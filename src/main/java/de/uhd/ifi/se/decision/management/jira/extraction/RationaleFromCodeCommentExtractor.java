@@ -19,9 +19,9 @@ import java.util.stream.Collectors;
  * Codes rationale location within the source file/comment.
  */
 public class RationaleFromCodeCommentExtractor {
-	ArrayList<DecisionKnowledgeElement> elements;
+	private ArrayList<DecisionKnowledgeElement> elements;
 	private final static List<String> decKnowTags = KnowledgeType.toList();
-	CodeCommentWithRange comment;
+	private CodeCommentWithRange comment;
 	private final Pattern TAGS_SEARCH_PATTERN;
 	private final Pattern TWO_EMPTY_LINES_PATTERN;
 	private final Pattern SPACE_ATCHAR_LETTER_PATTERN;
@@ -43,7 +43,7 @@ public class RationaleFromCodeCommentExtractor {
 		if (!canProcesElement(element)) {
 			return -1;
 		} else {
-			return RationaleCommitElementPositionCoding.getStartLine(element.getKey());
+			return RationaleCommitElementPositionCodingHelper.getStartLine(element.getKey());
 		}
 	}
 
@@ -51,7 +51,7 @@ public class RationaleFromCodeCommentExtractor {
 		if (!canProcesElement(element)) {
 			return -1;
 		} else {
-			return RationaleCommitElementPositionCoding.getEndLine(element.getKey());
+			return RationaleCommitElementPositionCodingHelper.getEndLine(element.getKey());
 		}
 	}
 
@@ -59,7 +59,7 @@ public class RationaleFromCodeCommentExtractor {
 		if (!canProcesElement(element)) {
 			return -1;
 		} else {
-			return RationaleCommitElementPositionCoding.getCursor(element.getKey());
+			return RationaleCommitElementPositionCodingHelper.getCursor(element.getKey());
 		}
 	}
 
@@ -186,7 +186,7 @@ public class RationaleFromCodeCommentExtractor {
 			absoluteFileEndLine++;
 		}
 
-		return RationaleCommitElementPositionCoding.encodeAttributes(absoluteFileStartLine
+		return RationaleCommitElementPositionCodingHelper.encodeAttributes(absoluteFileStartLine
 				, absoluteFileEndLine, start);
 	}
 
@@ -236,7 +236,7 @@ public class RationaleFromCodeCommentExtractor {
 		return rationaleText.length();
 	}
 
-	private static class RationaleCommitElementPositionCoding {
+	private static class RationaleCommitElementPositionCodingHelper {
 		/*
 		 * Keyformat: ...lineStartInt_lineEndInt_CursorInCommetnInt
 		 */

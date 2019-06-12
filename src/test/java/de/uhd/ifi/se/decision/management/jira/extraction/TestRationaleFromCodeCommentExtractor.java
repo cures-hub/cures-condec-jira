@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,7 +32,7 @@ public class TestRationaleFromCodeCommentExtractor {
 		codeCommentWithRange.commentContent = "";
 		rationaleFromCodeCommentExtractor =
 				new RationaleFromCodeCommentExtractor(codeCommentWithRange);
-		Assert.assertEquals(new ArrayList<DecisionKnowledgeElement>()
+		assertEquals(new ArrayList<DecisionKnowledgeElement>()
 				, rationaleFromCodeCommentExtractor.getElements());
 	}
 
@@ -43,7 +42,7 @@ public class TestRationaleFromCodeCommentExtractor {
 		rationaleFromCodeCommentExtractor =
 				new RationaleFromCodeCommentExtractor(codeCommentWithRange);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
-		Assert.assertEquals(new ArrayList<DecisionKnowledgeElement>()
+		assertEquals(new ArrayList<DecisionKnowledgeElement>()
 				, elementsFound);
 	}
 
@@ -54,8 +53,8 @@ public class TestRationaleFromCodeCommentExtractor {
 		rationaleFromCodeCommentExtractor =
 				new RationaleFromCodeCommentExtractor(codeCommentWithRange);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
-		Assert.assertEquals(1, elementsFound.size());
-		Assert.assertEquals(expectedRationaleText, elementsFound.get(0).getSummary());
+		assertEquals(1, elementsFound.size());
+		assertEquals(expectedRationaleText, elementsFound.get(0).getSummary());
 	}
 
 	@Test
@@ -65,8 +64,8 @@ public class TestRationaleFromCodeCommentExtractor {
 		rationaleFromCodeCommentExtractor =
 				new RationaleFromCodeCommentExtractor(codeCommentWithRange);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
-		Assert.assertEquals(1, elementsFound.size());
-		Assert.assertEquals(expectedRationaleText, elementsFound.get(0).getSummary());
+		assertEquals(1, elementsFound.size());
+		assertEquals(expectedRationaleText, elementsFound.get(0).getSummary());
 	}
 
 	@Test
@@ -76,8 +75,8 @@ public class TestRationaleFromCodeCommentExtractor {
 		rationaleFromCodeCommentExtractor =
 				new RationaleFromCodeCommentExtractor(codeCommentWithRange);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
-		Assert.assertEquals(1, elementsFound.size());
-		Assert.assertEquals(expectedRationaleText, elementsFound.get(0).getSummary());
+		assertEquals(1, elementsFound.size());
+		assertEquals(expectedRationaleText, elementsFound.get(0).getSummary());
 	}
 
 	@Test
@@ -87,8 +86,8 @@ public class TestRationaleFromCodeCommentExtractor {
 		rationaleFromCodeCommentExtractor =
 				new RationaleFromCodeCommentExtractor(codeCommentWithRange);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
-		Assert.assertEquals(1, elementsFound.size());
-		Assert.assertEquals(expectedRationaleText, elementsFound.get(0).getSummary());
+		assertEquals(1, elementsFound.size());
+		assertEquals(expectedRationaleText, elementsFound.get(0).getSummary());
 	}
 
 	@Test
@@ -98,10 +97,10 @@ public class TestRationaleFromCodeCommentExtractor {
 		rationaleFromCodeCommentExtractor =
 				new RationaleFromCodeCommentExtractor(codeCommentWithRange);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
-		Assert.assertEquals(2, elementsFound.size());
-		Assert.assertEquals(expectedRationaleText, elementsFound.get(0).getSummary());
+		assertEquals(2, elementsFound.size());
+		assertEquals(expectedRationaleText, elementsFound.get(0).getSummary());
 		expectedRationaleText = "rationale";
-		Assert.assertEquals(expectedRationaleText, elementsFound.get(1).getSummary());
+		assertEquals(expectedRationaleText, elementsFound.get(1).getSummary());
 	}
 
 	@Test
@@ -111,11 +110,11 @@ public class TestRationaleFromCodeCommentExtractor {
 		rationaleFromCodeCommentExtractor =
 				new RationaleFromCodeCommentExtractor(codeCommentWithRange);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
-		Assert.assertEquals(2, elementsFound.size());
-		Assert.assertEquals(expectedRationaleText, elementsFound.get(0).getSummary());
+		assertEquals(2, elementsFound.size());
+		assertEquals(expectedRationaleText, elementsFound.get(0).getSummary());
 
 		expectedRationaleText = "#2";
-		Assert.assertEquals(expectedRationaleText, elementsFound.get(1).getSummary());
+		assertEquals(expectedRationaleText, elementsFound.get(1).getSummary());
 	}
 
 	@Test
@@ -131,8 +130,8 @@ public class TestRationaleFromCodeCommentExtractor {
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
 		String foundElementKey = elementsFound.get(0).getKey();
 
-		Assert.assertEquals(2, elementsFound.size());
-		Assert.assertTrue(foundElementKey.endsWith(expectedKeyEnd));
+		assertEquals(2, elementsFound.size());
+		assertTrue(foundElementKey.endsWith(expectedKeyEnd));
 
 		expectedKeyEnd = String.valueOf(codeCommentWithRange.beginLine + 3) +
 				"_" +
@@ -140,6 +139,6 @@ public class TestRationaleFromCodeCommentExtractor {
 				"_" +
 				"41";
 		foundElementKey = elementsFound.get(1).getKey();
-		Assert.assertTrue(foundElementKey.endsWith(expectedKeyEnd));
+		assertTrue(foundElementKey.endsWith(expectedKeyEnd));
 	}
 }

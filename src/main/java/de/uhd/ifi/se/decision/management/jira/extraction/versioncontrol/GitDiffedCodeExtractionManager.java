@@ -27,18 +27,18 @@ import java.util.stream.Collectors;
  * """
  *
  * @decKnowledgeTag: knowledge summary text
- * 
+ *
  * knowledge description text after empty line
- * 
- * 
+ *
+ *
  * """
- * 
+ *
  * where [decKnowledgeTag] belongs to set of know Knowledge Types,
  * for example issue, alternative, decision etc.
  * and where empty two lines denote the end of the decision element,
  * Observation of another tag ends the element too.
  * Comment end ends also the decision element.
- * 
+ *
  * This class will:
  * 1) fetch with gitClient necessary files from code repository,
  * 2) delegate comment extraction to specialized classes and
@@ -63,6 +63,7 @@ public class GitDiffedCodeExtractionManager {
 	 * client[/con]
 	 *
 	 */
+
 	private final GitClient gitClientCheckedOutAtDiffStart;
 	private final GitClient gitClientCheckedOutAtDiffEnd;
 	private final Map<DiffEntry, EditList> diffEntries;
@@ -217,10 +218,11 @@ public class GitDiffedCodeExtractionManager {
 	}
 
 	private File getInspectedFileAbsolutePath(String inspectedFileRelativePath) {
-		inspectedFileRelativePath = ".." //.. gets us out of .git folder.
+		String filePathRelativeOutOfGitFolder = ".." //.. gets us out of .git folder.
 				+ File.separator
 				+ inspectedFileRelativePath;
-		return new File(gitClientCheckedOutAtDiffEnd.getDirectory(), inspectedFileRelativePath);
+		return new File(gitClientCheckedOutAtDiffEnd.getDirectory()
+				, filePathRelativeOutOfGitFolder);
 	}
 
 	/* Currently only Java parser is available. */
@@ -234,7 +236,7 @@ public class GitDiffedCodeExtractionManager {
 
 	/* Windows vs. Unix, is this method needed for diff entry paths?*/
 	private String adjustOSsPathSeparator(String newPath) {
-		if (newPath.indexOf("/") > -1 && "/" != File.separator) {
+		if (newPath.indexOf("/") > -1 && !"/".equals(File.separator)) {
 			return newPath.replaceAll("/", File.separator);
 		}
 		return newPath;

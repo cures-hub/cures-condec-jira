@@ -436,14 +436,10 @@ public class GitClientImpl implements GitClient {
 		String branchShortName = branchNameComponents[branchNameComponents.length - 1];
 		File directory = new File(fsManager.prepareBranchDirectory(branchShortName));
 
-		if (switchGitDirectory(directory)
+		return (switchGitDirectory(directory)
 				&& createLocalBranchIfNotExists(branchShortName)
 				&& checkoutBranch(branchShortName)
-				&& pull()) {
-			return true;
-		} else {
-			return false;
-		}
+				&& pull());
 	}
 
 	@Override

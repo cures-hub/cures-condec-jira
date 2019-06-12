@@ -7,7 +7,6 @@ import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,11 +21,11 @@ import java.util.stream.Collectors;
  */
 public class RationaleFromDiffCodeCommentExtractor {
 
-	EditList editList;
-	List<CodeCommentWithRange> commentsInNewerFile;
-	List<CodeCommentWithRange> commentsInOlderFile;
-	int cursorNewerFile = -1;
-	int cursorOlderFile = -1;
+	private EditList editList;
+	private List<CodeCommentWithRange> commentsInNewerFile;
+	private List<CodeCommentWithRange> commentsInOlderFile;
+	private int cursorNewerFile = -1;
+	private int cursorOlderFile = -1;
 
 	public RationaleFromDiffCodeCommentExtractor(List<CodeCommentWithRange> commentsInOlderFile
 			, List<CodeCommentWithRange> commentsInNewerFile
