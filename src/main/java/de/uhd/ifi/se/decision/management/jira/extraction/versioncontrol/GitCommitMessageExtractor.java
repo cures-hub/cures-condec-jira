@@ -111,7 +111,7 @@ public class GitCommitMessageExtractor {
 	}
 
 	private String getRatTypeFromStartTag(String rationaleTypeStartTag) {
-		return rationaleTypeStartTag.substring(1, rationaleTypeStartTag.length() - 2);
+		return rationaleTypeStartTag.substring(1, rationaleTypeStartTag.length() - 1);
 	}
 
 	private DecisionKnowledgeElement createElement(int start, String rationaleType
