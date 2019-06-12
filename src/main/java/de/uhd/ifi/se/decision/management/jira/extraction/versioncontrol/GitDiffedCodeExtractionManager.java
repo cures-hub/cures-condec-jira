@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * purpose: extract decision knowledge elements from files
@@ -68,7 +69,8 @@ public class GitDiffedCodeExtractionManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitDiffedCodeExtractionManager.class);
 
-	private List<CodeExtractionResult> results = new ArrayList<>();
+	// may include null values for keys!
+	private Map<DiffEntry, CodeExtractionResult> results = new HashMap<>();
 
 	/*
 	 * Passing only the git client checked out at the last commit of the diff
@@ -97,9 +99,35 @@ public class GitDiffedCodeExtractionManager {
 		//no actions implemented yet
 	}
 
+	public List<DecisionKnowledgeElement> getNewDecisionKnowledgeElements() {
+		List<DecisionKnowledgeElement> resultValues = new ArrayList<>();
+
+		if (results.size()>0) {
+			for (Map.Entry<DiffEntry, CodeExtractionResult> dEntry
+					: results.entrySet()) {
+				String newPath = dEntry.getKey().getNewPath();
+				if (dEntry.getValue()!=null) {
+					Map<Edit, List<DecisionKnowledgeElement>> codeExtractionResult =
+							dEntry.getValue().elementsInNewerVersion;
+					if (codeExtractionResult.size()>0) {
+						for (Map.Entry<Edit, List<DecisionKnowledgeElement>> editListEntry
+								: codeExtractionResult.entrySet()) {
+							resultValues.addAll(editListEntry.getValue().stream().map(d -> {
+								d.setKey(newPath + "_" + d.getKey());
+							return d;
+						}
+						).collect(Collectors.toList()));
+						}
+					}
+				}
+			}
+		}
+		return resultValues;
+	}
+
 	private void processEntries() {
-		for (Map.Entry<DiffEntry, EditList> diffEntry : diffEntries.entrySet()) {
-			results.add(processEntry(diffEntry));
+		for (Map.Entry<DiffEntry, EditList> entry : diffEntries.entrySet()) {
+			results.put(entry.getKey(),processEntry(entry));
 		}
 	}
 
@@ -159,7 +187,8 @@ public class GitDiffedCodeExtractionManager {
 				new RationaleFromDiffCodeCommentExtractor(commentsInOlderFile, commentsInNewerFile, diffEntry.getValue());
 
 		while (rationaleFromDiffCodeCommentExtractor.next(true)) {
-			returnMap.putAll(rationaleFromDiffCodeCommentExtractor.getRationaleFromComment(true));
+			returnMap.putAll(rationaleFromDiffCodeCommentExtractor.getRationaleFromComment(true
+					,returnMap));
 		}
 
 		return returnMap;

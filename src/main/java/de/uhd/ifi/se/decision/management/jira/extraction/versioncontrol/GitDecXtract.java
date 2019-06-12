@@ -68,6 +68,7 @@ public class GitDecXtract {
 		Map<DiffEntry, EditList> diffs = gitClient.getDiff(revCommitStart, revCommitEnd);
 		GitDiffedCodeExtractionManager diffCodeManager =
 				new GitDiffedCodeExtractionManager( diffs, endAnchoredGitClient);
+		elementsFromCode = diffCodeManager.getNewDecisionKnowledgeElements();
 
 		return elementsFromCode;
 	}
