@@ -70,7 +70,10 @@ public class GitDecXtract {
 				new GitDiffedCodeExtractionManager( diffs, endAnchoredGitClient);
 		elementsFromCode = diffCodeManager.getNewDecisionKnowledgeElements();
 
-		return elementsFromCode;
+		return elementsFromCode.stream().map(element -> {
+			element.setProject(projecKey);
+			return element;
+		}).collect(Collectors.toList());
 	}
 
 	private List<DecisionKnowledgeElement> getElementsFromMessage(RevCommit commit) {
@@ -85,7 +88,8 @@ public class GitDecXtract {
 	}
 
 	private String updateKeyFroMessageExtractedElement(String keyWithoutCommitish, ObjectId id) {
+		// replace placeholder with commit's hash
 		return keyWithoutCommitish.replace(GitCommitMessageExtractor.COMMIT_PLACEHOLDER,
-				String.valueOf(id) + COMMIT_POSITION_SEPARATOR);
+				String.valueOf(id).split(" ")[1] + COMMIT_POSITION_SEPARATOR);
 	}
 }
