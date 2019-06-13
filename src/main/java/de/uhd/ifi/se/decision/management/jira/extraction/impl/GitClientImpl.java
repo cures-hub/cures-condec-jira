@@ -312,11 +312,11 @@ public class GitClientImpl implements GitClient {
 		Ref featureBranch = getBranch(featureBranchName);
 		if (null == featureBranch) {
 			/*
-			[issue] What is the return value of methods that would normally return a collection (e.g. list) with an invalid input parameter? [/issue]
-			[alternative] Methods with an invalid input parameter return an empty list! [/alternative]
-			[pro] Prevents a null pointer exception. [/pro]
-			[con] Is misleading since it is not clear whether the list is empty but has a valid input parameter or because of an invalid parameter. [/con]
-			[alternative] Methods with an invalid input parameter return null! [/alternative]
+			@issue: What is the return value of methods that would normally return a collection (e.g. list) with an invalid input parameter?
+			@alternative: Methods with an invalid input parameter return an empty list!
+			@pro: Prevents a null pointer exception.
+			@con: Is misleading since it is not clear whether the list is empty but has a valid input parameter or because of an invalid parameter.
+			@alternative: Methods with an invalid input parameter return null!
 			 */
 			return (List<RevCommit>) null;
 		}

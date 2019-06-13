@@ -46,21 +46,21 @@ import java.util.stream.Collectors;
  */
 public class GitDiffedCodeExtractionManager {
 	/*
-	 * [issue]Modified files may add, modify or delete rationale.
+	 * @issue: Modified files may add, modify or delete rationale.
 	 * For extraction of rationale on modified files their contents
 	 * from the base and changed versions are required.
-	 * How should both versions of affected files be accessed?{/issue]
+	 * How should both versions of affected files be accessed?
 	 *
-	 * [decision]Use two gitClientImpl instances each checked out
-	 * at different commit of the diff range![/decision]
-	 * [pro]no additional checkouts need to be performed by the gitClientImpl[/pro]
-	 * [con]requires on more gitClientImpl object in the memory[/con]
+	 * @decision: Use two gitClientImpl instances each checked out
+	 * at different commit of the diff range!
+	 * @pro: no additional checkouts need to be performed by the gitClientImpl
+	 * @con: requires on more gitClientImpl object in the memory
 	 *
-	 * [alternative]Switch between commits using one gitClientImpl
-	 * instance[/alternative]
-	 * [con]frequent checkouts take time[/con]
-	 * [con]requires implementation of another special mode in the
-	 * client[/con]
+	 * @alternative: Switch between commits using one gitClientImpl
+	 * instance!
+	 * @con: frequent checkouts take time
+	 * @con: requires implementation of another special mode in the
+	 * client
 	 *
 	 */
 
