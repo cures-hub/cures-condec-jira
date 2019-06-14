@@ -16,7 +16,7 @@ public interface CodeSummarizer {
 	 *            JIRA issue. Its key is searched for in commit messages.
 	 * @return summary as a String.
 	 */
-	String createSummary(Issue jiraIssue);
+	String createSummary(Issue jiraIssue, int probability);
 
 	/**
 	 * Creates a summary of code changes for a diff.

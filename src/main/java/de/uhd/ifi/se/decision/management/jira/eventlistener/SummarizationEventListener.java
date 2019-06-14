@@ -40,7 +40,7 @@ public class SummarizationEventListener{
 		}
 
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueKey);
-		String summary = new CodeSummarizerImpl(projectKey).createSummary(issueEvent.getIssue());
+		String summary = new CodeSummarizerImpl(projectKey).createSummary(issueEvent.getIssue(), 0);
 
 		if (summary.isEmpty()) {
 			return;
