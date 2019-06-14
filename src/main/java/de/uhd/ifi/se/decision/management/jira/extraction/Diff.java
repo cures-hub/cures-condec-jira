@@ -3,23 +3,20 @@ package de.uhd.ifi.se.decision.management.jira.extraction;
 import com.atlassian.gzipfilter.org.apache.commons.lang.StringEscapeUtils;
 import com.atlassian.jira.util.json.JSONObject;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.ChangedFileImpl;
-import org.apache.commons.io.FileUtils;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Vector;
 
 public interface Diff {
     ArrayList<ChangedFileImpl> getChangedFileImpls();
     void addChangedFileImpl(ChangedFileImpl changedFileImpl);
-    String USER_AGENT = "Mozilla/5.0";
-    static void sendPost(String projectName, String issueKey, String data) throws Exception {
 
+    static void sendPost(String projectName, String issueKey, String data) throws Exception {
+        String USER_AGENT = "Mozilla/5.0";
         String url = "https://ijezxzhgjf.execute-api.eu-west-3.amazonaws.com/prod/diff/";
         URL obj = new URL(url);
         HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
