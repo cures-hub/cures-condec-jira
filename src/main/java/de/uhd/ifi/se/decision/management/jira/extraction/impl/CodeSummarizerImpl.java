@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Vector;
 
-import com.google.gson.Gson;
 import de.uhd.ifi.se.decision.management.jira.extraction.*;
 import org.apache.commons.io.FilenameUtils;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -86,30 +85,6 @@ public class CodeSummarizerImpl implements CodeSummarizer {
             e.printStackTrace();
         }
 
-
-        /*ObjectMapper mapper = new ObjectMapper();
-        DiffImpl RxDiff = allDiffs;
-        try {
-
-            Gson gson = new Gson();
-            String studentJson = gson.toJson(RxDiff.getChangedFileImpls().get(0));
-
-
-            mapper.writeValue(new File("staff.json"), RxDiff.getChangedFileImpls().get(0));
-            // Java objects to JSON string - compact-print
-            String jsonString = mapper.writeValueAsString(RxDiff.getChangedFileImpls().get(0));
-
-            System.out.println(jsonString);
-
-            // Java objects to JSON string - pretty-print
-            String jsonInString2 = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(RxDiff);
-
-            System.out.println(jsonInString2);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
         return generateSummary(allDiffs);
     }
 

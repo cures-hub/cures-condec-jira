@@ -42,20 +42,10 @@ public interface Diff {
         json.put("data", results);
         String urlParameters = json.toString();
 
-
-        // String urlParameters = "projectKey=" + projectName + "&issueKey="+issueKey + "&data=" + results;
-/*
-        String body = "projectKey=" + URLEncoder.encode( projectName, "UTF-8" ) + "&" +
-                "issueKey=" + URLEncoder.encode( issueKey, "UTF-8" )  + "&" +
-                "data=" + URLEncoder.encode( results, "UTF-8" );
-*/
-        // Send post request
         con.setDoOutput(true);
         con.setDoInput( true );
         con.setUseCaches( false );
-        //con.setRequestProperty( "Content-Length", String.valueOf(body.length()));
         DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-        //wr.writeBytes(body);
         wr.writeBytes(urlParameters);
         wr.flush();
         wr.close();
@@ -65,8 +55,7 @@ public interface Diff {
         System.out.println("Post parameters : " + urlParameters);
         System.out.println("Response Code : " + responseCode);
 
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String inputLine;
         StringBuffer response = new StringBuffer();
 
@@ -74,8 +63,6 @@ public interface Diff {
             response.append(inputLine);
         }
         in.close();
-
-        //print result
         System.out.println(response.toString());
 
     }
