@@ -4,12 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationManagerForJiraIssueComments;
 import org.ofbiz.core.entity.GenericEntityException;
 import org.ofbiz.core.entity.GenericValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.event.issue.IssueEvent;
@@ -18,6 +16,7 @@ import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.util.collect.MapBuilder;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
@@ -28,7 +27,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersisten
  * in the knowledge graph when the user changes either a comment or the
  * description of a JIRA issue.
  */
-public class DecXtractEventListener{
+public class DecXtractEventListener {
 
 	private String projectKey;
 	private IssueEvent issueEvent;
