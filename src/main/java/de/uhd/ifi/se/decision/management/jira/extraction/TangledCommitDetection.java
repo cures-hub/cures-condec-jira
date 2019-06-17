@@ -7,33 +7,30 @@ import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.ChangedFileImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.DiffImpl;
-
 public interface TangledCommitDetection {
 
-	void calculatePredication(DiffImpl diffImpl);
+	void calculatePredication(Diff diff);
 
 	Vector<String> parsePackage(Optional<PackageDeclaration> op);
 
-	void calculateLineDistances(DiffImpl diffImpl);
+	void calculateLineDistances(Diff diff);
 
-	void calculatePackageDistances(DiffImpl diffImpl);
+	void calculatePackageDistances(Diff diff);
 
-	void standardization(DiffImpl diffImpl);
+	void standardization(Diff diff);
 
-	void calculatePathDistances(DiffImpl diffImpl);
+	void calculatePathDistances(Diff diff);
 
-	void calculateMethodDistances(DiffImpl diffImpl);
+	void calculateMethodDistances(Diff diff);
 
-	Boolean isAllChangesInMethods(DiffImpl diffImpl);
+	Boolean isAllChangesInMethods(Diff diff);
 
-	Boolean isAllChangesInOnePackage(DiffImpl diffImpl);
+	Boolean isAllChangesInOnePackage(Diff diff);
 
-	static void getMethods(DiffImpl diffImpl) {
-		for (ChangedFileImpl changedFileImpl : diffImpl.getChangedFileImpls()) {
+	static void getMethods(Diff diff) {
+		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			try {
-				new MethodVisitor().visit(changedFileImpl.getCompilationUnit(), changedFileImpl);
+				new MethodVisitor().visit(changedFile.getCompilationUnit(), changedFile);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -43,8 +40,8 @@ public interface TangledCommitDetection {
 	class MethodVisitor extends VoidVisitorAdapter {
 		@Override
 		public void visit(MethodDeclaration m, Object arg) {
-			ChangedFileImpl changedFileImpl = (ChangedFileImpl) arg;
-			changedFileImpl.setMethodDeclarations(m);
+			ChangedFile changedFile = (ChangedFile) arg;
+			changedFile.setMethodDeclarations(m);
 		}
 	}
 }

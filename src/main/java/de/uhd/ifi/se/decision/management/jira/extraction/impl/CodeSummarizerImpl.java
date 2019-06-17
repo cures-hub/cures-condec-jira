@@ -41,7 +41,7 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 			return "";
 		}
 		this.minProbability = probability;
-		this.issueKey = jiraIssue.getKey();		
+		this.issueKey = jiraIssue.getKey();
 		Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssue);
 		return createSummary(diff);
 	}
@@ -60,14 +60,14 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		if (diff == null || diff.size() == 0) {
 			return "";
 		}
-		DiffImpl allDiffs = new DiffImpl();
+		Diff allDiffs = new DiffImpl();
 		for (Map.Entry<DiffEntry, EditList> entry : diff.entrySet()) {
 			File file = new File(gitClient.getDirectory().toString().replace(".git", "") + entry.getKey().getNewPath());
-			allDiffs.addChangedFileImpl(new ChangedFileImpl(entry.getValue(), file));
+			allDiffs.addChangedFile(new ChangedFileImpl(entry.getValue(), file));
 		}
 		try {
 			TangledCommitDetection.getMethods(allDiffs);
-			TangledCommitDetectionImpl tangledCommitDetection = new TangledCommitDetectionImpl();
+			TangledCommitDetection tangledCommitDetection = new TangledCommitDetectionImpl();
 			tangledCommitDetection.calculatePredication(allDiffs);
 		} catch (Exception e) {
 			LOGGER.error("calculation fails");
@@ -75,7 +75,7 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		}
 		// make easy for mapper
 		Vector<SimplifiedChangedFile> simplifiedChangedFiles = new Vector<>();
-		for (ChangedFileImpl changedFile : allDiffs.getChangedFileImpls()) {
+		for (ChangedFile changedFile : allDiffs.getChangedFiles()) {
 			simplifiedChangedFiles.add(ChangedFile.getSimplified(changedFile));
 		}
 		ObjectMapper mapper = new ObjectMapper();
@@ -95,21 +95,20 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		return generateSummary(allDiffs);
 	}
 
-	private String generateSummary(DiffImpl diffImpl) {
+	private String generateSummary(Diff diff) {
 		String rows = "";
-		for (ChangedFileImpl changedFileImpl : diffImpl.getChangedFileImpls()) {
-			if (changedFileImpl.getPercentage() >= this.minProbability) {
-				rows += this.addRow(this.addTableItem(
-						FilenameUtils.removeExtension(changedFileImpl.getFile().getName()),
-						this.summarizeMethods(changedFileImpl), Float.toString(changedFileImpl.getPercentage())));
+		for (ChangedFile changedFile : diff.getChangedFiles()) {
+			if (changedFile.getPercentage() >= this.minProbability) {
+				rows += this.addRow(this.addTableItem(FilenameUtils.removeExtension(changedFile.getFile().getName()),
+						this.summarizeMethods(changedFile), Float.toString(changedFile.getPercentage())));
 			}
 		}
 		return this.generateTable(rows);
 	}
 
-	private String summarizeMethods(ChangedFileImpl changedFileImpl) {
+	private String summarizeMethods(ChangedFile changedFile) {
 		String summarizedMethods = "";
-		for (MethodDeclaration methodDeclaration : changedFileImpl.getMethodDeclarations()) {
+		for (MethodDeclaration methodDeclaration : changedFile.getMethodDeclarations()) {
 			summarizedMethods += methodDeclaration.getNameAsString() + "<br/>";
 		}
 		return summarizedMethods;

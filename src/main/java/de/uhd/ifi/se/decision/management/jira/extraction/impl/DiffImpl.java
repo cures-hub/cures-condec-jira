@@ -1,22 +1,24 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.extraction.Diff;
 
-import java.util.ArrayList;
-
 public class DiffImpl implements Diff {
-    private ArrayList<ChangedFileImpl> changedFileImpls;
+	private List<ChangedFile> changedFiles;
 
-    public DiffImpl(){
-        this.changedFileImpls = new ArrayList<>();
-    }
+	public DiffImpl() {
+		this.changedFiles = new ArrayList<ChangedFile>();
+	}
 
-    public ArrayList<ChangedFileImpl> getChangedFileImpls() {
-        return changedFileImpls;
-    }
+	public List<ChangedFile> getChangedFiles() {
+		return changedFiles;
+	}
 
-    public void addChangedFileImpl(ChangedFileImpl changedFileImpl){
-        changedFileImpls.add(changedFileImpl);
-    }
+	public void addChangedFile(ChangedFile changedFile) {
+		changedFiles.add(changedFile);
+	}
 
 }
