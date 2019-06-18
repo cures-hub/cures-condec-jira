@@ -12,7 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import de.uhd.ifi.se.decision.management.jira.view.vis.EvolutinDataProvider;
+import de.uhd.ifi.se.decision.management.jira.view.vis.EvolutionDataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,11 +72,11 @@ public class ViewRest {
 	@Path("/getEvolutionData")
 	@GET
 	public Response getEvolutionData(@QueryParam("projectKey") String projectKey){
-		if(projectKey.equals("")|| projectKey== null){
+		if(projectKey== null || projectKey.equals("")){
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not valid."))
 					       .build();
 		}
-		EvolutinDataProvider dataProvider = new EvolutinDataProvider(projectKey);
+		EvolutionDataProvider dataProvider = new EvolutionDataProvider(projectKey);
 		return Response.ok(dataProvider.getEvolutionData()).build();
 	}
 

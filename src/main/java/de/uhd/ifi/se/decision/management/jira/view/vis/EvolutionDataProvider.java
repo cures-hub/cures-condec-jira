@@ -7,13 +7,14 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.HashSet;
 import java.util.List;
 
-public class EvolutinDataProvider {
+public class EvolutionDataProvider {
+
 	private List<DecisionKnowledgeElement> elementList;
 
 	@XmlElement
 	private HashSet<EvolutionNode> dataSet;
 
-	public EvolutinDataProvider(String projectKey){
+	public EvolutionDataProvider(String projectKey){
 		if(projectKey != null) {
 			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
 			elementList = strategy.getDecisionKnowledgeElements();
@@ -23,6 +24,14 @@ public class EvolutinDataProvider {
 
 	public HashSet<EvolutionNode> getEvolutionData(){
 		return dataSet;
+	}
+
+	public List<DecisionKnowledgeElement> getElementList() {
+		return elementList;
+	}
+
+	public void setElementList(List<DecisionKnowledgeElement> elementList) {
+		this.elementList = elementList;
 	}
 
 	private void createDataSet(){

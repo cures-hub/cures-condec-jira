@@ -19,6 +19,14 @@ public class EvolutionNode {
 		this.start = startTime;
 	}
 
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public String getContent() {
 		return content;
 	}
