@@ -367,6 +367,8 @@ public class GraphFiltering {
 
 	}
 
+	//TODO Fix complexity of this function
+	// Way to big needs to be split in small functions
 	public void produceResultsWithAdditionalFilters(String issueTypes, long createdEarliest, long createdLatest){
 		this.produceResultsFromQuery();
 		List<Issue> resultingIssues = new ArrayList<>();
@@ -388,7 +390,6 @@ public class GraphFiltering {
 			}
 		} else {
 			if (!matchesCreatedOrIssueType(resultingQuery)) {
-				//queryBuilder.and();
 				queryBuilder.addCondition(resultingQuery);
 			}
 		}
@@ -421,9 +422,7 @@ public class GraphFiltering {
 		}
 		Query finalQuery = queryBuilder.buildQuery();
 		final SearchService.ParseResult parseResult = getSearchService().parseQuery(user,getSearchService().getJqlString(finalQuery));
-		if (parseResult.isValid())
-
-		{
+		if (parseResult.isValid()){
 			List<Clause> clauses = parseResult.getQuery().getWhereClause().getClauses();
 
 			if (!clauses.isEmpty()) {
@@ -491,10 +490,9 @@ public class GraphFiltering {
 				List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
 						.getElementsForIssue(currentIssue.getId(), projectKey);
 				for (DecisionKnowledgeElement currentElement : elements) {
-					if (!results.contains(currentElement) && currentElement instanceof PartOfJiraIssueText) {
-						if (checkIfJiraTextMatchesFilter(currentElement)) {
-							results.add(currentElement);
-						}
+					if (!results.contains(currentElement) && currentElement instanceof PartOfJiraIssueText
+							    && checkIfJiraTextMatchesFilter(currentElement)) {
+						results.add(currentElement);
 					}
 				}
 			}
@@ -506,15 +504,11 @@ public class GraphFiltering {
 		if (this.isQueryContainsCreationDate()){
 			long startTime = this.getStartDate();
 			long endTime = this.getEndDate();
-			if (startTime > 0) {
-				if ((element).getCreated().getTime() < startTime) {
+			if (startTime > 0 && (element).getCreated().getTime() < startTime) {
 					return false;
-				}
 			}
-			if (endTime > 0) {
-				if ((element).getCreated().getTime() > endTime) {
+			if (endTime > 0 && (element).getCreated().getTime() > endTime) {
 					return false;
-				}
 			}
 		}
 		if (this.isQueryContainsIssueTypes()) {

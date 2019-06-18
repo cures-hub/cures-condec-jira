@@ -110,7 +110,8 @@ public class Vis {
 	}
 
 
-
+	//TODO Fix complexity of this function
+	// Way to big needs to be split in small functions
 	private void fillNodesAndEdges(DecisionKnowledgeElement element, Link link, int level, int cid) {
 		if (element == null || element.getProject() == null) {
 			return;
@@ -178,10 +179,9 @@ public class Vis {
 	}
 
 	private boolean isCollapsed(DecisionKnowledgeElement element) {
-		if (this.documentationLocation.contains(DocumentationLocation.getName(element.getDocumentationLocation()))) {
-			if (this.elementsMatchingFilterCriteria.contains(element)) {
-				return true;
-			}
+		if (this.documentationLocation.contains(DocumentationLocation.getName(element.getDocumentationLocation()))
+			&& this.elementsMatchingFilterCriteria.contains(element)) {
+			return true;
 		}
 		return false;
 	}
@@ -217,5 +217,13 @@ public class Vis {
 
 	public boolean isHyperlinked() {
 		return isHyperlinked;
+	}
+
+	public String getRootElementKey() {
+		return rootElementKey;
+	}
+
+	public void setRootElementKey(String rootElementKey) {
+		this.rootElementKey = rootElementKey;
 	}
 }

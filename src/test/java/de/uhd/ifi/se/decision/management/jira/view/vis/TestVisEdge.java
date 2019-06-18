@@ -16,12 +16,11 @@ public class TestVisEdge extends TestSetUpWithIssues {
 
 	private VisEdge edge;
 	private Link link;
-	private DecisionKnowledgeElement from;
-	private DecisionKnowledgeElement to;
+
 
 	@Before
 	public void setUp() {
-		from = new DecisionKnowledgeElementImpl();
+		DecisionKnowledgeElement from = new DecisionKnowledgeElementImpl();
 		from.setId(1);
 		from.setKey("Test-1");
 		from.setType("Argument");
@@ -30,7 +29,7 @@ public class TestVisEdge extends TestSetUpWithIssues {
 		from.setSummary("TESTfwf");
 		from.setDocumentationLocation("i");
 
-		to = new DecisionKnowledgeElementImpl();
+		DecisionKnowledgeElement to = new DecisionKnowledgeElementImpl();
 		to.setId(1);
 		to.setKey("Test-1");
 		to.setType("Argument");

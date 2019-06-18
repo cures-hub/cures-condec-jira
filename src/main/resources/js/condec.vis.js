@@ -201,7 +201,7 @@
         console.log("conDecVis buildVisFiltered");
         conDecAPI.getVisFiltered(issueKey,search,issueTypes,createdAfter,createdBefore, documentationLocation, function (visData) {
             build(visData.nodes, visData.edges, visData.rootElementKey,nodeDistance);
-        })
+        });
     };
 
     ConDecVis.prototype.buildVis = function buildVis(elementKey,  searchTerm) {
