@@ -13,6 +13,8 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 
@@ -26,6 +28,8 @@ public class WebhookContentProvider {
 	private String rootElementKey;
 	private String secret;
 
+	protected static final Logger LOGGER = LoggerFactory.getLogger(WebhookContentProvider.class);
+
 	public WebhookContentProvider(String projectKey, String elementKey, String secret) {
 		this.projectKey = projectKey;
 		this.rootElementKey = elementKey;
@@ -34,7 +38,7 @@ public class WebhookContentProvider {
 
 	/**
 	 * Creates post method for a single tree of decision knowledge.
-	 * 
+	 *
 	 * @return post method ready to be posted
 	 */
 	public PostMethod createPostMethod() {
@@ -47,7 +51,7 @@ public class WebhookContentProvider {
 			StringRequestEntity requestEntity = new StringRequestEntity(webhookData, "application/json", "UTF-8");
 			postMethod.setRequestEntity(requestEntity);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			LOGGER.error("Creating the post method failed. Message: " + e.getMessage());
 		}
 		Header header = new Header();
 		header.setName("X-Hub-Signature");
@@ -79,7 +83,7 @@ public class WebhookContentProvider {
 		try {
 			treantAsJson = objectMapper.writeValueAsString(treant);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error("Failed to create a treant json string for the webhook. Message: " + e.getMessage());
 		}
 		return treantAsJson;
 	}
@@ -98,22 +102,13 @@ public class WebhookContentProvider {
 	public static String createHashedPayload(String data, String key) {
 		final String hashingAlgorithm = "HMACSHA256";
 		SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), hashingAlgorithm);
-		Mac mac = null;
-		try {
-			mac = Mac.getInstance(hashingAlgorithm);
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-		try {
-			mac.init(secretKeySpec);
-		} catch (InvalidKeyException e) {
-			e.printStackTrace();
-		}
 		String hexString = "";
 		try {
+			Mac mac = Mac.getInstance(hashingAlgorithm);
+			mac.init(secretKeySpec);
 			hexString = toHexString(mac.doFinal(data.getBytes("UTF-8")));
-		} catch (IllegalStateException | UnsupportedEncodingException e) {
-			e.printStackTrace();
+		} catch (NoSuchAlgorithmException | InvalidKeyException | UnsupportedEncodingException e) {
+			LOGGER.error("Creating a hashed payload failed. Message: " + e.getMessage());
 		}
 		return hexString;
 	}

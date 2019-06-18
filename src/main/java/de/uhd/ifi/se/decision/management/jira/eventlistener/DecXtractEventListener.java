@@ -1,27 +1,22 @@
-package de.uhd.ifi.se.decision.management.jira.extraction;
+package de.uhd.ifi.se.decision.management.jira.eventlistener;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationManagerForJiraIssueComments;
 import org.ofbiz.core.entity.GenericEntityException;
 import org.ofbiz.core.entity.GenericValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.atlassian.event.api.EventListener;
-import com.atlassian.event.api.EventPublisher;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.util.collect.MapBuilder;
-import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -33,11 +28,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersisten
  * in the knowledge graph when the user changes either a comment or the
  * description of a JIRA issue.
  */
-@Component
-public class DecXtractEventListener implements InitializingBean, DisposableBean {
+public class DecXtractEventListener{
 
-	@JiraImport
-	private final EventPublisher eventPublisher;
 	private String projectKey;
 	private IssueEvent issueEvent;
 	private static final Logger LOGGER = LoggerFactory.getLogger(DecXtractEventListener.class);
@@ -47,36 +39,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	 */
 	public static boolean editCommentLock;
 
-	@Autowired
-	public DecXtractEventListener(EventPublisher eventPublisher) {
-		this.eventPublisher = eventPublisher;
-	}
-
-	/**
-	 * Called when the plugin has been enabled.
-	 *
-	 * @throws Exception
-	 */
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		eventPublisher.register(this);
-	}
-
-	/**
-	 * Called when the plugin is being disabled or removed.
-	 *
-	 * @throws Exception
-	 */
-	@Override
-	public void destroy() throws Exception {
-		eventPublisher.unregister(this);
-	}
-
-	@EventListener
 	public void onIssueEvent(IssueEvent issueEvent) {
-		if (issueEvent == null) {
-			return;
-		}
 		this.issueEvent = issueEvent;
 		this.projectKey = issueEvent.getProject().getKey();
 
@@ -201,7 +164,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 				changedString.put(oldValue, newValue);
 			}
 		} catch (NullPointerException | GenericEntityException e) {
-			e.printStackTrace();
+			LOGGER.error("Get changed string during a JIRA issue event failed. Message: " + e.getMessage());
 		}
 
 		return changedString;

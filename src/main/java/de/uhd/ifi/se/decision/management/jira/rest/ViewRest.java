@@ -91,7 +91,7 @@ public class ViewRest {
 		try {
 			depth = Integer.parseInt(depthOfTree);
 		} catch (NumberFormatException e) {
-			LOGGER.error("Depth of tree could not be parsed, the default value of 4 is used.");
+			LOGGER.error("Depth of tree could not be parsed, the default value of 4 is used. Message: " + e.getMessage());
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Treant cannot be shown since depth of Tree is NaN")).build();
 		}

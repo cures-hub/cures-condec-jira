@@ -18,7 +18,7 @@ import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
+import de.uhd.ifi.se.decision.management.jira.eventlistener.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -549,6 +549,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		try {
 			issueLinkManager.createIssueLink(element.getJiraIssueId(), issue.getId(), linkTypeId, (long) 0, user);
 		} catch (CreateException e) {
+			LOGGER.error("Creating JIRA issue from part of text failed. Message: " + e.getMessage());
 			return null;
 		}
 

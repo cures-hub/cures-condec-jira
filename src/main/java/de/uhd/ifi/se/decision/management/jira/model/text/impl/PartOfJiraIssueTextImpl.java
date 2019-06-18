@@ -15,6 +15,8 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Model class for textual parts (substrings) of JIRA issue comments or the
@@ -24,6 +26,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssue
 public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJiraIssueText {
 
 	private long commentId;
+
+	protected static final Logger LOGGER = LoggerFactory.getLogger(PartOfJiraIssueTextImpl.class);
 
 	public PartOfJiraIssueTextImpl() {
 		super();
@@ -95,7 +99,7 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 				text = text.substring(startSubstringCount);
 			}
 		} catch (NullPointerException | StringIndexOutOfBoundsException e) {
-			e.printStackTrace();
+			LOGGER.error("Constructor faild to create object of PartOfJiraIssueTextImpl. Message: " + e.getMessage());
 		}
 		if (text == null) {
 			text = "";

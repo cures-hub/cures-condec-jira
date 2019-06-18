@@ -31,7 +31,6 @@ public class ClassificationManagerForJiraIssueComments {
 		if (issue == null) {
 			return;
 		}
-		// TODO
 	}
 
 	public void classifyAllCommentsOfJiraIssue(Issue issue) {

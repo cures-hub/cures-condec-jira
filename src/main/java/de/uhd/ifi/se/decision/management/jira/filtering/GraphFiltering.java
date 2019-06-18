@@ -316,7 +316,7 @@ public class GraphFiltering {
 				filterId = Long.parseLong(filteredQuery, 10);
 				filterIsNumberCoded = true;
 			} catch (NumberFormatException n) {
-				// n.printStackTrace();
+				LOGGER.error("Produce results from query failed. Message: " + n.getMessage());
 			}
 			if (filterIsNumberCoded) {
 				finalQuery = queryFromFilterId(filterId);
@@ -354,6 +354,7 @@ public class GraphFiltering {
 				resultingIssues = JiraSearchServiceHelper.getJiraIssues(results);
 
 			} catch (SearchException e) {
+				LOGGER.error("Produce results from query failed. Message: " + e.getMessage());
 				e.printStackTrace();
 			}
 		} else {
@@ -532,6 +533,7 @@ public class GraphFiltering {
 		try {
 			searchResult = getSearchService().search(user, query, PagerFilter.getUnlimitedFilter());
 		} catch (SearchException e) {
+			LOGGER.error("Get Issues for this project failed. Message: " + e.getMessage());
 			return null;
 		}
 		return searchResult;

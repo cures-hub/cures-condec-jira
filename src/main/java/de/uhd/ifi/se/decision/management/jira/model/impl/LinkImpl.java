@@ -14,6 +14,8 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Model class for links between decision knowledge elements
@@ -24,6 +26,8 @@ public class LinkImpl implements Link {
 	private String type;
 	private DecisionKnowledgeElement sourceElement;
 	private DecisionKnowledgeElement destinationElement;
+
+	protected static final Logger LOGGER = LoggerFactory.getLogger(LinkImpl.class);
 
 	public LinkImpl() {
 	}
@@ -202,6 +206,7 @@ public class LinkImpl implements Link {
 		try {
 			return !sourceElement.getProject().getProjectKey().equals(destinationElement.getProject().getProjectKey());
 		} catch (NullPointerException e) {
+			LOGGER.error("Link is not valid. Message: " + e.getMessage());
 			return false;
 		}
 	}

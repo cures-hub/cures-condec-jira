@@ -90,7 +90,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		try {
 			idAsString = key.split("-")[1];
 		} catch (ArrayIndexOutOfBoundsException e) {
-			LOGGER.error("Key cannot be split into the project key and id.");
+			LOGGER.error("Key cannot be split into the project key and id. Message: " + e.getMessage());
 		}
 		if (idAsString != null) {
 			long id = Long.parseLong(idAsString);

@@ -121,7 +121,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 					link.getDestinationElement().getId(), linkTypeId);
 			return issueLink.getId();
 		} catch (CreateException | NullPointerException e) {
-			LOGGER.error("Insertion of link into database failed.");
+			LOGGER.error("Insertion of link into database failed. Message: " + e.getMessage());
 		}
 		return 0;
 	}
@@ -191,6 +191,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 			issueIds = issueManager.getIssueIdsForProject(project.getId());
 		} catch (GenericEntityException | NullPointerException e) {
 			issueIds = new ArrayList<Long>();
+			LOGGER.error("Get decisionknowledgeelemtns failed. Message: " + e.getMessage());
 		}
 
 		for (long issueId : issueIds) {
