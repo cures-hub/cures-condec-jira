@@ -85,7 +85,7 @@
                         conDecAPI.createLink(null,data.from.slice(0, -2),data.to.slice(0,-2),data.to.substr(-1),
                             data.from.substr(-1),function () {
                                 conDecObservable.notify();
-                            })
+                            });
                     }
                 },
                 deleteNode: function(data, callback) {

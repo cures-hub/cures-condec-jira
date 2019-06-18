@@ -179,11 +179,8 @@ public class Vis {
 	}
 
 	private boolean isCollapsed(DecisionKnowledgeElement element) {
-		if (this.documentationLocation.contains(DocumentationLocation.getName(element.getDocumentationLocation()))
-			&& this.elementsMatchingFilterCriteria.contains(element)) {
-			return true;
-		}
-		return false;
+		return (this.documentationLocation.contains(DocumentationLocation.getName(element.getDocumentationLocation()))
+			&& this.elementsMatchingFilterCriteria.contains(element));
 	}
 
 	public void setNodes(HashSet<VisNode> nodes) {

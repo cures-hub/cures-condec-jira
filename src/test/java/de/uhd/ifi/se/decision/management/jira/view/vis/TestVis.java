@@ -33,7 +33,6 @@ public class TestVis extends TestSetUpWithIssues {
 	private Vis vis;
 	private HashSet<VisNode> nodes;
 	private HashSet<VisEdge> edges;
-	private AbstractPersistenceManager persistenceStrategy;
 	private DecisionKnowledgeElement element;
 
 	@Before
@@ -50,7 +49,6 @@ public class TestVis extends TestSetUpWithIssues {
 
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
 		element.setProject(new DecisionKnowledgeProjectImpl("Test"));
-		persistenceStrategy = AbstractPersistenceManager.getDefaultPersistenceStrategy("TEST");
 	}
 	@Test
 	public void testGetNodes(){assertEquals(this.vis.getNodes(),this.nodes);}
