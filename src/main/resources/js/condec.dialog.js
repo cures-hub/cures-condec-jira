@@ -304,22 +304,24 @@
 		var summarizedDialog = document.getElementById("summarization-dialog");
 		var cancelButton = document.getElementById("summarization-dialog-cancel-button");
 		var content = document.getElementById("summarization-dialog-content");
+		// TODO Be more verbose, what kind of probability?
 		var probability = document.getElementById("summarization-probability").valueAsNumber;
+		// TODO What is the xID? Projectid? Please use verbose names.
 		var xID = document.getElementById("summarization-xID").value;
-        console.log(xID);
-		if(xID === undefined || xID.length === 0 || xID === ""){
-            document.getElementById("summarization-xID").value = id;
-            conDecAPI.getSummarizedCode(id, documentationLocation, probability, function(text) {
-                var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";
-                content.innerHTML = insertString;
-            });
-        }else {
-            conDecAPI.getSummarizedCode(parseInt(xID), documentationLocation, probability, function(text) {
-                var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";
-                content.innerHTML = insertString;
-            });
-        }
-
+		console.log(xID);
+		// TODO: The following code contains some duplicates, please unifiy them.
+		if (xID === undefined || xID.length === 0 || xID === "") {
+			document.getElementById("summarization-xID").value = id;
+			conDecAPI.getSummarizedCode(id, documentationLocation, probability, function(text) {
+				var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";
+				content.innerHTML = insertString;
+			});
+		} else {
+			conDecAPI.getSummarizedCode(parseInt(xID), documentationLocation, probability, function(text) {
+				var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";
+				content.innerHTML = insertString;
+			});
+		}
 
 		cancelButton.onclick = function() {
 			AJS.dialog2(summarizedDialog).hide();
@@ -333,10 +335,10 @@
 
 		// HTML elements
 		var exportDialog = document.getElementById("export-dialog");
-		var hiddenDiv= document.getElementById("exportQueryFallback");
+		var hiddenDiv = document.getElementById("exportQueryFallback");
 		// set hidden attribute
-		hiddenDiv.setAttribute("data-tree-element-key",decisionElementKey);
-		//open dialog
+		hiddenDiv.setAttribute("data-tree-element-key", decisionElementKey);
+		// open dialog
 		AJS.dialog2(exportDialog).show();
 	};
 

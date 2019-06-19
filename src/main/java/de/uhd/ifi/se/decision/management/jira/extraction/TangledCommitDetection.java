@@ -11,8 +11,10 @@ public interface TangledCommitDetection {
 
 	void calculatePredication(Diff diff);
 
+	// TODO: change return value to list
 	Vector<String> parsePackage(Optional<PackageDeclaration> op);
 
+	// TODO: Remove method
 	void calculateLineDistances(Diff diff);
 
 	void calculatePackageDistances(Diff diff);
@@ -21,8 +23,10 @@ public interface TangledCommitDetection {
 
 	void calculatePathDistances(Diff diff);
 
+	// TODO: Remove method
 	void calculateMethodDistances(Diff diff);
 
+	// TODO change to boolean
 	Boolean isAllChangesInMethods(Diff diff);
 
 	Boolean isAllChangesInOnePackage(Diff diff);

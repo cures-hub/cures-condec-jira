@@ -164,8 +164,8 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 	}
 
 	@Override
-	public void calculateMethodDistances(Diff diffImpl) {
-		for (ChangedFile changedFile : diffImpl.getChangedFiles()) {
+	public void calculateMethodDistances(Diff diff) {
+		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			if (changedFile.getMethodDeclarations().size() > 1) {
 				for (int i = 0; i < changedFile.getMethodDeclarations().size(); i++) {
 					for (int j = 0; j < changedFile.getMethodDeclarations().size(); j++) {
@@ -181,25 +181,25 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 	}
 
 	@Override
-	public void calculatePathDistances(Diff diffs) {
-		if (diffs.getChangedFiles().size() > 1) {
-			for (int i = 0; i < diffs.getChangedFiles().size(); i++) {
-				char[] leftPath = diffs.getChangedFiles().get(i).getFile().getPath().toCharArray();
-				for (int j = i + 1; j < diffs.getChangedFiles().size(); j++) {
-					char[] rightPath = diffs.getChangedFiles().get(j).getFile().getPath().toCharArray();
+	public void calculatePathDistances(Diff diff) {
+		if (diff.getChangedFiles().size() > 1) {
+			for (int i = 0; i < diff.getChangedFiles().size(); i++) {
+				char[] leftPath = diff.getChangedFiles().get(i).getFile().getPath().toCharArray();
+				for (int j = i + 1; j < diff.getChangedFiles().size(); j++) {
+					char[] rightPath = diff.getChangedFiles().get(j).getFile().getPath().toCharArray();
 					if (leftPath.length >= rightPath.length) {
 						for (int k = 0; k < rightPath.length; k++) {
 							if (leftPath[k] != rightPath[k]) {
-								diffs.getChangedFiles().get(i).addPathDistance((double) leftPath.length - (k + 1));
-								diffs.getChangedFiles().get(j).addPathDistance((double) leftPath.length - (k + 1));
+								diff.getChangedFiles().get(i).addPathDistance((double) leftPath.length - (k + 1));
+								diff.getChangedFiles().get(j).addPathDistance((double) leftPath.length - (k + 1));
 								break;
 							}
 						}
 					} else {
 						for (int k = 0; k < leftPath.length; k++) {
 							if (leftPath[k] != rightPath[k]) {
-								diffs.getChangedFiles().get(i).addPathDistance((double) rightPath.length - (k + 1));
-								diffs.getChangedFiles().get(j).addPathDistance((double) rightPath.length - (k + 1));
+								diff.getChangedFiles().get(i).addPathDistance((double) rightPath.length - (k + 1));
+								diff.getChangedFiles().get(j).addPathDistance((double) rightPath.length - (k + 1));
 								break;
 							}
 						}
@@ -208,7 +208,7 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 				}
 			}
 		} else {
-			diffs.getChangedFiles().get(0).addPathDistance(0.0);
+			diff.getChangedFiles().get(0).addPathDistance(0.0);
 		}
 	}
 
