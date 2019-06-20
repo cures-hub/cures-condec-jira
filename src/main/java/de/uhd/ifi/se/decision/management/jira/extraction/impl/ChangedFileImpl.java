@@ -12,10 +12,10 @@ import java.util.ArrayList;
 
 public class ChangedFileImpl implements ChangedFile{
 
-    private String className;
+    public String className;
     private ArrayList<String> methodDeclarations;
     private float probabilityOfTangledness;
-    private boolean isCorrect;
+    public boolean isCorrect;
     @JsonIgnore
     private File file;
     @JsonIgnore
