@@ -113,8 +113,8 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 	private String generateTable(String rows) {
 		return "<table style=\"width:100%; border: 1px solid black; border-collapse: collapse;\">" + "<tr>\n"
 				+ "    <th style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Classname</th>\n"
-				+ "    <th style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Changed methods</th> \n"
-				+ "    <th style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Probability</th>\n"
+				+ "    <th style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Methodnames</th> \n"
+				+ "    <th style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Probability of Tangledness</th>\n"
 				+ "</tr>\n" + rows + "</table>";
 	}
 

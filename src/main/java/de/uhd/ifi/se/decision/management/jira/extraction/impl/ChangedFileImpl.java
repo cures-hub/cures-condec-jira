@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-public class ChangedFileImpl implements ChangedFile, Comparable<ChangedFileImpl> {
+public class ChangedFileImpl implements ChangedFile{
 
     private String className;
     private ArrayList<String> methodDeclarations;
@@ -72,10 +72,5 @@ public class ChangedFileImpl implements ChangedFile, Comparable<ChangedFileImpl>
 
     public void setMethodDeclarations(String m) {
         this.methodDeclarations.add(m);
-    }
-
-    @Override
-    public int compareTo(ChangedFileImpl o) {
-        return (o.getPackageDistance()-this.getPackageDistance());
     }
 }

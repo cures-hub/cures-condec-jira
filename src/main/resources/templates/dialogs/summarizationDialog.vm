@@ -9,8 +9,8 @@
     <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
     </div>
     <div id ="summary-filter" style="display: none; text-align: right; margin-right: 6%; margin-top: 2px; padding-bottom: 5px; border-bottom: double">
-        <label for="probability">Filtering over probability:</label>
-        <input type="range" list="tickmarks" id="summarization-probability" name="probability" onchange="window.conDecDialog.showSummarizedDialog()">
+        <label for="probabilityOfTangledness">Filtering over probability of tangledness:</label>
+        <input type="range" list="tickmarks" id="summarization-probabilityOfTangledness" name="probabilityOfTangledness" onchange="window.conDecDialog.showSummarizedDialog()">
         <datalist id="tickmarks">
             <option value="0" label="0%">
             <option value="10">
@@ -24,7 +24,7 @@
             <option value="90">
             <option value="100" label="100%">
         </datalist>
-        <input hidden type="text" id= "summarization-xID" name="xID" value="">
+        <input hidden type="text" id= "summarization-projectId" name="projectId" value="">
     </div>
 	<div id="summarization-dialog-content" class="aui-dialog2-content">
 		Please wait a moment

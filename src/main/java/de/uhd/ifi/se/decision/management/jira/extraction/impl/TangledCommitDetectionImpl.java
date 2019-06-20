@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.Vector;
 
-
 import com.github.javaparser.ast.PackageDeclaration;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
@@ -28,6 +27,7 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 	@Override
 	public void calculatePredication(Diff diff) {
 		this.calculatePackageDistances(diff);
+		diff.getChangedFiles().sort((ChangedFile c1, ChangedFile c2)->  c2.getPackageDistance() - c1.getPackageDistance() );
 		this.standardization(diff);
 	}
 
@@ -49,7 +49,6 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 											.setPackageDistance(diffs.getChangedFiles().get(i).getPackageDistance()
 													+ (leftPackageDeclaration.size() - k));
 									maxtrix[i][j] = leftPackageDeclaration.size() - k;
-
 									break;
 								}
 							}
@@ -66,21 +65,17 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 						}
 					} else {
 						maxtrix[i][j] = 0;
-
 					}
 				}
 			}
-
 		} else {
 			diffs.getChangedFiles().get(0).setPackageDistance(0);
 		}
 	}
 
-
 	@Override
 	public Vector<String> parsePackage(Optional<PackageDeclaration> op) {
 		return new Vector<>(Arrays.asList(op.get().toString().split("\\.")));
 	}
-
 
 }

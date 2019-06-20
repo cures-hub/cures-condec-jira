@@ -296,32 +296,21 @@
 	};
 
 	ConDecDialog.prototype.showSummarizedDialog = function showSummarizedDialog(id, documentationLocation) {
-		console.log("conDecDialog summarizedDialog");
-		console.log("location: ", documentationLocation);
-		console.log("id: ", id);
-
 		// HTML elements
 		var summarizedDialog = document.getElementById("summarization-dialog");
 		var cancelButton = document.getElementById("summarization-dialog-cancel-button");
 		var content = document.getElementById("summarization-dialog-content");
-		// TODO Be more verbose, what kind of probability?
-		var probability = document.getElementById("summarization-probability").valueAsNumber;
-		// TODO What is the xID? Projectid? Please use verbose names.
-		var xID = document.getElementById("summarization-xID").value;
-		console.log(xID);
-		// TODO: The following code contains some duplicates, please unifiy them.
-		if (xID === undefined || xID.length === 0 || xID === "") {
-			document.getElementById("summarization-xID").value = id;
-			conDecAPI.getSummarizedCode(id, documentationLocation, probability, function(text) {
-				var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";
-				content.innerHTML = insertString;
-			});
-		} else {
-			conDecAPI.getSummarizedCode(parseInt(xID), documentationLocation, probability, function(text) {
-				var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";
-				content.innerHTML = insertString;
-			});
-		}
+		var probabilityOfTangledness = document.getElementById("summarization-probabilityOfTangledness").valueAsNumber;
+		var projectId = document.getElementById("summarization-projectId").value;
+        console.log(probabilityOfTangledness)
+        if (projectId === undefined || projectId.length === 0 || projectId === "") {
+            document.getElementById("summarization-projectId").value = id;
+            projectId = id
+        }
+        conDecAPI.getSummarizedCode(parseInt(projectId), documentationLocation, probabilityOfTangledness, function(text) {
+            var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";
+            content.innerHTML = insertString;
+        });
 
 		cancelButton.onclick = function() {
 			AJS.dialog2(summarizedDialog).hide();

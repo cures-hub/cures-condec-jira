@@ -7,13 +7,13 @@ import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.extraction.Diff;
 
 public class DiffImpl implements Diff {
-	private List<ChangedFile> changedFiles;
+	private ArrayList<ChangedFile> changedFiles;
 
 	public DiffImpl() {
 		this.changedFiles = new ArrayList<ChangedFile>();
 	}
 
-	public List<ChangedFile> getChangedFiles() {
+	public ArrayList<ChangedFile> getChangedFiles() {
 		return changedFiles;
 	}
 
