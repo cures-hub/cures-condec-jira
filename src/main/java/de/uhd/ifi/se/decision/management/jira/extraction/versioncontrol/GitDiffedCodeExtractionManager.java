@@ -114,7 +114,13 @@ public class GitDiffedCodeExtractionManager {
 						for (Map.Entry<Edit, List<DecisionKnowledgeElement>> editListEntry
 								: codeExtractionResult.entrySet()) {
 							resultValues.addAll(editListEntry.getValue().stream().map(d -> {
-										d.setKey(newPath + "_" + d.getKey());
+										d.setKey(newPath
+												+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
+												+ String.valueOf(dEntry.getValue().sequence)
+												+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
+												+ editListEntry.getKey().toString()
+												+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
+												+ d.getKey());
 										return d;
 									}
 							).collect(Collectors.toList()));
@@ -127,8 +133,13 @@ public class GitDiffedCodeExtractionManager {
 	}
 
 	private void processEntries() {
+		int entrySequenceNumber = 0;
 		for (Map.Entry<DiffEntry, EditList> entry : diffEntries.entrySet()) {
-			results.put(entry.getKey(), processEntry(entry));
+			CodeExtractionResult entryResults = processEntry(entry);
+
+			entryResults.sequence = entrySequenceNumber;
+			results.put(entry.getKey(), entryResults);
+			entrySequenceNumber++;
 		}
 	}
 
@@ -141,6 +152,7 @@ public class GitDiffedCodeExtractionManager {
 			case ADD:
 				return processADDEntry(diffEntry);
 			case MODIFY: // gitClientCheckedOutAtDiffStart must exist
+				return processADDEntry(diffEntry);
 			case DELETE: // gitClientCheckedOutAtDiffStart must exist
 			case RENAME: // behaves like MODIFY ?
 			case COPY: // ??
@@ -235,11 +247,11 @@ public class GitDiffedCodeExtractionManager {
 	}
 
 	/* Windows vs. Unix, is this method needed for diff entry paths?*/
-	private String adjustOSsPathSeparator(String newPath) {
-		if (newPath.indexOf("/") > -1 && !"/".equals(File.separator)) {
-			return newPath.replaceAll("/", File.separator);
+	private String adjustOSsPathSeparator(String filePath) {
+		if (!"/".equals(File.separator) && filePath.indexOf("/") > -1) {
+			return filePath.replaceAll("/","\\\\");
 		}
-		return newPath;
+		return filePath;
 	}
 
 	/* Stores old and new rationale elements in maps with edits as key,
@@ -247,6 +259,7 @@ public class GitDiffedCodeExtractionManager {
 	 * possibility of conflict exists
 	 */
 	private class CodeExtractionResult {
+		public int sequence = -1;
 		/* list of elements modified/created after diff */
 		public Map<Edit, List<DecisionKnowledgeElement>> elementsInNewerVersion = new HashMap<>();
 		/* list of old elements somehow affected by the diff */
