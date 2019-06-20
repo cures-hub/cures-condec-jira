@@ -302,12 +302,11 @@
 		var content = document.getElementById("summarization-dialog-content");
 		var probabilityOfTangledness = document.getElementById("summarization-probabilityOfTangledness").valueAsNumber;
 		var projectId = document.getElementById("summarization-projectId").value;
-        console.log(probabilityOfTangledness)
         if (projectId === undefined || projectId.length === 0 || projectId === "") {
             document.getElementById("summarization-projectId").value = id;
-            projectId = id
+            projectId = id;
         }
-        conDecAPI.getSummarizedCode(parseInt(projectId), documentationLocation, probabilityOfTangledness, function(text) {
+        conDecAPI.getSummarizedCode(parseInt(projectId, 10), documentationLocation, probabilityOfTangledness, function(text) {
             var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";
             content.innerHTML = insertString;
         });
