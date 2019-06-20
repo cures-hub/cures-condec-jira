@@ -13,19 +13,9 @@ public interface TangledCommitDetection {
 
 	Vector<String> parsePackage(Optional<PackageDeclaration> op);
 
-	void calculateLineDistances(Diff diff);
-
 	void calculatePackageDistances(Diff diff);
 
 	void standardization(Diff diff);
-
-	void calculatePathDistances(Diff diff);
-
-	void calculateMethodDistances(Diff diff);
-
-	Boolean isAllChangesInMethods(Diff diff);
-
-	Boolean isAllChangesInOnePackage(Diff diff);
 
 	static void getMethods(Diff diff) {
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
@@ -41,7 +31,7 @@ public interface TangledCommitDetection {
 		@Override
 		public void visit(MethodDeclaration m, Object arg) {
 			ChangedFile changedFile = (ChangedFile) arg;
-			changedFile.setMethodDeclarations(m);
+			changedFile.setMethodDeclarations(m.getDeclarationAsString());
 		}
 	}
 }
