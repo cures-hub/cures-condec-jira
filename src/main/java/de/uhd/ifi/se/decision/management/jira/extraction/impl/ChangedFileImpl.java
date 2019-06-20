@@ -70,7 +70,7 @@ public class ChangedFileImpl implements ChangedFile{
         return file;
     }
 
-    public void setMethodDeclarations(String m) {
+    public void addMethodDeclaration(String m) {
         this.methodDeclarations.add(m);
     }
 }

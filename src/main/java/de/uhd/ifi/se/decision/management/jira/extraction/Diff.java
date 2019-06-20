@@ -13,8 +13,8 @@ import com.atlassian.jira.util.json.JSONObject;
 
 /**
  * Interface for a list of changed files. The scope for the diff might be a
- * single git commit, a whole feature branch (with many commits), or all commits
- * belonging to a JIRA issue.
+ *  * single git commit, a whole feature branch (with many commits), or all commits
+ *  * belonging to a JIRA issue.
  */
 public interface Diff {
 
