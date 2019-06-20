@@ -11,6 +11,7 @@ public interface TangledCommitDetection {
 
 	void calculatePredication(Diff diff);
 
+	// TODO: change return value to list
 	Vector<String> parsePackage(Optional<PackageDeclaration> op);
 
 	void calculatePackageDistances(Diff diff);

@@ -5,6 +5,10 @@ import java.util.ArrayList;
 
 import com.github.javaparser.ast.CompilationUnit;
 
+/**
+ * Interface for a changed file as part of a diff.
+ * @see Diff
+ */
 public interface ChangedFile {
 	float getProbabilityOfTangledness();
 

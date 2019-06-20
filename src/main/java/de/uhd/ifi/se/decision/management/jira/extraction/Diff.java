@@ -11,11 +11,21 @@ import javax.net.ssl.HttpsURLConnection;
 import com.atlassian.gzipfilter.org.apache.commons.lang.StringEscapeUtils;
 import com.atlassian.jira.util.json.JSONObject;
 
+/**
+ * Interface for a list of changed files. The scope for the diff might be a
+ * single git commit, a whole feature branch (with many commits), or all commits
+ * belonging to a JIRA issue.
+ */
 public interface Diff {
+
 	List<ChangedFile> getChangedFiles();
 
 	void addChangedFile(ChangedFile changedFile);
 
+	/**
+	 * Sends the evaluation data to an external server in order to evaluate the
+	 * algorithm to detect tangled changes.
+	 */
 	static void sendPost(String projectName, String issueKey, String data) throws Exception {
 		String USER_AGENT = "Mozilla/5.0";
 		String url = "https://ijezxzhgjf.execute-api.eu-west-3.amazonaws.com/prod/diff/";
@@ -62,7 +72,5 @@ public interface Diff {
 		}
 		in.close();
 		System.out.println(response.toString());
-
 	}
-
 }
