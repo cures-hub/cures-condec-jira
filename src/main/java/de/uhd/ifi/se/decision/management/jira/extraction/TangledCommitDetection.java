@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
+import java.util.ArrayList;
 import java.util.Optional;
-import java.util.Vector;
 
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -22,7 +22,6 @@ public interface TangledCommitDetection {
 	 */
 	void calculatePredication(Diff diff);
 
-	// TODO: change return value to list
 	/**
 	 * Split a package declaration into a list of Strings.
 	 *
@@ -31,7 +30,7 @@ public interface TangledCommitDetection {
 	 *
 	 * @return package declaration as a list of Strings.
 	 */
-	Vector<String> parsePackage(Optional<PackageDeclaration> packageDeclaration);
+	ArrayList<String> parsePackage(Optional<PackageDeclaration> packageDeclaration);
 
 	/**
 	 * Calculate for each ChangedFile a distance, which is depends on the package distances between other ChangedFiles.

@@ -8,8 +8,9 @@ import java.util.ArrayList;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import com.atlassian.gzipfilter.org.apache.commons.lang.StringEscapeUtils;
+
 import com.atlassian.jira.util.json.JSONObject;
+import com.github.javaparser.utils.StringEscapeUtils;
 
 /**
  * Interface for a list of changed files. The scope for the diff might be a

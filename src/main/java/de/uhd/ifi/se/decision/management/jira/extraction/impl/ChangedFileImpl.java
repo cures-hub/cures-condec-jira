@@ -27,7 +27,7 @@ public class ChangedFileImpl implements ChangedFile{
     public ChangedFileImpl(File file) {
         this.file = file;
         this.packageDistance = 0;
-        this.methodDeclarations = new ArrayList<String>();
+        this.methodDeclarations = new ArrayList<>();
         this.compilationUnit = parseCompilationUnit(file);
         this.isCorrect = true;
         this.className = this.file.getName();

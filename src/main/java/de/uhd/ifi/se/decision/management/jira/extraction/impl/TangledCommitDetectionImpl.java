@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.Vector;
 
 import com.github.javaparser.ast.PackageDeclaration;
 
@@ -36,15 +36,15 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 		Integer[][] maxtrix = new Integer[diffs.getChangedFiles().size()][diffs.getChangedFiles().size()];
 		if (diffs.getChangedFiles().size() > 1) {
 			for (int i = 0; i < diffs.getChangedFiles().size(); i++) {
-				Vector<String> leftPackageDeclaration = this
+				ArrayList<String> leftPackageDeclaration = this
 						.parsePackage(diffs.getChangedFiles().get(i).getCompilationUnit().getPackageDeclaration());
 				for (int j = 0; j < diffs.getChangedFiles().size(); j++) {
-					Vector<String> rightPackageDeclaration = this
+					ArrayList<String> rightPackageDeclaration = this
 							.parsePackage(diffs.getChangedFiles().get(j).getCompilationUnit().getPackageDeclaration());
 					if (i != j) {
 						if (leftPackageDeclaration.size() >= rightPackageDeclaration.size()) {
 							for (int k = 0; k < rightPackageDeclaration.size(); k++) {
-								if (!leftPackageDeclaration.elementAt(k).equals(rightPackageDeclaration.elementAt(k))) {
+								if (!leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k))) {
 									diffs.getChangedFiles().get(i)
 											.setPackageDistance(diffs.getChangedFiles().get(i).getPackageDistance()
 													+ (leftPackageDeclaration.size() - k));
@@ -54,7 +54,7 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 							}
 						} else {
 							for (int k = 0; k < leftPackageDeclaration.size(); k++) {
-								if (!leftPackageDeclaration.elementAt(k).equals(rightPackageDeclaration.elementAt(k))) {
+								if (!leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k))) {
 									diffs.getChangedFiles().get(i)
 											.setPackageDistance(diffs.getChangedFiles().get(i).getPackageDistance()
 													+ (rightPackageDeclaration.size() - k));
@@ -74,8 +74,8 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 	}
 
 	@Override
-	public Vector<String> parsePackage(Optional<PackageDeclaration> op) {
-		return new Vector<>(Arrays.asList(op.get().toString().split("\\.")));
+	public ArrayList<String> parsePackage(Optional<PackageDeclaration> op) {
+		return new ArrayList<>(Arrays.asList(op.get().toString().split("\\.")));
 	}
 
 }
