@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * purpose: extract decision knowledge elements in the list of comments
  * of one source file associated with the diff change.
  * Extracted decision knowledge elements contain
- * the notion about their location within the source file.
+ * the notion about their source within the source file.
  * Extracted rationale from comments is matched against diff entries.
  */
 public class RationaleFromDiffCodeCommentExtractor {

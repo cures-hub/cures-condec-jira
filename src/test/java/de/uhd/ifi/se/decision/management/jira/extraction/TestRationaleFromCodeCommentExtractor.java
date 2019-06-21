@@ -121,9 +121,9 @@ public class TestRationaleFromCodeCommentExtractor {
 	public void twoRationaleCheckDecKnowledgeElementKeys() {
 		codeCommentWithRange.commentContent = "@issue:#1\n\n\nnot rat. text anymore @issue: #2\n\npart2";
 		String expectedKeyEnd = String.valueOf(codeCommentWithRange.beginLine + 0) +
-				"_" +
+				":" +
 				String.valueOf(codeCommentWithRange.beginLine + 0) +
-				"_" +
+				":" +
 				"7";
 		rationaleFromCodeCommentExtractor =
 				new RationaleFromCodeCommentExtractor(codeCommentWithRange);
@@ -134,9 +134,9 @@ public class TestRationaleFromCodeCommentExtractor {
 		assertTrue(foundElementKey.endsWith(expectedKeyEnd));
 
 		expectedKeyEnd = String.valueOf(codeCommentWithRange.beginLine + 3) +
-				"_" +
+				":" +
 				String.valueOf(codeCommentWithRange.beginLine + 5) +
-				"_" +
+				":" +
 				"41";
 		foundElementKey = elementsFound.get(1).getKey();
 		assertTrue(foundElementKey.endsWith(expectedKeyEnd));

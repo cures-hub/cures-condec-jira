@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 /**
  * purpose: extract decision knowledge elements from single comment.
- * Codes rationale location within the source file/comment.
+ * Codes rationale source within the source file/comment.
  */
 public class RationaleFromCodeCommentExtractor {
 	private ArrayList<DecisionKnowledgeElement> elements;
@@ -29,7 +29,7 @@ public class RationaleFromCodeCommentExtractor {
 
 	public RationaleFromCodeCommentExtractor(CodeCommentWithRange comment) {
 		String tagSearch = String.join("|", decKnowTags.stream()
-				.map(tag -> "@" + tag + "\\:") //at-char ratType colon
+				.map(tag -> "@" + tag + "\\:?") //at-char + ratType + colon
 				.collect(Collectors.toList()));
 		TAGS_SEARCH_PATTERN = Pattern.compile(tagSearch, Pattern.CASE_INSENSITIVE);
 		TWO_EMPTY_LINES_PATTERN = Pattern.compile("\\s*\\n\\s*\\n\\s*\\n"); //with optional white spaces
@@ -82,8 +82,8 @@ public class RationaleFromCodeCommentExtractor {
 	}
 
 	private int extractElementAndMoveCursor(Matcher tagMatcher) {
-		String rationaleTypeStartTag = tagMatcher.group();
-		String rationaleType = getRatTypeFromStartTag(rationaleTypeStartTag);
+		String rationaleTypeTag = tagMatcher.group();
+		String rationaleType = getRatTypeFromTag(rationaleTypeTag);
 		String rationaleText = comment.commentContent.substring(tagMatcher.end());
 
 		int cursorPosition = tagMatcher.end();
@@ -105,29 +105,8 @@ public class RationaleFromCodeCommentExtractor {
 				, getDescription(rationaleText)
 				, rationaleType.toUpperCase()
 				, "" // unknown, not needed at the moment
-				, calculateKey(start, rationaleText)
+				, calculateAndCodeRationalePositionInSourceFile(start, rationaleText)
 				, DocumentationLocation.COMMIT);
-	}
-
-	private String calculateKey(int start, String rationaleText) {
-		String rationaleTextHash = calculateRationaleTextHash(rationaleText);
-		String rationaleRangeCoded =
-				calculateAndCodeRationalePositionInSourceFile(start, rationaleText);
-
-		return rationaleTextHash + "_" + rationaleRangeCoded;
-	}
-
-	private String calculateRationaleTextHash(String rationaleText) {
-		try {
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			md.update(rationaleText.getBytes());
-			byte[] digest = md.digest();
-			return DatatypeConverter.printHexBinary(digest).toUpperCase()
-					.substring(0, 8); // 5,8 indef. ? TODO: lookup db space for keys
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return "";
-		}
 	}
 
 	private String calculateAndCodeRationalePositionInSourceFile(int start
@@ -138,10 +117,10 @@ public class RationaleFromCodeCommentExtractor {
 		 * itself?
 		 *
 		 * KEY :=
-		 * 		 TEXTHASH_POSITION
+		 * 		POSITION_TEXTHASH
 		 *
 		 * 		POSITION :=
-		 * 		 lineBegin_columnBegin_lineEnd_columnEnd
+		 * 		 lineBegin,columnBegin:lineEnd,columnEnd
 		 * @alternative: the key must include the start POINT and end POINT in source
 		 * code andthe hash of the rationale text!
 		 * @pro: with start point(line,column) and end point the order of rationale
@@ -156,10 +135,10 @@ public class RationaleFromCodeCommentExtractor {
 		 * code, tje cursor position within comment and the hash of the rationale text!
 		 *
 		 * KEY :=
-		 * 		 TEXTHASH_POSITION
+		 * 		 POSITION_TEXTHASH
 		 *
 		 * 		POSITION :=
-		 * 		 lineBegin_lineEnd_cursorInComment
+		 * 		 lineBegin:lineEnd:cursorInComment
 		 *
 		 * @pro: start line, end line in source code and the cursor position within
 		 * comment is sufficient to get the order of rationale within the source code
@@ -215,10 +194,14 @@ public class RationaleFromCodeCommentExtractor {
 		return -1;
 	}
 
-	private String getRatTypeFromStartTag(String rationaleTypeStartTag) {
+	private String getRatTypeFromTag(String rationaleTypeStartTag) {
 		int atCharPosition = rationaleTypeStartTag.indexOf("@");
 		int colonCharPosition = rationaleTypeStartTag.indexOf(":");
-		return rationaleTypeStartTag.substring(atCharPosition + 1, colonCharPosition);
+		if (colonCharPosition>-1) {
+			return rationaleTypeStartTag.substring(atCharPosition + 1, colonCharPosition);
+		} else {
+			return rationaleTypeStartTag.substring(atCharPosition + 1);
+		}
 	}
 
 	// similar 3 below methods found in extraction/versioncontrol/GitCommitMessageExtractor.java
@@ -242,7 +225,7 @@ public class RationaleFromCodeCommentExtractor {
 		 */
 		// decode method
 		public static int getAttribute(String key, int attributePositionOffsetFromEnd) {
-			String[] keyComponents = key.split("_");
+			String[] keyComponents = key.split(":");
 			int len = keyComponents.length;
 			int returnValue = -1;
 			if (len > 2) {
@@ -271,9 +254,9 @@ public class RationaleFromCodeCommentExtractor {
 		public static String encodeAttributes(int lineStart, int lineEnd
 				, int inCommentCursor) {
 			return String.valueOf(lineStart) +
-					"_" +
+					":" +
 					String.valueOf(lineEnd) +
-					"_" +
+					":" +
 					String.valueOf(inCommentCursor);
 		}
 	}

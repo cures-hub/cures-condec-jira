@@ -8,6 +8,9 @@ import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import javax.xml.bind.DatatypeConverter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +22,7 @@ import java.util.stream.Collectors;
  */
 public class GitDecXtract {
 
-	private static final String COMMIT_POSITION_SEPARATOR = "_";
+	public static final String RAT_KEY_COMPONENTS_SEPARATOR = " ";
 	private final GitClient gitClient;
 	private final String projecKey;
 
@@ -65,6 +68,7 @@ public class GitDecXtract {
 		if (featureBranchShortName != null) {
 			endAnchoredGitClient.checkoutFeatureBranch(featureBranchShortName);
 		}
+
 		Map<DiffEntry, EditList> diffs = gitClient.getDiff(revCommitStart, revCommitEnd);
 		GitDiffedCodeExtractionManager diffCodeManager =
 				new GitDiffedCodeExtractionManager(diffs, endAnchoredGitClient);
@@ -72,6 +76,7 @@ public class GitDecXtract {
 
 		return elementsFromCode.stream().map(element -> {
 			element.setProject(projecKey);
+			element.setKey(updateKeyForCommentExtractedElement(element));
 			return element;
 		}).collect(Collectors.toList());
 	}
@@ -81,15 +86,49 @@ public class GitDecXtract {
 		List<DecisionKnowledgeElement> elementsFromMessage = extractorFromMessage.getElements()
 				.stream().map(element -> { // need to update project and key attributes
 					element.setProject(projecKey);
-					element.setKey(updateKeyFroMessageExtractedElement(element.getKey(), commit.getId()));
+					element.setKey(updateKeyForMessageExtractedElement(element, commit.getId()));
 					return element;
 				}).collect(Collectors.toList());
 		return elementsFromMessage;
 	}
 
-	private String updateKeyFroMessageExtractedElement(String keyWithoutCommitish, ObjectId id) {
-		// replace placeholder with commit's hash
-		return keyWithoutCommitish.replace(GitCommitMessageExtractor.COMMIT_PLACEHOLDER,
-				String.valueOf(id).split(" ")[1] + COMMIT_POSITION_SEPARATOR);
+	private String updateKeyForCommentExtractedElement(
+			DecisionKnowledgeElement elementWithoutCommitishAndHash) {
+		String key = elementWithoutCommitishAndHash.getKey();
+
+		// append rationale text hash
+		String rationaleText = elementWithoutCommitishAndHash.getSummary()
+			+elementWithoutCommitishAndHash.getDescription();
+		key += RAT_KEY_COMPONENTS_SEPARATOR + calculateRationaleTextHash(rationaleText);
+
+		return key;
+	}
+
+	private String updateKeyForMessageExtractedElement(
+			DecisionKnowledgeElement elementWithoutCommitishAndHash
+			, ObjectId id) {
+		String key = elementWithoutCommitishAndHash.getKey();
+
+		// 1st: append rationale text hash
+		String rationaleText = elementWithoutCommitishAndHash.getSummary()
+			+elementWithoutCommitishAndHash.getDescription();
+		key += RAT_KEY_COMPONENTS_SEPARATOR + calculateRationaleTextHash(rationaleText);
+
+		// 2nd: replace placeholder with commit's hash
+		return key.replace(GitCommitMessageExtractor.COMMIT_PLACEHOLDER,
+				String.valueOf(id).split(" ")[1] + RAT_KEY_COMPONENTS_SEPARATOR);
+	}
+
+	private String calculateRationaleTextHash(String rationaleText) {
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			md.update(rationaleText.getBytes());
+			byte[] digest = md.digest();
+			return DatatypeConverter.printHexBinary(digest).toUpperCase()
+					.substring(0, 8); // 5,8 indef. ? TODO: lookup db space for keys
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			return "";
+		}
 	}
 }
