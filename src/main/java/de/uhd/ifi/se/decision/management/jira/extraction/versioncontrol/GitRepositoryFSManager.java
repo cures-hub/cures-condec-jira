@@ -52,7 +52,7 @@ public class GitRepositoryFSManager {
 	 * @return null on failure, absolute path to new temporary directory
 	 */
 	public String releaseBranchDirectoryNameToTemp(String branchShortName) {
-		File oldDir = new File(getBranchPath(branchShortName));
+		File oldDir = new File(getCheckoutPath(branchShortName));
 		if (!oldDir.isDirectory()) {
 			return null;
 		} else {
@@ -101,7 +101,7 @@ public class GitRepositoryFSManager {
 			return null;
 		}
 		rememberBranchPathRequest(branchShortName);
-		return getBranchPath(branchShortName);
+		return getCheckoutPath(branchShortName);
 	}
 
 	/*
@@ -168,8 +168,8 @@ public class GitRepositoryFSManager {
 		file.delete();
 	}
 
-	private String getBranchPath(String branchShortName) {
-		return baseProjectUriPath + File.separator + getShortHash(branchShortName);
+	private String getCheckoutPath(String checkoutPoint) {
+		return baseProjectUriPath + File.separator + getShortHash(checkoutPoint);
 	}
 
 	private boolean useFromDefaultFolder(String branchShortName) {
@@ -178,11 +178,11 @@ public class GitRepositoryFSManager {
 			return false;
 		} else {
 			try {
-				File newDir = new File(getBranchPath(branchShortName));
+				File newDir = new File(getCheckoutPath(branchShortName));
 				FileUtils.copyDirectory(defaultDir, newDir);
 			} catch (Exception e) {
 				LOGGER.error("Could not copy " + defaultDir
-						+ " to " + getBranchPath(branchShortName) + ".\n\t" + e.getMessage());
+						+ " to " + getCheckoutPath(branchShortName) + ".\n\t" + e.getMessage());
 				return false;
 			}
 		}
@@ -190,7 +190,7 @@ public class GitRepositoryFSManager {
 	}
 
 	private boolean useFromExistingBranchFolder(String branchShortName) {
-		File dir = new File(getBranchPath(branchShortName));
+		File dir = new File(getCheckoutPath(branchShortName));
 		return dir.isDirectory();
 	}
 
@@ -201,11 +201,11 @@ public class GitRepositoryFSManager {
 		}
 		try {
 			File dir = new File(baseProjectUriPath, tempDirs[0]); // get the 1st of temp dirs, but is 1st the best?
-			File newDir = new File(getBranchPath(branchShortName));
+			File newDir = new File(getCheckoutPath(branchShortName));
 			dir.renameTo(newDir);
 		} catch (Exception e) {
 			LOGGER.error("Could not rename " + tempDirs[0]
-					+ " to " + getBranchPath(branchShortName) + ". " + e.getMessage());
+					+ " to " + getCheckoutPath(branchShortName) + ". " + e.getMessage());
 			return false;
 		}
 		return true;

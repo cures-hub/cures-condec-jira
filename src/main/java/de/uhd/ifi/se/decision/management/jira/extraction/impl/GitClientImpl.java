@@ -428,6 +428,21 @@ public class GitClientImpl implements GitClient {
 
 	@Override
 	/**
+	 * Switches git client's directory to commit directory
+	 * checks out files in working dir for the commit
+	 * and i.e. DOES NOT go back to default branch directory.
+	 */
+	public boolean checkoutCommit(RevCommit commit) {
+		String commitName = commit.getName();
+
+		// will copy default branch folder
+		File directory = new File(fsManager.prepareBranchDirectory(commitName));
+
+		return (switchGitDirectory(directory)&& checkout(commit.getName()));
+	}
+
+	@Override
+	/**
 	 * Switches git client's directory to feature branch directory
 	 * and i.e. DOES NOT go back to default branch directory.
 	 */
@@ -438,7 +453,7 @@ public class GitClientImpl implements GitClient {
 
 		return (switchGitDirectory(directory)
 				&& createLocalBranchIfNotExists(branchShortName)
-				&& checkoutBranch(branchShortName)
+				&& checkout(branchShortName)
 				&& pull());
 	}
 
@@ -564,7 +579,7 @@ public class GitClientImpl implements GitClient {
 
 		if (switchGitDirectory(directory)
 				&& createLocalBranchIfNotExists(branchShortName)
-				&& checkoutBranch(branchShortName)
+				&& checkout(branchShortName)
 				&& pull()) {
 			Iterable<RevCommit> iterable = null;
 			try {
@@ -586,11 +601,11 @@ public class GitClientImpl implements GitClient {
 		return commits;
 	}
 
-	private boolean checkoutBranch(String branchShortName) {
+	private boolean checkout(String checkoutObjectName) {
 		try {
-			git.checkout().setName(branchShortName).call();
+			git.checkout().setName(checkoutObjectName).call();
 		} catch (GitAPIException e) {
-			LOGGER.error("Could not checkout branch. " + e.getMessage());
+			LOGGER.error("Could not checkout "+checkoutObjectName+". " + e.getMessage());
 			return false;
 		}
 		return true;

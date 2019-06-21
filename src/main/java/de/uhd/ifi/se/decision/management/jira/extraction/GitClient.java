@@ -29,6 +29,15 @@ public interface GitClient {
 			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "git" + File.separator;
 
 	/**
+	 * Switch git client's directory to the commit.
+	 *
+	 * @param commit
+	 *            name of the feature branch
+	 * @return success or failure boolean
+	 */
+	boolean checkoutCommit(RevCommit commit);
+
+	/**
 	 * Switch git client's directory to dedicated feature branch directory.
 	 *
 	 * @param featureBranchShortName
