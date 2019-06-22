@@ -105,7 +105,7 @@ public class GitDecXtract {
 			DecisionKnowledgeElement elementWithoutTextHash) {
 		String key = elementWithoutTextHash.getKey();
 		String rationaleText = elementWithoutTextHash.getSummary()
-			+elementWithoutTextHash.getDescription();
+				+ elementWithoutTextHash.getDescription();
 
 		key += RAT_KEY_COMPONENTS_SEPARATOR + calculateRationaleTextHash(rationaleText);
 
@@ -123,7 +123,7 @@ public class GitDecXtract {
 
 		// 1st: append rationale text hash
 		String rationaleText = elementWithoutCommitishAndHash.getSummary()
-			+elementWithoutCommitishAndHash.getDescription();
+				+ elementWithoutCommitishAndHash.getDescription();
 		key += RAT_KEY_COMPONENTS_SEPARATOR + calculateRationaleTextHash(rationaleText);
 
 		// 2nd: replace placeholder with commit's hash (40 hex chars)

@@ -84,7 +84,6 @@ public class GitDiffedCodeExtractionManager {
 	}
 
 
-
 	public List<DecisionKnowledgeElement> getNewDecisionKnowledgeElements() {
 		return getNewOrOldDecisionKnowledgeElements(true);
 	}
@@ -102,16 +101,14 @@ public class GitDiffedCodeExtractionManager {
 				String newPath;
 				if (getNew) {
 					newPath = dEntry.getKey().getNewPath();
-				}
-				else {
+				} else {
 					newPath = OLD_FILE_SYMBOL_PREPENDER + dEntry.getKey().getNewPath();
 				}
 				if (dEntry.getValue() != null) {
 					Map<Edit, List<DecisionKnowledgeElement>> codeExtractionResult;
 					if (getNew) {
 						codeExtractionResult = dEntry.getValue().diffedElementsInNewerVersion;
-					}
-					else {
+					} else {
 						codeExtractionResult = dEntry.getValue().diffedElementsInOlderVersion;
 					}
 					if (codeExtractionResult.size() > 0) {
@@ -191,6 +188,7 @@ public class GitDiffedCodeExtractionManager {
 
 		return returnCodeExtractionResult;
 	}
+
 	/* DELETE does not require gitClientCheckedOutAtDiffEnd */
 	private CodeExtractionResult processDeleteEntryEdits(Map.Entry<DiffEntry, EditList> diffEntry) {
 		CodeExtractionResult returnCodeExtractionResult = new CodeExtractionResult();
@@ -212,7 +210,7 @@ public class GitDiffedCodeExtractionManager {
 
 		String fileARelativePath = adjustOSsPathSeparator(diffEntry.getKey().getOldPath());
 		List<CodeCommentWithRange> commentsInFileA
-				= getCommentsFromFile(fileARelativePath,false);
+				= getCommentsFromFile(fileARelativePath, false);
 
 		String fileBRelativePath = adjustOSsPathSeparator(diffEntry.getKey().getNewPath());
 		List<CodeCommentWithRange> commentsInFileB
@@ -292,8 +290,7 @@ public class GitDiffedCodeExtractionManager {
 		if (fromNewerFile) {
 			return new File(gitClientCheckedOutAtDiffEnd.getDirectory()
 					, filePathRelativeOutOfGitFolder);
-		}
-		else {
+		} else {
 			return new File(gitClientCheckedOutAtDiffStart.getDirectory()
 					, filePathRelativeOutOfGitFolder);
 		}
@@ -311,7 +308,7 @@ public class GitDiffedCodeExtractionManager {
 	/* Windows vs. Unix, is this method needed for diff entry paths?*/
 	private String adjustOSsPathSeparator(String filePath) {
 		if (!"/".equals(File.separator) && filePath.indexOf("/") > -1) {
-			return filePath.replaceAll("/","\\\\");
+			return filePath.replaceAll("/", "\\\\");
 		}
 		return filePath;
 	}

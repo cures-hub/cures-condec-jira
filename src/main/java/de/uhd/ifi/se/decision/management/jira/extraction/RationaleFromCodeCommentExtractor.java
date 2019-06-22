@@ -197,7 +197,7 @@ public class RationaleFromCodeCommentExtractor {
 	private String getRatTypeFromTag(String rationaleTypeStartTag) {
 		int atCharPosition = rationaleTypeStartTag.indexOf("@");
 		int colonCharPosition = rationaleTypeStartTag.indexOf(":");
-		if (colonCharPosition>-1) {
+		if (colonCharPosition > -1) {
 			return rationaleTypeStartTag.substring(atCharPosition + 1, colonCharPosition);
 		} else {
 			return rationaleTypeStartTag.substring(atCharPosition + 1);

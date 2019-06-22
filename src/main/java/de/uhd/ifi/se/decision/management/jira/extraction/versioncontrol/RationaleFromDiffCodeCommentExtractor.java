@@ -60,7 +60,7 @@ public class RationaleFromDiffCodeCommentExtractor {
 	 * @return: list of decision knowledge elements found in a comment
 	 */
 	public Map<Edit, List<DecisionKnowledgeElement>> getRationaleFromComment(boolean newerFile
-		, Map<Edit, List<DecisionKnowledgeElement>> elementsInSingleComment) {
+			, Map<Edit, List<DecisionKnowledgeElement>> elementsInSingleComment) {
 
 		int cursor = cursorOlderFile;
 		List<CodeCommentWithRange> comments = commentsInOlderFile;
@@ -81,7 +81,7 @@ public class RationaleFromDiffCodeCommentExtractor {
 				for (Edit edit : commentEdits) {
 					List<DecisionKnowledgeElement> rationale = getRationaleIntersectingEdit(edit
 							, rationaleElements, newerFile);
-					if ( elementsInSingleComment.containsKey(edit)) {
+					if (elementsInSingleComment.containsKey(edit)) {
 						rationale.addAll(elementsInSingleComment.get(edit));
 					}
 					elementsInSingleComment.put(edit, rationale);
@@ -132,24 +132,24 @@ public class RationaleFromDiffCodeCommentExtractor {
 	/* fetches list of edits which affected the comment */
 	private List<Edit> getEditsOnComment(CodeCommentWithRange comment, boolean newerFile) {
 		return editList.stream().filter(edit -> {
-			int begin = edit.getBeginA();
-			int end = edit.getEndA();
-			if (newerFile) {
-				begin = edit.getBeginB();
-				end = edit.getEndB();
-			}
-			return
-			// change's end within the comment
-			(end >= comment.beginLine
-					&& end <= comment.endLine)
-			||
-			// change's begin within the comment
-			(begin >= comment.beginLine
-					&& begin <= comment.endLine)
-			||
-			// change overlaps comment
-			(begin <= comment.beginLine
-					&& end >= comment.endLine);
+					int begin = edit.getBeginA();
+					int end = edit.getEndA();
+					if (newerFile) {
+						begin = edit.getBeginB();
+						end = edit.getEndB();
+					}
+					return
+							// change's end within the comment
+							(end >= comment.beginLine
+									&& end <= comment.endLine)
+									||
+									// change's begin within the comment
+									(begin >= comment.beginLine
+											&& begin <= comment.endLine)
+									||
+									// change overlaps comment
+									(begin <= comment.beginLine
+											&& end >= comment.endLine);
 
 				}
 		).collect(Collectors.toList());
