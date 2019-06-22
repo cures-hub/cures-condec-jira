@@ -62,17 +62,23 @@ public class GitDecXtract {
 			, RevCommit revCommitEnd, String featureBranchShortName) {
 		List<DecisionKnowledgeElement> elementsFromCode = new ArrayList<>();
 
-		// TODO: implement also access to files in the revision revCommitStart.parent(0)
 		// git client which has access to correct version of files (revCommitEnd)
 		GitClient endAnchoredGitClient = new GitClientImpl((GitClientImpl) gitClient);
 		if (featureBranchShortName != null) {
 			endAnchoredGitClient.checkoutFeatureBranch(featureBranchShortName);
 		}
 
+		GitClient startAnchoredGitClient = new GitClientImpl((GitClientImpl) gitClient);
+		if (featureBranchShortName != null) {
+			startAnchoredGitClient.checkoutCommit(revCommitStart.getParent(0));
+		}
+
+
 		Map<DiffEntry, EditList> diffs = gitClient.getDiff(revCommitStart, revCommitEnd);
 		GitDiffedCodeExtractionManager diffCodeManager =
-				new GitDiffedCodeExtractionManager(diffs, endAnchoredGitClient);
+				new GitDiffedCodeExtractionManager(diffs, endAnchoredGitClient, startAnchoredGitClient);
 		elementsFromCode = diffCodeManager.getNewDecisionKnowledgeElements();
+		elementsFromCode.addAll(diffCodeManager.getOldDecisionKnowledgeElements());
 
 		return elementsFromCode.stream().map(element -> {
 			element.setProject(projecKey);
@@ -92,18 +98,24 @@ public class GitDecXtract {
 		return elementsFromMessage;
 	}
 
+	/*
+	Appends rationale text hash to the DecisionKnowledgeElement key.
+	 */
 	private String updateKeyForCommentExtractedElement(
-			DecisionKnowledgeElement elementWithoutCommitishAndHash) {
-		String key = elementWithoutCommitishAndHash.getKey();
+			DecisionKnowledgeElement elementWithoutTextHash) {
+		String key = elementWithoutTextHash.getKey();
+		String rationaleText = elementWithoutTextHash.getSummary()
+			+elementWithoutTextHash.getDescription();
 
-		// append rationale text hash
-		String rationaleText = elementWithoutCommitishAndHash.getSummary()
-			+elementWithoutCommitishAndHash.getDescription();
 		key += RAT_KEY_COMPONENTS_SEPARATOR + calculateRationaleTextHash(rationaleText);
 
 		return key;
 	}
 
+	/*
+	Appends rationale text hash to the DecisionKnowledgeElement key.
+	Replaces commit hash placeholder in the key with the actual commit hash.
+	 */
 	private String updateKeyForMessageExtractedElement(
 			DecisionKnowledgeElement elementWithoutCommitishAndHash
 			, ObjectId id) {
@@ -114,7 +126,7 @@ public class GitDecXtract {
 			+elementWithoutCommitishAndHash.getDescription();
 		key += RAT_KEY_COMPONENTS_SEPARATOR + calculateRationaleTextHash(rationaleText);
 
-		// 2nd: replace placeholder with commit's hash
+		// 2nd: replace placeholder with commit's hash (40 hex chars)
 		return key.replace(GitCommitMessageExtractor.COMMIT_PLACEHOLDER,
 				String.valueOf(id).split(" ")[1] + RAT_KEY_COMPONENTS_SEPARATOR);
 	}
@@ -125,7 +137,7 @@ public class GitDecXtract {
 			md.update(rationaleText.getBytes());
 			byte[] digest = md.digest();
 			return DatatypeConverter.printHexBinary(digest).toUpperCase()
-					.substring(0, 8); // 5,8 indef. ? TODO: lookup db space for keys
+					.substring(0, 8);
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 			return "";
