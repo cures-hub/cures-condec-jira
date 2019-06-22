@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
  * 3) extract evolution of knowledge elements in files.
  */
 public class GitDiffedCodeExtractionManager {
+	private static final String OLD_FILE_SYMBOL_PREPENDER = "~";
 	/*
 	 * @issue: Modified files may add, modify or delete rationale.
 	 * For extraction of rationale on modified files their contents
@@ -73,43 +74,46 @@ public class GitDiffedCodeExtractionManager {
 	// may include null values for keys!
 	private Map<DiffEntry, CodeExtractionResult> results = new HashMap<>();
 
-	/*
-	 * Passing only the git client checked out at the last commit of the diff
-	 * limits knowledge extraction to output of new or partial extraction
-	 * of modified elements. Noticing deletions of previously existing elements,
-	 *  will not be possible to detect.
-	 */
-
-	public GitDiffedCodeExtractionManager(Map<DiffEntry, EditList> diffEntries
-			, GitClient GitClientAtDiffEnd) {
-		gitClientCheckedOutAtDiffStart = null;
-		gitClientCheckedOutAtDiffEnd = GitClientAtDiffEnd;
-		this.diffEntries = diffEntries;
-		processEntries();
-	}
-
-	/*
-	 * TODO: Below constructor will be used later, as the class will evolve.
-	 */
 	public GitDiffedCodeExtractionManager(Map<DiffEntry, EditList> diffEntries
 			, GitClient GitClientAtDiffEnd
 			, GitClient GitClientAtDiffStart) {
 		gitClientCheckedOutAtDiffStart = GitClientAtDiffStart;
 		gitClientCheckedOutAtDiffEnd = GitClientAtDiffEnd;
 		this.diffEntries = diffEntries;
-		//no actions implemented yet
+		processEntries();
 	}
 
+
+
 	public List<DecisionKnowledgeElement> getNewDecisionKnowledgeElements() {
+		return getNewOrOldDecisionKnowledgeElements(true);
+	}
+
+	public List<DecisionKnowledgeElement> getOldDecisionKnowledgeElements() {
+		return getNewOrOldDecisionKnowledgeElements(false);
+	}
+
+	private List<DecisionKnowledgeElement> getNewOrOldDecisionKnowledgeElements(boolean getNew) {
 		List<DecisionKnowledgeElement> resultValues = new ArrayList<>();
 
 		if (results.size() > 0) {
 			for (Map.Entry<DiffEntry, CodeExtractionResult> dEntry
 					: results.entrySet()) {
-				String newPath = dEntry.getKey().getNewPath();
+				String newPath;
+				if (getNew) {
+					newPath = dEntry.getKey().getNewPath();
+				}
+				else {
+					newPath = OLD_FILE_SYMBOL_PREPENDER + dEntry.getKey().getNewPath();
+				}
 				if (dEntry.getValue() != null) {
-					Map<Edit, List<DecisionKnowledgeElement>> codeExtractionResult =
-							dEntry.getValue().elementsInNewerVersion;
+					Map<Edit, List<DecisionKnowledgeElement>> codeExtractionResult;
+					if (getNew) {
+						codeExtractionResult = dEntry.getValue().diffedElementsInNewerVersion;
+					}
+					else {
+						codeExtractionResult = dEntry.getValue().diffedElementsInOlderVersion;
+					}
 					if (codeExtractionResult.size() > 0) {
 						for (Map.Entry<Edit, List<DecisionKnowledgeElement>> editListEntry
 								: codeExtractionResult.entrySet()) {
@@ -144,39 +148,85 @@ public class GitDiffedCodeExtractionManager {
 	}
 
 	private CodeExtractionResult processEntry(Map.Entry<DiffEntry, EditList> diffEntry) {
+		CodeExtractionResult returnResult = null;
+
 		switch (diffEntry.getKey().getChangeType()) {
 			/* ADD and DELETE are easiest to implement
 			 * others are more complex.
 			 * Begin implementation with ADD.
 			 * */
 			case ADD:
-				return processADDEntry(diffEntry);
-			case MODIFY: // gitClientCheckedOutAtDiffStart must exist
-				return processADDEntry(diffEntry);
-			case DELETE: // gitClientCheckedOutAtDiffStart must exist
+				returnResult = processAddEntryEdits(diffEntry);
+				break;
+			case MODIFY:
+				returnResult = processModifyEntryEdits(diffEntry);
+				break;
+			case DELETE:
+				returnResult = processDeleteEntryEdits(diffEntry);
+				break;
 			case RENAME: // behaves like MODIFY ?
 			case COPY: // ??
 			default:
-				// change type support not implemented
-				break;
+				LOGGER.info("Diff change type is not implemented: "
+						+ diffEntry.getKey().getChangeType().toString());
+				return returnResult;
 		}
-		LOGGER.info("Diff change type is not implemented: "
-				+ diffEntry.getKey().getChangeType().toString());
-		return null;
+		// TODO: gather all elements in newer version of the file
+
+		return returnResult;
 	}
 
 	/* ADD does not require gitClientCheckedOutAtDiffStart */
-	private CodeExtractionResult processADDEntry(Map.Entry<DiffEntry, EditList> diffEntry) {
+	private CodeExtractionResult processAddEntryEdits(Map.Entry<DiffEntry, EditList> diffEntry) {
 		CodeExtractionResult returnCodeExtractionResult = new CodeExtractionResult();
+		boolean fromNewerFile = true;
 
-		// TODO: check if the call to adjustOSsPathSeparator is required?
-		String fileRelativePath = adjustOSsPathSeparator(diffEntry.getKey().getNewPath());
-		List<CodeCommentWithRange> commentsInFile = getCommentsFromFile(fileRelativePath);
+		String fileBRelativePath = adjustOSsPathSeparator(diffEntry.getKey().getNewPath());
+		List<CodeCommentWithRange> commentsInFile = getCommentsFromFile(fileBRelativePath, fromNewerFile);
 
 		Map<Edit, List<DecisionKnowledgeElement>> elementsByEdit =
-				getRationaleFromComments(true, commentsInFile, diffEntry);
+				getRationaleFromComments(fromNewerFile, commentsInFile, diffEntry);
 
-		returnCodeExtractionResult.elementsInNewerVersion = elementsByEdit;
+		returnCodeExtractionResult.diffedElementsInNewerVersion = elementsByEdit;
+
+		return returnCodeExtractionResult;
+	}
+	/* DELETE does not require gitClientCheckedOutAtDiffEnd */
+	private CodeExtractionResult processDeleteEntryEdits(Map.Entry<DiffEntry, EditList> diffEntry) {
+		CodeExtractionResult returnCodeExtractionResult = new CodeExtractionResult();
+		boolean fromNewerFile = false;
+
+		String fileARelativePath = adjustOSsPathSeparator(diffEntry.getKey().getNewPath());
+		List<CodeCommentWithRange> commentsInFile = getCommentsFromFile(fileARelativePath, fromNewerFile);
+
+		Map<Edit, List<DecisionKnowledgeElement>> elementsByEdit =
+				getRationaleFromComments(fromNewerFile, commentsInFile, diffEntry);
+
+		returnCodeExtractionResult.diffedElementsInOlderVersion = elementsByEdit;
+
+		return returnCodeExtractionResult;
+	}
+
+	private CodeExtractionResult processModifyEntryEdits(Map.Entry<DiffEntry, EditList> diffEntry) {
+		CodeExtractionResult returnCodeExtractionResult = new CodeExtractionResult();
+
+		String fileARelativePath = adjustOSsPathSeparator(diffEntry.getKey().getOldPath());
+		List<CodeCommentWithRange> commentsInFileA
+				= getCommentsFromFile(fileARelativePath,false);
+
+		String fileBRelativePath = adjustOSsPathSeparator(diffEntry.getKey().getNewPath());
+		List<CodeCommentWithRange> commentsInFileB
+				= getCommentsFromFile(fileBRelativePath, true);
+
+
+		Map<Edit, List<DecisionKnowledgeElement>> elementsByEditNew =
+				getRationaleFromComments(true, commentsInFileB, diffEntry);
+
+		Map<Edit, List<DecisionKnowledgeElement>> elementsByEditOld =
+				getRationaleFromComments(false, commentsInFileA, diffEntry);
+
+		returnCodeExtractionResult.diffedElementsInNewerVersion = elementsByEditNew;
+		returnCodeExtractionResult.diffedElementsInOlderVersion = elementsByEditOld;
 
 		return returnCodeExtractionResult;
 	}
@@ -197,18 +247,21 @@ public class GitDiffedCodeExtractionManager {
 		}
 
 		RationaleFromDiffCodeCommentExtractor rationaleFromDiffCodeCommentExtractor =
-				new RationaleFromDiffCodeCommentExtractor(commentsInOlderFile, commentsInNewerFile, diffEntry.getValue());
+				new RationaleFromDiffCodeCommentExtractor(commentsInOlderFile
+						, commentsInNewerFile, diffEntry.getValue());
 
-		while (rationaleFromDiffCodeCommentExtractor.next(true)) {
-			returnMap.putAll(rationaleFromDiffCodeCommentExtractor.getRationaleFromComment(true
-					, returnMap));
+		while (rationaleFromDiffCodeCommentExtractor.next(newerFile)) {
+			returnMap.putAll(rationaleFromDiffCodeCommentExtractor
+					.getRationaleFromComment(newerFile, returnMap));
 		}
 
 		return returnMap;
 	}
 
-	private List<CodeCommentWithRange> getCommentsFromFile(String inspectedFileRelativePath) {
-		File resultingFile = getInspectedFileAbsolutePath(inspectedFileRelativePath);
+	private List<CodeCommentWithRange> getCommentsFromFile(String inspectedFileRelativePath
+			, boolean fromNewerFile) {
+		File resultingFile = getInspectedFileAbsolutePath(inspectedFileRelativePath
+				, fromNewerFile);
 		if (!resultingFile.isFile()) {
 			LOGGER.error("Expected file "
 					+ resultingFile.getAbsolutePath() + " to exist!");
@@ -229,12 +282,21 @@ public class GitDiffedCodeExtractionManager {
 		}
 	}
 
-	private File getInspectedFileAbsolutePath(String inspectedFileRelativePath) {
+	private File getInspectedFileAbsolutePath(String inspectedFileRelativePath
+			, boolean fromNewerFile) {
+
 		String filePathRelativeOutOfGitFolder = ".." //.. gets us out of .git folder.
 				+ File.separator
 				+ inspectedFileRelativePath;
-		return new File(gitClientCheckedOutAtDiffEnd.getDirectory()
-				, filePathRelativeOutOfGitFolder);
+
+		if (fromNewerFile) {
+			return new File(gitClientCheckedOutAtDiffEnd.getDirectory()
+					, filePathRelativeOutOfGitFolder);
+		}
+		else {
+			return new File(gitClientCheckedOutAtDiffStart.getDirectory()
+					, filePathRelativeOutOfGitFolder);
+		}
 	}
 
 	/* Currently only Java parser is available. */
@@ -260,9 +322,11 @@ public class GitDiffedCodeExtractionManager {
 	 */
 	private class CodeExtractionResult {
 		public int sequence = -1;
-		/* list of elements modified/created after diff */
-		public Map<Edit, List<DecisionKnowledgeElement>> elementsInNewerVersion = new HashMap<>();
-		/* list of old elements somehow affected by the diff */
-		public Map<Edit, List<DecisionKnowledgeElement>> elementsInOlderVersion = new HashMap<>();
+		/* list of elements modified/created with diff in a file */
+		public Map<Edit, List<DecisionKnowledgeElement>> diffedElementsInNewerVersion = new HashMap<>();
+		/* list of all elements present in file after diff */
+		public Map<DiffEntry, List<DecisionKnowledgeElement>> allElementsInNewerVersion = new HashMap<>();
+		/* list of old elements somehow affected by the diff in a file */
+		public Map<Edit, List<DecisionKnowledgeElement>> diffedElementsInOlderVersion = new HashMap<>();
 	}
 }

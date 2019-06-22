@@ -41,7 +41,10 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
 		makeExampleCommit("readMe.txt", "Self-explanatory, ReadMe not necessary.",
 				"TEST-12: Explain how the great software works");
-		makeExampleCommit("GodClass.java", "public class GodClass {}", "TEST-12: Develop great software");
+		makeExampleCommit("GodClass.java", "public class GodClass {" +
+				"//@issue:Small code issue in GodClass, it does nothing." +
+				"\r\n}"
+				,"TEST-12: Develop great software");
 		setupBranchWithDecKnowledge();
 
 		gitClient.close();
