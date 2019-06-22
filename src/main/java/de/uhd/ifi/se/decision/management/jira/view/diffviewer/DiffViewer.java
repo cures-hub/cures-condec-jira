@@ -28,4 +28,8 @@ public class DiffViewer {
 			branches.add(new BranchDiff(entry.getKey().getName(), entry.getValue()));
 		}
 	}
+
+	public List<BranchDiff> getBranches() {
+		return branches;
+	}
 }
