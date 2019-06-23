@@ -22,6 +22,10 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 		</div>
 		<div id="vis-container"></div>
 	</div>
+	<div class="tabs-pane" id="featureBranchesTab">
+		<div id="featureBranches-container">
+		</div>
+	</div>
 </div>
 
 #parse("templates/dialogs/createDialog.vm")
@@ -45,6 +49,7 @@ $(document).ready(function() {
     if (window.conDecJiraIssueModule.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant,
             conDecVis, conDecContextVis)) {
         window.conDecJiraIssueModule.initView();
+        getBranchesDiff();
     }
     else {
         console.error("ConDecJiraIssueModule could not get its dependencies.");
