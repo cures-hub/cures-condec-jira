@@ -1,0 +1,62 @@
+/* some basic looks for rationale from the commit messages and differ */
+
+#featureBranches-container > p {
+}
+.branchGroup {
+	position: relative;
+	font-size: 0.8rem;
+	margin: 1em 0;
+	border: 1px solid grey;
+	border-radius:1em;
+}
+.fileA>p, .fileB>p, .messageBox {
+	margin: 0.3em;
+	border-radius: 0.8em;
+	padding: 0.3em;
+	position: relative;
+
+}
+.fileDiffBlock {
+	display: flex;
+	flex-flow: row nowrap;
+}
+.fileA {
+	margin: 0;
+}
+.fileA .filename {
+	background: orange;
+}
+.fileB {
+	margin: 0;
+}
+.fileB .filename {
+	background: greenyellow;
+}
+.messageBox {
+	background: rgba(9,30,66,.08); /* greenyellow; */
+}
+.branchGroup .text {
+	position: absolute;
+	left:2em;
+	top:-0.8em;
+	background: white;
+}
+.branchGroup img {
+	position: absolute;
+	top: 5px;
+	left: 0px;
+}
+.branchGroup .loc {
+	width: 200px; /* 50% does not work correctly */
+	text-overflow: ellipsis;
+	height: 20px;
+	white-space: nowrap;
+	overflow: hidden;
+	margin: 0;
+
+}
+.branchGroup .content {
+	/* background: white; */
+	margin: 0 0 0 1em;
+	width: auto;
+}

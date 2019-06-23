@@ -55,8 +55,9 @@
 		<resource type="download" name="treant.css" location="/css/treant.css" />
 		<resource type="download" name="condec.css" location="/css/condec.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
+
 		<resource type="download" name="vis.css" location="/vis/dist/vis.css" />
-		<!-- look and feel like JIRA -->
+		<resource type="download" name="gitdiffviewer.css" location="/css/gitdiffviewer.css" />		<!-- look and feel like JIRA -->
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
 		<dependency>com.atlassian.auiplugin:aui-flag</dependency>
 		<dependency>com.atlassian.auiplugin:aui-buttons</dependency>
@@ -98,6 +99,8 @@
 		<resource type="download" name="condec.dialog.js" location="/js/condec.dialog.js" />
 		<resource type="download" name="condec.context.menu.js"
 			location="/js/condec.context.menu.js" />
+		<resource type="download" name="condec.gitdiffviewer.js" location="/js/condec.gitdiffviewer.js" />
+
 		<resource type="download" name="condec.context.vis.js"
 				  location="/js/condec.context.vis.js" />
 		<resource type="download" name="condec.treant.js" location="/js/condec.treant.js" />
