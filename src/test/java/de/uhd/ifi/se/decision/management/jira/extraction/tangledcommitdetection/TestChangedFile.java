@@ -1,5 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.tangledcommitdetection;
-  /*
+
 import com.github.javaparser.ast.body.MethodDeclaration;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
@@ -18,75 +18,71 @@ import static org.junit.Assert.assertNotNull;
 
 public class TestChangedFile extends TestSetUpGit {
 
+	private ChangedFileImpl changedFile;
+	private Map<DiffEntry, EditList> diffsWithOneCommit;
 
+	public Map<DiffEntry, EditList> getDiff(GitClient gitClient, String jiraIssueKey) {
+		return gitClient.getDiff(mockJiraIssueForGitTests);
+	}
 
-    private ChangedFileImpl changedFile;
-    private Map<DiffEntry, EditList> diffsWithOneCommit;
+	public void setChangedFile() {
+		for (Map.Entry<DiffEntry, EditList> entry : diffsWithOneCommit.entrySet()) {
+			File file = new File(gitClient.getDirectory().toString().replace(".git", "") + entry.getKey().getNewPath());
+			changedFile = new ChangedFileImpl(file);
+		}
+	}
 
+	@Before
+	public void setUp() {
+		super.setUp();
+		diffsWithOneCommit = getDiff(gitClient, "TEST-77");
+	}
 
-    public Map<DiffEntry, EditList> getDiff(GitClient gitClient, String jiraIssueKey) {
-        return gitClient.getDiff(jiraIssueKey);
-    }
+	@Test
+	public void testCreatChangedFile() {
+		setChangedFile();
+		assertNotNull(changedFile);
+	}
 
-    public void setChangedFile() {
-        for (Map.Entry<DiffEntry, EditList> entry : diffsWithOneCommit.entrySet()) {
-            File file = new File(gitClient.getDirectory().toString().replace(".git", "") + entry.getKey().getNewPath());
-            changedFile = new ChangedFileImpl(entry.getValue(), file);
-        }
-    }
+	@Test
+	public void testGetFile() {
+		setChangedFile();
+		assertNotNull(changedFile.getFile());
+	}
 
-    @Before
-    public void setUp() {
-        super.setUp();
-        diffsWithOneCommit = getDiff(gitClient, "TEST-77");
-    }
+	@Test
+	public void testCompilationUnit() {
+		setChangedFile();
+		assertNotNull(changedFile.getCompilationUnit());
+	}
 
-    @Test
-    public void testCreatChangedFile() {
-        setChangedFile();
-        assertNotNull(changedFile);
-    }
+	@Test
+	public void testGetSetPackageDistance() {
+		setChangedFile();
+		changedFile.setPackageDistance(10);
+		assertEquals(10, changedFile.getPackageDistance());
+	}
 
-    @Test
-    public void testGetFile() {
-        setChangedFile();
-        assertNotNull(changedFile.getFile());
-    }
+//	@Test
+//	public void testGetSetMethodDeclarations() {
+//		setChangedFile();
+//		MethodDeclaration methodDeclaration = new MethodDeclaration();
+//		changedFile.setMethodDeclarations(methodDeclaration);
+//		assertEquals(1, changedFile.getMethodDeclarations().size());
+//	}
 
-    @Test
-    public void testCompilationUnit() {
-        setChangedFile();
-        assertNotNull(changedFile.getCompilationUnit());
-    }
+	@Test
+	public void testGetSetPercentage() {
+		setChangedFile();
+		assertEquals(0, changedFile.getProbabilityOfTangledness(), 0.00);
+		changedFile.getProbabilityOfTangledness();
+		assertEquals(80, changedFile.getProbabilityOfTangledness(), 0.00);
+	}
 
-    @Test
-    public void testGetSetPackageDistance() {
-        setChangedFile();
-        changedFile.setPackageDistance(10);
-        assertEquals(10, changedFile.getPackageDistance());
-    }
-
-    @Test
-    public void testGetSetMethodDeclarations() {
-        setChangedFile();
-        MethodDeclaration methodDeclaration = new MethodDeclaration();
-        changedFile.setMethodDeclarations(methodDeclaration);
-        assertEquals(1, changedFile.getMethodDeclarations().size());
-    }
-    @Test
-    public void testGetSetPercentage() {
-        setChangedFile();
-        assertEquals(0, changedFile.getPercentage(),0.00);
-        changedFile.setPercentage(80);
-        assertEquals(80, changedFile.getPercentage(),0.00);
-    }
-
-    @Test
-    public void testGetEditList(){
-        setChangedFile();
-        assertNotNull(changedFile.getEditList());
-    }
-
+//	@Test
+//	public void testGetEditList() {
+//		setChangedFile();
+//		assertNotNull(changedFile.getEditList());
+//	}
 
 }
-    */
