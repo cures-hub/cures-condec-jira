@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import com.github.javaparser.ast.PackageDeclaration;
@@ -27,26 +28,27 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 	@Override
 	public void calculatePredication(Diff diff) {
 		this.calculatePackageDistances(diff);
-		diff.getChangedFiles().sort((ChangedFile c1, ChangedFile c2)->  c2.getPackageDistance() - c1.getPackageDistance() );
+		diff.getChangedFiles()
+				.sort((ChangedFile c1, ChangedFile c2) -> c2.getPackageDistance() - c1.getPackageDistance());
 		this.standardization(diff);
 	}
 
 	@Override
-	public void calculatePackageDistances(Diff diffs) {
-		Integer[][] maxtrix = new Integer[diffs.getChangedFiles().size()][diffs.getChangedFiles().size()];
-		if (diffs.getChangedFiles().size() > 1) {
-			for (int i = 0; i < diffs.getChangedFiles().size(); i++) {
-				ArrayList<String> leftPackageDeclaration = this
-						.parsePackage(diffs.getChangedFiles().get(i).getCompilationUnit().getPackageDeclaration());
-				for (int j = 0; j < diffs.getChangedFiles().size(); j++) {
-					ArrayList<String> rightPackageDeclaration = this
-							.parsePackage(diffs.getChangedFiles().get(j).getCompilationUnit().getPackageDeclaration());
+	public void calculatePackageDistances(Diff diff) {
+		Integer[][] maxtrix = new Integer[diff.getChangedFiles().size()][diff.getChangedFiles().size()];
+		if (diff.getChangedFiles().size() > 1) {
+			for (int i = 0; i < diff.getChangedFiles().size(); i++) {
+				List<String> leftPackageDeclaration = this
+						.parsePackage(diff.getChangedFiles().get(i).getCompilationUnit().getPackageDeclaration());
+				for (int j = 0; j < diff.getChangedFiles().size(); j++) {
+					List<String> rightPackageDeclaration = this
+							.parsePackage(diff.getChangedFiles().get(j).getCompilationUnit().getPackageDeclaration());
 					if (i != j) {
 						if (leftPackageDeclaration.size() >= rightPackageDeclaration.size()) {
 							for (int k = 0; k < rightPackageDeclaration.size(); k++) {
 								if (!leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k))) {
-									diffs.getChangedFiles().get(i)
-											.setPackageDistance(diffs.getChangedFiles().get(i).getPackageDistance()
+									diff.getChangedFiles().get(i)
+											.setPackageDistance(diff.getChangedFiles().get(i).getPackageDistance()
 													+ (leftPackageDeclaration.size() - k));
 									maxtrix[i][j] = leftPackageDeclaration.size() - k;
 									break;
@@ -55,8 +57,8 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 						} else {
 							for (int k = 0; k < leftPackageDeclaration.size(); k++) {
 								if (!leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k))) {
-									diffs.getChangedFiles().get(i)
-											.setPackageDistance(diffs.getChangedFiles().get(i).getPackageDistance()
+									diff.getChangedFiles().get(i)
+											.setPackageDistance(diff.getChangedFiles().get(i).getPackageDistance()
 													+ (rightPackageDeclaration.size() - k));
 									maxtrix[i][j] = rightPackageDeclaration.size() - k;
 									break;
@@ -69,12 +71,12 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 				}
 			}
 		} else {
-			diffs.getChangedFiles().get(0).setPackageDistance(0);
+			diff.getChangedFiles().get(0).setPackageDistance(0);
 		}
 	}
 
 	@Override
-	public ArrayList<String> parsePackage(Optional<PackageDeclaration> op) {
+	public List<String> parsePackage(Optional<PackageDeclaration> op) {
 		return new ArrayList<>(Arrays.asList(op.get().toString().split("\\.")));
 	}
 

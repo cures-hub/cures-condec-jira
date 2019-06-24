@@ -4,22 +4,21 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
-
 
 import com.atlassian.jira.util.json.JSONObject;
 import com.github.javaparser.utils.StringEscapeUtils;
 
 /**
  * Interface for a list of changed files. The scope for the diff might be a
- *  * single git commit, a whole feature branch (with many commits), or all commits
- *  * belonging to a JIRA issue.
+ * single git commit, a whole feature branch (with many commits), or all commits
+ * belonging to a JIRA issue.
  */
 public interface Diff {
 
-	ArrayList<ChangedFile> getChangedFiles();
+	List<ChangedFile> getChangedFiles();
 
 	void addChangedFile(ChangedFile changedFile);
 
