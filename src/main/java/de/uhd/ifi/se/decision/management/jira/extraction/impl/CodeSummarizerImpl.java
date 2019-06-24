@@ -32,6 +32,10 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		this.projectKey = projectKey;
 		this.gitClient = new GitClientImpl(projectKey);
 	}
+	
+	public CodeSummarizerImpl(GitClient gitClient) {
+		this.gitClient = gitClient;
+	}
 
 	@Override
 	public String createSummary(Issue jiraIssue, int minProbabilityOfTangledness) {
@@ -133,5 +137,4 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 				+ "<td style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">"
 				+ item3 + "% </td>\n";
 	}
-
 }

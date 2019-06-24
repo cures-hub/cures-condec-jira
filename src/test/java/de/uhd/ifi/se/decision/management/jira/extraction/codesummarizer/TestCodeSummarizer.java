@@ -1,10 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.codesummarizer;
-/*
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jgit.diff.DiffEntry;
@@ -24,7 +23,7 @@ public class TestCodeSummarizer extends TestSetUpGit {
 	@Before
 	public void setUp() {
 		super.setUp();
-		summarizer = new CodeSummarizerImpl("TEST");
+		summarizer = new CodeSummarizerImpl(gitClient);
 	}
 
 	@Test
@@ -40,9 +39,8 @@ public class TestCodeSummarizer extends TestSetUpGit {
 
 	@Test
 	public void testJiraIssueKeyEmpty() {
-		assertEquals("", summarizer.createSummary(null, 0 ));
+		assertEquals("", summarizer.createSummary(null, 0));
 	}
-
 
 	@Test
 	public void testRevCommitNull() {
@@ -60,4 +58,3 @@ public class TestCodeSummarizer extends TestSetUpGit {
 	}
 
 }
-*/
