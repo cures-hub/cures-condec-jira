@@ -61,8 +61,8 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		Diff allDiffs = new DiffImpl();
 		for (Map.Entry<DiffEntry, EditList> entry : diff.entrySet()) {
 			File file = new File(gitClient.getDirectory().toString().replace(".git", "") + entry.getKey().getNewPath());
-			if(file.exists() && FilenameUtils.getExtension(file.toString()) != null &&
-					FilenameUtils.getExtension(file.toString()).equalsIgnoreCase("java")){
+			if (file.exists() && FilenameUtils.getExtension(file.toString()) != null
+					&& FilenameUtils.getExtension(file.toString()).equalsIgnoreCase("java")) {
 				allDiffs.addChangedFile(new ChangedFileImpl(file));
 			}
 		}
@@ -110,10 +110,13 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		return summarizedMethods;
 	}
 
+	// TODO Change "Probability of Tangledness" in "Probability of Correct Link" or
+	// "Probability of Untangledness". 100% should represent a correct link, 0% a
+	// wrong link.
 	private String generateTable(String rows) {
 		return "<table style=\"width:100%; border: 1px solid black; border-collapse: collapse;\">" + "<tr>\n"
-				+ "    <th style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Classname</th>\n"
-				+ "    <th style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Methodnames</th> \n"
+				+ "    <th style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Class Name</th>\n"
+				+ "    <th style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Method Names</th> \n"
 				+ "    <th style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Probability of Tangledness</th>\n"
 				+ "</tr>\n" + rows + "</table>";
 	}
