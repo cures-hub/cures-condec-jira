@@ -89,10 +89,5 @@ $(document).ready(function() {
     else {
         console.error("ConDecJiraIssueModule could not get its dependencies.");
     }
-
-
 });
-
-
-
 </script>

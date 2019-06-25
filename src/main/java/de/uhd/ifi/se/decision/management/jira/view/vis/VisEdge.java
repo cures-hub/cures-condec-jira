@@ -5,9 +5,8 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Model class for vis.js Edge
+ * Model class for vis.js Edge.
  */
-
 public class VisEdge {
 
 	@XmlElement
@@ -24,8 +23,10 @@ public class VisEdge {
 
 	public VisEdge(Link link) {
 		this.setLabel(link.getType());
-		this.setFrom(link.getSourceElement().getId()+ "_" + link.getSourceElement().getDocumentationLocationAsString());
-		this.setTo(link.getDestinationElement().getId()+ "_" + link.getDestinationElement().getDocumentationLocationAsString());
+		this.setFrom(
+				link.getSourceElement().getId() + "_" + link.getSourceElement().getDocumentationLocationAsString());
+		this.setTo(link.getDestinationElement().getId() + "_"
+				+ link.getDestinationElement().getDocumentationLocationAsString());
 		this.setId(String.valueOf(link.getId()));
 	}
 
@@ -53,7 +54,11 @@ public class VisEdge {
 		this.label = label;
 	}
 
-	public String getId() {return id; }
+	public String getId() {
+		return id;
+	}
 
-	public void setId(String id) { this.id = id; }
+	public void setId(String id) {
+		this.id = id;
+	}
 }

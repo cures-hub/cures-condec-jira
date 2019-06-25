@@ -1,14 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
-
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 
 import javax.xml.bind.annotation.XmlElement;
 
 /**
-* Model class for vis.js Node
-*/
-
+ * Model class for vis.js Node.
+ */
 public class VisNode {
 	@XmlElement
 	private String id;
@@ -28,17 +26,18 @@ public class VisNode {
 	@XmlElement
 	private int cid;
 
-	public VisNode() {}
+	public VisNode() {
+	}
 
-	public VisNode(DecisionKnowledgeElement element, boolean collapsed, int level, int cid){
-		this.setId(element.getId()+ "_" + element.getDocumentationLocationAsString());
+	public VisNode(DecisionKnowledgeElement element, boolean collapsed, int level, int cid) {
+		this.setId(element.getId() + "_" + element.getDocumentationLocationAsString());
 		this.level = level;
 		this.cid = cid;
 		if (collapsed) {
 			this.setGroup(element.getTypeAsString().toLowerCase());
 			String summary;
-			if(element.getSummary().length()>100) {
-				summary = element.getSummary().substring(0,99) + "...";
+			if (element.getSummary().length() > 100) {
+				summary = element.getSummary().substring(0, 99) + "...";
 			} else {
 				summary = element.getSummary();
 			}
@@ -47,8 +46,8 @@ public class VisNode {
 			this.setGroup("collapsed");
 			this.setLabel("");
 		}
-		this.setTitle("<b>" + element.getTypeAsString().toUpperCase() + " <br> " +
-				element.getKey() + ":</b> " + element.getSummary() +"<br> <i>" + element.getDescription() +"</i>");
+		this.setTitle("<b>" + element.getTypeAsString().toUpperCase() + " <br> " + element.getKey() + ":</b> "
+				+ element.getSummary() + "<br> <i>" + element.getDescription() + "</i>");
 	}
 
 	public VisNode(DecisionKnowledgeElement element, String type, boolean collapsed, int level, int cid) {

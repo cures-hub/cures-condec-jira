@@ -45,117 +45,134 @@
 			conDecObservable.subscribe(this);
 
 			addOnClickEventToExportAsTable();
+			addOnClickEventToTab();
+			addOnClickEventToFilterButton();			
 
 			return true;
 		}
 		return false;
 	};
 
-
-
 	ConDecJiraIssueModule.prototype.initView = function initView() {
 		console.log("ConDecJiraIssueModule initView");
-        var issueKey = conDecAPI.getIssueKey();
-        var search = getURLsSearch();
-        AJS.$('#visualization-selection-tabs').on('tabSelect', function(e,o){
-            console.log("tab switched");
-            console.log(window);
-            if (o.tab.attr("href")==="#treant") {
-                window.conDecJiraIssueModule.initTreant();
-            } else if (o.tab.attr("href")==="#vis"){
-                window.conDecJiraIssueModule.initVis();
-            }
-        });
-        AJS.$("#filter-button").on('click', function (e) {
-            e.preventDefault();
-            window.conDecJiraIssueModule.initVisFiltered();
-        });
-        initFilter(issueKey, search);
+		var issueKey = conDecAPI.getIssueKey();
+		var search = getURLsSearch();
+		initFilter(issueKey, search);		
 	};
 
-    ConDecJiraIssueModule.prototype.initTreant = function initTreant() {
-        console.log("ConDecJiraIssueModule initTreant");
-        var issueKey = conDecAPI.getIssueKey();
-        var search = getURLsSearch();
-        treant.buildTreant(issueKey, true, search);
-    };
+	function addOnClickEventToTab() {
+		console.log("ConDecJiraIssueModule addOnClickEventVisualizationSelectionTab");
 
-    ConDecJiraIssueModule.prototype.initVis = function initVis() {
-        var issueKey = conDecAPI.getIssueKey();
-        var search = getURLsSearch();
-        console.log("ConDecJiraIssueModule initVis");
-        vis.buildVis(issueKey, search);
-    };
+		var tab = document.getElementById("visualization-selection-tabs");
 
-    ConDecJiraIssueModule.prototype.initVisFiltered = function initVisFiltered() {
-        var issueKey = conDecAPI.getIssueKey();
-        var search = getURLsSearch();
-        var issueTypes = "";
-        var createdAfter = -1;
-        var createdBefore = -1;
-        var documentationLocation = "";
-        var nodeDistance = 4;
-        if (!isNaN(document.getElementById("created-after-picker").valueAsNumber)) {
-            createdAfter = document.getElementById("created-after-picker").valueAsNumber;
-        }
-        if (!isNaN(document.getElementById("created-before-picker").valueAsNumber)) {
-            createdBefore = document.getElementById("created-before-picker").valueAsNumber;
-        }
-        for (var i=0; i < AJS.$('#issuetype-dropdown').children().size(); i++) {
-            if (typeof AJS.$('#issuetype-dropdown').children().eq(i).attr('checked') !== typeof undefined
-                && AJS.$('#issuetype-dropdown').children().eq(i).attr('checked') !== false) {
-                issueTypes = issueTypes + AJS.$('#issuetype-dropdown').children().eq(i).text();
-                issueTypes= issueTypes + ",";
-            }
-        }
-        for (var j=0; j < AJS.$('#documentation-dropdown').children().size(); j++) {
-            if (typeof AJS.$('#documentation-dropdown').children().eq(j).attr('checked') !== typeof undefined
-                && AJS.$('#documentation-dropdown').children().eq(j).attr('checked') !== false) {
-                documentationLocation = documentationLocation + AJS.$('#documentation-dropdown').children().eq(j).text();
-            }
-        }
-        var nodeDistanceInput = document.getElementById("node-distance-picker");
-		if (nodeDistanceInput !== null) {
-        	nodeDistance = nodeDistanceInput.value;
+		tab.addEventListener("click", function(event) {
+			event.preventDefault();
+			event.stopPropagation();
+			if (event.target.href.includes("#treant")) {
+				initTreant();
+			} else if (event.target.href.includes("#vis")) {
+				initVis();
+			}
+		});
+	}
+
+	function addOnClickEventToFilterButton() {
+		console.log("ConDecJiraIssueModule addOnClickEventToFilterButton");
+
+		var filterButton = document.getElementById("filter-button");
+
+		filterButton.addEventListener("click", function(event) {
+			event.preventDefault();
+			event.stopPropagation();
+			initVisFiltered();
+		});
+	}
+
+	function initTreant() {
+		console.log("ConDecJiraIssueModule initTreant");
+		var issueKey = conDecAPI.getIssueKey();
+		var search = getURLsSearch();
+		treant.buildTreant(issueKey, true, search);
+	}
+
+	function initVis() {
+		var issueKey = conDecAPI.getIssueKey();
+		var search = getURLsSearch();
+		console.log("ConDecJiraIssueModule initVis");
+		vis.buildVis(issueKey, search);
+	}
+
+	function initVisFiltered() {
+		var issueKey = conDecAPI.getIssueKey();
+		var search = getURLsSearch();
+		var issueTypes = "";
+		var createdAfter = -1;
+		var createdBefore = -1;
+		var documentationLocation = "";
+		var nodeDistance = 4;
+		if (!isNaN(document.getElementById("created-after-picker").valueAsNumber)) {
+			createdAfter = document.getElementById("created-after-picker").valueAsNumber;
 		}
-        vis.buildVisFiltered(issueKey,search,nodeDistance,issueTypes,createdAfter,createdBefore,documentationLocation);
-    };
+		if (!isNaN(document.getElementById("created-before-picker").valueAsNumber)) {
+			createdBefore = document.getElementById("created-before-picker").valueAsNumber;
+		}
+		for (var i = 0; i < AJS.$('#issuetype-dropdown').children().size(); i++) {
+			if (typeof AJS.$('#issuetype-dropdown').children().eq(i).attr('checked') !== typeof undefined
+					&& AJS.$('#issuetype-dropdown').children().eq(i).attr('checked') !== false) {
+				issueTypes = issueTypes + AJS.$('#issuetype-dropdown').children().eq(i).text();
+				issueTypes = issueTypes + ",";
+			}
+		}
+		for (var j = 0; j < AJS.$('#documentation-dropdown').children().size(); j++) {
+			if (typeof AJS.$('#documentation-dropdown').children().eq(j).attr('checked') !== typeof undefined
+					&& AJS.$('#documentation-dropdown').children().eq(j).attr('checked') !== false) {
+				documentationLocation = documentationLocation
+						+ AJS.$('#documentation-dropdown').children().eq(j).text();
+			}
+		}
+		var nodeDistanceInput = document.getElementById("node-distance-picker");
+		if (nodeDistanceInput !== null) {
+			nodeDistance = nodeDistanceInput.value;
+		}
+		vis.buildVisFiltered(issueKey, search, nodeDistance, issueTypes, createdAfter, createdBefore,
+				documentationLocation);
+	}
 
-    function initFilter(issueKey, search) {
-        console.log("ConDecJiraIssueModule initFilter");
-        var checkedItems;
-        var issueTypeDropdown = document.getElementById("issuetype-dropdown");
-        var firstDatePicker = document.getElementById("created-after-picker");
-        var secondDatePicker = document.getElementById("created-before-picker");
-        var documentationDropdown = document.getElementById("documentation-dropdown");
-        conDecAPI.getFilterData(issueKey, search, function (filterData) {
-            var allIssueTypes = filterData.allIssueTypes;
-            var selectedIssueTypes = filterData.issueTypesMatchingFilter;
-            var documentationLocation = filterData.documentationLocations;
-            checkedItems =selectedIssueTypes;
-            issueTypeDropdown.innerHTML = "";
+	function initFilter(issueKey, search) {
+		console.log("ConDecJiraIssueModule initFilter");
+		var checkedItems;
+		var issueTypeDropdown = document.getElementById("issuetype-dropdown");
+		var firstDatePicker = document.getElementById("created-after-picker");
+		var secondDatePicker = document.getElementById("created-before-picker");
+		var documentationDropdown = document.getElementById("documentation-dropdown");
+		conDecAPI.getFilterData(issueKey, search, function(filterData) {
+			var allIssueTypes = filterData.allIssueTypes;
+			var selectedIssueTypes = filterData.issueTypesMatchingFilter;
+			var documentationLocation = filterData.documentationLocations;
+			checkedItems = selectedIssueTypes;
+			issueTypeDropdown.innerHTML = "";
 
-            for (var index = 0; index < allIssueTypes.length; index++) {
-                var isSelected = "";
-                if (selectedIssueTypes.includes(allIssueTypes[index])) {
-                    isSelected = "checked";
-                }
-                issueTypeDropdown.insertAdjacentHTML("beforeend","<aui-item-checkbox interactive " + isSelected + ">" +
-                    allIssueTypes[index] + "</aui-item-checkbox>");
-            }
-            for (var count = 0; count < documentationLocation.length; count++) {
+			for (var index = 0; index < allIssueTypes.length; index++) {
+				var isSelected = "";
+				if (selectedIssueTypes.includes(allIssueTypes[index])) {
+					isSelected = "checked";
+				}
+				issueTypeDropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + isSelected + ">"
+						+ allIssueTypes[index] + "</aui-item-checkbox>");
+			}
+			for (var count = 0; count < documentationLocation.length; count++) {
 
-                documentationDropdown.insertAdjacentHTML("beforeend","<aui-item-checkbox interactive checked>" +
-                    documentationLocation[count] + "</aui-item-checkbox>");
-            }
-            if (filterData.startDate >= 0) {
-                firstDatePicker.valueAsDate = new Date(filterData.startDate+1000);
-            }
-            if (filterData.endDate >= 0) {
-                secondDatePicker.valueAsDate = new Date(filterData.endDate+1000);
-            }
-        });
-    }
+				documentationDropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive checked>"
+						+ documentationLocation[count] + "</aui-item-checkbox>");
+			}
+			if (filterData.startDate >= 0) {
+				firstDatePicker.valueAsDate = new Date(filterData.startDate + 1000);
+			}
+			if (filterData.endDate >= 0) {
+				secondDatePicker.valueAsDate = new Date(filterData.endDate + 1000);
+			}
+		});
+	}
 
 	function getURLsSearch() {
 		// get jql from url
@@ -170,19 +187,17 @@
 		JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [ JIRA.Issue.getIssueId() ]);
 	};
 
-
 	function addOnClickEventToExportAsTable() {
 		console.log("ConDecJiraIssueModule addOnClickEventToExportAsTable");
 
 		var exportMenuItem = document.getElementById("export-as-table-link");
 
-		exportMenuItem.addEventListener("click", function (event) {
+		exportMenuItem.addEventListener("click", function(event) {
 			event.preventDefault();
 			event.stopPropagation();
 			AJS.dialog2("#export-dialog").show();
 		});
 	}
-
 
 	/*
 	 * Init Helpers
@@ -228,20 +243,20 @@
 	}
 
 	function isConDecVisType(conDecVis) {
-        if (!(conDecVis !== undefined && conDecVis.buildVis !== undefined && typeof conDecVis.buildVis === 'function')) {
-            console.warn("ConDecJiraIssueModule: invalid conDecVis object received.");
-            return false;
-        }
-        return true;
+		if (!(conDecVis !== undefined && conDecVis.buildVis !== undefined && typeof conDecVis.buildVis === 'function')) {
+			console.warn("ConDecJiraIssueModule: invalid conDecVis object received.");
+			return false;
+		}
+		return true;
 	}
 
 	function isCondecContextVisType(conDecContextVis) {
-	    if (!(conDecContextVis !== undefined && conDecContextVis.createContextVis !== undefined && typeof conDecContextVis.createContextVis === 'function')) {
-	        console.warn("ConDecJiraIssueModule: invalid conDecContextVis object received.");
-	        return false;
-        }
-        return true;
-    }
+		if (!(conDecContextVis !== undefined && conDecContextVis.createContextVis !== undefined && typeof conDecContextVis.createContextVis === 'function')) {
+			console.warn("ConDecJiraIssueModule: invalid conDecContextVis object received.");
+			return false;
+		}
+		return true;
+	}
 
 	// export ConDecJiraIssueModule
 	global.conDecJiraIssueModule = new ConDecJiraIssueModule();
