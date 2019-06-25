@@ -65,12 +65,14 @@
 
 	function addOnClickEventToTab() {
 		console.log("ConDecJiraIssueModule addOnClickEventVisualizationSelectionTab");
-
 		var tab = document.getElementById("visualization-selection-tabs");
 
 		tab.addEventListener("click", function(event) {
 			event.preventDefault();
 			event.stopPropagation();
+			if (event.target.href === undefined) {
+				return;
+			}
 			if (event.target.href.includes("#treant")) {
 				showTreant();
 			} else if (event.target.href.includes("#vis")) {
