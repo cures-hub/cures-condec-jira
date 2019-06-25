@@ -17,18 +17,18 @@ public interface ChangedFile {
 	 * requirement/work item is wrong. If the link is wrong, the {@link Diff} is
 	 * tangled.
 	 * 
-	 * @return the probability for tangledness as a floating-point number.
+	 * @return the probability of Correctness as a floating-point number.
 	 */
-	float getProbabilityOfTangledness();
+	float getProbabilityOfCorrectness();
 
 	/**
 	 * Sets the probability that the link between a {@link ChangedFile} and a
 	 * requirement/work item is wrong.
 	 * 
-	 * @param probabilityOfTangledness
-	 *            probability as a floating-point number.
+	 * @param probabilityOfCorrectness
+	 *            probability of Correctness as a floating-point number.
 	 */
-	void setProbabilityOfTangledness(float probabilityOfTangledness);
+	void setProbabilityOfCorrectness(float probabilityOfCorrectness);
 
 	/**
 	 *

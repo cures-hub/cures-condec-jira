@@ -24,7 +24,7 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 
 	private GitClient gitClient;
 	private static final Logger LOGGER = LoggerFactory.getLogger(CodeSummarizerImpl.class);
-	private int minProbabilityOfTangledness;
+	private int minProbabilityOfCorrectness;
 	private String projectKey;
 	private String issueKey;
 
@@ -38,11 +38,11 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 	}
 
 	@Override
-	public String createSummary(Issue jiraIssue, int minProbabilityOfTangledness) {
+	public String createSummary(Issue jiraIssue, int minProbabilityOfCorrectness) {
 		if (jiraIssue == null) {
 			return "";
 		}
-		this.minProbabilityOfTangledness = minProbabilityOfTangledness;
+		this.minProbabilityOfCorrectness = minProbabilityOfCorrectness;
 		this.issueKey = jiraIssue.getKey();
 		Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssue);
 		return createSummary(diff);
@@ -98,9 +98,9 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 	private String generateSummary(Diff diff) {
 		String rows = "";
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			if (changedFile.getProbabilityOfTangledness() >= this.minProbabilityOfTangledness) {
+			if (changedFile.getProbabilityOfCorrectness() >= this.minProbabilityOfCorrectness) {
 				rows += this.addRow(this.addTableItem(FilenameUtils.removeExtension(changedFile.getFile().getName()),
-						this.summarizeMethods(changedFile), Float.toString(changedFile.getProbabilityOfTangledness())));
+						this.summarizeMethods(changedFile), Float.toString(changedFile.getProbabilityOfCorrectness())));
 			}
 		}
 		return this.generateTable(rows);
@@ -114,14 +114,11 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		return summarizedMethods;
 	}
 
-	// TODO Change "Probability of Tangledness" in "Probability of Correct Link" or
-	// "Probability of Untangledness". 100% should represent a correct link, 0% a
-	// wrong link.
 	private String generateTable(String rows) {
 		return "<table style=\"width:100%; border: 1px solid black; border-collapse: collapse;\">" + "<tr>\n"
 				+ "    <th style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Class Name</th>\n"
 				+ "    <th style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Method Names</th> \n"
-				+ "    <th style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Probability of Tangledness</th>\n"
+				+ "    <th style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Probability of Correct Link</th>\n"
 				+ "</tr>\n" + rows + "</table>";
 	}
 

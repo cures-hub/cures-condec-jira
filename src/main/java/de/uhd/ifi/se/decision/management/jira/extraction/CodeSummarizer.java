@@ -14,9 +14,11 @@ public interface CodeSummarizer {
 	 * 
 	 * @param jiraIssue
 	 *            JIRA issue. Its key is searched for in commit messages.
+	 * @param probabilityOfCorrectness
+	 * 			probabilityOfCorrectness. Integer value for filter over correctness
 	 * @return summary as a String.
 	 */
-	String createSummary(Issue jiraIssue, int probability);
+	String createSummary(Issue jiraIssue, int probabilityOfCorrectness);
 
 	/**
 	 * Creates a summary of code changes for a diff.

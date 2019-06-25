@@ -16,7 +16,7 @@ public class ChangedFileImpl implements ChangedFile {
 
 	public String className;
 	private List<String> methodDeclarations;
-	private float probabilityOfTangledness;
+	private float probabilityOfCorrectness;
 	public boolean isCorrect;
 	@JsonIgnore
 	private File file;
@@ -34,12 +34,12 @@ public class ChangedFileImpl implements ChangedFile {
 		this.className = this.file.getName();
 	}
 
-	public float getProbabilityOfTangledness() {
-		return probabilityOfTangledness;
+	public float getProbabilityOfCorrectness() {
+		return probabilityOfCorrectness;
 	}
 
-	public void setProbabilityOfTangledness(float percentage) {
-		this.probabilityOfTangledness = percentage;
+	public void setProbabilityOfCorrectness(float probabilityOfCorrectness) {
+		this.probabilityOfCorrectness = probabilityOfCorrectness;
 	}
 
 	public int getPackageDistance() {

@@ -300,13 +300,13 @@
 		var summarizedDialog = document.getElementById("summarization-dialog");
 		var cancelButton = document.getElementById("summarization-dialog-cancel-button");
 		var content = document.getElementById("summarization-dialog-content");
-		var probabilityOfTangledness = document.getElementById("summarization-probabilityOfTangledness").valueAsNumber;
+		var probabilityOfCorrectness = document.getElementById("summarization-probabilityOfCorrectness").valueAsNumber;
 		var projectId = document.getElementById("summarization-projectId").value;
         if (projectId === undefined || projectId.length === 0 || projectId === "") {
             document.getElementById("summarization-projectId").value = id;
             projectId = id;
         }
-        conDecAPI.getSummarizedCode(parseInt(projectId, 10), documentationLocation, probabilityOfTangledness, function(text) {
+        conDecAPI.getSummarizedCode(parseInt(projectId, 10), documentationLocation, probabilityOfCorrectness, function(text) {
             var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";
             content.innerHTML = insertString;
         });

@@ -16,12 +16,13 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 	@Override
 	public void standardization(Diff diff) {
 		if (diff.getChangedFiles().size() > 1) {
-			float max = diff.getChangedFiles().get(0).getPackageDistance();
+			float max = diff.getChangedFiles().get(diff.getChangedFiles().size() - 1).getPackageDistance();
+			float min = diff.getChangedFiles().get(0).getPackageDistance();
 			for (ChangedFile changedFile : diff.getChangedFiles()) {
-				changedFile.setProbabilityOfTangledness((changedFile.getPackageDistance() / max) * 100);
+				changedFile.setProbabilityOfCorrectness(((max - changedFile.getPackageDistance()) / (max - min)) * 100);
 			}
 		} else {
-			diff.getChangedFiles().get(0).setProbabilityOfTangledness(0);
+			diff.getChangedFiles().get(0).setProbabilityOfCorrectness(100);
 		}
 	}
 
@@ -29,7 +30,7 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 	public void calculatePredication(Diff diff) {
 		this.calculatePackageDistances(diff);
 		diff.getChangedFiles()
-				.sort((ChangedFile c1, ChangedFile c2) -> c2.getPackageDistance() - c1.getPackageDistance());
+				.sort((ChangedFile c1, ChangedFile c2) -> c1.getPackageDistance() - c2.getPackageDistance());
 		this.standardization(diff);
 	}
 

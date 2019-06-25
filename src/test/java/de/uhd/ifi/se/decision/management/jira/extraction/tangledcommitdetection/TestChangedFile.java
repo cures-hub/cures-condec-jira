@@ -73,9 +73,9 @@ public class TestChangedFile extends TestSetUpGit {
 	@Test
 	public void testGetSetPercentage() {
 		setChangedFile();
-		assertEquals(0, changedFile.getProbabilityOfTangledness(), 0.00);
-		changedFile.setProbabilityOfTangledness(80);
-		assertEquals(80, changedFile.getProbabilityOfTangledness(), 0.00);
+		assertEquals(0, changedFile.getProbabilityOfCorrectness(), 0.00);
+		changedFile.setProbabilityOfCorrectness(80);
+		assertEquals(80, changedFile.getProbabilityOfCorrectness(), 0.00);
 	}
 
 }

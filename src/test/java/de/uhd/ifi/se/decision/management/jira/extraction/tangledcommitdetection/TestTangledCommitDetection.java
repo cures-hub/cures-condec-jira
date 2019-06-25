@@ -75,9 +75,12 @@ public class TestTangledCommitDetection extends TestSetUpGit {
 				.sort((ChangedFile c1, ChangedFile c2) -> c2.getPackageDistance() - c1.getPackageDistance());
 		// sort after standardization
 		tangledCommitDetection.standardization(diffsWithMoreThanOneCommits);
-		assertEquals(100.0, diffsWithMoreThanOneCommits.getChangedFiles().get(0).getProbabilityOfTangledness(), 0.0000);
-		assertEquals(50.0, diffsWithMoreThanOneCommits.getChangedFiles().get(1).getProbabilityOfTangledness(), 0.0000);
-		assertEquals(50.0, diffsWithMoreThanOneCommits.getChangedFiles().get(2).getProbabilityOfTangledness(), 0.0000);
+		System.out.println(diffsWithMoreThanOneCommits.getChangedFiles().get(0).getProbabilityOfCorrectness());
+		System.out.println(diffsWithMoreThanOneCommits.getChangedFiles().get(1).getProbabilityOfCorrectness());
+		System.out.println(diffsWithMoreThanOneCommits.getChangedFiles().get(2).getProbabilityOfCorrectness());
+		assertEquals(100.0, diffsWithMoreThanOneCommits.getChangedFiles().get(0).getProbabilityOfCorrectness(), 0.0000);
+		assertEquals(0.0, diffsWithMoreThanOneCommits.getChangedFiles().get(1).getProbabilityOfCorrectness(), 0.0000);
+		assertEquals(0.0, diffsWithMoreThanOneCommits.getChangedFiles().get(2).getProbabilityOfCorrectness(), 0.0000);
 
 	}
 
@@ -85,7 +88,7 @@ public class TestTangledCommitDetection extends TestSetUpGit {
 	public void testStandardizationWithOneCommit() {
 		tangledCommitDetection.calculatePackageDistances(diffsWithOneCommit);
 		tangledCommitDetection.standardization(diffsWithOneCommit);
-		assertEquals(0, diffsWithOneCommit.getChangedFiles().get(0).getProbabilityOfTangledness(), 0.0000);
+		assertEquals(100.0, diffsWithOneCommit.getChangedFiles().get(0).getProbabilityOfCorrectness(), 0.0000);
 
 	}
 
