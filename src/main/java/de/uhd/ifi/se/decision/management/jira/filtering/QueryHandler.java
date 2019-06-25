@@ -19,7 +19,6 @@ import com.atlassian.query.clause.Clause;
 
 public class QueryHandler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(QueryHandler.class);
-
 	private String query;
 	private boolean queryIsJQL;
 	private boolean queryIsFilter;
@@ -47,7 +46,8 @@ public class QueryHandler {
 		this.finalQuery = "";
 	}
 
-	public SearchService.ParseResult processParsResult() {
+	public SearchService.ParseResult processParsResult(String query) {
+		this.query = query;
 		String filteredQuery = cropQuery();
 		if (queryIsFilter) {
 			long filterId = 0;

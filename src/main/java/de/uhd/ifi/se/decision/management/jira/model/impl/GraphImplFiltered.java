@@ -31,14 +31,13 @@ public class GraphImplFiltered extends GraphImpl {
 	public GraphImplFiltered() {
 		super();
 		this.elementsVisitedTransitively = new ArrayList<>();
-		this.queryHandler = new QueryHandler(null, null, null);
 	}
 
 	public GraphImplFiltered(String projectKey, String rootElementKey, GraphFiltering filter) {
 		super(projectKey, rootElementKey);
 		this.filter = filter;
 		this.elementsVisitedTransitively = new ArrayList<>();
-		this.queryHandler = new QueryHandler(null, null, null);
+		this.queryHandler = filter.getQueryHandler();
 	}
 
 	@Override

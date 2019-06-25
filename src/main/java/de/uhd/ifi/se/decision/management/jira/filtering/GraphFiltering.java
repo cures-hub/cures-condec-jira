@@ -36,6 +36,14 @@ public class GraphFiltering {
 	private String resultingQuery;
 	private QueryHandler queryHandler;
 
+	public QueryHandler getQueryHandler() {
+		return queryHandler;
+	}
+
+	public void setQueryHandler(QueryHandler queryHandler) {
+		this.queryHandler = queryHandler;
+	}
+
 	public GraphFiltering(String projectKey, String query, ApplicationUser user,
 			boolean mergeFilterQueryWithProjectKey) {
 		this.query = query;
@@ -47,7 +55,7 @@ public class GraphFiltering {
 
 	public void produceResultsFromQuery() {
 		List<Issue> resultingIssues = new ArrayList<>();
-		final SearchService.ParseResult parseResult = queryHandler.processParsResult();
+		final SearchService.ParseResult parseResult = queryHandler.processParsResult(query);
 		if (parseResult.isValid()) {
 			List<Clause> clauses = parseResult.getQuery().getWhereClause().getClauses();
 
