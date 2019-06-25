@@ -1,8 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.tangledcommitdetection;
 
-import com.atlassian.jira.issue.Issue;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.ChangedFileImpl;
 
