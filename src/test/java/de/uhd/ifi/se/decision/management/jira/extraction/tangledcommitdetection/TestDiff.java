@@ -3,10 +3,12 @@ package de.uhd.ifi.se.decision.management.jira.extraction.tangledcommitdetection
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,11 +22,12 @@ public class TestDiff extends TestSetUpGit {
 
 	private Diff diffsWithMoreThanOneCommits;
 	private Diff diffsWithOneCommit;
+	private Map<DiffEntry, EditList> oneCommit;
+	private Map<DiffEntry, EditList> moreThanOneCommits;
 
-	public Diff mapToDiff(GitClient gitClient, String jiraIssueKey) {
+	public Diff mapToDiff(Map<DiffEntry, EditList> diff) {
 		DiffImpl mappedDiff = new DiffImpl();
-		Map<DiffEntry, EditList> diff1 = gitClient.getDiff(mockJiraIssueForGitTests);
-		for (Map.Entry<DiffEntry, EditList> entry : diff1.entrySet()) {
+		for (Map.Entry<DiffEntry, EditList> entry : diff.entrySet()) {
 			File file = new File(gitClient.getDirectory().toString().replace(".git", "") + entry.getKey().getNewPath());
 			mappedDiff.addChangedFile(new ChangedFileImpl(file));
 		}
@@ -34,8 +37,13 @@ public class TestDiff extends TestSetUpGit {
 	@Before
 	public void setUp() {
 		super.setUp();
-		diffsWithMoreThanOneCommits = mapToDiff(gitClient, "TEST-66");
-		diffsWithOneCommit = mapToDiff(gitClient, "TEST-77");
+		List<RevCommit> commit = gitClient.getCommits(mockJiraIssueForGitTestsTangledSingleCommit);
+		oneCommit = gitClient.getDiff(commit);
+		diffsWithOneCommit = mapToDiff(oneCommit);
+
+		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTestsTangled);
+		moreThanOneCommits = gitClient.getDiff(commits);
+		diffsWithMoreThanOneCommits = mapToDiff(moreThanOneCommits);
 
 	}
 
