@@ -63,7 +63,7 @@ public class TestTangledCommitDetection extends TestSetUpGit {
 	@Test
 	public void testCalculatePackageDistance() {
 		tangledCommitDetection.calculatePackageDistances(diffsWithOneCommit);
-		assertEquals(0, diffsWithOneCommit.getChangedFiles().get(0).getPackageDistance());
+		assertEquals(100, diffsWithOneCommit.getChangedFiles().get(0).getPackageDistance());
 	}
 
 	@Test
