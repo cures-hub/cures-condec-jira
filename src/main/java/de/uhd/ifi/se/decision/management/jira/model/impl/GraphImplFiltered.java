@@ -9,6 +9,7 @@ import java.util.Set;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.GraphFiltering;
+import de.uhd.ifi.se.decision.management.jira.filtering.QueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -25,16 +26,19 @@ public class GraphImplFiltered extends GraphImpl {
 
 	private GraphFiltering filter;
 	private List<DecisionKnowledgeElement> elementsVisitedTransitively;
+	private QueryHandler queryHandler;
 
 	public GraphImplFiltered() {
 		super();
 		this.elementsVisitedTransitively = new ArrayList<>();
+		this.queryHandler = new QueryHandler(null, null, null);
 	}
 
 	public GraphImplFiltered(String projectKey, String rootElementKey, GraphFiltering filter) {
 		super(projectKey, rootElementKey);
 		this.filter = filter;
 		this.elementsVisitedTransitively = new ArrayList<>();
+		this.queryHandler = new QueryHandler(null, null, null);
 	}
 
 	@Override
@@ -130,10 +134,10 @@ public class GraphImplFiltered extends GraphImpl {
 			}
 			DecisionKnowledgeElement oppositeElement = link.getOppositeElement(element);
 			includeElementInGraph = true;
-			if (filter.isQueryContainsCreationDate() && oppositeElement instanceof PartOfJiraIssueText) {
+			if (queryHandler.isQueryContainsCreationDate() && oppositeElement instanceof PartOfJiraIssueText) {
 				includeElementInGraph = isSentenceIncludedInGraph(oppositeElement);
-			} else if (filter.isQueryContainsIssueTypes() && oppositeElement instanceof  PartOfJiraIssueText &&
-					includeElementInGraph) {
+			} else if (queryHandler.isQueryContainsIssueTypes() && oppositeElement instanceof PartOfJiraIssueText
+					&& includeElementInGraph) {
 				includeElementInGraph = isSentenceIssueTypeInIssueTypes(oppositeElement);
 			}
 
@@ -144,28 +148,27 @@ public class GraphImplFiltered extends GraphImpl {
 		}
 
 		// remove irrelevant sentences from graph
-		linkedElementsAndLinks.keySet().removeIf(e -> (e instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) e).isRelevant()));
+		linkedElementsAndLinks.keySet()
+				.removeIf(e -> (e instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) e).isRelevant()));
 
 		return linkedElementsAndLinks;
 	}
 
 	private boolean isSentenceIssueTypeInIssueTypes(DecisionKnowledgeElement oppositeElement) {
-		return filter.getIssueTypesInQuery().contains(oppositeElement.getType().toString());
+		return queryHandler.getIssueTypesInQuery().contains(oppositeElement.getType().toString());
 	}
 
 	private boolean isSentenceIncludedInGraph(DecisionKnowledgeElement element) {
-		if (filter.getStartDate() <= 0 && element.getCreated().getTime() < filter.getEndDate()) {
+		if (queryHandler.getStartDate() <= 0 && element.getCreated().getTime() < queryHandler.getEndDate()) {
 			return true;
-		} else if (filter.getEndDate() <= 0 && element.getCreated().getTime() > filter.getStartDate()) {
+		} else if (queryHandler.getEndDate() <= 0 && element.getCreated().getTime() > queryHandler.getStartDate()) {
 			return true;
-		} else if (element.getCreated().getTime() < filter.getEndDate()
-				&& element.getCreated().getTime() > filter.getStartDate()) {
+		} else if (element.getCreated().getTime() < queryHandler.getEndDate()
+				&& element.getCreated().getTime() > queryHandler.getStartDate()) {
 			return true;
 		}
 		return false;
 	}
-
-
 
 	@Override
 	public DecisionKnowledgeElement getRootElement() {

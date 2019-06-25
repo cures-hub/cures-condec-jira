@@ -1,16 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.issuetype.IssueType;
-import com.atlassian.jira.user.ApplicationUser;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
+
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.issuetype.IssueType;
+import com.atlassian.jira.user.ApplicationUser;
+
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 
 @XmlRootElement(name = "issueTypesForDropdown")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -26,22 +28,22 @@ public class FilterDataProvider {
 	@XmlElement
 	private List<String> documentationLocations;
 
-
 	public FilterDataProvider(String projectKey, String query, ApplicationUser user) {
 		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
 			GraphFiltering filter = new GraphFiltering(projectKey, query, user, false);
+			QueryHandler queryHandler = new QueryHandler(user, projectKey, false);
 			filter.produceResultsFromQuery();
 			this.allIssueTypes = new ArrayList<>();
 			for (IssueType issueType : ComponentAccessor.getConstantsManager().getAllIssueTypeObjects()) {
 				this.allIssueTypes.add(issueType.getName());
 			}
-			if (!filter.getIssueTypesInQuery().isEmpty()) {
-				this.issueTypesMatchingFilter = filter.getIssueTypesInQuery();
+			if (!queryHandler.getIssueTypesInQuery().isEmpty()) {
+				this.issueTypesMatchingFilter = queryHandler.getIssueTypesInQuery();
 			} else {
 				this.issueTypesMatchingFilter = allIssueTypes;
 			}
-			this.startDate = filter.getStartDate();
-			this.endDate = filter.getEndDate();
+			this.startDate = queryHandler.getStartDate();
+			this.endDate = queryHandler.getEndDate();
 		} else {
 			this.allIssueTypes = new ArrayList<>();
 			this.issueTypesMatchingFilter = new ArrayList<>();
@@ -91,7 +93,11 @@ public class FilterDataProvider {
 		this.endDate = endDate;
 	}
 
-	public List<String> getDocumentationLocations() {return this.documentationLocations;}
+	public List<String> getDocumentationLocations() {
+		return this.documentationLocations;
+	}
 
-	public void setDocumentationLocations(List<String> documentationLocations) {this.documentationLocations = documentationLocations;}
+	public void setDocumentationLocations(List<String> documentationLocations) {
+		this.documentationLocations = documentationLocations;
+	}
 }

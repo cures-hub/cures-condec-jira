@@ -1,20 +1,21 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
-import com.atlassian.jira.bc.issue.search.SearchService;
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.search.SearchRequest;
-import com.atlassian.jira.issue.search.SearchRequestManager;
-import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.query.clause.Clause;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.atlassian.jira.bc.issue.search.SearchService;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.search.SearchRequest;
+import com.atlassian.jira.issue.search.SearchRequestManager;
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.query.clause.Clause;
 
 public class QueryHandler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(QueryHandler.class);
@@ -33,7 +34,6 @@ public class QueryHandler {
 	private String finalQuery;
 	private List<String> issueTypesInQuery;
 
-
 	public QueryHandler(ApplicationUser user, String projectKey, Boolean mergeFilterQueryWithProjectKey) {
 		this.projectKey = projectKey;
 		this.mergeFilterQueryWithProjectKey = mergeFilterQueryWithProjectKey;
@@ -47,10 +47,9 @@ public class QueryHandler {
 		this.finalQuery = "";
 	}
 
-
-	public SearchService.ParseResult processParsResult(){
+	public SearchService.ParseResult processParsResult() {
 		String filteredQuery = cropQuery();
-		if(queryIsFilter){
+		if (queryIsFilter) {
 			long filterId = 0;
 			boolean filterIsNumberCoded = false;
 			try {
@@ -58,21 +57,22 @@ public class QueryHandler {
 				filterIsNumberCoded = true;
 			} catch (NumberFormatException n) {
 				LOGGER.error("Produce results from query failed. Message: " + n.getMessage());
-			} if (filterIsNumberCoded) {
+			}
+			if (filterIsNumberCoded) {
 				finalQuery = queryFromFilterId(filterId);
 			} else {
 				finalQuery = queryFromFilterString(filteredQuery);
 			}
-		} else if(queryIsJQL){
+		} else if (queryIsJQL) {
 			finalQuery = cropQuery();
-		} else if(!queryIsJQL &&!queryIsFilter){
+		} else if (!queryIsJQL && !queryIsFilter) {
 			finalQuery = "type = null";
-		} if(this.mergeFilterQueryWithProjectKey){
+		}
+		if (this.mergeFilterQueryWithProjectKey) {
 			finalQuery = "(" + finalQuery + ")AND( PROJECT=" + this.projectKey + ")";
 		}
-		return  searchService.parseQuery(this.user, finalQuery);
+		return searchService.parseQuery(this.user, finalQuery);
 	}
-
 
 	private String cropQuery() {
 		String croppedQuery = "";
@@ -97,39 +97,39 @@ public class QueryHandler {
 		String returnQuery;
 		if (id <= 0) {
 			switch ((int) id) {
-				case 0: // Any other than the preset Filters
-					returnQuery = "type != null";
-					break;
-				case -1: // My open issues
-					returnQuery = "assignee = currentUser() AND resolution = Unresolved";
-					break;
-				case -2: // Reported by me
-					returnQuery = "reporter = currentUser()";
-					break;
-				case -3: // Viewed recently
-					returnQuery = "issuekey IN issueHistory()";
-					break;
-				case -4: // All issues
-					returnQuery = "type != null";
-					break;
-				case -5: // Open issues
-					returnQuery = "resolution = Unresolved";
-					break;
-				case -6: // Created recently
-					returnQuery = "created >= -1w";
-					break;
-				case -7: // Resolved recently
-					returnQuery = "resolutiondate >= -1w";
-					break;
-				case -8: // Updated recently
-					returnQuery = "updated >= -1w";
-					break;
-				case -9: // Done issues
-					returnQuery = "statusCategory = Done";
-					break;
-				default:
-					returnQuery = "type != null";
-					break;
+			case 0: // Any other than the preset Filters
+				returnQuery = "type != null";
+				break;
+			case -1: // My open issues
+				returnQuery = "assignee = currentUser() AND resolution = Unresolved";
+				break;
+			case -2: // Reported by me
+				returnQuery = "reporter = currentUser()";
+				break;
+			case -3: // Viewed recently
+				returnQuery = "issuekey IN issueHistory()";
+				break;
+			case -4: // All issues
+				returnQuery = "type != null";
+				break;
+			case -5: // Open issues
+				returnQuery = "resolution = Unresolved";
+				break;
+			case -6: // Created recently
+				returnQuery = "created >= -1w";
+				break;
+			case -7: // Resolved recently
+				returnQuery = "resolutiondate >= -1w";
+				break;
+			case -8: // Updated recently
+				returnQuery = "updated >= -1w";
+				break;
+			case -9: // Done issues
+				returnQuery = "statusCategory = Done";
+				break;
+			default:
+				returnQuery = "type != null";
+				break;
 			}
 			returnQuery = "Project = " + projectKey + " AND " + returnQuery;
 		} else {
@@ -143,36 +143,36 @@ public class QueryHandler {
 	private String queryFromFilterString(String filterQuery) {
 		String returnQuery;
 		switch (filterQuery) {
-			case "myopenissues": // My open issues
-				returnQuery = "assignee = currentUser() AND resolution = Unresolved";
-				break;
-			case "reportedbyme": // Reported by me
-				returnQuery = "reporter = currentUser()";
-				break;
-			case "recentlyviewfinalQueryed": // Viewed recently
-				returnQuery = "issuekey IN issueHistory()";
-				break;
-			case "allissues": // All issues
-				returnQuery = "type != null";
-				break;
-			case "allopenissues": // Open issues
-				returnQuery = "resolution = Unresolved";
-				break;
-			case "addedrecently": // Created recently
-				returnQuery = "created >= -1w";
-				break;
-			case "updatedrecently": // Updated recently
-				returnQuery = "updated >= -1w";
-				break;
-			case "resolvedrecently": // Resolved recently
-				returnQuery = "resolutiondate >= -1w";
-				break;
-			case "doneissues": // Done issues
-				returnQuery = "statusCategory = Done";
-				break;
-			default:
-				returnQuery = "type != null";
-				break;
+		case "myopenissues": // My open issues
+			returnQuery = "assignee = currentUser() AND resolution = Unresolved";
+			break;
+		case "reportedbyme": // Reported by me
+			returnQuery = "reporter = currentUser()";
+			break;
+		case "recentlyviewfinalQueryed": // Viewed recently
+			returnQuery = "issuekey IN issueHistory()";
+			break;
+		case "allissues": // All issues
+			returnQuery = "type != null";
+			break;
+		case "allopenissues": // Open issues
+			returnQuery = "resolution = Unresolved";
+			break;
+		case "addedrecently": // Created recently
+			returnQuery = "created >= -1w";
+			break;
+		case "updatedrecently": // Updated recently
+			returnQuery = "updated >= -1w";
+			break;
+		case "resolvedrecently": // Resolved recently
+			returnQuery = "resolutiondate >= -1w";
+			break;
+		case "doneissues": // Done issues
+			returnQuery = "statusCategory = Done";
+			break;
+		default:
+			returnQuery = "type != null";
+			break;
 		}
 		return returnQuery;
 	}
@@ -192,8 +192,6 @@ public class QueryHandler {
 		}
 	}
 
-
-
 	public void findDatesInQuery(String query) {
 		if (query.contains("created")) {
 			this.queryContainsCreationDate = true;
@@ -208,15 +206,15 @@ public class QueryHandler {
 
 	}
 
-	public void findIssueTypesInQuery(List<Clause> clauses){
+	public void findIssueTypesInQuery(List<Clause> clauses) {
 		for (Clause clause : clauses) {
 			if (clause.getName().equals("issuetype")) {
 				this.queryContainsIssueTypes = true;
 				String issuetypes = clause.toString().substring(14, clause.toString().length() - 2);
-				if (clause.toString().contains("=")){
+				if (clause.toString().contains("=")) {
 					this.issueTypesInQuery.add(issuetypes.trim());
 				} else {
-					String issueTypesCleared = issuetypes.replaceAll("[()]","").replaceAll("\"","");
+					String issueTypesCleared = issuetypes.replaceAll("[()]", "").replaceAll("\"", "");
 					String[] split = issueTypesCleared.split(",");
 					for (String issueType : split) {
 						this.issueTypesInQuery.add(issueType.trim());
@@ -226,18 +224,18 @@ public class QueryHandler {
 		}
 	}
 
-	public void findIssueTypesInQuery(String query){
-		if(query.contains("issuetype")){
+	public void findIssueTypesInQuery(String query) {
+		if (query.contains("issuetype")) {
 			this.queryContainsIssueTypes = true;
-			if(query.contains("=")){
+			if (query.contains("=")) {
 				String[] split = query.split("=");
 				this.issueTypesInQuery.add(split[1].trim());
-			} else  {
+			} else {
 				String issueTypeSeparated = query.substring(12, query.length());
-				String issueTypeCleared = issueTypeSeparated.replaceAll("[()]","").replaceAll("\"","");
+				String issueTypeCleared = issueTypeSeparated.replaceAll("[()]", "").replaceAll("\"", "");
 				String[] split = issueTypeCleared.split(",");
-				for(String issueType: split){
-					String cleandIssueType = issueType.replaceAll("[()]","");
+				for (String issueType : split) {
+					String cleandIssueType = issueType.replaceAll("[()]", "");
 					this.issueTypesInQuery.add(cleandIssueType.trim());
 				}
 			}
@@ -263,6 +261,7 @@ public class QueryHandler {
 		}
 		return endTime;
 	}
+
 	private long getDateFromYearMonthDateFormat(String dateAsString) {
 		long dateAsLong = -1;
 		try {
@@ -287,28 +286,28 @@ public class QueryHandler {
 		} catch (NumberFormatException e) {
 			LOGGER.error("No valid time given");
 		}
-		long result = currentDate -(queryTime*factor);
+		long result = currentDate - (queryTime * factor);
 		return result;
 	}
 
 	private long getTimeFactor(char factorAsALetter) {
 		long factor;
 		switch (factorAsALetter) {
-			case 'm':
-				factor = 60000;
-				break;
-			case 'h':
-				factor = 3600000;
-				break;
-			case 'd':
-				factor = 86400000;
-				break;
-			case 'w':
-				factor = 604800000;
-				break;
-			default:
-				factor = 1;
-				break;
+		case 'm':
+			factor = 60000;
+			break;
+		case 'h':
+			factor = 3600000;
+			break;
+		case 'd':
+			factor = 86400000;
+			break;
+		case 'w':
+			factor = 604800000;
+			break;
+		default:
+			factor = 1;
+			break;
 		}
 		return factor;
 	}
@@ -325,19 +324,23 @@ public class QueryHandler {
 		return endDate;
 	}
 
-	public boolean isQueryContainsIssueTypes() {return queryContainsIssueTypes;}
+	public boolean isQueryContainsIssueTypes() {
+		return queryContainsIssueTypes;
+	}
 
 	public boolean isQueryContainsCreationDate() {
 		return queryContainsCreationDate;
 	}
 
-	public String getFinalQuery(){
-		if(finalQuery.equals("")|| finalQuery == null){
+	public String getFinalQuery() {
+		if (finalQuery.equals("") || finalQuery == null) {
 			LOGGER.error("Filter query is null or empty");
-			return  "";
+			return "";
 		}
-		return  this.finalQuery;
+		return this.finalQuery;
 	}
 
-	public List<String> getIssueTypesInQuery() {return  issueTypesInQuery; }
+	public List<String> getIssueTypesInQuery() {
+		return issueTypesInQuery;
+	}
 }

@@ -8,16 +8,15 @@ import javax.ejb.CreateException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
-import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.filtering.GraphFiltering;
+import de.uhd.ifi.se.decision.management.jira.filtering.QueryHandler;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -44,14 +43,13 @@ public class TestGraphFiltering extends TestSetUpWithIssues {
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
 		element.setProject(new DecisionKnowledgeProjectImpl("Test"));
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
-		graphFiltering = new GraphFiltering(element.getProject().getProjectKey(), "", user,false);
-		graphFiltering.setSearchService(Mockito.mock(SearchService.class));
+		graphFiltering = new GraphFiltering(element.getProject().getProjectKey(), "", user, false);
 	}
 
 	@Test
 	public void testConstructor() {
 		GraphFiltering filter = new GraphFiltering(element.getProject().getProjectKey(),
-				"?jql= Project = " + element.getProject().getProjectKey() + " AND type!=null", user,false);
+				"?jql= Project = " + element.getProject().getProjectKey() + " AND type!=null", user, false);
 		assertNotNull(filter);
 	}
 
