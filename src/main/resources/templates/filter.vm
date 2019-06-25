@@ -1,0 +1,19 @@
+<button aria-controls="issuetype-dropdown" class="aui-button aui-style-default aui-dropdown2-trigger" aria-haspopup="true">
+	Issuetypes
+</button>
+<aui-dropdown-menu id="issuetype-dropdown" style="overflow:auto;max-height:200px;"></aui-dropdown-menu>
+
+<label>Created between</label>
+<input id="created-after-picker" type="date" style="vertical-align: middle; margin: 0px 5px;"/>
+<label>and</label>
+<input id="created-before-picker" type="date" style="vertical-align: middle; margin: 0px 5px;"/>
+<button aria-controls="documentation-dropdown" class="aui-button aui-style-default aui-dropdown2-trigger" 
+	aria-haspopup="true">Documentation Location</button>
+
+<aui-dropdown-menu id="documentation-dropdown"></aui-dropdown-menu>
+<input type="number" id="node-distance-picker" value="4" min="1"
+	class="text short-field" placeholder="Enter maximum distance of nodes...">
+
+<button class="aui-button aui-button-primary" id="filter-button">
+	<span class="aui-icon aui-icon-small aui-iconfont-search"></span> Filter
+</button>
