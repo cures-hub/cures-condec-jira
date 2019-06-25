@@ -24,8 +24,6 @@ public class TestTangledCommitDetection extends TestSetUpGit {
 
 	private Diff diffsWithMoreThanOneCommits;
 	private Diff diffsWithOneCommit;
-	private Map<DiffEntry, EditList> oneCommit;
-	private Map<DiffEntry, EditList> moreThanOneCommits;
 
 	private TangledCommitDetection tangledCommitDetection;
 
@@ -43,11 +41,11 @@ public class TestTangledCommitDetection extends TestSetUpGit {
 		super.setUp();
 		tangledCommitDetection = new TangledCommitDetectionImpl();
 		List<RevCommit> commit = gitClient.getCommits(mockJiraIssueForGitTestsTangledSingleCommit);
-		oneCommit = gitClient.getDiff(commit);
+		Map<DiffEntry, EditList> oneCommit = gitClient.getDiff(commit);
 		diffsWithOneCommit = mapToDiff(oneCommit);
 
 		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTestsTangled);
-		moreThanOneCommits = gitClient.getDiff(commits);
+		Map<DiffEntry, EditList> moreThanOneCommits = gitClient.getDiff(commits);
 		diffsWithMoreThanOneCommits = mapToDiff(moreThanOneCommits);
 
 

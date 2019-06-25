@@ -21,8 +21,6 @@ public class TestDiff extends TestSetUpGit {
 
 	private Diff diffsWithMoreThanOneCommits;
 	private Diff diffsWithOneCommit;
-	private Map<DiffEntry, EditList> oneCommit;
-	private Map<DiffEntry, EditList> moreThanOneCommits;
 
 	public Diff mapToDiff(Map<DiffEntry, EditList> diff) {
 		DiffImpl mappedDiff = new DiffImpl();
@@ -37,11 +35,11 @@ public class TestDiff extends TestSetUpGit {
 	public void setUp() {
 		super.setUp();
 		List<RevCommit> commit = gitClient.getCommits(mockJiraIssueForGitTestsTangledSingleCommit);
-		oneCommit = gitClient.getDiff(commit);
+		Map<DiffEntry, EditList> oneCommit = gitClient.getDiff(commit);
 		diffsWithOneCommit = mapToDiff(oneCommit);
 
 		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTestsTangled);
-		moreThanOneCommits = gitClient.getDiff(commits);
+		Map<DiffEntry, EditList> moreThanOneCommits = gitClient.getDiff(commits);
 		diffsWithMoreThanOneCommits = mapToDiff(moreThanOneCommits);
 
 	}
