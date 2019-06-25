@@ -20,6 +20,9 @@
 	var vis = null;
 	var condecContextVis = null;
 
+	var issueKey = "";
+	var search = "";
+
 	var ConDecJiraIssueModule = function ConDecJiraIssueModule() {
 		console.log("conDecJiraIssueModule constructor");
 	};
@@ -46,7 +49,7 @@
 
 			addOnClickEventToExportAsTable();
 			addOnClickEventToTab();
-			addOnClickEventToFilterButton();			
+			addOnClickEventToFilterButton();
 
 			return true;
 		}
@@ -55,9 +58,9 @@
 
 	ConDecJiraIssueModule.prototype.initView = function initView() {
 		console.log("ConDecJiraIssueModule initView");
-		var issueKey = conDecAPI.getIssueKey();
-		var search = getURLsSearch();
-		initFilter(issueKey, search);		
+		issueKey = conDecAPI.getIssueKey();
+		search = getURLsSearch();
+		initFilter(issueKey, search);
 	};
 
 	function addOnClickEventToTab() {
@@ -69,9 +72,9 @@
 			event.preventDefault();
 			event.stopPropagation();
 			if (event.target.href.includes("#treant")) {
-				initTreant();
+				showTreant();
 			} else if (event.target.href.includes("#vis")) {
-				initVis();
+				showGraph();
 			}
 		});
 	}
@@ -84,27 +87,21 @@
 		filterButton.addEventListener("click", function(event) {
 			event.preventDefault();
 			event.stopPropagation();
-			initVisFiltered();
+			applyFilters();
 		});
 	}
 
-	function initTreant() {
-		console.log("ConDecJiraIssueModule initTreant");
-		var issueKey = conDecAPI.getIssueKey();
-		var search = getURLsSearch();
+	function showTreant() {
+		console.log("ConDecJiraIssueModule showTreant");
 		treant.buildTreant(issueKey, true, search);
 	}
 
-	function initVis() {
-		var issueKey = conDecAPI.getIssueKey();
-		var search = getURLsSearch();
-		console.log("ConDecJiraIssueModule initVis");
+	function showGraph() {
+		console.log("ConDecJiraIssueModule showGraph");
 		vis.buildVis(issueKey, search);
 	}
 
-	function initVisFiltered() {
-		var issueKey = conDecAPI.getIssueKey();
-		var search = getURLsSearch();
+	function applyFilters() {
 		var issueTypes = "";
 		var createdAfter = -1;
 		var createdBefore = -1;
