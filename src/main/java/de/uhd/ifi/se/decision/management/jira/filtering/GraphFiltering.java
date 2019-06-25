@@ -368,11 +368,8 @@ public class GraphFiltering {
 
 	}
 
-	//TODO Fix complexity of this function
-	// Way to big needs to be split in small functions
 	public void produceResultsWithAdditionalFilters(String issueTypes, long createdEarliest, long createdLatest){
 		this.produceResultsFromQuery();
-		List<Issue> resultingIssues = new ArrayList<>();
 		queryResults.clear();
 		JqlClauseBuilder queryBuilder = JqlQueryBuilder.newClauseBuilder();
 		queryBuilder.project(this.projectKey);
@@ -394,6 +391,14 @@ public class GraphFiltering {
 				queryBuilder.addCondition(resultingQuery);
 			}
 		}
+		queryBuilder = addIssueTypes(queryBuilder,issueTypes);
+		queryBuilder = addTimeFilter(queryBuilder,createdEarliest, createdLatest);
+		processQueryResult(queryBuilder);
+
+	}
+
+	// New issue type filter function
+	private JqlClauseBuilder addIssueTypes(JqlClauseBuilder queryBuilder, String issueTypes){
 		if (issueTypes != null) {
 			JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
 			newQueryBuilder.and();
@@ -409,6 +414,11 @@ public class GraphFiltering {
 			newQueryBuilder.issueType(types);
 			queryBuilder = newQueryBuilder;
 		}
+		return queryBuilder;
+	}
+
+	//New time filter function
+	private JqlClauseBuilder addTimeFilter(JqlClauseBuilder queryBuilder, long createdEarliest, long createdLatest){
 		if (createdEarliest >= 0) {
 			JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
 			newQueryBuilder.and();
@@ -421,6 +431,12 @@ public class GraphFiltering {
 			newQueryBuilder.addDateCondition("created", Operator.LESS_THAN_EQUALS, new Date(createdLatest));
 			queryBuilder = newQueryBuilder;
 		}
+		return  queryBuilder;
+	}
+
+	//New process of the final result
+	private  void processQueryResult(JqlClauseBuilder queryBuilder){
+		List<Issue> resultingIssues = new ArrayList<>();
 		Query finalQuery = queryBuilder.buildQuery();
 		final SearchService.ParseResult parseResult = getSearchService().parseQuery(user,getSearchService().getJqlString(finalQuery));
 		if (parseResult.isValid()){
@@ -441,7 +457,7 @@ public class GraphFiltering {
 				resultingIssues = JiraSearchServiceHelper.getJiraIssues(results);
 
 			} catch (SearchException e) {
-				e.printStackTrace();
+				LOGGER.error("Errors massage in processQueryResult. Message: " + e.getMessage());
 			}
 		} else {
 			LOGGER.error(parseResult.getErrors().toString());

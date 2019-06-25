@@ -15,11 +15,7 @@ import java.util.List;
 @XmlRootElement(name = "issueTypesForDropdown")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class FilterDataProvider {
-
-
-
 	@XmlElement
-
 	private List<String> allIssueTypes;
 	@XmlElement
 	private List<String> issueTypesMatchingFilter;
