@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.eventlistener.decxtracteventlistener;
+package de.uhd.ifi.se.decision.management.jira.eventlistener.jiraissuetextextractioneventlistener;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;

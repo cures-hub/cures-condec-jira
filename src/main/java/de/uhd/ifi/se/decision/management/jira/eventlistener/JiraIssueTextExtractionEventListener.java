@@ -27,11 +27,11 @@ import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersisten
  * in the knowledge graph when the user changes either a comment or the
  * description of a JIRA issue.
  */
-public class DecXtractEventListener {
+public class JiraIssueTextExtractionEventListener {
 
 	private String projectKey;
 	private IssueEvent issueEvent;
-	private static final Logger LOGGER = LoggerFactory.getLogger(DecXtractEventListener.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextExtractionEventListener.class);
 
 	/**
 	 * Locks the edit comment event function if a REST service edits comments.
@@ -107,7 +107,7 @@ public class DecXtractEventListener {
 	}
 
 	private void handleEditComment() {
-		if (DecXtractEventListener.editCommentLock) {
+		if (JiraIssueTextExtractionEventListener.editCommentLock) {
 			// If locked, a REST service is currently manipulating the comment and should
 			// not be handled by this event listener.
 			LOGGER.debug("DecXtract event listener:\nEditing comment is still locked.");
@@ -127,7 +127,7 @@ public class DecXtractEventListener {
 	}
 
 	private void handleUpdateDescription() {
-		if (DecXtractEventListener.editCommentLock) {
+		if (JiraIssueTextExtractionEventListener.editCommentLock) {
 			// If locked, a REST service is currently manipulating the comment and should
 			// not be handled by this event listener.
 			LOGGER.debug("DecXtract event listener:\nEditing description is still locked.");

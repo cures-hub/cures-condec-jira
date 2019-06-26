@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.HashMap;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -90,8 +89,6 @@ public class TestWebhookEventListener extends TestSetUpWithIssues {
 		listener.onIssueEvent(event);
 	}
 
-	// TODO Needs to be fixed
-	@Ignore
 	@Test
 	public void testIssueLinkCreated() {
 		IssueLink link = new MockIssueLink(1);
@@ -99,8 +96,6 @@ public class TestWebhookEventListener extends TestSetUpWithIssues {
 		listener.onLinkCreatedIssueEvent(event);
 	}
 
-	// TODO Needs to be fixed
-	@Ignore
 	@Test
 	public void testIssueLinkDeleted() {
 		IssueLink link = new MockIssueLink(1);

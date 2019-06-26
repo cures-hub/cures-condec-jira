@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.eventlistener;
 
-import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,13 +9,13 @@ import com.atlassian.jira.event.type.EventType;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
  * Triggers the webhook when JIRA issues are created, updated, or deleted or
  * when links between JIRA issues are created or deleted
  */
-public class WebhookEventListener{
-
+public class WebhookEventListener {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(WebhookEventListener.class);
 
@@ -37,8 +36,8 @@ public class WebhookEventListener{
 		}
 	}
 
-	public void onLinkEvent(DecisionKnowledgeElement decisionKnowledgeElement){
-		if(!ConfigPersistenceManager.isWebhookEnabled(decisionKnowledgeElement.getProject().getProjectKey())){
+	public void onLinkEvent(DecisionKnowledgeElement decisionKnowledgeElement) {
+		if (!ConfigPersistenceManager.isWebhookEnabled(decisionKnowledgeElement.getProject().getProjectKey())) {
 			return;
 		}
 		WebhookConnector connector = new WebhookConnector(decisionKnowledgeElement.getProject().getProjectKey());

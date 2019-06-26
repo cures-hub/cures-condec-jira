@@ -110,7 +110,6 @@ public class TestPluginInitializer extends TestSetUpWithIssues {
 		PluginInitializer.addIssueTypeToScheme("Decision", null);
 	}
 
-	@Test
 	@Ignore
 	public void testAddIssueTypeToSchemeIssueTypeFilledProjectKeyFilled() {
 		initialization();
