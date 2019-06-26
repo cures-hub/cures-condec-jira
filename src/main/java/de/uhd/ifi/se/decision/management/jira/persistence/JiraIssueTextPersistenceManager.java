@@ -18,7 +18,7 @@ import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.eventlistener.DecXtractEventListener;
+import de.uhd.ifi.se.decision.management.jira.eventlistener.JiraIssueTextExtractionEventListener;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -346,7 +346,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 
 		String newBody = firstPartOfText + changedPartOfText + lastPartOfText;
 
-		DecXtractEventListener.editCommentLock = true;
+		JiraIssueTextExtractionEventListener.editCommentLock = true;
 		if (mutableComment == null) {
 			MutableIssue jiraIssue = (MutableIssue) sentence.getJiraIssue();
 			jiraIssue.setDescription(newBody);
@@ -355,7 +355,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 			mutableComment.setBody(newBody);
 			ComponentAccessor.getCommentManager().update(mutableComment, true);
 		}
-		DecXtractEventListener.editCommentLock = false;
+		JiraIssueTextExtractionEventListener.editCommentLock = false;
 
 		int lengthDifference = changedPartOfText.length() - sentence.getLength();
 		updateSentenceLengthForOtherSentencesInSameComment(sentence, lengthDifference);
@@ -655,10 +655,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		String newBody = mutableComment.getBody();
 		newBody = newBody.substring(0, element.getStartPosition()) + newBody.substring(element.getEndPosition());
 
-		DecXtractEventListener.editCommentLock = true;
+		JiraIssueTextExtractionEventListener.editCommentLock = true;
 		mutableComment.setBody(newBody);
 		ComponentAccessor.getCommentManager().update(mutableComment, true);
-		DecXtractEventListener.editCommentLock = false;
+		JiraIssueTextExtractionEventListener.editCommentLock = false;
 		return element.getEndPosition() - element.getStartPosition();
 	}
 
