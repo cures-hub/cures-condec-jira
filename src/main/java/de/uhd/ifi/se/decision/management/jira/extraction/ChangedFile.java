@@ -14,46 +14,55 @@ public interface ChangedFile {
 
 	/**
 	 * Returns the probability that the link between a {@link ChangedFile} and a
-	 * requirement/work item is wrong. If the link is wrong, the {@link Diff} is
+	 * requirement/work item is correct. If the link is wrong, the {@link Diff} is
 	 * tangled.
 	 * 
-	 * @return the probability of Correctness as a floating-point number.
+	 * @return the probability of correctness as a floating-point number.
 	 */
 	float getProbabilityOfCorrectness();
 
 	/**
 	 * Sets the probability that the link between a {@link ChangedFile} and a
-	 * requirement/work item is wrong.
+	 * requirement/work item is correct.
 	 * 
 	 * @param probabilityOfCorrectness
-	 *            probability of Correctness as a floating-point number.
+	 *            probability of correctness as a floating-point number.
 	 */
 	void setProbabilityOfCorrectness(float probabilityOfCorrectness);
 
 	/**
-	 *
+	 * Returns a list of method declrations if the changed file is a Java class.
+	 * 
 	 * @return a list of Strings, which contains methodDeclarations.
 	 */
 	List<String> getMethodDeclarations();
 
 	/**
-	 *
+	 * Returns the compilation unit if the changed file is a Java class. Each java
+	 * file denotes a compilation unit. A compilation unit starts with an optional
+	 * package declaration, followed by zero or more import declarations, followed
+	 * by zero or more type declarations.
+	 * 
 	 * @param file
-	 *            Parse a Java file into AST
+	 *            to be parsed to an abstract syntax tree (AST). Needs to be a Java file.
+	 * @see CompilationUnit
+	 * 
+	 * TODO
 	 * @return CompilationUnit, Java compilation unit AST node type. This is the
 	 *         type of the root of an AST.
 	 */
 	CompilationUnit parseCompilationUnit(File file);
 
 	/**
-	 *
+	 * Returns the compilation unit if the changed file is a Java class. 
 	 * @return CompilationUnit, Java compilation unit AST node type. This is the
 	 *         type of the root of an AST.
 	 */
 	CompilationUnit getCompilationUnit();
 
 	/**
-	 *
+	 * Returns the file that is 
+	 * @see File
 	 * @return File, an abstract representation of a file and is also a directory
 	 *         path-name.
 	 */
@@ -61,7 +70,7 @@ public interface ChangedFile {
 
 	/**
 	 *
-	 * @return Integer, which describes the total packageDistance to other
+	 * @return a  which describes the total packageDistance to other
 	 *         ChangedFiles.
 	 *
 	 */
@@ -83,5 +92,4 @@ public interface ChangedFile {
 	 *
 	 */
 	void addMethodDeclaration(String methodDeclaration);
-
 }

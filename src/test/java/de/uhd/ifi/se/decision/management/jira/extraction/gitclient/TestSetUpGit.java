@@ -44,14 +44,14 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		makeExampleCommit("readMe.txt", "Self-explanatory, ReadMe not necessary.",
 				"TEST-12: Explain how the great software works");
 		makeExampleCommit("GodClass.java", "public class GodClass {}", "TEST-12: Develop great software");
-		makeExampleCommit("untangled.java", "package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" +
+		makeExampleCommit("Untangled.java", "package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" +
 				"\n" +
 				"public class Main {\n" +
 				"    public static void  main(String[] args) {\n" +
 				"        System.out.println(\"Hello World!\");\n" +
 				"    }\n" +
 				"}\n", "TEST-26 add main");
-		makeExampleCommit("untangled2.java", "package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" +
+		makeExampleCommit("Untangled2.java", "package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" +
 				"\n" +
 				"public class D {\n" +
 				"\n" +
@@ -75,7 +75,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 				"\n" +
 				"}\n", "TEST-26 add class d");
 
-		makeExampleCommit("tangled1.java", "package de.uhd.ifi.se.decision.management.jira.view.treeviewer;\n" +
+		makeExampleCommit("Tangled1.java", "package de.uhd.ifi.se.decision.management.jira.view.treeviewer;\n" +
 						"public class E {\n" +
 						"\n" +
 						"    public int a;\n" +
@@ -103,7 +103,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 						"}\n"
 				, "TEST-26 add class e");
 
-		makeExampleCommit("tangled2.java", "package de.uhd.ifi.se.decision.management.jira.view.treeviewer;\n" +
+		makeExampleCommit("Tangled2.java", "package de.uhd.ifi.se.decision.management.jira.view.treeviewer;\n" +
 				"public class A {\n" +
 				"\n" +
 				"    public int x;\n" +

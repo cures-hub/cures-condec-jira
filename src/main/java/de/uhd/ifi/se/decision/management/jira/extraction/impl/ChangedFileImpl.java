@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
@@ -14,9 +15,9 @@ import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
 
 public class ChangedFileImpl implements ChangedFile {
 
-	public String className;
 	private List<String> methodDeclarations;
 	private float probabilityOfCorrectness;
+	// TODO warum public?
 	public boolean isCorrect;
 	@JsonIgnore
 	private File file;
@@ -28,10 +29,15 @@ public class ChangedFileImpl implements ChangedFile {
 	public ChangedFileImpl(File file) {
 		this.file = file;
 		this.packageDistance = 0;
-		this.methodDeclarations = new ArrayList<>();
+		this.methodDeclarations = new ArrayList<String>();
 		this.compilationUnit = parseCompilationUnit(file);
 		this.isCorrect = true;
-		this.className = this.file.getName();
+	}
+	
+	// TODO derived method
+	@JsonProperty("className")
+	public String getName() {
+		return this.file.getName();
 	}
 
 	public float getProbabilityOfCorrectness() {
@@ -71,7 +77,7 @@ public class ChangedFileImpl implements ChangedFile {
 		return file;
 	}
 
-	public void addMethodDeclaration(String m) {
-		this.methodDeclarations.add(m);
+	public void addMethodDeclaration(String methodDeclaration) {
+		this.methodDeclarations.add(methodDeclaration);
 	}
 }

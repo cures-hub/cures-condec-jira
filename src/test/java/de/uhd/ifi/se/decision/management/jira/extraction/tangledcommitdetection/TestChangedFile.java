@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.tangledcommitdetection;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
+
+import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.ChangedFileImpl;
 
@@ -19,7 +21,7 @@ import static org.junit.Assert.assertNotNull;
 
 public class TestChangedFile extends TestSetUpGit {
 
-	private ChangedFileImpl changedFile;
+	private ChangedFile changedFile;
 	private Map<DiffEntry, EditList> diffsWithOneCommit;
 
 	public void setChangedFile() {
@@ -38,7 +40,7 @@ public class TestChangedFile extends TestSetUpGit {
 	}
 
 	@Test
-	public void testCreatChangedFile() {
+	public void testCreateChangedFile() {
 		setChangedFile();
 		assertNotNull(changedFile);
 	}
