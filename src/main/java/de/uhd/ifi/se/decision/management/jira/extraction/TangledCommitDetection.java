@@ -14,7 +14,12 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 public interface TangledCommitDetection {
 
 	/**
-	 * TODO Was macht diese Methode?
+	 *  This function is a summarized function, which could be easily updated later
+	 *  if we decided to use more than one metric for our prediction.
+	 *  The function calculatePredication call first {@calculatePackageDistances}.
+	 *  After the package distances are set, the ChangedFiles will be sort in order of package distance.
+	 *  At last the package distance will be normalized and represent as a probability of correctness.
+	 *
 	 * @param diff
 	 *            The {@link Diff} might be a single git commit, a whole feature branch
 	 *            (with many commits), or all commits belonging to a JIRA issue.
@@ -45,7 +50,7 @@ public interface TangledCommitDetection {
 	/**
 	 * TODO Passt 100%? 
 	 * Normalize the result of calculatePackageDistances, from floating-point number into
-	 * percentage. This function takes the biggest distance as 100%
+	 * percentage. This function takes the difference between largest and smallest package distance as 100%
 	 *
 	 * @param diff
 	 *            The diff might be a single git commit, a whole feature branch
@@ -74,7 +79,7 @@ public interface TangledCommitDetection {
 	}
 
 	/**
-	 * TODO Brauchen wir MethodVisitor Klasse noch? bitte andere Klasse löschen
+	 *
 	 * Helper class for getMethods, which use the visit() to get the method-name.
 	 * Visit() takes MethodDeclaration and an Object, which in this case is a
 	 * ChangedFile.
