@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.atlassian.event.api.EventListener;
 import com.atlassian.event.api.EventPublisher;
@@ -13,10 +14,16 @@ import com.atlassian.jira.event.issue.link.IssueLinkCreatedEvent;
 import com.atlassian.jira.event.issue.link.IssueLinkDeletedEvent;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
-import aQute.bnd.annotation.component.Component;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 
+/**
+ * This class is responsible for all the event listeners used in this plug-in.
+ * 
+ * @see JiraIssueTextExtractionEventListener
+ * @see SummarizationEventListener
+ * @see WebhookEventListener
+ */
 @Component
 public class ConDecEventListener implements InitializingBean, DisposableBean {
 
@@ -31,7 +38,7 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 	@Autowired
 	public ConDecEventListener(EventPublisher eventPublisher) {
 		this.eventPublisher = eventPublisher;
-		LOGGER.info("ConDec event listener was added to JIRA");
+		LOGGER.info("ConDec event listener object was created.");
 		webhookEventListener = new WebhookEventListener();
 		jiraIssueTextExtractionEventListener = new JiraIssueTextExtractionEventListener();
 		summarizationEventListener = new SummarizationEventListener();
@@ -45,7 +52,7 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		eventPublisher.register(this);
-		LOGGER.info("ConDec event listener was added to JIRA.");
+		LOGGER.info("ConDec event listener was registered in JIRA.");
 	}
 
 	/**
@@ -74,7 +81,7 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(
 				linkCreatedEvent.getIssueLink().getSourceObject());
 		webhookEventListener.onLinkEvent(element);
-		LOGGER.info("ConDec event listener on link create issue event triggered.");
+		LOGGER.info("ConDec event listener on link create issue event was triggered.");
 	}
 
 	@EventListener
@@ -82,6 +89,6 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(
 				linkDeletedEvent.getIssueLink().getSourceObject());
 		webhookEventListener.onLinkEvent(element);
-		LOGGER.info("ConDec event listener on link deleted issue event triggered.");
+		LOGGER.info("ConDec event listener on link deleted issue event was triggered.");
 	}
 }
