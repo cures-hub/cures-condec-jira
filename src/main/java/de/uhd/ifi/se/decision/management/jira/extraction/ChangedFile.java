@@ -48,7 +48,6 @@ public interface ChangedFile {
 	 *            file.
 	 * @see CompilationUnit
 	 * 
-	 *      TODO
 	 * @return CompilationUnit, Java compilation unit AST node type. This is the
 	 *         type of the root of an AST.
 	 */

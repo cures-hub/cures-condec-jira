@@ -16,7 +16,7 @@ public interface TangledCommitDetection {
 	/**
 	 * TODO Was macht diese Methode?
 	 * @param diff
-	 *            The diff might be a single git commit, a whole feature branch
+	 *            The {@link Diff} might be a single git commit, a whole feature branch
 	 *            (with many commits), or all commits belonging to a JIRA issue.
 	 */
 	void calculatePredication(Diff diff);
@@ -25,7 +25,7 @@ public interface TangledCommitDetection {
 	 * Split a package declaration into a list of Strings.
 	 *
 	 * @param packageDeclaration
-	 *            packageDeclaration. Its an optional attribute of CompilationUnit.
+	 *            packageDeclaration. It is an optional attribute of CompilationUnit.
 	 *
 	 * @return package declaration as a list of Strings.
 	 */
@@ -74,7 +74,7 @@ public interface TangledCommitDetection {
 	}
 
 	/**
-	 * TODO Brauchen wir MethodVisitor Klasse noch?
+	 * TODO Brauchen wir MethodVisitor Klasse noch? bitte andere Klasse löschen
 	 * Helper class for getMethods, which use the visit() to get the method-name.
 	 * Visit() takes MethodDeclaration and an Object, which in this case is a
 	 * ChangedFile.

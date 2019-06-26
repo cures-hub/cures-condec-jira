@@ -18,7 +18,7 @@ public class ChangedFileImpl implements ChangedFile {
 	private List<String> methodDeclarations;
 	private float probabilityOfCorrectness;
 	// TODO warum public? wofuer ist das?
-	public boolean isCorrect;
+	private boolean isCorrect;
 	@JsonIgnore
 	private File file;
 	@JsonIgnore
