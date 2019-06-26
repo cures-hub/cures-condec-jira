@@ -121,7 +121,7 @@ public class WebhookConnector {
 				return true;
 			}
 			LOGGER.error("Could not send webhook data. The HTTP response code is: " + httpResponse);
-		} catch (IOException e) {
+		} catch (IOException | IllegalArgumentException e) {
 			LOGGER.error("Could not send webhook data because of " + e.getMessage());
 		}
 		return false;

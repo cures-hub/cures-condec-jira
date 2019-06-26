@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.eventlistener.decxtracteventlistener;
+package de.uhd.ifi.se.decision.management.jira.eventlistener.jiraissuetextextractioneventlistener;
 
 import java.util.HashMap;
 import java.util.List;
