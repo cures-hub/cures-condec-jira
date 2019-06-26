@@ -17,7 +17,7 @@ public class ChangedFileImpl implements ChangedFile {
 
 	private List<String> methodDeclarations;
 	private float probabilityOfCorrectness;
-	// TODO warum public?
+	// TODO warum public? wofuer ist das?
 	public boolean isCorrect;
 	@JsonIgnore
 	private File file;
@@ -35,35 +35,43 @@ public class ChangedFileImpl implements ChangedFile {
 	}
 	
 	// TODO derived method
+	@Override
 	@JsonProperty("className")
 	public String getName() {
 		return this.file.getName();
 	}
 
+	@Override
 	public float getProbabilityOfCorrectness() {
 		return probabilityOfCorrectness;
 	}
 
+	@Override
 	public void setProbabilityOfCorrectness(float probabilityOfCorrectness) {
 		this.probabilityOfCorrectness = probabilityOfCorrectness;
 	}
 
+	@Override
 	public int getPackageDistance() {
 		return packageDistance;
 	}
 
+	@Override
 	public void setPackageDistance(int packageDistance) {
 		this.packageDistance = packageDistance;
 	}
 
+	@Override
 	public List<String> getMethodDeclarations() {
 		return methodDeclarations;
 	}
 
+	@Override
 	public CompilationUnit getCompilationUnit() {
 		return compilationUnit;
 	}
 
+	@Override
 	public CompilationUnit parseCompilationUnit(File file) {
 		try {
 			return JavaParser.parse(file);
@@ -73,10 +81,12 @@ public class ChangedFileImpl implements ChangedFile {
 		}
 	}
 
+	@Override
 	public File getFile() {
 		return file;
 	}
 
+	@Override
 	public void addMethodDeclaration(String methodDeclaration) {
 		this.methodDeclarations.add(methodDeclaration);
 	}

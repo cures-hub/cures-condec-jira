@@ -14,7 +14,7 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 public interface TangledCommitDetection {
 
 	/**
-	 *
+	 * TODO Was macht diese Methode?
 	 * @param diff
 	 *            The diff might be a single git commit, a whole feature branch
 	 *            (with many commits), or all commits belonging to a JIRA issue.
@@ -43,7 +43,8 @@ public interface TangledCommitDetection {
 	void calculatePackageDistances(Diff diff);
 
 	/**
-	 * Normalize the result of calculatePackageDistances, from Float number into
+	 * TODO Passt 100%? 
+	 * Normalize the result of calculatePackageDistances, from floating-point number into
 	 * percentage. This function takes the biggest distance as 100%
 	 *
 	 * @param diff
@@ -73,7 +74,7 @@ public interface TangledCommitDetection {
 	}
 
 	/**
-	 *
+	 * TODO Brauchen wir MethodVisitor Klasse noch?
 	 * Helper class for getMethods, which use the visit() to get the method-name.
 	 * Visit() takes MethodDeclaration and an Object, which in this case is a
 	 * ChangedFile.

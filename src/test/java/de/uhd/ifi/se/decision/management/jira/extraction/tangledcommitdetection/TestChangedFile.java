@@ -35,7 +35,6 @@ public class TestChangedFile extends TestSetUpGit {
 	public void setUp() {
 		super.setUp();
 		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTestsTangled);
-		System.out.println(commits.size());
 		diffsWithOneCommit = gitClient.getDiff(commits.get(0));
 	}
 
@@ -49,6 +48,7 @@ public class TestChangedFile extends TestSetUpGit {
 	public void testGetFile() {
 		setChangedFile();
 		assertNotNull(changedFile.getFile());
+		assertEquals("Tangled1.java", changedFile.getName());
 	}
 
 	@Test

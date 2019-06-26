@@ -44,24 +44,27 @@ public interface ChangedFile {
 	 * by zero or more type declarations.
 	 * 
 	 * @param file
-	 *            to be parsed to an abstract syntax tree (AST). Needs to be a Java file.
+	 *            to be parsed to an abstract syntax tree (AST). Needs to be a Java
+	 *            file.
 	 * @see CompilationUnit
 	 * 
-	 * TODO
+	 *      TODO
 	 * @return CompilationUnit, Java compilation unit AST node type. This is the
 	 *         type of the root of an AST.
 	 */
 	CompilationUnit parseCompilationUnit(File file);
 
 	/**
-	 * Returns the compilation unit if the changed file is a Java class. 
+	 * Returns the compilation unit if the changed file is a Java class.
+	 * 
 	 * @return CompilationUnit, Java compilation unit AST node type. This is the
 	 *         type of the root of an AST.
 	 */
 	CompilationUnit getCompilationUnit();
 
 	/**
-	 * Returns the file that is 
+	 * Returns the file that is
+	 * 
 	 * @see File
 	 * @return File, an abstract representation of a file and is also a directory
 	 *         path-name.
@@ -70,8 +73,7 @@ public interface ChangedFile {
 
 	/**
 	 *
-	 * @return a  which describes the total packageDistance to other
-	 *         ChangedFiles.
+	 * @return a which describes the total packageDistance to other ChangedFiles.
 	 *
 	 */
 	int getPackageDistance();
@@ -92,4 +94,11 @@ public interface ChangedFile {
 	 *
 	 */
 	void addMethodDeclaration(String methodDeclaration);
+
+	/**
+	 * Returns the name of the file as a String.
+	 * 
+	 * @return name of the file as a String.
+	 */
+	String getName();
 }
