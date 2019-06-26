@@ -346,7 +346,7 @@
 	}
 
 	/*
-	 * external references: condec.vis
+	 * external references: condec.jira.issue.module
 	 */
 	ConDecVis.prototype.buildVisFiltered = function buildVisFiltered(issueKey, search, nodeDistance, issueTypes,
 			createdAfter, createdBefore, documentationLocation) {
@@ -356,9 +356,9 @@
 					build(visData.nodes, visData.edges, visData.rootElementKey, nodeDistance);
 				});
 	};
-	
+
 	/*
-	 * external references: condec.vis
+	 * external references: condec.jira.issue.module
 	 */
 	ConDecVis.prototype.buildVis = function buildVis(elementKey, searchTerm) {
 		console.log("conDecVis buildVis");

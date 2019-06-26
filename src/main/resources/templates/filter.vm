@@ -11,6 +11,7 @@
 	aria-haspopup="true">Documentation Location</button>
 
 <aui-dropdown-menu id="documentation-dropdown"></aui-dropdown-menu>
+
 <input type="number" id="node-distance-picker" value="4" min="1"
 	class="text short-field" placeholder="Enter maximum distance of nodes...">
 
