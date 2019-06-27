@@ -571,6 +571,37 @@
 		showFlag("error", "The classification process failed.");
 		return 0.0;
 	};
+	
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.trainClassifier = function trainClassifier(projectKey, arffFileName) {
+		var response = postWithResponseAsReturnValue(AJS.contextPath()
+				+ "/rest/decisions/latest/config/trainClassifier.json?projectKey=" + projectKey + "&arffFileName="
+				+ arffFileName);
+		console.log(response);
+		if (response["isSucceeded"]) {
+			showFlag("success", "The classifier was successfully retrained.");
+			return 1.0;
+		}
+		showFlag("error", "Training of the classifier failed.");
+		return 0.0;
+	};
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.saveArffFile = function saveArffFile(projectKey, callback) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/saveArffFile.json?projectKey=" + projectKey, null,
+				function(error, response) {
+					if (error === null) {
+						showFlag("success", "The ARFF file was successfully created and saved in "
+								+ response["arffFile"] + ".");
+						console.log(response["content"]);
+						callback(response["content"]);
+					}
+				});
+	};
 
 	/*
 	 * external references: settingsForSingleProject.vm
