@@ -3,7 +3,11 @@ package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -14,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
@@ -149,5 +154,12 @@ public class ChangedFileImpl implements ChangedFile {
 	@Override
 	public CompilationUnit getCompilationUnit() {
 		return this.compilationUnit;
+	}
+
+	@Override
+	public List<String> getPackageName() {
+		Optional<PackageDeclaration> optional = getCompilationUnit().getPackageDeclaration();
+		return new LinkedList<String>(
+				Arrays.asList(optional.get().toString().replaceAll("\n", "").replaceAll(";", "").split("\\.")));
 	}
 }

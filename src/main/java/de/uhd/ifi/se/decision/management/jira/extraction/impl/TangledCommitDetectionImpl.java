@@ -1,30 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-
-import com.github.javaparser.ast.PackageDeclaration;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.extraction.Diff;
 import de.uhd.ifi.se.decision.management.jira.extraction.TangledCommitDetection;
 
 public class TangledCommitDetectionImpl implements TangledCommitDetection {
-
-	@Override
-	public void standardization(Diff diff) {
-		if (diff.getChangedFiles().size() > 1) {
-			float max = diff.getChangedFiles().get(diff.getChangedFiles().size() - 1).getPackageDistance();
-			float min = diff.getChangedFiles().get(0).getPackageDistance();
-			for (ChangedFile changedFile : diff.getChangedFiles()) {
-				changedFile.setProbabilityOfCorrectness(((max - changedFile.getPackageDistance()) / (max - min)) * 100);
-			}
-		} else {
-			diff.getChangedFiles().get(0).setProbabilityOfCorrectness(100);
-		}
-	}
 
 	@Override
 	public void calculatePredication(Diff diff) {
@@ -39,11 +21,9 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 		Integer[][] maxtrix = new Integer[diff.getChangedFiles().size()][diff.getChangedFiles().size()];
 		if (diff.getChangedFiles().size() > 1) {
 			for (int i = 0; i < diff.getChangedFiles().size(); i++) {
-				List<String> leftPackageDeclaration = this
-						.parsePackage(diff.getChangedFiles().get(i).getCompilationUnit().getPackageDeclaration());
+				List<String> leftPackageDeclaration = diff.getChangedFiles().get(i).getPackageName();
 				for (int j = 0; j < diff.getChangedFiles().size(); j++) {
-					List<String> rightPackageDeclaration = this
-							.parsePackage(diff.getChangedFiles().get(j).getCompilationUnit().getPackageDeclaration());
+					List<String> rightPackageDeclaration = diff.getChangedFiles().get(j).getPackageName();
 					if (i != j) {
 						if (leftPackageDeclaration.size() >= rightPackageDeclaration.size()) {
 							for (int k = 0; k < rightPackageDeclaration.size(); k++) {
@@ -90,9 +70,16 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 	}
 
 	@Override
-	public List<String> parsePackage(Optional<PackageDeclaration> op) {
-		return new ArrayList<>(
-				Arrays.asList(op.get().toString().replaceAll("\n", "").replaceAll(";", "").split("\\.")));
+	public void standardization(Diff diff) {
+		if (diff.getChangedFiles().size() > 1) {
+			float max = diff.getChangedFiles().get(diff.getChangedFiles().size() - 1).getPackageDistance();
+			float min = diff.getChangedFiles().get(0).getPackageDistance();
+			for (ChangedFile changedFile : diff.getChangedFiles()) {
+				changedFile.setProbabilityOfCorrectness(((max - changedFile.getPackageDistance()) / (max - min)) * 100);
+			}
+		} else {
+			diff.getChangedFiles().get(0).setProbabilityOfCorrectness(100);
+		}
 	}
 
 }

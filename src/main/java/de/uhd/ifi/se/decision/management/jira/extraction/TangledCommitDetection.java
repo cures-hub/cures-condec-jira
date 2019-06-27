@@ -1,10 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
-import java.util.List;
-import java.util.Optional;
-
-import com.github.javaparser.ast.PackageDeclaration;
-
 /**
  * Interface for a estimation whether a {@link Diff} of {@ChangedFile}s contains
  * wrong links, i.e., is tangled.
@@ -25,17 +20,6 @@ public interface TangledCommitDetection {
 	 *            issue.
 	 */
 	void calculatePredication(Diff diff);
-
-	/**
-	 * Split a package declaration into a list of Strings.
-	 *
-	 * @param packageDeclaration
-	 *            packageDeclaration. It is an optional attribute of
-	 *            CompilationUnit.
-	 *
-	 * @return package declaration as a list of Strings.
-	 */
-	List<String> parsePackage(Optional<PackageDeclaration> packageDeclaration);
 
 	/**
 	 * Calculate for each ChangedFile a distance, which is depends on the package

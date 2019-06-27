@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.tangledcommitdetection
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -12,48 +11,51 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.atlassian.jira.issue.Issue;
+
 import de.uhd.ifi.se.decision.management.jira.extraction.Diff;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.ChangedFileImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.DiffImpl;
 
 public class TestDiff extends TestSetUpGit {
 
-	private Diff diffsWithMoreThanOneCommits;
-	private Diff diffsWithOneCommit;
+	private Diff diffForCommit;
+	private Diff diffForJiraIssue;
 
 	@Before
 	public void setUp() {
 		super.setUp();
-		List<RevCommit> commit = gitClient.getCommits(mockJiraIssueForGitTestsTangledSingleCommit);
-		Map<DiffEntry, EditList> oneCommit = gitClient.getDiff(commit);
-		String baseDirectory = gitClient.getDirectory().toString().replace(".git", "");
-		diffsWithOneCommit = new DiffImpl(oneCommit, baseDirectory);
+		diffForCommit = createDiff(mockJiraIssueForGitTestsTangledSingleCommit);
+		diffForJiraIssue = createDiff(mockJiraIssueForGitTestsTangled);
+	}
 
-		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTestsTangled);
-		Map<DiffEntry, EditList> moreThanOneCommits = gitClient.getDiff(commits);
-		diffsWithMoreThanOneCommits = new DiffImpl(moreThanOneCommits, baseDirectory);
+	// TODO: Diff objects should be returned in the git client directly
+	public static Diff createDiff(Issue jiraIssue) {
+		List<RevCommit> commits = gitClient.getCommits(jiraIssue);
+		Map<DiffEntry, EditList> diff = gitClient.getDiff(commits);
+		String baseDirectory = gitClient.getDirectory().toString().replace(".git", "");
+		return new DiffImpl(diff, baseDirectory);
 	}
 
 	@Test
 	public void createDiff() {
-		DiffImpl diff = new DiffImpl();
+		Diff diff = new DiffImpl();
 		assertEquals(0, diff.getChangedFiles().size());
 	}
 
 	@Test
-	public void testGetChangedFileImplsWithMoreThanOneCommits() {
-		assertEquals(3, diffsWithMoreThanOneCommits.getChangedFiles().size());
+	public void testGetChangedFilesWithMoreThanOneCommit() {
+		assertEquals(3, diffForJiraIssue.getChangedFiles().size());
 	}
 
 	@Test
-	public void testGetChangedFileImplsWithOneCommit() {
-		assertEquals(1, diffsWithOneCommit.getChangedFiles().size());
+	public void testGetChangedFilesWithOneCommit() {
+		assertEquals(1, diffForCommit.getChangedFiles().size());
 	}
 
 	@Test
-	public void testAddChangedFileImpl() {
-		diffsWithOneCommit.addChangedFile(null);
-		assertEquals(2, diffsWithOneCommit.getChangedFiles().size());
+	public void testAddChangedFile() {
+		diffForCommit.addChangedFile(null);
+		assertEquals(2, diffForCommit.getChangedFiles().size());
 	}
 }

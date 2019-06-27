@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import java.io.File;
+import java.util.List;
 import java.util.Set;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -34,7 +35,7 @@ public interface ChangedFile {
 	 * @return a list of Strings, which contains methodDeclarations.
 	 */
 	Set<String> getMethodDeclarations();
-	
+
 	/**
 	 * Returns the compilation unit if the changed file is a Java class.
 	 * 
@@ -109,4 +110,11 @@ public interface ChangedFile {
 	 *         version of the git repository.
 	 */
 	boolean isExistingJavaClass();
+
+	/**
+	 * Returns a package declaration split into a list of Strings.
+	 *
+	 * @return package declaration as a list of Strings.
+	 */
+	List<String> getPackageName();
 }
