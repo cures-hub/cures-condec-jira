@@ -111,10 +111,11 @@ public class GitCommitMessageExtractor {
 	}
 
 	private String getRatTypeFromStartTag(String rationaleTypeStartTag) {
-		return rationaleTypeStartTag.substring(1, rationaleTypeStartTag.length() - 2);
+		return rationaleTypeStartTag.substring(1, rationaleTypeStartTag.length() - 1);
 	}
 
-	private DecisionKnowledgeElement createElement(int start, String rationaleType, String rationaleText, int end) {
+	private DecisionKnowledgeElement createElement(int start, String rationaleType
+			, String rationaleText, int end) {
 		return new DecisionKnowledgeElementImpl(0
 				, getSummary(rationaleText)
 				, getDescription(rationaleText)
@@ -129,7 +130,7 @@ public class GitCommitMessageExtractor {
 	}
 
 	private String getSummary(String rationaleText) {
-		return rationaleText.substring(0,getSummaryEndPosition(rationaleText));
+		return rationaleText.substring(0, getSummaryEndPosition(rationaleText));
 	}
 
 	// TODO: implement logic for split between summary and description

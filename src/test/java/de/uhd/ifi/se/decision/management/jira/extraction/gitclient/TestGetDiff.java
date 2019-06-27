@@ -37,7 +37,7 @@ public class TestGetDiff extends TestSetUpGit {
 			assertEquals(ChangeType.ADD, diffEntry.getChangeType());
 
 			EditList editList = entry.getValue();
-			assertEquals("EditList[INSERT(0-0,0-1)]", editList.toString());
+			assertEquals("EditList[INSERT(0-0,0-2)]", editList.toString());
 		}
 	}
 
@@ -63,7 +63,7 @@ public class TestGetDiff extends TestSetUpGit {
 		assertTrue(diffEntries.contains("MODIFY readMe.txt"));
 		
 		String editLists = diff.values().toString();
-		assertTrue(editLists.contains("INSERT(0-0,0-1)"));
+		assertTrue(editLists.contains("INSERT(0-0,0-2)"));
 		assertTrue(editLists.contains("REPLACE(0-1,0-1)"));
 	}
 
