@@ -42,4 +42,3 @@ public class TestTrainClassifier extends TestConfigSuper {
 				configRest.trainClassifier(request, "TEST", "fake.arff").getEntity());
 	}
 }
-

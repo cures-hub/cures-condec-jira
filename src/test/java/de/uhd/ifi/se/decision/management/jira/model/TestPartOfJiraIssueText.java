@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -247,7 +246,7 @@ public class TestPartOfJiraIssueText extends TestSetUpWithIssues {
 		assertNotNull(jiraIssue);
 		assertEquals(50, (long) jiraIssue.getId());
 	}
-	@Ignore
+	
 	@Test
 	@NonTransactional
 	public void testGetJiraIssueDescription() {

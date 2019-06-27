@@ -224,5 +224,4 @@ public interface DecisionKnowledgeProject {
 	 * @return true, if is classifier used for issue comments
 	 */
 	boolean isClassifierUsedForIssueComments();
-
 }

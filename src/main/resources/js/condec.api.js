@@ -562,9 +562,9 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.classifyWholeProject = function classifyWholeProject(projectKey) {
-		var isSucceeded = postWithResponseAsReturnValue(AJS.contextPath()
+		var response = postWithResponseAsReturnValue(AJS.contextPath()
 				+ "/rest/decisions/latest/config/classifyWholeProject.json?projectKey=" + projectKey);
-		if (isSucceeded) {
+		if (response["isSucceeded"]) {
 			showFlag("success", "The whole project has been classified.");
 			return 1.0;
 		}

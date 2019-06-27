@@ -183,14 +183,14 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 	/**
 	 * Works more efficient than "getElementsForIssue" for Sentence ID searching in
 	 * Macros
-	 *
+	 * 
 	 * @param jiraIssueId
 	 * @param projectKey
 	 * @param type
 	 * @return A list of all fitting Sentence objects
 	 */
 	public static List<DecisionKnowledgeElement> getElementsForJiraIssueWithType(long jiraIssueId, String projectKey,
-																				 String type) {
+			String type) {
 
 		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
 		if (jiraIssueId <= 0 || projectKey == null || type == null) {
@@ -245,7 +245,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 
 	@Override
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
-																   ApplicationUser user, DecisionKnowledgeElement parentElement) {
+			ApplicationUser user, DecisionKnowledgeElement parentElement) {
 		if (element == null || user == null || parentElement == null) {
 			return null;
 		}
@@ -382,7 +382,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 	}
 
 	public static void updateSentenceLengthForOtherSentencesInSameComment(PartOfJiraIssueText sentence,
-																		  int lengthDifference) {
+			int lengthDifference) {
 		for (PartOfJiraIssueTextInDatabase otherSentenceInComment : ACTIVE_OBJECTS.find(
 				PartOfJiraIssueTextInDatabase.class, "COMMENT_ID = ? AND JIRA_ISSUE_ID = ?", sentence.getCommentId(),
 				sentence.getJiraIssueId())) {
@@ -396,7 +396,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 	}
 
 	public static DecisionKnowledgeElement compareForLaterElement(DecisionKnowledgeElement first,
-																  DecisionKnowledgeElement second) {
+			DecisionKnowledgeElement second) {
 		if (first == null) {
 			return second;
 		} else if (second == null) {
@@ -409,7 +409,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 	}
 
 	public static boolean checkLastElementAndCreateLink(DecisionKnowledgeElement lastElement,
-														PartOfJiraIssueText sentence) {
+			PartOfJiraIssueText sentence) {
 		if (lastElement == null) {
 			return false;
 		}
@@ -507,7 +507,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 	/**
 	 * Migration function on button "Validate Sentence Database" Adds Link types to
 	 * "empty" links. Can be deleted in a future release
-	 *
+	 * 
 	 */
 	public static void migrateArgumentTypesInLinks(String projectKey) {
 		if (projectKey == null || projectKey.equals("")) {
@@ -555,9 +555,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 
 		// delete sentence in comment
 		int length = JiraIssueTextPersistenceManager.removeSentenceFromComment(element) * -1; // -1 because we
-		// decrease the
-		// total number of
-		// letters
+																								// decrease the
+																								// total number of
+																								// letters
 		updateSentenceLengthForOtherSentencesInSameComment(element, length);
 
 		// delete ao sentence entry
@@ -570,7 +570,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 
 	/**
 	 * Split a text into parts (substrings).
-	 *
+	 * 
 	 * @see PartOfText
 	 * @param comment
 	 *            JIRA issue comment.
