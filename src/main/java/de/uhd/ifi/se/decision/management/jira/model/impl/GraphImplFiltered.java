@@ -36,14 +36,14 @@ public class GraphImplFiltered extends GraphImpl {
 	public GraphImplFiltered(String projectKey, String rootElementKey, GraphFiltering filter) {
 		super(projectKey, rootElementKey);
 		this.filter = filter;
-		this.elementsVisitedTransitively = new ArrayList<>();
+		this.elementsVisitedTransitively = new ArrayList<DecisionKnowledgeElement>();
 		this.queryHandler = filter.getQueryHandler();
 	}
 
 	@Override
 	protected Map<DecisionKnowledgeElement, Link> getLinkedFirstClassElementsAndLinks(
 			DecisionKnowledgeElement element) {
-		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<>();
+		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
 		List<Link> links = this.project.getPersistenceStrategy().getLinks(element);
 		for (Link link : links) {
@@ -89,7 +89,7 @@ public class GraphImplFiltered extends GraphImpl {
 		if (elementsVisitedTransitively.contains(element) || element == null) {
 			return new ArrayList<>();
 		}
-		List<DecisionKnowledgeElement> transitivelyLinkedElements = new ArrayList<>();
+		List<DecisionKnowledgeElement> transitivelyLinkedElements = new ArrayList<DecisionKnowledgeElement>();
 		List<Link> links = this.project.getPersistenceStrategy().getLinks(element);
 		for (Link link : links) {
 			if (linkIds.contains(link.getId())) {

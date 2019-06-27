@@ -54,7 +54,7 @@ public class GraphFiltering {
 	}
 
 	public void produceResultsFromQuery() {
-		List<Issue> resultingIssues = new ArrayList<>();
+		List<Issue> resultingIssues = new ArrayList<Issue>();
 		final SearchService.ParseResult parseResult = queryHandler.processParsResult(query);
 		if (parseResult.isValid()) {
 			List<Clause> clauses = parseResult.getQuery().getWhereClause().getClauses();
@@ -119,22 +119,23 @@ public class GraphFiltering {
 
 	// New issue type filter function
 	private JqlClauseBuilder addIssueTypes(JqlClauseBuilder queryBuilder, String issueTypes) {
-		if (issueTypes != null) {
-			JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
-			newQueryBuilder.and();
-			String newIssueTypes = issueTypes.replaceAll("\"", "");
-			String[] typesSplit = newIssueTypes.split(",");
-			List<String> typesTemp = new ArrayList<>();
-			for (String current : typesSplit) {
-				String temp = current.trim();
-				typesTemp.add(temp);
-			}
-			String[] types = new String[typesTemp.size()];
-			types = typesTemp.toArray(types);
-			newQueryBuilder.issueType(types);
-			queryBuilder = newQueryBuilder;
+		if (issueTypes == null) {
+			return queryBuilder;
 		}
-		return queryBuilder;
+
+		JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
+		newQueryBuilder.and();
+		String newIssueTypes = issueTypes.replaceAll("\"", "");
+		String[] typesSplit = newIssueTypes.split(",");
+		List<String> typesTemp = new ArrayList<>();
+		for (String current : typesSplit) {
+			String temp = current.trim();
+			typesTemp.add(temp);
+		}
+		String[] types = new String[typesTemp.size()];
+		types = typesTemp.toArray(types);
+		newQueryBuilder.issueType(types);
+		return newQueryBuilder;
 	}
 
 	// New time filter function
@@ -143,13 +144,13 @@ public class GraphFiltering {
 			JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
 			newQueryBuilder.and();
 			newQueryBuilder.addDateCondition("created", Operator.GREATER_THAN_EQUALS, new Date(createdEarliest));
-			queryBuilder = newQueryBuilder;
+			return newQueryBuilder;
 		}
 		if (createdLatest >= 0) {
 			JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
 			newQueryBuilder.and();
 			newQueryBuilder.addDateCondition("created", Operator.LESS_THAN_EQUALS, new Date(createdLatest));
-			queryBuilder = newQueryBuilder;
+			return newQueryBuilder;
 		}
 		return queryBuilder;
 	}

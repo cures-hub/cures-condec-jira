@@ -333,7 +333,7 @@ public class QueryHandler {
 	}
 
 	public String getFinalQuery() {
-		if (finalQuery.equals("") || finalQuery == null) {
+		if (finalQuery == null) {
 			LOGGER.error("Filter query is null or empty");
 			return "";
 		}
