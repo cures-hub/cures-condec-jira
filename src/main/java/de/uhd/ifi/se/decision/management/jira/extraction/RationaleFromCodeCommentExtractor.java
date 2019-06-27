@@ -109,7 +109,7 @@ public class RationaleFromCodeCommentExtractor {
 	private String calculateAndCodeRationalePositionInSourceFile(int start
 			, String rationaleText) {
 		/**
-		 * @issue: what information the dec. know. key encapsulate
+		 * @issue what information the dec. know. key encapsulate
 		 * regarding its position in a source code file and the rationale
 		 * itself?
 		 *
@@ -118,17 +118,17 @@ public class RationaleFromCodeCommentExtractor {
 		 *
 		 * 		POSITION :=
 		 * 		 lineBegin,columnBegin:lineEnd,columnEnd
-		 * @alternative: the key must include the start POINT and end POINT in source
+		 * @alternative the key must include the start POINT and end POINT in source
 		 * code andthe hash of the rationale text!
-		 * @pro: with start point(line,column) and end point the order of rationale
+		 * @pro with start point(line,column) and end point the order of rationale
 		 * within source file can be easily read.
-		 * @pro: with start point(line,column) and end point intersections with diff
+		 * @pro with start point(line,column) and end point intersections with diff
 		 * entries can be calculated
-		 * @con: calculating start and end column is complicated
-		 * @con: end column information is not useful for diff intersections nor
+		 * @con calculating start and end column is complicated
+		 * @con end column information is not useful for diff intersections nor
 		 * rationale order calculation.
 		 *
-		 * @decision: the key must include the start LINE, end LINE in source
+		 * @decision the key must include the start LINE, end LINE in source
 		 * code, tje cursor position within comment and the hash of the rationale text!
 		 *
 		 * KEY :=
@@ -137,9 +137,9 @@ public class RationaleFromCodeCommentExtractor {
 		 * 		POSITION :=
 		 * 		 lineBegin:lineEnd:cursorInComment
 		 *
-		 * @pro: start line, end line in source code and the cursor position within
+		 * @pro start line, end line in source code and the cursor position within
 		 * comment is sufficient to get the order of rationale within the source code
-		 * @pro: with start line, end line and cursor position intersections
+		 * @pro with start line, end line and cursor position intersections
 		 * with diff entries can be calculated
 		 */
 
