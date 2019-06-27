@@ -22,25 +22,17 @@ public class TestDiff extends TestSetUpGit {
 	private Diff diffsWithMoreThanOneCommits;
 	private Diff diffsWithOneCommit;
 
-	public Diff mapToDiff(Map<DiffEntry, EditList> diff) {
-		Diff mappedDiff = new DiffImpl();
-		for (Map.Entry<DiffEntry, EditList> entry : diff.entrySet()) {
-			File file = new File(gitClient.getDirectory().toString().replace(".git", "") + entry.getKey().getNewPath());
-			mappedDiff.addChangedFile(new ChangedFileImpl(file));
-		}
-		return mappedDiff;
-	}
-
 	@Before
 	public void setUp() {
 		super.setUp();
 		List<RevCommit> commit = gitClient.getCommits(mockJiraIssueForGitTestsTangledSingleCommit);
 		Map<DiffEntry, EditList> oneCommit = gitClient.getDiff(commit);
-		diffsWithOneCommit = mapToDiff(oneCommit);
+		String baseDirectory = gitClient.getDirectory().toString().replace(".git", "");
+		diffsWithOneCommit = new DiffImpl(oneCommit, baseDirectory);
 
 		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTestsTangled);
 		Map<DiffEntry, EditList> moreThanOneCommits = gitClient.getDiff(commits);
-		diffsWithMoreThanOneCommits = mapToDiff(moreThanOneCommits);
+		diffsWithMoreThanOneCommits = new DiffImpl(moreThanOneCommits, baseDirectory);
 	}
 
 	@Test
