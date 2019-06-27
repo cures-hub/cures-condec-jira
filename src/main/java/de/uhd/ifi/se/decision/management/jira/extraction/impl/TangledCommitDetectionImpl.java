@@ -19,9 +19,9 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 		int numberOfFiles = diff.getChangedFiles().size();
 		int[][] matrix = new int[numberOfFiles][numberOfFiles];
 		if (diff.getChangedFiles().size() > 1) {
-			for (int i = 0; i < diff.getChangedFiles().size(); i++) {
+			for (int i = 0; i < numberOfFiles; i++) {
 				List<String> leftPackageDeclaration = diff.getChangedFiles().get(i).getPackageName();
-				for (int j = 0; j < diff.getChangedFiles().size(); j++) {
+				for (int j = 0; j < numberOfFiles; j++) {
 					List<String> rightPackageDeclaration = diff.getChangedFiles().get(j).getPackageName();
 					if (i != j) {
 						if (leftPackageDeclaration.size() >= rightPackageDeclaration.size()) {

@@ -3,9 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -159,7 +159,7 @@ public class ChangedFileImpl implements ChangedFile {
 	@Override
 	public List<String> getPackageName() {
 		Optional<PackageDeclaration> optional = getCompilationUnit().getPackageDeclaration();
-		return new LinkedList<String>(
+		return new ArrayList<String>(
 				Arrays.asList(optional.get().toString().replaceAll("\n", "").replaceAll(";", "").split("\\.")));
 	}
 }
