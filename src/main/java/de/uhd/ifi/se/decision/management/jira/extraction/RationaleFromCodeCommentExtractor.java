@@ -18,13 +18,13 @@ import java.util.stream.Collectors;
 public class RationaleFromCodeCommentExtractor {
 	private ArrayList<DecisionKnowledgeElement> elements;
 	private final static List<String> decKnowTags = KnowledgeType.toList();
-	private CodeCommentWithRange comment;
+	private CodeComment comment;
 	private final Pattern TAGS_SEARCH_PATTERN;
 	private final Pattern TWO_EMPTY_LINES_PATTERN;
 	private final Pattern SPACE_ATCHAR_LETTER_PATTERN;
 	private final Pattern NEWLINE_CHAR_PATTERN;
 
-	public RationaleFromCodeCommentExtractor(CodeCommentWithRange comment) {
+	public RationaleFromCodeCommentExtractor(CodeComment comment) {
 		String tagSearch = String.join("|", decKnowTags.stream()
 				.map(tag -> "@" + tag + "\\:?") //at-char + ratType + colon
 				.collect(Collectors.toList()));

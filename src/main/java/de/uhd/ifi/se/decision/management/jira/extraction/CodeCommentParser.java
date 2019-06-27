@@ -10,5 +10,5 @@ public interface CodeCommentParser {
 	 *
 	 * @return : comments with their positions in the source file.
 	 */
-	List<CodeCommentWithRange> getComments(File inspectedFile);
+	List<CodeComment> getComments(File inspectedFile);
 }

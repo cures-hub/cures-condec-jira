@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.CodeCommentWithRange;
+import de.uhd.ifi.se.decision.management.jira.extraction.CodeComment;
 import de.uhd.ifi.se.decision.management.jira.extraction.RationaleFromCodeCommentExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import org.eclipse.jgit.diff.Edit;
@@ -22,13 +22,13 @@ import java.util.stream.Collectors;
 public class RationaleFromDiffCodeCommentExtractor {
 
 	private EditList editList;
-	private List<CodeCommentWithRange> commentsInNewerFile;
-	private List<CodeCommentWithRange> commentsInOlderFile;
+	private List<CodeComment> commentsInNewerFile;
+	private List<CodeComment> commentsInOlderFile;
 	private int cursorNewerFile = -1;
 	private int cursorOlderFile = -1;
 
-	public RationaleFromDiffCodeCommentExtractor(List<CodeCommentWithRange> commentsInOlderFile
-			, List<CodeCommentWithRange> commentsInNewerFile
+	public RationaleFromDiffCodeCommentExtractor(List<CodeComment> commentsInOlderFile
+			, List<CodeComment> commentsInNewerFile
 			, EditList editList) {
 		this.commentsInNewerFile = commentsInNewerFile;
 		this.commentsInOlderFile = commentsInOlderFile;
@@ -63,13 +63,13 @@ public class RationaleFromDiffCodeCommentExtractor {
 			, Map<Edit, List<DecisionKnowledgeElement>> elementsInSingleComment) {
 
 		int cursor = cursorOlderFile;
-		List<CodeCommentWithRange> comments = commentsInOlderFile;
+		List<CodeComment> comments = commentsInOlderFile;
 		if (newerFile) {
 			cursor = cursorNewerFile;
 			comments = commentsInNewerFile;
 		}
 		if ((cursor + 1) <= comments.size()) {
-			CodeCommentWithRange currentComment = comments.get(cursor);
+			CodeComment currentComment = comments.get(cursor);
 
 			// inspect comment only if it was within diff range
 			List<Edit> commentEdits = getEditsOnComment(currentComment, newerFile);
@@ -130,7 +130,7 @@ public class RationaleFromDiffCodeCommentExtractor {
 	}
 
 	/* fetches list of edits which affected the comment */
-	private List<Edit> getEditsOnComment(CodeCommentWithRange comment, boolean newerFile) {
+	private List<Edit> getEditsOnComment(CodeComment comment, boolean newerFile) {
 		return editList.stream().filter(edit -> {
 					int begin = edit.getBeginA();
 					int end = edit.getEndA();
@@ -161,7 +161,7 @@ public class RationaleFromDiffCodeCommentExtractor {
 	 *  could be removed from that list to improve algorithm runtime for files with
 	 *  many small changes.
 	 */
-	/*private void removeNotNeededEdits(CodeCommentWithRange currentComment) {
+	/*private void removeNotNeededEdits(CodeComment currentComment) {
 
 		editList.removeIf(edit ->
 				edit.getEndB() < currentComment.beginLine);

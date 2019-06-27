@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.CodeComment;
 import de.uhd.ifi.se.decision.management.jira.extraction.CodeCommentParser;
-import de.uhd.ifi.se.decision.management.jira.extraction.CodeCommentWithRange;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.JavaCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -179,7 +179,7 @@ public class GitDiffedCodeExtractionManager {
 		boolean fromNewerFile = true;
 
 		String fileBRelativePath = adjustOSsPathSeparator(diffEntry.getKey().getNewPath());
-		List<CodeCommentWithRange> commentsInFile = getCommentsFromFile(fileBRelativePath, fromNewerFile);
+		List<CodeComment> commentsInFile = getCommentsFromFile(fileBRelativePath, fromNewerFile);
 
 		Map<Edit, List<DecisionKnowledgeElement>> elementsByEdit =
 				getRationaleFromComments(fromNewerFile, commentsInFile, diffEntry);
@@ -195,7 +195,7 @@ public class GitDiffedCodeExtractionManager {
 		boolean fromNewerFile = false;
 
 		String fileARelativePath = adjustOSsPathSeparator(diffEntry.getKey().getNewPath());
-		List<CodeCommentWithRange> commentsInFile = getCommentsFromFile(fileARelativePath, fromNewerFile);
+		List<CodeComment> commentsInFile = getCommentsFromFile(fileARelativePath, fromNewerFile);
 
 		Map<Edit, List<DecisionKnowledgeElement>> elementsByEdit =
 				getRationaleFromComments(fromNewerFile, commentsInFile, diffEntry);
@@ -209,11 +209,11 @@ public class GitDiffedCodeExtractionManager {
 		CodeExtractionResult returnCodeExtractionResult = new CodeExtractionResult();
 
 		String fileARelativePath = adjustOSsPathSeparator(diffEntry.getKey().getOldPath());
-		List<CodeCommentWithRange> commentsInFileA
+		List<CodeComment> commentsInFileA
 				= getCommentsFromFile(fileARelativePath, false);
 
 		String fileBRelativePath = adjustOSsPathSeparator(diffEntry.getKey().getNewPath());
-		List<CodeCommentWithRange> commentsInFileB
+		List<CodeComment> commentsInFileB
 				= getCommentsFromFile(fileBRelativePath, true);
 
 
@@ -231,13 +231,13 @@ public class GitDiffedCodeExtractionManager {
 
 	private Map<Edit, List<DecisionKnowledgeElement>> getRationaleFromComments(
 			boolean newerFile
-			, List<CodeCommentWithRange> commentsInFile
+			, List<CodeComment> commentsInFile
 			, Map.Entry<DiffEntry, EditList> diffEntry) {
 
 		Map<Edit, List<DecisionKnowledgeElement>> returnMap = new HashMap<>();
 
-		List<CodeCommentWithRange> commentsInNewerFile = new ArrayList<>();
-		List<CodeCommentWithRange> commentsInOlderFile = new ArrayList<>();
+		List<CodeComment> commentsInNewerFile = new ArrayList<>();
+		List<CodeComment> commentsInOlderFile = new ArrayList<>();
 		if (newerFile) {
 			commentsInNewerFile = commentsInFile;
 		} else {
@@ -256,7 +256,7 @@ public class GitDiffedCodeExtractionManager {
 		return returnMap;
 	}
 
-	private List<CodeCommentWithRange> getCommentsFromFile(String inspectedFileRelativePath
+	private List<CodeComment> getCommentsFromFile(String inspectedFileRelativePath
 			, boolean fromNewerFile) {
 		File resultingFile = getInspectedFileAbsolutePath(inspectedFileRelativePath
 				, fromNewerFile);

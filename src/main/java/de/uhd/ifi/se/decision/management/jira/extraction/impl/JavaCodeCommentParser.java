@@ -5,8 +5,8 @@ import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.Position;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.comments.Comment;
+import de.uhd.ifi.se.decision.management.jira.extraction.CodeComment;
 import de.uhd.ifi.se.decision.management.jira.extraction.CodeCommentParser;
-import de.uhd.ifi.se.decision.management.jira.extraction.CodeCommentWithRange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class JavaCodeCommentParser  implements CodeCommentParser {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CodeCommentParser.class);
 	@Override
-	public List<CodeCommentWithRange> getComments(File inspectedFile) {
+	public List<CodeComment> getComments(File inspectedFile) {
 
 		CompilationUnit compilationUnit = parseJavaFile(inspectedFile);
 		if (compilationUnit == null) {
@@ -41,16 +41,16 @@ public class JavaCodeCommentParser  implements CodeCommentParser {
 		return compilationUnit;
 	}
 
-	private List<CodeCommentWithRange> getComments(CompilationUnit compilationUnit) {
+	private List<CodeComment> getComments(CompilationUnit compilationUnit) {
 		List<Comment> comments = compilationUnit.getComments();
-		List<CodeCommentWithRange> positionedComments =
+		List<CodeComment> positionedComments =
 			comments.stream()
 				.filter(comment -> (comment.getBegin().isPresent()
 						&& comment.getEnd().isPresent()))
 				.map( comment -> {
 					Position begin = comment.getBegin().get();
 					Position end = comment.getEnd().get();
-					return new CodeCommentWithRange(comment.getContent()
+					return new CodeComment(comment.getContent()
 							,begin.column, begin.line
 							,end.column, end.line);
 				})
