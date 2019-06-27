@@ -58,6 +58,19 @@ public class TestChangedFile extends TestSetUpGit {
 	}
 
 	@Test
+	public void testParseCompilationUnitWithNull() {
+		setChangedFile();
+		File file = new File("noFile");
+		assertEquals(null, changedFile.parseCompilationUnit(file));
+	}
+
+	@Test
+	public void testParseCompilationUnit() {
+		setChangedFile();
+		assertNotNull(changedFile.parseCompilationUnit(changedFile.getFile()));
+	}
+
+	@Test
 	public void testGetSetPackageDistance() {
 		setChangedFile();
 		changedFile.setPackageDistance(10);

@@ -70,14 +70,10 @@ public class TestTangledCommitDetection extends TestSetUpGit {
 	public void testStandardizationWithMoreThanOneCommits() {
 		tangledCommitDetection.calculatePackageDistances(diffsWithMoreThanOneCommits);
 		diffsWithMoreThanOneCommits.getChangedFiles()
-				.sort((ChangedFile c1, ChangedFile c2) -> c2.getPackageDistance() - c1.getPackageDistance());
-		// sort after standardization
+				.sort((ChangedFile c1, ChangedFile c2) -> c1.getPackageDistance() - c2.getPackageDistance());
 		tangledCommitDetection.standardization(diffsWithMoreThanOneCommits);
-		System.out.println(diffsWithMoreThanOneCommits.getChangedFiles().get(0).getProbabilityOfCorrectness());
-		System.out.println(diffsWithMoreThanOneCommits.getChangedFiles().get(1).getProbabilityOfCorrectness());
-		System.out.println(diffsWithMoreThanOneCommits.getChangedFiles().get(2).getProbabilityOfCorrectness());
 		assertEquals(100.0, diffsWithMoreThanOneCommits.getChangedFiles().get(0).getProbabilityOfCorrectness(), 0.0000);
-		assertEquals(0.0, diffsWithMoreThanOneCommits.getChangedFiles().get(1).getProbabilityOfCorrectness(), 0.0000);
+		assertEquals(100.0, diffsWithMoreThanOneCommits.getChangedFiles().get(1).getProbabilityOfCorrectness(), 0.0000);
 		assertEquals(0.0, diffsWithMoreThanOneCommits.getChangedFiles().get(2).getProbabilityOfCorrectness(), 0.0000);
 
 	}
@@ -97,5 +93,34 @@ public class TestTangledCommitDetection extends TestSetUpGit {
 						diffsWithOneCommit.getChangedFiles().get(0).getCompilationUnit().getPackageDeclaration())
 						.size());
 	}
+
+	@Test
+	public void testCalculatePackageDistanceRightBiggerLeft(){
+		Diff diff = new DiffImpl();
+		//System.out.println(diffsWithMoreThanOneCommits.getChangedFiles().get(2).getCompilationUnit().getPackageDeclaration().toString());
+		//System.out.println(diffsWithMoreThanOneCommits.getChangedFiles().get(1).getCompilationUnit().getPackageDeclaration().toString());
+		//System.out.println(diffsWithMoreThanOneCommits.getChangedFiles().get(0).getCompilationUnit().getPackageDeclaration().toString());
+		diff.addChangedFile(diffsWithMoreThanOneCommits.getChangedFiles().get(2));
+		diff.addChangedFile(diffsWithMoreThanOneCommits.getChangedFiles().get(1));
+		diff.addChangedFile(diffsWithMoreThanOneCommits.getChangedFiles().get(0));
+		diff.getChangedFiles().sort((ChangedFile c1, ChangedFile c2)
+				-> c1.getCompilationUnit().getPackageDeclaration().toString().length()
+				- c2.getCompilationUnit().getPackageDeclaration().toString().length());
+		//System.out.println(diff.getChangedFiles().get(0).getCompilationUnit().getPackageDeclaration().toString());
+		//System.out.println(diff.getChangedFiles().get(1).getCompilationUnit().getPackageDeclaration().toString());
+		//System.out.println(diff.getChangedFiles().get(2).getCompilationUnit().getPackageDeclaration().toString());
+		tangledCommitDetection.calculatePackageDistances(diff);
+		assertEquals(4, diff.getChangedFiles().get(0).getPackageDistance());
+		assertEquals(2, diff.getChangedFiles().get(1).getPackageDistance());
+		assertEquals(2, diff.getChangedFiles().get(2).getPackageDistance());
+		}
+
+	@Test
+	public void TestcalculatePredication(){
+		tangledCommitDetection.calculatePredication(diffsWithMoreThanOneCommits);
+		assertEquals(100.0, diffsWithMoreThanOneCommits.getChangedFiles().get(0).getProbabilityOfCorrectness(), 0.0000);
+		assertEquals(100.0, diffsWithMoreThanOneCommits.getChangedFiles().get(1).getProbabilityOfCorrectness(), 0.0000);
+		assertEquals(0.0, diffsWithMoreThanOneCommits.getChangedFiles().get(2).getProbabilityOfCorrectness(), 0.0000);
+		}
 
 }

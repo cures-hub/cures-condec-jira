@@ -75,7 +75,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 				"\n" +
 				"}\n", "TEST-26 add class d");
 
-		makeExampleCommit("Tangled1.java", "package de.uhd.ifi.se.decision.management.jira.view.treeviewer;\n" +
+		makeExampleCommit("Tangled1.java", "package de.uhd.ifi.se.decision.management.jira;\n" +
 						"public class E {\n" +
 						"\n" +
 						"    public int a;\n" +
