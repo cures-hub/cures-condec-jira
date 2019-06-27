@@ -8,6 +8,9 @@
 	var ConDecTreant = function ConDecTreant() {
 	};
 
+	/*
+	 * external references: condec.jira.issue.module.js, condec.knowledge.page.js
+	 */
 	ConDecTreant.prototype.buildTreant = function buildTreant(elementKey, isInteractive, searchTerm) {
 		console.log("conDecTreant buildTreant");
 		var depthOfTree = getDepthOfTree();

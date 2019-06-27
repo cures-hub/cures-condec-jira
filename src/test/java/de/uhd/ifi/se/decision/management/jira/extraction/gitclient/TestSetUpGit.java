@@ -43,94 +43,46 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
 		makeExampleCommit("readMe.txt", "Self-explanatory, ReadMe not necessary.",
 				"TEST-12: Explain how the great software works");
-		makeExampleCommit("GodClass.java", "public class GodClass {}", "TEST-12: Develop great software");
-		makeExampleCommit("Untangled.java", "package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" +
-				"\n" +
-				"public class Main {\n" +
-				"    public static void  main(String[] args) {\n" +
-				"        System.out.println(\"Hello World!\");\n" +
-				"    }\n" +
-				"}\n", "TEST-26 add main");
-		makeExampleCommit("Untangled2.java", "package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" +
-				"\n" +
-				"public class D {\n" +
-				"\n" +
-				"    public int a;\n" +
-				"    public int b ;\n" +
-				"    public String c;\n" +
-				"\n" +
-				"    public d(){\n" +
-				"        this.a = 18;\n" +
-				"        this.b = 64;\n" +
-				"        this.c = \"world\";\n" +
-				"    };\n" +
-				"    public void printSomeThing(){\n" +
-				"        for(int i =0; i < b; i ++){\n" +
-				"            for(int j =0; j < a; j++){\n" +
-				"                System.out.println(c);\n" +
-				"            }\n" +
-				"        }\n" +
-				"    };\n" +
-				"\n" +
-				"\n" +
-				"}\n", "TEST-26 add class d");
+		makeExampleCommit("GodClass.java",
+				"public class GodClass {" + "//@issue:Small code issue in GodClass, it does nothing." + "\r\n}",
+				"TEST-12: Develop great software");
+		makeExampleCommit("Untangled.java",
+				"package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" + "\n" + "public class Main {\n"
+						+ "    public static void  main(String[] args) {\n"
+						+ "        System.out.println(\"Hello World!\");\n" + "    }\n" + "}\n",
+				"TEST-26 add main");
+		makeExampleCommit("Untangled2.java",
+				"package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" + "\n" + "public class D {\n" + "\n"
+						+ "    public int a;\n" + "    public int b ;\n" + "    public String c;\n" + "\n"
+						+ "    public d(){\n" + "        this.a = 18;\n" + "        this.b = 64;\n"
+						+ "        this.c = \"world\";\n" + "    };\n" + "    public void printSomeThing(){\n"
+						+ "        for(int i =0; i < b; i ++){\n" + "            for(int j =0; j < a; j++){\n"
+						+ "                System.out.println(c);\n" + "            }\n" + "        }\n" + "    };\n"
+						+ "\n" + "\n" + "}\n",
+				"TEST-26 add class d");
 
-		makeExampleCommit("Tangled1.java", "package de.uhd.ifi.se.decision.management.jira;\n" +
-						"public class E {\n" +
-						"\n" +
-						"    public int a;\n" +
-						"    public int b ;\n" +
-						"    public String c;\n" +
-						"\n" +
-						"    public c(){\n" +
-						"        this.a = 22;\n" +
-						"        this.b = 33;\n" +
-						"        this.c = \"mouse\";\n" +
-						"    };\n" +
-						"    public int sum(){\n" +
-						"        return a + b +c.length();\n" +
-						"    };\n" +
-						"\n" +
-						"    public void printSomeThing(){\n" +
-						"        for(int i =0; i < b; i ++){\n" +
-						"            for(int j =0; j < a; j++){\n" +
-						"                System.out.println(c);\n" +
-						"            }\n" +
-						"        }\n" +
-						"    };\n" +
-						"\n" +
-						"\n" +
-						"}\n"
-				, "TEST-26 add class e");
+		makeExampleCommit("Tangled1.java",
+				"package de.uhd.ifi.se.decision.management.jira;\n" + "public class E {\n" + "\n"
+						+ "    public int a;\n" + "    public int b ;\n" + "    public String c;\n" + "\n"
+						+ "    public c(){\n" + "        this.a = 22;\n" + "        this.b = 33;\n"
+						+ "        this.c = \"mouse\";\n" + "    };\n" + "    public int sum(){\n"
+						+ "        return a + b +c.length();\n" + "    };\n" + "\n"
+						+ "    public void printSomeThing(){\n" + "        for(int i =0; i < b; i ++){\n"
+						+ "            for(int j =0; j < a; j++){\n" + "                System.out.println(c);\n"
+						+ "            }\n" + "        }\n" + "    };\n" + "\n" + "\n" + "}\n",
+				"TEST-26 add class e");
 
-		makeExampleCommit("Tangled2.java", "package de.uhd.ifi.se.decision.management.jira.view.treeviewer;\n" +
-				"public class A {\n" +
-				"\n" +
-				"    public int x;\n" +
-				"    public int y ;\n" +
-				"    public String z;\n" +
-				"\n" +
-				"    public A(int x, int y, String z){\n" +
-				"        this.x = x;\n" +
-				"        this.y = y;\n" +
-				"        this.z = z;\n" +
-				"    };\n" +
-				"    public void doSomething(){\n" +
-				"        for(int i =0; i < 10; i ++){\n" +
-				"            for(int j =0; j < 20; j++){\n" +
-				"                System.out.println(i+j);\n" +
-				"            }\n" +
-				"        }\n" +
-				"    };\n" +
-				"    public void doOtherthing(){\n" +
-				"        for(int i =0; i < 10; i ++){\n" +
-				"            for(int j =0; j < 20; j++){\n" +
-				"                System.out.println(i+j);\n" +
-				"            }\n" +
-				"        }\n" +
-				"    };\n" +
-				"\n" +
-				"}\n" , "TEST-62 add class A");
+		makeExampleCommit("Tangled2.java",
+				"package de.uhd.ifi.se.decision.management.jira.view.treeviewer;\n" + "public class A {\n" + "\n"
+						+ "    public int x;\n" + "    public int y ;\n" + "    public String z;\n" + "\n"
+						+ "    public A(int x, int y, String z){\n" + "        this.x = x;\n" + "        this.y = y;\n"
+						+ "        this.z = z;\n" + "    };\n" + "    public void doSomething(){\n"
+						+ "        for(int i =0; i < 10; i ++){\n" + "            for(int j =0; j < 20; j++){\n"
+						+ "                System.out.println(i+j);\n" + "            }\n" + "        }\n" + "    };\n"
+						+ "    public void doOtherthing(){\n" + "        for(int i =0; i < 10; i ++){\n"
+						+ "            for(int j =0; j < 20; j++){\n" + "                System.out.println(i+j);\n"
+						+ "            }\n" + "        }\n" + "    };\n" + "\n" + "}\n",
+				"TEST-62 add class A");
 		setupBranchWithDecKnowledge();
 
 		gitClient.close();
@@ -200,43 +152,33 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 			currentBranch = git.getRepository().getBranch();
 			git.branchCreate().setName(featureBranch).call();
 			git.checkout().setName(featureBranch).call();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		makeExampleCommit("readMe.featureBranch.txt"
-				, "First content"
-				, firstCommitMessage);
+		makeExampleCommit("readMe.featureBranch.txt", "First content", firstCommitMessage);
 
-		makeExampleCommit("readMe.featureBranch.txt"
-				, "Second content"
-				, "Second message");
+		makeExampleCommit("GodClass.java", "public class GodClass {" + "//@issue:code issue in GodClass" + "\r\n}",
+				"Second message");
 
-		makeExampleCommit("GodClass.java", "public class GodClass {}"
-				, "TEST-12: Develop great software" +
-						"//[issue]Huston we have a small problem..[/issue]" +
-						"\r\n"+
-						"//[alternative]ignore it![/alternative]" +
-						"\r\n"+
-						"//[pro]ignorance is bliss[/pro]" +
-						"\r\n"+
-						"//[decision]solve it ASAP![/decision]" +
-						"\r\n"+
-						"//[pro]life is valuable, prevent even smallest risks[/pro]"
-						);
+		makeExampleCommit("HermesGodClass.java",
+				"public class HermesGodClass {" + "//@issue:1st code issue in one-line comment in HermesGodClass"
+						+ "\r\n/*\r\n@issue:2nd issue in comment block*/" + "\r\n/**\r\n* @issue:3rd issue in javadoc"
+						+ "\r\n*\r\n* @alternative:1st alt in javadoc*/" + "\r\n}",
+				"TEST-12: Develop great software" + "//[issue]Huston we have a small problem..[/issue]" + "\r\n"
+						+ "//[alternative]ignore it![/alternative]" + "\r\n" + "//[pro]ignorance is bliss[/pro]"
+						+ "\r\n" + "//[decision]solve it ASAP![/decision]" + "\r\n"
+						+ "//[pro]life is valuable, prevent even smallest risks[/pro]");
 		returnToPreviousBranch(currentBranch, git);
 	}
 
 	private static void returnToPreviousBranch(String branch, Git git) {
-		if (branch==null) {
+		if (branch == null) {
 			return;
-		}
-		else {
+		} else {
 			try {
 				git.checkout().setName(branch).call();
 				git.pull();
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
@@ -254,14 +196,12 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		try {
 			remoteList = gitClient.getGit().remoteList().call();
 
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		if (remoteList==null) {
+		if (remoteList == null) {
 			return "";
-		}
-		else {
+		} else {
 			RemoteConfig remoteHead = remoteList.get(0);
 			URIish uriHead = remoteHead.getURIs().get(0);
 
@@ -276,11 +216,11 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		String projectUriSomeBranchPath = dir.getAbsolutePath();
 		String regExSplit = File.separator;
 		if (("\\").equals(regExSplit)) {
-			regExSplit="\\\\";
+			regExSplit = "\\\\";
 		}
 		String[] projectUriSomeBranchPathComponents = projectUriSomeBranchPath.split(regExSplit);
-		String[] projectUriPathComponents = new String[projectUriSomeBranchPathComponents.length-4];
-		for (int i = 0; i<projectUriPathComponents.length;i++) {
+		String[] projectUriPathComponents = new String[projectUriSomeBranchPathComponents.length - 4];
+		for (int i = 0; i < projectUriPathComponents.length; i++) {
 			projectUriPathComponents[i] = projectUriSomeBranchPathComponents[i];
 		}
 		return String.join(File.separator, projectUriPathComponents);

@@ -68,7 +68,7 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 	}
 
 	public PartOfJiraIssueTextImpl(long id, int endSubstringCount, int startSubstringCount, boolean isValidated,
-			boolean isRelevant, String projectKey, long commentId, long issueId, String type) {
+								   boolean isRelevant, String projectKey, long commentId, long issueId, String type) {
 		this();
 		this.setId(id);
 		this.setEndPosition(endSubstringCount);

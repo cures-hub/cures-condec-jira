@@ -251,6 +251,7 @@
 				<version>${amps.version}</version>
 				<extensions>true</extensions>
 				<configuration>
+					<compressResources>false</compressResources>
 					<extractDependencies>false</extractDependencies> <!-- If enabled, external .jar files will be unzipped into the final .jar file -->
 					<productVersion>${jira.version}</productVersion>
 					<productDataVersion>${jira.version}</productDataVersion>
@@ -304,7 +305,7 @@
 	</build>
 	<properties>
 		<jira.version>8.1.0</jira.version>
-		<amps.version>8.0.1</amps.version>
+		<amps.version>8.0.2</amps.version>
 		<ao.version>1.5.0</ao.version>
 		<plugin.testrunner.version>2.0.1</plugin.testrunner.version>
 		<atlassian.spring.scanner.version>1.2.13</atlassian.spring.scanner.version>

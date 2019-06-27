@@ -74,7 +74,7 @@ public class TextSplitterImpl implements TextSplitter {
 	}
 
 	private static ArrayList<String> searchForTagsRecursively(String partOfText, String openTag, String closeTag,
-			ArrayList<String> slices) {
+															  ArrayList<String> slices) {
 		if (isIncorrectlyTagged(partOfText, openTag, closeTag)) {
 			slices.add(partOfText);
 			return slices;
@@ -122,7 +122,7 @@ public class TextSplitterImpl implements TextSplitter {
 	/**
 	 * Checks: Start Index >=0, End Index >= 0, End Index - Start Index > 0, Body
 	 * not only whitespaces
-	 * 
+	 *
 	 * @param startIndex
 	 * @param endIndex
 	 * @return
@@ -172,7 +172,7 @@ public class TextSplitterImpl implements TextSplitter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param body
 	 * @param projectKey
 	 * @param lookOutForIcons
