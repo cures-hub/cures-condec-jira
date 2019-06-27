@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -257,7 +257,7 @@ public class GitClientImpl implements GitClient {
 
 	@Override
 	public Map<DiffEntry, EditList> getDiff(RevCommit firstCommit, RevCommit lastCommit) {
-		Map<DiffEntry, EditList> diffEntriesMappedToEditLists = new HashMap<DiffEntry, EditList>();
+		Map<DiffEntry, EditList> diffEntriesMappedToEditLists = new LinkedHashMap<DiffEntry, EditList>();
 		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
 
 		DiffFormatter diffFormatter = getDiffFormater();

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.extraction.Diff;
 import de.uhd.ifi.se.decision.management.jira.extraction.TangledCommitDetection;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
@@ -30,8 +29,6 @@ public class TestTangledCommitDetection extends TestSetUpGit {
 	@Test
 	public void testCalculatePackageDistances() {
 		tangledCommitDetection.calculatePackageDistances(diffForJiraIssue);
-		diffForJiraIssue.getChangedFiles()
-				.sort((ChangedFile c1, ChangedFile c2) -> c2.getPackageDistance() - c1.getPackageDistance());
 		assertEquals(6, diffForJiraIssue.getChangedFiles().get(0).getPackageDistance());
 		assertEquals(3, diffForJiraIssue.getChangedFiles().get(1).getPackageDistance());
 		assertEquals(3, diffForJiraIssue.getChangedFiles().get(2).getPackageDistance());
@@ -46,13 +43,11 @@ public class TestTangledCommitDetection extends TestSetUpGit {
 	@Test
 	public void testStandardizationWithMoreThanOneCommits() {
 		tangledCommitDetection.calculatePackageDistances(diffForJiraIssue);
-		diffForJiraIssue.getChangedFiles()
-				.sort((ChangedFile c1, ChangedFile c2) -> c1.getPackageDistance() - c2.getPackageDistance());
+		diffForJiraIssue.getChangedFiles();
 		tangledCommitDetection.standardization(diffForJiraIssue);
 		assertEquals(100.0, diffForJiraIssue.getChangedFiles().get(0).getProbabilityOfCorrectness(), 0.0000);
-		assertEquals(100.0, diffForJiraIssue.getChangedFiles().get(1).getProbabilityOfCorrectness(), 0.0000);
+		assertEquals(0.0, diffForJiraIssue.getChangedFiles().get(1).getProbabilityOfCorrectness(), 0.0000);
 		assertEquals(0.0, diffForJiraIssue.getChangedFiles().get(2).getProbabilityOfCorrectness(), 0.0000);
-
 	}
 
 	@Test
@@ -60,7 +55,6 @@ public class TestTangledCommitDetection extends TestSetUpGit {
 		tangledCommitDetection.calculatePackageDistances(diffForCommit);
 		tangledCommitDetection.standardization(diffForCommit);
 		assertEquals(100.0, diffForCommit.getChangedFiles().get(0).getProbabilityOfCorrectness(), 0.0000);
-
 	}
 
 	@Test
@@ -72,23 +66,20 @@ public class TestTangledCommitDetection extends TestSetUpGit {
 		diff.addChangedFile(diffForJiraIssue.getChangedFiles().get(2));
 		diff.addChangedFile(diffForJiraIssue.getChangedFiles().get(1));
 		diff.addChangedFile(diffForJiraIssue.getChangedFiles().get(0));
-		diff.getChangedFiles().sort(
-				(ChangedFile c1, ChangedFile c2) -> c1.getCompilationUnit().getPackageDeclaration().toString().length()
-						- c2.getCompilationUnit().getPackageDeclaration().toString().length());
 		// System.out.println(diff.getChangedFiles().get(0).getCompilationUnit().getPackageDeclaration().toString());
 		// System.out.println(diff.getChangedFiles().get(1).getCompilationUnit().getPackageDeclaration().toString());
 		// System.out.println(diff.getChangedFiles().get(2).getCompilationUnit().getPackageDeclaration().toString());
 		tangledCommitDetection.calculatePackageDistances(diff);
-		assertEquals(6, diff.getChangedFiles().get(0).getPackageDistance());
+		assertEquals(3, diff.getChangedFiles().get(0).getPackageDistance());
 		assertEquals(3, diff.getChangedFiles().get(1).getPackageDistance());
-		assertEquals(3, diff.getChangedFiles().get(2).getPackageDistance());
+		assertEquals(6, diff.getChangedFiles().get(2).getPackageDistance());
 	}
 
 	@Test
 	public void testCalculatePredication() {
 		tangledCommitDetection.calculatePredication(diffForJiraIssue);
 		assertEquals(100.0, diffForJiraIssue.getChangedFiles().get(0).getProbabilityOfCorrectness(), 0.0000);
-		assertEquals(100.0, diffForJiraIssue.getChangedFiles().get(1).getProbabilityOfCorrectness(), 0.0000);
+		assertEquals(0.0, diffForJiraIssue.getChangedFiles().get(1).getProbabilityOfCorrectness(), 0.0000);
 		assertEquals(0.0, diffForJiraIssue.getChangedFiles().get(2).getProbabilityOfCorrectness(), 0.0000);
 	}
 

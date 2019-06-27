@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
@@ -9,8 +8,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
 
@@ -23,7 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.TangledCommitDetection;
 public class CodeSummarizerImpl implements CodeSummarizer {
 
 	private GitClient gitClient;
-	private static final Logger LOGGER = LoggerFactory.getLogger(CodeSummarizerImpl.class);
 	private int minProbabilityOfCorrectness;
 	private String projectKey;
 	private String issueKey;
@@ -32,7 +28,7 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		this.projectKey = projectKey;
 		this.gitClient = new GitClientImpl(projectKey);
 	}
-	
+
 	public CodeSummarizerImpl(GitClient gitClient) {
 		this.gitClient = gitClient;
 	}
@@ -58,29 +54,20 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 	}
 
 	@Override
-	public String createSummary(Map<DiffEntry, EditList> diff) {
-		if (diff == null || diff.size() == 0) {
+	public String createSummary(Map<DiffEntry, EditList> diffMap) {
+		if (diffMap == null || diffMap.size() == 0) {
 			return "";
 		}
-		Diff allDiffs = new DiffImpl();
-		for (Map.Entry<DiffEntry, EditList> entry : diff.entrySet()) {
-			File file = new File(gitClient.getDirectory().toString().replace(".git", "") + entry.getKey().getNewPath());
-			if (file.exists() && FilenameUtils.getExtension(file.toString()) != null
-					&& FilenameUtils.getExtension(file.toString()).equalsIgnoreCase("java")) {
-				allDiffs.addChangedFile(new ChangedFileImpl(file));
-			}
-		}
-		try {
-			TangledCommitDetection tangledCommitDetection = new TangledCommitDetectionImpl();
-			tangledCommitDetection.calculatePredication(allDiffs);
-		} catch (Exception e) {
-			LOGGER.error(e.toString());
-			return "";
-		}
+		String baseDirectory = gitClient.getDirectory().toString().replace(".git", "");
+		Diff diff = new DiffImpl(diffMap, baseDirectory);
+
+		TangledCommitDetection tangledCommitDetection = new TangledCommitDetectionImpl();
+		tangledCommitDetection.calculatePredication(diff);
+
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonString = "";
 		try {
-			jsonString = mapper.writeValueAsString(allDiffs);
+			jsonString = mapper.writeValueAsString(diff);
 			System.out.println(jsonString);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -91,7 +78,7 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return generateSummary(allDiffs);
+		return generateSummary(diff);
 	}
 
 	private String generateSummary(Diff diff) {

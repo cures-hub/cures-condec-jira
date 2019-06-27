@@ -11,14 +11,12 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 	@Override
 	public void calculatePredication(Diff diff) {
 		this.calculatePackageDistances(diff);
-		diff.getChangedFiles()
-				.sort((ChangedFile c1, ChangedFile c2) -> c1.getPackageDistance() - c2.getPackageDistance());
 		this.standardization(diff);
 	}
 
 	@Override
 	public void calculatePackageDistances(Diff diff) {
-		Integer[][] maxtrix = new Integer[diff.getChangedFiles().size()][diff.getChangedFiles().size()];
+		Integer[][] matrix = new Integer[diff.getChangedFiles().size()][diff.getChangedFiles().size()];
 		if (diff.getChangedFiles().size() > 1) {
 			for (int i = 0; i < diff.getChangedFiles().size(); i++) {
 				List<String> leftPackageDeclaration = diff.getChangedFiles().get(i).getPackageName();
@@ -31,14 +29,14 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 									diff.getChangedFiles().get(i)
 											.setPackageDistance(diff.getChangedFiles().get(i).getPackageDistance()
 													+ (leftPackageDeclaration.size() - k));
-									maxtrix[i][j] = leftPackageDeclaration.size() - k;
+									matrix[i][j] = leftPackageDeclaration.size() - k;
 									break;
 								} else if ((rightPackageDeclaration.size() - 1) == k
 										&& (leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k)))) {
 									diff.getChangedFiles().get(i)
 											.setPackageDistance(diff.getChangedFiles().get(i).getPackageDistance()
 													+ (leftPackageDeclaration.size() - rightPackageDeclaration.size()));
-									maxtrix[i][j] = leftPackageDeclaration.size() - rightPackageDeclaration.size();
+									matrix[i][j] = leftPackageDeclaration.size() - rightPackageDeclaration.size();
 								}
 							}
 						} else {
@@ -47,20 +45,20 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 									diff.getChangedFiles().get(i)
 											.setPackageDistance(diff.getChangedFiles().get(i).getPackageDistance()
 													+ (rightPackageDeclaration.size() - k));
-									maxtrix[i][j] = rightPackageDeclaration.size() - k;
+									matrix[i][j] = rightPackageDeclaration.size() - k;
 									break;
 								} else if (leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k))
 										&& (k == leftPackageDeclaration.size() - 1)) {
 									diff.getChangedFiles().get(i)
 											.setPackageDistance(diff.getChangedFiles().get(i).getPackageDistance()
 													+ (rightPackageDeclaration.size() - leftPackageDeclaration.size()));
-									maxtrix[i][j] = rightPackageDeclaration.size() - leftPackageDeclaration.size();
+									matrix[i][j] = rightPackageDeclaration.size() - leftPackageDeclaration.size();
 									break;
 								}
 							}
 						}
 					} else {
-						maxtrix[i][j] = 0;
+						matrix[i][j] = 0;
 					}
 				}
 			}
