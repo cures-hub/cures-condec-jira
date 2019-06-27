@@ -64,11 +64,6 @@ public class TestTangledCommitDetection extends TestSetUpGit {
 	}
 
 	@Test
-	public void testParsePackage() {
-		assertEquals(9, diffForCommit.getChangedFiles().get(0).getPackageName().size());
-	}
-
-	@Test
 	public void testCalculatePackageDistanceRightBiggerLeft() {
 		Diff diff = new DiffImpl();
 		// System.out.println(diffsWithMoreThanOneCommits.getChangedFiles().get(2).getCompilationUnit().getPackageDeclaration().toString());
