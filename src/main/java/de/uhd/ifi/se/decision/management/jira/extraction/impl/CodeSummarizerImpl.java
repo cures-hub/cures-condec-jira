@@ -71,7 +71,6 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 			}
 		}
 		try {
-			TangledCommitDetection.getMethods(allDiffs);
 			TangledCommitDetection tangledCommitDetection = new TangledCommitDetectionImpl();
 			tangledCommitDetection.calculatePredication(allDiffs);
 		} catch (Exception e) {

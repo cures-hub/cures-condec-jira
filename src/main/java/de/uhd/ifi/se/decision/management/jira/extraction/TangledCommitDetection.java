@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.github.javaparser.ast.PackageDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 /**
  * Interface for a estimation whether a {@link Diff} of {@ChangedFile}s contains
@@ -14,15 +12,17 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 public interface TangledCommitDetection {
 
 	/**
-	 *  This function is a summarized function, which could be easily updated later
-	 *  if we decided to use more than one metric for our prediction.
-	 *  The function calculatePredication call first {@calculatePackageDistances}.
-	 *  After the package distances are set, the ChangedFiles will be sort in order of package distance.
-	 *  At last the package distance will be normalized and represent as a probability of correctness.
+	 * This function is a summarized function, which could be easily updated later
+	 * if we decided to use more than one metric for our prediction. The function
+	 * calculatePredication call first {@calculatePackageDistances}. After the
+	 * package distances are set, the ChangedFiles will be sort in order of package
+	 * distance. At last the package distance will be normalized and represent as a
+	 * probability of correctness.
 	 *
 	 * @param diff
-	 *            The {@link Diff} might be a single git commit, a whole feature branch
-	 *            (with many commits), or all commits belonging to a JIRA issue.
+	 *            The {@link Diff} might be a single git commit, a whole feature
+	 *            branch (with many commits), or all commits belonging to a JIRA
+	 *            issue.
 	 */
 	void calculatePredication(Diff diff);
 
@@ -30,7 +30,8 @@ public interface TangledCommitDetection {
 	 * Split a package declaration into a list of Strings.
 	 *
 	 * @param packageDeclaration
-	 *            packageDeclaration. It is an optional attribute of CompilationUnit.
+	 *            packageDeclaration. It is an optional attribute of
+	 *            CompilationUnit.
 	 *
 	 * @return package declaration as a list of Strings.
 	 */
@@ -48,9 +49,9 @@ public interface TangledCommitDetection {
 	void calculatePackageDistances(Diff diff);
 
 	/**
-	 * TODO Passt 100%? 
-	 * Normalize the result of calculatePackageDistances, from floating-point number into
-	 * percentage. This function takes the difference between largest and smallest package distance as 100%
+	 * TODO Passt 100%? Normalize the result of calculatePackageDistances, from
+	 * floating-point number into percentage. This function takes the difference
+	 * between largest and smallest package distance as 100%
 	 *
 	 * @param diff
 	 *            The diff might be a single git commit, a whole feature branch
@@ -58,38 +59,4 @@ public interface TangledCommitDetection {
 	 *
 	 */
 	void standardization(Diff diff);
-
-	/**
-	 * Set for each ChangedFile the name of methods, which is used to summarize code
-	 * changes.
-	 *
-	 * @param diff
-	 *            The diff might be a single git commit, a whole feature branch
-	 *            (with many commits), or all commits belonging to a JIRA issue.
-	 *
-	 */
-	static void getMethods(Diff diff) {
-		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			try {
-				new MethodVisitor().visit(changedFile.getCompilationUnit(), changedFile);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	/**
-	 *
-	 * Helper class for getMethods, which use the visit() to get the method-name.
-	 * Visit() takes MethodDeclaration and an Object, which in this case is a
-	 * ChangedFile.
-	 *
-	 */
-	class MethodVisitor extends VoidVisitorAdapter {
-		@Override
-		public void visit(MethodDeclaration m, Object arg) {
-			ChangedFile changedFile = (ChangedFile) arg;
-			changedFile.addMethodDeclaration(m.getDeclarationAsString());
-		}
-	}
 }

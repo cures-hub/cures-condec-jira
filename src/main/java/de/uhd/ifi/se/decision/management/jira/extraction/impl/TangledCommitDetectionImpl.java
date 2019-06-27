@@ -48,16 +48,16 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 						if (leftPackageDeclaration.size() >= rightPackageDeclaration.size()) {
 							for (int k = 0; k < rightPackageDeclaration.size(); k++) {
 								if (!leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k))) {
-											diff.getChangedFiles().get(i)
-													.setPackageDistance(diff.getChangedFiles().get(i).getPackageDistance()
-															+ (leftPackageDeclaration.size() - k));
-											maxtrix[i][j] = leftPackageDeclaration.size() - k;
-										break;
-								}else if((rightPackageDeclaration.size() - 1) == k
-										&& (leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k)))){
-											diff.getChangedFiles().get(i)
-													.setPackageDistance(diff.getChangedFiles().get(i).getPackageDistance()
-															+ (leftPackageDeclaration.size() - rightPackageDeclaration.size()));
+									diff.getChangedFiles().get(i)
+											.setPackageDistance(diff.getChangedFiles().get(i).getPackageDistance()
+													+ (leftPackageDeclaration.size() - k));
+									maxtrix[i][j] = leftPackageDeclaration.size() - k;
+									break;
+								} else if ((rightPackageDeclaration.size() - 1) == k
+										&& (leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k)))) {
+									diff.getChangedFiles().get(i)
+											.setPackageDistance(diff.getChangedFiles().get(i).getPackageDistance()
+													+ (leftPackageDeclaration.size() - rightPackageDeclaration.size()));
 									maxtrix[i][j] = leftPackageDeclaration.size() - rightPackageDeclaration.size();
 								}
 							}
@@ -69,7 +69,8 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 													+ (rightPackageDeclaration.size() - k));
 									maxtrix[i][j] = rightPackageDeclaration.size() - k;
 									break;
-								}else if (leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k)) && (k == leftPackageDeclaration.size()-1)) {
+								} else if (leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k))
+										&& (k == leftPackageDeclaration.size() - 1)) {
 									diff.getChangedFiles().get(i)
 											.setPackageDistance(diff.getChangedFiles().get(i).getPackageDistance()
 													+ (rightPackageDeclaration.size() - leftPackageDeclaration.size()));
@@ -90,7 +91,8 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 
 	@Override
 	public List<String> parsePackage(Optional<PackageDeclaration> op) {
-		return new ArrayList<>(Arrays.asList(op.get().toString().replaceAll("\n", "").replaceAll(";", "").split("\\.")));
+		return new ArrayList<>(
+				Arrays.asList(op.get().toString().replaceAll("\n", "").replaceAll(";", "").split("\\.")));
 	}
 
 }

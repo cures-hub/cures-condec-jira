@@ -1,27 +1,38 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.MethodDeclaration;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
 
 public class ChangedFileImpl implements ChangedFile {
 
-	private List<String> methodDeclarations;
+	private Set<String> methodDeclarations;
 	private float probabilityOfCorrectness;
-	
-	// @issue How to model whether a changed file is correctly linked to a requirement/work item/knowledge elements?
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ChangedFile.class);
+
+	// @issue How to model whether a changed file is correctly linked to a
+	// requirement/work item/knowledge element?
 	// @decision Add the isCorrect boolean attribute to the changed file class.
-	// @con Changed files might be correctly linked to one requirement but incorrectly linked to another requirement, so it should not be an attribute of the object.
-	// @alternative Add class to represent a link between a changed file and a knowledge element.
+	// @con Changed files might be correctly linked to one requirement but
+	// incorrectly linked to another requirement, so it should not be an attribute
+	// of the object.
+	// @alternative Add class to represent a link between a changed file and a
+	// knowledge element.
 	private boolean isCorrect;
 	@JsonIgnore
 	private File file;
@@ -33,11 +44,10 @@ public class ChangedFileImpl implements ChangedFile {
 	public ChangedFileImpl(File file) {
 		this.file = file;
 		this.packageDistance = 0;
-		this.methodDeclarations = new ArrayList<String>();
-		this.compilationUnit = parseCompilationUnit(file);
+		this.methodDeclarations = parseMethods();
 		this.setCorrect(true);
 	}
-	
+
 	@Override
 	@JsonProperty("className")
 	public String getName() {
@@ -65,23 +75,42 @@ public class ChangedFileImpl implements ChangedFile {
 	}
 
 	@Override
-	public List<String> getMethodDeclarations() {
+	public Set<String> getMethodDeclarations() {
 		return methodDeclarations;
 	}
 
-	@Override
-	public CompilationUnit getCompilationUnit() {
-		return compilationUnit;
+	private Set<String> parseMethods() {
+		Set<String> methodsInClass = new LinkedHashSet<String>();
+
+		if (!isExistingJavaClass()) {
+			return methodsInClass;
+		}
+
+		MethodVisitor methodVistor = getMethodVisitor();
+		for (MethodDeclaration methodDeclaration : methodVistor.getMethodDeclarations()) {
+			methodsInClass.add(methodDeclaration.getNameAsString());
+		}
+
+		return methodsInClass;
 	}
 
-	@Override
-	public CompilationUnit parseCompilationUnit(File file) {
+	private MethodVisitor getMethodVisitor() {
+		this.compilationUnit = parseJavaFile(file);
+		MethodVisitor methodVistor = new MethodVisitor();
+		compilationUnit.accept(methodVistor, null);
+		return methodVistor;
+	}
+
+	private static CompilationUnit parseJavaFile(File inspectedFile) {
+		CompilationUnit compilationUnit = null;
 		try {
-			return JavaParser.parse(file);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
+			FileInputStream fileInputStream = new FileInputStream(inspectedFile.toString());
+			compilationUnit = JavaParser.parse(fileInputStream);
+			fileInputStream.close();
+		} catch (ParseProblemException | IOException e) {
+			LOGGER.error(e.getMessage());
 		}
+		return compilationUnit;
 	}
 
 	@Override
@@ -94,11 +123,31 @@ public class ChangedFileImpl implements ChangedFile {
 		this.methodDeclarations.add(methodDeclaration);
 	}
 
+	@Override
+	public boolean isExistingJavaClass() {
+		return exists() && isJavaClass();
+	}
+
+	@Override
+	public boolean exists() {
+		return file.exists();
+	}
+
+	@Override
+	public boolean isJavaClass() {
+		return file.getName().endsWith("java");
+	}
+
 	public boolean isCorrect() {
 		return isCorrect;
 	}
 
 	public void setCorrect(boolean isCorrect) {
 		this.isCorrect = isCorrect;
+	}
+
+	@Override
+	public CompilationUnit getCompilationUnit() {
+		return this.compilationUnit;
 	}
 }
