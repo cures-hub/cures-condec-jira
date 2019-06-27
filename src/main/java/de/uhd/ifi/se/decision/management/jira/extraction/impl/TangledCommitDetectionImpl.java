@@ -16,7 +16,8 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 
 	@Override
 	public void calculatePackageDistances(Diff diff) {
-		Integer[][] matrix = new Integer[diff.getChangedFiles().size()][diff.getChangedFiles().size()];
+		int numberOfFiles = diff.getChangedFiles().size();
+		int[][] matrix = new int[numberOfFiles][numberOfFiles];
 		if (diff.getChangedFiles().size() > 1) {
 			for (int i = 0; i < diff.getChangedFiles().size(); i++) {
 				List<String> leftPackageDeclaration = diff.getChangedFiles().get(i).getPackageName();
