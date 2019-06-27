@@ -47,10 +47,15 @@
 		<resource type="download" name="assumption.png" location="/images/assumption.png" />
 		<resource type="download" name="assessment.png" location="/images/assessment.png" />
 		<resource type="download" name="codesummarization.png" location="/images/codesummarization.png" />
+		<!-- vis.js icons -->
+		<resource type="download" name="addNodeIcon.png" location="/images/addNodeIcon.png" />
+		<resource type="download" name="backIcon.png" location="/images/backIcon.png" />
+		<resource type="download" name="editIcon.png" location="/images/editIcon.png" />
 		<!-- style sheets -->
 		<resource type="download" name="treant.css" location="/css/treant.css" />
 		<resource type="download" name="condec.css" location="/css/condec.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
+		<resource type="download" name="vis.css" location="/css/vis.css" />
 		<!-- look and feel like JIRA -->
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
 		<dependency>com.atlassian.auiplugin:aui-flag</dependency>
@@ -62,10 +67,10 @@
 		<dependency>com.atlassian.auiplugin:aui-lozenge</dependency>
 		<dependency>com.atlassian.auiplugin:dialog2</dependency>
 		<dependency>com.atlassian.auiplugin:aui-dropdown2</dependency>
-        <dependency>com.atlassian.auiplugin:aui-select</dependency>
 		<dependency>com.atlassian.auiplugin:aui-select2</dependency>
 		<dependency>com.atlassian.auiplugin:aui-experimental-iconfont</dependency>
 		<dependency>com.atlassian.auiplugin:aui-tooltips</dependency>
+		<dependency>com.atlassian.auiplugin:tabs</dependency>
 		<!-- JIRA dialogs -->
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-edit-issue</dependency>
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-create-issue</dependency>
@@ -85,15 +90,20 @@
 		<resource type="download" name="Treant.js" location="/js/treant/treant.js" />
 		<resource type="download" name="raphael.js" location="/js/treant/raphael.js" />
 		<resource type="download" name="jquery.easing.js" location="/js/jquery/jquery.easing.js" />
+		<!--Vis-->
+		<resource type="download" name="vis.js" location="/js/vis/vis.js" />
 		<!-- ConDec java script files -->
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
 		<resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />
 		<resource type="download" name="condec.dialog.js" location="/js/condec.dialog.js" />
 		<resource type="download" name="condec.context.menu.js"
 			location="/js/condec.context.menu.js" />
+		<resource type="download" name="condec.context.vis.js"
+				  location="/js/condec.context.vis.js" />
 		<resource type="download" name="condec.treant.js" location="/js/condec.treant.js" />
 		<resource type="download" name="condec.tree.viewer.js"
 			location="/js/condec.tree.viewer.js" />
+		<resource type="download" name="condec.vis.js" location="/js/condec.vis.js" />
 		<resource type="download" name="condec.export.js"  location="/js/condec.export.js" />
 	</web-resource>
 

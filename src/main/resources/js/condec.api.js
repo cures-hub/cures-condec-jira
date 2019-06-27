@@ -302,6 +302,45 @@
 	};
 
 	/*
+	 * external references: condec.vis
+	 */
+	ConDecAPI.prototype.getVis = function getVis(elementKey, searchTerm, callback) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey + "&searchTerm="
+				+ searchTerm, function(error, vis) {
+			if (error === null) {
+				callback(vis);
+			}
+		});
+	};
+
+	/*
+	 * external references: condec.vis
+	 */
+	ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, issueTypes, createdAfter,
+			createdBefore, documentationLocation, callback) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVisFiltered.json?elementKey=" + elementKey
+				+ "&searchTerm=" + searchTerm + "&issueTypes=" + issueTypes + "&createdAfter=" + createdAfter
+				+ "&createdBefore=" + createdBefore + "&documentationLocation=" + documentationLocation, function(
+				error, vis) {
+			if (error === null) {
+				callback(vis);
+			}
+		});
+	};
+
+	/*
+	 * external reference: condec.jira.issue.module
+	 */
+	ConDecAPI.prototype.getFilterData = function getFilterData(elementKey, searchTerm, callback) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getFilterData.json?elementKey=" + elementKey
+				+ "&searchTerm=" + searchTerm, function(error, filterData) {
+			if (error === null) {
+				callback(filterData);
+			}
+		});
+	};
+
+	/*
 	 * external references: condec.tab.panel
 	 */
 	ConDecAPI.prototype.getTreeViewerWithoutRootElement = function getTreeViewerWithoutRootElement(showRelevant,
@@ -532,7 +571,7 @@
 		showFlag("error", "The classification process failed.");
 		return 0.0;
 	};
-
+	
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
@@ -692,11 +731,11 @@
 	 * external references: condec.jira.issue.module
 	 */
 	function getIssueKey() {
-		console.log("conDecAPI getIssueKey");
 		var issueKey = JIRA.Issue.getIssueKey();
 		if (issueKey === null) {
 			issueKey = AJS.Meta.get("issue-key");
 		}
+		console.log("conDecAPI getIssueKey: " + issueKey);
 		return issueKey;
 	}
 
