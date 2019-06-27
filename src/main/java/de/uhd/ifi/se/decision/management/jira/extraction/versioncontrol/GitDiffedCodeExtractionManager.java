@@ -102,7 +102,7 @@ public class GitDiffedCodeExtractionManager {
 				if (getNew) {
 					newPath = dEntry.getKey().getNewPath();
 				} else {
-					newPath = OLD_FILE_SYMBOL_PREPENDER + dEntry.getKey().getNewPath();
+					newPath = OLD_FILE_SYMBOL_PREPENDER + dEntry.getKey().getOldPath();
 				}
 				if (dEntry.getValue() != null) {
 					Map<Edit, List<DecisionKnowledgeElement>> codeExtractionResult;
