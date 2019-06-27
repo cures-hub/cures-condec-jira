@@ -4,6 +4,7 @@
 	};
 
 	function build(theNodes, theEdges, rootElementKey, nodeDistance) {
+		console.log("ConDecVis build");
 		var nodes = new vis.DataSet(theNodes);
 		var edges = new vis.DataSet(theEdges);
 		var container = document.getElementById('vis-container');

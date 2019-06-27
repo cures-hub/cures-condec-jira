@@ -700,11 +700,11 @@
 	 * external references: condec.jira.issue.module
 	 */
 	function getIssueKey() {
-		console.log("conDecAPI getIssueKey");
 		var issueKey = JIRA.Issue.getIssueKey();
 		if (issueKey === null) {
 			issueKey = AJS.Meta.get("issue-key");
 		}
+		console.log("conDecAPI getIssueKey: " + issueKey);
 		return issueKey;
 	}
 

@@ -150,7 +150,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 	/**
 	 * Determine whether the prediction result indicates that the text is decision
 	 * knowledge, i.e., relevant.
-	 *
+	 * 
 	 * @param predictionResult
 	 *            1.0 if the text is decision knowledge. Values less than 1
 	 *            represent irrelevant text.
@@ -214,7 +214,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 	 * an array of estimated values for relevance. For example: double[]
 	 * classification = { 1.0, 0.0, 0.0, 0.0, 0.0 } for alternative. The order is
 	 * important: alternative, decision, issue, pro, and con.
-	 *
+	 * 
 	 * @see KnowledgeType
 	 * @param prediction
 	 *            1.0 if the text is decision knowledge with a certain type. Values

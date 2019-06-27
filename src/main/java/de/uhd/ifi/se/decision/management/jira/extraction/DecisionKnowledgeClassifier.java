@@ -35,7 +35,7 @@ public interface DecisionKnowledgeClassifier {
 	/**
 	 * Determines for a list of strings whether each string is relevant decision
 	 * knowledge or not. The classifier needs a list of strings not just one string.
-	 *
+	 * 
 	 * @param stringsToBeClassified
 	 *            list of strings to be checked for relevance.
 	 * @return list of boolean values in the same order as the input strings. Each
@@ -46,7 +46,7 @@ public interface DecisionKnowledgeClassifier {
 	/**
 	 * Determines the knowledge type for a list of strings, respectively. The
 	 * classifier needs a list of strings not just one string.
-	 *
+	 * 
 	 * @see KnowledgeType
 	 * @param stringsToBeClassified
 	 *            list of strings that should be classified into knowledge types.
@@ -57,7 +57,7 @@ public interface DecisionKnowledgeClassifier {
 
 	/**
 	 * Set the classifier for binary prediction.
-	 *
+	 * 
 	 * @see FilteredClassifier
 	 * @param binaryClassifier
 	 *            classifier for binary prediction.
@@ -66,7 +66,7 @@ public interface DecisionKnowledgeClassifier {
 
 	/**
 	 * Set the classifier for fine grained prediction.
-	 *
+	 * 
 	 * @see LC
 	 * @param fineGrainedClassifier
 	 *            classifier for fine grained prediction.
@@ -76,7 +76,7 @@ public interface DecisionKnowledgeClassifier {
 	/**
 	 * Creates a String to Word Vector for the Classifier All Elements are Lowercase
 	 * Tokens
-	 *
+	 * 
 	 * @return StringToWordVector
 	 */
 	public static StringToWordVector getStringToWordVector() {
