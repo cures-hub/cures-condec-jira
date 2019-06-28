@@ -48,7 +48,7 @@ public interface TangledCommitDetection {
 	void calculatePackageDistances(Diff diff);
 
 	/**
-	 * TODO Passt 100%? 
+	 * 
 	 * Normalize the result of calculatePackageDistances, from floating-point number into
 	 * percentage. This function takes the difference between largest and smallest package distance as 100%
 	 *
