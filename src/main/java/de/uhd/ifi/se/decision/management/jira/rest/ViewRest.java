@@ -25,6 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
+import de.uhd.ifi.se.decision.management.jira.view.vis.EvolutionDataProvider;
 import de.uhd.ifi.se.decision.management.jira.view.vis.Vis;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterDataProvider;
 
@@ -71,6 +72,17 @@ public class ViewRest {
 		return Response.ok(treeViewer).build();
 	}
 
+	@Path("/getEvolutionData")
+	@GET
+	public Response getEvolutionData(@QueryParam("projectKey") String projectKey) {
+		if (projectKey == null || projectKey.equals("")) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not valid."))
+					.build();
+		}
+		EvolutionDataProvider dataProvider = new EvolutionDataProvider(projectKey);
+		return Response.ok(dataProvider.getEvolutionData()).build();
+	}
+
 	@Path("/getTreant")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -91,7 +103,8 @@ public class ViewRest {
 		try {
 			depth = Integer.parseInt(depthOfTree);
 		} catch (NumberFormatException e) {
-			LOGGER.error("Depth of tree could not be parsed, the default value of 4 is used. Message: " + e.getMessage());
+			LOGGER.error(
+					"Depth of tree could not be parsed, the default value of 4 is used. Message: " + e.getMessage());
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Treant cannot be shown since depth of Tree is NaN")).build();
 		}

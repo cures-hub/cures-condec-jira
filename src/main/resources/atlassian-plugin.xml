@@ -105,6 +105,8 @@
 			location="/js/condec.tree.viewer.js" />
 		<resource type="download" name="condec.vis.js" location="/js/condec.vis.js" />
 		<resource type="download" name="condec.export.js"  location="/js/condec.export.js" />
+		<resource type="download" name="condec.evolution.page.js"
+			location="/js/condec.evolution.page.js" />
 	</web-resource>
 
 	<web-resource key="decision-knowledge-page-resources"
@@ -296,7 +298,7 @@
 		class='de.uhd.ifi.se.decision.management.jira.view.macros.ConMacro'>
 		<description>Highlights con knowledge elements in comments.</description>
 	</macro>
-	
+
 	<macro key='codesummarization' name='ConDec Editor Macro for Code Summarization'
 		class='de.uhd.ifi.se.decision.management.jira.view.macros.CodeSummarizationMacro'>
 		<description>Highlights code summarization in comments.</description>
