@@ -13,9 +13,9 @@ public class EvolutionNode {
 	@XmlElement
 	private String start;
 
-	public EvolutionNode(int id,String content, String startTime){
+	public EvolutionNode(int id, String content, String startTime) {
 		this.id = id;
-		this.content =content;
+		this.content = content;
 		this.start = startTime;
 	}
 
