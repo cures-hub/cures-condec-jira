@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.eventlistener.decxtracteventlistener;
+package de.uhd.ifi.se.decision.management.jira.eventlistener.jiraissuetextextractioneventlistener;
 
 import static org.junit.Assert.assertTrue;
 
@@ -18,12 +18,12 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
-public class TestEventCommentDeleted extends TestSetUpEventListener {
+public class TestEventIssueDeleted extends TestSetUpEventListener {
 
-	private boolean testCommentDeleteEvent(String commentBody) {
+	private boolean testIssueDeleteEvent(String commentBody) {
 		Comment comment = createComment(commentBody);
 		ComponentAccessor.getCommentManager().delete(comment);
-		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_COMMENT_DELETED_ID);
+		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_DELETED_ID);
 		listener.onIssueEvent(issueEvent);
 
 		boolean isCommentDeleted = !isCommentExistent(commentBody);
@@ -37,24 +37,24 @@ public class TestEventCommentDeleted extends TestSetUpEventListener {
 	@Test
 	@NonTransactional
 	public void testNoCommentContained() {
-		assertTrue(testCommentDeleteEvent(""));
+		assertTrue(testIssueDeleteEvent(""));
 	}
 
 	@Test
 	@NonTransactional
 	public void testRationaleTag() {
-		assertTrue(testCommentDeleteEvent("{issue}This is a very severe issue.{issue}"));
+		assertTrue(testIssueDeleteEvent("{issue}This is a very severe issue.{issue}"));
 	}
 
 	@Test
 	@NonTransactional
 	public void testExcludedTag() {
-		assertTrue(testCommentDeleteEvent("{code}public static class{code}"));
+		assertTrue(testIssueDeleteEvent("{code}public static class{code}"));
 	}
 
 	@Test
 	@NonTransactional
 	public void testRationaleIcon() {
-		assertTrue(testCommentDeleteEvent("(!)This is a very severe issue."));
+		assertTrue(testIssueDeleteEvent("(!)This is a very severe issue."));
 	}
 }

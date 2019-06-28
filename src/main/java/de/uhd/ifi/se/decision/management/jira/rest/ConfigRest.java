@@ -49,7 +49,7 @@ public class ConfigRest {
 	@Path("/setActivated")
 	@POST
 	public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivated") String isActivatedString) {
+								 @QueryParam("isActivated") String isActivatedString) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -89,7 +89,7 @@ public class ConfigRest {
 	@Path("/setIssueStrategy")
 	@POST
 	public Response setIssueStrategy(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isIssueStrategy") String isIssueStrategyString) {
+									 @QueryParam("isIssueStrategy") String isIssueStrategyString) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -125,8 +125,8 @@ public class ConfigRest {
 	@Path("/setKnowledgeExtractedFromGit")
 	@POST
 	public Response setKnowledgeExtractedFromGit(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isKnowledgeExtractedFromGit") String isKnowledgeExtractedFromGit) {
+												 @QueryParam("projectKey") String projectKey,
+												 @QueryParam("isKnowledgeExtractedFromGit") String isKnowledgeExtractedFromGit) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -148,7 +148,7 @@ public class ConfigRest {
 	@Path("/setGitUri")
 	@POST
 	public Response setGitUri(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("gitUri") String gitUri) {
+							  @QueryParam("gitUri") String gitUri) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -164,8 +164,8 @@ public class ConfigRest {
 	@Path("/setKnowledgeExtractedFromIssues")
 	@POST
 	public Response setKnowledgeExtractedFromIssues(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isKnowledgeExtractedFromIssues") String isKnowledgeExtractedFromIssues) {
+													@QueryParam("projectKey") String projectKey,
+													@QueryParam("isKnowledgeExtractedFromIssues") String isKnowledgeExtractedFromIssues) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -187,7 +187,7 @@ public class ConfigRest {
 	@Path("/isKnowledgeTypeEnabled")
 	@GET
 	public Response isKnowledgeTypeEnabled(@QueryParam("projectKey") final String projectKey,
-			@QueryParam("knowledgeType") String knowledgeType) {
+										   @QueryParam("knowledgeType") String knowledgeType) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -199,9 +199,9 @@ public class ConfigRest {
 	@Path("/setKnowledgeTypeEnabled")
 	@POST
 	public Response setKnowledgeTypeEnabled(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isKnowledgeTypeEnabled") String isKnowledgeTypeEnabledString,
-			@QueryParam("knowledgeType") String knowledgeType) {
+											@QueryParam("projectKey") String projectKey,
+											@QueryParam("isKnowledgeTypeEnabled") String isKnowledgeTypeEnabledString,
+											@QueryParam("knowledgeType") String knowledgeType) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -248,8 +248,8 @@ public class ConfigRest {
 	@Path("/setWebhookEnabled")
 	@POST
 	public Response setWebhookEnabled(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey,
-			@QueryParam("isActivated") final String isActivatedString) {
+									  @QueryParam("projectKey") final String projectKey,
+									  @QueryParam("isActivated") final String isActivatedString) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -271,8 +271,8 @@ public class ConfigRest {
 	@Path("/setWebhookData")
 	@POST
 	public Response setWebhookData(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey, @QueryParam("webhookUrl") final String webhookUrl,
-			@QueryParam("webhookSecret") final String webhookSecret) {
+								   @QueryParam("projectKey") final String projectKey, @QueryParam("webhookUrl") final String webhookUrl,
+								   @QueryParam("webhookSecret") final String webhookSecret) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -293,8 +293,8 @@ public class ConfigRest {
 	@Path("/setWebhookType")
 	@POST
 	public Response setWebhookType(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey, @QueryParam("webhookType") final String webhookType,
-			@QueryParam("isWebhookTypeEnabled") final boolean isWebhookTypeEnabled) {
+								   @QueryParam("projectKey") final String projectKey, @QueryParam("webhookType") final String webhookType,
+								   @QueryParam("isWebhookTypeEnabled") final boolean isWebhookTypeEnabled) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -314,7 +314,7 @@ public class ConfigRest {
 	@Path("/clearSentenceDatabase")
 	@POST
 	public Response clearSentenceDatabase(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey) {
+										  @QueryParam("projectKey") final String projectKey) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -340,7 +340,7 @@ public class ConfigRest {
 	@Path("/classifyWholeProject")
 	@POST
 	public Response classifyWholeProject(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey) {
+										 @QueryParam("projectKey") final String projectKey) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -373,7 +373,7 @@ public class ConfigRest {
 	@Path("/trainClassifier")
 	@POST
 	public Response trainClassifier(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("arffFileName") String arffFileName) {
+									@QueryParam("arffFileName") String arffFileName) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -415,7 +415,7 @@ public class ConfigRest {
 	@Path("/setIconParsing")
 	@POST
 	public Response setIconParsing(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivatedString") String isActivatedString) {
+								   @QueryParam("isActivatedString") String isActivatedString) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -436,8 +436,8 @@ public class ConfigRest {
 	@Path("/setUseClassifierForIssueComments")
 	@POST
 	public Response setUseClassifierForIssueComments(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isClassifierUsedForIssues") String isActivatedString) {
+													 @QueryParam("projectKey") String projectKey,
+													 @QueryParam("isClassifierUsedForIssues") String isActivatedString) {
 		System.out.println(isActivatedString);
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {

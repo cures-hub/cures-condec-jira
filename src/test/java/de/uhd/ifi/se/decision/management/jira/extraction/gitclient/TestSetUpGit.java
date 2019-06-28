@@ -5,11 +5,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
+import org.eclipse.jgit.transport.RemoteConfig;
+import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.util.FS;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -33,11 +36,19 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 	public static void setUpBeforeClass() throws IOException {
 		File directory = getExampleDirectory();
 		String uri = getExampleUri();
-		gitClient = new GitClientImpl(uri, directory);
+		gitClient = new GitClientImpl(uri, directory.getAbsolutePath(), "TEST");
+		// above line will log errors for pulling from still empty remote repositry.
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
 		makeExampleCommit("readMe.txt", "Self-explanatory, ReadMe not necessary.",
 				"TEST-12: Explain how the great software works");
-		makeExampleCommit("GodClass.java", "public class GodClass {}", "TEST-12: Develop great software");
+		makeExampleCommit("GodClass.java", "public class GodClass {" +
+				"//@issue:Small code issue in GodClass, it does nothing." +
+				"\r\n}"
+				,"TEST-12: Develop great software");
+		setupBranchWithDecKnowledge();
+
+		gitClient.close();
+		gitClient = new GitClientImpl(uri, directory.getAbsolutePath(), "TEST");
 	}
 
 	@Before
@@ -75,7 +86,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		return uri;
 	}
 
-	private static void makeExampleCommit(String filename, String content, String commitMessage) {
+	protected static void makeExampleCommit(String filename, String content, String commitMessage) {
 		Git git = gitClient.getGit();
 		try {
 			File inputFile = new File(gitClient.getDirectory().getParent(), filename);
@@ -90,8 +101,104 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		}
 	}
 
+	private static void setupBranchWithDecKnowledge() {
+		String featureBranch = "featureBranch";
+		String firstCommitMessage = "First message";
+		String currentBranch = null;
+		Git git = gitClient.getGit();
+		try {
+			currentBranch = git.getRepository().getBranch();
+			git.branchCreate().setName(featureBranch).call();
+			git.checkout().setName(featureBranch).call();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		makeExampleCommit("readMe.featureBranch.txt"
+				, "First content"
+				, firstCommitMessage);
+
+		makeExampleCommit("GodClass.java", "public class GodClass {" +
+						"//@issue:code issue in GodClass" +
+						"\r\n}"
+				, "Second message");
+
+		makeExampleCommit("HermesGodClass.java", "public class HermesGodClass {" +
+						"//@issue:1st code issue in one-line comment in HermesGodClass" +
+						"\r\n/*\r\n@issue:2nd issue in comment block*/"+
+						"\r\n/**\r\n* @issue:3rd issue in javadoc"+
+						"\r\n*\r\n* @alternative:1st alt in javadoc*/"+
+						"\r\n}"
+				, "TEST-12: Develop great software" +
+						"//[issue]Huston we have a small problem..[/issue]" +
+						"\r\n"+
+						"//[alternative]ignore it![/alternative]" +
+						"\r\n"+
+						"//[pro]ignorance is bliss[/pro]" +
+						"\r\n"+
+						"//[decision]solve it ASAP![/decision]" +
+						"\r\n"+
+						"//[pro]life is valuable, prevent even smallest risks[/pro]"
+						);
+		returnToPreviousBranch(currentBranch, git);
+	}
+
+	private static void returnToPreviousBranch(String branch, Git git) {
+		if (branch==null) {
+			return;
+		}
+		else {
+			try {
+				git.checkout().setName(branch).call();
+				git.pull();
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+
 	@AfterClass
 	public static void tidyUp() {
 		gitClient.deleteRepository();
+	}
+
+	// helpers
+
+	protected String getRepoUri() {
+		List<RemoteConfig> remoteList = null;
+		try {
+			remoteList = gitClient.getGit().remoteList().call();
+
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		if (remoteList==null) {
+			return "";
+		}
+		else {
+			RemoteConfig remoteHead = remoteList.get(0);
+			URIish uriHead = remoteHead.getURIs().get(0);
+
+			return uriHead.toString();
+		}
+
+	}
+
+	protected String getRepoBaseDirectory() {
+		Repository repo = gitClient.getGit().getRepository();
+		File dir = repo.getDirectory();
+		String projectUriSomeBranchPath = dir.getAbsolutePath();
+		String regExSplit = File.separator;
+		if (("\\").equals(regExSplit)) {
+			regExSplit="\\\\";
+		}
+		String[] projectUriSomeBranchPathComponents = projectUriSomeBranchPath.split(regExSplit);
+		String[] projectUriPathComponents = new String[projectUriSomeBranchPathComponents.length-4];
+		for (int i = 0; i<projectUriPathComponents.length;i++) {
+			projectUriPathComponents[i] = projectUriSomeBranchPathComponents[i];
+		}
+		return String.join(File.separator, projectUriPathComponents);
 	}
 }

@@ -1,14 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import java.io.File;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import com.atlassian.jira.issue.Issue;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
@@ -28,6 +27,33 @@ public interface GitClient {
 	 */
 	public static final String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
 			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "git" + File.separator;
+
+	/**
+	 * Switch git client's directory to the commit.
+	 *
+	 * @param commit
+	 *            name of the feature branch
+	 * @return success or failure boolean
+	 */
+	boolean checkoutCommit(RevCommit commit);
+
+	/**
+	 * Switch git client's directory to dedicated feature branch directory.
+	 *
+	 * @param featureBranchShortName
+	 *            name of the feature branch
+	 * @return success or failure boolean
+	 */
+	boolean checkoutFeatureBranch(String featureBranchShortName);
+
+	/**
+	 * Switch git client's directory to dedicated feature branch directory.
+	 *
+	 * @param featureBranch
+	 *            ref of the feature branch
+	 * @return success or failure boolean
+	 */
+	boolean checkoutFeatureBranch(Ref featureBranch);
 
 	/**
 	 * Retrieves the commits with the JIRA issue key in their commit message.
@@ -89,6 +115,36 @@ public interface GitClient {
 	 * @return map of diff entries and respective edit lists.
 	 */
 	Map<DiffEntry, EditList> getDiff(RevCommit firstCommit, RevCommit lastCommit);
+
+	/**
+	 * Get a list of remote branches in repository.
+	 *
+	 * @return Refs list
+	 */
+	List<Ref> getRemoteBranches();
+
+	/**
+	 * Get a list of all commits of a "feature" branch,
+	 * which do not exist in the "default" branch.
+	 * Commits are sorted by age, beginning with the oldest.
+	 *
+	 * @param featureBranchName
+	 *            name of the feature branch
+	 * @return ordered list of commits unique to this branch.
+	 */
+	List<RevCommit>  getFeatureBranchCommits(String featureBranchName);
+
+	/**
+	 * Get a list of all commits of a "feature" branch,
+	 * which do not exist in the "default" branch.
+	 * Commits are sorted by age, beginning with the oldest.
+	 *
+	 * @param featureBranch
+	 *            ref of the feature branch
+	 * @return ordered list of commits unique to this branch.
+	 */
+	List<RevCommit>  getFeatureBranchCommits(Ref featureBranch);
+
 
 	/**
 	 * Get the jgit repository object.
