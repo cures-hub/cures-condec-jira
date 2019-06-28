@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 
-public class TestVisEdge extends TestSetUpWithIssues {
+public class TestVisGraphEdge extends TestSetUpWithIssues {
 
 	private VisEdge edge;
 	private Link link;

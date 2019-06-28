@@ -2,7 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import javax.xml.bind.annotation.XmlElement;
 
-public class EvolutionNode {
+public class VisTimeLineNode {
 
 	@XmlElement
 	private int id;
@@ -13,7 +13,7 @@ public class EvolutionNode {
 	@XmlElement
 	private String start;
 
-	public EvolutionNode(int id, String content, String startTime) {
+	public VisTimeLineNode(int id, String content, String startTime) {
 		this.id = id;
 		this.content = content;
 		this.start = startTime;

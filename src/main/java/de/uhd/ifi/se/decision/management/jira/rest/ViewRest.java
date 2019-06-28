@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.management.jira.view.vis.VisDataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +26,8 @@ import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
-import de.uhd.ifi.se.decision.management.jira.view.vis.EvolutionDataProvider;
-import de.uhd.ifi.se.decision.management.jira.view.vis.Vis;
+import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
+import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterDataProvider;
 
 /**
@@ -79,8 +80,9 @@ public class ViewRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not valid."))
 					.build();
 		}
-		EvolutionDataProvider dataProvider = new EvolutionDataProvider(projectKey);
-		return Response.ok(dataProvider.getEvolutionData()).build();
+		VisDataProvider visDataProvider = new VisDataProvider(projectKey);
+		VisTimeLine timeLine = visDataProvider.getTimeLine();
+		return Response.ok(timeLine.getEvolutionData()).build();
 	}
 
 	@Path("/getTreant")
@@ -128,8 +130,9 @@ public class ViewRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		Vis vis = new Vis(projectKey,elementKey,false,searchTerm,user);
-		return Response.ok(vis).build();
+		VisDataProvider visDataProvider = new VisDataProvider(projectKey,elementKey,false,searchTerm,user);
+		VisGraph visGraph = visDataProvider.getVisGraph();
+		return Response.ok(visGraph).build();
 	}
 
 	@Path("/getVisFiltered")
@@ -165,8 +168,10 @@ public class ViewRest {
 			//		.entity(ImmutableMap.of("error", "Graph can not be filtered because top Date is NaN")).build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		Vis vis = new Vis(projectKey,elementKey,false,searchTerm,user,issueTypes,createdEarliest,createdLatest,documentationLocation);
-		return Response.ok(vis).build();
+		VisDataProvider visDataProvider = new VisDataProvider(projectKey,elementKey,
+				false,searchTerm,user,issueTypes,createdEarliest,createdLatest,documentationLocation);
+		VisGraph visGraph = visDataProvider.getVisGraph();
+		return Response.ok(visGraph).build();
 	}
 
 	@Path("/getFilterData")
