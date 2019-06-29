@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/cures-hub/cures-condec-jira.svg?branch=master)](https://travis-ci.org/cures-hub/cures-condec-jira)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/bcbb5354da724d718c5b63c0416ee572)](https://www.codacy.com/app/anja.kleebaum/cures-condec-jira?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=cures-hub/cures-condec-jira&amp;utm_campaign=Badge_Grade)
 [![Codecoverage](https://codecov.io/gh/cures-hub/cures-condec-jira/branch/master/graph/badge.svg)](https://codecov.io/gh/cures-hub/cures-condec-jira/branch/master)
+[![GitHub contributors](https://img.shields.io/github/contributors/cures-hub/cures-condec-jira.svg)](https://github.com/cures-hub/cures-condec-jira/graphs/contributors)
 
 The CURES ConDec JIRA plug-in enables the user to capture and explore decision knowledge in [JIRA](https://de.atlassian.com/software/jira).
 Decision knowledge covers knowledge about decisions, the problems they address, solution proposals, their context, and justifications (rationale). The documented decision knowledge can be linked to JIRA issues such as features, tasks to implement a feature, or bug reports.
