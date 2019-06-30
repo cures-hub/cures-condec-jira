@@ -119,7 +119,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		String featureBranch = "featureBranch";
 		String firstCommitMessage = "First message";
 		Git git = gitClient.getGit();
-		String currentBranch = "master";
+		String currentBranch = null;
 
 		// @issue: How can we create a mock feature branch?
 		try {
