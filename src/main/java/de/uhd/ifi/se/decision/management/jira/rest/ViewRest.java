@@ -52,8 +52,11 @@ public class ViewRest {
 			return issueKeyIsInvalid();
 		}
 
-		GitClient gitClient = new GitClientImpl(getProjectKey(issueKey)); //ex: issueKey=ConDec-498
+		GitClient gitClient = new GitClientImpl(getProjectKey(issueKey)); // ex: issueKey=ConDec-498
 		List<Ref> branches = gitClient.getRemoteBranches();
+		if (branches.isEmpty()) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+		}
 		Map<Ref, List<DecisionKnowledgeElement>> ratBranchList = new HashMap<>();
 		GitDecXtract extractor = new GitDecXtract(getProjectKey(issueKey));
 		// TODO: move the loop elsewhere or maybe in GitDecXtract
@@ -229,9 +232,9 @@ public class ViewRest {
 
 	@Path("/getFilterData")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getFilterData(@QueryParam("elementKey") String elementKey, @QueryParam("searchTerm") String query,
-								  @Context HttpServletRequest request) {
+			@Context HttpServletRequest request) {
 		if (elementKey == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Visualization cannot be shown since element key is invalid."))
@@ -271,12 +274,9 @@ public class ViewRest {
 	}
 
 	private Response issueKeyIsInvalid() {
-		String msg = "Decision knowledge elements cannot be shown" +
-				" since issue key is invalid.";
+		String msg = "Decision knowledge elements cannot be shown" + " since issue key is invalid.";
 		LOGGER.error(msg);
-		return Response.status(Status.BAD_REQUEST).entity(
-				ImmutableMap.of("error", msg))
-				.build();
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", msg)).build();
 	}
 
 }

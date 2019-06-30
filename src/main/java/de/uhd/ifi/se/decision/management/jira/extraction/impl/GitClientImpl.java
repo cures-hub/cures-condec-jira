@@ -557,7 +557,7 @@ public class GitClientImpl implements GitClient {
 		List<Ref> refs = new ArrayList<Ref>();
 		try {
 			refs = git.branchList().setListMode(listMode).call();
-		} catch (GitAPIException e) {
+		} catch (GitAPIException | NullPointerException e) {
 			LOGGER.error("Git could not get references. Message: " + e.getMessage());
 		}
 		return refs;
