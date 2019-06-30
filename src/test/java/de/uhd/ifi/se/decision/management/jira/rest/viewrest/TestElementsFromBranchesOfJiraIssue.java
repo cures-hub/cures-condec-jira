@@ -1,24 +1,28 @@
 package de.uhd.ifi.se.decision.management.jira.rest.viewrest;
 
+import static org.junit.Assert.assertEquals;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.ofbiz.core.entity.GenericEntityException;
+
 import com.atlassian.activeobjects.test.TestActiveObjects;
+import com.google.common.collect.ImmutableMap;
+
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ofbiz.core.entity.GenericEntityException;
-
-import static org.junit.Assert.assertEquals;
 
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 @RunWith(ActiveObjectsJUnitRunner.class)
@@ -26,7 +30,7 @@ public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 	private EntityManager entityManager;
 	private ViewRest viewRest;
 
-	private static final String INVALID_PROJECTKEY = "Decision knowledge elements cannot be shown since project key is invalid.";
+	private static final String INVALID_ISSUEKEY = "Decision knowledge elements cannot be shown since issue key is invalid.";
 
 	@Before
 	public void setUp() {
@@ -34,10 +38,6 @@ public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
-		ConfigPersistenceManager.setGitUri("TEST", getRepoUri());
-		/* TODO: uri will not be correctly retrieved
-		String uri = ConfigPersistenceManager.getGitUri("TEST");
-		*/
 	}
 
 	@Test
@@ -46,14 +46,10 @@ public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 	}
 
 	@Test
-	@Ignore("In order for the test to work, the mock PluginSettings must store and return" +
-			"gitUri for the TEST project, which is currently not implemented.")
 	public void testUnknownIssueKey() throws GenericEntityException {
-		/*
-			ProjectManager projectManager = ComponentAccessor.getProjectManager();
-			TODO: Setup the test, so that the git client can get git uri given the project key only.
-		 */
 		assertEquals(400, viewRest.getFeatureBranchTree("HOUDINI-1").getStatus());
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", INVALID_ISSUEKEY))
+				.build().getEntity(), viewRest.getFeatureBranchTree("HOUDINI-1").getEntity());
 	}
 
 	@Test

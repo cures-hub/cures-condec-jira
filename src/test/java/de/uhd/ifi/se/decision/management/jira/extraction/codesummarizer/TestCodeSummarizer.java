@@ -7,12 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.atlassian.jira.issue.Issue;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
@@ -47,7 +48,8 @@ public class TestCodeSummarizer extends TestSetUpGit {
 
 	@Test
 	public void testJiraIssueExisting() {
-		assertEquals("The following classes were changed: *GodClass*\n", summarizer.createSummary(mockJiraIssueForGitTests));
+		assertEquals("The following classes were changed: *GodClass*\n",
+				summarizer.createSummary(mockJiraIssueForGitTests));
 	}
 
 	@Test

@@ -2,20 +2,28 @@ package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
-import com.atlassian.jira.issue.Issue;
-import com.google.common.collect.Lists;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
-import org.eclipse.jgit.api.errors.*;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRefNameException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
+import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawTextComparator;
-import org.eclipse.jgit.lib.*;
+import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.RemoteConfig;
@@ -23,7 +31,11 @@ import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.issue.Issue;
+import com.google.common.collect.Lists;
+
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
@@ -31,13 +43,14 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * @decision Only use jGit.
  * @pro The jGit library is open source.
  * @alternative Both, the jgit library and the git integration for JIRA plugin
- * were used to access git repositories.
+ *              were used to access git repositories.
  * @con An application link and oAuth is needed to call REST API on Java side.
  * 
- * This implementation works well only with configuration for one remote git server.
- * Multiple instances of this class are "thread-safe" in the limited way that
- * the checked out branch files are stored in dedicated branch folders and can be read,
- * modifing files is not safe and not supported.
+ *      This implementation works well only with configuration for one remote
+ *      git server. Multiple instances of this class are "thread-safe" in the
+ *      limited way that the checked out branch files are stored in dedicated
+ *      branch folders and can be read, modifing files is not safe and not
+ *      supported.
  */
 public class GitClientImpl implements GitClient {
 
@@ -60,28 +73,31 @@ public class GitClientImpl implements GitClient {
 	}
 
 	public GitClientImpl(String uri, String defaultDirectory, String projectKey) {
-		// TODO: the last parameter should be a setting retrievable with ConfigPersistenceM
+		// TODO: the last parameter should be a setting retrievable with
+		// ConfigPersistenceM
 		repoInitSuccess = pullOrCloneRepository(projectKey, defaultDirectory, uri, "develop");
 	}
 
 	public GitClientImpl(String uri, String projectKey) {
-		// TODO: the last parameter should be a setting retrievable with ConfigPersistenceManager
+		// TODO: the last parameter should be a setting retrievable with
+		// ConfigPersistenceManager
 		repoInitSuccess = pullOrCloneRepository(projectKey, DEFAULT_DIR, uri, "develop");
 	}
+
 	public GitClientImpl(GitClientImpl originalClient) {
-		repoInitSuccess = pullOrCloneRepository( originalClient.getProjectKey()
-				,originalClient.getDefaultDirectory()
-				,originalClient.getRemoteUri()
-				,originalClient.getDefaultBranchFolderName());
+		repoInitSuccess = pullOrCloneRepository(originalClient.getProjectKey(), originalClient.getDefaultDirectory(),
+				originalClient.getRemoteUri(), originalClient.getDefaultBranchFolderName());
 	}
 
 	public GitClientImpl(String projectKey) {
 		String uri = ConfigPersistenceManager.getGitUri(projectKey);
-		// TODO: the last parameter should be a setting retrievable with ConfigPersistenceManager
+		// TODO: the last parameter should be a setting retrievable with
+		// ConfigPersistenceManager
 		repoInitSuccess = pullOrCloneRepository(projectKey, DEFAULT_DIR, uri, "develop");
 	}
 
-	private boolean pullOrCloneRepository(String projectKey, String defaultDirectory, String uri, String defaultBranchFolderName) {
+	private boolean pullOrCloneRepository(String projectKey, String defaultDirectory, String uri,
+			String defaultBranchFolderName) {
 		fsManager = new GitRepositoryFSManager(defaultDirectory, projectKey, uri, defaultBranchFolderName);
 		File directory = new File(fsManager.getDefaultBranchPath());
 		this.remoteUri = uri;
@@ -157,8 +173,8 @@ public class GitClientImpl implements GitClient {
 		try {
 			git = Git.open(directory);
 		} catch (IOException e) {
-			LOGGER.error("Git repository could not be opened: " + directory.getAbsolutePath() +
-					"\n\t" + e.getMessage());
+			LOGGER.error(
+					"Git repository could not be opened: " + directory.getAbsolutePath() + "\n\t" + e.getMessage());
 			return false;
 		}
 		return true;
@@ -172,8 +188,7 @@ public class GitClientImpl implements GitClient {
 				git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
 			}
 		} catch (GitAPIException e) {
-			LOGGER.error("Issue occurred while pulling from a remote." +
-					"\n\t" + e.getMessage());
+			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t" + e.getMessage());
 			return false;
 		}
 		return true;
@@ -187,8 +202,8 @@ public class GitClientImpl implements GitClient {
 			git = Git.cloneRepository().setURI(uri).setDirectory(directory).setCloneAllBranches(true).call();
 			setConfig();
 		} catch (GitAPIException e) {
-			LOGGER.error("Git repository could not be cloned: " + uri + " " + directory.getAbsolutePath() +
-					"\n\t" + e.getMessage());
+			LOGGER.error("Git repository could not be cloned: " + uri + " " + directory.getAbsolutePath() + "\n\t"
+					+ e.getMessage());
 			return false;
 		}
 		// TODO checkoutDefault branch
@@ -261,7 +276,8 @@ public class GitClientImpl implements GitClient {
 				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
 				diffEntriesMappedToEditLists.put(diffEntry, editList);
 			} catch (IOException e) {
-				LOGGER.error("Git diff for the file " + diffEntry.getNewPath() + " could not be retrieved. Message: " + e.getMessage());
+				LOGGER.error("Git diff for the file " + diffEntry.getNewPath() + " could not be retrieved. Message: "
+						+ e.getMessage());
 			}
 		}
 		diffFormatter.close();
@@ -274,11 +290,12 @@ public class GitClientImpl implements GitClient {
 	}
 
 	/**
-	 * @implNote Temporally switches git client's directory to
-	 * feature branch directory to fetch commits,
-	 * afterwards returns to default branch directory after.
+	 * @implNote Temporally switches git client's directory to feature branch
+	 *           directory to fetch commits, afterwards returns to default branch
+	 *           directory after.
 	 *
-	 * @param featureBranch ref of the feature branch
+	 * @param featureBranch
+	 *            ref of the feature branch
 	 * @return list of unique commits.
 	 */
 	@Override
@@ -312,11 +329,17 @@ public class GitClientImpl implements GitClient {
 		Ref featureBranch = getBranch(featureBranchName);
 		if (null == featureBranch) {
 			/*
-			@issue: What is the return value of methods that would normally return a collection (e.g. list) with an invalid input parameter?
-			@alternative: Methods with an invalid input parameter return an empty list!
-			@pro: Prevents a null pointer exception.
-			@con: Is misleading since it is not clear whether the list is empty but has a valid input parameter or because of an invalid parameter.
-			@alternative: Methods with an invalid input parameter return null!
+			 * @issue: What is the return value of methods that would normally return a
+			 * collection (e.g. list) with an invalid input parameter?
+			 * 
+			 * @alternative: Methods with an invalid input parameter return an empty list!
+			 * 
+			 * @pro: Prevents a null pointer exception.
+			 * 
+			 * @con: Is misleading since it is not clear whether the list is empty but has a
+			 * valid input parameter or because of an invalid parameter.
+			 * 
+			 * @alternative: Methods with an invalid input parameter return null!
 			 */
 			return (List<RevCommit>) null;
 		}
@@ -394,7 +417,7 @@ public class GitClientImpl implements GitClient {
 
 	@Override
 	public void deleteRepository() {
-		if (git == null) {
+		if (git == null | this.getDirectory() != null) {
 			return;
 		}
 		close();
@@ -414,8 +437,8 @@ public class GitClientImpl implements GitClient {
 
 	@Override
 	/**
-	 * Switches git client's directory to feature branch directory
-	 * and i.e. DOES NOT go back to default branch directory.
+	 * Switches git client's directory to feature branch directory and i.e. DOES NOT
+	 * go back to default branch directory.
 	 */
 	public boolean checkoutFeatureBranch(String featureBranchShortName) {
 		Ref featureBranch = getBranch(featureBranchShortName);
@@ -428,9 +451,9 @@ public class GitClientImpl implements GitClient {
 
 	@Override
 	/**
-	 * Switches git client's directory to commit directory
-	 * checks out files in working dir for the commit
-	 * and i.e. DOES NOT go back to default branch directory.
+	 * Switches git client's directory to commit directory checks out files in
+	 * working dir for the commit and i.e. DOES NOT go back to default branch
+	 * directory.
 	 */
 	public boolean checkoutCommit(RevCommit commit) {
 		String commitName = commit.getName();
@@ -438,23 +461,21 @@ public class GitClientImpl implements GitClient {
 		// will copy default branch folder
 		File directory = new File(fsManager.prepareBranchDirectory(commitName));
 
-		return (switchGitDirectory(directory)&& checkout(commit.getName()));
+		return (switchGitDirectory(directory) && checkout(commit.getName()));
 	}
 
 	@Override
 	/**
-	 * Switches git client's directory to feature branch directory
-	 * and i.e. DOES NOT go back to default branch directory.
+	 * Switches git client's directory to feature branch directory and i.e. DOES NOT
+	 * go back to default branch directory.
 	 */
 	public boolean checkoutFeatureBranch(Ref featureBranch) {
 		String branchNameComponents[] = featureBranch.getName().split("/");
 		String branchShortName = branchNameComponents[branchNameComponents.length - 1];
 		File directory = new File(fsManager.prepareBranchDirectory(branchShortName));
 
-		return (switchGitDirectory(directory)
-				&& createLocalBranchIfNotExists(branchShortName)
-				&& checkout(branchShortName)
-				&& pull());
+		return (switchGitDirectory(directory) && createLocalBranchIfNotExists(branchShortName)
+				&& checkout(branchShortName) && pull());
 	}
 
 	@Override
@@ -472,16 +493,15 @@ public class GitClientImpl implements GitClient {
 		 * @issue How to get the commits for branches that are not on the master branch?
 		 * @decision Assume that the branch name begins with the JIRA issue key!
 		 * @pro This simple rule will work just fine.
-		 * @con The rule is too simple. Issues with low key numbers could collect branches
-		 * of much higher issues also. ex. search for "CONDEC-1" would find branches
-		 * beginning with CONDEC-1 BUT as well the ones for issues with keys
-		 * "CONDEC-10", "CONDEC-11" , "CONDEC-100" etc.
+		 * @con The rule is too simple. Issues with low key numbers could collect
+		 *      branches of much higher issues also. ex. search for "CONDEC-1" would
+		 *      find branches beginning with CONDEC-1 BUT as well the ones for issues
+		 *      with keys "CONDEC-10", "CONDEC-11" , "CONDEC-100" etc.
 		 * @alternative Assume the branch name begins with the JIRA issue key and a dot
-		 * character follows directly afterwards!
-		 * @pro issues with low key number (ex. CONDEC-1) and higher key numbers
-		 * (ex. CONDEC-1000) will not be confused.
+		 *              character follows directly afterwards!
+		 * @pro issues with low key number (ex. CONDEC-1) and higher key numbers (ex.
+		 *      CONDEC-1000) will not be confused.
 		 */
-
 
 		Ref branch = getRef(jiraIssueKey);
 		List<RevCommit> commits = getCommits(branch);
@@ -500,25 +520,34 @@ public class GitClientImpl implements GitClient {
 	public List<RevCommit> getCommits() {
 		List<RevCommit> commits = new ArrayList<RevCommit>();
 		for (Ref branch : getRemoteBranches()) {
-			/* @issue: All branches will be created in separate file system
-			 * folders for this method's loop. How can this be prevented?
+			/*
+			 * @issue: All branches will be created in separate file system folders for this
+			 * method's loop. How can this be prevented?
 			 *
-			 * @alternative: remove this method completely,
-			 * fetching commits from all branches is not sensible!
+			 * @alternative: remove this method completely, fetching commits from all
+			 * branches is not sensible!
+			 * 
 			 * @pro: this method seems to be used only for code testing (TestGetCommits)
-			 * @con: scraping it would require coding improvement in test code (TestGetCommits),
-			 * but who wants to spend time on that;)
+			 * 
+			 * @con: scraping it would require coding improvement in test code
+			 * (TestGetCommits), but who wants to spend time on that;)
 			 *
-			 * @alternative: We could check whether the JIRA issue key is part of the branch name
-			 * and - if so - only use the commits from this branch.
+			 * @alternative: We could check whether the JIRA issue key is part of the branch
+			 * name and - if so - only use the commits from this branch.
 			 *
-			 * @decision: release branch folders if possible,
-			 * so that in best case only one folder will be used!
+			 * @decision: release branch folders if possible, so that in best case only one
+			 * folder will be used!
+			 * 
 			 * @pro: implementation does not seem to be complex at all.
+			 * 
 			 * @pro: until discussion are not finished, seems like a cheap workaround
+			 * 
 			 * @con: a workaround which has potential to stay forever in the code base
+			 * 
 			 * @con: still some more code will be written
-			 * @con: scraping it, would require coding improvement in test code (TestGetCommits)
+			 * 
+			 * @con: scraping it, would require coding improvement in test code
+			 * (TestGetCommits)
 			 */
 			commits.addAll(getCommits(branch));
 		}
@@ -526,8 +555,8 @@ public class GitClientImpl implements GitClient {
 	}
 
 	/*
-	 * TODO: This method and getCommits(Issue jiraIssue) need refactoring and
-	 * deeper discussions!
+	 * TODO: This method and getCommits(Issue jiraIssue) need refactoring and deeper
+	 * discussions!
 	 */
 	private Ref getRef(String jiraIssueKey) {
 		List<Ref> refs = getAllRefs();
@@ -557,7 +586,7 @@ public class GitClientImpl implements GitClient {
 		List<Ref> refs = new ArrayList<Ref>();
 		try {
 			refs = git.branchList().setListMode(listMode).call();
-		} catch (GitAPIException e) {
+		} catch (GitAPIException | NullPointerException e) {
 			LOGGER.error("Git could not get references. Message: " + e.getMessage());
 		}
 		return refs;
@@ -589,16 +618,14 @@ public class GitClientImpl implements GitClient {
 			directory = new File(fsManager.prepareBranchDirectory(branchShortName));
 		}
 
-		if (switchGitDirectory(directory)
-				&& createLocalBranchIfNotExists(branchShortName)
-				&& checkout(branchShortName)
+		if (switchGitDirectory(directory) && createLocalBranchIfNotExists(branchShortName) && checkout(branchShortName)
 				&& pull()) {
 			Iterable<RevCommit> iterable = null;
 			try {
 				iterable = git.log().call();
 			} catch (GitAPIException e) {
-				LOGGER.error("Git could not get commits for the branch: "
-						+ branch.getName() + " Message: " + e.getMessage());
+				LOGGER.error("Git could not get commits for the branch: " + branch.getName() + " Message: "
+						+ e.getMessage());
 			}
 			if (iterable != null) {
 				for (RevCommit commit : iterable) {
@@ -616,8 +643,8 @@ public class GitClientImpl implements GitClient {
 	private boolean checkout(String checkoutObjectName) {
 		try {
 			git.checkout().setName(checkoutObjectName).call();
-		} catch (GitAPIException e) {
-			LOGGER.error("Could not checkout "+checkoutObjectName+". " + e.getMessage());
+		} catch (GitAPIException | JGitInternalException e) {
+			LOGGER.error("Could not checkout " + checkoutObjectName + ". " + e.getMessage());
 			return false;
 		}
 		return true;
@@ -643,8 +670,8 @@ public class GitClientImpl implements GitClient {
 		try {
 			git = git.open(gitDirectory);
 		} catch (IOException e) {
-			LOGGER.error("Could not switch into git directory " + gitDirectory.getAbsolutePath()
-					+ "\r\n" + e.getMessage());
+			LOGGER.error(
+					"Could not switch into git directory " + gitDirectory.getAbsolutePath() + "\r\n" + e.getMessage());
 			return false;
 		}
 		return true;
