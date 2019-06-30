@@ -468,9 +468,21 @@ public class GitClientImpl implements GitClient {
 			LOGGER.error("Commits cannot be retrieved since git object is null.");
 			return commitsForJiraIssue;
 		}
-		// @issue How to get the commits for branches that are not on the master branch?
-		// @decision Assume that the JIRA issue key equals the branch name, otherwise
-		// return commits on master branch
+		/**
+		 * @issue How to get the commits for branches that are not on the master branch?
+		 * @decision Assume that the branch name begins with the JIRA issue key!
+		 * @pro This simple rule will work just fine.
+		 * @con The rule is too simple. Issues with low key numbers could collect branches
+		 * of much higher issues also. ex. search for "CONDEC-1" would find branches
+		 * beginning with CONDEC-1 BUT as well the ones for issues with keys
+		 * "CONDEC-10", "CONDEC-11" , "CONDEC-100" etc.
+		 * @alternative Assume the branch name begins with the JIRA issue key and a dot
+		 * character follows directly afterwards!
+		 * @pro issues with low key number (ex. CONDEC-1) and higher key numbers
+		 * (ex. CONDEC-1000) will not be confused.
+		 */
+
+
 		Ref branch = getRef(jiraIssueKey);
 		List<RevCommit> commits = getCommits(branch);
 		for (RevCommit commit : commits) {

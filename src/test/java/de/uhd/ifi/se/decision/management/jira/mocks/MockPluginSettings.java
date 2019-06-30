@@ -2,16 +2,22 @@ package de.uhd.ifi.se.decision.management.jira.mocks;
 
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MockPluginSettings implements PluginSettings {
-	
+	private Map<String, Object> settings = new HashMap<>();
+
 	@Override
 	public Object get(String s) {
-		return null;
+		Object returnVal = settings.get(s);
+		return returnVal;
 	}
 
 	@Override
 	public Object put(String s, Object o) {
-		return null;
+		settings.put(s,o);
+		return o;
 	}
 
 	@Override
