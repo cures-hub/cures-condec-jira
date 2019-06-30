@@ -475,9 +475,9 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	public void testGetEnabledWebhookTypesFilled() {
 		assertEquals(13, ConfigPersistenceManager.getEnabledWebhookTypes("TEST").size(), 0.0);
 	}
-	
+
 	@Test
 	public void testGetGitUri() {
-		assertEquals(TestGitClient.getExampleUri(), ConfigPersistenceManager.getGitUri("TEST"));
+		assertEquals(TestGitClient.GIT_URI, ConfigPersistenceManager.getGitUri("TEST"));
 	}
 }

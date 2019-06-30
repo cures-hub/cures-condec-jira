@@ -29,26 +29,34 @@ import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 public class TestSetUpGit extends TestSetUpWithIssues {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestSetUpGit.class);
+	public static String GIT_URI;
+	public static File DIRECTORY;
 	protected static GitClient gitClient;
 	protected MockIssue mockJiraIssueForGitTests;
 
 	@BeforeClass
-	public static void setUpBeforeClass() throws IOException {
-		File directory = getExampleDirectory();
-		String uri = getExampleUri();
-		gitClient = new GitClientImpl(uri, directory.getAbsolutePath(), "TEST");
+	public static void setUpBeforeClass() {		
+		if (gitClient != null && gitClient.getDirectory() != null) {
+			return;
+		}
+		
+		GIT_URI = getExampleUri();
+		DIRECTORY = getExampleDirectory();
+		
+		gitClient = new GitClientImpl(GIT_URI, DIRECTORY.getAbsolutePath(), "TEST");
+
 		// above line will log errors for pulling from still empty remote repositry.
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
 		makeExampleCommit("readMe.txt", "Self-explanatory, ReadMe not necessary.",
 				"TEST-12: Explain how the great software works");
-		makeExampleCommit("GodClass.java", "public class GodClass {" +
-				"//@issue:Small code issue in GodClass, it does nothing." +
-				"\r\n}"
-				,"TEST-12: Develop great software");
+		makeExampleCommit("GodClass.java",
+				"public class GodClass {" + "//@issue:Small code issue in GodClass, it does nothing." + "\r\n}",
+				"TEST-12: Develop great software");
 		setupBranchWithDecKnowledge();
-
-		gitClient.close();
-		gitClient = new GitClientImpl(uri, directory.getAbsolutePath(), "TEST");
+		//
+		// // @issue: Is this really needed? Why do we close the git client here?
+		// gitClient.close();
+		// gitClient = new GitClientImpl(GIT_URI, DIRECTORY.getAbsolutePath(), "TEST");
 	}
 
 	@Before
@@ -59,6 +67,9 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 	}
 
 	private static File getExampleDirectory() {
+		if (DIRECTORY != null) {
+			return DIRECTORY;
+		}
 		File directory = null;
 		try {
 			directory = File.createTempFile("clone", "");
@@ -71,6 +82,9 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 	}
 
 	public static String getExampleUri() {
+		if (GIT_URI != null) {
+			return GIT_URI;
+		}
 		String uri = "";
 		try {
 			File remoteDir = File.createTempFile("remote", "");
@@ -104,55 +118,41 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 	private static void setupBranchWithDecKnowledge() {
 		String featureBranch = "featureBranch";
 		String firstCommitMessage = "First message";
-		String currentBranch = null;
 		Git git = gitClient.getGit();
+		String currentBranch = "master";
+
+		// @issue: How can we create a mock feature branch?
 		try {
 			currentBranch = git.getRepository().getBranch();
 			git.branchCreate().setName(featureBranch).call();
 			git.checkout().setName(featureBranch).call();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		makeExampleCommit("readMe.featureBranch.txt"
-				, "First content"
-				, firstCommitMessage);
+		makeExampleCommit("readMe.featureBranch.txt", "First content", firstCommitMessage);
 
-		makeExampleCommit("GodClass.java", "public class GodClass {" +
-						"//@issue:code issue in GodClass" +
-						"\r\n}"
-				, "Second message");
+		makeExampleCommit("GodClass.java", "public class GodClass {" + "//@issue:code issue in GodClass" + "\r\n}",
+				"Second message");
 
-		makeExampleCommit("HermesGodClass.java", "public class HermesGodClass {" +
-						"//@issue:1st code issue in one-line comment in HermesGodClass" +
-						"\r\n/*\r\n@issue:2nd issue in comment block*/"+
-						"\r\n/**\r\n* @issue:3rd issue in javadoc"+
-						"\r\n*\r\n* @alternative:1st alt in javadoc*/"+
-						"\r\n}"
-				, "TEST-12: Develop great software" +
-						"//[issue]Huston we have a small problem..[/issue]" +
-						"\r\n"+
-						"//[alternative]ignore it![/alternative]" +
-						"\r\n"+
-						"//[pro]ignorance is bliss[/pro]" +
-						"\r\n"+
-						"//[decision]solve it ASAP![/decision]" +
-						"\r\n"+
-						"//[pro]life is valuable, prevent even smallest risks[/pro]"
-						);
+		makeExampleCommit("HermesGodClass.java",
+				"public class HermesGodClass {" + "//@issue:1st code issue in one-line comment in HermesGodClass"
+						+ "\r\n/*\r\n@issue:2nd issue in comment block*/" + "\r\n/**\r\n* @issue:3rd issue in javadoc"
+						+ "\r\n*\r\n* @alternative:1st alt in javadoc*/" + "\r\n}",
+				"TEST-12: Develop great software" + "//[issue]Huston we have a small problem..[/issue]" + "\r\n"
+						+ "//[alternative]ignore it![/alternative]" + "\r\n" + "//[pro]ignorance is bliss[/pro]"
+						+ "\r\n" + "//[decision]solve it ASAP![/decision]" + "\r\n"
+						+ "//[pro]life is valuable, prevent even smallest risks[/pro]");
 		returnToPreviousBranch(currentBranch, git);
 	}
 
 	private static void returnToPreviousBranch(String branch, Git git) {
-		if (branch==null) {
+		if (branch == null) {
 			return;
-		}
-		else {
+		} else {
 			try {
 				git.checkout().setName(branch).call();
 				git.pull();
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
@@ -170,14 +170,12 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		try {
 			remoteList = gitClient.getGit().remoteList().call();
 
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		if (remoteList==null) {
+		if (remoteList == null) {
 			return "";
-		}
-		else {
+		} else {
 			RemoteConfig remoteHead = remoteList.get(0);
 			URIish uriHead = remoteHead.getURIs().get(0);
 
@@ -192,11 +190,11 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		String projectUriSomeBranchPath = dir.getAbsolutePath();
 		String regExSplit = File.separator;
 		if (("\\").equals(regExSplit)) {
-			regExSplit="\\\\";
+			regExSplit = "\\\\";
 		}
 		String[] projectUriSomeBranchPathComponents = projectUriSomeBranchPath.split(regExSplit);
-		String[] projectUriPathComponents = new String[projectUriSomeBranchPathComponents.length-4];
-		for (int i = 0; i<projectUriPathComponents.length;i++) {
+		String[] projectUriPathComponents = new String[projectUriSomeBranchPathComponents.length - 4];
+		for (int i = 0; i < projectUriPathComponents.length; i++) {
 			projectUriPathComponents[i] = projectUriSomeBranchPathComponents[i];
 		}
 		return String.join(File.separator, projectUriPathComponents);

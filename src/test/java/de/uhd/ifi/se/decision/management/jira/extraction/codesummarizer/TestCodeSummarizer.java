@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.atlassian.jira.issue.Issue;
+
+import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.revwalk.RevCommit;

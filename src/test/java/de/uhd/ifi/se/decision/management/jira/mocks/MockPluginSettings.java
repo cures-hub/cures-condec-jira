@@ -20,7 +20,7 @@ public class MockPluginSettings implements PluginSettings {
 	public static Map<String, Object> getDefaultSettings() {
 		String subfix = ComponentGetter.getPluginStorageKey() + ".";
 		Map<String, Object> settings = new HashMap<String, Object>();
-		settings.put(subfix + "gitUri", TestGitClient.getExampleUri());
+		settings.put(subfix + "gitUri", TestGitClient.GIT_URI);
 		settings.put(subfix + "webhookUrl", "http://true");
 		settings.put(subfix + "isIssueStrategy", "true");
 		settings.put(subfix + "isKnowledgeExtractedFromIssues", "true");

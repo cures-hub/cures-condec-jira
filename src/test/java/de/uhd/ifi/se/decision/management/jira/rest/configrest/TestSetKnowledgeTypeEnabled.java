@@ -2,6 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+
+import org.eclipse.jgit.api.Git;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
