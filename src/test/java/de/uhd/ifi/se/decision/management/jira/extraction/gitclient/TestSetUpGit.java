@@ -70,7 +70,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		return directory;
 	}
 
-	private static String getExampleUri() {
+	public static String getExampleUri() {
 		String uri = "";
 		try {
 			File remoteDir = File.createTempFile("remote", "");

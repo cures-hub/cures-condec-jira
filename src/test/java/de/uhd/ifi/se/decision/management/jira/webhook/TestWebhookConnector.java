@@ -82,14 +82,14 @@ public class TestWebhookConnector extends TestSetUpWithIssues {
 	@Test
 	public void testConstructorWrongProjectKey() {
 		WebhookConnector connector = new WebhookConnector("NoTest");
-		assertEquals("true", connector.getUrl());
+		assertEquals("http://true", connector.getUrl());
 		assertFalse(connector.sendElementChanges(null));
 	}
 
 	@Test
 	public void testConstructorCorrectProjectKey() {
 		WebhookConnector connector = new WebhookConnector("TEST");
-		assertEquals("true", connector.getUrl());
+		assertEquals("http://true", connector.getUrl());
 		assertFalse(connector.sendElementChanges(null));
 	}
 
