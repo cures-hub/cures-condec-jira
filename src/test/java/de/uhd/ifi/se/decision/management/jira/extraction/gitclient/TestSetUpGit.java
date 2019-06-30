@@ -23,6 +23,19 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 
+/**
+ * @issue Should we have one or more git repositories for testing?
+ * @decision We have one mock git repositories for testing!
+ * @pro The mock git repository can be easily accessed using the Plugin Settings
+ *      (see ConfigPersistenceManager class).
+ * @pro This is more efficient than recreating the test git repository all the
+ *      time.
+ * @con Changes to the git repository (e.g. new commits) during testing has an
+ *      effect on the test cases that follow. The order of test cases is
+ *      arbitrary.
+ * @alternative We could have more than one mock git repositories for testing!
+ *
+ */
 public class TestSetUpGit extends TestSetUpWithIssues {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestSetUpGit.class);
