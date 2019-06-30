@@ -19,12 +19,10 @@ import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplateWebhook;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -129,7 +127,6 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 
 		String newText = "some fancy new text";
 		decisionKnowledgeElement.setDescription(newText);
-		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
 		decisionKnowledgeElement.setType(KnowledgeType.PRO);
 
 		assertEquals(Status.OK.getStatusCode(),
@@ -143,12 +140,12 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledWithCommentChangedCheckValidTextWithManuallTaggedComment() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("{issue}This is a test sentence.{Issue}");
+		List<PartOfJiraIssueText> comment = TestTextSplitter
+				.getSentencesForCommentText("{issue}This is a test sentence.{Issue}");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
-		
+
 		String newText = "some fancy new text";
 		decisionKnowledgeElement.setDescription(newText);
-		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
 		decisionKnowledgeElement.setType(KnowledgeType.ISSUE);
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "s").getStatus());

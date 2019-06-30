@@ -62,7 +62,7 @@ import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 
 public class TestSetUpWithIssues {
-	private ProjectManager projectManager;
+	protected ProjectManager projectManager;
 	private IssueManager issueManager;
 	private ConstantsManager constantsManager;
 	protected MockIssue issue;

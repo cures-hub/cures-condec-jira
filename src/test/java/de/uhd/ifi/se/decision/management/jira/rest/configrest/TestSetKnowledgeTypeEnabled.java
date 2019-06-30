@@ -1,16 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+import static org.junit.Assert.assertEquals;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response;
-
-import static org.junit.Assert.assertEquals;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestSetKnowledgeTypeEnabled extends TestConfigSuper {
@@ -152,20 +153,20 @@ public class TestSetKnowledgeTypeEnabled extends TestConfigSuper {
 
 	@Test
 	public void testRequestNullProjectKeyExistsIsActivatedTrueKnowledgeTypeFilled() {
-		assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-				configRest.setKnowledgeTypeEnabled(null, "TEST", "true", KnowledgeType.SOLUTION.toString()).getEntity());
+		assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(), configRest
+				.setKnowledgeTypeEnabled(null, "TEST", "true", KnowledgeType.SOLUTION.toString()).getEntity());
 	}
 
 	@Test
 	public void testRequestNullProjectKeyExistsIsActivatedFalseKnowledgeTypeFilled() {
-		assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-				configRest.setKnowledgeTypeEnabled(null, "TEST", "false", KnowledgeType.SOLUTION.toString()).getEntity());
+		assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(), configRest
+				.setKnowledgeTypeEnabled(null, "TEST", "false", KnowledgeType.SOLUTION.toString()).getEntity());
 	}
 
 	@Test
 	public void testRequestNullProjectKeyDoesNotExistIsActivatedNullKnowledgeTypeFilled() {
-		assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-				configRest.setKnowledgeTypeEnabled(null, "NotTEST", null, KnowledgeType.SOLUTION.toString()).getEntity());
+		assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(), configRest
+				.setKnowledgeTypeEnabled(null, "NotTEST", null, KnowledgeType.SOLUTION.toString()).getEntity());
 	}
 
 	@Test
@@ -188,8 +189,8 @@ public class TestSetKnowledgeTypeEnabled extends TestConfigSuper {
 
 	@Test
 	public void testSetActivatedRequestExistsProjectKeyNullIsActivatedTrueKnowledgeTypeFilled() {
-		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-				configRest.setKnowledgeTypeEnabled(request, null, "true", KnowledgeType.SOLUTION.toString()).getEntity());
+		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(), configRest
+				.setKnowledgeTypeEnabled(request, null, "true", KnowledgeType.SOLUTION.toString()).getEntity());
 	}
 
 	@Test
@@ -200,8 +201,8 @@ public class TestSetKnowledgeTypeEnabled extends TestConfigSuper {
 
 	@Test
 	public void testRequestExistsProjectKeyExistsIsActivatedNullKnowledgeTypeFilled() {
-		assertEquals(getBadRequestResponse(INVALID_KNOWLEDGE_ENABLED).getEntity(),
-				configRest.setKnowledgeTypeEnabled(request, "TEST", null, KnowledgeType.SOLUTION.toString()).getEntity());
+		assertEquals(getBadRequestResponse(INVALID_KNOWLEDGE_ENABLED).getEntity(), configRest
+				.setKnowledgeTypeEnabled(request, "TEST", null, KnowledgeType.SOLUTION.toString()).getEntity());
 	}
 
 	@Test
