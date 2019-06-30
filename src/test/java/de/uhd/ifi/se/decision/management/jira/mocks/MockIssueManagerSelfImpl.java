@@ -15,7 +15,7 @@ import com.atlassian.jira.mock.MockIssueManager;
 public class MockIssueManagerSelfImpl extends MockIssueManager {
 
 	@Override
-	public MutableIssue getIssueByKeyIgnoreCase (String key) {
+	public MutableIssue getIssueByKeyIgnoreCase(String key) {
 		MutableIssue value = getIssueObject(key);
 		if (value != null)
 			return value;
@@ -72,7 +72,7 @@ public class MockIssueManagerSelfImpl extends MockIssueManager {
 
 	@Override
 	public MutableIssue getIssueObject(String key) {
-		if ("false".equals(key)) {
+		if ("false".equals(key) || !key.startsWith("TEST")) {
 			return null;
 		}
 		Issue issue = this.getIssueObject((long) 14);
