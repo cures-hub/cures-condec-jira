@@ -15,6 +15,20 @@ import com.atlassian.jira.mock.MockIssueManager;
 public class MockIssueManagerSelfImpl extends MockIssueManager {
 
 	@Override
+	public MutableIssue getIssueByKeyIgnoreCase (String key) {
+		MutableIssue value = getIssueObject(key);
+		if (value != null)
+			return value;
+
+		value = getIssueObject(key.toLowerCase());
+		if (value != null)
+			return value;
+
+		value = getIssueObject(key.toUpperCase());
+		return value;
+	}
+
+	@Override
 	public Collection<Long> getIssueIdsForProject(Long id) throws GenericEntityException {
 		if (id == 10) {
 			throw new GenericEntityException();

@@ -21,8 +21,13 @@ public class DiffViewer {
 
 
 	public DiffViewer(Map<Ref, List<DecisionKnowledgeElement>> ratBranchList) {
-		Iterator<Map.Entry<Ref, List<DecisionKnowledgeElement>>> it = ratBranchList.entrySet().iterator();
 		branches = new ArrayList<>();
+		if (ratBranchList == null) {
+			return;
+		}
+
+		Iterator<Map.Entry<Ref, List<DecisionKnowledgeElement>>> it = ratBranchList.entrySet().iterator();
+
 		while (it.hasNext()) {
 			Map.Entry<Ref, List<DecisionKnowledgeElement>> entry = it.next();
 			branches.add(new BranchDiff(entry.getKey().getName(), entry.getValue()));
