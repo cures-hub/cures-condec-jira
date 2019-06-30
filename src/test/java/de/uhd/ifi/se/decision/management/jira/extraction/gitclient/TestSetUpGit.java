@@ -5,14 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
-import org.eclipse.jgit.transport.RemoteConfig;
-import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.util.FS;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -35,14 +32,14 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 	protected MockIssue mockJiraIssueForGitTests;
 
 	@BeforeClass
-	public static void setUpBeforeClass() {		
+	public static void setUpBeforeClass() {
 		if (gitClient != null && gitClient.getDirectory() != null) {
 			return;
 		}
-		
+
 		GIT_URI = getExampleUri();
 		DIRECTORY = getExampleDirectory();
-		
+
 		gitClient = new GitClientImpl(GIT_URI, DIRECTORY.getAbsolutePath(), "TEST");
 
 		// above line will log errors for pulling from still empty remote repositry.
@@ -165,29 +162,8 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 
 	// helpers
 
-	protected String getRepoUri() {
-		List<RemoteConfig> remoteList = null;
-		try {
-			remoteList = gitClient.getGit().remoteList().call();
-
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		if (remoteList == null) {
-			return "";
-		} else {
-			RemoteConfig remoteHead = remoteList.get(0);
-			URIish uriHead = remoteHead.getURIs().get(0);
-
-			return uriHead.toString();
-		}
-
-	}
-
 	protected String getRepoBaseDirectory() {
-		Repository repo = gitClient.getGit().getRepository();
-		File dir = repo.getDirectory();
-		String projectUriSomeBranchPath = dir.getAbsolutePath();
+		String projectUriSomeBranchPath = DIRECTORY.getAbsolutePath();
 		String regExSplit = File.separator;
 		if (("\\").equals(regExSplit)) {
 			regExSplit = "\\\\";

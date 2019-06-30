@@ -15,7 +15,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 public class TestGetFeatureBranchCommits extends TestSetUpGit {
 
 	private final String repoBaseDirectory;
-	private final String uri;
 	private GitClient testGitClient;
 
 	private String featureBranch = "featureBranch";
@@ -23,13 +22,12 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 
 	public TestGetFeatureBranchCommits() {
 		repoBaseDirectory = super.getRepoBaseDirectory();
-		uri = super.getRepoUri();
 	}
 
 	@Test
 	public void testGetFeatureBranchCommitsByString() {
 		// fetches the 'default' branch commits. Do not use TestSetUpGit' gitClient
-		testGitClient = new GitClientImpl(uri, repoBaseDirectory, "TEST");
+		testGitClient = new GitClientImpl(GIT_URI, repoBaseDirectory, "TEST");
 
 		List<RevCommit> commits = testGitClient.getFeatureBranchCommits(featureBranch);
 		assertEquals(3, commits.size());
@@ -39,7 +37,7 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 	@Test
 	public void testGetFeatureBranchCommitsByRef() {
 		// fetches the 'default' branch commits. Do not use TestSetUpGit' gitClient
-		testGitClient = new GitClientImpl(uri, repoBaseDirectory, "TEST");
+		testGitClient = new GitClientImpl(GIT_URI, repoBaseDirectory, "TEST");
 
 		// get the Ref
 		List<Ref> remoteBranches = testGitClient.getRemoteBranches();
