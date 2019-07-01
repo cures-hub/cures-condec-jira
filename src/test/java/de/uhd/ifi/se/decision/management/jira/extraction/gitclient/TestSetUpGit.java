@@ -131,6 +131,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		DIRECTORY = directory;
 		return directory;
 	}
 
@@ -150,6 +151,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		GIT_URI = uri;
 		return uri;
 	}
 
