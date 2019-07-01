@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
@@ -22,14 +21,14 @@ public class TestGetSummarizedCode extends TestSetUpGit {
 	}
 
 	@Test
-	@Ignore
 	public void testElementIdFilledProjectExistentDocumentationLocationJiraIssue() {
 		assertEquals(Status.OK.getStatusCode(), knowledgeRest.getSummarizedCode(12, "TEST", "i", 0).getStatus());
 	}
 
 	@Test
 	public void testElementIdNegativeProjectExistentDocumentationLocationJiraIssue() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), knowledgeRest.getSummarizedCode(-1, "TEST", "i", 0).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				knowledgeRest.getSummarizedCode(-1, "TEST", "i", 0).getStatus());
 	}
 
 	@Test

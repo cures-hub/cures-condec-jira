@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -27,7 +28,6 @@ public class ChangedFileImpl implements ChangedFile {
 
 	private Set<String> methodDeclarations;
 	private float probabilityOfCorrectness;
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChangedFile.class);
 
 	// @issue How to model whether a changed file is correctly linked to a
@@ -158,11 +158,17 @@ public class ChangedFileImpl implements ChangedFile {
 
 	@Override
 	public List<String> getPackageName() {
-		Optional<PackageDeclaration> optional = getCompilationUnit().getPackageDeclaration();
-		if (optional == null || optional.get() == null) {
-			return new ArrayList<String>();
+		List<String> partsOfPackageName = new ArrayList<String>();
+		if (getCompilationUnit() == null) {
+			return partsOfPackageName;
 		}
-		return new ArrayList<String>(
-				Arrays.asList(optional.get().toString().replaceAll("\n", "").replaceAll(";", "").split("\\.")));
+		Optional<PackageDeclaration> optional = getCompilationUnit().getPackageDeclaration();
+		try {
+			partsOfPackageName = Arrays
+					.asList(optional.get().toString().replaceAll("\n", "").replaceAll(";", "").split("\\."));
+		} catch (NoSuchElementException e) {
+			LOGGER.error(e.getMessage());
+		}
+		return partsOfPackageName;
 	}
 }
