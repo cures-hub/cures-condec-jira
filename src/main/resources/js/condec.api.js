@@ -305,8 +305,9 @@
 	 * external references: condec.vis
 	 */
 	ConDecAPI.prototype.getVis = function getVis(elementKey, searchTerm, callback) {
+		var filterData = [];
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey + "&searchTerm="
-				+ searchTerm, function(error, vis) {
+				+ searchTerm + "&filterData=" + filterData, function(error, vis) {
 			if (error === null) {
 				callback(vis);
 			}
@@ -318,10 +319,9 @@
 	 */
 	ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, issueTypes, createdAfter,
 			createdBefore, documentationLocation, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVisFiltered.json?elementKey=" + elementKey
-				+ "&searchTerm=" + searchTerm + "&issueTypes=" + issueTypes + "&createdAfter=" + createdAfter
-				+ "&createdBefore=" + createdBefore + "&documentationLocation=" + documentationLocation, function(
-				error, vis) {
+		var filterData = ["issueTypes:"+ issueTypes,"createdAfter:" + createdAfter, "createdBefore:" + createdBefore, "documentationLocation:" + documentationLocation];
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey + "&searchTerm="
+			+ searchTerm + "&filterData=" + filterData, function(error, vis) {
 			if (error === null) {
 				callback(vis);
 			}

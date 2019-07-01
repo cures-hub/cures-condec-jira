@@ -13,11 +13,9 @@ public class VisDataProvider {
 	private FilterExtractor filterExtractor;
 	private List<DecisionKnowledgeElement> decisionKnowledgeElements;
 
-	public VisDataProvider(String projectKey){
-	}
 
-	public VisDataProvider(String projectKey, ApplicationUser user){
-		this.filterExtractor = new FilterExtractor(projectKey, user, "");
+	public VisDataProvider(String projectKey){
+		this.timeLine = new VisTimeLine(projectKey);
 	}
 
 	public VisDataProvider(String projectKey, String elementKey, boolean isHyperlinked, String query, ApplicationUser user) {

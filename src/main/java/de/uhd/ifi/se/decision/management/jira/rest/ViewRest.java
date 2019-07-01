@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -119,10 +120,12 @@ public class ViewRest {
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response getVis(@QueryParam("elementKey") String elementKey, @QueryParam("searchTerm") String searchTerm,
-						   @Context HttpServletRequest request) {
+						   @QueryParam("filterData") List<String> filterData, @Context HttpServletRequest request) {
 		if(checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()){
 			return checkIfElementIsValid(elementKey);
 		}
+		//TODO Split with data Set and not Set get rid of the getVisFiltered function
+		System.out.println(filterData);
 		String projectKey = getProjectKey(elementKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisDataProvider visDataProvider = new VisDataProvider(projectKey,elementKey,false,searchTerm,user);
