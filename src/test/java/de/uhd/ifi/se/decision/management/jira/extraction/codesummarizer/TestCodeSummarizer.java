@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.codesummarizer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,10 +43,10 @@ public class TestCodeSummarizer extends TestSetUpGit {
 		assertEquals("", summarizer.createSummary(null, 0));
 	}
 
-	// public void testJiraIssueExisting() {
-	// assertEquals("The following classes were changed: *GodClass*\n",
-	// summarizer.createSummary(mockJiraIssueForGitTests));
-	// }
+	@Test
+	public void testJiraIssueExisting() {
+		assertTrue(summarizer.createSummary(mockJiraIssueForGitTestsTangled, 0).startsWith("<table"));
+	}
 
 	@Test
 	public void testRevCommitNull() {

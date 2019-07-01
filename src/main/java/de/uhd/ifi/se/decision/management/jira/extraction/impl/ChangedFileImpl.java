@@ -159,6 +159,9 @@ public class ChangedFileImpl implements ChangedFile {
 	@Override
 	public List<String> getPackageName() {
 		Optional<PackageDeclaration> optional = getCompilationUnit().getPackageDeclaration();
+		if (optional == null || optional.get() == null) {
+			return new ArrayList<String>();
+		}
 		return new ArrayList<String>(
 				Arrays.asList(optional.get().toString().replaceAll("\n", "").replaceAll(";", "").split("\\.")));
 	}

@@ -32,7 +32,8 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 	public CodeSummarizerImpl(GitClient gitClient) {
 		this.gitClient = gitClient;
 	}
-
+	
+	// TODO Add overloaded method createSummary(Issue jiraIssue)
 	@Override
 	public String createSummary(Issue jiraIssue, int minProbabilityOfCorrectness) {
 		if (jiraIssue == null) {
