@@ -120,15 +120,10 @@ public class ViewRest {
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response getVis(@QueryParam("elementKey") String elementKey, @QueryParam("searchTerm") String searchTerm,
 						   @Context HttpServletRequest request) {
-		if (elementKey == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Visualization cannot be shown since element key is invalid.")).build();
+		if(checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()){
+			return checkIfElementIsValid(elementKey);
 		}
 		String projectKey = getProjectKey(elementKey);
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisDataProvider visDataProvider = new VisDataProvider(projectKey,elementKey,false,searchTerm,user);
 		VisGraph visGraph = visDataProvider.getVisGraph();
@@ -142,30 +137,19 @@ public class ViewRest {
 								   @QueryParam("issueTypes") String issueTypes, @QueryParam("createdAfter") String createdAfter,
 								   @QueryParam("createdBefore") String createdBefore, @QueryParam("documentationLocation") String documentationLocation,
 								   @Context HttpServletRequest request) {
-		if (elementKey == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error","Visualization cannot be shown since element key is invalid.")).build();
+		if(checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()){
+			return checkIfElementIsValid(elementKey);
 		}
 		String projectKey = getProjectKey(elementKey);
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
 		long createdEarliest = -1;
 		long createdLatest = -1;
 		try {
 			createdEarliest = Long.parseLong(createdAfter);
+			createdLatest = Long.parseLong(createdBefore);
 		} catch (NumberFormatException e) {
 			LOGGER.error("No bottom limit could be set for creation date!");
 			//return Response.status(Status.BAD_REQUEST)
 				//	.entity(ImmutableMap.of("error", "Graph can not be filtered because bottom Date is NaN")).build();
-		}
-		try {
-			createdLatest = Long.parseLong(createdBefore);
-		} catch (NumberFormatException e) {
-			LOGGER.error("No top limit could be set for creation date!");
-			//return Response.status(Status.BAD_REQUEST)
-			//		.entity(ImmutableMap.of("error", "Graph can not be filtered because top Date is NaN")).build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisDataProvider visDataProvider = new VisDataProvider(projectKey,elementKey,
@@ -179,15 +163,10 @@ public class ViewRest {
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response getFilterData(@QueryParam("elementKey") String elementKey, @QueryParam("searchTerm") String query,
 								  @Context HttpServletRequest request) {
-		if (elementKey == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Visualization cannot be shown since element key is invalid.")).build();
+		if(checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()){
+			return checkIfElementIsValid(elementKey);
 		}
 		String projectKey = getProjectKey(elementKey);
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		FilterDataProvider filterDataProvider = new FilterDataProvider(projectKey,query,user);
 		return Response.ok(filterDataProvider).build();
@@ -207,6 +186,19 @@ public class ViewRest {
 			return projectKeyIsInvalid();
 		}
 		return Response.status(Status.OK).build();
+	}
+
+	private Response checkIfElementIsValid(String elementKey){
+		if (elementKey == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Visualization cannot be shown since element key is invalid.")).build();
+		}
+		String projectKey = getProjectKey(elementKey);
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		Response.status(Status.OK).build();
 	}
 
 	private Response projectKeyIsInvalid() {
