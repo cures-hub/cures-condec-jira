@@ -6,15 +6,17 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Extracats the Element search Items from the JQL and SearchString
- * TODO get Types and Date Early and Latest in spezific datatypes after Constructor
  */
 public class FilterExtractor {
+	private static final Logger LOGGER = LoggerFactory.getLogger(FilterExtractor.class);
 	private String projectKey;
 	private ApplicationUser user;
 	private String filterString;
@@ -22,8 +24,17 @@ public class FilterExtractor {
 	private List<DecisionKnowledgeElement> decisionKnowledgeElements;
 
 	public FilterExtractor(String projectKey , ApplicationUser user, String filterString) {
+		if(projectKey == null || projectKey.equals("")){
+			LOGGER.error("ProjectKey is null or empty");
+			return;
+		}
 		if(filterString == null){
+			LOGGER.error("FilterString is null");
 			this.filterString = "";
+		}
+		if(user == null){
+			LOGGER.error("User is null");
+			return;
 		}
 		this.filterString = filterString;
 		this.projectKey = projectKey;

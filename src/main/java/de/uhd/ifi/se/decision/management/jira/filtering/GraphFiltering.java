@@ -40,10 +40,6 @@ public class GraphFiltering {
 		return queryHandler;
 	}
 
-	public void setQueryHandler(QueryHandler queryHandler) {
-		this.queryHandler = queryHandler;
-	}
-
 	public GraphFiltering(String projectKey, String query, ApplicationUser user,
 			boolean mergeFilterQueryWithProjectKey) {
 		this.query = query;

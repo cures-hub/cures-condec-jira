@@ -5,7 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -21,7 +23,7 @@ import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestConfigPersistenceManager extends TestSetUpWithIssues {
+public class TestConfigPersistenceManager extends TestSetUpGit {
 	private EntityManager entityManager;
 
 	@Before
