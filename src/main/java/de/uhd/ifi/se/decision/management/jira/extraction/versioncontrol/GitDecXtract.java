@@ -6,6 +6,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import javax.xml.bind.DatatypeConverter;
@@ -142,5 +143,14 @@ public class GitDecXtract {
 			e.printStackTrace();
 			return "";
 		}
+	}
+
+	public List<DecisionKnowledgeElement> getElements(Ref branch) {
+		if (branch==null) {
+			return getElements((String) null);
+		}
+		String[] branchNameComponents = branch.getName().split("/");
+		String shortName  = branchNameComponents[branchNameComponents.length-1];
+		return getElements(shortName);
 	}
 }

@@ -24,6 +24,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterDataProvider;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
@@ -37,6 +38,43 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterDataProvider;
 @Path("/view")
 public class ViewRest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ViewRest.class);
+
+	@Path("/elementsFromBranchesOfJiraIssue")
+	@GET
+	public Response getFeatureBranchTree(@QueryParam("issueKey") String issueKey) {
+		issueKey = normalizeIssueKey(issueKey);
+		Issue issue = getIssue(issueKey);
+		if (issue == null) {
+			return issueKeyIsInvalid();
+		}
+
+		GitClient gitClient = new GitClientImpl(getProjectKey(issueKey)); // ex: issueKey=ConDec-498
+		List<Ref> branches = gitClient.getRemoteBranches();
+		if (branches.isEmpty()) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+		}
+		Map<Ref, List<DecisionKnowledgeElement>> ratBranchList = new HashMap<>();
+		GitDecXtract extractor = new GitDecXtract(getProjectKey(issueKey));
+		// TODO: move the loop elsewhere or maybe in GitDecXtract
+		for (Ref branch : branches) {
+			if (branch.getName().contains(issueKey.toUpperCase())) {
+				ratBranchList.put(branch, extractor.getElements(branch));
+			}
+		}
+		DiffViewer diffView = new DiffViewer(ratBranchList);
+		Response resp = null;
+		try {
+			Response.ResponseBuilder respBuilder = Response.ok(diffView);
+			resp = respBuilder.build();
+		} catch (Exception ex) {
+			LOGGER.error(ex.getMessage());
+		}
+		return resp;
+	}
+
+	private String normalizeIssueKey(String issueKey) {
+		return issueKey.toUpperCase();
+	}
 
 	@Path("/getTreeViewer")
 	@GET
@@ -116,9 +154,21 @@ public class ViewRest {
 		return Response.ok(treant).build();
 	}
 
+	private Issue getIssue(String issueKey) {
+		Issue issue = null;
+		if (issueKey == null || issueKey.trim().equals(""))
+			return null;
+		try {
+			issue = ComponentAccessor.getIssueManager().getIssueByKeyIgnoreCase(issueKey);
+		} catch (Exception ex) {
+			LOGGER.error(ex.getMessage());
+		}
+		return issue;
+	}
+
 	@Path("/getVis")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getVis(@QueryParam("elementKey") String elementKey, @QueryParam("searchTerm") String searchTerm,
 						   @QueryParam("filterData") List<String> filterData, @Context HttpServletRequest request) {
 		if(checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()){
@@ -151,8 +201,9 @@ public class ViewRest {
 			createdLatest = Long.parseLong(createdBefore);
 		} catch (NumberFormatException e) {
 			LOGGER.error("No bottom limit could be set for creation date!");
-			//return Response.status(Status.BAD_REQUEST)
-				//	.entity(ImmutableMap.of("error", "Graph can not be filtered because bottom Date is NaN")).build();
+			// return Response.status(Status.BAD_REQUEST)
+			// .entity(ImmutableMap.of("error", "Graph can not be filtered because bottom
+			// Date is NaN")).build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisDataProvider visDataProvider = new VisDataProvider(projectKey,elementKey,
@@ -163,7 +214,7 @@ public class ViewRest {
 
 	@Path("/getFilterData")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getFilterData(@QueryParam("elementKey") String elementKey, @QueryParam("searchTerm") String query,
 								  @Context HttpServletRequest request) {
 		if(checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()){
@@ -171,7 +222,7 @@ public class ViewRest {
 		}
 		String projectKey = getProjectKey(elementKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		FilterDataProvider filterDataProvider = new FilterDataProvider(projectKey,query,user);
+		FilterDataProvider filterDataProvider = new FilterDataProvider(projectKey, query, user);
 		return Response.ok(filterDataProvider).build();
 	}
 
@@ -210,4 +261,11 @@ public class ViewRest {
 				ImmutableMap.of("error", "Decision knowledge elements cannot be shown since project key is invalid."))
 				.build();
 	}
+
+	private Response issueKeyIsInvalid() {
+		String msg = "Decision knowledge elements cannot be shown" + " since issue key is invalid.";
+		LOGGER.error(msg);
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", msg)).build();
+	}
+
 }

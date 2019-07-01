@@ -55,7 +55,7 @@
 		<resource type="download" name="treant.css" location="/css/treant.css" />
 		<resource type="download" name="condec.css" location="/css/condec.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
-		<resource type="download" name="visGraph.css" location="/css/visGraph.css" />
+		<resource type="download" name="vis.css" location="/vis/dist/vis.css" />
 		<!-- look and feel like JIRA -->
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
 		<dependency>com.atlassian.auiplugin:aui-flag</dependency>
@@ -90,8 +90,8 @@
 		<resource type="download" name="Treant.js" location="/js/treant/treant.js" />
 		<resource type="download" name="raphael.js" location="/js/treant/raphael.js" />
 		<resource type="download" name="jquery.easing.js" location="/js/jquery/jquery.easing.js" />
-		<!--VisGraph-->
-		<resource type="download" name="visGraph.js" location="/js/visGraph/visGraph.js" />
+		<!--Vis-->
+		<resource type="download" name="vis.js" location="/vis/dist/vis.js" />
 		<!-- ConDec java script files -->
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
 		<resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />

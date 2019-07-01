@@ -129,7 +129,7 @@ public class TestDecisionKnowledgeProject extends TestSetUpWithIssues {
 
 	@Test
 	public void testGetWebhookUrl() {
-		assertEquals("true", project.getWebhookUrl());
+		assertEquals("http://true", project.getWebhookUrl());
 	}
 
 	@Test
