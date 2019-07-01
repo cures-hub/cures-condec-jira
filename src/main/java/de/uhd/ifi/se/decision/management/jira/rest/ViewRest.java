@@ -198,7 +198,7 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		Response.status(Status.OK).build();
+		 return Response.status(Status.OK).build();
 	}
 
 	private Response projectKeyIsInvalid() {
