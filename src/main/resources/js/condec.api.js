@@ -319,9 +319,9 @@
 	 */
 	ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, issueTypes, createdAfter,
 			createdBefore, documentationLocation, callback) {
-		var filterData = ["issueTypes:"+ issueTypes,"createdAfter:" + createdAfter, "createdBefore:" + createdBefore, "documentationLocation:" + documentationLocation];
+	    var filterData = issueTypes + ";" + createdBefore + ";" +  createdAfter + ";" + documentationLocation;
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey + "&searchTerm="
-			+ searchTerm + "&filterData=" + filterData, function(error, vis) {
+			+ searchTerm + "&filterData=" + filterData , function(error, vis) {
 			if (error === null) {
 				callback(vis);
 			}

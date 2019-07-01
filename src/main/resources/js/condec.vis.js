@@ -364,8 +364,6 @@
     ConDecVis.prototype.buildVis = function buildVis(elementKey, searchTerm) {
         console.log("conDecVis buildVis");
         conDecAPI.getVis(elementKey, searchTerm, function (visData) {
-            console.log("Vis Data that is returned: ");
-            console.log(visData);
             var network = build(visData.nodes, visData.edges, visData.rootElementKey, 10);
             network.focus(visData.rootElementKey, {
                 scale: 0.9

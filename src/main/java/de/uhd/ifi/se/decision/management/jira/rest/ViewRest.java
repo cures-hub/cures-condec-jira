@@ -1,7 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -13,10 +15,17 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
+import org.eclipse.jgit.lib.Ref;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisDataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
@@ -30,7 +39,6 @@ import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterDataProvider;
 
 /**
  * REST resource for view
@@ -170,43 +178,28 @@ public class ViewRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getVis(@QueryParam("elementKey") String elementKey, @QueryParam("searchTerm") String searchTerm,
-						   @QueryParam("filterData") List<String> filterData, @Context HttpServletRequest request) {
-		if(checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()){
-			return checkIfElementIsValid(elementKey);
-		}
-		//TODO Split with data Set and not Set get rid of the getVisFiltered function
-		String projectKey = getProjectKey(elementKey);
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisDataProvider visDataProvider = new VisDataProvider(projectKey,elementKey,false,searchTerm,user);
-		VisGraph visGraph = visDataProvider.getVisGraph();
-		return Response.ok(visGraph).build();
-	}
-
-	@Path("/getVisFiltered")
-	@GET
-	@Produces({MediaType.APPLICATION_JSON})
-	public Response getVisFiltered(@QueryParam("elementKey") String elementKey, @QueryParam("searchTerm") String searchTerm,
-								   @QueryParam("issueTypes") String issueTypes, @QueryParam("createdAfter") String createdAfter,
-								   @QueryParam("createdBefore") String createdBefore, @QueryParam("documentationLocation") String documentationLocation,
-								   @Context HttpServletRequest request) {
+						   @QueryParam("filterData") String filterDataString, @Context HttpServletRequest request) {
 		if(checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()){
 			return checkIfElementIsValid(elementKey);
 		}
 		String projectKey = getProjectKey(elementKey);
-		long createdEarliest = -1;
-		long createdLatest = -1;
-		try {
-			createdEarliest = Long.parseLong(createdAfter);
-			createdLatest = Long.parseLong(createdBefore);
-		} catch (NumberFormatException e) {
-			LOGGER.error("No bottom limit could be set for creation date!");
-			// return Response.status(Status.BAD_REQUEST)
-			// .entity(ImmutableMap.of("error", "Graph can not be filtered because bottom
-			// Date is NaN")).build();
-		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisDataProvider visDataProvider = new VisDataProvider(projectKey,elementKey,
-				false,searchTerm,user,issueTypes,createdEarliest,createdLatest,documentationLocation);
+		VisDataProvider visDataProvider;
+		String filterData[] = filterDataString.split(";");
+		if(filterData.length == 1) {
+			visDataProvider = new VisDataProvider(projectKey, elementKey, false, searchTerm, user);
+		} else {
+			long createdEarliest = -1;
+			long createdLatest = -1;
+			try {
+				createdEarliest = Long.parseLong(filterData[1]);
+				createdLatest = Long.parseLong(filterData[2]);
+			} catch (NumberFormatException e) {
+				LOGGER.error("No bottom limit could be set for creation date!");
+			}
+			visDataProvider = new VisDataProvider(projectKey,elementKey,
+					false,searchTerm,user,filterData[0],createdEarliest,createdLatest,filterData[3]);
+		}
 		VisGraph visGraph = visDataProvider.getVisGraph();
 		return Response.ok(visGraph).build();
 	}
