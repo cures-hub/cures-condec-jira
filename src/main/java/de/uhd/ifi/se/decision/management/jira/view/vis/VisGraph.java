@@ -49,13 +49,17 @@ public class VisGraph {
 	public VisGraph() {
 	}
 
-	public VisGraph(String projectKey, String elementKey,List<DecisionKnowledgeElement> elements, boolean isHyperlinked) {
+	public VisGraph(String projectKey, String elementKey, List<DecisionKnowledgeElement> elements, boolean isHyperlinked) {
 		this.graph = new GraphImpl(projectKey, elementKey);
 
 		for (DocumentationLocation location : DocumentationLocation.values()) {
 			this.documentationLocation = this.documentationLocation + DocumentationLocation.getName(location);
 		}
-		this.elementsMatchingFilterCriteria = elements;
+		if (elements == null) {
+			this.elementsMatchingFilterCriteria = graph.getAllElements();
+		} else {
+			this.elementsMatchingFilterCriteria = elements;
+		}
 		this.setHyperlinked(isHyperlinked);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
 		this.rootElementKey = (rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString());
@@ -79,38 +83,38 @@ public class VisGraph {
 
 		if (link != null) {
 			switch (link.getType()) {
-			case "support":
-				if (element.getId() == link.getSourceElement().getId()) {
-					if (!(this.elementsAlreadyAsNode.contains(element))) {
-						this.elementsAlreadyAsNode.add(element);
-						this.nodes.add(new VisNode(element, "pro", isCollapsed(element), level + 2, cid));
+				case "support":
+					if (element.getId() == link.getSourceElement().getId()) {
+						if (!(this.elementsAlreadyAsNode.contains(element))) {
+							this.elementsAlreadyAsNode.add(element);
+							this.nodes.add(new VisNode(element, "pro", isCollapsed(element), level + 2, cid));
+						}
+					} else {
+						if (!(this.elementsAlreadyAsNode.contains(element))) {
+							this.elementsAlreadyAsNode.add(element);
+							this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
+						}
 					}
-				} else {
+					break;
+				case "attack":
+					if (element.getId() == link.getSourceElement().getId()) {
+						if (!(this.elementsAlreadyAsNode.contains(element))) {
+							this.elementsAlreadyAsNode.add(element);
+							this.nodes.add(new VisNode(element, "con", isCollapsed(element), level + 2, cid));
+						}
+					} else {
+						if (!(this.elementsAlreadyAsNode.contains(element))) {
+							this.elementsAlreadyAsNode.add(element);
+							this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
+						}
+					}
+					break;
+				default:
 					if (!(this.elementsAlreadyAsNode.contains(element))) {
 						this.elementsAlreadyAsNode.add(element);
 						this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
 					}
-				}
-				break;
-			case "attack":
-				if (element.getId() == link.getSourceElement().getId()) {
-					if (!(this.elementsAlreadyAsNode.contains(element))) {
-						this.elementsAlreadyAsNode.add(element);
-						this.nodes.add(new VisNode(element, "con", isCollapsed(element), level + 2, cid));
-					}
-				} else {
-					if (!(this.elementsAlreadyAsNode.contains(element))) {
-						this.elementsAlreadyAsNode.add(element);
-						this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
-					}
-				}
-				break;
-			default:
-				if (!(this.elementsAlreadyAsNode.contains(element))) {
-					this.elementsAlreadyAsNode.add(element);
-					this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
-				}
-				break;
+					break;
 			}
 			this.edges.add(new VisEdge(link));
 
@@ -135,8 +139,7 @@ public class VisGraph {
 	}
 
 	private boolean isCollapsed(DecisionKnowledgeElement element) {
-		return (this.documentationLocation.contains(DocumentationLocation.getName(element.getDocumentationLocation()))
-				&& this.elementsMatchingFilterCriteria.contains(element));
+		return (this.documentationLocation.contains(DocumentationLocation.getName(element.getDocumentationLocation())) && this.elementsMatchingFilterCriteria.contains(element));
 	}
 
 	public void setNodes(HashSet<VisNode> nodes) {

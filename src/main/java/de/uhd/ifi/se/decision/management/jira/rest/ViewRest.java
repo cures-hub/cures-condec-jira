@@ -175,7 +175,6 @@ public class ViewRest {
 			return checkIfElementIsValid(elementKey);
 		}
 		//TODO Split with data Set and not Set get rid of the getVisFiltered function
-		System.out.println(filterData);
 		String projectKey = getProjectKey(elementKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisDataProvider visDataProvider = new VisDataProvider(projectKey,elementKey,false,searchTerm,user);
