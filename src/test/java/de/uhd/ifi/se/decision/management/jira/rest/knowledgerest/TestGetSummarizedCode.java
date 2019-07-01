@@ -27,7 +27,8 @@ public class TestGetSummarizedCode extends TestSetUpGit {
 
 	@Test
 	public void testElementIdNegativeProjectExistentDocumentationLocationJiraIssue() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), knowledgeRest.getSummarizedCode(-1, "TEST", "i", 0).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				knowledgeRest.getSummarizedCode(-1, "TEST", "i", 0).getStatus());
 	}
 
 	@Test

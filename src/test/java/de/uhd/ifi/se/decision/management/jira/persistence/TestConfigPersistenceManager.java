@@ -12,7 +12,8 @@ import org.junit.runner.RunWith;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestGitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -20,7 +21,7 @@ import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestConfigPersistenceManager extends TestSetUpWithIssues {
+public class TestConfigPersistenceManager extends TestSetUpGit {
 	private EntityManager entityManager;
 
 	@Before
@@ -269,7 +270,7 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetWebhookUrlFilledFilled() {
 		ConfigPersistenceManager.setWebhookUrl("TEST", "http://true");
-		assertEquals("true", ConfigPersistenceManager.getWebhookUrl("TEST"));
+		assertEquals("http://true", ConfigPersistenceManager.getWebhookUrl("TEST"));
 	}
 
 	@Test
@@ -279,7 +280,7 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 
 	@Test
 	public void testGetWebhookUrlFilled() {
-		assertEquals("true", ConfigPersistenceManager.getWebhookUrl("TEST"));
+		assertEquals("http://true", ConfigPersistenceManager.getWebhookUrl("TEST"));
 	}
 
 	@Test
@@ -473,5 +474,10 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testGetEnabledWebhookTypesFilled() {
 		assertEquals(13, ConfigPersistenceManager.getEnabledWebhookTypes("TEST").size(), 0.0);
+	}
+
+	@Test
+	public void testGetGitUri() {
+		assertEquals(TestGitClient.GIT_URI, ConfigPersistenceManager.getGitUri("TEST"));
 	}
 }

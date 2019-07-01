@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.codesummarizer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +41,11 @@ public class TestCodeSummarizer extends TestSetUpGit {
 	@Test
 	public void testJiraIssueKeyEmpty() {
 		assertEquals("", summarizer.createSummary(null, 0));
+	}
+
+	@Test
+	public void testJiraIssueExisting() {
+		assertTrue(summarizer.createSummary(mockJiraIssueForGitTestsTangled, 0).startsWith("<table"));
 	}
 
 	@Test

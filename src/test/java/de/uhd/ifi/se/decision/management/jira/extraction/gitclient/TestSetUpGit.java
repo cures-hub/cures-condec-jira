@@ -5,14 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
-import org.eclipse.jgit.transport.RemoteConfig;
-import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.util.FS;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -26,19 +23,40 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 
+/**
+ * @issue Should we have one or more git repositories for testing?
+ * @decision We have one mock git repositories for testing!
+ * @pro The mock git repository can be easily accessed using the Plugin Settings
+ *      (see ConfigPersistenceManager class).
+ * @pro This is more efficient than recreating the test git repository all the
+ *      time.
+ * @con Changes to the git repository (e.g. new commits) during testing has an
+ *      effect on the test cases that follow. The order of test cases is
+ *      arbitrary.
+ * @alternative We could have more than one mock git repositories for testing!
+ *
+ */
 public class TestSetUpGit extends TestSetUpWithIssues {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestSetUpGit.class);
+	public static String GIT_URI;
+	public static File DIRECTORY;
 	protected static GitClient gitClient;
 	protected MockIssue mockJiraIssueForGitTests;
 	protected MockIssue mockJiraIssueForGitTestsTangled;
 	protected MockIssue mockJiraIssueForGitTestsTangledSingleCommit;
 
 	@BeforeClass
-	public static void setUpBeforeClass() throws IOException {
-		File directory = getExampleDirectory();
-		String uri = getExampleUri();
-		gitClient = new GitClientImpl(uri, directory.getAbsolutePath(), "TEST");
+	public static void setUpBeforeClass() {
+		if (gitClient != null && gitClient.getDirectory() != null) {
+			return;
+		}
+
+		GIT_URI = getExampleUri();
+		DIRECTORY = getExampleDirectory();
+
+		gitClient = new GitClientImpl(GIT_URI, DIRECTORY.getAbsolutePath(), "TEST");
+
 		// above line will log errors for pulling from still empty remote repositry.
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
 		makeExampleCommit("readMe.txt", "Self-explanatory, ReadMe not necessary.",
@@ -84,9 +102,10 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 						+ "            }\n" + "        }\n" + "    };\n" + "\n" + "}\n",
 				"TEST-62 add class A");
 		setupBranchWithDecKnowledge();
-
-		gitClient.close();
-		gitClient = new GitClientImpl(uri, directory.getAbsolutePath(), "TEST");
+		//
+		// // @issue: Is this really needed? Why do we close the git client here?
+		// gitClient.close();
+		// gitClient = new GitClientImpl(GIT_URI, DIRECTORY.getAbsolutePath(), "TEST");
 	}
 
 	@Before
@@ -101,6 +120,9 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 	}
 
 	private static File getExampleDirectory() {
+		if (DIRECTORY != null) {
+			return DIRECTORY;
+		}
 		File directory = null;
 		try {
 			directory = File.createTempFile("clone", "");
@@ -112,7 +134,10 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		return directory;
 	}
 
-	private static String getExampleUri() {
+	public static String getExampleUri() {
+		if (GIT_URI != null) {
+			return GIT_URI;
+		}
 		String uri = "";
 		try {
 			File remoteDir = File.createTempFile("remote", "");
@@ -146,8 +171,10 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 	private static void setupBranchWithDecKnowledge() {
 		String featureBranch = "featureBranch";
 		String firstCommitMessage = "First message";
-		String currentBranch = null;
 		Git git = gitClient.getGit();
+		String currentBranch = null;
+
+		// @issue: How can we create a mock feature branch?
 		try {
 			currentBranch = git.getRepository().getBranch();
 			git.branchCreate().setName(featureBranch).call();
@@ -190,25 +217,6 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 	}
 
 	// helpers
-
-	protected String getRepoUri() {
-		List<RemoteConfig> remoteList = null;
-		try {
-			remoteList = gitClient.getGit().remoteList().call();
-
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		if (remoteList == null) {
-			return "";
-		} else {
-			RemoteConfig remoteHead = remoteList.get(0);
-			URIish uriHead = remoteHead.getURIs().get(0);
-
-			return uriHead.toString();
-		}
-
-	}
 
 	protected String getRepoBaseDirectory() {
 		Repository repo = gitClient.getGit().getRepository();

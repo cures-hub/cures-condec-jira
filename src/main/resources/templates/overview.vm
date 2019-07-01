@@ -1,0 +1,44 @@
+<form class="aui">
+    <input class="text medium-long-field" id="jstree-search-input"
+           placeholder="$i18n.getText('condec.filter.label')"/>
+    <select id="select-root-element-type" name="select-root-element-type"
+            class="select medium-field" onchange="conDecObservable.notify()"/>
+    <input type="text" class="text medium-long-field"
+           id="element-input-field" placeholder="$i18n.getText('condec.create.label')"/>
+    <input type="button" id="create-element-button"
+           class="aui-button aui-button-primary" value="$i18n.getText('condec.button.create')"/>
+    <label for="depth-of-tree-input">$i18n.getText("condec.depth.of.tree.label")<span
+            class="aui-icon icon-required"></span>
+    </label>
+    <input type="number" id="depth-of-tree-input" value="4" min="1"
+           class="text short-field" placeholder="Enter depth of tree...">
+    <label for="depth-of-tree-input" id="depth-of-tree-warning">Depth
+        must be positive</label>
+</form>
+<div class="aui-group">
+    <div id="resizable" class="left">
+        <div id="jstree"></div>
+    </div>
+    <div id="treant-container" class="right"></div>
+</div>
+#parse("templates/dialogs/createDialog.vm")
+#parse("templates/dialogs/editDialog.vm")
+#parse("templates/dialogs/deleteDialog.vm")
+#parse("templates/dialogs/deleteLinkDialog.vm")
+#parse("templates/dialogs/linkDialog.vm")
+#parse("templates/dialogs/changeTypeDialog.vm")
+#parse("templates/dialogs/summarizationDialog.vm")
+#parse("templates/contextMenu.vm")
+<script>
+    /*
+     * Instantiate the ConDecKnowledgePage object controlling this view:
+     */
+    $(document).ready(function() {
+        conDecAPI.checkIfProjectKeyIsValid();
+        if ( window.conDecKnowledgePage.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant, conDecTreeViewer) )
+            window.conDecKnowledgePage.fetchAndRender();
+        else {
+            console.error("ConDecKnowledgePage could not get its dependencies.");
+        }
+    });
+</script>

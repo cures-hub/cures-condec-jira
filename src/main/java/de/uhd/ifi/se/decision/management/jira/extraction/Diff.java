@@ -18,8 +18,20 @@ import com.github.javaparser.utils.StringEscapeUtils;
  */
 public interface Diff {
 
+	/**
+	 * Returns the files changed in the diff as a list of {@link ChangedFile}
+	 * objects.
+	 * 
+	 * @return list of {@link ChangedFile} objects.
+	 */
 	List<ChangedFile> getChangedFiles();
 
+	/**
+	 * Adds a new {@link ChangedFile} to the diff.
+	 * 
+	 * @param changedFile
+	 *            object of {@link ChangedFile} class.
+	 */
 	void addChangedFile(ChangedFile changedFile);
 
 	/**
