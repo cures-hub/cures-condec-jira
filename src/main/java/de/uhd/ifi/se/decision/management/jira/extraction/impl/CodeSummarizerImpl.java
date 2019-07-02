@@ -1,10 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -32,7 +30,7 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 	public CodeSummarizerImpl(GitClient gitClient) {
 		this.gitClient = gitClient;
 	}
-	
+
 	// TODO Add overloaded method createSummary(Issue jiraIssue)
 	@Override
 	public String createSummary(Issue jiraIssue, int minProbabilityOfCorrectness) {
@@ -65,20 +63,6 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		TangledCommitDetection tangledCommitDetection = new TangledCommitDetectionImpl();
 		tangledCommitDetection.estimateWhetherChangedFilesAreCorrectlyIncludedInDiff(diff);
 
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonString = "";
-		try {
-			jsonString = mapper.writeValueAsString(diff);
-			System.out.println(jsonString);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		try {
-			Diff.sendPost(this.projectKey, this.issueKey, jsonString);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		return generateSummary(diff);
 	}
 
@@ -120,5 +104,13 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 				+ item2 + "</td>\n"
 				+ "<td style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">"
 				+ item3 + "% </td>\n";
+	}
+
+	public String getProjectKey() {
+		return projectKey;
+	}
+
+	public String getIssueKey() {
+		return issueKey;
 	}
 }
