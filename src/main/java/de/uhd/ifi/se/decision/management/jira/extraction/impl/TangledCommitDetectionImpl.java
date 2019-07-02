@@ -56,30 +56,21 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 
 	private int calculatePackageDistance(List<String> leftPackageDeclaration, List<String> rightPackageDeclaration) {
 		int packageDistance = 0;
-		if (leftPackageDeclaration.size() >= rightPackageDeclaration.size()) {
-			for (int k = 0; k < rightPackageDeclaration.size(); k++) {
-				if (!leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k))) {
-					packageDistance = leftPackageDeclaration.size() - k;
-					break;
-				} else if ((rightPackageDeclaration.size() - 1) == k
-						&& (leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k)))) {
-					packageDistance = leftPackageDeclaration.size() - rightPackageDeclaration.size();
-				}
+
+		if (leftPackageDeclaration.size() < rightPackageDeclaration.size()) {
+			return calculatePackageDistance(rightPackageDeclaration, leftPackageDeclaration);
+		}
+
+		for (int k = 0; k < rightPackageDeclaration.size(); k++) {
+			if (!leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k))) {
+				packageDistance = leftPackageDeclaration.size() - k;
+				break;
+			} else if ((rightPackageDeclaration.size() - 1) == k
+					&& (leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k)))) {
+				packageDistance = leftPackageDeclaration.size() - rightPackageDeclaration.size();
 			}
 		}
 
-		if (leftPackageDeclaration.size() < rightPackageDeclaration.size()) {
-			for (int k = 0; k < leftPackageDeclaration.size(); k++) {
-				if (!leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k))) {
-					packageDistance = rightPackageDeclaration.size() - k;
-					break;
-				} else if (leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k))
-						&& (k == leftPackageDeclaration.size() - 1)) {
-					packageDistance = rightPackageDeclaration.size() - leftPackageDeclaration.size();
-					break;
-				}
-			}
-		}
 		return packageDistance;
 	}
 
