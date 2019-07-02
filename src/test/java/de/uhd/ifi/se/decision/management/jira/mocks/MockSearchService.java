@@ -94,7 +94,7 @@ public class MockSearchService implements SearchService {
 
 	@Override
 	public String getGeneratedJqlString(Query query) {
-		return null;
+		return "Test";
 	}
 
 	@Override

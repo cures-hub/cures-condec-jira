@@ -40,8 +40,7 @@ public class GraphFiltering {
 		return queryHandler;
 	}
 
-	public GraphFiltering(String projectKey, String query, ApplicationUser user,
-			boolean mergeFilterQueryWithProjectKey) {
+	public GraphFiltering(String projectKey, String query, ApplicationUser user, boolean mergeFilterQueryWithProjectKey) {
 		this.query = query;
 		this.projectKey = projectKey;
 		this.user = user;
@@ -65,8 +64,7 @@ public class GraphFiltering {
 				queryHandler.findIssueTypesInQuery(queryHandler.getFinalQuery());
 			}
 			try {
-				final SearchResults<Issue> results = queryHandler.getSearchService().search(this.user,
-						parseResult.getQuery(), PagerFilter.getUnlimitedFilter());
+				final SearchResults<Issue> results = queryHandler.getSearchService().search(this.user, parseResult.getQuery(), PagerFilter.getUnlimitedFilter());
 				resultingIssues = JiraSearchServiceHelper.getJiraIssues(results);
 
 			} catch (SearchException e) {
@@ -139,7 +137,8 @@ public class GraphFiltering {
 		if (createdEarliest >= 0) {
 			JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
 			newQueryBuilder.and();
-			newQueryBuilder.addDateCondition("created", Operator.GREATER_THAN_EQUALS, new Date(createdEarliest));
+			Date date = new Date(createdEarliest);
+			newQueryBuilder.addDateCondition("created", Operator.GREATER_THAN_EQUALS, date);
 			return newQueryBuilder;
 		}
 		if (createdLatest >= 0) {
@@ -155,8 +154,7 @@ public class GraphFiltering {
 	private void processQueryResult(JqlClauseBuilder queryBuilder) {
 		List<Issue> resultingIssues = new ArrayList<>();
 		Query finalQuery = queryBuilder.buildQuery();
-		final SearchService.ParseResult parseResult = queryHandler.getSearchService().parseQuery(user,
-				queryHandler.getSearchService().getJqlString(finalQuery));
+		final SearchService.ParseResult parseResult = queryHandler.getSearchService().parseQuery(user, queryHandler.getSearchService().getJqlString(finalQuery));
 		if (parseResult.isValid()) {
 			List<Clause> clauses = parseResult.getQuery().getWhereClause().getClauses();
 
@@ -170,8 +168,7 @@ public class GraphFiltering {
 				queryHandler.findIssueTypesInQuery(this.resultingQuery);
 			}
 			try {
-				final SearchResults<Issue> results = queryHandler.getSearchService().search(this.user,
-						parseResult.getQuery(), PagerFilter.getUnlimitedFilter());
+				final SearchResults<Issue> results = queryHandler.getSearchService().search(this.user, parseResult.getQuery(), PagerFilter.getUnlimitedFilter());
 				resultingIssues = JiraSearchServiceHelper.getJiraIssues(results);
 
 			} catch (SearchException e) {
@@ -192,8 +189,7 @@ public class GraphFiltering {
 			return true;
 		}
 		if (queryHandler.isQueryContainsCreationDate()) {
-			if (queryHandler.getStartDate() >= 0 && resultingQuery.contains("created")
-					&& resultingQuery.contains(">=")) {
+			if (queryHandler.getStartDate() >= 0 && resultingQuery.contains("created") && resultingQuery.contains(">=")) {
 				return true;
 			}
 			if (queryHandler.getEndDate() >= 0 && resultingQuery.contains("created") && resultingQuery.contains("<=")) {
@@ -208,12 +204,10 @@ public class GraphFiltering {
 			return true;
 		}
 		if (queryHandler.isQueryContainsCreationDate()) {
-			if (queryHandler.getStartDate() >= 0 && clause.getName().equals("created")
-					&& clause.toString().contains(">=")) {
+			if (queryHandler.getStartDate() >= 0 && clause.getName().equals("created") && clause.toString().contains(">=")) {
 				return true;
 			}
-			if (queryHandler.getEndDate() >= 0 && clause.getName().equals("created")
-					&& clause.toString().contains("<=")) {
+			if (queryHandler.getEndDate() >= 0 && clause.getName().equals("created") && clause.toString().contains("<=")) {
 				return true;
 			}
 		}
@@ -225,11 +219,9 @@ public class GraphFiltering {
 		SearchResults<Issue> projectIssues = getIssuesForThisProject(user);
 		if (projectIssues != null) {
 			for (Issue currentIssue : JiraSearchServiceHelper.getJiraIssues(projectIssues)) {
-				List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
-						.getElementsForIssue(currentIssue.getId(), projectKey);
+				List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager.getElementsForIssue(currentIssue.getId(), projectKey);
 				for (DecisionKnowledgeElement currentElement : elements) {
-					if (!results.contains(currentElement) && currentElement instanceof PartOfJiraIssueText
-							&& checkIfJiraTextMatchesFilter(currentElement)) {
+					if (!results.contains(currentElement) && currentElement instanceof PartOfJiraIssueText && checkIfJiraTextMatchesFilter(currentElement)) {
 						results.add(currentElement);
 					}
 				}
