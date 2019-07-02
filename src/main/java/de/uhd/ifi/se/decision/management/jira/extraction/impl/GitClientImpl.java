@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.Lists;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -224,8 +225,9 @@ public class GitClientImpl implements GitClient {
 		Repository repository = this.getRepository();
 		StoredConfig config = repository.getConfig();
 		// @issue The internal representation of a file might add system dependent new
-		// line statements, for example CR LF in Windows
-		// @decision Disable system dependent new line statements
+		// line statements, for example CR LF in Windows. How to deal with different
+		// line endings?
+		// @decision Disable system dependent new line statements!
 		config.setEnum(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_AUTOCRLF, AutoCRLF.TRUE);
 		try {
 			config.save();

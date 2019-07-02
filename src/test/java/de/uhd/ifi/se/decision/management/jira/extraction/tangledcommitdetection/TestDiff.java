@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import com.atlassian.jira.issue.Issue;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.extraction.Diff;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.DiffImpl;
@@ -45,7 +46,11 @@ public class TestDiff extends TestSetUpGit {
 
 	@Test
 	public void testGetChangedFilesWithMoreThanOneCommit() {
+		List<ChangedFile> changedFiles = diffForJiraIssue.getChangedFiles();
 		assertEquals(3, diffForJiraIssue.getChangedFiles().size());
+		assertEquals("Tangled1.java", changedFiles.get(0).getName());
+		assertEquals("Untangled.java", changedFiles.get(1).getName());
+		assertEquals("Untangled2.java", changedFiles.get(2).getName());
 	}
 
 	@Test
@@ -56,6 +61,6 @@ public class TestDiff extends TestSetUpGit {
 	@Test
 	public void testAddChangedFile() {
 		diffForCommit.addChangedFile(null);
-		assertEquals(2, diffForCommit.getChangedFiles().size());
+		assertEquals(2, diffForCommit.getChangedFiles().size());		
 	}
 }

@@ -34,9 +34,9 @@ public class TestTangledCommitDetection extends TestSetUpGit {
 		//System.out.println(diffForJiraIssue.getChangedFiles().get(0).getPackageDistance());
         //System.out.println(diffForJiraIssue.getChangedFiles().get(1).getPackageDistance());
         //System.out.println(diffForJiraIssue.getChangedFiles().get(2).getPackageDistance());
-        assertEquals(2, diffForJiraIssue.getChangedFiles().get(0).getPackageDistance());
-		assertEquals(2, diffForJiraIssue.getChangedFiles().get(1).getPackageDistance());
-		assertEquals(4, diffForJiraIssue.getChangedFiles().get(2).getPackageDistance());
+        assertEquals(3, diffForJiraIssue.getChangedFiles().get(0).getPackageDistance());
+		assertEquals(3, diffForJiraIssue.getChangedFiles().get(1).getPackageDistance());
+		assertEquals(6, diffForJiraIssue.getChangedFiles().get(2).getPackageDistance());
 	}
 
 	@Test
@@ -75,9 +75,9 @@ public class TestTangledCommitDetection extends TestSetUpGit {
 		//System.out.println(diff.getChangedFiles().get(1).getCompilationUnit().getPackageDeclaration().toString());
 		//System.out.println(diff.getChangedFiles().get(2).getCompilationUnit().getPackageDeclaration().toString());
 		tangledCommitDetection.calculatePackageDistances(diff);
-		assertEquals(2, diff.getChangedFiles().get(0).getPackageDistance());
-		assertEquals(2, diff.getChangedFiles().get(1).getPackageDistance());
-		assertEquals(4, diff.getChangedFiles().get(2).getPackageDistance());
+		assertEquals(3, diff.getChangedFiles().get(0).getPackageDistance());
+		assertEquals(3, diff.getChangedFiles().get(1).getPackageDistance());
+		assertEquals(6, diff.getChangedFiles().get(2).getPackageDistance());
 	}
 
 	@Test
