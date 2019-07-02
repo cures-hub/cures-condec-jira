@@ -13,29 +13,28 @@ public enum DocumentationLocation {
 	/**
 	 * Convert a string to a documentation type.
 	 *
-	 * @param identifier
-	 *            as a String.
+	 * @param identifier as a String.
 	 */
 	public static DocumentationLocation getDocumentationLocationFromIdentifier(String identifier) {
 		if (identifier == null) {
 			return DocumentationLocation.UNKNOWN;
 		}
 		switch (identifier.toLowerCase(Locale.ENGLISH)) {
-		case "i":
-			return DocumentationLocation.JIRAISSUE;
-		case "a":
-			return DocumentationLocation.ACTIVEOBJECT;
-		case "s":
-			return DocumentationLocation.JIRAISSUETEXT;
-		case "c":
-			return DocumentationLocation.COMMIT;
-		case "p":
-			return DocumentationLocation.PULLREQUEST;
-		case "":
-			// TODO This should be the same as the default persistence strategy
-			return DocumentationLocation.JIRAISSUE;
-		default:
-			return DocumentationLocation.UNKNOWN;
+			case "i":
+				return DocumentationLocation.JIRAISSUE;
+			case "a":
+				return DocumentationLocation.ACTIVEOBJECT;
+			case "s":
+				return DocumentationLocation.JIRAISSUETEXT;
+			case "c":
+				return DocumentationLocation.COMMIT;
+			case "p":
+				return DocumentationLocation.PULLREQUEST;
+			case "":
+				// TODO This should be the same as the default persistence strategy
+				return DocumentationLocation.JIRAISSUE;
+			default:
+				return DocumentationLocation.UNKNOWN;
 		}
 	}
 
@@ -44,20 +43,20 @@ public enum DocumentationLocation {
 			return "";
 		}
 		switch (documentationLocation) {
-		case JIRAISSUE:
-			return "i";
-		case JIRAISSUETEXT:
-			return "s";
-		case ACTIVEOBJECT:
-			return "a";
-		case COMMIT:
-			return "c";
-		case PULLREQUEST:
-			return "p";
-		case UNKNOWN:
-			return "u";
-		default:
-			return "";
+			case JIRAISSUE:
+				return "i";
+			case JIRAISSUETEXT:
+				return "s";
+			case ACTIVEOBJECT:
+				return "a";
+			case COMMIT:
+				return "c";
+			case PULLREQUEST:
+				return "p";
+			case UNKNOWN:
+				return "u";
+			default:
+				return "";
 		}
 	}
 
@@ -90,8 +89,7 @@ public enum DocumentationLocation {
 	public static String getIdentifier(DecisionKnowledgeElement element) {
 		if (element == null || element.getDocumentationLocation() == null) {
 			return "";
-		} else if (element instanceof PartOfJiraIssueText
-				|| element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUETEXT)) {
+		} else if (element instanceof PartOfJiraIssueText || element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUETEXT)) {
 			return "s";
 		} else if (element.getDocumentationLocation().equals(DocumentationLocation.ACTIVEOBJECT)) {
 			return "a";
@@ -99,6 +97,24 @@ public enum DocumentationLocation {
 			return "i";
 		} else {
 			return "";
+		}
+	}
+
+	public static DocumentationLocation getDocumentationLocationFromString(String locationString) {
+		switch (locationString) {
+			case "JiraIssue":
+				return JIRAISSUE;
+			case "JiraIssueText":
+				return JIRAISSUETEXT;
+			case "ActiveObject":
+				return ACTIVEOBJECT;
+			case "Commit":
+				return COMMIT;
+			case "PullRequest":
+				return PULLREQUEST;
+			default:
+				return UNKNOWN;
+
 		}
 	}
 }
