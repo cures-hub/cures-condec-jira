@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.FilterData;
 
 import java.util.List;
 
@@ -25,9 +26,8 @@ public class VisDataProvider {
 
 	}
 
-	public VisDataProvider(String projectKey, String elementKey, boolean isHyperlinked, String searchTerm, ApplicationUser user,
-	                       String issueTypes, long createdEarliest, long createdLatest, String documentationLocation) {
-		this.filterExtractor = new FilterExtractor(projectKey, user, searchTerm, issueTypes, createdEarliest, createdLatest);
+	public VisDataProvider(String projectKey, String elementKey, boolean isHyperlinked, ApplicationUser user, FilterData filterData) {
+		this.filterExtractor = new FilterExtractor(projectKey, user,filterData);
 		decisionKnowledgeElements = filterExtractor.getFilteredDecisions();
 		graph = new VisGraph(projectKey,elementKey, decisionKnowledgeElements, isHyperlinked);
 

@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.impl.FilterDataImpl;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 

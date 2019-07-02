@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.model.FilterData;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +84,7 @@ public class GraphFiltering {
 
 	}
 
-	public void produceResultsWithAdditionalFilters(String issueTypes, long createdEarliest, long createdLatest) {
+	public void produceResultsWithAdditionalFilters(FilterData filterData) {
 		produceResultsFromQuery();
 		queryResults.clear();
 		JqlClauseBuilder queryBuilder = JqlQueryBuilder.newClauseBuilder();
@@ -105,26 +107,22 @@ public class GraphFiltering {
 				queryBuilder.addCondition(resultingQuery);
 			}
 		}
-		queryBuilder = addIssueTypes(queryBuilder, issueTypes);
-		queryBuilder = addTimeFilter(queryBuilder, createdEarliest, createdLatest);
+		queryBuilder = addIssueTypes(queryBuilder, filterData.getIssueTypes());
+		queryBuilder = addTimeFilter(queryBuilder, filterData.getCreatedEarliest(), filterData.getCreatedLatest());
 		processQueryResult(queryBuilder);
 
 	}
 
 	// New issue type filter function
-	private JqlClauseBuilder addIssueTypes(JqlClauseBuilder queryBuilder, String issueTypes) {
+	private JqlClauseBuilder addIssueTypes(JqlClauseBuilder queryBuilder, List<KnowledgeType> issueTypes) {
 		if (issueTypes == null) {
 			return queryBuilder;
 		}
-
 		JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
 		newQueryBuilder.and();
-		String newIssueTypes = issueTypes.replaceAll("\"", "");
-		String[] typesSplit = newIssueTypes.split(",");
 		List<String> typesTemp = new ArrayList<>();
-		for (String current : typesSplit) {
-			String temp = current.trim();
-			typesTemp.add(temp);
+		for(KnowledgeType current: issueTypes){
+			typesTemp.add(current.toString());
 		}
 		String[] types = new String[typesTemp.size()];
 		types = typesTemp.toArray(types);

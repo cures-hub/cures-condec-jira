@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.FilterData;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
@@ -54,12 +55,12 @@ public class FilterExtractor {
 		}
 	}
 
-	public FilterExtractor(String projectKey, ApplicationUser user, String searchTerm, String issueTypes, long createdEarliest, long createdLatest) {
+	public FilterExtractor(String projectKey, ApplicationUser user, FilterData filterData) {
 		if (projectKey == null || projectKey.equals("")) {
 			LOGGER.error("ProjectKey is null or empty");
 			return;
 		}
-		if (searchTerm == null) {
+		if (filterData.getSearchString() == null) {
 			LOGGER.error("FilterString is null");
 			return;
 		}
@@ -67,11 +68,11 @@ public class FilterExtractor {
 			LOGGER.error("User is null");
 			return;
 		}
-		this.filterString = searchTerm;
+		this.filterString = filterData.getSearchString();
 		this.projectKey = projectKey;
 		this.user = user;
 		GraphFiltering filter = new GraphFiltering(projectKey, filterString, user, false);
-		filter.produceResultsWithAdditionalFilters(issueTypes, createdEarliest, createdLatest);
+		filter.produceResultsWithAdditionalFilters(filterData);
 		this.decisionKnowledgeElements = filter.getAllElementsMatchingQuery();
 	}
 

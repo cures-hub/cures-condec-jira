@@ -19,6 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.FilterData;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import org.eclipse.jgit.lib.Ref;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisDataProvider;
@@ -177,28 +178,17 @@ public class ViewRest {
 	@Path("/getVis")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getVis(@QueryParam("elementKey") String elementKey, @QueryParam("searchTerm") String searchTerm,
-						   @QueryParam("filterData") String filterDataString, @Context HttpServletRequest request) {
+	public Response getVis(@QueryParam("elementKey") String elementKey, FilterData filterData, @Context HttpServletRequest request) {
 		if(checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()){
 			return checkIfElementIsValid(elementKey);
 		}
 		String projectKey = getProjectKey(elementKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisDataProvider visDataProvider;
-		String filterData[] = filterDataString.split(";");
-		if(filterData.length == 1) {
-			visDataProvider = new VisDataProvider(projectKey, elementKey, false, searchTerm, user);
+		if(filterData.getIssueTypes().size() == 0) {
+			visDataProvider = new VisDataProvider(projectKey, elementKey, false, filterData.getSearchString(), user);
 		} else {
-			long createdEarliest = -1;
-			long createdLatest = -1;
-			try {
-				createdEarliest = Long.parseLong(filterData[1]);
-				createdLatest = Long.parseLong(filterData[2]);
-			} catch (NumberFormatException e) {
-				LOGGER.error("No bottom limit could be set for creation date!");
-			}
-			visDataProvider = new VisDataProvider(projectKey,elementKey,
-					false,searchTerm,user,filterData[0],createdEarliest,createdLatest,filterData[3]);
+			visDataProvider = new VisDataProvider(projectKey,elementKey, false,user,filterData);
 		}
 		VisGraph visGraph = visDataProvider.getVisGraph();
 		return Response.ok(visGraph).build();
