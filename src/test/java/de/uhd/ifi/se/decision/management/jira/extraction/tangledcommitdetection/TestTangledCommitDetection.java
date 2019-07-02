@@ -2,6 +2,11 @@ package de.uhd.ifi.se.decision.management.jira.extraction.tangledcommitdetection
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Assert;
+
 import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,14 +34,36 @@ public class TestTangledCommitDetection extends TestSetUpGit {
 
 	@Test
 	public void testCalculatePackageDistances() {
-		tangledCommitDetection.calculatePackageDistances(diffForJiraIssue);
-        diffForJiraIssue.getChangedFiles().sort((ChangedFile c1, ChangedFile c2) -> c1.getPackageDistance() - c2.getPackageDistance());
-		//System.out.println(diffForJiraIssue.getChangedFiles().get(0).getPackageDistance());
-        //System.out.println(diffForJiraIssue.getChangedFiles().get(1).getPackageDistance());
-        //System.out.println(diffForJiraIssue.getChangedFiles().get(2).getPackageDistance());
-        assertEquals(3, diffForJiraIssue.getChangedFiles().get(0).getPackageDistance());
-		assertEquals(3, diffForJiraIssue.getChangedFiles().get(1).getPackageDistance());
-		assertEquals(6, diffForJiraIssue.getChangedFiles().get(2).getPackageDistance());
+		Diff diffForJiraIssue = TestDiff.createDiff(mockJiraIssueForGitTestsTangled);
+		
+		int[][] matrix = tangledCommitDetection.calculatePackageDistances(diffForJiraIssue);
+		int[][] expectedMatrix = new int[3][3];
+		expectedMatrix[0][0] = 0;
+		expectedMatrix[0][1] = 2;
+		expectedMatrix[0][2] = 2;
+		expectedMatrix[1][0] = 2;
+		expectedMatrix[2][0] = 2;
+		Assert.assertArrayEquals(expectedMatrix, matrix);
+
+		List<ChangedFile> changedFiles = diffForJiraIssue.getChangedFiles();
+
+		assertEquals("Tangled1.java", changedFiles.get(0).getName());
+		assertEquals(Arrays.asList("package de", "uhd", "ifi", "se", "decision", "management", "jira"),
+				changedFiles.get(0).getPackageName());
+
+		assertEquals("Untangled.java", changedFiles.get(1).getName());
+		assertEquals(
+				Arrays.asList("package de", "uhd", "ifi", "se", "decision", "management", "jira", "extraction", "impl"),
+				changedFiles.get(1).getPackageName());
+
+		assertEquals("Untangled2.java", changedFiles.get(2).getName());
+		assertEquals(
+				Arrays.asList("package de", "uhd", "ifi", "se", "decision", "management", "jira", "extraction", "impl"),
+				changedFiles.get(2).getPackageName());
+		
+		assertEquals(4, changedFiles.get(0).getPackageDistance());
+		assertEquals(2, changedFiles.get(1).getPackageDistance());
+		assertEquals(2, changedFiles.get(2).getPackageDistance());
 	}
 
 	@Test
@@ -64,20 +91,17 @@ public class TestTangledCommitDetection extends TestSetUpGit {
 
 	@Test
 	public void testCalculatePackageDistanceRightBiggerLeft() {
+		Diff diffForJiraIssue = TestDiff.createDiff(mockJiraIssueForGitTestsTangled);
 		Diff diff = new DiffImpl();
-		//System.out.println(diffForJiraIssue.getChangedFiles().get(2).getCompilationUnit().getPackageDeclaration().toString());
-		//System.out.println(diffForJiraIssue.getChangedFiles().get(1).getCompilationUnit().getPackageDeclaration().toString());
-		//System.out.println(diffForJiraIssue.getChangedFiles().get(0).getCompilationUnit().getPackageDeclaration().toString());
+
 		diff.addChangedFile(diffForJiraIssue.getChangedFiles().get(2));
 		diff.addChangedFile(diffForJiraIssue.getChangedFiles().get(1));
 		diff.addChangedFile(diffForJiraIssue.getChangedFiles().get(0));
-		//System.out.println(diff.getChangedFiles().get(0).getCompilationUnit().getPackageDeclaration().toString());
-		//System.out.println(diff.getChangedFiles().get(1).getCompilationUnit().getPackageDeclaration().toString());
-		//System.out.println(diff.getChangedFiles().get(2).getCompilationUnit().getPackageDeclaration().toString());
+
 		tangledCommitDetection.calculatePackageDistances(diff);
-		assertEquals(3, diff.getChangedFiles().get(0).getPackageDistance());
-		assertEquals(3, diff.getChangedFiles().get(1).getPackageDistance());
-		assertEquals(6, diff.getChangedFiles().get(2).getPackageDistance());
+		assertEquals(2, diff.getChangedFiles().get(0).getPackageDistance());
+		assertEquals(2, diff.getChangedFiles().get(1).getPackageDistance());
+		assertEquals(4, diff.getChangedFiles().get(2).getPackageDistance());
 	}
 
 	@Test

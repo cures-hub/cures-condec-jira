@@ -15,23 +15,26 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 	}
 
 	@Override
-	public void calculatePackageDistances(Diff diff) {
+	public int[][] calculatePackageDistances(Diff diff) {
 		List<ChangedFile> changedFiles = diff.getChangedFiles();
 
-		if (changedFiles.isEmpty()) {
-			return;
+		int numberOfFiles = changedFiles.size();
+		int[][] matrix = new int[numberOfFiles][numberOfFiles];
+
+		if (numberOfFiles == 0) {
+			return matrix;
 		}
 
-		int numberOfFiles = changedFiles.size();
 		if (numberOfFiles == 1) {
 			changedFiles.get(0).setPackageDistance(100);
-			return;
+			return matrix;
 		}
 
-		int[][] matrix = new int[numberOfFiles][numberOfFiles];
 		for (int i = 0; i < numberOfFiles; i++) {
 			matrix[i] = calculatePackageDistance(changedFiles.get(i), changedFiles);
 		}
+
+		return matrix;
 	}
 
 	private int[] calculatePackageDistance(ChangedFile file, List<ChangedFile> changedFiles) {
@@ -65,16 +68,14 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 			String rightPackageSegment = rightPackageDeclaration.get(k);
 			if (!leftPackageSegment.equals(rightPackageSegment)) {
 				return leftPackageDeclaration.size() - k;
-			}
-
-			if (leftPackageSegment.equals(rightPackageSegment) && isLastSegment(rightPackageDeclaration, k)) {
+			} else if (isLastSegment(rightPackageDeclaration, k)) {
 				return leftPackageDeclaration.size() - rightPackageDeclaration.size();
 			}
 		}
 
 		return 0;
 	}
-	
+
 	private boolean isLastSegment(List<String> packageDeclaration, int segmentNumber) {
 		return packageDeclaration.size() - segmentNumber == 1;
 	}

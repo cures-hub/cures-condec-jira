@@ -164,8 +164,12 @@ public class ChangedFileImpl implements ChangedFile {
 		}
 		Optional<PackageDeclaration> optional = getCompilationUnit().getPackageDeclaration();
 		try {
-			partsOfPackageName = Arrays
-					.asList(optional.get().toString().replaceAll("\n", "").replaceAll(";", "").split("\\."));
+			String packageDeclaration = optional.get().toString();
+			packageDeclaration = packageDeclaration.replaceAll("\n", "").replaceAll(";", "").replaceAll("\r", "");
+			for (String partOfPackageName : packageDeclaration.split("\\.")) {
+				partsOfPackageName.add(partOfPackageName);
+			}
+			//partsOfPackageName.remove(partsOfPackageName.size() - 1);
 		} catch (NoSuchElementException e) {
 			LOGGER.error(e.getMessage());
 		}

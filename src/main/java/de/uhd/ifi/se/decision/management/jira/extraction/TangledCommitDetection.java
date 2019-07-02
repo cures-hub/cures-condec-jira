@@ -28,9 +28,9 @@ public interface TangledCommitDetection {
 	 * @param diff
 	 *            The diff might be a single git commit, a whole feature branch
 	 *            (with many commits), or all commits belonging to a JIRA issue.
-	 *
+	 * @return tow-dimensional integer matrix with package distances.
 	 */
-	void calculatePackageDistances(Diff diff);
+	int[][] calculatePackageDistances(Diff diff);
 
 	/**
 	 * TODO Passt 100%? Normalize the result of calculatePackageDistances, from
