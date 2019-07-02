@@ -89,12 +89,31 @@ public class TestSetUpWithIssues {
 		((MockUserManager) userManager).addUser(user4);
 
 
-		TimeZoneManager timeZoneManager = Mockito.mock(TimeZoneManager.class);
+		TimeZoneManager timeZoneManager = mock(TimeZoneManager.class);
 		Mockito.when(timeZoneManager.getLoggedInUserTimeZone()).thenReturn(TimeZone.getDefault());
 
 		MockComponentWorker worker = new MockComponentWorker();
 		worker.registerMock(JqlClauseBuilderFactory.class, new JqlClauseBuilderFactoryImpl(new JqlDateSupportImpl(timeZoneManager)));
-		worker.init().addMock(IssueManager.class, issueManager).addMock(IssueLinkManager.class, new MockIssueLinkManager()).addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager()).addMock(IssueService.class, issueService).addMock(ProjectManager.class, projectManager).addMock(UserManager.class, userManager).addMock(ConstantsManager.class, constantsManager).addMock(ProjectRoleManager.class, new MockProjectRoleManager()).addMock(VelocityManager.class, new MockVelocityManager()).addMock(VelocityParamFactory.class, new MockVelocityParamFactory()).addMock(AvatarManager.class, new MockAvatarManager()).addMock(IssueTypeManager.class, issueTypeManager).addMock(IssueTypeSchemeManager.class, mock(IssueTypeSchemeManager.class)).addMock(FieldConfigScheme.class, mock(FieldConfigScheme.class)).addMock(PluginSettingsFactory.class, new MockPluginSettingsFactory()).addMock(OptionSetManager.class, mock(OptionSetManager.class)).addMock(CommentManager.class, new MockCommentManager()).addMock(ApplicationProperties.class, mockApplicationProperties).addMock(JiraHome.class, new MockJiraHomeForTesting()).addMock(SearchService.class, new MockSearchService());
+		worker.init().addMock(IssueManager.class, issueManager)
+				.addMock(IssueLinkManager.class, new MockIssueLinkManager())
+				.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager())
+				.addMock(IssueService.class, issueService)
+				.addMock(ProjectManager.class, projectManager)
+				.addMock(UserManager.class, userManager)
+				.addMock(ConstantsManager.class, constantsManager)
+				.addMock(ProjectRoleManager.class, new MockProjectRoleManager())
+				.addMock(VelocityManager.class, new MockVelocityManager())
+				.addMock(VelocityParamFactory.class, new MockVelocityParamFactory())
+				.addMock(AvatarManager.class, new MockAvatarManager())
+				.addMock(IssueTypeManager.class, issueTypeManager)
+				.addMock(IssueTypeSchemeManager.class, mock(IssueTypeSchemeManager.class))
+				.addMock(FieldConfigScheme.class, mock(FieldConfigScheme.class))
+				.addMock(PluginSettingsFactory.class, new MockPluginSettingsFactory())
+				.addMock(OptionSetManager.class, mock(OptionSetManager.class))
+				.addMock(CommentManager.class, new MockCommentManager())
+				.addMock(ApplicationProperties.class, mockApplicationProperties)
+				.addMock(JiraHome.class, new MockJiraHomeForTesting())
+				.addMock(SearchService.class, new MockSearchService());
 		creatingProjectIssueStructure();
 	}
 

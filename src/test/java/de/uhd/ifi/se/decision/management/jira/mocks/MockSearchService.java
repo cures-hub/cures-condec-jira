@@ -12,7 +12,6 @@ import com.atlassian.jira.util.MessageSetImpl;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 import com.atlassian.query.QueryImpl;
-import com.atlassian.query.clause.AndClause;
 import com.atlassian.query.clause.TerminalClauseImpl;
 
 import javax.annotation.Nonnull;

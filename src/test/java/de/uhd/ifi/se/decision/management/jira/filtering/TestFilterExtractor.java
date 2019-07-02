@@ -12,11 +12,15 @@ import static org.junit.Assert.assertNull;
 public class TestFilterExtractor extends TestSetUpWithIssues {
 
 	private ApplicationUser user;
+	private String jql;
+	private FilterExtractor filterExtractor;
 
 	@Before
 	public void setUp() {
 		initialization();
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		jql = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
+		filterExtractor = new FilterExtractor("TEST", user, jql, "Issue", System.currentTimeMillis() - 100, System.currentTimeMillis());
 	}
 
 	@Test
@@ -52,7 +56,6 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 
 	@Test
 	public void testConstructorFilterStringNullNullFilledJQL() {
-		String jql = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
 		FilterExtractor extractor = new FilterExtractor(null, null, "\\?filter=(.)+" + jql);
 		assertNull(extractor.getFilteredDecisions());
 	}
@@ -72,7 +75,6 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 
 	@Test
 	public void testConstructorFilterStringFilledFilledFilledJQL() {
-		String jql = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
 		FilterExtractor extractor = new FilterExtractor("Test", user, "?jql=" + jql);
 		assertEquals(0.0, extractor.getFilteredDecisions().size(), 0.0);
 	}
@@ -105,16 +107,28 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 
 	@Test
 	public void testConstructorFilterOwnFilledNoTime() {
-		String jql = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
 		FilterExtractor extractor = new FilterExtractor("TEST", user, jql, "Issue", -1, -1);
 		assertEquals(0.0, extractor.getFilteredDecisions().size(), 0.0);
 	}
 
 	@Test
 	public void testConstructorFilterOwnFilled() {
-		String jql = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
 		FilterExtractor extractor = new FilterExtractor("TEST", user, jql, "Issue", System.currentTimeMillis() - 100, System.currentTimeMillis());
 		assertEquals(0.0, extractor.getFilteredDecisions().size(), 0.0);
 	}
 
+	@Test
+	public void testGetGraphsMatchingQueryNull(){
+		assertEquals(0.0,filterExtractor.getGraphsMatchingQuery(null).size(),0.0);
+	}
+
+	@Test
+	public void testGetGraphsMatchingQueryEmpty(){
+		assertEquals(0.0,filterExtractor.getGraphsMatchingQuery("").size(),0.0);
+	}
+
+	@Test
+	public void testGetGraphsMatchingQueryFilled(){
+		assertEquals(0.0,filterExtractor.getGraphsMatchingQuery("Test").size(),0.0);
+	}
 }
