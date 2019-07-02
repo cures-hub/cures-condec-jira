@@ -35,45 +35,46 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 	}
 
 	private int[] calculatePackageDistance(ChangedFile file, List<ChangedFile> changedFiles) {
-		int[] packageDistances = new int[changedFiles.size()];		
+		int[] packageDistances = new int[changedFiles.size()];
 		for (int j = 0; j < changedFiles.size(); j++) {
 			packageDistances[j] = calculatePackageDistance(file, changedFiles.get(j));
 		}
 		return packageDistances;
 	}
 
-	private int calculatePackageDistance(ChangedFile fileA, ChangedFile fileB) {		
+	private int calculatePackageDistance(ChangedFile fileA, ChangedFile fileB) {
 		List<String> leftPackageDeclaration = fileA.getPackageName();
 		List<String> rightPackageDeclaration = fileB.getPackageName();
 		if (fileA.equals(fileB)) {
 			return 0;
 		}
-		
-		int packageDistance = 0;
 
+		int packageDistance = calculatePackageDistance(leftPackageDeclaration, rightPackageDeclaration);
+		fileA.setPackageDistance(fileA.getPackageDistance() + packageDistance);
+		return packageDistance;
+	}
+
+	private int calculatePackageDistance(List<String> leftPackageDeclaration, List<String> rightPackageDeclaration) {
+		int packageDistance = 0;
 		if (leftPackageDeclaration.size() >= rightPackageDeclaration.size()) {
 			for (int k = 0; k < rightPackageDeclaration.size(); k++) {
 				if (!leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k))) {
-					fileA.setPackageDistance(fileA.getPackageDistance() + (leftPackageDeclaration.size() - k));
 					packageDistance = leftPackageDeclaration.size() - k;
 					break;
 				} else if ((rightPackageDeclaration.size() - 1) == k
 						&& (leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k)))) {
-					fileA.setPackageDistance(fileA.getPackageDistance()
-							+ (leftPackageDeclaration.size() - rightPackageDeclaration.size()));
 					packageDistance = leftPackageDeclaration.size() - rightPackageDeclaration.size();
 				}
 			}
-		} else {
+		}
+
+		if (leftPackageDeclaration.size() < rightPackageDeclaration.size()) {
 			for (int k = 0; k < leftPackageDeclaration.size(); k++) {
 				if (!leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k))) {
-					fileA.setPackageDistance(fileA.getPackageDistance() + (rightPackageDeclaration.size() - k));
 					packageDistance = rightPackageDeclaration.size() - k;
 					break;
 				} else if (leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k))
 						&& (k == leftPackageDeclaration.size() - 1)) {
-					fileA.setPackageDistance(fileA.getPackageDistance()
-							+ (rightPackageDeclaration.size() - leftPackageDeclaration.size()));
 					packageDistance = rightPackageDeclaration.size() - leftPackageDeclaration.size();
 					break;
 				}
