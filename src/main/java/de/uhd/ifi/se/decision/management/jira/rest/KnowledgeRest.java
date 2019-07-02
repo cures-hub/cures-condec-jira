@@ -336,7 +336,7 @@ public class KnowledgeRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getSummarizedCode(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
-			@QueryParam("documentationLocation") String documentationLocation) {
+			@QueryParam("documentationLocation") String documentationLocation, @QueryParam("probability") int probability) {
 		if (projectKey == null || id <= 0) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Getting summarized code failed due to a bad request.")).build();
@@ -356,7 +356,7 @@ public class KnowledgeRest {
 					.build();
 		}
 
-		String summary = new CodeSummarizerImpl(projectKey, true).createSummary(jiraIssue);
+		String summary = new CodeSummarizerImpl(projectKey).createSummary(jiraIssue,probability);
 		if (summary == null || summary.isEmpty()) {
 			summary = "This JIRA issue does not have any code committed.";
 		}

@@ -296,17 +296,20 @@
 	};
 
 	ConDecDialog.prototype.showSummarizedDialog = function showSummarizedDialog(id, documentationLocation) {
-		console.log("conDecDialog summarizedDialog");
-
 		// HTML elements
 		var summarizedDialog = document.getElementById("summarization-dialog");
 		var cancelButton = document.getElementById("summarization-dialog-cancel-button");
 		var content = document.getElementById("summarization-dialog-content");
-
-		conDecAPI.getSummarizedCode(id, documentationLocation, function(text) {
-			var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";
-			content.innerHTML = insertString;
-		});
+		var probabilityOfCorrectness = document.getElementById("summarization-probabilityOfCorrectness").valueAsNumber;
+		var projectId = document.getElementById("summarization-projectId").value;
+        if (projectId === undefined || projectId.length === 0 || projectId === "") {
+            document.getElementById("summarization-projectId").value = id;
+            projectId = id;
+        }
+        conDecAPI.getSummarizedCode(parseInt(projectId, 10), documentationLocation, probabilityOfCorrectness, function(text) {
+            var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";
+            content.innerHTML = insertString;
+        });
 
 		cancelButton.onclick = function() {
 			AJS.dialog2(summarizedDialog).hide();
@@ -320,10 +323,10 @@
 
 		// HTML elements
 		var exportDialog = document.getElementById("export-dialog");
-		var hiddenDiv= document.getElementById("exportQueryFallback");
+		var hiddenDiv = document.getElementById("exportQueryFallback");
 		// set hidden attribute
-		hiddenDiv.setAttribute("data-tree-element-key",decisionElementKey);
-		//open dialog
+		hiddenDiv.setAttribute("data-tree-element-key", decisionElementKey);
+		// open dialog
 		AJS.dialog2(exportDialog).show();
 	};
 

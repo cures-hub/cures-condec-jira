@@ -1,54 +1,44 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 
-import com.atlassian.jira.issue.Issue;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseProblemException;
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.MethodDeclaration;
+import com.atlassian.jira.issue.Issue;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
+import de.uhd.ifi.se.decision.management.jira.extraction.Diff;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.TangledCommitDetection;
 
 public class CodeSummarizerImpl implements CodeSummarizer {
 
 	private GitClient gitClient;
-	private boolean useHtml;
-	private static final Logger LOGGER = LoggerFactory.getLogger(CodeSummarizerImpl.class);
-
-	public CodeSummarizerImpl(GitClient gitClient, boolean useHtml) {
-		this.gitClient = gitClient;
-		this.useHtml = useHtml;
-	}
-
-	public CodeSummarizerImpl(String projectKey, boolean useHtml) {
-		this.gitClient = new GitClientImpl(projectKey);
-		this.useHtml = useHtml;
-	}
+	private int minProbabilityOfCorrectness;
+	private String projectKey;
+	private String issueKey;
 
 	public CodeSummarizerImpl(String projectKey) {
-		this(projectKey, false);
+		this.projectKey = projectKey;
+		this.gitClient = new GitClientImpl(projectKey);
 	}
 
+	public CodeSummarizerImpl(GitClient gitClient) {
+		this.gitClient = gitClient;
+	}
+
+	// TODO Add overloaded method createSummary(Issue jiraIssue)
 	@Override
-	public String createSummary(Issue jiraIssue) {
+	public String createSummary(Issue jiraIssue, int minProbabilityOfCorrectness) {
 		if (jiraIssue == null) {
 			return "";
 		}
+		this.minProbabilityOfCorrectness = minProbabilityOfCorrectness;
+		this.issueKey = jiraIssue.getKey();
 		Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssue);
 		return createSummary(diff);
 	}
@@ -63,96 +53,64 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 	}
 
 	@Override
-	public String createSummary(Map<DiffEntry, EditList> diff) {
-		if (diff == null || diff.size() == 0) {
+	public String createSummary(Map<DiffEntry, EditList> diffMap) {
+		if (diffMap == null || diffMap.size() == 0) {
 			return "";
 		}
-		String summary = "The following classes were changed: ";
-		for (Map.Entry<DiffEntry, EditList> entry : diff.entrySet()) {
-			summary += createSummaryOfDiffEntry(entry.getKey(), entry.getValue());
-		}
-		return summary;
+		String baseDirectory = gitClient.getDirectory().toString().replace(".git", "");
+		Diff diff = new DiffImpl(diffMap, baseDirectory);
+
+		TangledCommitDetection tangledCommitDetection = new TangledCommitDetectionImpl();
+		tangledCommitDetection.estimateWhetherChangedFilesAreCorrectlyIncludedInDiff(diff);
+
+		return generateSummary(diff);
 	}
 
-	private String createSummaryOfDiffEntry(DiffEntry diffEntry, EditList editList) {
-		if (diffEntry == null) {
-			return "";
-		}
-
-		String newPath = diffEntry.getNewPath();
-		if (!newPath.contains(".java")) {
-			return "";
-		}
-
-		File file = new File(gitClient.getDirectory() + File.separator + newPath);
-
-		String className = FilenameUtils.removeExtension(file.getName());
-		String summary = makeBold(className) + lineBreak();
-
-		// @issue How can we parse methods from diffs?
-		// @decision Use parser on existing files in file system.
-		// @con Files might be deleted in the current version.
-		// @con All methods are included, also the methods not in the diff.
-		if (!file.exists()) {
-			return summary;
-		}
-
-		CompilationUnit compilationUnit = null;
-		try {
-			FileInputStream fileInputStream = new FileInputStream(file.toString());
-			compilationUnit = JavaParser.parse(fileInputStream); // produces real readable code
-			fileInputStream.close();
-		} catch (ParseProblemException | IOException e) {
-			LOGGER.debug("Parsing error in class " + className);
-		}
-
-		MethodVisitor methodVisitor = new MethodVisitor();
-		compilationUnit.accept(methodVisitor, null);
-		Set<MethodDeclaration> methodDeclarations = new LinkedHashSet<MethodDeclaration>();
-		methodDeclarations = methodVisitor.getMethodDeclarations();
-
-		summary += summarizeChangedMethods(methodDeclarations, editList);
-
-		return summary;
-	}
-
-	private String summarizeChangedMethods(Set<MethodDeclaration> methodDeclarations, EditList editList) {
-		String summary = "The following methods were changed: " + lineBreak();
-
-		for (Edit edit : editList) {
-			for (MethodDeclaration methodDeclaration : methodDeclarations) {
-				if (edit.getEndB() >= methodDeclaration.getBegin().get().line
-						&& edit.getBeginB() <= methodDeclaration.getEnd().get().line) {
-					// Insert happended
-					String method = methodDeclaration.getNameAsString();
-					if (!summary.contains(method)) {
-						summary += method + lineBreak();
-					}
-				}
+	private String generateSummary(Diff diff) {
+		String rows = "";
+		for (ChangedFile changedFile : diff.getChangedFiles()) {
+			if (changedFile.getProbabilityOfCorrectness() >= this.minProbabilityOfCorrectness) {
+				rows += this.addRow(this.addTableItem(FilenameUtils.removeExtension(changedFile.getFile().getName()),
+						this.summarizeMethods(changedFile), Float.toString(changedFile.getProbabilityOfCorrectness())));
 			}
 		}
-		return summary;
+		return this.generateTable(rows);
 	}
 
-	private String makeBold(String text, boolean useHtml) {
-		if (useHtml) {
-			return "<b>" + text + "</b>";
+	private String summarizeMethods(ChangedFile changedFile) {
+		String summarizedMethods = "";
+		for (String methodDeclaration : changedFile.getMethodDeclarations()) {
+			summarizedMethods += methodDeclaration + "<br/>";
 		}
-		return "*" + text + "*";
+		return summarizedMethods;
 	}
 
-	private String makeBold(String text) {
-		return makeBold(text, useHtml);
+	private String generateTable(String rows) {
+		return "<table style=\"width:100%; border: 1px solid black; border-collapse: collapse;\">" + "<tr>\n"
+				+ "    <th style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Class Name</th>\n"
+				+ "    <th style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Method Names</th> \n"
+				+ "    <th style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Probability of Correct Link</th>\n"
+				+ "</tr>\n" + rows + "</table>";
 	}
 
-	private String lineBreak(boolean useHtml) {
-		if (useHtml) {
-			return "<br/>";
-		}
-		return "\n";
+	private String addRow(String tableItem) {
+		return "<tr>\n" + tableItem + "</tr>\n";
 	}
 
-	private String lineBreak() {
-		return lineBreak(useHtml);
+	private String addTableItem(String item1, String item2, String item3) {
+		return "<td style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">"
+				+ item1 + "</td>\n"
+				+ "<td style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">"
+				+ item2 + "</td>\n"
+				+ "<td style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">"
+				+ item3 + "% </td>\n";
+	}
+
+	public String getProjectKey() {
+		return projectKey;
+	}
+
+	public String getIssueKey() {
+		return issueKey;
 	}
 }
