@@ -602,7 +602,7 @@ public class GitClientImpl implements GitClient {
 
 	private List<RevCommit> getCommits(Ref branch, boolean isDefaultBranch) {
 		List<RevCommit> commits = new ArrayList<RevCommit>();
-		if (branch == null) {
+		if (branch == null || fsManager == null) {
 			return commits;
 		}
 

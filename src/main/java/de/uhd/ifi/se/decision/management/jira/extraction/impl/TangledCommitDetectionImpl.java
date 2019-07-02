@@ -55,23 +55,28 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 	}
 
 	private int calculatePackageDistance(List<String> leftPackageDeclaration, List<String> rightPackageDeclaration) {
-		int packageDistance = 0;
 
 		if (leftPackageDeclaration.size() < rightPackageDeclaration.size()) {
 			return calculatePackageDistance(rightPackageDeclaration, leftPackageDeclaration);
 		}
 
 		for (int k = 0; k < rightPackageDeclaration.size(); k++) {
-			if (!leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k))) {
-				packageDistance = leftPackageDeclaration.size() - k;
-				break;
-			} else if ((rightPackageDeclaration.size() - 1) == k
-					&& (leftPackageDeclaration.get(k).equals(rightPackageDeclaration.get(k)))) {
-				packageDistance = leftPackageDeclaration.size() - rightPackageDeclaration.size();
+			String leftPackageSegment = leftPackageDeclaration.get(k);
+			String rightPackageSegment = rightPackageDeclaration.get(k);
+			if (!leftPackageSegment.equals(rightPackageSegment)) {
+				return leftPackageDeclaration.size() - k;
+			}
+
+			if (leftPackageSegment.equals(rightPackageSegment) && isLastSegment(rightPackageDeclaration, k)) {
+				return leftPackageDeclaration.size() - rightPackageDeclaration.size();
 			}
 		}
 
-		return packageDistance;
+		return 0;
+	}
+	
+	private boolean isLastSegment(List<String> packageDeclaration, int segmentNumber) {
+		return packageDeclaration.size() - segmentNumber == 1;
 	}
 
 	@Override
