@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.Lists;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;

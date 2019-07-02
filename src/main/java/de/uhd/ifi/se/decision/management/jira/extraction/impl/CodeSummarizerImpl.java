@@ -63,7 +63,7 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		Diff diff = new DiffImpl(diffMap, baseDirectory);
 
 		TangledCommitDetection tangledCommitDetection = new TangledCommitDetectionImpl();
-		tangledCommitDetection.calculatePredication(diff);
+		tangledCommitDetection.estimateWhetherChangedFilesAreCorrectlyIncludedInDiff(diff);
 
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonString = "";

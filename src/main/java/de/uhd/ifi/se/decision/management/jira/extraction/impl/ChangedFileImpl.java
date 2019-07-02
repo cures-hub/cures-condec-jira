@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -169,7 +168,6 @@ public class ChangedFileImpl implements ChangedFile {
 			for (String partOfPackageName : packageDeclaration.split("\\.")) {
 				partsOfPackageName.add(partOfPackageName);
 			}
-			//partsOfPackageName.remove(partsOfPackageName.size() - 1);
 		} catch (NoSuchElementException e) {
 			LOGGER.error(e.getMessage());
 		}

@@ -9,7 +9,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.TangledCommitDetection;
 public class TangledCommitDetectionImpl implements TangledCommitDetection {
 
 	@Override
-	public void calculatePredication(Diff diff) {
+	public void estimateWhetherChangedFilesAreCorrectlyIncludedInDiff(Diff diff) {
 		this.calculatePackageDistances(diff);
 		this.standardization(diff);
 	}

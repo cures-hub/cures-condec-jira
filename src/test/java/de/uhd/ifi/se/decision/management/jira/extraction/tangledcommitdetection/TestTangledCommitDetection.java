@@ -105,11 +105,15 @@ public class TestTangledCommitDetection extends TestSetUpGit {
 	}
 
 	@Test
-	public void testCalculatePredication() {
-		tangledCommitDetection.calculatePredication(diffForJiraIssue);
-		assertEquals(100.0, diffForJiraIssue.getChangedFiles().get(0).getProbabilityOfCorrectness(), 0.0000);
-		assertEquals(100.0, diffForJiraIssue.getChangedFiles().get(1).getProbabilityOfCorrectness(), 0.0000);
-		assertEquals(0.0, diffForJiraIssue.getChangedFiles().get(2).getProbabilityOfCorrectness(), 0.0000);
+	public void testEstimateCorrectnessOfLinkForChangedFiles() {
+		tangledCommitDetection.estimateWhetherChangedFilesAreCorrectlyIncludedInDiff(diffForJiraIssue);
+		
+		List<ChangedFile> changedFiles = diffForJiraIssue.getChangedFiles();
+		
+		assertEquals(100.0, changedFiles.get(0).getProbabilityOfCorrectness(), 0.0000);		
+		assertEquals(100.0, changedFiles.get(1).getProbabilityOfCorrectness(), 0.0000);
+		assertEquals(0.0, changedFiles.get(2).getProbabilityOfCorrectness(), 0.0000);
+		assertEquals("Tangled1.java", changedFiles.get(2).getName());
 	}
 
 }
