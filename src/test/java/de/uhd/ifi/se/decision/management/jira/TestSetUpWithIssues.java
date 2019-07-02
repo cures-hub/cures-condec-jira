@@ -42,18 +42,7 @@ import com.atlassian.jira.util.VelocityParamFactory;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.velocity.VelocityManager;
 
-import de.uhd.ifi.se.decision.management.jira.mocks.MockAvatarManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockCommentManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkTypeManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueService;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockJiraHomeForTesting;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockProjectRoleManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityParamFactory;
+import de.uhd.ifi.se.decision.management.jira.mocks.*;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
@@ -109,7 +98,7 @@ public class TestSetUpWithIssues {
 				.addMock(CommentManager.class, new MockCommentManager())
 				.addMock(ApplicationProperties.class, mockApplicationProperties)
 				.addMock(JiraHome.class, new MockJiraHomeForTesting())
-				.addMock(SearchService.class, mock(SearchService.class));
+				.addMock(SearchService.class, new MockSearchService());
 
 		creatingProjectIssueStructure();
 	}

@@ -6,6 +6,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 public class TestFilterExtractor extends TestSetUpWithIssues {
@@ -38,13 +39,43 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 
 	@Test
 	public void testConstructorFilterStringNullNullEmpty() {
-		FilterExtractor extractor = new FilterExtractor(null, user ,"");
+		FilterExtractor extractor = new FilterExtractor(null, null ,"");
 		assertNull(extractor.getFilteredDecisions());
 	}
 
 	@Test
-	public void testConstructorFilterStringNullNullFilled() {
-		FilterExtractor extractor = new FilterExtractor(null, user ,null);
+	public void testConstructorFilterStringNullNullFilledString() {
+		String filter = "allopenissues";
+		FilterExtractor extractor = new FilterExtractor(null, null ,"\\?filter=(.)+"+ filter);
 		assertNull(extractor.getFilteredDecisions());
 	}
+
+	@Test
+	public void testConstructorFilterStringNullNullFilledJQL() {
+		String jql = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
+		FilterExtractor extractor = new FilterExtractor(null, null ,"\\?filter=(.)+"+jql);
+		assertNull(extractor.getFilteredDecisions());
+	}
+
+	@Test
+	public void testConstructorFilterStringFilledFilledEmpty(){
+		FilterExtractor extractor = new FilterExtractor("TEST", user, "");
+		assertEquals(0.0 , extractor.getFilteredDecisions().size(), 0.0);
+	}
+
+	@Test
+	public void testConstructorFilterStringFilledFilledString(){
+		String filter = "allopenissues";
+		FilterExtractor extractor = new FilterExtractor("TEST", user, "?filter="+ filter);
+		assertEquals(0.0 , extractor.getFilteredDecisions().size(), 0.0);
+	}
+
+	@Test
+	public void testConstructorFilterStringFilledFilledFilledJQL() {
+		String jql = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
+		FilterExtractor extractor = new FilterExtractor("Test", user ,"?jql="+jql);
+		assertEquals(0.0, extractor.getFilteredDecisions().size(), 0.0);
+	}
+
+	
 }
