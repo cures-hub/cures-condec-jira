@@ -34,8 +34,4 @@ public class MethodVisitor extends VoidVisitorAdapter<Void> {
 	public Set<MethodDeclaration> getMethodDeclarations() {
 		return methodDeclarations;
 	}
-
-	public void setMethodDeclarations(Set<MethodDeclaration> methodDeclarations) {
-		this.methodDeclarations = methodDeclarations;
-	}
 }

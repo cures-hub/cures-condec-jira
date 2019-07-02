@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -224,8 +224,9 @@ public class GitClientImpl implements GitClient {
 		Repository repository = this.getRepository();
 		StoredConfig config = repository.getConfig();
 		// @issue The internal representation of a file might add system dependent new
-		// line statements, for example CR LF in Windows
-		// @decision Disable system dependent new line statements
+		// line statements, for example CR LF in Windows. How to deal with different
+		// line endings?
+		// @decision Disable system dependent new line statements!
 		config.setEnum(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_AUTOCRLF, AutoCRLF.TRUE);
 		try {
 			config.save();
@@ -258,7 +259,7 @@ public class GitClientImpl implements GitClient {
 
 	@Override
 	public Map<DiffEntry, EditList> getDiff(RevCommit firstCommit, RevCommit lastCommit) {
-		Map<DiffEntry, EditList> diffEntriesMappedToEditLists = new HashMap<DiffEntry, EditList>();
+		Map<DiffEntry, EditList> diffEntriesMappedToEditLists = new LinkedHashMap<DiffEntry, EditList>();
 		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
 
 		DiffFormatter diffFormatter = getDiffFormater();
@@ -602,7 +603,7 @@ public class GitClientImpl implements GitClient {
 
 	private List<RevCommit> getCommits(Ref branch, boolean isDefaultBranch) {
 		List<RevCommit> commits = new ArrayList<RevCommit>();
-		if (branch == null) {
+		if (branch == null || fsManager == null) {
 			return commits;
 		}
 
@@ -644,6 +645,7 @@ public class GitClientImpl implements GitClient {
 		try {
 			git.checkout().setName(checkoutObjectName).call();
 		} catch (GitAPIException | JGitInternalException e) {
+
 			LOGGER.error("Could not checkout " + checkoutObjectName + ". " + e.getMessage());
 			return false;
 		}
