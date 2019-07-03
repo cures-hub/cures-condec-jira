@@ -3,8 +3,14 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.FilterData;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.impl.FilterDataImpl;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -14,30 +20,46 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 	private ApplicationUser user;
 	private String jql;
 	private FilterExtractor filterExtractor;
+	private FilterData data;
 
 	@Before
 	public void setUp() {
 		initialization();
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		jql = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
-		filterExtractor = new FilterExtractor("TEST", user, jql, "Issue", System.currentTimeMillis() - 100, System.currentTimeMillis());
+		data = new FilterDataImpl("TEST", jql,
+				System.currentTimeMillis() - 100, System.currentTimeMillis());
+		String[] ktypes = new String[KnowledgeType.toList().size()];
+		List<String> typeList = KnowledgeType.toList();
+		for(int i = 0 ; i< typeList.size() ; i++){
+			ktypes[i] = typeList.get(i);
+		}
+		String[] doc = new String[DocumentationLocation.toList().size()];
+		List<String> docList = DocumentationLocation.toList();
+		for(int i= 0; i < docList.size(); i++){
+			doc[i] = docList.get(i);
+		}
+		data.setIssueTypes(ktypes);
+		data.setDocumentationLocation(doc);
+
+		filterExtractor = new FilterExtractor("TEST", user, data);
 	}
 
 	@Test
 	public void testConstructorFilterStringNullNullNull() {
-		FilterExtractor extractor = new FilterExtractor(null, null, null);
+		FilterExtractor extractor = new FilterExtractor(null, null, (String)null);
 		assertNull(extractor.getFilteredDecisions());
 	}
 
 	@Test
 	public void testConstructorFilterStringFilledNullNull() {
-		FilterExtractor extractor = new FilterExtractor("TEST", null, null);
+		FilterExtractor extractor = new FilterExtractor("TEST", null, (String)null);
 		assertNull(extractor.getFilteredDecisions());
 	}
 
 	@Test
 	public void testConstructorFilterStringNullFilledNull() {
-		FilterExtractor extractor = new FilterExtractor(null, user, null);
+		FilterExtractor extractor = new FilterExtractor(null, user, (String)null);
 		assertNull(extractor.getFilteredDecisions());
 	}
 
@@ -83,37 +105,32 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 
 	@Test
 	public void testConstructorFilterOwnNullProject() {
-		FilterExtractor extractor = new FilterExtractor(null, null, null, null, 0, 0);
+		FilterExtractor extractor = new FilterExtractor(null, null, (FilterData)null);
 		assertNull(extractor.getFilteredDecisions());
 	}
 
 	@Test
 	public void testConstructorFilterOwnNullUser() {
-		FilterExtractor extractor = new FilterExtractor("TEST", null, null, null, 0, 0);
+		FilterExtractor extractor = new FilterExtractor("TEST", null, (FilterData) null);
 		assertNull(extractor.getFilteredDecisions());
 	}
 
 	@Test
 	public void testConstructorFilterOwnNullSearch() {
-		FilterExtractor extractor = new FilterExtractor("TEST", user, null, null, -1, -1);
+		FilterExtractor extractor = new FilterExtractor("TEST", user,(FilterData) null);
 		assertNull(extractor.getFilteredDecisions());
 	}
 
 	@Test
 	public void testConstructorFilterOwnEmpty() {
-		FilterExtractor extractor = new FilterExtractor("TEST", user, "", "", -1, -1);
-		assertEquals(0.0, extractor.getFilteredDecisions().size(), 0.0);
+		FilterExtractor extractor = new FilterExtractor("TEST", user,(FilterData) null);
+		assertNull(extractor.getFilteredDecisions());
 	}
 
-	@Test
-	public void testConstructorFilterOwnFilledNoTime() {
-		FilterExtractor extractor = new FilterExtractor("TEST", user, jql, "Issue", -1, -1);
-		assertEquals(0.0, extractor.getFilteredDecisions().size(), 0.0);
-	}
 
 	@Test
 	public void testConstructorFilterOwnFilled() {
-		FilterExtractor extractor = new FilterExtractor("TEST", user, jql, "Issue", System.currentTimeMillis() - 100, System.currentTimeMillis());
+		FilterExtractor extractor = new FilterExtractor("TEST", user,data);
 		assertEquals(0.0, extractor.getFilteredDecisions().size(), 0.0);
 	}
 

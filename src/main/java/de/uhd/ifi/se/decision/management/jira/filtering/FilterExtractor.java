@@ -60,6 +60,10 @@ public class FilterExtractor {
 			LOGGER.error("ProjectKey is null or empty");
 			return;
 		}
+		if(filterData == null){
+			LOGGER.error("Filter data is null");
+			return;
+		}
 		if (filterData.getSearchString() == null) {
 			LOGGER.error("FilterString is null");
 			return;

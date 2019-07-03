@@ -22,7 +22,25 @@ public class FilterDataImpl implements FilterData {
 	private List<KnowledgeType>  issueTypes;
 
 	public FilterDataImpl(String projectKey,String searchString){
+		this.projectKey = projectKey;
+		this.searchString = searchString;
+	}
 
+	public FilterDataImpl(String projectKey, String searchString, long createdEarliest, long createdLatest){
+		this(projectKey, searchString);
+		this.createdEarliest = createdEarliest;
+		this.createdLatest = createdLatest;
+	}
+
+	public FilterDataImpl(String projectKey, String searchString , long createdEarliest, long createdLatest, List<DocumentationLocation> documentationLocations){
+		this(projectKey, searchString, createdEarliest, createdLatest);
+		this.documentationLocationList = documentationLocations;
+	}
+
+	public FilterDataImpl(String projectKey, String searchString, long createdEarliest, long createdLatest,
+	                      List<DocumentationLocation> documentationLocations, List<KnowledgeType> knowledgeTypes){
+		this(projectKey, searchString, createdEarliest, createdLatest, documentationLocations);
+		this.issueTypes = knowledgeTypes;
 	}
 
 	@Override
