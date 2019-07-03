@@ -52,9 +52,9 @@ public interface FilterData {
 
 	/**
 	 * Set the earliest date when a element is created as a String.
-	 * @param earliest String with a long
+	 * @param createdEarliest String with a long
 	 */
-	void setCreatedEarliest(String earliest);
+	void setCreatedEarliest(long createdEarliest);
 
 	/**
 	 * Returns the latest date when a element is created in milliseconds
@@ -66,9 +66,9 @@ public interface FilterData {
 
 	/**
 	 * Set the latest date when a element is created as a String.
-	 * @param latest String with a long
+	 * @param createdLatest String with a long
 	 */
-	void setCreatedLatest(String latest);
+	void setCreatedLatest(long createdLatest);
 
 
 	/**

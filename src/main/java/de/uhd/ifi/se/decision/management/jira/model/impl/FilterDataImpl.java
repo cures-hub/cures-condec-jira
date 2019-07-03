@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.model.impl;
 
-import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.FilterData;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -21,6 +20,11 @@ public class FilterDataImpl implements FilterData {
 	private List<DocumentationLocation> documentationLocationList;
 	private List<KnowledgeType>  issueTypes;
 
+	public FilterDataImpl(){
+		projectKey = "";
+		searchString = "";
+	}
+
 	public FilterDataImpl(String projectKey,String searchString){
 		this.projectKey = projectKey;
 		this.searchString = searchString;
@@ -38,9 +42,10 @@ public class FilterDataImpl implements FilterData {
 	}
 
 	public FilterDataImpl(String projectKey, String searchString, long createdEarliest, long createdLatest,
-	                      List<DocumentationLocation> documentationLocations, List<KnowledgeType> knowledgeTypes){
-		this(projectKey, searchString, createdEarliest, createdLatest, documentationLocations);
-		this.issueTypes = knowledgeTypes;
+	                      String[] documentationLocations, String[] knowledgeTypes){
+		this(projectKey, searchString,createdEarliest,createdLatest);
+		this.setDocumentationLocation(documentationLocations);
+		this.setIssueTypes(knowledgeTypes);
 	}
 
 	@Override
@@ -49,6 +54,7 @@ public class FilterDataImpl implements FilterData {
 	}
 
 	@Override
+	@JsonProperty("projectKey")
 	public void setProjectKey(String projectKey) {
 		this.projectKey = projectKey;
 	}
@@ -59,6 +65,7 @@ public class FilterDataImpl implements FilterData {
 	}
 
 	@Override
+	@JsonProperty("searchString")
 	public void setSearchString(String searchString) {
 		this.searchString = searchString;
 	}
@@ -69,8 +76,9 @@ public class FilterDataImpl implements FilterData {
 	}
 
 	@Override
-	public void setCreatedEarliest(String earliest) {
-		this.createdEarliest = Long.parseLong(earliest);
+	@JsonProperty("createdEarliest")
+	public void setCreatedEarliest(long createdEarliest) {
+		this.createdEarliest = createdEarliest;
 	}
 
 	@Override
@@ -79,8 +87,9 @@ public class FilterDataImpl implements FilterData {
 	}
 
 	@Override
-	public void setCreatedLatest(String latest) {
-		this.createdLatest = Long.parseLong(latest);
+	@JsonProperty("createdLatest")
+	public void setCreatedLatest(long createdLatest) {
+		this.createdLatest = createdLatest;
 	}
 
 	@Override
@@ -89,7 +98,7 @@ public class FilterDataImpl implements FilterData {
 	}
 
 	@Override
-	@JsonProperty("documentationLocationArray")
+	@JsonProperty("documentationLocationList")
 	public void setDocumentationLocation(String[] documentationLocationArray) {
 		documentationLocationList = new ArrayList<>();
 		for(String location: documentationLocationArray){
@@ -103,6 +112,7 @@ public class FilterDataImpl implements FilterData {
 	}
 
 	@Override
+	@JsonProperty("issueTypes")
 	public void setIssueTypes(String[] issueTypesArray) {
 		issueTypes = new ArrayList<>();
 		for (String typeString : issueTypesArray) {

@@ -311,10 +311,10 @@
             "searchString": searchTerm,
             "createdEarliest": -1,
             "createdLatest": -1,
-            "documentationLocationList": [],
-            "issueTypes": []
+            "documentationLocationList": [""],
+            "issueTypes": [""]
         };
-        getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
+        postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
             filterData, function (error, vis) {
             if (error === null) {
                 callback(vis);
@@ -335,9 +335,9 @@
             "documentationLocationList": documentationLocation,
             "issueTypes": issueTypes
         };
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
-            filterData, function(error, vis) {
-			if (error === null) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey, filterData, function(error, vis) {
+		    console.log(filterData);
+		    if (error === null) {
 				callback(vis);
 			}
 		});
@@ -651,23 +651,6 @@
 		});
 	};
 
-	function getJSON(url,data, callback) {
-		var xhr = new XMLHttpRequest();
-		xhr.open("GET", url, true);
-		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-		xhr.responseType = "json";
-		xhr.onload = function() {
-			var status = xhr.status;
-			if (status === 200) {
-				callback(null, xhr.response);
-			} else {
-				showFlag("error", xhr.response.error, status);
-				callback(status);
-			}
-		};
-		xhr.send(JSON.stringify(data));
-	}
-
 	function getText(url, callback) {
 		var xhr = new XMLHttpRequest();
 		xhr.open("GET", url, true);
@@ -699,6 +682,24 @@
 		xhr.send();
 		return JSON.parse(xhr.response);
 	}
+
+    function getJSON(url, data, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", url, true);
+        xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+        xhr.setRequestHeader("Accept", "application/json");
+        xhr.responseType = "json";
+        xhr.onload = function() {
+            var status = xhr.status;
+            if (status === 200) {
+                callback(null, xhr.response);
+            } else {
+                showFlag("error", xhr.response.error, status);
+                callback(status);
+            }
+        };
+        xhr.send(JSON.stringify(data));
+    }
 
 	function postJSON(url, data, callback) {
 		var xhr = new XMLHttpRequest();

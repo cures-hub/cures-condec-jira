@@ -6,10 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -176,9 +173,9 @@ public class ViewRest {
 	}
 
 	@Path("/getVis")
-	@GET
+	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getVis(@QueryParam("elementKey") String elementKey, FilterData filterData, @Context HttpServletRequest request) {
+	public Response getVis(@Context HttpServletRequest request,FilterData filterData, @QueryParam("elementKey") String elementKey ) {
 		if(checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()){
 			return checkIfElementIsValid(elementKey);
 		}
