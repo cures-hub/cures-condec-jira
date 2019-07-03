@@ -179,6 +179,14 @@ public class ViewRest {
 		if(checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()){
 			return checkIfElementIsValid(elementKey);
 		}
+		if (filterData == null) {
+			return Response.status(Status.BAD_REQUEST)
+					       .entity(ImmutableMap.of("error", "Filter data is null. Vis could not be visualized.")).build();
+		}
+		if(request == null){
+			return Response.status(Status.BAD_REQUEST)
+					               .entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis could not be visualized.")).build();
+		}
 		String projectKey = getProjectKey(elementKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisDataProvider visDataProvider;
