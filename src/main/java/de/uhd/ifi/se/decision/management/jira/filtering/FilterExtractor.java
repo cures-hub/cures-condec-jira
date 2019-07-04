@@ -5,6 +5,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.FilterData;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
+import de.uhd.ifi.se.decision.management.jira.model.impl.FilterDataImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
 import org.slf4j.Logger;
@@ -18,10 +19,8 @@ import java.util.List;
  */
 public class FilterExtractor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilterExtractor.class);
-	private String projectKey;
 	private ApplicationUser user;
-	private String filterString;
-
+	private FilterData filterData;
 	private List<DecisionKnowledgeElement> decisionKnowledgeElements;
 
 	public FilterExtractor(String projectKey, ApplicationUser user, String filterString) {
@@ -37,8 +36,7 @@ public class FilterExtractor {
 			LOGGER.error("User is null");
 			return;
 		}
-		this.filterString = filterString;
-		this.projectKey = projectKey;
+		this.filterData = new FilterDataImpl(projectKey, filterString);
 		this.user = user;
 		GraphFiltering filter;
 		if ((filterString.matches("\\?jql=(.)+")) || (filterString.matches("\\?filter=(.)+"))) {
@@ -55,12 +53,8 @@ public class FilterExtractor {
 		}
 	}
 
-	public FilterExtractor(String projectKey, ApplicationUser user, FilterData filterData) {
-		if (projectKey == null || projectKey.equals("")) {
-			LOGGER.error("ProjectKey is null or empty");
-			return;
-		}
-		if(filterData == null){
+	public FilterExtractor(ApplicationUser user, FilterData filterData) {
+		if (filterData == null) {
 			LOGGER.error("Filter data is null");
 			return;
 		}
@@ -72,10 +66,9 @@ public class FilterExtractor {
 			LOGGER.error("User is null");
 			return;
 		}
-		this.filterString = filterData.getSearchString();
-		this.projectKey = projectKey;
 		this.user = user;
-		GraphFiltering filter = new GraphFiltering(projectKey, filterString, user, false);
+		this.filterData = filterData;
+		GraphFiltering filter = new GraphFiltering(filterData.getProjectKey(), filterData.getSearchString(), user, false);
 		filter.produceResultsWithAdditionalFilters(filterData);
 		this.decisionKnowledgeElements = filter.getAllElementsMatchingQuery();
 	}
@@ -112,7 +105,7 @@ public class FilterExtractor {
 		if ("".equals(linkedQueryNotEmpty)) {
 			linkedQueryNotEmpty = "?filter=allissues";
 		}
-		List<DecisionKnowledgeElement> tempQueryResult = new FilterExtractor(projectKey, user, filterString).getFilteredDecisions();
+		List<DecisionKnowledgeElement> tempQueryResult = new FilterExtractor(filterData.getProjectKey(), user, filterData.getSearchString()).getFilteredDecisions();
 		List<DecisionKnowledgeElement> addedElements = new ArrayList<DecisionKnowledgeElement>();
 		List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
 
@@ -122,7 +115,7 @@ public class FilterExtractor {
 			if (!addedElements.contains(current)) {
 				// if not get the connected tree
 				String currentElementKey = current.getKey();
-				List<DecisionKnowledgeElement> filteredElements = getElementsInGraph(user, projectKey, linkedQueryNotEmpty, currentElementKey);
+				List<DecisionKnowledgeElement> filteredElements = getElementsInGraph(user, filterData.getProjectKey(), linkedQueryNotEmpty, currentElementKey);
 				// add each element to the list
 				addedElements.addAll(filteredElements);
 				// add list to the big list

@@ -27,7 +27,7 @@ public class VisDataProvider {
 	}
 
 	public VisDataProvider(String projectKey, String elementKey, boolean isHyperlinked, ApplicationUser user, FilterData filterData) {
-		this.filterExtractor = new FilterExtractor(projectKey, user,filterData);
+		this.filterExtractor = new FilterExtractor(user,filterData);
 		decisionKnowledgeElements = filterExtractor.getFilteredDecisions();
 		graph = new VisGraph(projectKey,elementKey, decisionKnowledgeElements, isHyperlinked);
 

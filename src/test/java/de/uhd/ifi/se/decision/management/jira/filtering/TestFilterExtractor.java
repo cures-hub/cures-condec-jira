@@ -41,8 +41,7 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 		}
 		data.setIssueTypes(ktypes);
 		data.setDocumentationLocation(doc);
-
-		filterExtractor = new FilterExtractor("TEST", user, data);
+		filterExtractor = new FilterExtractor( user, data);
 	}
 
 	@Test
@@ -105,32 +104,20 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 
 	@Test
 	public void testConstructorFilterOwnNullProject() {
-		FilterExtractor extractor = new FilterExtractor(null, null, (FilterData)null);
+		FilterExtractor extractor = new FilterExtractor(null, (FilterData)null);
 		assertNull(extractor.getFilteredDecisions());
 	}
 
-	@Test
-	public void testConstructorFilterOwnNullUser() {
-		FilterExtractor extractor = new FilterExtractor("TEST", null, (FilterData) null);
-		assertNull(extractor.getFilteredDecisions());
-	}
 
 	@Test
 	public void testConstructorFilterOwnNullSearch() {
-		FilterExtractor extractor = new FilterExtractor("TEST", user,(FilterData) null);
+		FilterExtractor extractor = new FilterExtractor(user,(FilterData) null);
 		assertNull(extractor.getFilteredDecisions());
 	}
-
-	@Test
-	public void testConstructorFilterOwnEmpty() {
-		FilterExtractor extractor = new FilterExtractor("TEST", user,(FilterData) null);
-		assertNull(extractor.getFilteredDecisions());
-	}
-
 
 	@Test
 	public void testConstructorFilterOwnFilled() {
-		FilterExtractor extractor = new FilterExtractor("TEST", user,data);
+		FilterExtractor extractor = new FilterExtractor(user,data);
 		assertEquals(0.0, extractor.getFilteredDecisions().size(), 0.0);
 	}
 
