@@ -103,16 +103,17 @@ public enum DocumentationLocation {
 	}
 
 	public static DocumentationLocation getDocumentationLocationFromString(String locationString) {
+		locationString = locationString.toLowerCase();
 		switch (locationString) {
-			case "JiraIssue":
+			case "jiraissue":
 				return JIRAISSUE;
-			case "JiraIssueText":
+			case "jiraissuetext":
 				return JIRAISSUETEXT;
-			case "ActiveObject":
+			case "activeobject":
 				return ACTIVEOBJECT;
-			case "Commit":
+			case "commit":
 				return COMMIT;
-			case "PullRequest":
+			case "pullrequest":
 				return PULLREQUEST;
 			default:
 				return UNKNOWN;

@@ -49,7 +49,6 @@ public class TestGetVis extends TestSetUpWithIssues {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockUserManager());
 		request = new MockHttpServletRequest();
-		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		String jql = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
 		filterData = new FilterDataImpl("TEST", jql, System.currentTimeMillis() - 100, System.currentTimeMillis());
 		String[] ktypes = new String[KnowledgeType.toList().size()];
