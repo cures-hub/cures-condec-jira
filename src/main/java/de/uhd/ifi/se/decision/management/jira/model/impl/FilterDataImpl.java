@@ -36,9 +36,9 @@ public class FilterDataImpl implements FilterData {
 		this.createdLatest = createdLatest;
 	}
 
-	public FilterDataImpl(String projectKey, String searchString , long createdEarliest, long createdLatest, List<DocumentationLocation> documentationLocations){
+	public FilterDataImpl(String projectKey, String searchString , long createdEarliest, long createdLatest, String[] documentationLocations){
 		this(projectKey, searchString, createdEarliest, createdLatest);
-		this.documentationLocationList = documentationLocations;
+		this.setDocumentationLocation(documentationLocations);
 	}
 
 	public FilterDataImpl(String projectKey, String searchString, long createdEarliest, long createdLatest,
