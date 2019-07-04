@@ -1,9 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.rest.viewrest;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
-import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;

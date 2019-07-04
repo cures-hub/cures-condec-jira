@@ -103,8 +103,8 @@ public enum DocumentationLocation {
 	}
 
 	public static DocumentationLocation getDocumentationLocationFromString(String locationString) {
-		locationString = locationString.toLowerCase();
-		switch (locationString) {
+		String lowCaseLocationString = locationString.toLowerCase();
+		switch (lowCaseLocationString) {
 			case "jiraissue":
 				return JIRAISSUE;
 			case "jiraissuetext":
