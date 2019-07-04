@@ -69,7 +69,7 @@ public class FilterExtractor {
 		this.user = user;
 		this.filterData = filterData;
 		GraphFiltering filter = new GraphFiltering(filterData.getProjectKey(), filterData.getSearchString(), user, false);
-		filter.produceResultsWithAdditionalFilters(filterData);
+		filter.produceResultsWithAdditionalFilters();
 		this.decisionKnowledgeElements = filter.getAllElementsMatchingQuery();
 	}
 

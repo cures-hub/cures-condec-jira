@@ -6,6 +6,7 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.FilterData;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.impl.FilterDataImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +30,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersisten
 public class GraphFiltering {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GraphFiltering.class);
 
-	private String query;
-	private String projectKey;
+	private FilterData filterData;
 
 	private ApplicationUser user;
 	private List<DecisionKnowledgeElement> queryResults;
@@ -43,8 +43,7 @@ public class GraphFiltering {
 	}
 
 	public GraphFiltering(String projectKey, String query, ApplicationUser user, boolean mergeFilterQueryWithProjectKey) {
-		this.query = query;
-		this.projectKey = projectKey;
+		filterData = new FilterDataImpl(projectKey, query);
 		this.user = user;
 		this.queryResults = new ArrayList<>();
 		this.queryHandler = new QueryHandler(user, projectKey, mergeFilterQueryWithProjectKey);
@@ -52,7 +51,7 @@ public class GraphFiltering {
 
 	public void produceResultsFromQuery() {
 		List<Issue> resultingIssues = new ArrayList<Issue>();
-		final SearchService.ParseResult parseResult = queryHandler.processParsResult(query);
+		final SearchService.ParseResult parseResult = queryHandler.processParsResult(filterData.getSearchString());
 		if (parseResult.isValid()) {
 			List<Clause> clauses = parseResult.getQuery().getWhereClause().getClauses();
 
@@ -84,11 +83,11 @@ public class GraphFiltering {
 
 	}
 
-	public void produceResultsWithAdditionalFilters(FilterData filterData) {
+	public void produceResultsWithAdditionalFilters() {
 		produceResultsFromQuery();
 		queryResults.clear();
 		JqlClauseBuilder queryBuilder = JqlQueryBuilder.newClauseBuilder();
-		queryBuilder.project(this.projectKey);
+		queryBuilder.project(filterData.getProjectKey());
 		boolean first = true;
 		if (this.resultingClauses != null) {
 			for (Clause clause : this.resultingClauses) {
@@ -107,21 +106,18 @@ public class GraphFiltering {
 				queryBuilder.addCondition(resultingQuery);
 			}
 		}
-		queryBuilder = addIssueTypes(queryBuilder, filterData.getIssueTypes());
-		queryBuilder = addTimeFilter(queryBuilder, filterData.getCreatedEarliest(), filterData.getCreatedLatest());
+		queryBuilder = addIssueTypes(queryBuilder);
+		queryBuilder = addTimeFilter(queryBuilder);
 		processQueryResult(queryBuilder);
 
 	}
 
 	// New issue type filter function
-	private JqlClauseBuilder addIssueTypes(JqlClauseBuilder queryBuilder, List<KnowledgeType> issueTypes) {
-		if (issueTypes == null) {
-			return queryBuilder;
-		}
+	private JqlClauseBuilder addIssueTypes(JqlClauseBuilder queryBuilder) {
 		JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
 		newQueryBuilder.and();
 		List<String> typesTemp = new ArrayList<>();
-		for(KnowledgeType current: issueTypes){
+		for (KnowledgeType current : filterData.getIssueTypes()) {
 			typesTemp.add(current.toString());
 		}
 		String[] types = new String[typesTemp.size()];
@@ -131,18 +127,18 @@ public class GraphFiltering {
 	}
 
 	// New time filter function
-	private JqlClauseBuilder addTimeFilter(JqlClauseBuilder queryBuilder, long createdEarliest, long createdLatest) {
-		if (createdEarliest >= 0) {
+	private JqlClauseBuilder addTimeFilter(JqlClauseBuilder queryBuilder) {
+		if (filterData.getCreatedEarliest() >= 0) {
 			JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
 			newQueryBuilder.and();
-			Date date = new Date(createdEarliest);
+			Date date = new Date(filterData.getCreatedEarliest());
 			newQueryBuilder.addDateCondition("created", Operator.GREATER_THAN_EQUALS, date);
 			return newQueryBuilder;
 		}
-		if (createdLatest >= 0) {
+		if (filterData.getCreatedLatest() >= 0) {
 			JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
 			newQueryBuilder.and();
-			newQueryBuilder.addDateCondition("created", Operator.LESS_THAN_EQUALS, new Date(createdLatest));
+			newQueryBuilder.addDateCondition("created", Operator.LESS_THAN_EQUALS, new Date(filterData.getCreatedLatest()));
 			return newQueryBuilder;
 		}
 		return queryBuilder;
@@ -217,7 +213,7 @@ public class GraphFiltering {
 		SearchResults<Issue> projectIssues = getIssuesForThisProject(user);
 		if (projectIssues != null) {
 			for (Issue currentIssue : JiraSearchServiceHelper.getJiraIssues(projectIssues)) {
-				List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager.getElementsForIssue(currentIssue.getId(), projectKey);
+				List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager.getElementsForIssue(currentIssue.getId(), filterData.getProjectKey());
 				for (DecisionKnowledgeElement currentElement : elements) {
 					if (!results.contains(currentElement) && currentElement instanceof PartOfJiraIssueText && checkIfJiraTextMatchesFilter(currentElement)) {
 						results.add(currentElement);
@@ -255,7 +251,7 @@ public class GraphFiltering {
 
 	private SearchResults<Issue> getIssuesForThisProject(ApplicationUser user) {
 		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
-		Query query = jqlClauseBuilder.project(projectKey).buildQuery();
+		Query query = jqlClauseBuilder.project(filterData.getProjectKey()).buildQuery();
 		SearchResults<Issue> searchResult;
 		try {
 			SearchService searchService = queryHandler.getSearchService();
@@ -267,12 +263,12 @@ public class GraphFiltering {
 		return searchResult;
 	}
 
-	public String getQuery() {
-		return query;
+	public FilterData getFilterData() {
+		return this.filterData;
 	}
 
-	public void setQuery(String query) {
-		this.query = query;
+	public void setFilterData(FilterData filterData) {
+		this.filterData = filterData;
 	}
 
 	public ApplicationUser getUser() {

@@ -61,6 +61,9 @@ public class FilterDataImpl implements FilterData {
 
 	@Override
 	public String getSearchString() {
+		if(this.searchString == null){
+			this.searchString = "";
+		}
 		return searchString;
 	}
 
@@ -94,6 +97,9 @@ public class FilterDataImpl implements FilterData {
 
 	@Override
 	public List<DocumentationLocation> getDocumentationLocation() {
+		if(this.documentationLocationList == null){
+			this.documentationLocationList = DocumentationLocation.getAllDocumentationLocations();
+		}
 		return documentationLocationList;
 	}
 
@@ -108,6 +114,12 @@ public class FilterDataImpl implements FilterData {
 
 	@Override
 	public List<KnowledgeType> getIssueTypes() {
+		if(issueTypes == null){
+			issueTypes = new ArrayList<>();
+			for(KnowledgeType type: KnowledgeType.getDefaultTypes()){
+				issueTypes.add(type);
+			}
+		}
 		return issueTypes;
 	}
 

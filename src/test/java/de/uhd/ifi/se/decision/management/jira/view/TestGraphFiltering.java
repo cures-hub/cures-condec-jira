@@ -51,16 +51,4 @@ public class TestGraphFiltering extends TestSetUpWithIssues {
 				"?jql= Project = " + element.getProject().getProjectKey() + " AND type!=null", user, false);
 		assertNotNull(filter);
 	}
-
-	@Test
-	@NonTransactional
-	public void testSetQuery() {
-		graphFiltering.setQuery("?jql= type!=null");
-		assertEquals("?jql= type!=null", graphFiltering.getQuery());
-	}
-
-	@Test
-	public void testGetQuery() {
-		assertEquals("", graphFiltering.getQuery());
-	}
 }

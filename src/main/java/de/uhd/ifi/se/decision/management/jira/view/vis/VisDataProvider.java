@@ -9,6 +9,7 @@ import java.util.List;
 
 public class VisDataProvider {
 
+	private String projectKey;
 	private VisGraph graph;
 	private VisTimeLine timeLine;
 	private FilterExtractor filterExtractor;
@@ -16,10 +17,12 @@ public class VisDataProvider {
 
 
 	public VisDataProvider(String projectKey){
+		this.projectKey = projectKey;
 		this.timeLine = new VisTimeLine(projectKey);
 	}
 
 	public VisDataProvider(String projectKey, String elementKey, boolean isHyperlinked, String query, ApplicationUser user) {
+		this.projectKey = projectKey;
 		this.filterExtractor = new FilterExtractor(projectKey, user, query);
 		decisionKnowledgeElements = filterExtractor.getFilteredDecisions();
 		graph = new VisGraph(projectKey, elementKey, decisionKnowledgeElements, isHyperlinked);
@@ -27,6 +30,7 @@ public class VisDataProvider {
 	}
 
 	public VisDataProvider(String projectKey, String elementKey, boolean isHyperlinked, ApplicationUser user, FilterData filterData) {
+		this.projectKey = projectKey;
 		this.filterExtractor = new FilterExtractor(user,filterData);
 		decisionKnowledgeElements = filterExtractor.getFilteredDecisions();
 		graph = new VisGraph(projectKey,elementKey, decisionKnowledgeElements, isHyperlinked);
@@ -38,6 +42,9 @@ public class VisDataProvider {
 	}
 
 	public VisTimeLine getTimeLine(){
+		if(timeLine == null){
+			this.timeLine = new VisTimeLine(projectKey);
+		}
 		return this.timeLine;
 	}
 }

@@ -144,4 +144,12 @@ public enum DocumentationLocation {
 		}
 		return documentationLocationList;
 	}
+
+	public static List<DocumentationLocation> getAllDocumentationLocations(){
+		List<DocumentationLocation> locations = new ArrayList<>();
+		for(String location: DocumentationLocation.toList()){
+			locations.add(DocumentationLocation.getDocumentationLocationFromString(location));
+		}
+		return locations;
+	}
 }
