@@ -33,12 +33,14 @@ public interface FilterData {
 
 	/**
 	 * Returns the search string. This string can be a jql, a filter string.
+	 *
 	 * @return search String
 	 */
 	String getSearchString();
 
 	/**
 	 * Set the search string of the filter.
+	 *
 	 * @param searchString
 	 */
 	void setSearchString(String searchString);
@@ -46,12 +48,14 @@ public interface FilterData {
 	/**
 	 * Returns the earliest date when a element is created in milliseconds
 	 * as long.
+	 *
 	 * @return date as long in milliseconds
 	 */
 	long getCreatedEarliest();
 
 	/**
 	 * Set the earliest date when a element is created as a String.
+	 *
 	 * @param createdEarliest String with a long
 	 */
 	void setCreatedEarliest(long createdEarliest);
@@ -59,6 +63,7 @@ public interface FilterData {
 	/**
 	 * Returns the latest date when a element is created in milliseconds
 	 * as long.
+	 *
 	 * @return date as long in milliseconds
 	 */
 	long getCreatedLatest();
@@ -66,6 +71,7 @@ public interface FilterData {
 
 	/**
 	 * Set the latest date when a element is created as a String.
+	 *
 	 * @param createdLatest String with a long
 	 */
 	void setCreatedLatest(long createdLatest);
@@ -74,18 +80,21 @@ public interface FilterData {
 	/**
 	 * Returns a list of documentation locations where the data can
 	 * be saved.
+	 *
 	 * @return list of documentation locations
 	 */
 	List<DocumentationLocation> getDocumentationLocation();
 
 	/**
 	 * Set the documentation locations where the data is stored
+	 *
 	 * @param documentationLocationArray whit the locations as string
 	 */
 	void setDocumentationLocation(String[] documentationLocationArray);
 
 	/**
 	 * Gets the selected knowledge types from the filter
+	 *
 	 * @return list of knowledge types of the filter
 	 */
 	List<KnowledgeType> getIssueTypes();
@@ -93,9 +102,18 @@ public interface FilterData {
 	/**
 	 * Set the issue types that are used in the filter from the
 	 * issueTypeString to the knowledge type list.
+	 *
 	 * @param issueTypesArray from the json
 	 */
 	void setIssueTypes(String[] issueTypesArray);
 
+
+	/**
+	 * Set the issuetypes that are used in the filter from a
+	 * list of Knowledge Types.
+	 *
+	 * @param types
+	 */
+	void setIssueTypes(List<KnowledgeType> types);
 
 }

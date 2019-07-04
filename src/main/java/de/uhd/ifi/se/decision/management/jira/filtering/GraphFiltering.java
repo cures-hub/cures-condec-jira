@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.FilterData;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,7 +116,7 @@ public class GraphFiltering {
 		JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
 		newQueryBuilder.and();
 		String[] types = new String[filterData.getIssueTypes().size()];
-		for(int i=0; i<filterData.getIssueTypes().size(); i++){
+		for (int i = 0; i < filterData.getIssueTypes().size(); i++) {
 			types[i] = filterData.getIssueTypes().get(i).toString();
 		}
 		newQueryBuilder.issueType(types);
@@ -178,10 +179,10 @@ public class GraphFiltering {
 			return true;
 		}
 		if (queryHandler.isQueryContainsCreationDate()) {
-			if (queryHandler.getStartDate() >= 0 && resultingQuery.contains("created") && resultingQuery.contains(">=")) {
+			if (queryHandler.getFilterData().getCreatedEarliest() >= 0 && resultingQuery.contains("created") && resultingQuery.contains(">=")) {
 				return true;
 			}
-			if (queryHandler.getEndDate() >= 0 && resultingQuery.contains("created") && resultingQuery.contains("<=")) {
+			if (queryHandler.getFilterData().getCreatedLatest() >= 0 && resultingQuery.contains("created") && resultingQuery.contains("<=")) {
 				return true;
 			}
 		}
@@ -193,10 +194,10 @@ public class GraphFiltering {
 			return true;
 		}
 		if (queryHandler.isQueryContainsCreationDate()) {
-			if (queryHandler.getStartDate() >= 0 && clause.getName().equals("created") && clause.toString().contains(">=")) {
+			if (queryHandler.getFilterData().getCreatedEarliest() >= 0 && clause.getName().equals("created") && clause.toString().contains(">=")) {
 				return true;
 			}
-			if (queryHandler.getEndDate() >= 0 && clause.getName().equals("created") && clause.toString().contains("<=")) {
+			if (queryHandler.getFilterData().getCreatedLatest() >= 0 && clause.getName().equals("created") && clause.toString().contains("<=")) {
 				return true;
 			}
 		}
@@ -221,22 +222,19 @@ public class GraphFiltering {
 
 	private boolean checkIfJiraTextMatchesFilter(DecisionKnowledgeElement element) {
 		if (queryHandler.isQueryContainsCreationDate()) {
-			long startTime = queryHandler.getStartDate();
-			long endTime = queryHandler.getEndDate();
-			if (startTime > 0 && (element).getCreated().getTime() < startTime) {
+			if (queryHandler.getFilterData().getCreatedEarliest() > 0 && (element).getCreated().getTime() < queryHandler.getFilterData().getCreatedEarliest()) {
 				return false;
 			}
-			if (endTime > 0 && (element).getCreated().getTime() > endTime) {
+			if (queryHandler.getFilterData().getCreatedLatest() > 0 && (element).getCreated().getTime() > queryHandler.getFilterData().getCreatedLatest()) {
 				return false;
 			}
 		}
 		if (queryHandler.isQueryContainsIssueTypes()) {
-			List<String> issueTypes = queryHandler.getIssueTypesInQuery();
-			if (element.getTypeAsString().equals("Pro") || element.getTypeAsString().equals("Con")) {
-				if (!issueTypes.contains("Argument")) {
+			if (element.getType().equals(KnowledgeType.PRO) || element.getType().equals(KnowledgeType.CON)) {
+				if (!queryHandler.getFilterData().getIssueTypes().contains(KnowledgeType.ARGUMENT)) {
 					return false;
 				}
-			} else if (!(issueTypes.contains((element).getTypeAsString()))) {
+			} else if (!queryHandler.getFilterData().getIssueTypes().contains(element)) {
 				return false;
 			}
 		}

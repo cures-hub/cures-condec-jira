@@ -18,32 +18,31 @@ public class FilterDataImpl implements FilterData {
 	private long createdEarliest;
 	private long createdLatest;
 	private List<DocumentationLocation> documentationLocationList;
-	private List<KnowledgeType>  issueTypes;
+	private List<KnowledgeType> issueTypes;
 
-	public FilterDataImpl(){
+	public FilterDataImpl() {
 		projectKey = "";
 		searchString = "";
 	}
 
-	public FilterDataImpl(String projectKey,String searchString){
+	public FilterDataImpl(String projectKey, String searchString) {
 		this.projectKey = projectKey;
 		this.searchString = searchString;
 	}
 
-	public FilterDataImpl(String projectKey, String searchString, long createdEarliest, long createdLatest){
+	public FilterDataImpl(String projectKey, String searchString, long createdEarliest, long createdLatest) {
 		this(projectKey, searchString);
 		this.createdEarliest = createdEarliest;
 		this.createdLatest = createdLatest;
 	}
 
-	public FilterDataImpl(String projectKey, String searchString , long createdEarliest, long createdLatest, String[] documentationLocations){
+	public FilterDataImpl(String projectKey, String searchString, long createdEarliest, long createdLatest, String[] documentationLocations) {
 		this(projectKey, searchString, createdEarliest, createdLatest);
 		this.setDocumentationLocation(documentationLocations);
 	}
 
-	public FilterDataImpl(String projectKey, String searchString, long createdEarliest, long createdLatest,
-	                      String[] documentationLocations, String[] knowledgeTypes){
-		this(projectKey, searchString,createdEarliest,createdLatest);
+	public FilterDataImpl(String projectKey, String searchString, long createdEarliest, long createdLatest, String[] documentationLocations, String[] knowledgeTypes) {
+		this(projectKey, searchString, createdEarliest, createdLatest);
 		this.setDocumentationLocation(documentationLocations);
 		this.setIssueTypes(knowledgeTypes);
 	}
@@ -61,7 +60,7 @@ public class FilterDataImpl implements FilterData {
 
 	@Override
 	public String getSearchString() {
-		if(this.searchString == null){
+		if (this.searchString == null) {
 			this.searchString = "";
 		}
 		return searchString;
@@ -97,7 +96,7 @@ public class FilterDataImpl implements FilterData {
 
 	@Override
 	public List<DocumentationLocation> getDocumentationLocation() {
-		if(this.documentationLocationList == null){
+		if (this.documentationLocationList == null) {
 			this.documentationLocationList = DocumentationLocation.getAllDocumentationLocations();
 		}
 		return documentationLocationList;
@@ -107,16 +106,16 @@ public class FilterDataImpl implements FilterData {
 	@JsonProperty("documentationLocationList")
 	public void setDocumentationLocation(String[] documentationLocationArray) {
 		documentationLocationList = new ArrayList<>();
-		for(String location: documentationLocationArray){
+		for (String location : documentationLocationArray) {
 			documentationLocationList.add(DocumentationLocation.getDocumentationLocationFromString(location));
 		}
 	}
 
 	@Override
 	public List<KnowledgeType> getIssueTypes() {
-		if(issueTypes == null){
+		if (issueTypes == null) {
 			issueTypes = new ArrayList<>();
-			for(KnowledgeType type: KnowledgeType.getDefaultTypes()){
+			for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
 				issueTypes.add(type);
 			}
 		}
@@ -130,5 +129,10 @@ public class FilterDataImpl implements FilterData {
 		for (String typeString : issueTypesArray) {
 			issueTypes.add(KnowledgeType.getKnowledgeType(typeString));
 		}
+	}
+
+	@Override
+	public void setIssueTypes(List<KnowledgeType> types) {
+		issueTypes = types;
 	}
 }
