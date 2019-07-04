@@ -12,6 +12,8 @@ import java.util.Set;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.EditList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +26,13 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
 
 public class ChangedFileImpl implements ChangedFile {
+
+	@JsonIgnore
+	private DiffEntry diffEntry;
+	@JsonIgnore
+	private EditList editList;
+	@JsonIgnore
+	private File file;
 
 	private Set<String> methodDeclarations;
 	private float probabilityOfCorrectness;
@@ -38,18 +47,27 @@ public class ChangedFileImpl implements ChangedFile {
 	// @alternative Add class to represent a link between a changed file and a
 	// knowledge element.
 	private boolean isCorrect;
-	@JsonIgnore
-	private File file;
+
 	@JsonIgnore
 	private int packageDistance;
 	@JsonIgnore
 	private CompilationUnit compilationUnit;
 
-	public ChangedFileImpl(File file) {
-		this.file = file;
+	public ChangedFileImpl() {
 		this.packageDistance = 0;
-		this.methodDeclarations = parseMethods();
 		this.setCorrect(true);
+	}
+
+	public ChangedFileImpl(File file) {
+		this();
+		this.file = file;
+		this.methodDeclarations = parseMethods();
+	}
+
+	public ChangedFileImpl(DiffEntry entry, EditList editList, String baseDirectory) {
+		this(new File(baseDirectory + entry.getNewPath()));
+		this.diffEntry = entry;
+		this.editList = editList;
 	}
 
 	@Override
@@ -172,5 +190,25 @@ public class ChangedFileImpl implements ChangedFile {
 			LOGGER.error(e.getMessage());
 		}
 		return partsOfPackageName;
+	}
+
+	@Override
+	public DiffEntry getDiffEntry() {
+		return diffEntry;
+	}
+
+	@Override
+	public void setDiffEntry(DiffEntry diffEntry) {
+		this.diffEntry = diffEntry;
+	}
+
+	@Override
+	public EditList getEditList() {
+		return editList;
+	}
+
+	@Override
+	public void setEditList(EditList editList) {
+		this.editList = editList;
 	}
 }

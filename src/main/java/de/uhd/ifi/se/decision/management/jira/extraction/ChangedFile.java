@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.EditList;
+
 import com.github.javaparser.ast.CompilationUnit;
 
 /**
@@ -117,4 +120,12 @@ public interface ChangedFile {
 	 * @return package declaration as a list of Strings.
 	 */
 	List<String> getPackageName();
+
+	DiffEntry getDiffEntry();
+
+	void setDiffEntry(DiffEntry diffEntry);
+
+	EditList getEditList();
+
+	void setEditList(EditList editList);
 }

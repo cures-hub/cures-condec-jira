@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.Diff;
 // TODO: Integrate Map<DiffEntry, EditList> diff into this class and
 // change git client API to return objects of this class.
 public class DiffImpl implements Diff {
+
 	private List<ChangedFile> changedFiles;
 
 	public DiffImpl() {
@@ -28,8 +28,7 @@ public class DiffImpl implements Diff {
 	public DiffImpl(Map<DiffEntry, EditList> diff, String baseDirectory) {
 		this();
 		for (Map.Entry<DiffEntry, EditList> entry : diff.entrySet()) {
-			File file = new File(baseDirectory + entry.getKey().getNewPath());
-			this.addChangedFile(new ChangedFileImpl(file));
+			this.addChangedFile(new ChangedFileImpl(entry.getKey(), entry.getValue(), baseDirectory));
 		}
 	}
 
