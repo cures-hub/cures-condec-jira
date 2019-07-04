@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.impl;
+package de.uhd.ifi.se.decision.management.jira.model.git.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,7 +23,8 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.MethodVisitor;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 
 public class ChangedFileImpl implements ChangedFile {
 

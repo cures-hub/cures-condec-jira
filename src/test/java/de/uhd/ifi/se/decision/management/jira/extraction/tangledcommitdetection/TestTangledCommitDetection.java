@@ -6,16 +6,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
-
-import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.Diff;
 import de.uhd.ifi.se.decision.management.jira.extraction.TangledCommitDetection;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.DiffImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.TangledCommitDetectionImpl;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import de.uhd.ifi.se.decision.management.jira.model.git.impl.DiffImpl;
 
 public class TestTangledCommitDetection extends TestSetUpGit {
 

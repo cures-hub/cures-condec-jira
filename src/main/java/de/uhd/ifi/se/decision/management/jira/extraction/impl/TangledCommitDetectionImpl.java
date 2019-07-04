@@ -2,9 +2,9 @@ package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.extraction.Diff;
 import de.uhd.ifi.se.decision.management.jira.extraction.TangledCommitDetection;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 public class TangledCommitDetectionImpl implements TangledCommitDetection {
 

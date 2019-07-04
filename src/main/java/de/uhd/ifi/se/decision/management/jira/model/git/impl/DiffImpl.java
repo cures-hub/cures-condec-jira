@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.impl;
+package de.uhd.ifi.se.decision.management.jira.model.git.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +7,8 @@ import java.util.Map;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.extraction.Diff;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 /**
  * Class for a list of changed files. The scope for the diff might be a single
