@@ -13,6 +13,8 @@ import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.FilterData;
+import de.uhd.ifi.se.decision.management.jira.model.impl.FilterDataImpl;
 
 @XmlRootElement(name = "issueTypesForDropdown")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -30,7 +32,8 @@ public class FilterDataProvider {
 
 	public FilterDataProvider(String projectKey, String query, ApplicationUser user) {
 		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
-			GraphFiltering filter = new GraphFiltering(projectKey, query, user, false);
+			FilterData filterData = new FilterDataImpl(projectKey, query);
+			GraphFiltering filter = new GraphFiltering(filterData, user, false);
 			QueryHandler queryHandler = new QueryHandler(user, projectKey, false);
 			filter.produceResultsFromQuery();
 			this.allIssueTypes = new ArrayList<>();

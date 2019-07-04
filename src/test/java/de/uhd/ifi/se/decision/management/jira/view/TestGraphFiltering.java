@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 
 import javax.ejb.CreateException;
 
+import de.uhd.ifi.se.decision.management.jira.model.FilterData;
+import de.uhd.ifi.se.decision.management.jira.model.impl.FilterDataImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,13 +44,15 @@ public class TestGraphFiltering extends TestSetUpWithIssues {
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
 		element.setProject(new DecisionKnowledgeProjectImpl("Test"));
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
-		graphFiltering = new GraphFiltering(element.getProject().getProjectKey(), "", user, false);
+		FilterData filterData = new FilterDataImpl(element.getProject().getProjectKey(), "");
+		graphFiltering = new GraphFiltering(filterData, user, false);
 	}
 
 	@Test
 	public void testConstructor() {
-		GraphFiltering filter = new GraphFiltering(element.getProject().getProjectKey(),
-				"?jql= Project = " + element.getProject().getProjectKey() + " AND type!=null", user, false);
+		FilterData filterData = new FilterDataImpl(element.getProject().getProjectKey(),
+				"?jql= Project = " + element.getProject().getProjectKey() + " AND type!=null");
+		GraphFiltering filter = new GraphFiltering(filterData, user, false);
 		assertNotNull(filter);
 	}
 }

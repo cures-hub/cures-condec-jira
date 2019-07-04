@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Filter;
 
 import de.uhd.ifi.se.decision.management.jira.model.FilterData;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -42,11 +43,11 @@ public class GraphFiltering {
 		return queryHandler;
 	}
 
-	public GraphFiltering(String projectKey, String query, ApplicationUser user, boolean mergeFilterQueryWithProjectKey) {
-		filterData = new FilterDataImpl(projectKey, query);
+	public GraphFiltering(FilterData filterData, ApplicationUser user, boolean mergeFilterQueryWithProjectKey) {
+		this.filterData = filterData;
 		this.user = user;
 		this.queryResults = new ArrayList<>();
-		this.queryHandler = new QueryHandler(user, projectKey, mergeFilterQueryWithProjectKey);
+		this.queryHandler = new QueryHandler(user, filterData.getProjectKey(), mergeFilterQueryWithProjectKey);
 	}
 
 	public void produceResultsFromQuery() {
@@ -116,12 +117,10 @@ public class GraphFiltering {
 	private JqlClauseBuilder addIssueTypes(JqlClauseBuilder queryBuilder) {
 		JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
 		newQueryBuilder.and();
-		List<String> typesTemp = new ArrayList<>();
-		for (KnowledgeType current : filterData.getIssueTypes()) {
-			typesTemp.add(current.toString());
+		String[] types = new String[filterData.getIssueTypes().size()];
+		for(int i=0; i<filterData.getIssueTypes().size(); i++){
+			types[i] = filterData.getIssueTypes().get(i).toString();
 		}
-		String[] types = new String[typesTemp.size()];
-		types = typesTemp.toArray(types);
 		newQueryBuilder.issueType(types);
 		return newQueryBuilder;
 	}
@@ -131,8 +130,7 @@ public class GraphFiltering {
 		if (filterData.getCreatedEarliest() >= 0) {
 			JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
 			newQueryBuilder.and();
-			Date date = new Date(filterData.getCreatedEarliest());
-			newQueryBuilder.addDateCondition("created", Operator.GREATER_THAN_EQUALS, date);
+			newQueryBuilder.addDateCondition("created", Operator.GREATER_THAN_EQUALS, new Date(filterData.getCreatedEarliest()));
 			return newQueryBuilder;
 		}
 		if (filterData.getCreatedLatest() >= 0) {

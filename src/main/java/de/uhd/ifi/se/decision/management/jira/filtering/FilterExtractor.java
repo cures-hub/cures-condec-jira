@@ -39,15 +39,12 @@ public class FilterExtractor {
 		this.filterData = new FilterDataImpl(projectKey, filterString);
 		this.user = user;
 		GraphFiltering filter;
-		if ((filterString.matches("\\?jql=(.)+")) || (filterString.matches("\\?filter=(.)+"))) {
-			filter = new GraphFiltering(projectKey, filterString, user, false);
-			filter.produceResultsFromQuery();
-			this.decisionKnowledgeElements = filter.getAllElementsMatchingQuery();
-		} else {
-			filter = new GraphFiltering(projectKey, "asdf§filter=-4", user, false);
-			filter.produceResultsFromQuery();
-			this.decisionKnowledgeElements = filter.getAllElementsMatchingQuery();
+		if (!(filterString.matches("\\?jql=(.)+")) || (filterString.matches("\\?filter=(.)+"))) {
+			filterData.setSearchString("asdf§filter=-4");
 		}
+		filter = new GraphFiltering(filterData, user, false);
+		filter.produceResultsFromQuery();
+		this.decisionKnowledgeElements = filter.getAllElementsMatchingQuery();
 		if (this.decisionKnowledgeElements == null) {
 			this.decisionKnowledgeElements = new ArrayList<>();
 		}
@@ -68,7 +65,7 @@ public class FilterExtractor {
 		}
 		this.user = user;
 		this.filterData = filterData;
-		GraphFiltering filter = new GraphFiltering(filterData.getProjectKey(), filterData.getSearchString(), user, false);
+		GraphFiltering filter = new GraphFiltering(filterData, user, false);
 		filter.produceResultsWithAdditionalFilters();
 		this.decisionKnowledgeElements = filter.getAllElementsMatchingQuery();
 	}
@@ -87,14 +84,14 @@ public class FilterExtractor {
 	 * Treant and Treeview filter
 	 */
 
-	private static List<DecisionKnowledgeElement> getElementsInGraph(ApplicationUser user, String projectKey, String query, String elementKey) {
+	private static List<DecisionKnowledgeElement> getElementsInGraph(ApplicationUser user, FilterData filterData, String elementKey) {
 		Graph graph;
-		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
-			GraphFiltering filter = new GraphFiltering(projectKey, query, user, false);
+		if ((filterData.getSearchString().matches("\\?jql=(.)+")) || (filterData.getSearchString().matches("\\?filter=(.)+"))) {
+			GraphFiltering filter = new GraphFiltering(filterData, user, false);
 			filter.produceResultsFromQuery();
-			graph = new GraphImplFiltered(projectKey, elementKey, filter);
+			graph = new GraphImplFiltered(filterData.getProjectKey(), elementKey, filter);
 		} else {
-			graph = new GraphImpl(projectKey, elementKey);
+			graph = new GraphImpl(filterData.getProjectKey(), elementKey);
 		}
 		return graph.getAllElements();
 	}
@@ -115,7 +112,8 @@ public class FilterExtractor {
 			if (!addedElements.contains(current)) {
 				// if not get the connected tree
 				String currentElementKey = current.getKey();
-				List<DecisionKnowledgeElement> filteredElements = getElementsInGraph(user, filterData.getProjectKey(), linkedQueryNotEmpty, currentElementKey);
+				filterData.setSearchString(linkedQueryNotEmpty);
+				List<DecisionKnowledgeElement> filteredElements = getElementsInGraph(user, filterData, currentElementKey);
 				// add each element to the list
 				addedElements.addAll(filteredElements);
 				// add list to the big list

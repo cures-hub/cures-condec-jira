@@ -15,6 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.GraphFiltering;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.impl.FilterDataImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
 
@@ -49,9 +50,8 @@ public class Treant {
 	}
 
 	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user) {
-		GraphFiltering filter = null;
 		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
-			filter = new GraphFiltering(projectKey, query, user,false);
+			GraphFiltering filter = new GraphFiltering(new FilterDataImpl(projectKey, query), user, false);
 			filter.produceResultsFromQuery();
 			this.graph = new GraphImplFiltered(projectKey, elementKey, filter);
 		} else {
@@ -86,8 +86,7 @@ public class Treant {
 		}
 		List<Node> nodes = new ArrayList<Node>();
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-			Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
-					currentDepth + 1);
+			Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth, currentDepth + 1);
 			nodes.add(newChildNode);
 		}
 		node.setChildren(nodes);
