@@ -16,6 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.FilterData;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import org.eclipse.jgit.lib.Ref;
@@ -177,7 +178,9 @@ public class ViewRest {
 		String projectKey = getProjectKey(elementKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisDataProvider visDataProvider;
-		if (filterData.getIssueTypes().size() == 0) {
+		if (filterData.getIssueTypes().size() == 0 ||
+				    (filterData.getDocumentationLocation().size() == 1 &&
+						     filterData.getDocumentationLocation().get(0).equals(DocumentationLocation.UNKNOWN))){
 			visDataProvider = new VisDataProvider(projectKey, elementKey, false, filterData.getSearchString(), user);
 		} else {
 			visDataProvider = new VisDataProvider(elementKey, false, user, filterData);

@@ -83,8 +83,6 @@ public class GraphFiltering {
 	}
 
 	public void produceResultsWithAdditionalFilters() {
-		produceResultsFromQuery();
-		/*
 		queryResults.clear();
 		JqlClauseBuilder queryBuilder = JqlQueryBuilder.newClauseBuilder();
 		queryBuilder.project(filterData.getProjectKey());
@@ -109,7 +107,7 @@ public class GraphFiltering {
 		queryBuilder = addIssueTypes(queryBuilder);
 		queryBuilder = addTimeFilter(queryBuilder);
 		processQueryResult(queryBuilder);
-		*/
+
 	}
 
 	// New issue type filter function
