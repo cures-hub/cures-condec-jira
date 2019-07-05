@@ -336,7 +336,6 @@
             "issueTypes": issueTypes
         };
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey, filterData, function(error, vis) {
-		    console.log(filterData);
 		    if (error === null) {
 				callback(vis);
 			}
@@ -347,10 +346,18 @@
 	 * external reference: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getFilterData = function getFilterData(elementKey, searchTerm, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getFilterData.json?elementKey=" + elementKey
-				+ "&searchTerm=" + searchTerm, null,function(error, filterData) {
+        var filterData = {
+            "projectKey": getProjectKey(),
+            "searchString": searchTerm,
+            "createdEarliest":-1,
+            "createdLatest": -1,
+            "documentationLocationList": [""],
+            "issueTypes": [""]
+        };
+        postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getFilterData.json?elementKey=" + elementKey
+				, filterData,function(error, filterReturnData) {
 			if (error === null) {
-				callback(filterData);
+				callback(filterReturnData);
 			}
 		});
 	};

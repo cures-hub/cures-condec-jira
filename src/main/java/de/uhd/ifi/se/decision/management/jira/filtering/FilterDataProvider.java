@@ -31,11 +31,10 @@ public class FilterDataProvider {
 	@XmlElement
 	private List<String> documentationLocations;
 
-	public FilterDataProvider(String projectKey, String query, ApplicationUser user) {
-		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
-			FilterData filterData = new FilterDataImpl(projectKey, query);
+	public FilterDataProvider(FilterData filterData, ApplicationUser user) {
+		if ((filterData.getSearchString().matches("\\?jql=(.)+")) || (filterData.getSearchString().matches("\\?filter=(.)+"))) {
 			GraphFiltering filter = new GraphFiltering(filterData, user, false);
-			QueryHandler queryHandler = new QueryHandler(user, projectKey, false);
+			QueryHandler queryHandler = new QueryHandler(user, filterData.getProjectKey(), false);
 			filter.produceResultsFromQuery();
 			this.allIssueTypes = new ArrayList<>();
 			for (IssueType issueType : ComponentAccessor.getConstantsManager().getAllIssueTypeObjects()) {

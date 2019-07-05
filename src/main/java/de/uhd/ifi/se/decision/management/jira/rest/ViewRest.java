@@ -202,14 +202,12 @@ public class ViewRest {
 	@Path("/getFilterData")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getFilterData(@QueryParam("elementKey") String elementKey, @QueryParam("searchTerm") String query,
-								  @Context HttpServletRequest request) {
+	public Response getFilterData(@Context HttpServletRequest request, FilterData filterData, @QueryParam("elementKey") String elementKey) {
 		if(checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()){
 			return checkIfElementIsValid(elementKey);
 		}
-		String projectKey = getProjectKey(elementKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		FilterDataProvider filterDataProvider = new FilterDataProvider(projectKey, query, user);
+		FilterDataProvider filterDataProvider = new FilterDataProvider(filterData, user);
 		return Response.ok(filterDataProvider).build();
 	}
 
