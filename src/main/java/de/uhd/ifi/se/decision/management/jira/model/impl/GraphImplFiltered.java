@@ -157,6 +157,7 @@ public class GraphImplFiltered extends GraphImpl {
 		} else if (queryHandler.getFilterData().getCreatedLatest() <= 0 && element.getCreated().getTime() > queryHandler.getFilterData().getCreatedEarliest()) {
 			return true;
 		} else if (element.getCreated().getTime() < queryHandler.getFilterData().getCreatedLatest() && element.getCreated().getTime() > queryHandler.getFilterData().getCreatedEarliest()) {
+			return true;
 		}
 		return false;
 	}
