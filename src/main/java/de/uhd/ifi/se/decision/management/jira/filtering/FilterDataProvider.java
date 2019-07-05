@@ -15,7 +15,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.FilterData;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.FilterDataImpl;
 
 @XmlRootElement(name = "issueTypesForDropdown")
 @XmlAccessorType(XmlAccessType.FIELD)
