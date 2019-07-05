@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.tangledcommitdetection;
+package de.uhd.ifi.se.decision.management.jira.extraction.tangledchangedetector;
 
 import static org.junit.Assert.assertEquals;
 
@@ -6,28 +6,28 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
-
-import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.Diff;
-import de.uhd.ifi.se.decision.management.jira.extraction.TangledCommitDetection;
+import de.uhd.ifi.se.decision.management.jira.extraction.TangledChangeDetector;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.DiffImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.TangledCommitDetectionImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.TangledChangeDetectorImpl;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import de.uhd.ifi.se.decision.management.jira.model.git.TestDiff;
+import de.uhd.ifi.se.decision.management.jira.model.git.impl.DiffImpl;
 
-public class TestTangledCommitDetection extends TestSetUpGit {
+public class TestTangledChangeDetector extends TestSetUpGit {
 
 	private Diff diffForJiraIssue;
 	private Diff diffForCommit;
 
-	private TangledCommitDetection tangledCommitDetection;
+	private TangledChangeDetector tangledCommitDetection;
 
 	@Before
 	public void setUp() {
 		super.setUp();
-		tangledCommitDetection = new TangledCommitDetectionImpl();
+		tangledCommitDetection = new TangledChangeDetectorImpl();
 		diffForCommit = TestDiff.createDiff(mockJiraIssueForGitTestsTangledSingleCommit);
 		diffForJiraIssue = TestDiff.createDiff(mockJiraIssueForGitTestsTangled);
 	}
@@ -49,17 +49,17 @@ public class TestTangledCommitDetection extends TestSetUpGit {
 
 		assertEquals("Tangled1.java", changedFiles.get(0).getName());
 		assertEquals(Arrays.asList("package de", "uhd", "ifi", "se", "decision", "management", "jira"),
-				changedFiles.get(0).getPackageName());
+				changedFiles.get(0).getPartsOfPackageDeclaration());
 
 		assertEquals("Untangled.java", changedFiles.get(1).getName());
 		assertEquals(
 				Arrays.asList("package de", "uhd", "ifi", "se", "decision", "management", "jira", "extraction", "impl"),
-				changedFiles.get(1).getPackageName());
+				changedFiles.get(1).getPartsOfPackageDeclaration());
 
 		assertEquals("Untangled2.java", changedFiles.get(2).getName());
 		assertEquals(
 				Arrays.asList("package de", "uhd", "ifi", "se", "decision", "management", "jira", "extraction", "impl"),
-				changedFiles.get(2).getPackageName());
+				changedFiles.get(2).getPartsOfPackageDeclaration());
 		
 		assertEquals(4, changedFiles.get(0).getPackageDistance());
 		assertEquals(2, changedFiles.get(1).getPackageDistance());

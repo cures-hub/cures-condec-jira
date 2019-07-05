@@ -1,8 +1,11 @@
-package de.uhd.ifi.se.decision.management.jira.extraction;
+package de.uhd.ifi.se.decision.management.jira.model.git;
 
 import java.io.File;
 import java.util.List;
 import java.util.Set;
+
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.EditList;
 
 import com.github.javaparser.ast.CompilationUnit;
 
@@ -116,5 +119,19 @@ public interface ChangedFile {
 	 *
 	 * @return package declaration as a list of Strings.
 	 */
-	List<String> getPackageName();
+	List<String> getPartsOfPackageDeclaration();
+
+	/**
+	 * Returns the {@link DiffEntry} object.
+	 * 
+	 * @return the {@link DiffEntry} object.
+	 */
+	DiffEntry getDiffEntry();
+
+	/**
+	 * Returns the {@link EditList} object.
+	 * 
+	 * @return the {@link EditList} object.
+	 */
+	EditList getEditList();
 }

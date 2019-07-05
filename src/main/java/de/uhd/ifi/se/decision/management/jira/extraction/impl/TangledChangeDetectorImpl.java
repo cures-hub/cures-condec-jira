@@ -2,11 +2,15 @@ package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.extraction.Diff;
-import de.uhd.ifi.se.decision.management.jira.extraction.TangledCommitDetection;
+import de.uhd.ifi.se.decision.management.jira.extraction.TangledChangeDetector;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
-public class TangledCommitDetectionImpl implements TangledCommitDetection {
+/**
+ * Class for the estimation whether a {@link Diff} of {@ChangedFile}s
+ * contains wrong links, i.e., is tangled.
+ */
+public class TangledChangeDetectorImpl implements TangledChangeDetector {
 
 	@Override
 	public void estimateWhetherChangedFilesAreCorrectlyIncludedInDiff(Diff diff) {
@@ -46,8 +50,8 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 	}
 
 	private int calculatePackageDistance(ChangedFile fileA, ChangedFile fileB) {
-		List<String> leftPackageDeclaration = fileA.getPackageName();
-		List<String> rightPackageDeclaration = fileB.getPackageName();
+		List<String> leftPackageDeclaration = fileA.getPartsOfPackageDeclaration();
+		List<String> rightPackageDeclaration = fileB.getPartsOfPackageDeclaration();
 		if (fileA.equals(fileB)) {
 			return 0;
 		}

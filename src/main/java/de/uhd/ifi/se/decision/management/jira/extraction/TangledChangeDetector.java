@@ -1,10 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+
 /**
  * Interface for the estimation whether a {@link Diff} of {@ChangedFile}s
  * contains wrong links, i.e., is tangled.
  */
-public interface TangledCommitDetection {
+public interface TangledChangeDetector {
 
 	/**
 	 * Currently, this function calls {@link #calculatePackageDistances(Diff)}.

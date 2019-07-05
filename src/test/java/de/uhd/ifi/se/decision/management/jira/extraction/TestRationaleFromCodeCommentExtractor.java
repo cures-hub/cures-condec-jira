@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
+
 import org.junit.Before;
 import org.junit.Test;
 

@@ -4,9 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -19,54 +17,56 @@ import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 public class TestGetDiff extends TestSetUpGit {
 
 	@Test
 	public void testRevCommitNull() {
-		Map<DiffEntry, EditList> diff = gitClient.getDiff((RevCommit) null);
-		assertEquals(diff, new HashMap<DiffEntry, EditList>());
+		Diff diff = gitClient.getDiff((RevCommit) null);
+		assertEquals(0, diff.getChangedFiles().size());
 	}
 
 	@Test
 	public void testRevCommitExisting() {
 		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
-		Map<DiffEntry, EditList> diff = gitClient.getDiff(commits.get(0));
-		assertEquals(1, diff.size());
-		for (Map.Entry<DiffEntry, EditList> entry : diff.entrySet()) {
-			DiffEntry diffEntry = entry.getKey();
+		Diff diff = gitClient.getDiff(commits.get(0));
+		assertEquals(1, diff.getChangedFiles().size());
+		for (ChangedFile changedFile : diff.getChangedFiles()) {
+			DiffEntry diffEntry = changedFile.getDiffEntry();
 			assertEquals("DiffEntry[ADD GodClass.java]", diffEntry.toString());
 			assertEquals(ChangeType.ADD, diffEntry.getChangeType());
 
-			EditList editList = entry.getValue();
+			EditList editList = changedFile.getEditList();
 			assertEquals("EditList[INSERT(0-0,0-2)]", editList.toString());
 		}
 	}
 
 	@Test
 	public void testListOfRevCommitsNull() {
-		Map<DiffEntry, EditList> diff = gitClient.getDiff((List<RevCommit>) null);
+		Diff diff = gitClient.getDiff((List<RevCommit>) null);
 		assertNull(diff);
 	}
 
 	@Test
 	public void testJiraIssueNull() {
-		Map<DiffEntry, EditList> diff = gitClient.getDiff((Issue) null);
+		Diff diff = gitClient.getDiff((Issue) null);
 		assertNull(diff);
 	}
 
 	@Test
 	public void testJiraIssueKeyExisting() {
-		Map<DiffEntry, EditList> diff = gitClient.getDiff(mockJiraIssueForGitTests);
-		assertEquals(2, diff.size());
+		Diff diff = gitClient.getDiff(mockJiraIssueForGitTests);
+		assertEquals(2, diff.getChangedFiles().size());
 
-		String diffEntries = diff.keySet().toString();
-		assertTrue(diffEntries.contains("ADD GodClass.java"));
-		assertTrue(diffEntries.contains("MODIFY readMe.txt"));
+		List<ChangedFile> changedFiles = diff.getChangedFiles();
 
-		String editLists = diff.values().toString();
-		assertTrue(editLists.contains("INSERT(0-0,0-2)"));
-		assertTrue(editLists.contains("REPLACE(0-1,0-1)"));
+		assertTrue(changedFiles.get(0).getDiffEntry().toString().contains("ADD GodClass.java"));
+		assertTrue(changedFiles.get(1).getDiffEntry().toString().contains("MODIFY readMe.txt"));
+
+		assertTrue(changedFiles.get(0).getEditList().toString().contains("INSERT(0-0,0-2)"));
+		assertTrue(changedFiles.get(1).getEditList().toString().contains("REPLACE(0-1,0-1)"));
 	}
 
 	@Test
@@ -74,11 +74,10 @@ public class TestGetDiff extends TestSetUpGit {
 		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
 
 		GitClient newGitClient = new GitClientImpl();
-		Map<DiffEntry, EditList> diff = newGitClient.getDiff(commits.get(0));
-		assertEquals(0, diff.size());
-		assertEquals(new HashMap<DiffEntry, EditList>(), diff);
+		Diff diff = newGitClient.getDiff(commits.get(0));
+		assertEquals(0, diff.getChangedFiles().size());
 	}
-	
+
 	@Test
 	public void testMasterBranchExists() {
 		Git git = gitClient.getGit();

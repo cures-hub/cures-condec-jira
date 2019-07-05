@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.tangledcommitdetection;
+package de.uhd.ifi.se.decision.management.jira.model.git;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 
 public class TestChangedFile extends TestSetUpGit {
 
@@ -54,7 +54,7 @@ public class TestChangedFile extends TestSetUpGit {
 
 	@Test
 	public void testGetPackageName() {
-		assertEquals(9, changedFile.getPackageName().size());
+		assertEquals(9, changedFile.getPartsOfPackageDeclaration().size());
 	}
 
 }

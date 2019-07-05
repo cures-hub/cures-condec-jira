@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction;
+package de.uhd.ifi.se.decision.management.jira.model.git;
 
 /** purpose: structure to store comment text
  * and area it occupies in a source code file

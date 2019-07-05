@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.extraction;
 import java.io.File;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
+
 public interface CodeCommentParser {
 
 	/**
