@@ -84,8 +84,7 @@ public class ViewRest {
 
 	@Path("/getTreeViewer")
 	@GET
-	public Response getTreeViewer(@QueryParam("projectKey") String projectKey,
-			@QueryParam("rootElementType") String rootElementType) {
+	public Response getTreeViewer(@QueryParam("projectKey") String projectKey, @QueryParam("rootElementType") String rootElementType) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -100,14 +99,11 @@ public class ViewRest {
 
 	@Path("/getTreeViewer2")
 	@GET
-	public Response getTreeViewer2(@QueryParam("issueKey") String issueKey,
-			@QueryParam("showRelevant") String showRelevant) {
+	public Response getTreeViewer2(@QueryParam("issueKey") String issueKey, @QueryParam("showRelevant") String showRelevant) {
 		if (!issueKey.contains("-")) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Issue Key is not valid."))
-					.build();
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Issue Key is not valid.")).build();
 		}
-		Boolean[] booleanArray = Arrays.stream(showRelevant.split(",")).map(Boolean::parseBoolean)
-				.toArray(Boolean[]::new);
+		Boolean[] booleanArray = Arrays.stream(showRelevant.split(",")).map(Boolean::parseBoolean).toArray(Boolean[]::new);
 		String projectKey = issueKey.substring(0, issueKey.indexOf("-"));
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
@@ -122,8 +118,7 @@ public class ViewRest {
 	@GET
 	public Response getEvolutionData(@QueryParam("projectKey") String projectKey) {
 		if (projectKey == null || projectKey.equals("")) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not valid."))
-					.build();
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not valid.")).build();
 		}
 		VisDataProvider visDataProvider = new VisDataProvider(projectKey);
 		VisTimeLine timeLine = visDataProvider.getTimeLine();
@@ -132,14 +127,11 @@ public class ViewRest {
 
 	@Path("/getTreant")
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getTreant(@QueryParam("elementKey") String elementKey,
-			@QueryParam("depthOfTree") String depthOfTree, @QueryParam("searchTerm") String searchTerm,
-			@Context HttpServletRequest request) {
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getTreant(@QueryParam("elementKey") String elementKey, @QueryParam("depthOfTree") String depthOfTree, @QueryParam("searchTerm") String searchTerm, @Context HttpServletRequest request) {
 
 		if (elementKey == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build();
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build();
 		}
 		String projectKey = getProjectKey(elementKey);
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
@@ -150,10 +142,8 @@ public class ViewRest {
 		try {
 			depth = Integer.parseInt(depthOfTree);
 		} catch (NumberFormatException e) {
-			LOGGER.error(
-					"Depth of tree could not be parsed, the default value of 4 is used. Message: " + e.getMessage());
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Treant cannot be shown since depth of Tree is NaN")).build();
+			LOGGER.error("Depth of tree could not be parsed, the default value of 4 is used. Message: " + e.getMessage());
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Treant cannot be shown since depth of Tree is NaN")).build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		Treant treant = new Treant(projectKey, elementKey, depth, searchTerm, user);
@@ -162,8 +152,7 @@ public class ViewRest {
 
 	private Issue getIssue(String issueKey) {
 		Issue issue = null;
-		if (issueKey == null || issueKey.trim().equals(""))
-			return null;
+		if (issueKey == null || issueKey.trim().equals("")) return null;
 		try {
 			issue = ComponentAccessor.getIssueManager().getIssueByKeyIgnoreCase(issueKey);
 		} catch (Exception ex) {
@@ -174,26 +163,24 @@ public class ViewRest {
 
 	@Path("/getVis")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getVis(@Context HttpServletRequest request,FilterData filterData, @QueryParam("elementKey") String elementKey ) {
-		if(checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()){
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getVis(@Context HttpServletRequest request, FilterData filterData, @QueryParam("elementKey") String elementKey) {
+		if (checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()) {
 			return checkIfElementIsValid(elementKey);
 		}
 		if (filterData == null) {
-			return Response.status(Status.BAD_REQUEST)
-					       .entity(ImmutableMap.of("error", "Filter data is null. Vis could not be visualized.")).build();
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Filter data is null. Vis could not be visualized.")).build();
 		}
-		if(request == null){
-			return Response.status(Status.BAD_REQUEST)
-					               .entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis could not be visualized.")).build();
+		if (request == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis could not be visualized.")).build();
 		}
 		String projectKey = getProjectKey(elementKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisDataProvider visDataProvider;
-		if(filterData.getIssueTypes().size() == 0) {
+		if (filterData.getIssueTypes().size() == 0) {
 			visDataProvider = new VisDataProvider(projectKey, elementKey, false, filterData.getSearchString(), user);
 		} else {
-			visDataProvider = new VisDataProvider(projectKey,elementKey, false,user,filterData);
+			visDataProvider = new VisDataProvider(elementKey, false, user, filterData);
 		}
 		VisGraph visGraph = visDataProvider.getVisGraph();
 		return Response.ok(visGraph).build();
@@ -201,9 +188,9 @@ public class ViewRest {
 
 	@Path("/getFilterData")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
+	@Produces({MediaType.APPLICATION_JSON})
 	public Response getFilterData(@Context HttpServletRequest request, FilterData filterData, @QueryParam("elementKey") String elementKey) {
-		if(checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()){
+		if (checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()) {
 			return checkIfElementIsValid(elementKey);
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
@@ -227,24 +214,21 @@ public class ViewRest {
 		return Response.status(Status.OK).build();
 	}
 
-	private Response checkIfElementIsValid(String elementKey){
+	private Response checkIfElementIsValid(String elementKey) {
 		if (elementKey == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Visualization cannot be shown since element key is invalid.")).build();
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Visualization cannot be shown since element key is invalid.")).build();
 		}
 		String projectKey = getProjectKey(elementKey);
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		 return Response.status(Status.OK).build();
+		return Response.status(Status.OK).build();
 	}
 
 	private Response projectKeyIsInvalid() {
 		LOGGER.error("Decision knowledge elements cannot be shown since project key is invalid.");
-		return Response.status(Status.BAD_REQUEST).entity(
-				ImmutableMap.of("error", "Decision knowledge elements cannot be shown since project key is invalid."))
-				.build();
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Decision knowledge elements cannot be shown since project key is invalid.")).build();
 	}
 
 	private Response issueKeyIsInvalid() {

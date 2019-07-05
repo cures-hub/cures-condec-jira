@@ -42,6 +42,14 @@ public class QueryHandler {
 		this.filterData = new FilterDataImpl(projectKey, "", -1, -1);
 	}
 
+	private void jqlStringParser() {
+		String jql = this.filterData.getSearchString();
+		jql = jql.replaceAll("%20", " ");
+		jql = jql.replaceAll("%3D", "=");
+		jql = jql.replaceAll("%2C", ",");
+		this.filterData.setSearchString(jql);
+	}
+
 	public SearchService.ParseResult processParsResult(String query) {
 		this.filterData.setSearchString(query);
 		String filteredQuery = cropQuery();
@@ -60,8 +68,10 @@ public class QueryHandler {
 				finalQuery = queryFromFilterString(filteredQuery);
 			}
 		} else if (queryIsJQL) {
-			finalQuery = cropQuery();
-		} else if (!queryIsJQL && !queryIsFilter) {
+			this.filterData.setSearchString(cropQuery());
+			jqlStringParser();
+			return searchService.parseQuery(this.user, this.filterData.getSearchString());
+		} else {
 			finalQuery = "type = null";
 		}
 		if (this.mergeFilterQueryWithProjectKey) {
