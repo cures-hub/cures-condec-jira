@@ -65,7 +65,7 @@ public class GraphFiltering {
 			}
 			try {
 				final SearchResults<Issue> results = queryHandler.getSearchService().search(this.user, parseResult.getQuery(), PagerFilter.getUnlimitedFilter());
-				resultingIssues = JiraSearchServiceHelper.getJiraIssues(results);
+				resultingIssues =results.getResults();
 
 			} catch (SearchException e) {
 				LOGGER.error("Produce results from query failed. Message: " + e.getMessage());
@@ -84,6 +84,7 @@ public class GraphFiltering {
 
 	public void produceResultsWithAdditionalFilters() {
 		produceResultsFromQuery();
+		/*
 		queryResults.clear();
 		JqlClauseBuilder queryBuilder = JqlQueryBuilder.newClauseBuilder();
 		queryBuilder.project(filterData.getProjectKey());
@@ -108,7 +109,7 @@ public class GraphFiltering {
 		queryBuilder = addIssueTypes(queryBuilder);
 		queryBuilder = addTimeFilter(queryBuilder);
 		processQueryResult(queryBuilder);
-
+		*/
 	}
 
 	// New issue type filter function
