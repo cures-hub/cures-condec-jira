@@ -200,7 +200,7 @@ public class ViewRest {
 	}
 
 	@Path("/getFilterData")
-	@GET
+	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getFilterData(@Context HttpServletRequest request, FilterData filterData, @QueryParam("elementKey") String elementKey) {
 		if(checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()){
