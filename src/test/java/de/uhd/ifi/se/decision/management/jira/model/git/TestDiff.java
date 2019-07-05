@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.tangledchangedetector;
+package de.uhd.ifi.se.decision.management.jira.model.git;
 
 import static org.junit.Assert.assertEquals;
 
