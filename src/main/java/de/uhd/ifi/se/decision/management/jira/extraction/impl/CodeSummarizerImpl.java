@@ -1,10 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
-import java.util.Map;
-
 import org.apache.commons.io.FilenameUtils;
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.atlassian.jira.issue.Issue;
@@ -14,7 +10,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.TangledCommitDetection;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.model.git.impl.DiffImpl;
 
 public class CodeSummarizerImpl implements CodeSummarizer {
 
@@ -40,7 +35,7 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		}
 		this.minProbabilityOfCorrectness = minProbabilityOfCorrectness;
 		this.issueKey = jiraIssue.getKey();
-		Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssue);
+		Diff diff = gitClient.getDiff(jiraIssue);
 		return createSummary(diff);
 	}
 
@@ -49,17 +44,15 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		if (commit == null) {
 			return "";
 		}
-		Map<DiffEntry, EditList> diff = gitClient.getDiff(commit);
+		Diff diff = gitClient.getDiff(commit);
 		return createSummary(diff);
 	}
 
 	@Override
-	public String createSummary(Map<DiffEntry, EditList> diffMap) {
-		if (diffMap == null || diffMap.size() == 0) {
+	public String createSummary(Diff diff) {
+		if (diff == null || diff.getChangedFiles().size() == 0) {
 			return "";
 		}
-		String baseDirectory = gitClient.getDirectory().toString().replace(".git", "");
-		Diff diff = new DiffImpl(diffMap, baseDirectory);
 
 		TangledCommitDetection tangledCommitDetection = new TangledCommitDetectionImpl();
 		tangledCommitDetection.estimateWhetherChangedFilesAreCorrectlyIncludedInDiff(diff);

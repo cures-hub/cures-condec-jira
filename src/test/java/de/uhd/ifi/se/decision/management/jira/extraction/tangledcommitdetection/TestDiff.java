@@ -3,10 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.tangledcommitdetection
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
-import java.util.Map;
 
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,12 +27,9 @@ public class TestDiff extends TestSetUpGit {
 		diffForJiraIssue = createDiff(mockJiraIssueForGitTestsTangled);
 	}
 
-	// TODO: Diff objects should be returned in the git client directly
 	public static Diff createDiff(Issue jiraIssue) {
 		List<RevCommit> commits = gitClient.getCommits(jiraIssue);
-		Map<DiffEntry, EditList> diff = gitClient.getDiff(commits);
-		String baseDirectory = gitClient.getDirectory().toString().replace(".git", "");
-		return new DiffImpl(diff, baseDirectory);
+		return gitClient.getDiff(commits);
 	}
 
 	@Test
@@ -61,6 +55,6 @@ public class TestDiff extends TestSetUpGit {
 	@Test
 	public void testAddChangedFile() {
 		diffForCommit.addChangedFile(null);
-		assertEquals(2, diffForCommit.getChangedFiles().size());		
+		assertEquals(2, diffForCommit.getChangedFiles().size());
 	}
 }

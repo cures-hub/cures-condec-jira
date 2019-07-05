@@ -71,6 +71,12 @@ public class ChangedFileImpl implements ChangedFile {
 		this.editList = editList;
 	}
 
+	public ChangedFileImpl(DiffEntry diffEntry, EditList editList, File directory) {
+		this(new File(directory + diffEntry.getNewPath()));
+		this.diffEntry = diffEntry;
+		this.editList = editList;
+	}
+
 	@Override
 	@JsonProperty("className")
 	public String getName() {
