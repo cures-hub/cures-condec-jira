@@ -48,17 +48,17 @@ public class TestTangledCommitDetection extends TestSetUpGit {
 
 		assertEquals("Tangled1.java", changedFiles.get(0).getName());
 		assertEquals(Arrays.asList("package de", "uhd", "ifi", "se", "decision", "management", "jira"),
-				changedFiles.get(0).getPackageName());
+				changedFiles.get(0).getPartsOfPackageDeclaration());
 
 		assertEquals("Untangled.java", changedFiles.get(1).getName());
 		assertEquals(
 				Arrays.asList("package de", "uhd", "ifi", "se", "decision", "management", "jira", "extraction", "impl"),
-				changedFiles.get(1).getPackageName());
+				changedFiles.get(1).getPartsOfPackageDeclaration());
 
 		assertEquals("Untangled2.java", changedFiles.get(2).getName());
 		assertEquals(
 				Arrays.asList("package de", "uhd", "ifi", "se", "decision", "management", "jira", "extraction", "impl"),
-				changedFiles.get(2).getPackageName());
+				changedFiles.get(2).getPartsOfPackageDeclaration());
 		
 		assertEquals(4, changedFiles.get(0).getPackageDistance());
 		assertEquals(2, changedFiles.get(1).getPackageDistance());

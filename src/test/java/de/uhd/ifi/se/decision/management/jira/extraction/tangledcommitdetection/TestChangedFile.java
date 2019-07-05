@@ -54,7 +54,7 @@ public class TestChangedFile extends TestSetUpGit {
 
 	@Test
 	public void testGetPackageName() {
-		assertEquals(9, changedFile.getPackageName().size());
+		assertEquals(9, changedFile.getPartsOfPackageDeclaration().size());
 	}
 
 }

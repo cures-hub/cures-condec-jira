@@ -119,13 +119,19 @@ public interface ChangedFile {
 	 *
 	 * @return package declaration as a list of Strings.
 	 */
-	List<String> getPackageName();
+	List<String> getPartsOfPackageDeclaration();
 
+	/**
+	 * Returns the {@link DiffEntry} object.
+	 * 
+	 * @return the {@link DiffEntry} object.
+	 */
 	DiffEntry getDiffEntry();
 
-	void setDiffEntry(DiffEntry diffEntry);
-
+	/**
+	 * Returns the {@link EditList} object.
+	 * 
+	 * @return the {@link EditList} object.
+	 */
 	EditList getEditList();
-
-	void setEditList(EditList editList);
 }

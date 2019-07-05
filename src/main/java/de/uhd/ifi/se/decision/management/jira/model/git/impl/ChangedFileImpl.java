@@ -27,6 +27,8 @@ import de.uhd.ifi.se.decision.management.jira.extraction.impl.MethodVisitor;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 
 public class ChangedFileImpl implements ChangedFile {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(ChangedFile.class);
 
 	@JsonIgnore
 	private DiffEntry diffEntry;
@@ -36,8 +38,7 @@ public class ChangedFileImpl implements ChangedFile {
 	private File file;
 
 	private Set<String> methodDeclarations;
-	private float probabilityOfCorrectness;
-	private static final Logger LOGGER = LoggerFactory.getLogger(ChangedFile.class);
+	private float probabilityOfCorrectness;	
 
 	// @issue How to model whether a changed file is correctly linked to a
 	// requirement/work item/knowledge element?
@@ -65,16 +66,20 @@ public class ChangedFileImpl implements ChangedFile {
 		this.methodDeclarations = parseMethods();
 	}
 
-	public ChangedFileImpl(DiffEntry entry, EditList editList, String baseDirectory) {
-		this(new File(baseDirectory + entry.getNewPath()));
-		this.diffEntry = entry;
+	public ChangedFileImpl(DiffEntry diffEntry, EditList editList, String baseDirectory) {
+		this(new File(baseDirectory + diffEntry.getNewPath()));
+		this.diffEntry = diffEntry;
 		this.editList = editList;
 	}
 
-	public ChangedFileImpl(DiffEntry diffEntry, EditList editList, File directory) {
-		this(new File(directory + diffEntry.getNewPath()));
-		this.diffEntry = diffEntry;
-		this.editList = editList;
+	@Override
+	public DiffEntry getDiffEntry() {
+		return diffEntry;
+	}
+
+	@Override
+	public EditList getEditList() {
+		return editList;
 	}
 
 	@Override
@@ -181,41 +186,30 @@ public class ChangedFileImpl implements ChangedFile {
 	}
 
 	@Override
-	public List<String> getPackageName() {
+	public List<String> getPartsOfPackageDeclaration() {
 		List<String> partsOfPackageName = new ArrayList<String>();
-		if (getCompilationUnit() == null) {
-			return partsOfPackageName;
+		String packageDeclaration = getPackageDeclaration();
+
+		for (String partOfPackageName : packageDeclaration.split("\\.")) {
+			partsOfPackageName.add(partOfPackageName);
 		}
-		Optional<PackageDeclaration> optional = getCompilationUnit().getPackageDeclaration();
-		try {
-			String packageDeclaration = optional.get().toString();
-			packageDeclaration = packageDeclaration.replaceAll("\n", "").replaceAll(";", "").replaceAll("\r", "");
-			for (String partOfPackageName : packageDeclaration.split("\\.")) {
-				partsOfPackageName.add(partOfPackageName);
-			}
-		} catch (NoSuchElementException e) {
-			LOGGER.error(e.getMessage());
-		}
+
 		return partsOfPackageName;
 	}
 
-	@Override
-	public DiffEntry getDiffEntry() {
-		return diffEntry;
-	}
-
-	@Override
-	public void setDiffEntry(DiffEntry diffEntry) {
-		this.diffEntry = diffEntry;
-	}
-
-	@Override
-	public EditList getEditList() {
-		return editList;
-	}
-
-	@Override
-	public void setEditList(EditList editList) {
-		this.editList = editList;
+	private String getPackageDeclaration() {
+		String packageDeclaration = "";
+		if (getCompilationUnit() == null) {
+			return "";
+		}
+		Optional<PackageDeclaration> optional = getCompilationUnit().getPackageDeclaration();
+		
+		try {
+			packageDeclaration = optional.get().toString();
+			packageDeclaration = packageDeclaration.replaceAll("\n", "").replaceAll(";", "").replaceAll("\r", "");
+		} catch (NoSuchElementException e) {
+			LOGGER.error(e.getMessage());
+		}
+		return packageDeclaration;
 	}
 }

@@ -46,8 +46,8 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 	}
 
 	private int calculatePackageDistance(ChangedFile fileA, ChangedFile fileB) {
-		List<String> leftPackageDeclaration = fileA.getPackageName();
-		List<String> rightPackageDeclaration = fileB.getPackageName();
+		List<String> leftPackageDeclaration = fileA.getPartsOfPackageDeclaration();
+		List<String> rightPackageDeclaration = fileB.getPartsOfPackageDeclaration();
 		if (fileA.equals(fileB)) {
 			return 0;
 		}
