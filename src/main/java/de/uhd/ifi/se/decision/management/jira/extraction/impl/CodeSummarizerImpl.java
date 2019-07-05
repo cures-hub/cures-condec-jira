@@ -7,7 +7,7 @@ import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.TangledCommitDetection;
+import de.uhd.ifi.se.decision.management.jira.extraction.TangledChangeDetector;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
@@ -54,7 +54,7 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 			return "";
 		}
 
-		TangledCommitDetection tangledCommitDetection = new TangledCommitDetectionImpl();
+		TangledChangeDetector tangledCommitDetection = new TangledChangeDetectorImpl();
 		tangledCommitDetection.estimateWhetherChangedFilesAreCorrectlyIncludedInDiff(diff);
 
 		return generateSummary(diff);
