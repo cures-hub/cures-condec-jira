@@ -4,11 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +11,8 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import de.uhd.ifi.se.decision.management.jira.model.git.impl.DiffImpl;
 
 public class TestCodeSummarizer extends TestSetUpGit {
 
@@ -55,12 +52,12 @@ public class TestCodeSummarizer extends TestSetUpGit {
 
 	@Test
 	public void testDiffNull() {
-		assertEquals("", summarizer.createSummary((Map<DiffEntry, EditList>) null));
+		assertEquals("", summarizer.createSummary((Diff) null));
 	}
 
 	@Test
 	public void testDiffEmpty() {
-		assertEquals("", summarizer.createSummary(new HashMap<DiffEntry, EditList>()));
+		assertEquals("", summarizer.createSummary(new DiffImpl()));
 	}
 
 }

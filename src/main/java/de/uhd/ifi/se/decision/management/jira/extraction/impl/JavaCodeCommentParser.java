@@ -5,8 +5,10 @@ import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.Position;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.comments.Comment;
-import de.uhd.ifi.se.decision.management.jira.extraction.CodeComment;
+
 import de.uhd.ifi.se.decision.management.jira.extraction.CodeCommentParser;
+import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

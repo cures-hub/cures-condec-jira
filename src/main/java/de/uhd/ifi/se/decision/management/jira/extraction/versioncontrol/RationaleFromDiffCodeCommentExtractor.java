@@ -1,8 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.CodeComment;
 import de.uhd.ifi.se.decision.management.jira.extraction.RationaleFromCodeCommentExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
+
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
 

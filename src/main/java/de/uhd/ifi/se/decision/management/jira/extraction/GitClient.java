@@ -1,18 +1,20 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import java.io.File;
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
 
-import com.atlassian.jira.issue.Issue;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.util.JiraHome;
+import com.atlassian.jira.issue.Issue;
+
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 /**
  * Class to connect to commits and code in git.
@@ -75,46 +77,52 @@ public interface GitClient {
 	List<RevCommit> getCommits();
 
 	/**
-	 * Get a map of diff entries and the respective edit lists for a commit.
+	 * Get the {@link Diff} for a commit containing the {@link ChangedFile}s. Each
+	 * {@link ChangedFile} is created from a diff entry and contains the respective
+	 * edit list.
 	 * 
 	 * @see RevCommit
 	 * @param revCommit
 	 *            commit as a RevCommit object.
-	 * @return map of diff entries and respective edit lists.
+	 * @return {@link Diff} object containing the {@link ChangedFile}s.
 	 */
-	Map<DiffEntry, EditList> getDiff(RevCommit revCommit);
+	Diff getDiff(RevCommit revCommit);
 
 	/**
-	 * Get a map of diff entries and the respective edit lists for all commits
-	 * belonging to a JIRA issue.
+	 * Get the {@link Diff} for a JIRA issue containing the {@link ChangedFile}s.
+	 * Each {@link ChangedFile} is created from a diff entry and contains the
+	 * respective edit list.
 	 *
 	 * @param jiraIssue
 	 *            a JIRA issue object.
-	 * @return map of diff entries and respective edit lists.
+	 * @return {@link Diff} object containing the {@link ChangedFile}s.
 	 */
-	Map<DiffEntry, EditList> getDiff(Issue jiraIssue);
+	Diff getDiff(Issue jiraIssue);
 
 	/**
-	 * Get a map of diff entries and the respective edit lists for a list of
-	 * commits.
+	 * Get the {@link Diff} for a list of commits containing the
+	 * {@link ChangedFile}s. Each {@link ChangedFile} is created from a diff entry
+	 * and contains the respective edit list.
 	 * 
 	 * @param commits
 	 *            commits as a list of RevCommit objects.
-	 * @return map of diff entries and respective edit lists.
+	 * @return {@link Diff} object containing the {@link ChangedFile}s.
 	 */
-	Map<DiffEntry, EditList> getDiff(List<RevCommit> commits);
+	Diff getDiff(List<RevCommit> commits);
 
 	/**
-	 * Get a map of diff entries and the respective edit lists for a branch of
-	 * commits indicated by the first and last commit on the branch.
+	 * Get the {@link Diff} for a branch of commits indicated by the first and last
+	 * commit on the branch containing the {@link ChangedFile}s. Each
+	 * {@link ChangedFile} is created from a diff entry and contains the respective
+	 * edit list.
 	 *
 	 * @param firstCommit
 	 *            first commit on a branch as a RevCommit object.
 	 * @param lastCommit
 	 *            last commit on a branch as a RevCommit object.
-	 * @return map of diff entries and respective edit lists.
+	 * @return {@link Diff} object containing the {@link ChangedFile}s.
 	 */
-	Map<DiffEntry, EditList> getDiff(RevCommit firstCommit, RevCommit lastCommit);
+	Diff getDiff(RevCommit firstCommit, RevCommit lastCommit);
 
 	/**
 	 * Get a list of remote branches in repository.
@@ -124,27 +132,24 @@ public interface GitClient {
 	List<Ref> getRemoteBranches();
 
 	/**
-	 * Get a list of all commits of a "feature" branch,
-	 * which do not exist in the "default" branch.
-	 * Commits are sorted by age, beginning with the oldest.
+	 * Get a list of all commits of a "feature" branch, which do not exist in the
+	 * "default" branch. Commits are sorted by age, beginning with the oldest.
 	 *
 	 * @param featureBranchName
 	 *            name of the feature branch
 	 * @return ordered list of commits unique to this branch.
 	 */
-	List<RevCommit>  getFeatureBranchCommits(String featureBranchName);
+	List<RevCommit> getFeatureBranchCommits(String featureBranchName);
 
 	/**
-	 * Get a list of all commits of a "feature" branch,
-	 * which do not exist in the "default" branch.
-	 * Commits are sorted by age, beginning with the oldest.
+	 * Get a list of all commits of a "feature" branch, which do not exist in the
+	 * "default" branch. Commits are sorted by age, beginning with the oldest.
 	 *
 	 * @param featureBranch
 	 *            ref of the feature branch
 	 * @return ordered list of commits unique to this branch.
 	 */
-	List<RevCommit>  getFeatureBranchCommits(Ref featureBranch);
-
+	List<RevCommit> getFeatureBranchCommits(Ref featureBranch);
 
 	/**
 	 * Get the jgit repository object.
@@ -171,7 +176,8 @@ public interface GitClient {
 	void deleteRepository();
 
 	/**
-	 * Returns the number of commits with the JIRA issue key in their commit message.
+	 * Returns the number of commits with the JIRA issue key in their commit
+	 * message.
 	 *
 	 * @param jiraIssue
 	 *            JIRA issue. Its key is searched for in commit messages.

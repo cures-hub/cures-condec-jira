@@ -3,10 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
@@ -36,6 +34,9 @@ import com.google.common.collect.Lists;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import de.uhd.ifi.se.decision.management.jira.model.git.impl.ChangedFileImpl;
+import de.uhd.ifi.se.decision.management.jira.model.git.impl.DiffImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
@@ -238,7 +239,7 @@ public class GitClientImpl implements GitClient {
 	}
 
 	@Override
-	public Map<DiffEntry, EditList> getDiff(List<RevCommit> commits) {
+	public Diff getDiff(List<RevCommit> commits) {
 		if (commits == null || commits.size() == 0) {
 			return null;
 		}
@@ -249,7 +250,7 @@ public class GitClientImpl implements GitClient {
 	}
 
 	@Override
-	public Map<DiffEntry, EditList> getDiff(Issue jiraIssue) {
+	public Diff getDiff(Issue jiraIssue) {
 		if (jiraIssue == null) {
 			return null;
 		}
@@ -258,8 +259,8 @@ public class GitClientImpl implements GitClient {
 	}
 
 	@Override
-	public Map<DiffEntry, EditList> getDiff(RevCommit firstCommit, RevCommit lastCommit) {
-		Map<DiffEntry, EditList> diffEntriesMappedToEditLists = new LinkedHashMap<DiffEntry, EditList>();
+	public Diff getDiff(RevCommit firstCommit, RevCommit lastCommit) {
+		Diff diff = new DiffImpl();
 		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
 
 		DiffFormatter diffFormatter = getDiffFormater();
@@ -272,21 +273,26 @@ public class GitClientImpl implements GitClient {
 			LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
 		}
 
+		File directory = getDirectory();
+		String baseDirectory = "";
+		if (directory != null) {
+			baseDirectory = getDirectory().toString().replace(".git", "");
+		}
 		for (DiffEntry diffEntry : diffEntries) {
 			try {
 				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
-				diffEntriesMappedToEditLists.put(diffEntry, editList);
+				diff.addChangedFile(new ChangedFileImpl(diffEntry, editList, baseDirectory));
 			} catch (IOException e) {
 				LOGGER.error("Git diff for the file " + diffEntry.getNewPath() + " could not be retrieved. Message: "
 						+ e.getMessage());
 			}
 		}
 		diffFormatter.close();
-		return diffEntriesMappedToEditLists;
+		return diff;
 	}
 
 	@Override
-	public Map<DiffEntry, EditList> getDiff(RevCommit revCommit) {
+	public Diff getDiff(RevCommit revCommit) {
 		return getDiff(revCommit, revCommit);
 	}
 
