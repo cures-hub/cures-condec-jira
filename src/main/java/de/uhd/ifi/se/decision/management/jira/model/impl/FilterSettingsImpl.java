@@ -91,8 +91,8 @@ public class FilterSettingsImpl implements FilterSettings {
 		// this.issueTypesMatchingFilter.add(type.toString());
 		// }
 		// }
-		this.startDate = queryHandler.getFilterSettings().getCreatedEarliest();
-		this.endDate = queryHandler.getFilterSettings().getCreatedLatest();
+//		this.startDate = queryHandler.getFilterSettings().getCreatedEarliest();
+//		this.endDate = queryHandler.getFilterSettings().getCreatedLatest();
 	}
 
 	@Override

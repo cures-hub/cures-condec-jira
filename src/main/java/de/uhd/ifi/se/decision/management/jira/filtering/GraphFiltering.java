@@ -183,14 +183,15 @@ public class GraphFiltering {
 			return true;
 		}
 		if (queryHandler.isQueryContainsCreationDate()) {
-			if (queryHandler.getFilterSettings().getCreatedEarliest() >= 0 && resultingQuery.contains("created")
-					&& resultingQuery.contains(">=")) {
-				return true;
-			}
-			if (queryHandler.getFilterSettings().getCreatedLatest() >= 0 && resultingQuery.contains("created")
-					&& resultingQuery.contains("<=")) {
-				return true;
-			}
+			// TODO
+//			if (queryHandler.getFilterSettings().getCreatedEarliest() >= 0 && resultingQuery.contains("created")
+//					&& resultingQuery.contains(">=")) {
+//				return true;
+//			}
+//			if (queryHandler.getFilterSettings().getCreatedLatest() >= 0 && resultingQuery.contains("created")
+//					&& resultingQuery.contains("<=")) {
+//				return true;
+//			}
 		}
 		return false;
 	}
@@ -200,14 +201,15 @@ public class GraphFiltering {
 			return true;
 		}
 		if (queryHandler.isQueryContainsCreationDate()) {
-			if (queryHandler.getFilterSettings().getCreatedEarliest() >= 0 && clause.getName().equals("created")
-					&& clause.toString().contains(">=")) {
-				return true;
-			}
-			if (queryHandler.getFilterSettings().getCreatedLatest() >= 0 && clause.getName().equals("created")
-					&& clause.toString().contains("<=")) {
-				return true;
-			}
+			// TODO
+//			if (queryHandler.getFilterSettings().getCreatedEarliest() >= 0 && clause.getName().equals("created")
+//					&& clause.toString().contains(">=")) {
+//				return true;
+//			}
+//			if (queryHandler.getFilterSettings().getCreatedLatest() >= 0 && clause.getName().equals("created")
+//					&& clause.toString().contains("<=")) {
+//				return true;
+//			}
 		}
 		return false;
 	}
@@ -235,23 +237,26 @@ public class GraphFiltering {
 
 	private boolean checkIfJiraTextMatchesFilter(DecisionKnowledgeElement element) {
 		if (queryHandler.isQueryContainsCreationDate()) {
-			if (queryHandler.getFilterSettings().getCreatedEarliest() > 0
-					&& (element).getCreated().getTime() < queryHandler.getFilterSettings().getCreatedEarliest()) {
-				return false;
-			}
-			if (queryHandler.getFilterSettings().getCreatedLatest() > 0
-					&& (element).getCreated().getTime() > queryHandler.getFilterSettings().getCreatedLatest()) {
-				return false;
-			}
+			// TODO
+//			if (queryHandler.getFilterSettings().getCreatedEarliest() > 0
+//					&& (element).getCreated().getTime() < queryHandler.getFilterSettings().getCreatedEarliest()) {
+//				return false;
+//			}
+//			if (queryHandler.getFilterSettings().getCreatedLatest() > 0
+//					&& (element).getCreated().getTime() > queryHandler.getFilterSettings().getCreatedLatest()) {
+//				return false;
+//			}
 		}
 		if (queryHandler.isQueryContainsIssueTypes()) {
-			if (element.getType().equals(KnowledgeType.PRO) || element.getType().equals(KnowledgeType.CON)) {
-				if (!queryHandler.getFilterSettings().getIssueTypes().contains(KnowledgeType.ARGUMENT)) {
-					return false;
-				}
-			} else if (!queryHandler.getFilterSettings().getIssueTypes().contains(element)) {
-				return false;
-			}
+//			if (element.getType().equals(KnowledgeType.PRO) || element.getType().equals(KnowledgeType.CON)) {
+//				if (!queryHandler.getFilterSettings().getIssueTypes().contains(KnowledgeType.ARGUMENT)) {
+//					return false;
+//				}
+//			} else if (!queryHandler.getFilterSettings().getIssueTypes().contains(element)) {
+//				return false;
+//			}
+			// TODO
+			
 		}
 
 		return true;

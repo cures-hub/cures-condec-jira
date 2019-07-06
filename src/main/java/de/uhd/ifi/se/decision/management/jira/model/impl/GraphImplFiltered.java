@@ -148,17 +148,20 @@ public class GraphImplFiltered extends GraphImpl {
 	}
 
 	private boolean isSentenceIssueTypeInIssueTypes(DecisionKnowledgeElement oppositeElement) {
-		return queryHandler.getFilterSettings().getIssueTypes().contains(oppositeElement.getType());
+		return true;
+		//TODO
+		//return queryHandler.getFilterSettings().getIssueTypes().contains(oppositeElement.getType());
 	}
 
 	private boolean isSentenceIncludedInGraph(DecisionKnowledgeElement element) {
-		if (queryHandler.getFilterSettings().getCreatedEarliest() <= 0 && element.getCreated().getTime() < queryHandler.getFilterSettings().getCreatedLatest()) {
-			return true;
-		} else if (queryHandler.getFilterSettings().getCreatedLatest() <= 0 && element.getCreated().getTime() > queryHandler.getFilterSettings().getCreatedEarliest()) {
-			return true;
-		} else if (element.getCreated().getTime() < queryHandler.getFilterSettings().getCreatedLatest() && element.getCreated().getTime() > queryHandler.getFilterSettings().getCreatedEarliest()) {
-			return true;
-		}
+		// TODO
+//		if (queryHandler.getFilterSettings().getCreatedEarliest() <= 0 && element.getCreated().getTime() < queryHandler.getFilterSettings().getCreatedLatest()) {
+//			return true;
+//		} else if (queryHandler.getFilterSettings().getCreatedLatest() <= 0 && element.getCreated().getTime() > queryHandler.getFilterSettings().getCreatedEarliest()) {
+//			return true;
+//		} else if (element.getCreated().getTime() < queryHandler.getFilterSettings().getCreatedLatest() && element.getCreated().getTime() > queryHandler.getFilterSettings().getCreatedEarliest()) {
+//			return true;
+//		}
 		return false;
 	}
 

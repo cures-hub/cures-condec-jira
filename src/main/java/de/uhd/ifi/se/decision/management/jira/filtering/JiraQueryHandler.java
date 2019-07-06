@@ -16,19 +16,16 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.query.clause.Clause;
 
-import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
-
 public class JiraQueryHandler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraQueryHandler.class);
 
-	private FilterSettings filterSettings;
 	private boolean mergeFilterQueryWithProjectKey;
 	private SearchService searchService;
 	private ApplicationUser user;
 	private boolean queryContainsCreationDate;
 	private boolean queryContainsIssueTypes;
 	private String finalQuery;
+	private String projectKey;
 
 	public JiraQueryHandler(ApplicationUser user, String projectKey, boolean mergeFilterQueryWithProjectKey) {
 		this.mergeFilterQueryWithProjectKey = mergeFilterQueryWithProjectKey;
@@ -37,27 +34,27 @@ public class JiraQueryHandler {
 		this.queryContainsCreationDate = false;
 		this.queryContainsIssueTypes = false;
 		this.finalQuery = "";
-		this.filterSettings = new FilterSettingsImpl(projectKey, "", -1, -1);
+		this.projectKey = projectKey;
 	}
 
 	public ParseResult processParseResult(String query) {
-		this.filterSettings.setSearchString(query);
-		String filteredQuery = cropQuery();
+		String filteredQuery = getQuery(query);
 		JiraQueryType jiraQueryType = JiraQueryType.getJiraQueryType(filteredQuery);
 		switch (jiraQueryType) {
 		case FILTER:
 			filteredQuery = filteredQuery.substring(8, filteredQuery.length());
-			finalQuery = JiraFilter.getQueryForFilter(filteredQuery, this.filterSettings.getProjectKey());
+			finalQuery = JiraFilter.getQueryForFilter(filteredQuery, filteredQuery);
+			break;
 		case JQL:
 			filteredQuery = filteredQuery.substring(5, filteredQuery.length());
-			this.filterSettings.setSearchString(jqlStringParser(this.filterSettings.getSearchString()));
-			return searchService.parseQuery(this.user, this.filterSettings.getSearchString());
+			filteredQuery = jqlStringParser(filteredQuery);
+			return searchService.parseQuery(this.user, filteredQuery);
 		default:
 			finalQuery = "type = null";
 		}
 
 		if (this.mergeFilterQueryWithProjectKey) {
-			finalQuery = "(" + finalQuery + ")AND( PROJECT=" + this.filterSettings.getProjectKey() + ")";
+			finalQuery = "(" + finalQuery + ")AND( PROJECT=" + projectKey + ")";
 		}
 		return searchService.parseQuery(this.user, finalQuery);
 	}
@@ -66,12 +63,11 @@ public class JiraQueryHandler {
 		return jql.replaceAll("%20", " ").replaceAll("%3D", "=").replaceAll("%2C", ",");
 	}
 
-	private String cropQuery() {
-		String searchString = this.filterSettings.getSearchString();
-		String croppedQuery = "";
+	private String getQuery(String searchString) {
+		String croppedQuery = searchString;
 		String[] split = searchString.split("§");
 		if (split.length > 1) {
-			searchString = "?" + split[1];
+			croppedQuery = "?" + split[1];
 		}
 		return croppedQuery;
 	}
@@ -128,9 +124,9 @@ public class JiraQueryHandler {
 			long todaysDate = new Date().getTime();
 			String time = clause.toString().substring(13, clause.toString().length() - 2);
 			if (clause.toString().contains(" <= ")) {
-				this.filterSettings.setCreatedLatest(findEndTime(todaysDate, time));
+				// this.filterSettings.setCreatedLatest(findEndTime(todaysDate, time));
 			} else if (clause.toString().contains(" >= ")) {
-				this.filterSettings.setCreatedEarliest(findStartTime(todaysDate, time));
+				// this.filterSettings.setCreatedEarliest(findStartTime(todaysDate, time));
 			}
 		}
 	}
@@ -143,9 +139,9 @@ public class JiraQueryHandler {
 		long todaysDate = new Date().getTime();
 		String time = query.substring(11, query.length());
 		if (query.contains(" <= ")) {
-			this.filterSettings.setCreatedLatest(findEndTime(todaysDate, time));
+			// this.filterSettings.setCreatedLatest(findEndTime(todaysDate, time));
 		} else if (query.contains(" >= ")) {
-			this.filterSettings.setCreatedEarliest(findStartTime(todaysDate, time));
+			// this.filterSettings.setCreatedEarliest(findStartTime(todaysDate, time));
 		}
 	}
 
@@ -237,9 +233,5 @@ public class JiraQueryHandler {
 			return "";
 		}
 		return this.finalQuery;
-	}
-
-	public FilterSettings getFilterSettings() {
-		return this.filterSettings;
 	}
 }
