@@ -56,7 +56,7 @@ public class TestGetFilterSettings extends TestSetUpWithIssues {
 
 		FilterSettings filterSettings = (FilterSettings) filterSettingsResponse.getEntity();
 		assertEquals(6, filterSettings.getNamesOfDocumentationLocations().size());
-		assertEquals(16, FilterSettings.getAllJiraIssueTypes().size());
+		assertEquals(16, filterSettings.getAllJiraIssueTypes().size());
 		assertEquals(16, filterSettings.getSelectedJiraIssueTypes().size());
 		assertEquals(-1, filterSettings.getCreatedEarliest());
 		assertEquals(-1, filterSettings.getCreatedLatest());

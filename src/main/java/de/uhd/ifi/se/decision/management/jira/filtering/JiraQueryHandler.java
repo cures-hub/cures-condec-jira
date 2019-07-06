@@ -17,7 +17,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.query.clause.Clause;
 
 import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 
 public class JiraQueryHandler {
@@ -98,6 +97,49 @@ public class JiraQueryHandler {
 		return croppedQuery;
 	}
 
+	public List<String> getNamesOfJiraIssueTypesInQuery(List<Clause> clauses) {
+		List<String> types = new ArrayList<String>();
+		for (Clause clause : clauses) {
+			if (!clause.getName().equals("issuetype")) {
+				continue;
+			}
+			this.queryContainsIssueTypes = true;
+			String issuetypes = clause.toString().substring(14, clause.toString().length() - 2);
+
+			if (clause.toString().contains("=")) {
+				types.add(issuetypes.trim());
+			} else {
+				String issueTypesCleared = issuetypes.replaceAll("[()]", "").replaceAll("\"", "");
+				String[] split = issueTypesCleared.split(",");
+				for (String issueType : split) {
+					types.add(issueType.trim());
+				}
+			}
+		}
+		return types;
+	}
+
+	public List<String> getNamesOfJiraIssueTypesInQuery(String query) {
+		if (!query.contains("issuetype")) {
+			return new ArrayList<String>();
+		}
+		this.queryContainsIssueTypes = true;
+		List<String> types = new ArrayList<String>();
+		if (query.contains("=")) {
+			String[] split = query.split("=");
+			types.add(split[1].trim());
+		} else {
+			String issueTypeSeparated = query.substring(12, query.length());
+			String issueTypeCleared = issueTypeSeparated.replaceAll("[()]", "").replaceAll("\"", "");
+			String[] split = issueTypeCleared.split(",");
+			for (String issueType : split) {
+				String cleandIssueType = issueType.replaceAll("[()]", "");
+				types.add(cleandIssueType.trim());
+			}
+		}
+		return types;
+	}	
+	
 	public void findDatesInQuery(List<Clause> clauses) {
 		for (Clause clause : clauses) {
 			if (!clause.getName().equals("created")) {
@@ -126,49 +168,6 @@ public class JiraQueryHandler {
 		} else if (query.contains(" >= ")) {
 			this.filterSettings.setCreatedEarliest(findStartTime(todaysDate, time));
 		}
-	}
-
-	public List<String> getNamesOfJiraIssueTypesInQuery(List<Clause> clauses) {
-		List<String> types = new ArrayList<>();
-		for (Clause clause : clauses) {
-			if (!clause.getName().equals("issuetype")) {
-				continue;
-			}
-			this.queryContainsIssueTypes = true;
-			String issuetypes = clause.toString().substring(14, clause.toString().length() - 2);
-
-			if (clause.toString().contains("=")) {
-				types.add(issuetypes.trim());
-			} else {
-				String issueTypesCleared = issuetypes.replaceAll("[()]", "").replaceAll("\"", "");
-				String[] split = issueTypesCleared.split(",");
-				for (String issueType : split) {
-					types.add(issueType.trim());
-				}
-			}
-		}
-		return types;
-	}
-
-	public List<String> getNamesOfJiraIssueTypesInQuery(String query) {
-		if (!query.contains("issuetype")) {
-			return new ArrayList<>();
-		}
-		this.queryContainsIssueTypes = true;
-		List<String> types = new ArrayList<>();
-		if (query.contains("=")) {
-			String[] split = query.split("=");
-			types.add(split[1].trim());
-		} else {
-			String issueTypeSeparated = query.substring(12, query.length());
-			String issueTypeCleared = issueTypeSeparated.replaceAll("[()]", "").replaceAll("\"", "");
-			String[] split = issueTypeCleared.split(",");
-			for (String issueType : split) {
-				String cleandIssueType = issueType.replaceAll("[()]", "");
-				types.add(cleandIssueType.trim());
-			}
-		}
-		return types;
 	}
 
 	private long findStartTime(long currentDate, String time) {

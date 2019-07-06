@@ -161,13 +161,5 @@ public interface FilterSettings {
 	 *
 	 * @return list of names of JIRA {@link IssueType}s.
 	 */
-	@XmlElement(name = "allJiraIssueTypes")
-	public static List<String> getAllJiraIssueTypes() {
-		List<String> allIssueTypes = new ArrayList<String>();
-		for (IssueType issueType : ComponentAccessor.getConstantsManager().getAllIssueTypeObjects()) {
-			allIssueTypes.add(issueType.getName());
-
-		}
-		return allIssueTypes;
-	}
+	public List<String> getAllJiraIssueTypes();
 }

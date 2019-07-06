@@ -1,5 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
+import java.util.Locale;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.search.SearchRequest;
 import com.atlassian.jira.issue.search.SearchRequestManager;
@@ -18,6 +23,8 @@ public enum JiraFilter {
 	UPDATEDRECENTLY(-7, "updated >= -1w"), // Updated recently;
 	RESOLVEDRECENTLY(-8, "resolutiondate >= -1w"), // Resolved recently
 	DONEISSUES(-9, "statusCategory = Done"); // Done issues
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(JiraFilter.class);
 
 	private long id;
 	private String jqlString;
@@ -55,9 +62,11 @@ public enum JiraFilter {
 	}
 
 	public static String getQueryFromFilterName(String filterName) {
-		JiraFilter jiraFilter = JiraFilter.valueOf(filterName);
-		if (jiraFilter == null) {
-			jiraFilter = ALLISSUES;
+		JiraFilter jiraFilter = ALLISSUES;
+		try {
+			jiraFilter = JiraFilter.valueOf(filterName.toUpperCase(Locale.ENGLISH));
+		} catch (IllegalArgumentException e) {
+			LOGGER.error("The filter " + filterName + " could not be converted into a query String.");
 		}
 		return jiraFilter.getJqlString();
 	}
@@ -67,9 +76,9 @@ public enum JiraFilter {
 			return getQueryForCustomFilter(filterId);
 		}
 		JiraFilter jiraFilter = valueOf(filterId);
-		String returnQuery = jiraFilter.getJqlString();
-		returnQuery = "Project = " + projectKey + " AND " + returnQuery;
-		return returnQuery;
+		String query = jiraFilter.getJqlString();
+		query = "project = " + projectKey + " AND " + query;
+		return query;
 	}
 
 	private static boolean isPresetJiraFilter(long filterId) {

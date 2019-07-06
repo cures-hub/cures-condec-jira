@@ -214,4 +214,15 @@ public class FilterSettingsImpl implements FilterSettings {
 		}
 		return issueTypesMatchingFilter;
 	}
+	
+	@Override
+	@XmlElement(name = "allJiraIssueTypes")
+	public List<String> getAllJiraIssueTypes() {
+		List<String> allIssueTypes = new ArrayList<String>();
+		for (IssueType issueType : ComponentAccessor.getConstantsManager().getAllIssueTypeObjects()) {
+			allIssueTypes.add(issueType.getName());
+
+		}
+		return allIssueTypes;
+	}
 }
