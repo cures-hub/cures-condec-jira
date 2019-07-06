@@ -23,8 +23,6 @@ public class JiraQueryHandler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraQueryHandler.class);
 
 	private FilterSettings filterSettings;
-	private boolean queryIsJQL;
-	private boolean queryIsPresetJiraFilter;
 	private boolean mergeFilterQueryWithProjectKey;
 	private SearchService searchService;
 	private ApplicationUser user;
@@ -45,15 +43,19 @@ public class JiraQueryHandler {
 	public ParseResult processParseResult(String query) {
 		this.filterSettings.setSearchString(query);
 		String filteredQuery = cropQuery();
-		if (queryIsPresetJiraFilter) {
+		JiraQueryType jiraQueryType = JiraQueryType.getJiraQueryType(filteredQuery);
+		switch (jiraQueryType) {
+		case FILTER:
+			filteredQuery = filteredQuery.substring(8, filteredQuery.length());
 			finalQuery = JiraFilter.getQueryForFilter(filteredQuery, this.filterSettings.getProjectKey());
-		} else if (queryIsJQL) {
-			this.filterSettings.setSearchString(cropQuery());
+		case JQL:
+			filteredQuery = filteredQuery.substring(5, filteredQuery.length());
 			this.filterSettings.setSearchString(jqlStringParser(this.filterSettings.getSearchString()));
 			return searchService.parseQuery(this.user, this.filterSettings.getSearchString());
-		} else {
+		default:
 			finalQuery = "type = null";
 		}
+
 		if (this.mergeFilterQueryWithProjectKey) {
 			finalQuery = "(" + finalQuery + ")AND( PROJECT=" + this.filterSettings.getProjectKey() + ")";
 		}
@@ -70,16 +72,6 @@ public class JiraQueryHandler {
 		String[] split = searchString.split("§");
 		if (split.length > 1) {
 			searchString = "?" + split[1];
-		}
-		if (searchString.indexOf("jql") == 1) {
-			this.queryIsJQL = true;
-		} else if (JiraFilter.containsJiraFilter(searchString)) {
-			this.queryIsPresetJiraFilter = true;
-		}
-		if (this.queryIsJQL) {
-			croppedQuery = searchString.substring(5, searchString.length());
-		} else if (this.queryIsPresetJiraFilter) {
-			croppedQuery = searchString.substring(8, searchString.length());
 		}
 		return croppedQuery;
 	}

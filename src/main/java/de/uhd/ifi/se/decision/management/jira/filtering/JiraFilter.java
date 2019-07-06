@@ -13,7 +13,7 @@ import com.atlassian.jira.issue.search.SearchRequestManager;
  * Type of preset filters in JIRA.
  */
 public enum JiraFilter {
-
+	
 	MYOPENISSUES(-1, "assignee = currentUser() AND resolution = Unresolved"), // My open issues
 	REPORTEDBYME(-2, "reporter = currentUser()"), // Reported by me
 	RECENTLYVIEWFINALQUERYED(-3, "issuekey IN issueHistory()"), // Viewed recently

@@ -29,5 +29,12 @@ public class TestJiraQueryHandler extends TestSetUpWithIssues {
 		assertEquals(1, types.size());
 		//assertEquals("Issue", types.get(0));
 	}
+	
+	@Test
+	public void testGetNamesOfJiraIssueTypesInQueryWithClauses() {
+		List<String> types = jiraQueryHandler.getNamesOfJiraIssueTypesInQuery("issuetype = (Decision, Issue)");
+		assertEquals(1, types.size());
+		//assertEquals("Issue", types.get(0));
+	}
 
 }
