@@ -144,9 +144,8 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 
 	@Test
 	public void testGetIssueTypes() {
-		for (String type : knowledgeTypesStringArray) {
-			assertTrue(filterSettings.getIssueTypes().contains(KnowledgeType.getKnowledgeType(type)));
-		}
+		assertEquals(18, filterSettings.getIssueTypes().size());
+		assertTrue(filterSettings.getIssueTypes().contains("Decision"));
 	}
 
 	@Test
@@ -163,7 +162,7 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 		}
 		filterSettings.setIssueTypes(newIssueTypes);
 		for (String type : newIssueTypes) {
-			assertTrue(filterSettings.getIssueTypes().contains(KnowledgeType.getKnowledgeType(type)));
+			assertTrue(filterSettings.getIssueTypes().contains(KnowledgeType.getKnowledgeType(type).toString()));
 		}
 	}
 }

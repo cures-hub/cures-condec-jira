@@ -113,7 +113,7 @@ public interface FilterSettings {
 	 *
 	 * @return list of knowledge types of the filter
 	 */
-	List<KnowledgeType> getIssueTypes();
+	List<String> getIssueTypes();
 
 	/**
 	 * Set the issue types that are used in the filter from the issueTypeString to
@@ -130,7 +130,7 @@ public interface FilterSettings {
 	 *
 	 * @param types
 	 */
-	void setIssueTypes(List<KnowledgeType> types);
+	void setIssueTypes(List<String> types);
 
 	/**
 	 * Set the JIRA issue types to be shown in the knowledge graph as a list.

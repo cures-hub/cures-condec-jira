@@ -45,10 +45,10 @@ public class TestJiraQueryHandler extends TestSetUpWithIssues {
 	}
 	
 	@Test
-	public void testIssueTypesQuery() {
-		List<KnowledgeType> types =  jiraQueryHandler.findIssueTypesInQuery("?jql=issuetype %3D Issue");
+	public void testGetNamesOfJiraIssueTypesInQuery() {
+		List<String> types =  jiraQueryHandler.getNamesOfJiraIssueTypesInQuery("issuetype = Issue");
 		assertEquals(1, types.size());
-		//assertEquals("OTHER", types.get(0).name());
+		assertEquals("Issue", types.get(0));
 	}
 
 }

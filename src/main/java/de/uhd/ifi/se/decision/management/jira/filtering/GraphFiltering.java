@@ -62,12 +62,12 @@ public class GraphFiltering {
 		if (!clauses.isEmpty()) {
 			this.resultingClauses = clauses;
 			queryHandler.findDatesInQuery(clauses);
-			this.filterData.setIssueTypes(queryHandler.findIssueTypesInQuery(clauses));
+			this.filterData.setIssueTypes(queryHandler.getNamesOfJiraIssueTypesInQuery(clauses));
 		} else {
 			String finalQuery = queryHandler.getFinalQuery();
 			this.resultingQuery = finalQuery;
 			queryHandler.findDatesInQuery(finalQuery);
-			this.filterData.setIssueTypes(queryHandler.findIssueTypesInQuery(finalQuery));
+			this.filterData.setIssueTypes(queryHandler.getNamesOfJiraIssueTypesInQuery(finalQuery));
 		}
 		try {
 			SearchResults<Issue> results = queryHandler.getSearchService().search(this.user, parseResult.getQuery(),
@@ -154,11 +154,11 @@ public class GraphFiltering {
 			if (!clauses.isEmpty()) {
 				this.resultingClauses = parseResult.getQuery().getWhereClause().getClauses();
 				queryHandler.findDatesInQuery(clauses);
-				queryHandler.findIssueTypesInQuery(clauses);
+				queryHandler.getNamesOfJiraIssueTypesInQuery(clauses);
 			} else {
 				this.resultingQuery = queryHandler.getSearchService().getGeneratedJqlString(queryBuilder.buildQuery());
 				queryHandler.findDatesInQuery(this.resultingQuery);
-				queryHandler.findIssueTypesInQuery(this.resultingQuery);
+				queryHandler.getNamesOfJiraIssueTypesInQuery(this.resultingQuery);
 			}
 			try {
 				final SearchResults<Issue> results = queryHandler.getSearchService().search(this.user,
@@ -214,7 +214,8 @@ public class GraphFiltering {
 
 	public List<DecisionKnowledgeElement> getAllElementsMatchingQuery() {
 		List<DecisionKnowledgeElement> results = new ArrayList<>(this.getQueryResults());
-		List<Issue> jiraIssuesForProject = JiraSearchServiceHelper.getAllJiraIssuesForProject(user, filterData.getProjectKey());
+		List<Issue> jiraIssuesForProject = JiraSearchServiceHelper.getAllJiraIssuesForProject(user,
+				filterData.getProjectKey());
 		if (jiraIssuesForProject == null) {
 			return results;
 		}

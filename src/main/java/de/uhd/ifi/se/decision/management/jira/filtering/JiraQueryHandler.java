@@ -128,8 +128,8 @@ public class JiraQueryHandler {
 		}
 	}
 
-	public List<KnowledgeType> findIssueTypesInQuery(List<Clause> clauses) {
-		List<KnowledgeType> types = new ArrayList<>();
+	public List<String> getNamesOfJiraIssueTypesInQuery(List<Clause> clauses) {
+		List<String> types = new ArrayList<>();
 		for (Clause clause : clauses) {
 			if (!clause.getName().equals("issuetype")) {
 				continue;
@@ -138,34 +138,34 @@ public class JiraQueryHandler {
 			String issuetypes = clause.toString().substring(14, clause.toString().length() - 2);
 
 			if (clause.toString().contains("=")) {
-				types.add(KnowledgeType.getKnowledgeType(issuetypes.trim()));
+				types.add(issuetypes.trim());
 			} else {
 				String issueTypesCleared = issuetypes.replaceAll("[()]", "").replaceAll("\"", "");
 				String[] split = issueTypesCleared.split(",");
 				for (String issueType : split) {
-					types.add(KnowledgeType.getKnowledgeType(issueType.trim()));
+					types.add(issueType.trim());
 				}
 			}
 		}
 		return types;
 	}
 
-	public List<KnowledgeType> findIssueTypesInQuery(String query) {
+	public List<String> getNamesOfJiraIssueTypesInQuery(String query) {
 		if (!query.contains("issuetype")) {
 			return new ArrayList<>();
 		}
 		this.queryContainsIssueTypes = true;
-		List<KnowledgeType> types = new ArrayList<>();
+		List<String> types = new ArrayList<>();
 		if (query.contains("=")) {
 			String[] split = query.split("=");
-			types.add(KnowledgeType.getKnowledgeType(split[1].trim()));
+			types.add(split[1].trim());
 		} else {
 			String issueTypeSeparated = query.substring(12, query.length());
 			String issueTypeCleared = issueTypeSeparated.replaceAll("[()]", "").replaceAll("\"", "");
 			String[] split = issueTypeCleared.split(",");
 			for (String issueType : split) {
 				String cleandIssueType = issueType.replaceAll("[()]", "");
-				types.add(KnowledgeType.getKnowledgeType(cleandIssueType.trim()));
+				types.add(cleandIssueType.trim());
 			}
 		}
 		return types;

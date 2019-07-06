@@ -26,7 +26,7 @@ public class FilterSettingsImpl implements FilterSettings {
 	private List<DocumentationLocation> documentationLocations;
 	
 	// TODO Merge both lists
-	private List<KnowledgeType> issueTypes;
+	private List<String> issueTypes;
 	private List<IssueType> selectedJiraIssueTypes;
 
 	@XmlElement
@@ -171,11 +171,11 @@ public class FilterSettingsImpl implements FilterSettings {
 	}
 
 	@Override
-	public List<KnowledgeType> getIssueTypes() {
+	public List<String> getIssueTypes() {
 		if (issueTypes == null) {
 			issueTypes = new ArrayList<>();
 			for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
-				issueTypes.add(type);
+				issueTypes.add(type.name());
 			}
 		}
 		return issueTypes;
@@ -186,12 +186,12 @@ public class FilterSettingsImpl implements FilterSettings {
 	public void setIssueTypes(String[] issueTypesArray) {
 		issueTypes = new ArrayList<>();
 		for (String typeString : issueTypesArray) {
-			issueTypes.add(KnowledgeType.getKnowledgeType(typeString));
+			issueTypes.add(typeString);
 		}
 	}
 
 	@Override
-	public void setIssueTypes(List<KnowledgeType> types) {
+	public void setIssueTypes(List<String> types) {
 		issueTypes = types;
 	}
 
