@@ -1,15 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
-
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.issuetype.IssueType;
-
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+
+import com.atlassian.jira.issue.issuetype.IssueType;
+
+import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 
 /**
  * Interface for the filter settings. The filter settings cover the key of the

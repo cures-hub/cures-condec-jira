@@ -42,27 +42,11 @@ public class JiraQueryHandler {
 		this.filterSettings = new FilterSettingsImpl(projectKey, "", -1, -1);
 	}
 
-	private String jqlStringParser(String jql) {
-		return jql.replaceAll("%20", " ").replaceAll("%3D", "=").replaceAll("%2C", ",");
-	}
-
 	public ParseResult processParseResult(String query) {
 		this.filterSettings.setSearchString(query);
 		String filteredQuery = cropQuery();
 		if (queryIsPresetJiraFilter) {
-			long filterId = 0;
-			boolean filterIsNumberCoded = false;
-			try {
-				filterId = Long.parseLong(filteredQuery, 10);
-				filterIsNumberCoded = true;
-			} catch (NumberFormatException n) {
-				LOGGER.error("Produce results from query failed. Message: " + n.getMessage());
-			}
-			if (filterIsNumberCoded) {
-				finalQuery = JiraFilter.getQueryFromFilterId(filterId, this.filterSettings.getProjectKey());
-			} else {
-				finalQuery = JiraFilter.getQueryFromFilterName(filteredQuery);
-			}
+			finalQuery = JiraFilter.getQueryForFilter(filteredQuery, this.filterSettings.getProjectKey());
 		} else if (queryIsJQL) {
 			this.filterSettings.setSearchString(cropQuery());
 			this.filterSettings.setSearchString(jqlStringParser(this.filterSettings.getSearchString()));
@@ -76,23 +60,26 @@ public class JiraQueryHandler {
 		return searchService.parseQuery(this.user, finalQuery);
 	}
 
+	private String jqlStringParser(String jql) {
+		return jql.replaceAll("%20", " ").replaceAll("%3D", "=").replaceAll("%2C", ",");
+	}
+
 	private String cropQuery() {
+		String searchString = this.filterSettings.getSearchString();
 		String croppedQuery = "";
-		String[] split = this.filterSettings.getSearchString().split("§");
+		String[] split = searchString.split("§");
 		if (split.length > 1) {
-			this.filterSettings.setSearchString("?" + split[1]);
+			searchString = "?" + split[1];
 		}
-		if (this.filterSettings.getSearchString().indexOf("jql") == 1) {
+		if (searchString.indexOf("jql") == 1) {
 			this.queryIsJQL = true;
-		} else if (this.filterSettings.getSearchString().indexOf("filter") == 1) {
+		} else if (JiraFilter.containsJiraFilter(searchString)) {
 			this.queryIsPresetJiraFilter = true;
 		}
 		if (this.queryIsJQL) {
-			croppedQuery = this.filterSettings.getSearchString().substring(5,
-					this.filterSettings.getSearchString().length());
+			croppedQuery = searchString.substring(5, searchString.length());
 		} else if (this.queryIsPresetJiraFilter) {
-			croppedQuery = this.filterSettings.getSearchString().substring(8,
-					this.filterSettings.getSearchString().length());
+			croppedQuery = searchString.substring(8, searchString.length());
 		}
 		return croppedQuery;
 	}
@@ -138,8 +125,8 @@ public class JiraQueryHandler {
 			}
 		}
 		return types;
-	}	
-	
+	}
+
 	public void findDatesInQuery(List<Clause> clauses) {
 		for (Clause clause : clauses) {
 			if (!clause.getName().equals("created")) {

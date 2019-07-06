@@ -23,7 +23,7 @@ public enum JiraFilter {
 	UPDATEDRECENTLY(-7, "updated >= -1w"), // Updated recently;
 	RESOLVEDRECENTLY(-8, "resolutiondate >= -1w"), // Resolved recently
 	DONEISSUES(-9, "statusCategory = Done"); // Done issues
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraFilter.class);
 
 	private long id;
@@ -61,7 +61,7 @@ public enum JiraFilter {
 		return ALLISSUES;
 	}
 
-	public static String getQueryFromFilterName(String filterName) {
+	public static String getQueryForFilterName(String filterName) {
 		JiraFilter jiraFilter = ALLISSUES;
 		try {
 			jiraFilter = JiraFilter.valueOf(filterName.toUpperCase(Locale.ENGLISH));
@@ -71,7 +71,7 @@ public enum JiraFilter {
 		return jiraFilter.getJqlString();
 	}
 
-	public static String getQueryFromFilterId(long filterId, String projectKey) {
+	public static String getQueryForFilterId(long filterId, String projectKey) {
 		if (!isPresetJiraFilter(filterId)) {
 			return getQueryForCustomFilter(filterId);
 		}
@@ -89,5 +89,24 @@ public enum JiraFilter {
 		SearchRequestManager searchRequestManager = ComponentAccessor.getComponentOfType(SearchRequestManager.class);
 		SearchRequest filter = searchRequestManager.getSharedEntity(filterId);
 		return filter.getQuery().getQueryString();
+	}
+
+	public static String getQueryForFilter(String searchTerm, String projectKey) {
+		long filterId = 0;
+		boolean filterIsNumberCoded = false;
+		try {
+			filterId = Long.parseLong(searchTerm, 10);
+			filterIsNumberCoded = true;
+		} catch (NumberFormatException e) {
+			LOGGER.error("Produce results from query failed. Message: " + e.getMessage());
+		}
+		if (filterIsNumberCoded) {
+			return JiraFilter.getQueryForFilterId(filterId, projectKey);
+		}
+		return JiraFilter.getQueryForFilterName(searchTerm);
+	}
+	
+	public static boolean containsJiraFilter(String searchTerm) {
+		return searchTerm.indexOf("filter") == 1;
 	}
 }

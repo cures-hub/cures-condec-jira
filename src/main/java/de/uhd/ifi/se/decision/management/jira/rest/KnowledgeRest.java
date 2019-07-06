@@ -250,7 +250,6 @@ public class KnowledgeRest {
 
 	@Path("/getElements")
 	@GET
-
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getElements(@QueryParam("allTrees") boolean allTrees, @QueryParam("projectKey") String projectKey,
 			@QueryParam("query") String query, @QueryParam("elementKey") String elementKey,
