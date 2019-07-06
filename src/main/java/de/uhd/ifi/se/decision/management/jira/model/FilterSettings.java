@@ -6,7 +6,8 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import java.util.List;
 
 /**
- * Interface for the filter settings. The search string
+ * Interface for the filter settings. The filter settings cover the key of the selected project, the
+ * time frame, documentation locations, JIRA issue types, and decision knowledge types. The search string
  * can contain a JQL, a filter or a search string form the frontend.
  */
 @JsonDeserialize(as = FilterSettingsImpl.class)
@@ -26,7 +27,8 @@ public interface FilterSettings {
 	 * with settings for this plug-in, for example, whether the plug-in is activated
 	 * for the project.
 	 *
-	 * @param projectKey of the JIRA project.
+	 * @param projectKey
+	 *            of the JIRA project.
 	 */
 	void setProjectKey(String projectKey);
 
@@ -45,8 +47,7 @@ public interface FilterSettings {
 	void setSearchString(String searchString);
 
 	/**
-	 * Returns the earliest date when a element is created in milliseconds
-	 * as long.
+	 * Returns the earliest date when a element is created in milliseconds as long.
 	 *
 	 * @return date as long in milliseconds
 	 */
@@ -55,30 +56,28 @@ public interface FilterSettings {
 	/**
 	 * Set the earliest date when a element is created as a String.
 	 *
-	 * @param createdEarliest String with a long
+	 * @param createdEarliest
+	 *            String with a long
 	 */
 	void setCreatedEarliest(long createdEarliest);
 
 	/**
-	 * Returns the latest date when a element is created in milliseconds
-	 * as long.
+	 * Returns the latest date when a element is created in milliseconds as long.
 	 *
 	 * @return date as long in milliseconds
 	 */
 	long getCreatedLatest();
 
-
 	/**
 	 * Set the latest date when a element is created as a String.
 	 *
-	 * @param createdLatest String with a long
+	 * @param createdLatest
+	 *            String with a long
 	 */
 	void setCreatedLatest(long createdLatest);
 
-
 	/**
-	 * Returns a list of documentation locations where the data can
-	 * be saved.
+	 * Returns a list of documentation locations where the data can be saved.
 	 *
 	 * @return list of documentation locations
 	 */
@@ -87,7 +86,8 @@ public interface FilterSettings {
 	/**
 	 * Set the documentation locations where the data is stored
 	 *
-	 * @param documentationLocations whit the locations as string
+	 * @param documentationLocations
+	 *            whit the locations as string
 	 */
 	void setDocumentationLocation(String[] documentationLocations);
 
@@ -99,17 +99,17 @@ public interface FilterSettings {
 	List<KnowledgeType> getIssueTypes();
 
 	/**
-	 * Set the issue types that are used in the filter from the
-	 * issueTypeString to the knowledge type list.
+	 * Set the issue types that are used in the filter from the issueTypeString to
+	 * the knowledge type list.
 	 *
-	 * @param issueTypesArray from the json
+	 * @param issueTypesArray
+	 *            from the json
 	 */
 	void setIssueTypes(String[] issueTypesArray);
 
-
 	/**
-	 * Set the issuetypes that are used in the filter from a
-	 * list of Knowledge Types.
+	 * Set the issuetypes that are used in the filter from a list of Knowledge
+	 * Types.
 	 *
 	 * @param types
 	 */

@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.bc.issue.search.SearchService;
+import com.atlassian.jira.bc.issue.search.SearchService.ParseResult;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.search.SearchRequest;
 import com.atlassian.jira.issue.search.SearchRequestManager;
@@ -22,10 +23,11 @@ import com.atlassian.query.clause.Clause;
 
 public class QueryHandler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(QueryHandler.class);
-	private FilterSettings filterData;
+
+	private FilterSettings filterSettings;
 	private boolean queryIsJQL;
-	private boolean queryIsFilter;
-	private Boolean mergeFilterQueryWithProjectKey;
+	private boolean queryIsPresetJiraFilter;
+	private boolean mergeFilterQueryWithProjectKey;
 	private SearchService searchService;
 	private ApplicationUser user;
 	private boolean queryContainsCreationDate;
@@ -39,21 +41,21 @@ public class QueryHandler {
 		this.queryContainsCreationDate = false;
 		this.queryContainsIssueTypes = false;
 		this.finalQuery = "";
-		this.filterData = new FilterSettingsImpl(projectKey, "", -1, -1);
+		this.filterSettings = new FilterSettingsImpl(projectKey, "", -1, -1);
 	}
 
 	private void jqlStringParser() {
-		String jql = this.filterData.getSearchString();
+		String jql = this.filterSettings.getSearchString();
 		jql = jql.replaceAll("%20", " ");
 		jql = jql.replaceAll("%3D", "=");
 		jql = jql.replaceAll("%2C", ",");
-		this.filterData.setSearchString(jql);
+		this.filterSettings.setSearchString(jql);
 	}
 
-	public SearchService.ParseResult processParsResult(String query) {
-		this.filterData.setSearchString(query);
+	public ParseResult processParseResult(String query) {
+		this.filterSettings.setSearchString(query);
 		String filteredQuery = cropQuery();
-		if (queryIsFilter) {
+		if (queryIsPresetJiraFilter) {
 			long filterId = 0;
 			boolean filterIsNumberCoded = false;
 			try {
@@ -68,33 +70,35 @@ public class QueryHandler {
 				finalQuery = queryFromFilterString(filteredQuery);
 			}
 		} else if (queryIsJQL) {
-			this.filterData.setSearchString(cropQuery());
+			this.filterSettings.setSearchString(cropQuery());
 			jqlStringParser();
-			return searchService.parseQuery(this.user, this.filterData.getSearchString());
+			return searchService.parseQuery(this.user, this.filterSettings.getSearchString());
 		} else {
 			finalQuery = "type = null";
 		}
 		if (this.mergeFilterQueryWithProjectKey) {
-			finalQuery = "(" + finalQuery + ")AND( PROJECT=" + this.filterData.getProjectKey() + ")";
+			finalQuery = "(" + finalQuery + ")AND( PROJECT=" + this.filterSettings.getProjectKey() + ")";
 		}
 		return searchService.parseQuery(this.user, finalQuery);
 	}
 
 	private String cropQuery() {
 		String croppedQuery = "";
-		String[] split = this.filterData.getSearchString().split("§");
+		String[] split = this.filterSettings.getSearchString().split("§");
 		if (split.length > 1) {
-			this.filterData.setSearchString("?" + split[1]);
+			this.filterSettings.setSearchString("?" + split[1]);
 		}
-		if (this.filterData.getSearchString().indexOf("jql") == 1) {
+		if (this.filterSettings.getSearchString().indexOf("jql") == 1) {
 			this.queryIsJQL = true;
-		} else if (this.filterData.getSearchString().indexOf("filter") == 1) {
-			this.queryIsFilter = true;
+		} else if (this.filterSettings.getSearchString().indexOf("filter") == 1) {
+			this.queryIsPresetJiraFilter = true;
 		}
 		if (this.queryIsJQL) {
-			croppedQuery = this.filterData.getSearchString().substring(5, this.filterData.getSearchString().length());
-		} else if (this.queryIsFilter) {
-			croppedQuery = this.filterData.getSearchString().substring(8, this.filterData.getSearchString().length());
+			croppedQuery = this.filterSettings.getSearchString().substring(5,
+					this.filterSettings.getSearchString().length());
+		} else if (this.queryIsPresetJiraFilter) {
+			croppedQuery = this.filterSettings.getSearchString().substring(8,
+					this.filterSettings.getSearchString().length());
 		}
 		return croppedQuery;
 	}
@@ -103,41 +107,41 @@ public class QueryHandler {
 		String returnQuery;
 		if (id <= 0) {
 			switch ((int) id) {
-				case 0: // Any other than the preset Filters
-					returnQuery = "type != null";
-					break;
-				case -1: // My open issues
-					returnQuery = "assignee = currentUser() AND resolution = Unresolved";
-					break;
-				case -2: // Reported by me
-					returnQuery = "reporter = currentUser()";
-					break;
-				case -3: // Viewed recently
-					returnQuery = "issuekey IN issueHistory()";
-					break;
-				case -4: // All issues
-					returnQuery = "type != null";
-					break;
-				case -5: // Open issues
-					returnQuery = "resolution = Unresolved";
-					break;
-				case -6: // Created recently
-					returnQuery = "created >= -1w";
-					break;
-				case -7: // Resolved recently
-					returnQuery = "resolutiondate >= -1w";
-					break;
-				case -8: // Updated recently
-					returnQuery = "updated >= -1w";
-					break;
-				case -9: // Done issues
-					returnQuery = "statusCategory = Done";
-					break;
-				default:
-					returnQuery = "type != null";
-					break;
+			case 0: // Any other than the preset Filters
+				returnQuery = "type != null";
+				break;
+			case -1: // My open issues
+				returnQuery = "assignee = currentUser() AND resolution = Unresolved";
+				break;
+			case -2: // Reported by me
+				returnQuery = "reporter = currentUser()";
+				break;
+			case -3: // Viewed recently
+				returnQuery = "issuekey IN issueHistory()";
+				break;
+			case -4: // All issues
+				returnQuery = "type != null";
+				break;
+			case -5: // Open issues
+				returnQuery = "resolution = Unresolved";
+				break;
+			case -6: // Created recently
+				returnQuery = "created >= -1w";
+				break;
+			case -7: // Resolved recently
+				returnQuery = "resolutiondate >= -1w";
+				break;
+			case -8: // Updated recently
+				returnQuery = "updated >= -1w";
+				break;
+			case -9: // Done issues
+				returnQuery = "statusCategory = Done";
+				break;
+			default:
+				returnQuery = "type != null";
+				break;
 			}
-			returnQuery = "Project = " + this.filterData.getProjectKey() + " AND " + returnQuery;
+			returnQuery = "Project = " + this.filterSettings.getProjectKey() + " AND " + returnQuery;
 		} else {
 			SearchRequestManager srm = ComponentAccessor.getComponentOfType(SearchRequestManager.class);
 			SearchRequest filter = srm.getSharedEntity(id);
@@ -149,107 +153,110 @@ public class QueryHandler {
 	private String queryFromFilterString(String filterQuery) {
 		String returnQuery;
 		switch (filterQuery) {
-			case "myopenissues": // My open issues
-				returnQuery = "assignee = currentUser() AND resolution = Unresolved";
-				break;
-			case "reportedbyme": // Reported by me
-				returnQuery = "reporter = currentUser()";
-				break;
-			case "recentlyviewfinalQueryed": // Viewed recently
-				returnQuery = "issuekey IN issueHistory()";
-				break;
-			case "allissues": // All issues
-				returnQuery = "type != null";
-				break;
-			case "allopenissues": // Open issues
-				returnQuery = "resolution = Unresolved";
-				break;
-			case "addedrecently": // Created recently
-				returnQuery = "created >= -1w";
-				break;
-			case "updatedrecently": // Updated recently
-				returnQuery = "updated >= -1w";
-				break;
-			case "resolvedrecently": // Resolved recently
-				returnQuery = "resolutiondate >= -1w";
-				break;
-			case "doneissues": // Done issues
-				returnQuery = "statusCategory = Done";
-				break;
-			default:
-				returnQuery = "type != null";
-				break;
+		case "myopenissues": // My open issues
+			returnQuery = "assignee = currentUser() AND resolution = Unresolved";
+			break;
+		case "reportedbyme": // Reported by me
+			returnQuery = "reporter = currentUser()";
+			break;
+		case "recentlyviewfinalQueryed": // Viewed recently
+			returnQuery = "issuekey IN issueHistory()";
+			break;
+		case "allissues": // All issues
+			returnQuery = "type != null";
+			break;
+		case "allopenissues": // Open issues
+			returnQuery = "resolution = Unresolved";
+			break;
+		case "addedrecently": // Created recently
+			returnQuery = "created >= -1w";
+			break;
+		case "updatedrecently": // Updated recently
+			returnQuery = "updated >= -1w";
+			break;
+		case "resolvedrecently": // Resolved recently
+			returnQuery = "resolutiondate >= -1w";
+			break;
+		case "doneissues": // Done issues
+			returnQuery = "statusCategory = Done";
+			break;
+		default:
+			returnQuery = "type != null";
+			break;
 		}
 		return returnQuery;
 	}
 
 	public void findDatesInQuery(List<Clause> clauses) {
 		for (Clause clause : clauses) {
-			if (clause.getName().equals("created")) {
-				this.queryContainsCreationDate = true;
-				long todaysDate = new Date().getTime();
-				String time = clause.toString().substring(13, clause.toString().length() - 2);
-				if (clause.toString().contains(" <= ")) {
-					this.filterData.setCreatedLatest(findEndTime(todaysDate, time));
-				} else if (clause.toString().contains(" >= ")) {
-					this.filterData.setCreatedEarliest(findStartTime(todaysDate, time));
-				}
+			if (!clause.getName().equals("created")) {
+				continue;
+			}
+			this.queryContainsCreationDate = true;
+			long todaysDate = new Date().getTime();
+			String time = clause.toString().substring(13, clause.toString().length() - 2);
+			if (clause.toString().contains(" <= ")) {
+				this.filterSettings.setCreatedLatest(findEndTime(todaysDate, time));
+			} else if (clause.toString().contains(" >= ")) {
+				this.filterSettings.setCreatedEarliest(findStartTime(todaysDate, time));
 			}
 		}
 	}
 
 	public void findDatesInQuery(String query) {
-		if (query.contains("created")) {
-			this.queryContainsCreationDate = true;
-			long todaysDate = new Date().getTime();
-			String time = query.substring(11, query.length());
-			if (query.contains(" <= ")) {
-				this.filterData.setCreatedLatest(findEndTime(todaysDate, time));
-			} else if (query.contains(" >= ")) {
-				this.filterData.setCreatedEarliest(findStartTime(todaysDate, time));
-			}
+		if (!query.contains("created")) {
+			return;
 		}
-
+		this.queryContainsCreationDate = true;
+		long todaysDate = new Date().getTime();
+		String time = query.substring(11, query.length());
+		if (query.contains(" <= ")) {
+			this.filterSettings.setCreatedLatest(findEndTime(todaysDate, time));
+		} else if (query.contains(" >= ")) {
+			this.filterSettings.setCreatedEarliest(findStartTime(todaysDate, time));
+		}
 	}
 
 	public void findIssueTypesInQuery(List<Clause> clauses) {
 		for (Clause clause : clauses) {
-			if (clause.getName().equals("issuetype")) {
-				this.queryContainsIssueTypes = true;
-				String issuetypes = clause.toString().substring(14, clause.toString().length() - 2);
-				List<KnowledgeType> types = new ArrayList<>();
-				if (clause.toString().contains("=")) {
-					types.add(KnowledgeType.getKnowledgeType(issuetypes.trim()));
-				} else {
-					String issueTypesCleared = issuetypes.replaceAll("[()]", "").replaceAll("\"", "");
-					String[] split = issueTypesCleared.split(",");
-					for (String issueType : split) {
-						types.add(KnowledgeType.getKnowledgeType(issueType.trim()));
-					}
-				}
-				this.filterData.setIssueTypes(types);
+			if (!clause.getName().equals("issuetype")) {
+				continue;
 			}
+			this.queryContainsIssueTypes = true;
+			String issuetypes = clause.toString().substring(14, clause.toString().length() - 2);
+			List<KnowledgeType> types = new ArrayList<>();
+			if (clause.toString().contains("=")) {
+				types.add(KnowledgeType.getKnowledgeType(issuetypes.trim()));
+			} else {
+				String issueTypesCleared = issuetypes.replaceAll("[()]", "").replaceAll("\"", "");
+				String[] split = issueTypesCleared.split(",");
+				for (String issueType : split) {
+					types.add(KnowledgeType.getKnowledgeType(issueType.trim()));
+				}
+			}
+			this.filterSettings.setIssueTypes(types);
 		}
 	}
 
 	public void findIssueTypesInQuery(String query) {
-		if (query.contains("issuetype")) {
-			this.queryContainsIssueTypes = true;
-			List<KnowledgeType> types = new ArrayList<>();
-			if (query.contains("=")) {
-				String[] split = query.split("=");
-				types.add(KnowledgeType.getKnowledgeType(split[1].trim()));
-			} else {
-				String issueTypeSeparated = query.substring(12, query.length());
-				String issueTypeCleared = issueTypeSeparated.replaceAll("[()]", "").replaceAll("\"", "");
-				String[] split = issueTypeCleared.split(",");
-				for (String issueType : split) {
-					String cleandIssueType = issueType.replaceAll("[()]", "");
-					types.add(KnowledgeType.getKnowledgeType(cleandIssueType.trim()));
-				}
-			}
-			this.filterData.setIssueTypes(types);
+		if (!query.contains("issuetype")) {
+			return;
 		}
+		this.queryContainsIssueTypes = true;
+		List<KnowledgeType> types = new ArrayList<>();
+		if (query.contains("=")) {
+			String[] split = query.split("=");
+			types.add(KnowledgeType.getKnowledgeType(split[1].trim()));
+		} else {
+			String issueTypeSeparated = query.substring(12, query.length());
+			String issueTypeCleared = issueTypeSeparated.replaceAll("[()]", "").replaceAll("\"", "");
+			String[] split = issueTypeCleared.split(",");
+			for (String issueType : split) {
+				String cleandIssueType = issueType.replaceAll("[()]", "");
+				types.add(KnowledgeType.getKnowledgeType(cleandIssueType.trim()));
+			}
+		}
+		this.filterSettings.setIssueTypes(types);
 	}
 
 	private long findStartTime(long currentDate, String time) {
@@ -303,21 +310,21 @@ public class QueryHandler {
 	private long getTimeFactor(char factorAsALetter) {
 		long factor;
 		switch (factorAsALetter) {
-			case 'm':
-				factor = 60000;
-				break;
-			case 'h':
-				factor = 3600000;
-				break;
-			case 'd':
-				factor = 86400000;
-				break;
-			case 'w':
-				factor = 604800000;
-				break;
-			default:
-				factor = 1;
-				break;
+		case 'm':
+			factor = 60000;
+			break;
+		case 'h':
+			factor = 3600000;
+			break;
+		case 'd':
+			factor = 86400000;
+			break;
+		case 'w':
+			factor = 604800000;
+			break;
+		default:
+			factor = 1;
+			break;
 		}
 		return factor;
 	}
@@ -342,7 +349,7 @@ public class QueryHandler {
 		return this.finalQuery;
 	}
 
-	public FilterSettings getFilterData() {
-		return this.filterData;
+	public FilterSettings getFilterSettings() {
+		return this.filterSettings;
 	}
 }

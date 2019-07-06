@@ -13,6 +13,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.GraphFiltering;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
@@ -51,8 +52,9 @@ public class Treant {
 
 	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user) {
 		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
-			GraphFiltering filter = new GraphFiltering(new FilterSettingsImpl(projectKey, query), user, false);
-			filter.produceResultsFromQuery();
+			FilterSettings filterSettings = new FilterSettingsImpl(projectKey, query);
+			GraphFiltering filter = new GraphFiltering(filterSettings, user, false);
+			filter.getJiraIssuesFromQuery(filterSettings.getSearchString());
 			this.graph = new GraphImplFiltered(projectKey, elementKey, filter);
 		} else {
 			this.graph = new GraphImpl(projectKey, elementKey);

@@ -34,21 +34,21 @@ public class FilterDataProvider {
 		if ((filterData.getSearchString().matches("\\?jql=(.)+")) || (filterData.getSearchString().matches("\\?filter=(.)+"))) {
 			GraphFiltering filter = new GraphFiltering(filterData, user, false);
 			QueryHandler queryHandler = new QueryHandler(user, filterData.getProjectKey(), false);
-			filter.produceResultsFromQuery();
+			filter.getJiraIssuesFromQuery(filterData.getSearchString());
 			this.allIssueTypes = new ArrayList<>();
 			for (IssueType issueType : ComponentAccessor.getConstantsManager().getAllIssueTypeObjects()) {
 				this.allIssueTypes.add(issueType.getName());
 			}
-			if (!queryHandler.getFilterData().getIssueTypes().isEmpty()) {
+			if (!queryHandler.getFilterSettings().getIssueTypes().isEmpty()) {
 				this.issueTypesMatchingFilter = new ArrayList<>();
-				for(KnowledgeType type: queryHandler.getFilterData().getIssueTypes()){
+				for(KnowledgeType type: queryHandler.getFilterSettings().getIssueTypes()){
 					this.issueTypesMatchingFilter.add(type.toString());
 				}
 			} else {
 				this.issueTypesMatchingFilter = allIssueTypes;
 			}
-			this.startDate = queryHandler.getFilterData().getCreatedEarliest();
-			this.endDate = queryHandler.getFilterData().getCreatedLatest();
+			this.startDate = queryHandler.getFilterSettings().getCreatedEarliest();
+			this.endDate = queryHandler.getFilterSettings().getCreatedLatest();
 		} else {
 			this.allIssueTypes = new ArrayList<>();
 			this.issueTypesMatchingFilter = new ArrayList<>();

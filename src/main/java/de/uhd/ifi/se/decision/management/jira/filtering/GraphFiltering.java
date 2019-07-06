@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.bc.issue.search.SearchService;
+import com.atlassian.jira.bc.issue.search.SearchService.ParseResult;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.search.SearchException;
 import com.atlassian.jira.issue.search.SearchResults;
@@ -44,45 +45,48 @@ public class GraphFiltering {
 	public GraphFiltering(FilterSettings filterData, ApplicationUser user, boolean mergeFilterQueryWithProjectKey) {
 		this.filterData = filterData;
 		this.user = user;
-		this.queryResults = new ArrayList<>();
+		this.queryResults = new ArrayList<DecisionKnowledgeElement>();
 		this.queryHandler = new QueryHandler(user, filterData.getProjectKey(), mergeFilterQueryWithProjectKey);
 	}
 
-	public void produceResultsFromQuery() {
-		List<Issue> resultingIssues = new ArrayList<Issue>();
-		final SearchService.ParseResult parseResult = queryHandler.processParsResult(filterData.getSearchString());
-		if (parseResult.isValid()) {
-			List<Clause> clauses = parseResult.getQuery().getWhereClause().getClauses();
-
-			if (!clauses.isEmpty()) {
-				this.resultingClauses = parseResult.getQuery().getWhereClause().getClauses();
-				queryHandler.findDatesInQuery(clauses);
-				queryHandler.findIssueTypesInQuery(clauses);
-			} else {
-				this.resultingQuery = queryHandler.getFinalQuery();
-				queryHandler.findDatesInQuery(queryHandler.getFinalQuery());
-				queryHandler.findIssueTypesInQuery(queryHandler.getFinalQuery());
-			}
-			try {
-				SearchResults<Issue> results = queryHandler.getSearchService().search(this.user, parseResult.getQuery(),
-						PagerFilter.getUnlimitedFilter());
-				if (results != null) {
-					resultingIssues = results.getResults();
-				}
-
-			} catch (SearchException e) {
-				LOGGER.error("Produce results from query failed. Message: " + e.getMessage());
-				e.printStackTrace();
-			}
-		} else {
+	public List<Issue> getJiraIssuesFromQuery(String query) {
+		ParseResult parseResult = queryHandler.processParseResult(filterData.getSearchString());
+		if (!parseResult.isValid()) {
 			LOGGER.error(parseResult.getErrors().toString());
-		}
-		if (resultingIssues != null) {
-			for (Issue issue : resultingIssues) {
-				queryResults.add(new DecisionKnowledgeElementImpl(issue));
-			}
+			return new ArrayList<Issue>();
 		}
 
+		List<Issue> jiraIssues = new ArrayList<Issue>();
+		List<Clause> clauses = parseResult.getQuery().getWhereClause().getClauses();
+
+		if (!clauses.isEmpty()) {
+			this.resultingClauses = clauses;
+			queryHandler.findDatesInQuery(clauses);
+			queryHandler.findIssueTypesInQuery(clauses);
+		} else {
+			String finalQuery = queryHandler.getFinalQuery();
+			this.resultingQuery = finalQuery;
+			queryHandler.findDatesInQuery(finalQuery);
+			queryHandler.findIssueTypesInQuery(finalQuery);
+		}
+		try {
+			SearchResults<Issue> results = queryHandler.getSearchService().search(this.user, parseResult.getQuery(),
+					PagerFilter.getUnlimitedFilter());
+			if (results != null) {
+				jiraIssues = JiraSearchServiceHelper.getJiraIssues(results);
+			}
+		} catch (SearchException e) {
+			LOGGER.error("Produce results from query failed. Message: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		if (jiraIssues == null) {
+			return new ArrayList<Issue>();
+		}
+		for (Issue issue : jiraIssues) {
+			queryResults.add(new DecisionKnowledgeElementImpl(issue));
+		}
+		return jiraIssues;
 	}
 
 	public void produceResultsWithAdditionalFilters() {
@@ -185,11 +189,11 @@ public class GraphFiltering {
 			return true;
 		}
 		if (queryHandler.isQueryContainsCreationDate()) {
-			if (queryHandler.getFilterData().getCreatedEarliest() >= 0 && resultingQuery.contains("created")
+			if (queryHandler.getFilterSettings().getCreatedEarliest() >= 0 && resultingQuery.contains("created")
 					&& resultingQuery.contains(">=")) {
 				return true;
 			}
-			if (queryHandler.getFilterData().getCreatedLatest() >= 0 && resultingQuery.contains("created")
+			if (queryHandler.getFilterSettings().getCreatedLatest() >= 0 && resultingQuery.contains("created")
 					&& resultingQuery.contains("<=")) {
 				return true;
 			}
@@ -202,11 +206,11 @@ public class GraphFiltering {
 			return true;
 		}
 		if (queryHandler.isQueryContainsCreationDate()) {
-			if (queryHandler.getFilterData().getCreatedEarliest() >= 0 && clause.getName().equals("created")
+			if (queryHandler.getFilterSettings().getCreatedEarliest() >= 0 && clause.getName().equals("created")
 					&& clause.toString().contains(">=")) {
 				return true;
 			}
-			if (queryHandler.getFilterData().getCreatedLatest() >= 0 && clause.getName().equals("created")
+			if (queryHandler.getFilterSettings().getCreatedLatest() >= 0 && clause.getName().equals("created")
 					&& clause.toString().contains("<=")) {
 				return true;
 			}
@@ -234,21 +238,21 @@ public class GraphFiltering {
 
 	private boolean checkIfJiraTextMatchesFilter(DecisionKnowledgeElement element) {
 		if (queryHandler.isQueryContainsCreationDate()) {
-			if (queryHandler.getFilterData().getCreatedEarliest() > 0
-					&& (element).getCreated().getTime() < queryHandler.getFilterData().getCreatedEarliest()) {
+			if (queryHandler.getFilterSettings().getCreatedEarliest() > 0
+					&& (element).getCreated().getTime() < queryHandler.getFilterSettings().getCreatedEarliest()) {
 				return false;
 			}
-			if (queryHandler.getFilterData().getCreatedLatest() > 0
-					&& (element).getCreated().getTime() > queryHandler.getFilterData().getCreatedLatest()) {
+			if (queryHandler.getFilterSettings().getCreatedLatest() > 0
+					&& (element).getCreated().getTime() > queryHandler.getFilterSettings().getCreatedLatest()) {
 				return false;
 			}
 		}
 		if (queryHandler.isQueryContainsIssueTypes()) {
 			if (element.getType().equals(KnowledgeType.PRO) || element.getType().equals(KnowledgeType.CON)) {
-				if (!queryHandler.getFilterData().getIssueTypes().contains(KnowledgeType.ARGUMENT)) {
+				if (!queryHandler.getFilterSettings().getIssueTypes().contains(KnowledgeType.ARGUMENT)) {
 					return false;
 				}
-			} else if (!queryHandler.getFilterData().getIssueTypes().contains(element)) {
+			} else if (!queryHandler.getFilterSettings().getIssueTypes().contains(element)) {
 				return false;
 			}
 		}

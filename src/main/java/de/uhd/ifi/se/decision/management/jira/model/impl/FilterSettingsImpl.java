@@ -10,7 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
- * Model class for filter data
+ * Model class for the filter settings.
  */
 public class FilterSettingsImpl implements FilterSettings {
 
