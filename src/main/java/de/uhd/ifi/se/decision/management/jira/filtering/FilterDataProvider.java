@@ -33,41 +33,42 @@ public class FilterDataProvider {
 	private List<String> documentationLocations;
 
 	public FilterDataProvider(String projectKey, String query, ApplicationUser user) {
-		if ((query.matches("\\?jql=(.)+"))
-				|| (query.matches("\\?filter=(.)+"))) {
-			FilterSettings filterSettings = new FilterSettingsImpl(projectKey, query);
-			GraphFiltering filter = new GraphFiltering(filterSettings, user, false);
-			QueryHandler queryHandler = new QueryHandler(user, projectKey, false);
-			filter.getJiraIssuesFromQuery(query);
-			this.allIssueTypes = new ArrayList<>();
-			for (IssueType issueType : ComponentAccessor.getConstantsManager().getAllIssueTypeObjects()) {
-				this.allIssueTypes.add(issueType.getName());
-			}
-			if (!queryHandler.getFilterSettings().getIssueTypes().isEmpty()) {
-				this.issueTypesMatchingFilter = new ArrayList<>();
-				for (KnowledgeType type : queryHandler.getFilterSettings().getIssueTypes()) {
-					this.issueTypesMatchingFilter.add(type.toString());
-				}
-			} else {
-				this.issueTypesMatchingFilter = allIssueTypes;
-			}
-			this.startDate = queryHandler.getFilterSettings().getCreatedEarliest();
-			this.endDate = queryHandler.getFilterSettings().getCreatedLatest();
-		} else {
-			this.allIssueTypes = new ArrayList<>();
-			this.issueTypesMatchingFilter = new ArrayList<>();
-			for (IssueType issueType : ComponentAccessor.getConstantsManager().getAllIssueTypeObjects()) {
-				this.allIssueTypes.add(issueType.getName());
-				this.issueTypesMatchingFilter.add(issueType.getName());
-			}
-			this.startDate = -1;
-			this.endDate = -1;
+		this.allIssueTypes = new ArrayList<String>();
+		this.issueTypesMatchingFilter = new ArrayList<String>();
+		for (IssueType issueType : ComponentAccessor.getConstantsManager().getAllIssueTypeObjects()) {
+			this.allIssueTypes.add(issueType.getName());
+			this.issueTypesMatchingFilter.add(issueType.getName());
 		}
+
+		this.startDate = -1;
+		this.endDate = -1;
+
+		initFilterSettingsFromQuery(projectKey, query, user);
+
 		this.documentationLocations = new ArrayList<>();
 		DocumentationLocation[] locations = DocumentationLocation.values();
 		for (DocumentationLocation location : locations) {
 			this.documentationLocations.add(DocumentationLocation.getName(location));
 		}
+	}
+
+	public void initFilterSettingsFromQuery(String projectKey, String query, ApplicationUser user) {
+		if (!query.matches("\\?jql=(.)+") && !query.matches("\\?filter=(.)+")) {
+			return;
+		}
+		FilterSettings filterSettings = new FilterSettingsImpl(projectKey, query);
+		GraphFiltering filter = new GraphFiltering(filterSettings, user, false);
+		QueryHandler queryHandler = new QueryHandler(user, projectKey, false);
+		filter.getJiraIssuesFromQuery(query);
+
+		if (!queryHandler.getFilterSettings().getIssueTypes().isEmpty()) {
+			this.issueTypesMatchingFilter = new ArrayList<String>();
+			for (KnowledgeType type : queryHandler.getFilterSettings().getIssueTypes()) {
+				this.issueTypesMatchingFilter.add(type.toString());
+			}
+		}
+		this.startDate = queryHandler.getFilterSettings().getCreatedEarliest();
+		this.endDate = queryHandler.getFilterSettings().getCreatedLatest();
 	}
 
 	public List<String> getAllIssueTypes() {
