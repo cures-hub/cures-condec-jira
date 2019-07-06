@@ -31,11 +31,11 @@ import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterDataProvider;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
@@ -187,7 +187,8 @@ public class ViewRest {
 		}
 		if (filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created.")).build();
+					.entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
+					.build();
 		}
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST)
@@ -199,7 +200,8 @@ public class ViewRest {
 		VisDataProvider visDataProvider;
 		if (filterSettings.getIssueTypes().size() == 0 || (filterSettings.getDocumentationLocation().size() == 1
 				&& filterSettings.getDocumentationLocation().get(0).equals(DocumentationLocation.UNKNOWN))) {
-			visDataProvider = new VisDataProvider(projectKey, elementKey, false, filterSettings.getSearchString(), user);
+			visDataProvider = new VisDataProvider(projectKey, elementKey, false, filterSettings.getSearchString(),
+					user);
 		} else {
 			visDataProvider = new VisDataProvider(elementKey, false, user, filterSettings);
 		}
@@ -217,8 +219,9 @@ public class ViewRest {
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		String projectKey = getProjectKey(elementKey);
-		FilterDataProvider filterDataProvider = new FilterDataProvider(projectKey, searchTerm, user);
-		return Response.ok(filterDataProvider).build();
+		// FilterDataProvider filterDataProvider = new FilterDataProvider(projectKey,
+		// searchTerm, user);
+		return Response.ok(new FilterSettingsImpl(projectKey, searchTerm, user)).build();
 	}
 
 	private String getProjectKey(String elementKey) {

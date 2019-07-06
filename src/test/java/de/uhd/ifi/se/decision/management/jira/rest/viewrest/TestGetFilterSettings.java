@@ -2,6 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.rest.viewrest;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
@@ -14,9 +16,9 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterDataProvider;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
+import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.view.treant.TestTreant;
 import net.java.ao.EntityManager;
@@ -51,31 +53,36 @@ public class TestGetFilterSettings extends TestSetUpWithIssues {
 		Response filterSettingsResponse = viewRest.getFilterSettings(request, "", "TEST-12");
 		assertEquals(Response.Status.OK.getStatusCode(), filterSettingsResponse.getStatus());
 
-		FilterDataProvider filterSettings = (FilterDataProvider) filterSettingsResponse.getEntity();
+		FilterSettingsImpl filterSettings = (FilterSettingsImpl) filterSettingsResponse.getEntity();
 		assertEquals(6, filterSettings.getDocumentationLocations().size());
+		assertEquals(16, filterSettings.getAllIssueTypes().size());
 		assertEquals(16, filterSettings.getAllIssueTypes().size());
 		assertEquals(-1, filterSettings.getEndDate());
 		assertEquals(-1, filterSettings.getStartDate());
 	}
-	
+
 	@Test
 	public void testRequestFilledSearchTermJqlElementExistent() {
-		Response filterSettingsResponse = viewRest.getFilterSettings(request, "?jql=(.)+", "TEST-12");
+		Response filterSettingsResponse = viewRest.getFilterSettings(request, "?jql=issuetype%20%3D%20Issue",
+				"TEST-12");
 		assertEquals(Response.Status.OK.getStatusCode(), filterSettingsResponse.getStatus());
 
-		FilterDataProvider filterSettings = (FilterDataProvider) filterSettingsResponse.getEntity();
+		FilterSettingsImpl filterSettings = (FilterSettingsImpl) filterSettingsResponse.getEntity();
 		assertEquals(6, filterSettings.getDocumentationLocations().size());
 		assertEquals(16, filterSettings.getAllIssueTypes().size());
+		List<String> issueTypesMatchingFilter = filterSettings.getIssueTypesMatchingFilter();
+		assertEquals("Issue", issueTypesMatchingFilter.get(3));
+		assertEquals(4, issueTypesMatchingFilter.size());
 		assertEquals(-1, filterSettings.getEndDate());
 		assertEquals(-1, filterSettings.getStartDate());
 	}
-	
+
 	@Test
 	public void testRequestFilledSearchTermPresetJiraFilterElementExistent() {
 		Response filterSettingsResponse = viewRest.getFilterSettings(request, "?filter=allopenissues", "TEST-12");
 		assertEquals(Response.Status.OK.getStatusCode(), filterSettingsResponse.getStatus());
 
-		FilterDataProvider filterSettings = (FilterDataProvider) filterSettingsResponse.getEntity();
+		FilterSettingsImpl filterSettings = (FilterSettingsImpl) filterSettingsResponse.getEntity();
 		assertEquals(6, filterSettings.getDocumentationLocations().size());
 		assertEquals(16, filterSettings.getAllIssueTypes().size());
 		assertEquals(-1, filterSettings.getEndDate());

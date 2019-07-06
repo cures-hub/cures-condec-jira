@@ -137,7 +137,6 @@
 
 	function initFilter(issueKey, search) {
 		console.log("ConDecJiraIssueModule initFilter");
-		var checkedItems;
 		var issueTypeDropdown = document.getElementById("issuetype-dropdown");
 		var firstDatePicker = document.getElementById("created-after-picker");
 		var secondDatePicker = document.getElementById("created-before-picker");
@@ -146,7 +145,6 @@
 			var allIssueTypes = filterData.allIssueTypes;
 			var selectedIssueTypes = filterData.issueTypesMatchingFilter;
 			var documentationLocation = filterData.documentationLocations;
-			checkedItems = selectedIssueTypes;
 			issueTypeDropdown.innerHTML = "";
 
 			for (var index = 0; index < allIssueTypes.length; index++) {
