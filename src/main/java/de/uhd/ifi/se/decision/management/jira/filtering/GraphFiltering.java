@@ -20,7 +20,7 @@ import com.atlassian.query.clause.Clause;
 import com.atlassian.query.operator.Operator;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.FilterData;
+import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -29,7 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersisten
 public class GraphFiltering {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GraphFiltering.class);
 
-	private FilterData filterData;
+	private FilterSettings filterData;
 
 	private ApplicationUser user;
 	private List<DecisionKnowledgeElement> queryResults;
@@ -41,7 +41,7 @@ public class GraphFiltering {
 		return queryHandler;
 	}
 
-	public GraphFiltering(FilterData filterData, ApplicationUser user, boolean mergeFilterQueryWithProjectKey) {
+	public GraphFiltering(FilterSettings filterData, ApplicationUser user, boolean mergeFilterQueryWithProjectKey) {
 		this.filterData = filterData;
 		this.user = user;
 		this.queryResults = new ArrayList<>();
@@ -270,11 +270,11 @@ public class GraphFiltering {
 		return searchResult;
 	}
 
-	public FilterData getFilterData() {
+	public FilterSettings getFilterData() {
 		return this.filterData;
 	}
 
-	public void setFilterData(FilterData filterData) {
+	public void setFilterData(FilterSettings filterData) {
 		this.filterData = filterData;
 	}
 

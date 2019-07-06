@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.model.impl.FilterDataImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -10,8 +10,8 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 
-public class TestFilterData extends TestSetUpWithIssues {
-	private FilterData filterData;
+public class TestFilterSettings extends TestSetUpWithIssues {
+	private FilterSettings filterData;
 	private String[] knowledgeTypesStringArray;
 	private String[] doc;
 	private String searchString;
@@ -22,7 +22,7 @@ public class TestFilterData extends TestSetUpWithIssues {
 		initialization();
 		createDate = System.currentTimeMillis();
 		searchString = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
-		filterData = new FilterDataImpl("TEST", searchString, createDate - 100, createDate);
+		filterData = new FilterSettingsImpl("TEST", searchString, createDate - 100, createDate);
 		knowledgeTypesStringArray = new String[KnowledgeType.toList().size()];
 		List<String> typeList = KnowledgeType.toList();
 		for (int i = 0; i < typeList.size(); i++) {
@@ -39,30 +39,30 @@ public class TestFilterData extends TestSetUpWithIssues {
 
 	@Test
 	public void testEmptyConstructor() {
-		assertNotNull(new FilterDataImpl());
+		assertNotNull(new FilterSettingsImpl());
 	}
 
 	@Test
 	public void testKeySearchConstructor() {
-		FilterData data = new FilterDataImpl("TEST", "search string");
+		FilterSettings data = new FilterSettingsImpl("TEST", "search string");
 		assertNotNull(data);
 	}
 
 	@Test
 	public void testKeySearchTimeConstructor() {
-		FilterData data = new FilterDataImpl("TEST", "search string", System.currentTimeMillis() - 100, System.currentTimeMillis());
+		FilterSettings data = new FilterSettingsImpl("TEST", "search string", System.currentTimeMillis() - 100, System.currentTimeMillis());
 		assertNotNull(data);
 	}
 
 	@Test
 	public void testKeySearchTimeLocationConstructor() {
-		FilterData data = new FilterDataImpl("TEST", "search string", System.currentTimeMillis() - 100, System.currentTimeMillis(), doc);
+		FilterSettings data = new FilterSettingsImpl("TEST", "search string", System.currentTimeMillis() - 100, System.currentTimeMillis(), doc);
 		assertNotNull(data);
 	}
 
 	@Test
 	public void testKeySearchTimeLocationTypeConstructor() {
-		FilterData data = new FilterDataImpl("TEST", "search string", System.currentTimeMillis() - 100, System.currentTimeMillis(), doc, knowledgeTypesStringArray);
+		FilterSettings data = new FilterSettingsImpl("TEST", "search string", System.currentTimeMillis() - 100, System.currentTimeMillis(), doc, knowledgeTypesStringArray);
 		assertNotNull(data);
 	}
 

@@ -3,9 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.FilterData;
+import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
-import de.uhd.ifi.se.decision.management.jira.model.impl.FilterDataImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
 import org.slf4j.Logger;
@@ -20,7 +20,7 @@ import java.util.List;
 public class FilterExtractor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilterExtractor.class);
 	private ApplicationUser user;
-	private FilterData filterData;
+	private FilterSettings filterData;
 	private List<DecisionKnowledgeElement> decisionKnowledgeElements;
 
 	public FilterExtractor(String projectKey, ApplicationUser user, String filterString) {
@@ -36,7 +36,7 @@ public class FilterExtractor {
 			LOGGER.error("User is null");
 			return;
 		}
-		this.filterData = new FilterDataImpl(projectKey, filterString);
+		this.filterData = new FilterSettingsImpl(projectKey, filterString);
 		this.user = user;
 		GraphFiltering filter;
 		if (!(filterString.matches("\\?jql=(.)+")) || (filterString.matches("\\?filter=(.)+"))) {
@@ -50,7 +50,7 @@ public class FilterExtractor {
 		}
 	}
 
-	public FilterExtractor(ApplicationUser user, FilterData filterData) {
+	public FilterExtractor(ApplicationUser user, FilterSettings filterData) {
 		if (filterData == null) {
 			LOGGER.error("Filter data is null");
 			return;
@@ -84,7 +84,7 @@ public class FilterExtractor {
 	 * Treant and Treeview filter
 	 */
 
-	private static List<DecisionKnowledgeElement> getElementsInGraph(ApplicationUser user, FilterData filterData, String elementKey) {
+	private static List<DecisionKnowledgeElement> getElementsInGraph(ApplicationUser user, FilterSettings filterData, String elementKey) {
 		Graph graph;
 		if ((filterData.getSearchString().matches("\\?jql=(.)+")) || (filterData.getSearchString().matches("\\?filter=(.)+"))) {
 			GraphFiltering filter = new GraphFiltering(filterData, user, false);

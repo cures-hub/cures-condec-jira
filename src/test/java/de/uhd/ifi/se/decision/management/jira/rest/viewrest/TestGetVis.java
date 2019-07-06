@@ -8,9 +8,9 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.FilterData;
+import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.FilterDataImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.view.treant.TestTreant;
 import net.java.ao.EntityManager;
@@ -33,7 +33,7 @@ public class TestGetVis extends TestSetUpWithIssues {
 
 	private ViewRest viewRest;
 	private EntityManager entityManager;
-	private FilterData filterData;
+	private FilterSettings filterData;
 	protected HttpServletRequest request;
 
 	private static final String INVALID_PROJECTKEY = "Decision knowledge elements cannot be shown since project key is invalid.";
@@ -48,7 +48,7 @@ public class TestGetVis extends TestSetUpWithIssues {
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockUserManager());
 		request = new MockHttpServletRequest();
 		String jql = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
-		filterData = new FilterDataImpl("TEST", jql, System.currentTimeMillis() - 100, System.currentTimeMillis());
+		filterData = new FilterSettingsImpl("TEST", jql, System.currentTimeMillis() - 100, System.currentTimeMillis());
 		String[] ktypes = new String[KnowledgeType.toList().size()];
 		List<String> typeList = KnowledgeType.toList();
 		for (int i = 0; i < typeList.size(); i++) {

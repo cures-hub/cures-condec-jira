@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
+import javax.annotation.Nonnull;
+
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.search.SearchContext;
@@ -14,16 +16,16 @@ import com.atlassian.query.Query;
 import com.atlassian.query.QueryImpl;
 import com.atlassian.query.clause.TerminalClauseImpl;
 
-import javax.annotation.Nonnull;
-
 public class MockSearchService implements SearchService {
 	@Override
-	public SearchResults<Issue> search(ApplicationUser applicationUser, Query query, PagerFilter pagerFilter) throws SearchException {
+	public SearchResults<Issue> search(ApplicationUser applicationUser, Query query, PagerFilter pagerFilter)
+			throws SearchException {
 		return null;
 	}
 
 	@Override
-	public SearchResults<Issue> searchOverrideSecurity(ApplicationUser applicationUser, Query query, PagerFilter pagerFilter) throws SearchException {
+	public SearchResults<Issue> searchOverrideSecurity(ApplicationUser applicationUser, Query query,
+			PagerFilter pagerFilter) throws SearchException {
 		return null;
 	}
 
@@ -44,13 +46,15 @@ public class MockSearchService implements SearchService {
 
 	@Nonnull
 	@Override
-	public String getIssueSearchPath(ApplicationUser applicationUser, @Nonnull IssueSearchParameters issueSearchParameters) {
+	public String getIssueSearchPath(ApplicationUser applicationUser,
+			@Nonnull IssueSearchParameters issueSearchParameters) {
 		return null;
 	}
 
 	@Override
 	public ParseResult parseQuery(ApplicationUser applicationUser, String s) {
-		ParseResult result = new ParseResult( new QueryImpl(new TerminalClauseImpl("Test", (long)21323),s),new MessageSetImpl());
+		ParseResult result = new ParseResult(new QueryImpl(new TerminalClauseImpl("Test", (long) 21323), s),
+				new MessageSetImpl());
 		return result;
 	}
 

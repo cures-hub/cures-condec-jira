@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.model.FilterData;
+import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.FilterDataImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +22,7 @@ import com.atlassian.query.clause.Clause;
 
 public class QueryHandler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(QueryHandler.class);
-	private FilterData filterData;
+	private FilterSettings filterData;
 	private boolean queryIsJQL;
 	private boolean queryIsFilter;
 	private Boolean mergeFilterQueryWithProjectKey;
@@ -39,7 +39,7 @@ public class QueryHandler {
 		this.queryContainsCreationDate = false;
 		this.queryContainsIssueTypes = false;
 		this.finalQuery = "";
-		this.filterData = new FilterDataImpl(projectKey, "", -1, -1);
+		this.filterData = new FilterSettingsImpl(projectKey, "", -1, -1);
 	}
 
 	private void jqlStringParser() {
@@ -342,7 +342,7 @@ public class QueryHandler {
 		return this.finalQuery;
 	}
 
-	public FilterData getFilterData() {
+	public FilterSettings getFilterData() {
 		return this.filterData;
 	}
 }

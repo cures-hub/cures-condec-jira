@@ -1,17 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import de.uhd.ifi.se.decision.management.jira.model.impl.FilterDataImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import java.util.List;
 
 /**
- * Interface for the filter settings. The filter data
- * is from the filter in the views from the ConDec Plugin. The search string
+ * Interface for the filter settings. The search string
  * can contain a JQL, a filter or a search string form the frontend.
  */
-@JsonDeserialize(as = FilterDataImpl.class)
-public interface FilterData {
+@JsonDeserialize(as = FilterSettingsImpl.class)
+public interface FilterSettings {
 
 	/**
 	 * Get the key of the project. The project is a JIRA project that is extended
@@ -88,9 +87,9 @@ public interface FilterData {
 	/**
 	 * Set the documentation locations where the data is stored
 	 *
-	 * @param documentationLocationArray whit the locations as string
+	 * @param documentationLocations whit the locations as string
 	 */
-	void setDocumentationLocation(String[] documentationLocationArray);
+	void setDocumentationLocation(String[] documentationLocations);
 
 	/**
 	 * Gets the selected knowledge types from the filter

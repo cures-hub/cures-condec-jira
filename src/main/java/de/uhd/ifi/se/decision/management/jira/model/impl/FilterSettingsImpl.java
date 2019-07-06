@@ -6,13 +6,13 @@ import java.util.List;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.FilterData;
+import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
  * Model class for filter data
  */
-public class FilterDataImpl implements FilterData {
+public class FilterSettingsImpl implements FilterSettings {
 
 	private String projectKey;
 	private String searchString;
@@ -21,29 +21,29 @@ public class FilterDataImpl implements FilterData {
 	private List<DocumentationLocation> documentationLocations;
 	private List<KnowledgeType> issueTypes;
 
-	public FilterDataImpl() {
+	public FilterSettingsImpl() {
 		projectKey = "";
 		searchString = "";
 	}
 
-	public FilterDataImpl(String projectKey, String searchString) {
+	public FilterSettingsImpl(String projectKey, String searchString) {
 		this.projectKey = projectKey;
 		this.searchString = searchString;
 	}
 
-	public FilterDataImpl(String projectKey, String searchString, long createdEarliest, long createdLatest) {
+	public FilterSettingsImpl(String projectKey, String searchString, long createdEarliest, long createdLatest) {
 		this(projectKey, searchString);
 		this.createdEarliest = createdEarliest;
 		this.createdLatest = createdLatest;
 	}
 
-	public FilterDataImpl(String projectKey, String searchString, long createdEarliest, long createdLatest,
+	public FilterSettingsImpl(String projectKey, String searchString, long createdEarliest, long createdLatest,
 			String[] documentationLocations) {
 		this(projectKey, searchString, createdEarliest, createdLatest);
 		this.setDocumentationLocation(documentationLocations);
 	}
 
-	public FilterDataImpl(String projectKey, String searchString, long createdEarliest, long createdLatest,
+	public FilterSettingsImpl(String projectKey, String searchString, long createdEarliest, long createdLatest,
 			String[] documentationLocations, String[] knowledgeTypes) {
 		this(projectKey, searchString, createdEarliest, createdLatest);
 		this.setDocumentationLocation(documentationLocations);

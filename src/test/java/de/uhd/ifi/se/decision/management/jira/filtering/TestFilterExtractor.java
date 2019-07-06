@@ -4,9 +4,9 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.FilterData;
+import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.FilterDataImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,14 +20,14 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 	private ApplicationUser user;
 	private String jql;
 	private FilterExtractor filterExtractor;
-	private FilterData data;
+	private FilterSettings data;
 
 	@Before
 	public void setUp() {
 		initialization();
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		jql = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
-		data = new FilterDataImpl("TEST", jql, System.currentTimeMillis() - 100, System.currentTimeMillis());
+		data = new FilterSettingsImpl("TEST", jql, System.currentTimeMillis() - 100, System.currentTimeMillis());
 		String[] ktypes = new String[KnowledgeType.toList().size()];
 		List<String> typeList = KnowledgeType.toList();
 		for (int i = 0; i < typeList.size(); i++) {
@@ -103,13 +103,13 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 
 	@Test
 	public void testConstructorFilterOwnNullProject() {
-		FilterExtractor extractor = new FilterExtractor(null, (FilterData) null);
+		FilterExtractor extractor = new FilterExtractor(null, (FilterSettings) null);
 		assertNull(extractor.getFilteredDecisions());
 	}
 
 	@Test
 	public void testConstructorFilterOwnNullSearch() {
-		FilterExtractor extractor = new FilterExtractor(user, (FilterData) null);
+		FilterExtractor extractor = new FilterExtractor(user, (FilterSettings) null);
 		assertNull(extractor.getFilteredDecisions());
 	}
 

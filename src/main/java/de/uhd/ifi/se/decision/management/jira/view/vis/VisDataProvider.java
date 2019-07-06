@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.FilterData;
+import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class VisDataProvider {
 
 	}
 
-	public VisDataProvider(String elementKey, boolean isHyperlinked, ApplicationUser user, FilterData filterData) {
+	public VisDataProvider(String elementKey, boolean isHyperlinked, ApplicationUser user, FilterSettings filterData) {
 		this.projectKey = filterData.getProjectKey();
 		this.filterExtractor = new FilterExtractor(user,filterData);
 		decisionKnowledgeElements = filterExtractor.getFilteredDecisions();

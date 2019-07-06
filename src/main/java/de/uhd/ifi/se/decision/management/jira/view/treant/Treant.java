@@ -15,7 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.GraphFiltering;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.FilterDataImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
 
@@ -51,7 +51,7 @@ public class Treant {
 
 	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user) {
 		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
-			GraphFiltering filter = new GraphFiltering(new FilterDataImpl(projectKey, query), user, false);
+			GraphFiltering filter = new GraphFiltering(new FilterSettingsImpl(projectKey, query), user, false);
 			filter.produceResultsFromQuery();
 			this.graph = new GraphImplFiltered(projectKey, elementKey, filter);
 		} else {

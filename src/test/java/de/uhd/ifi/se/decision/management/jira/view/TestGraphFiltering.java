@@ -1,12 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.view;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import javax.ejb.CreateException;
 
-import de.uhd.ifi.se.decision.management.jira.model.FilterData;
-import de.uhd.ifi.se.decision.management.jira.model.impl.FilterDataImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,11 +18,12 @@ import de.uhd.ifi.se.decision.management.jira.filtering.GraphFiltering;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
-import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
@@ -44,13 +42,13 @@ public class TestGraphFiltering extends TestSetUpWithIssues {
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
 		element.setProject(new DecisionKnowledgeProjectImpl("Test"));
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
-		FilterData filterData = new FilterDataImpl(element.getProject().getProjectKey(), "");
+		FilterSettings filterData = new FilterSettingsImpl(element.getProject().getProjectKey(), "");
 		graphFiltering = new GraphFiltering(filterData, user, false);
 	}
 
 	@Test
 	public void testConstructor() {
-		FilterData filterData = new FilterDataImpl(element.getProject().getProjectKey(),
+		FilterSettings filterData = new FilterSettingsImpl(element.getProject().getProjectKey(),
 				"?jql= Project = " + element.getProject().getProjectKey() + " AND type!=null");
 		GraphFiltering filter = new GraphFiltering(filterData, user, false);
 		assertNotNull(filter);
