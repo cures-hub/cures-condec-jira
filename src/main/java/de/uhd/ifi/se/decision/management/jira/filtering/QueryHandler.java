@@ -7,19 +7,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.issue.search.SearchService.ParseResult;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.search.SearchRequest;
-import com.atlassian.jira.issue.search.SearchRequestManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.query.clause.Clause;
+
+import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 
 public class QueryHandler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(QueryHandler.class);
@@ -65,9 +64,9 @@ public class QueryHandler {
 				LOGGER.error("Produce results from query failed. Message: " + n.getMessage());
 			}
 			if (filterIsNumberCoded) {
-				finalQuery = queryFromFilterId(filterId);
+				finalQuery = JiraFilter.getQueryFromFilterId(filterId, this.filterSettings.getProjectKey());
 			} else {
-				finalQuery = JiraFilter.getQueryFromPresetFilter(filteredQuery);
+				finalQuery = JiraFilter.getQueryFromFilterName(filteredQuery);
 			}
 		} else if (queryIsJQL) {
 			this.filterSettings.setSearchString(cropQuery());
@@ -101,53 +100,6 @@ public class QueryHandler {
 					this.filterSettings.getSearchString().length());
 		}
 		return croppedQuery;
-	}
-
-	private String queryFromFilterId(long id) {
-		String returnQuery;
-		if (id <= 0) {
-			switch ((int) id) {
-			case 0: // Any other than the preset Filters
-				returnQuery = "type != null";
-				break;
-			case -1: // My open issues
-				returnQuery = "assignee = currentUser() AND resolution = Unresolved";
-				break;
-			case -2: // Reported by me
-				returnQuery = "reporter = currentUser()";
-				break;
-			case -3: // Viewed recently
-				returnQuery = "issuekey IN issueHistory()";
-				break;
-			case -4: // All issues
-				returnQuery = "type != null";
-				break;
-			case -5: // Open issues
-				returnQuery = "resolution = Unresolved";
-				break;
-			case -6: // Created recently
-				returnQuery = "created >= -1w";
-				break;
-			case -7: // Resolved recently
-				returnQuery = "resolutiondate >= -1w";
-				break;
-			case -8: // Updated recently
-				returnQuery = "updated >= -1w";
-				break;
-			case -9: // Done issues
-				returnQuery = "statusCategory = Done";
-				break;
-			default:
-				returnQuery = "type != null";
-				break;
-			}
-			returnQuery = "Project = " + this.filterSettings.getProjectKey() + " AND " + returnQuery;
-		} else {
-			SearchRequestManager srm = ComponentAccessor.getComponentOfType(SearchRequestManager.class);
-			SearchRequest filter = srm.getSharedEntity(id);
-			returnQuery = filter.getQuery().getQueryString();
-		}
-		return returnQuery;
 	}
 
 	public void findDatesInQuery(List<Clause> clauses) {

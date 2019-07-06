@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 
 public class TestFilterSettings extends TestSetUpWithIssues {
-	private FilterSettings filterData;
+	private FilterSettings filterSettings;
 	private String[] knowledgeTypesStringArray;
 	private String[] doc;
 	private String searchString;
@@ -24,7 +24,7 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 		initialization();
 		createDate = System.currentTimeMillis();
 		searchString = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
-		filterData = new FilterSettingsImpl("TEST", searchString, createDate - 100, createDate);
+		filterSettings = new FilterSettingsImpl("TEST", searchString, createDate - 100, createDate);
 		knowledgeTypesStringArray = new String[KnowledgeType.toList().size()];
 		List<String> typeList = KnowledgeType.toList();
 		for (int i = 0; i < typeList.size(); i++) {
@@ -35,8 +35,8 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 		for (int i = 0; i < docList.size(); i++) {
 			doc[i] = docList.get(i);
 		}
-		filterData.setIssueTypes(knowledgeTypesStringArray);
-		filterData.setDocumentationLocations(doc);
+		filterSettings.setIssueTypes(knowledgeTypesStringArray);
+		filterSettings.setDocumentationLocations(doc);
 	}
 
 	@Test
@@ -73,52 +73,52 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 
 	@Test
 	public void testGetProjectKey() {
-		assertEquals(filterData.getProjectKey(), "TEST");
+		assertEquals(filterSettings.getProjectKey(), "TEST");
 	}
 
 	@Test
 	public void testSetProjectKey() {
-		filterData.setProjectKey("NEWTEST");
-		assertEquals(filterData.getProjectKey(), "NEWTEST");
+		filterSettings.setProjectKey("NEWTEST");
+		assertEquals(filterSettings.getProjectKey(), "NEWTEST");
 	}
 
 	@Test
 	public void testGetSearchString() {
-		assertEquals(filterData.getSearchString(), searchString);
+		assertEquals(filterSettings.getSearchString(), searchString);
 	}
 
 	@Test
 	public void testSetSearchString() {
-		filterData.setSearchString(filterData.getSearchString() + "TEST ENDING");
-		assertEquals(filterData.getSearchString(), searchString + "TEST ENDING");
+		filterSettings.setSearchString(filterSettings.getSearchString() + "TEST ENDING");
+		assertEquals(filterSettings.getSearchString(), searchString + "TEST ENDING");
 	}
 
 	@Test
 	public void testGetCreatedEarliest() {
-		assertEquals(createDate - 100, filterData.getCreatedEarliest(), 0.0);
+		assertEquals(createDate - 100, filterSettings.getCreatedEarliest(), 0.0);
 	}
 
 	@Test
 	public void testSetCreatedEarliest() {
-		filterData.setCreatedEarliest(createDate - 50);
-		assertEquals(createDate - 50, filterData.getCreatedEarliest(), 0.0);
+		filterSettings.setCreatedEarliest(createDate - 50);
+		assertEquals(createDate - 50, filterSettings.getCreatedEarliest(), 0.0);
 	}
 
 	@Test
 	public void testGetCreatedLatest() {
-		assertEquals(createDate, filterData.getCreatedLatest(), 0.0);
+		assertEquals(createDate, filterSettings.getCreatedLatest(), 0.0);
 	}
 
 	@Test
 	public void testSetCreatedLatest() {
-		filterData.setCreatedLatest(createDate + 10);
-		assertEquals(createDate + 10, filterData.getCreatedLatest(), 0.0);
+		filterSettings.setCreatedLatest(createDate + 10);
+		assertEquals(createDate + 10, filterSettings.getCreatedLatest(), 0.0);
 	}
 
 	@Test
 	public void testGetDocumentationLocation() {
 		for (String location : doc) {
-			assertTrue(filterData.getDocumentationLocations()
+			assertTrue(filterSettings.getDocumentationLocations()
 					.contains(DocumentationLocation.getDocumentationLocationFromString(location)));
 		}
 	}
@@ -135,9 +135,9 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 			}
 			position++;
 		}
-		filterData.setIssueTypes(newLocations);
+		filterSettings.setIssueTypes(newLocations);
 		for (String location : newLocations) {
-			assertTrue(filterData.getDocumentationLocations()
+			assertTrue(filterSettings.getDocumentationLocations()
 					.contains(DocumentationLocation.getDocumentationLocationFromString(location)));
 		}
 	}
@@ -145,7 +145,7 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 	@Test
 	public void testGetIssueTypes() {
 		for (String type : knowledgeTypesStringArray) {
-			assertTrue(filterData.getIssueTypes().contains(KnowledgeType.getKnowledgeType(type)));
+			assertTrue(filterSettings.getIssueTypes().contains(KnowledgeType.getKnowledgeType(type)));
 		}
 	}
 
@@ -161,9 +161,9 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 			}
 			position++;
 		}
-		filterData.setIssueTypes(newIssueTypes);
+		filterSettings.setIssueTypes(newIssueTypes);
 		for (String type : newIssueTypes) {
-			assertTrue(filterData.getIssueTypes().contains(KnowledgeType.getKnowledgeType(type)));
+			assertTrue(filterSettings.getIssueTypes().contains(KnowledgeType.getKnowledgeType(type)));
 		}
 	}
 }

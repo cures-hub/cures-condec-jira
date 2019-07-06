@@ -1,23 +1,29 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.search.SearchRequest;
+import com.atlassian.jira.issue.search.SearchRequestManager;
+
 /**
  * Type of preset filters in JIRA.
  */
 public enum JiraFilter {
 
-	MYOPENISSUES("assignee = currentUser() AND resolution = Unresolved"), // My open issues
-	REPORTEDBYME("reporter = currentUser()"), // Reported by me
-	RECENTLYVIEWFINALQUERYED("issuekey IN issueHistory()"), // Viewed recently
-	ALLISSUES("type != null"), // All issues (default)
-	ALLOPENISSUES("resolution = Unresolved"), // Open issues
-	ADDEDRECENTLY("created >= -1w"), // Created recently
-	UPDATEDRECENTLY("updated >= -1w"), // Updated recently;
-	RESOLVEDRECENTLY("resolutiondate >= -1w"), // Resolved recently
-	DONEISSUES("statusCategory = Done"); // Done issues
+	MYOPENISSUES(-1, "assignee = currentUser() AND resolution = Unresolved"), // My open issues
+	REPORTEDBYME(-2, "reporter = currentUser()"), // Reported by me
+	RECENTLYVIEWFINALQUERYED(-3, "issuekey IN issueHistory()"), // Viewed recently
+	ALLISSUES(-4, "type != null"), // All issues (default)
+	ALLOPENISSUES(-5, "resolution = Unresolved"), // Open issues
+	ADDEDRECENTLY(-6, "created >= -1w"), // Created recently
+	UPDATEDRECENTLY(-7, "updated >= -1w"), // Updated recently;
+	RESOLVEDRECENTLY(-8, "resolutiondate >= -1w"), // Resolved recently
+	DONEISSUES(-9, "statusCategory = Done"); // Done issues
 
+	private long id;
 	private String jqlString;
 
-	private JiraFilter(String jqlString) {
+	private JiraFilter(long id, String jqlString) {
+		this.id = id;
 		this.jqlString = jqlString;
 	}
 
@@ -30,11 +36,41 @@ public enum JiraFilter {
 		return this.jqlString;
 	}
 
-	public static String getQueryFromPresetFilter(String filterQuery) {
-		JiraFilter jiraFilter = JiraFilter.valueOf(filterQuery);
+	/**
+	 * Returns the number of the JIRA filter.
+	 *
+	 * @return number of the JIRA filter.
+	 */
+	public long getId() {
+		return this.id;
+	}
+	
+	public static JiraFilter valueOf(long id) {
+		for (JiraFilter jiraFilter : values()) {
+			if (jiraFilter.id == id) {
+				return jiraFilter;
+			}
+		}
+		return ALLISSUES;
+	}
+
+	public static String getQueryFromFilterName(String filterName) {
+		JiraFilter jiraFilter = JiraFilter.valueOf(filterName);
 		if (jiraFilter == null) {
 			jiraFilter = ALLISSUES;
 		}
 		return jiraFilter.getJqlString();
+	}	
+
+	public static String getQueryFromFilterId(long filterId, String projectKey) {
+		if (filterId > 0) {
+			SearchRequestManager srm = ComponentAccessor.getComponentOfType(SearchRequestManager.class);
+			SearchRequest filter = srm.getSharedEntity(filterId);
+			return filter.getQuery().getQueryString();
+		}
+		JiraFilter jiraFilter = valueOf(filterId);
+		String returnQuery = jiraFilter.getJqlString();
+		returnQuery = "Project = " + projectKey + " AND " + returnQuery;
+		return returnQuery;
 	}
 }

@@ -139,7 +139,7 @@ public class FilterSettingsImpl implements FilterSettings {
 	@Override
 	@JsonProperty("createdLatest")
 	public void setCreatedLatest(long createdLatest) {
-		this.startDate = createdLatest;
+		this.endDate = createdLatest;
 	}
 
 	@Override
