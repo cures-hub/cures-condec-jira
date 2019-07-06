@@ -28,7 +28,7 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 public class GraphFiltering {
-	private static final Logger LOGGER = LoggerFactory.getLogger(GraphFiltering.class);
+	static final Logger LOGGER = LoggerFactory.getLogger(GraphFiltering.class);
 
 	private FilterSettings filterData;
 
@@ -72,17 +72,12 @@ public class GraphFiltering {
 		try {
 			SearchResults<Issue> results = queryHandler.getSearchService().search(this.user, parseResult.getQuery(),
 					PagerFilter.getUnlimitedFilter());
-			if (results != null) {
-				jiraIssues = JiraSearchServiceHelper.getJiraIssues(results);
-			}
+			jiraIssues = JiraSearchServiceHelper.getJiraIssues(results);
 		} catch (SearchException e) {
 			LOGGER.error("Produce results from query failed. Message: " + e.getMessage());
 			e.printStackTrace();
 		}
 
-		if (jiraIssues == null) {
-			return new ArrayList<Issue>();
-		}
 		for (Issue issue : jiraIssues) {
 			queryResults.add(new DecisionKnowledgeElementImpl(issue));
 		}
@@ -220,19 +215,21 @@ public class GraphFiltering {
 
 	public List<DecisionKnowledgeElement> getAllElementsMatchingQuery() {
 		List<DecisionKnowledgeElement> results = new ArrayList<>(this.getQueryResults());
-		SearchResults<Issue> projectIssues = getIssuesForThisProject(user);
-		if (projectIssues != null) {
-			for (Issue currentIssue : JiraSearchServiceHelper.getJiraIssues(projectIssues)) {
-				List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
-						.getElementsForIssue(currentIssue.getId(), filterData.getProjectKey());
-				for (DecisionKnowledgeElement currentElement : elements) {
-					if (!results.contains(currentElement) && currentElement instanceof PartOfJiraIssueText
-							&& checkIfJiraTextMatchesFilter(currentElement)) {
-						results.add(currentElement);
-					}
+		List<Issue> jiraIssuesForProject = JiraSearchServiceHelper.getAllJiraIssuesForProject(user, filterData.getProjectKey());
+		if (jiraIssuesForProject == null) {
+			return results;
+		}
+		for (Issue currentIssue : jiraIssuesForProject) {
+			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
+					.getElementsForIssue(currentIssue.getId(), filterData.getProjectKey());
+			for (DecisionKnowledgeElement currentElement : elements) {
+				if (!results.contains(currentElement) && currentElement instanceof PartOfJiraIssueText
+						&& checkIfJiraTextMatchesFilter(currentElement)) {
+					results.add(currentElement);
 				}
 			}
 		}
+
 		return results;
 	}
 
@@ -258,20 +255,6 @@ public class GraphFiltering {
 		}
 
 		return true;
-	}
-
-	private SearchResults<Issue> getIssuesForThisProject(ApplicationUser user) {
-		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
-		Query query = jqlClauseBuilder.project(filterData.getProjectKey()).buildQuery();
-		SearchResults<Issue> searchResult;
-		try {
-			SearchService searchService = queryHandler.getSearchService();
-			searchResult = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
-		} catch (SearchException e) {
-			LOGGER.error("Get Issues for this project failed. Message: " + e.getMessage());
-			return null;
-		}
-		return searchResult;
 	}
 
 	public FilterSettings getFilterData() {
