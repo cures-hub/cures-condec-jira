@@ -308,7 +308,7 @@
 	 */
 	ConDecAPI.prototype.getVis = function getVis(elementKey, searchTerm, callback) {
 		var filterSettings = {
-			"projectKey" : getProjectKey(),
+			"projectKey" : projectKey,
 			"searchString" : searchTerm,
 			"createdEarliest" : -1,
 			"createdLatest" : -1,
@@ -329,7 +329,7 @@
 	ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, issueTypes, createdAfter,
 			createdBefore, documentationLocation, callback) {
 		var filterSettings = {
-			"projectKey" : getProjectKey(),
+			"projectKey" : projectKey,
 			"searchString" : searchTerm,
 			"createdEarliest" : createdBefore,
 			"createdLatest" : createdAfter,
@@ -348,20 +348,12 @@
 	 * external reference: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getFilterSettings = function getFilterSettings(elementKey, searchTerm, callback) {
-		var filterSettings = {
-			"projectKey" : getProjectKey(),
-			"searchString" : searchTerm,
-			"createdEarliest" : -1,
-			"createdLatest" : -1,
-			"documentationLocationList" : [ "" ],
-			"issueTypes" : [ "" ]
-		};
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getFilterSettings.json?elementKey=" + elementKey,
-				filterSettings, function(error, filterSettings) {
-					if (error === null) {
-						callback(filterSettings);
-					}
-				});
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getFilterSettings.json?elementKey=" + elementKey
+				+ "&searchTerm=" + searchTerm, function(error, filterSettings) {
+			if (error === null) {
+				callback(filterSettings);
+			}
+		});
 	};
 
 	/*
@@ -660,22 +652,6 @@
 		});
 	};
 
-	function getText(url, callback) {
-		var xhr = new XMLHttpRequest();
-		xhr.open("GET", url, true);
-		xhr.setRequestHeader("Content-type", "plain/text");
-		xhr.onload = function() {
-			var status = xhr.status;
-			if (status === 200) {
-				callback(null, xhr.response);
-			} else {
-				showFlag("error", xhr.response.error, status);
-				callback(status);
-			}
-		};
-		xhr.send();
-	}
-
 	function getResponseAsReturnValue(url) {
 		var xhr = new XMLHttpRequest();
 		xhr.open("GET", url, false);
@@ -698,6 +674,22 @@
 		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
 		xhr.setRequestHeader("Accept", "application/json");
 		xhr.responseType = "json";
+		xhr.onload = function() {
+			var status = xhr.status;
+			if (status === 200) {
+				callback(null, xhr.response);
+			} else {
+				showFlag("error", xhr.response.error, status);
+				callback(status);
+			}
+		};
+		xhr.send();
+	}	
+
+	function getText(url, callback) {
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", url, true);
+		xhr.setRequestHeader("Content-type", "plain/text");
 		xhr.onload = function() {
 			var status = xhr.status;
 			if (status === 200) {

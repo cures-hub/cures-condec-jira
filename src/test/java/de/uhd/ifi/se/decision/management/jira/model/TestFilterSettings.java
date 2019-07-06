@@ -1,14 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
+import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 
 public class TestFilterSettings extends TestSetUpWithIssues {
 	private FilterSettings filterData;
@@ -50,19 +52,22 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 
 	@Test
 	public void testKeySearchTimeConstructor() {
-		FilterSettings data = new FilterSettingsImpl("TEST", "search string", System.currentTimeMillis() - 100, System.currentTimeMillis());
+		FilterSettings data = new FilterSettingsImpl("TEST", "search string", System.currentTimeMillis() - 100,
+				System.currentTimeMillis());
 		assertNotNull(data);
 	}
 
 	@Test
 	public void testKeySearchTimeLocationConstructor() {
-		FilterSettings data = new FilterSettingsImpl("TEST", "search string", System.currentTimeMillis() - 100, System.currentTimeMillis(), doc);
+		FilterSettings data = new FilterSettingsImpl("TEST", "search string", System.currentTimeMillis() - 100,
+				System.currentTimeMillis(), doc);
 		assertNotNull(data);
 	}
 
 	@Test
 	public void testKeySearchTimeLocationTypeConstructor() {
-		FilterSettings data = new FilterSettingsImpl("TEST", "search string", System.currentTimeMillis() - 100, System.currentTimeMillis(), doc, knowledgeTypesStringArray);
+		FilterSettings data = new FilterSettingsImpl("TEST", "search string", System.currentTimeMillis() - 100,
+				System.currentTimeMillis(), doc, knowledgeTypesStringArray);
 		assertNotNull(data);
 	}
 
@@ -113,7 +118,8 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 	@Test
 	public void testGetDocumentationLocation() {
 		for (String location : doc) {
-			assertTrue(filterData.getDocumentationLocation().contains(DocumentationLocation.getDocumentationLocationFromString(location)));
+			assertTrue(filterData.getDocumentationLocation()
+					.contains(DocumentationLocation.getDocumentationLocationFromString(location)));
 		}
 	}
 
@@ -131,7 +137,8 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 		}
 		filterData.setIssueTypes(newLocations);
 		for (String location : newLocations) {
-			assertTrue(filterData.getDocumentationLocation().contains(DocumentationLocation.getDocumentationLocationFromString(location)));
+			assertTrue(filterData.getDocumentationLocation()
+					.contains(DocumentationLocation.getDocumentationLocationFromString(location)));
 		}
 	}
 

@@ -28,7 +28,7 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 public class GraphFiltering {
-	static final Logger LOGGER = LoggerFactory.getLogger(GraphFiltering.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GraphFiltering.class);
 
 	private FilterSettings filterData;
 

@@ -15,7 +15,9 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 
+// TODO Delete class and replace with FilterSettings directly
 @XmlRootElement(name = "issueTypesForDropdown")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class FilterDataProvider {
@@ -30,12 +32,13 @@ public class FilterDataProvider {
 	@XmlElement
 	private List<String> documentationLocations;
 
-	public FilterDataProvider(FilterSettings filterData, ApplicationUser user) {
-		if ((filterData.getSearchString().matches("\\?jql=(.)+"))
-				|| (filterData.getSearchString().matches("\\?filter=(.)+"))) {
-			GraphFiltering filter = new GraphFiltering(filterData, user, false);
-			QueryHandler queryHandler = new QueryHandler(user, filterData.getProjectKey(), false);
-			filter.getJiraIssuesFromQuery(filterData.getSearchString());
+	public FilterDataProvider(String projectKey, String query, ApplicationUser user) {
+		if ((query.matches("\\?jql=(.)+"))
+				|| (query.matches("\\?filter=(.)+"))) {
+			FilterSettings filterSettings = new FilterSettingsImpl(projectKey, query);
+			GraphFiltering filter = new GraphFiltering(filterSettings, user, false);
+			QueryHandler queryHandler = new QueryHandler(user, projectKey, false);
+			filter.getJiraIssuesFromQuery(query);
 			this.allIssueTypes = new ArrayList<>();
 			for (IssueType issueType : ComponentAccessor.getConstantsManager().getAllIssueTypeObjects()) {
 				this.allIssueTypes.add(issueType.getName());

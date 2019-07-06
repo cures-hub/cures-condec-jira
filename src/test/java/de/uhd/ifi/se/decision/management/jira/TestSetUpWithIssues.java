@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.mockito.Mockito;
+
 import com.atlassian.jira.avatar.AvatarManager;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.search.SearchService;
@@ -47,14 +49,25 @@ import com.atlassian.jira.util.VelocityParamFactory;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.velocity.VelocityManager;
 
-import de.uhd.ifi.se.decision.management.jira.mocks.*;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockAvatarManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockCommentManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkTypeManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueService;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockJiraHomeForTesting;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockProjectRoleManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockSearchService;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityParamFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
-import org.mockito.Mockito;
 
 public class TestSetUpWithIssues {
 	protected ProjectManager projectManager;
@@ -88,24 +101,21 @@ public class TestSetUpWithIssues {
 		((MockUserManager) userManager).addUser(user3);
 		((MockUserManager) userManager).addUser(user4);
 
-
 		TimeZoneManager timeZoneManager = mock(TimeZoneManager.class);
 		Mockito.when(timeZoneManager.getLoggedInUserTimeZone()).thenReturn(TimeZone.getDefault());
 
 		MockComponentWorker worker = new MockComponentWorker();
-		worker.registerMock(JqlClauseBuilderFactory.class, new JqlClauseBuilderFactoryImpl(new JqlDateSupportImpl(timeZoneManager)));
+		worker.registerMock(JqlClauseBuilderFactory.class,
+				new JqlClauseBuilderFactoryImpl(new JqlDateSupportImpl(timeZoneManager)));
 		worker.init().addMock(IssueManager.class, issueManager)
 				.addMock(IssueLinkManager.class, new MockIssueLinkManager())
 				.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager())
-				.addMock(IssueService.class, issueService)
-				.addMock(ProjectManager.class, projectManager)
-				.addMock(UserManager.class, userManager)
-				.addMock(ConstantsManager.class, constantsManager)
+				.addMock(IssueService.class, issueService).addMock(ProjectManager.class, projectManager)
+				.addMock(UserManager.class, userManager).addMock(ConstantsManager.class, constantsManager)
 				.addMock(ProjectRoleManager.class, new MockProjectRoleManager())
 				.addMock(VelocityManager.class, new MockVelocityManager())
 				.addMock(VelocityParamFactory.class, new MockVelocityParamFactory())
-				.addMock(AvatarManager.class, new MockAvatarManager())
-				.addMock(IssueTypeManager.class, issueTypeManager)
+				.addMock(AvatarManager.class, new MockAvatarManager()).addMock(IssueTypeManager.class, issueTypeManager)
 				.addMock(IssueTypeSchemeManager.class, mock(IssueTypeSchemeManager.class))
 				.addMock(FieldConfigScheme.class, mock(FieldConfigScheme.class))
 				.addMock(PluginSettingsFactory.class, new MockPluginSettingsFactory())

@@ -180,43 +180,44 @@ public class ViewRest {
 	@Path("/getVis")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getVis(@Context HttpServletRequest request, FilterSettings filterData,
+	public Response getVis(@Context HttpServletRequest request, FilterSettings filterSettings,
 			@QueryParam("elementKey") String elementKey) {
 		if (checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()) {
 			return checkIfElementIsValid(elementKey);
 		}
-		if (filterData == null) {
+		if (filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Filter data is null. Vis could not be visualized.")).build();
+					.entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created.")).build();
 		}
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis could not be visualized."))
+					.entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
 					.build();
 		}
 		String projectKey = getProjectKey(elementKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisDataProvider visDataProvider;
-		if (filterData.getIssueTypes().size() == 0 || (filterData.getDocumentationLocation().size() == 1
-				&& filterData.getDocumentationLocation().get(0).equals(DocumentationLocation.UNKNOWN))) {
-			visDataProvider = new VisDataProvider(projectKey, elementKey, false, filterData.getSearchString(), user);
+		if (filterSettings.getIssueTypes().size() == 0 || (filterSettings.getDocumentationLocation().size() == 1
+				&& filterSettings.getDocumentationLocation().get(0).equals(DocumentationLocation.UNKNOWN))) {
+			visDataProvider = new VisDataProvider(projectKey, elementKey, false, filterSettings.getSearchString(), user);
 		} else {
-			visDataProvider = new VisDataProvider(elementKey, false, user, filterData);
+			visDataProvider = new VisDataProvider(elementKey, false, user, filterSettings);
 		}
 		VisGraph visGraph = visDataProvider.getVisGraph();
 		return Response.ok(visGraph).build();
 	}
 
 	@Path("/getFilterSettings")
-	@POST
+	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getFilterSettings(@Context HttpServletRequest request, FilterSettings filterData,
+	public Response getFilterSettings(@Context HttpServletRequest request, @QueryParam("searchTerm") String searchTerm,
 			@QueryParam("elementKey") String elementKey) {
 		if (checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()) {
 			return checkIfElementIsValid(elementKey);
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		FilterDataProvider filterDataProvider = new FilterDataProvider(filterData, user);
+		String projectKey = getProjectKey(elementKey);
+		FilterDataProvider filterDataProvider = new FilterDataProvider(projectKey, searchTerm, user);
 		return Response.ok(filterDataProvider).build();
 	}
 
