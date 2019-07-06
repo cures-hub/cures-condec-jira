@@ -27,38 +27,37 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 		initialization();
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		jql = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
-		data = new FilterDataImpl("TEST", jql,
-				System.currentTimeMillis() - 100, System.currentTimeMillis());
+		data = new FilterDataImpl("TEST", jql, System.currentTimeMillis() - 100, System.currentTimeMillis());
 		String[] ktypes = new String[KnowledgeType.toList().size()];
 		List<String> typeList = KnowledgeType.toList();
-		for(int i = 0 ; i< typeList.size() ; i++){
+		for (int i = 0; i < typeList.size(); i++) {
 			ktypes[i] = typeList.get(i);
 		}
 		String[] doc = new String[DocumentationLocation.toList().size()];
 		List<String> docList = DocumentationLocation.toList();
-		for(int i= 0; i < docList.size(); i++){
+		for (int i = 0; i < docList.size(); i++) {
 			doc[i] = docList.get(i);
 		}
 		data.setIssueTypes(ktypes);
 		data.setDocumentationLocation(doc);
-		filterExtractor = new FilterExtractor( user, data);
+		filterExtractor = new FilterExtractor(user, data);
 	}
 
 	@Test
 	public void testConstructorFilterStringNullNullNull() {
-		FilterExtractor extractor = new FilterExtractor(null, null, (String)null);
+		FilterExtractor extractor = new FilterExtractor(null, null, (String) null);
 		assertNull(extractor.getFilteredDecisions());
 	}
 
 	@Test
 	public void testConstructorFilterStringFilledNullNull() {
-		FilterExtractor extractor = new FilterExtractor("TEST", null, (String)null);
+		FilterExtractor extractor = new FilterExtractor("TEST", null, (String) null);
 		assertNull(extractor.getFilteredDecisions());
 	}
 
 	@Test
 	public void testConstructorFilterStringNullFilledNull() {
-		FilterExtractor extractor = new FilterExtractor(null, user, (String)null);
+		FilterExtractor extractor = new FilterExtractor(null, user, (String) null);
 		assertNull(extractor.getFilteredDecisions());
 	}
 
@@ -104,35 +103,34 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 
 	@Test
 	public void testConstructorFilterOwnNullProject() {
-		FilterExtractor extractor = new FilterExtractor(null, (FilterData)null);
+		FilterExtractor extractor = new FilterExtractor(null, (FilterData) null);
 		assertNull(extractor.getFilteredDecisions());
 	}
 
-
 	@Test
 	public void testConstructorFilterOwnNullSearch() {
-		FilterExtractor extractor = new FilterExtractor(user,(FilterData) null);
+		FilterExtractor extractor = new FilterExtractor(user, (FilterData) null);
 		assertNull(extractor.getFilteredDecisions());
 	}
 
 	@Test
 	public void testConstructorFilterOwnFilled() {
-		FilterExtractor extractor = new FilterExtractor(user,data);
+		FilterExtractor extractor = new FilterExtractor(user, data);
 		assertEquals(0.0, extractor.getFilteredDecisions().size(), 0.0);
 	}
 
 	@Test
-	public void testGetGraphsMatchingQueryNull(){
-		assertEquals(0.0,filterExtractor.getGraphsMatchingQuery(null).size(),0.0);
+	public void testGetGraphsMatchingQueryNull() {
+		assertEquals(0.0, filterExtractor.getGraphsMatchingQuery(null).size(), 0.0);
 	}
 
 	@Test
-	public void testGetGraphsMatchingQueryEmpty(){
-		assertEquals(0.0,filterExtractor.getGraphsMatchingQuery("").size(),0.0);
+	public void testGetGraphsMatchingQueryEmpty() {
+		assertEquals(0.0, filterExtractor.getGraphsMatchingQuery("").size(), 0.0);
 	}
 
 	@Test
-	public void testGetGraphsMatchingQueryFilled(){
-		assertEquals(0.0,filterExtractor.getGraphsMatchingQuery("Test").size(),0.0);
+	public void testGetGraphsMatchingQueryFilled() {
+		assertEquals(0.0, filterExtractor.getGraphsMatchingQuery("Test").size(), 0.0);
 	}
 }

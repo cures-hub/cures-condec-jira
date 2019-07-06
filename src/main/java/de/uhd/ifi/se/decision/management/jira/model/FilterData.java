@@ -6,7 +6,7 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import java.util.List;
 
 /**
- * Interface for a filter data and its search string. The filter data
+ * Interface for the filter settings. The filter data
  * is from the filter in the views from the ConDec Plugin. The search string
  * can contain a JQL, a filter or a search string form the frontend.
  */
