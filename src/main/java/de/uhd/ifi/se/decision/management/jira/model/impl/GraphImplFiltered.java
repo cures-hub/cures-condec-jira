@@ -9,7 +9,7 @@ import java.util.Set;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.GraphFiltering;
-import de.uhd.ifi.se.decision.management.jira.filtering.QueryHandler;
+import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -26,7 +26,7 @@ public class GraphImplFiltered extends GraphImpl {
 
 	private GraphFiltering filter;
 	private List<DecisionKnowledgeElement> elementsVisitedTransitively;
-	private QueryHandler queryHandler;
+	private JiraQueryHandler queryHandler;
 
 	public GraphImplFiltered() {
 		super();

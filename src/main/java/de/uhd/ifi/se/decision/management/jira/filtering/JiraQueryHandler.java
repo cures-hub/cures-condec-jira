@@ -20,8 +20,8 @@ import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 
-public class QueryHandler {
-	private static final Logger LOGGER = LoggerFactory.getLogger(QueryHandler.class);
+public class JiraQueryHandler {
+	private static final Logger LOGGER = LoggerFactory.getLogger(JiraQueryHandler.class);
 
 	private FilterSettings filterSettings;
 	private boolean queryIsJQL;
@@ -33,7 +33,7 @@ public class QueryHandler {
 	private boolean queryContainsIssueTypes;
 	private String finalQuery;
 
-	public QueryHandler(ApplicationUser user, String projectKey, Boolean mergeFilterQueryWithProjectKey) {
+	public JiraQueryHandler(ApplicationUser user, String projectKey, boolean mergeFilterQueryWithProjectKey) {
 		this.mergeFilterQueryWithProjectKey = mergeFilterQueryWithProjectKey;
 		this.searchService = ComponentAccessor.getComponentOfType(SearchService.class);
 		this.user = user;
@@ -43,12 +43,8 @@ public class QueryHandler {
 		this.filterSettings = new FilterSettingsImpl(projectKey, "", -1, -1);
 	}
 
-	private void jqlStringParser() {
-		String jql = this.filterSettings.getSearchString();
-		jql = jql.replaceAll("%20", " ");
-		jql = jql.replaceAll("%3D", "=");
-		jql = jql.replaceAll("%2C", ",");
-		this.filterSettings.setSearchString(jql);
+	private String jqlStringParser(String jql) {
+		return jql.replaceAll("%20", " ").replaceAll("%3D", "=").replaceAll("%2C", ",");
 	}
 
 	public ParseResult processParseResult(String query) {
@@ -70,7 +66,7 @@ public class QueryHandler {
 			}
 		} else if (queryIsJQL) {
 			this.filterSettings.setSearchString(cropQuery());
-			jqlStringParser();
+			this.filterSettings.setSearchString(jqlStringParser(this.filterSettings.getSearchString()));
 			return searchService.parseQuery(this.user, this.filterSettings.getSearchString());
 		} else {
 			finalQuery = "type = null";
@@ -132,14 +128,15 @@ public class QueryHandler {
 		}
 	}
 
-	public void findIssueTypesInQuery(List<Clause> clauses) {
+	public List<KnowledgeType> findIssueTypesInQuery(List<Clause> clauses) {
+		List<KnowledgeType> types = new ArrayList<>();
 		for (Clause clause : clauses) {
 			if (!clause.getName().equals("issuetype")) {
 				continue;
 			}
 			this.queryContainsIssueTypes = true;
 			String issuetypes = clause.toString().substring(14, clause.toString().length() - 2);
-			List<KnowledgeType> types = new ArrayList<>();
+
 			if (clause.toString().contains("=")) {
 				types.add(KnowledgeType.getKnowledgeType(issuetypes.trim()));
 			} else {
@@ -149,13 +146,13 @@ public class QueryHandler {
 					types.add(KnowledgeType.getKnowledgeType(issueType.trim()));
 				}
 			}
-			this.filterSettings.setIssueTypes(types);
 		}
+		return types;
 	}
 
-	public void findIssueTypesInQuery(String query) {
+	public List<KnowledgeType> findIssueTypesInQuery(String query) {
 		if (!query.contains("issuetype")) {
-			return;
+			return new ArrayList<>();
 		}
 		this.queryContainsIssueTypes = true;
 		List<KnowledgeType> types = new ArrayList<>();
@@ -171,7 +168,7 @@ public class QueryHandler {
 				types.add(KnowledgeType.getKnowledgeType(cleandIssueType.trim()));
 			}
 		}
-		this.filterSettings.setIssueTypes(types);
+		return types;
 	}
 
 	private long findStartTime(long currentDate, String time) {

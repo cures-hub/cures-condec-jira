@@ -36,9 +36,9 @@ public class GraphFiltering {
 	private List<DecisionKnowledgeElement> queryResults;
 	private List<Clause> resultingClauses;
 	private String resultingQuery;
-	private QueryHandler queryHandler;
+	private JiraQueryHandler queryHandler;
 
-	public QueryHandler getQueryHandler() {
+	public JiraQueryHandler getQueryHandler() {
 		return queryHandler;
 	}
 
@@ -46,7 +46,7 @@ public class GraphFiltering {
 		this.filterData = filterData;
 		this.user = user;
 		this.queryResults = new ArrayList<DecisionKnowledgeElement>();
-		this.queryHandler = new QueryHandler(user, filterData.getProjectKey(), mergeFilterQueryWithProjectKey);
+		this.queryHandler = new JiraQueryHandler(user, filterData.getProjectKey(), mergeFilterQueryWithProjectKey);
 	}
 
 	public List<Issue> getJiraIssuesFromQuery(String query) {
@@ -62,12 +62,12 @@ public class GraphFiltering {
 		if (!clauses.isEmpty()) {
 			this.resultingClauses = clauses;
 			queryHandler.findDatesInQuery(clauses);
-			queryHandler.findIssueTypesInQuery(clauses);
+			this.filterData.setIssueTypes(queryHandler.findIssueTypesInQuery(clauses));
 		} else {
 			String finalQuery = queryHandler.getFinalQuery();
 			this.resultingQuery = finalQuery;
 			queryHandler.findDatesInQuery(finalQuery);
-			queryHandler.findIssueTypesInQuery(finalQuery);
+			this.filterData.setIssueTypes(queryHandler.findIssueTypesInQuery(finalQuery));
 		}
 		try {
 			SearchResults<Issue> results = queryHandler.getSearchService().search(this.user, parseResult.getQuery(),

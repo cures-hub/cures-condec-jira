@@ -44,7 +44,7 @@ public enum JiraFilter {
 	public long getId() {
 		return this.id;
 	}
-	
+
 	public static JiraFilter valueOf(long id) {
 		for (JiraFilter jiraFilter : values()) {
 			if (jiraFilter.id == id) {
@@ -60,17 +60,25 @@ public enum JiraFilter {
 			jiraFilter = ALLISSUES;
 		}
 		return jiraFilter.getJqlString();
-	}	
+	}
 
 	public static String getQueryFromFilterId(long filterId, String projectKey) {
-		if (filterId > 0) {
-			SearchRequestManager srm = ComponentAccessor.getComponentOfType(SearchRequestManager.class);
-			SearchRequest filter = srm.getSharedEntity(filterId);
-			return filter.getQuery().getQueryString();
+		if (!isPresetJiraFilter(filterId)) {
+			return getQueryForCustomFilter(filterId);
 		}
 		JiraFilter jiraFilter = valueOf(filterId);
 		String returnQuery = jiraFilter.getJqlString();
 		returnQuery = "Project = " + projectKey + " AND " + returnQuery;
 		return returnQuery;
+	}
+
+	private static boolean isPresetJiraFilter(long filterId) {
+		return filterId <= 0;
+	}
+
+	private static String getQueryForCustomFilter(long filterId) {
+		SearchRequestManager searchRequestManager = ComponentAccessor.getComponentOfType(SearchRequestManager.class);
+		SearchRequest filter = searchRequestManager.getSharedEntity(filterId);
+		return filter.getQuery().getQueryString();
 	}
 }

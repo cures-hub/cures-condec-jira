@@ -11,7 +11,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.QueryHandler;
+import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -83,7 +83,7 @@ public class FilterSettingsImpl implements FilterSettings {
 		if (!query.matches("\\?jql=(.)+") && !query.matches("\\?filter=(.)+")) {
 			return;
 		}
-		QueryHandler queryHandler = new QueryHandler(user, projectKey, false);
+		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, false);
 
 		// if (!queryHandler.getFilterSettings().getIssueTypes().isEmpty()) {
 		// this.issueTypesMatchingFilter = new ArrayList<String>();
