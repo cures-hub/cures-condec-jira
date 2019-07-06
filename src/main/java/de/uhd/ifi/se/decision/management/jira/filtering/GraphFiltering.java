@@ -50,7 +50,7 @@ public class GraphFiltering {
 	}
 
 	public List<Issue> getJiraIssuesFromQuery(String query) {
-		ParseResult parseResult = queryHandler.processParseResult(filterData.getSearchString());
+		ParseResult parseResult = queryHandler.processParseResult(query);
 		if (!parseResult.isValid()) {
 			LOGGER.error(parseResult.getErrors().toString());
 			return new ArrayList<Issue>();
@@ -86,42 +86,41 @@ public class GraphFiltering {
 
 	public void produceResultsWithAdditionalFilters() {
 		queryResults.clear();
-		JqlClauseBuilder queryBuilder = JqlQueryBuilder.newClauseBuilder();
-		queryBuilder.project(filterData.getProjectKey());
+		JqlClauseBuilder clauseBuilder = JqlQueryBuilder.newClauseBuilder();
+		clauseBuilder.project(filterData.getProjectKey());
 		boolean first = true;
 		if (this.resultingClauses != null) {
 			for (Clause clause : this.resultingClauses) {
 				if (!matchesCreatedOrIssueType(clause)) {
-					JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
+					JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(clauseBuilder.buildQuery());
 					if (first) {
 						newQueryBuilder.and();
 						first = false;
 					}
 					newQueryBuilder.addClause(clause);
-					queryBuilder = newQueryBuilder;
+					clauseBuilder = newQueryBuilder;
 				}
 			}
 		} else {
 			if (!matchesCreatedOrIssueType(resultingQuery) && resultingQuery != null) {
-				queryBuilder.addCondition(resultingQuery);
+				clauseBuilder.addCondition(resultingQuery);
 			}
 		}
-		queryBuilder = addIssueTypes(queryBuilder);
-		queryBuilder = addTimeFilter(queryBuilder);
-		processQueryResult(queryBuilder);
-
+		clauseBuilder = addIssueTypes(clauseBuilder);
+		clauseBuilder = addTimeFilter(clauseBuilder);
+		processQueryResult(clauseBuilder);
 	}
 
 	// New issue type filter function
 	private JqlClauseBuilder addIssueTypes(JqlClauseBuilder queryBuilder) {
-		JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
-		newQueryBuilder.and();
+		JqlClauseBuilder clauseBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
+		clauseBuilder.and();
 		String[] types = new String[filterData.getIssueTypes().size()];
 		for (int i = 0; i < filterData.getIssueTypes().size(); i++) {
 			types[i] = filterData.getIssueTypes().get(i).toString();
 		}
-		newQueryBuilder.issueType(types);
-		return newQueryBuilder;
+		clauseBuilder.issueType(types);
+		return clauseBuilder;
 	}
 
 	// New time filter function

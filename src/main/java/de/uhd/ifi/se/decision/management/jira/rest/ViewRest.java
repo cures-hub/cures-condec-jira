@@ -207,10 +207,10 @@ public class ViewRest {
 		return Response.ok(visGraph).build();
 	}
 
-	@Path("/getFilterData")
+	@Path("/getFilterSettings")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getFilterData(@Context HttpServletRequest request, FilterSettings filterData,
+	public Response getFilterSettings(@Context HttpServletRequest request, FilterSettings filterData,
 			@QueryParam("elementKey") String elementKey) {
 		if (checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()) {
 			return checkIfElementIsValid(elementKey);

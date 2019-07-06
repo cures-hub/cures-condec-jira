@@ -31,7 +31,8 @@ public class FilterDataProvider {
 	private List<String> documentationLocations;
 
 	public FilterDataProvider(FilterSettings filterData, ApplicationUser user) {
-		if ((filterData.getSearchString().matches("\\?jql=(.)+")) || (filterData.getSearchString().matches("\\?filter=(.)+"))) {
+		if ((filterData.getSearchString().matches("\\?jql=(.)+"))
+				|| (filterData.getSearchString().matches("\\?filter=(.)+"))) {
 			GraphFiltering filter = new GraphFiltering(filterData, user, false);
 			QueryHandler queryHandler = new QueryHandler(user, filterData.getProjectKey(), false);
 			filter.getJiraIssuesFromQuery(filterData.getSearchString());
@@ -41,7 +42,7 @@ public class FilterDataProvider {
 			}
 			if (!queryHandler.getFilterSettings().getIssueTypes().isEmpty()) {
 				this.issueTypesMatchingFilter = new ArrayList<>();
-				for(KnowledgeType type: queryHandler.getFilterSettings().getIssueTypes()){
+				for (KnowledgeType type : queryHandler.getFilterSettings().getIssueTypes()) {
 					this.issueTypesMatchingFilter.add(type.toString());
 				}
 			} else {

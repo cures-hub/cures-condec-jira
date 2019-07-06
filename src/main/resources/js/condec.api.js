@@ -44,7 +44,7 @@
 	ConDecAPI.prototype.getDecisionKnowledgeElement = function getDecisionKnowledgeElement(id, documentationLocation,
 			callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getDecisionKnowledgeElement.json?projectKey="
-				+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, null,function(error,
+				+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function(error,
 				decisionKnowledgeElement) {
 			if (error === null) {
 				callback(decisionKnowledgeElement);
@@ -57,7 +57,7 @@
 	 */
 	ConDecAPI.prototype.getAdjacentElements = function getAdjacentElements(id, documentationLocation, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAdjacentElements.json?projectKey="
-				+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, null,function(error,
+				+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function(error,
 				adjacentElements) {
 			if (error === null) {
 				callback(adjacentElements);
@@ -70,8 +70,8 @@
 	 */
 	ConDecAPI.prototype.getUnlinkedElements = function getUnlinkedElements(id, documentationLocation, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getUnlinkedElements.json?projectKey="
-				+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, null ,
-            function(error, unlinkedElements) {
+				+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function(error,
+				unlinkedElements) {
 			if (error === null) {
 				callback(unlinkedElements);
 			}
@@ -197,7 +197,7 @@
 	 */
 	ConDecAPI.prototype.getElementsByQuery = function getElementsByQuery(query, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getElements.json?allTrees=false&projectKey="
-				+ projectKey + "&query=" + query, null,function(error, elements) {
+				+ projectKey + "&query=" + query, function(error, elements) {
 			if (error === null) {
 				callback(elements);
 			}
@@ -210,7 +210,7 @@
 	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, elementKey,
 			documentationLocation, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getElements.json?allTrees=false&projectKey="
-				+ projectKey + "&elementKey=" + elementKey + "&query=" + query, null, function(error, elements) {
+				+ projectKey + "&elementKey=" + elementKey + "&query=" + query, function(error, elements) {
 			if (error === null) {
 				callback(elements);
 			}
@@ -222,7 +222,7 @@
 	 */
 	ConDecAPI.prototype.getAllElementsByQueryAndLinked = function getAllElementsByQueryAndLinked(query, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getElements.json?allTrees=true&projectKey="
-				+ projectKey + "&query=" + query, null,function(error, elements) {
+				+ projectKey + "&query=" + query, function(error, elements) {
 			if (error === null) {
 				callback(elements);
 			}
@@ -270,11 +270,12 @@
 	ConDecAPI.prototype.getSummarizedCode = function getSummarizedCode(id, documentationLocation, probability, callback) {
 		console.log(probability);
 		getText(AJS.contextPath() + "/rest/decisions/latest/decisions/getSummarizedCode?projectKey=" + projectKey
-				+ "&id=" + id + "&documentationLocation=" + documentationLocation + "&probability=" + probability, function(error, summary) {
-			if (error === null) {
-				callback(summary);
-			}
-		});
+				+ "&id=" + id + "&documentationLocation=" + documentationLocation + "&probability=" + probability,
+				function(error, summary) {
+					if (error === null) {
+						callback(summary);
+					}
+				});
 
 	};
 
@@ -283,7 +284,7 @@
 	 */
 	ConDecAPI.prototype.getTreeViewer = function getTreeViewer(rootElementType, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer.json?projectKey=" + projectKey
-				+ "&rootElementType=" + rootElementType, null,function(error, core) {
+				+ "&rootElementType=" + rootElementType, function(error, core) {
 			if (error === null) {
 				callback(core);
 			}
@@ -295,7 +296,7 @@
 	 */
 	ConDecAPI.prototype.getTreant = function getTreant(elementKey, depthOfTree, searchTerm, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?&elementKey=" + elementKey
-				+ "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm, null,function(error, treant) {
+				+ "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm, function(error, treant) {
 			if (error === null) {
 				callback(treant);
 			}
@@ -306,20 +307,20 @@
 	 * external references: condec.vis
 	 */
 	ConDecAPI.prototype.getVis = function getVis(elementKey, searchTerm, callback) {
-        var filterData = {
-            "projectKey": getProjectKey(),
-            "searchString": searchTerm,
-            "createdEarliest": -1,
-            "createdLatest": -1,
-            "documentationLocationList": [""],
-            "issueTypes": [""]
-        };
-        postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
-            filterData, function (error, vis) {
-            if (error === null) {
-                callback(vis);
-			}
-		});
+		var filterSettings = {
+			"projectKey" : getProjectKey(),
+			"searchString" : searchTerm,
+			"createdEarliest" : -1,
+			"createdLatest" : -1,
+			"documentationLocationList" : [ "" ],
+			"issueTypes" : [ "" ]
+		};
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
+				filterSettings, function(error, vis) {
+					if (error === null) {
+						callback(vis);
+					}
+				});
 	};
 
 	/*
@@ -327,39 +328,40 @@
 	 */
 	ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, issueTypes, createdAfter,
 			createdBefore, documentationLocation, callback) {
-        var filterData = {
-            "projectKey": getProjectKey(),
-            "searchString": searchTerm,
-            "createdEarliest":createdBefore,
-            "createdLatest": createdAfter,
-            "documentationLocationList": documentationLocation,
-            "issueTypes": issueTypes
-        };
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey, filterData, function(error, vis) {
-		    if (error === null) {
-				callback(vis);
-			}
-		});
+		var filterSettings = {
+			"projectKey" : getProjectKey(),
+			"searchString" : searchTerm,
+			"createdEarliest" : createdBefore,
+			"createdLatest" : createdAfter,
+			"documentationLocationList" : documentationLocation,
+			"issueTypes" : issueTypes
+		};
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
+				filterSettings, function(error, vis) {
+					if (error === null) {
+						callback(vis);
+					}
+				});
 	};
 
 	/*
 	 * external reference: condec.jira.issue.module
 	 */
-	ConDecAPI.prototype.getFilterData = function getFilterData(elementKey, searchTerm, callback) {
-        var filterData = {
-            "projectKey": getProjectKey(),
-            "searchString": searchTerm,
-            "createdEarliest":-1,
-            "createdLatest": -1,
-            "documentationLocationList": [""],
-            "issueTypes": [""]
-        };
-        postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getFilterData.json?elementKey=" + elementKey
-				, filterData,function(error, filterReturnData) {
-			if (error === null) {
-				callback(filterReturnData);
-			}
-		});
+	ConDecAPI.prototype.getFilterSettings = function getFilterSettings(elementKey, searchTerm, callback) {
+		var filterSettings = {
+			"projectKey" : getProjectKey(),
+			"searchString" : searchTerm,
+			"createdEarliest" : -1,
+			"createdLatest" : -1,
+			"documentationLocationList" : [ "" ],
+			"issueTypes" : [ "" ]
+		};
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getFilterSettings.json?elementKey=" + elementKey,
+				filterSettings, function(error, filterSettings) {
+					if (error === null) {
+						callback(filterSettings);
+					}
+				});
 	};
 
 	/*
@@ -372,7 +374,7 @@
 			issueId = this.getIssueKey();
 		}
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer2.json?issueKey=" + issueId
-				+ "&showRelevant=" + showRelevant.toString(), null, function(error, core) {
+				+ "&showRelevant=" + showRelevant.toString(), function(error, core) {
 			if (error === null) {
 				callback(core);
 			}
@@ -384,7 +386,7 @@
 	 */
 	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(projectKey, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getEvolutionData.json?projectKey=" + projectKey,
-				null ,function(error, evolutionData) {
+				function(error, evolutionData) {
 					if (error === null) {
 						callback(evolutionData);
 					}
@@ -422,7 +424,7 @@
 	 */
 	ConDecAPI.prototype.isIssueStrategy = function isIssueStrategy(callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isIssueStrategy.json?projectKey=" + projectKey,
-				null, function(error, isIssueStrategyBoolean) {
+				function(error, isIssueStrategyBoolean) {
 					if (error === null) {
 						callback(isIssueStrategyBoolean);
 					}
@@ -510,7 +512,7 @@
 	ConDecAPI.prototype.isKnowledgeTypeEnabled = function isKnowledgeTypeEnabled(knowledgeType, projectKey, toggle,
 			callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isKnowledgeTypeEnabled.json?knowledgeType="
-				+ knowledgeType + "&projectKey=" + projectKey, null, function(error, isKnowledgeTypeEnabled) {
+				+ knowledgeType + "&projectKey=" + projectKey, function(error, isKnowledgeTypeEnabled) {
 			if (error === null) {
 				callback(isKnowledgeTypeEnabled, toggle);
 			}
@@ -605,7 +607,7 @@
 		showFlag("error", "The classification process failed.");
 		return 0.0;
 	};
-	
+
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
@@ -690,23 +692,23 @@
 		return JSON.parse(xhr.response);
 	}
 
-    function getJSON(url, data, callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", url, true);
-        xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-        xhr.setRequestHeader("Accept", "application/json");
-        xhr.responseType = "json";
-        xhr.onload = function() {
-            var status = xhr.status;
-            if (status === 200) {
-                callback(null, xhr.response);
-            } else {
-                showFlag("error", xhr.response.error, status);
-                callback(status);
-            }
-        };
-        xhr.send(JSON.stringify(data));
-    }
+	function getJSON(url, callback) {
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", url, true);
+		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+		xhr.setRequestHeader("Accept", "application/json");
+		xhr.responseType = "json";
+		xhr.onload = function() {
+			var status = xhr.status;
+			if (status === 200) {
+				callback(null, xhr.response);
+			} else {
+				showFlag("error", xhr.response.error, status);
+				callback(status);
+			}
+		};
+		xhr.send();
+	}
 
 	function postJSON(url, data, callback) {
 		var xhr = new XMLHttpRequest();

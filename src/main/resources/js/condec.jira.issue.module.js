@@ -142,7 +142,7 @@
 		var firstDatePicker = document.getElementById("created-after-picker");
 		var secondDatePicker = document.getElementById("created-before-picker");
 		var documentationDropdown = document.getElementById("documentation-dropdown");
-		conDecAPI.getFilterData(issueKey, search, function(filterData) {
+		conDecAPI.getFilterSettings(issueKey, search, function(filterData) {
 			var allIssueTypes = filterData.allIssueTypes;
 			var selectedIssueTypes = filterData.issueTypesMatchingFilter;
 			var documentationLocation = filterData.documentationLocations;
