@@ -142,8 +142,8 @@
 		var secondDatePicker = document.getElementById("created-before-picker");
 		var documentationDropdown = document.getElementById("documentation-dropdown");
 		conDecAPI.getFilterSettings(issueKey, search, function(filterData) {
-			var allIssueTypes = filterData.allIssueTypes;
-			var selectedIssueTypes = filterData.issueTypesMatchingFilter;
+			var allIssueTypes = filterData.allJiraIssueTypes;
+			var selectedIssueTypes = filterData.selectedJiraIssueTypes;
 			var documentationLocation = filterData.documentationLocations;
 			issueTypeDropdown.innerHTML = "";
 

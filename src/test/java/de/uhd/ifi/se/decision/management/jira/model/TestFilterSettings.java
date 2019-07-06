@@ -36,7 +36,7 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 			doc[i] = docList.get(i);
 		}
 		filterData.setIssueTypes(knowledgeTypesStringArray);
-		filterData.setDocumentationLocation(doc);
+		filterData.setDocumentationLocations(doc);
 	}
 
 	@Test
@@ -118,7 +118,7 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 	@Test
 	public void testGetDocumentationLocation() {
 		for (String location : doc) {
-			assertTrue(filterData.getDocumentationLocation()
+			assertTrue(filterData.getDocumentationLocations()
 					.contains(DocumentationLocation.getDocumentationLocationFromString(location)));
 		}
 	}
@@ -137,7 +137,7 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 		}
 		filterData.setIssueTypes(newLocations);
 		for (String location : newLocations) {
-			assertTrue(filterData.getDocumentationLocation()
+			assertTrue(filterData.getDocumentationLocations()
 					.contains(DocumentationLocation.getDocumentationLocationFromString(location)));
 		}
 	}

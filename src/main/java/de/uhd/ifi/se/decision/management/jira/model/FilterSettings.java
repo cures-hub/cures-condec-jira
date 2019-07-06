@@ -3,12 +3,19 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.issuetype.IssueType;
+
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
+
 /**
- * Interface for the filter settings. The filter settings cover the key of the selected project, the
- * time frame, documentation locations, JIRA issue types, and decision knowledge types. The search string
- * can contain a JQL, a filter or a search string form the frontend.
+ * Interface for the filter settings. The filter settings cover the key of the
+ * selected project, the time frame, documentation locations, JIRA issue types,
+ * and decision knowledge types. The search string can contain a JQL, a filter
+ * or a search string form the frontend.
  */
 @JsonDeserialize(as = FilterSettingsImpl.class)
 public interface FilterSettings {
@@ -77,11 +84,21 @@ public interface FilterSettings {
 	void setCreatedLatest(long createdLatest);
 
 	/**
-	 * Returns a list of documentation locations where the data can be saved.
+	 * Returns a list of documentation locations to be shown in the knowledge graph.
 	 *
-	 * @return list of documentation locations
+	 * @see DocumentationLocation
+	 * @return list of documentation locations.
 	 */
-	List<DocumentationLocation> getDocumentationLocation();
+	List<DocumentationLocation> getDocumentationLocations();
+
+	/**
+	 * Returns the names of the documentation locations to be shown in the knowledge
+	 * graph.
+	 *
+	 * @see DocumentationLocation
+	 * @return list of names of documentation locations.
+	 */
+	List<String> getNamesOfDocumentationLocations();
 
 	/**
 	 * Set the documentation locations where the data is stored
@@ -89,7 +106,7 @@ public interface FilterSettings {
 	 * @param documentationLocations
 	 *            whit the locations as string
 	 */
-	void setDocumentationLocation(String[] documentationLocations);
+	void setDocumentationLocations(String[] documentationLocations);
 
 	/**
 	 * Gets the selected knowledge types from the filter
@@ -115,4 +132,42 @@ public interface FilterSettings {
 	 */
 	void setIssueTypes(List<KnowledgeType> types);
 
+	/**
+	 * Set the JIRA issue types to be shown in the knowledge graph as a list.
+	 *
+	 * @param selectedJiraIssueTypes
+	 *            list of JIRA {@link IssueType}s.
+	 */
+	void setSelectedJiraIssueTypes(List<IssueType> selectedJiraIssueTypes);
+
+	/**
+	 * Returns the JIRA issue types to be shown in the knowledge graph as a list.
+	 *
+	 * @return list of JIRA {@link IssueType}s.
+	 */
+	List<IssueType> getSelectedJiraIssueTypes();
+
+	/**
+	 * Returns the names of the JIRA issue types to be shown in the knowledge graph
+	 * as a list.
+	 *
+	 * @return list of names of JIRA {@link IssueType}s.
+	 */
+	List<String> getNamesOfSelectedJiraIssueTypes();
+
+	/**
+	 * TODO This method should only return JIRA issue types of the current project.
+	 * Returns the names of all JIRA issue types available.
+	 *
+	 * @return list of names of JIRA {@link IssueType}s.
+	 */
+	@XmlElement(name = "allJiraIssueTypes")
+	public static List<String> getAllJiraIssueTypes() {
+		List<String> allIssueTypes = new ArrayList<String>();
+		for (IssueType issueType : ComponentAccessor.getConstantsManager().getAllIssueTypeObjects()) {
+			allIssueTypes.add(issueType.getName());
+
+		}
+		return allIssueTypes;
+	}
 }

@@ -39,7 +39,7 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 			doc[i] = docList.get(i);
 		}
 		data.setIssueTypes(ktypes);
-		data.setDocumentationLocation(doc);
+		data.setDocumentationLocations(doc);
 		filterExtractor = new FilterExtractor(user, data);
 	}
 

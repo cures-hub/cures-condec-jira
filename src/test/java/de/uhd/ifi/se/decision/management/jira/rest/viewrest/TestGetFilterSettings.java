@@ -18,6 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
+import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.view.treant.TestTreant;
@@ -53,12 +54,12 @@ public class TestGetFilterSettings extends TestSetUpWithIssues {
 		Response filterSettingsResponse = viewRest.getFilterSettings(request, "", "TEST-12");
 		assertEquals(Response.Status.OK.getStatusCode(), filterSettingsResponse.getStatus());
 
-		FilterSettingsImpl filterSettings = (FilterSettingsImpl) filterSettingsResponse.getEntity();
-		assertEquals(6, filterSettings.getDocumentationLocations().size());
-		assertEquals(16, filterSettings.getAllIssueTypes().size());
-		assertEquals(16, filterSettings.getAllIssueTypes().size());
-		assertEquals(-1, filterSettings.getEndDate());
-		assertEquals(-1, filterSettings.getStartDate());
+		FilterSettings filterSettings = (FilterSettings) filterSettingsResponse.getEntity();
+		assertEquals(6, filterSettings.getNamesOfDocumentationLocations().size());
+		assertEquals(16, FilterSettings.getAllJiraIssueTypes().size());
+		assertEquals(16, filterSettings.getSelectedJiraIssueTypes().size());
+		assertEquals(-1, filterSettings.getCreatedEarliest());
+		assertEquals(-1, filterSettings.getCreatedLatest());
 	}
 
 	@Test
@@ -68,13 +69,12 @@ public class TestGetFilterSettings extends TestSetUpWithIssues {
 		assertEquals(Response.Status.OK.getStatusCode(), filterSettingsResponse.getStatus());
 
 		FilterSettingsImpl filterSettings = (FilterSettingsImpl) filterSettingsResponse.getEntity();
-		assertEquals(6, filterSettings.getDocumentationLocations().size());
-		assertEquals(16, filterSettings.getAllIssueTypes().size());
-		List<String> issueTypesMatchingFilter = filterSettings.getIssueTypesMatchingFilter();
+		assertEquals(6, filterSettings.getNamesOfDocumentationLocations().size());
+		List<String> issueTypesMatchingFilter = filterSettings.getNamesOfSelectedJiraIssueTypes();
 		assertEquals("Issue", issueTypesMatchingFilter.get(3));
 		assertEquals(4, issueTypesMatchingFilter.size());
-		assertEquals(-1, filterSettings.getEndDate());
-		assertEquals(-1, filterSettings.getStartDate());
+		assertEquals(-1, filterSettings.getCreatedEarliest());
+		assertEquals(-1, filterSettings.getCreatedLatest());
 	}
 
 	@Test
@@ -83,9 +83,8 @@ public class TestGetFilterSettings extends TestSetUpWithIssues {
 		assertEquals(Response.Status.OK.getStatusCode(), filterSettingsResponse.getStatus());
 
 		FilterSettingsImpl filterSettings = (FilterSettingsImpl) filterSettingsResponse.getEntity();
-		assertEquals(6, filterSettings.getDocumentationLocations().size());
-		assertEquals(16, filterSettings.getAllIssueTypes().size());
-		assertEquals(-1, filterSettings.getEndDate());
-		assertEquals(-1, filterSettings.getStartDate());
+		assertEquals(6, filterSettings.getNamesOfDocumentationLocations().size());
+		assertEquals(-1, filterSettings.getCreatedEarliest());
+		assertEquals(-1, filterSettings.getCreatedLatest());
 	}
 }

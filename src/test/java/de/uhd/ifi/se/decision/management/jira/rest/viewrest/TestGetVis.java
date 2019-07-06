@@ -63,7 +63,7 @@ public class TestGetVis extends TestSetUpWithIssues {
 			doc[i] = docList.get(i);
 		}
 		filterSettings.setIssueTypes(ktypes);
-		filterSettings.setDocumentationLocation(doc);
+		filterSettings.setDocumentationLocations(doc);
 	}
 
 	@Test
