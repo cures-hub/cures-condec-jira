@@ -67,7 +67,7 @@ public class QueryHandler {
 			if (filterIsNumberCoded) {
 				finalQuery = queryFromFilterId(filterId);
 			} else {
-				finalQuery = queryFromFilterString(filteredQuery);
+				finalQuery = JiraFilter.getQueryFromPresetFilter(filteredQuery);
 			}
 		} else if (queryIsJQL) {
 			this.filterSettings.setSearchString(cropQuery());
@@ -146,43 +146,6 @@ public class QueryHandler {
 			SearchRequestManager srm = ComponentAccessor.getComponentOfType(SearchRequestManager.class);
 			SearchRequest filter = srm.getSharedEntity(id);
 			returnQuery = filter.getQuery().getQueryString();
-		}
-		return returnQuery;
-	}
-
-	private String queryFromFilterString(String filterQuery) {
-		String returnQuery;
-		switch (filterQuery) {
-		case "myopenissues": // My open issues
-			returnQuery = "assignee = currentUser() AND resolution = Unresolved";
-			break;
-		case "reportedbyme": // Reported by me
-			returnQuery = "reporter = currentUser()";
-			break;
-		case "recentlyviewfinalQueryed": // Viewed recently
-			returnQuery = "issuekey IN issueHistory()";
-			break;
-		case "allissues": // All issues
-			returnQuery = "type != null";
-			break;
-		case "allopenissues": // Open issues
-			returnQuery = "resolution = Unresolved";
-			break;
-		case "addedrecently": // Created recently
-			returnQuery = "created >= -1w";
-			break;
-		case "updatedrecently": // Updated recently
-			returnQuery = "updated >= -1w";
-			break;
-		case "resolvedrecently": // Resolved recently
-			returnQuery = "resolutiondate >= -1w";
-			break;
-		case "doneissues": // Done issues
-			returnQuery = "statusCategory = Done";
-			break;
-		default:
-			returnQuery = "type != null";
-			break;
 		}
 		return returnQuery;
 	}
