@@ -83,9 +83,11 @@ public class TestJiraQueryHandler extends TestSetUpWithIssues {
 	@Test
 	public void testGetDatesInQuery() {
 		assertTrue("1970-01-01".matches("\\d\\d\\d\\d-\\d\\d-\\d\\d(.)*"));
-		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "?jql=created >= 1970-01-02 AND created <= 1970-01-03");
-		assertEquals("created >= 1970-01-02 AND created <= 1970-01-03", jiraQueryHandler.getQuery());
-		assertEquals("1970-01-02 AND created <= 1970-01-03", jiraQueryHandler.getQuerySubstringWithTimeInformation());
+		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "?jql=resolution = Unresolved AND created >= 1970-01-02 AND created <= 1970-01-03");
+		assertEquals("resolution = Unresolved AND created >= 1970-01-02 AND created <= 1970-01-03", jiraQueryHandler.getQuery());
+		assertEquals("created >= 1970-01-02 AND created <= 1970-01-03", jiraQueryHandler.getQuerySubstringWithTimeInformation());
+		assertEquals("1970-01-02 AND created <= 1970-01-03", jiraQueryHandler.getQuerySubstringWithTimeInformation().split(">=")[1].trim());
+		
 		assertTrue(jiraQueryHandler.getCreatedEarliest() > 0);
 		assertTrue(jiraQueryHandler.getCreatedLatest() > 0);
 	}
@@ -93,7 +95,7 @@ public class TestJiraQueryHandler extends TestSetUpWithIssues {
 	@Test
 	public void testGetDatesInQueryFromTimeFactor() {
 		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "?jql=created >= -1m AND created <= -1w");
-		assertEquals("-1m AND created <= -1w", jiraQueryHandler.getQuerySubstringWithTimeInformation());
+		assertEquals("created >= -1m AND created <= -1w", jiraQueryHandler.getQuerySubstringWithTimeInformation());
 		assertTrue(jiraQueryHandler.getCreatedEarliest() > 100000000);
 		assertTrue(jiraQueryHandler.getCreatedLatest() > 100000000);
 

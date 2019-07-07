@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
@@ -53,10 +52,10 @@ public class TestJiraFilter extends TestSetUpWithIssues {
 		assertFalse(JiraFilter.containsJiraFilter("?jql="));
 	}
 
-	@Ignore
-	@Test
-	public void testGetQueryFromCustomFilter() {
-		// TODO Implement this test, mock SearchRequestManager for it
-		JiraFilter.getQueryForFilterId(1, "TEST");
-	}
+	// TODO Implement this test, mock SearchRequestManager for it
+	// @Ignore
+	// @Test
+	// public void testGetQueryFromCustomFilter() {
+	// JiraFilter.getQueryForFilterId(1, "TEST");
+	// }
 }

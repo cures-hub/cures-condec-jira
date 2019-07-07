@@ -12,15 +12,13 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 
 public class TestFilterSettings extends TestSetUpWithIssues {
 	private FilterSettings filterSettings;
-	private String searchString;
 	private long createDate;
 
 	@Before
 	public void setUp() {
 		initialization();
 		createDate = -1;
-		searchString = "?jql=project%20%3D%20CONDEC";
-		filterSettings = new FilterSettingsImpl("TEST", searchString, null);
+		filterSettings = new FilterSettingsImpl("TEST", "?jql=project%20%3D%20CONDEC", null);
 	}
 
 	@Test

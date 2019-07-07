@@ -104,19 +104,19 @@ public class JiraQueryHandler {
 	}
 
 	public String getQuerySubstringWithTimeInformation() {
-		return query.substring(11, query.length());
+		return query.substring(query.indexOf("created"), query.length());
 	}
 
 	public long getCreatedEarliest() {
 		if (!query.contains("created") || !query.contains(" >= ")) {
 			return -1;
 		}
-		String timeSubstringOfQuery = getQuerySubstringWithTimeInformation().split(" ")[0].trim();
+		String timeSubstringOfQuery = getQuerySubstringWithTimeInformation().split(">=")[1].trim();
 		long startTime = 0;
 		if (timeSubstringOfQuery.matches("(\\d\\d\\d\\d-\\d\\d-\\d\\d)(.)*")) {
 			// created >= 1970-01-01
 			startTime = getDateFromYearMonthDateFormat(timeSubstringOfQuery);
-		} else if (timeSubstringOfQuery.matches("(-\\d+(.))")) {
+		} else if (timeSubstringOfQuery.matches("(-\\d+(.)*)")) {
 			// created >= -1w
 			long currentDate = new Date().getTime();
 			startTime = getTimeFromNumberAndFactorLetter(currentDate, timeSubstringOfQuery);
@@ -133,7 +133,7 @@ public class JiraQueryHandler {
 		if (timeSubstringOfQuery.matches("(\\d\\d\\d\\d-\\d\\d-\\d\\d)(.)*")) {
 			// created <= 1970-01-01
 			endTime = getDateFromYearMonthDateFormat(timeSubstringOfQuery);
-		} else if (timeSubstringOfQuery.matches("-\\d+(.)+")) {
+		} else if (timeSubstringOfQuery.matches("-\\d+(.)*")) {
 			// created <= -1w
 			long currentDate = new Date().getTime();
 			endTime = getTimeFromNumberAndFactorLetter(currentDate, timeSubstringOfQuery);

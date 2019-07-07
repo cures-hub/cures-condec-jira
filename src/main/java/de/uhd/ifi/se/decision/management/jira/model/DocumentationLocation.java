@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -38,7 +37,7 @@ public enum DocumentationLocation {
 			return UNKNOWN;
 		}
 		// TODO: This should be the default persistence location.
-		if (identifier.equals("")) {
+		if (identifier.isEmpty()) {
 			return JIRAISSUE;
 		}
 		for (DocumentationLocation location : values()) {
