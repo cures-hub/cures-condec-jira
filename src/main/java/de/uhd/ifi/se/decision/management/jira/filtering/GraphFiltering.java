@@ -26,14 +26,11 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 public class GraphFiltering {
-	static final Logger LOGGER = LoggerFactory.getLogger(GraphFiltering.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GraphFiltering.class);
 
-	FilterSettings filterSettings;
-
-	ApplicationUser user;
-	List<Clause> resultingClauses;
-	String resultingQuery;
-	JiraQueryHandler queryHandler;
+	private ApplicationUser user;
+	public FilterSettings filterSettings;
+	private JiraQueryHandler queryHandler;
 
 	public JiraQueryHandler getQueryHandler() {
 		return queryHandler;
@@ -49,8 +46,8 @@ public class GraphFiltering {
 		JqlClauseBuilder clauseBuilder = JqlQueryBuilder.newClauseBuilder();
 		clauseBuilder.project(filterSettings.getProjectKey());
 		boolean first = true;
-		if (this.resultingClauses != null) {
-			for (Clause clause : this.resultingClauses) {
+		if (this.getQueryHandler().resultingClauses != null) {
+			for (Clause clause : this.getQueryHandler().resultingClauses) {
 				if (!matchesCreatedOrIssueType(clause)) {
 					JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(clauseBuilder.buildQuery());
 					if (first) {
@@ -112,13 +109,13 @@ public class GraphFiltering {
 			List<Clause> clauses = parseResult.getQuery().getWhereClause().getClauses();
 
 			if (!clauses.isEmpty()) {
-				this.resultingClauses = parseResult.getQuery().getWhereClause().getClauses();
+				this.getQueryHandler().resultingClauses = parseResult.getQuery().getWhereClause().getClauses();
 				queryHandler.findDatesInQuery(clauses);
 				queryHandler.getNamesOfJiraIssueTypesInQuery(clauses);
 			} else {
-				this.resultingQuery = queryHandler.getSearchService().getGeneratedJqlString(queryBuilder.buildQuery());
-				queryHandler.findDatesInQuery(this.resultingQuery);
-				queryHandler.getNamesOfJiraIssueTypesInQuery(this.resultingQuery);
+				this.getQueryHandler().resultingQuery = queryHandler.getSearchService().getGeneratedJqlString(queryBuilder.buildQuery());
+				queryHandler.findDatesInQuery(this.getQueryHandler().resultingQuery);
+				queryHandler.getNamesOfJiraIssueTypesInQuery(this.getQueryHandler().resultingQuery);
 			}
 			try {
 				final SearchResults<Issue> results = queryHandler.getSearchService().search(this.user,

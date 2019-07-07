@@ -35,7 +35,7 @@ public class FilterExtractor {
 			filterSettings.setSearchString("asdf§filter=-4");
 		}
 		filter = new GraphFiltering(filterSettings, user, false);
-		filter.getQueryHandler().getJiraIssuesFromQuery(filter, filterSettings.getSearchString());
+		filter.getQueryHandler().getJiraIssuesFromQuery(filter);
 		this.decisionKnowledgeElements = filter.getAllElementsMatchingQuery();
 		if (this.decisionKnowledgeElements == null) {
 			this.decisionKnowledgeElements = new ArrayList<>();
@@ -135,7 +135,7 @@ public class FilterExtractor {
 		if ((filterData.getSearchString().matches("\\?jql=(.)+"))
 				|| (filterData.getSearchString().matches("\\?filter=(.)+"))) {
 			GraphFiltering filter = new GraphFiltering(filterData, user, false);
-			filter.getQueryHandler().getJiraIssuesFromQuery(filter, filterData.getSearchString());
+			filter.getQueryHandler().getJiraIssuesFromQuery(filter);
 			graph = new GraphImplFiltered(filterData.getProjectKey(), elementKey, filter);
 		} else {
 			graph = new GraphImpl(filterData.getProjectKey(), elementKey);

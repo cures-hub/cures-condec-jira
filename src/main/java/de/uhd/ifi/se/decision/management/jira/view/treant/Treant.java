@@ -54,7 +54,7 @@ public class Treant {
 		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
 			FilterSettings filterSettings = new FilterSettingsImpl(projectKey, query);
 			GraphFiltering filter = new GraphFiltering(filterSettings, user, false);
-			filter.getQueryHandler().getJiraIssuesFromQuery(filter, filterSettings.getSearchString());
+			filter.getQueryHandler().getJiraIssuesFromQuery(filter);
 			this.graph = new GraphImplFiltered(projectKey, elementKey, filter);
 		} else {
 			this.graph = new GraphImpl(projectKey, elementKey);

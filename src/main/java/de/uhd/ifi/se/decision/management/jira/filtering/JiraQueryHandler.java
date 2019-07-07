@@ -29,6 +29,10 @@ public class JiraQueryHandler {
 	private String projectKey;
 	private JiraQueryType queryType;
 
+	List<Clause> resultingClauses;
+
+	String resultingQuery;
+
 	public JiraQueryHandler(ApplicationUser user, String projectKey, String query) {
 		this.searchService = ComponentAccessor.getComponentOfType(SearchService.class);
 		this.user = user;
@@ -227,10 +231,10 @@ public class JiraQueryHandler {
 		return queryType;
 	}
 
-	public List<Issue> getJiraIssuesFromQuery(GraphFiltering graphFiltering, String query) {
+	public List<Issue> getJiraIssuesFromQuery(GraphFiltering graphFiltering) {
 		ParseResult parseResult = getParseResult();
 		if (!parseResult.isValid()) {
-			GraphFiltering.LOGGER.error(parseResult.getErrors().toString());
+			LOGGER.error("Getting JIRA issues from JQL query failed. " + parseResult.getErrors().toString());
 			return new ArrayList<Issue>();
 		}
 	
@@ -238,22 +242,21 @@ public class JiraQueryHandler {
 		List<Clause> clauses = parseResult.getQuery().getWhereClause().getClauses();
 	
 		if (!clauses.isEmpty()) {
-			graphFiltering.resultingClauses = clauses;
+			resultingClauses = clauses;
 			findDatesInQuery(clauses);
 			graphFiltering.filterSettings.setIssueTypes(getNamesOfJiraIssueTypesInQuery(clauses));
 		} else {
 			String finalQuery = getQuery();
-			graphFiltering.resultingQuery = finalQuery;
+			resultingQuery = finalQuery;
 			findDatesInQuery(finalQuery);
 			graphFiltering.filterSettings.setIssueTypes(getNamesOfJiraIssueTypesInQuery(finalQuery));
 		}
 		try {
-			SearchResults<Issue> results = getSearchService().search(graphFiltering.user, parseResult.getQuery(),
+			SearchResults<Issue> results = getSearchService().search(user, parseResult.getQuery(),
 					PagerFilter.getUnlimitedFilter());
 			jiraIssues = JiraSearchServiceHelper.getJiraIssues(results);
 		} catch (SearchException e) {
-			GraphFiltering.LOGGER.error("Produce results from query failed. Message: " + e.getMessage());
-			e.printStackTrace();
+			LOGGER.error("Getting JIRA issues from JQL query failed. Message: " + e.getMessage());
 		}
 		return jiraIssues;
 	}
