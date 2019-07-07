@@ -38,7 +38,7 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 		for (int i = 0; i < docList.size(); i++) {
 			doc[i] = docList.get(i);
 		}
-		data.setIssueTypes(ktypes);
+		data.setNamesOfSelectedJiraIssueTypes(ktypes);
 		data.setDocumentationLocations(doc);
 		filterExtractor = new FilterExtractor(user, data);
 	}

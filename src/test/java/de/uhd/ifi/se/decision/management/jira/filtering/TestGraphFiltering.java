@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.view;
+package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import static org.junit.Assert.assertNotNull;
 

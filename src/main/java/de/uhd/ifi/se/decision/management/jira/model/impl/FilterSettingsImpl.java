@@ -14,7 +14,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
  * Model class for the filter settings.
@@ -24,24 +23,26 @@ public class FilterSettingsImpl implements FilterSettings {
 	private String projectKey;
 	private String searchString;
 	private List<DocumentationLocation> documentationLocations;
-	
-	// TODO Merge both lists
-	private List<String> issueTypes;
-	private List<IssueType> selectedJiraIssueTypes;
+	private List<String> namesOfSelectedJiraIssueTypes;
 
 	@XmlElement
 	private long startDate;
 	@XmlElement
 	private long endDate;
 
-	public FilterSettingsImpl() {
-		projectKey = "";
-		searchString = "";
-	}
-
 	public FilterSettingsImpl(String projectKey, String searchString) {
 		this.projectKey = projectKey;
 		this.searchString = searchString;
+		this.namesOfSelectedJiraIssueTypes = getAllJiraIssueTypes();
+		this.startDate = -1;
+		this.endDate = -1;
+		
+		// TODO Add method in enum class
+		this.documentationLocations = new ArrayList<>();
+		DocumentationLocation[] locations = DocumentationLocation.values();
+		for (DocumentationLocation location : locations) {
+			this.documentationLocations.add(location);
+		}
 	}
 
 	public FilterSettingsImpl(String projectKey, String searchString, long createdEarliest, long createdLatest) {
@@ -60,28 +61,19 @@ public class FilterSettingsImpl implements FilterSettings {
 			String[] documentationLocations, String[] knowledgeTypes) {
 		this(projectKey, searchString, createdEarliest, createdLatest);
 		this.setDocumentationLocations(documentationLocations);
-		this.setIssueTypes(knowledgeTypes);
+		this.setNamesOfSelectedJiraIssueTypes(knowledgeTypes);
 	}
 
-	public FilterSettingsImpl(String projectKey, String query, ApplicationUser user) {
-		this.selectedJiraIssueTypes = new ArrayList<IssueType>(
-				ComponentAccessor.getConstantsManager().getAllIssueTypeObjects());
+	public FilterSettingsImpl(String projectKey, String query, ApplicationUser user) {		
+		this(projectKey, query);
 
-		this.startDate = -1;
-		this.endDate = -1;
-
-		initFilterSettingsFromQuery(user, projectKey, query);
-
-		this.documentationLocations = new ArrayList<>();
-		DocumentationLocation[] locations = DocumentationLocation.values();
-		for (DocumentationLocation location : locations) {
-			this.documentationLocations.add(location);
-		}
-	}
-
-	public void initFilterSettingsFromQuery(ApplicationUser user, String projectKey, String query) {
 		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, query);
-		this.issueTypes = queryHandler.getNamesOfJiraIssueTypesInQuery();
+		this.searchString = queryHandler.getQuery();
+		
+		List<String> namesOfJiraIssueTypesInQuery = queryHandler.getNamesOfJiraIssueTypesInQuery();
+		if (!namesOfJiraIssueTypesInQuery.isEmpty()) {
+			this.namesOfSelectedJiraIssueTypes = namesOfJiraIssueTypesInQuery;
+		}
 
 		this.startDate = queryHandler.getCreatedEarliest();
 		this.endDate = queryHandler.getCreatedLatest();
@@ -163,50 +155,28 @@ public class FilterSettingsImpl implements FilterSettings {
 	}
 
 	@Override
-	public List<String> getIssueTypes() {
-		if (issueTypes == null) {
-			issueTypes = new ArrayList<>();
-			for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
-				issueTypes.add(type.name());
-			}
+	@XmlElement(name = "selectedJiraIssueTypes")
+	public List<String> getNamesOfSelectedJiraIssueTypes() {
+		if (namesOfSelectedJiraIssueTypes == null) {
+			namesOfSelectedJiraIssueTypes = getAllJiraIssueTypes();
 		}
-		return issueTypes;
+		return namesOfSelectedJiraIssueTypes;
 	}
 
 	@Override
 	@JsonProperty("issueTypes")
-	public void setIssueTypes(String[] issueTypesArray) {
-		issueTypes = new ArrayList<>();
-		for (String typeString : issueTypesArray) {
-			issueTypes.add(typeString);
+	public void setNamesOfSelectedJiraIssueTypes(String[] namesOfSelectedTypes) {
+		namesOfSelectedJiraIssueTypes = new ArrayList<>();
+		for (String typeString : namesOfSelectedTypes) {
+			namesOfSelectedJiraIssueTypes.add(typeString);
 		}
 	}
 
 	@Override
-	public void setIssueTypes(List<String> types) {
-		issueTypes = types;
+	public void setNamesOfSelectedJiraIssueTypes(List<String> types) {
+		namesOfSelectedJiraIssueTypes = types;
 	}
 
-	@Override
-	public List<IssueType> getSelectedJiraIssueTypes() {
-		return selectedJiraIssueTypes;
-	}
-
-	@Override
-	public void setSelectedJiraIssueTypes(List<IssueType> selectedJiraIssueTypes) {
-		this.selectedJiraIssueTypes = selectedJiraIssueTypes;
-	}
-	
-	@Override
-	@XmlElement(name = "selectedJiraIssueTypes")
-	public List<String> getNamesOfSelectedJiraIssueTypes() {
-		List<String> issueTypesMatchingFilter = new ArrayList<String>();
-		for (IssueType type : selectedJiraIssueTypes) {
-			issueTypesMatchingFilter.add(type.getName());
-		}
-		return issueTypesMatchingFilter;
-	}
-	
 	@Override
 	@XmlElement(name = "allJiraIssueTypes")
 	public List<String> getAllJiraIssueTypes() {

@@ -62,7 +62,7 @@ public class TestGetVis extends TestSetUpWithIssues {
 		for (int i = 0; i < docList.size(); i++) {
 			doc[i] = docList.get(i);
 		}
-		filterSettings.setIssueTypes(ktypes);
+		filterSettings.setNamesOfSelectedJiraIssueTypes(ktypes);
 		filterSettings.setDocumentationLocations(doc);
 	}
 

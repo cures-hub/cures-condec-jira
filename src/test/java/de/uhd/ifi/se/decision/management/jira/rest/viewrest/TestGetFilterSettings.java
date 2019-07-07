@@ -57,7 +57,7 @@ public class TestGetFilterSettings extends TestSetUpWithIssues {
 		FilterSettings filterSettings = (FilterSettings) filterSettingsResponse.getEntity();
 		assertEquals(6, filterSettings.getNamesOfDocumentationLocations().size());
 		assertEquals(16, filterSettings.getAllJiraIssueTypes().size());
-		assertEquals(16, filterSettings.getSelectedJiraIssueTypes().size());
+		assertEquals(16, filterSettings.getNamesOfSelectedJiraIssueTypes().size());
 		assertEquals(-1, filterSettings.getCreatedEarliest());
 		assertEquals(-1, filterSettings.getCreatedLatest());
 	}
@@ -71,8 +71,8 @@ public class TestGetFilterSettings extends TestSetUpWithIssues {
 		FilterSettingsImpl filterSettings = (FilterSettingsImpl) filterSettingsResponse.getEntity();
 		assertEquals(6, filterSettings.getNamesOfDocumentationLocations().size());
 		List<String> issueTypesMatchingFilter = filterSettings.getNamesOfSelectedJiraIssueTypes();
-//		assertEquals("Issue", issueTypesMatchingFilter.get(3));
-//		assertEquals(4, issueTypesMatchingFilter.size());
+		assertEquals("Issue", issueTypesMatchingFilter.get(0));
+		assertEquals(1, issueTypesMatchingFilter.size());
 		assertEquals(-1, filterSettings.getCreatedEarliest());
 		assertEquals(-1, filterSettings.getCreatedLatest());
 	}

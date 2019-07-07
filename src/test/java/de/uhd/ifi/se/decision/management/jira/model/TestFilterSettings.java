@@ -35,15 +35,10 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 		for (int i = 0; i < docList.size(); i++) {
 			doc[i] = docList.get(i);
 		}
-		filterSettings.setIssueTypes(knowledgeTypesStringArray);
+		filterSettings.setNamesOfSelectedJiraIssueTypes(knowledgeTypesStringArray);
 		filterSettings.setDocumentationLocations(doc);
 	}
-
-	@Test
-	public void testEmptyConstructor() {
-		assertNotNull(new FilterSettingsImpl());
-	}
-
+	
 	@Test
 	public void testKeySearchConstructor() {
 		FilterSettings data = new FilterSettingsImpl("TEST", "search string");
@@ -135,7 +130,7 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 			}
 			position++;
 		}
-		filterSettings.setIssueTypes(newLocations);
+		filterSettings.setNamesOfSelectedJiraIssueTypes(newLocations);
 		for (String location : newLocations) {
 			assertTrue(filterSettings.getDocumentationLocations()
 					.contains(DocumentationLocation.getDocumentationLocationFromString(location)));
@@ -144,8 +139,8 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 
 	@Test
 	public void testGetIssueTypes() {
-		assertEquals(18, filterSettings.getIssueTypes().size());
-		assertTrue(filterSettings.getIssueTypes().contains("Decision"));
+		assertEquals(18, filterSettings.getNamesOfSelectedJiraIssueTypes().size());
+		assertTrue(filterSettings.getNamesOfSelectedJiraIssueTypes().contains("Decision"));
 	}
 
 	@Test
@@ -160,9 +155,9 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 			}
 			position++;
 		}
-		filterSettings.setIssueTypes(newIssueTypes);
+		filterSettings.setNamesOfSelectedJiraIssueTypes(newIssueTypes);
 		for (String type : newIssueTypes) {
-			assertTrue(filterSettings.getIssueTypes().contains(KnowledgeType.getKnowledgeType(type).toString()));
+			assertTrue(filterSettings.getNamesOfSelectedJiraIssueTypes().contains(KnowledgeType.getKnowledgeType(type).toString()));
 		}
 	}
 }

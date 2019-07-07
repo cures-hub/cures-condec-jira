@@ -110,39 +110,16 @@ public interface FilterSettings {
 	 *
 	 * @return list of knowledge types of the filter
 	 */
-	List<String> getIssueTypes();
+	List<String> getNamesOfSelectedJiraIssueTypes();
 
 	/**
 	 * Set the issue types that are used in the filter from the issueTypeString to
 	 * the knowledge type list.
 	 *
-	 * @param issueTypesArray
+	 * @param namesOfSelectedTypes
 	 *            from the json
 	 */
-	void setIssueTypes(String[] issueTypesArray);
-
-	/**
-	 * Set the issuetypes that are used in the filter from a list of Knowledge
-	 * Types.
-	 *
-	 * @param types
-	 */
-	void setIssueTypes(List<String> types);
-
-	/**
-	 * Set the JIRA issue types to be shown in the knowledge graph as a list.
-	 *
-	 * @param selectedJiraIssueTypes
-	 *            list of JIRA {@link IssueType}s.
-	 */
-	void setSelectedJiraIssueTypes(List<IssueType> selectedJiraIssueTypes);
-
-	/**
-	 * Returns the JIRA issue types to be shown in the knowledge graph as a list.
-	 *
-	 * @return list of JIRA {@link IssueType}s.
-	 */
-	List<IssueType> getSelectedJiraIssueTypes();
+	void setNamesOfSelectedJiraIssueTypes(String[] namesOfSelectedTypes);
 
 	/**
 	 * Returns the names of the JIRA issue types to be shown in the knowledge graph
@@ -150,7 +127,7 @@ public interface FilterSettings {
 	 *
 	 * @return list of names of JIRA {@link IssueType}s.
 	 */
-	List<String> getNamesOfSelectedJiraIssueTypes();
+	void setNamesOfSelectedJiraIssueTypes(List<String> types);
 
 	/**
 	 * TODO This method should only return JIRA issue types of the current project.
