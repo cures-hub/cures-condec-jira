@@ -46,25 +46,6 @@ public class FilterSettingsImpl implements FilterSettings {
 		this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
 	}
 
-	public FilterSettingsImpl(String projectKey, String searchString, long createdEarliest, long createdLatest) {
-		this(projectKey, searchString);
-		this.startDate = createdEarliest;
-		this.endDate = createdLatest;
-	}
-
-	public FilterSettingsImpl(String projectKey, String searchString, long createdEarliest, long createdLatest,
-			String[] documentationLocations) {
-		this(projectKey, searchString, createdEarliest, createdLatest);
-		this.setDocumentationLocations(documentationLocations);
-	}
-
-	public FilterSettingsImpl(String projectKey, String searchString, long createdEarliest, long createdLatest,
-			String[] documentationLocations, String[] knowledgeTypes) {
-		this(projectKey, searchString, createdEarliest, createdLatest);
-		this.setDocumentationLocations(documentationLocations);
-		this.setNamesOfSelectedJiraIssueTypesAsArray(knowledgeTypes);
-	}
-
 	public FilterSettingsImpl(String projectKey, String query, ApplicationUser user) {
 		this(projectKey, query);
 
@@ -147,10 +128,13 @@ public class FilterSettingsImpl implements FilterSettings {
 
 	@Override
 	@JsonProperty("documentationLocationList")
-	public void setDocumentationLocations(String[] documentationLocationArray) {
-		documentationLocations = new ArrayList<>();
-		for (String location : documentationLocationArray) {
-			documentationLocations.add(DocumentationLocation.getDocumentationLocationFromString(location));
+	public void setDocumentationLocations(List<String> namesOfDocumentationLocations) {
+		this.documentationLocations = new ArrayList<>();
+		if (namesOfDocumentationLocations == null) {
+			return;
+		}
+		for (String location : namesOfDocumentationLocations) {
+			this.documentationLocations.add(DocumentationLocation.getDocumentationLocationFromString(location));
 		}
 	}
 
@@ -165,15 +149,7 @@ public class FilterSettingsImpl implements FilterSettings {
 
 	@Override
 	@JsonProperty("issueTypes")
-	public void setNamesOfSelectedJiraIssueTypesAsArray(String[] namesOfSelectedTypes) {
-		namesOfSelectedJiraIssueTypes = new ArrayList<>();
-		for (String typeString : namesOfSelectedTypes) {
-			namesOfSelectedJiraIssueTypes.add(typeString);
-		}
-	}
-
-	@Override
-	public void setNamesOfSelectedJiraIssueTypes(List<String> types) {
+	public void setNamesOfSelectedJiraIssueTypesArray(List<String> types) {
 		namesOfSelectedJiraIssueTypes = types;
 	}
 

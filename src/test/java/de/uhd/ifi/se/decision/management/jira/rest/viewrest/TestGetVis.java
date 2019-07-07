@@ -51,7 +51,7 @@ public class TestGetVis extends TestSetUpWithIssues {
 				new MockUserManager());
 		request = new MockHttpServletRequest();
 		String jql = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
-		filterSettings = new FilterSettingsImpl("TEST", jql, System.currentTimeMillis() - 100, System.currentTimeMillis());
+		filterSettings = new FilterSettingsImpl("TEST", jql, null);
 		String[] ktypes = new String[KnowledgeType.toList().size()];
 		List<String> typeList = KnowledgeType.toList();
 		for (int i = 0; i < typeList.size(); i++) {
@@ -62,8 +62,9 @@ public class TestGetVis extends TestSetUpWithIssues {
 		for (int i = 0; i < docList.size(); i++) {
 			doc[i] = docList.get(i);
 		}
-		filterSettings.setNamesOfSelectedJiraIssueTypesAsArray(ktypes);
-		filterSettings.setDocumentationLocations(doc);
+		// TODO
+	//	filterSettings.setNamesOfSelectedJiraIssueTypesAsArray(ktypes);
+		//filterSettings.setDocumentationLocations(doc);
 	}
 
 	@Test

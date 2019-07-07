@@ -2,8 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import static org.junit.Assert.assertNotNull;
 
-import javax.ejb.CreateException;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +12,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.filtering.GraphFiltering;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
@@ -34,7 +31,7 @@ public class TestGraphFiltering extends TestSetUpWithIssues {
 	private ApplicationUser user;
 
 	@Before
-	public void setUp() throws CreateException {
+	public void setUp() {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());

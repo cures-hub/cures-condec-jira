@@ -72,37 +72,35 @@ public class TestJiraQueryHandler extends TestSetUpWithIssues {
 		List<String> types = jiraQueryHandler.getNamesOfJiraIssueTypesInQuery();
 		assertEquals(3, types.size());
 	}
-	
+
 	@Test
 	public void testGetDatesNoDatesInQuery() {
 		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "");
 		assertEquals(-1, jiraQueryHandler.getCreatedEarliest());
 		assertEquals(-1, jiraQueryHandler.getCreatedLatest());
 	}
-	
+
 	@Test
 	public void testGetDatesInQuery() {
 		assertTrue("1970-01-01".matches("\\d\\d\\d\\d-\\d\\d-\\d\\d(.)*"));
-		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "?jql=created >= 1970-01-01 AND created <= 1970-01-03");
-		assertEquals("created >= 1970-01-01 AND created <= 1970-01-03", jiraQueryHandler.getQuery());
-		assertEquals("1970-01-01 AND created <= 1970-01-03", jiraQueryHandler.getQuerySubstringWithTimeInformation());
-		assertEquals(-3600000, jiraQueryHandler.getCreatedEarliest());
+		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "?jql=created >= 1970-01-02 AND created <= 1970-01-03");
+		assertEquals("created >= 1970-01-02 AND created <= 1970-01-03", jiraQueryHandler.getQuery());
+		assertEquals("1970-01-02 AND created <= 1970-01-03", jiraQueryHandler.getQuerySubstringWithTimeInformation());
+		assertEquals(82800000, jiraQueryHandler.getCreatedEarliest());
 		assertEquals(169200000, jiraQueryHandler.getCreatedLatest());
-	}	
-	
+	}
+
 	@Test
 	public void testGetDatesInQueryFromTimeFactor() {
 		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "?jql=created >= -1m AND created <= -1w");
 		assertEquals("-1m AND created <= -1w", jiraQueryHandler.getQuerySubstringWithTimeInformation());
 		assertTrue(jiraQueryHandler.getCreatedEarliest() > 100000000);
 		assertTrue(jiraQueryHandler.getCreatedLatest() > 100000000);
-		
+
 		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "?jql=created >= -1d AND created <= -1h");
 		assertTrue(jiraQueryHandler.getCreatedEarliest() > 100000000);
 		assertTrue(jiraQueryHandler.getCreatedLatest() > 100000000);
-	}	
-	
-	
+	}
 
 	@Test
 	public void testGetClauses() {

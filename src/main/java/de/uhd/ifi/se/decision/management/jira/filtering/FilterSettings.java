@@ -45,7 +45,7 @@ public interface FilterSettings {
 	String getSearchString();
 
 	/**
-	 * Set the search string of the filter.
+	 * Sets the search string of the filter.
 	 *
 	 * @param searchString
 	 */
@@ -59,7 +59,7 @@ public interface FilterSettings {
 	long getCreatedEarliest();
 
 	/**
-	 * Set the earliest date when a element is created as a String.
+	 * Sets the earliest date when a element is created as a String.
 	 *
 	 * @param createdEarliest
 	 *            String with a long
@@ -104,7 +104,7 @@ public interface FilterSettings {
 	 * @param documentationLocations
 	 *            whit the locations as string
 	 */
-	void setDocumentationLocations(String[] documentationLocations);
+	void setDocumentationLocations(List<String> documentationLocations);
 
 	/**
 	 * Gets the selected knowledge types from the filter
@@ -114,21 +114,12 @@ public interface FilterSettings {
 	List<String> getNamesOfSelectedJiraIssueTypes();
 
 	/**
-	 * Set the issue types that are used in the filter from the issueTypeString to
-	 * the knowledge type list.
-	 *
-	 * @param namesOfSelectedTypes
-	 *            from the json
-	 */
-	void setNamesOfSelectedJiraIssueTypesAsArray(String[] namesOfSelectedTypes);
-
-	/**
 	 * Returns the names of the JIRA issue types to be shown in the knowledge graph
 	 * as a list.
 	 *
 	 * @return list of names of JIRA {@link IssueType}s.
 	 */
-	void setNamesOfSelectedJiraIssueTypes(List<String> types);
+	void setNamesOfSelectedJiraIssueTypesArray(List<String> types);
 
 	/**
 	 * TODO This method should only return JIRA issue types of the current project.

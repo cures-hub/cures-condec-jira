@@ -27,7 +27,7 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 		initialization();
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		jql = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
-		data = new FilterSettingsImpl("TEST", jql, System.currentTimeMillis() - 100, System.currentTimeMillis());
+		data = new FilterSettingsImpl("TEST", jql, user);
 		String[] ktypes = new String[KnowledgeType.toList().size()];
 		List<String> typeList = KnowledgeType.toList();
 		for (int i = 0; i < typeList.size(); i++) {
@@ -38,8 +38,8 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 		for (int i = 0; i < docList.size(); i++) {
 			doc[i] = docList.get(i);
 		}
-		data.setNamesOfSelectedJiraIssueTypesAsArray(ktypes);
-		data.setDocumentationLocations(doc);
+		//data.setNamesOfSelectedJiraIssueTypesAsArray(ktypes);
+		//data.setDocumentationLocations(doc);
 		filterExtractor = new FilterExtractor(user, data);
 	}
 
