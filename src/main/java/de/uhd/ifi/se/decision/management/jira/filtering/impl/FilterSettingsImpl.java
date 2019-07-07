@@ -110,9 +110,6 @@ public class FilterSettingsImpl implements FilterSettings {
 
 	@Override
 	public List<DocumentationLocation> getDocumentationLocations() {
-		if (this.documentationLocations == null) {
-			this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
-		}
 		return documentationLocations;
 	}
 
@@ -149,8 +146,8 @@ public class FilterSettingsImpl implements FilterSettings {
 
 	@Override
 	@JsonProperty("issueTypes")
-	public void setNamesOfSelectedJiraIssueTypesArray(List<String> types) {
-		namesOfSelectedJiraIssueTypes = types;
+	public void setSelectedJiraIssueTypes(List<String> namesOfTypes) {
+		namesOfSelectedJiraIssueTypes = namesOfTypes;
 	}
 
 	@Override

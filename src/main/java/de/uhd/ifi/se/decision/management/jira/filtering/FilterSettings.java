@@ -119,7 +119,7 @@ public interface FilterSettings {
 	 *
 	 * @return list of names of JIRA {@link IssueType}s.
 	 */
-	void setNamesOfSelectedJiraIssueTypesArray(List<String> types);
+	void setSelectedJiraIssueTypes(List<String> types);
 
 	/**
 	 * TODO This method should only return JIRA issue types of the current project.
