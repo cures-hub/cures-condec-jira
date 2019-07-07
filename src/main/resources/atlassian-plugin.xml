@@ -47,7 +47,7 @@
 		<resource type="download" name="assumption.png" location="/images/assumption.png" />
 		<resource type="download" name="assessment.png" location="/images/assessment.png" />
 		<resource type="download" name="codesummarization.png" location="/images/codesummarization.png" />
-		<!-- vis.js icons -->
+		<!-- visGraph.js icons -->
 		<resource type="download" name="addNodeIcon.png" location="/images/addNodeIcon.png" />
 		<resource type="download" name="backIcon.png" location="/images/backIcon.png" />
 		<resource type="download" name="editIcon.png" location="/images/editIcon.png" />

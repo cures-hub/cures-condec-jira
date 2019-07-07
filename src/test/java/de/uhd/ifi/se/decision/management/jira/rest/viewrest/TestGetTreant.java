@@ -83,15 +83,6 @@ public class TestGetTreant extends TestSetUpWithIssues {
 		assertEquals(200, viewRest.getTreant("TEST-12", "3", "", request).getStatus());
 	}
 
-	// @Test
-	// @NonTransactional
-	// public void testElementExistsDepthNumberSearchNotEmpty() {
-	// request.setAttribute("WithFails", false);
-	// request.setAttribute("NoFails", true);
-	// assertEquals(200,viewRest.getTreant("TEST-12", "3", "?jql= type!=null",
-	// request).getStatus());
-	// }
-
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
 		@SuppressWarnings("unchecked")
 		@Override

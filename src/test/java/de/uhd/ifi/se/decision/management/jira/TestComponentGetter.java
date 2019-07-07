@@ -16,6 +16,7 @@ import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockSearchService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 
 public class TestComponentGetter {
@@ -41,7 +42,7 @@ public class TestComponentGetter {
 		transactionTemplate = mock(TransactionTemplate.class);
 		issueService = mock(IssueService.class);
 		projectService = mock(ProjectService.class);
-		searchService = mock(SearchService.class);
+		searchService = new MockSearchService();
 		userManager = new MockUserManager();
 		templateRenderer = mock(TemplateRenderer.class);
 		activeObjects = mock(ActiveObjects.class);

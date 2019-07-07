@@ -37,51 +37,15 @@ public enum KnowledgeType {
 	 * @return knowledge type.
 	 */
 	public static KnowledgeType getKnowledgeType(String type) {
-		if (type == null) {
+		if (type == null || type.isEmpty()) {
 			return KnowledgeType.OTHER;
 		}
-		switch (type.toLowerCase(Locale.ENGLISH)) {
-		case "decision":
-			return KnowledgeType.DECISION;
-		case "constraint":
-			return KnowledgeType.CONSTRAINT;
-		case "assumption":
-			return KnowledgeType.ASSUMPTION;
-		case "implication":
-			return KnowledgeType.IMPLICATION;
-		case "context":
-			return KnowledgeType.CONTEXT;
-		case "problem":
-			return KnowledgeType.PROBLEM;
-		case "issue":
-			return KnowledgeType.ISSUE;
-		case "goal":
-			return KnowledgeType.GOAL;
-		case "solution":
-			return KnowledgeType.SOLUTION;
-		case "claim":
-			return KnowledgeType.CLAIM;
-		case "alternative":
-			return KnowledgeType.ALTERNATIVE;
-		case "rationale":
-			return KnowledgeType.RATIONALE;
-		case "question":
-			return KnowledgeType.QUESTION;
-		case "argument":
-			return KnowledgeType.ARGUMENT;
-		case "pro-argument":
-			return KnowledgeType.PRO;
-		case "pro":
-			return KnowledgeType.PRO;
-		case "con-argument":
-			return KnowledgeType.CON;
-		case "con":
-			return KnowledgeType.CON;
-		case "assessment":
-			return KnowledgeType.ASSESSMENT;
-		default:
-			return KnowledgeType.OTHER;
+		for (KnowledgeType knowledgeType : KnowledgeType.values()) {
+			if (knowledgeType.name().toLowerCase(Locale.ENGLISH).matches(type.toLowerCase(Locale.ENGLISH) + "(.)*")) {
+				return knowledgeType;
+			}
 		}
+		return OTHER;
 	}
 
 	/**

@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -250,7 +250,6 @@ public class KnowledgeRest {
 
 	@Path("/getElements")
 	@GET
-
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getElements(@QueryParam("allTrees") boolean allTrees, @QueryParam("projectKey") String projectKey,
 			@QueryParam("query") String query, @QueryParam("elementKey") String elementKey,
@@ -262,13 +261,13 @@ public class KnowledgeRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		List<DecisionKnowledgeElement> queryResult = new ArrayList<DecisionKnowledgeElement>();
-
+		FilterExtractor extractor = new FilterExtractor(projectKey,user, query);
 		if (allTrees) {
 			List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
-			elementsQueryLinked = FilteringManager.getGraphsMatchingQuery(user, projectKey, query, "");
+			elementsQueryLinked = extractor.getGraphsMatchingQuery("");
 			return Response.ok(elementsQueryLinked).build();
 		} else {
-			queryResult = FilteringManager.getElementsInGraph(user, projectKey, query, elementKey);
+			queryResult = extractor.getAllElementsMatchingQuery();
 		}
 		return Response.ok(queryResult).build();
 	}

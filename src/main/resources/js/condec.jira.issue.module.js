@@ -104,10 +104,10 @@
 	}
 
 	function applyFilters() {
-		var issueTypes = "";
+		var issueTypes = [];
 		var createdAfter = -1;
 		var createdBefore = -1;
-		var documentationLocation = "";
+		var documentationLocation = [];
 		var nodeDistance = 4;
 		if (!isNaN(document.getElementById("created-after-picker").valueAsNumber)) {
 			createdAfter = document.getElementById("created-after-picker").valueAsNumber;
@@ -118,16 +118,14 @@
 		for (var i = 0; i < AJS.$('#issuetype-dropdown').children().size(); i++) {
 			if (typeof AJS.$('#issuetype-dropdown').children().eq(i).attr('checked') !== typeof undefined
 					&& AJS.$('#issuetype-dropdown').children().eq(i).attr('checked') !== false) {
-				issueTypes = issueTypes + AJS.$('#issuetype-dropdown').children().eq(i).text();
-				issueTypes = issueTypes + ",";
-			}
+                issueTypes.push(AJS.$('#issuetype-dropdown').children().eq(i).text());
+            }
 		}
 		for (var j = 0; j < AJS.$('#documentation-dropdown').children().size(); j++) {
 			if (typeof AJS.$('#documentation-dropdown').children().eq(j).attr('checked') !== typeof undefined
 					&& AJS.$('#documentation-dropdown').children().eq(j).attr('checked') !== false) {
-				documentationLocation = documentationLocation
-						+ AJS.$('#documentation-dropdown').children().eq(j).text();
-			}
+                documentationLocation.push(AJS.$('#documentation-dropdown').children().eq(j).text() );
+            }
 		}
 		var nodeDistanceInput = document.getElementById("node-distance-picker");
 		if (nodeDistanceInput !== null) {
@@ -139,16 +137,14 @@
 
 	function initFilter(issueKey, search) {
 		console.log("ConDecJiraIssueModule initFilter");
-		var checkedItems;
 		var issueTypeDropdown = document.getElementById("issuetype-dropdown");
 		var firstDatePicker = document.getElementById("created-after-picker");
 		var secondDatePicker = document.getElementById("created-before-picker");
 		var documentationDropdown = document.getElementById("documentation-dropdown");
-		conDecAPI.getFilterData(issueKey, search, function(filterData) {
-			var allIssueTypes = filterData.allIssueTypes;
-			var selectedIssueTypes = filterData.issueTypesMatchingFilter;
+		conDecAPI.getFilterSettings(issueKey, search, function(filterData) {
+			var allIssueTypes = filterData.allJiraIssueTypes;
+			var selectedIssueTypes = filterData.selectedJiraIssueTypes;
 			var documentationLocation = filterData.documentationLocations;
-			checkedItems = selectedIssueTypes;
 			issueTypeDropdown.innerHTML = "";
 
 			for (var index = 0; index < allIssueTypes.length; index++) {

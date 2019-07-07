@@ -270,11 +270,12 @@
 	ConDecAPI.prototype.getSummarizedCode = function getSummarizedCode(id, documentationLocation, probability, callback) {
 		console.log(probability);
 		getText(AJS.contextPath() + "/rest/decisions/latest/decisions/getSummarizedCode?projectKey=" + projectKey
-				+ "&id=" + id + "&documentationLocation=" + documentationLocation + "&probability=" + probability, function(error, summary) {
-			if (error === null) {
-				callback(summary);
-			}
-		});
+				+ "&id=" + id + "&documentationLocation=" + documentationLocation + "&probability=" + probability,
+				function(error, summary) {
+					if (error === null) {
+						callback(summary);
+					}
+				});
 
 	};
 
@@ -306,37 +307,51 @@
 	 * external references: condec.vis
 	 */
 	ConDecAPI.prototype.getVis = function getVis(elementKey, searchTerm, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey + "&searchTerm="
-				+ searchTerm, function(error, vis) {
-			if (error === null) {
-				callback(vis);
-			}
-		});
+		var filterSettings = {
+			"projectKey" : projectKey,
+			"searchString" : searchTerm,
+			"createdEarliest" : -1,
+			"createdLatest" : -1,
+			"documentationLocations" : [ "" ],
+			"selectedJiraIssueTypes" : [ "" ]
+		};
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
+				filterSettings, function(error, vis) {
+					if (error === null) {
+						callback(vis);
+					}
+				});
 	};
 
 	/*
 	 * external references: condec.vis
 	 */
-	ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, issueTypes, createdAfter,
-			createdBefore, documentationLocation, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVisFiltered.json?elementKey=" + elementKey
-				+ "&searchTerm=" + searchTerm + "&issueTypes=" + issueTypes + "&createdAfter=" + createdAfter
-				+ "&createdBefore=" + createdBefore + "&documentationLocation=" + documentationLocation, function(
-				error, vis) {
-			if (error === null) {
-				callback(vis);
-			}
-		});
+	ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, selectedJiraIssueTypes, createdAfter,
+			createdBefore, documentationLocations, callback) {
+		var filterSettings = {
+			"projectKey" : projectKey,
+			"searchString" : searchTerm,
+			"createdEarliest" : createdBefore,
+			"createdLatest" : createdAfter,
+			"documentationLocations" : documentationLocations,
+			"selectedJiraIssueTypes" : selectedJiraIssueTypes
+		};
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
+				filterSettings, function(error, vis) {
+					if (error === null) {
+						callback(vis);
+					}
+				});
 	};
 
 	/*
 	 * external reference: condec.jira.issue.module
 	 */
-	ConDecAPI.prototype.getFilterData = function getFilterData(elementKey, searchTerm, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getFilterData.json?elementKey=" + elementKey
-				+ "&searchTerm=" + searchTerm, function(error, filterData) {
+	ConDecAPI.prototype.getFilterSettings = function getFilterSettings(elementKey, searchTerm, callback) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getFilterSettings.json?elementKey=" + elementKey
+				+ "&searchTerm=" + searchTerm, function(error, filterSettings) {
 			if (error === null) {
-				callback(filterData);
+				callback(filterSettings);
 			}
 		});
 	};
@@ -584,7 +599,7 @@
 		showFlag("error", "The classification process failed.");
 		return 0.0;
 	};
-	
+
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
@@ -637,10 +652,27 @@
 		});
 	};
 
+	function getResponseAsReturnValue(url) {
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", url, false);
+		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+		xhr.send();
+		return JSON.parse(xhr.response);
+	}
+
+	function postWithResponseAsReturnValue(url) {
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", url, false);
+		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+		xhr.send();
+		return JSON.parse(xhr.response);
+	}
+
 	function getJSON(url, callback) {
 		var xhr = new XMLHttpRequest();
 		xhr.open("GET", url, true);
 		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+		xhr.setRequestHeader("Accept", "application/json");
 		xhr.responseType = "json";
 		xhr.onload = function() {
 			var status = xhr.status;
@@ -652,7 +684,7 @@
 			}
 		};
 		xhr.send();
-	}
+	}	
 
 	function getText(url, callback) {
 		var xhr = new XMLHttpRequest();
@@ -668,22 +700,6 @@
 			}
 		};
 		xhr.send();
-	}
-
-	function getResponseAsReturnValue(url) {
-		var xhr = new XMLHttpRequest();
-		xhr.open("GET", url, false);
-		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-		xhr.send();
-		return JSON.parse(xhr.response);
-	}
-
-	function postWithResponseAsReturnValue(url) {
-		var xhr = new XMLHttpRequest();
-		xhr.open("POST", url, false);
-		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-		xhr.send();
-		return JSON.parse(xhr.response);
 	}
 
 	function postJSON(url, data, callback) {

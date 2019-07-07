@@ -12,9 +12,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
-import com.atlassian.jira.user.ApplicationUser;
-
-import de.uhd.ifi.se.decision.management.jira.filtering.GraphFiltering;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
@@ -23,7 +20,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 
 @XmlRootElement(name = "vis")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Vis {
+public class VisGraph {
 	@XmlElement
 	private HashSet<VisNode> nodes;
 	@XmlElement
@@ -46,42 +43,20 @@ public class Vis {
 	@JsonIgnore
 	private int cid;
 
-	public Vis() {
+	public VisGraph() {
 	}
 
-	public Vis(String projectKey, String elementKey) {
+	public VisGraph(String projectKey, String elementKey, List<DecisionKnowledgeElement> elements,
+			boolean isHyperlinked) {
 		this.graph = new GraphImpl(projectKey, elementKey);
-		this.elementsAlreadyAsNode = new ArrayList<>();
-		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
-		this.rootElementKey = (rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString());
-		nodes = new HashSet<>();
-		edges = new HashSet<>();
-		elementsAlreadyAsNode = new ArrayList<>();
-		elementsMatchingFilterCriteria = graph.getAllElements();
-		level = 50;
-		cid = 0;
+
 		for (DocumentationLocation location : DocumentationLocation.values()) {
 			this.documentationLocation = this.documentationLocation + DocumentationLocation.getName(location);
 		}
-		fillNodesAndEdges(rootElement, null, 0, 0);
-	}
-
-	public Vis(String projectKey, String elementKey, boolean isHyperlinked, String query, ApplicationUser user) {
-		this.graph = new GraphImpl(projectKey, elementKey);
-		GraphFiltering filter;
-		for (DocumentationLocation location : DocumentationLocation.values()) {
-			this.documentationLocation = this.documentationLocation + DocumentationLocation.getName(location);
-		}
-		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
-			filter = new GraphFiltering(projectKey, query, user, false);
-			filter.produceResultsFromQuery();
-			this.elementsMatchingFilterCriteria = filter.getAllElementsMatchingQuery();
-			// this.graph = new GraphImplFiltered(projectKey, elementKey, filter);
+		if (elements == null) {
+			this.elementsMatchingFilterCriteria = graph.getAllElements();
 		} else {
-			// set filter to all Issues
-			filter = new GraphFiltering(projectKey, "asdf§filter=-4", user, false);
-			filter.produceResultsFromQuery();
-			this.elementsMatchingFilterCriteria = filter.getAllElementsMatchingQuery();
+			this.elementsMatchingFilterCriteria = elements;
 		}
 		this.setHyperlinked(isHyperlinked);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
@@ -94,27 +69,8 @@ public class Vis {
 		fillNodesAndEdges(rootElement, null, level, cid);
 	}
 
-	public Vis(String projectKey, String elementKey, boolean isHyperlinked, String searchTerm, ApplicationUser user,
-			String issueTypes, long createdEarliest, long createdLatest, String documentationLocation) {
-		this.graph = new GraphImpl(projectKey, elementKey);
-		GraphFiltering filter;
-		filter = new GraphFiltering(projectKey, searchTerm, user, false);
-		filter.produceResultsWithAdditionalFilters(issueTypes, createdEarliest, createdLatest);
-		this.elementsMatchingFilterCriteria = filter.getAllElementsMatchingQuery();
-		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
-		this.isHyperlinked = isHyperlinked;
-		this.rootElementKey = (rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString());
-		this.documentationLocation = documentationLocation;
-		nodes = new HashSet<>();
-		edges = new HashSet<>();
-		elementsAlreadyAsNode = new ArrayList<>();
-		level = 50;
-		cid = 0;
-		fillNodesAndEdges(rootElement, null, level, cid);
-	}
-
-	// TODO Fix complexity of this function
-	// Way to big needs to be split in small functions
+	// TODO Reduce complexity of this function
+	// Way too big needs to be split in small functions
 	private void fillNodesAndEdges(DecisionKnowledgeElement element, Link link, int level, int cid) {
 		if (element == null || element.getProject() == null) {
 			return;

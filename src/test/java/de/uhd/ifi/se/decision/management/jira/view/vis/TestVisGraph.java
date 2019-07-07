@@ -27,10 +27,10 @@ import net.java.ao.test.jdbc.DatabaseUpdater;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestVis.AoSentenceTestDatabaseUpdater.class)
-public class TestVis extends TestSetUpWithIssues {
+@Data(TestVisGraph.AoSentenceTestDatabaseUpdater.class)
+public class TestVisGraph extends TestSetUpWithIssues {
 	private EntityManager entityManager;
-	private Vis vis;
+	private VisGraph visGraph;
 	private HashSet<VisNode> nodes;
 	private HashSet<VisEdge> edges;
 	private DecisionKnowledgeElement element;
@@ -42,9 +42,9 @@ public class TestVis extends TestSetUpWithIssues {
 				new MockUserManager());
 		nodes = new HashSet<>();
 		edges = new HashSet<>();
-		vis = new Vis();
-		vis.setEdges(edges);
-		vis.setNodes(nodes);
+		visGraph = new VisGraph();
+		visGraph.setEdges(edges);
+		visGraph.setNodes(nodes);
 
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
 		element.setProject(new DecisionKnowledgeProjectImpl("Test"));
@@ -52,32 +52,32 @@ public class TestVis extends TestSetUpWithIssues {
 
 	@Test
 	public void testGetNodes() {
-		assertEquals(this.vis.getNodes(), this.nodes);
+		assertEquals(this.visGraph.getNodes(), this.nodes);
 	}
 
 	@Test
 	public void testGetEdges() {
-		assertEquals(this.vis.getEdges(), this.edges);
+		assertEquals(this.visGraph.getEdges(), this.edges);
 	}
 
 	@Test
 	public void testSetNodes() {
 		HashSet<VisNode> newNodes = new HashSet<>();
-		this.vis.setNodes(newNodes);
-		assertEquals(this.vis.getNodes(), newNodes);
+		this.visGraph.setNodes(newNodes);
+		assertEquals(this.visGraph.getNodes(), newNodes);
 	}
 
 	@Test
 	public void testSetEdges() {
 		HashSet<VisEdge> newEdges = new HashSet<>();
-		this.vis.setEdges(newEdges);
-		assertEquals(this.vis.getEdges(), newEdges);
+		this.visGraph.setEdges(newEdges);
+		assertEquals(this.visGraph.getEdges(), newEdges);
 	}
 
 	@Test
 	public void testWithoutFiltering() {
-		Vis newVis = new Vis(element.getProject().getProjectKey(), element.getKey());
-		assertNotNull(newVis);
+		VisGraph newVisGraph = new VisGraph(element.getProject().getProjectKey(), element.getKey(), null ,false);
+		assertNotNull(newVisGraph);
 	}
 
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {

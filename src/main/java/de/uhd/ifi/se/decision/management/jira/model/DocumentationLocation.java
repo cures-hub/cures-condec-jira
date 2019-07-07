@@ -1,90 +1,73 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 
 /**
- * Possible documentation locations of decision knowledge
+ * Possible documentation locations of decision knowledge.
  */
 public enum DocumentationLocation {
-	JIRAISSUE, ACTIVEOBJECT, JIRAISSUETEXT, COMMIT, PULLREQUEST, UNKNOWN;
+	JIRAISSUE("i", "JiraIssue"), // store as first-class entities with own JIRA issue type
+	ACTIVEOBJECT("a", "ActiveObject"), // store as first-class entities but not as JIRA issues
+	JIRAISSUETEXT("s", "JiraIssueText"), // store in the body of existing JIRA issues, e.g. work items or requirements
+	COMMIT("c", "Commit"), // store in commit message
+	PULLREQUEST("p", "PullRequest"), // store in pull requests (currently not used)
+	UNKNOWN("", "Unknown");
+
+	private String identifier;
+	private String name;
+
+	private DocumentationLocation(String identifier, String name) {
+		this.identifier = identifier;
+		this.name = name;
+	}
 
 	/**
-	 * Convert a string to a documentation type.
+	 * Converts an identifier to a documentation location objects.
 	 *
 	 * @param identifier
-	 *            as a String.
+	 *            of the documentation location as a String, e.g. "i" for JIRA
+	 *            issue.
 	 */
 	public static DocumentationLocation getDocumentationLocationFromIdentifier(String identifier) {
 		if (identifier == null) {
-			return DocumentationLocation.UNKNOWN;
+			return UNKNOWN;
 		}
-		switch (identifier.toLowerCase(Locale.ENGLISH)) {
-		case "i":
-			return DocumentationLocation.JIRAISSUE;
-		case "a":
-			return DocumentationLocation.ACTIVEOBJECT;
-		case "s":
-			return DocumentationLocation.JIRAISSUETEXT;
-		case "c":
-			return DocumentationLocation.COMMIT;
-		case "p":
-			return DocumentationLocation.PULLREQUEST;
-		case "":
-			// TODO This should be the same as the default persistence strategy
-			return DocumentationLocation.JIRAISSUE;
-		default:
-			return DocumentationLocation.UNKNOWN;
+		// TODO: This should be the default persistence location.
+		if (identifier.isEmpty()) {
+			return JIRAISSUE;
 		}
+		for (DocumentationLocation location : values()) {
+			if (location.identifier == identifier) {
+				return location;
+			}
+		}
+		return UNKNOWN;
 	}
 
 	public static String getIdentifier(DocumentationLocation documentationLocation) {
 		if (documentationLocation == null) {
-			return "";
+			return UNKNOWN.identifier;
 		}
-		switch (documentationLocation) {
-		case JIRAISSUE:
-			return "i";
-		case JIRAISSUETEXT:
-			return "s";
-		case ACTIVEOBJECT:
-			return "a";
-		case COMMIT:
-			return "c";
-		case PULLREQUEST:
-			return "p";
-		case UNKNOWN:
-			return "u";
-		default:
-			return "";
-		}
+		return documentationLocation.identifier;
 	}
 
 	public String getIdentifier() {
-		return getIdentifier(this);
+		return identifier;
 	}
 
 	public static String getName(DocumentationLocation documentationLocation) {
 		if (documentationLocation == null) {
-			return "";
+			return UNKNOWN.name;
 		}
-		switch (documentationLocation) {
-			case JIRAISSUE:
-				return "JiraIssues";
-			case JIRAISSUETEXT:
-				return "JiraIssueText";
-			case ACTIVEOBJECT:
-				return "ActiveObject";
-			case COMMIT:
-				return "Commit";
-			case PULLREQUEST:
-				return "PullRequest";
-			case UNKNOWN:
-				return "Unknown";
-			default:
-				return "";
-		}
+		return documentationLocation.name;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public static String getIdentifier(DecisionKnowledgeElement element) {
@@ -100,5 +83,58 @@ public enum DocumentationLocation {
 		} else {
 			return "";
 		}
+	}
+
+	public static DocumentationLocation getDocumentationLocationFromString(String locationString) {
+		if (locationString == null) {
+			return UNKNOWN;
+		}
+		for (DocumentationLocation location : values()) {
+			if (location.name.equalsIgnoreCase(locationString)) {
+				return location;
+			}
+		}
+		return UNKNOWN;
+	}
+
+	/**
+	 * Convert the documentation locations to a String starting with a capital
+	 * letter, e.g., Pullrequest, Jiraissue, Commit
+	 * 
+	 * @return documentation locations as a String starting with a capital letter.
+	 */
+	@Override
+	public String toString() {
+		return this.name().substring(0, 1).toUpperCase(Locale.ENGLISH)
+				+ this.name().substring(1).toLowerCase(Locale.ENGLISH);
+	}
+
+	/**
+	 * Converts all documentation locations to a list of Strings.
+	 *
+	 * @return list of documentation locations as Strings starting with a capital
+	 *         letter.
+	 */
+	public static List<String> getNamesOfDocumentationLocations() {
+		List<String> documentationLocations = new ArrayList<String>();
+		for (DocumentationLocation documentationLocation : DocumentationLocation.values()) {
+			documentationLocations.add(documentationLocation.toString());
+		}
+		return documentationLocations;
+	}
+
+	/**
+	 * Returns a list of all valid documentation locations.
+	 * 
+	 * @return list of documentation locations.
+	 */
+	public static List<DocumentationLocation> getAllDocumentationLocations() {
+		List<DocumentationLocation> locations = new ArrayList<DocumentationLocation>();
+		for (DocumentationLocation location : values()) {
+			if (location != UNKNOWN) {
+				locations.add(location);
+			}
+		}
+		return locations;
 	}
 }

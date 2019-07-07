@@ -6,6 +6,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.user.ApplicationUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,6 +83,14 @@ public class TestTreant extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testConstructor() {
 		this.treant = new Treant("TEST", "14", 3);
+		assertNotNull(this.treant);
+	}
+
+	@Test
+	@NonTransactional
+	public void testConstructorFiltered(){
+		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		this.treant = new Treant("TEST", "14", 3, "?jql= Project = \" + element.getProject().getProjectKey() + \" AND type!=null", user);
 		assertNotNull(this.treant);
 	}
 

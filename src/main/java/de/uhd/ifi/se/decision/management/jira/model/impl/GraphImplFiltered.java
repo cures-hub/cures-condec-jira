@@ -8,8 +8,7 @@ import java.util.Set;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.GraphFiltering;
-import de.uhd.ifi.se.decision.management.jira.filtering.QueryHandler;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -24,20 +23,18 @@ import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 @JsonAutoDetect
 public class GraphImplFiltered extends GraphImpl {
 
-	private GraphFiltering filter;
+	private FilterExtractor filter;
 	private List<DecisionKnowledgeElement> elementsVisitedTransitively;
-	private QueryHandler queryHandler;
 
 	public GraphImplFiltered() {
 		super();
 		this.elementsVisitedTransitively = new ArrayList<>();
 	}
 
-	public GraphImplFiltered(String projectKey, String rootElementKey, GraphFiltering filter) {
+	public GraphImplFiltered(String projectKey, String rootElementKey, FilterExtractor filter) {
 		super(projectKey, rootElementKey);
 		this.filter = filter;
 		this.elementsVisitedTransitively = new ArrayList<DecisionKnowledgeElement>();
-		this.queryHandler = filter.getQueryHandler();
 	}
 
 	@Override
@@ -55,7 +52,7 @@ public class GraphImplFiltered extends GraphImpl {
 			if (oppositeElement == null) {
 				continue;
 			}
-			if (this.filter.getQueryResults().contains(oppositeElement)) {
+			if (this.filter.getAllElementsMatchingQuery().contains(oppositeElement)) {
 				linkedElementsAndLinks.put(oppositeElement, link);
 			} else {
 				List<DecisionKnowledgeElement> transitivelyLinkedElements = getTransitivelyLinkedElements(
@@ -99,7 +96,7 @@ public class GraphImplFiltered extends GraphImpl {
 			int count = 0;
 			DecisionKnowledgeElement oppositeElement = link.getOppositeElement(element);
 			while (isFiltered && (count < 10)) {
-				if (filter.getQueryResults().contains(oppositeElement)) {
+				if (filter.getAllElementsMatchingQuery().contains(oppositeElement)) {
 					if (!oppositeElement.getType().equals(KnowledgeType.ARGUMENT)) {
 						transitivelyLinkedElements.add(oppositeElement);
 					}
@@ -133,10 +130,10 @@ public class GraphImplFiltered extends GraphImpl {
 			}
 			DecisionKnowledgeElement oppositeElement = link.getOppositeElement(element);
 			includeElementInGraph = true;
-			if (queryHandler.isQueryContainsCreationDate() && oppositeElement instanceof PartOfJiraIssueText) {
+			if (filter.getFilterSettings().getCreatedEarliest() > 0 && oppositeElement instanceof PartOfJiraIssueText) {
 				includeElementInGraph = isSentenceIncludedInGraph(oppositeElement);
-			} else if (queryHandler.isQueryContainsIssueTypes() && oppositeElement instanceof PartOfJiraIssueText
-					&& includeElementInGraph) {
+			} else if (filter.getFilterSettings().getNamesOfSelectedJiraIssueTypes().size() > 0
+					&& oppositeElement instanceof PartOfJiraIssueText && includeElementInGraph) {
 				includeElementInGraph = isSentenceIssueTypeInIssueTypes(oppositeElement);
 			}
 
@@ -154,16 +151,19 @@ public class GraphImplFiltered extends GraphImpl {
 	}
 
 	private boolean isSentenceIssueTypeInIssueTypes(DecisionKnowledgeElement oppositeElement) {
-		return queryHandler.getIssueTypesInQuery().contains(oppositeElement.getType().toString());
+		return filter.getFilterSettings().getNamesOfSelectedJiraIssueTypes()
+				.contains(oppositeElement.getType().toString());
 	}
 
 	private boolean isSentenceIncludedInGraph(DecisionKnowledgeElement element) {
-		if (queryHandler.getStartDate() <= 0 && element.getCreated().getTime() < queryHandler.getEndDate()) {
+		if (filter.getFilterSettings().getCreatedEarliest() <= 0
+				&& element.getCreated().getTime() < filter.getFilterSettings().getCreatedLatest()) {
 			return true;
-		} else if (queryHandler.getEndDate() <= 0 && element.getCreated().getTime() > queryHandler.getStartDate()) {
+		} else if (filter.getFilterSettings().getCreatedLatest() <= 0
+				&& element.getCreated().getTime() > filter.getFilterSettings().getCreatedEarliest()) {
 			return true;
-		} else if (element.getCreated().getTime() < queryHandler.getEndDate()
-				&& element.getCreated().getTime() > queryHandler.getStartDate()) {
+		} else if (element.getCreated().getTime() < filter.getFilterSettings().getCreatedLatest()
+				&& element.getCreated().getTime() > filter.getFilterSettings().getCreatedEarliest()) {
 			return true;
 		}
 		return false;
