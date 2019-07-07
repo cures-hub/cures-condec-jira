@@ -34,8 +34,8 @@ public class FilterExtractor {
 		if (!(filterString.matches("\\?jql=(.)+")) || (filterString.matches("\\?filter=(.)+"))) {
 			filterSettings.setSearchString("asdf§filter=-4");
 		}
-		filter = new GraphFiltering(filterSettings, user, false);
-		filter.getQueryHandler().getJiraIssuesFromQuery(filter);
+		filter = new GraphFiltering(filterSettings, user);
+		filter.getQueryHandler().getJiraIssuesFromQuery();
 		this.decisionKnowledgeElements = filter.getAllElementsMatchingQuery();
 		if (this.decisionKnowledgeElements == null) {
 			this.decisionKnowledgeElements = new ArrayList<>();
@@ -64,8 +64,8 @@ public class FilterExtractor {
 		}
 		this.user = user;
 		this.filterSettings = filterSettings;
-		GraphFiltering filter = new GraphFiltering(filterSettings, user, false);
-		filter.produceResultsWithAdditionalFilters(filterSettings.getSearchString());
+		GraphFiltering filter = new GraphFiltering(filterSettings, user);
+		//filter.produceResultsWithAdditionalFilters(filterSettings.getSearchString());
 		this.decisionKnowledgeElements = filter.getAllElementsMatchingQuery();
 	}
 
@@ -134,8 +134,8 @@ public class FilterExtractor {
 		Graph graph;
 		if ((filterData.getSearchString().matches("\\?jql=(.)+"))
 				|| (filterData.getSearchString().matches("\\?filter=(.)+"))) {
-			GraphFiltering filter = new GraphFiltering(filterData, user, false);
-			filter.getQueryHandler().getJiraIssuesFromQuery(filter);
+			GraphFiltering filter = new GraphFiltering(filterData, user);
+			filter.getQueryHandler().getJiraIssuesFromQuery();
 			graph = new GraphImplFiltered(filterData.getProjectKey(), elementKey, filter);
 		} else {
 			graph = new GraphImpl(filterData.getProjectKey(), elementKey);

@@ -70,7 +70,7 @@ public class FilterSettingsImpl implements FilterSettings {
 		this.startDate = -1;
 		this.endDate = -1;
 
-		initFilterSettingsFromQuery(projectKey, query, user);
+		initFilterSettingsFromQuery(user, projectKey, query);
 
 		this.documentationLocations = new ArrayList<>();
 		DocumentationLocation[] locations = DocumentationLocation.values();
@@ -79,20 +79,12 @@ public class FilterSettingsImpl implements FilterSettings {
 		}
 	}
 
-	public void initFilterSettingsFromQuery(String projectKey, String query, ApplicationUser user) {
-		if (!query.matches("\\?jql=(.)+") && !query.matches("\\?filter=(.)+")) {
-			return;
-		}
+	public void initFilterSettingsFromQuery(ApplicationUser user, String projectKey, String query) {
 		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, query);
+		this.issueTypes = queryHandler.getNamesOfJiraIssueTypesInQuery();
 
-		// if (!queryHandler.getFilterSettings().getIssueTypes().isEmpty()) {
-		// this.issueTypesMatchingFilter = new ArrayList<String>();
-		// for (KnowledgeType type : queryHandler.getFilterSettings().getIssueTypes()) {
-		// this.issueTypesMatchingFilter.add(type.toString());
-		// }
-		// }
-//		this.startDate = queryHandler.getFilterSettings().getCreatedEarliest();
-//		this.endDate = queryHandler.getFilterSettings().getCreatedLatest();
+		this.startDate = queryHandler.getCreatedEarliest();
+		this.endDate = queryHandler.getCreatedLatest();
 	}
 
 	@Override

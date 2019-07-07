@@ -43,14 +43,14 @@ public class TestGraphFiltering extends TestSetUpWithIssues {
 		element.setProject(new DecisionKnowledgeProjectImpl("Test"));
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		FilterSettings filterData = new FilterSettingsImpl(element.getProject().getProjectKey(), "");
-		graphFiltering = new GraphFiltering(filterData, user, false);
+		graphFiltering = new GraphFiltering(filterData, user);
 	}
 
 	@Test
 	public void testConstructor() {
 		FilterSettings filterData = new FilterSettingsImpl(element.getProject().getProjectKey(),
 				"?jql= Project = " + element.getProject().getProjectKey() + " AND type!=null");
-		GraphFiltering filter = new GraphFiltering(filterData, user, false);
+		GraphFiltering filter = new GraphFiltering(filterData, user);
 		assertNotNull(filter);
 	}
 }

@@ -14,13 +14,20 @@ import com.atlassian.jira.util.MessageSetImpl;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 import com.atlassian.query.QueryImpl;
+import com.atlassian.query.clause.Clause;
 import com.atlassian.query.clause.TerminalClauseImpl;
 
+/**
+ * This class is currently not used because the JiraQueryHandler sets the
+ * searchService via ComponentAccessor not the ComponentGetter.
+ */
+@SuppressWarnings("rawtypes")
 public class MockSearchService implements SearchService {
+
 	@Override
 	public SearchResults<Issue> search(ApplicationUser applicationUser, Query query, PagerFilter pagerFilter)
 			throws SearchException {
-		return null;
+		return new SearchResults<Issue>(null, 0, 0, 0);
 	}
 
 	@Override
@@ -52,9 +59,9 @@ public class MockSearchService implements SearchService {
 	}
 
 	@Override
-	public ParseResult parseQuery(ApplicationUser applicationUser, String s) {
-		ParseResult result = new ParseResult(new QueryImpl(new TerminalClauseImpl("Test", (long) 21323), s),
-				new MessageSetImpl());
+	public ParseResult parseQuery(ApplicationUser applicationUser, String query) {
+		Clause clause = new TerminalClauseImpl("Test", (long) 21323);
+		ParseResult result = new ParseResult(new QueryImpl(clause, query), new MessageSetImpl());
 		return result;
 	}
 

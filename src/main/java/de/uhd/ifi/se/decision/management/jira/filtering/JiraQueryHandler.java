@@ -18,6 +18,7 @@ import com.atlassian.jira.issue.search.SearchException;
 import com.atlassian.jira.issue.search.SearchResults;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
+import com.atlassian.query.Query;
 import com.atlassian.query.clause.Clause;
 
 public class JiraQueryHandler {
@@ -25,20 +26,22 @@ public class JiraQueryHandler {
 
 	private SearchService searchService;
 	private ApplicationUser user;
+
+	// TODO merge
 	private String query;
+	String resultingQuery;
+
 	private String projectKey;
 	private JiraQueryType queryType;
 
 	List<Clause> resultingClauses;
-
-	String resultingQuery;
 
 	public JiraQueryHandler(ApplicationUser user, String projectKey, String query) {
 		this.searchService = ComponentAccessor.getComponentOfType(SearchService.class);
 		this.user = user;
 		this.projectKey = projectKey;
 		this.queryType = JiraQueryType.getJiraQueryType(query);
-		this.query = getFinalQuery(query, queryType);		
+		this.query = getFinalQuery(query, queryType);
 	}
 
 	private String getFinalQuery(String query, JiraQueryType queryType) {
@@ -59,7 +62,13 @@ public class JiraQueryHandler {
 		return jql.replaceAll("%20", " ").replaceAll("%3D", "=").replaceAll("%2C", ",");
 	}
 
+	/**
+	 * The searchTerm might start with "abc§" but should start with "?".
+	 */
 	private String getRawQuery(String searchString) {
+		if (searchString == null || searchString.isEmpty()) {
+			return "?jql = type = null";
+		}
 		String croppedQuery = searchString;
 		String[] split = searchString.split("§");
 		if (split.length > 1) {
@@ -68,91 +77,64 @@ public class JiraQueryHandler {
 		return croppedQuery;
 	}
 
-	public List<String> getNamesOfJiraIssueTypesInQuery(List<Clause> clauses) {
-		List<String> types = new ArrayList<String>();
-		for (Clause clause : clauses) {
-			if (!clause.getName().equals("issuetype")) {
-				continue;
-			}
-			String issuetypes = clause.toString().substring(14, clause.toString().length() - 2);
-
-			if (clause.toString().contains("=")) {
-				types.add(issuetypes.trim());
-			} else {
-				String issueTypesCleared = issuetypes.replaceAll("[()]", "").replaceAll("\"", "");
-				String[] split = issueTypesCleared.split(",");
-				for (String issueType : split) {
-					types.add(issueType.trim());
-				}
-			}
-		}
-		return types;
-	}
-
-	public List<String> getNamesOfJiraIssueTypesInQuery(String query) {
+	public List<String> getNamesOfJiraIssueTypesInQuery() {
 		if (!query.contains("issuetype")) {
 			return new ArrayList<String>();
 		}
 		List<String> types = new ArrayList<String>();
+
+		// issuetype = Decision
 		if (query.contains("=")) {
 			String[] split = query.split("=");
 			types.add(split[1].trim());
-		} else {
-			String issueTypeSeparated = query.substring(12, query.length());
-			String issueTypeCleared = issueTypeSeparated.replaceAll("[()]", "").replaceAll("\"", "");
-			String[] split = issueTypeCleared.split(",");
-			for (String issueType : split) {
-				String cleandIssueType = issueType.replaceAll("[()]", "");
-				types.add(cleandIssueType.trim());
-			}
+			return types;
+		}
+
+		// issuetype in (Decision, Issue, ...)
+		String issueTypesSeparated = query.substring(12, query.length());
+		String issueTypesCleared = issueTypesSeparated.replaceAll("[()]", "").replaceAll("\"", "");
+		String[] split = issueTypesCleared.split(",");
+		for (String issueType : split) {
+			issueType = issueType.replaceAll("[()]", "");
+			types.add(issueType.trim());
 		}
 		return types;
 	}
 
-	public void findDatesInQuery(List<Clause> clauses) {
-		for (Clause clause : clauses) {
-			if (!clause.getName().equals("created")) {
-				continue;
-			}
-			long todaysDate = new Date().getTime();
-			String time = clause.toString().substring(13, clause.toString().length() - 2);
-			if (clause.toString().contains(" <= ")) {
-				// this.filterSettings.setCreatedLatest(findEndTime(todaysDate, time));
-			} else if (clause.toString().contains(" >= ")) {
-				// this.filterSettings.setCreatedEarliest(findStartTime(todaysDate, time));
-			}
-		}
+	public String getQuerySubstringWithTimeInformation() {
+		return query.substring(11, query.length());
 	}
 
-	public void findDatesInQuery(String query) {
-		if (!query.contains("created")) {
-			return;
+	public long getCreatedEarliest() {
+		if (!query.contains("created") || !query.contains(" >= ")) {
+			return -1;
 		}
-		long todaysDate = new Date().getTime();
-		String time = query.substring(11, query.length());
-		if (query.contains(" <= ")) {
-			// this.filterSettings.setCreatedLatest(findEndTime(todaysDate, time));
-		} else if (query.contains(" >= ")) {
-			// this.filterSettings.setCreatedEarliest(findStartTime(todaysDate, time));
-		}
-	}
-
-	private long findStartTime(long currentDate, String time) {
+		String timeSubstringOfQuery = getQuerySubstringWithTimeInformation().split(" ")[0].trim();
 		long startTime = 0;
-		if (time.matches("(\\d\\d\\d\\d-\\d\\d-\\d\\d)")) {
-			startTime = getDateFromYearMonthDateFormat(time);
-		} else if (time.matches("(-\\d+(.))")) {
-			startTime = getTimeFromNumberAndFactorLetter(currentDate, time);
+		if (timeSubstringOfQuery.matches("(\\d\\d\\d\\d-\\d\\d-\\d\\d)(.)*")) {
+			// created >= 1970-01-01
+			startTime = getDateFromYearMonthDateFormat(timeSubstringOfQuery);
+		} else if (timeSubstringOfQuery.matches("(-\\d+(.))")) {
+			// created >= -1w
+			long currentDate = new Date().getTime();
+			startTime = getTimeFromNumberAndFactorLetter(currentDate, timeSubstringOfQuery);
 		}
 		return startTime;
 	}
 
-	private long findEndTime(long currentDate, String time) {
+	public long getCreatedLatest() {
+		if (!query.contains("created") || !query.contains(" <= ")) {
+			return -1;
+		}
+		String timeSubstringOfQuery = getQuerySubstringWithTimeInformation().split("<=")[1].trim();
 		long endTime = 0;
-		if (time.matches("(\\d\\d\\d\\d-\\d\\d-\\d\\d)")) {
-			endTime = getDateFromYearMonthDateFormat(time);
-		} else if (time.matches("-\\d+(.)+")) {
-			endTime = getTimeFromNumberAndFactorLetter(currentDate, time);
+		if (timeSubstringOfQuery.matches("(\\d\\d\\d\\d-\\d\\d-\\d\\d)(.)*")) {
+			// created <= 1970-01-01
+			endTime = getDateFromYearMonthDateFormat(timeSubstringOfQuery);
+		} else if (timeSubstringOfQuery.matches("-\\d+(.)+")) {
+			// created <= -1w
+			long currentDate = new Date().getTime();
+			endTime = getTimeFromNumberAndFactorLetter(currentDate, timeSubstringOfQuery);
 		}
 		return endTime;
 	}
@@ -179,32 +161,25 @@ public class JiraQueryHandler {
 		try {
 			queryTime = Long.parseLong(queryTimeString);
 		} catch (NumberFormatException e) {
-			LOGGER.error("No valid time given");
+			LOGGER.error("No valid time was given in the JIRA query.");
 		}
 		long result = currentDate - (queryTime * factor);
 		return result;
 	}
 
 	private long getTimeFactor(char factorAsALetter) {
-		long factor;
 		switch (factorAsALetter) {
 		case 'm':
-			factor = 60000;
-			break;
+			return 60000;
 		case 'h':
-			factor = 3600000;
-			break;
+			return 3600000;
 		case 'd':
-			factor = 86400000;
-			break;
+			return 86400000;
 		case 'w':
-			factor = 604800000;
-			break;
+			return 604800000;
 		default:
-			factor = 1;
-			break;
+			return 1;
 		}
-		return factor;
 	}
 
 	public SearchService getSearchService() {
@@ -220,37 +195,21 @@ public class JiraQueryHandler {
 	}
 
 	public String getQuery() {
-		if (query == null) {
-			LOGGER.error("The JIRA query is null or empty.");
-			return "type = null";
-		}
 		return query;
 	}
-	
+
 	public JiraQueryType getQueryType() {
 		return queryType;
 	}
 
-	public List<Issue> getJiraIssuesFromQuery(GraphFiltering graphFiltering) {
+	public List<Issue> getJiraIssuesFromQuery() {
 		ParseResult parseResult = getParseResult();
 		if (!parseResult.isValid()) {
 			LOGGER.error("Getting JIRA issues from JQL query failed. " + parseResult.getErrors().toString());
 			return new ArrayList<Issue>();
 		}
-	
+
 		List<Issue> jiraIssues = new ArrayList<Issue>();
-		List<Clause> clauses = parseResult.getQuery().getWhereClause().getClauses();
-	
-		if (!clauses.isEmpty()) {
-			resultingClauses = clauses;
-			findDatesInQuery(clauses);
-			graphFiltering.filterSettings.setIssueTypes(getNamesOfJiraIssueTypesInQuery(clauses));
-		} else {
-			String finalQuery = getQuery();
-			resultingQuery = finalQuery;
-			findDatesInQuery(finalQuery);
-			graphFiltering.filterSettings.setIssueTypes(getNamesOfJiraIssueTypesInQuery(finalQuery));
-		}
 		try {
 			SearchResults<Issue> results = getSearchService().search(user, parseResult.getQuery(),
 					PagerFilter.getUnlimitedFilter());
@@ -261,7 +220,22 @@ public class JiraQueryHandler {
 		return jiraIssues;
 	}
 
-	private ParseResult getParseResult() {
+	public List<Clause> getClauses() {
+		Query query = getQueryObject();
+		if (query == null || query.getWhereClause() == null) {
+			return new ArrayList<Clause>();
+		}
+		return query.getWhereClause().getClauses();
+	}
+
+	public ParseResult getParseResult() {
+		if (searchService == null) {
+			return null;
+		}
 		return searchService.parseQuery(this.user, query);
+	}
+
+	public Query getQueryObject() {
+		return getParseResult().getQuery();
 	}
 }
