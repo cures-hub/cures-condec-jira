@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.bc.issue.search.SearchService;
-import com.atlassian.jira.bc.issue.search.SearchService.ParseResult;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.search.SearchException;
 import com.atlassian.jira.issue.search.SearchResults;
@@ -27,14 +26,14 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 public class GraphFiltering {
-	private static final Logger LOGGER = LoggerFactory.getLogger(GraphFiltering.class);
+	static final Logger LOGGER = LoggerFactory.getLogger(GraphFiltering.class);
 
-	private FilterSettings filterSettings;
+	FilterSettings filterSettings;
 
-	private ApplicationUser user;
-	private List<Clause> resultingClauses;
-	private String resultingQuery;
-	private JiraQueryHandler queryHandler;
+	ApplicationUser user;
+	List<Clause> resultingClauses;
+	String resultingQuery;
+	JiraQueryHandler queryHandler;
 
 	public JiraQueryHandler getQueryHandler() {
 		return queryHandler;
@@ -44,37 +43,6 @@ public class GraphFiltering {
 		this.filterSettings = filterSettings;
 		this.user = user;
 		this.queryHandler = new JiraQueryHandler(user, filterSettings.getProjectKey(), filterSettings.getSearchString());
-	}
-
-	public List<Issue> getJiraIssuesFromQuery(String query) {
-		ParseResult parseResult = queryHandler.getParseResult();
-		if (!parseResult.isValid()) {
-			LOGGER.error(parseResult.getErrors().toString());
-			return new ArrayList<Issue>();
-		}
-
-		List<Issue> jiraIssues = new ArrayList<Issue>();
-		List<Clause> clauses = parseResult.getQuery().getWhereClause().getClauses();
-
-		if (!clauses.isEmpty()) {
-			this.resultingClauses = clauses;
-			queryHandler.findDatesInQuery(clauses);
-			this.filterSettings.setIssueTypes(queryHandler.getNamesOfJiraIssueTypesInQuery(clauses));
-		} else {
-			String finalQuery = queryHandler.getFinalQuery();
-			this.resultingQuery = finalQuery;
-			queryHandler.findDatesInQuery(finalQuery);
-			this.filterSettings.setIssueTypes(queryHandler.getNamesOfJiraIssueTypesInQuery(finalQuery));
-		}
-		try {
-			SearchResults<Issue> results = queryHandler.getSearchService().search(this.user, parseResult.getQuery(),
-					PagerFilter.getUnlimitedFilter());
-			jiraIssues = JiraSearchServiceHelper.getJiraIssues(results);
-		} catch (SearchException e) {
-			LOGGER.error("Produce results from query failed. Message: " + e.getMessage());
-			e.printStackTrace();
-		}
-		return jiraIssues;
 	}
 
 	public List<Issue> produceResultsWithAdditionalFilters(String resultingQuery) {

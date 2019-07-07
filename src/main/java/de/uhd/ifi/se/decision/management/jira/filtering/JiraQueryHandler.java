@@ -13,7 +13,11 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.issue.search.SearchService.ParseResult;
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.search.SearchException;
+import com.atlassian.jira.issue.search.SearchResults;
 import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.clause.Clause;
 
 public class JiraQueryHandler {
@@ -45,10 +49,6 @@ public class JiraQueryHandler {
 		default:
 			return "type = null";
 		}
-	}
-
-	public ParseResult getParseResult() {
-		return searchService.parseQuery(this.user, query);
 	}
 
 	private String cleanDirtyJqlString(String jql) {
@@ -215,11 +215,50 @@ public class JiraQueryHandler {
 		return query.contains("created");
 	}
 
-	public String getFinalQuery() {
+	public String getQuery() {
 		if (query == null) {
 			LOGGER.error("The JIRA query is null or empty.");
 			return "type = null";
 		}
 		return query;
+	}
+	
+	public JiraQueryType getQueryType() {
+		return queryType;
+	}
+
+	public List<Issue> getJiraIssuesFromQuery(GraphFiltering graphFiltering, String query) {
+		ParseResult parseResult = getParseResult();
+		if (!parseResult.isValid()) {
+			GraphFiltering.LOGGER.error(parseResult.getErrors().toString());
+			return new ArrayList<Issue>();
+		}
+	
+		List<Issue> jiraIssues = new ArrayList<Issue>();
+		List<Clause> clauses = parseResult.getQuery().getWhereClause().getClauses();
+	
+		if (!clauses.isEmpty()) {
+			graphFiltering.resultingClauses = clauses;
+			findDatesInQuery(clauses);
+			graphFiltering.filterSettings.setIssueTypes(getNamesOfJiraIssueTypesInQuery(clauses));
+		} else {
+			String finalQuery = getQuery();
+			graphFiltering.resultingQuery = finalQuery;
+			findDatesInQuery(finalQuery);
+			graphFiltering.filterSettings.setIssueTypes(getNamesOfJiraIssueTypesInQuery(finalQuery));
+		}
+		try {
+			SearchResults<Issue> results = getSearchService().search(graphFiltering.user, parseResult.getQuery(),
+					PagerFilter.getUnlimitedFilter());
+			jiraIssues = JiraSearchServiceHelper.getJiraIssues(results);
+		} catch (SearchException e) {
+			GraphFiltering.LOGGER.error("Produce results from query failed. Message: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return jiraIssues;
+	}
+
+	private ParseResult getParseResult() {
+		return searchService.parseQuery(this.user, query);
 	}
 }
