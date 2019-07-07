@@ -49,7 +49,7 @@ public class FilterSettingsImpl implements FilterSettings {
 	public FilterSettingsImpl(String projectKey, String query, ApplicationUser user) {
 		this(projectKey, query);
 
-		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, query);
+		JiraQueryHandler queryHandler = new JiraQueryHandlerImpl(user, projectKey, query);
 		this.searchString = queryHandler.getQuery();
 
 		List<String> namesOfJiraIssueTypesInQuery = queryHandler.getNamesOfJiraIssueTypesInQuery();

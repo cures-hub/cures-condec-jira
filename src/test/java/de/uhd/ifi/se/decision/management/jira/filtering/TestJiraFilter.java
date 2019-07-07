@@ -53,7 +53,6 @@ public class TestJiraFilter extends TestSetUpWithIssues {
 	}
 
 	// TODO Implement this test, mock SearchRequestManager for it
-	// @Ignore
 	// @Test
 	// public void testGetQueryFromCustomFilter() {
 	// JiraFilter.getQueryForFilterId(1, "TEST");

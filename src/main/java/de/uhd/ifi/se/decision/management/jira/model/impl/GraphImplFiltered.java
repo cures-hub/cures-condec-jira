@@ -54,7 +54,7 @@ public class GraphImplFiltered extends GraphImpl {
 			if (oppositeElement == null) {
 				continue;
 			}
-			if (this.filter.getQueryResults().contains(oppositeElement)) {
+			if (this.filter.getAllElementsMatchingQuery().contains(oppositeElement)) {
 				linkedElementsAndLinks.put(oppositeElement, link);
 			} else {
 				List<DecisionKnowledgeElement> transitivelyLinkedElements = getTransitivelyLinkedElements(oppositeElement);
@@ -95,7 +95,7 @@ public class GraphImplFiltered extends GraphImpl {
 			int count = 0;
 			DecisionKnowledgeElement oppositeElement = link.getOppositeElement(element);
 			while (isFiltered && (count < 10)) {
-				if (filter.getQueryResults().contains(oppositeElement)) {
+				if (filter.getAllElementsMatchingQuery().contains(oppositeElement)) {
 					if (!oppositeElement.getType().equals(KnowledgeType.ARGUMENT)) {
 						transitivelyLinkedElements.add(oppositeElement);
 					}
@@ -129,11 +129,11 @@ public class GraphImplFiltered extends GraphImpl {
 			}
 			DecisionKnowledgeElement oppositeElement = link.getOppositeElement(element);
 			includeElementInGraph = true;
-			if (queryHandler.isQueryContainsCreationDate() && oppositeElement instanceof PartOfJiraIssueText) {
-				includeElementInGraph = isSentenceIncludedInGraph(oppositeElement);
-			} else if (queryHandler.isQueryContainsIssueTypes() && oppositeElement instanceof PartOfJiraIssueText && includeElementInGraph) {
-				includeElementInGraph = isSentenceIssueTypeInIssueTypes(oppositeElement);
-			}
+//			if (queryHandler.isQueryContainsCreationDate() && oppositeElement instanceof PartOfJiraIssueText) {
+//				includeElementInGraph = isSentenceIncludedInGraph(oppositeElement);
+//			} else if (queryHandler.isQueryContainsIssueTypes() && oppositeElement instanceof PartOfJiraIssueText && includeElementInGraph) {
+//				includeElementInGraph = isSentenceIssueTypeInIssueTypes(oppositeElement);
+//			}
 
 			if (includeElementInGraph && !this.genericLinkIds.contains(link.getId())) {
 				this.genericLinkIds.add(link.getId());
