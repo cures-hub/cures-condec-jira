@@ -11,9 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.filtering.GraphFiltering;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -52,10 +50,9 @@ public class Treant {
 
 	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user) {
 		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
-			FilterSettings filterSettings = new FilterSettingsImpl(projectKey, query);
-			GraphFiltering filter = new GraphFiltering(filterSettings, user);
-			filter.getQueryHandler().getJiraIssuesFromQuery();
-			this.graph = new GraphImplFiltered(projectKey, elementKey, filter);
+			FilterExtractor filterExtractor = new FilterExtractor(projectKey, user, query);
+			filterExtractor.getQueryHandler().getJiraIssuesFromQuery();
+			this.graph = new GraphImplFiltered(projectKey, elementKey, filterExtractor);
 		} else {
 			this.graph = new GraphImpl(projectKey, elementKey);
 		}
@@ -88,7 +85,8 @@ public class Treant {
 		}
 		List<Node> nodes = new ArrayList<Node>();
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-			Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth, currentDepth + 1);
+			Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
+					currentDepth + 1);
 			nodes.add(newChildNode);
 		}
 		node.setChildren(nodes);

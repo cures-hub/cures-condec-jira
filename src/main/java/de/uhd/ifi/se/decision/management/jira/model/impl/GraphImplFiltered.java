@@ -8,8 +8,7 @@ import java.util.Set;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.GraphFiltering;
-import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -24,24 +23,23 @@ import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 @JsonAutoDetect
 public class GraphImplFiltered extends GraphImpl {
 
-	private GraphFiltering filter;
+	private FilterExtractor filter;
 	private List<DecisionKnowledgeElement> elementsVisitedTransitively;
-	private JiraQueryHandler queryHandler;
 
 	public GraphImplFiltered() {
 		super();
 		this.elementsVisitedTransitively = new ArrayList<>();
 	}
 
-	public GraphImplFiltered(String projectKey, String rootElementKey, GraphFiltering filter) {
+	public GraphImplFiltered(String projectKey, String rootElementKey, FilterExtractor filter) {
 		super(projectKey, rootElementKey);
 		this.filter = filter;
 		this.elementsVisitedTransitively = new ArrayList<DecisionKnowledgeElement>();
-		this.queryHandler = filter.getQueryHandler();
 	}
 
 	@Override
-	protected Map<DecisionKnowledgeElement, Link> getLinkedFirstClassElementsAndLinks(DecisionKnowledgeElement element) {
+	protected Map<DecisionKnowledgeElement, Link> getLinkedFirstClassElementsAndLinks(
+			DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
 		List<Link> links = this.project.getPersistenceStrategy().getLinks(element);
@@ -57,14 +55,16 @@ public class GraphImplFiltered extends GraphImpl {
 			if (this.filter.getAllElementsMatchingQuery().contains(oppositeElement)) {
 				linkedElementsAndLinks.put(oppositeElement, link);
 			} else {
-				List<DecisionKnowledgeElement> transitivelyLinkedElements = getTransitivelyLinkedElements(oppositeElement);
+				List<DecisionKnowledgeElement> transitivelyLinkedElements = getTransitivelyLinkedElements(
+						oppositeElement);
 				for (DecisionKnowledgeElement transitivelyLinkedElement : transitivelyLinkedElements) {
 					Link transitiveLink = new LinkImpl(element, transitivelyLinkedElement);
 					transitiveLink.setType("contains");
 					linkIds.add(transitiveLink.getId());
 					linkedElementsAndLinks.put(transitivelyLinkedElement, transitiveLink);
 				}
-				Map<DecisionKnowledgeElement, Link> sentencesLinkedToFilteredElement = getLinkedSentencesAndLinks(oppositeElement);
+				Map<DecisionKnowledgeElement, Link> sentencesLinkedToFilteredElement = getLinkedSentencesAndLinks(
+						oppositeElement);
 				Set<DecisionKnowledgeElement> sentences = sentencesLinkedToFilteredElement.keySet();
 				linkSentencesTransitively(element, linkedElementsAndLinks, sentences);
 			}
@@ -72,7 +72,8 @@ public class GraphImplFiltered extends GraphImpl {
 		return linkedElementsAndLinks;
 	}
 
-	private void linkSentencesTransitively(DecisionKnowledgeElement element, Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks, Set<DecisionKnowledgeElement> sentences) {
+	private void linkSentencesTransitively(DecisionKnowledgeElement element,
+			Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks, Set<DecisionKnowledgeElement> sentences) {
 		for (DecisionKnowledgeElement sentence : sentences) {
 			Link transitiveLink = new LinkImpl(element, sentence);
 			transitiveLink.setType("contains");
@@ -129,11 +130,13 @@ public class GraphImplFiltered extends GraphImpl {
 			}
 			DecisionKnowledgeElement oppositeElement = link.getOppositeElement(element);
 			includeElementInGraph = true;
-//			if (queryHandler.isQueryContainsCreationDate() && oppositeElement instanceof PartOfJiraIssueText) {
-//				includeElementInGraph = isSentenceIncludedInGraph(oppositeElement);
-//			} else if (queryHandler.isQueryContainsIssueTypes() && oppositeElement instanceof PartOfJiraIssueText && includeElementInGraph) {
-//				includeElementInGraph = isSentenceIssueTypeInIssueTypes(oppositeElement);
-//			}
+			// if (queryHandler.isQueryContainsCreationDate() && oppositeElement instanceof
+			// PartOfJiraIssueText) {
+			// includeElementInGraph = isSentenceIncludedInGraph(oppositeElement);
+			// } else if (queryHandler.isQueryContainsIssueTypes() && oppositeElement
+			// instanceof PartOfJiraIssueText && includeElementInGraph) {
+			// includeElementInGraph = isSentenceIssueTypeInIssueTypes(oppositeElement);
+			// }
 
 			if (includeElementInGraph && !this.genericLinkIds.contains(link.getId())) {
 				this.genericLinkIds.add(link.getId());
@@ -142,26 +145,35 @@ public class GraphImplFiltered extends GraphImpl {
 		}
 
 		// remove irrelevant sentences from graph
-		linkedElementsAndLinks.keySet().removeIf(e -> (e instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) e).isRelevant()));
+		linkedElementsAndLinks.keySet()
+				.removeIf(e -> (e instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) e).isRelevant()));
 
 		return linkedElementsAndLinks;
 	}
 
 	private boolean isSentenceIssueTypeInIssueTypes(DecisionKnowledgeElement oppositeElement) {
 		return true;
-		//TODO
-		//return queryHandler.getFilterSettings().getIssueTypes().contains(oppositeElement.getType());
+		// TODO
+		// return
+		// queryHandler.getFilterSettings().getIssueTypes().contains(oppositeElement.getType());
 	}
 
 	private boolean isSentenceIncludedInGraph(DecisionKnowledgeElement element) {
 		// TODO
-//		if (queryHandler.getFilterSettings().getCreatedEarliest() <= 0 && element.getCreated().getTime() < queryHandler.getFilterSettings().getCreatedLatest()) {
-//			return true;
-//		} else if (queryHandler.getFilterSettings().getCreatedLatest() <= 0 && element.getCreated().getTime() > queryHandler.getFilterSettings().getCreatedEarliest()) {
-//			return true;
-//		} else if (element.getCreated().getTime() < queryHandler.getFilterSettings().getCreatedLatest() && element.getCreated().getTime() > queryHandler.getFilterSettings().getCreatedEarliest()) {
-//			return true;
-//		}
+		// if (queryHandler.getFilterSettings().getCreatedEarliest() <= 0 &&
+		// element.getCreated().getTime() <
+		// queryHandler.getFilterSettings().getCreatedLatest()) {
+		// return true;
+		// } else if (queryHandler.getFilterSettings().getCreatedLatest() <= 0 &&
+		// element.getCreated().getTime() >
+		// queryHandler.getFilterSettings().getCreatedEarliest()) {
+		// return true;
+		// } else if (element.getCreated().getTime() <
+		// queryHandler.getFilterSettings().getCreatedLatest() &&
+		// element.getCreated().getTime() >
+		// queryHandler.getFilterSettings().getCreatedEarliest()) {
+		// return true;
+		// }
 		return false;
 	}
 
