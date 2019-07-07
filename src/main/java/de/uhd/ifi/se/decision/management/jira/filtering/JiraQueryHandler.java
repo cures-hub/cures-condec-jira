@@ -82,17 +82,19 @@ public class JiraQueryHandler {
 			return new ArrayList<String>();
 		}
 		List<String> types = new ArrayList<String>();
-
+		String queryPartContainingTypes = query.split("issuetype")[1];
+		queryPartContainingTypes = queryPartContainingTypes.split("AND")[0];
+		
 		// issuetype = Decision
-		if (query.contains("=")) {
-			String[] split = query.split("=");
+		if (queryPartContainingTypes.contains("=")) {
+			String split[] = queryPartContainingTypes.split("=");
 			types.add(split[1].trim());
 			return types;
 		}
-
+		
 		// issuetype in (Decision, Issue, ...)
-		String issueTypesSeparated = query.substring(12, query.length());
-		String issueTypesCleared = issueTypesSeparated.replaceAll("[()]", "").replaceAll("\"", "");
+		String issueTypesSeparated = queryPartContainingTypes.split("AND")[0];
+		String issueTypesCleared = issueTypesSeparated.replaceAll("[()]", "").replaceAll("\"", "").replaceAll("in", "");
 		String[] split = issueTypesCleared.split(",");
 		for (String issueType : split) {
 			issueType = issueType.replaceAll("[()]", "");
@@ -220,18 +222,7 @@ public class JiraQueryHandler {
 		return jiraIssues;
 	}
 
-	public List<Clause> getClauses() {
-		Query query = getQueryObject();
-		if (query == null || query.getWhereClause() == null) {
-			return new ArrayList<Clause>();
-		}
-		return query.getWhereClause().getClauses();
-	}
-
-	public ParseResult getParseResult() {
-		if (searchService == null) {
-			return null;
-		}
+	private ParseResult getParseResult() {
 		return searchService.parseQuery(this.user, query);
 	}
 

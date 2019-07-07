@@ -19,18 +19,14 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 public interface FilterSettings {
 
 	/**
-	 * Get the key of the project. The project is a JIRA project that is extended
-	 * with settings for this plug-in, for example, whether the plug-in is activated
-	 * for the project.
+	 * Returns the key of the JIRA project.
 	 *
 	 * @return key of the JIRA project.
 	 */
 	String getProjectKey();
 
 	/**
-	 * Set the key of the project. The project is a JIRA project that is extended
-	 * with settings for this plug-in, for example, whether the plug-in is activated
-	 * for the project.
+	 * Sets the key of the JIRA project.
 	 *
 	 * @param projectKey
 	 *            of the JIRA project.

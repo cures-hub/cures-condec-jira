@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -9,11 +8,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.atlassian.jira.bc.issue.search.SearchService.ParseResult;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.util.MessageSetImpl;
-import com.atlassian.query.QueryImpl;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 
@@ -43,16 +39,16 @@ public class TestJiraQueryHandler extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testGetJiraIssuesFromQuery() {
+	public void testGetJiraIssuesFromEmptyQuery() {
 		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "");
 		assertEquals(0, jiraQueryHandler.getJiraIssuesFromQuery().size());
 	}
 
 	@Test
 	public void testGetNamesOfJiraIssueTypesInQueryOneType() {
-		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "?jql=issuetype = Issue");
+		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "?jql=project=TEST AND issuetype = Issue AND resolution = Unresolved");
 		assertEquals(JiraQueryType.JQL, jiraQueryHandler.getQueryType());
-		assertEquals("issuetype = Issue", jiraQueryHandler.getQuery());
+		assertEquals("project=TEST AND issuetype = Issue AND resolution = Unresolved", jiraQueryHandler.getQuery());
 		List<String> types = jiraQueryHandler.getNamesOfJiraIssueTypesInQuery();
 		assertEquals(1, types.size());
 		assertEquals("Issue", types.get(0));
@@ -67,9 +63,13 @@ public class TestJiraQueryHandler extends TestSetUpWithIssues {
 
 	@Test
 	public void testGetNamesOfJiraIssueTypesInQueryThreeTypes() {
-		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "abc§jql=issuetype in (Decision, Issue, Alternative)");
-		assertEquals("issuetype in (Decision, Issue, Alternative)", jiraQueryHandler.getQuery());
+		jiraQueryHandler = new JiraQueryHandler(user, "TEST",
+				"abc§jql=project=TEST AND issuetype in (Decision, Issue, Alternative) AND resolution = Unresolved");
+		assertEquals("project=TEST AND issuetype in (Decision, Issue, Alternative) AND resolution = Unresolved", jiraQueryHandler.getQuery());
 		List<String> types = jiraQueryHandler.getNamesOfJiraIssueTypesInQuery();
+		assertEquals("Decision", types.get(0));
+		assertEquals("Issue", types.get(1));
+		assertEquals("Alternative", types.get(2));
 		assertEquals(3, types.size());
 	}
 
@@ -86,8 +86,8 @@ public class TestJiraQueryHandler extends TestSetUpWithIssues {
 		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "?jql=created >= 1970-01-02 AND created <= 1970-01-03");
 		assertEquals("created >= 1970-01-02 AND created <= 1970-01-03", jiraQueryHandler.getQuery());
 		assertEquals("1970-01-02 AND created <= 1970-01-03", jiraQueryHandler.getQuerySubstringWithTimeInformation());
-		assertEquals(82800000, jiraQueryHandler.getCreatedEarliest());
-		assertEquals(169200000, jiraQueryHandler.getCreatedLatest());
+		assertTrue(jiraQueryHandler.getCreatedEarliest() > 0);
+		assertTrue(jiraQueryHandler.getCreatedLatest() > 0);
 	}
 
 	@Test
@@ -100,14 +100,6 @@ public class TestJiraQueryHandler extends TestSetUpWithIssues {
 		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "?jql=created >= -1d AND created <= -1h");
 		assertTrue(jiraQueryHandler.getCreatedEarliest() > 100000000);
 		assertTrue(jiraQueryHandler.getCreatedLatest() > 100000000);
-	}
-
-	@Test
-	public void testGetClauses() {
-		jiraQueryHandler = new JiraQueryHandler(user, "TEST",
-				"?jql=project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC");
-		assertNotNull(new ParseResult(new QueryImpl(null, "?jql=project"), new MessageSetImpl()));
-		assertEquals(0, jiraQueryHandler.getClauses().size());
 	}
 
 	@Test

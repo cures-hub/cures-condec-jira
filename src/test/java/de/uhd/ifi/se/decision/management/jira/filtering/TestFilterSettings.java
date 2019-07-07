@@ -96,8 +96,8 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 	@Test
 	public void testGetNamesOfSelectedJiraIssueTypes() {
 		assertEquals(16, filterSettings.getNamesOfSelectedJiraIssueTypes().size());
-		filterSettings = new FilterSettingsImpl("TEST", "?jql=issuetype in (Decision, Issue)");
-		//assertEquals(2, filterSettings.getNamesOfSelectedJiraIssueTypes().size());
+		filterSettings = new FilterSettingsImpl("TEST", "?jql=issuetype in (Decision, Issue)", null);
+		assertEquals(2, filterSettings.getNamesOfSelectedJiraIssueTypes().size());
 	}
 
 	@Test

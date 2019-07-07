@@ -124,7 +124,7 @@ public class FilterSettingsImpl implements FilterSettings {
 	}
 
 	@Override
-	@JsonProperty("documentationLocationList")
+	@JsonProperty("documentationLocations")
 	public void setDocumentationLocations(List<String> namesOfDocumentationLocations) {
 		this.documentationLocations = new ArrayList<>();
 		if (namesOfDocumentationLocations == null) {
@@ -145,7 +145,7 @@ public class FilterSettingsImpl implements FilterSettings {
 	}
 
 	@Override
-	@JsonProperty("issueTypes")
+	@JsonProperty("selectedJiraIssueTypes")
 	public void setSelectedJiraIssueTypes(List<String> namesOfTypes) {
 		namesOfSelectedJiraIssueTypes = namesOfTypes;
 	}

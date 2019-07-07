@@ -312,8 +312,8 @@
 			"searchString" : searchTerm,
 			"createdEarliest" : -1,
 			"createdLatest" : -1,
-			"documentationLocationList" : [ "" ],
-			"issueTypes" : [ "" ]
+			"documentationLocations" : [ "" ],
+			"selectedJiraIssueTypes" : [ "" ]
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
 				filterSettings, function(error, vis) {
@@ -326,15 +326,15 @@
 	/*
 	 * external references: condec.vis
 	 */
-	ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, issueTypes, createdAfter,
-			createdBefore, documentationLocation, callback) {
+	ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, selectedJiraIssueTypes, createdAfter,
+			createdBefore, documentationLocations, callback) {
 		var filterSettings = {
 			"projectKey" : projectKey,
 			"searchString" : searchTerm,
 			"createdEarliest" : createdBefore,
 			"createdLatest" : createdAfter,
-			"documentationLocationList" : documentationLocation,
-			"issueTypes" : issueTypes
+			"documentationLocations" : documentationLocations,
+			"selectedJiraIssueTypes" : selectedJiraIssueTypes
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
 				filterSettings, function(error, vis) {
