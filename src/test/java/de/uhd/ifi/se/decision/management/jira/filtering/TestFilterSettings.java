@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.model;
+package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -10,7 +10,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class TestFilterSettings extends TestSetUpWithIssues {
 	private FilterSettings filterSettings;
@@ -30,12 +32,12 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 		for (int i = 0; i < typeList.size(); i++) {
 			knowledgeTypesStringArray[i] = typeList.get(i);
 		}
-		doc = new String[DocumentationLocation.toList().size()];
-		List<String> docList = DocumentationLocation.toList();
+		doc = new String[DocumentationLocation.getNamesOfDocumentationLocations().size()];
+		List<String> docList = DocumentationLocation.getNamesOfDocumentationLocations();
 		for (int i = 0; i < docList.size(); i++) {
 			doc[i] = docList.get(i);
 		}
-		filterSettings.setNamesOfSelectedJiraIssueTypes(knowledgeTypesStringArray);
+		filterSettings.setNamesOfSelectedJiraIssueTypesAsArray(knowledgeTypesStringArray);
 		filterSettings.setDocumentationLocations(doc);
 	}
 	
@@ -122,7 +124,7 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 	public void testSetDocumentationLocation() {
 		String[] newLocations = new String[2];
 		int position = 0;
-		for (String location : DocumentationLocation.toList()) {
+		for (String location : DocumentationLocation.getNamesOfDocumentationLocations()) {
 			if (position < 2) {
 				newLocations[position] = location;
 			} else {
@@ -130,7 +132,7 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 			}
 			position++;
 		}
-		filterSettings.setNamesOfSelectedJiraIssueTypes(newLocations);
+		filterSettings.setNamesOfSelectedJiraIssueTypesAsArray(newLocations);
 		for (String location : newLocations) {
 			assertTrue(filterSettings.getDocumentationLocations()
 					.contains(DocumentationLocation.getDocumentationLocationFromString(location)));
@@ -155,7 +157,7 @@ public class TestFilterSettings extends TestSetUpWithIssues {
 			}
 			position++;
 		}
-		filterSettings.setNamesOfSelectedJiraIssueTypes(newIssueTypes);
+		filterSettings.setNamesOfSelectedJiraIssueTypesAsArray(newIssueTypes);
 		for (String type : newIssueTypes) {
 			assertTrue(filterSettings.getNamesOfSelectedJiraIssueTypes().contains(KnowledgeType.getKnowledgeType(type).toString()));
 		}

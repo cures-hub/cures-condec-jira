@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -110,23 +111,30 @@ public enum DocumentationLocation {
 	}
 
 	/**
-	 * Convert all documentation locations to a list of String.
+	 * Converts all documentation locations to a list of Strings.
 	 *
 	 * @return list of documentation locations as Strings starting with a capital
 	 *         letter.
 	 */
-	public static List<String> toList() {
-		List<String> documentationLocationList = new ArrayList<String>();
+	public static List<String> getNamesOfDocumentationLocations() {
+		List<String> documentationLocations = new ArrayList<String>();
 		for (DocumentationLocation documentationLocation : DocumentationLocation.values()) {
-			documentationLocationList.add(documentationLocation.toString());
+			documentationLocations.add(documentationLocation.toString());
 		}
-		return documentationLocationList;
+		return documentationLocations;
 	}
 
+	/**
+	 * Returns a list of all valid documentation locations.
+	 * 
+	 * @return list of documentation locations.
+	 */
 	public static List<DocumentationLocation> getAllDocumentationLocations() {
-		List<DocumentationLocation> locations = new ArrayList<>();
-		for (String location : DocumentationLocation.toList()) {
-			locations.add(DocumentationLocation.getDocumentationLocationFromString(location));
+		List<DocumentationLocation> locations = new ArrayList<DocumentationLocation>();
+		for (DocumentationLocation location : values()) {
+			if (location != UNKNOWN) {
+				locations.add(location);
+			}
 		}
 		return locations;
 	}

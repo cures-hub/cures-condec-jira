@@ -2,8 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
 
 import java.util.List;
 

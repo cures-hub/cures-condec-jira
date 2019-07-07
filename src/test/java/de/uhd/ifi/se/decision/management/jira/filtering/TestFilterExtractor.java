@@ -3,10 +3,10 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,12 +33,12 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 		for (int i = 0; i < typeList.size(); i++) {
 			ktypes[i] = typeList.get(i);
 		}
-		String[] doc = new String[DocumentationLocation.toList().size()];
-		List<String> docList = DocumentationLocation.toList();
+		String[] doc = new String[DocumentationLocation.getNamesOfDocumentationLocations().size()];
+		List<String> docList = DocumentationLocation.getNamesOfDocumentationLocations();
 		for (int i = 0; i < docList.size(); i++) {
 			doc[i] = docList.get(i);
 		}
-		data.setNamesOfSelectedJiraIssueTypes(ktypes);
+		data.setNamesOfSelectedJiraIssueTypesAsArray(ktypes);
 		data.setDocumentationLocations(doc);
 		filterExtractor = new FilterExtractor(user, data);
 	}

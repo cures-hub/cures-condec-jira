@@ -17,12 +17,12 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.view.treant.TestTreant;
 import net.java.ao.EntityManager;
@@ -57,12 +57,12 @@ public class TestGetVis extends TestSetUpWithIssues {
 		for (int i = 0; i < typeList.size(); i++) {
 			ktypes[i] = typeList.get(i);
 		}
-		String[] doc = new String[DocumentationLocation.toList().size()];
-		List<String> docList = DocumentationLocation.toList();
+		String[] doc = new String[DocumentationLocation.getNamesOfDocumentationLocations().size()];
+		List<String> docList = DocumentationLocation.getNamesOfDocumentationLocations();
 		for (int i = 0; i < docList.size(); i++) {
 			doc[i] = docList.get(i);
 		}
-		filterSettings.setNamesOfSelectedJiraIssueTypes(ktypes);
+		filterSettings.setNamesOfSelectedJiraIssueTypesAsArray(ktypes);
 		filterSettings.setDocumentationLocations(doc);
 	}
 

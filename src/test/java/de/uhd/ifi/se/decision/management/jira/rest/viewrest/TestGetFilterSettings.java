@@ -16,10 +16,10 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.view.treant.TestTreant;
 import net.java.ao.EntityManager;
@@ -55,7 +55,7 @@ public class TestGetFilterSettings extends TestSetUpWithIssues {
 		assertEquals(Response.Status.OK.getStatusCode(), filterSettingsResponse.getStatus());
 
 		FilterSettings filterSettings = (FilterSettings) filterSettingsResponse.getEntity();
-		assertEquals(6, filterSettings.getNamesOfDocumentationLocations().size());
+		assertEquals(5, filterSettings.getNamesOfDocumentationLocations().size());
 		assertEquals(16, filterSettings.getAllJiraIssueTypes().size());
 		assertEquals(16, filterSettings.getNamesOfSelectedJiraIssueTypes().size());
 		assertEquals(-1, filterSettings.getCreatedEarliest());
@@ -69,7 +69,7 @@ public class TestGetFilterSettings extends TestSetUpWithIssues {
 		assertEquals(Response.Status.OK.getStatusCode(), filterSettingsResponse.getStatus());
 
 		FilterSettingsImpl filterSettings = (FilterSettingsImpl) filterSettingsResponse.getEntity();
-		assertEquals(6, filterSettings.getNamesOfDocumentationLocations().size());
+		assertEquals(5, filterSettings.getNamesOfDocumentationLocations().size());
 		List<String> issueTypesMatchingFilter = filterSettings.getNamesOfSelectedJiraIssueTypes();
 		assertEquals("Issue", issueTypesMatchingFilter.get(0));
 		assertEquals(1, issueTypesMatchingFilter.size());
@@ -83,7 +83,7 @@ public class TestGetFilterSettings extends TestSetUpWithIssues {
 		assertEquals(Response.Status.OK.getStatusCode(), filterSettingsResponse.getStatus());
 
 		FilterSettingsImpl filterSettings = (FilterSettingsImpl) filterSettingsResponse.getEntity();
-		assertEquals(6, filterSettings.getNamesOfDocumentationLocations().size());
+		assertEquals(5, filterSettings.getNamesOfDocumentationLocations().size());
 		assertEquals(-1, filterSettings.getCreatedEarliest());
 		assertEquals(-1, filterSettings.getCreatedLatest());
 	}

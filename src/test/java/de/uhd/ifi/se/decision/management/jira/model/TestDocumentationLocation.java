@@ -9,7 +9,7 @@ public class TestDocumentationLocation {
 
 	@Test
 	public void testGetDocumentationLocationFromIdentifier() {
-		for (String location : DocumentationLocation.toList()) {
+		for (String location : DocumentationLocation.getNamesOfDocumentationLocations()) {
 			assertTrue(location.equals(DocumentationLocation.getDocumentationLocationFromString(location).toString()));
 		}
 	}

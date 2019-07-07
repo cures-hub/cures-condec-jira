@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.model;
+package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import java.util.List;
 
@@ -6,7 +6,8 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import com.atlassian.jira.issue.issuetype.IssueType;
 
-import de.uhd.ifi.se.decision.management.jira.model.impl.FilterSettingsImpl;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 
 /**
  * Interface for the filter settings. The filter settings cover the key of the
@@ -119,7 +120,7 @@ public interface FilterSettings {
 	 * @param namesOfSelectedTypes
 	 *            from the json
 	 */
-	void setNamesOfSelectedJiraIssueTypes(String[] namesOfSelectedTypes);
+	void setNamesOfSelectedJiraIssueTypesAsArray(String[] namesOfSelectedTypes);
 
 	/**
 	 * Returns the names of the JIRA issue types to be shown in the knowledge graph
