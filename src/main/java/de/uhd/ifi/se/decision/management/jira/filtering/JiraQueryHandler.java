@@ -19,51 +19,43 @@ import com.atlassian.query.clause.Clause;
 public class JiraQueryHandler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraQueryHandler.class);
 
-	private boolean mergeFilterQueryWithProjectKey;
 	private SearchService searchService;
 	private ApplicationUser user;
-	private boolean queryContainsCreationDate;
-	private boolean queryContainsIssueTypes;
-	private String finalQuery;
+	private String query;
 	private String projectKey;
+	private JiraQueryType queryType;
 
-	public JiraQueryHandler(ApplicationUser user, String projectKey, boolean mergeFilterQueryWithProjectKey) {
-		this.mergeFilterQueryWithProjectKey = mergeFilterQueryWithProjectKey;
+	public JiraQueryHandler(ApplicationUser user, String projectKey, String query) {
 		this.searchService = ComponentAccessor.getComponentOfType(SearchService.class);
 		this.user = user;
-		this.queryContainsCreationDate = false;
-		this.queryContainsIssueTypes = false;
-		this.finalQuery = "";
 		this.projectKey = projectKey;
+		this.queryType = JiraQueryType.getJiraQueryType(query);
+		this.query = getFinalQuery(query, queryType);		
 	}
 
-	public ParseResult processParseResult(String query) {
-		String filteredQuery = getQuery(query);
-		JiraQueryType jiraQueryType = JiraQueryType.getJiraQueryType(filteredQuery);
-		switch (jiraQueryType) {
+	private String getFinalQuery(String query, JiraQueryType queryType) {
+		String finalQuery = getRawQuery(query);
+		switch (queryType) {
 		case FILTER:
-			filteredQuery = filteredQuery.substring(8, filteredQuery.length());
-			finalQuery = JiraFilter.getQueryForFilter(filteredQuery, filteredQuery);
-			break;
+			finalQuery = finalQuery.substring(8, finalQuery.length());
+			return JiraFilter.getQueryForFilter(finalQuery, projectKey);
 		case JQL:
-			filteredQuery = filteredQuery.substring(5, filteredQuery.length());
-			filteredQuery = jqlStringParser(filteredQuery);
-			return searchService.parseQuery(this.user, filteredQuery);
+			finalQuery = finalQuery.substring(5, finalQuery.length());
+			return cleanDirtyJqlString(finalQuery);
 		default:
-			finalQuery = "type = null";
+			return "type = null";
 		}
-
-		if (this.mergeFilterQueryWithProjectKey) {
-			finalQuery = "(" + finalQuery + ")AND( PROJECT=" + projectKey + ")";
-		}
-		return searchService.parseQuery(this.user, finalQuery);
 	}
 
-	private String jqlStringParser(String jql) {
+	public ParseResult getParseResult() {
+		return searchService.parseQuery(this.user, query);
+	}
+
+	private String cleanDirtyJqlString(String jql) {
 		return jql.replaceAll("%20", " ").replaceAll("%3D", "=").replaceAll("%2C", ",");
 	}
 
-	private String getQuery(String searchString) {
+	private String getRawQuery(String searchString) {
 		String croppedQuery = searchString;
 		String[] split = searchString.split("§");
 		if (split.length > 1) {
@@ -78,7 +70,6 @@ public class JiraQueryHandler {
 			if (!clause.getName().equals("issuetype")) {
 				continue;
 			}
-			this.queryContainsIssueTypes = true;
 			String issuetypes = clause.toString().substring(14, clause.toString().length() - 2);
 
 			if (clause.toString().contains("=")) {
@@ -98,7 +89,6 @@ public class JiraQueryHandler {
 		if (!query.contains("issuetype")) {
 			return new ArrayList<String>();
 		}
-		this.queryContainsIssueTypes = true;
 		List<String> types = new ArrayList<String>();
 		if (query.contains("=")) {
 			String[] split = query.split("=");
@@ -120,7 +110,6 @@ public class JiraQueryHandler {
 			if (!clause.getName().equals("created")) {
 				continue;
 			}
-			this.queryContainsCreationDate = true;
 			long todaysDate = new Date().getTime();
 			String time = clause.toString().substring(13, clause.toString().length() - 2);
 			if (clause.toString().contains(" <= ")) {
@@ -135,7 +124,6 @@ public class JiraQueryHandler {
 		if (!query.contains("created")) {
 			return;
 		}
-		this.queryContainsCreationDate = true;
 		long todaysDate = new Date().getTime();
 		String time = query.substring(11, query.length());
 		if (query.contains(" <= ")) {
@@ -220,18 +208,18 @@ public class JiraQueryHandler {
 	}
 
 	public boolean isQueryContainsIssueTypes() {
-		return queryContainsIssueTypes;
+		return query.contains("issuetype");
 	}
 
 	public boolean isQueryContainsCreationDate() {
-		return queryContainsCreationDate;
+		return query.contains("created");
 	}
 
 	public String getFinalQuery() {
-		if (finalQuery == null) {
-			LOGGER.error("Filter query is null or empty");
-			return "";
+		if (query == null) {
+			LOGGER.error("The JIRA query is null or empty.");
+			return "type = null";
 		}
-		return this.finalQuery;
+		return query;
 	}
 }

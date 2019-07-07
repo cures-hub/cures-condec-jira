@@ -83,7 +83,7 @@ public class FilterSettingsImpl implements FilterSettings {
 		if (!query.matches("\\?jql=(.)+") && !query.matches("\\?filter=(.)+")) {
 			return;
 		}
-		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, false);
+		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, query);
 
 		// if (!queryHandler.getFilterSettings().getIssueTypes().isEmpty()) {
 		// this.issueTypesMatchingFilter = new ArrayList<String>();

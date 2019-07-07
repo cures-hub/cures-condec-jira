@@ -15,16 +15,17 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 public class TestJiraQueryHandler extends TestSetUpWithIssues {
 
 	private JiraQueryHandler jiraQueryHandler;
+	private ApplicationUser user;
 
 	@Before
 	public void setUp() {
 		initialization();
-		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
-		jiraQueryHandler = new JiraQueryHandler(user, "TEST", false);
+		user = ComponentAccessor.getUserManager().getUserByName("NoFails");		
 	}
 
 	@Test
 	public void testGetNamesOfJiraIssueTypesInQuery() {
+		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "issuetype = (Decision, Issue)");
 		List<String> types = jiraQueryHandler.getNamesOfJiraIssueTypesInQuery("issuetype = (Decision, Issue)");
 		assertEquals(1, types.size());
 		//assertEquals("Issue", types.get(0));
@@ -32,6 +33,7 @@ public class TestJiraQueryHandler extends TestSetUpWithIssues {
 	
 	@Test
 	public void testGetNamesOfJiraIssueTypesInQueryWithClauses() {
+		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "issuetype = (Decision, Issue)");
 		List<String> types = jiraQueryHandler.getNamesOfJiraIssueTypesInQuery("issuetype = (Decision, Issue)");
 		assertEquals(1, types.size());
 		//assertEquals("Issue", types.get(0));

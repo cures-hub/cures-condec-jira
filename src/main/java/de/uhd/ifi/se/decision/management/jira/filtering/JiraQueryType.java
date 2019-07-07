@@ -10,12 +10,12 @@ public enum JiraQueryType {
 
 	public static JiraQueryType getJiraQueryType(String searchTerm) {
 		JiraQueryType jiraQueryType = OTHER;
-		if (searchTerm.indexOf("filter") == 1) {
-			jiraQueryType = FILTER;
-		}
-		if (searchTerm.indexOf("jql") == 1) {
+		if (searchTerm.contains("jql")) {
 			jiraQueryType = JQL;
 		}
+		if (searchTerm.contains("filter")) {
+			jiraQueryType = FILTER;
+		}		
 		return jiraQueryType;
 	}
 }

@@ -65,7 +65,7 @@ public class FilterExtractor {
 		this.user = user;
 		this.filterSettings = filterSettings;
 		GraphFiltering filter = new GraphFiltering(filterSettings, user, false);
-		filter.produceResultsWithAdditionalFilters();
+		filter.produceResultsWithAdditionalFilters(filterSettings.getSearchString());
 		this.decisionKnowledgeElements = filter.getAllElementsMatchingQuery();
 	}
 

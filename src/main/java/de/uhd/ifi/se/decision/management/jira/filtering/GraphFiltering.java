@@ -22,7 +22,6 @@ import com.atlassian.query.operator.Operator;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
@@ -30,10 +29,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersisten
 public class GraphFiltering {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GraphFiltering.class);
 
-	private FilterSettings filterData;
+	private FilterSettings filterSettings;
 
 	private ApplicationUser user;
-	private List<DecisionKnowledgeElement> queryResults;
 	private List<Clause> resultingClauses;
 	private String resultingQuery;
 	private JiraQueryHandler queryHandler;
@@ -42,15 +40,14 @@ public class GraphFiltering {
 		return queryHandler;
 	}
 
-	public GraphFiltering(FilterSettings filterData, ApplicationUser user, boolean mergeFilterQueryWithProjectKey) {
-		this.filterData = filterData;
+	public GraphFiltering(FilterSettings filterSettings, ApplicationUser user, boolean mergeFilterQueryWithProjectKey) {
+		this.filterSettings = filterSettings;
 		this.user = user;
-		this.queryResults = new ArrayList<DecisionKnowledgeElement>();
-		this.queryHandler = new JiraQueryHandler(user, filterData.getProjectKey(), mergeFilterQueryWithProjectKey);
+		this.queryHandler = new JiraQueryHandler(user, filterSettings.getProjectKey(), filterSettings.getSearchString());
 	}
 
 	public List<Issue> getJiraIssuesFromQuery(String query) {
-		ParseResult parseResult = queryHandler.processParseResult(query);
+		ParseResult parseResult = queryHandler.getParseResult();
 		if (!parseResult.isValid()) {
 			LOGGER.error(parseResult.getErrors().toString());
 			return new ArrayList<Issue>();
@@ -62,12 +59,12 @@ public class GraphFiltering {
 		if (!clauses.isEmpty()) {
 			this.resultingClauses = clauses;
 			queryHandler.findDatesInQuery(clauses);
-			this.filterData.setIssueTypes(queryHandler.getNamesOfJiraIssueTypesInQuery(clauses));
+			this.filterSettings.setIssueTypes(queryHandler.getNamesOfJiraIssueTypesInQuery(clauses));
 		} else {
 			String finalQuery = queryHandler.getFinalQuery();
 			this.resultingQuery = finalQuery;
 			queryHandler.findDatesInQuery(finalQuery);
-			this.filterData.setIssueTypes(queryHandler.getNamesOfJiraIssueTypesInQuery(finalQuery));
+			this.filterSettings.setIssueTypes(queryHandler.getNamesOfJiraIssueTypesInQuery(finalQuery));
 		}
 		try {
 			SearchResults<Issue> results = queryHandler.getSearchService().search(this.user, parseResult.getQuery(),
@@ -77,17 +74,12 @@ public class GraphFiltering {
 			LOGGER.error("Produce results from query failed. Message: " + e.getMessage());
 			e.printStackTrace();
 		}
-
-		for (Issue issue : jiraIssues) {
-			queryResults.add(new DecisionKnowledgeElementImpl(issue));
-		}
 		return jiraIssues;
 	}
 
-	public void produceResultsWithAdditionalFilters() {
-		queryResults.clear();
+	public List<Issue> produceResultsWithAdditionalFilters(String resultingQuery) {
 		JqlClauseBuilder clauseBuilder = JqlQueryBuilder.newClauseBuilder();
-		clauseBuilder.project(filterData.getProjectKey());
+		clauseBuilder.project(filterSettings.getProjectKey());
 		boolean first = true;
 		if (this.resultingClauses != null) {
 			for (Clause clause : this.resultingClauses) {
@@ -108,16 +100,16 @@ public class GraphFiltering {
 		}
 		clauseBuilder = addIssueTypes(clauseBuilder);
 		clauseBuilder = addTimeFilter(clauseBuilder);
-		processQueryResult(clauseBuilder);
+		return processQueryResult(clauseBuilder);
 	}
 
 	// New issue type filter function
 	private JqlClauseBuilder addIssueTypes(JqlClauseBuilder queryBuilder) {
 		JqlClauseBuilder clauseBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
 		clauseBuilder.and();
-		String[] types = new String[filterData.getIssueTypes().size()];
-		for (int i = 0; i < filterData.getIssueTypes().size(); i++) {
-			types[i] = filterData.getIssueTypes().get(i).toString();
+		String[] types = new String[filterSettings.getIssueTypes().size()];
+		for (int i = 0; i < filterSettings.getIssueTypes().size(); i++) {
+			types[i] = filterSettings.getIssueTypes().get(i).toString();
 		}
 		clauseBuilder.issueType(types);
 		return clauseBuilder;
@@ -125,25 +117,25 @@ public class GraphFiltering {
 
 	// New time filter function
 	private JqlClauseBuilder addTimeFilter(JqlClauseBuilder queryBuilder) {
-		if (filterData.getCreatedEarliest() >= 0) {
+		if (filterSettings.getCreatedEarliest() >= 0) {
 			JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
 			newQueryBuilder.and();
 			newQueryBuilder.addDateCondition("created", Operator.GREATER_THAN_EQUALS,
-					new Date(filterData.getCreatedEarliest()));
+					new Date(filterSettings.getCreatedEarliest()));
 			return newQueryBuilder;
 		}
-		if (filterData.getCreatedLatest() >= 0) {
+		if (filterSettings.getCreatedLatest() >= 0) {
 			JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
 			newQueryBuilder.and();
 			newQueryBuilder.addDateCondition("created", Operator.LESS_THAN_EQUALS,
-					new Date(filterData.getCreatedLatest()));
+					new Date(filterSettings.getCreatedLatest()));
 			return newQueryBuilder;
 		}
 		return queryBuilder;
 	}
 
 	// New process of the final result
-	private void processQueryResult(JqlClauseBuilder queryBuilder) {
+	private List<Issue> processQueryResult(JqlClauseBuilder queryBuilder) {
 		List<Issue> resultingIssues = new ArrayList<>();
 		Query finalQuery = queryBuilder.buildQuery();
 		final SearchService.ParseResult parseResult = queryHandler.getSearchService().parseQuery(user,
@@ -171,11 +163,7 @@ public class GraphFiltering {
 		} else {
 			LOGGER.error(parseResult.getErrors().toString());
 		}
-		if (resultingIssues != null) {
-			for (Issue issue : resultingIssues) {
-				queryResults.add(new DecisionKnowledgeElementImpl(issue));
-			}
-		}
+		return resultingIssues;
 	}
 
 	private boolean matchesCreatedOrIssueType(String resultingQuery) {
@@ -184,14 +172,16 @@ public class GraphFiltering {
 		}
 		if (queryHandler.isQueryContainsCreationDate()) {
 			// TODO
-//			if (queryHandler.getFilterSettings().getCreatedEarliest() >= 0 && resultingQuery.contains("created")
-//					&& resultingQuery.contains(">=")) {
-//				return true;
-//			}
-//			if (queryHandler.getFilterSettings().getCreatedLatest() >= 0 && resultingQuery.contains("created")
-//					&& resultingQuery.contains("<=")) {
-//				return true;
-//			}
+			// if (queryHandler.getFilterSettings().getCreatedEarliest() >= 0 &&
+			// resultingQuery.contains("created")
+			// && resultingQuery.contains(">=")) {
+			// return true;
+			// }
+			// if (queryHandler.getFilterSettings().getCreatedLatest() >= 0 &&
+			// resultingQuery.contains("created")
+			// && resultingQuery.contains("<=")) {
+			// return true;
+			// }
 		}
 		return false;
 	}
@@ -202,28 +192,31 @@ public class GraphFiltering {
 		}
 		if (queryHandler.isQueryContainsCreationDate()) {
 			// TODO
-//			if (queryHandler.getFilterSettings().getCreatedEarliest() >= 0 && clause.getName().equals("created")
-//					&& clause.toString().contains(">=")) {
-//				return true;
-//			}
-//			if (queryHandler.getFilterSettings().getCreatedLatest() >= 0 && clause.getName().equals("created")
-//					&& clause.toString().contains("<=")) {
-//				return true;
-//			}
+			// if (queryHandler.getFilterSettings().getCreatedEarliest() >= 0 &&
+			// clause.getName().equals("created")
+			// && clause.toString().contains(">=")) {
+			// return true;
+			// }
+			// if (queryHandler.getFilterSettings().getCreatedLatest() >= 0 &&
+			// clause.getName().equals("created")
+			// && clause.toString().contains("<=")) {
+			// return true;
+			// }
 		}
 		return false;
 	}
 
 	public List<DecisionKnowledgeElement> getAllElementsMatchingQuery() {
-		List<DecisionKnowledgeElement> results = new ArrayList<>(this.getQueryResults());
+		// List<DecisionKnowledgeElement> results = new ArrayList<>(getQueryResults());
+		List<DecisionKnowledgeElement> results = new ArrayList<>();
 		List<Issue> jiraIssuesForProject = JiraSearchServiceHelper.getAllJiraIssuesForProject(user,
-				filterData.getProjectKey());
+				filterSettings.getProjectKey());
 		if (jiraIssuesForProject == null) {
 			return results;
 		}
 		for (Issue currentIssue : jiraIssuesForProject) {
 			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
-					.getElementsForIssue(currentIssue.getId(), filterData.getProjectKey());
+					.getElementsForIssue(currentIssue.getId(), filterSettings.getProjectKey());
 			for (DecisionKnowledgeElement currentElement : elements) {
 				if (!results.contains(currentElement) && currentElement instanceof PartOfJiraIssueText
 						&& checkIfJiraTextMatchesFilter(currentElement)) {
@@ -238,36 +231,42 @@ public class GraphFiltering {
 	private boolean checkIfJiraTextMatchesFilter(DecisionKnowledgeElement element) {
 		if (queryHandler.isQueryContainsCreationDate()) {
 			// TODO
-//			if (queryHandler.getFilterSettings().getCreatedEarliest() > 0
-//					&& (element).getCreated().getTime() < queryHandler.getFilterSettings().getCreatedEarliest()) {
-//				return false;
-//			}
-//			if (queryHandler.getFilterSettings().getCreatedLatest() > 0
-//					&& (element).getCreated().getTime() > queryHandler.getFilterSettings().getCreatedLatest()) {
-//				return false;
-//			}
+			// if (queryHandler.getFilterSettings().getCreatedEarliest() > 0
+			// && (element).getCreated().getTime() <
+			// queryHandler.getFilterSettings().getCreatedEarliest()) {
+			// return false;
+			// }
+			// if (queryHandler.getFilterSettings().getCreatedLatest() > 0
+			// && (element).getCreated().getTime() >
+			// queryHandler.getFilterSettings().getCreatedLatest()) {
+			// return false;
+			// }
 		}
 		if (queryHandler.isQueryContainsIssueTypes()) {
-//			if (element.getType().equals(KnowledgeType.PRO) || element.getType().equals(KnowledgeType.CON)) {
-//				if (!queryHandler.getFilterSettings().getIssueTypes().contains(KnowledgeType.ARGUMENT)) {
-//					return false;
-//				}
-//			} else if (!queryHandler.getFilterSettings().getIssueTypes().contains(element)) {
-//				return false;
-//			}
+			// if (element.getType().equals(KnowledgeType.PRO) ||
+			// element.getType().equals(KnowledgeType.CON)) {
+			// if
+			// (!queryHandler.getFilterSettings().getIssueTypes().contains(KnowledgeType.ARGUMENT))
+			// {
+			// return false;
+			// }
+			// } else if
+			// (!queryHandler.getFilterSettings().getIssueTypes().contains(element)) {
+			// return false;
+			// }
 			// TODO
-			
+
 		}
 
 		return true;
 	}
 
 	public FilterSettings getFilterData() {
-		return this.filterData;
+		return this.filterSettings;
 	}
 
 	public void setFilterData(FilterSettings filterData) {
-		this.filterData = filterData;
+		this.filterSettings = filterData;
 	}
 
 	public ApplicationUser getUser() {
@@ -278,7 +277,8 @@ public class GraphFiltering {
 		this.user = user;
 	}
 
+	// TODO
 	public List<DecisionKnowledgeElement> getQueryResults() {
-		return queryResults;
+		return new ArrayList<>();
 	}
 }
