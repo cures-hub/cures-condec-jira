@@ -130,13 +130,12 @@ public class GraphImplFiltered extends GraphImpl {
 			}
 			DecisionKnowledgeElement oppositeElement = link.getOppositeElement(element);
 			includeElementInGraph = true;
-			// if (queryHandler.isQueryContainsCreationDate() && oppositeElement instanceof
-			// PartOfJiraIssueText) {
-			// includeElementInGraph = isSentenceIncludedInGraph(oppositeElement);
-			// } else if (queryHandler.isQueryContainsIssueTypes() && oppositeElement
-			// instanceof PartOfJiraIssueText && includeElementInGraph) {
-			// includeElementInGraph = isSentenceIssueTypeInIssueTypes(oppositeElement);
-			// }
+			if (filter.getFilterSettings().getCreatedEarliest() > 0 && oppositeElement instanceof PartOfJiraIssueText) {
+				includeElementInGraph = isSentenceIncludedInGraph(oppositeElement);
+			} else if (filter.getFilterSettings().getNamesOfSelectedJiraIssueTypes().size() > 0
+					&& oppositeElement instanceof PartOfJiraIssueText && includeElementInGraph) {
+				includeElementInGraph = isSentenceIssueTypeInIssueTypes(oppositeElement);
+			}
 
 			if (includeElementInGraph && !this.genericLinkIds.contains(link.getId())) {
 				this.genericLinkIds.add(link.getId());
@@ -152,28 +151,21 @@ public class GraphImplFiltered extends GraphImpl {
 	}
 
 	private boolean isSentenceIssueTypeInIssueTypes(DecisionKnowledgeElement oppositeElement) {
-		return true;
-		// TODO
-		// return
-		// queryHandler.getFilterSettings().getIssueTypes().contains(oppositeElement.getType());
+		return filter.getFilterSettings().getNamesOfSelectedJiraIssueTypes()
+				.contains(oppositeElement.getType().toString());
 	}
 
 	private boolean isSentenceIncludedInGraph(DecisionKnowledgeElement element) {
-		// TODO
-		// if (queryHandler.getFilterSettings().getCreatedEarliest() <= 0 &&
-		// element.getCreated().getTime() <
-		// queryHandler.getFilterSettings().getCreatedLatest()) {
-		// return true;
-		// } else if (queryHandler.getFilterSettings().getCreatedLatest() <= 0 &&
-		// element.getCreated().getTime() >
-		// queryHandler.getFilterSettings().getCreatedEarliest()) {
-		// return true;
-		// } else if (element.getCreated().getTime() <
-		// queryHandler.getFilterSettings().getCreatedLatest() &&
-		// element.getCreated().getTime() >
-		// queryHandler.getFilterSettings().getCreatedEarliest()) {
-		// return true;
-		// }
+		if (filter.getFilterSettings().getCreatedEarliest() <= 0
+				&& element.getCreated().getTime() < filter.getFilterSettings().getCreatedLatest()) {
+			return true;
+		} else if (filter.getFilterSettings().getCreatedLatest() <= 0
+				&& element.getCreated().getTime() > filter.getFilterSettings().getCreatedEarliest()) {
+			return true;
+		} else if (element.getCreated().getTime() < filter.getFilterSettings().getCreatedLatest()
+				&& element.getCreated().getTime() > filter.getFilterSettings().getCreatedEarliest()) {
+			return true;
+		}
 		return false;
 	}
 

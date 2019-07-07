@@ -267,7 +267,7 @@ public class KnowledgeRest {
 			elementsQueryLinked = extractor.getGraphsMatchingQuery("");
 			return Response.ok(elementsQueryLinked).build();
 		} else {
-			queryResult = extractor.getFilteredDecisions();
+			queryResult = extractor.getAllElementsMatchingQuery();
 		}
 		return Response.ok(queryResult).build();
 	}

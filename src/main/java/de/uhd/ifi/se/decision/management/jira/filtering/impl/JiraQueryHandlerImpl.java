@@ -30,7 +30,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
  * or as a preset filter (can also be set by the user).
  */
 public class JiraQueryHandlerImpl implements JiraQueryHandler {
-	private static final Logger LOGGER = LoggerFactory.getLogger(JiraQueryHandlerImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JiraQueryHandler.class);
 
 	private SearchService searchService;
 	private ApplicationUser user;

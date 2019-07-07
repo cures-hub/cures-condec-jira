@@ -26,76 +26,30 @@ public class FilterExtractor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilterExtractor.class);
 	private ApplicationUser user;
 	private FilterSettings filterSettings;
-	private List<DecisionKnowledgeElement> decisionKnowledgeElements;
 	private JiraQueryHandler queryHandler;
 
-	public JiraQueryHandler getQueryHandler() {
-		return queryHandler;
-	}
-
 	public FilterExtractor(String projectKey, ApplicationUser user, String filterString) {
-		if (!isValidInput(projectKey, user, filterString)) {
+		if (projectKey == null || projectKey.equals("") || filterString == null || user == null) {
+			LOGGER.error("FilterExtractor could not be created due to an invalid input.");
 			return;
 		}
 		this.filterSettings = new FilterSettingsImpl(projectKey, filterString);
 		this.user = user;
 		if (!(filterString.matches("\\?jql=(.)+")) || (filterString.matches("\\?filter=(.)+"))) {
-			filterSettings.setSearchString("asdf§filter=-4");
-		}		
-		this.queryHandler = new JiraQueryHandlerImpl(user, projectKey, filterString);
-		this.decisionKnowledgeElements = getAllElementsMatchingQuery();
-	}
-
-	private boolean isValidInput(String projectKey, ApplicationUser user, String filterString) {
-		if (projectKey == null || projectKey.equals("")) {
-			LOGGER.error("ProjectKey is null or empty");
-			return false;
+			filterSettings.setSearchString("?filter=-4");
 		}
-		if (filterString == null) {
-			LOGGER.error("FilterString is null");
-			return false;
-		}
-		if (user == null) {
-			LOGGER.error("User is null");
-			return false;
-		}
-		return true;
+		this.queryHandler = new JiraQueryHandlerImpl(user, projectKey, filterSettings.getSearchString());
 	}
 
 	public FilterExtractor(ApplicationUser user, FilterSettings filterSettings) {
-		if (!isValidInput(user, filterSettings)) {
+		if (filterSettings == null || user == null) {
+			LOGGER.error("FilterExtractor could not be created due to an invalid input.");
 			return;
 		}
 		this.user = user;
-		this.filterSettings = filterSettings;		
+		this.filterSettings = filterSettings;
 		this.queryHandler = new JiraQueryHandlerImpl(user, filterSettings.getProjectKey(),
 				filterSettings.getSearchString());
-		this.decisionKnowledgeElements = getAllElementsMatchingQuery();
-	}
-
-	private boolean isValidInput(ApplicationUser user, FilterSettings filterData) {
-		if (filterData == null) {
-			LOGGER.error("Filter data is null");
-			return false;
-		}
-		if (filterData.getSearchString() == null) {
-			LOGGER.error("FilterString is null");
-			return false;
-		}
-		if (user == null) {
-			LOGGER.error("User is null");
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * if no filter
-	 *
-	 * @return filtered DecisionKnowledgeElements
-	 */
-	public List<DecisionKnowledgeElement> getFilteredDecisions() {
-		return this.decisionKnowledgeElements;
 	}
 
 	/**
@@ -108,7 +62,7 @@ public class FilterExtractor {
 			linkedQueryNotEmpty = "?filter=allissues";
 		}
 		List<DecisionKnowledgeElement> tempQueryResult = new FilterExtractor(filterSettings.getProjectKey(), user,
-				filterSettings.getSearchString()).getFilteredDecisions();
+				filterSettings.getSearchString()).getAllElementsMatchingQuery();
 		List<DecisionKnowledgeElement> addedElements = new ArrayList<DecisionKnowledgeElement>();
 		List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
 
@@ -190,8 +144,7 @@ public class FilterExtractor {
 		return this.filterSettings;
 	}
 
-	public ApplicationUser getUser() {
-		return user;
+	public JiraQueryHandler getQueryHandler() {
+		return queryHandler;
 	}
-
 }

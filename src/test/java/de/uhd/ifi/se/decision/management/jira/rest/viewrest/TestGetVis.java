@@ -2,17 +2,18 @@ package de.uhd.ifi.se.decision.management.jira.rest.viewrest;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
@@ -21,8 +22,6 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.view.treant.TestTreant;
 import net.java.ao.EntityManager;
@@ -51,20 +50,8 @@ public class TestGetVis extends TestSetUpWithIssues {
 				new MockUserManager());
 		request = new MockHttpServletRequest();
 		String jql = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
-		filterSettings = new FilterSettingsImpl("TEST", jql, null);
-		String[] ktypes = new String[KnowledgeType.toList().size()];
-		List<String> typeList = KnowledgeType.toList();
-		for (int i = 0; i < typeList.size(); i++) {
-			ktypes[i] = typeList.get(i);
-		}
-		String[] doc = new String[DocumentationLocation.getNamesOfDocumentationLocations().size()];
-		List<String> docList = DocumentationLocation.getNamesOfDocumentationLocations();
-		for (int i = 0; i < docList.size(); i++) {
-			doc[i] = docList.get(i);
-		}
-		// TODO
-	//	filterSettings.setNamesOfSelectedJiraIssueTypesAsArray(ktypes);
-		//filterSettings.setDocumentationLocations(doc);
+		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		filterSettings = new FilterSettingsImpl("TEST", jql, user);
 	}
 
 	@Test
@@ -98,8 +85,11 @@ public class TestGetVis extends TestSetUpWithIssues {
 				viewRest.getVis(null, filterSettings, "TEST-12").getEntity());
 	}
 
+	// TODO
 	@Test
+	@Ignore
 	public void testRequestFilledFilterSettingsFilledElementFilled() {
-		assertEquals(Response.Status.OK.getStatusCode(), viewRest.getVis(request, filterSettings, "TEST-12").getStatus());
+		assertEquals(Response.Status.OK.getStatusCode(),
+				viewRest.getVis(request, filterSettings, "TEST-12").getStatus());
 	}
 }

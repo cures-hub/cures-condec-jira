@@ -69,8 +69,8 @@ public class VisGraph {
 		fillNodesAndEdges(rootElement, null, level, cid);
 	}
 
-	// TODO Fix complexity of this function
-	// Way to big needs to be split in small functions
+	// TODO Reduce complexity of this function
+	// Way too big needs to be split in small functions
 	private void fillNodesAndEdges(DecisionKnowledgeElement element, Link link, int level, int cid) {
 		if (element == null || element.getProject() == null) {
 			return;

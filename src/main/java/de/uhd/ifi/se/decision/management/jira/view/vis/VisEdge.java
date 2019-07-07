@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-
 import javax.xml.bind.annotation.XmlElement;
+
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
  * Model class for vis.js Edge.
