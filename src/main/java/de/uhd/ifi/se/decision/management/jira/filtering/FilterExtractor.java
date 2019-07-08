@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,13 +100,19 @@ public class FilterExtractor {
 		return graph.getAllElements();
 	}
 
+	//Problem Filtered Issues from sideFilter will be filterd again
+	//In the end there are only 2 Issues left that are not matching with the
+	//location so everything is collapsed
 	public List<DecisionKnowledgeElement> getAllElementsMatchingQuery() {
 		List<Issue> jiraIssues = queryHandler.getJiraIssuesFromQuery();
 		List<DecisionKnowledgeElement> results = new ArrayList<DecisionKnowledgeElement>();
 		if (jiraIssues == null) {
 			return results;
 		}
+		//Search in every Jira issue for some more Decision Knowledge Elements and if there are some add them
 		for (Issue currentIssue : jiraIssues) {
+			//Add all Matching Elements from Query as a DecisionKnowledgeElement
+			results.add(new DecisionKnowledgeElementImpl(currentIssue));
 			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
 					.getElementsForIssue(currentIssue.getId(), filterSettings.getProjectKey());
 			for (DecisionKnowledgeElement currentElement : elements) {
