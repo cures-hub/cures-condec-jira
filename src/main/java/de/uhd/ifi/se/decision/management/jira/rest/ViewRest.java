@@ -125,12 +125,13 @@ public class ViewRest {
 
 	@Path("/getEvolutionData")
 	@GET
-	public Response getEvolutionData(@QueryParam("projectKey") String projectKey) {
+	public Response getEvolutionData(@QueryParam("projectKey") String projectKey,@Context HttpServletRequest request) {
 		if (projectKey == null || projectKey.equals("")) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not valid."))
 					.build();
 		}
-		VisDataProvider visDataProvider = new VisDataProvider(projectKey);
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		VisDataProvider visDataProvider = new VisDataProvider(projectKey,user);
 		VisTimeLine timeLine = visDataProvider.getTimeLine();
 		return Response.ok(timeLine.getEvolutionData()).build();
 	}
@@ -195,15 +196,19 @@ public class ViewRest {
 					.entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
 					.build();
 		}
-		String projectKey = getProjectKey(elementKey);
+		String projectKey = filterSettings.getProjectKey();
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisDataProvider visDataProvider;
-		if (filterSettings.getNamesOfSelectedJiraIssueTypes().size() == 0 || (filterSettings.getDocumentationLocations().size() == 1
-				&& filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN))) {
-			visDataProvider = new VisDataProvider(projectKey, elementKey, false, filterSettings.getSearchString(),
-					user);
+		// Case Compare View
+		if(elementKey.equals("")){
+			visDataProvider = new VisDataProvider(projectKey, user);
 		} else {
-			visDataProvider = new VisDataProvider(elementKey, false, user, filterSettings);
+			//Case Filter Views
+			if (filterSettings.getNamesOfSelectedJiraIssueTypes().size() == 0 || (filterSettings.getDocumentationLocations().size() == 1 && filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN))) {
+				visDataProvider = new VisDataProvider(projectKey, elementKey, false, filterSettings.getSearchString(), user);
+			} else {
+				visDataProvider = new VisDataProvider(elementKey, false, user, filterSettings);
+			}
 		}
 		VisGraph visGraph = visDataProvider.getVisGraph();
 		return Response.ok(visGraph).build();

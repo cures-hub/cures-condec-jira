@@ -30,82 +30,28 @@
 		});
 	};
 
-	ConDecEvolutionPage.prototype.buildCompare = function buildCompare(projectKey, firstDate, scondDate) {
+	ConDecEvolutionPage.prototype.buildCompare = function buildCompare(projectKey, firstDate, secondDate) {
 		console.log("ConDec build compare view");
-
-		var containerleft = document.getElementById('left-network');
-		var containerright = document.getElementById('right-network');
-
-		var options = {};
-		var nodesleft = new vis.DataSet([ {
-			id : 1,
-			label : 'Node 1'
-		}, {
-			id : 2,
-			label : 'Node 2'
-		}, {
-			id : 3,
-			label : 'Node 3'
-		} ]);
-		var edgesleft = new vis.DataSet([ {
-			from : 1,
-			to : 3
-		}, {
-			from : 1,
-			to : 2
-		}, {
-			from : 3,
-			to : 3
-		} ]);
-
-		var dataleft = {
-			nodes : nodesleft,
-			edges : edgesleft
-		};
-		var networkleft = new vis.Network(containerleft, dataleft, options);
-
-		var nodesright = new vis.DataSet([ {
-			id : 1,
-			label : 'Node 1'
-		}, {
-			id : 2,
-			label : 'Node 2'
-		}, {
-			id : 3,
-			label : 'Node 3'
-		}, {
-			id : 4,
-			label : 'Node 4'
-		}, {
-			id : 5,
-			label : 'Node 5'
-		} ]);
-
-		// create an array with edges
-		var edgesright = new vis.DataSet([ {
-			from : 1,
-			to : 3
-		}, {
-			from : 1,
-			to : 2
-		}, {
-			from : 2,
-			to : 4
-		}, {
-			from : 2,
-			to : 5
-		}, {
-			from : 3,
-			to : 3
-		} ]);
-
-		// create a network
-
-		var dataright = {
-			nodes : nodesright,
-			edges : edgesright
-		};
-		var networkright = new vis.Network(containerright, dataright, options);
+        conDecAPI.getVisFiltered("", "","",
+            firstDate, secondDate, "", function (visData) {
+            console.log("Test if this is shown we have some other problem");
+            var containerleft = document.getElementById('left-network');
+            var dataleft = {
+                nodes : visData.nodes,
+                edges : visData.edges
+            };
+            var options = {};
+            var networkleft = new vis.Network(containerleft, dataleft, options);
+        });
+        conDecAPI.getVis("", "",function (visData) {
+            var containerright = document.getElementById('right-network');
+            var dataright = {
+                nodes : visData.nodes,
+                edges : visData.edges
+            };
+            var options = {};
+            var networkright = new vis.Network(containerright, dataright, options);
+        });
 	};
 
 	/*

@@ -16,9 +16,12 @@ public class VisDataProvider {
 	private FilterExtractor filterExtractor;
 	private List<DecisionKnowledgeElement> decisionKnowledgeElements;
 
-	public VisDataProvider(String projectKey) {
+	public VisDataProvider(String projectKey, ApplicationUser user) {
 		this.projectKey = projectKey;
+		this.filterExtractor = new FilterExtractor(projectKey, user, "");
 		this.timeLine = new VisTimeLine(projectKey);
+		decisionKnowledgeElements = filterExtractor.getAllElementsMatchingQuery();
+		graph = new VisGraph(projectKey,decisionKnowledgeElements.get(0).getKey(), decisionKnowledgeElements, false);
 	}
 
 	public VisDataProvider(String projectKey, String elementKey, boolean isHyperlinked, String query,
