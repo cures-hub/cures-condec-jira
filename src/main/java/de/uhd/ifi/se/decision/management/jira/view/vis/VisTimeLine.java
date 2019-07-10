@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -23,6 +24,14 @@ public class VisTimeLine {
 		createDataSet();
 	}
 
+	public VisTimeLine(String projectKey, Date created, Date closed) {
+		if (projectKey != null) {
+			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
+			elementList = strategy.getDecisionKnowledgeElementsInTimeSpan(created, closed);
+		}
+		createDataSet();
+	}
+
 	public HashSet<VisTimeLineNode> getEvolutionData() {
 		return dataSet;
 	}
@@ -37,8 +46,8 @@ public class VisTimeLine {
 
 	private void createDataSet() {
 		dataSet = new HashSet<>();
-		dataSet.add(new VisTimeLineNode(1, "Test Item 1", "2019-03-1"));
-		dataSet.add(new VisTimeLineNode(2, "Test Item 2", "2019-03-4"));
-		dataSet.add(new VisTimeLineNode(3, "Test Item 3", "2019-03-20"));
+		for(DecisionKnowledgeElement element: elementList){
+			dataSet.add(new VisTimeLineNode(element));
+		}
 	}
 }

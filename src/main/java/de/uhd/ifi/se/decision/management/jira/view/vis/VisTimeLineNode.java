@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+
 import javax.xml.bind.annotation.XmlElement;
 
 public class VisTimeLineNode {
@@ -13,10 +15,13 @@ public class VisTimeLineNode {
 	@XmlElement
 	private String start;
 
-	public VisTimeLineNode(int id, String content, String startTime) {
-		this.id = id;
-		this.content = content;
-		this.start = startTime;
+	public VisTimeLineNode(DecisionKnowledgeElement element) {
+		this.id = ((int)element.getId());
+		this.content = element.getKey();
+		int year = element.getCreated().getYear();
+		int month = element.getCreated().getMonth();
+		int day = element.getCreated().getDay();
+		this.start = year+ "-" + month + "-" + day;
 	}
 
 	public int getId() {

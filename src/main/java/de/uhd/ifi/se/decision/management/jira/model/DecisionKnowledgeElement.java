@@ -249,6 +249,20 @@ public interface DecisionKnowledgeElement {
 	void setCreated(Date date);
 
 	/**
+	 * Get the close date fo the decision knowledge element.
+	 *
+	 * @return close date.
+	 */
+	Date getClosed();
+
+	/**
+	 * Set the close date of the decision knowledge element.
+	 *
+	 * @param date
+	 */
+	void setClosed(Date date);
+
+	/**
 	 * Check whether the element exists in database.
 	 * 
 	 * @return true if the element exists in database.

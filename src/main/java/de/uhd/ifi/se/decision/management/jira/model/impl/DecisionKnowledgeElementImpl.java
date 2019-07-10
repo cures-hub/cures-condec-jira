@@ -35,6 +35,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	private DecisionKnowledgeProject project;
 	private String key;
 	private Date created;
+	private Date closed;
 
 	public DecisionKnowledgeElementImpl() {
 		this.description = "";
@@ -263,6 +264,16 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	@Override
 	public void setCreated(Date date) {
 		this.created = date;
+	}
+
+	@Override
+	public Date getClosed() {
+		return this.closed;
+	}
+
+	@Override
+	public void setClosed(Date date) {
+		this.closed = date;
 	}
 
 	@Override

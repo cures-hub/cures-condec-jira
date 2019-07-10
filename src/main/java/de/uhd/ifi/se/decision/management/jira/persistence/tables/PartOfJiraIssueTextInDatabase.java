@@ -56,6 +56,14 @@ public interface PartOfJiraIssueTextInDatabase extends RawEntity<Long> {
 
 	void setValidated(boolean validated);
 
+	long getCreated();
+
+	void setCreated(long created);
+
+	long getClosed();
+
+	void setClosed(long closed);
+
 	static boolean deleteElement(PartOfJiraIssueTextInDatabase elementToDelete) {
 		try {
 			elementToDelete.getEntityManager().delete(elementToDelete);
