@@ -21,7 +21,7 @@
 	
 	ConDecEvolutionPage.prototype.buildTimeLine = function buildTimeLine(projectKey) {
 		console.log("ConDec build timeline");
-		conDecAPI.getEvolutionData(projectKey, function(evolutionData) {
+		conDecAPI.getEvolutionData(function(evolutionData) {
 			var container = document.getElementById('evolution-timeline');
 			var data = evolutionData;
 			var item = new vis.DataSet(data);

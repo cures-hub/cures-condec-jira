@@ -376,10 +376,11 @@
 	/*
 	 * external references: condec.evolution.page
 	 */
-	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(projectKey, callback) {
+	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getEvolutionData.json?projectKey=" + projectKey,
 				function(error, evolutionData) {
 					if (error === null) {
+					    console.log(evolutionData);
 						callback(evolutionData);
 					}
 				});

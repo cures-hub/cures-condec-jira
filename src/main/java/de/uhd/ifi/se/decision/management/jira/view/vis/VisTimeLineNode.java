@@ -18,7 +18,7 @@ public class VisTimeLineNode {
 	public VisTimeLineNode(DecisionKnowledgeElement element) {
 		this.id = ((int)element.getId());
 		this.content = element.getKey();
-		int year = element.getCreated().getYear();
+		int year = element.getCreated().getYear() + 1900;
 		int month = element.getCreated().getMonth();
 		int day = element.getCreated().getDay();
 		this.start = year+ "-" + month + "-" + day;
