@@ -345,6 +345,17 @@
 	};
 
 	/*
+	 *external reference: condec.evolution.page.js
+	 */
+    ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed, callback){
+        getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getCompareVis.json?projectKey="+projectKey
+            +"&created=" + created +"&closed=" + closed ,function (error, vis) {
+                if(error === null){
+                    callback(vis);
+                }
+        });
+    };
+	/*
 	 * external reference: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getFilterSettings = function getFilterSettings(elementKey, searchTerm, callback) {

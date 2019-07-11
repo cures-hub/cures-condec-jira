@@ -32,8 +32,7 @@
 
 	ConDecEvolutionPage.prototype.buildCompare = function buildCompare(projectKey, firstDate, secondDate) {
 		console.log("ConDec build compare view");
-        conDecAPI.getVisFiltered("", "","",
-            firstDate, secondDate, "", function (visData) {
+        conDecAPI.getCompareVis("-1", "-1", function (visData) {
             console.log("Test if this is shown we have some other problem");
             var containerleft = document.getElementById('left-network');
             var dataleft = {
@@ -43,7 +42,7 @@
             var options = {};
             var networkleft = new vis.Network(containerleft, dataleft, options);
         });
-        conDecAPI.getVis("", "",function (visData) {
+        conDecAPI.getCompareVis(firstDate, secondDate,function (visData) {
             var containerright = document.getElementById('right-network');
             var dataright = {
                 nodes : visData.nodes,

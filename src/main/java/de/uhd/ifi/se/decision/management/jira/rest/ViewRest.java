@@ -199,19 +199,33 @@ public class ViewRest {
 		String projectKey = filterSettings.getProjectKey();
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisDataProvider visDataProvider;
-		// Case Compare View
-		if(elementKey.equals("")){
-			visDataProvider = new VisDataProvider(projectKey, user);
+		if (filterSettings.getNamesOfSelectedJiraIssueTypes().size() == 0 || (filterSettings.getDocumentationLocations().size() == 1 && filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN))) {
+			visDataProvider = new VisDataProvider(projectKey, elementKey, false, filterSettings.getSearchString(), user);
 		} else {
-			//Case Filter Views
-			if (filterSettings.getNamesOfSelectedJiraIssueTypes().size() == 0 || (filterSettings.getDocumentationLocations().size() == 1 && filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN))) {
-				visDataProvider = new VisDataProvider(projectKey, elementKey, false, filterSettings.getSearchString(), user);
-			} else {
-				visDataProvider = new VisDataProvider(elementKey, false, user, filterSettings);
-			}
+			visDataProvider = new VisDataProvider(elementKey, false, user, filterSettings);
 		}
 		VisGraph visGraph = visDataProvider.getVisGraph();
 		return Response.ok(visGraph).build();
+	}
+
+	@Path("/getCompareVis")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getCompareVis(@Context HttpServletRequest request,@QueryParam("projectKey") String projectKey,
+	                              @QueryParam("created") long created, @QueryParam("closed") long closed){
+		if (request == null) {
+			return Response.status(Status.BAD_REQUEST)
+					       .entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
+					       .build();
+		}
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		if(created == -1 && closed == -1 ) {
+			VisDataProvider visDataProvider = new VisDataProvider(projectKey, user);
+			return Response.ok(visDataProvider.getVisGraph()).build();
+		}
+
+		VisDataProvider visDataProvider = new VisDataProvider(projectKey, user);
+		return Response.ok(visDataProvider.getVisGraphTimeFilterd(created,closed)).build();
 	}
 
 	@Path("/getFilterSettings")
