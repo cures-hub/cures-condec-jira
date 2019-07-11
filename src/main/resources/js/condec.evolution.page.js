@@ -40,7 +40,7 @@
                 edges : visData.edges
             };
             var options = {};
-            var networkleft = new vis.Network(containerleft, dataleft, options);
+            var networkLeft = new vis.Network(containerleft, dataleft, options);
         });
         conDecAPI.getCompareVis(firstDate, secondDate,function (visData) {
             var containerright = document.getElementById('right-network');
@@ -49,7 +49,8 @@
                 edges : visData.edges
             };
             var options = {};
-            var networkright = new vis.Network(containerright, dataright, options);
+            var networkRight = new vis.Network(containerright, dataright, options);
+            addOnClickEventToFilterButton(networkRight);
         });
 	};
 
@@ -71,5 +72,24 @@
 		}
 		return true;
 	}
+
+	//Compute filter and select new elements
+    function addOnClickEventToFilterButton(networkright) {
+        console.log("ConDecJiraEvolutionPage addOnClickEventToFilterButtonCompare");
+
+        var filterButton = document.getElementById("filter-button-compare");
+
+        filterButton.addEventListener("click", function(event, networkRight) {
+            var firstDate = document.getElementById("start-data-picker").valueAsNumber;
+            var secondDate = document.getElementById("end-data-picker").valueAsNumber;
+            conDecAPI.getCompareVis(firstDate, secondDate,function (visData) {
+                var dataRight = {
+                    nodes : visData.nodes,
+                    edges : visData.edges
+                };
+                networkRight.setData(dataRight);
+            });
+        });
+    }
 	global.conDecEvolutionPage = new ConDecEvolutionPage();
 })(window);
