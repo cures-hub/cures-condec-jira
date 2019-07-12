@@ -347,7 +347,7 @@
 	/*
 	 *external reference: condec.evolution.page.js
 	 */
-    ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed, callback){
+    ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed,searchString, callback){
         getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getCompareVis.json?projectKey="+projectKey
             +"&created=" + created +"&closed=" + closed ,function (error, vis) {
                 if(error === null){

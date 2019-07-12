@@ -3,15 +3,18 @@
 	/* private vars */
 	var conDecObservable = null;
 	var conDecAPI = null;
+	var conDecVis = null;
+	var networkRight = null;
 
 	var ConDecEvolutionPage = function ConDecEvolutionPage() {
 	};
 
-	ConDecEvolutionPage.prototype.init = function(_conDecAPI, _conDecObservable) {
+	ConDecEvolutionPage.prototype.init = function(_conDecAPI, _conDecObservable, _conDecVis) {
 		console.log("ConDecEvolutionPage init");
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)) {
 			conDecAPI = _conDecAPI;
 			conDecObservable = _conDecObservable;
+			conDecVis = _conDecVis;
 
 			conDecObservable.subscribe(this);
 			return true;
@@ -32,26 +35,27 @@
 
 	ConDecEvolutionPage.prototype.buildCompare = function buildCompare(projectKey, firstDate, secondDate) {
 		console.log("ConDec build compare view");
-        conDecAPI.getCompareVis("-1", "-1", function (visData) {
+        conDecAPI.getCompareVis("-1", "-1","",function (visData) {
             console.log("Test if this is shown we have some other problem");
             var containerleft = document.getElementById('left-network');
             var dataleft = {
                 nodes : visData.nodes,
                 edges : visData.edges
             };
-            var options = {};
+            var options = conDecVis.getVisOptions();
             var networkLeft = new vis.Network(containerleft, dataleft, options);
+
         });
-        conDecAPI.getCompareVis(firstDate, secondDate,function (visData) {
+        conDecAPI.getCompareVis(firstDate, secondDate,"",function (visData) {
             var containerright = document.getElementById('right-network');
             var dataright = {
                 nodes : visData.nodes,
                 edges : visData.edges
             };
-            var options = {};
-            var networkRight = new vis.Network(containerright, dataright, options);
-            addOnClickEventToFilterButton(networkRight);
+            var options = conDecVis.getVisOptions();
+            networkRight = new vis.Network(containerright, dataright, options);
         });
+        addOnClickEventToFilterButton();
 	};
 
 	/*
@@ -74,15 +78,19 @@
 	}
 
 	//Compute filter and select new elements
-    function addOnClickEventToFilterButton(networkright) {
+    function addOnClickEventToFilterButton() {
         console.log("ConDecJiraEvolutionPage addOnClickEventToFilterButtonCompare");
 
         var filterButton = document.getElementById("filter-button-compare");
 
-        filterButton.addEventListener("click", function(event, networkRight) {
+        filterButton.addEventListener("click", function(event) {
             var firstDate = document.getElementById("start-data-picker").valueAsNumber;
             var secondDate = document.getElementById("end-data-picker").valueAsNumber;
-            conDecAPI.getCompareVis(firstDate, secondDate,function (visData) {
+            var searchString = document.getElementById("compare-search-input").value;
+            console.log(searchString);
+            console.log(firstDate);
+            console.log(secondDate);
+            conDecAPI.getCompareVis(firstDate, secondDate,searchString, function (visData) {
                 var dataRight = {
                     nodes : visData.nodes,
                     edges : visData.edges
