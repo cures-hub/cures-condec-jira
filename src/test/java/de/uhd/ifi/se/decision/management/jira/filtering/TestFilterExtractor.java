@@ -97,21 +97,15 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testGetGraphsMatchingQueryNull() {
-		FilterExtractor extractor = new FilterExtractor("Test", user, "?jql=project=TEST");
-		assertEquals(0, extractor.getGraphsMatchingQuery(null).size());
-	}
-
-	@Test
 	public void testGetGraphsMatchingQueryEmpty() {
-		FilterExtractor extractor = new FilterExtractor("Test", user, "?jql=project=TEST");
-		assertEquals(0, extractor.getGraphsMatchingQuery("").size());
+		FilterExtractor extractor = new FilterExtractor("Test", user, "");
+		assertEquals(0, extractor.getAllGraphs().size());
 	}
 
 	@Test
 	public void testGetGraphsMatchingQueryFilled() {
 		FilterExtractor extractor = new FilterExtractor("Test", user, "?jql=project=TEST");
-		assertEquals(0, extractor.getGraphsMatchingQuery("Test").size());
+		assertEquals(0, extractor.getAllGraphs().size());
 	}
 	
 	@Test

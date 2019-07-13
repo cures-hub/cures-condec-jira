@@ -56,14 +56,8 @@ public class FilterExtractor {
 	/**
 	 * Used for the export of decision knowledge
 	 */
-	public List<List<DecisionKnowledgeElement>> getGraphsMatchingQuery(String linkedQuery) {
-		// Default filter for adjecent Elements
-		String linkedQueryNotEmpty = linkedQuery;
-		if ("".equals(linkedQueryNotEmpty)) {
-			linkedQueryNotEmpty = "?filter=allissues";
-		}
-		List<DecisionKnowledgeElement> tempQueryResult = new FilterExtractor(filterSettings.getProjectKey(), user,
-				filterSettings.getSearchString()).getAllElementsMatchingQuery();
+	public List<List<DecisionKnowledgeElement>> getAllGraphs() {
+		List<DecisionKnowledgeElement> tempQueryResult = getAllElementsMatchingQuery();
 		List<DecisionKnowledgeElement> addedElements = new ArrayList<DecisionKnowledgeElement>();
 		List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
 
@@ -73,9 +67,7 @@ public class FilterExtractor {
 			if (!addedElements.contains(current)) {
 				// if not get the connected tree
 				String currentElementKey = current.getKey();
-				filterSettings.setSearchString(linkedQueryNotEmpty);
-				List<DecisionKnowledgeElement> filteredElements = this.getElementsInGraph(user, filterSettings,
-						currentElementKey);
+				List<DecisionKnowledgeElement> filteredElements = getElementsInGraph(currentElementKey);
 				// add each element to the list
 				addedElements.addAll(filteredElements);
 				// add list to the big list
@@ -85,33 +77,29 @@ public class FilterExtractor {
 		return elementsQueryLinked;
 	}
 
-	/**
-	 * Used for the export of decision knowledge
-	 */
-	private List<DecisionKnowledgeElement> getElementsInGraph(ApplicationUser user, FilterSettings filterData,
-			String elementKey) {
+	private List<DecisionKnowledgeElement> getElementsInGraph(String elementKey) {
 		Graph graph;
-		if ((filterData.getSearchString().matches("\\?jql=(.)+"))
-				|| (filterData.getSearchString().matches("\\?filter=(.)+"))) {
-			graph = new GraphImplFiltered(filterData.getProjectKey(), elementKey, this);
+		if (queryHandler.getQueryType() != JiraQueryType.OTHER) {
+			graph = new GraphImplFiltered(filterSettings.getProjectKey(), elementKey, this);
 		} else {
-			graph = new GraphImpl(filterData.getProjectKey(), elementKey);
+			graph = new GraphImpl(filterSettings.getProjectKey(), elementKey);
 		}
 		return graph.getAllElements();
 	}
 
-	//Problem Filtered Issues from sideFilter will be filterd again
-	//In the end there are only 2 Issues left that are not matching with the
-	//location so everything is collapsed
+	// Problem Filtered Issues from sideFilter will be filterd again
+	// In the end there are only 2 Issues left that are not matching with the
+	// location so everything is collapsed
 	public List<DecisionKnowledgeElement> getAllElementsMatchingQuery() {
 		List<DecisionKnowledgeElement> results = new ArrayList<DecisionKnowledgeElement>();
-		List<Issue> jiraIssues = queryHandler.getJiraIssuesFromQuery();		
-		if (jiraIssues == null || jiraIssues.isEmpty()) {
+		List<Issue> jiraIssues = queryHandler.getJiraIssuesFromQuery();
+		if (jiraIssues == null) {
 			return results;
 		}
-		//Search in every Jira issue for some more Decision Knowledge Elements and if there are some add them
+		// Search in every Jira issue for some more Decision Knowledge Elements and if
+		// there are some add them
 		for (Issue currentIssue : jiraIssues) {
-			//Add all Matching Elements from Query as a DecisionKnowledgeElement
+			// Add all Matching Elements from Query as a DecisionKnowledgeElement
 			results.add(new DecisionKnowledgeElementImpl(currentIssue));
 			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
 					.getElementsForIssue(currentIssue.getId(), filterSettings.getProjectKey());
@@ -128,11 +116,11 @@ public class FilterExtractor {
 
 	private boolean checkIfJiraTextMatchesFilter(DecisionKnowledgeElement element) {
 		if (filterSettings.getCreatedEarliest() > 0
-				&& (element).getCreated().getTime() < filterSettings.getCreatedEarliest()) {
+				&& element.getCreated().getTime() < filterSettings.getCreatedEarliest()) {
 			return false;
 		}
 		if (filterSettings.getCreatedLatest() > 0
-				&& (element).getCreated().getTime() > filterSettings.getCreatedLatest()) {
+				&& element.getCreated().getTime() > filterSettings.getCreatedLatest()) {
 			return false;
 		}
 
@@ -153,5 +141,9 @@ public class FilterExtractor {
 
 	public JiraQueryHandler getQueryHandler() {
 		return queryHandler;
+	}
+
+	public ApplicationUser getUser() {
+		return user;
 	}
 }
