@@ -104,9 +104,9 @@ public class FilterExtractor {
 	//In the end there are only 2 Issues left that are not matching with the
 	//location so everything is collapsed
 	public List<DecisionKnowledgeElement> getAllElementsMatchingQuery() {
-		List<Issue> jiraIssues = queryHandler.getJiraIssuesFromQuery();
 		List<DecisionKnowledgeElement> results = new ArrayList<DecisionKnowledgeElement>();
-		if (jiraIssues == null) {
+		List<Issue> jiraIssues = queryHandler.getJiraIssuesFromQuery();		
+		if (jiraIssues == null || jiraIssues.isEmpty()) {
 			return results;
 		}
 		//Search in every Jira issue for some more Decision Knowledge Elements and if there are some add them

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -43,6 +44,14 @@ public class TestJiraQueryHandler extends TestSetUpWithIssues {
 	public void testGetJiraIssuesFromEmptyQuery() {
 		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "");
 		assertEquals(0, jiraQueryHandler.getJiraIssuesFromQuery().size());
+	}
+
+	@Test
+	@Ignore
+	// TODO Improve mocking of SearchService so that it returns some JIRA issues.
+	public void testGetJiraIssuesFromFilledQuery() {
+		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "?jql=project=TEST");
+		assertTrue(jiraQueryHandler.getJiraIssuesFromQuery().size() > 0);
 	}
 
 	@Test

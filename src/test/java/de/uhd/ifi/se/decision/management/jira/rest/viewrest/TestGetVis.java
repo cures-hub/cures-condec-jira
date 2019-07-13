@@ -1,12 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.rest.viewrest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -18,6 +18,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
@@ -52,6 +53,7 @@ public class TestGetVis extends TestSetUpWithIssues {
 		String jql = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
 		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		filterSettings = new FilterSettingsImpl("TEST", jql, user);
+		request.setAttribute("NoFails", true);
 	}
 
 	@Test
@@ -85,10 +87,9 @@ public class TestGetVis extends TestSetUpWithIssues {
 				viewRest.getVis(null, filterSettings, "TEST-12").getEntity());
 	}
 
-	// TODO
 	@Test
-	@Ignore
 	public void testRequestFilledFilterSettingsFilledElementFilled() {
+		assertNotNull(AuthenticationManager.getUser(request));
 		assertEquals(Response.Status.OK.getStatusCode(),
 				viewRest.getVis(request, filterSettings, "TEST-12").getStatus());
 	}
