@@ -86,16 +86,13 @@ public class FilterExtractor {
 		return graph.getAllElements();
 	}
 
-	// Problem Filtered Issues from sideFilter will be filterd again
-	// In the end there are only 2 Issues left that are not matching with the
-	// location so everything is collapsed
 	public List<DecisionKnowledgeElement> getAllElementsMatchingQuery() {
 		List<DecisionKnowledgeElement> results = new ArrayList<DecisionKnowledgeElement>();
 		List<Issue> jiraIssues = queryHandler.getJiraIssuesFromQuery();
 		if (jiraIssues == null) {
 			return results;
 		}
-		// Search in every Jira issue for some more Decision Knowledge Elements and if
+		// Search in every Jira issue for decision knowledge elements and if
 		// there are some add them
 		for (Issue currentIssue : jiraIssues) {
 			// Add all Matching Elements from Query as a DecisionKnowledgeElement
@@ -114,15 +111,10 @@ public class FilterExtractor {
 	}
 
 	private boolean checkIfJiraTextMatchesFilter(DecisionKnowledgeElement element) {
-		if (filterSettings.getCreatedEarliest() > 0
-				&& element.getCreated().getTime() < filterSettings.getCreatedEarliest()) {
-			return false;
-		}
-		if (filterSettings.getCreatedLatest() > 0
-				&& element.getCreated().getTime() > filterSettings.getCreatedLatest()) {
-			return false;
-		}
-		return true;
+		return !(filterSettings.getCreatedEarliest() > 0
+				&& element.getCreated().getTime() < filterSettings.getCreatedEarliest())
+				|| !(filterSettings.getCreatedLatest() > 0
+						&& element.getCreated().getTime() > filterSettings.getCreatedLatest());
 	}
 
 	public FilterSettings getFilterSettings() {
