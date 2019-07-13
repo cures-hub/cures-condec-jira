@@ -21,9 +21,6 @@ import com.atlassian.query.clause.Clause;
 import com.atlassian.query.clause.TerminalClauseImpl;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 /**
  * This class is currently not used because the JiraQueryHandler sets the
@@ -40,17 +37,8 @@ public class MockSearchService implements SearchService {
 				|| query.getQueryString().equals("project=UNKNOWNPROJECT")) {
 			return new SearchResults<Issue>(jiraIssues, 0, 0, 0);
 		}
-		jiraIssues.add(createIssueWithComments(user));
+		jiraIssues.add(new TestSetUpWithIssues().createGlobalIssueWithComment());
 		return new SearchResults<Issue>(jiraIssues, 1, 1, 0);
-	}
-
-	private Issue createIssueWithComments(ApplicationUser user) {
-		Issue issue = new TestSetUpWithIssues().createGlobalIssue();
-		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("{issue} testobject {issue}");
-		PartOfJiraIssueText sentence = comment.get(0);
-		sentence.setJiraIssueId(issue.getId());
-		JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(sentence, user);
-		return issue;
 	}
 
 	@Override

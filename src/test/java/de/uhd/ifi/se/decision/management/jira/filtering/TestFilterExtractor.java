@@ -82,15 +82,14 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 
 	@Test
 	public void testConstructorFilterStringFilledFilledString() {
-		String filter = "allopenissues";
-		FilterExtractor extractor = new FilterExtractor("TEST", user, "?filter=" + filter);
+		FilterExtractor extractor = new FilterExtractor("TEST", user, "?filter=allopenissues");
 		assertEquals(2, extractor.getAllElementsMatchingQuery().size());
 	}
 
 	@Test
 	public void testConstructorFilterStringFilledFilledFilledJQL() {
-		FilterExtractor extractor = new FilterExtractor("Test", user, "?jql=project=TEST");
-		assertEquals(1, extractor.getAllElementsMatchingQuery().size());
+		FilterExtractor extractor = new FilterExtractor("TEST", user, "?jql=project=TEST");
+		assertEquals(2, extractor.getAllElementsMatchingQuery().size());
 	}
 
 	@Test

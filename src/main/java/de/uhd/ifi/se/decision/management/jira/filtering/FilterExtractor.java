@@ -35,9 +35,6 @@ public class FilterExtractor {
 		}
 		this.filterSettings = new FilterSettingsImpl(projectKey, filterString);
 		this.user = user;
-		if (!(filterString.matches("\\?jql=(.)+")) || (filterString.matches("\\?filter=(.)+"))) {
-			filterSettings.setSearchString("?filter=-4");
-		}
 		this.queryHandler = new JiraQueryHandlerImpl(user, projectKey, filterSettings.getSearchString());
 	}
 

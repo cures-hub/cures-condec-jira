@@ -11,5 +11,6 @@ public class TestJiraQueryType {
 		assertEquals(JiraQueryType.JQL, JiraQueryType.getJiraQueryType("?jql="));
 		assertEquals(JiraQueryType.FILTER, JiraQueryType.getJiraQueryType("?filter="));
 		assertEquals(JiraQueryType.FILTER, JiraQueryType.getJiraQueryType("?filter=allissues&jql"));
+		assertEquals(JiraQueryType.OTHER, JiraQueryType.getJiraQueryType(""));
 	}
 }

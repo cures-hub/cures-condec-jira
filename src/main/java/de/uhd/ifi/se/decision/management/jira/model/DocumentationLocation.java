@@ -10,7 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
  * Possible documentation locations of decision knowledge.
  */
 public enum DocumentationLocation {
-	JIRAISSUE("i", "JiraIssue"), // store as first-class entities with own JIRA issue type
+	JIRAISSUE("i", "JiraIssues"), // store as first-class entities with own JIRA issue type
 	ACTIVEOBJECT("a", "ActiveObject"), // store as first-class entities but not as JIRA issues
 	JIRAISSUETEXT("s", "JiraIssueText"), // store in the body of existing JIRA issues, e.g. work items or requirements
 	COMMIT("c", "Commit"), // store in commit message
@@ -72,22 +72,21 @@ public enum DocumentationLocation {
 
 	public static String getIdentifier(DecisionKnowledgeElement element) {
 		if (element == null || element.getDocumentationLocation() == null) {
-			return "";
-		} else if (element instanceof PartOfJiraIssueText
-				|| element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUETEXT)) {
-			return "s";
-		} else if (element.getDocumentationLocation().equals(DocumentationLocation.ACTIVEOBJECT)) {
-			return "a";
-		} else if (element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUE)) {
-			return "i";
-		} else {
-			return "";
+			return UNKNOWN.identifier;
 		}
+		if (element instanceof PartOfJiraIssueText
+				|| element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUETEXT)) {
+			return JIRAISSUETEXT.identifier;
+		}
+		return element.getDocumentationLocation().identifier;
 	}
 
 	public static DocumentationLocation getDocumentationLocationFromString(String locationString) {
 		if (locationString == null) {
 			return UNKNOWN;
+		}
+		if ("JiraIssue".equalsIgnoreCase(locationString)) {
+			return JIRAISSUE;
 		}
 		for (DocumentationLocation location : values()) {
 			if (location.name.equalsIgnoreCase(locationString)) {

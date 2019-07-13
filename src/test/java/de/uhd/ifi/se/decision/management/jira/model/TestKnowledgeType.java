@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestKnowledgeType {
@@ -20,7 +19,7 @@ public class TestKnowledgeType {
 		assertEquals(KnowledgeType.OTHER, KnowledgeType.getKnowledgeType("Test"));
 	}
 
-	@Ignore
+	@Test
 	public void testGetKnowledgeTypeExistent() {
 		for (KnowledgeType type : KnowledgeType.values()) {
 			assertEquals(type, KnowledgeType.getKnowledgeType(type.toString()));
