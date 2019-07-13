@@ -5,21 +5,35 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
+import de.uhd.ifi.se.decision.management.jira.view.treant.TestTreant;
+import net.java.ao.EntityManager;
+import net.java.ao.test.jdbc.Data;
+import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
+@RunWith(ActiveObjectsJUnitRunner.class)
+@Data(TestTreant.AoSentenceTestDatabaseUpdater.class)
 public class TestFilterExtractor extends TestSetUpWithIssues {
 
 	private ApplicationUser user;
+	private EntityManager entityManager;
 
 	@Before
 	public void setUp() {
 		initialization();
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
+				new MockUserManager());
 	}
 
 	@Test
@@ -62,20 +76,21 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 	@Test
 	public void testConstructorFilterStringFilledFilledEmpty() {
 		FilterExtractor extractor = new FilterExtractor("TEST", user, "");
-		assertEquals(0, extractor.getAllElementsMatchingQuery().size());
+		// the empty query will be changed to "allissues", i.e. "type != null"
+		assertEquals(2, extractor.getAllElementsMatchingQuery().size());
 	}
 
 	@Test
 	public void testConstructorFilterStringFilledFilledString() {
 		String filter = "allopenissues";
 		FilterExtractor extractor = new FilterExtractor("TEST", user, "?filter=" + filter);
-		assertEquals(0, extractor.getAllElementsMatchingQuery().size());
+		assertEquals(2, extractor.getAllElementsMatchingQuery().size());
 	}
 
 	@Test
 	public void testConstructorFilterStringFilledFilledFilledJQL() {
 		FilterExtractor extractor = new FilterExtractor("Test", user, "?jql=project=TEST");
-		assertEquals(0, extractor.getAllElementsMatchingQuery().size());
+		assertEquals(1, extractor.getAllElementsMatchingQuery().size());
 	}
 
 	@Test
@@ -93,21 +108,23 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 	@Test
 	public void testConstructorFilterOwnFilled() {
 		FilterExtractor extractor = new FilterExtractor(user, new FilterSettingsImpl("TEST", ""));
-		assertEquals(0, extractor.getAllElementsMatchingQuery().size());
+		// the empty query will be changed to "allissues", i.e. "type != null"
+		assertEquals(2, extractor.getAllElementsMatchingQuery().size());
 	}
 
 	@Test
 	public void testGetGraphsMatchingQueryEmpty() {
 		FilterExtractor extractor = new FilterExtractor("Test", user, "");
-		assertEquals(0, extractor.getAllGraphs().size());
+		// the empty query will be changed to "allissues", i.e. "type != null"
+		assertEquals(1, extractor.getAllGraphs().size());
 	}
 
 	@Test
 	public void testGetGraphsMatchingQueryFilled() {
 		FilterExtractor extractor = new FilterExtractor("Test", user, "?jql=project=TEST");
-		assertEquals(0, extractor.getAllGraphs().size());
+		assertEquals(1, extractor.getAllGraphs().size());
 	}
-	
+
 	@Test
 	public void testGetFilterSettings() {
 		FilterExtractor extractor = new FilterExtractor("Test", user, "?jql=project=TEST");

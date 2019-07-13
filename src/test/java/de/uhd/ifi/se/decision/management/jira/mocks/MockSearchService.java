@@ -21,6 +21,11 @@ import com.atlassian.query.clause.Clause;
 import com.atlassian.query.clause.TerminalClauseImpl;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 /**
  * This class is currently not used because the JiraQueryHandler sets the
@@ -30,14 +35,23 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 public class MockSearchService implements SearchService {
 
 	@Override
-	public SearchResults<Issue> search(ApplicationUser applicationUser, Query query, PagerFilter pagerFilter)
+	public SearchResults<Issue> search(ApplicationUser user, Query query, PagerFilter pagerFilter)
 			throws SearchException {
-		if (query.getQueryString().equals("project=TEST")) {
-			List<Issue> jiraIssues = new ArrayList<Issue>();
-			jiraIssues.add(TestSetUpWithIssues.createIssue());
-			return new SearchResults<Issue>(jiraIssues, 1, 1, 0);
+		List<Issue> jiraIssues = new ArrayList<Issue>();
+		if (query.getQueryString().equals("project=UNKNOWNPROJECT")) {
+			return new SearchResults<Issue>(jiraIssues, 0, 0, 0);
 		}
-		return new SearchResults<Issue>(null, 0, 0, 0);
+		jiraIssues.add(createIssueWithComments(user));
+		return new SearchResults<Issue>(jiraIssues, 1, 1, 0);
+	}
+
+	private Issue createIssueWithComments(ApplicationUser user) {
+		Issue issue = new TestSetUpWithIssues().createGlobalIssue();
+		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("{issue} testobject {issue}");
+		PartOfJiraIssueText sentence = comment.get(0);
+		sentence.setJiraIssueId(issue.getId());
+		JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(sentence, user);
+		return issue;
 	}
 
 	@Override

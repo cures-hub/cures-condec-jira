@@ -205,7 +205,7 @@ public class TestSetUpWithIssues {
 		}
 	}
 
-	protected MockIssue createGlobalIssue() {
+	public MockIssue createGlobalIssue() {
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
 		issue = new MockIssue(30, "TEST-" + 30);
 		((MockIssue) issue).setProjectId(project.getId());
