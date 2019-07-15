@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,17 +45,19 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * @decision Only use jGit.
  * @pro The jGit library is open source.
  * @alternative Both, the jgit library and the git integration for JIRA plugin
- *              were used to access git repositories.
+ * were used to access git repositories.
  * @con An application link and oAuth is needed to call REST API on Java side.
- * 
- *      This implementation works well only with configuration for one remote
- *      git server. Multiple instances of this class are "thread-safe" in the
- *      limited way that the checked out branch files are stored in dedicated
- *      branch folders and can be read, modifing files is not safe and not
- *      supported.
+ *
+ *
+ * This implementation works well only with configuration for one remote
+ * git server. Multiple instances of this class are "thread-safe" in the
+ * limited way that the checked out branch files are stored in dedicated
+ * branch folders and can be read, modifing files is not safe and not
+ * supported.
  */
 public class GitClientImpl implements GitClient {
 
+	private static final long REPO_OUTDATED_AFTER = 15 * 60 * 1000; //ex. 15 minutes = 15 minutes * 60 seconds * 1000 miliseconds
 	private Git git;
 	private String remoteUri;
 	private String projectKey;
@@ -182,14 +185,66 @@ public class GitClientImpl implements GitClient {
 	}
 
 	private boolean pull() {
+		if (!isPullNeeded()) {
+			return true;
+		}
 		try {
-			git.pull().call();
 			List<RemoteConfig> remotes = git.remoteList().call();
 			for (RemoteConfig remote : remotes) {
 				git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
 			}
+			git.pull().call();
 		} catch (GitAPIException e) {
 			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t" + e.getMessage());
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Based on file timestamp decides if pull is necessary.
+	 *
+	 * @return decision whether to make or make not the git pull call
+	 */
+
+	private boolean isPullNeeded() {
+		String trackerFilename = "condec.pullstamp.";
+		//if (true) return true;
+		Repository repository = this.getRepository();
+		String branch = "";
+
+		try {
+			branch = repository.getBranch();
+		}
+		catch (IOException ex) {
+			LOGGER.error("Could not get branch, repositories will be fetched on each request.");
+			return true;
+		}
+		trackerFilename += branch;
+		File file = new File(repository.getDirectory()
+				, trackerFilename);
+
+		if (!file.isFile()) {
+			file.setWritable(true);
+			try {
+				file.createNewFile();
+			}
+			catch (IOException ex) {
+				LOGGER.error("Could not create a file, repositories will be fetched on each request.");
+			}
+			return true;
+		}
+
+		Date date = new Date();
+		long fileLifespan = date.getTime() - file.lastModified();
+		updateFileModifyTime(file, date);
+		boolean needsFetch = fileLifespan > REPO_OUTDATED_AFTER;
+		return needsFetch;
+	}
+
+	private boolean updateFileModifyTime(File file, Date date) {
+		if (! file.setLastModified(date.getTime()) ) {
+			LOGGER.error("Could not modify a file modify time, repositories will be fetched on each request.");
 			return false;
 		}
 		return true;
@@ -297,13 +352,11 @@ public class GitClientImpl implements GitClient {
 	}
 
 	/**
-	 * @implNote Temporally switches git client's directory to feature branch
-	 *           directory to fetch commits, afterwards returns to default branch
-	 *           directory after.
-	 *
-	 * @param featureBranch
-	 *            ref of the feature branch
+	 * @param featureBranch ref of the feature branch
 	 * @return list of unique commits.
+	 * @implNote Temporally switches git client's directory to feature branch
+	 * directory to fetch commits, afterwards returns to default branch
+	 * directory after.
 	 */
 	@Override
 	public List<RevCommit> getFeatureBranchCommits(Ref featureBranch) {
@@ -338,14 +391,14 @@ public class GitClientImpl implements GitClient {
 			/*
 			 * @issue: What is the return value of methods that would normally return a
 			 * collection (e.g. list) with an invalid input parameter?
-			 * 
+			 *
 			 * @alternative: Methods with an invalid input parameter return an empty list!
-			 * 
+			 *
 			 * @pro: Prevents a null pointer exception.
-			 * 
+			 *
 			 * @con: Is misleading since it is not clear whether the list is empty but has a
 			 * valid input parameter or because of an invalid parameter.
-			 * 
+			 *
 			 * @alternative: Methods with an invalid input parameter return null!
 			 */
 			return (List<RevCommit>) null;
@@ -468,7 +521,11 @@ public class GitClientImpl implements GitClient {
 		// will copy default branch folder
 		File directory = new File(fsManager.prepareBranchDirectory(commitName));
 
-		return (switchGitDirectory(directory) && checkout(commit.getName()));
+		return (switchGitDirectory(directory) && checkout(commit.getName(), true));
+	}
+
+	private boolean checkout(String branchShortName) {
+		return checkout(branchShortName, false);
 	}
 
 	@Override
@@ -481,8 +538,10 @@ public class GitClientImpl implements GitClient {
 		String branchShortName = branchNameComponents[branchNameComponents.length - 1];
 		File directory = new File(fsManager.prepareBranchDirectory(branchShortName));
 
-		return (switchGitDirectory(directory) && createLocalBranchIfNotExists(branchShortName)
-				&& checkout(branchShortName) && pull());
+		return (switchGitDirectory(directory)
+				&& pull()
+				&& checkout(branchShortName)
+		);
 	}
 
 	@Override
@@ -533,9 +592,9 @@ public class GitClientImpl implements GitClient {
 			 *
 			 * @alternative: remove this method completely, fetching commits from all
 			 * branches is not sensible!
-			 * 
+			 *
 			 * @pro: this method seems to be used only for code testing (TestGetCommits)
-			 * 
+			 *
 			 * @con: scraping it would require coding improvement in test code
 			 * (TestGetCommits), but who wants to spend time on that;)
 			 *
@@ -544,15 +603,15 @@ public class GitClientImpl implements GitClient {
 			 *
 			 * @decision: release branch folders if possible, so that in best case only one
 			 * folder will be used!
-			 * 
+			 *
 			 * @pro: implementation does not seem to be complex at all.
-			 * 
+			 *
 			 * @pro: until discussion are not finished, seems like a cheap workaround
-			 * 
+			 *
 			 * @con: a workaround which has potential to stay forever in the code base
-			 * 
+			 *
 			 * @con: still some more code will be written
-			 * 
+			 *
 			 * @con: scraping it, would require coding improvement in test code
 			 * (TestGetCommits)
 			 */
@@ -625,8 +684,9 @@ public class GitClientImpl implements GitClient {
 			directory = new File(fsManager.prepareBranchDirectory(branchShortName));
 		}
 
-		if (switchGitDirectory(directory) && createLocalBranchIfNotExists(branchShortName) && checkout(branchShortName)
-				&& pull()) {
+		if (switchGitDirectory(directory)
+				&& pull()
+				&& checkout(branchShortName)) {
 			Iterable<RevCommit> iterable = null;
 			try {
 				iterable = git.log().call();
@@ -647,12 +707,47 @@ public class GitClientImpl implements GitClient {
 		return commits;
 	}
 
-	private boolean checkout(String checkoutObjectName) {
+	private boolean checkout(String checkoutObjectName, boolean isCommitWithinBranch) {
+
+		// checkout only remote branch
+		if (!isCommitWithinBranch) {
+			String checkoutName =  "origin/"+checkoutObjectName;
+			try {
+				git.checkout().setName(checkoutName).call();
+			} catch (GitAPIException | JGitInternalException e) {
+
+				LOGGER.error("Could not checkout " + checkoutName + ". " + e.getMessage());
+				return false;
+			}
+			// create local branch
+			if (!createLocalBranchIfNotExists(checkoutObjectName)) {
+				LOGGER.error("Could delete and create local branch");
+				return false;
+
+			}
+		}
+
+		// checkout local branch/commit
 		try {
 			git.checkout().setName(checkoutObjectName).call();
 		} catch (GitAPIException | JGitInternalException e) {
 
 			LOGGER.error("Could not checkout " + checkoutObjectName + ". " + e.getMessage());
+			return false;
+		}
+		return true;
+	}
+
+	/*
+	 Deleting local branch might detach HEAD, pulls will not be possible then.
+	 */
+	private boolean ensureLocalBranchDoesNotExist(String branchName) {
+		try {
+			git.branchDelete().setBranchNames(branchName).setForce(true).call();
+		} catch (InvalidRefNameException | RefNotFoundException e) {
+			return true;
+		} catch (GitAPIException e) {
+			LOGGER.error("Could not delete local branch. " + e.getMessage());
 			return false;
 		}
 		return true;
