@@ -134,6 +134,13 @@ public class GitRepositoryFSManager {
 	 * need to be accessed in parallel.
 	 */
 	private void maintainNotUsedBranchPaths() {
+
+		/* leave branches where they are until issues with repo checkouts are not fixed */
+		boolean DEV_BUG_SKIP = true;
+		if (DEV_BUG_SKIP) {
+			return;
+		}
+
 		String[] notUsedBranchPaths = findOutdatedBranchPaths();
 		if (notUsedBranchPaths != null)
 			for (String branch : notUsedBranchPaths) {
