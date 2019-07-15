@@ -10,28 +10,48 @@
 	border-radius:1em;
 }
 .fileA>p, .fileB>p, .messageBox {
-	margin: 0.3em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
 	border-radius: 0.8em;
 	padding: 0.3em;
 	position: relative;
 
 }
+
+.fileDiffBlockLabel {
+	color: white;
+	background:black;
+}
+
+.fileNonDiffBlockLabel {
+	color: white;
+	background:grey;
+}
+
+.fileNonDiffBlock {
+	margin-top: 0;
+}
 .fileDiffBlock {
 	display: flex;
 	flex-flow: row nowrap;
+	margin-top:0;
 }
-.fileA {
+.fileA, .fileB {
 	margin: 0;
 }
 .fileA .filename {
 	background: orange;
-}
-.fileB {
-	margin: 0;
+	border-radius: 0;
 }
 .fileB .filename {
 	background: greenyellow;
+	border-radius: 0;
 }
+
+.filename {
+	margin-top: 0px;
+}
+
 .messageBox {
 	background: rgba(9,30,66,.08); /* greenyellow; */
 }
@@ -46,7 +66,20 @@
 	top: 5px;
 	left: 0px;
 }
+
+.branchGroup .rat-link-problem {
+    position: absolute;
+    top: 0;
+    right: 0.3em;
+    width: 0.6em;
+    height: 0.6em;
+    background: yellow;
+    border-radius: 1em;
+    border: 0.3em red solid;
+}
+
 .branchGroup .loc {
+	display: none; /* make this element obsolete ? */
 	width: 200px; /* 50% does not work correctly */
 	text-overflow: ellipsis;
 	height: 20px;
@@ -59,4 +92,10 @@
 	/* background: white; */
 	margin: 0 0 0 1em;
 	width: auto;
+}
+.decision, .alternative {
+	margin-left: 1em;
+}
+.pro, .con {
+	margin-left: 2em;
 }
