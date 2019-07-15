@@ -1,27 +1,71 @@
-var contentHtml;
-var lastBranch, br, brText, el, loc, desc, img, msgE, codeE, messageElementHtml;
-var lastBranchDiffLines =  new Map();
-var NEWER_FILE_NOT_EXIST = "file got deleted"
-var OLDER_FILE_NOT_EXIST = "file did not exist"
-var RATIONALE_IN_NEWER_FILE_NOT_EXIST = "rationale got removed"
-var RATIONALE_IN_OLDER_FILE_NOT_EXIST = "no rationale did exist before"
+/*
+Known issues:
+	branch sorting is random
+	msg.key.positin contains bad data, it is cursor:length
+*/
 
+/*
+api data transform examples:
+branches[0].elements.map(function(e) {var n = {}; n.s = e.summary.substr(0,10); n.t = e.type; n.src = e.key.source; return n})
+*/
 
+var contentHtml
+var lastBranch, lastBranchIdx
+var lastBranchElementsFromMessages, lastBranchElementsFromFiles
+var lastBranchBlocks =  new Map();
+
+var NEWER_FILE_NOT_EXIST = "-"
+var OLDER_FILE_NOT_EXIST = "File did not exist"
+var RATIONALE_IN_NEWER_FILE_NOT_EXIST = "Rationale got removed"
+var RATIONALE_IN_OLDER_FILE_NOT_EXIST = "No rationale did exist before"
+var RATIONALE_NO_CHANGES_TEXT = "{file} - no rationale changed in below section:"
+var NO_QUALITY_PROBLEMS_IN_BRANCH = "No quality problems found in this branch."
+var NO_QUALITY_PROBLEMS_FOR_NO_RATIONALE_IN_BRANCH = "No rationale found in messages and changed files!"
+
+var FILTER_CODE_RATIONALE_TEXT_COMMENT_DOTS = true
+
+var url;
 var branches = []
 
 function getBranchesDiff() {
 	contentHtml = document.getElementById("featureBranches-container");
 	contentHtml.innerText = "Loading ..."
-	/*
-		var issueId = AJS.$("meta[name='ajs-issue-key']").attr("content");
-		if (issueId === undefined) {
-			issueId = this.getIssueKey();
-		}*/
+	
+
 	var issue = JIRA.Issue.getIssueKey();
+	url = AJS.contextPath()
+		 + "/rest/decisions/latest/view/elementsFromBranchesOfJiraIssue.json?issueKey="
+		 + issue
+
+	// get cache or server data?
+	if (localStorage.getItem("condec.restCacheTTL")) {
+		if (localStorage.getItem(url)) {
+			var data = null
+			var now = Date.now()
+			var cacheTTL =  parseInt(localStorage.getItem("condec.restCacheTTL"))
+			try {
+				data = JSON.parse(localStorage.getItem(url))
+			}
+			catch(ex) {
+				data = null
+			}
+			if (data && cacheTTL) {
+				if (now-data.timestamp<cacheTTL) {
+					console.log("Cache is within specified TTL, therefore getting data from local cache instead from server.")
+					return showBranchesDiff(data)
+				}
+				else {
+					console.log("Cache TTL expired, therefore starting  REST query.")
+				}
+			}
+			if (!cacheTTL) {
+					console.log("Cache TTL is not a number, therefore starting  REST query.")
+			}
+		}
+	}
+
 	AJS.$.ajax(
-	{ url: AJS.contextPath()
-	 + "/rest/decisions/latest/view/elementsFromBranchesOfJiraIssue.json?issueKey="
-	 + issue
+	{ url: url
 	, type: 'get'
 	, dataType: 'json'
 	, async: false
@@ -43,7 +87,18 @@ function getMessageElements(elements) {
 
 function getCodeElements(elements) {
 	console.debug("getCodeElements")
-	return  elements.filter(function(e) { return e.key.sourceTypeCodeFile} )
+	filteredList = elements.filter(function(el) { return el.key.sourceTypeCodeFile} );
+
+	if (FILTER_CODE_RATIONALE_TEXT_COMMENT_DOTS) {
+		return filteredList
+			.map(function(el){
+				n = el;
+				n.description = el.description.replace(/\n\s*\*\s*/gi,"\n ");
+				n.summary = el.summary.replace(/\n\s*\*\s*/gi,"\n ");
+				return n;
+		 	});
+	}
+	return  filteredList;
 }
 
 function getJiraBaseUri() {
@@ -69,23 +124,30 @@ function getElementAsHTML(element,isFromMessage) {
 
 	var locationText = ""
 
+	locationTextShort = element.key.position
 	if (isFromMessage) {
 		el.className = "messageBox "+element.type.toLowerCase()
-		locationText = "Message: "
-			+ element.key.source
-			+ " at position (start line,positionInText) "
-			+ element.key.position;
+		locationText = "Commit message "+element.key.source
+			+ " at position (sequence # in text, rationale length) "
+			+ locationTextShort;
 	}
 	else {
 		el.className = element.type.toLowerCase()
-		locationText = element.key.position;
+		locationText = "Code comment section at position (start line, end line, sequence # in comment) "
+			+ locationTextShort
 	}
+
 	desc.className = "content";
 	desc.innerText = element.summary + element.description;
 	loc.className = "loc"
 	loc.innerText = locationText
-	loc.title = locationText
 
+	el.title = locationText
+
+	// do not set ID for A file-rationale
+	if (!element.key.codeFileA) {
+		el.setAttribute("id", btoa(element.key.rationaleHash+"-"+lastBranch.branchName+"-"+element.key.source))
+	}
 	el.appendChild(getIcon(element.type.toLowerCase()))
 	el.appendChild(desc)
 	el.appendChild(loc)
@@ -115,25 +177,13 @@ function getEmptyElementAsHTML(forNewerFile) {
 	return emptyE
 }
 
-function getFilenameForHTML(diffLine, forNewerFile) {
-	console.debug("getFilenameForHTML")
-	var filename
-	if (forNewerFile) {
-		filename = diffLine.filenameB
-	} else{
-		filename = diffLine.filenameA
-	}
-
-	if (filename.trim() !== "") {
-		return filename;
-	} else {
-		if (forNewerFile) {
-			return NEWER_FILE_NOT_EXIST
-		} else {
-			return OLDER_FILE_NOT_EXIST
-		}
-	}
+// version A (old) files have "~" character prepended to actual file name
+function removeTildeFromAFilename(lastBranchElementsFromFileslements) {
+	return lastBranchElementsFromFiles.map( function(e) {
+		e.key.source = e.key.source.replace("~","");
+		 return e; })
 }
+
 function sortRationaleDiffOfFile(rationale) {
 /* rationale should appear in the order it was found in code */
 	rationale.sort(function(a,b) {
@@ -166,23 +216,23 @@ function sortRationaleDiffOfFile(rationale) {
 	return rationale
 }
 
-function getCodeElementsFromSide(diffLine, newerSide) {
+function getCodeElementsFromSide(blockData, newerSide) {
 	console.debug("getCodeElementsFromSide")
 	var codeElements = document.createElement("p")
-	var fileName = document.createElement("p")
 	var rationaleElements
 
 	if (newerSide) {
 		codeElements.className = "fileB"
-		rationaleElements = diffLine.B
+		rationaleElements = blockData.B
 	} else {
 		codeElements.className = "fileA"
-		rationaleElements = diffLine.A
+		rationaleElements = blockData.A
 	}
+	/*
+	var fileName = document.createElement("p")
 	fileName.className = "filename"
-
-	fileName.innerText = getFilenameForHTML(diffLine,newerSide)
-	codeElements.appendChild(fileName)
+	fileName.innerText = blockData.filename; // getFilenameForHTML(blockData,newerSide)
+	codeElements.appendChild(fileName)*/
 
 
 	if (rationaleElements.length>0) {
@@ -198,99 +248,227 @@ function getCodeElementsFromSide(diffLine, newerSide) {
 	return codeElements
 }
 
-function appendDiffElements(brNode) {
-	console.debug("appendDiffElements")
-	diffLinesIterator = lastBranchDiffLines.entries()
-	while (diffLineEntry = diffLinesIterator.next()) {
-		if (diffLineEntry.done) {
+function appendCodeElements(brNode) {
+	console.debug("appendCodeElements")
+	blockLinesIterator = lastBranchBlocks.entries()
+	while (blockEntry = blockLinesIterator.next()) {
+		if (blockEntry.done) {
 			break
 		}
-		var diffLineKey = diffLineEntry.value[0]
-		var diffLine = diffLineEntry.value[1]
+		var blockKey = blockEntry.value[0]
+		var blockData = blockEntry.value[1]
 
-		var fileRatEditLineLabel = document.createElement("p")
-		var fileRatEditLine = document.createElement("p")
-		fileRatEditLineLabel.innerText = diffLineKey
-		fileRatEditLineLabel.className = "fileDiffBlockLabel"
-		fileRatEditLine.className = "fileDiffBlock"
+		var fileRatElement = document.createElement("p")
 
-		// get A side rationale elements
-		var codeElements = getCodeElementsFromSide(diffLine, false)
-		fileRatEditLine.appendChild(codeElements)
+		// Start: decode blockKey
+		var block = blockKey.split(" ");
+		var blockIsDiffType = false
+		var blockEntry = ""
+		if (block.length === 3) {
+			blockIsDiffType = (block[0].indexOf("1") === 0)
+			blockEntry = block[2];
+		}
+		// End: decode blockKey
+
+		var fileRatBlockLabel = document.createElement("p")
+		fileRatBlockLabel.dataset.blockSequence = blockData.sequence
+		// rationale changed?
+		if (blockIsDiffType) {
+			// get A side rationale elements
+			var codeElements = getCodeElementsFromSide(blockData, false)
+			fileRatElement.appendChild(codeElements)
+
+			// add diff edit label
+			fileRatBlockLabel.innerText = blockData.filename +" - "+blockEntry
+			fileRatBlockLabel.className = "fileDiffBlockLabel"
+
+			fileRatElement.className = "fileDiffBlock"
+
+		} else {
+			fileRatBlockLabel.innerText = RATIONALE_NO_CHANGES_TEXT.replace("{file",blockData.filename)
+			fileRatBlockLabel.className = "fileNonDiffBlockLabel"
+
+			fileRatElement.className = "fileNonDiffBlock"
+		}
 
 		// get B side rationale elements
-		codeElements = getCodeElementsFromSide(diffLine, true)
-		fileRatEditLine.appendChild(codeElements)
+		codeElements = getCodeElementsFromSide(blockData, true)
+		fileRatElement.appendChild(codeElements)
 
-		brNode.appendChild(fileRatEditLineLabel)
-		brNode.appendChild(fileRatEditLine)
+		brNode.appendChild(fileRatBlockLabel)
+		brNode.appendChild(fileRatElement)
 	}
 }
 
-function appendBranchElements(brNode,elements) {
+
+function getBlock(element, counter) {
+	var block = {};
+		if (element.key.diffEntry != "-") {
+			block.diffType = true
+			block.sequence=element.key.diffEntrySequence
+			block.entry = element.key.diffEntry
+		}
+		// rat. elements outside diff
+		else {
+			block.diffType = false
+			block.sequence = counter
+			block.entry = element.key.source
+		}
+
+	block.toString = function() {
+		return (this.diffType ? "1": "0")
+			+ " "
+			+ this.sequence
+			+ " "
+			+ this.entry
+	}
+	return block;
+}
+
+
+function appendBranchMessageElementsHtml(elementsFromMessage, parentNode) {
+	if (elementsFromMessage!=null && elementsFromMessage.length>0) {
+		// group rationale in messages by commit hash
+		var msgCommitIsh = ""
+		var messageBlockHtml = null
+		for ( m = 0; m< elementsFromMessage.length; m++){
+			if (msgCommitIsh != elementsFromMessage[m].key.source) {
+				msgCommitIsh = elementsFromMessage[m].key.source
+				if (messageBlockHtml) { // add previous message
+					parentNode.appendChild(messageBlockHtml)
+				}
+				messageBlockHtml = document.createElement("p")
+				messageBlockHtml.id = "branchGroup-"+lastBranchIdx+"-message-"+msgCommitIsh
+				messageBlockHtml.className = "messageBox"
+
+				messageBlockLabelHtml = document.createElement("div")
+				messageBlockLabelHtml.innerText = "Commit message "+msgCommitIsh
+				messageBlockLabelHtml.className = "commitMessageLabel"
+				messageBlockHtml.appendChild(messageBlockLabelHtml)
+			}
+			if (messageBlockHtml) {
+				var messageElementHtml = getElementAsHTML(elementsFromMessage[m],true)
+				messageBlockHtml.appendChild(messageElementHtml)
+			}
+		}
+		parentNode.appendChild(messageBlockHtml)
+	}
+}
+
+function appendBranchCodeElementsHtml(elementsFromCode, parentNode) {
+	var blockCounter = 0
+	var previousBlock = null
+
+	for ( c = 0; c < elementsFromCode.length; c++){
+		codeElementHtml = getElementAsHTML(elementsFromCode[c],false)
+
+		var block = getBlock(elementsFromCode[c], blockCounter)
+
+		if (previousBlock === null ) {
+			previousBlock = block
+		}
+		if (block.diffType != previousBlock.diffType
+			|| block.entry != previousBlock.entry
+			) {
+			blockCounter++
+			block.sequence = blockCounter
+		}
+		previousBlock = block
+
+		var blockKey = block.toString()
+
+		if (!lastBranchBlocks.has(blockKey)) {
+			blockData = { A: [], B: [], filename: "", sequence : blockCounter }
+			lastBranchBlocks.set(blockKey,blockData)
+		}
+
+
+		var blockData = lastBranchBlocks.get(blockKey)
+		if (elementsFromCode[c].key.codeFileA) {
+			blockData.filename = elementsFromCode[c].key.source
+			blockData.A.push(codeElementHtml)
+		}
+		else if (elementsFromCode[c].key.codeFileB) {
+			blockData.filename = elementsFromCode[c].key.source
+			blockData.B.push(codeElementHtml)
+		}
+		lastBranchBlocks.set(blockKey,blockData)
+	}
+	appendCodeElements(parentNode)
+}
+/*
+appends message and code located rationale elements as HTML
+
+branchNode - parent html node
+elements - sorted(path,line, column) list of rationale elements
+*/
+function appendBranchAllElements(branchNode,elements) {
 	console.debug("appendBranchElements")
-	msgE = getMessageElements(elements)
-	codeE = getCodeElements(elements)
 
-	if (msgE!=null) {
-	//brNode.appendChild(getMessagesSectionLabel)
-		for ( m = 0; m< msgE.length; m++){
-			messageElementHtml = getElementAsHTML(msgE[m],true)
-			brNode.appendChild(messageElementHtml)
-		}
-	}
+	appendBranchMessageElementsHtml(lastBranchElementsFromMessages, branchNode)
 
-	if (codeE!=null) {
-		codeE = sortRationaleDiffOfFile(codeE)
-
-		for ( c = 0; c < codeE.length; c++){
-			codeElementBHtml = getElementAsHTML(codeE[c],false)
-
-			diffLineKey = codeE[c].key.diffEntrySequence
-				+ codeE[c].key.diffEntry
-
-			if (!lastBranchDiffLines.has(diffLineKey)) {
-				diffLine = { A: [], B: [], filenameA: "", filenameB: "" }
-				lastBranchDiffLines.set(diffLineKey,diffLine)
-			}
-
-			var diffLine =lastBranchDiffLines.get(diffLineKey)
-			if (codeE[c].key.codeFileA) {
-				diffLine.filenameA = codeE[c].key.source
-				diffLine.A.push(codeElementBHtml)
-			}
-			else if (codeE[c].key.codeFileB) {
-				diffLine.filenameB = codeE[c].key.source
-				diffLine.B.push(codeElementBHtml)
-			}
-			lastBranchDiffLines.set(diffLineKey,diffLine)
-		}
-		appendDiffElements(brNode)
+	if (lastBranchElementsFromFiles!=null && lastBranchElementsFromFiles.length>0) {
+		lastBranchElementsFromFiles = removeTildeFromAFilename(lastBranchElementsFromFiles)
+		lastBranchElementsFromFiles = sortRationaleDiffOfFile(lastBranchElementsFromFiles)
+		appendBranchCodeElementsHtml(lastBranchElementsFromFiles, branchNode)
 	}
 }
 
+function appendBranchLabel(parentNode, data) {
+	branchLabel = document.createElement("p")
+	branchLabel.className = "branchLabel"
+	branchLabel.innerText = data.branchName
+	parentNode.appendChild(branchLabel)
+}
+
+function appendBranchQualityAssessment(parentNode, index) {
+	qualitySummary = document.createElement("p")
+	qualitySummary.id  = "branchGroup-"+index+"-qualitySummary"
+	qualitySummary.className = "qualitySummary"
+	if (( lastBranchElementsFromMessages && lastBranchElementsFromMessages.length>0)
+		|| (lastBranchElementsFromFiles && lastBranchElementsFromFiles.length>0) ) {
+		qualitySummary.innerText = NO_QUALITY_PROBLEMS_IN_BRANCH
+		qualitySummary.classList.add("noProblems")
+	}
+	else {
+		qualitySummary.innerText = NO_QUALITY_PROBLEMS_FOR_NO_RATIONALE_IN_BRANCH
+		qualitySummary.classList.add("noRationale")
+	}
+	parentNode.appendChild(qualitySummary)
+}
+
+/*
+	render feature branch in HTML
+*/
 function showBranchDiff(data,index) {
 	console.debug("showBranchDiff")
-	console.log(data,index)
 	if (data == null)  {
 		return alert("received empty invalid data")
 	}
-	contentHtml.innerText = ""
 
-	br = document.createElement("p")
-	brText = document.createElement("p")
+	branchContainer = document.createElement("p")
+	branchContainer.id = "branchGroup-"+index
+	branchContainer.className = "branchGroup"
 
-	br.id = "branchGroup"+index
-	br.className = "branchGroup"
-	brText.className = "text"
+	// show user the branch name
+	appendBranchLabel(branchContainer, data)
+	// show user the quality assessment for rationale observed in modified files
+	appendBranchQualityAssessment(branchContainer, index)
+	// show user the rationale observed in modified files
+	appendBranchAllElements(branchContainer, data.elements)
 
-	brText.innerText = data.branchName
-	br.appendChild(brText)
+	// append branch HTMl to parent HTML container
+	contentHtml.appendChild(branchContainer)
 
-	contentHtml.appendChild(br)
-	appendBranchElements(br, data.elements)
 }
 
+/*
+	decodes received position "x:y[:z]" into
+		.positionStartLine = x
+		.positionCursor = y
+		and optionally
+		.positionEndLine = z
+*/
 function extractPositions(branchData) {
 	elements = branchData.elements.map(function(e) {
 		positionComponents = e.key.position.split(":")
@@ -308,15 +486,105 @@ function extractPositions(branchData) {
 	return branchData
 }
 
+function attachClickEventsOnBlockLabels(labels) {
+	var hider = function(event) {
+		var content = event.target.nextElementSibling
+		if (!content && !content.classList) {
+			console.error("no sibling found for "+event.target.id)
+			return
+		}
+		if (content.classList.contains("hidden")) {
+			content.classList.remove("hidden")
+			event.target.classList.remove("inactive")
+		}
+		else {
+			content.classList.add("hidden")
+			event.target.classList.add("inactive")
+		}
+	}
+
+	if (labels && labels.length>0)
+	for (var i = 0; i<labels.length; i++) {
+		var label = labels[i]
+		label.addEventListener("click", hider)
+		label.title = "click to hide/show"
+
+	}
+}
+
+function attachClickEventsOnCommitMessgeLabels(labels) {
+	attachClickEventsRollingUpParents(labels)
+}
+
+function attachClickEventsOnBranchLabels(labels) {
+	attachClickEventsRollingUpParents(labels)
+}
+
+function attachClickEventsRollingUpParents(labels) {
+	var hider = function(event) {
+		var branchContainer = event.target.parentElement
+		if (!branchContainer && !branchContainer.classList) {
+			console.error("Parent not found for "+event.target.id)
+			return
+		}
+		if (branchContainer.classList.contains("rolledUp")) {
+			branchContainer.classList.remove("rolledUp")
+		}
+		else {
+			branchContainer.classList.add("rolledUp")
+		}
+	}
+
+	if (labels && labels.length>0)
+	for (var i = 0; i<labels.length; i++) {
+		var label = labels[i]
+		label.addEventListener("click", hider)
+		label.title = "click to roll up/show"
+	}
+}
+
 function showBranchesDiff(data) {
 	console.debug("showBranchesDiff")
+	data.timestamp = Date.now()
+	localStorage.setItem(url,JSON.stringify(data, null, 1))
 	contentHtml = document.getElementById("featureBranches-container");
-	console.log(data)
-	for (b=0;b<data.branches.length;b++)
-	{
-		lastBranch = extractPositions(data.branches[b])
-		branches.push(lastBranch)
-		showBranchDiff(lastBranch,b)
+	contentHtml.innerText = ""
+
+	if (data.branches.length>0){
+		// branches come not sorted from rest
+		branches = data.branches.sort(function(a,b) {
+			if (a.branchName<b.branchName) {
+				return -1
+			}
+			else {
+				return 1
+			}
+		});
+
+		for (branchIdx=0;branchIdx<branches.length;branchIdx++)
+		{
+			lastBranch = extractPositions(branches[branchIdx])
+			lastBranchIdx = branchIdx
+			lastBranchBlocks =  new Map();
+
+ 			// these elements are sorted by commit age and occurrence in message
+			lastBranchElementsFromMessages = getMessageElements(elements)
+			// these elements are not sorted
+			lastBranchElementsFromFiles = getCodeElements(elements)
+
+			showBranchDiff(lastBranch, branchIdx)
+
+			// assess relations between rationale and render results in HTMl
+			linkBranchCandidates(lastBranchElementsFromMessages ,lastBranch.branchName, branchIdx, "messages")
+			linkBranchCandidates(lastBranchElementsFromFiles, lastBranch.branchName, branchIdx, "files")
+		}
+		attachClickEventsOnBlockLabels(document.getElementsByClassName("fileNonDiffBlockLabel"))
+		attachClickEventsOnBlockLabels(document.getElementsByClassName("fileDiffBlockLabel"))
+		attachClickEventsOnBranchLabels(document.getElementsByClassName("branchLabel"))
+		attachClickEventsOnCommitMessgeLabels(document.getElementsByClassName("commitMessageLabel"))
+	}
+	else {
+		contentHtml.innerText = "No feature branches found for this issue."
 	}
 }
 
