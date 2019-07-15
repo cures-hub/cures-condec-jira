@@ -209,23 +209,23 @@ public class ViewRest {
 	}
 
 	@Path("/getCompareVis")
-	@GET
+	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getCompareVis(@Context HttpServletRequest request,@QueryParam("projectKey") String projectKey,
-	                              @QueryParam("created") long created, @QueryParam("closed") long closed){
+	public Response getCompareVis(@Context HttpServletRequest request,FilterSettings filterSettings){
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST)
 					       .entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
 					       .build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		if(created == -1 && closed == -1 ) {
-			VisDataProvider visDataProvider = new VisDataProvider(projectKey, user);
+		if(filterSettings.getCreatedEarliest() == -1 && filterSettings.getCreatedLatest()== -1 ) {
+			VisDataProvider visDataProvider = new VisDataProvider(filterSettings.getProjectKey(), user);
 			return Response.ok(visDataProvider.getVisGraph()).build();
 		}
 
-		VisDataProvider visDataProvider = new VisDataProvider(projectKey, user);
-		return Response.ok(visDataProvider.getVisGraphTimeFilterd(created,closed)).build();
+		VisDataProvider visDataProvider = new VisDataProvider(filterSettings.getProjectKey(), user);
+
+		return Response.ok(visDataProvider.getVisGraphTimeFilterd(filterSettings)).build();
 	}
 
 	@Path("/getFilterSettings")

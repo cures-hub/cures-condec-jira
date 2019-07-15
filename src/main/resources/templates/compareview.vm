@@ -1,12 +1,12 @@
 <form class="aui">
-    <label for="start-data-picker">$i18n.getText("condec.startdatepicker")<span
+    <label for="start-data-picker-compare">$i18n.getText("condec.startdatepicker")<span
             class="aui-icon icon-required"></span>
     </label>
-    <input class="aui-date-picker" id="start-data-picker" type="date"/>
-    <label for="end-data-picker">$i18n.getText("condec.enddatepicker")<span
+    <input id="start-data-picker-compare" type="date"/>
+    <label for="end-data-picker-compare">$i18n.getText("condec.enddatepicker")<span
             class="aui-icon icon-required"></span>
     </label>
-    <input class="aui-date-picker" id="end-data-picker" type="date"/>
+    <input id="end-data-picker-compare" type="date"/>
     <input class="text medium-long-field" id="compare-search-input"
            placeholder="$i18n.getText('condec.filter.label')"/>
     <input type="button" id="filter-button-compare" class="aui-button aui-button-primary" value="Filter"/>

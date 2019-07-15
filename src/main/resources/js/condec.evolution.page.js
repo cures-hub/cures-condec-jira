@@ -36,7 +36,6 @@
 	ConDecEvolutionPage.prototype.buildCompare = function buildCompare(projectKey, firstDate, secondDate) {
 		console.log("ConDec build compare view");
         conDecAPI.getCompareVis("-1", "-1","",function (visData) {
-            console.log("Test if this is shown we have some other problem");
             var containerleft = document.getElementById('left-network');
             var dataleft = {
                 nodes : visData.nodes,
@@ -44,6 +43,7 @@
             };
             var options = conDecVis.getVisOptions();
             var networkLeft = new vis.Network(containerleft, dataleft, options);
+            networkLeft.setData(dataleft);
 
         });
         conDecAPI.getCompareVis(firstDate, secondDate,"",function (visData) {
@@ -84,9 +84,18 @@
         var filterButton = document.getElementById("filter-button-compare");
 
         filterButton.addEventListener("click", function(event) {
-            var firstDate = document.getElementById("start-data-picker").valueAsNumber;
-            var secondDate = document.getElementById("end-data-picker").valueAsNumber;
-            var searchString = document.getElementById("compare-search-input").value;
+            var firstDate = -1;
+            var secondDate = -1;
+
+
+            if (!isNaN(document.getElementById("start-data-picker-compare").valueAsNumber)) {
+                firstDate = document.getElementById("start-data-picker-compare").valueAsNumber;
+            }
+            if (!isNaN(document.getElementById("end-data-picker-compare").valueAsNumber)) {
+                secondDate = document.getElementById("end-data-picker-compare").valueAsNumber;
+            }
+            var searchString = "";
+            searchString = document.getElementById("compare-search-input").value;
             console.log(searchString);
             console.log(firstDate);
             console.log(secondDate);
@@ -99,5 +108,6 @@
             });
         });
     }
+
 	global.conDecEvolutionPage = new ConDecEvolutionPage();
 })(window);

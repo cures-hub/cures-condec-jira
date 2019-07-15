@@ -126,6 +126,11 @@ public class FilterExtractor {
 		return results;
 	}
 
+	public List<DecisionKnowledgeElement> getAllElementsMatchingFilterString(){
+		//TODO Get all Decision Knowledge Elements that can be selected and filter the Name and the Description
+		//TODO Return Decision Knowledge Element list with all Matching Elements
+	}
+
 	private boolean checkIfJiraTextMatchesFilter(DecisionKnowledgeElement element) {
 		if (filterSettings.getCreatedEarliest() > 0
 				&& (element).getCreated().getTime() < filterSettings.getCreatedEarliest()) {

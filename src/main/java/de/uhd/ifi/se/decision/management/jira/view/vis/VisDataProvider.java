@@ -49,14 +49,10 @@ public class VisDataProvider {
 		return this.graph;
 	}
 
-	public VisGraph getVisGraphTimeFilterd(long created, long closed){
-		FilterSettings settings = new FilterSettingsImpl();
-		settings.setProjectKey(projectKey);
-		settings.setCreatedEarliest(created);
-		settings.setCreatedLatest(closed);
-		FilterExtractor extractor = new FilterExtractor(this.user, settings);
+	public VisGraph getVisGraphTimeFilterd(FilterSettings filterSettings){
+		FilterExtractor extractor = new FilterExtractor(this.user, filterSettings);
 		List<DecisionKnowledgeElement> elements = extractor.getAllElementsMatchingQuery();
-		return  new VisGraph(projectKey, elements.get(0).getKey(),  elements,false);
+		return  new VisGraph(elements,false);
 	}
 
 	public VisTimeLine getTimeLine() {

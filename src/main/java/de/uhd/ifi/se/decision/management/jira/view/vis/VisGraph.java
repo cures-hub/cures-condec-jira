@@ -46,6 +46,31 @@ public class VisGraph {
 	public VisGraph() {
 	}
 
+	public VisGraph(List<DecisionKnowledgeElement> elements,
+	                boolean isHyperlinked) {
+		this.cid = 0;
+		this.level = 50;
+		this.nodes = new HashSet<>();
+		this.edges = new HashSet<>();
+		this.setHyperlinked(isHyperlinked);
+		if(elements== null || elements.size() ==0){
+			this.nodes = new HashSet<>();
+			this.edges = new HashSet<>();
+			this.rootElementKey= "";
+			return;
+		}
+		for(DecisionKnowledgeElement element: elements){
+			this.nodes.add(new VisNode(element, false, level, cid));
+			level += 1;
+			cid += 1;
+			for(Link edge: element.getInwardLinks()){
+				this.edges.add(new VisEdge(edge));
+			}
+		}
+
+
+	}
+
 	public VisGraph(String projectKey, String elementKey, List<DecisionKnowledgeElement> elements,
 			boolean isHyperlinked) {
 		this.graph = new GraphImpl(projectKey, elementKey);
