@@ -38,6 +38,12 @@ public class GitDecXtract {
 		gitClient = new GitClientImpl(uri, projecKey);
 	}
 
+	/// TODO: can this be done better in JAVA?
+	/// Release git client.
+	public void close() {
+		gitClient.close();
+	}
+
 	// TODO: below method signature will further improve
 	public List<DecisionKnowledgeElement> getElements(String featureBranchShortName) {
 		List<DecisionKnowledgeElement> gatheredElements = new ArrayList<>();
@@ -75,6 +81,9 @@ public class GitDecXtract {
 				startAnchoredGitClient);
 		elementsFromCode = diffCodeManager.getNewDecisionKnowledgeElements();
 		elementsFromCode.addAll(diffCodeManager.getOldDecisionKnowledgeElements());
+
+		startAnchoredGitClient.close();
+		endAnchoredGitClient.close();
 
 		return elementsFromCode.stream().map(element -> {
 			element.setProject(projecKey);

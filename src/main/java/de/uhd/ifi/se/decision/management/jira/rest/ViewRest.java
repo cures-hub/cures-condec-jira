@@ -59,8 +59,10 @@ public class ViewRest {
 			return issueKeyIsInvalid();
 		}
 
+		// get branches
 		GitClient gitClient = new GitClientImpl(getProjectKey(issueKey)); // ex: issueKey=ConDec-498
 		List<Ref> branches = gitClient.getRemoteBranches();
+
 		if (branches.isEmpty()) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
@@ -68,10 +70,13 @@ public class ViewRest {
 		GitDecXtract extractor = new GitDecXtract(getProjectKey(issueKey));
 		// TODO: move the loop elsewhere or maybe in GitDecXtract
 		for (Ref branch : branches) {
-			if (branch.getName().contains(issueKey.toUpperCase())) {
+			if (branch.getName().contains(issueKey.toUpperCase()+".")) {
 				ratBranchList.put(branch, extractor.getElements(branch));
 			}
 		}
+		extractor.close();
+		gitClient.close();
+
 		DiffViewer diffView = new DiffViewer(ratBranchList);
 		Response resp = null;
 		try {
