@@ -115,13 +115,24 @@ public class GitDiffedCodeExtractionManager {
 					if (codeExtractionResult.size() > 0) {
 						for (Map.Entry<Edit, List<DecisionKnowledgeElement>> editListEntry : codeExtractionResult
 								.entrySet()) {
-							resultValues.addAll(editListEntry.getValue().stream().map(d -> {
-								d.setKey(newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
-										+ String.valueOf(dEntry.getValue().sequence)
-										+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + editListEntry.getKey().toString()
-										+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + d.getKey());
-								return d;
-							}).collect(Collectors.toList()));
+							if (editListEntry.getKey()!=null) {
+								resultValues.addAll(editListEntry.getValue().stream().map(d -> {
+									d.setKey(newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
+											+ String.valueOf(dEntry.getValue().sequence)
+											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + editListEntry.getKey().toString()
+											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + d.getKey());
+									return d;
+								}).collect(Collectors.toList()));
+							}
+							else {
+								resultValues.addAll(editListEntry.getValue().stream().map(d -> {
+									d.setKey(newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
+											+ String.valueOf(dEntry.getValue().sequence)
+											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + GitDecXtract.RAT_KEY_NOEDIT
+											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + d.getKey());
+									return d;
+								}).collect(Collectors.toList()));
+							}
 						}
 					}
 				}
