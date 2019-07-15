@@ -24,6 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 public class GitDecXtract {
 
 	public static final String RAT_KEY_COMPONENTS_SEPARATOR = " ";
+	public static final String RAT_KEY_NOEDIT = "-";
 	private final GitClient gitClient;
 	private final String projecKey;
 
