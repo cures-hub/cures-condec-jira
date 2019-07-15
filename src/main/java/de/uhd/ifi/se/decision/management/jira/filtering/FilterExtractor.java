@@ -3,7 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,9 +128,26 @@ public class FilterExtractor {
 		return results;
 	}
 
-	public List<DecisionKnowledgeElement> getAllElementsMatchingFilterString(){
-		//TODO Get all Decision Knowledge Elements that can be selected and filter the Name and the Description
-		//TODO Return Decision Knowledge Element list with all Matching Elements
+	public List<DecisionKnowledgeElement> getAllElementsMatchingCompareFilter() {
+		DecisionKnowledgeProject project = new DecisionKnowledgeProjectImpl(this.filterSettings.getProjectKey());
+		List<DecisionKnowledgeElement> elements = project.getPersistenceStrategy().getDecisionKnowledgeElements();
+		List<DecisionKnowledgeElement> filteredElements = new ArrayList<>();
+
+		for (DecisionKnowledgeElement element : elements) {
+			//Check if the element is created in time
+			if (checkIfJiraTextMatchesFilter(element)) {
+				//Case no text filter
+				if (filterSettings.getSearchString().equals("")) {
+					filteredElements.add(element);
+				} else {
+					//Case Description or summary are containing the search sting
+					if (element.getDescription().contains(filterSettings.getSearchString()) || element.getSummary().contains(filterSettings.getSearchString())) {
+						filteredElements.add(element);
+					}
+				}
+			}
+		}
+		return filteredElements;
 	}
 
 	private boolean checkIfJiraTextMatchesFilter(DecisionKnowledgeElement element) {
@@ -140,15 +159,16 @@ public class FilterExtractor {
 				&& (element).getCreated().getTime() > filterSettings.getCreatedLatest()) {
 			return false;
 		}
-
-		if (element.getType().equals(KnowledgeType.PRO) || element.getType().equals(KnowledgeType.CON)) {
-			if (!filterSettings.getNamesOfSelectedJiraIssueTypes().contains(KnowledgeType.ARGUMENT.toString())) {
+		if(!(filterSettings.getNamesOfSelectedJiraIssueTypes().size()==1 &&
+		filterSettings.getNamesOfSelectedJiraIssueTypes().get(0).equals(""))) {
+			if (element.getType().equals(KnowledgeType.PRO) || element.getType().equals(KnowledgeType.CON)) {
+				if (!filterSettings.getNamesOfSelectedJiraIssueTypes().contains(KnowledgeType.ARGUMENT.toString())) {
+					return false;
+				}
+			} else if (!filterSettings.getNamesOfSelectedJiraIssueTypes().contains(element.getTypeAsString())) {
 				return false;
 			}
-		} else if (!filterSettings.getNamesOfSelectedJiraIssueTypes().contains(element.getTypeAsString())) {
-			return false;
 		}
-
 		return true;
 	}
 

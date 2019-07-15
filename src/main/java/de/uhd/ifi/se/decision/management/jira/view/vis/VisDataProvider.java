@@ -1,13 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 
 public class VisDataProvider {
@@ -51,8 +49,9 @@ public class VisDataProvider {
 
 	public VisGraph getVisGraphTimeFilterd(FilterSettings filterSettings){
 		FilterExtractor extractor = new FilterExtractor(this.user, filterSettings);
-		List<DecisionKnowledgeElement> elements = extractor.getAllElementsMatchingQuery();
-		return  new VisGraph(elements,false);
+		List<DecisionKnowledgeElement> elements = extractor.getAllElementsMatchingCompareFilter();
+		VisGraph graph = new VisGraph(elements,false);
+		return graph;
 	}
 
 	public VisTimeLine getTimeLine() {
