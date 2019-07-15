@@ -254,7 +254,11 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 			return false;
 		}
 		DecisionKnowledgeElement element = (DecisionKnowledgeElement) object;
-		return this.id == element.getId();
+		return this.id == element.getId()
+		/* At least compare also the key, otherwise comparison will not work for
+		elements with same/not initialized ID.
+		 */
+				&& element.getKey().equals(getKey());
 	}
 
 	@Override
@@ -288,4 +292,5 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	public String toString() {
 		return this.getDescription();
 	}
+
 }
