@@ -124,16 +124,25 @@ public class ViewRest {
 	}
 
 	@Path("/getEvolutionData")
-	@GET
-	public Response getEvolutionData(@QueryParam("projectKey") String projectKey,@Context HttpServletRequest request) {
-		if (projectKey == null || projectKey.equals("")) {
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getEvolutionData(@Context HttpServletRequest request,FilterSettings filterSettings) {
+		if (filterSettings.getProjectKey() == null || filterSettings.getProjectKey().equals("")) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not valid."))
 					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisDataProvider visDataProvider = new VisDataProvider(projectKey,user);
-		VisTimeLine timeLine = visDataProvider.getTimeLine();
+		VisDataProvider visDataProvider = new VisDataProvider(filterSettings.getProjectKey(),user);
+		VisTimeLine timeLine;
+		//Case: No filter applied
+		if(filterSettings.getSearchString().equals("")&& filterSettings.getCreatedEarliest() == -1
+				   && filterSettings.getCreatedLatest() == -1){
+			timeLine = visDataProvider.getTimeLine();
+		} else {
+			timeLine = visDataProvider.getTimeLineFilterd(filterSettings);
+		}
 		return Response.ok(timeLine.getEvolutionData()).build();
+
 	}
 
 	@Path("/getTreant")

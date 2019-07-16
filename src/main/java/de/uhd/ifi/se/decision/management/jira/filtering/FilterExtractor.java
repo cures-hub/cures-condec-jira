@@ -140,9 +140,11 @@ public class FilterExtractor {
 				if (filterSettings.getSearchString().equals("")) {
 					filteredElements.add(element);
 				} else {
-					//Case Description or summary are containing the search sting
-					if (element.getDescription().contains(filterSettings.getSearchString()) || element.getSummary().contains(filterSettings.getSearchString())) {
-						filteredElements.add(element);
+					if(element.getDescription() != null && element.getSummary() !=null) {
+						//Case Description or summary are containing the search sting
+						if (element.getDescription().contains(filterSettings.getSearchString()) || element.getSummary().contains(filterSettings.getSearchString())) {
+							filteredElements.add(element);
+						}
 					}
 				}
 			}

@@ -24,10 +24,9 @@ public class VisTimeLine {
 		createDataSet();
 	}
 
-	public VisTimeLine(String projectKey, Date created, Date closed) {
-		if (projectKey != null) {
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
-			elementList = strategy.getDecisionKnowledgeElementsInTimeSpan(created, closed);
+	public VisTimeLine(List<DecisionKnowledgeElement> elements) {
+		if (elements != null) {
+			elementList = elements;
 		}
 		createDataSet();
 	}

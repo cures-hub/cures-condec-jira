@@ -395,11 +395,18 @@
 	/*
 	 * external references: condec.evolution.page
 	 */
-	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getEvolutionData.json?projectKey=" + projectKey,
+	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(searchString, created, closed, callback) {
+        var filterSettings = {
+            "projectKey" : projectKey,
+            "searchString" : searchString,
+            "createdEarliest" : created,
+            "createdLatest" : closed,
+            "documentationLocations" : [ "" ],
+            "selectedJiraIssueTypes" : [ "" ]
+        };
+        postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getEvolutionData.json", filterSettings,
 				function(error, evolutionData) {
 					if (error === null) {
-					    console.log(evolutionData);
 						callback(evolutionData);
 					}
 				});

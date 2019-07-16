@@ -61,5 +61,12 @@ public class VisDataProvider {
 		return this.timeLine;
 	}
 
+	public VisTimeLine getTimeLineFilterd(FilterSettings filterSettings){
+		FilterExtractor extractor = new FilterExtractor(this.user, filterSettings);
+		List<DecisionKnowledgeElement> elements = extractor.getAllElementsMatchingCompareFilter();
+		this.timeLine= new VisTimeLine(elements);
+		return this.timeLine;
+	}
+
 
 }
