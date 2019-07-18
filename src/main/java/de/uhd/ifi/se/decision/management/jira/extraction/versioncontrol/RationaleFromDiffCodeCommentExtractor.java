@@ -23,16 +23,12 @@ import java.util.stream.Collectors;
 public class RationaleFromDiffCodeCommentExtractor {
 
 	private EditList editList;
-	private List<CodeComment> commentsInNewerFile;
-	private List<CodeComment> commentsInOlderFile;
-	private int cursorNewerFile = -1;
-	private int cursorOlderFile = -1;
+	private List<CodeComment> commentsInFile;
+	private int fileCursor = -1;
 
 	public RationaleFromDiffCodeCommentExtractor(List<CodeComment> commentsInOlderFile
-			, List<CodeComment> commentsInNewerFile
 			, EditList editList) {
-		this.commentsInNewerFile = commentsInNewerFile;
-		this.commentsInOlderFile = commentsInOlderFile;
+		this.commentsInFile = commentsInOlderFile;
 		this.editList = editList;
 	}
 
@@ -40,18 +36,12 @@ public class RationaleFromDiffCodeCommentExtractor {
 	 * Moves comment cursor forward for the newer or older version file comments.
 	 *
 	 * @param: move newer instead of older file cursor?
-	 * @return: success if cursor at nextInNewerFile comment exists.
+	 * @return: success if cursor at commentsInFile comment exists.
 	 */
 	public boolean next(boolean forNewerFile) {
-		if (forNewerFile) {
-			cursorNewerFile++;
-			return commentsInNewerFile != null
-					&& (cursorNewerFile + 1) <= commentsInNewerFile.size();
-		} else {
-			cursorOlderFile++;
-			return commentsInOlderFile != null
-					&& (cursorOlderFile + 1) <= commentsInOlderFile.size();
-		}
+		fileCursor++;
+		return commentsInFile != null
+				&& (fileCursor + 1) <= commentsInFile.size();
 	}
 
 	/**
@@ -64,12 +54,8 @@ public class RationaleFromDiffCodeCommentExtractor {
 	public Map<Edit, List<DecisionKnowledgeElement>> getRationaleFromComment(boolean newerFile
 			, Map<Edit, List<DecisionKnowledgeElement>> elementsInSingleComment) {
 
-		int cursor = cursorOlderFile;
-		List<CodeComment> comments = commentsInOlderFile;
-		if (newerFile) {
-			cursor = cursorNewerFile;
-			comments = commentsInNewerFile;
-		}
+		int cursor = fileCursor;
+		List<CodeComment> comments = commentsInFile;
 		if ((cursor + 1) <= comments.size()) {
 			CodeComment currentComment = comments.get(cursor);
 
@@ -149,11 +135,20 @@ public class RationaleFromDiffCodeCommentExtractor {
 	private boolean doesRationaleIntersectWithEdit(DecisionKnowledgeElement rationaleElement, Edit edit, boolean newerFile) {
 		int rationaleStart = RationaleFromCodeCommentExtractor.getRationaleStartLineInCode(rationaleElement);
 		int rationaleEnd = RationaleFromCodeCommentExtractor.getRationaleEndLineInCode(rationaleElement);
-		int editBegin = edit.getBeginA();
+
+		/*
+			if only line 10 changes in the old file the Edit object will then have
+				getBeginA() == 9 ; getEndA() == 10
+
+			Edit counts lines starting by 0, DecisionKnowledgeElement stores line information beginning from 1.
+			To adapt to this fact, getBeginA() will be increased by one and below calculation should be fine.
+		 */
+
+		int editBegin = edit.getBeginA()+1;
 		int editEnd = edit.getEndA();
 
 		if (newerFile) {
-			editBegin = edit.getBeginB();
+			editBegin = edit.getBeginB()+1;
 			editEnd = edit.getEndB();
 		}
 

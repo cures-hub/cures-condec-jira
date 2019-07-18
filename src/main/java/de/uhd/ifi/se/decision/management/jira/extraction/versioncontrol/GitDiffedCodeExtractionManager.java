@@ -239,16 +239,8 @@ public class GitDiffedCodeExtractionManager {
 
 		Map<Edit, List<DecisionKnowledgeElement>> returnMap = new HashMap<>();
 
-		List<CodeComment> commentsInNewerFile = new ArrayList<>();
-		List<CodeComment> commentsInOlderFile = new ArrayList<>();
-		if (newerFile) {
-			commentsInNewerFile = commentsInFile;
-		} else {
-			commentsInOlderFile = commentsInFile;
-		}
-
 		RationaleFromDiffCodeCommentExtractor rationaleFromDiffCodeCommentExtractor = new RationaleFromDiffCodeCommentExtractor(
-				commentsInOlderFile, commentsInNewerFile, changedFile.getEditList());
+				commentsInFile, changedFile.getEditList());
 
 		while (rationaleFromDiffCodeCommentExtractor.next(newerFile)) {
 			returnMap.putAll(rationaleFromDiffCodeCommentExtractor.getRationaleFromComment(newerFile, returnMap));
