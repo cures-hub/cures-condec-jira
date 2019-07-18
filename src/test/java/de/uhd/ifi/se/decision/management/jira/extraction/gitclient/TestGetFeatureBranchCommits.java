@@ -30,7 +30,7 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 		testGitClient = new GitClientImpl(GIT_URI, repoBaseDirectory, "TEST");
 
 		List<RevCommit> commits = testGitClient.getFeatureBranchCommits(featureBranch);
-		assertEquals(3, commits.size());
+		assertEquals(4, commits.size());
 		assertEquals(expectedFirstCommitMessage, commits.get(0).getFullMessage());
 	}
 
@@ -47,7 +47,7 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 		assertEquals(1, branchCandidates.size());
 
 		List<RevCommit> commits = testGitClient.getFeatureBranchCommits(branchCandidates.get(0));
-		assertEquals(3, commits.size());
+		assertEquals(4, commits.size());
 		assertEquals(expectedFirstCommitMessage, commits.get(0).getFullMessage());
 	}
 }
