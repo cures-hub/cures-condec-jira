@@ -62,11 +62,13 @@ public class TestGetDiff extends TestSetUpGit {
 
 		List<ChangedFile> changedFiles = diff.getChangedFiles();
 
-		assertTrue(changedFiles.get(0).getDiffEntry().toString().contains("ADD GodClass.java"));
-		assertTrue(changedFiles.get(1).getDiffEntry().toString().contains("MODIFY readMe.txt"));
+		assertTrue(changedFiles.get(0).getDiffEntry().toString().contains("ADD GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java"));
+		assertEquals(1, changedFiles.get(0).getEditList().size());
+		assertTrue(changedFiles.get(0).getEditList().toString().contains("INSERT(0-0,0-58)"));
 
-		assertTrue(changedFiles.get(0).getEditList().toString().contains("INSERT(0-0,0-2)"));
-		assertTrue(changedFiles.get(1).getEditList().toString().contains("REPLACE(0-1,0-1)"));
+		assertTrue(changedFiles.get(1).getDiffEntry().toString().contains("ADD GodClass.java"));
+		assertEquals(1, changedFiles.get(1).getEditList().size());
+		assertTrue(changedFiles.get(1).getEditList().toString().contains("INSERT(0-0,0-2)"));
 	}
 
 	@Test

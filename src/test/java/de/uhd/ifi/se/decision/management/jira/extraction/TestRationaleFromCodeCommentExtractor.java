@@ -21,8 +21,8 @@ public class TestRationaleFromCodeCommentExtractor {
 	@Before
 	public void setUp() {
 		codeComment = new CodeComment(""
-				, commitBeginLine, commitBeginColumn
-				, commitBeginLine + 1, commitBeginColumn + 1
+				, commitBeginColumn, commitBeginLine
+				, commitBeginColumn + 1, commitBeginLine + 1
 		/* end point could be recalculated given contents number of lines
 		 and last lines length, but it does not really matter for
 		 testing RationaleFromCodeCommentExtractor class */
@@ -74,11 +74,15 @@ public class TestRationaleFromCodeCommentExtractor {
 	public void oneRationaleAndRestTextSeparetedByLinesWithSpaces() {
 		codeComment.commentContent = "Text @issue:with rationale  \n  \n  \nnot rat. text anymore";
 		expectedRationaleText = "with rationale";
+		String expectedKey = commitBeginLine+":"+commitBeginLine+":12";
+
 		rationaleFromCodeCommentExtractor =
 				new RationaleFromCodeCommentExtractor(codeComment);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
+
 		assertEquals(1, elementsFound.size());
 		assertEquals(expectedRationaleText, elementsFound.get(0).getSummary());
+		assertEquals(expectedKey, elementsFound.get(0).getKey());
 	}
 
 	@Test
