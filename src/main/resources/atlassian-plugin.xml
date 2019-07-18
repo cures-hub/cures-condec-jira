@@ -100,6 +100,8 @@
 		<resource type="download" name="condec.context.menu.js"
 			location="/js/condec.context.menu.js" />
 		<resource type="download" name="condec.gitdiffviewer.js" location="/js/condec.gitdiffviewer.js" />
+		<resource type="download" name="condec.git.code.elements.linker.js"
+	  		location="/js/condec.git.code.elements.linker.js" />
 
 		<resource type="download" name="condec.context.vis.js"
 				  location="/js/condec.context.vis.js" />
