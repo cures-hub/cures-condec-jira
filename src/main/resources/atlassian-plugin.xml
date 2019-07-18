@@ -117,6 +117,8 @@
 		<resource type="download" name="condec.export.js"  location="/js/condec.export.js" />
 		<resource type="download" name="condec.evolution.page.js"
 			location="/js/condec.evolution.page.js" />
+		<resource type="download" name="condec.relationship.page.js"
+				  location="/js/condec.relationship.page.js" />
 	</web-resource>
 
 	<web-resource key="decision-knowledge-page-resources"
