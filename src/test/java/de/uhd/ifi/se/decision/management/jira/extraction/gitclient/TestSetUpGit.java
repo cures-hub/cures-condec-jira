@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
@@ -55,12 +56,18 @@ public abstract class TestSetUpGit extends TestSetUp {
 		GIT_URI = getExampleUri();
 		DIRECTORY = getExampleDirectory();
 
+		ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
+		String pathToExtractionVCSTestFilesDir = "extraction/versioncontrol/";
+		String pathToExtractionVCSTestFile = pathToExtractionVCSTestFilesDir
+				+ "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.FileA.java";
+		String extractionVCSTestFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
+		File fileA = new File(classLoader.getResource(pathToExtractionVCSTestFile).getFile());
+
 		gitClient = new GitClientImpl(GIT_URI, DIRECTORY.getAbsolutePath(), "TEST");
 
 		// above line will log errors for pulling from still empty remote repositry.
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
-		makeExampleCommit("readMe.txt", "Self-explanatory, ReadMe not necessary.",
-				"TEST-12: Explain how the great software works");
+		makeExampleCommit(fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
 		makeExampleCommit("GodClass.java",
 				"public class GodClass {" + "//@issue:Small code issue in GodClass, it does nothing." + "\r\n}",
 				"TEST-12: Develop great software");
@@ -155,6 +162,18 @@ public abstract class TestSetUpGit extends TestSetUp {
 		return uri;
 	}
 
+	protected static void makeExampleCommit(File inputFile, String targetName, String commitMessage) {
+		Git git = gitClient.getGit();
+		File gitFile = new File(gitClient.getDirectory().getParent(), targetName);
+		try {
+			FileUtils.copyFile(inputFile,gitFile);
+			git.add().addFilepattern(gitFile.getName()).call();
+			git.commit().setMessage(commitMessage).setAuthor("gitTest", "gitTest@test.de").call();
+			git.push().setRemote("origin").call();
+		} catch (Exception e) {
+			LOGGER.error("Mock commit failed. Message: " + e.getMessage());
+		}
+	}
 	protected static void makeExampleCommit(String filename, String content, String commitMessage) {
 		Git git = gitClient.getGit();
 		try {
@@ -175,6 +194,12 @@ public abstract class TestSetUpGit extends TestSetUp {
 		String firstCommitMessage = "First message";
 		Git git = gitClient.getGit();
 		String currentBranch = null;
+
+		ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
+		String pathToTestFilesDir = "extraction/versioncontrol/";
+		String pathToTestFile = pathToTestFilesDir + "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.FileB.java";
+		String testFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
+		File fileB = new File(classLoader.getResource(pathToTestFile).getFile());
 
 		// @issue: How can we create a mock feature branch?
 		try {
@@ -197,6 +222,8 @@ public abstract class TestSetUpGit extends TestSetUp {
 						+ "//[alternative]ignore it![/alternative]" + "\r\n" + "//[pro]ignorance is bliss[/pro]"
 						+ "\r\n" + "//[decision]solve it ASAP![/decision]" + "\r\n"
 						+ "//[pro]life is valuable, prevent even smallest risks[/pro]");
+		makeExampleCommit(fileB, testFileTargetName, "modified rationale text, reproducing replace problem observed " +
+				"with CONDEC-505 feature branch");
 		returnToPreviousBranch(currentBranch, git);
 	}
 
