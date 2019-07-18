@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 public class VisTimeLine {
 
@@ -20,6 +21,9 @@ public class VisTimeLine {
 		if (projectKey != null) {
 			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
 			elementList = strategy.getDecisionKnowledgeElements();
+			AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
+					projectKey);
+			elementList.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
 		}
 		createDataSet();
 	}

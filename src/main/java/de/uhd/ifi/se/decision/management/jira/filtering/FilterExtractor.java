@@ -6,6 +6,7 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,15 +130,21 @@ public class FilterExtractor {
 	}
 
 	public List<DecisionKnowledgeElement> getAllElementsMatchingCompareFilter() {
-		DecisionKnowledgeProject project = new DecisionKnowledgeProjectImpl(this.filterSettings.getProjectKey());
-		List<DecisionKnowledgeElement> elements = project.getPersistenceStrategy().getDecisionKnowledgeElements();
+		if (filterSettings.getProjectKey() == null) {
+			return new ArrayList<>();
+		}
+		AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(filterSettings.getProjectKey() );
+		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
+		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(filterSettings.getProjectKey() );
+		elements.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
+
 		List<DecisionKnowledgeElement> filteredElements = new ArrayList<>();
 
 		for (DecisionKnowledgeElement element : elements) {
 			//Check if the element is created in time
 			if (checkIfJiraTextMatchesFilter(element)) {
 				//Case no text filter
-				if (filterSettings.getSearchString().equals("")) {
+				if (filterSettings.getSearchString().equals("")|| filterSettings.getSearchString().equals("?filter=-4")) {
 					filteredElements.add(element);
 				} else {
 					if(element.getDescription() != null && element.getSummary() !=null) {
