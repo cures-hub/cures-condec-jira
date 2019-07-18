@@ -1,4 +1,4 @@
-/* some basic looks for rationale from the commit messages and differ */
+/* some basic looks for rationale from the commit messages and files */
 
 #featureBranches-container > p {
 }
@@ -6,96 +6,235 @@
 	position: relative;
 	font-size: 0.8rem;
 	margin: 1em 0;
+	padding:1em .2em;
+
 	border: 1px solid grey;
 	border-radius:1em;
 }
-.fileA>p, .fileB>p, .messageBox {
+
+.branchGroup.rolledUp {
+	overflow: hidden;
+	max-height: 0;
+}
+
+.branchGroup .fileA>p,
+.branchGroup .fileB>p,
+.branchGroup .messageBox {
 	margin-top: 0.3em;
 	margin-bottom: 0.3em;
 	border-radius: 0.8em;
 	padding: 0.3em;
 	position: relative;
-
+	border: 1px solid black;
 }
 
-.fileDiffBlockLabel {
+.branchGroup .fileDiffBlockLabel,
+.branchGroup .fileNonDiffBlockLabel {
 	color: white;
 	background:black;
+	cursor: pointer;
+	text-decoration: underline;
+	padding: 0.5em;
+	overflow: hidden;
+
+	/* not using this presentation variant yet.
+	padding: 1em 0 0 0;
+	max-height: 0em;*/
 }
 
-.fileNonDiffBlockLabel {
-	color: white;
+/* not using this presentation variant yet.
+.branchGroup .fileDiffBlockLabel:hover,
+.branchGroup .fileNonDiffBlockLabel:hover {
+	max-height: 100%;
+	padding: 0.7em;
+}
+*/
+.branchGroup .fileDiffBlockLabel.inactive,
+.branchGroup .fileNonDiffBlockLabel.inactive {
 	background:grey;
 }
 
-.fileNonDiffBlock {
+.branchGroup .fileNonDiffBlock {
 	margin-top: 0;
 }
-.fileDiffBlock {
+.branchGroup .fileDiffBlock {
 	display: flex;
 	flex-flow: row nowrap;
-	margin-top:0;
+	justify-content: space-between;
 }
-.fileA, .fileB {
+.branchGroup .fileA,
+.branchGroup .fileB {
 	margin: 0;
-}
-.fileA .filename {
-	background: orange;
-	border-radius: 0;
-}
-.fileB .filename {
-	background: greenyellow;
-	border-radius: 0;
+	flex-grow: 0;
+	flex-shrink: 0;
+	flex-basis: 50%;
 }
 
-.filename {
-	margin-top: 0px;
+.branchGroup .messageBox {
+	background: rgba(9,30,66,.08);
 }
 
-.messageBox {
-	background: rgba(9,30,66,.08); /* greenyellow; */
+.branchGroup .messageBox.rolledUp {
+    max-height: 1em;
+    overflow: hidden;
 }
-.branchGroup .text {
+.branchGroup .messageBox .commitMessageLabel {
+	cursor: pointer;
+	text-decoration: underline;
+
+}
+
+.branchGroup .fileNonDiffBlock p.detailed > .content,
+.branchGroup .fileDiffBlock p.detailed > .content,
+.branchGroup .messageBox p.detailed > .content /*,
+.branchGroup .fileNonDiffBlock p:hover > .content,
+.branchGroup .fileDiffBlock p:hover > .content,
+.branchGroup .messageBox p:hover > .content,*/
+{
+    font-size: 1.3em;
+}
+
+.branchGroup .branchLabel {
 	position: absolute;
 	left:2em;
-	top:-0.8em;
+	top:-0.5em;
 	background: white;
-}
-.branchGroup img {
-	position: absolute;
-	top: 5px;
-	left: 0px;
+	cursor: pointer;
+	text-decoration: underline;
 }
 
-.branchGroup .rat-link-problem {
-    position: absolute;
-    top: 0;
-    right: 0.3em;
-    width: 0.6em;
-    height: 0.6em;
-    background: yellow;
-    border-radius: 1em;
-    border: 0.3em red solid;
+.branchGroup.rolledUp .branchLabel {
+	top: 0;
 }
 
-.branchGroup .loc {
-	display: none; /* make this element obsolete ? */
-	width: 200px; /* 50% does not work correctly */
-	text-overflow: ellipsis;
-	height: 20px;
-	white-space: nowrap;
-	overflow: hidden;
-	margin: 0;
-
+.branchGroup .qualitySummary {
+	margin:1em;
+	padding:1em;
+	background: rgb(222, 250, 222);
+	border:1px grey solid;
+	border-radius: 0.1em;
+	font-weight: 800;
+	font-size: 1.2em;
 }
+
+.branchGroup .qualitySummary.noRationale{
+	background: repeating-linear-gradient(
+		-45deg,
+		rgb(222, 250, 222),
+		rgb(222, 250, 222) 16px,
+		yellow 10px,
+		yellow 20px
+    );
+}
+
+.branchGroup .qualitySummary.hasErrors,
+.branchGroup .qualitySummary.hasWarnings {
+	background: yellow;
+	background: repeating-linear-gradient(
+		-45deg,
+		orange,
+		orange 16px,
+		yellow 10px,
+		yellow 20px
+    );
+}
+
 .branchGroup .content {
 	/* background: white; */
 	margin: 0 0 0 1em;
 	width: auto;
+	transition: font-size 0.05s;
+	cursot: pointer;
 }
-.decision, .alternative {
+
+/* in browser invisible rationale text tags,
+will be copied if .content is marked and copied */
+.branchGroup .content > span {
+	overflow: hidden;
+	max-width: 0px;
+	display: inline-block;
+}
+
+.branchGroup img {
+	position: absolute;
+    top: 0.5em;
+	left: 0px;
+}
+
+.branchGroup .loc {
+	display: none; /* make this element obsolete ? */
+}
+
+/*.branchGroup p:hover > .loc {*/
+.branchGroup p.detailed > .loc {
+	display: block;
+}
+
+.branchGroup .decision, .alternative {
+	margin-left: 0.5em;
+}
+.branchGroup .pro, .con {
 	margin-left: 1em;
 }
-.pro, .con {
-	margin-left: 2em;
+
+ /* just graphics, no text mode*/
+.branchGroup .rat-link-problem {
+    position: absolute;
+    top: 0.5em;
+    right: 0.3em;
+
+	overflow: hidden;
+	color: red;
+    width: 0.6em;
+    height: 0.6em;
+    background: red;
+    border-radius: 1em;
+    border: 0.3em red solid;
+	animation: rat-link-blinking 2s infinite;
+
+    margin:0;
+}
+
+/* text mode */
+/*.branchGroup p:hover >.rat-link-problem {*/
+.branchGroup p.detailed >.rat-link-problem {
+	position: relative ;
+	right: 0;
+	top: 0;
+	width: auto;
+	height: auto;
+	background: pink;
+	animation: unset;
+
+	padding: 0.3em;
+	margin: 0.3em;
+	color: black;
+}
+
+@keyframes rat-link-blinking {
+  0%   { opacity: 0; }
+  85% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.branchGroup .selector {
+	cursor: pointer;
+	position: absolute;
+	top: .5em;
+	right: 0.5em;
+	color: white;
+	background: blue;
+	border: 1px black solid;
+	border-radius: 0.8em;
+	min-width: 2em;
+	min-height: 0.8em;
+	text-align: center;
+}
+
+/* ensure 1st look awareness */
+.menu-item.condec-attention * {
+    color: red !important;
+}
+.menu-item.condec-fine * {
+    color: green !important;
 }
