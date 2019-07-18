@@ -1,0 +1,23 @@
+<div class="aui-group">
+    <div id="graph-container"></div>
+</div>
+<style type="text/css">
+    #graph-container{
+        width: 1000px;
+        height: 500px;
+        border: 1px solid lightgray;
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        conDecAPI.checkIfProjectKeyIsValid();
+        if(window.conDecRelationshipPage.init(conDecAPI, conDecObservable)) {
+            conDecAPI.checkIfProjectKeyIsValid();
+            window.conDecRelationshipPage.buildDecisionGraph();
+        }
+        else {
+            console.error("ConDecRelationshipPage could not get its dependencies.");
+        }
+    });
+</script>

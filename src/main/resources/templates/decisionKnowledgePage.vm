@@ -15,6 +15,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         <li class="menu-item">
             <a href="#tabs-Relationship-Matrix">Matrix</a>
         </li>
+        <li class="menu-item">
+            <a href="#tabs-Relationship">Relationships</a>
+        </li>
     </ul>
    <div class="tabs-pane active-pane" id="tabs-Overview">
         #parse("templates/overview.vm")
@@ -25,6 +28,10 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 
     <div class="tabs-pane" id="tabs-Compare">
         #parse("templates/compareview.vm")
+    </div>
+
+    <div class="tabs-pane" id="tabs-Relationship">
+        #parse("templates/relationshipView.vm")
     </div>
     <div class="tabs-pane" id="tabs-Relationship-Matrix">
         #parse("templates/relationshipMatrixView.vm")
