@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
+import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryType;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -37,21 +38,18 @@ public class Treant {
 	}
 
 	public Treant(String projectKey, String elementKey, int depth, boolean isHyperlinked) {
-		this.graph = new GraphImpl(projectKey, elementKey);
-		this.setHyperlinked(isHyperlinked);
-		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
-		this.setChart(new Chart());
-		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
+		this(projectKey, elementKey, depth, null, null, isHyperlinked);
 	}
 
 	public Treant(String projectKey, String elementKey, int depth) {
 		this(projectKey, elementKey, depth, false);
 	}
 
-	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user) {
-		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
-			FilterExtractor filterExtractor = new FilterExtractor(projectKey, user, query);
-			filterExtractor.getQueryHandler().getJiraIssuesFromQuery();
+	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user,
+			boolean isHyperlinked) {
+		FilterExtractor filterExtractor = new FilterExtractor(projectKey, user, query);
+		if (filterExtractor.getQueryHandler() != null
+				&& filterExtractor.getQueryHandler().getQueryType() != JiraQueryType.OTHER) {
 			this.graph = new GraphImplFiltered(projectKey, elementKey, filterExtractor);
 		} else {
 			this.graph = new GraphImpl(projectKey, elementKey);
@@ -59,7 +57,11 @@ public class Treant {
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
-		this.setHyperlinked(false);
+		this.setHyperlinked(isHyperlinked);
+	}
+
+	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user) {
+		this(projectKey, elementKey, depth, query, user, false);
 	}
 
 	public Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth) {

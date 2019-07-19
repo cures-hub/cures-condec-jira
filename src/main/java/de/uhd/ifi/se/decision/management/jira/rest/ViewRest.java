@@ -198,8 +198,9 @@ public class ViewRest {
 		String projectKey = getProjectKey(elementKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisDataProvider visDataProvider;
-		if (filterSettings.getNamesOfSelectedJiraIssueTypes().size() == 0 || (filterSettings.getDocumentationLocations().size() == 1
-				&& filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN))) {
+		if (filterSettings.getNamesOfSelectedJiraIssueTypes().size() == 0
+				|| (filterSettings.getDocumentationLocations().size() == 1
+						&& filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN))) {
 			visDataProvider = new VisDataProvider(projectKey, elementKey, false, filterSettings.getSearchString(),
 					user);
 		} else {

@@ -123,7 +123,7 @@ public class JiraQueryHandlerImpl implements JiraQueryHandler {
 		}
 		return startTime;
 	}
-	
+
 	private String getQuerySubstringWithTimeInformation() {
 		return query.substring(query.indexOf("created"), query.length());
 	}

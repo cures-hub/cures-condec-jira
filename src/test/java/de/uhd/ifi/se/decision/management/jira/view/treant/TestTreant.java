@@ -6,13 +6,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.user.ApplicationUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
@@ -25,8 +25,8 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.DatabaseUpdater;
@@ -88,10 +88,26 @@ public class TestTreant extends TestSetUpWithIssues {
 
 	@Test
 	@NonTransactional
-	public void testConstructorFiltered(){
+	public void testConstructorFiltered() {
 		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
-		this.treant = new Treant("TEST", "14", 3, "?jql= Project = \" + element.getProject().getProjectKey() + \" AND type!=null", user);
+		this.treant = new Treant("TEST", "TEST-30", 3, "?jql=project=TEST", user);
 		assertNotNull(this.treant);
+		assertNotNull(treant.getNodeStructure());
+		//assertEquals("decision",  treant.getNodeStructure().getHtmlClass());
+		assertEquals("Test",  treant.getNodeStructure().getNodeContent().get("title"));
+		assertEquals(0, treant.getNodeStructure().getChildren().size());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testConstructorQueryNull() {
+		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		this.treant = new Treant("TEST", "TEST-30", 3, "null", user);
+		assertNotNull(this.treant);
+		assertNotNull(treant.getNodeStructure());
+		//assertEquals("decision",  treant.getNodeStructure().getHtmlClass());
+		assertEquals("Test",  treant.getNodeStructure().getNodeContent().get("title"));
+		assertEquals(0, treant.getNodeStructure().getChildren().size());
 	}
 
 	@Test
@@ -99,6 +115,7 @@ public class TestTreant extends TestSetUpWithIssues {
 		assertEquals(Node.class, treant.createNodeStructure(null, null, 0, 0).getClass());
 	}
 
+	@Test
 	public void testCreateNodeStructureEmptyNullZeroZero() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
 		assertEquals(Node.class, treant.createNodeStructure(element, null, 0, 0).getClass());

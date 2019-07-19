@@ -81,7 +81,7 @@ public class GraphImpl implements Graph {
 	}
 
 	protected Map<DecisionKnowledgeElement, Link> getLinkedFirstClassElementsAndLinks(
-			DecisionKnowledgeElement element) {
+			DecisionKnowledgeElement element) {		
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 		if (!element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUE)) {
 			return linkedElementsAndLinks;
@@ -92,10 +92,10 @@ public class GraphImpl implements Graph {
 				continue;
 			}
 			DecisionKnowledgeElement oppositeElement = link.getOppositeElement(element);
+			linkIds.add(link.getId());
 			if (oppositeElement == null) {
 				continue;
-			}
-			linkIds.add(link.getId());
+			}			
 			linkedElementsAndLinks.put(oppositeElement, link);
 		}
 
