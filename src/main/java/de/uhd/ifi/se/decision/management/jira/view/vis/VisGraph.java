@@ -60,7 +60,7 @@ public class VisGraph {
 			return;
 		}
 		for(DecisionKnowledgeElement element: elements){
-			this.nodes.add(new VisNode(element, false, level, cid));
+			this.nodes.add(new VisNode(element, true, level, cid));
 			level += 1;
 			cid += 1;
 			for(Link edge: element.getInwardLinks()){
