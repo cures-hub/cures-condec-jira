@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
