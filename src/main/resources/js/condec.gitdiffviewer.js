@@ -114,7 +114,7 @@ function getJiraBaseUri() {
 
 function getIcon(type) {
   console.debug("getIcon");
-  if (type == "pro" || type == "con") type = "argument_" + type;
+  if (type === "pro" || type === "con") type = "argument_" + type;
   img = document.createElement("img");
   path =
     getJiraBaseUri() +
@@ -469,7 +469,7 @@ function appendBranchQualityAssessment(parentNode, index) {
 */
 function showBranchDiff(data, index) {
   console.debug("showBranchDiff");
-  if (data == null) {
+  if (!data) {
     return alert("received empty invalid data");
   }
 
@@ -499,13 +499,13 @@ function extractPositions(branchData) {
   elements = branchData.elements.map(function(e) {
     positionComponents = e.key.position.split(":");
     positionComponentsNumber = positionComponents.length;
-    if (positionComponentsNumber == 2 || positionComponentsNumber == 3) {
+    if (positionComponentsNumber === 2 || positionComponentsNumber === 3) {
       e.key.positionStartLine = parseInt(positionComponents[0]);
       e.key.positionCursor = parseInt(
         positionComponents[positionComponentsNumber - 1]
       );
     }
-    if (positionComponentsNumber == 3) {
+    if (positionComponentsNumber === 3) {
       e.key.positionEndLine = parseInt(
         positionComponents[positionComponentsNumber - 2]
       );
@@ -627,12 +627,13 @@ function attachClickEventsOnBlockLabels(labels) {
 }
 
 function attachClickEvents(elements, handler, hoverTitle) {
-  if (elements && elements.length > 0)
+  if (elements && elements.length > 0) {
     for (var i = 0; i < elements.length; i++) {
       var element = elements[i];
       element.addEventListener("click", handler);
       element.title = hoverTitle;
     }
+  }
 }
 
 function attachClickEventsOnCommitMessageLabels(labels) {

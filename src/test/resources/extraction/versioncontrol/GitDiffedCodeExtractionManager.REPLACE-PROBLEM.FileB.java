@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.impl;
+/*package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +38,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepos
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.model.git.impl.ChangedFileImpl;
 import de.uhd.ifi.se.decision.management.jira.model.git.impl.DiffImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;*/
 
 /**
  * @issue How to access commits related to a JIRA issue?
