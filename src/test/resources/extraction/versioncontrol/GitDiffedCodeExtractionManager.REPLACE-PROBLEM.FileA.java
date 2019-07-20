@@ -1,5 +1,5 @@
-/*package de.uhd.ifi.se.decision.management.jira.extraction.impl;
-
+package de.uhd.ifi.se.decision.management.jira.extraction.impl;
+/*
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

@@ -114,7 +114,9 @@ function getJiraBaseUri() {
 
 function getIcon(type) {
   console.debug("getIcon");
-  if (type === "pro" || type === "con") type = "argument_" + type;
+  if (type === "pro" || type === "con") {
+      type = "argument_" + type;
+  }
   img = document.createElement("img");
   path =
     getJiraBaseUri() +
@@ -182,7 +184,9 @@ function getFileLocationShort(fileDecKnowKey) {
   while (
     shortNameArr.unshift(longNameArr.pop()) &&
     shortNameArr.length < PATH_DEPTH
-  ) {}
+  ) {
+      // NOP: unshifting of array ellemts is done in while construct
+  }
   return shortNameArr.join("/");
 }
 
@@ -324,7 +328,7 @@ function appendCodeElements(brNode) {
 
 function getBlock(element, counter) {
   var block = {};
-  if (element.key.diffEntry != "-") {
+  if (element.key.diffEntry !== "-") {
     block.diffType = true;
     block.entry = element.key.diffEntry + " " + element.key.source;
   } else {
@@ -344,12 +348,12 @@ function getBlock(element, counter) {
 }
 
 function appendBranchMessageElementsHtml(elementsFromMessage, parentNode) {
-  if (elementsFromMessage != null && elementsFromMessage.length > 0) {
+  if (elementsFromMessage !== null && elementsFromMessage.length > 0) {
     // group rationale in messages by commit hash
     var msgCommitIsh = "";
     var messageBlockHtml = null;
     for (m = 0; m < elementsFromMessage.length; m++) {
-      if (msgCommitIsh != elementsFromMessage[m].key.source) {
+      if (msgCommitIsh !== elementsFromMessage[m].key.source) {
         msgCommitIsh = elementsFromMessage[m].key.source;
         if (messageBlockHtml) {
           // add previous message
@@ -387,8 +391,8 @@ function appendBranchCodeElementsHtml(elementsFromCode, parentNode) {
       previousBlock = block;
     }
     if (
-      block.diffType != previousBlock.diffType ||
-      block.entry != previousBlock.entry
+      block.diffType !== previousBlock.diffType ||
+      block.entry !== previousBlock.entry
     ) {
       blockCounter++;
       block.sequence = blockCounter;
@@ -426,7 +430,7 @@ function appendBranchAllElements(branchNode, elements) {
   appendBranchMessageElementsHtml(lastBranchElementsFromMessages, branchNode);
 
   if (
-    lastBranchElementsFromFiles != null &&
+    lastBranchElementsFromFiles !== null &&
     lastBranchElementsFromFiles.length > 0
   ) {
     lastBranchElementsFromFiles = removeTildeFromAFilename(
@@ -658,15 +662,16 @@ function attachClickEventsRollingUpParents(labels) {
     }
   };
 
-  if (labels && labels.length > 0)
+  if (labels && labels.length > 0) {
     for (var i = 0; i < labels.length; i++) {
       var label = labels[i];
       label.addEventListener("click", hider);
       label.title = "click to roll up/show";
     }
+  }
 }
 function addInvisibleButCopyableElementTypeTags(elementNodes, classFilter) {
-  if (elementNodes && elementNodes.length > 0)
+  if (elementNodes && elementNodes.length > 0) {
     for (var i = 0; i < elementNodes.length; i++) {
       var rationaleNode = elementNodes[i];
       if (!classFilter || rationaleNode.classList.contains(classFilter)) {
@@ -688,6 +693,7 @@ function addInvisibleButCopyableElementTypeTags(elementNodes, classFilter) {
         }
       }
     }
+  }
 }
 
 /*
@@ -709,7 +715,7 @@ function addSelectionHelperForContainer(labels) {
     selObj.addRange(range);
   };
 
-  if (labels && labels.length > 0)
+  if (labels && labels.length > 0) {
     for (var i = 0; i < labels.length; i++) {
       var label = labels[i];
       var container = label.parentElement;
@@ -720,6 +726,7 @@ function addSelectionHelperForContainer(labels) {
       selectorNode.addEventListener("click", contentSelector);
       container.appendChild(selectorNode);
     }
+  }
 }
 
 //showBranchDiff(lastBranch)

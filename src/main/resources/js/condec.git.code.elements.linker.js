@@ -1,8 +1,8 @@
 function linkBranchCandidates(
-  rationale,
-  branchName,
-  branchInSequence,
-  problemSourceCategory
+  _rationale,
+  _branchName,
+  _branchInSequence,
+  _problemSourceCategory
 ) {
   // bad problem explanations
   var ARGUMENT_WITHOUT_PARENT_ELEMENT = "Argument without parent alternative";
@@ -19,10 +19,10 @@ function linkBranchCandidates(
   var ISSUE_WITHOUT_DECISIONS = "Issue does not have a decision yet";
   var ISSUE_WITHOUT_ALTERNATIVES = "Issue does not have any alternatives yet";
 
-  var rationale = rationale;
-  var branchName = branchName;
-  var branchInSequence = branchInSequence;
-  var problemSourceCategory = problemSourceCategory;
+  var rationale = _rationale;
+  var branchName = _branchName;
+  var branchInSequence = _branchInSequence;
+  var problemSourceCategory = _problemSourceCategory;
 
   // paser helpers
   var currentIssueId = null;
@@ -90,7 +90,9 @@ function linkBranchCandidates(
       for (var i = 0; i < linkCandidates.length; i++) {
         element = linkCandidates[i];
 
-        if (element.skip) continue;
+        if (element.skip) {
+            continue;
+        }
         switch (element.rationaleType.toLowerCase()) {
           case "issue":
             addNewIssue(element);
@@ -195,7 +197,7 @@ function linkBranchCandidates(
         qElem.childNodes[0].textContent = "";
         // draw attention to feature tab menu item
         setStatusWarningInMenuItem();
-      } else if (errors.size == 0 && warnings.size == 0) {
+      } else if (errors.size === 0 && warnings.size === 0) {
         setStatusFineInMenuItem();
       }
 
@@ -329,15 +331,19 @@ function linkBranchCandidates(
       };
       // checks if decision is out voted by any alternative
       el.isDecisionOutvotedByAlternative = function() {
-        if (!this.isDecision || !this.hasParent()) return false;
+        if (!this.isDecision || !this.hasParent()) {
+            return false;
+        }
 
         var parentAlternatives = linkCandidates[this.parent].alternatives;
-        if (parentAlternatives.length > 0)
+        if (parentAlternatives.length > 0) {
           for (var i = 0; i < parentAlternatives.length; i++) {
             var alternativeId = parentAlternatives[i];
-            if (this.countVotes() < linkCandidates[alternativeId].countVotes())
+            if (this.countVotes() < linkCandidates[alternativeId].countVotes()) {
               return true;
+            }
           }
+        }
         return false;
       };
       // checks if alternative has any votes

@@ -738,21 +738,6 @@ public class GitClientImpl implements GitClient {
 		return true;
 	}
 
-	/*
-	 Deleting local branch might detach HEAD, pulls will not be possible then.
-	 */
-	private boolean ensureLocalBranchDoesNotExist(String branchName) {
-		try {
-			git.branchDelete().setBranchNames(branchName).setForce(true).call();
-		} catch (InvalidRefNameException | RefNotFoundException e) {
-			return true;
-		} catch (GitAPIException e) {
-			LOGGER.error("Could not delete local branch. " + e.getMessage());
-			return false;
-		}
-		return true;
-	}
-
 	private boolean createLocalBranchIfNotExists(String branchShortName) {
 		try {
 			git.branchCreate().setName(branchShortName).call();
