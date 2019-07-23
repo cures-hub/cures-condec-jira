@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
-
-import org.mockito.Mockito;
 
 import com.atlassian.jira.avatar.AvatarManager;
 import com.atlassian.jira.bc.issue.IssueService;
@@ -30,9 +27,6 @@ import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.issuetype.MockIssueType;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
-import com.atlassian.jira.jql.builder.JqlClauseBuilderFactory;
-import com.atlassian.jira.jql.builder.JqlClauseBuilderFactoryImpl;
-import com.atlassian.jira.jql.util.JqlDateSupportImpl;
 import com.atlassian.jira.mock.MockApplicationProperties;
 import com.atlassian.jira.mock.MockConstantsManager;
 import com.atlassian.jira.mock.MockProjectManager;
@@ -42,7 +36,6 @@ import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.security.roles.ProjectRoleManager;
-import com.atlassian.jira.timezone.TimeZoneManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 import com.atlassian.jira.user.util.MockUserManager;
@@ -85,7 +78,7 @@ public class TestSetUpWithIssues {
 		projectManager = new MockProjectManager();
 		issueManager = new MockIssueManagerSelfImpl();
 		constantsManager = new MockConstantsManager();
-		
+
 		MockApplicationProperties mockApplicationProperties = new MockApplicationProperties();
 		mockApplicationProperties.setString(APKeys.JIRA_BASEURL, "null");
 		IssueTypeManager issueTypeManager = new MockIssueTypeManager();
@@ -105,13 +98,7 @@ public class TestSetUpWithIssues {
 		((MockUserManager) userManager).addUser(user2);
 		((MockUserManager) userManager).addUser(user3);
 		((MockUserManager) userManager).addUser(user4);
-
-		TimeZoneManager timeZoneManager = mock(TimeZoneManager.class);
-		Mockito.when(timeZoneManager.getLoggedInUserTimeZone()).thenReturn(TimeZone.getDefault());
-
 		MockComponentWorker worker = new MockComponentWorker();
-		worker.registerMock(JqlClauseBuilderFactory.class,
-				new JqlClauseBuilderFactoryImpl(new JqlDateSupportImpl(timeZoneManager)));
 		worker.init().addMock(IssueManager.class, issueManager)
 				.addMock(IssueLinkManager.class, new MockIssueLinkManager())
 				.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager())
@@ -136,14 +123,14 @@ public class TestSetUpWithIssues {
 		Project project = new MockProject(1, "TEST");
 		((MockProject) project).setKey("TEST");
 		((MockProjectManager) projectManager).addProject(project);
-		
+
 		List<IssueType> jiraIssueTypes = createJiraIssueTypesForDecisionKnowledgeTypes();
 
 		List<KnowledgeType> types = Arrays.asList(KnowledgeType.values());
 		addJiraIssue(30, "TEST-" + 30, jiraIssueTypes.get(13), project);
 
 		for (int i = 2; i < jiraIssueTypes.size() + 2; i++) {
-			issue = addJiraIssue(i, "TEST-" + i, jiraIssueTypes.get(i-2), project);
+			issue = addJiraIssue(i, "TEST-" + i, jiraIssueTypes.get(i - 2), project);
 			if (i > types.size() - 4) {
 				issue.setParentId((long) 3);
 			}
