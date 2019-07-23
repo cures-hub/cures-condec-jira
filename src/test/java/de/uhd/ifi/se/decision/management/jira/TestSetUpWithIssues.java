@@ -13,8 +13,6 @@ import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
-import com.atlassian.jira.config.properties.APKeys;
-import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.atlassian.jira.config.util.JiraHome;
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.IssueManager;
@@ -27,7 +25,6 @@ import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.issuetype.MockIssueType;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
-import com.atlassian.jira.mock.MockApplicationProperties;
 import com.atlassian.jira.mock.MockConstantsManager;
 import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.component.MockComponentWorker;
@@ -79,8 +76,6 @@ public class TestSetUpWithIssues {
 		issueManager = new MockIssueManagerSelfImpl();
 		constantsManager = new MockConstantsManager();
 
-		MockApplicationProperties mockApplicationProperties = new MockApplicationProperties();
-		mockApplicationProperties.setString(APKeys.JIRA_BASEURL, "null");
 		IssueTypeManager issueTypeManager = new MockIssueTypeManager();
 		try {
 			((MockIssueTypeManager) issueTypeManager).addingAllIssueTypes();
@@ -113,7 +108,6 @@ public class TestSetUpWithIssues {
 				.addMock(PluginSettingsFactory.class, new MockPluginSettingsFactory())
 				.addMock(OptionSetManager.class, mock(OptionSetManager.class))
 				.addMock(CommentManager.class, new MockCommentManager())
-				.addMock(ApplicationProperties.class, mockApplicationProperties)
 				.addMock(JiraHome.class, new MockJiraHomeForTesting())
 				.addMock(SearchService.class, new MockSearchService());
 		createProjectIssueStructure();
