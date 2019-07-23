@@ -8,19 +8,14 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
@@ -28,24 +23,16 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
-import net.java.ao.EntityManager;
-import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-@Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
-@RunWith(ActiveObjectsJUnitRunner.class)
 public class TestGraph extends TestSetUpWithIssues {
 
-	private EntityManager entityManager;
 	private Graph graph;
 	private DecisionKnowledgeElement element;
 
 	@Before
 	public void setUp() throws CreateException {
 		initialization();
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
 		element.setProject(new DecisionKnowledgeProjectImpl("Test"));
 		graph = new GraphImpl(element.getProject().getProjectKey(), element.getKey());
@@ -155,7 +142,8 @@ public class TestGraph extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testGraphWithSentences() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter.getSentencesForCommentText("I got an issue in this testclass");
+		List<PartOfJiraIssueText> sentences = TestTextSplitter
+				.getSentencesForCommentText("I got an issue in this testclass");
 		element = sentences.get(0);
 		graph.setRootElement(element);
 		assertNotNull(graph.getAdjacentElementsAndLinks(element));

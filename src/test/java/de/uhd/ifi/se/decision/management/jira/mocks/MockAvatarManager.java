@@ -52,7 +52,7 @@ public class MockAvatarManager implements AvatarManager {
 	@Nonnull
 	@Override
 	public Avatar create(Avatar avatar) throws DataAccessException {
-		return new MockAvatar((long) 1, "Test", "Test", IconType.ISSUE_TYPE_ICON_TYPE, "SysAdmin", true);
+		return new MockAvatar(1, "Test", "Test", IconType.ISSUE_TYPE_ICON_TYPE, "SysAdmin", true);
 	}
 
 	@Nonnull

@@ -8,33 +8,21 @@ import javax.ws.rs.core.Response;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
-import de.uhd.ifi.se.decision.management.jira.view.treant.TestTreant;
-import net.java.ao.EntityManager;
-import net.java.ao.test.jdbc.Data;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-@RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestTreant.AoSentenceTestDatabaseUpdater.class)
 public class TestGetVis extends TestSetUpWithIssues {
 
 	private ViewRest viewRest;
-	private EntityManager entityManager;
 	private FilterSettings filterSettings;
 	protected HttpServletRequest request;
 
@@ -47,8 +35,6 @@ public class TestGetVis extends TestSetUpWithIssues {
 	public void setUp() {
 		viewRest = new ViewRest();
 		initialization();
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
 		request = new MockHttpServletRequest();
 		String jql = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
 		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");

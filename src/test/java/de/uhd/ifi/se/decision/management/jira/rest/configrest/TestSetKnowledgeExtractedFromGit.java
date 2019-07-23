@@ -1,17 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+import static org.junit.Assert.assertEquals;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
-@RunWith(ActiveObjectsJUnitRunner.class)
+import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+
 public class TestSetKnowledgeExtractedFromGit extends TestConfigSuper {
 	@Test
 	public void testSetKnowledgeExtractedNullNullNull() {

@@ -7,6 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import org.junit.runner.RunWith;
+
+import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.avatar.AvatarManager;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.search.SearchService;
@@ -14,7 +17,6 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.config.util.JiraHome;
-import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.CommentManager;
@@ -53,6 +55,7 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockJiraHomeForTesting;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockProjectRoleManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockSearchService;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityParamFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -62,14 +65,19 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowled
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import net.java.ao.EntityManager;
+import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.DatabaseUpdater;
+import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-public class TestSetUpWithIssues {
+@RunWith(ActiveObjectsJUnitRunner.class)
+@Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
+public abstract class TestSetUpWithIssues {
 	protected ProjectManager projectManager;
 	private IssueManager issueManager;
 	private ConstantsManager constantsManager;
 	protected MockIssue issue;
 	ApplicationUser user;
+	private EntityManager entityManager;
 
 	public void initialization() {
 		projectManager = new MockProjectManager();
@@ -77,11 +85,7 @@ public class TestSetUpWithIssues {
 		constantsManager = new MockConstantsManager();
 
 		IssueTypeManager issueTypeManager = new MockIssueTypeManager();
-		try {
-			((MockIssueTypeManager) issueTypeManager).addingAllIssueTypes();
-		} catch (CreateException e) {
-			e.printStackTrace();
-		}
+		((MockIssueTypeManager) issueTypeManager).addingAllIssueTypes();
 		IssueService issueService = new MockIssueService();
 
 		UserManager userManager = new MockUserManager();
@@ -111,6 +115,9 @@ public class TestSetUpWithIssues {
 				.addMock(JiraHome.class, new MockJiraHomeForTesting())
 				.addMock(SearchService.class, new MockSearchService());
 		createProjectIssueStructure();
+		
+		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
+				new de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager());
 	}
 
 	private void createProjectIssueStructure() {
@@ -185,14 +192,14 @@ public class TestSetUpWithIssues {
 		issue.setSummary("Test");
 		return issue;
 	}
-
-	public MockIssue createGlobalIssueWithComment() {
+	
+	public static MockIssue createGlobalIssueWithComment() {
 		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("{issue} testobject {issue}");
 		PartOfJiraIssueText sentence = comment.get(0);
-		sentence.setJiraIssueId(createGlobalIssue().getId());
-		JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(sentence, user);
+		sentence.setJiraIssueId(createIssue().getId());
+		JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(sentence, new MockApplicationUser("NoFails"));
 
-		return issue;
+		return (MockIssue) sentence.getJiraIssue();
 	}
 
 	public static MockIssue createIssue() {

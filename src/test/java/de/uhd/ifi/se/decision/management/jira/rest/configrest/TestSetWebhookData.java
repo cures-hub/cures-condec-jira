@@ -6,13 +6,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-
-@RunWith(ActiveObjectsJUnitRunner.class)
 public class TestSetWebhookData extends TestConfigSuper {
 
 	@Test

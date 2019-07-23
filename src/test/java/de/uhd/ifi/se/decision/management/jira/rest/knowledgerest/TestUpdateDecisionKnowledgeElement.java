@@ -10,20 +10,15 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -33,15 +28,9 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
-import net.java.ao.EntityManager;
-import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-@RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
-	private EntityManager entityManager;
 	private KnowledgeRest knowledgeRest;
 	private DecisionKnowledgeElement decisionKnowledgeElement;
 	private HttpServletRequest request;
@@ -52,8 +41,6 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 	public void setUp() {
 		knowledgeRest = new KnowledgeRest();
 		initialization();
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
 		decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);

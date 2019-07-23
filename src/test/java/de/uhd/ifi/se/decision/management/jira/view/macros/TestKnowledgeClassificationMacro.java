@@ -5,32 +5,15 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.issue.fields.renderer.IssueRenderContext;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
 
-import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.view.macros.AlternativeMacro;
-import de.uhd.ifi.se.decision.management.jira.view.macros.ConMacro;
-import de.uhd.ifi.se.decision.management.jira.view.macros.DecisionMacro;
-import de.uhd.ifi.se.decision.management.jira.view.macros.IssueMacro;
-import de.uhd.ifi.se.decision.management.jira.view.macros.ProMacro;
-import net.java.ao.EntityManager;
-import net.java.ao.test.jdbc.Data;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-@RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 public class TestKnowledgeClassificationMacro extends TestSetUpWithIssues {
-
-	private EntityManager entityManager;
 
 	private RenderContext issueView = new RenderContext();
 	private RenderContext wysiwygView = new RenderContext();
@@ -38,8 +21,6 @@ public class TestKnowledgeClassificationMacro extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		initialization();
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
 
 		issueView.addParam(IssueRenderContext.WYSIWYG_PARAM, false);
 		issueView.addParam("jira.issue", "Test-1");

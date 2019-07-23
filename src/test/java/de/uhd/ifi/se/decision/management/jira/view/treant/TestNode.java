@@ -11,25 +11,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
-import net.java.ao.EntityManager;
-import net.java.ao.test.jdbc.Data;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-@RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestTreant.AoSentenceTestDatabaseUpdater.class)
 public class TestNode extends TestSetUpWithIssues {
 
 	private Map<String, String> nodeContent;
@@ -42,14 +32,11 @@ public class TestNode extends TestSetUpWithIssues {
 	private boolean isHyperlinked;
 
 	private Node node;
-	private EntityManager entityManager;
 	private DecisionKnowledgeElement element;
 
 	@Before
 	public void setUp() {
 		initialization();
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
 		nodeContent = new HashMap<>();
 		link = new HashMap<>();
 		htmlClass = "Test";

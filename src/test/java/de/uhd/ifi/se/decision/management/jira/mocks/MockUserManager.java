@@ -9,6 +9,9 @@ import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.sal.api.user.UserProfile;
 import com.atlassian.sal.api.user.UserResolutionException;
 
+/**
+ * Mocks the JIRA user manager and adds mock users.
+ */
 public class MockUserManager implements UserManager {
 
 	@Override
@@ -62,8 +65,8 @@ public class MockUserManager implements UserManager {
 	public Principal resolve(String arg0) throws UserResolutionException {
 		return null;
 	}
-	
+
 	public ApplicationUser getUserByName(String username) {
-		return null;		
+		return null;
 	}
 }

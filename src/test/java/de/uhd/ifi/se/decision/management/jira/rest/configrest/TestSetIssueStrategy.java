@@ -5,11 +5,7 @@ import static org.junit.Assert.assertEquals;
 import javax.ws.rs.core.Response;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-
-@RunWith(ActiveObjectsJUnitRunner.class)
 public class TestSetIssueStrategy extends TestConfigSuper {
 
 	@Test

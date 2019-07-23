@@ -6,7 +6,7 @@ import java.util.Map;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestGitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 
 public class MockPluginSettings implements PluginSettings {
 	private Map<String, Object> settings;
@@ -20,7 +20,7 @@ public class MockPluginSettings implements PluginSettings {
 	public static Map<String, Object> getDefaultSettings() {
 		String subfix = ComponentGetter.getPluginStorageKey() + ".";
 		Map<String, Object> settings = new HashMap<String, Object>();
-		settings.put(subfix + "gitUri", TestGitClient.GIT_URI);
+		settings.put(subfix + "gitUri", TestSetUpGit.GIT_URI);
 		settings.put(subfix + "webhookUrl", "http://true");
 		settings.put(subfix + "isIssueStrategy", "true");
 		settings.put(subfix + "isKnowledgeExtractedFromIssues", "true");

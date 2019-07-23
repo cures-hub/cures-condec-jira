@@ -14,10 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.mock.servlet.MockHttpServletResponse;
@@ -26,19 +24,12 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
-import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTemplateRenderer;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import net.java.ao.EntityManager;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-@RunWith(ActiveObjectsJUnitRunner.class)
 public class TestSettingsOfAllProjects extends TestSetUpWithIssues {
 
-	private EntityManager entityManager;
 	private ProjectManager projectManager;
 	private SettingsOfAllProjects servlet;
 	private HttpServletRequest request;
@@ -47,8 +38,6 @@ public class TestSettingsOfAllProjects extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		initialization();
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
 		request = new MockHttpServletRequest();
 		response = new MockHttpServletResponse();
 		TemplateRenderer renderer = new MockTemplateRenderer();

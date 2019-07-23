@@ -37,7 +37,7 @@ public class MockSearchService implements SearchService {
 				|| query.getQueryString().equals("project=UNKNOWNPROJECT")) {
 			return new SearchResults<Issue>(jiraIssues, 0, 0, 0);
 		}
-		jiraIssues.add(new TestSetUpWithIssues().createGlobalIssueWithComment());
+		jiraIssues.add(TestSetUpWithIssues.createGlobalIssueWithComment());
 		return new SearchResults<Issue>(jiraIssues, 1, 1, 0);
 	}
 

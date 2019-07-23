@@ -6,14 +6,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-@RunWith(ActiveObjectsJUnitRunner.class)
 public class TestSetKnowledgeTypeEnabled extends TestConfigSuper {
 
 	private static final String INVALID_KNOWLEDGE_ENABLED = "isKnowledgeTypeEnabled = null";

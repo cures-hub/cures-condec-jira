@@ -7,10 +7,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.ofbiz.core.entity.GenericEntityException;
 
-import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.project.MockProject;
@@ -18,30 +16,18 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
-import net.java.ao.EntityManager;
-import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-@Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
-@RunWith(ActiveObjectsJUnitRunner.class)
 public class TestGetTreeViewer extends TestSetUpWithIssues {
-	private EntityManager entityManager;
 	private ViewRest viewRest;
-
 	private static final String INVALID_PROJECTKEY = "Decision knowledge elements cannot be shown since project key is invalid.";
 
 	@Before
 	public void setUp() {
 		viewRest = new ViewRest();
 		initialization();
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
 	}
 
 	@Test

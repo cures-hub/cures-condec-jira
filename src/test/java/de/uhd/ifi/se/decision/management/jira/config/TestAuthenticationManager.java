@@ -8,31 +8,21 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.*;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.security.roles.ProjectRole;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
-import net.java.ao.EntityManager;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 
-@RunWith(ActiveObjectsJUnitRunner.class)
 public class TestAuthenticationManager extends TestSetUpWithIssues {
-	protected EntityManager entityManager;
 	protected HttpServletRequest request;
 
 	@Before
 	public void setUp() {
-        initialization();
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
+		initialization();
 
 		request = new MockHttpServletRequest();
 		request.setAttribute("NoSysAdmin", false);

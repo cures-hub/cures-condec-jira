@@ -10,10 +10,8 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
-import net.java.ao.EntityManager;
 
-public class TestConfigSuper extends TestSetUpWithIssues {
-	protected EntityManager entityManager;
+public abstract class TestConfigSuper extends TestSetUpWithIssues {
 	protected HttpServletRequest request;
 	protected ConfigRest configRest;
 
