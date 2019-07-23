@@ -2,7 +2,7 @@ package de.uhd.ifi.se.decision.management.jira;
 
 import static org.mockito.Mockito.mock;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -137,23 +137,7 @@ public class TestSetUpWithIssues {
 		((MockProject) project).setKey("TEST");
 		((MockProjectManager) projectManager).addProject(project);
 
-		ArrayList<KnowledgeType> types = new ArrayList<>();
-
-		types.add(KnowledgeType.OTHER);
-		types.add(KnowledgeType.DECISION);
-		types.add(KnowledgeType.QUESTION);
-		types.add(KnowledgeType.ISSUE);
-		types.add(KnowledgeType.GOAL);
-		types.add(KnowledgeType.SOLUTION);
-		types.add(KnowledgeType.ALTERNATIVE);
-		types.add(KnowledgeType.CLAIM);
-		types.add(KnowledgeType.CONTEXT);
-		types.add(KnowledgeType.ALTERNATIVE);
-		types.add(KnowledgeType.CONSTRAINT);
-		types.add(KnowledgeType.IMPLICATION);
-		types.add(KnowledgeType.ASSESSMENT);
-		types.add(KnowledgeType.ARGUMENT);
-		types.add(KnowledgeType.PROBLEM);
+		List<KnowledgeType> types = Arrays.asList(KnowledgeType.values());
 
 		for (int i = 2; i < types.size() + 2; i++) {
 			if (types.get(i - 2).toString().equals("Problem")) {
@@ -209,7 +193,7 @@ public class TestSetUpWithIssues {
 			entityManager.migrate(LinkInDatabase.class);
 		}
 	}
-	
+
 	public MockIssue createGlobalIssue() {
 		if (issue != null) {
 			return issue;
@@ -224,12 +208,12 @@ public class TestSetUpWithIssues {
 		return issue;
 	}
 
-	public MockIssue createGlobalIssueWithComment() {		
+	public MockIssue createGlobalIssueWithComment() {
 		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("{issue} testobject {issue}");
 		PartOfJiraIssueText sentence = comment.get(0);
 		sentence.setJiraIssueId(createGlobalIssue().getId());
 		JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(sentence, user);
-		
+
 		return issue;
 	}
 
