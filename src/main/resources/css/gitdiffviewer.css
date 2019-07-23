@@ -144,7 +144,7 @@
 	margin: 0 0 0 1em;
 	width: auto;
 	transition: font-size 0.05s;
-	cursot: pointer;
+	cursor: pointer;
 }
 
 /* in browser invisible rationale text tags,
@@ -225,12 +225,19 @@ will be copied if .content is marked and copied */
 	color: white;
 	background: blue;
 	border: 1px black solid;
+	border-top-color: grey;
+	border-left-color: grey;
 	border-radius: 0.8em;
 	min-width: 2em;
 	min-height: 0.8em;
 	text-align: center;
+	box-shadow: 2px 2px 2px grey;
 }
-
+.branchGroup .selector:hover {
+	box-shadow: unset;
+	border-top-color: black;
+	border-left-color: black;
+}
 /* ensure 1st look awareness */
 .menu-item.condec-attention * {
     color: red !important;
