@@ -26,6 +26,6 @@ public class TestGetLinksToIssueTypeMap extends TestSetupCalculator {
 	@NonTransactional
 	public void testTypeFilled() {
 		Object map = calculator.getLinksToIssueTypeMap(KnowledgeType.ARGUMENT);
-		assertEquals(map.toString(), "{Links from problem to Argument=0, No links from problem to Argument=0}");
+		assertEquals("{Links from other to Argument=0, No links from other to Argument=0}", map.toString());
 	}
 }

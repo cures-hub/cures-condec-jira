@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira;
 
 import static org.mockito.Mockito.mock;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -84,8 +85,7 @@ public class TestSetUpWithIssues {
 		projectManager = new MockProjectManager();
 		issueManager = new MockIssueManagerSelfImpl();
 		constantsManager = new MockConstantsManager();
-		// With the Value we could add some kinde of real support of the classifier
-		// tests
+		
 		MockApplicationProperties mockApplicationProperties = new MockApplicationProperties();
 		mockApplicationProperties.setString(APKeys.JIRA_BASEURL, "null");
 		IssueTypeManager issueTypeManager = new MockIssueTypeManager();
@@ -129,59 +129,56 @@ public class TestSetUpWithIssues {
 				.addMock(ApplicationProperties.class, mockApplicationProperties)
 				.addMock(JiraHome.class, new MockJiraHomeForTesting())
 				.addMock(SearchService.class, new MockSearchService());
-		creatingProjectIssueStructure();
+		createProjectIssueStructure();
 	}
 
-	private void creatingProjectIssueStructure() {
+	private void createProjectIssueStructure() {
 		Project project = new MockProject(1, "TEST");
 		((MockProject) project).setKey("TEST");
 		((MockProjectManager) projectManager).addProject(project);
+		
+		List<IssueType> jiraIssueTypes = createJiraIssueTypesForDecisionKnowledgeTypes();
 
 		List<KnowledgeType> types = Arrays.asList(KnowledgeType.values());
+		addJiraIssue(30, "TEST-" + 30, jiraIssueTypes.get(13), project);
 
-		for (int i = 2; i < types.size() + 2; i++) {
-			if (types.get(i - 2).toString().equals("Problem")) {
-				MutableIssue issue = new MockIssue(30, "TEST-" + 30);
-				((MockIssue) issue).setProjectId(project.getId());
-				issue.setProjectObject(project);
-				IssueType issueType = new MockIssueType(i, types.get(i - 2).toString().toLowerCase(Locale.ENGLISH));
-				((MockConstantsManager) constantsManager).addIssueType(issueType);
-				issue.setIssueType(issueType);
-				issue.setSummary("Test");
-				((MockIssueManagerSelfImpl) issueManager).addIssue(issue);
-			} else {
-				MutableIssue issue = new MockIssue(i, "TEST-" + i);
-				((MockIssue) issue).setProjectId(project.getId());
-				issue.setProjectObject(project);
-				IssueType issueType = new MockIssueType(i, types.get(i - 2).toString().toLowerCase(Locale.ENGLISH));
-				((MockConstantsManager) constantsManager).addIssueType(issueType);
-				issue.setIssueType(issueType);
-				issue.setSummary("Test");
-				((MockIssueManagerSelfImpl) issueManager).addIssue(issue);
-				if (i > types.size() - 4) {
-					issue.setParentId((long) 3);
-				}
+		for (int i = 2; i < jiraIssueTypes.size() + 2; i++) {
+			issue = addJiraIssue(i, "TEST-" + i, jiraIssueTypes.get(i-2), project);
+			if (i > types.size() - 4) {
+				issue.setParentId((long) 3);
 			}
 		}
-		MutableIssue issue = new MockIssue(50, "TEST-50");
-		((MockIssue) issue).setProjectId(project.getId());
-		issue.setProjectObject(project);
 		IssueType issueType = new MockIssueType(50, "Class");
-		((MockConstantsManager) constantsManager).addIssueType(issueType);
-		issue.setIssueType(issueType);
-		issue.setSummary("Test");
-		issue.setDescription("Test");
-		((MockIssueManagerSelfImpl) issueManager).addIssue(issue);
+		issue = addJiraIssue(50, "TEST-" + 50, issueType, project);
 		issue.setParentId((long) 3);
 
 		Project condecProject = new MockProject(3, "CONDEC");
 		((MockProject) condecProject).setKey("CONDEC");
 		((MockProjectManager) projectManager).addProject(condecProject);
-		MutableIssue cuuIssue = new MockIssue(1234, "CONDEC-1234");
-		cuuIssue.setIssueType(constantsManager.getIssueType("2"));
-		cuuIssue.setSummary("Test Send");
-		cuuIssue.setProjectObject(condecProject);
-		((MockIssueManagerSelfImpl) issueManager).addIssue(cuuIssue);
+		addJiraIssue(1234, "CONDEC-" + 1234, jiraIssueTypes.get(2), condecProject);
+	}
+
+	private List<IssueType> createJiraIssueTypesForDecisionKnowledgeTypes() {
+		List<IssueType> jiraIssueTypes = new ArrayList<IssueType>();
+		int i = 0;
+		for (KnowledgeType type : KnowledgeType.values()) {
+			IssueType issueType = new MockIssueType(i, type.name().toLowerCase(Locale.ENGLISH));
+			((MockConstantsManager) constantsManager).addIssueType(issueType);
+			jiraIssueTypes.add(issueType);
+			i++;
+		}
+		return jiraIssueTypes;
+	}
+
+	private MockIssue addJiraIssue(int id, String key, IssueType issueType, Project project) {
+		MutableIssue issue = new MockIssue(id, key);
+		((MockIssue) issue).setProjectId(project.getId());
+		issue.setProjectObject(project);
+		issue.setIssueType(issueType);
+		issue.setSummary("Test");
+		issue.setDescription("Test");
+		((MockIssueManagerSelfImpl) issueManager).addIssue(issue);
+		return (MockIssue) issue;
 	}
 
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
