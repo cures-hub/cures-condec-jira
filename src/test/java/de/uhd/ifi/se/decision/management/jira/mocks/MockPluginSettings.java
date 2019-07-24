@@ -18,7 +18,7 @@ public class MockPluginSettings implements PluginSettings {
 	}
 
 	public static Map<String, Object> getDefaultSettings() {
-		String subfix = ComponentGetter.getPluginStorageKey() + ".";
+		String subfix = ComponentGetter.PLUGIN_KEY + ".";
 		Map<String, Object> settings = new HashMap<String, Object>();
 		settings.put(subfix + "gitUri", TestSetUpGit.GIT_URI);
 		settings.put(subfix + "webhookUrl", "http://true");
@@ -39,7 +39,7 @@ public class MockPluginSettings implements PluginSettings {
 
 	@Override
 	public Object put(String parameter, Object object) {
-		settings.put(ComponentGetter.getPluginStorageKey() + "." + parameter, object);
+		settings.put(ComponentGetter.PLUGIN_KEY + "." + parameter, object);
 		return object;
 	}
 

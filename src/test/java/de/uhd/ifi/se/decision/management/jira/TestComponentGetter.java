@@ -36,18 +36,6 @@ public class TestComponentGetter extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testGetPluginStorageKey() {
-		assertEquals("de.uhd.ifi.se.decision.management.jira", ComponentGetter.getPluginStorageKey());
-	}
-
-	@Test
-	public void testSetActiveObjects() {
-		ActiveObjects activeObjects = mock(ActiveObjects.class);
-		ComponentGetter.setActiveObjects(activeObjects);
-		assertEquals(activeObjects, ComponentGetter.getActiveObjects());
-	}
-
-	@Test
 	public void testGetUrlOfImageFolder() {
 		assertEquals("null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/",
 				ComponentGetter.getUrlOfImageFolder());

@@ -23,7 +23,6 @@ public class ConfigPersistenceManager {
 			.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
 	private static TransactionTemplate transactionTemplate = ComponentAccessor
 			.getOSGiComponentInstanceOfType(TransactionTemplate.class);
-	private static String pluginStorageKey = ComponentGetter.getPluginStorageKey();
 
 	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
@@ -61,7 +60,7 @@ public class ConfigPersistenceManager {
 		Object value = transactionTemplate.execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction() {
-				return settings.get(pluginStorageKey + "." + parameter);
+				return settings.get(ComponentGetter.PLUGIN_KEY + "." + parameter);
 			}
 		});
 		if (value instanceof String) {
@@ -172,7 +171,7 @@ public class ConfigPersistenceManager {
 
 	public static void setValue(String parameter, String value) {
 		PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-		settings.put(pluginStorageKey + "." + parameter, value);
+		settings.put(ComponentGetter.PLUGIN_KEY + "." + parameter, value);
 	}
 
 	public static void setValue(String projectKey, String parameter, String value) {
@@ -180,7 +179,7 @@ public class ConfigPersistenceManager {
 			return;
 		}
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey + "." + parameter, value);
+		settings.put(ComponentGetter.PLUGIN_KEY + "." + parameter, value);
 	}
 
 	public static void setWebhookEnabled(String projectKey, boolean isWebhookEnabled) {

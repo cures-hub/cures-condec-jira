@@ -18,12 +18,14 @@ import com.atlassian.sal.api.user.UserManager;
  */
 @Named("ComponentUtil")
 public class ComponentGetter {
-	private static final String PLUGIN_STORAGE_KEY = "de.uhd.ifi.se.decision.management.jira";
+	
+	public final static String PLUGIN_KEY = "de.uhd.ifi.se.decision.management.jira";
 
 	@ComponentImport
 	private static UserManager userManager;
 	@ComponentImport
 	private static ActiveObjects activeObjects;
+	
 
 	@Inject
 	public ComponentGetter(UserManager userManager, ActiveObjects activeObjects) {
@@ -47,19 +49,15 @@ public class ComponentGetter {
 		ComponentGetter.activeObjects = checkNotNull(activeObjects);
 	}
 
-	public static String getPluginStorageKey() {
-		return PLUGIN_STORAGE_KEY;
-	}
-
 	public static String getUrlOfImageFolder() {
 		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
-		return applicationProperties.getString(APKeys.JIRA_BASEURL) + "/download/resources/"
-				+ ComponentGetter.getPluginStorageKey() + ":stylesheet-and-icon-resources/";
+		return applicationProperties.getString(APKeys.JIRA_BASEURL) + "/download/resources/" + PLUGIN_KEY
+				+ ":stylesheet-and-icon-resources/";
 	}
 
 	public static String getUrlOfClassifierFolder() {
 		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
-		return applicationProperties.getString(APKeys.JIRA_BASEURL) + "/download/resources/"
-				+ ComponentGetter.getPluginStorageKey() + ":classifier-resources/";
+		return applicationProperties.getString(APKeys.JIRA_BASEURL) + "/download/resources/" + PLUGIN_KEY
+				+ ":classifier-resources/";
 	}
 }

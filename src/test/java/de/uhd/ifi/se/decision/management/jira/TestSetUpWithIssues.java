@@ -44,12 +44,7 @@ public abstract class TestSetUpWithIssues {
 
 	public static void initComponentGetter() {
 		ActiveObjects activeObjects = new TestActiveObjects(entityManager);
-		initComponentGetter(activeObjects, new de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager());
-	}
-
-	public static void initComponentGetter(ActiveObjects activeObjects,
-			de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager mockUserManager) {
-		new ComponentGetter(mockUserManager, activeObjects);
+		new ComponentGetter(new de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager(), activeObjects);
 	}
 
 	private static void createProjectIssueStructure() {
