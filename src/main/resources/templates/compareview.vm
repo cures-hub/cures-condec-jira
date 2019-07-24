@@ -12,11 +12,13 @@
     <input type="button" id="filter-button-compare" class="aui-button aui-button-primary" value="Filter"/>
 </form>
 <div class="aui-group">
-    <div id="left-network" class="aui-item">
+    <div  class="aui-item">
         <h1>Current Date</h1>
+        <div id="left-network"></div>
     </div>
-    <div id="right-network" class="aui-item">
+    <div class="aui-item">
         <h1>Selected Time</h1>
+        <div id="right-network"></div>
     </div>
 </div>
 <style type="text/css">

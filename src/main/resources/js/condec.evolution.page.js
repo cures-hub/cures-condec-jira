@@ -43,7 +43,7 @@
                 nodes : visData.nodes,
                 edges : visData.edges
             };
-            var options = conDecVis.getVisOptions();
+            var options = getOptions();
             var networkLeft = new vis.Network(containerLeft, dataLeft, options);
 
         });
@@ -53,7 +53,7 @@
                 nodes : visData.nodes,
                 edges : visData.edges
             };
-            var options = conDecVis.getVisOptions();
+            var options = getOptions();
             networkRight = new vis.Network(containerRight, dataRight, options);
         });
         addOnClickEventToFilterCompareButton();
@@ -127,6 +127,191 @@
                 timeline.redraw();
             });
         });
+    }
+
+    function getOptions(){
+	    return {
+            layout: {
+                randomSeed: undefined,
+                improvedLayout: true,
+                hierarchical: {
+                    enabled: false,
+                    levelSeparation: 150,
+                    nodeSpacing: 100,
+                    treeSpacing: 200
+                }
+            },
+            nodes: {
+                shape: "box",
+                widthConstraint: 120,
+                color: {
+                    background: 'rgba(255, 255, 255,1)',
+                    border: 'rgba(0,0,0,1)',
+                    highlight: {
+                        background: 'rgba(255,255,255,1)',
+                        border: 'rgba(0,0,0,1)'
+                    }
+                },
+                font: {
+                    multi: false
+                },
+                shapeProperties: {
+                    interpolation: false
+                }
+            },
+            edges: {
+                arrows: "to"
+            },
+	        groups: {
+                // Setting colors for Decision Knowledge Elements
+                decision: {
+                    color: {
+                        background: 'rgba(252,227,190,1)',
+                        highlight: {
+                            background: 'rgba(252,227,190,1)'
+                        }
+                    }
+                },
+                issue: {
+                    color: {
+                        background: 'rgba(255, 255, 204,1)',
+                        highlight: {
+                            background: 'rgba(255,255,204,1)'
+                        }
+                    }
+                },
+                alternative: {
+                    color: {
+                        background: 'rgba(252,227,190,1',
+                        highlight: {
+                            background: 'rgba(252,227,190,1)'
+                        }
+                    }
+                },
+                pro: {
+                    color: {
+                        background: 'rgba(222, 250, 222,1)',
+                        highlight: {
+                            background: 'rgba(222,250,222,1)'
+                        }
+                    }
+                },
+                con: {
+                    color: {
+                        background: 'rgba(255, 231, 231,1)',
+                        highlight: {
+                            background: 'rgba(255,231,231,1)'
+                        }
+                    }
+                },
+                argument: {
+                    color: {
+                        background: 'rgba(255, 255, 255,1)',
+                        highlight: {
+                            background: 'rgba(255,255,255,1)'
+                        }
+                    }
+                },
+                constraint: {
+                    color: {
+                        background: 'rgba(255, 255, 255,1)',
+                        highlight: {
+                            background: 'rgba(255,255,255,1)'
+                        }
+                    }
+                },
+                assumption: {
+                    color: {
+                        background: 'rgba(255, 255, 255,1)',
+                        highlight: {
+                            background: 'rgba(255,255,255,1)'
+                        }
+                    }
+                },
+                implication: {
+                    color: {
+                        background: 'rgba(255, 255, 255,1)',
+                        highlight: {
+                            background: 'rgba(255,255,255,1)'
+                        }
+                    }
+                },
+                context: {
+                    color: {
+                        background: 'rgba(255, 255, 221,1)',
+                        highlight: {
+                            background: 'rgba(255,255,221,1)'
+                        }
+                    }
+                },
+                problem: {
+                    color: {
+                        background: 'rgba(255, 255, 204,1)',
+                        highlight: {
+                            background: 'rgba(255,255,204,1)'
+                        }
+                    }
+                },
+                goal: {
+                    color: {
+                        background: 'rgba(255, 255, 255,1)',
+                        highlight: {
+                            background: 'rgba(255,255,255,1)'
+                        }
+                    }
+                },
+                solution: {
+                    color: {
+                        background: 'rgba(255, 246, 232,1)',
+                        highlight: {
+                            background: 'rgba(255,246,232,1)'
+                        }
+                    }
+                },
+                claim: {
+                    color: {
+                        background: 'rgba(255, 255, 255,1)',
+                        highlight: {
+                            background: 'rgba(255,255,255,1)'
+                        }
+                    }
+                },
+                rationale: {
+                    color: {
+                        background: 'rgba(255, 255, 221,1)',
+                        highlight: {
+                            background: 'rgba(255,255,221,1)'
+                        }
+                    }
+                },
+                question: {
+                    color: {
+                        background: 'rgba(255, 255, 255,1)',
+                        highlight: {
+                            background: 'rgba(255,255,255,1)'
+                        }
+                    }
+                },
+                assessment: {
+                    color: {
+                        background: 'rgba(255, 255, 255,1)',
+                        highlight: {
+                            background: 'rgba(255,255,255,1)'
+                        }
+                    }
+                },
+                collapsed: {
+                    shape: "dot",
+                    size: 5,
+                    color: {
+                        background: 'rgba(0,0,0,1)'
+                    }
+                }
+            },
+            physics: {
+                enabled: false
+            }
+        }
     }
 
 	global.conDecEvolutionPage = new ConDecEvolutionPage();
