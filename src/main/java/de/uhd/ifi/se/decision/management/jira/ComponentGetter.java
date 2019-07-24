@@ -18,14 +18,13 @@ import com.atlassian.sal.api.user.UserManager;
  */
 @Named("ComponentUtil")
 public class ComponentGetter {
-	
+
 	public final static String PLUGIN_KEY = "de.uhd.ifi.se.decision.management.jira";
 
 	@ComponentImport
 	private static UserManager userManager;
 	@ComponentImport
 	private static ActiveObjects activeObjects;
-	
 
 	@Inject
 	public ComponentGetter(UserManager userManager, ActiveObjects activeObjects) {

@@ -9,19 +9,19 @@ import org.junit.Test;
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.sal.api.user.UserManager;
 
+import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 
-public class TestComponentGetter extends TestSetUpWithIssues {
+public class TestComponentGetter {
 
 	private UserManager userManager;
 	private ActiveObjects activeObjects;
 
 	@Before
 	public void setUp() {
-		initialization();
+		new MockComponentAccessor();
 		userManager = new MockUserManager();
 		activeObjects = mock(ActiveObjects.class);
-
 		new ComponentGetter(userManager, activeObjects);
 	}
 
@@ -31,7 +31,7 @@ public class TestComponentGetter extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testGetActivObjects() {
+	public void testGetActiveObjects() {
 		assertEquals(activeObjects, ComponentGetter.getActiveObjects());
 	}
 
