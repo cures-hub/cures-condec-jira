@@ -14,7 +14,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssue
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.DatabaseUpdater;
-import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import org.junit.Before;
 import org.junit.Test;

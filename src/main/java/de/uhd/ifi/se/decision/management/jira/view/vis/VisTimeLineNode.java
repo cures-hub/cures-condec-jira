@@ -16,7 +16,6 @@ public class VisTimeLineNode {
 	@XmlElement
 	private String start;
 
-
 	private String end;
 
 	public VisTimeLineNode(DecisionKnowledgeElement element) {
