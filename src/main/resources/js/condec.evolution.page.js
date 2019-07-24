@@ -311,7 +311,7 @@
             physics: {
                 enabled: false
             }
-        }
+        };
     }
 
 	global.conDecEvolutionPage = new ConDecEvolutionPage();
