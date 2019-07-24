@@ -7,13 +7,11 @@ import javax.inject.Named;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.bc.issue.IssueService;
-import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
-import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
@@ -26,8 +24,6 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 public class ComponentGetter {
 	private static final String PLUGIN_STORAGE_KEY = "de.uhd.ifi.se.decision.management.jira";
 
-	@ComponentImport
-	private static PluginSettingsFactory pluginSettingsFactory;
 	@ComponentImport
 	private static TransactionTemplate transactionTemplate;
 	@ComponentImport
@@ -42,24 +38,15 @@ public class ComponentGetter {
 	private static ActiveObjects activeObjects;
 
 	@Inject
-	public ComponentGetter(PluginSettingsFactory pluginSettingsFactory, TransactionTemplate transactionTemplate,
-			IssueService issueService, ProjectService projectService, UserManager userManager,
-			TemplateRenderer templateRenderer, ActiveObjects activeObjects) {
-		setPluginSettingsFactory(pluginSettingsFactory);
+	public ComponentGetter(TransactionTemplate transactionTemplate, IssueService issueService,
+			ProjectService projectService, UserManager userManager, TemplateRenderer templateRenderer,
+			ActiveObjects activeObjects) {
 		setTransactionTemplate(transactionTemplate);
 		setIssueService(issueService);
 		setProjectService(projectService);
 		setUserManager(userManager);
 		setTemplateRenderer(templateRenderer);
 		setActiveObjects(activeObjects);
-	}
-
-	public static PluginSettingsFactory getPluginSettingsFactory() {
-		return pluginSettingsFactory;
-	}
-
-	public static void setPluginSettingsFactory(PluginSettingsFactory pluginSettingsFactory) {
-		ComponentGetter.pluginSettingsFactory = pluginSettingsFactory;
 	}
 
 	public static TransactionTemplate getTransactionTemplate() {

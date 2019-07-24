@@ -19,7 +19,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
  * Class to store and receive configuration settings
  */
 public class ConfigPersistenceManager {
-	private static PluginSettingsFactory pluginSettingsFactory = ComponentGetter.getPluginSettingsFactory();
+	private static PluginSettingsFactory pluginSettingsFactory = ComponentAccessor
+			.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
 	private static TransactionTemplate transactionTemplate = ComponentGetter.getTransactionTemplate();
 	private static String pluginStorageKey = ComponentGetter.getPluginStorageKey();
 

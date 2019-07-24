@@ -59,8 +59,7 @@ public class MockComponentAccessor {
 				.addMock(CommentManager.class, new MockCommentManager())
 				.addMock(JiraHome.class, new MockJiraHomeForTesting())
 				.addMock(SearchService.class, new MockSearchService())
-				.addMock(TransactionTemplate.class, new MockTransactionTemplate())
-				.addMock(PluginSettingsFactory.class, mock(PluginSettingsFactory.class));
+				.addMock(TransactionTemplate.class, new MockTransactionTemplate());
 	}
 
 	public UserManager initUserManager() {

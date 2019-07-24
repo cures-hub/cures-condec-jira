@@ -22,7 +22,6 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -53,8 +52,7 @@ public abstract class TestSetUpWithIssues {
 
 	public static void initComponentGetter(ActiveObjects activeObjects, TransactionTemplate transactionTemplate,
 			de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager mockUserManager) {
-		new ComponentGetter(new MockPluginSettingsFactory(), transactionTemplate, null, null, mockUserManager, null,
-				activeObjects);
+		new ComponentGetter(transactionTemplate, null, null, mockUserManager, null, activeObjects);
 	}
 
 	private static void createProjectIssueStructure() {

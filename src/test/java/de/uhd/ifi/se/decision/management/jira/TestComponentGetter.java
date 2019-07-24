@@ -9,7 +9,6 @@ import org.junit.Test;
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.project.ProjectService;
-import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
@@ -18,7 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 
 public class TestComponentGetter extends TestSetUpWithIssues {
 
-	private PluginSettingsFactory pluginSettingsFactory;
 	private TransactionTemplate transactionTemplate;
 	private IssueService issueService;
 	private ProjectService projectService;
@@ -29,7 +27,6 @@ public class TestComponentGetter extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		initialization();
-		pluginSettingsFactory = mock(PluginSettingsFactory.class);
 		transactionTemplate = mock(TransactionTemplate.class);
 		issueService = mock(IssueService.class);
 		projectService = mock(ProjectService.class);
@@ -37,13 +34,8 @@ public class TestComponentGetter extends TestSetUpWithIssues {
 		templateRenderer = mock(TemplateRenderer.class);
 		activeObjects = mock(ActiveObjects.class);
 
-		new ComponentGetter(pluginSettingsFactory, transactionTemplate, issueService, projectService, userManager,
-				templateRenderer, activeObjects);
-	}
-
-	@Test
-	public void testGetPluginSettingsFactory() {
-		assertEquals(pluginSettingsFactory, ComponentGetter.getPluginSettingsFactory());
+		new ComponentGetter(transactionTemplate, issueService, projectService, userManager, templateRenderer,
+				activeObjects);
 	}
 
 	@Test
