@@ -16,17 +16,13 @@ import com.atlassian.jira.issue.issuetype.MockIssueType;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
-import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
-import com.atlassian.jira.user.util.MockUserManager;
-import com.atlassian.jira.user.util.UserManager;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockSearchService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -41,27 +37,12 @@ public abstract class TestSetUpWithIssues {
 
 	private static MockComponentAccessor componentAccessor;
 	protected static MockIssue issue;
-	private static ApplicationUser user;
 	protected static EntityManager entityManager;
 
 	public static void initialization() {
-		user = new MockApplicationUser("NoFails");
 		componentAccessor = new MockComponentAccessor();
 		createProjectIssueStructure();
 		initComponentGetter();
-	}
-
-	public static UserManager initUserManager() {
-		UserManager userManager = new MockUserManager();
-		user = new MockApplicationUser("NoFails");
-		ApplicationUser user2 = new MockApplicationUser("WithFails");
-		ApplicationUser user3 = new MockApplicationUser("NoSysAdmin");
-		ApplicationUser user4 = new MockApplicationUser("SysAdmin");
-		((MockUserManager) userManager).addUser(user);
-		((MockUserManager) userManager).addUser(user2);
-		((MockUserManager) userManager).addUser(user3);
-		((MockUserManager) userManager).addUser(user4);
-		return userManager;
 	}
 
 	public static void initComponentGetter() {
@@ -72,8 +53,8 @@ public abstract class TestSetUpWithIssues {
 
 	public static void initComponentGetter(ActiveObjects activeObjects, TransactionTemplate transactionTemplate,
 			de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager mockUserManager) {
-		new ComponentGetter(new MockPluginSettingsFactory(), transactionTemplate, null, null, new MockSearchService(),
-				mockUserManager, null, activeObjects);
+		new ComponentGetter(new MockPluginSettingsFactory(), transactionTemplate, null, null, mockUserManager, null,
+				activeObjects);
 	}
 
 	private static void createProjectIssueStructure() {

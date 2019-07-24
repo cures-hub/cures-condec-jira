@@ -35,8 +35,6 @@ public class ComponentGetter {
 	@ComponentImport
 	private static ProjectService projectService;
 	@ComponentImport
-	private static SearchService searchService;
-	@ComponentImport
 	private static UserManager userManager;
 	@ComponentImport
 	private static TemplateRenderer templateRenderer;
@@ -45,13 +43,12 @@ public class ComponentGetter {
 
 	@Inject
 	public ComponentGetter(PluginSettingsFactory pluginSettingsFactory, TransactionTemplate transactionTemplate,
-			IssueService issueService, ProjectService projectService, SearchService searchService,
-			UserManager userManager, TemplateRenderer templateRenderer, ActiveObjects activeObjects) {
+			IssueService issueService, ProjectService projectService, UserManager userManager,
+			TemplateRenderer templateRenderer, ActiveObjects activeObjects) {
 		setPluginSettingsFactory(pluginSettingsFactory);
 		setTransactionTemplate(transactionTemplate);
 		setIssueService(issueService);
 		setProjectService(projectService);
-		setSearchService(searchService);
 		setUserManager(userManager);
 		setTemplateRenderer(templateRenderer);
 		setActiveObjects(activeObjects);
@@ -87,14 +84,6 @@ public class ComponentGetter {
 
 	public static void setProjectService(ProjectService projectService) {
 		ComponentGetter.projectService = projectService;
-	}
-
-	public static SearchService getSearchService() {
-		return searchService;
-	}
-
-	public static void setSearchService(SearchService searchService) {
-		ComponentGetter.searchService = searchService;
 	}
 
 	public static UserManager getUserManager() {

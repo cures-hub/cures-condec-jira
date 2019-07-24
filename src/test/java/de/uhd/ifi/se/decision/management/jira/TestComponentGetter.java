@@ -8,14 +8,12 @@ import org.junit.Test;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.bc.issue.IssueService;
-import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
-import de.uhd.ifi.se.decision.management.jira.mocks.MockSearchService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 
 public class TestComponentGetter extends TestSetUpWithIssues {
@@ -24,7 +22,6 @@ public class TestComponentGetter extends TestSetUpWithIssues {
 	private TransactionTemplate transactionTemplate;
 	private IssueService issueService;
 	private ProjectService projectService;
-	private SearchService searchService;
 	private UserManager userManager;
 	private TemplateRenderer templateRenderer;
 	private ActiveObjects activeObjects;
@@ -36,13 +33,12 @@ public class TestComponentGetter extends TestSetUpWithIssues {
 		transactionTemplate = mock(TransactionTemplate.class);
 		issueService = mock(IssueService.class);
 		projectService = mock(ProjectService.class);
-		searchService = new MockSearchService();
 		userManager = new MockUserManager();
 		templateRenderer = mock(TemplateRenderer.class);
 		activeObjects = mock(ActiveObjects.class);
 
-		new ComponentGetter(pluginSettingsFactory, transactionTemplate, issueService, projectService, searchService,
-				userManager, templateRenderer, activeObjects);
+		new ComponentGetter(pluginSettingsFactory, transactionTemplate, issueService, projectService, userManager,
+				templateRenderer, activeObjects);
 	}
 
 	@Test
@@ -63,11 +59,6 @@ public class TestComponentGetter extends TestSetUpWithIssues {
 	@Test
 	public void testGetProjectService() {
 		assertEquals(projectService, ComponentGetter.getProjectService());
-	}
-
-	@Test
-	public void testGetSearchService() {
-		assertEquals(searchService, ComponentGetter.getSearchService());
 	}
 
 	@Test
