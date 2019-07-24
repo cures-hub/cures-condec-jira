@@ -16,7 +16,7 @@ public class VisTimeLineNode {
 	@XmlElement
 	private String start;
 
-	@XmlElement
+
 	private String end;
 
 	public VisTimeLineNode(DecisionKnowledgeElement element) {
@@ -31,6 +31,9 @@ public class VisTimeLineNode {
 	}
 
 	private String createDateString(Date created){
+		if(created==null){
+			return "";
+		}
 		int year = created.getYear() + 1900;
 		int month =created.getMonth();
 		int day = created.getDay();

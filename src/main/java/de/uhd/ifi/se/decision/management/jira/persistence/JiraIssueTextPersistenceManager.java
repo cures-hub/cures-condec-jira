@@ -309,9 +309,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		databaseEntry.setStartPosition(element.getStartPosition());
 		databaseEntry.setEndPosition(element.getEndPosition());
 		databaseEntry.setJiraIssueId(element.getJiraIssueId());
-		if(element.getComment() != null) {
-			databaseEntry.setCreated(element.getComment().getCreated().getTime());
-		}
 	}
 
 	@Override
@@ -702,4 +699,5 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		}
 		return validatedPartsOfText;
 	}
+
 }
