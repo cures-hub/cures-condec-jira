@@ -23,7 +23,7 @@ import java.util.Date;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestVisGraph.AoSentenceTestDatabaseUpdater.class)
+@Data(TestVisTimeLineNode.AoSentenceTestDatabaseUpdater.class)
 public class TestVisTimeLineNode extends TestSetUpWithIssues {
 	private EntityManager entityManager;
 	private DecisionKnowledgeElement element;

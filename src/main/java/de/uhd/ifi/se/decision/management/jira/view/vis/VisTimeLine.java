@@ -30,8 +30,8 @@ public class VisTimeLine {
 	public VisTimeLine(List<DecisionKnowledgeElement> elements) {
 		if (elements != null) {
 			elementList = elements;
+			createDataSet();
 		}
-		createDataSet();
 	}
 
 	public HashSet<VisTimeLineNode> getEvolutionData() {
@@ -48,8 +48,10 @@ public class VisTimeLine {
 
 	private void createDataSet() {
 		dataSet = new HashSet<>();
-		for(DecisionKnowledgeElement element: elementList){
-			dataSet.add(new VisTimeLineNode(element));
+		if(elementList != null) {
+			for (DecisionKnowledgeElement element : elementList) {
+				dataSet.add(new VisTimeLineNode(element));
+			}
 		}
 	}
 }
