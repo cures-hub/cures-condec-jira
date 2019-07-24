@@ -6,8 +6,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
-import com.atlassian.jira.bc.issue.IssueService;
-import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.config.properties.ApplicationProperties;
@@ -23,37 +21,14 @@ public class ComponentGetter {
 	private static final String PLUGIN_STORAGE_KEY = "de.uhd.ifi.se.decision.management.jira";
 
 	@ComponentImport
-	private static IssueService issueService;
-	@ComponentImport
-	private static ProjectService projectService;
-	@ComponentImport
 	private static UserManager userManager;
 	@ComponentImport
 	private static ActiveObjects activeObjects;
 
 	@Inject
-	public ComponentGetter(IssueService issueService, ProjectService projectService, UserManager userManager,
-			ActiveObjects activeObjects) {
-		setIssueService(issueService);
-		setProjectService(projectService);
+	public ComponentGetter(UserManager userManager, ActiveObjects activeObjects) {
 		setUserManager(userManager);
 		setActiveObjects(activeObjects);
-	}
-
-	public static IssueService getIssueService() {
-		return issueService;
-	}
-
-	public static void setIssueService(IssueService issueService) {
-		ComponentGetter.issueService = issueService;
-	}
-
-	public static ProjectService getProjectService() {
-		return projectService;
-	}
-
-	public static void setProjectService(ProjectService projectService) {
-		ComponentGetter.projectService = projectService;
 	}
 
 	public static UserManager getUserManager() {

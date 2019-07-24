@@ -49,7 +49,7 @@ public abstract class TestSetUpWithIssues {
 
 	public static void initComponentGetter(ActiveObjects activeObjects,
 			de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager mockUserManager) {
-		new ComponentGetter(null, null, mockUserManager, activeObjects);
+		new ComponentGetter(mockUserManager, activeObjects);
 	}
 
 	private static void createProjectIssueStructure() {
