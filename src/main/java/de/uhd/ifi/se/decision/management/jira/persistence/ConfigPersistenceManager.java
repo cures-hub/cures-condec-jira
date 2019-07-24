@@ -21,7 +21,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 public class ConfigPersistenceManager {
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentAccessor
 			.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
-	private static TransactionTemplate transactionTemplate = ComponentGetter.getTransactionTemplate();
+	private static TransactionTemplate transactionTemplate = ComponentAccessor
+			.getOSGiComponentInstanceOfType(TransactionTemplate.class);
 	private static String pluginStorageKey = ComponentGetter.getPluginStorageKey();
 
 	public static Collection<String> getEnabledWebhookTypes(String projectKey) {

@@ -12,9 +12,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
-import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
-import com.atlassian.templaterenderer.TemplateRenderer;
 
 /**
  * @description Provides access to JIRA components. Automatically initialized.
@@ -25,36 +23,21 @@ public class ComponentGetter {
 	private static final String PLUGIN_STORAGE_KEY = "de.uhd.ifi.se.decision.management.jira";
 
 	@ComponentImport
-	private static TransactionTemplate transactionTemplate;
-	@ComponentImport
 	private static IssueService issueService;
 	@ComponentImport
 	private static ProjectService projectService;
 	@ComponentImport
 	private static UserManager userManager;
 	@ComponentImport
-	private static TemplateRenderer templateRenderer;
-	@ComponentImport
 	private static ActiveObjects activeObjects;
 
 	@Inject
-	public ComponentGetter(TransactionTemplate transactionTemplate, IssueService issueService,
-			ProjectService projectService, UserManager userManager, TemplateRenderer templateRenderer,
+	public ComponentGetter(IssueService issueService, ProjectService projectService, UserManager userManager,
 			ActiveObjects activeObjects) {
-		setTransactionTemplate(transactionTemplate);
 		setIssueService(issueService);
 		setProjectService(projectService);
 		setUserManager(userManager);
-		setTemplateRenderer(templateRenderer);
 		setActiveObjects(activeObjects);
-	}
-
-	public static TransactionTemplate getTransactionTemplate() {
-		return transactionTemplate;
-	}
-
-	public static void setTransactionTemplate(TransactionTemplate transactionTemplate) {
-		ComponentGetter.transactionTemplate = transactionTemplate;
 	}
 
 	public static IssueService getIssueService() {
@@ -79,14 +62,6 @@ public class ComponentGetter {
 
 	public static void setUserManager(UserManager userManager) {
 		ComponentGetter.userManager = userManager;
-	}
-
-	public static TemplateRenderer getTemplateRenderer() {
-		return templateRenderer;
-	}
-
-	public static void setTemplateRenderer(TemplateRenderer templateRenderer) {
-		ComponentGetter.templateRenderer = templateRenderer;
 	}
 
 	public static ActiveObjects getActiveObjects() {

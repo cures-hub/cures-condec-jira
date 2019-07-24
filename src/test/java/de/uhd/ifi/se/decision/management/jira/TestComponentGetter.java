@@ -9,38 +9,26 @@ import org.junit.Test;
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.project.ProjectService;
-import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
-import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 
 public class TestComponentGetter extends TestSetUpWithIssues {
 
-	private TransactionTemplate transactionTemplate;
 	private IssueService issueService;
 	private ProjectService projectService;
 	private UserManager userManager;
-	private TemplateRenderer templateRenderer;
 	private ActiveObjects activeObjects;
 
 	@Before
 	public void setUp() {
 		initialization();
-		transactionTemplate = mock(TransactionTemplate.class);
 		issueService = mock(IssueService.class);
 		projectService = mock(ProjectService.class);
 		userManager = new MockUserManager();
-		templateRenderer = mock(TemplateRenderer.class);
 		activeObjects = mock(ActiveObjects.class);
 
-		new ComponentGetter(transactionTemplate, issueService, projectService, userManager, templateRenderer,
-				activeObjects);
-	}
-
-	@Test
-	public void testGetTransactionTemplate() {
-		assertEquals(transactionTemplate, ComponentGetter.getTransactionTemplate());
+		new ComponentGetter(issueService, projectService, userManager, activeObjects);
 	}
 
 	@Test
@@ -56,11 +44,6 @@ public class TestComponentGetter extends TestSetUpWithIssues {
 	@Test
 	public void testGetUserManager() {
 		assertEquals(userManager, ComponentGetter.getUserManager());
-	}
-
-	@Test
-	public void testGetTemplateRenderer() {
-		assertEquals(templateRenderer, ComponentGetter.getTemplateRenderer());
 	}
 
 	@Test

@@ -17,12 +17,10 @@ import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.MockApplicationUser;
-import com.atlassian.sal.api.transaction.TransactionTemplate;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
@@ -46,13 +44,12 @@ public abstract class TestSetUpWithIssues {
 
 	public static void initComponentGetter() {
 		ActiveObjects activeObjects = new TestActiveObjects(entityManager);
-		initComponentGetter(activeObjects, new MockTransactionTemplate(),
-				new de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager());
+		initComponentGetter(activeObjects, new de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager());
 	}
 
-	public static void initComponentGetter(ActiveObjects activeObjects, TransactionTemplate transactionTemplate,
+	public static void initComponentGetter(ActiveObjects activeObjects,
 			de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager mockUserManager) {
-		new ComponentGetter(transactionTemplate, null, null, mockUserManager, null, activeObjects);
+		new ComponentGetter(null, null, mockUserManager, activeObjects);
 	}
 
 	private static void createProjectIssueStructure() {
