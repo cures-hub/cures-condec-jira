@@ -15,11 +15,10 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
-import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockSearchService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 
-public class TestComponentGetter {
+public class TestComponentGetter extends TestSetUpWithIssues {
 
 	private PluginSettingsFactory pluginSettingsFactory;
 	private TransactionTemplate transactionTemplate;
@@ -30,14 +29,9 @@ public class TestComponentGetter {
 	private TemplateRenderer templateRenderer;
 	private ActiveObjects activeObjects;
 
-	public static void init(ActiveObjects activeObjects, TransactionTemplate transactionTemplate,
-			UserManager userManager) {
-		new ComponentGetter(new MockPluginSettingsFactory(), transactionTemplate, null, null, new MockSearchService(),
-				userManager, null, activeObjects);
-	}
-
 	@Before
 	public void setUp() {
+		initialization();
 		pluginSettingsFactory = mock(PluginSettingsFactory.class);
 		transactionTemplate = mock(TransactionTemplate.class);
 		issueService = mock(IssueService.class);
@@ -101,5 +95,17 @@ public class TestComponentGetter {
 		ActiveObjects activeObjects = mock(ActiveObjects.class);
 		ComponentGetter.setActiveObjects(activeObjects);
 		assertEquals(activeObjects, ComponentGetter.getActiveObjects());
+	}
+
+	@Test
+	public void testGetUrlOfImageFolder() {
+		assertEquals("null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/",
+				ComponentGetter.getUrlOfImageFolder());
+	}
+
+	@Test
+	public void testGetUrlOfClassifierFolder() {
+		assertEquals("null/download/resources/de.uhd.ifi.se.decision.management.jira:classifier-resources/",
+				ComponentGetter.getUrlOfClassifierFolder());
 	}
 }

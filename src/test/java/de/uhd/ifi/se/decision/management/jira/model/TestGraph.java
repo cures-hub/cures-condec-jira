@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
@@ -31,7 +30,7 @@ public class TestGraph extends TestSetUpWithIssues {
 	private DecisionKnowledgeElement element;
 
 	@Before
-	public void setUp() throws CreateException {
+	public void setUp() {
 		initialization();
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
 		element.setProject(new DecisionKnowledgeProjectImpl("Test"));

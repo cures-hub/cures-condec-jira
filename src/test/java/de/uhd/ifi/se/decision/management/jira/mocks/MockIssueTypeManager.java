@@ -16,6 +16,7 @@ public class MockIssueTypeManager implements IssueTypeManager {
 	public MockIssueTypeManager() {
 		super();
 		types = new ArrayList<>();
+		addingAllIssueTypes();
 	}
 
 	public void addingAllIssueTypes() {

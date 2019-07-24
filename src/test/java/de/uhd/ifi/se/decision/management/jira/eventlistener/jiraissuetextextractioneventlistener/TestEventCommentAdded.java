@@ -60,7 +60,7 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 		Comment comment = createCommentAndTestWhetherExistent("(!)This is a very severe issue.",
 				"{issue}This is a very severe issue.{issue}");
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
-		assertTrue(element.getDescription().equals("This is a very severe issue."));
-		assertTrue(element.getType() == KnowledgeType.ISSUE);
+		assertEquals("This is a very severe issue.", element.getDescription());
+		assertEquals(KnowledgeType.ISSUE, element.getType());
 	}
 }

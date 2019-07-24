@@ -20,6 +20,7 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 
 /**
  * @description Provides access to JIRA components. Automatically initialized.
+ *              Similar to the ComponentAccessor that comes with JIRA.
  */
 @Named("ComponentUtil")
 public class ComponentGetter {

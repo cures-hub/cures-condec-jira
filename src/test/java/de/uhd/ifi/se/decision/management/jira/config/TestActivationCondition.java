@@ -9,6 +9,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.mocks.JiraSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockJiraHelper;
 
 public class TestActivationCondition extends TestSetUpWithIssues {
@@ -16,7 +17,7 @@ public class TestActivationCondition extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
-		initialization();
+		TestSetUpWithIssues.initialization();
 		condition = new ActivationCondition();
 	}
 
