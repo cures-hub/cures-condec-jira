@@ -38,9 +38,13 @@ public abstract class TestSetUpWithIssues {
 	private static EntityManager entityManager;
 
 	public static void initialization() {
-		new MockComponentAccessor();
-		createProjectIssueStructure();
+		initComponentAccessor();
 		initComponentGetter();
+		createProjectIssueStructure();		
+	}
+	
+	public static void initComponentAccessor() {
+		new MockComponentAccessor();
 	}
 
 	public static void initComponentGetter() {

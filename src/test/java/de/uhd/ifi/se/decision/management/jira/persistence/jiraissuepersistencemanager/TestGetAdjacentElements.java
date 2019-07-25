@@ -34,7 +34,7 @@ public class TestGetAdjacentElements extends TestJiraIssuePersistenceManagerSetU
 
 	@Test
 	public void testDecisionKnowledgeElementHasAllTypesOfChildren() {
-		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
 
 		long i = 2;

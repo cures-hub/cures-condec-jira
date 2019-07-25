@@ -11,6 +11,7 @@ import org.junit.Test;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+import com.atlassian.jira.user.MockApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
@@ -37,8 +38,7 @@ public class TestDeleteDecisionKnowledgeElement extends TestSetUpWithIssues {
 		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 
 		request = new MockHttpServletRequest();
-		request.setAttribute("WithFails", false);
-		request.setAttribute("NoFails", true);
+		request.setAttribute("user", ComponentAccessor.getUserManager().getUserByName("SysAdmin"));
 	}
 
 	@Test
@@ -50,8 +50,7 @@ public class TestDeleteDecisionKnowledgeElement extends TestSetUpWithIssues {
 	@Test
 	public void testRequestErrorElementFilled() {
 		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("WithFails", true);
-		request.setAttribute("NoFails", false);
+		request.setAttribute("user", new MockApplicationUser("WithFails"));
 		assertEquals(
 				Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", DELETION_ERROR))
 						.build().getEntity(),

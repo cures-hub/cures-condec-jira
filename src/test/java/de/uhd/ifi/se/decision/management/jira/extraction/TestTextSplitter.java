@@ -27,7 +27,7 @@ public class TestTextSplitter extends TestSetUpWithIssues {
 
 	public static List<PartOfJiraIssueText> getSentencesForCommentText(String text) {
 		Issue issue = TestSetUpWithIssues.createIssue();
-		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 		Comment comment = ComponentAccessor.getCommentManager().create(issue, currentUser, text, true);
 		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.getPartsOfComment(comment);

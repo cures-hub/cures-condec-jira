@@ -30,17 +30,14 @@ public class TestSetKnowledgeExtractedFromGit extends TestConfigSuper {
 
 	@Test
 	public void testSetKnowledgeExtractedFilledNullNull() {
-		request.setAttribute("WithFails", false);
-		request.setAttribute("NoFails", false);
+		request.setAttribute("user", null);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
 				configRest.setKnowledgeExtractedFromGit(request, null, null).getStatus());
 	}
 
 	@Test
 	public void testSetKnowledgeExtractedFilledFilledNull() {
-		request.setAttribute("WithFails", false);
-		request.setAttribute("NoFails", false);
-		request.setAttribute("SysAdmin", false);
+		request.setAttribute("user", null);
 		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
 				configRest.setKnowledgeExtractedFromGit(request, "TEST", null).getStatus());
 	}
@@ -60,9 +57,7 @@ public class TestSetKnowledgeExtractedFromGit extends TestConfigSuper {
 	@Test
 	public void testSetKnowledgeExtractedFilledFilledFilled() {
 		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("WithFails", false);
-		request.setAttribute("NoFails", false);
-		request.setAttribute("SysAdmin", false);
+		request.setAttribute("user", null);
 		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
 				configRest.setKnowledgeExtractedFromGit(request, "TEST", "false").getStatus());
 	}
@@ -70,9 +65,7 @@ public class TestSetKnowledgeExtractedFromGit extends TestConfigSuper {
 	@Test
 	public void testSetKnowledgeExtractedFilledWithFailsFilledFilled() {
 		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("WithFails", true);
-		request.setAttribute("NoFails", false);
-		request.setAttribute("SysAdmin", false);
+		request.setAttribute("user", null);
 		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
 				configRest.setKnowledgeExtractedFromGit(request, "TEST", "false").getStatus());
 	}

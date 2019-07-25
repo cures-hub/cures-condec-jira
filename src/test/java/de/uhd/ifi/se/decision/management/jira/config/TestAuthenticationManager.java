@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.security.roles.ProjectRole;
 import com.atlassian.jira.user.ApplicationUser;
@@ -19,14 +20,15 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 
 public class TestAuthenticationManager {
 	private static HttpServletRequest request;
+	private static ApplicationUser user;
 
 	@BeforeClass
 	public static void setUp() {
 		TestSetUpWithIssues.initialization();
 
-		request = new MockHttpServletRequest();
-		request.setAttribute("NoSysAdmin", false);
-		request.setAttribute("SysAdmin", true);
+		user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
+		request = new MockHttpServletRequest();		
+		request.setAttribute("user", user);
 		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
 	}
 
@@ -38,7 +40,7 @@ public class TestAuthenticationManager {
 	@Test
 	public void testIsProjectAdminByRequestFails() {
 		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("SysAdmin", false);
+		request.setAttribute("user", null);
 		assertFalse(AuthenticationManager.isProjectAdmin(request));
 	}
 
@@ -77,11 +79,18 @@ public class TestAuthenticationManager {
 		ApplicationUser user = AuthenticationManager.getUser("SysAdmin");
 		assertEquals(user.getUsername(), "SysAdmin");
 	}
+	
+	@Test
+	public void testGetUsernameFromRequest() {
+		String usernameFromRequest = AuthenticationManager.getUsername(request);
+		assertEquals("SysAdmin", usernameFromRequest);
+	}
 
 	@Test
 	public void testGetUserFromRequest() {
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		assertEquals(user.getUsername(), "SysAdmin");
+		ApplicationUser userFromRequest = AuthenticationManager.getUser(request);
+		assertEquals(user, userFromRequest);
+		assertEquals("SysAdmin", user.getUsername());
 	}
 
 	@Test

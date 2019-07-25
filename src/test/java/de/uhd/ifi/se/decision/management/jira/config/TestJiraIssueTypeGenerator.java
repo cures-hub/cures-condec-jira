@@ -24,7 +24,6 @@ public class TestJiraIssueTypeGenerator {
 	@BeforeClass
 	public static void setUp() {
 		TestSetUpWithIssues.initialization();
-
 		generator = new JiraIssueTypeGenerator();
 	}
 

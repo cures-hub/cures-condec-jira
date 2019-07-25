@@ -56,7 +56,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		// 2) Add comment to issue
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("14");
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
-		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
 		Comment comment1 = commentManager.create(issue, currentUser, text, true);
 
@@ -146,7 +146,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 
 		@Override
 		public ApplicationUser getLoggedInUser() {
-			return new MockApplicationUser("NoFails");
+			return new MockApplicationUser("SysAdmin");
 		}
 	}
 

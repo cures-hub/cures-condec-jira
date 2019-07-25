@@ -5,8 +5,7 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.user.MockApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -44,7 +43,6 @@ public class TestInsertDecisionKnowledgeElement extends TestJiraIssuePersistence
 		DecisionKnowledgeElementImpl element = new DecisionKnowledgeElementImpl();
 		element.setProject("TEST");
 		element.setType(KnowledgeType.SOLUTION);
-		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("WithFails");
-		assertNull(issueStrategy.insertDecisionKnowledgeElement(element, user));
+		assertNull(issueStrategy.insertDecisionKnowledgeElement(element, new MockApplicationUser("WithFails")));
 	}
 }

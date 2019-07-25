@@ -6,6 +6,8 @@ import javax.ws.rs.core.Response;
 
 import org.junit.Test;
 
+import com.atlassian.jira.user.MockApplicationUser;
+
 public class TestClearSentenceDatabase extends TestConfigSuper {
 
 	@Test
@@ -27,17 +29,14 @@ public class TestClearSentenceDatabase extends TestConfigSuper {
 
 	@Test
 	public void testSetActivatedUserUnauthorized() {
-		request.setAttribute("WithFails", true);
-		request.setAttribute("NoFails", false);
+		request.setAttribute("user", new MockApplicationUser("WithFails"));
 		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
 				configRest.setActivated(request, "NotTEST", "false").getStatus());
 	}
 
 	@Test
 	public void testSetActivatedUserNull() {
-		request.setAttribute("WithFails", false);
-		request.setAttribute("NoFails", false);
-		request.setAttribute("SysAdmin", false);
+		request.setAttribute("user", null);
 		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
 				configRest.setActivated(request, "NotTEST", "false").getStatus());
 	}

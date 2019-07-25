@@ -72,7 +72,7 @@ public class TestGraph extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testGetAdjacentElementsFilled() {
 		JiraIssuePersistenceManager issueStrategy = new JiraIssuePersistenceManager("TEST");
-		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
 
 		long i = 2;

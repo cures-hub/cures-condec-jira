@@ -32,7 +32,7 @@ public abstract class TestSetUpEventListener extends TestSetUpWithIssues {
 		EventPublisher publisher = new MockEventPublisher();
 		listener = new ConDecEventListener(publisher);
 		jiraIssue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
-		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
 	}
 
 	protected Comment createComment(String comment) {

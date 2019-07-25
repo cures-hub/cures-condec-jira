@@ -166,7 +166,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		// 2) Add comment to issue
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("14");
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
-		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
 		Comment comment1 = commentManager.create(issue, currentUser, "This is a testsentence for test purposes", true);
 

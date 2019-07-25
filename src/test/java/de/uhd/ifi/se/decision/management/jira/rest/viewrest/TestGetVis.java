@@ -37,9 +37,9 @@ public class TestGetVis extends TestSetUpWithIssues {
 		initialization();
 		request = new MockHttpServletRequest();
 		String jql = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
-		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
 		filterSettings = new FilterSettingsImpl("TEST", jql, user);
-		request.setAttribute("NoFails", true);
+		request.setAttribute("user", user);
 	}
 
 	@Test

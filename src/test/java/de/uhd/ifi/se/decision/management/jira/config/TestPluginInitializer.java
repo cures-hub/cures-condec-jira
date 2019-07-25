@@ -133,6 +133,7 @@ public class TestPluginInitializer {
 		PluginInitializer.removeIssueTypeFromScheme("Decision", null);
 	}
 
+	@Ignore
 	@Test
 	public void testRemoveIssueTypeToSchemeIssueTypeFilledProjectKeyFilled() {
 		PluginInitializer.removeIssueTypeFromScheme("Decision", "TEST");

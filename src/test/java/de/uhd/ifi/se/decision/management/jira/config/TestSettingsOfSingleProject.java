@@ -7,11 +7,13 @@ import static org.junit.Assert.assertTrue;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.mock.servlet.MockHttpServletResponse;
+import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
@@ -20,12 +22,13 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestSettingsOfSingleProject {
 
-	private SettingsOfSingleProject servlet;
-	private HttpServletRequest request;
-	private HttpServletResponse response;
+	private static SettingsOfSingleProject servlet;
+	private static HttpServletRequest request;
+	private static HttpServletResponse response;
+	private static ApplicationUser user;
 
-	@Before
-	public void setUp() {
+	@BeforeClass
+	public static void setUp() {
 		TestSetUpWithIssues.initialization();
 
 		request = new MockHttpServletRequest();
@@ -34,6 +37,8 @@ public class TestSettingsOfSingleProject {
 		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
 		TemplateRenderer renderer = new MockTemplateRenderer();
 		servlet = new SettingsOfSingleProject(renderer);
+
+		user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
 	}
 
 	@Test
@@ -42,9 +47,8 @@ public class TestSettingsOfSingleProject {
 	}
 
 	@Test
-	public void testRequestFilledResponseNull() {
-		request.setAttribute("NoSysAdmin", false);
-		request.setAttribute("SysAdmin", false);
+	public void testRequestFilledUserNull() {
+		request.setAttribute("user", null);
 		assertFalse(servlet.isValidUser(request));
 	}
 
@@ -55,31 +59,27 @@ public class TestSettingsOfSingleProject {
 
 	@Test
 	public void testRequestFilledResponseFilled() {
-		request.setAttribute("NoSysAdmin", false);
-		request.setAttribute("SysAdmin", false);
+		request.setAttribute("user", null);
 		assertFalse(servlet.isValidUser(request));
 	}
 
 	@Test
 	public void testNoUserManager() {
 		((MockHttpServletRequest) request).setQueryString("Test");
-		request.setAttribute("NoSysAdmin", true);
-		request.setAttribute("SysAdmin", false);
+		request.setAttribute("user", null);
 		assertFalse(servlet.isValidUser(request));
 	}
 
 	@Test
 	public void testNoUserManagerQueryNull() {
 		((MockHttpServletRequest) request).setQueryString(null);
-		request.setAttribute("NoSysAdmin", true);
-		request.setAttribute("SysAdmin", false);
+		request.setAttribute("user", null);
 		assertFalse(servlet.isValidUser(request));
 	}
 
 	@Test
 	public void testUserManager() {
-		request.setAttribute("NoSysAdmin", false);
-		request.setAttribute("SysAdmin", true);
+		request.setAttribute("user", user);
 		assertTrue(servlet.isValidUser(request));
 	}
 

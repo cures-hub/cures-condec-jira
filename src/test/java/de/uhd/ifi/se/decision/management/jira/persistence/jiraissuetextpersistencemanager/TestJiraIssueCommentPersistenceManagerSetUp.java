@@ -35,7 +35,7 @@ public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIs
 	public void setUp() {
 		initialization();
 		manager = new JiraIssueTextPersistenceManager("TEST");
-		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
 		addElementToDataBase();
 		addDecisionKnowledgeElement();
 	}
@@ -67,7 +67,7 @@ public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIs
 
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 		// Get the current logged in user
-		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
 		// Get access to the Jira comment and component manager
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
 		// Get the last comment entered in on the issue to a String

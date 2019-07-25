@@ -19,7 +19,7 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		initialization();
-		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
 	}
 
 	@Test

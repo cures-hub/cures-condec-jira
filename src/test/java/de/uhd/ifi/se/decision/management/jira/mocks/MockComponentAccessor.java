@@ -65,14 +65,8 @@ public class MockComponentAccessor extends ComponentAccessor {
 
 	public UserManager initUserManager() {
 		UserManager userManager = new MockUserManager();
-		ApplicationUser user1 = new MockApplicationUser("NoFails");
-		ApplicationUser user2 = new MockApplicationUser("WithFails");
-		ApplicationUser user3 = new MockApplicationUser("NoSysAdmin");
-		ApplicationUser user4 = new MockApplicationUser("SysAdmin");
-		((MockUserManager) userManager).addUser(user1);
-		((MockUserManager) userManager).addUser(user2);
-		((MockUserManager) userManager).addUser(user3);
-		((MockUserManager) userManager).addUser(user4);
+		ApplicationUser user = new MockApplicationUser("SysAdmin");
+		((MockUserManager) userManager).addUser(user);
 		return userManager;
 	}
 

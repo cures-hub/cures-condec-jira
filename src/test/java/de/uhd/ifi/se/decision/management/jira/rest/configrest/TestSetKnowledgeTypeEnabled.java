@@ -108,8 +108,7 @@ public class TestSetKnowledgeTypeEnabled extends TestConfigSuper {
 	@Test
 	public void testUserUnauthorized() {
 		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("WithFails", true);
-		request.setAttribute("NoFails", false);
+		request.setAttribute("user", null);
 		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
 				configRest.setKnowledgeTypeEnabled(request, "NotTEST", "false", null).getStatus());
 	}
@@ -117,9 +116,7 @@ public class TestSetKnowledgeTypeEnabled extends TestConfigSuper {
 	@Test
 	public void testUserNull() {
 		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("WithFails", false);
-		request.setAttribute("NoFails", false);
-		request.setAttribute("SysAdmin", false);
+		request.setAttribute("user", null);
 		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
 				configRest.setKnowledgeTypeEnabled(request, "NotTEST", "false", null).getStatus());
 	}

@@ -21,28 +21,28 @@ import com.atlassian.jira.workflow.TransitionOptions;
 public class MockIssueService implements IssueService {
 
 	@Override
-	public IssueResult assign(ApplicationUser arg0, AssignValidationResult arg1) {
+	public IssueResult assign(ApplicationUser user, AssignValidationResult arg1) {
 		return null;
 	}
 
 	@Override
-	public AsynchronousTaskResult clone(ApplicationUser arg0, CloneValidationResult arg1) {
+	public AsynchronousTaskResult clone(ApplicationUser user, CloneValidationResult arg1) {
 		return null;
 	}
 
 	@Override
-	public IssueResult create(ApplicationUser arg0, CreateValidationResult arg1) {
+	public IssueResult create(ApplicationUser user, CreateValidationResult arg1) {
 		return new IssueResult(arg1.getIssue());
 	}
 
 	@Override
-	public IssueResult create(ApplicationUser arg0, CreateValidationResult arg1, String arg2) {
+	public IssueResult create(ApplicationUser user, CreateValidationResult arg1, String arg2) {
 		return null;
 	}
 
 	@Override
-	public ErrorCollection delete(ApplicationUser arg0, DeleteValidationResult arg1) {
-		if(arg0.getName().equalsIgnoreCase("ValidNoResErrors")) {
+	public ErrorCollection delete(ApplicationUser user, DeleteValidationResult arg1) {
+		if (user.getName().equalsIgnoreCase("ValidNoResErrors")) {
 			ErrorCollection col = new MockAction();
 			col.addError("Test", "Test");
 			return col;
@@ -51,19 +51,16 @@ public class MockIssueService implements IssueService {
 	}
 
 	@Override
-	public ErrorCollection delete(ApplicationUser arg0, DeleteValidationResult arg1, EventDispatchOption arg2,
+	public ErrorCollection delete(ApplicationUser user, DeleteValidationResult arg1, EventDispatchOption arg2,
 			boolean arg3) {
 		return null;
 	}
 
 	@Override
-	public IssueResult getIssue(ApplicationUser arg0, Long arg1) {
-		MutableIssue issue = new MockIssue(arg1);
+	public IssueResult getIssue(ApplicationUser user, Long issueId) {
+		MutableIssue issue = new MockIssue(issueId);
 		IssueResult result = new IssueResult(issue);
-		if(arg0.getName().equals("NoFails")) {
-			return result;
-		}
-		if(arg0.getName().equals("WithFails")) {
+		if (user == null) {
 			ErrorCollection col = new MockAction();
 			col.addError("Test", "Test");
 			return new IssueResult(issue, col);
@@ -72,13 +69,13 @@ public class MockIssueService implements IssueService {
 	}
 
 	@Override
-	public IssueResult getIssue(ApplicationUser arg0, String arg1) {
+	public IssueResult getIssue(ApplicationUser user, String arg1) {
 		MutableIssue issue = new MockIssue(1, arg1);
 		IssueResult result = new IssueResult(issue);
-		if(arg0.getName().equals("NoFails")) {
+		if (user.getName().equals("NoFails")) {
 			return result;
 		}
-		if(arg0.getName().equals("WithFails")) {
+		if (user.getName().equals("WithFails")) {
 			ErrorCollection col = new MockAction();
 			col.addError("Test", "Test");
 			return new IssueResult(issue, col);
@@ -87,7 +84,7 @@ public class MockIssueService implements IssueService {
 	}
 
 	@Override
-	public boolean isEditable(Issue arg0, ApplicationUser arg1) {
+	public boolean isEditable(Issue jiraIssue, ApplicationUser user) {
 		return false;
 	}
 
@@ -107,7 +104,7 @@ public class MockIssueService implements IssueService {
 	}
 
 	@Override
-	public IssueResult update(ApplicationUser arg0, UpdateValidationResult arg1) {
+	public IssueResult update(ApplicationUser user, UpdateValidationResult arg1) {
 		return new IssueResult(arg1.getIssue());
 	}
 
@@ -131,35 +128,27 @@ public class MockIssueService implements IssueService {
 	}
 
 	@Override
-	public CreateValidationResult validateCreate(ApplicationUser arg0, IssueInputParameters arg1) {
+	public CreateValidationResult validateCreate(ApplicationUser user, IssueInputParameters arg1) {
 		MutableIssue issue = new MockIssue(1, "TEST-12");
 		IssueType issueType = new MockIssueType(12, "Solution");
 		issue.setIssueType(issueType);
 		ErrorCollection col = new MockAction();
-		Map<String,Object> fieldValuesHolder = new ConcurrentHashMap<>();
-		Map<String,org.codehaus.jackson.JsonNode> properties = new ConcurrentHashMap<>();
-		if(arg0.getName().equals("NoFails")) {
-			return new CreateValidationResult(issue, col, fieldValuesHolder, properties);
-		}
-		if(arg0.getName().equals("WithResFails")) {
+		Map<String, Object> fieldValuesHolder = new ConcurrentHashMap<>();
+		Map<String, org.codehaus.jackson.JsonNode> properties = new ConcurrentHashMap<>();
+		if (user == null || user.getName().equals("WithFails")) {
 			col.addError("Test", "Test");
 			return new CreateValidationResult(issue, col, fieldValuesHolder, properties);
 		}
-		col.addError("Test", "Test");
 		return new CreateValidationResult(issue, col, fieldValuesHolder, properties);
 	}
 
 	@Override
-	public DeleteValidationResult validateDelete(ApplicationUser arg0, Long arg1) {
-		System.out.println(arg0.getUsername());
+	public DeleteValidationResult validateDelete(ApplicationUser user, Long arg1) {
 		MutableIssue issue = new MockIssue(1, "TEST-12");
 		IssueType issueType = new MockIssueType(12, "Solution");
 		issue.setIssueType(issueType);
 		ErrorCollection col = new MockAction();
-		if(arg0.getUsername().equals("NoFails")) {
-			return new DeleteValidationResult(issue, col);
-		}
-		if(arg0.getName().equals("WithResFails")) {
+		if (user == null || user.getName().equals("WithFails")) {
 			col.addError("Test", "Test");
 			return new DeleteValidationResult(issue, col);
 		}
@@ -184,21 +173,17 @@ public class MockIssueService implements IssueService {
 	}
 
 	@Override
-	public UpdateValidationResult validateUpdate(ApplicationUser arg0, Long arg1, IssueInputParameters arg2) {
+	public UpdateValidationResult validateUpdate(ApplicationUser user, Long arg1, IssueInputParameters arg2) {
 		MutableIssue issue = new MockIssue(1, "TEST-12");
 		IssueType issueType = new MockIssueType(12, "Solution");
 		issue.setIssueType(issueType);
 		ErrorCollection col = new MockAction();
-		Map<String,Object> fieldValuesHolder = new ConcurrentHashMap<>();
-		if(arg0.getName().equals("NoFails")) {
-			return new UpdateValidationResult(issue, col, fieldValuesHolder);
-		}
-		if(arg0.getName().equals("WithFails")) {
+		Map<String, Object> fieldValuesHolder = new ConcurrentHashMap<>();
+		if (user == null || user.getName().equals("WithFails")) {
 			col.addError("Test", "Test");
 			return new UpdateValidationResult(issue, col, fieldValuesHolder);
 		}
-		return null;
+		return new UpdateValidationResult(issue, col, fieldValuesHolder);
 	}
-
 
 }

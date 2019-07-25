@@ -19,7 +19,7 @@ public class TestDeleteDecisionKnowledgeElement extends TestJiraIssuePersistence
 		issueStrategy.deleteDecisionKnowledgeElement(null, null);
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void testElementNonExistentUserNull() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
 		issueStrategy.deleteDecisionKnowledgeElement(element, null);

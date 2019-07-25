@@ -36,7 +36,7 @@ public class TestWebhookEventListener extends TestSetUpWithIssues {
 		EventPublisher publisher = new MockEventPublisher();
 		listener = new ConDecEventListener(publisher);
 		issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
-		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
 		jiraComment = ComponentAccessor.getCommentManager().create(issue, user, "Test Comment", true);
 	}
 
