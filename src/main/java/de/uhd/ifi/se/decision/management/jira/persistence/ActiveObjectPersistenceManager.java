@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -108,6 +109,19 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
 		DecisionKnowledgeElementInDatabase[] databaseEntries = ACTIVE_OBJECTS
 				.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("PROJECT_KEY = ?", projectKey));
+		for (DecisionKnowledgeElementInDatabase databaseEntry : databaseEntries) {
+			decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(databaseEntry));
+		}
+		return decisionKnowledgeElements;
+	}
+
+	@Override
+	public List<DecisionKnowledgeElement> getDecisionKnowledgeElementsInTimeSpan(Date creation, Date closed) {
+		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<>();
+		DecisionKnowledgeElementInDatabase[] databaseEntries = ACTIVE_OBJECTS
+                   .find(DecisionKnowledgeElementInDatabase.class,
+                           Query.select().where("PROJECT_KEY = ? AND CREATED >= ? AND CLOSED <= ?",
+		                           projectKey, creation.getTime(), closed.getTime()));
 		for (DecisionKnowledgeElementInDatabase databaseEntry : databaseEntries) {
 			decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(databaseEntry));
 		}

@@ -1,15 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.ofbiz.core.entity.GenericEntityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.sql.Timestamp;
 
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.IssueService.CreateValidationResult;
@@ -184,22 +181,34 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		if (this.projectKey == null) {
 			return decisionKnowledgeElements;
 		}
-		IssueManager issueManager = ComponentAccessor.getIssueManager();
-		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(this.projectKey);
-		Collection<Long> issueIds;
-		try {
-			issueIds = issueManager.getIssueIdsForProject(project.getId());
-		} catch (GenericEntityException | NullPointerException e) {
-			issueIds = new ArrayList<Long>();
-			LOGGER.error("Get decisionknowledgeelemtns failed. Message: " + e.getMessage());
-		}
-
-		for (long issueId : issueIds) {
-			Issue issue = issueManager.getIssueObject(issueId);
-
+		for (Issue issue : getIssueIdCollection()) {
 			KnowledgeType type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
 			if (type != KnowledgeType.OTHER) {
 				decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(issue));
+			}
+		}
+		return decisionKnowledgeElements;
+	}
+
+	@Override
+	public List<DecisionKnowledgeElement> getDecisionKnowledgeElementsInTimeSpan(Date creation, Date closed) {
+		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<>();
+		if(creation == null || closed == null){
+			LOGGER.error("Time is not set correctly. Creation of close time are null");
+			return  decisionKnowledgeElements;
+		}
+		Timestamp creationStamp = new Timestamp(creation.getTime());
+		Timestamp closeStamp = new Timestamp(closed.getTime());
+		for (Issue issue : getIssueIdCollection()) {
+			if(issue.getCreated().after(creationStamp)){
+				//Issue is not resolved jet
+				if(issue.getResolutionDate() == null){
+					decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(issue));
+				}
+				//Issue is resolved before the time filter
+				if(issue.getResolutionDate().before(closeStamp)){
+					decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(issue));
+				}
 			}
 		}
 		return decisionKnowledgeElements;
@@ -311,5 +320,23 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 	
 	public static void updateJiraIssue(Issue jiraIssue, ApplicationUser user) {
 		ComponentAccessor.getIssueManager().updateIssue(user, (MutableIssue) jiraIssue, EventDispatchOption.ISSUE_UPDATED, true);
+	}
+
+	private List<Issue> getIssueIdCollection(){
+		IssueManager issueManager = ComponentAccessor.getIssueManager();
+		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(this.projectKey);
+		Collection<Long> issueIds;
+		try {
+			issueIds = issueManager.getIssueIdsForProject(project.getId());
+		} catch (GenericEntityException | NullPointerException e) {
+			issueIds = new ArrayList<Long>();
+			LOGGER.error("Get decisionknowledgeelemtns failed. Message: " + e.getMessage());
+		}
+		List<Issue> issueList = new ArrayList<>();
+		for (long issueId : issueIds) {
+			Issue issue = issueManager.getIssueObject(issueId);
+			issueList.add(issue);
+		}
+		return issueList;
 	}
 }

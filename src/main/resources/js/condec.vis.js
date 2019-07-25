@@ -23,7 +23,105 @@
             nodes: nodes,
             edges: edges
         };
-        var options = {
+        var options = conDecVis.getVisOptions();
+
+        var network = new vis.Network(container, data, options);
+        network.setSize("100%", "500px");
+
+        network.on("oncontext",
+            function (params) {
+                console.log(params);
+                params.event.preventDefault();
+                var nodeIndices = network.body.nodeIndices;
+                var clickedNodeId;
+                console.log(network);
+                for (var i = 0; i < nodeIndices.length; i++) {
+                    var nodeId = nodeIndices[i];
+                    var boundingBox = network.getBoundingBox(nodeId);
+                    if (boundingBox.left <= params.pointer.canvas.x && params.pointer.canvas.x <= boundingBox.right
+                        && boundingBox.top <= params.pointer.canvas.y
+                        && params.pointer.canvas.y <= boundingBox.bottom) {
+                        clickedNodeId = nodeId;
+                    }
+                }
+                if (clickedNodeId !== undefined && clickedNodeId !== 'distanceCluster') {
+                    console.log("ContextMenu for ID: " + clickedNodeId.toString().slice(0, -2) + " and location: "
+                        + clickedNodeId.toString().substr(-1));
+                    conDecContextVis.createContextVis(clickedNodeId.toString().slice(0, -2),
+                        getDocumentationLocationFromId(clickedNodeId), params.event);
+                }
+            });
+
+        network.on("hold",
+            function (params) {
+                var nodeIndices = network.body.nodeIndices;
+                var clickedNodeId;
+                for (var i = 0; i < nodeIndices.length; i++) {
+                    var nodeId = nodeIndices[i];
+                    var boundingBox = network.getBoundingBox(nodeId);
+                    if (boundingBox.left <= params.pointer.canvas.x && params.pointer.canvas.x <= boundingBox.right
+                        && boundingBox.top <= params.pointer.canvas.y
+                        && params.pointer.canvas.y <= boundingBox.bottom) {
+                        clickedNodeId = nodeId;
+                    }
+                }
+                if (clickedNodeId !== undefined && clickedNodeId !== 'distanceCluster') {
+                    params.event.preventDefault();
+                    conDecDialog.showEditDialog(clickedNodeId.toString().slice(0, -2),
+                        getDocumentationLocationFromId(clickedNodeId));
+                }
+            });
+        network.on("selectNode", function (params) {
+            if (params.nodes.length === 1) {
+                if (network.isCluster(params.nodes[0]) === true) {
+                    network.openCluster(params.nodes[0]);
+                }
+            }
+        });
+        var clusterOptionsByData = {
+            joinCondition: function (childOptions) {
+                return ((childOptions.level <= 50 - nodeDistance) || (childOptions.level >= 50 + nodeDistance) || (childOptions.cid >= nodeDistance));
+            },
+            clusterNodeProperties: {
+                allowSingleNodeCluster: false,
+                id: 'distanceCluster',
+                shape: 'ellipse',
+                label: 'clusteredNodes',
+                level: ((50 * 1) + (nodeDistance * 1))
+            }
+
+        };
+        network.cluster(clusterOptionsByData);
+        return network;
+    }
+
+    /*
+     * external references: condec.jira.issue.module
+     */
+    ConDecVis.prototype.buildVisFiltered = function buildVisFiltered(issueKey, search, nodeDistance, issueTypes,
+                                                                     createdAfter, createdBefore, documentationLocation) {
+        console.log("conDecVis buildVisFiltered");
+        conDecAPI.getVisFiltered(issueKey, search, issueTypes, createdAfter, createdBefore, documentationLocation,
+            function (visData) {
+                build(visData.nodes, visData.edges, visData.rootElementKey, nodeDistance);
+            });
+    };
+
+    /*
+     * external references: condec.jira.issue.module
+     */
+    ConDecVis.prototype.buildVis = function buildVis(elementKey, searchTerm) {
+        console.log("conDecVis buildVis");
+        conDecAPI.getVis(elementKey, searchTerm, function (visData) {
+            var network = build(visData.nodes, visData.edges, visData.rootElementKey, 10);
+            network.focus(visData.rootElementKey, {
+                scale: 0.9
+            });
+        });
+    };
+
+    ConDecVis.prototype.getVisOptions = function getVisOptions() {
+        return {
             clickToUse: false,
             nodes: {
                 shape: "box",
@@ -275,101 +373,7 @@
                 tooltipDelay: 600
             }
         };
-
-        var network = new vis.Network(container, data, options);
-        network.setSize("100%", "500px");
-
-        network.on("oncontext",
-            function (params) {
-                console.log(params);
-                params.event.preventDefault();
-                var nodeIndices = network.body.nodeIndices;
-                var clickedNodeId;
-                console.log(network);
-                for (var i = 0; i < nodeIndices.length; i++) {
-                    var nodeId = nodeIndices[i];
-                    var boundingBox = network.getBoundingBox(nodeId);
-                    if (boundingBox.left <= params.pointer.canvas.x && params.pointer.canvas.x <= boundingBox.right
-                        && boundingBox.top <= params.pointer.canvas.y
-                        && params.pointer.canvas.y <= boundingBox.bottom) {
-                        clickedNodeId = nodeId;
-                    }
-                }
-                if (clickedNodeId !== undefined && clickedNodeId !== 'distanceCluster') {
-                    console.log("ContextMenu for ID: " + clickedNodeId.toString().slice(0, -2) + " and location: "
-                        + clickedNodeId.toString().substr(-1));
-                    conDecContextVis.createContextVis(clickedNodeId.toString().slice(0, -2),
-                        getDocumentationLocationFromId(clickedNodeId), params.event);
-                }
-            });
-
-        network.on("hold",
-            function (params) {
-                var nodeIndices = network.body.nodeIndices;
-                var clickedNodeId;
-                for (var i = 0; i < nodeIndices.length; i++) {
-                    var nodeId = nodeIndices[i];
-                    var boundingBox = network.getBoundingBox(nodeId);
-                    if (boundingBox.left <= params.pointer.canvas.x && params.pointer.canvas.x <= boundingBox.right
-                        && boundingBox.top <= params.pointer.canvas.y
-                        && params.pointer.canvas.y <= boundingBox.bottom) {
-                        clickedNodeId = nodeId;
-                    }
-                }
-                if (clickedNodeId !== undefined && clickedNodeId !== 'distanceCluster') {
-                    params.event.preventDefault();
-                    conDecDialog.showEditDialog(clickedNodeId.toString().slice(0, -2),
-                        getDocumentationLocationFromId(clickedNodeId));
-                }
-            });
-        network.on("selectNode", function (params) {
-            if (params.nodes.length === 1) {
-                if (network.isCluster(params.nodes[0]) === true) {
-                    network.openCluster(params.nodes[0]);
-                }
-            }
-        });
-        var clusterOptionsByData = {
-            joinCondition: function (childOptions) {
-                return ((childOptions.level <= 50 - nodeDistance) || (childOptions.level >= 50 + nodeDistance) || (childOptions.cid >= nodeDistance));
-            },
-            clusterNodeProperties: {
-                allowSingleNodeCluster: false,
-                id: 'distanceCluster',
-                shape: 'ellipse',
-                label: 'clusteredNodes',
-                level: ((50 * 1) + (nodeDistance * 1))
-            }
-
-        };
-        network.cluster(clusterOptionsByData);
-        return network;
     }
-
-    /*
-     * external references: condec.jira.issue.module
-     */
-    ConDecVis.prototype.buildVisFiltered = function buildVisFiltered(issueKey, search, nodeDistance, issueTypes,
-                                                                     createdAfter, createdBefore, documentationLocation) {
-        console.log("conDecVis buildVisFiltered");
-        conDecAPI.getVisFiltered(issueKey, search, issueTypes, createdAfter, createdBefore, documentationLocation,
-            function (visData) {
-                build(visData.nodes, visData.edges, visData.rootElementKey, nodeDistance);
-            });
-    };
-
-    /*
-     * external references: condec.jira.issue.module
-     */
-    ConDecVis.prototype.buildVis = function buildVis(elementKey, searchTerm) {
-        console.log("conDecVis buildVis");
-        conDecAPI.getVis(elementKey, searchTerm, function (visData) {
-            var network = build(visData.nodes, visData.edges, visData.rootElementKey, 10);
-            network.focus(visData.rootElementKey, {
-                scale: 0.9
-            });
-        });
-    };
 
     function getDocumentationLocationFromId(nodeId) {
         return nodeId.toString().substr(-1);

@@ -1,6 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import javax.xml.bind.annotation.XmlElement;
+
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 
 public class VisTimeLineNode {
 
@@ -13,10 +18,29 @@ public class VisTimeLineNode {
 	@XmlElement
 	private String start;
 
-	public VisTimeLineNode(int id, String content, String startTime) {
-		this.id = id;
-		this.content = content;
-		this.start = startTime;
+	private String end;
+
+	public VisTimeLineNode(DecisionKnowledgeElement element) {
+		if (element == null) {
+			return;
+		}
+		this.id = ((int) element.getId());
+		this.content = element.getKey();
+
+		this.start = createDateString(element.getCreated());
+		this.end = createDateString(element.getClosed());
+	}
+
+	private String createDateString(Date created) {
+		if (created == null) {
+			return "";
+		}
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(created);
+		int year = calendar.get(Calendar.YEAR) + 1900;
+		int month = calendar.get(Calendar.MONTH);
+		int day = calendar.get(Calendar.DAY_OF_MONTH);
+		return year + "-" + month + "-" + day;
 	}
 
 	public int getId() {
@@ -41,5 +65,13 @@ public class VisTimeLineNode {
 
 	public void setStart(String start) {
 		this.start = start;
+	}
+
+	public String getEnd() {
+		return end;
+	}
+
+	public void setEnd(String end) {
+		this.end = end;
 	}
 }

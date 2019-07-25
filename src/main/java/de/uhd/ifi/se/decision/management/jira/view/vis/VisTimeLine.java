@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 public class VisTimeLine {
 
@@ -19,8 +20,18 @@ public class VisTimeLine {
 		if (projectKey != null) {
 			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
 			elementList = strategy.getDecisionKnowledgeElements();
+			AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
+					projectKey);
+			elementList.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
 		}
 		createDataSet();
+	}
+
+	public VisTimeLine(List<DecisionKnowledgeElement> elements) {
+		if (elements != null) {
+			elementList = elements;
+			createDataSet();
+		}
 	}
 
 	public HashSet<VisTimeLineNode> getEvolutionData() {
@@ -37,8 +48,10 @@ public class VisTimeLine {
 
 	private void createDataSet() {
 		dataSet = new HashSet<>();
-		dataSet.add(new VisTimeLineNode(1, "Test Item 1", "2019-03-1"));
-		dataSet.add(new VisTimeLineNode(2, "Test Item 2", "2019-03-4"));
-		dataSet.add(new VisTimeLineNode(3, "Test Item 3", "2019-03-20"));
+		if(elementList != null) {
+			for (DecisionKnowledgeElement element : elementList) {
+				dataSet.add(new VisTimeLineNode(element));
+			}
+		}
 	}
 }
