@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuepersistencemanager;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
@@ -13,13 +13,13 @@ import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceMa
 
 public abstract class TestJiraIssuePersistenceManagerSetUp extends TestSetUpWithIssues {
 
-	protected JiraIssuePersistenceManager issueStrategy;
-	protected int numberOfElements;
-	protected ApplicationUser user;
-	protected Link link;
+	protected static JiraIssuePersistenceManager issueStrategy;
+	protected static int numberOfElements;
+	protected static ApplicationUser user;
+	protected static Link link;
 
-	@Before
-	public void setUp() {
+	@BeforeClass
+	public static void setUp() {
 		initialization();
 		issueStrategy = new JiraIssuePersistenceManager("TEST");
 		numberOfElements = issueStrategy.getDecisionKnowledgeElements().size();

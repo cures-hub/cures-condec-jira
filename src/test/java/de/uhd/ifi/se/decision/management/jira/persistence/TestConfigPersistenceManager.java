@@ -5,7 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestGitClient;
@@ -14,8 +14,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class TestConfigPersistenceManager extends TestSetUpGit {
 
-	@Before
-	public void setUp() {
+	@BeforeClass
+	public static void setUpBeforeClass() {
 		initialization();
 	}
 

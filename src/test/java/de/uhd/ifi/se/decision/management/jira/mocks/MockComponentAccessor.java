@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 import com.atlassian.jira.avatar.AvatarManager;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.search.SearchService;
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.config.util.JiraHome;
@@ -29,11 +30,11 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.velocity.VelocityManager;
 
-public class MockComponentAccessor {
+public class MockComponentAccessor extends ComponentAccessor {
 
-	private ProjectManager projectManager;
-	private IssueManager issueManager;
-	private ConstantsManager constantsManager;
+	private static ProjectManager projectManager;
+	private static IssueManager issueManager;
+	private static ConstantsManager constantsManager;
 
 	public MockComponentAccessor() {
 		projectManager = new MockProjectManager();
@@ -75,16 +76,15 @@ public class MockComponentAccessor {
 		return userManager;
 	}
 
-	public MockProjectManager getProjectManager() {
+	public static MockProjectManager getProjectManager() {
 		return (MockProjectManager) projectManager;
 	}
 
-	public MockConstantsManager getConstantsManager() {
+	public static MockConstantsManager getConstantsManager() {
 		return (MockConstantsManager) constantsManager;
 	}
 
-	public MockIssueManagerSelfImpl getIssueManager() {
+	public static MockIssueManagerSelfImpl getIssueManager() {
 		return (MockIssueManagerSelfImpl) issueManager;
 	}
-
 }

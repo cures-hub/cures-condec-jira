@@ -34,12 +34,11 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 @Data(MockDatabase.class)
 public abstract class TestSetUpWithIssues {
 
-	private static MockComponentAccessor componentAccessor;
 	protected static MockIssue issue;
 	private static EntityManager entityManager;
 
 	public static void initialization() {
-		componentAccessor = new MockComponentAccessor();
+		new MockComponentAccessor();
 		createProjectIssueStructure();
 		initComponentGetter();
 	}
@@ -55,7 +54,7 @@ public abstract class TestSetUpWithIssues {
 	private static void createProjectIssueStructure() {
 		Project project = new MockProject(1, "TEST");
 		((MockProject) project).setKey("TEST");
-		componentAccessor.getProjectManager().addProject(project);
+		MockComponentAccessor.getProjectManager().addProject(project);
 
 		List<IssueType> jiraIssueTypes = createJiraIssueTypesForDecisionKnowledgeTypes();
 
@@ -74,7 +73,7 @@ public abstract class TestSetUpWithIssues {
 
 		Project condecProject = new MockProject(3, "CONDEC");
 		((MockProject) condecProject).setKey("CONDEC");
-		componentAccessor.getProjectManager().addProject(condecProject);
+		MockComponentAccessor.getProjectManager().addProject(condecProject);
 		addJiraIssue(1234, "CONDEC-" + 1234, jiraIssueTypes.get(2), condecProject);
 	}
 
@@ -83,7 +82,7 @@ public abstract class TestSetUpWithIssues {
 		int i = 0;
 		for (KnowledgeType type : KnowledgeType.values()) {
 			IssueType issueType = new MockIssueType(i, type.name().toLowerCase(Locale.ENGLISH));
-			componentAccessor.getConstantsManager().addIssueType(issueType);
+			MockComponentAccessor.getConstantsManager().addIssueType(issueType);
 			jiraIssueTypes.add(issueType);
 			i++;
 		}
@@ -97,7 +96,7 @@ public abstract class TestSetUpWithIssues {
 		issue.setIssueType(issueType);
 		issue.setSummary("Test");
 		issue.setDescription("Test");
-		componentAccessor.getIssueManager().addIssue(issue);
+		MockComponentAccessor.getIssueManager().addIssue(issue);
 		return (MockIssue) issue;
 	}
 

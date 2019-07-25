@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -16,12 +17,16 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestDeleteDecisionKnowledgeElement extends ActiveObjectPersistenceManagerTestSetUp {
 
-	private DecisionKnowledgeElement element;
-	private DecisionKnowledgeElement linkedDecisision;
+	private static DecisionKnowledgeElement element;
+	private static DecisionKnowledgeElement linkedDecisision;
+
+	@BeforeClass
+	public static void setUpBeforeClass() {
+		initialisation();
+	}
 
 	@Before
 	public void setUp() {
-		initialisation();
 		element = new DecisionKnowledgeElementImpl();
 		element.setProject("TEST");
 		element.setType(KnowledgeType.SOLUTION);

@@ -25,23 +25,22 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIssues {
 
-	protected JiraIssueTextPersistenceManager manager;
-	protected ApplicationUser user;
-	protected PartOfJiraIssueText element;
-	protected Comment comment1;
-	protected DecisionKnowledgeElement decisionKnowledgeElement;
+	protected static JiraIssueTextPersistenceManager manager;
+	protected static ApplicationUser user;
+	protected static PartOfJiraIssueText element;
+	protected static Comment comment1;
+	protected static DecisionKnowledgeElement decisionKnowledgeElement;
 
 	@Before
 	public void setUp() {
 		initialization();
-		createGlobalIssue();
 		manager = new JiraIssueTextPersistenceManager("TEST");
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		addElementToDataBase();
 		addDecisionKnowledgeElement();
 	}
 
-	protected void addElementToDataBase() {
+	protected static void addElementToDataBase() {
 		element = new PartOfJiraIssueTextImpl();
 		element.setProject("TEST");
 		element.setJiraIssueId(12);
@@ -54,7 +53,7 @@ public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIs
 		JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(element, user);
 	}
 
-	private void addDecisionKnowledgeElement() {
+	private static void addDecisionKnowledgeElement() {
 		decisionKnowledgeElement = new DecisionKnowledgeElementImpl();
 		decisionKnowledgeElement.setProject("TEST");
 		decisionKnowledgeElement.setId(1232);

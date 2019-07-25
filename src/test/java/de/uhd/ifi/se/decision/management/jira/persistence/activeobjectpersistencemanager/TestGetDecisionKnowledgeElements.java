@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectpersisten
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -12,9 +13,13 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGetDecisionKnowledgeElements extends ActiveObjectPersistenceManagerTestSetUp {
 
+	@BeforeClass
+	public static void setUpBeforeClass() {
+		initialisation();
+	}
+
 	@Before
 	public void setUp() {
-		initialisation();
 		DecisionKnowledgeElement insertElement = new DecisionKnowledgeElementImpl();
 		insertElement.setKey("TEST-13");
 		insertElement.setProject("TEST");
