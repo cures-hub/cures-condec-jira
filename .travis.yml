@@ -5,6 +5,7 @@ cache:
     - $HOME/.m2
 jdk:
   - oraclejdk8
+dist: trusty
 before_install:
   - wget https://marketplace.atlassian.com/download/plugins/atlassian-plugin-sdk-tgz
   - mkdir opt
