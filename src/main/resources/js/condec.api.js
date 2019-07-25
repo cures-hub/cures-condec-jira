@@ -345,6 +345,25 @@
 	};
 
 	/*
+	 *external reference: condec.evolution.page.js
+	 */
+    ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed,searchString, callback){
+        var filterSettings = {
+            "projectKey" : projectKey,
+            "searchString" : searchString,
+            "createdEarliest" : created,
+            "createdLatest" : closed,
+            "documentationLocations" : [ "" ],
+            "selectedJiraIssueTypes" : [ "" ]
+        };
+        postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getCompareVis.json", filterSettings,
+            function (error, vis) {
+                if(error === null){
+                    callback(vis);
+                }
+        });
+    };
+	/*
 	 * external reference: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getFilterSettings = function getFilterSettings(elementKey, searchTerm, callback) {
@@ -376,8 +395,16 @@
 	/*
 	 * external references: condec.evolution.page
 	 */
-	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(projectKey, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getEvolutionData.json?projectKey=" + projectKey,
+	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(searchString, created, closed, callback) {
+        var filterSettings = {
+            "projectKey" : projectKey,
+            "searchString" : searchString,
+            "createdEarliest" : created,
+            "createdLatest" : closed,
+            "documentationLocations" : [ "" ],
+            "selectedJiraIssueTypes" : [ "" ]
+        };
+        postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getEvolutionData.json", filterSettings,
 				function(error, evolutionData) {
 					if (error === null) {
 						callback(evolutionData);

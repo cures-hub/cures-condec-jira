@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -348,6 +349,15 @@ public abstract class AbstractPersistenceManager {
 		}
 		return elements;
 	}
+
+	/**
+	 * Get all decision knowledge elements for a project in a certain timespan.
+	 *
+	 * @param creation
+	 * @param closed
+	 * @return all decision knowledge elements in a timespan.
+	 */
+	public abstract List<DecisionKnowledgeElement> getDecisionKnowledgeElementsInTimeSpan(Date creation, Date closed);
 
 	/**
 	 * Get all linked elements of the decision knowledge element for a project where

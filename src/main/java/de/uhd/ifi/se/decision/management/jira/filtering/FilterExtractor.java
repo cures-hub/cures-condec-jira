@@ -17,6 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 /**
@@ -83,6 +84,9 @@ public class FilterExtractor {
 		return graph.getAllElements();
 	}
 
+	// Problem Filtered Issues from sideFilter will be filterd again
+	// In the end there are only 2 Issues left that are not matching with the
+	// location so everything is collapsed
 	public List<DecisionKnowledgeElement> getAllElementsMatchingQuery() {
 		List<DecisionKnowledgeElement> results = new ArrayList<DecisionKnowledgeElement>();
 		List<Issue> jiraIssues = queryHandler.getJiraIssuesFromQuery();
@@ -105,6 +109,40 @@ public class FilterExtractor {
 		}
 
 		return results;
+	}
+
+	public List<DecisionKnowledgeElement> getAllElementsMatchingCompareFilter() {
+		if (filterSettings.getProjectKey() == null) {
+			return new ArrayList<>();
+		}
+		AbstractPersistenceManager strategy = AbstractPersistenceManager
+				.getDefaultPersistenceStrategy(filterSettings.getProjectKey());
+		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
+		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
+				filterSettings.getProjectKey());
+		elements.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
+
+		List<DecisionKnowledgeElement> filteredElements = new ArrayList<>();
+
+		for (DecisionKnowledgeElement element : elements) {
+			// Check if the element is created in time
+			if (checkIfJiraTextMatchesFilter(element)) {
+				// Case no text filter
+				if (filterSettings.getSearchString().equals("")
+						|| filterSettings.getSearchString().equals("?filter=-4")) {
+					filteredElements.add(element);
+				} else {
+					if (element.getDescription() != null && element.getSummary() != null) {
+						// Case Description or summary are containing the search sting
+						if (element.getDescription().contains(filterSettings.getSearchString())
+								|| element.getSummary().contains(filterSettings.getSearchString())) {
+							filteredElements.add(element);
+						}
+					}
+				}
+			}
+		}
+		return filteredElements;
 	}
 
 	private boolean checkIfJiraTextMatchesFilter(DecisionKnowledgeElement element) {

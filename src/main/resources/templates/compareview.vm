@@ -1,41 +1,44 @@
 <form class="aui">
-    <label for="start-data-picker">$i18n.getText("condec.startdatepicker")<span
+    <label for="start-data-picker-compare">$i18n.getText("condec.startdatepicker")<span
             class="aui-icon icon-required"></span>
     </label>
-    <input class="aui-date-picker" id="start-data-picker" type="date" max="2012-01-25" min="2011-12-25" />
-    <label for="end-data-picker">$i18n.getText("condec.enddatepicker")<span
+    <input id="start-data-picker-compare" type="date"/>
+    <label for="end-data-picker-compare">$i18n.getText("condec.enddatepicker")<span
             class="aui-icon icon-required"></span>
     </label>
-    <input class="aui-date-picker" id="end-data-picker" type="date" max="2012-01-25" min="2011-12-25" />
-    <input class="text medium-long-field" id="jstree-search-input"
+    <input id="end-data-picker-compare" type="date"/>
+    <input class="text medium-long-field" id="compare-search-input"
            placeholder="$i18n.getText('condec.filter.label')"/>
+    <input type="button" id="filter-button-compare" class="aui-button aui-button-primary" value="Filter"/>
 </form>
 <div class="aui-group">
-    <div id="left-network" class="aui-item">
+    <div  class="aui-item">
+        <h1>Current Date</h1>
+        <div id="left-network"></div>
     </div>
-    <div id="right-network" class="aui-item">
+    <div class="aui-item">
+        <h1>Selected Time</h1>
+        <div id="right-network"></div>
     </div>
 </div>
 <style type="text/css">
     #right-network{
         width: 500px;
         height: 400px;
-        border: 1px solid lightgray;
     }
 </style>
 <style type="text/css">
     #left-network{
         width: 500px;
         height: 400px;
-        border: 1px solid lightgray;
     }
 </style>
 <script>
     $(document).ready(function() {
         conDecAPI.checkIfProjectKeyIsValid();
-        if(window.conDecEvolutionPage.init(conDecAPI, conDecObservable)) {
+        if(window.conDecEvolutionPage.init(conDecAPI, conDecObservable, conDecVis)) {
             conDecAPI.checkIfProjectKeyIsValid();
-            window.conDecEvolutionPage.buildCompare(0,0,conDecAPI.projectKey);
+            window.conDecEvolutionPage.buildCompare();
         }
         else {
             console.error("ConDecEvolutionPage could not get its dependencies.");

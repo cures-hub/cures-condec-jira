@@ -43,6 +43,15 @@ public interface DecisionKnowledgeElementInDatabase extends RawEntity<Integer> {
 
 	void setKey(String key);
 
+	long getCreated();
+
+	void setCreated(long created);
+
+	long getClosed();
+
+	void setClosed(long closed);
+
+
 	static boolean deleteElement(DecisionKnowledgeElementInDatabase elementToDelete) {
 		try {
 			elementToDelete.getEntityManager().delete(elementToDelete);

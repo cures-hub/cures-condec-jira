@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -148,6 +149,17 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
+			decisionKnowledgeElements.add(new PartOfJiraIssueTextImpl(databaseEntry));
+		}
+		return decisionKnowledgeElements;
+	}
+
+	@Override
+	public List<DecisionKnowledgeElement> getDecisionKnowledgeElementsInTimeSpan(Date creation, Date closed) {
+		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
+		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
+				Query.select().where("PROJECT_KEY = ? AND CREATED >= ? AND CLOSED <= ?",
+						projectKey, creation.getTime(), closed.getTime()))){
 			decisionKnowledgeElements.add(new PartOfJiraIssueTextImpl(databaseEntry));
 		}
 		return decisionKnowledgeElements;
@@ -687,4 +699,5 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		}
 		return validatedPartsOfText;
 	}
+
 }

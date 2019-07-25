@@ -3,15 +3,19 @@
 	/* private vars */
 	var conDecObservable = null;
 	var conDecAPI = null;
+	var conDecVis = null;
+	var networkRight = null;
+	var timeline = null;
 
 	var ConDecEvolutionPage = function ConDecEvolutionPage() {
 	};
 
-	ConDecEvolutionPage.prototype.init = function(_conDecAPI, _conDecObservable) {
+	ConDecEvolutionPage.prototype.init = function(_conDecAPI, _conDecObservable, _conDecVis) {
 		console.log("ConDecEvolutionPage init");
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)) {
 			conDecAPI = _conDecAPI;
 			conDecObservable = _conDecObservable;
+			conDecVis = _conDecVis;
 
 			conDecObservable.subscribe(this);
 			return true;
@@ -19,93 +23,40 @@
 		return false;
 	};
 	
-	ConDecEvolutionPage.prototype.buildTimeLine = function buildTimeLine(projectKey) {
+	ConDecEvolutionPage.prototype.buildTimeLine = function buildTimeLine() {
 		console.log("ConDec build timeline");
-		conDecAPI.getEvolutionData(projectKey, function(evolutionData) {
+		conDecAPI.getEvolutionData("", -1, -1 ,function(evolutionData) {
 			var container = document.getElementById('evolution-timeline');
 			var data = evolutionData;
 			var item = new vis.DataSet(data);
 			var options = {};
-			var timeline = new vis.Timeline(container, item, options);
+			timeline = new vis.Timeline(container, item, options);
 		});
+        addOnClickEventToFilterTimeLineButton();
 	};
 
-	ConDecEvolutionPage.prototype.buildCompare = function buildCompare(projectKey, firstDate, scondDate) {
+	ConDecEvolutionPage.prototype.buildCompare = function buildCompare() {
 		console.log("ConDec build compare view");
+        conDecAPI.getCompareVis(-1, -1,"",function (visData) {
+            var containerLeft = document.getElementById('left-network');
+            var dataLeft = {
+                nodes : visData.nodes,
+                edges : visData.edges
+            };
+            var options = getOptions();
+            var networkLeft = new vis.Network(containerLeft, dataLeft, options);
 
-		var containerleft = document.getElementById('left-network');
-		var containerright = document.getElementById('right-network');
-
-		var options = {};
-		var nodesleft = new vis.DataSet([ {
-			id : 1,
-			label : 'Node 1'
-		}, {
-			id : 2,
-			label : 'Node 2'
-		}, {
-			id : 3,
-			label : 'Node 3'
-		} ]);
-		var edgesleft = new vis.DataSet([ {
-			from : 1,
-			to : 3
-		}, {
-			from : 1,
-			to : 2
-		}, {
-			from : 3,
-			to : 3
-		} ]);
-
-		var dataleft = {
-			nodes : nodesleft,
-			edges : edgesleft
-		};
-		var networkleft = new vis.Network(containerleft, dataleft, options);
-
-		var nodesright = new vis.DataSet([ {
-			id : 1,
-			label : 'Node 1'
-		}, {
-			id : 2,
-			label : 'Node 2'
-		}, {
-			id : 3,
-			label : 'Node 3'
-		}, {
-			id : 4,
-			label : 'Node 4'
-		}, {
-			id : 5,
-			label : 'Node 5'
-		} ]);
-
-		// create an array with edges
-		var edgesright = new vis.DataSet([ {
-			from : 1,
-			to : 3
-		}, {
-			from : 1,
-			to : 2
-		}, {
-			from : 2,
-			to : 4
-		}, {
-			from : 2,
-			to : 5
-		}, {
-			from : 3,
-			to : 3
-		} ]);
-
-		// create a network
-
-		var dataright = {
-			nodes : nodesright,
-			edges : edgesright
-		};
-		var networkright = new vis.Network(containerright, dataright, options);
+        });
+        conDecAPI.getCompareVis(-1, -1,"",function (visData) {
+            var containerRight = document.getElementById('right-network');
+            var dataRight = {
+                nodes : visData.nodes,
+                edges : visData.edges
+            };
+            var options = getOptions();
+            networkRight = new vis.Network(containerRight, dataRight, options);
+        });
+        addOnClickEventToFilterCompareButton();
 	};
 
 	/*
@@ -126,5 +77,242 @@
 		}
 		return true;
 	}
+
+	//Compute filter and select new elements
+    function addOnClickEventToFilterCompareButton() {
+        console.log("ConDecJiraEvolutionPage addOnClickEventToFilterButtonCompare");
+
+        var filterButton = document.getElementById("filter-button-compare");
+
+        filterButton.addEventListener("click", function(event) {
+            var firstDate = -1;
+            var secondDate = -1;
+            if (!isNaN(document.getElementById("start-data-picker-compare").valueAsNumber)) {
+                firstDate = document.getElementById("start-data-picker-compare").valueAsNumber;
+            }
+            if (!isNaN(document.getElementById("end-data-picker-compare").valueAsNumber)) {
+                secondDate = document.getElementById("end-data-picker-compare").valueAsNumber;
+            }
+            var searchString = "";
+            searchString = document.getElementById("compare-search-input").value;
+            conDecAPI.getCompareVis(firstDate, secondDate,searchString, function (visData) {
+                var dataRight = {
+                    nodes : visData.nodes,
+                    edges : visData.edges
+                };
+                networkRight.setData(dataRight);
+            });
+        });
+    }
+
+    //Compute filter and select new elements in the TimeLine View
+    function addOnClickEventToFilterTimeLineButton() {
+        console.log("ConDecJiraEvolutionPage addOnClickEventToFilterButtonTimeLine");
+        var filterButton = document.getElementById("filter-button-time");
+
+        filterButton.addEventListener("click", function(event) {
+            var firstDate = -1;
+            var secondDate = -1;
+            if (!isNaN(document.getElementById("start-date-picker-time").valueAsNumber)) {
+                firstDate = document.getElementById("start-date-picker-time").valueAsNumber;
+            }
+            if (!isNaN(document.getElementById("end-date-picker-time").valueAsNumber)) {
+                secondDate = document.getElementById("end-date-picker-time").valueAsNumber;
+            }
+            var searchString = document.getElementById("time-search-input").value;
+            conDecAPI.getEvolutionData(searchString, firstDate, secondDate,  function (visData) {
+                var data = visData;
+                var item = new vis.DataSet(data);
+                timeline.setItems(item);
+                timeline.redraw();
+            });
+        });
+    }
+
+    function getOptions(){
+	    return {
+            layout: {
+                randomSeed: undefined,
+                improvedLayout: true,
+                hierarchical: {
+                    enabled: false,
+                    levelSeparation: 150,
+                    nodeSpacing: 100,
+                    treeSpacing: 200
+                }
+            },
+            nodes: {
+                shape: "box",
+                widthConstraint: 120,
+                color: {
+                    background: 'rgba(255, 255, 255,1)',
+                    border: 'rgba(0,0,0,1)',
+                    highlight: {
+                        background: 'rgba(255,255,255,1)',
+                        border: 'rgba(0,0,0,1)'
+                    }
+                },
+                font: {
+                    multi: false
+                },
+                shapeProperties: {
+                    interpolation: false
+                }
+            },
+            edges: {
+                arrows: "to"
+            },
+	        groups: {
+                // Setting colors for Decision Knowledge Elements
+                decision: {
+                    color: {
+                        background: 'rgba(252,227,190,1)',
+                        highlight: {
+                            background: 'rgba(252,227,190,1)'
+                        }
+                    }
+                },
+                issue: {
+                    color: {
+                        background: 'rgba(255, 255, 204,1)',
+                        highlight: {
+                            background: 'rgba(255,255,204,1)'
+                        }
+                    }
+                },
+                alternative: {
+                    color: {
+                        background: 'rgba(252,227,190,1',
+                        highlight: {
+                            background: 'rgba(252,227,190,1)'
+                        }
+                    }
+                },
+                pro: {
+                    color: {
+                        background: 'rgba(222, 250, 222,1)',
+                        highlight: {
+                            background: 'rgba(222,250,222,1)'
+                        }
+                    }
+                },
+                con: {
+                    color: {
+                        background: 'rgba(255, 231, 231,1)',
+                        highlight: {
+                            background: 'rgba(255,231,231,1)'
+                        }
+                    }
+                },
+                argument: {
+                    color: {
+                        background: 'rgba(255, 255, 255,1)',
+                        highlight: {
+                            background: 'rgba(255,255,255,1)'
+                        }
+                    }
+                },
+                constraint: {
+                    color: {
+                        background: 'rgba(255, 255, 255,1)',
+                        highlight: {
+                            background: 'rgba(255,255,255,1)'
+                        }
+                    }
+                },
+                assumption: {
+                    color: {
+                        background: 'rgba(255, 255, 255,1)',
+                        highlight: {
+                            background: 'rgba(255,255,255,1)'
+                        }
+                    }
+                },
+                implication: {
+                    color: {
+                        background: 'rgba(255, 255, 255,1)',
+                        highlight: {
+                            background: 'rgba(255,255,255,1)'
+                        }
+                    }
+                },
+                context: {
+                    color: {
+                        background: 'rgba(255, 255, 221,1)',
+                        highlight: {
+                            background: 'rgba(255,255,221,1)'
+                        }
+                    }
+                },
+                problem: {
+                    color: {
+                        background: 'rgba(255, 255, 204,1)',
+                        highlight: {
+                            background: 'rgba(255,255,204,1)'
+                        }
+                    }
+                },
+                goal: {
+                    color: {
+                        background: 'rgba(255, 255, 255,1)',
+                        highlight: {
+                            background: 'rgba(255,255,255,1)'
+                        }
+                    }
+                },
+                solution: {
+                    color: {
+                        background: 'rgba(255, 246, 232,1)',
+                        highlight: {
+                            background: 'rgba(255,246,232,1)'
+                        }
+                    }
+                },
+                claim: {
+                    color: {
+                        background: 'rgba(255, 255, 255,1)',
+                        highlight: {
+                            background: 'rgba(255,255,255,1)'
+                        }
+                    }
+                },
+                rationale: {
+                    color: {
+                        background: 'rgba(255, 255, 221,1)',
+                        highlight: {
+                            background: 'rgba(255,255,221,1)'
+                        }
+                    }
+                },
+                question: {
+                    color: {
+                        background: 'rgba(255, 255, 255,1)',
+                        highlight: {
+                            background: 'rgba(255,255,255,1)'
+                        }
+                    }
+                },
+                assessment: {
+                    color: {
+                        background: 'rgba(255, 255, 255,1)',
+                        highlight: {
+                            background: 'rgba(255,255,255,1)'
+                        }
+                    }
+                },
+                collapsed: {
+                    shape: "dot",
+                    size: 5,
+                    color: {
+                        background: 'rgba(0,0,0,1)'
+                    }
+                }
+            },
+            physics: {
+                enabled: false
+            }
+        };
+    }
+
 	global.conDecEvolutionPage = new ConDecEvolutionPage();
 })(window);
