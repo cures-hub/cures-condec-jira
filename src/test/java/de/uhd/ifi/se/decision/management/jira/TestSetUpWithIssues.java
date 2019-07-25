@@ -15,6 +15,8 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.issuetype.MockIssueType;
+import com.atlassian.jira.mock.MockConstantsManager;
+import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
@@ -23,6 +25,7 @@ import com.atlassian.jira.user.MockApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
@@ -40,9 +43,9 @@ public abstract class TestSetUpWithIssues {
 	public static void initialization() {
 		initComponentAccessor();
 		initComponentGetter();
-		createProjectIssueStructure();		
+		createProjectIssueStructure();
 	}
-	
+
 	public static void initComponentAccessor() {
 		new MockComponentAccessor();
 	}
@@ -58,7 +61,7 @@ public abstract class TestSetUpWithIssues {
 	private static void createProjectIssueStructure() {
 		Project project = new MockProject(1, "TEST");
 		((MockProject) project).setKey("TEST");
-		MockComponentAccessor.getProjectManager().addProject(project);
+		((MockProjectManager) MockComponentAccessor.getProjectManager()).addProject(project);
 
 		List<IssueType> jiraIssueTypes = createJiraIssueTypesForDecisionKnowledgeTypes();
 
@@ -77,7 +80,7 @@ public abstract class TestSetUpWithIssues {
 
 		Project condecProject = new MockProject(3, "CONDEC");
 		((MockProject) condecProject).setKey("CONDEC");
-		MockComponentAccessor.getProjectManager().addProject(condecProject);
+		((MockProjectManager) MockComponentAccessor.getProjectManager()).addProject(condecProject);
 		addJiraIssue(1234, "CONDEC-" + 1234, jiraIssueTypes.get(2), condecProject);
 	}
 
@@ -86,7 +89,7 @@ public abstract class TestSetUpWithIssues {
 		int i = 0;
 		for (KnowledgeType type : KnowledgeType.values()) {
 			IssueType issueType = new MockIssueType(i, type.name().toLowerCase(Locale.ENGLISH));
-			MockComponentAccessor.getConstantsManager().addIssueType(issueType);
+			((MockConstantsManager) MockComponentAccessor.getConstantsManager()).addIssueType(issueType);
 			jiraIssueTypes.add(issueType);
 			i++;
 		}
@@ -100,7 +103,7 @@ public abstract class TestSetUpWithIssues {
 		issue.setIssueType(issueType);
 		issue.setSummary("Test");
 		issue.setDescription("Test");
-		MockComponentAccessor.getIssueManager().addIssue(issue);
+		((MockIssueManagerSelfImpl) MockComponentAccessor.getIssueManager()).addIssue(issue);
 		return (MockIssue) issue;
 	}
 

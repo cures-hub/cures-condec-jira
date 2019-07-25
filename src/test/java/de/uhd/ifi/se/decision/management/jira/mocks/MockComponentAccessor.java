@@ -32,15 +32,10 @@ import com.atlassian.velocity.VelocityManager;
 
 public class MockComponentAccessor extends ComponentAccessor {
 
-	private static ProjectManager projectManager;
-	private static IssueManager issueManager;
-	private static ConstantsManager constantsManager;
-
 	public MockComponentAccessor() {
-		projectManager = new MockProjectManager();
-		issueManager = new MockIssueManagerSelfImpl();
-		constantsManager = new MockConstantsManager();
-
+		ProjectManager projectManager = new MockProjectManager();
+		IssueManager issueManager = new MockIssueManagerSelfImpl();
+		ConstantsManager constantsManager = new MockConstantsManager();
 		UserManager userManager = initUserManager();
 
 		new MockComponentWorker().init().addMock(IssueManager.class, issueManager)
@@ -68,17 +63,5 @@ public class MockComponentAccessor extends ComponentAccessor {
 		ApplicationUser user = new MockApplicationUser("SysAdmin");
 		((MockUserManager) userManager).addUser(user);
 		return userManager;
-	}
-
-	public static MockProjectManager getProjectManager() {
-		return (MockProjectManager) projectManager;
-	}
-
-	public static MockConstantsManager getConstantsManager() {
-		return (MockConstantsManager) constantsManager;
-	}
-
-	public static MockIssueManagerSelfImpl getIssueManager() {
-		return (MockIssueManagerSelfImpl) issueManager;
 	}
 }
