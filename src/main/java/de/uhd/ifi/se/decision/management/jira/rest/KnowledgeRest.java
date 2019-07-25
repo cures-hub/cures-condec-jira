@@ -264,7 +264,7 @@ public class KnowledgeRest {
 		FilterExtractor extractor = new FilterExtractor(projectKey,user, query);
 		if (allTrees) {
 			List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
-			elementsQueryLinked = extractor.getGraphsMatchingQuery("");
+			elementsQueryLinked = extractor.getAllGraphs();
 			return Response.ok(elementsQueryLinked).build();
 		} else {
 			queryResult = extractor.getAllElementsMatchingQuery();

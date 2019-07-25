@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira;
 import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -49,6 +50,7 @@ import com.atlassian.jira.util.VelocityParamFactory;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.velocity.VelocityManager;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockAvatarManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockCommentManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkManager;
@@ -63,6 +65,8 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockSearchService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityParamFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
@@ -74,6 +78,7 @@ public class TestSetUpWithIssues {
 	private IssueManager issueManager;
 	private ConstantsManager constantsManager;
 	protected MockIssue issue;
+	ApplicationUser user;
 
 	public void initialization() {
 		projectManager = new MockProjectManager();
@@ -92,7 +97,7 @@ public class TestSetUpWithIssues {
 		IssueService issueService = new MockIssueService();
 
 		UserManager userManager = new MockUserManager();
-		ApplicationUser user = new MockApplicationUser("NoFails");
+		user = new MockApplicationUser("NoFails");
 		ApplicationUser user2 = new MockApplicationUser("WithFails");
 		ApplicationUser user3 = new MockApplicationUser("NoSysAdmin");
 		ApplicationUser user4 = new MockApplicationUser("SysAdmin");
@@ -204,8 +209,11 @@ public class TestSetUpWithIssues {
 			entityManager.migrate(LinkInDatabase.class);
 		}
 	}
-
-	protected MockIssue createGlobalIssue() {
+	
+	public MockIssue createGlobalIssue() {
+		if (issue != null) {
+			return issue;
+		}
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
 		issue = new MockIssue(30, "TEST-" + 30);
 		((MockIssue) issue).setProjectId(project.getId());
@@ -213,6 +221,15 @@ public class TestSetUpWithIssues {
 		IssueType issueType = new MockIssueType(1, KnowledgeType.DECISION.toString().toLowerCase(Locale.ENGLISH));
 		issue.setIssueType(issueType);
 		issue.setSummary("Test");
+		return issue;
+	}
+
+	public MockIssue createGlobalIssueWithComment() {		
+		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("{issue} testobject {issue}");
+		PartOfJiraIssueText sentence = comment.get(0);
+		sentence.setJiraIssueId(createGlobalIssue().getId());
+		JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(sentence, user);
+		
 		return issue;
 	}
 

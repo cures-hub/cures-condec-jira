@@ -51,8 +51,8 @@ public class MockIssueManagerSelfImpl extends MockIssueManager {
 
 	@Override
 	public MutableIssue getIssueByCurrentKey(String key) {
-		if ("30".equals(key)) {
-			return this.getIssueObject((long) 30);
+		if (key.contains("-30")) {
+			return this.getIssueObject(key);
 		}
 		if ("CONDEC-1234".equals(key)) {
 			Issue issue = this.getIssueObject((long) 1234);

@@ -126,17 +126,17 @@ public class ViewRest {
 	@Path("/getEvolutionData")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getEvolutionData(@Context HttpServletRequest request,FilterSettings filterSettings) {
+	public Response getEvolutionData(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (filterSettings.getProjectKey() == null || filterSettings.getProjectKey().equals("")) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not valid."))
 					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisDataProvider visDataProvider = new VisDataProvider(filterSettings.getProjectKey(),user);
+		VisDataProvider visDataProvider = new VisDataProvider(filterSettings.getProjectKey(), user);
 		VisTimeLine timeLine;
-		//Case: No filter applied
-		if(filterSettings.getSearchString().equals("")&& filterSettings.getCreatedEarliest() == -1
-				   && filterSettings.getCreatedLatest() == -1){
+		// Case: No filter applied
+		if (filterSettings.getSearchString().equals("") && filterSettings.getCreatedEarliest() == -1
+				&& filterSettings.getCreatedLatest() == -1) {
 			timeLine = visDataProvider.getTimeLine();
 		} else {
 			timeLine = visDataProvider.getTimeLineFilterd(filterSettings);
@@ -208,8 +208,11 @@ public class ViewRest {
 		String projectKey = filterSettings.getProjectKey();
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisDataProvider visDataProvider;
-		if (filterSettings.getNamesOfSelectedJiraIssueTypes().size() == 0 || (filterSettings.getDocumentationLocations().size() == 1 && filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN))) {
-			visDataProvider = new VisDataProvider(projectKey, elementKey, false, filterSettings.getSearchString(), user);
+		if (filterSettings.getNamesOfSelectedJiraIssueTypes().size() == 0
+				|| (filterSettings.getDocumentationLocations().size() == 1
+						&& filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN))) {
+			visDataProvider = new VisDataProvider(projectKey, elementKey, false, filterSettings.getSearchString(),
+					user);
 		} else {
 			visDataProvider = new VisDataProvider(elementKey, false, user, filterSettings);
 		}
@@ -220,14 +223,14 @@ public class ViewRest {
 	@Path("/getCompareVis")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getCompareVis(@Context HttpServletRequest request,FilterSettings filterSettings){
+	public Response getCompareVis(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST)
-					       .entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
-					       .build();
+					.entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
+					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		if(filterSettings.getCreatedEarliest() == -1 && filterSettings.getCreatedLatest()== -1 ) {
+		if (filterSettings.getCreatedEarliest() == -1 && filterSettings.getCreatedLatest() == -1) {
 			VisDataProvider visDataProvider = new VisDataProvider(filterSettings.getProjectKey(), user);
 			return Response.ok(visDataProvider.getVisGraph()).build();
 		}

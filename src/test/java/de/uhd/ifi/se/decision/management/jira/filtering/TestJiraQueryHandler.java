@@ -7,22 +7,38 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.JiraQueryHandlerImpl;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.view.treant.TestTreant;
+import net.java.ao.EntityManager;
+import net.java.ao.test.jdbc.Data;
+import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
+@RunWith(ActiveObjectsJUnitRunner.class)
+@Data(TestTreant.AoSentenceTestDatabaseUpdater.class)
 public class TestJiraQueryHandler extends TestSetUpWithIssues {
 
 	private JiraQueryHandler jiraQueryHandler;
 	private ApplicationUser user;
+	private EntityManager entityManager;
 
 	@Before
 	public void setUp() {
 		initialization();
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
+				new MockUserManager());
 	}
 
 	@Test
@@ -42,6 +58,21 @@ public class TestJiraQueryHandler extends TestSetUpWithIssues {
 	@Test
 	public void testGetJiraIssuesFromEmptyQuery() {
 		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "");
+		assertTrue(jiraQueryHandler.getJiraIssuesFromQuery().size() > 0);
+	}
+
+	@Test
+	public void testGetJiraIssuesFromFilledQuery() {
+		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "?jql=project=TEST");
+		List<Issue> jiraIssues = jiraQueryHandler.getJiraIssuesFromQuery();
+		assertTrue(jiraIssues.size() > 0);
+		Issue jiraIssue = jiraIssues.get(0);
+		assertTrue(JiraIssueTextPersistenceManager.getElementsForIssue(jiraIssue.getId(), "TEST").size() > 0);
+	}
+
+	@Test
+	public void testGetJiraIssuesFromFilledQueryNonExistingProject() {
+		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "?jql=project=UNKNOWNPROJECT");
 		assertEquals(0, jiraQueryHandler.getJiraIssuesFromQuery().size());
 	}
 
@@ -107,8 +138,8 @@ public class TestJiraQueryHandler extends TestSetUpWithIssues {
 
 	@Test
 	public void testGetQueryObject() {
-		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "?jql=project");
-		assertEquals("project", jiraQueryHandler.getQueryObject().getQueryString());
+		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "?jql=project=TEST");
+		assertEquals("project=TEST", jiraQueryHandler.getQueryObject().getQueryString());
 	}
 
 }

@@ -24,6 +24,7 @@ public class MockPluginSettings implements PluginSettings {
 		settings.put(subfix + "webhookUrl", "http://true");
 		settings.put(subfix + "isIssueStrategy", "true");
 		settings.put(subfix + "isKnowledgeExtractedFromIssues", "true");
+		settings.put(subfix + "isIconParsing", "true");
 		return settings;
 	}
 

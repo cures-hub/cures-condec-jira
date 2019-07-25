@@ -61,13 +61,13 @@
 			<version>${jira.version}</version>
 			<scope>provided</scope>
 		</dependency>
-        <dependency>
-            <groupId>com.atlassian.plugins.rest</groupId>
-            <artifactId>atlassian-rest-common</artifactId>
-            <version>6.0.2</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
+		<dependency>
+			<groupId>com.atlassian.plugins.rest</groupId>
+			<artifactId>atlassian-rest-common</artifactId>
+			<version>6.0.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.atlassian.sal</groupId>
 			<artifactId>sal-api</artifactId>
 			<version>2.7.1</version>
@@ -289,33 +289,33 @@
 				</configuration>
 			</plugin>
 			<!-- CodeCov Plug-in -->
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco-version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <!-- attached to Maven test phase -->
-                    <execution>
-                        <id>report</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco-version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<!-- attached to Maven test phase -->
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 	<properties>
 		<jira.version>8.2.3</jira.version>
 		<amps.version>8.0.2</amps.version>
 		<ao.version>1.6.2</ao.version>
-        <jacoco-version>0.8.4</jacoco-version>
+		<jacoco-version>0.8.4</jacoco-version>
 		<plugin.testrunner.version>2.0.1</plugin.testrunner.version>
 		<atlassian.spring.scanner.version>2.1.10</atlassian.spring.scanner.version>
 		<!-- This key is also used in atlassian-plugin.xml -->

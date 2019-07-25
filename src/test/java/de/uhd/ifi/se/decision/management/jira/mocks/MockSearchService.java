@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 import com.atlassian.jira.bc.issue.search.SearchService;
@@ -17,6 +20,8 @@ import com.atlassian.query.QueryImpl;
 import com.atlassian.query.clause.Clause;
 import com.atlassian.query.clause.TerminalClauseImpl;
 
+import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+
 /**
  * This class is currently not used because the JiraQueryHandler sets the
  * searchService via ComponentAccessor not the ComponentGetter.
@@ -25,9 +30,15 @@ import com.atlassian.query.clause.TerminalClauseImpl;
 public class MockSearchService implements SearchService {
 
 	@Override
-	public SearchResults<Issue> search(ApplicationUser applicationUser, Query query, PagerFilter pagerFilter)
+	public SearchResults<Issue> search(ApplicationUser user, Query query, PagerFilter pagerFilter)
 			throws SearchException {
-		return new SearchResults<Issue>(null, 0, 0, 0);
+		List<Issue> jiraIssues = new ArrayList<Issue>();
+		if (query == null || query.getQueryString() == null
+				|| query.getQueryString().equals("project=UNKNOWNPROJECT")) {
+			return new SearchResults<Issue>(jiraIssues, 0, 0, 0);
+		}
+		jiraIssues.add(new TestSetUpWithIssues().createGlobalIssueWithComment());
+		return new SearchResults<Issue>(jiraIssues, 1, 1, 0);
 	}
 
 	@Override

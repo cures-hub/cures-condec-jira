@@ -3,8 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,10 +13,11 @@ import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.JiraQueryHandlerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 /**
@@ -37,9 +36,6 @@ public class FilterExtractor {
 		}
 		this.filterSettings = new FilterSettingsImpl(projectKey, filterString);
 		this.user = user;
-		if (!(filterString.matches("\\?jql=(.)+")) || (filterString.matches("\\?filter=(.)+"))) {
-			filterSettings.setSearchString("?filter=-4");
-		}
 		this.queryHandler = new JiraQueryHandlerImpl(user, projectKey, filterSettings.getSearchString());
 	}
 
@@ -57,14 +53,8 @@ public class FilterExtractor {
 	/**
 	 * Used for the export of decision knowledge
 	 */
-	public List<List<DecisionKnowledgeElement>> getGraphsMatchingQuery(String linkedQuery) {
-		// Default filter for adjecent Elements
-		String linkedQueryNotEmpty = linkedQuery;
-		if ("".equals(linkedQueryNotEmpty)) {
-			linkedQueryNotEmpty = "?filter=allissues";
-		}
-		List<DecisionKnowledgeElement> tempQueryResult = new FilterExtractor(filterSettings.getProjectKey(), user,
-				filterSettings.getSearchString()).getAllElementsMatchingQuery();
+	public List<List<DecisionKnowledgeElement>> getAllGraphs() {
+		List<DecisionKnowledgeElement> tempQueryResult = getAllElementsMatchingQuery();
 		List<DecisionKnowledgeElement> addedElements = new ArrayList<DecisionKnowledgeElement>();
 		List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
 
@@ -74,9 +64,7 @@ public class FilterExtractor {
 			if (!addedElements.contains(current)) {
 				// if not get the connected tree
 				String currentElementKey = current.getKey();
-				filterSettings.setSearchString(linkedQueryNotEmpty);
-				List<DecisionKnowledgeElement> filteredElements = this.getElementsInGraph(user, filterSettings,
-						currentElementKey);
+				List<DecisionKnowledgeElement> filteredElements = getElementsInGraph(currentElementKey);
 				// add each element to the list
 				addedElements.addAll(filteredElements);
 				// add list to the big list
@@ -86,33 +74,29 @@ public class FilterExtractor {
 		return elementsQueryLinked;
 	}
 
-	/**
-	 * Used for the export of decision knowledge
-	 */
-	private List<DecisionKnowledgeElement> getElementsInGraph(ApplicationUser user, FilterSettings filterData,
-			String elementKey) {
+	private List<DecisionKnowledgeElement> getElementsInGraph(String elementKey) {
 		Graph graph;
-		if ((filterData.getSearchString().matches("\\?jql=(.)+"))
-				|| (filterData.getSearchString().matches("\\?filter=(.)+"))) {
-			graph = new GraphImplFiltered(filterData.getProjectKey(), elementKey, this);
+		if (queryHandler.getQueryType() != JiraQueryType.OTHER) {
+			graph = new GraphImplFiltered(filterSettings.getProjectKey(), elementKey, this);
 		} else {
-			graph = new GraphImpl(filterData.getProjectKey(), elementKey);
+			graph = new GraphImpl(filterSettings.getProjectKey(), elementKey);
 		}
 		return graph.getAllElements();
 	}
 
-	//Problem Filtered Issues from sideFilter will be filterd again
-	//In the end there are only 2 Issues left that are not matching with the
-	//location so everything is collapsed
+	// Problem Filtered Issues from sideFilter will be filterd again
+	// In the end there are only 2 Issues left that are not matching with the
+	// location so everything is collapsed
 	public List<DecisionKnowledgeElement> getAllElementsMatchingQuery() {
-		List<Issue> jiraIssues = queryHandler.getJiraIssuesFromQuery();
 		List<DecisionKnowledgeElement> results = new ArrayList<DecisionKnowledgeElement>();
+		List<Issue> jiraIssues = queryHandler.getJiraIssuesFromQuery();
 		if (jiraIssues == null) {
 			return results;
 		}
-		//Search in every Jira issue for some more Decision Knowledge Elements and if there are some add them
+		// Search in every Jira issue for decision knowledge elements and if
+		// there are some add them
 		for (Issue currentIssue : jiraIssues) {
-			//Add all Matching Elements from Query as a DecisionKnowledgeElement
+			// Add all Matching Elements from Query as a DecisionKnowledgeElement
 			results.add(new DecisionKnowledgeElementImpl(currentIssue));
 			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
 					.getElementsForIssue(currentIssue.getId(), filterSettings.getProjectKey());
@@ -131,23 +115,27 @@ public class FilterExtractor {
 		if (filterSettings.getProjectKey() == null) {
 			return new ArrayList<>();
 		}
-		AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(filterSettings.getProjectKey() );
+		AbstractPersistenceManager strategy = AbstractPersistenceManager
+				.getDefaultPersistenceStrategy(filterSettings.getProjectKey());
 		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
-		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(filterSettings.getProjectKey() );
+		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
+				filterSettings.getProjectKey());
 		elements.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
 
 		List<DecisionKnowledgeElement> filteredElements = new ArrayList<>();
 
 		for (DecisionKnowledgeElement element : elements) {
-			//Check if the element is created in time
+			// Check if the element is created in time
 			if (checkIfJiraTextMatchesFilter(element)) {
-				//Case no text filter
-				if (filterSettings.getSearchString().equals("")|| filterSettings.getSearchString().equals("?filter=-4")) {
+				// Case no text filter
+				if (filterSettings.getSearchString().equals("")
+						|| filterSettings.getSearchString().equals("?filter=-4")) {
 					filteredElements.add(element);
 				} else {
-					if(element.getDescription() != null && element.getSummary() !=null) {
-						//Case Description or summary are containing the search sting
-						if (element.getDescription().contains(filterSettings.getSearchString()) || element.getSummary().contains(filterSettings.getSearchString())) {
+					if (element.getDescription() != null && element.getSummary() != null) {
+						// Case Description or summary are containing the search sting
+						if (element.getDescription().contains(filterSettings.getSearchString())
+								|| element.getSummary().contains(filterSettings.getSearchString())) {
 							filteredElements.add(element);
 						}
 					}
@@ -158,25 +146,10 @@ public class FilterExtractor {
 	}
 
 	private boolean checkIfJiraTextMatchesFilter(DecisionKnowledgeElement element) {
-		if (filterSettings.getCreatedEarliest() > 0
-				&& (element).getCreated().getTime() < filterSettings.getCreatedEarliest()) {
-			return false;
-		}
-		if (filterSettings.getCreatedLatest() > 0
-				&& (element).getCreated().getTime() > filterSettings.getCreatedLatest()) {
-			return false;
-		}
-		if(!(filterSettings.getNamesOfSelectedJiraIssueTypes().size()==1 &&
-		filterSettings.getNamesOfSelectedJiraIssueTypes().get(0).equals(""))) {
-			if (element.getType().equals(KnowledgeType.PRO) || element.getType().equals(KnowledgeType.CON)) {
-				if (!filterSettings.getNamesOfSelectedJiraIssueTypes().contains(KnowledgeType.ARGUMENT.toString())) {
-					return false;
-				}
-			} else if (!filterSettings.getNamesOfSelectedJiraIssueTypes().contains(element.getTypeAsString())) {
-				return false;
-			}
-		}
-		return true;
+		return !(filterSettings.getCreatedEarliest() > 0
+				&& element.getCreated().getTime() < filterSettings.getCreatedEarliest())
+				|| !(filterSettings.getCreatedLatest() > 0
+						&& element.getCreated().getTime() > filterSettings.getCreatedLatest());
 	}
 
 	public FilterSettings getFilterSettings() {
@@ -185,5 +158,9 @@ public class FilterExtractor {
 
 	public JiraQueryHandler getQueryHandler() {
 		return queryHandler;
+	}
+
+	public ApplicationUser getUser() {
+		return user;
 	}
 }

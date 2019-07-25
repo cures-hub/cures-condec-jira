@@ -32,8 +32,8 @@ public class TestComponentGetter {
 
 	public static void init(ActiveObjects activeObjects, TransactionTemplate transactionTemplate,
 			UserManager userManager) {
-		new ComponentGetter(new MockPluginSettingsFactory(), transactionTemplate, null, null, null, userManager, null,
-				activeObjects);
+		new ComponentGetter(new MockPluginSettingsFactory(), transactionTemplate, null, null, new MockSearchService(),
+				userManager, null, activeObjects);
 	}
 
 	@Before
