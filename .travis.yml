@@ -15,7 +15,8 @@ before_install:
   - export PATH=opt/atlassian-plugin-sdk/bin:opt/atlassian-plugin-sdk/apache-maven-*/bin:$PATH
 install: true
 script:
-  - atlas-package cobertura:cobertura
+  - atlas-package -DskipTests=true
+  - atöas-mvn cobertura:cobertura
 notifications:
   email: false
 deploy:
