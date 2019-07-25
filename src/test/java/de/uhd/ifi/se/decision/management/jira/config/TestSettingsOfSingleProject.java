@@ -18,7 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTemplateRenderer;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestSettingsOfSingleProject extends TestSetUpWithIssues {
+public class TestSettingsOfSingleProject {
 
 	private SettingsOfSingleProject servlet;
 	private HttpServletRequest request;
@@ -26,7 +26,7 @@ public class TestSettingsOfSingleProject extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
-		initialization();
+		TestSetUpWithIssues.initialization();
 
 		request = new MockHttpServletRequest();
 		response = new MockHttpServletResponse();

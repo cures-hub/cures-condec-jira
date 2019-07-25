@@ -32,7 +32,7 @@ public class TestWebhookEventListener extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
-		initialization();
+		TestSetUpWithIssues.initialization();
 		EventPublisher publisher = new MockEventPublisher();
 		listener = new ConDecEventListener(publisher);
 		issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");

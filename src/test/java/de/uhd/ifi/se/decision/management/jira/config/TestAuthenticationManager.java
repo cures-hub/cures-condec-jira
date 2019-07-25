@@ -8,7 +8,7 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
@@ -17,12 +17,12 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 
-public class TestAuthenticationManager extends TestSetUpWithIssues {
-	protected HttpServletRequest request;
+public class TestAuthenticationManager {
+	private static HttpServletRequest request;
 
-	@Before
-	public void setUp() {
-		initialization();
+	@BeforeClass
+	public static void setUp() {
+		TestSetUpWithIssues.initialization();
 
 		request = new MockHttpServletRequest();
 		request.setAttribute("NoSysAdmin", false);

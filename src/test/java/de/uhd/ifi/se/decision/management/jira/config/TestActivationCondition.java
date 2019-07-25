@@ -2,7 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.config;
 
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -11,11 +11,11 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockJiraHelper;
 
-public class TestActivationCondition extends TestSetUpWithIssues {
-	private ActivationCondition condition;
+public class TestActivationCondition {
+	private static ActivationCondition condition;
 
-	@Before
-	public void setUp() {
+	@BeforeClass
+	public static void setUp() {
 		TestSetUpWithIssues.initialization();
 		condition = new ActivationCondition();
 	}

@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.ofbiz.core.entity.GenericValue;
@@ -17,13 +17,13 @@ import com.atlassian.jira.mock.ofbiz.MockGenericValue;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 
-public class TestJiraIssueTypeGenerator extends TestSetUpWithIssues {
+public class TestJiraIssueTypeGenerator {
 
-	private JiraIssueTypeGenerator generator;
+	private static JiraIssueTypeGenerator generator;
 
-	@Before
-	public void setUp() {
-		initialization();
+	@BeforeClass
+	public static void setUp() {
+		TestSetUpWithIssues.initialization();
 
 		generator = new JiraIssueTypeGenerator();
 	}

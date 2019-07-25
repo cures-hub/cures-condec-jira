@@ -28,7 +28,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTemplateRenderer;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
-public class TestSettingsOfAllProjects extends TestSetUpWithIssues {
+public class TestSettingsOfAllProjects {
 
 	private ProjectManager projectManager;
 	private SettingsOfAllProjects servlet;
@@ -37,7 +37,7 @@ public class TestSettingsOfAllProjects extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
-		initialization();
+		TestSetUpWithIssues.initialization();
 		request = new MockHttpServletRequest();
 		response = new MockHttpServletResponse();
 		TemplateRenderer renderer = new MockTemplateRenderer();

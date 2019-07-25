@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -25,10 +26,15 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeManager;
 
-public class TestPluginInitializer extends TestSetUpWithIssues {
+public class TestPluginInitializer {
 
-	private PluginInitializer pluginInitializer;
+	private static PluginInitializer pluginInitializer;
 
+	@BeforeClass
+	public static void setUpBeforeClass() {
+		TestSetUpWithIssues.initialization();
+	}
+	
 	@Before
 	public void setUp() {
 		pluginInitializer = new PluginInitializer();
@@ -36,7 +42,6 @@ public class TestPluginInitializer extends TestSetUpWithIssues {
 
 	@Test
 	public void testExecutionAfterProp() throws CreateException {
-		initialization();
 		pluginInitializer.afterPropertiesSet();
 	}
 
@@ -94,49 +99,42 @@ public class TestPluginInitializer extends TestSetUpWithIssues {
 
 	@Test
 	public void testAddIssueTypeToSchemeIssueTypeNullProjectKeyNull() {
-		initialization();
 		PluginInitializer.addIssueTypeToScheme(null, null);
 	}
 
 	@Test
 	public void testAddIssueTypeToSchemeIssueTypeNullProjectKeyFilled() {
-		initialization();
 		PluginInitializer.addIssueTypeToScheme(null, "TEST");
 	}
 
 	@Test
 	public void testAddIssueTypeToSchemeIssueTypeFilledProjectKeyNull() {
-		initialization();
 		PluginInitializer.addIssueTypeToScheme("Decision", null);
 	}
 
 	@Ignore
+	@Test
 	public void testAddIssueTypeToSchemeIssueTypeFilledProjectKeyFilled() {
-		initialization();
 		PluginInitializer.addIssueTypeToScheme("Decision", "TEST");
 	}
 
 	@Test
 	public void testRemoveIssueTypeToSchemeIssueTypeNullProjectKeyNull() {
-		initialization();
 		PluginInitializer.removeIssueTypeFromScheme(null, null);
 	}
 
 	@Test
 	public void testRemoveIssueTypeToSchemeIssueTypeNullProjectKeyFilled() {
-		initialization();
 		PluginInitializer.removeIssueTypeFromScheme(null, "TEST");
 	}
 
 	@Test
 	public void testRemoveIssueTypeToSchemeIssueTypeFilledProjectKeyNull() {
-		initialization();
 		PluginInitializer.removeIssueTypeFromScheme("Decision", null);
 	}
 
 	@Test
 	public void testRemoveIssueTypeToSchemeIssueTypeFilledProjectKeyFilled() {
-		initialization();
 		PluginInitializer.removeIssueTypeFromScheme("Decision", "TEST");
 	}
 }

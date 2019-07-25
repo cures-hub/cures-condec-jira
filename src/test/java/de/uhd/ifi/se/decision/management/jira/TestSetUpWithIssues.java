@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +36,7 @@ public abstract class TestSetUpWithIssues {
 
 	private static MockComponentAccessor componentAccessor;
 	protected static MockIssue issue;
-	protected static EntityManager entityManager;
+	private static EntityManager entityManager;
 
 	public static void initialization() {
 		componentAccessor = new MockComponentAccessor();
@@ -43,7 +45,10 @@ public abstract class TestSetUpWithIssues {
 	}
 
 	public static void initComponentGetter() {
-		ActiveObjects activeObjects = new TestActiveObjects(entityManager);
+		ActiveObjects activeObjects = mock(ActiveObjects.class);
+		if (entityManager != null) {
+			activeObjects = new TestActiveObjects(entityManager);
+		}
 		new ComponentGetter(new de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager(), activeObjects);
 	}
 
