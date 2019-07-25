@@ -13,7 +13,7 @@ The plug-in supports various documentation location for decision knowledge, such
 
 ### Prerequisites
 The following prerequisites are necessary to compile the plug-in from source code:
-- Java 8 JDK
+- Java 11 JDK
 - [Atlassian SDK](https://developer.atlassian.com/docs/getting-started/set-up-the-atlassian-plugin-sdk-and-build-a-project)
 
 ### Compilation via Terminal
