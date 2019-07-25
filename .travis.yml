@@ -16,7 +16,7 @@ before_install:
 install: true
 script:
   - atlas-package -DskipTests=true
-  - atöas-mvn cobertura:cobertura
+  - atlas-mvn cobertura:cobertura
 notifications:
   email: false
 deploy:
