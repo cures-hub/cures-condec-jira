@@ -13,8 +13,7 @@ before_install:
   - chmod a+x opt/atlassian-plugin-sdk/bin/*
   - chmod a+x opt/atlassian-plugin-sdk/apache-maven-*/bin/*
   - export PATH=opt/atlassian-plugin-sdk/bin:opt/atlassian-plugin-sdk/apache-maven-*/bin:$PATH
-install: true
-script:
+install: 
   - atlas-package
 notifications:
   email: false
