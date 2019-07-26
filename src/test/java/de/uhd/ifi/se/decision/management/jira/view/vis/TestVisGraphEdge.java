@@ -11,6 +11,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestVisGraphEdge extends TestSetUpWithIssues {
 
@@ -45,24 +46,28 @@ public class TestVisGraphEdge extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@NonTransactional
 	public void testConstructor() {
 		edge = new VisEdge(link);
 		assertNotNull(edge);
 	}
 
 	@Test
+	@NonTransactional
 	public void testId() {
 		edge = new VisEdge(link);
 		assertEquals(String.valueOf(link.getId()), edge.getId());
 	}
 
 	@Test
+	@NonTransactional
 	public void testLabel() {
 		edge = new VisEdge(link);
 		assertEquals(link.getType(), edge.getLabel());
 	}
 
 	@Test
+	@NonTransactional
 	public void testFrom() {
 		edge = new VisEdge(link);
 		String expected = link.getSourceElement().getId() + "_"
@@ -71,6 +76,7 @@ public class TestVisGraphEdge extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@NonTransactional
 	public void testTo() {
 		edge = new VisEdge(link);
 		String expected = link.getDestinationElement().getId() + "_"
