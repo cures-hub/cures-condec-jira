@@ -20,6 +20,9 @@ public class MockProjectRoleManager implements ProjectRoleManager {
 
 	@Override
 	public Collection<ProjectRole> getProjectRoles(ApplicationUser applicationUser, Project project) {
+		if (applicationUser == null) {
+			return null;
+		}
 		Collection<ProjectRole> roles = new ArrayList<>();
 		if (applicationUser.getName().equals("SysAdmin")) {
 			ProjectRole role = new MockProjectRole();
@@ -27,9 +30,6 @@ public class MockProjectRoleManager implements ProjectRoleManager {
 			((MockProjectRole) role).setName("Administrators");
 			((MockProjectRole) role).setDescription("Test");
 			roles.add(role);
-		}
-		if (applicationUser.getName().equals("NoSysAdmin")) {
-			return null;
 		}
 		return roles;
 	}

@@ -7,29 +7,19 @@ import java.util.HashSet;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 
-import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import net.java.ao.EntityManager;
-import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.DatabaseUpdater;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-@RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestVisGraph.AoSentenceTestDatabaseUpdater.class)
 public class TestVisGraph extends TestSetUpWithIssues {
-	private EntityManager entityManager;
 	private VisGraph visGraph;
 	private HashSet<VisNode> nodes;
 	private HashSet<VisEdge> edges;
@@ -38,8 +28,6 @@ public class TestVisGraph extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		initialization();
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
 		nodes = new HashSet<>();
 		edges = new HashSet<>();
 		visGraph = new VisGraph();
@@ -76,7 +64,7 @@ public class TestVisGraph extends TestSetUpWithIssues {
 
 	@Test
 	public void testWithoutFiltering() {
-		VisGraph newVisGraph = new VisGraph(element.getProject().getProjectKey(), element.getKey(), null ,false);
+		VisGraph newVisGraph = new VisGraph(element.getProject().getProjectKey(), element.getKey(), null, false);
 		assertNotNull(newVisGraph);
 	}
 

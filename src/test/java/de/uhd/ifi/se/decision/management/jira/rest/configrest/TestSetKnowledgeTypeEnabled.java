@@ -6,14 +6,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-@RunWith(ActiveObjectsJUnitRunner.class)
 public class TestSetKnowledgeTypeEnabled extends TestConfigSuper {
 
 	private static final String INVALID_KNOWLEDGE_ENABLED = "isKnowledgeTypeEnabled = null";
@@ -111,8 +108,7 @@ public class TestSetKnowledgeTypeEnabled extends TestConfigSuper {
 	@Test
 	public void testUserUnauthorized() {
 		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("WithFails", true);
-		request.setAttribute("NoFails", false);
+		request.setAttribute("user", null);
 		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
 				configRest.setKnowledgeTypeEnabled(request, "NotTEST", "false", null).getStatus());
 	}
@@ -120,9 +116,7 @@ public class TestSetKnowledgeTypeEnabled extends TestConfigSuper {
 	@Test
 	public void testUserNull() {
 		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("WithFails", false);
-		request.setAttribute("NoFails", false);
-		request.setAttribute("SysAdmin", false);
+		request.setAttribute("user", null);
 		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
 				configRest.setKnowledgeTypeEnabled(request, "NotTEST", "false", null).getStatus());
 	}

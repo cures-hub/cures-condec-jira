@@ -6,36 +6,24 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.ofbiz.core.entity.GenericValue;
 
-import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.mock.ofbiz.MockGenericValue;
 
-import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import net.java.ao.EntityManager;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-@RunWith(ActiveObjectsJUnitRunner.class)
-public class TestJiraIssueTypeGenerator extends TestSetUpWithIssues {
+public class TestJiraIssueTypeGenerator {
 
-	private EntityManager entityManager;
-	private JiraIssueTypeGenerator generator;
+	private static JiraIssueTypeGenerator generator;
 
-	@Before
-	public void setUp() {
-		initialization();
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
-
+	@BeforeClass
+	public static void setUp() {
+		TestSetUpWithIssues.initialization();
 		generator = new JiraIssueTypeGenerator();
 	}
 

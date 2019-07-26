@@ -5,44 +5,39 @@ import static org.junit.Assert.assertEquals;
 import javax.ws.rs.core.Response;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+import com.atlassian.jira.user.MockApplicationUser;
 
-@RunWith(ActiveObjectsJUnitRunner.class)
-public class TestClearSentenceDatabase extends TestConfigSuper{
-	
-    @Test
-    public void testSetActivatedRequestNullProjectKeyNull() {
-        assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-                configRest.clearSentenceDatabase(null, null).getEntity());
-    }
+public class TestClearSentenceDatabase extends TestConfigSuper {
 
-    @Test
-    public void testSetActivatedRequestNullProjectKeyTrue() {
-        assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-                configRest.clearSentenceDatabase(null, "TEST").getEntity());
-    }
+	@Test
+	public void testSetActivatedRequestNullProjectKeyNull() {
+		assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
+				configRest.clearSentenceDatabase(null, null).getEntity());
+	}
 
-    @Test
-    public void testSetActivatedRequestExistsProjectKeyExistsIsActivatedFalse() {
-        assertEquals(Response.ok().build().getClass(), configRest.setActivated(request, "TEST", "false").getClass());
-    }
+	@Test
+	public void testSetActivatedRequestNullProjectKeyTrue() {
+		assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
+				configRest.clearSentenceDatabase(null, "TEST").getEntity());
+	}
 
-    @Test
-    public void testSetActivatedUserUnauthorized() {
-        request.setAttribute("WithFails", true);
-        request.setAttribute("NoFails", false);
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                configRest.setActivated(request, "NotTEST", "false").getStatus());
-    }
+	@Test
+	public void testSetActivatedRequestExistsProjectKeyExistsIsActivatedFalse() {
+		assertEquals(Response.ok().build().getClass(), configRest.setActivated(request, "TEST", "false").getClass());
+	}
 
-    @Test
-    public void testSetActivatedUserNull() {
-        request.setAttribute("WithFails", false);
-        request.setAttribute("NoFails", false);
-        request.setAttribute("SysAdmin", false);
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                configRest.setActivated(request, "NotTEST", "false").getStatus());
-    }
+	@Test
+	public void testSetActivatedUserUnauthorized() {
+		request.setAttribute("user", new MockApplicationUser("WithFails"));
+		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
+				configRest.setActivated(request, "NotTEST", "false").getStatus());
+	}
+
+	@Test
+	public void testSetActivatedUserNull() {
+		request.setAttribute("user", null);
+		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
+				configRest.setActivated(request, "NotTEST", "false").getStatus());
+	}
 }

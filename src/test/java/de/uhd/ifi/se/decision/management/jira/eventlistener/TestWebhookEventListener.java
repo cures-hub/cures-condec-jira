@@ -6,9 +6,7 @@ import java.util.HashMap;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.event.api.EventPublisher;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.event.MockEventPublisher;
@@ -22,20 +20,11 @@ import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.mock.ofbiz.MockGenericValue;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import net.java.ao.EntityManager;
-import net.java.ao.test.jdbc.Data;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-@Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
-@RunWith(ActiveObjectsJUnitRunner.class)
 public class TestWebhookEventListener extends TestSetUpWithIssues {
 
-	private EntityManager entityManager;
 	private ConDecEventListener listener;
 	private ApplicationUser user;
 	private Issue issue;
@@ -43,13 +32,11 @@ public class TestWebhookEventListener extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
-		initialization();
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
+		TestSetUpWithIssues.initialization();
 		EventPublisher publisher = new MockEventPublisher();
 		listener = new ConDecEventListener(publisher);
 		issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
-		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
 		jiraComment = ComponentAccessor.getCommentManager().create(issue, user, "Test Comment", true);
 	}
 

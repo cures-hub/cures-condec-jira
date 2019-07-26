@@ -6,8 +6,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -16,19 +16,19 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-@RunWith(ActiveObjectsJUnitRunner.class)
-@Data(ActiveObjectPersistenceManagerTestSetUp.AoSentenceTestDatabaseUpdater.class)
 public class TestDeleteLink extends ActiveObjectPersistenceManagerTestSetUp {
 
-	private DecisionKnowledgeElement linkedDecisision;
+	private static DecisionKnowledgeElement linkedDecisision;
 
+	@BeforeClass
+	public static void setUpBeforeAll() {
+		initialisation();
+	}
+	
 	@Before
 	public void setUp() {
-		initialisation();
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
 		element.setProject("TEST");
 		element.setType(KnowledgeType.SOLUTION);
@@ -59,7 +59,7 @@ public class TestDeleteLink extends ActiveObjectPersistenceManagerTestSetUp {
 	@Test
 	@NonTransactional
 	public void testLinkFilledUserNull() {
-		List<Link> links = aoStrategy.getLinks(linkedDecisision);		
+		List<Link> links = aoStrategy.getLinks(linkedDecisision);
 		boolean isDeleted = AbstractPersistenceManager.deleteLink(links.get(0), user);
 		assertTrue(isDeleted);
 	}
@@ -78,7 +78,7 @@ public class TestDeleteLink extends ActiveObjectPersistenceManagerTestSetUp {
 		Link link = links.get(0);
 		long linkId = GenericLinkManager.isLinkAlreadyInDatabase(link);
 		assertTrue(linkId > 0);
-		boolean isDeleted = AbstractPersistenceManager.deleteLink(link, user);		
+		boolean isDeleted = AbstractPersistenceManager.deleteLink(link, user);
 		assertTrue(isDeleted);
 	}
 }

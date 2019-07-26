@@ -8,35 +8,27 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.*;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import com.atlassian.activeobjects.test.TestActiveObjects;
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.security.roles.ProjectRole;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
-import net.java.ao.EntityManager;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 
-@RunWith(ActiveObjectsJUnitRunner.class)
-public class TestAuthenticationManager extends TestSetUpWithIssues {
-	protected EntityManager entityManager;
-	protected HttpServletRequest request;
+public class TestAuthenticationManager {
+	private static HttpServletRequest request;
+	private static ApplicationUser user;
 
-	@Before
-	public void setUp() {
-        initialization();
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
+	@BeforeClass
+	public static void setUp() {
+		TestSetUpWithIssues.initialization();
 
-		request = new MockHttpServletRequest();
-		request.setAttribute("NoSysAdmin", false);
-		request.setAttribute("SysAdmin", true);
+		user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
+		request = new MockHttpServletRequest();		
+		request.setAttribute("user", user);
 		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
 	}
 
@@ -48,7 +40,7 @@ public class TestAuthenticationManager extends TestSetUpWithIssues {
 	@Test
 	public void testIsProjectAdminByRequestFails() {
 		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("SysAdmin", false);
+		request.setAttribute("user", null);
 		assertFalse(AuthenticationManager.isProjectAdmin(request));
 	}
 
@@ -87,11 +79,18 @@ public class TestAuthenticationManager extends TestSetUpWithIssues {
 		ApplicationUser user = AuthenticationManager.getUser("SysAdmin");
 		assertEquals(user.getUsername(), "SysAdmin");
 	}
+	
+	@Test
+	public void testGetUsernameFromRequest() {
+		String usernameFromRequest = AuthenticationManager.getUsername(request);
+		assertEquals("SysAdmin", usernameFromRequest);
+	}
 
 	@Test
 	public void testGetUserFromRequest() {
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		assertEquals(user.getUsername(), "SysAdmin");
+		ApplicationUser userFromRequest = AuthenticationManager.getUser(request);
+		assertEquals(user, userFromRequest);
+		assertEquals("SysAdmin", user.getUsername());
 	}
 
 	@Test

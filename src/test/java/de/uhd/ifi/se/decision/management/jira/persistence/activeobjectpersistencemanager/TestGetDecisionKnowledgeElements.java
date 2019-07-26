@@ -1,24 +1,25 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectpersistencemanager;
 
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertNotNull;
+public class TestGetDecisionKnowledgeElements extends ActiveObjectPersistenceManagerTestSetUp {
 
-@RunWith(ActiveObjectsJUnitRunner.class)
-@Data(ActiveObjectPersistenceManagerTestSetUp.AoSentenceTestDatabaseUpdater.class)
-public class TestGetDecisionKnowledgeElements extends  ActiveObjectPersistenceManagerTestSetUp {
+	@BeforeClass
+	public static void setUpBeforeClass() {
+		initialisation();
+	}
 
-    @Before
+	@Before
 	public void setUp() {
-        initialisation();
 		DecisionKnowledgeElement insertElement = new DecisionKnowledgeElementImpl();
 		insertElement.setKey("TEST-13");
 		insertElement.setProject("TEST");
@@ -33,8 +34,7 @@ public class TestGetDecisionKnowledgeElements extends  ActiveObjectPersistenceMa
 	@Test
 	@NonTransactional
 	public void testFunction() {
-	    assertNotNull(aoStrategy.getDecisionKnowledgeElements());
+		assertNotNull(aoStrategy.getDecisionKnowledgeElements());
 	}
-
 
 }

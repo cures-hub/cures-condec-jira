@@ -1,27 +1,28 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectpersistencemanager;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import net.java.ao.test.jdbc.Data;
-import net.java.ao.test.jdbc.NonTransactional;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(ActiveObjectsJUnitRunner.class)
-@Data(ActiveObjectPersistenceManagerTestSetUp.AoSentenceTestDatabaseUpdater.class)
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import net.java.ao.test.jdbc.NonTransactional;
+
 public class TestUpdateDecisionKnowledgeElement extends ActiveObjectPersistenceManagerTestSetUp {
 
-	private DecisionKnowledgeElement element;
+	private static DecisionKnowledgeElement element;
+
+	@BeforeClass
+	public static void setUpBeforeAll() {
+		initialisation();
+	}
 
 	@Before
 	public void setUp() {
-		initialisation();
 		element = new DecisionKnowledgeElementImpl();
 		element.setId(13);
 		element.setKey("TEST-13");
@@ -31,7 +32,7 @@ public class TestUpdateDecisionKnowledgeElement extends ActiveObjectPersistenceM
 		aoStrategy.insertDecisionKnowledgeElement(element, user);
 		element.setDescription("New");
 	}
-
+	
 	@Test(expected = NullPointerException.class)
 	@NonTransactional
 	public void testElementNullUserNull() {

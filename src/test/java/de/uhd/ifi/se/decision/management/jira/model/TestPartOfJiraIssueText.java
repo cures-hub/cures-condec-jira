@@ -10,36 +10,22 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.issue.Issue;
 
-import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfTextImpl;
-import net.java.ao.EntityManager;
-import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-@RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestPartOfJiraIssueText.AoSentenceTestDatabaseUpdater.class)
 public class TestPartOfJiraIssueText extends TestSetUpWithIssues {
-
-	private EntityManager entityManager;
 
 	@Before
 	public void setUp() {
 		initialization();
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
 	}
 
 	@Test
@@ -107,7 +93,7 @@ public class TestPartOfJiraIssueText extends TestSetUpWithIssues {
 		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl();
 		assertEquals(sentence.getText(), "");
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testGetTextInSuperClass() {
@@ -246,13 +232,13 @@ public class TestPartOfJiraIssueText extends TestSetUpWithIssues {
 		assertNotNull(jiraIssue);
 		assertEquals(50, (long) jiraIssue.getId());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testGetJiraIssueDescription() {
-		PartOfJiraIssueText partOfText = new PartOfJiraIssueTextImpl();		
+		PartOfJiraIssueText partOfText = new PartOfJiraIssueTextImpl();
 		assertEquals("", partOfText.getJiraIssueDescription());
-		
+
 		partOfText.setJiraIssueId(50);
 
 		assertEquals("Test", partOfText.getJiraIssueDescription());

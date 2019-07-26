@@ -41,15 +41,15 @@ public class MockIssueLinkManager implements IssueLinkManager {
 	public List<IssueLink> getInwardLinks(Long arg0) {
 		List<IssueLink> allInwardIssueLink = new ArrayList<>();
 		if (arg0 == 20) {
-			IssueLink link = new MockIssueLink((long) 3);
+			IssueLink link = new MockIssueLink(3);
 			allInwardIssueLink.add(link);
 		}
 		if (arg0 == 30) {
 			for (int i = 0; i < 10; i++) {
-				IssueLink link = new MockIssueLink((long) 3);
-				((MockIssueLink) link).setSequence((long) i);
+				IssueLink link = new MockIssueLink(3);
+				((MockIssueLink) link).setSequence(i);
 				if (i == 9) {
-					((MockIssueLink) link).setSequence((long) 1);
+					((MockIssueLink) link).setSequence(1);
 				}
 				allInwardIssueLink.add(link);
 			}
@@ -105,21 +105,21 @@ public class MockIssueLinkManager implements IssueLinkManager {
 			}
 		}
 		if (arg0 == 20) {
-			IssueLink link = new MockIssueLink((long) 4);
+			IssueLink link = new MockIssueLink(4);
 			allOutwardIssueLink.add(link);
 		}
 		if (arg0 == 30) {
 			for (int i = 0; i < 10; i++) {
-				IssueLink link = new MockIssueLink((long) 3);
+				IssueLink link = new MockIssueLink(3);
 				((MockIssueLink) link).setSequence((long) i + 10);
 				if (i == 9) {
-					((MockIssueLink) link).setSequence((long) 1);
+					((MockIssueLink) link).setSequence(1);
 				}
 				allOutwardIssueLink.add(link);
 			}
 		}
 		if (arg0 == 12) {
-			MockIssueLink link = new MockIssueLink((long) 1);
+			MockIssueLink link = new MockIssueLink(1);
 			allOutwardIssueLink.add(link);
 		}
 		return allOutwardIssueLink;

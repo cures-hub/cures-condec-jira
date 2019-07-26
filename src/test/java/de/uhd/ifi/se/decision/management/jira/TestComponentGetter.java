@@ -7,73 +7,22 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
-import com.atlassian.jira.bc.issue.IssueService;
-import com.atlassian.jira.bc.issue.search.SearchService;
-import com.atlassian.jira.bc.project.ProjectService;
-import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
-import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
-import com.atlassian.templaterenderer.TemplateRenderer;
 
-import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockSearchService;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 
 public class TestComponentGetter {
 
-	private PluginSettingsFactory pluginSettingsFactory;
-	private TransactionTemplate transactionTemplate;
-	private IssueService issueService;
-	private ProjectService projectService;
-	private SearchService searchService;
 	private UserManager userManager;
-	private TemplateRenderer templateRenderer;
 	private ActiveObjects activeObjects;
-
-	public static void init(ActiveObjects activeObjects, TransactionTemplate transactionTemplate,
-			UserManager userManager) {
-		new ComponentGetter(new MockPluginSettingsFactory(), transactionTemplate, null, null, new MockSearchService(),
-				userManager, null, activeObjects);
-	}
 
 	@Before
 	public void setUp() {
-		pluginSettingsFactory = mock(PluginSettingsFactory.class);
-		transactionTemplate = mock(TransactionTemplate.class);
-		issueService = mock(IssueService.class);
-		projectService = mock(ProjectService.class);
-		searchService = new MockSearchService();
+		new MockComponentAccessor();
 		userManager = new MockUserManager();
-		templateRenderer = mock(TemplateRenderer.class);
 		activeObjects = mock(ActiveObjects.class);
-
-		new ComponentGetter(pluginSettingsFactory, transactionTemplate, issueService, projectService, searchService,
-				userManager, templateRenderer, activeObjects);
-	}
-
-	@Test
-	public void testGetPluginSettingsFactory() {
-		assertEquals(pluginSettingsFactory, ComponentGetter.getPluginSettingsFactory());
-	}
-
-	@Test
-	public void testGetTransactionTemplate() {
-		assertEquals(transactionTemplate, ComponentGetter.getTransactionTemplate());
-	}
-
-	@Test
-	public void testGetIssueService() {
-		assertEquals(issueService, ComponentGetter.getIssueService());
-	}
-
-	@Test
-	public void testGetProjectService() {
-		assertEquals(projectService, ComponentGetter.getProjectService());
-	}
-
-	@Test
-	public void testGetSearchService() {
-		assertEquals(searchService, ComponentGetter.getSearchService());
+		new ComponentGetter(userManager, activeObjects);
 	}
 
 	@Test
@@ -82,24 +31,19 @@ public class TestComponentGetter {
 	}
 
 	@Test
-	public void testGetTemplateRenderer() {
-		assertEquals(templateRenderer, ComponentGetter.getTemplateRenderer());
-	}
-
-	@Test
-	public void testGetActivObjects() {
+	public void testGetActiveObjects() {
 		assertEquals(activeObjects, ComponentGetter.getActiveObjects());
 	}
 
 	@Test
-	public void testGetPluginStorageKey() {
-		assertEquals("de.uhd.ifi.se.decision.management.jira", ComponentGetter.getPluginStorageKey());
+	public void testGetUrlOfImageFolder() {
+		assertEquals("null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/",
+				ComponentGetter.getUrlOfImageFolder());
 	}
 
 	@Test
-	public void testSetActiveObjects() {
-		ActiveObjects activeObjects = mock(ActiveObjects.class);
-		ComponentGetter.setActiveObjects(activeObjects);
-		assertEquals(activeObjects, ComponentGetter.getActiveObjects());
+	public void testGetUrlOfClassifierFolder() {
+		assertEquals("null/download/resources/de.uhd.ifi.se.decision.management.jira:classifier-resources/",
+				ComponentGetter.getUrlOfClassifierFolder());
 	}
 }

@@ -6,24 +6,14 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import com.atlassian.activeobjects.test.TestActiveObjects;
-
-import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import net.java.ao.EntityManager;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 /**
  * Test class for decision knowledge element getter and setter methods
  */
-@RunWith(ActiveObjectsJUnitRunner.class)
 public class TestDecisionKnowledgeElementStrings extends TestSetUpWithIssues {
-	private EntityManager entityManager;
 	private long id;
 	private String summary;
 	private String description;
@@ -43,9 +33,6 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUpWithIssues {
 
 		this.decisionKnowledgeElement = new DecisionKnowledgeElementImpl(id, summary, description, type, projectKey,
 				key, DocumentationLocation.ACTIVEOBJECT);
-
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
 	}
 
 	@Test

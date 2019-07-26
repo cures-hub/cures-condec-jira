@@ -5,15 +5,9 @@ import static org.junit.Assert.assertEquals;
 import javax.ws.rs.core.Response;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
-import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-@RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestTextSplitter.AoSentenceTestDatabaseUpdater.class)
 public class TestSaveArffFile extends TestConfigSuper {
 
 	@Test

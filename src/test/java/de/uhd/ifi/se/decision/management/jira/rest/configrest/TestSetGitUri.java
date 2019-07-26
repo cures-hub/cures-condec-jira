@@ -5,12 +5,9 @@ import static org.junit.Assert.assertEquals;
 import javax.ws.rs.core.Response;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import net.java.ao.test.jdbc.NonTransactional;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-@RunWith(ActiveObjectsJUnitRunner.class)
 public class TestSetGitUri extends TestConfigSuper {
 	private static final String INVALID_GIT_URI = "Git URI could not be set because it is null.";
 

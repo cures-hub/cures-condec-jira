@@ -7,31 +7,23 @@ import javax.ws.rs.core.Response;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+import com.atlassian.jira.user.MockApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
-import net.java.ao.EntityManager;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-@RunWith(ActiveObjectsJUnitRunner.class)
 public class TestDeleteDecisionKnowledgeElement extends TestSetUpWithIssues {
 
 	private final static String DELETION_ERROR = "Deletion of decision knowledge element failed.";
 
-	private EntityManager entityManager;
 	private KnowledgeRest knowledgeRest;
 	private DecisionKnowledgeElement decisionKnowledgeElement;
 	private HttpServletRequest request;
@@ -40,16 +32,13 @@ public class TestDeleteDecisionKnowledgeElement extends TestSetUpWithIssues {
 	public void setUp() {
 		knowledgeRest = new KnowledgeRest();
 		initialization();
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
 		decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);
 		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 
 		request = new MockHttpServletRequest();
-		request.setAttribute("WithFails", false);
-		request.setAttribute("NoFails", true);
+		request.setAttribute("user", ComponentAccessor.getUserManager().getUserByName("SysAdmin"));
 	}
 
 	@Test
@@ -61,8 +50,7 @@ public class TestDeleteDecisionKnowledgeElement extends TestSetUpWithIssues {
 	@Test
 	public void testRequestErrorElementFilled() {
 		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("WithFails", true);
-		request.setAttribute("NoFails", false);
+		request.setAttribute("user", new MockApplicationUser("WithFails"));
 		assertEquals(
 				Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", DELETION_ERROR))
 						.build().getEntity(),

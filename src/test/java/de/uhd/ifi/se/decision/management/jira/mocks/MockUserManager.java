@@ -5,10 +5,15 @@ import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 
 import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.user.MockApplicationUser;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.sal.api.user.UserProfile;
 import com.atlassian.sal.api.user.UserResolutionException;
 
+/**
+ * Mocks the JIRA user manager and adds mock users. This is a different user
+ * manager than provided by the ComponentAccessor.getUserManager().
+ */
 public class MockUserManager implements UserManager {
 
 	@Override
@@ -23,19 +28,12 @@ public class MockUserManager implements UserManager {
 
 	@Override
 	public String getRemoteUsername(HttpServletRequest request) {
-		if (request.getAttribute("WithFails") != null && (boolean) request.getAttribute("WithFails")) {
-			return "WithFails";
+		Object userObject = request.getAttribute("user");
+		if (userObject == null || !(userObject instanceof ApplicationUser)) {
+			return null;
 		}
-		if (request.getAttribute("NoFails") != null && (boolean) request.getAttribute("NoFails")) {
-			return "NoFails";
-		}
-		if (request.getAttribute("NoSysAdmin") != null && (boolean) request.getAttribute("NoSysAdmin")) {
-			return "NoSysAdmin";
-		}
-		if (request.getAttribute("SysAdmin") != null && (boolean) request.getAttribute("SysAdmin")) {
-			return "SysAdmin";
-		}
-		return null;
+		ApplicationUser user = (MockApplicationUser) userObject;
+		return user.getUsername();
 	}
 
 	@Override
@@ -50,7 +48,7 @@ public class MockUserManager implements UserManager {
 
 	@Override
 	public boolean isSystemAdmin(String username) {
-		return "SysAdmin".equals(username) || "NoFails".equals(username);
+		return "SysAdmin".equals(username);
 	}
 
 	@Override
@@ -61,9 +59,5 @@ public class MockUserManager implements UserManager {
 	@Override
 	public Principal resolve(String arg0) throws UserResolutionException {
 		return null;
-	}
-	
-	public ApplicationUser getUserByName(String username) {
-		return null;		
 	}
 }

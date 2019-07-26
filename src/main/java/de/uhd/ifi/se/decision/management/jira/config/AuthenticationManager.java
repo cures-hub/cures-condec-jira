@@ -42,7 +42,7 @@ public class AuthenticationManager {
 			return false;
 		}
 		ApplicationUser user = getUser(username);
-		if(user == null) {
+		if (user == null) {
 			return false;
 		}
 		Collection<ProjectRole> roles = getRolesInProject(projectKey, user);
@@ -83,9 +83,9 @@ public class AuthenticationManager {
 		try {
 			ApplicationUser user = ComponentAccessor.getUserManager().getUserByName(username);
 			return user;
-		} catch(NullPointerException e) {
+		} catch (NullPointerException e) {
 			LOGGER.error("Application user could not be retrieved.");
-		}		
+		}
 		return null;
 	}
 

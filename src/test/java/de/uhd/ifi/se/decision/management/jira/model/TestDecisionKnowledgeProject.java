@@ -5,25 +5,15 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import com.atlassian.activeobjects.test.TestActiveObjects;
-
-import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
-import net.java.ao.EntityManager;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 /**
  * Test class for a JIRA project with the configuration settings used in this
  * plug-in
  */
-@RunWith(ActiveObjectsJUnitRunner.class)
 public class TestDecisionKnowledgeProject extends TestSetUpWithIssues {
-	private EntityManager entityManager;
 	private DecisionKnowledgeProject project;
 	private String projectKey;
 	private String projectName;
@@ -32,8 +22,6 @@ public class TestDecisionKnowledgeProject extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
 		initialization();
 		this.projectKey = "TestKey";
 		this.projectName = "TestName";

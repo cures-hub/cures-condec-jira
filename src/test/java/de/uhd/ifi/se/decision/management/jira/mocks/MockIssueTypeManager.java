@@ -16,23 +16,28 @@ public class MockIssueTypeManager implements IssueTypeManager {
 	public MockIssueTypeManager() {
 		super();
 		types = new ArrayList<>();
+		addingAllIssueTypes();
 	}
 
-	public void addingAllIssueTypes() throws CreateException {
+	public void addingAllIssueTypes() {
 		ConstantsManager constManager = new MockConstantsManager();
-		constManager.insertIssueType("Decision", (long) 20, "Test", "Test", (long) 12290);
-		constManager.insertIssueType("Alternative", (long) 20, "Test", "Test", (long) 12290);
-		constManager.insertIssueType("Argument", (long) 20, "Test", "Test", (long) 12290);
-		constManager.insertIssueType("Assessment", (long) 20, "Test", "Test", (long) 12290);
-		constManager.insertIssueType("Assumption", (long) 20, "Test", "Test", (long) 12290);
-		constManager.insertIssueType("Claim", (long) 20, "Test", "Test", (long) 12290);
-		constManager.insertIssueType("Constraint", (long) 20, "Test", "Test", (long) 12290);
-		constManager.insertIssueType("Context", (long) 20, "Test", "Test", (long) 12290);
-		constManager.insertIssueType("Goal", (long) 20, "Test", "Test", (long) 12290);
-		constManager.insertIssueType("Implication", (long) 20, "Test", "Test", (long) 12290);
-		constManager.insertIssueType("Issue", (long) 20, "Test", "Test", (long) 12290);
-		constManager.insertIssueType("Problem", (long) 20, "Test", "Test", (long) 12290);
-		constManager.insertIssueType("Solution", (long) 20, "Test", "Test", (long) 12290);
+		try {
+			constManager.insertIssueType("Decision", (long) 20, "Test", "Test", (long) 12290);
+			constManager.insertIssueType("Alternative", (long) 20, "Test", "Test", (long) 12290);
+			constManager.insertIssueType("Argument", (long) 20, "Test", "Test", (long) 12290);
+			constManager.insertIssueType("Assessment", (long) 20, "Test", "Test", (long) 12290);
+			constManager.insertIssueType("Assumption", (long) 20, "Test", "Test", (long) 12290);
+			constManager.insertIssueType("Claim", (long) 20, "Test", "Test", (long) 12290);
+			constManager.insertIssueType("Constraint", (long) 20, "Test", "Test", (long) 12290);
+			constManager.insertIssueType("Context", (long) 20, "Test", "Test", (long) 12290);
+			constManager.insertIssueType("Goal", (long) 20, "Test", "Test", (long) 12290);
+			constManager.insertIssueType("Implication", (long) 20, "Test", "Test", (long) 12290);
+			constManager.insertIssueType("Issue", (long) 20, "Test", "Test", (long) 12290);
+			constManager.insertIssueType("Problem", (long) 20, "Test", "Test", (long) 12290);
+			constManager.insertIssueType("Solution", (long) 20, "Test", "Test", (long) 12290);
+		} catch (CreateException e) {
+			e.printStackTrace();
+		}
 		types.addAll(constManager.getAllIssueTypeObjects());
 	}
 

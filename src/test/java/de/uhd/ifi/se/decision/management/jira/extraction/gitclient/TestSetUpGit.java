@@ -36,7 +36,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
  * @alternative We could have more than one mock git repositories for testing!
  *
  */
-public class TestSetUpGit extends TestSetUpWithIssues {
+public abstract class TestSetUpGit extends TestSetUpWithIssues {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestSetUpGit.class);
 	public static String GIT_URI;

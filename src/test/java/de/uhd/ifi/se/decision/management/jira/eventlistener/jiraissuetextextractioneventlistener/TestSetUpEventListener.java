@@ -3,10 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.eventlistener.jiraissuetextextrac
 import java.util.HashMap;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.eventlistener.ConDecEventListener;
 import org.junit.Before;
 
-import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.event.api.EventPublisher;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.event.MockEventPublisher;
@@ -16,17 +14,13 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.mock.ofbiz.MockGenericValue;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
+import de.uhd.ifi.se.decision.management.jira.eventlistener.ConDecEventListener;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
-import net.java.ao.EntityManager;
 
-public class TestSetUpEventListener extends TestSetUpWithIssues {
+public abstract class TestSetUpEventListener extends TestSetUpWithIssues {
 
-	private EntityManager entityManager;
 	protected MutableIssue jiraIssue;
 	private ApplicationUser user;
 
@@ -35,12 +29,10 @@ public class TestSetUpEventListener extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		initialization();
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
 		EventPublisher publisher = new MockEventPublisher();
 		listener = new ConDecEventListener(publisher);
 		jiraIssue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
-		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
 	}
 
 	protected Comment createComment(String comment) {
@@ -53,8 +45,8 @@ public class TestSetUpEventListener extends TestSetUpWithIssues {
 	}
 
 	protected IssueEvent createIssueEvent(Comment comment, long eventType) {
-		return new IssueEvent(jiraIssue, user, comment, null, new MockGenericValue("test"), new HashMap<String, String>(),
-				eventType);
+		return new IssueEvent(jiraIssue, user, comment, null, new MockGenericValue("test"),
+				new HashMap<String, String>(), eventType);
 	}
 
 	protected boolean isCommentExistent(String oldComment) {

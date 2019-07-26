@@ -3,213 +3,110 @@ package de.uhd.ifi.se.decision.management.jira;
 import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 
-import org.mockito.Mockito;
+import org.junit.runner.RunWith;
 
-import com.atlassian.jira.avatar.AvatarManager;
-import com.atlassian.jira.bc.issue.IssueService;
-import com.atlassian.jira.bc.issue.search.SearchService;
+import com.atlassian.activeobjects.external.ActiveObjects;
+import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.ConstantsManager;
-import com.atlassian.jira.config.IssueTypeManager;
-import com.atlassian.jira.config.properties.APKeys;
-import com.atlassian.jira.config.properties.ApplicationProperties;
-import com.atlassian.jira.config.util.JiraHome;
-import com.atlassian.jira.exception.CreateException;
-import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
-import com.atlassian.jira.issue.comments.CommentManager;
-import com.atlassian.jira.issue.fields.config.FieldConfigScheme;
-import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
-import com.atlassian.jira.issue.fields.option.OptionSetManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.issuetype.MockIssueType;
-import com.atlassian.jira.issue.link.IssueLinkManager;
-import com.atlassian.jira.issue.link.IssueLinkTypeManager;
-import com.atlassian.jira.jql.builder.JqlClauseBuilderFactory;
-import com.atlassian.jira.jql.builder.JqlClauseBuilderFactoryImpl;
-import com.atlassian.jira.jql.util.JqlDateSupportImpl;
-import com.atlassian.jira.mock.MockApplicationProperties;
 import com.atlassian.jira.mock.MockConstantsManager;
 import com.atlassian.jira.mock.MockProjectManager;
-import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
-import com.atlassian.jira.project.ProjectManager;
-import com.atlassian.jira.security.roles.ProjectRoleManager;
-import com.atlassian.jira.timezone.TimeZoneManager;
-import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
-import com.atlassian.jira.user.util.MockUserManager;
-import com.atlassian.jira.user.util.UserManager;
-import com.atlassian.jira.util.VelocityParamFactory;
-import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
-import com.atlassian.velocity.VelocityManager;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockAvatarManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockCommentManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkTypeManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueService;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockJiraHomeForTesting;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockProjectRoleManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockSearchService;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityParamFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import net.java.ao.EntityManager;
-import net.java.ao.test.jdbc.DatabaseUpdater;
+import net.java.ao.test.jdbc.Data;
+import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-public class TestSetUpWithIssues {
-	protected ProjectManager projectManager;
-	private IssueManager issueManager;
-	private ConstantsManager constantsManager;
-	protected MockIssue issue;
-	ApplicationUser user;
+@RunWith(ActiveObjectsJUnitRunner.class)
+@Data(MockDatabase.class)
+public abstract class TestSetUpWithIssues {
 
-	public void initialization() {
-		projectManager = new MockProjectManager();
-		issueManager = new MockIssueManagerSelfImpl();
-		constantsManager = new MockConstantsManager();
-		// With the Value we could add some kinde of real support of the classifier
-		// tests
-		MockApplicationProperties mockApplicationProperties = new MockApplicationProperties();
-		mockApplicationProperties.setString(APKeys.JIRA_BASEURL, "null");
-		IssueTypeManager issueTypeManager = new MockIssueTypeManager();
-		try {
-			((MockIssueTypeManager) issueTypeManager).addingAllIssueTypes();
-		} catch (CreateException e) {
-			e.printStackTrace();
-		}
-		IssueService issueService = new MockIssueService();
+	protected static MockIssue issue;
+	private static EntityManager entityManager;
 
-		UserManager userManager = new MockUserManager();
-		user = new MockApplicationUser("NoFails");
-		ApplicationUser user2 = new MockApplicationUser("WithFails");
-		ApplicationUser user3 = new MockApplicationUser("NoSysAdmin");
-		ApplicationUser user4 = new MockApplicationUser("SysAdmin");
-		((MockUserManager) userManager).addUser(user);
-		((MockUserManager) userManager).addUser(user2);
-		((MockUserManager) userManager).addUser(user3);
-		((MockUserManager) userManager).addUser(user4);
-
-		TimeZoneManager timeZoneManager = mock(TimeZoneManager.class);
-		Mockito.when(timeZoneManager.getLoggedInUserTimeZone()).thenReturn(TimeZone.getDefault());
-
-		MockComponentWorker worker = new MockComponentWorker();
-		worker.registerMock(JqlClauseBuilderFactory.class,
-				new JqlClauseBuilderFactoryImpl(new JqlDateSupportImpl(timeZoneManager)));
-		worker.init().addMock(IssueManager.class, issueManager)
-				.addMock(IssueLinkManager.class, new MockIssueLinkManager())
-				.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager())
-				.addMock(IssueService.class, issueService).addMock(ProjectManager.class, projectManager)
-				.addMock(UserManager.class, userManager).addMock(ConstantsManager.class, constantsManager)
-				.addMock(ProjectRoleManager.class, new MockProjectRoleManager())
-				.addMock(VelocityManager.class, new MockVelocityManager())
-				.addMock(VelocityParamFactory.class, new MockVelocityParamFactory())
-				.addMock(AvatarManager.class, new MockAvatarManager()).addMock(IssueTypeManager.class, issueTypeManager)
-				.addMock(IssueTypeSchemeManager.class, mock(IssueTypeSchemeManager.class))
-				.addMock(FieldConfigScheme.class, mock(FieldConfigScheme.class))
-				.addMock(PluginSettingsFactory.class, new MockPluginSettingsFactory())
-				.addMock(OptionSetManager.class, mock(OptionSetManager.class))
-				.addMock(CommentManager.class, new MockCommentManager())
-				.addMock(ApplicationProperties.class, mockApplicationProperties)
-				.addMock(JiraHome.class, new MockJiraHomeForTesting())
-				.addMock(SearchService.class, new MockSearchService());
-		creatingProjectIssueStructure();
+	public static void initialization() {
+		initComponentAccessor();
+		initComponentGetter();
+		createProjectIssueStructure();
 	}
 
-	private void creatingProjectIssueStructure() {
+	public static void initComponentAccessor() {
+		new MockComponentAccessor();
+	}
+
+	public static void initComponentGetter() {
+		ActiveObjects activeObjects = mock(ActiveObjects.class);
+		if (entityManager != null) {
+			activeObjects = new TestActiveObjects(entityManager);
+		}
+		new ComponentGetter(new de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager(), activeObjects);
+	}
+
+	private static void createProjectIssueStructure() {
 		Project project = new MockProject(1, "TEST");
 		((MockProject) project).setKey("TEST");
-		((MockProjectManager) projectManager).addProject(project);
+		((MockProjectManager) MockComponentAccessor.getProjectManager()).addProject(project);
 
-		ArrayList<KnowledgeType> types = new ArrayList<>();
+		List<IssueType> jiraIssueTypes = createJiraIssueTypesForDecisionKnowledgeTypes();
 
-		types.add(KnowledgeType.OTHER);
-		types.add(KnowledgeType.DECISION);
-		types.add(KnowledgeType.QUESTION);
-		types.add(KnowledgeType.ISSUE);
-		types.add(KnowledgeType.GOAL);
-		types.add(KnowledgeType.SOLUTION);
-		types.add(KnowledgeType.ALTERNATIVE);
-		types.add(KnowledgeType.CLAIM);
-		types.add(KnowledgeType.CONTEXT);
-		types.add(KnowledgeType.ALTERNATIVE);
-		types.add(KnowledgeType.CONSTRAINT);
-		types.add(KnowledgeType.IMPLICATION);
-		types.add(KnowledgeType.ASSESSMENT);
-		types.add(KnowledgeType.ARGUMENT);
-		types.add(KnowledgeType.PROBLEM);
+		List<KnowledgeType> types = Arrays.asList(KnowledgeType.values());
+		addJiraIssue(30, "TEST-" + 30, jiraIssueTypes.get(13), project);
 
-		for (int i = 2; i < types.size() + 2; i++) {
-			if (types.get(i - 2).toString().equals("Problem")) {
-				MutableIssue issue = new MockIssue(30, "TEST-" + 30);
-				((MockIssue) issue).setProjectId(project.getId());
-				issue.setProjectObject(project);
-				IssueType issueType = new MockIssueType(i, types.get(i - 2).toString().toLowerCase(Locale.ENGLISH));
-				((MockConstantsManager) constantsManager).addIssueType(issueType);
-				issue.setIssueType(issueType);
-				issue.setSummary("Test");
-				((MockIssueManagerSelfImpl) issueManager).addIssue(issue);
-			} else {
-				MutableIssue issue = new MockIssue(i, "TEST-" + i);
-				((MockIssue) issue).setProjectId(project.getId());
-				issue.setProjectObject(project);
-				IssueType issueType = new MockIssueType(i, types.get(i - 2).toString().toLowerCase(Locale.ENGLISH));
-				((MockConstantsManager) constantsManager).addIssueType(issueType);
-				issue.setIssueType(issueType);
-				issue.setSummary("Test");
-				((MockIssueManagerSelfImpl) issueManager).addIssue(issue);
-				if (i > types.size() - 4) {
-					issue.setParentId((long) 3);
-				}
+		for (int i = 2; i < jiraIssueTypes.size() + 2; i++) {
+			issue = addJiraIssue(i, "TEST-" + i, jiraIssueTypes.get(i - 2), project);
+			if (i > types.size() - 4) {
+				issue.setParentId((long) 3);
 			}
 		}
-		MutableIssue issue = new MockIssue(50, "TEST-50");
-		((MockIssue) issue).setProjectId(project.getId());
-		issue.setProjectObject(project);
 		IssueType issueType = new MockIssueType(50, "Class");
-		((MockConstantsManager) constantsManager).addIssueType(issueType);
-		issue.setIssueType(issueType);
-		issue.setSummary("Test");
-		issue.setDescription("Test");
-		((MockIssueManagerSelfImpl) issueManager).addIssue(issue);
+		issue = addJiraIssue(50, "TEST-" + 50, issueType, project);
 		issue.setParentId((long) 3);
 
 		Project condecProject = new MockProject(3, "CONDEC");
 		((MockProject) condecProject).setKey("CONDEC");
-		((MockProjectManager) projectManager).addProject(condecProject);
-		MutableIssue cuuIssue = new MockIssue(1234, "CONDEC-1234");
-		cuuIssue.setIssueType(constantsManager.getIssueType("2"));
-		cuuIssue.setSummary("Test Send");
-		cuuIssue.setProjectObject(condecProject);
-		((MockIssueManagerSelfImpl) issueManager).addIssue(cuuIssue);
+		((MockProjectManager) MockComponentAccessor.getProjectManager()).addProject(condecProject);
+		addJiraIssue(1234, "CONDEC-" + 1234, jiraIssueTypes.get(2), condecProject);
 	}
 
-	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
-		@SuppressWarnings("unchecked")
-		@Override
-		public void update(EntityManager entityManager) throws Exception {
-			entityManager.migrate(DecisionKnowledgeElementInDatabase.class);
-			entityManager.migrate(PartOfJiraIssueTextInDatabase.class);
-			entityManager.migrate(LinkInDatabase.class);
+	private static List<IssueType> createJiraIssueTypesForDecisionKnowledgeTypes() {
+		List<IssueType> jiraIssueTypes = new ArrayList<IssueType>();
+		int i = 0;
+		for (KnowledgeType type : KnowledgeType.values()) {
+			IssueType issueType = new MockIssueType(i, type.name().toLowerCase(Locale.ENGLISH));
+			((MockConstantsManager) MockComponentAccessor.getConstantsManager()).addIssueType(issueType);
+			jiraIssueTypes.add(issueType);
+			i++;
 		}
+		return jiraIssueTypes;
 	}
-	
+
+	private static MockIssue addJiraIssue(int id, String key, IssueType issueType, Project project) {
+		MutableIssue issue = new MockIssue(id, key);
+		((MockIssue) issue).setProjectId(project.getId());
+		issue.setProjectObject(project);
+		issue.setIssueType(issueType);
+		issue.setSummary("Test");
+		issue.setDescription("Test");
+		((MockIssueManagerSelfImpl) MockComponentAccessor.getIssueManager()).addIssue(issue);
+		return (MockIssue) issue;
+	}
+
 	public MockIssue createGlobalIssue() {
 		if (issue != null) {
 			return issue;
@@ -224,13 +121,13 @@ public class TestSetUpWithIssues {
 		return issue;
 	}
 
-	public MockIssue createGlobalIssueWithComment() {		
+	public static MockIssue createGlobalIssueWithComment() {
 		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("{issue} testobject {issue}");
 		PartOfJiraIssueText sentence = comment.get(0);
-		sentence.setJiraIssueId(createGlobalIssue().getId());
-		JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(sentence, user);
-		
-		return issue;
+		sentence.setJiraIssueId(createIssue().getId());
+		JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(sentence, new MockApplicationUser("NoFails"));
+
+		return (MockIssue) sentence.getJiraIssue();
 	}
 
 	public static MockIssue createIssue() {

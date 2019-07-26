@@ -6,13 +6,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-
-@RunWith(ActiveObjectsJUnitRunner.class)
 public class TestSetWebhookData extends TestConfigSuper {
 
 	@Test
@@ -90,7 +86,7 @@ public class TestSetWebhookData extends TestConfigSuper {
 	@Test
 	public void testReqFilledProFilledAdrNullSecNull() {
 		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("SysAdmin", true);
+		request.setAttribute("user", user);
 		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
 				configRest.setWebhookData(request, "TEST", null, null).getStatus());
@@ -99,7 +95,7 @@ public class TestSetWebhookData extends TestConfigSuper {
 	@Test
 	public void testReqFilledProFilledAdrNullSecFilled() {
 		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("SysAdmin", true);
+		request.setAttribute("user", user);
 		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
 				configRest.setWebhookData(request, "TEST", null, "TEST").getStatus());
@@ -108,7 +104,7 @@ public class TestSetWebhookData extends TestConfigSuper {
 	@Test
 	public void testReqFilledProFilledAdrFilledSecNull() {
 		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("SysAdmin", true);
+		request.setAttribute("user", user);
 		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
 				configRest.setWebhookData(request, "TEST", "TEST", null).getStatus());
@@ -117,7 +113,7 @@ public class TestSetWebhookData extends TestConfigSuper {
 	@Test
 	public void testReqFilledProFilledAdrFilledSecFilled() {
 		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("SysAdmin", true);
+		request.setAttribute("user", user);
 		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
 		assertEquals(Response.Status.OK.getStatusCode(),
 				configRest.setWebhookData(request, "TEST", "TEST", "TEST").getStatus());

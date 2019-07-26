@@ -2,7 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
@@ -12,10 +12,10 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
 
 public class TestAbstractPersistenceManager extends TestSetUpWithIssues {
 
-	private DecisionKnowledgeElement element;
+	private static DecisionKnowledgeElement element;
 
-	@Before
-	public void setUp() {
+	@BeforeClass
+	public static void setUp() {
 		initialization();
 		element = new DecisionKnowledgeElementImpl();
 		element.setProject("TEST");
@@ -53,7 +53,7 @@ public class TestAbstractPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testGetPersistenceManagerElementExistentJiraIssueComment() {
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
-		assertTrue(AbstractPersistenceManager
-				.getPersistenceManager(element) instanceof JiraIssueTextPersistenceManager);
+		assertTrue(
+				AbstractPersistenceManager.getPersistenceManager(element) instanceof JiraIssueTextPersistenceManager);
 	}
 }
