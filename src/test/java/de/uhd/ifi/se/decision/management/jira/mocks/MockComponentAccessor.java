@@ -10,6 +10,7 @@ import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.config.util.JiraHome;
 import com.atlassian.jira.issue.IssueManager;
+import com.atlassian.jira.issue.changehistory.ChangeHistoryManager;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.fields.config.FieldConfigScheme;
 import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
@@ -55,7 +56,8 @@ public class MockComponentAccessor extends ComponentAccessor {
 				.addMock(CommentManager.class, new MockCommentManager())
 				.addMock(JiraHome.class, new MockJiraHomeForTesting())
 				.addMock(SearchService.class, new MockSearchService())
-				.addMock(TransactionTemplate.class, new MockTransactionTemplate());
+				.addMock(TransactionTemplate.class, new MockTransactionTemplate())
+				.addMock(ChangeHistoryManager.class, mock(ChangeHistoryManager.class));
 	}
 
 	public UserManager initUserManager() {
