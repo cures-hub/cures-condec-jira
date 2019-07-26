@@ -33,6 +33,7 @@ public class TestEventCommentEdited extends TestSetUpEventListener {
 	}
 
 	@Test
+	@NonTransactional
 	public void testNoCommentContained() {
 		Comment comment = createAndChangeComment("", "");
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
