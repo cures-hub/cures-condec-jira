@@ -36,6 +36,8 @@ public class TestEventCommentEdited extends TestSetUpEventListener {
 	public void testNoCommentContained() {
 		Comment comment = createAndChangeComment("", "");
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
+		System.out.println(element);
+		System.out.println(element.getDescription());
 		assertNull(element);
 	}
 
