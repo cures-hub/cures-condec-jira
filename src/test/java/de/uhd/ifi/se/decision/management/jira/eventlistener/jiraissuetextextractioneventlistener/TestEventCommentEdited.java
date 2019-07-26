@@ -33,11 +33,11 @@ public class TestEventCommentEdited extends TestSetUpEventListener {
 	}
 
 	@Test
-	@NonTransactional
 	public void testNoCommentContained() {
 		Comment comment = createAndChangeComment("", "");
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
 		assertEquals("", element.getDescription());
+		assertEquals("", element.getSummary());
 		assertEquals("", element.getKey());
 		assertNull(element);
 	}
