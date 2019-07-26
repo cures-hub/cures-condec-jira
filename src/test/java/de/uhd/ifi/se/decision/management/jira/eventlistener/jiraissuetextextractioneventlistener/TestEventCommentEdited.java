@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.eventlistener.jiraissuetextextractioneventlistener;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -37,9 +36,6 @@ public class TestEventCommentEdited extends TestSetUpEventListener {
 	public void testNoCommentContained() {
 		Comment comment = createAndChangeComment("", "");
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
-		assertEquals("", element.getDescription());
-		assertEquals("", element.getSummary());
-		assertEquals("", element.getKey());
 		assertNull(element);
 	}
 
