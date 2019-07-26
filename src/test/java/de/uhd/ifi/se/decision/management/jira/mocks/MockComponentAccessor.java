@@ -21,6 +21,7 @@ import com.atlassian.jira.mock.MockConstantsManager;
 import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.project.ProjectManager;
+import com.atlassian.jira.security.PermissionManager;
 import com.atlassian.jira.security.roles.ProjectRoleManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
@@ -57,7 +58,8 @@ public class MockComponentAccessor extends ComponentAccessor {
 				.addMock(JiraHome.class, new MockJiraHomeForTesting())
 				.addMock(SearchService.class, new MockSearchService())
 				.addMock(TransactionTemplate.class, new MockTransactionTemplate())
-				.addMock(ChangeHistoryManager.class, mock(ChangeHistoryManager.class));
+				.addMock(ChangeHistoryManager.class, mock(ChangeHistoryManager.class))
+				.addMock(PermissionManager.class, mock(PermissionManager.class));
 	}
 
 	public UserManager initUserManager() {
