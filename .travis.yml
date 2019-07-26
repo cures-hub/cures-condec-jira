@@ -28,4 +28,4 @@ deploy:
     tags: true
     repo: cures-hub/cures-condec-jira
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash) -f $TRAVIS_BUILD_DIR/target/site/jacoco-aggregate/jacoco.xml
