@@ -10,17 +10,15 @@ import org.junit.runner.RunWith;
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.IssueManager;
+import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.issuetype.MockIssueType;
-import com.atlassian.jira.mock.MockIssueManager;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
@@ -34,15 +32,13 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 @Data(MockDatabase.class)
 public abstract class TestSetUpWithIssues {
 
-	protected static MockIssue issue;
+	protected static MutableIssue issue;
 	private static EntityManager entityManager;
 
 	public static void initialization() {
 		initComponentAccessor();
 		initComponentGetter();
-		issue = createIssue();
-		MockIssueManagerSelfImpl issueManager = (MockIssueManagerSelfImpl) ComponentAccessor.getIssueManager();
-		issueManager.addIssue(issue);
+		issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");
 	}
 
 	/**
@@ -72,7 +68,7 @@ public abstract class TestSetUpWithIssues {
 		new ComponentGetter(new de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager(), activeObjects);
 	}
 
-	public MockIssue createGlobalIssue() {
+	public MutableIssue createGlobalIssue() {
 		if (issue != null) {
 			return issue;
 		}

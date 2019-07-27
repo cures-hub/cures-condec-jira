@@ -22,7 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockAvatarManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkTypeManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeManager;
 
@@ -49,7 +49,7 @@ public class TestPluginInitializer {
 	public void testExecutionAfterPropNoInit() {
 		ProjectManager projectManager = new MockProjectManager();
 		IssueTypeManager issueTypeManager = new MockIssueTypeManager();
-		IssueManager issueManager = new MockIssueManagerSelfImpl();
+		IssueManager issueManager = new MockIssueManager();
 		ConstantsManager constManager = new MockConstantsManager();
 		IssueService issueService = new MockIssueService();
 
@@ -65,7 +65,7 @@ public class TestPluginInitializer {
 	@Test
 	public void testExecutionAfterPropInit() throws Exception {
 		ProjectManager projectManager = new MockProjectManager();
-		IssueManager issueManager = new MockIssueManagerSelfImpl();
+		IssueManager issueManager = new MockIssueManager();
 		ConstantsManager constManager = new MockConstantsManager();
 		IssueService issueService = new MockIssueService();
 		IssueTypeManager issueTypeManager = new MockIssueTypeManager();

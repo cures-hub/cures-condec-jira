@@ -24,9 +24,8 @@ public class JiraIssues {
 		List<IssueType> jiraIssueTypes = JiraIssueTypes.getTestJiraIssueTypes();
 
 		List<KnowledgeType> types = Arrays.asList(KnowledgeType.values());
-		addJiraIssue(30, "TEST-" + 30, jiraIssueTypes.get(13), project);
-
-		MockIssue issue = null;
+		MockIssue issue = addJiraIssue(30, "TEST-" + 30, jiraIssueTypes.get(13), project);
+		jiraIssues.add(issue);
 
 		for (int i = 2; i < jiraIssueTypes.size() + 2; i++) {
 			issue = addJiraIssue(i, "TEST-" + i, jiraIssueTypes.get(i - 2), project);

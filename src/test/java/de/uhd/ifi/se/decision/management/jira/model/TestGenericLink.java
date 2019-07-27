@@ -199,7 +199,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
 		Link link = new LinkImpl(sentence, element);
 
-		assertEquals("s1 to i30", link.toString());
+		assertEquals("s1 to i14", link.toString());
 	}
 
 }

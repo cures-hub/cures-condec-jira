@@ -7,12 +7,11 @@ import org.ofbiz.core.entity.GenericEntityException;
 
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
-import com.atlassian.jira.mock.MockIssueManager;
 
 /**
  * This class provides functions not implemented in the Jira Mock Class
  */
-public class MockIssueManagerSelfImpl extends MockIssueManager {
+public class MockIssueManager extends com.atlassian.jira.mock.MockIssueManager {
 
 	@Override
 	public MutableIssue getIssueByKeyIgnoreCase(String key) {

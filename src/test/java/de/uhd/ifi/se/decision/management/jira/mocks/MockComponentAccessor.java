@@ -20,7 +20,6 @@ import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.mock.MockConstantsManager;
-import com.atlassian.jira.mock.MockIssueManager;
 import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.project.Project;
@@ -95,7 +94,7 @@ public class MockComponentAccessor extends ComponentAccessor {
 	}
 
 	public IssueManager initIssueManager(Project project) {
-		MockIssueManager issueManager = new MockIssueManagerSelfImpl();
+		MockIssueManager issueManager = new MockIssueManager();
 		for (MutableIssue jiraIssue : JiraIssues.createJiraIssues(project)) {
 			issueManager.addIssue(jiraIssue);
 		}
