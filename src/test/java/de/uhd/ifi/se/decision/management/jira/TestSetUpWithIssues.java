@@ -60,7 +60,7 @@ public abstract class TestSetUpWithIssues {
 	private static void createProjectIssueStructure() {
 		Project project = JiraProjects.getTestProject();
 
-		List<IssueType> jiraIssueTypes = JiraIssueTypes.createJiraIssueTypesForDecisionKnowledgeTypes();
+		List<IssueType> jiraIssueTypes = JiraIssueTypes.getTestJiraIssueTypes();
 
 		List<KnowledgeType> types = Arrays.asList(KnowledgeType.values());
 		addJiraIssue(30, "TEST-" + 30, jiraIssueTypes.get(13), project);
