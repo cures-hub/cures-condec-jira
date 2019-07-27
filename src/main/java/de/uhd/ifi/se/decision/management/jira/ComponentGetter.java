@@ -12,9 +12,22 @@ import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.user.UserManager;
 
+import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.ActiveObjectPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+
 /**
  * @description Provides access to JIRA components. Automatically initialized.
- *              Similar to the ComponentAccessor that comes with JIRA.
+ *              The ComponentGetter is similar to the ComponentAccessor that
+ *              comes with JIRA, but is provided by the ConDec plugin. It
+ *              enables to access the active objects databases for object
+ *              relational mapping. Further, it contains a different user
+ *              manager than that provided by the {@link ComponentAccessor} to
+ *              handle users in HTTP requests.
+ * 
+ * @see AuthenticationManager
+ * @see JiraIssueTextPersistenceManager
+ * @see ActiveObjectPersistenceManager
  */
 @Named("ComponentUtil")
 public class ComponentGetter {

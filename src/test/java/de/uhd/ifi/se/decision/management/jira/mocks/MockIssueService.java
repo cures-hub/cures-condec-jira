@@ -18,6 +18,8 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ErrorCollection;
 import com.atlassian.jira.workflow.TransitionOptions;
 
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+
 public class MockIssueService implements IssueService {
 
 	@Override
@@ -60,7 +62,7 @@ public class MockIssueService implements IssueService {
 	public IssueResult getIssue(ApplicationUser user, Long issueId) {
 		MutableIssue issue = new MockIssue(issueId);
 		IssueResult result = new IssueResult(issue);
-		if (user == null) {
+		if (user == null || JiraUsers.valueOf(user) == JiraUsers.BLACK_HEAD) {
 			ErrorCollection col = new MockAction();
 			col.addError("Test", "Test");
 			return new IssueResult(issue, col);
@@ -69,13 +71,10 @@ public class MockIssueService implements IssueService {
 	}
 
 	@Override
-	public IssueResult getIssue(ApplicationUser user, String arg1) {
-		MutableIssue issue = new MockIssue(1, arg1);
+	public IssueResult getIssue(ApplicationUser user, String key) {
+		MutableIssue issue = new MockIssue(1, key);
 		IssueResult result = new IssueResult(issue);
-		if (user.getName().equals("NoFails")) {
-			return result;
-		}
-		if (user.getName().equals("WithFails")) {
+		if (JiraUsers.valueOf(user) == JiraUsers.BLACK_HEAD) {
 			ErrorCollection col = new MockAction();
 			col.addError("Test", "Test");
 			return new IssueResult(issue, col);
@@ -135,7 +134,7 @@ public class MockIssueService implements IssueService {
 		ErrorCollection col = new MockAction();
 		Map<String, Object> fieldValuesHolder = new ConcurrentHashMap<>();
 		Map<String, org.codehaus.jackson.JsonNode> properties = new ConcurrentHashMap<>();
-		if (user == null || user.getName().equals("WithFails")) {
+		if (user == null || JiraUsers.valueOf(user) == JiraUsers.BLACK_HEAD) {
 			col.addError("Test", "Test");
 			return new CreateValidationResult(issue, col, fieldValuesHolder, properties);
 		}
@@ -148,7 +147,7 @@ public class MockIssueService implements IssueService {
 		IssueType issueType = new MockIssueType(12, "Solution");
 		issue.setIssueType(issueType);
 		ErrorCollection col = new MockAction();
-		if (user == null || user.getName().equals("WithFails")) {
+		if (user == null || JiraUsers.valueOf(user) == JiraUsers.BLACK_HEAD) {
 			col.addError("Test", "Test");
 			return new DeleteValidationResult(issue, col);
 		}
@@ -179,7 +178,7 @@ public class MockIssueService implements IssueService {
 		issue.setIssueType(issueType);
 		ErrorCollection col = new MockAction();
 		Map<String, Object> fieldValuesHolder = new ConcurrentHashMap<>();
-		if (user == null || user.getName().equals("WithFails")) {
+		if (user == null || JiraUsers.valueOf(user) == JiraUsers.BLACK_HEAD) {
 			col.addError("Test", "Test");
 			return new UpdateValidationResult(issue, col, fieldValuesHolder);
 		}

@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
+import java.net.URI;
 import java.security.Principal;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +11,8 @@ import com.atlassian.sal.api.user.UserKey;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.sal.api.user.UserProfile;
 import com.atlassian.sal.api.user.UserResolutionException;
+
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 /**
  * Mocks the JIRA user manager and adds mock users. This is a different user
@@ -49,7 +52,7 @@ public class MockUserManager implements UserManager {
 
 	@Override
 	public boolean isSystemAdmin(String username) {
-		return "SysAdmin".equals(username);
+		return JiraUsers.SYS_ADMIN.getName().equals(username);
 	}
 
 	@Override
@@ -64,55 +67,86 @@ public class MockUserManager implements UserManager {
 
 	@Override
 	public UserProfile getRemoteUser() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public UserKey getRemoteUserKey() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public UserProfile getRemoteUser(HttpServletRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+		return new UserProfile() {
+
+			@Override
+			public UserKey getUserKey() {
+				String username = getRemoteUsername(request);
+				if (username == null) {
+					username = JiraUsers.BLACK_HEAD.getName();
+				}
+				return new UserKey(username);
+			}
+
+			@Override
+			public String getUsername() {
+				return getRemoteUsername(request);
+			}
+
+			@Override
+			public String getFullName() {
+				return null;
+			}
+
+			@Override
+			public String getEmail() {
+				return null;
+			}
+
+			@Override
+			public URI getProfilePictureUri(int width, int height) {
+				return null;
+			}
+
+			@Override
+			public URI getProfilePictureUri() {
+				return null;
+			}
+
+			@Override
+			public URI getProfilePageUri() {
+				return null;
+			}
+		};
 	}
 
 	@Override
 	public UserKey getRemoteUserKey(HttpServletRequest request) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public UserProfile getUserProfile(UserKey userKey) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public boolean isUserInGroup(UserKey userKey, String group) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isSystemAdmin(UserKey userKey) {
-		// TODO Auto-generated method stub
-		return false;
+		return userKey.getStringValue().equals(JiraUsers.SYS_ADMIN.getName());
 	}
 
 	@Override
 	public boolean isAdmin(UserKey userKey) {
-		// TODO Auto-generated method stub
-		return false;
+		return userKey.getStringValue().equals(JiraUsers.SYS_ADMIN.getName());
 	}
 
 	@Override
 	public Iterable<String> findGroupNamesByPrefix(String prefix, int startIndex, int maxResults) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

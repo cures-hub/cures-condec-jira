@@ -9,10 +9,10 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 
-public class TestGetUnlinkedElements extends TestSetUpWithIssues {
+public class TestGetUnlinkedElements extends TestSetUp {
 	private KnowledgeRest knowledgeRest;
 
 	private final static String BAD_REQUEST_ERRROR = "Unlinked decision knowledge elements could not be received due to a bad request (element id or project key was missing).";
@@ -20,7 +20,7 @@ public class TestGetUnlinkedElements extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		knowledgeRest = new KnowledgeRest();
-		initialization();
+		init();
 	}
 
 	@Test

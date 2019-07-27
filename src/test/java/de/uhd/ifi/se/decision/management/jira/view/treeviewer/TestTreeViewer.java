@@ -19,7 +19,7 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -27,9 +27,10 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestTreeViewer extends TestSetUpWithIssues {
+public class TestTreeViewer extends TestSetUp {
 	private AbstractPersistenceManager persistenceStrategy;
 
 	private boolean multiple;
@@ -41,7 +42,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
-		initialization();
+		init();
 		multiple = false;
 		checkCallback = true;
 		themes = new HashMap<>();
@@ -166,7 +167,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		// 2) Add comment to issue
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("14");
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
-		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
+		ApplicationUser currentUser = JiraUsers.SYS_ADMIN.getApplicationUser();
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
 		Comment comment1 = commentManager.create(issue, currentUser, "This is a testsentence for test purposes", true);
 

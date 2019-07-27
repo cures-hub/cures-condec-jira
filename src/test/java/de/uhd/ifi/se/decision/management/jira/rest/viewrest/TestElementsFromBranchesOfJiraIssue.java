@@ -23,7 +23,7 @@ public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 	@Before
 	public void setUp() {
 		viewRest = new ViewRest();
-		initialization();
+		init();
 	}
 
 	@Test

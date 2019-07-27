@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import com.atlassian.jira.bc.issue.search.SearchService;
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.search.SearchContext;
 import com.atlassian.jira.issue.search.SearchException;
@@ -20,7 +21,7 @@ import com.atlassian.query.QueryImpl;
 import com.atlassian.query.clause.Clause;
 import com.atlassian.query.clause.TerminalClauseImpl;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
 /**
  * This class is currently not used because the JiraQueryHandler sets the
@@ -37,7 +38,9 @@ public class MockSearchService implements SearchService {
 				|| query.getQueryString().equals("project=UNKNOWNPROJECT")) {
 			return new SearchResults<Issue>(jiraIssues, 0, 0, 0);
 		}
-		jiraIssues.add(TestSetUpWithIssues.createGlobalIssueWithComment());
+		Issue issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");
+		JiraIssues.addComment(issue);
+		jiraIssues.add(issue);
 		return new SearchResults<Issue>(jiraIssues, 1, 1, 0);
 	}
 

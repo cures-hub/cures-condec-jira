@@ -11,16 +11,16 @@ import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 
-public class TestKnowledgeClassificationMacro extends TestSetUpWithIssues {
+public class TestKnowledgeClassificationMacro extends TestSetUp {
 
 	private RenderContext issueView = new RenderContext();
 	private RenderContext wysiwygView = new RenderContext();
 
 	@Before
 	public void setUp() {
-		initialization();
+		init();
 
 		issueView.addParam(IssueRenderContext.WYSIWYG_PARAM, false);
 		issueView.addParam("jira.issue", "Test-1");

@@ -6,7 +6,7 @@ import javax.ws.rs.core.Response;
 
 import org.junit.Test;
 
-import com.atlassian.jira.user.MockApplicationUser;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestClearSentenceDatabase extends TestConfigSuper {
 
@@ -29,7 +29,7 @@ public class TestClearSentenceDatabase extends TestConfigSuper {
 
 	@Test
 	public void testSetActivatedUserUnauthorized() {
-		request.setAttribute("user", new MockApplicationUser("WithFails"));
+		request.setAttribute("user", JiraUsers.BLACK_HEAD.getApplicationUser());
 		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
 				configRest.setActivated(request, "NotTEST", "false").getStatus());
 	}

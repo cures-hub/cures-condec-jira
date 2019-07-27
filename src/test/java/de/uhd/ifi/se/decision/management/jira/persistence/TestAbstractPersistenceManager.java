@@ -5,18 +5,18 @@ import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 
-public class TestAbstractPersistenceManager extends TestSetUpWithIssues {
+public class TestAbstractPersistenceManager extends TestSetUp {
 
 	private static DecisionKnowledgeElement element;
 
 	@BeforeClass
 	public static void setUp() {
-		initialization();
+		init();
 		element = new DecisionKnowledgeElementImpl();
 		element.setProject("TEST");
 	}

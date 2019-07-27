@@ -13,7 +13,7 @@ import org.ofbiz.core.entity.GenericEntityException;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
@@ -21,7 +21,7 @@ import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestGetTreant extends TestSetUpWithIssues {
+public class TestGetTreant extends TestSetUp {
 	protected HttpServletRequest request;
 
 	private ViewRest viewRest;
@@ -33,7 +33,7 @@ public class TestGetTreant extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		viewRest = new ViewRest();
-		initialization();
+		init();
 		request = new MockHttpServletRequest();
 	}
 

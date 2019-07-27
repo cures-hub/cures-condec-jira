@@ -9,19 +9,19 @@ import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestGetVis extends TestSetUpWithIssues {
+public class TestGetVis extends TestSetUp {
 
 	private ViewRest viewRest;
 	private FilterSettings filterSettings;
@@ -35,10 +35,10 @@ public class TestGetVis extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		viewRest = new ViewRest();
-		initialization();
+		init();
 		request = new MockHttpServletRequest();
 		String jql = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
-		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		filterSettings = new FilterSettingsImpl("TEST", jql, user);
 		request.setAttribute("user", user);
 	}

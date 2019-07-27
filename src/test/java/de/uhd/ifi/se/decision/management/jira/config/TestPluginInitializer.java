@@ -18,11 +18,11 @@ import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.project.ProjectManager;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockAvatarManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkTypeManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeManager;
 
@@ -32,7 +32,7 @@ public class TestPluginInitializer {
 
 	@BeforeClass
 	public static void setUpBeforeClass() {
-		TestSetUpWithIssues.initialization();
+		TestSetUp.init();
 	}
 	
 	@Before
@@ -49,7 +49,7 @@ public class TestPluginInitializer {
 	public void testExecutionAfterPropNoInit() {
 		ProjectManager projectManager = new MockProjectManager();
 		IssueTypeManager issueTypeManager = new MockIssueTypeManager();
-		IssueManager issueManager = new MockIssueManagerSelfImpl();
+		IssueManager issueManager = new MockIssueManager();
 		ConstantsManager constManager = new MockConstantsManager();
 		IssueService issueService = new MockIssueService();
 
@@ -65,7 +65,7 @@ public class TestPluginInitializer {
 	@Test
 	public void testExecutionAfterPropInit() throws Exception {
 		ProjectManager projectManager = new MockProjectManager();
-		IssueManager issueManager = new MockIssueManagerSelfImpl();
+		IssueManager issueManager = new MockIssueManager();
 		ConstantsManager constManager = new MockConstantsManager();
 		IssueService issueService = new MockIssueService();
 		IssueTypeManager issueTypeManager = new MockIssueTypeManager();

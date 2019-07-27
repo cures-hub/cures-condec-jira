@@ -6,21 +6,21 @@ import static org.junit.Assert.assertNull;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestFilterExtractor extends TestSetUpWithIssues {
+public class TestFilterExtractor extends TestSetUp {
 
 	private ApplicationUser user;
 
 	@Before
 	public void setUp() {
-		initialization();
-		user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
+		init();
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 
 	@Test

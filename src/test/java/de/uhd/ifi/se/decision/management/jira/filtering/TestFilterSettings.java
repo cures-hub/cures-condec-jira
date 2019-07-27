@@ -6,17 +6,17 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 
-public class TestFilterSettings extends TestSetUpWithIssues {
+public class TestFilterSettings extends TestSetUp {
 	private FilterSettings filterSettings;
 	private long createDate;
 
 	@Before
 	public void setUp() {
-		initialization();
+		init();
 		createDate = -1;
 		filterSettings = new FilterSettingsImpl("TEST", "?jql=project%20%3D%20CONDEC", null);
 	}

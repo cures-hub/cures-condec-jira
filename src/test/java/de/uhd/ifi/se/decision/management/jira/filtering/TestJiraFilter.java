@@ -7,13 +7,13 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 
-public class TestJiraFilter extends TestSetUpWithIssues {
+public class TestJiraFilter extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		initialization();
+		init();
 	}
 
 	@Test

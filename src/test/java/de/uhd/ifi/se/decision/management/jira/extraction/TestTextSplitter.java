@@ -13,21 +13,22 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestTextSplitter extends TestSetUpWithIssues {
+public class TestTextSplitter extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		initialization();
+		init();
 	}
 
 	public static List<PartOfJiraIssueText> getSentencesForCommentText(String text) {
-		Issue issue = TestSetUpWithIssues.createIssue();
-		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
+		Issue issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");
+		ApplicationUser currentUser = JiraUsers.SYS_ADMIN.getApplicationUser();
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 		Comment comment = ComponentAccessor.getCommentManager().create(issue, currentUser, text, true);
 		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.getPartsOfComment(comment);

@@ -14,12 +14,13 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.mock.ofbiz.MockGenericValue;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.ConDecEventListener;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public abstract class TestSetUpEventListener extends TestSetUpWithIssues {
+public abstract class TestSetUpEventListener extends TestSetUp {
 
 	protected MutableIssue jiraIssue;
 	private ApplicationUser user;
@@ -28,11 +29,11 @@ public abstract class TestSetUpEventListener extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
-		initialization();
+		init();
 		EventPublisher publisher = new MockEventPublisher();
 		listener = new ConDecEventListener(publisher);
 		jiraIssue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
-		user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 
 	protected Comment createComment(String comment) {

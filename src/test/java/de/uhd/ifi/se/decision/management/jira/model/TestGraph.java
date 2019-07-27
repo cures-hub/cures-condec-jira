@@ -13,7 +13,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
@@ -22,16 +22,18 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestGraph extends TestSetUpWithIssues {
+public class TestGraph extends TestSetUp {
 
 	private Graph graph;
 	private DecisionKnowledgeElement element;
 
 	@Before
 	public void setUp() {
-		initialization();
+		init();
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
 		element.setProject(new DecisionKnowledgeProjectImpl("Test"));
 		graph = new GraphImpl(element.getProject().getProjectKey(), element.getKey());
@@ -72,8 +74,8 @@ public class TestGraph extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testGetAdjacentElementsFilled() {
 		JiraIssuePersistenceManager issueStrategy = new JiraIssuePersistenceManager("TEST");
-		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
-		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		Project project = JiraProjects.getTestProject();
 
 		long i = 2;
 		DecisionKnowledgeElementImpl decision = new DecisionKnowledgeElementImpl(5000, "TESTSummary", "TestDescription",

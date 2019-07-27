@@ -16,7 +16,7 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -25,7 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestSetSentenceIrrelevant extends TestSetUpWithIssues {
+public class TestSetSentenceIrrelevant extends TestSetUp {
 
 	private final static String BAD_REQUEST_ERROR = "Setting element irrelevant failed due to a bad request.";
 
@@ -35,7 +35,7 @@ public class TestSetSentenceIrrelevant extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		knowledgeRest = new KnowledgeRest();
-		initialization();
+		init();
 
 		request = new MockHttpServletRequest();
 		request.setAttribute("WithFails", false);

@@ -16,7 +16,7 @@ public class TestConfigPersistenceManager extends TestSetUpGit {
 
 	@BeforeClass
 	public static void setUpBeforeClass() {
-		initialization();
+		init();
 	}
 
 	// IsIssueStrategy

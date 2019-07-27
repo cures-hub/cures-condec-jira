@@ -9,10 +9,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -22,11 +21,12 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestTreant extends TestSetUpWithIssues {
+public class TestTreant extends TestSetUp {
 	private Chart chart;
 	private Node nodeStructure;
 	private Treant treant;
@@ -39,7 +39,7 @@ public class TestTreant extends TestSetUpWithIssues {
 		this.treant = new Treant();
 		this.treant.setChart(chart);
 		this.treant.setNodeStructure(nodeStructure);
-		initialization();
+		init();
 		persistenceStrategy = AbstractPersistenceManager.getDefaultPersistenceStrategy("TEST");
 	}
 
@@ -77,7 +77,7 @@ public class TestTreant extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testConstructorFiltered() {
-		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		this.treant = new Treant("TEST", "TEST-30", 3, "?jql=project=TEST", user);
 		assertNotNull(this.treant);
 		assertNotNull(treant.getNodeStructure());
@@ -89,7 +89,7 @@ public class TestTreant extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testConstructorQueryNull() {
-		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		this.treant = new Treant("TEST", "TEST-30", 3, "null", user);
 		assertNotNull(this.treant);
 		assertNotNull(treant.getNodeStructure());

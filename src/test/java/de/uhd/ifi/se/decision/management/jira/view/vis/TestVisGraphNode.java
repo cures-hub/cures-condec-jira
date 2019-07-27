@@ -6,11 +6,11 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 
-public class TestVisGraphNode extends TestSetUpWithIssues {
+public class TestVisGraphNode extends TestSetUp {
 
 	private DecisionKnowledgeElement element;
 	private VisNode node;

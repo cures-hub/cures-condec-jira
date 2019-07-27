@@ -14,7 +14,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.servlet.MockHttpServletResponse;
 import com.atlassian.jira.project.MockProject;
@@ -23,8 +22,9 @@ import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTemplateRenderer;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestSettingsOfAllProjects {
 
@@ -36,14 +36,14 @@ public class TestSettingsOfAllProjects {
 
 	@BeforeClass
 	public static void setUp() {
-		TestSetUpWithIssues.initialization();
+		TestSetUp.init();
 		request = new MockHttpServletRequest();
 		response = new MockHttpServletResponse();
 		TemplateRenderer renderer = new MockTemplateRenderer();
 		servlet = new SettingsOfAllProjects(renderer);
 
 		projectManager = new MockProjectManager();
-		user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 
 	@Test
@@ -117,7 +117,7 @@ public class TestSettingsOfAllProjects {
 
 	@Test
 	public void testGetProjectMapNoProject() {
-		assertEquals(2, SettingsOfAllProjects.getProjectsMap().size());
+		assertEquals(1, SettingsOfAllProjects.getProjectsMap().size());
 	}
 
 	@Test

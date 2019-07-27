@@ -31,6 +31,6 @@ public class TestGetJiraIssue extends TestJiraIssueCommentPersistenceManagerSetU
 
 		String jiraIssueKey = JiraIssueTextPersistenceManager.getJiraIssue(id).getKey();
 
-		assertEquals("TEST-30", jiraIssueKey);
+		assertEquals("TEST-14", jiraIssueKey);
 	}
 }

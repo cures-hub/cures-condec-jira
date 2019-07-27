@@ -14,10 +14,9 @@ import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.user.MockApplicationUser;
 import com.atlassian.jira.web.action.ProjectActionSupport;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -27,9 +26,10 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
+public class TestDecisionKnowledgeReport extends TestSetUp {
 
 	private DecisionKnowledgeReport report;
 	private AbstractPersistenceManager persistenceStrategy;
@@ -37,7 +37,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
-		initialization();
+		init();
 		this.report = new DecisionKnowledgeReport();
 
 		ProjectActionSupport pas = new MockProjectActionSupport();
@@ -56,7 +56,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		// 2) Add comment to issue
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("14");
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
-		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
+		ApplicationUser currentUser = JiraUsers.SYS_ADMIN.getApplicationUser();
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
 		Comment comment1 = commentManager.create(issue, currentUser, text, true);
 
@@ -146,7 +146,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 
 		@Override
 		public ApplicationUser getLoggedInUser() {
-			return new MockApplicationUser("SysAdmin");
+			return JiraUsers.SYS_ADMIN.getApplicationUser();
 		}
 	}
 

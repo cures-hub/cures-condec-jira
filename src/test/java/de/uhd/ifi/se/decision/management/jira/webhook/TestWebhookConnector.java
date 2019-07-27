@@ -11,21 +11,21 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.user.MockApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestWebhookConnector extends TestSetUpWithIssues {
+public class TestWebhookConnector extends TestSetUp {
 	private WebhookConnector webhookConnector;
 	private DecisionKnowledgeElement element;
 	private ApplicationUser user;
 
 	@Before
 	public void setUp() {
-		initialization();
+		init();
 		Collection<String> rootTypes = new ArrayList<String>();
 		rootTypes.add("DECISION");
 		webhookConnector = new WebhookConnector("ConDec",
@@ -38,7 +38,7 @@ public class TestWebhookConnector extends TestSetUpWithIssues {
 		element.setDescription("Test description");
 		element.setKey("TEST-14");
 		element.setSummary("Test summary");
-		user = new MockApplicationUser("SysAdmin");
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 
 	@Test
