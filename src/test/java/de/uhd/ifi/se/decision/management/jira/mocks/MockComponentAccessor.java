@@ -23,14 +23,14 @@ import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.security.PermissionManager;
 import com.atlassian.jira.security.roles.ProjectRoleManager;
-import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.user.MockApplicationUser;
 import com.atlassian.jira.user.util.MockUserManager;
 import com.atlassian.jira.user.util.UserManager;
 import com.atlassian.jira.util.VelocityParamFactory;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.velocity.VelocityManager;
+
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
 
 public class MockComponentAccessor extends ComponentAccessor {
 
@@ -64,8 +64,8 @@ public class MockComponentAccessor extends ComponentAccessor {
 
 	public UserManager initUserManager() {
 		UserManager userManager = new MockUserManager();
-		ApplicationUser user = new MockApplicationUser("SysAdmin");
-		((MockUserManager) userManager).addUser(user);
+		((MockUserManager) userManager).addUser(JiraUser.SYS_ADMIN.createApplicationUser());
+		((MockUserManager) userManager).addUser(JiraUser.BLACK_HEAD.createApplicationUser());
 		return userManager;
 	}
 }

@@ -11,6 +11,8 @@ import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.sal.api.user.UserProfile;
 import com.atlassian.sal.api.user.UserResolutionException;
 
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
+
 /**
  * Mocks the JIRA user manager and adds mock users. This is a different user
  * manager than provided by the ComponentAccessor.getUserManager().
@@ -49,7 +51,7 @@ public class MockUserManager implements UserManager {
 
 	@Override
 	public boolean isSystemAdmin(String username) {
-		return "SysAdmin".equals(username);
+		return JiraUser.SYS_ADMIN.getName().equals(username);
 	}
 
 	@Override
@@ -64,55 +66,46 @@ public class MockUserManager implements UserManager {
 
 	@Override
 	public UserProfile getRemoteUser() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public UserKey getRemoteUserKey() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public UserProfile getRemoteUser(HttpServletRequest request) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public UserKey getRemoteUserKey(HttpServletRequest request) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public UserProfile getUserProfile(UserKey userKey) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public boolean isUserInGroup(UserKey userKey, String group) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isSystemAdmin(UserKey userKey) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isAdmin(UserKey userKey) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public Iterable<String> findGroupNamesByPrefix(String prefix, int startIndex, int maxResults) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

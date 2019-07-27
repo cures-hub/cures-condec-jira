@@ -8,13 +8,13 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.JiraQueryHandlerImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestJiraQueryHandler extends TestSetUpWithIssues {
@@ -25,7 +25,7 @@ public class TestJiraQueryHandler extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		initialization();
-		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		user = JiraUser.SYS_ADMIN.getApplicationUser();
 	}
 
 	@Test

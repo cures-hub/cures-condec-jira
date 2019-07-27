@@ -14,7 +14,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.servlet.MockHttpServletResponse;
 import com.atlassian.jira.project.MockProject;
@@ -25,6 +24,7 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTemplateRenderer;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
 
 public class TestSettingsOfAllProjects {
 
@@ -43,7 +43,7 @@ public class TestSettingsOfAllProjects {
 		servlet = new SettingsOfAllProjects(renderer);
 
 		projectManager = new MockProjectManager();
-		user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
+		user = JiraUser.SYS_ADMIN.getApplicationUser();
 	}
 
 	@Test

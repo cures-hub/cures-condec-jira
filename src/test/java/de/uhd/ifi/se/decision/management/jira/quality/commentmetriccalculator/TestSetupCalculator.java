@@ -5,7 +5,6 @@ import java.io.File;
 import org.junit.AfterClass;
 import org.junit.Before;
 
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
@@ -14,6 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.CommentMetricCalculator;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
 
 public abstract class TestSetupCalculator extends TestSetUpWithIssues {
 	protected CommentMetricCalculator calculator;
@@ -21,7 +21,7 @@ public abstract class TestSetupCalculator extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		initialization();
-		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoSysAdmin");
+		ApplicationUser user = JiraUser.BLACK_HEAD.getApplicationUser();
 		addElementToDataBase(user);
 		calculator = new CommentMetricCalculator((long) 1, user, "16");
 	}

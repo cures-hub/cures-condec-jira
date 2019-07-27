@@ -18,6 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
 import meka.classifiers.multilabel.LC;
 import net.java.ao.test.jdbc.NonTransactional;
 import weka.classifiers.meta.FilteredClassifier;
@@ -43,7 +44,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUpWith
 
 	private void addCommentsToIssue() {
 		// Get the current logged in user
-		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
+		ApplicationUser currentUser = JiraUser.SYS_ADMIN.getApplicationUser();
 		// Get access to the Jira comment and component manager
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
 		// Get the last comment entered in on the issue to a String

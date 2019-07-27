@@ -5,13 +5,13 @@ import javax.ws.rs.core.Response;
 
 import org.junit.Before;
 
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
 
 public abstract class TestConfigSuper extends TestSetUpWithIssues {
 	protected HttpServletRequest request;
@@ -28,7 +28,7 @@ public abstract class TestConfigSuper extends TestSetUpWithIssues {
 		configRest = new ConfigRest();
 		initialization();
 
-		user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
+		user = JiraUser.SYS_ADMIN.getApplicationUser();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", user);
 	}

@@ -22,6 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGraph extends TestSetUpWithIssues {
@@ -72,7 +73,7 @@ public class TestGraph extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testGetAdjacentElementsFilled() {
 		JiraIssuePersistenceManager issueStrategy = new JiraIssuePersistenceManager("TEST");
-		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
+		ApplicationUser user = JiraUser.SYS_ADMIN.getApplicationUser();
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
 
 		long i = 2;

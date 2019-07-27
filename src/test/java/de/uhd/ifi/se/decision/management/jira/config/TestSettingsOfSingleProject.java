@@ -11,13 +11,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.mock.servlet.MockHttpServletResponse;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTemplateRenderer;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestSettingsOfSingleProject {
@@ -38,7 +38,7 @@ public class TestSettingsOfSingleProject {
 		TemplateRenderer renderer = new MockTemplateRenderer();
 		servlet = new SettingsOfSingleProject(renderer);
 
-		user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
+		user = JiraUser.SYS_ADMIN.getApplicationUser();
 	}
 
 	@Test

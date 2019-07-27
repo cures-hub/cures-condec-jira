@@ -27,6 +27,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestTreeViewer extends TestSetUpWithIssues {
@@ -166,7 +167,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		// 2) Add comment to issue
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("14");
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
-		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
+		ApplicationUser currentUser = JiraUser.SYS_ADMIN.getApplicationUser();
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
 		Comment comment1 = commentManager.create(issue, currentUser, "This is a testsentence for test purposes", true);
 

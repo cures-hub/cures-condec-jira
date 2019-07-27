@@ -22,6 +22,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
 
 public class TestWebhookEventListener extends TestSetUpWithIssues {
 
@@ -36,7 +37,7 @@ public class TestWebhookEventListener extends TestSetUpWithIssues {
 		EventPublisher publisher = new MockEventPublisher();
 		listener = new ConDecEventListener(publisher);
 		issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
-		user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
+		user = JiraUser.SYS_ADMIN.getApplicationUser();
 		jiraComment = ComponentAccessor.getCommentManager().create(issue, user, "Test Comment", true);
 	}
 

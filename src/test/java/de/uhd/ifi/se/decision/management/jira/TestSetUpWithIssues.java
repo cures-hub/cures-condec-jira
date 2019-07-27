@@ -20,7 +20,6 @@ import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
-import com.atlassian.jira.user.MockApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
@@ -29,6 +28,7 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
@@ -125,7 +125,8 @@ public abstract class TestSetUpWithIssues {
 		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("{issue} testobject {issue}");
 		PartOfJiraIssueText sentence = comment.get(0);
 		sentence.setJiraIssueId(createIssue().getId());
-		JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(sentence, new MockApplicationUser("NoFails"));
+		JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(sentence,
+				JiraUser.SYS_ADMIN.getApplicationUser());
 
 		return (MockIssue) sentence.getJiraIssue();
 	}

@@ -18,6 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
 
 public class TestGetAdjacentElements extends TestJiraIssuePersistenceManagerSetUp {
 
@@ -34,7 +35,7 @@ public class TestGetAdjacentElements extends TestJiraIssuePersistenceManagerSetU
 
 	@Test
 	public void testDecisionKnowledgeElementHasAllTypesOfChildren() {
-		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("SysAdmin");
+		ApplicationUser user = JiraUser.SYS_ADMIN.getApplicationUser();
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
 
 		long i = 2;

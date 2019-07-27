@@ -11,7 +11,6 @@ import org.junit.Test;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
-import com.atlassian.jira.user.MockApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
@@ -19,6 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
 
 public class TestDeleteDecisionKnowledgeElement extends TestSetUpWithIssues {
 
@@ -38,7 +38,7 @@ public class TestDeleteDecisionKnowledgeElement extends TestSetUpWithIssues {
 		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 
 		request = new MockHttpServletRequest();
-		request.setAttribute("user", ComponentAccessor.getUserManager().getUserByName("SysAdmin"));
+		request.setAttribute("user", JiraUser.SYS_ADMIN.getApplicationUser());
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class TestDeleteDecisionKnowledgeElement extends TestSetUpWithIssues {
 	@Test
 	public void testRequestErrorElementFilled() {
 		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("user", new MockApplicationUser("WithFails"));
+		request.setAttribute("user", JiraUser.BLACK_HEAD.getApplicationUser());
 		assertEquals(
 				Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", DELETION_ERROR))
 						.build().getEntity(),
