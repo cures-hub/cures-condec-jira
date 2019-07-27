@@ -18,6 +18,15 @@ import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersisten
 
 public class JiraIssues {
 
+	private static List<MutableIssue> jiraIssues;
+
+	public static List<MutableIssue> getTestJiraIssues() {
+		if (jiraIssues == null || jiraIssues.isEmpty()) {
+			jiraIssues = createJiraIssues(JiraProjects.TEST.createJiraProject(1));
+		}
+		return jiraIssues;
+	}
+
 	public static List<MutableIssue> createJiraIssues(Project project) {
 		List<MutableIssue> jiraIssues = new ArrayList<MutableIssue>();
 
@@ -45,7 +54,7 @@ public class JiraIssues {
 		return jiraIssues;
 	}
 
-	public static MutableIssue createJiraIssue(int id, String key, IssueType issueType, Project project) {
+	private static MutableIssue createJiraIssue(int id, String key, IssueType issueType, Project project) {
 		MutableIssue issue = new MockIssue(id, key);
 		((MockIssue) issue).setProjectId(project.getId());
 		issue.setProjectObject(project);

@@ -20,7 +20,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 public class JiraIssueTypes {
 
 	private static List<IssueType> jiraIssueTypes;
-	
+
 	public static List<IssueType> getTestTypes() {
 		if (jiraIssueTypes == null || jiraIssueTypes.isEmpty()) {
 			jiraIssueTypes = createJiraIssueTypesForDecisionKnowledgeTypes();
@@ -37,5 +37,5 @@ public class JiraIssueTypes {
 			i++;
 		}
 		return jiraIssueTypes;
-	}	
+	}
 }

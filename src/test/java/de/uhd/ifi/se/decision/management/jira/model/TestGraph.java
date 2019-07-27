@@ -35,29 +35,32 @@ public class TestGraph extends TestSetUp {
 	public void setUp() {
 		init();
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
-		element.setProject(new DecisionKnowledgeProjectImpl("Test"));
 		graph = new GraphImpl(element.getProject().getProjectKey(), element.getKey());
 	}
 
 	@Test
+	@NonTransactional
 	public void testProjectKeyConstructor() {
-		Graph graphRoot = new GraphImpl(element.getProject().getProjectKey());
-		assertNotNull(graphRoot);
+		Graph graph = new GraphImpl(element.getProject().getProjectKey());
+		assertNotNull(graph);
 	}
 
 	@Test
+	@NonTransactional
 	public void testRootElementLinkDistConstructor() {
 		Graph graphRoot = new GraphImpl(element.getProject().getProjectKey(), element.getKey());
 		assertNotNull(graphRoot);
 	}
 
 	@Test
+	@NonTransactional
 	public void testRootElementConstructor() {
 		Graph graphRoot = new GraphImpl(element);
 		assertNotNull(graphRoot);
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetAdjacentElementsNull() {
 		assertEquals(0, graph.getAdjacentElements(null).size());
 	}
@@ -112,6 +115,7 @@ public class TestGraph extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetAdjacentElementsAndLinksNull() {
 		assertEquals(0, graph.getAdjacentElementsAndLinks(null).size());
 	}
@@ -135,16 +139,16 @@ public class TestGraph extends TestSetUp {
 
 	@Test
 	public void testSetGetProject() {
-		DecisionKnowledgeProject project = new DecisionKnowledgeProjectImpl("TEST-Set");
+		DecisionKnowledgeProject project = new DecisionKnowledgeProjectImpl("CONDEC");
 		graph.setProject(project);
-		assertEquals("TEST-Set", graph.getProject().getProjectKey());
+		assertEquals("CONDEC", graph.getProject().getProjectKey());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGraphWithSentences() {
 		List<PartOfJiraIssueText> sentences = TestTextSplitter
-				.getSentencesForCommentText("I got an issue in this testclass");
+				.getSentencesForCommentText("How should we mock a knowledge graph?");
 		element = sentences.get(0);
 		graph.setRootElement(element);
 		assertNotNull(graph.getAdjacentElementsAndLinks(element));

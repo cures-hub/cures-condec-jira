@@ -201,7 +201,7 @@ public class TestGenericLink extends TestSetUp {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
 		Link link = new LinkImpl(sentence, element);
 
-		assertEquals("s1 to i14", link.toString());
+		assertEquals("s1 to i30", link.toString());
 	}
 
 }

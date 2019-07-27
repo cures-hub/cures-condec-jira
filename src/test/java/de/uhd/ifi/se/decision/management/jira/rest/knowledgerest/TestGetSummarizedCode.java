@@ -22,7 +22,7 @@ public class TestGetSummarizedCode extends TestSetUpGit {
 
 	@Test
 	public void testElementIdFilledProjectExistentDocumentationLocationJiraIssue() {
-		assertEquals(Status.OK.getStatusCode(), knowledgeRest.getSummarizedCode(12, "TEST", "i", 0).getStatus());
+		assertEquals(Status.OK.getStatusCode(), knowledgeRest.getSummarizedCode(14, "TEST", "i", 0).getStatus());
 	}
 
 	@Test
