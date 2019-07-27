@@ -12,7 +12,7 @@ import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.sal.api.user.UserProfile;
 import com.atlassian.sal.api.user.UserResolutionException;
 
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 /**
  * Mocks the JIRA user manager and adds mock users. This is a different user
@@ -52,7 +52,7 @@ public class MockUserManager implements UserManager {
 
 	@Override
 	public boolean isSystemAdmin(String username) {
-		return JiraUser.SYS_ADMIN.getName().equals(username);
+		return JiraUsers.SYS_ADMIN.getName().equals(username);
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class MockUserManager implements UserManager {
 			public UserKey getUserKey() {
 				String username = getRemoteUsername(request);
 				if (username == null) {
-					username = JiraUser.BLACK_HEAD.getName();
+					username = JiraUsers.BLACK_HEAD.getName();
 				}
 				return new UserKey(username);
 			}
@@ -137,12 +137,12 @@ public class MockUserManager implements UserManager {
 
 	@Override
 	public boolean isSystemAdmin(UserKey userKey) {
-		return userKey.getStringValue().equals(JiraUser.SYS_ADMIN.getName());
+		return userKey.getStringValue().equals(JiraUsers.SYS_ADMIN.getName());
 	}
 
 	@Override
 	public boolean isAdmin(UserKey userKey) {
-		return userKey.getStringValue().equals(JiraUser.SYS_ADMIN.getName());
+		return userKey.getStringValue().equals(JiraUsers.SYS_ADMIN.getName());
 	}
 
 	@Override

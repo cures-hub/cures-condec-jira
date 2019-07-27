@@ -15,7 +15,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestWebhookConnector extends TestSetUpWithIssues {
@@ -38,7 +38,7 @@ public class TestWebhookConnector extends TestSetUpWithIssues {
 		element.setDescription("Test description");
 		element.setKey("TEST-14");
 		element.setSummary("Test summary");
-		user = JiraUser.SYS_ADMIN.getApplicationUser();
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 
 	@Test

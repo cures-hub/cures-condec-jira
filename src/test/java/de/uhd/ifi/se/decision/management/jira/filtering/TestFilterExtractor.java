@@ -10,7 +10,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestFilterExtractor extends TestSetUpWithIssues {
@@ -20,7 +20,7 @@ public class TestFilterExtractor extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		initialization();
-		user = JiraUser.SYS_ADMIN.getApplicationUser();
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 
 	@Test

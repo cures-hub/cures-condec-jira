@@ -16,7 +16,7 @@ import com.atlassian.jira.security.roles.ProjectRole;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestAuthenticationManager {
 	private static HttpServletRequest request;
@@ -26,7 +26,7 @@ public class TestAuthenticationManager {
 	public static void setUp() {
 		TestSetUpWithIssues.initialization();
 
-		user = JiraUser.SYS_ADMIN.getApplicationUser();
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", user);
 		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");

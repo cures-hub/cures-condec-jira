@@ -22,7 +22,8 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGraph extends TestSetUpWithIssues {
@@ -73,8 +74,8 @@ public class TestGraph extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testGetAdjacentElementsFilled() {
 		JiraIssuePersistenceManager issueStrategy = new JiraIssuePersistenceManager("TEST");
-		ApplicationUser user = JiraUser.SYS_ADMIN.getApplicationUser();
-		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		Project project = JiraProjects.getTestProject();
 
 		long i = 2;
 		DecisionKnowledgeElementImpl decision = new DecisionKnowledgeElementImpl(5000, "TESTSummary", "TestDescription",

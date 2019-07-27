@@ -26,7 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
@@ -56,7 +56,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		// 2) Add comment to issue
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("14");
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
-		ApplicationUser currentUser = JiraUser.SYS_ADMIN.getApplicationUser();
+		ApplicationUser currentUser = JiraUsers.SYS_ADMIN.getApplicationUser();
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
 		Comment comment1 = commentManager.create(issue, currentUser, text, true);
 
@@ -146,7 +146,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 
 		@Override
 		public ApplicationUser getLoggedInUser() {
-			return JiraUser.SYS_ADMIN.getApplicationUser();
+			return JiraUsers.SYS_ADMIN.getApplicationUser();
 		}
 	}
 

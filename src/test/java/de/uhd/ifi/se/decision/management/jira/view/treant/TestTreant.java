@@ -21,7 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -77,7 +77,7 @@ public class TestTreant extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testConstructorFiltered() {
-		ApplicationUser user = JiraUser.SYS_ADMIN.getApplicationUser();
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		this.treant = new Treant("TEST", "TEST-30", 3, "?jql=project=TEST", user);
 		assertNotNull(this.treant);
 		assertNotNull(treant.getNodeStructure());
@@ -89,7 +89,7 @@ public class TestTreant extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testConstructorQueryNull() {
-		ApplicationUser user = JiraUser.SYS_ADMIN.getApplicationUser();
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		this.treant = new Treant("TEST", "TEST-30", 3, "null", user);
 		assertNotNull(this.treant);
 		assertNotNull(treant.getNodeStructure());

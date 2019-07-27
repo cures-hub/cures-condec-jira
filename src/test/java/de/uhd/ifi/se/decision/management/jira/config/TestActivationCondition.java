@@ -9,7 +9,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockJiraHelper;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestActivationCondition {
 	private static ActivationCondition condition;
@@ -22,7 +22,7 @@ public class TestActivationCondition {
 
 	@Test
 	public void testUserFilledJiraHelperFilled() {
-		ApplicationUser user = JiraUser.SYS_ADMIN.getApplicationUser();
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		MockJiraHelper helper = new MockJiraHelper();
 		assertTrue(condition.shouldDisplay(user, helper));
 	}

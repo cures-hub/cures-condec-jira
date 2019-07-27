@@ -30,12 +30,14 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.velocity.VelocityManager;
 
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class MockComponentAccessor extends ComponentAccessor {
 
 	public MockComponentAccessor() {
-		ProjectManager projectManager = new MockProjectManager();
+		ProjectManager projectManager = initProjectManager();
+
 		IssueManager issueManager = new MockIssueManagerSelfImpl();
 		ConstantsManager constantsManager = new MockConstantsManager();
 		UserManager userManager = initUserManager();
@@ -64,9 +66,18 @@ public class MockComponentAccessor extends ComponentAccessor {
 
 	public UserManager initUserManager() {
 		UserManager userManager = new MockUserManager();
-		for (JiraUser jiraUser : JiraUser.values()) {
+		for (JiraUsers jiraUser : JiraUsers.values()) {
 			((MockUserManager) userManager).addUser(jiraUser.createApplicationUser());
 		}
 		return userManager;
+	}
+
+	public ProjectManager initProjectManager() {
+		ProjectManager projectManager = new MockProjectManager();
+		int id = 1;
+		for (JiraProjects jiraProject : JiraProjects.values()) {
+			((MockProjectManager) projectManager).addProject(jiraProject.createJiraProject(id++));
+		}
+		return projectManager;
 	}
 }

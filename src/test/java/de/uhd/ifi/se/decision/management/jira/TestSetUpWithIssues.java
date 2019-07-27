@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira;
 
 import static org.mockito.Mockito.mock;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -11,11 +10,9 @@ import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.activeobjects.test.TestActiveObjects;
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.issuetype.MockIssueType;
-import com.atlassian.jira.mock.MockConstantsManager;
 import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.MockProject;
@@ -28,7 +25,9 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueTypes;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
@@ -59,11 +58,9 @@ public abstract class TestSetUpWithIssues {
 	}
 
 	private static void createProjectIssueStructure() {
-		Project project = new MockProject(1, "TEST");
-		((MockProject) project).setKey("TEST");
-		((MockProjectManager) MockComponentAccessor.getProjectManager()).addProject(project);
+		Project project = JiraProjects.getTestProject();
 
-		List<IssueType> jiraIssueTypes = createJiraIssueTypesForDecisionKnowledgeTypes();
+		List<IssueType> jiraIssueTypes = JiraIssueTypes.createJiraIssueTypesForDecisionKnowledgeTypes();
 
 		List<KnowledgeType> types = Arrays.asList(KnowledgeType.values());
 		addJiraIssue(30, "TEST-" + 30, jiraIssueTypes.get(13), project);
@@ -84,18 +81,6 @@ public abstract class TestSetUpWithIssues {
 		addJiraIssue(1234, "CONDEC-" + 1234, jiraIssueTypes.get(2), condecProject);
 	}
 
-	private static List<IssueType> createJiraIssueTypesForDecisionKnowledgeTypes() {
-		List<IssueType> jiraIssueTypes = new ArrayList<IssueType>();
-		int i = 0;
-		for (KnowledgeType type : KnowledgeType.values()) {
-			IssueType issueType = new MockIssueType(i, type.name().toLowerCase(Locale.ENGLISH));
-			((MockConstantsManager) MockComponentAccessor.getConstantsManager()).addIssueType(issueType);
-			jiraIssueTypes.add(issueType);
-			i++;
-		}
-		return jiraIssueTypes;
-	}
-
 	private static MockIssue addJiraIssue(int id, String key, IssueType issueType, Project project) {
 		MutableIssue issue = new MockIssue(id, key);
 		((MockIssue) issue).setProjectId(project.getId());
@@ -111,7 +96,7 @@ public abstract class TestSetUpWithIssues {
 		if (issue != null) {
 			return issue;
 		}
-		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
+		Project project = JiraProjects.getTestProject();
 		issue = new MockIssue(30, "TEST-" + 30);
 		((MockIssue) issue).setProjectId(project.getId());
 		issue.setProjectObject(project);
@@ -126,13 +111,13 @@ public abstract class TestSetUpWithIssues {
 		PartOfJiraIssueText sentence = comment.get(0);
 		sentence.setJiraIssueId(createIssue().getId());
 		JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(sentence,
-				JiraUser.SYS_ADMIN.getApplicationUser());
+				JiraUsers.SYS_ADMIN.getApplicationUser());
 
 		return (MockIssue) sentence.getJiraIssue();
 	}
 
 	public static MockIssue createIssue() {
-		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
+		Project project = JiraProjects.getTestProject();
 		MockIssue issue = new MockIssue(30, "TEST-" + 30);
 		((MockIssue) issue).setProjectId(project.getId());
 		issue.setProjectObject(project);

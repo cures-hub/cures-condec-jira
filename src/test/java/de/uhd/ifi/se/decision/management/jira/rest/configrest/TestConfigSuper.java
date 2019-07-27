@@ -11,7 +11,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public abstract class TestConfigSuper extends TestSetUpWithIssues {
 	protected HttpServletRequest request;
@@ -28,7 +28,7 @@ public abstract class TestConfigSuper extends TestSetUpWithIssues {
 		configRest = new ConfigRest();
 		initialization();
 
-		user = JiraUser.SYS_ADMIN.getApplicationUser();
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", user);
 	}

@@ -18,7 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.ConDecEventListener;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public abstract class TestSetUpEventListener extends TestSetUpWithIssues {
 
@@ -33,7 +33,7 @@ public abstract class TestSetUpEventListener extends TestSetUpWithIssues {
 		EventPublisher publisher = new MockEventPublisher();
 		listener = new ConDecEventListener(publisher);
 		jiraIssue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
-		user = JiraUser.SYS_ADMIN.getApplicationUser();
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 
 	protected Comment createComment(String comment) {

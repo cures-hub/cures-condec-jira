@@ -17,7 +17,7 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTemplateRenderer;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestSettingsOfSingleProject {
@@ -38,7 +38,7 @@ public class TestSettingsOfSingleProject {
 		TemplateRenderer renderer = new MockTemplateRenderer();
 		servlet = new SettingsOfSingleProject(renderer);
 
-		user = JiraUser.SYS_ADMIN.getApplicationUser();
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 
 	@Test

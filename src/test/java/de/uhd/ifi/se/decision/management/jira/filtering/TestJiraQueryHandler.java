@@ -14,7 +14,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.JiraQueryHandlerImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestJiraQueryHandler extends TestSetUpWithIssues {
@@ -25,7 +25,7 @@ public class TestJiraQueryHandler extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		initialization();
-		user = JiraUser.SYS_ADMIN.getApplicationUser();
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 
 	@Test

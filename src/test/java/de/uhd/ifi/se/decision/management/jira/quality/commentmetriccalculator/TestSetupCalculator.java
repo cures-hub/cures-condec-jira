@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.CommentMetricCalculator;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public abstract class TestSetupCalculator extends TestSetUpWithIssues {
 	protected CommentMetricCalculator calculator;
@@ -21,7 +21,7 @@ public abstract class TestSetupCalculator extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		initialization();
-		ApplicationUser user = JiraUser.BLACK_HEAD.getApplicationUser();
+		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
 		addElementToDataBase(user);
 		calculator = new CommentMetricCalculator((long) 1, user, "16");
 	}

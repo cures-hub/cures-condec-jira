@@ -20,7 +20,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestCreateDecisionKnowledgeElement extends TestSetUpWithIssues {
@@ -40,7 +40,7 @@ public class TestCreateDecisionKnowledgeElement extends TestSetUpWithIssues {
 		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 
 		request = new MockHttpServletRequest();
-		ApplicationUser user = JiraUser.SYS_ADMIN.getApplicationUser();
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
 	}
 

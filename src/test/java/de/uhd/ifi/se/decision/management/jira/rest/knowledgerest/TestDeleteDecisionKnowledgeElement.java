@@ -18,7 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUser;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestDeleteDecisionKnowledgeElement extends TestSetUpWithIssues {
 
@@ -38,7 +38,7 @@ public class TestDeleteDecisionKnowledgeElement extends TestSetUpWithIssues {
 		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 
 		request = new MockHttpServletRequest();
-		request.setAttribute("user", JiraUser.SYS_ADMIN.getApplicationUser());
+		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class TestDeleteDecisionKnowledgeElement extends TestSetUpWithIssues {
 	@Test
 	public void testRequestErrorElementFilled() {
 		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("user", JiraUser.BLACK_HEAD.getApplicationUser());
+		request.setAttribute("user", JiraUsers.BLACK_HEAD.getApplicationUser());
 		assertEquals(
 				Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", DELETION_ERROR))
 						.build().getEntity(),
