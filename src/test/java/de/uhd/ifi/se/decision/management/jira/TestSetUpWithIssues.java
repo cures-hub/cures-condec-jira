@@ -13,9 +13,7 @@ import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.issuetype.MockIssueType;
-import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.issue.MockIssue;
-import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
@@ -74,11 +72,6 @@ public abstract class TestSetUpWithIssues {
 		IssueType issueType = new MockIssueType(50, "Class");
 		issue = addJiraIssue(50, "TEST-" + 50, issueType, project);
 		issue.setParentId((long) 3);
-
-		Project condecProject = new MockProject(3, "CONDEC");
-		((MockProject) condecProject).setKey("CONDEC");
-		((MockProjectManager) MockComponentAccessor.getProjectManager()).addProject(condecProject);
-		addJiraIssue(1234, "CONDEC-" + 1234, jiraIssueTypes.get(2), condecProject);
 	}
 
 	private static MockIssue addJiraIssue(int id, String key, IssueType issueType, Project project) {
