@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.user.ApplicationUser;
@@ -31,6 +32,7 @@ public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIs
 	protected static PartOfJiraIssueText element;
 	protected static Comment comment1;
 	protected static DecisionKnowledgeElement decisionKnowledgeElement;
+	protected static Issue issue;
 
 	@Before
 	public void setUp() {
@@ -39,6 +41,7 @@ public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIs
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		addElementToDataBase();
 		addDecisionKnowledgeElement();
+		issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");
 	}
 
 	protected static void addElementToDataBase() {

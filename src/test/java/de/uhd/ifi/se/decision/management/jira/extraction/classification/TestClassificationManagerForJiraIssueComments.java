@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.user.ApplicationUser;
@@ -27,6 +28,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUpWith
 
 	private List<PartOfJiraIssueText> sentences;
 	private ClassificationManagerForJiraIssueComments classificationManager;
+	private Issue issue;
 
 	@Before
 	public void setUp() {
@@ -36,8 +38,8 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUpWith
 		classificationManager.getClassifier().setBinaryClassifier(binaryClassifier);
 		LC lc = new FineGrainedClassifierMock(5);
 		classificationManager.getClassifier().setFineGrainedClassifier(lc);
-
-		createGlobalIssue();
+		issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");
+		
 		addCommentsToIssue();
 		fillSentenceList();
 	}

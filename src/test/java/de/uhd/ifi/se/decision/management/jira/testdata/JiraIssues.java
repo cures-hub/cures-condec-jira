@@ -4,13 +4,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.issuetype.MockIssueType;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.Project;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 public class JiraIssues {
 
@@ -49,6 +53,17 @@ public class JiraIssues {
 		issue.setSummary("Test");
 		issue.setDescription("Test");
 		return (MockIssue) issue;
+	}
+	
+
+	public static MockIssue addComment(Issue issue) {
+		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("{issue} testobject {issue}");
+		PartOfJiraIssueText sentence = comment.get(0);
+		sentence.setJiraIssueId(issue.getId());
+		JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(sentence,
+				JiraUsers.SYS_ADMIN.getApplicationUser());
+
+		return (MockIssue) sentence.getJiraIssue();
 	}
 
 }
