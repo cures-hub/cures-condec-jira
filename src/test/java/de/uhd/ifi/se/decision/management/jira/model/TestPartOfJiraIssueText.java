@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import com.atlassian.jira.issue.Issue;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
@@ -21,11 +21,11 @@ import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTex
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfTextImpl;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestPartOfJiraIssueText extends TestSetUpWithIssues {
+public class TestPartOfJiraIssueText extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		initialization();
+		init();
 	}
 
 	@Test

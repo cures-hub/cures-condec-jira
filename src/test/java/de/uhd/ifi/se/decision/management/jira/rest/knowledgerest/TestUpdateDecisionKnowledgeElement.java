@@ -17,7 +17,7 @@ import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -30,7 +30,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersisten
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
+public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 	private KnowledgeRest knowledgeRest;
 	private DecisionKnowledgeElement decisionKnowledgeElement;
 	private HttpServletRequest request;
@@ -40,7 +40,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		knowledgeRest = new KnowledgeRest();
-		initialization();
+		init();
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
 		decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);

@@ -10,10 +10,10 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 
-public class TestGetDecisionKnowledgeElement extends TestSetUpWithIssues {
+public class TestGetDecisionKnowledgeElement extends TestSetUp {
 	private KnowledgeRest knowledgeRest;
 
 	private final static String BAD_REQUEST_ERROR = "Decision knowledge element could not be received due to a bad request (element id or project key was missing).";
@@ -21,7 +21,7 @@ public class TestGetDecisionKnowledgeElement extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		knowledgeRest = new KnowledgeRest();
-		super.initialization();
+		super.init();
 	}
 
 	@Test

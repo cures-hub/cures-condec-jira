@@ -16,7 +16,7 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -28,7 +28,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestDeleteLink extends TestSetUpWithIssues {
+public class TestDeleteLink extends TestSetUp {
 
 	private final static String DELETION_ERROR = "Deletion of link failed.";
 
@@ -38,7 +38,7 @@ public class TestDeleteLink extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		knowledgeRest = new KnowledgeRest();
-		initialization();
+		init();
 
 		request = new MockHttpServletRequest();
 		request.setAttribute("WithFails", false);

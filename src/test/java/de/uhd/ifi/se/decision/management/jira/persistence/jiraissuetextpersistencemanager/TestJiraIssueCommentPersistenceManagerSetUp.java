@@ -13,7 +13,7 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -25,7 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersisten
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIssues {
+public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUp {
 
 	protected static JiraIssueTextPersistenceManager manager;
 	protected static ApplicationUser user;
@@ -36,7 +36,7 @@ public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIs
 
 	@Before
 	public void setUp() {
-		initialization();
+		init();
 		manager = new JiraIssueTextPersistenceManager("TEST");
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		addElementToDataBase();

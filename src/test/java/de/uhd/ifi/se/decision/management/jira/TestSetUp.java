@@ -14,13 +14,28 @@ import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
+/**
+ * Mocks a JIRA server with JIRA's {@link ComponentAccessor}, the custom
+ * {@link ComponentGetter} of the ConDec plug-in, and test data (e.g.,
+ * {@link JiraUsers}, {@link JiraProjects}, {@link JiraIssueTypes}, and
+ * {@link JiraIssues}).
+ * 
+ * The following annotations are used to mock the active objects databases
+ * before every test execution. Test classes need to extend this TestSetUp class
+ * if they use the mocked active objects databases.
+ */
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(MockDatabase.class)
-public abstract class TestSetUpWithIssues {
+public abstract class TestSetUp {
 
 	private static EntityManager entityManager;
 
-	public static void initialization() {
+	/**
+	 * Inits JIRA's {@link ComponentAccessor} including test data (e.g.,
+	 * {@link JiraUsers}, {@link JiraProjects}, {@link JiraIssueTypes}, and
+	 * {@link JiraIssues}) and the custom {@link ComponentGetter}.
+	 */
+	public static void init() {
 		initComponentAccessor();
 		initComponentGetter();
 	}

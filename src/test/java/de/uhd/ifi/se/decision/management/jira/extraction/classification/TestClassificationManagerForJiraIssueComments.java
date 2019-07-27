@@ -15,7 +15,7 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
@@ -24,7 +24,7 @@ import meka.classifiers.multilabel.LC;
 import net.java.ao.test.jdbc.NonTransactional;
 import weka.classifiers.meta.FilteredClassifier;
 
-public class TestClassificationManagerForJiraIssueComments extends TestSetUpWithIssues {
+public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 
 	private List<PartOfJiraIssueText> sentences;
 	private ClassificationManagerForJiraIssueComments classificationManager;
@@ -32,7 +32,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUpWith
 
 	@Before
 	public void setUp() {
-		initialization();
+		init();
 		classificationManager = new ClassificationManagerForJiraIssueComments();
 		FilteredClassifier binaryClassifier = new BinaryClassifierMock();
 		classificationManager.getClassifier().setBinaryClassifier(binaryClassifier);

@@ -7,14 +7,14 @@ import static org.junit.Assert.assertNull;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestWebhookContentProvider extends TestSetUpWithIssues {
+public class TestWebhookContentProvider extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		initialization();
+		init();
 	}
 
 	@Test

@@ -12,11 +12,11 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestCreateLink extends TestSetUpWithIssues {
+public class TestCreateLink extends TestSetUp {
 	private KnowledgeRest knowledgeRest;
 	private HttpServletRequest request;
 
@@ -25,7 +25,7 @@ public class TestCreateLink extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		knowledgeRest = new KnowledgeRest();
-		initialization();
+		init();
 
 		request = new MockHttpServletRequest();
 	}

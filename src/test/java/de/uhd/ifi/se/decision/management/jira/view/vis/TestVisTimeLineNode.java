@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
@@ -18,7 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssue
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 
-public class TestVisTimeLineNode extends TestSetUpWithIssues {
+public class TestVisTimeLineNode extends TestSetUp {
 	private DecisionKnowledgeElement element;
 	private VisTimeLineNode timeNode;
 	private String createdString;
@@ -35,7 +35,7 @@ public class TestVisTimeLineNode extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
-		initialization();
+		init();
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
 		element.setCreated(new Date(System.currentTimeMillis() - 1000));
 		element.setClosed(new Date(System.currentTimeMillis()));

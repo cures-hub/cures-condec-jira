@@ -9,10 +9,10 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 
-public class TestGetElements extends TestSetUpWithIssues {
+public class TestGetElements extends TestSetUp {
 	private KnowledgeRest knowledgeRest;
 
 	private final static String BAD_REQUEST_ERROR = "Getting elements failed due to a bad request.";
@@ -20,7 +20,7 @@ public class TestGetElements extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		knowledgeRest = new KnowledgeRest();
-		super.initialization();
+		super.init();
 	}
 
 	@Test

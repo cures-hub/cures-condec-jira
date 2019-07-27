@@ -13,19 +13,19 @@ import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestJiraIssueTabPanelRenderer extends TestSetUpWithIssues {
+public class TestJiraIssueTabPanelRenderer extends TestSetUp {
 
 	private JiraIssueTabPanelRenderer renderer;
 
 	@Before
 	public void setUp() {
 		renderer = new JiraIssueTabPanelRenderer();
-		initialization();
+		init();
 	}
 
 	@Test

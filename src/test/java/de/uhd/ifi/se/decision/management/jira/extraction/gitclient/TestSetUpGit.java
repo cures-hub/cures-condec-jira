@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.mock.issue.MockIssue;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 
@@ -36,7 +36,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
  * @alternative We could have more than one mock git repositories for testing!
  *
  */
-public abstract class TestSetUpGit extends TestSetUpWithIssues {
+public abstract class TestSetUpGit extends TestSetUp {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestSetUpGit.class);
 	public static String GIT_URI;
@@ -110,7 +110,7 @@ public abstract class TestSetUpGit extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
-		initialization();
+		init();
 		mockJiraIssueForGitTests = new MockIssue();
 		mockJiraIssueForGitTestsTangled = new MockIssue();
 		mockJiraIssueForGitTestsTangledSingleCommit = new MockIssue();

@@ -18,7 +18,7 @@ import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.project.ProjectManager;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockAvatarManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkTypeManager;
@@ -32,7 +32,7 @@ public class TestPluginInitializer {
 
 	@BeforeClass
 	public static void setUpBeforeClass() {
-		TestSetUpWithIssues.initialization();
+		TestSetUp.init();
 	}
 	
 	@Before

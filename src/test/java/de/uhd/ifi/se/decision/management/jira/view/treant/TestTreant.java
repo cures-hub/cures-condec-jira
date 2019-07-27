@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -26,7 +26,7 @@ import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestTreant extends TestSetUpWithIssues {
+public class TestTreant extends TestSetUp {
 	private Chart chart;
 	private Node nodeStructure;
 	private Treant treant;
@@ -39,7 +39,7 @@ public class TestTreant extends TestSetUpWithIssues {
 		this.treant = new Treant();
 		this.treant.setChart(chart);
 		this.treant.setNodeStructure(nodeStructure);
-		initialization();
+		init();
 		persistenceStrategy = AbstractPersistenceManager.getDefaultPersistenceStrategy("TEST");
 	}
 

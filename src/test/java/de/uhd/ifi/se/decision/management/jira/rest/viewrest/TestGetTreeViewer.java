@@ -16,18 +16,18 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestGetTreeViewer extends TestSetUpWithIssues {
+public class TestGetTreeViewer extends TestSetUp {
 	private ViewRest viewRest;
 	private static final String INVALID_PROJECTKEY = "Decision knowledge elements cannot be shown since project key is invalid.";
 
 	@Before
 	public void setUp() {
 		viewRest = new ViewRest();
-		initialization();
+		init();
 	}
 
 	@Test

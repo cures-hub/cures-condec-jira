@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockJiraHelper;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -16,7 +16,7 @@ public class TestActivationCondition {
 
 	@BeforeClass
 	public static void setUp() {
-		TestSetUpWithIssues.initialization();
+		TestSetUp.init();
 		condition = new ActivationCondition();
 	}
 

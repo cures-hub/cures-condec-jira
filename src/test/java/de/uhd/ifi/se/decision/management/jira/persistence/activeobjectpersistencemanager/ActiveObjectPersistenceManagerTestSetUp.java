@@ -2,17 +2,17 @@ package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectpersisten
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.persistence.ActiveObjectPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public abstract class ActiveObjectPersistenceManagerTestSetUp extends TestSetUpWithIssues {
+public abstract class ActiveObjectPersistenceManagerTestSetUp extends TestSetUp {
 
 	protected static ApplicationUser user;
 	protected static ActiveObjectPersistenceManager aoStrategy;
 
 	public static void initialisation() {
-		initialization();
+		init();
 		aoStrategy = new ActiveObjectPersistenceManager("TEST");
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}

@@ -20,11 +20,11 @@ import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.mock.ofbiz.MockGenericValue;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestWebhookEventListener extends TestSetUpWithIssues {
+public class TestWebhookEventListener extends TestSetUp {
 
 	private ConDecEventListener listener;
 	private ApplicationUser user;
@@ -33,7 +33,7 @@ public class TestWebhookEventListener extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
-		TestSetUpWithIssues.initialization();
+		TestSetUp.init();
 		EventPublisher publisher = new MockEventPublisher();
 		listener = new ConDecEventListener(publisher);
 		issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");

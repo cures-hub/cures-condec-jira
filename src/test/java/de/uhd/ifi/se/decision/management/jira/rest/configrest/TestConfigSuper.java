@@ -9,11 +9,11 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public abstract class TestConfigSuper extends TestSetUpWithIssues {
+public abstract class TestConfigSuper extends TestSetUp {
 	protected HttpServletRequest request;
 	protected ConfigRest configRest;
 
@@ -26,7 +26,7 @@ public abstract class TestConfigSuper extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		configRest = new ConfigRest();
-		initialization();
+		init();
 
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request = new MockHttpServletRequest();

@@ -22,7 +22,7 @@ import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTemplateRenderer;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -36,7 +36,7 @@ public class TestSettingsOfAllProjects {
 
 	@BeforeClass
 	public static void setUp() {
-		TestSetUpWithIssues.initialization();
+		TestSetUp.init();
 		request = new MockHttpServletRequest();
 		response = new MockHttpServletResponse();
 		TemplateRenderer renderer = new MockTemplateRenderer();

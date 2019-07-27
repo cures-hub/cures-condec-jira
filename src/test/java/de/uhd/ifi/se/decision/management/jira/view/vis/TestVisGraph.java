@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
@@ -19,7 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssue
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 
-public class TestVisGraph extends TestSetUpWithIssues {
+public class TestVisGraph extends TestSetUp {
 	private VisGraph visGraph;
 	private HashSet<VisNode> nodes;
 	private HashSet<VisEdge> edges;
@@ -27,7 +27,7 @@ public class TestVisGraph extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
-		initialization();
+		init();
 		nodes = new HashSet<>();
 		edges = new HashSet<>();
 		visGraph = new VisGraph();

@@ -12,12 +12,12 @@ import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 
-public class TestGetFilterSettings extends TestSetUpWithIssues {
+public class TestGetFilterSettings extends TestSetUp {
 
 	private ViewRest viewRest;
 	protected HttpServletRequest request;
@@ -25,7 +25,7 @@ public class TestGetFilterSettings extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		viewRest = new ViewRest();
-		initialization();
+		init();
 		request = new MockHttpServletRequest();
 	}
 

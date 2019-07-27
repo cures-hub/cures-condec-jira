@@ -14,13 +14,13 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 
-public class TestNode extends TestSetUpWithIssues {
+public class TestNode extends TestSetUp {
 
 	private Map<String, String> nodeContent;
 	private Map<String, String> link;
@@ -36,7 +36,7 @@ public class TestNode extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
-		initialization();
+		init();
 		nodeContent = new HashMap<>();
 		link = new HashMap<>();
 		htmlClass = "Test";

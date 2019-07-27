@@ -15,7 +15,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.mock.ofbiz.MockGenericValue;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 
 public class TestJiraIssueTypeGenerator {
 
@@ -23,7 +23,7 @@ public class TestJiraIssueTypeGenerator {
 
 	@BeforeClass
 	public static void setUp() {
-		TestSetUpWithIssues.initialization();
+		TestSetUp.init();
 		generator = new JiraIssueTypeGenerator();
 	}
 
