@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
+import com.atlassian.sal.api.user.UserKey;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.sal.api.user.UserProfile;
 import com.atlassian.sal.api.user.UserResolutionException;
@@ -58,6 +59,60 @@ public class MockUserManager implements UserManager {
 
 	@Override
 	public Principal resolve(String arg0) throws UserResolutionException {
+		return null;
+	}
+
+	@Override
+	public UserProfile getRemoteUser() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public UserKey getRemoteUserKey() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public UserProfile getRemoteUser(HttpServletRequest request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public UserKey getRemoteUserKey(HttpServletRequest request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public UserProfile getUserProfile(UserKey userKey) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isUserInGroup(UserKey userKey, String group) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isSystemAdmin(UserKey userKey) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isAdmin(UserKey userKey) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Iterable<String> findGroupNamesByPrefix(String prefix, int startIndex, int maxResults) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }
