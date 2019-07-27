@@ -64,8 +64,9 @@ public class MockComponentAccessor extends ComponentAccessor {
 
 	public UserManager initUserManager() {
 		UserManager userManager = new MockUserManager();
-		((MockUserManager) userManager).addUser(JiraUser.SYS_ADMIN.createApplicationUser());
-		((MockUserManager) userManager).addUser(JiraUser.BLACK_HEAD.createApplicationUser());
+		for (JiraUser jiraUser : JiraUser.values()) {
+			((MockUserManager) userManager).addUser(jiraUser.createApplicationUser());
+		}
 		return userManager;
 	}
 }

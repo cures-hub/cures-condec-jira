@@ -60,16 +60,6 @@ public class TestAuthenticationManager {
 	}
 
 	@Test
-	public void testIsSystemAdminRequestSuccess() {
-		assertTrue(AuthenticationManager.isSystemAdmin("SysAdmin"));
-	}
-
-	@Test
-	public void testIsSystemAdminRequestFails() {
-		assertFalse(AuthenticationManager.isSystemAdmin("BlackHead"));
-	}
-
-	@Test
 	public void testGetUsername() {
 		assertEquals(AuthenticationManager.getUsername(request), "SysAdmin");
 	}

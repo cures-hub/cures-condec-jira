@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
+import java.net.URI;
 import java.security.Principal;
 
 import javax.servlet.http.HttpServletRequest;
@@ -76,7 +77,47 @@ public class MockUserManager implements UserManager {
 
 	@Override
 	public UserProfile getRemoteUser(HttpServletRequest request) {
-		return null;
+		return new UserProfile() {
+
+			@Override
+			public UserKey getUserKey() {
+				String username = getRemoteUsername(request);
+				if (username == null) {
+					username = JiraUser.BLACK_HEAD.getName();
+				}
+				return new UserKey(username);
+			}
+
+			@Override
+			public String getUsername() {
+				return getRemoteUsername(request);
+			}
+
+			@Override
+			public String getFullName() {
+				return null;
+			}
+
+			@Override
+			public String getEmail() {
+				return null;
+			}
+
+			@Override
+			public URI getProfilePictureUri(int width, int height) {
+				return null;
+			}
+
+			@Override
+			public URI getProfilePictureUri() {
+				return null;
+			}
+
+			@Override
+			public URI getProfilePageUri() {
+				return null;
+			}
+		};
 	}
 
 	@Override
@@ -96,12 +137,12 @@ public class MockUserManager implements UserManager {
 
 	@Override
 	public boolean isSystemAdmin(UserKey userKey) {
-		return false;
+		return userKey.getStringValue().equals(JiraUser.SYS_ADMIN.getName());
 	}
 
 	@Override
 	public boolean isAdmin(UserKey userKey) {
-		return false;
+		return userKey.getStringValue().equals(JiraUser.SYS_ADMIN.getName());
 	}
 
 	@Override

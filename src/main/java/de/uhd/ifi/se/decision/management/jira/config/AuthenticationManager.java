@@ -14,6 +14,7 @@ import com.atlassian.jira.security.roles.ProjectRole;
 import com.atlassian.jira.security.roles.ProjectRoleManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.user.UserManager;
+import com.atlassian.sal.api.user.UserProfile;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 
@@ -31,9 +32,14 @@ public class AuthenticationManager {
 		return AuthenticationManager.isProjectAdmin(username, projectKey);
 	}
 
-	public static String getUsername(HttpServletRequest request) {
+	public static UserProfile getUserProfile(HttpServletRequest request) {
 		UserManager userManager = ComponentGetter.getUserManager();
-		return userManager.getRemoteUsername(request);
+		UserProfile userProfile = userManager.getRemoteUser(request);
+		return userProfile;
+	}
+
+	public static String getUsername(HttpServletRequest request) {
+		return getUserProfile(request).getUsername();
 	}
 
 	public static boolean isProjectAdmin(String username, String projectKey) {
@@ -71,22 +77,12 @@ public class AuthenticationManager {
 	}
 
 	public static boolean isSystemAdmin(HttpServletRequest request) {
-		String username = getUsername(request);
-		return isSystemAdmin(username);
-	}
-
-	public static boolean isSystemAdmin(String username) {
-		return username != null && ComponentGetter.getUserManager().isSystemAdmin(username);
+		UserProfile userProfile = getUserProfile(request);
+		return ComponentGetter.getUserManager().isSystemAdmin(userProfile.getUserKey());
 	}
 
 	public static ApplicationUser getUser(String username) {
-		try {
-			ApplicationUser user = ComponentAccessor.getUserManager().getUserByName(username);
-			return user;
-		} catch (NullPointerException e) {
-			LOGGER.error("Application user could not be retrieved.");
-		}
-		return null;
+		return ComponentAccessor.getUserManager().getUserByName(username);
 	}
 
 	public static ApplicationUser getUser(HttpServletRequest request) {
