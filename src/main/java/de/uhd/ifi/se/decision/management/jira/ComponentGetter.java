@@ -14,7 +14,12 @@ import com.atlassian.sal.api.user.UserManager;
 
 /**
  * @description Provides access to JIRA components. Automatically initialized.
- *              Similar to the ComponentAccessor that comes with JIRA.
+ *              The ComponentGetter is similar to the ComponentAccessor that
+ *              comes with JIRA, but is provided by the ConDec plugin. It
+ *              enables to access the active objects databases for object
+ *              relational mapping. Further, it contains a different user
+ *              manager than that provided by the ComponentAccessor to handle
+ *              users in HTTP requests.
  */
 @Named("ComponentUtil")
 public class ComponentGetter {

@@ -10,6 +10,7 @@ import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.config.util.JiraHome;
 import com.atlassian.jira.issue.IssueManager;
+import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.changehistory.ChangeHistoryManager;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.fields.config.FieldConfigScheme;
@@ -19,8 +20,10 @@ import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.mock.MockConstantsManager;
+import com.atlassian.jira.mock.MockIssueManager;
 import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.component.MockComponentWorker;
+import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.security.PermissionManager;
 import com.atlassian.jira.security.roles.ProjectRoleManager;
@@ -32,6 +35,7 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.velocity.VelocityManager;
 
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueTypes;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -41,7 +45,7 @@ public class MockComponentAccessor extends ComponentAccessor {
 		ProjectManager projectManager = initProjectManager();
 		UserManager userManager = initUserManager();
 		ConstantsManager constantsManager = initConstantsManager();
-		IssueManager issueManager = new MockIssueManagerSelfImpl();
+		IssueManager issueManager = initIssueManager(projectManager.getProjects().get(0));
 
 		new MockComponentWorker().init().addMock(IssueManager.class, issueManager)
 				.addMock(IssueLinkManager.class, new MockIssueLinkManager())
@@ -88,5 +92,13 @@ public class MockComponentAccessor extends ComponentAccessor {
 			constantsManager.addIssueType(type);
 		}
 		return constantsManager;
+	}
+
+	public IssueManager initIssueManager(Project project) {
+		MockIssueManager issueManager = new MockIssueManagerSelfImpl();
+		for (MutableIssue jiraIssue : JiraIssues.createJiraIssues(project)) {
+			issueManager.addIssue(jiraIssue);
+		}
+		return issueManager;
 	}
 }

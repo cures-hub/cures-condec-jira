@@ -7,8 +7,16 @@ import java.util.Locale;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.issuetype.MockIssueType;
 
+import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
+/**
+ * Class for the JIRA issue types used in the unit tests. There are types for
+ * every decision knowledge type. The test types are included in the
+ * ComponentAccessor.getConstantsManager().
+ * 
+ * @see MockComponentAccessor
+ */
 public class JiraIssueTypes {
 
 	public static List<IssueType> getTestJiraIssueTypes() {

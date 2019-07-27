@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira;
 
 import static org.mockito.Mockito.mock;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -10,9 +9,11 @@ import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.activeobjects.test.TestActiveObjects;
-import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.issuetype.MockIssueType;
+import com.atlassian.jira.mock.MockIssueManager;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.Project;
 
@@ -23,7 +24,6 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueTypes;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.EntityManager;
@@ -40,49 +40,36 @@ public abstract class TestSetUpWithIssues {
 	public static void initialization() {
 		initComponentAccessor();
 		initComponentGetter();
-		createProjectIssueStructure();
+		issue = createIssue();
+		MockIssueManagerSelfImpl issueManager = (MockIssueManagerSelfImpl) ComponentAccessor.getIssueManager();
+		issueManager.addIssue(issue);
 	}
 
+	/**
+	 * The ComponentAccessor is a class provided by JIRA. It contains classes to
+	 * access JIRA's internal classes such as the ProjectManager or a UserManager.
+	 * 
+	 * @see ComponentAccessor
+	 * @see MockComponentAccessor
+	 */
 	public static void initComponentAccessor() {
 		new MockComponentAccessor();
 	}
 
+	/**
+	 * The ComponentGetter is a class provided by the ConDec plugin. It enables to
+	 * access the active objects databases for object relational mapping. Further,
+	 * it contains a different user manager than that provided by the
+	 * ComponentAccessor to handle users in HTTP requests.
+	 * 
+	 * @see ComponentGetter
+	 */
 	public static void initComponentGetter() {
 		ActiveObjects activeObjects = mock(ActiveObjects.class);
 		if (entityManager != null) {
 			activeObjects = new TestActiveObjects(entityManager);
 		}
 		new ComponentGetter(new de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager(), activeObjects);
-	}
-
-	private static void createProjectIssueStructure() {
-		Project project = JiraProjects.getTestProject();
-
-		List<IssueType> jiraIssueTypes = JiraIssueTypes.getTestJiraIssueTypes();
-
-		List<KnowledgeType> types = Arrays.asList(KnowledgeType.values());
-		addJiraIssue(30, "TEST-" + 30, jiraIssueTypes.get(13), project);
-
-		for (int i = 2; i < jiraIssueTypes.size() + 2; i++) {
-			issue = addJiraIssue(i, "TEST-" + i, jiraIssueTypes.get(i - 2), project);
-			if (i > types.size() - 4) {
-				issue.setParentId((long) 3);
-			}
-		}
-		IssueType issueType = new MockIssueType(50, "Class");
-		issue = addJiraIssue(50, "TEST-" + 50, issueType, project);
-		issue.setParentId((long) 3);
-	}
-
-	private static MockIssue addJiraIssue(int id, String key, IssueType issueType, Project project) {
-		MutableIssue issue = new MockIssue(id, key);
-		((MockIssue) issue).setProjectId(project.getId());
-		issue.setProjectObject(project);
-		issue.setIssueType(issueType);
-		issue.setSummary("Test");
-		issue.setDescription("Test");
-		((MockIssueManagerSelfImpl) MockComponentAccessor.getIssueManager()).addIssue(issue);
-		return (MockIssue) issue;
 	}
 
 	public MockIssue createGlobalIssue() {
