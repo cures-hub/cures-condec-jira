@@ -13,8 +13,8 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 
 /**
- * Test class for the {@link ComponentGetter}. The ComponentGetter is a class
- * provided by the ConDec plugin. It enables to access the active objects
+ * Test class for the {@link ComponentGetter}. The ComponentGetter is a custom
+ * class provided by the ConDec plugin. It enables to access the active objects
  * databases for object relational mapping. Further, it contains a different
  * user manager than that provided by JIRA's {@link ComponentAccessor} to handle
  * users in HTTP requests.

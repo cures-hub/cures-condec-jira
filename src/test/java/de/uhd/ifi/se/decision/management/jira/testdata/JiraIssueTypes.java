@@ -19,10 +19,13 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
  */
 public class JiraIssueTypes {
 
-	public static List<IssueType> getTestJiraIssueTypes() {
-		// return
-		// ComponentAccessor.getConstantsManager().getAllIssueTypeObjects().toArray();
-		return createJiraIssueTypesForDecisionKnowledgeTypes();
+	private static List<IssueType> jiraIssueTypes;
+	
+	public static List<IssueType> getTestTypes() {
+		if (jiraIssueTypes == null || jiraIssueTypes.isEmpty()) {
+			jiraIssueTypes = createJiraIssueTypesForDecisionKnowledgeTypes();
+		}
+		return jiraIssueTypes;
 	}
 
 	public static List<IssueType> createJiraIssueTypesForDecisionKnowledgeTypes() {
@@ -34,6 +37,5 @@ public class JiraIssueTypes {
 			i++;
 		}
 		return jiraIssueTypes;
-	}
-
+	}	
 }

@@ -71,8 +71,8 @@ public class MockIssueService implements IssueService {
 	}
 
 	@Override
-	public IssueResult getIssue(ApplicationUser user, String arg1) {
-		MutableIssue issue = new MockIssue(1, arg1);
+	public IssueResult getIssue(ApplicationUser user, String key) {
+		MutableIssue issue = new MockIssue(1, key);
 		IssueResult result = new IssueResult(issue);
 		if (JiraUsers.valueOf(user) == JiraUsers.BLACK_HEAD) {
 			ErrorCollection col = new MockAction();

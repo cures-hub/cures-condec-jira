@@ -24,46 +24,45 @@ public class JiraIssues {
 		if (project == null) {
 			return jiraIssues;
 		}
-		
-		List<IssueType> jiraIssueTypes = JiraIssueTypes.getTestJiraIssueTypes();
+
+		List<IssueType> jiraIssueTypes = JiraIssueTypes.getTestTypes();
 
 		List<KnowledgeType> types = Arrays.asList(KnowledgeType.values());
-		MockIssue issue = addJiraIssue(30, "TEST-" + 30, jiraIssueTypes.get(13), project);
+		MutableIssue issue = createJiraIssue(30, "TEST-" + 30, jiraIssueTypes.get(13), project);
 		jiraIssues.add(issue);
 
 		for (int i = 2; i < jiraIssueTypes.size() + 2; i++) {
-			issue = addJiraIssue(i, "TEST-" + i, jiraIssueTypes.get(i - 2), project);
+			issue = createJiraIssue(i, "TEST-" + i, jiraIssueTypes.get(i - 2), project);
 			if (i > types.size() - 4) {
 				issue.setParentId((long) 3);
 			}
 			jiraIssues.add(issue);
 		}
 		IssueType issueType = new MockIssueType(50, "Class");
-		issue = addJiraIssue(50, "TEST-" + 50, issueType, project);
+		issue = createJiraIssue(50, "TEST-" + 50, issueType, project);
 		issue.setParentId((long) 3);
 		jiraIssues.add(issue);
 		return jiraIssues;
 	}
 
-	public static MockIssue addJiraIssue(int id, String key, IssueType issueType, Project project) {
+	public static MutableIssue createJiraIssue(int id, String key, IssueType issueType, Project project) {
 		MutableIssue issue = new MockIssue(id, key);
 		((MockIssue) issue).setProjectId(project.getId());
 		issue.setProjectObject(project);
 		issue.setIssueType(issueType);
 		issue.setSummary("Test");
 		issue.setDescription("Test");
-		return (MockIssue) issue;
+		return issue;
 	}
-	
 
-	public static MockIssue addComment(Issue issue) {
+	public static Issue addComment(Issue issue) {
 		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("{issue} testobject {issue}");
 		PartOfJiraIssueText sentence = comment.get(0);
 		sentence.setJiraIssueId(issue.getId());
 		JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(sentence,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
 
-		return (MockIssue) sentence.getJiraIssue();
+		return sentence.getJiraIssue();
 	}
 
 }

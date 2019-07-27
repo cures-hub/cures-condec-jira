@@ -87,7 +87,7 @@ public class MockComponentAccessor extends ComponentAccessor {
 
 	public ConstantsManager initConstantsManager() {
 		MockConstantsManager constantsManager = new MockConstantsManager();
-		for (IssueType type : JiraIssueTypes.createJiraIssueTypesForDecisionKnowledgeTypes()) {
+		for (IssueType type : JiraIssueTypes.getTestTypes()) {
 			constantsManager.addIssueType(type);
 		}
 		return constantsManager;
