@@ -10,6 +10,7 @@ import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.config.util.JiraHome;
 import com.atlassian.jira.issue.IssueManager;
+import com.atlassian.jira.issue.changehistory.ChangeHistoryManager;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.fields.config.FieldConfigScheme;
 import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
@@ -20,6 +21,7 @@ import com.atlassian.jira.mock.MockConstantsManager;
 import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.project.ProjectManager;
+import com.atlassian.jira.security.PermissionManager;
 import com.atlassian.jira.security.roles.ProjectRoleManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
@@ -55,7 +57,9 @@ public class MockComponentAccessor extends ComponentAccessor {
 				.addMock(CommentManager.class, new MockCommentManager())
 				.addMock(JiraHome.class, new MockJiraHomeForTesting())
 				.addMock(SearchService.class, new MockSearchService())
-				.addMock(TransactionTemplate.class, new MockTransactionTemplate());
+				.addMock(TransactionTemplate.class, new MockTransactionTemplate())
+				.addMock(ChangeHistoryManager.class, mock(ChangeHistoryManager.class))
+				.addMock(PermissionManager.class, mock(PermissionManager.class));
 	}
 
 	public UserManager initUserManager() {

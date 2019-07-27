@@ -15,7 +15,7 @@ before_install:
   - export PATH=opt/atlassian-plugin-sdk/bin:opt/atlassian-plugin-sdk/apache-maven-*/bin:$PATH
 install: true
 script:
-  - atlas-package
+  - atlas-package -quiet -P jacoco
 notifications:
   email: false
 deploy:
@@ -28,4 +28,4 @@ deploy:
     tags: true
     repo: cures-hub/cures-condec-jira
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash) -f $TRAVIS_BUILD_DIR/target/site/jacoco/jacoco.xml

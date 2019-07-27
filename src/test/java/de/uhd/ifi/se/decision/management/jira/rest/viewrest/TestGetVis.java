@@ -19,6 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGetVis extends TestSetUpWithIssues {
 
@@ -43,6 +44,7 @@ public class TestGetVis extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@NonTransactional
 	public void testRequestNullFilterDataSettingsElementNull() {
 		assertEquals(
 				Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -51,6 +53,7 @@ public class TestGetVis extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@NonTransactional
 	public void testRequestNullFilerSettingsNullElementNotExisting() {
 		assertEquals(
 				Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -59,6 +62,7 @@ public class TestGetVis extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@NonTransactional
 	public void testRequestNullFilterSettingsNullElementExisting() {
 		assertEquals(
 				Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -67,6 +71,7 @@ public class TestGetVis extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@NonTransactional
 	public void testRequestNullFilterSettingsFilledElementFilled() {
 		assertEquals(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error", INVALID_REQUEST)).build().getEntity(),
@@ -74,6 +79,7 @@ public class TestGetVis extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@NonTransactional
 	public void testRequestFilledFilterSettingsFilledElementFilled() {
 		assertNotNull(AuthenticationManager.getUser(request));
 		assertEquals(Response.Status.OK.getStatusCode(),
