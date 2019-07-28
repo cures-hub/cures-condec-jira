@@ -65,9 +65,8 @@
 
 	function addOnClickEventToTab() {
 		console.log("ConDecJiraIssueModule addOnClickEventVisualizationSelectionTab");
-		var tab = document.getElementById("visualization-selection-tabs");
 
-		tab.addEventListener("click", function(event) {
+		AJS.$("#visualization-selection-tabs").on("tabSelect", function(event) {
 			event.preventDefault();
 			event.stopPropagation();
 			if (event.target.href === undefined) {
@@ -118,14 +117,14 @@
 		for (var i = 0; i < AJS.$('#issuetype-dropdown').children().size(); i++) {
 			if (typeof AJS.$('#issuetype-dropdown').children().eq(i).attr('checked') !== typeof undefined
 					&& AJS.$('#issuetype-dropdown').children().eq(i).attr('checked') !== false) {
-                issueTypes.push(AJS.$('#issuetype-dropdown').children().eq(i).text());
-            }
+				issueTypes.push(AJS.$('#issuetype-dropdown').children().eq(i).text());
+			}
 		}
 		for (var j = 0; j < AJS.$('#documentation-dropdown').children().size(); j++) {
 			if (typeof AJS.$('#documentation-dropdown').children().eq(j).attr('checked') !== typeof undefined
 					&& AJS.$('#documentation-dropdown').children().eq(j).attr('checked') !== false) {
-                documentationLocation.push(AJS.$('#documentation-dropdown').children().eq(j).text() );
-            }
+				documentationLocation.push(AJS.$('#documentation-dropdown').children().eq(j).text());
+			}
 		}
 		var nodeDistanceInput = document.getElementById("node-distance-picker");
 		if (nodeDistanceInput !== null) {
