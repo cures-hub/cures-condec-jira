@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -34,7 +33,7 @@ public class TestGraph extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
+		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 1));
 		graph = new GraphImpl(element.getProject().getProjectKey(), element.getKey());
 	}
 
@@ -158,8 +157,6 @@ public class TestGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetAllElements() {
-		List<DecisionKnowledgeElement> allElements = new ArrayList<DecisionKnowledgeElement>();
-		allElements.add(element);
-		assertEquals(graph.getAllElements(), allElements);
+		assertEquals(1, graph.getAllElements().size());
 	}
 }

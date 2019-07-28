@@ -106,7 +106,7 @@ public class TestCreateDecisionKnowledgeElement extends TestSetUp {
 	@Test
 	public void testRequestFilledElementFilledParentIdFilledParentDocumentationLocationNull() {
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 7, null).getStatus());
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 3, null).getStatus());
 	}
 
 	@Test

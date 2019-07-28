@@ -55,9 +55,9 @@ public class MockIssueLink implements IssueLink {
 	@Override
 	public Issue getDestinationObject() {
 		if (id == 1) {
-			return ComponentAccessor.getIssueManager().getIssueObject((long) 13);
+			return ComponentAccessor.getIssueManager().getIssueObject((long) 2);
 		}
-		IssueType issueType = new MockIssueType(12, "Argument");
+		IssueType issueType = new MockIssueType(4, "Argument");
 		Issue issue = new MockIssue(200, "TEST-200");
 		((MockIssue) issue).setIssueType(issueType);
 		((MockIssue) issue).setDescription("Test");
@@ -100,9 +100,9 @@ public class MockIssueLink implements IssueLink {
 	@Override
 	public Issue getSourceObject() {
 		if (id == 1) {
-			return ComponentAccessor.getIssueManager().getIssueObject((long) 12);
+			return ComponentAccessor.getIssueManager().getIssueObject((long) 1);
 		}
-		IssueType issueType = new MockIssueType(12, "Argument");
+		IssueType issueType = new MockIssueType(4, "Argument");
 		Issue issue = new MockIssue(300, "TEST-300");
 		((MockIssue) issue).setIssueType(issueType);
 		((MockIssue) issue).setDescription("Test");

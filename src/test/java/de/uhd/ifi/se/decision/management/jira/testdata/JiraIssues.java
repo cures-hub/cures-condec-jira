@@ -1,18 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.testdata;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.issuetype.IssueType;
-import com.atlassian.jira.issue.issuetype.MockIssueType;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
@@ -36,31 +33,42 @@ public class JiraIssues {
 
 		List<IssueType> jiraIssueTypes = JiraIssueTypes.getTestTypes();
 
-		List<KnowledgeType> types = Arrays.asList(KnowledgeType.values());
-		MutableIssue issue = createJiraIssue(30, "TEST-" + 30, jiraIssueTypes.get(13), project);
+		// Work items
+		MutableIssue issue = createJiraIssue(1, jiraIssueTypes.get(0), project, "WI: Implement feature");
+		jiraIssues.add(issue);
+		issue = createJiraIssue(14, jiraIssueTypes.get(0), project, "WI: Yet another work item");
+		jiraIssues.add(issue);
+		issue = createJiraIssue(30, jiraIssueTypes.get(0), project, "WI: Do an interesting task");
 		jiraIssues.add(issue);
 
-		for (int i = 2; i < jiraIssueTypes.size() + 2; i++) {
-			issue = createJiraIssue(i, "TEST-" + i, jiraIssueTypes.get(i - 2), project);
-			if (i > types.size() - 4) {
-				issue.setParentId((long) 3);
-			}
-			jiraIssues.add(issue);
-		}
-		IssueType issueType = new MockIssueType(50, "Class");
-		issue = createJiraIssue(50, "TEST-" + 50, issueType, project);
-		issue.setParentId((long) 3);
+		// Issue
+		issue = createJiraIssue(2, jiraIssueTypes.get(1), project, "How can we implement the feature?");
 		jiraIssues.add(issue);
+
+		// Alternative
+		issue = createJiraIssue(3, jiraIssueTypes.get(2), project, "We could do it like this!");
+		jiraIssues.add(issue);
+		issue.setParentId((long) 2);
+
+		// Decision
+		issue = createJiraIssue(4, jiraIssueTypes.get(3), project, "We will do it like this!");
+		jiraIssues.add(issue);
+		issue.setParentId((long) 2);
+
+		// Pro-Argument for the decision
+		issue = createJiraIssue(5, jiraIssueTypes.get(4), project, "This is a great solution.");
+		jiraIssues.add(issue);
+		issue.setParentId((long) 5);
 		return jiraIssues;
 	}
 
-	private static MutableIssue createJiraIssue(int id, String key, IssueType issueType, Project project) {
-		MutableIssue issue = new MockIssue(id, key);
+	private static MutableIssue createJiraIssue(int id, IssueType issueType, Project project, String summary) {
+		MutableIssue issue = new MockIssue(id, project.getKey() + "-" + id);
 		((MockIssue) issue).setProjectId(project.getId());
 		issue.setProjectObject(project);
 		issue.setIssueType(issueType);
-		issue.setSummary("Test");
-		issue.setDescription("Test");
+		issue.setSummary(summary);
+		issue.setDescription(summary);
 		return issue;
 	}
 

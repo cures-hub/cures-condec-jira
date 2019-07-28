@@ -71,21 +71,21 @@ public class TestFilterExtractor extends TestSetUp {
 	public void testConstructorFilterStringFilledFilledEmpty() {
 		FilterExtractor extractor = new FilterExtractor("TEST", user, "");
 		// the empty query will be changed to "allissues", i.e. "type != null"
-		assertEquals(20, extractor.getAllElementsMatchingQuery().size());
+		assertEquals(7, extractor.getAllElementsMatchingQuery().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testConstructorFilterStringFilledFilledString() {
 		FilterExtractor extractor = new FilterExtractor("TEST", user, "?filter=allopenissues");
-		assertEquals(20, extractor.getAllElementsMatchingQuery().size());
+		assertEquals(7, extractor.getAllElementsMatchingQuery().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testConstructorFilterStringFilledFilledFilledJQL() {
 		FilterExtractor extractor = new FilterExtractor("TEST", user, "?jql=project=TEST");
-		assertEquals(20, extractor.getAllElementsMatchingQuery().size());
+		assertEquals(7, extractor.getAllElementsMatchingQuery().size());
 	}
 
 	@Test
@@ -107,7 +107,7 @@ public class TestFilterExtractor extends TestSetUp {
 	public void testConstructorFilterOwnFilled() {
 		FilterExtractor extractor = new FilterExtractor(user, new FilterSettingsImpl("TEST", ""));
 		// the empty query will be changed to "allissues", i.e. "type != null"
-		assertEquals(20, extractor.getAllElementsMatchingQuery().size());
+		assertEquals(7, extractor.getAllElementsMatchingQuery().size());
 	}
 
 	@Test
@@ -115,14 +115,14 @@ public class TestFilterExtractor extends TestSetUp {
 	public void testGetGraphsMatchingQueryEmpty() {
 		FilterExtractor extractor = new FilterExtractor("Test", user, "");
 		// the empty query will be changed to "allissues", i.e. "type != null"
-		assertEquals(19, extractor.getAllGraphs().size());
+		assertEquals(7, extractor.getAllGraphs().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetGraphsMatchingQueryFilled() {
 		FilterExtractor extractor = new FilterExtractor("Test", user, "?jql=project=TEST");
-		assertEquals(19, extractor.getAllGraphs().size());
+		assertEquals(7, extractor.getAllGraphs().size());
 	}
 
 	@Test

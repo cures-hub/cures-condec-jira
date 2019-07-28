@@ -56,7 +56,7 @@ public class TestJiraQueryHandler extends TestSetUp {
 	public void testGetJiraIssuesFromFilledQuery() {
 		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "?jql=project=TEST");
 		List<Issue> jiraIssues = jiraQueryHandler.getJiraIssuesFromQuery();
-		assertEquals(20, jiraIssues.size());
+		assertEquals(7, jiraIssues.size());
 		Issue jiraIssue = jiraIssues.get(0);
 		assertEquals(0, JiraIssueTextPersistenceManager.getElementsForIssue(jiraIssue.getId(), "TEST").size());
 	}
