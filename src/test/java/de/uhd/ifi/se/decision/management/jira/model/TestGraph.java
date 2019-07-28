@@ -9,20 +9,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.project.Project;
-import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGraph extends TestSetUp {
@@ -33,7 +26,7 @@ public class TestGraph extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 1));
+		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 4));
 		graph = new GraphImpl(element.getProject().getProjectKey(), element.getKey());
 	}
 
@@ -75,42 +68,7 @@ public class TestGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetAdjacentElementsFilled() {
-		JiraIssuePersistenceManager issueStrategy = new JiraIssuePersistenceManager("TEST");
-		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		Project project = JiraProjects.getTestProject();
-
-		long i = 2;
-		DecisionKnowledgeElementImpl decision = new DecisionKnowledgeElementImpl(5000, "TESTSummary", "TestDescription",
-				KnowledgeType.DECISION, project.getKey(), "TEST-" + 5000, DocumentationLocation.JIRAISSUE);
-		decision.setId(5000);
-
-		issueStrategy.insertDecisionKnowledgeElement(decision, user);
-		for (KnowledgeType type : KnowledgeType.values()) {
-			LinkImpl link = new LinkImpl();
-			link.setType("support");
-			if (type != KnowledgeType.DECISION) {
-				if (type.equals(KnowledgeType.ARGUMENT)) {
-					DecisionKnowledgeElementImpl decisionKnowledgeElement = new DecisionKnowledgeElementImpl(i,
-							"TESTSummary", "TestDescription", type, project.getKey(), "TEST-" + i,
-							DocumentationLocation.JIRAISSUE);
-					issueStrategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
-					link.setSourceElement(decision);
-					link.setDestinationElement(decisionKnowledgeElement);
-					AbstractPersistenceManager.insertLink(link, user);
-				} else {
-					DecisionKnowledgeElementImpl decisionKnowledgeElement = new DecisionKnowledgeElementImpl(i,
-							"TESTSummary", "TestDescription", type, project.getKey(), "TEST-" + i,
-							DocumentationLocation.JIRAISSUE);
-					issueStrategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
-					link.setType("attack");
-					link.setDestinationElement(decision);
-					link.setSourceElement(decisionKnowledgeElement);
-					AbstractPersistenceManager.insertLink(link, user);
-				}
-			}
-			i++;
-		}
-		System.out.println(graph.getAdjacentElements(decision).size());
+		assertEquals(1, graph.getAdjacentElements(element).size());
 	}
 
 	@Test
@@ -157,6 +115,6 @@ public class TestGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetAllElements() {
-		assertEquals(1, graph.getAllElements().size());
+		assertEquals(2, graph.getAllElements().size());
 	}
 }

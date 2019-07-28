@@ -60,7 +60,7 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 		link.getDestinationElement().setProject("TEST");
 		link.getSourceElement().setProject("TEST");
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		assertEquals(0, AbstractPersistenceManager.insertLink(link, user));
+		assertEquals(1, AbstractPersistenceManager.insertLink(link, user));
 	}
 
 	@Test
@@ -82,7 +82,7 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 		link.setType("Contains");
 		link.setDestinationElement(3, "i");
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		assertEquals(0, AbstractPersistenceManager.insertLink(link, user));
+		assertEquals(1, AbstractPersistenceManager.insertLink(link, user));
 	}
 
 	@Test
@@ -92,6 +92,6 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 		link.setType("Contains");
 		link.setDestinationElement(30, "i");
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		assertEquals(0, AbstractPersistenceManager.insertLink(link, user));
+		assertEquals(1, AbstractPersistenceManager.insertLink(link, user));
 	}
 }

@@ -14,7 +14,6 @@ import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.LinkCollection;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class MockIssueLinkManager implements IssueLinkManager {
@@ -25,8 +24,8 @@ public class MockIssueLinkManager implements IssueLinkManager {
 	}
 
 	@Override
-	public void createIssueLink(Long arg0, Long arg1, Long arg2, Long arg3, ApplicationUser user)
-			throws CreateException {
+	public void createIssueLink(Long sourceIssueId, Long destinationIssueId, Long issueLinkTypeId, Long sequence,
+			ApplicationUser user) throws CreateException {
 		if (user == null || user == JiraUsers.BLACK_HEAD.getApplicationUser()) {
 			throw new CreateException();
 		}
@@ -34,35 +33,26 @@ public class MockIssueLinkManager implements IssueLinkManager {
 
 	@Override
 	public List<IssueLink> getInwardLinks(Long issueId) {
-		List<IssueLink> allInwardIssueLink = new ArrayList<>();
-		if (issueId == 20) {
-			IssueLink link = new MockIssueLink(3);
-			allInwardIssueLink.add(link);
+		List<IssueLink> inwardIssueLinks = new ArrayList<>();
+		if (issueId == 0) {
+			return inwardIssueLinks;
 		}
-		if (issueId == 30) {
-			for (int i = 0; i < 10; i++) {
-				IssueLink link = new MockIssueLink(3);
-				((MockIssueLink) link).setSequence(i);
-				if (i == 9) {
-					((MockIssueLink) link).setSequence(1);
-				}
-				allInwardIssueLink.add(link);
-			}
+		long childId = issueId - 1;
+		if (childId > 0) {
+			MockIssueLink link = new MockIssueLink(childId, issueId);
+			inwardIssueLinks.add(link);
 		}
-		return allInwardIssueLink;
+		return inwardIssueLinks;
 	}
 
 	@Override
 	public IssueLink getIssueLink(Long issueId) {
-		return new MockIssueLink(issueId);
+		return new MockIssueLink(1, 2);
 	}
 
 	@Override
-	public IssueLink getIssueLink(Long arg0, Long arg1, Long arg2) {
-		if (arg1 == 1) {
-			return new MockIssueLink(arg0);
-		}
-		return null;
+	public IssueLink getIssueLink(Long sourceIssueId, Long destinationIssueId, Long issueLinkTypeId) {
+		return new MockIssueLink(sourceIssueId, destinationIssueId);
 	}
 
 	@Override
@@ -92,32 +82,16 @@ public class MockIssueLinkManager implements IssueLinkManager {
 
 	@Override
 	public List<IssueLink> getOutwardLinks(Long issueId) {
-		List<IssueLink> allOutwardIssueLink = new ArrayList<>();
-		if (issueId.intValue() == 5000) {
-			for (long i = 2; i <= KnowledgeType.values().length; i++) {
-				MockIssueLink link = new MockIssueLink(i);
-				allOutwardIssueLink.add(link);
-			}
+		List<IssueLink> outwardIssueLinks = new ArrayList<IssueLink>();
+		if (issueId == 0) {
+			return outwardIssueLinks;
 		}
-		if (issueId == 20) {
-			IssueLink link = new MockIssueLink(4);
-			allOutwardIssueLink.add(link);
+		long parentId = issueId - 1;
+		if (parentId > 0) {
+			MockIssueLink link = new MockIssueLink(issueId, parentId);
+			outwardIssueLinks.add(link);
 		}
-		if (issueId == 30) {
-			for (int i = 0; i < 10; i++) {
-				IssueLink link = new MockIssueLink(3);
-				((MockIssueLink) link).setSequence((long) i + 10);
-				if (i == 9) {
-					((MockIssueLink) link).setSequence(1);
-				}
-				allOutwardIssueLink.add(link);
-			}
-		}
-		if (issueId == 12) {
-			MockIssueLink link = new MockIssueLink(1);
-			allOutwardIssueLink.add(link);
-		}
-		return allOutwardIssueLink;
+		return outwardIssueLinks;
 	}
 
 	@Override
@@ -126,12 +100,12 @@ public class MockIssueLinkManager implements IssueLinkManager {
 	}
 
 	@Override
-	public void moveIssueLink(List<IssueLink> arg0, Long arg1, Long arg2) {
+	public void moveIssueLink(List<IssueLink> issueLinks, Long currentSequence, Long sequence) {
 		// method empty since not used for testing
 	}
 
 	@Override
-	public void removeIssueLink(IssueLink arg0, ApplicationUser arg1) {
+	public void removeIssueLink(IssueLink issueLink, ApplicationUser user) {
 		// method empty since not used for testing
 	}
 
