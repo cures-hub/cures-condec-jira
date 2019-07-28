@@ -1,29 +1,84 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 
 public class TestDocumentationLocation {
 
 	@Test
 	public void testGetDocumentationLocationFromIdentifier() {
-		for (String location : DocumentationLocation.getNamesOfDocumentationLocations()) {
-			assertTrue(location.equals(DocumentationLocation.getDocumentationLocationFromString(location).toString()));
-		}
+		assertEquals(DocumentationLocation.JIRAISSUETEXT,
+				DocumentationLocation.getDocumentationLocationFromIdentifier("s"));
+		assertEquals(DocumentationLocation.JIRAISSUETEXT,
+				DocumentationLocation.getDocumentationLocationFromIdentifier("s "));
+		assertEquals(DocumentationLocation.JIRAISSUE,
+				DocumentationLocation.getDocumentationLocationFromIdentifier("i"));
+		assertEquals(DocumentationLocation.JIRAISSUE, DocumentationLocation.getDocumentationLocationFromIdentifier(""));
+		assertEquals(DocumentationLocation.UNKNOWN, DocumentationLocation.getDocumentationLocationFromIdentifier(null));
+		assertEquals(DocumentationLocation.UNKNOWN,
+				DocumentationLocation.getDocumentationLocationFromIdentifier("XXX"));
 	}
 
 	@Test
 	public void testGetIdentifier() {
-		for (DocumentationLocation location : DocumentationLocation.values()) {
-			String identifier = location.getIdentifier();
-			DocumentationLocation newLocation = DocumentationLocation
-					.getDocumentationLocationFromIdentifier(identifier);
-			if (location == DocumentationLocation.UNKNOWN) {
-				continue;
-			}
-			assertEquals(location, newLocation);
-		}
+		assertEquals("s", DocumentationLocation.JIRAISSUETEXT.getIdentifier());
+		assertEquals("s", DocumentationLocation.getIdentifier(DocumentationLocation.JIRAISSUETEXT));
+		assertEquals("", DocumentationLocation.getIdentifier((DocumentationLocation) null));
+		assertEquals("i", DocumentationLocation.JIRAISSUE.getIdentifier());
+		assertEquals("", DocumentationLocation.UNKNOWN.getIdentifier());
+	}
+
+	@Test
+	public void testGetIdentifierFromElement() {
+		assertEquals("", DocumentationLocation.getIdentifier((DecisionKnowledgeElement) null));
+
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+		assertEquals("", DocumentationLocation.getIdentifier(element));
+
+		element.setDocumentationLocation("s");
+		assertEquals("s", DocumentationLocation.getIdentifier(element));
+
+		element.setDocumentationLocation("i");
+		assertEquals("i", DocumentationLocation.getIdentifier(element));
+	}
+
+	@Test
+	public void testToString() {
+		assertEquals("JiraIssueText", DocumentationLocation.JIRAISSUETEXT.toString());
+	}
+
+	@Test
+	public void testGetName() {
+		assertEquals("Unknown", DocumentationLocation.getName(null));
+		assertEquals("JiraIssueText", DocumentationLocation.getName(DocumentationLocation.JIRAISSUETEXT));
+	}
+
+	@Test
+	public void testGetAllDocumentationLocations() {
+		// excludes Unknown documentation location
+		assertEquals(5, DocumentationLocation.getAllDocumentationLocations().size());
+	}
+
+	@Test
+	public void testGetNamesOfDocumentationLocations() {
+		// includes Unknown documentation location
+		assertEquals(6, DocumentationLocation.getNamesOfDocumentationLocations().size());
+	}
+
+	@Test
+	public void testGetDocumentationLocationFromString() {
+		assertEquals(DocumentationLocation.JIRAISSUE,
+				DocumentationLocation.getDocumentationLocationFromString("JiraIssue"));
+		assertEquals(DocumentationLocation.JIRAISSUE,
+				DocumentationLocation.getDocumentationLocationFromString("JiraIssues"));
+		assertEquals(DocumentationLocation.JIRAISSUETEXT,
+				DocumentationLocation.getDocumentationLocationFromString("JiraIssueText"));
+
+		assertEquals(DocumentationLocation.UNKNOWN, DocumentationLocation.getDocumentationLocationFromString(null));
+		assertEquals(DocumentationLocation.UNKNOWN,
+				DocumentationLocation.getDocumentationLocationFromString("WikiPage"));
 	}
 }

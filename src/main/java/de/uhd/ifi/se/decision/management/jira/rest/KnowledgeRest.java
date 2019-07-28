@@ -54,7 +54,6 @@ public class KnowledgeRest {
 		}
 		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(projectKey,
 				documentationLocation);
-
 		DecisionKnowledgeElement decisionKnowledgeElement = persistenceManager.getDecisionKnowledgeElement(id);
 		if (decisionKnowledgeElement != null) {
 			return Response.status(Status.OK).entity(decisionKnowledgeElement).build();

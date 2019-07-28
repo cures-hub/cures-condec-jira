@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 
@@ -41,7 +40,7 @@ public enum DocumentationLocation {
 			return JIRAISSUE;
 		}
 		for (DocumentationLocation location : values()) {
-			if (location.identifier == identifier) {
+			if (identifier.contains(location.identifier)) {
 				return location;
 			}
 		}
@@ -98,14 +97,13 @@ public enum DocumentationLocation {
 
 	/**
 	 * Convert the documentation locations to a String starting with a capital
-	 * letter, e.g., Pullrequest, Jiraissue, Commit
+	 * letter, e.g., PullRequest, JiraIssue, Commit
 	 * 
 	 * @return documentation locations as a String starting with a capital letter.
 	 */
 	@Override
 	public String toString() {
-		return this.name().substring(0, 1).toUpperCase(Locale.ENGLISH)
-				+ this.name().substring(1).toLowerCase(Locale.ENGLISH);
+		return this.getName();
 	}
 
 	/**
