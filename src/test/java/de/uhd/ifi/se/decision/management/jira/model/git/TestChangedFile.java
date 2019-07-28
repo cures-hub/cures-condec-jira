@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.model.git;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -55,6 +56,16 @@ public class TestChangedFile extends TestSetUpGit {
 	@Test
 	public void testGetPackageName() {
 		assertEquals(9, changedFile.getPartsOfPackageDeclaration().size());
+	}
+	
+	@Test
+	public void testGetDiffEntry() {
+		assertEquals(ChangeType.ADD, changedFile.getDiffEntry().getChangeType());
+	}
+	
+	@Test
+	public void testGetEditList() {
+		assertEquals("EditList[INSERT(0-0,0-29)]", changedFile.getEditList().toString());
 	}
 
 }

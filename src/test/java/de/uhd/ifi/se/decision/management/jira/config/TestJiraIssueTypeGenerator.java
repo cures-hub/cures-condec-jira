@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.ofbiz.core.entity.GenericValue;
 
@@ -29,53 +28,60 @@ public class TestJiraIssueTypeGenerator {
 
 	@Test
 	public void testGetValueParamNull() {
-		assertEquals(0, generator.getValues(null).size(), 0.0);
+		assertEquals(0, generator.getValues(null).size());
 	}
 
 	@Test
-	public void testGetValueParmaEmptyMap() {
-		assertEquals(0, generator.getValues(new HashMap<String, String>()).size(), 0.0);
+	public void testGetValueParamEmptyMap() {
+		assertEquals(0, generator.getValues(new HashMap<String, String>()).size());
 	}
-
+	
 	@Test
 	public void testGetValueParamNotExisting() {
 		Map<String, String> paramMap = new HashMap<String, String>();
-		paramMap.put("test", "noprojectKey");
-		assertEquals(0, generator.getValues(paramMap).size(), 0.0);
+		paramMap.put("test", "test");
+		assertEquals(0, generator.getValues(paramMap).size());
+	}
+
+
+	@Test
+	public void testGetValueProjectNotExisting() {
+		Map<String, GenericValue> paramMap = new HashMap<String, GenericValue>();
+		GenericValue value = new MockGenericValue("NONEXITINGPROJECT", (long) 0);
+		paramMap.put("project", value);
+		assertEquals(0, generator.getValues(paramMap).size());
 	}
 
 	@Test
-	@Ignore
 	public void testGetValueParamExisting() {
 		Map<String, GenericValue> paramMap = new HashMap<String, GenericValue>();
 		GenericValue value = new MockGenericValue("TEST", (long) 1);
 		paramMap.put("project", value);
-		assertEquals(12, generator.getValues(paramMap).size(), 0.0);
+		assertEquals(5, generator.getValues(paramMap).size());
 	}
 
 	@Test
 	public void testGetJiraIssueTypesZero() {
-		assertEquals(0, JiraIssueTypeGenerator.getJiraIssueTypes(0).size(), 0.0);
+		assertEquals(5, JiraIssueTypeGenerator.getJiraIssueTypes(1).size());
 	}
 
 	@Test
-	@Ignore
 	public void testGetJiraIssueTypesOk() {
-		assertEquals(12, JiraIssueTypeGenerator.getJiraIssueTypes(1).size(), 0.0);
+		assertEquals(5, JiraIssueTypeGenerator.getJiraIssueTypes(1).size());
 	}
 
 	@Test
-	public void testGetJiraIssueTypeNamesNull() {
+	public void testGetJiraIssueTypeNameNull() {
 		assertEquals("", JiraIssueTypeGenerator.getJiraIssueTypeName(null));
 	}
 
 	@Test
-	public void testGetJiraIssueTypeNamesEmpty() {
+	public void testGetJiraIssueTypeNameEmpty() {
 		assertEquals("", JiraIssueTypeGenerator.getJiraIssueTypeName(""));
 	}
 
 	@Test
-	public void testGetJiraIssueTypeNamesFilled() {
+	public void testGetJiraIssueTypeNameFilled() {
 		Collection<IssueType> issueTypes = JiraIssueTypeGenerator.getJiraIssueTypes(1);
 		for (IssueType type : issueTypes) {
 			IssueType issueType = ComponentAccessor.getConstantsManager().getIssueType(type.getId());

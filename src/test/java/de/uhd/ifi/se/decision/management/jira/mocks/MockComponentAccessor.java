@@ -55,7 +55,7 @@ public class MockComponentAccessor extends ComponentAccessor {
 				.addMock(VelocityParamFactory.class, new MockVelocityParamFactory())
 				.addMock(AvatarManager.class, new MockAvatarManager())
 				.addMock(IssueTypeManager.class, new MockIssueTypeManager())
-				.addMock(IssueTypeSchemeManager.class, mock(IssueTypeSchemeManager.class))
+				.addMock(IssueTypeSchemeManager.class, new MockIssueTypeSchemeManager())
 				.addMock(FieldConfigScheme.class, mock(FieldConfigScheme.class))
 				.addMock(PluginSettingsFactory.class, new MockPluginSettingsFactory())
 				.addMock(OptionSetManager.class, mock(OptionSetManager.class))
