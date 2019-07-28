@@ -63,12 +63,6 @@ public class TestDocumentationLocation {
 	}
 
 	@Test
-	public void testGetNamesOfDocumentationLocations() {
-		// includes Unknown documentation location
-		assertEquals(6, DocumentationLocation.getNamesOfDocumentationLocations().size());
-	}
-
-	@Test
 	public void testGetDocumentationLocationFromString() {
 		assertEquals(DocumentationLocation.JIRAISSUE,
 				DocumentationLocation.getDocumentationLocationFromString("JiraIssue"));

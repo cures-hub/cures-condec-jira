@@ -105,21 +105,7 @@ public enum DocumentationLocation {
 	public String toString() {
 		return this.getName();
 	}
-
-	/**
-	 * Converts all documentation locations to a list of Strings.
-	 *
-	 * @return list of documentation locations as Strings starting with a capital
-	 *         letter.
-	 */
-	public static List<String> getNamesOfDocumentationLocations() {
-		List<String> documentationLocations = new ArrayList<String>();
-		for (DocumentationLocation documentationLocation : DocumentationLocation.values()) {
-			documentationLocations.add(documentationLocation.toString());
-		}
-		return documentationLocations;
-	}
-
+	
 	/**
 	 * Returns a list of all valid documentation locations.
 	 * 
