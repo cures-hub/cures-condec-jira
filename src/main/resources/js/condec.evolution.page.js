@@ -25,7 +25,9 @@
 	
 	ConDecEvolutionPage.prototype.buildTimeLine = function buildTimeLine() {
 		console.log("ConDec build timeline");
-		conDecAPI.getEvolutionData("", -1, -1 ,function(evolutionData) {
+        var issueTypeDropdown = document.getElementById("chronologie-dropdown");
+        initIssueTypeSelectCompare(issueTypeDropdown);
+		conDecAPI.getEvolutionData("", -1, -1 ,conDecAPI.extendedKnowledgeTypes,function(evolutionData) {
 			var container = document.getElementById('evolution-timeline');
 			var data = evolutionData;
 			var item = new vis.DataSet(data);
@@ -37,7 +39,9 @@
 
 	ConDecEvolutionPage.prototype.buildCompare = function buildCompare() {
 		console.log("ConDec build compare view");
-        conDecAPI.getCompareVis(-1, -1,"",function (visData) {
+        var issueTypeDropdown = document.getElementById("compare-dropdown");
+        initIssueTypeSelectCompare(issueTypeDropdown);
+        conDecAPI.getCompareVis(-1, -1,"",conDecAPI.extendedKnowledgeTypes,function (visData) {
             var containerLeft = document.getElementById('left-network');
             var dataLeft = {
                 nodes : visData.nodes,
@@ -47,7 +51,7 @@
             var networkLeft = new vis.Network(containerLeft, dataLeft, options);
 
         });
-        conDecAPI.getCompareVis(-1, -1,"",function (visData) {
+        conDecAPI.getCompareVis(-1, -1,"",conDecAPI.extendedKnowledgeTypes, function (visData) {
             var containerRight = document.getElementById('right-network');
             var dataRight = {
                 nodes : visData.nodes,
@@ -78,6 +82,14 @@
 		return true;
 	}
 
+    function initIssueTypeSelectCompare(issueTypeDropdown) {
+        var issueType = conDecAPI.extendedKnowledgeTypes;
+        for (var index = 0; index < issueType.length; index++) {
+            issueTypeDropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + "checked" + ">"
+                + issueType[index] + "</aui-item-checkbox>");
+        }
+    }
+
 	//Compute filter and select new elements
     function addOnClickEventToFilterCompareButton() {
         console.log("ConDecJiraEvolutionPage addOnClickEventToFilterButtonCompare");
@@ -87,6 +99,7 @@
         filterButton.addEventListener("click", function(event) {
             var firstDate = -1;
             var secondDate = -1;
+            var issueTypes = [];
             if (!isNaN(document.getElementById("start-data-picker-compare").valueAsNumber)) {
                 firstDate = document.getElementById("start-data-picker-compare").valueAsNumber;
             }
@@ -95,7 +108,14 @@
             }
             var searchString = "";
             searchString = document.getElementById("compare-search-input").value;
-            conDecAPI.getCompareVis(firstDate, secondDate,searchString, function (visData) {
+            for (var i = 0; i < AJS.$('#compare-dropdown').children().size(); i++) {
+                if (typeof AJS.$('#compare-dropdown').children().eq(i).attr('checked') !== typeof undefined
+                    && AJS.$('#compare-dropdown').children().eq(i).attr('checked') !== false) {
+                    issueTypes.push(AJS.$('#compare-dropdown').children().eq(i).text());
+                }
+            }
+
+            conDecAPI.getCompareVis(firstDate, secondDate,searchString, issueTypes, function(visData) {
                 var dataRight = {
                     nodes : visData.nodes,
                     edges : visData.edges
@@ -113,6 +133,7 @@
         filterButton.addEventListener("click", function(event) {
             var firstDate = -1;
             var secondDate = -1;
+            var issueTypes = [];
             if (!isNaN(document.getElementById("start-date-picker-time").valueAsNumber)) {
                 firstDate = document.getElementById("start-date-picker-time").valueAsNumber;
             }
@@ -120,7 +141,13 @@
                 secondDate = document.getElementById("end-date-picker-time").valueAsNumber;
             }
             var searchString = document.getElementById("time-search-input").value;
-            conDecAPI.getEvolutionData(searchString, firstDate, secondDate,  function (visData) {
+            for (var i = 0; i < AJS.$('#chronologie-dropdown').children().size(); i++) {
+                if (typeof AJS.$('#chronologie-dropdown').children().eq(i).attr('checked') !== typeof undefined
+                    && AJS.$('#chronologie-dropdown').children().eq(i).attr('checked') !== false) {
+                    issueTypes.push(AJS.$('#chronologie-dropdown').children().eq(i).text());
+                }
+            }
+            conDecAPI.getEvolutionData(searchString, firstDate, secondDate,  issueTypes,function (visData) {
                 var data = visData;
                 var item = new vis.DataSet(data);
                 timeline.setItems(item);

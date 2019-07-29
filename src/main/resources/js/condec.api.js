@@ -347,14 +347,14 @@
 	/*
 	 *external reference: condec.evolution.page.js
 	 */
-    ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed,searchString, callback){
+    ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed, searchString, issueTypes, callback){
         var filterSettings = {
             "projectKey" : projectKey,
             "searchString" : searchString,
             "createdEarliest" : created,
             "createdLatest" : closed,
             "documentationLocations" : [ "" ],
-            "selectedJiraIssueTypes" : [ "" ]
+            "selectedJiraIssueTypes" : issueTypes
         };
         postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getCompareVis.json", filterSettings,
             function (error, vis) {
@@ -395,14 +395,14 @@
 	/*
 	 * external references: condec.evolution.page
 	 */
-	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(searchString, created, closed, callback) {
+	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(searchString, created, closed, issueTypes, callback) {
         var filterSettings = {
             "projectKey" : projectKey,
             "searchString" : searchString,
             "createdEarliest" : created,
             "createdLatest" : closed,
             "documentationLocations" : [ "" ],
-            "selectedJiraIssueTypes" : [ "" ]
+            "selectedJiraIssueTypes" : issueTypes
         };
         postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getEvolutionData.json", filterSettings,
 				function(error, evolutionData) {
@@ -489,7 +489,7 @@
 				error, response) {
 			if (error === null) {
 				showFlag("success", "Extraction from issue comments for this project has been set to "
-						+ isKnowledgeExtractedFromIssues + ".");
+						+ isKnowledgeExtractedFromIssues + ".");chronologie-dropdown
 			}
 		});
 	};
@@ -563,6 +563,10 @@
 		extendedKnowledgeTypes.push("Con-argument");
 		return extendedKnowledgeTypes;
 	}
+
+	/*
+
+	 */
 
 	/*
 	 * external references: settingsForSingleProject.vm

@@ -7,6 +7,10 @@
             class="aui-icon icon-required"></span>
     </label>
     <input id="end-data-picker-compare" type="date"/>
+    <button aria-controls="compare-dropdown" class="aui-button aui-style-default aui-dropdown2-trigger" aria-haspopup="true">
+        Issuetypes
+    </button>
+    <aui-dropdown-menu id="compare-dropdown" style="overflow:auto;max-height:200px;"></aui-dropdown-menu>
     <input class="text medium-long-field" id="compare-search-input"
            placeholder="$i18n.getText('condec.filter.label')"/>
     <input type="button" id="filter-button-compare" class="aui-button aui-button-primary" value="Filter"/>
