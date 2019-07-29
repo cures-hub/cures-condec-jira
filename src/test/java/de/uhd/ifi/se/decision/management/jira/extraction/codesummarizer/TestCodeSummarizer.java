@@ -59,5 +59,17 @@ public class TestCodeSummarizer extends TestSetUpGit {
 	public void testDiffEmpty() {
 		assertEquals("", summarizer.createSummary(new DiffImpl()));
 	}
+	
+	// TODO
+	@Test
+	public void testGetProjectKey() {
+		assertEquals(null, ((CodeSummarizerImpl) summarizer).getProjectKey());
+	}
+	
+	// TODO
+	@Test
+	public void testGetIssueKey() {
+		assertEquals(null, ((CodeSummarizerImpl) summarizer).getIssueKey());
+	}
 
 }

@@ -18,6 +18,8 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
  * databases for object relational mapping. Further, it contains a different
  * user manager than that provided by JIRA's {@link ComponentAccessor} to handle
  * users in HTTP requests.
+ * 
+ * @see ComponentGetter
  */
 public class TestComponentGetter {
 

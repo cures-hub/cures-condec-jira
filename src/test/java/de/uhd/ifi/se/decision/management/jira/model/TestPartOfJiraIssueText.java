@@ -227,10 +227,10 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@NonTransactional
 	public void testGetJiraIssue() {
 		PartOfJiraIssueText partOfText = new PartOfJiraIssueTextImpl();
-		partOfText.setJiraIssueId(50);
+		partOfText.setJiraIssueId(1);
 		Issue jiraIssue = partOfText.getJiraIssue();
 		assertNotNull(jiraIssue);
-		assertEquals(50, (long) jiraIssue.getId());
+		assertEquals(1, (long) jiraIssue.getId());
 	}
 
 	@Test
@@ -239,8 +239,8 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 		PartOfJiraIssueText partOfText = new PartOfJiraIssueTextImpl();
 		assertEquals("", partOfText.getJiraIssueDescription());
 
-		partOfText.setJiraIssueId(50);
+		partOfText.setJiraIssueId(1);
 
-		assertEquals("Test", partOfText.getJiraIssueDescription());
+		assertEquals("WI: Implement feature", partOfText.getJiraIssueDescription());
 	}
 }

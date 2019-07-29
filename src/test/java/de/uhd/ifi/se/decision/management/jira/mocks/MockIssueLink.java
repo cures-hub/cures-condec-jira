@@ -15,11 +15,14 @@ import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 
 public class MockIssueLink implements IssueLink {
-	private long id;
+
+	private long sourceId;
+	private long destinationId;
 	private long sequence;
 
-	public MockIssueLink(long id) {
-		this.id = id;
+	public MockIssueLink(long sourceId, long destinationId) {
+		this.sourceId = sourceId;
+		this.destinationId = destinationId;
 	}
 
 	@Override
@@ -54,23 +57,23 @@ public class MockIssueLink implements IssueLink {
 
 	@Override
 	public Issue getDestinationObject() {
-		if (id == 1) {
-			return ComponentAccessor.getIssueManager().getIssueObject((long) 13);
+		Issue issue = ComponentAccessor.getIssueManager().getIssueObject(destinationId);
+		if (issue == null) {
+			issue = new MockIssue(200, "TEST-200");
+			IssueType issueType = new MockIssueType(4, "Argument");
+			((MockIssue) issue).setIssueType(issueType);
+			((MockIssue) issue).setDescription("Test");
+			((MockIssue) issue).setSummary("Test");
+			Project project = new MockProject(1, "TEST");
+			((MockProject) project).setKey("TEST");
+			((MockIssue) issue).setProjectObject(project);
 		}
-		IssueType issueType = new MockIssueType(12, "Argument");
-		Issue issue = new MockIssue(200, "TEST-200");
-		((MockIssue) issue).setIssueType(issueType);
-		((MockIssue) issue).setDescription("Test");
-		((MockIssue) issue).setSummary("Test");
-		Project project = new MockProject(1, "TEST");
-		((MockProject) project).setKey("TEST");
-		((MockIssue) issue).setProjectObject(project);
 		return issue;
 	}
 
 	@Override
 	public Long getId() {
-		return this.id;
+		return (long) 1;
 	}
 
 	@Override
@@ -99,17 +102,17 @@ public class MockIssueLink implements IssueLink {
 
 	@Override
 	public Issue getSourceObject() {
-		if (id == 1) {
-			return ComponentAccessor.getIssueManager().getIssueObject((long) 12);
+		Issue issue = ComponentAccessor.getIssueManager().getIssueObject(sourceId);
+		if (issue == null) {
+			issue = new MockIssue(300, "TEST-300");
+			IssueType issueType = new MockIssueType(4, "Argument");
+			((MockIssue) issue).setIssueType(issueType);
+			((MockIssue) issue).setDescription("Test");
+			((MockIssue) issue).setSummary("Test");
+			Project project = new MockProject(1, "TEST");
+			((MockProject) project).setKey("TEST");
+			((MockIssue) issue).setProjectObject(project);
 		}
-		IssueType issueType = new MockIssueType(12, "Argument");
-		Issue issue = new MockIssue(300, "TEST-300");
-		((MockIssue) issue).setIssueType(issueType);
-		((MockIssue) issue).setDescription("Test");
-		((MockIssue) issue).setSummary("Test");
-		Project project = new MockProject(1, "TEST");
-		((MockProject) project).setKey("TEST");
-		((MockIssue) issue).setProjectObject(project);
 		return issue;
 	}
 

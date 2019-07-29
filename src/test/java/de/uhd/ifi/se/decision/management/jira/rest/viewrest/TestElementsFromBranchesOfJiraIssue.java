@@ -40,8 +40,8 @@ public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 
 	@Test
 	public void testExistingIssueKey() throws GenericEntityException {
-		assertEquals(200, viewRest.getFeatureBranchTree("TEST-1").getStatus());
-		Object receivedEntity = viewRest.getFeatureBranchTree("TEST-1").getEntity();
+		assertEquals(200, viewRest.getFeatureBranchTree("TEST-2").getStatus());
+		Object receivedEntity = viewRest.getFeatureBranchTree("TEST-2").getEntity();
 
 		Object expectedEntity = new DiffViewer(null);
 		assertEquals(expectedEntity.getClass(), receivedEntity.getClass());

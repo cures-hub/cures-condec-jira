@@ -13,6 +13,6 @@ public class TestGetUnlinkedElements extends TestJiraIssuePersistenceManagerSetU
 
 	@Test
 	public void testIdCanBeFound() {
-		assertEquals(numberOfElements - 1, issueStrategy.getUnlinkedElements(15).size());
+		assertEquals(numberOfElements - 1, issueStrategy.getUnlinkedElements(2).size());
 	}
 }

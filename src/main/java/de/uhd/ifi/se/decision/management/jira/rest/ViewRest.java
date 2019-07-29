@@ -180,7 +180,7 @@ public class ViewRest {
 		if (issueKey == null || issueKey.trim().equals(""))
 			return null;
 		try {
-			issue = ComponentAccessor.getIssueManager().getIssueByKeyIgnoreCase(issueKey);
+			issue = ComponentAccessor.getIssueManager().getIssueObject(issueKey);
 		} catch (Exception ex) {
 			LOGGER.error(ex.getMessage());
 		}

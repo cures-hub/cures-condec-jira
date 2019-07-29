@@ -30,7 +30,7 @@ public class TestGetAdjacentElements extends TestJiraIssuePersistenceManagerSetU
 	@Test
 	public void testDecisionKnowledgeElementEmpty() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		assertEquals(new ArrayList<DecisionKnowledgeElementImpl>(), issueStrategy.getAdjacentElements(element));
+		assertEquals(0, issueStrategy.getAdjacentElements(element).size());
 	}
 
 	@Test

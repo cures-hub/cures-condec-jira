@@ -24,6 +24,6 @@ public class TestIssueWithNoExistingLinksToDecisionKnowledge extends TestSetupCa
 	@Test
 	@NonTransactional
 	public void testTypeFilled() {
-		assertEquals(" TEST-12 ", calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.ARGUMENT));
+		assertEquals(" TEST-1 ", calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.ARGUMENT));
 	}
 }

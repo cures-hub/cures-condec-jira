@@ -6,7 +6,6 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import com.atlassian.jira.bc.issue.search.SearchService;
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.search.SearchContext;
 import com.atlassian.jira.issue.search.SearchException;
@@ -38,9 +37,7 @@ public class MockSearchService implements SearchService {
 				|| query.getQueryString().equals("project=UNKNOWNPROJECT")) {
 			return new SearchResults<Issue>(jiraIssues, 0, 0, 0);
 		}
-		Issue issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");
-		JiraIssues.addComment(issue);
-		jiraIssues.add(issue);
+		jiraIssues.addAll(JiraIssues.getTestJiraIssues());
 		return new SearchResults<Issue>(jiraIssues, 1, 1, 0);
 	}
 

@@ -35,7 +35,7 @@ public class TestCreateDecisionKnowledgeElement extends TestSetUp {
 		knowledgeRest = new KnowledgeRest();
 		init();
 
-		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
+		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-3");
 		decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);
 		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 
@@ -106,7 +106,7 @@ public class TestCreateDecisionKnowledgeElement extends TestSetUp {
 	@Test
 	public void testRequestFilledElementFilledParentIdFilledParentDocumentationLocationNull() {
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 7, null).getStatus());
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 3, null).getStatus());
 	}
 
 	@Test

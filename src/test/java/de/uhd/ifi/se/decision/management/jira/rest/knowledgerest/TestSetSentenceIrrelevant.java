@@ -82,7 +82,7 @@ public class TestSetSentenceIrrelevant extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledButNotDocumentedInJiraIssueComment() {
-		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
+		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-3");
 		DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);
 		assertEquals(503, knowledgeRest.setSentenceIrrelevant(request, decisionKnowledgeElement).getStatus());
 	}

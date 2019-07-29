@@ -165,7 +165,7 @@ public class TestTreeViewer extends TestSetUp {
 		assertEquals(0, tv.getDataStructure(element).getChildren().size());
 
 		// 2) Add comment to issue
-		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("14");
+		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-14");
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 		ApplicationUser currentUser = JiraUsers.SYS_ADMIN.getApplicationUser();
 		CommentManager commentManager = ComponentAccessor.getCommentManager();

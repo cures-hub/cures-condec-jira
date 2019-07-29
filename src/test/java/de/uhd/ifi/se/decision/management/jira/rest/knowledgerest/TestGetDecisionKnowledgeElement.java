@@ -26,7 +26,7 @@ public class TestGetDecisionKnowledgeElement extends TestSetUp {
 
 	@Test
 	public void testElementIdFilledProjectExistentDocumentationLocationNull() {
-		assertEquals(Status.OK.getStatusCode(), knowledgeRest.getDecisionKnowledgeElement(7, "TEST", null).getStatus());
+		assertEquals(Status.OK.getStatusCode(), knowledgeRest.getDecisionKnowledgeElement(3, "TEST", null).getStatus());
 	}
 
 	@Test

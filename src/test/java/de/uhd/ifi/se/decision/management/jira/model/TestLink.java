@@ -120,7 +120,7 @@ public class TestLink {
 
 	@Test
 	public void testConstructorIssueLink() {
-		IssueLink issueLink = new MockIssueLink((long) 54);
+		IssueLink issueLink = new MockIssueLink(1, 2);
 		Link link = new LinkImpl(issueLink);
 		assertNotNull(link);
 	}
