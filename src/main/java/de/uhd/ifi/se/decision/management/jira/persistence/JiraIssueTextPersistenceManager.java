@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -245,8 +247,19 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 
 	@Override
 	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Link> inwardLinks = new ArrayList<Link>();
+		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select()
+                                                   .where("DESTINATION_ID = ? AND DEST_DOCUMENTATION_LOCATION = ?",
+		                                                   element.getId(), element.getDocumentationLocation().getIdentifier()));
+		for (LinkInDatabase link : links) {
+			Link inwardLink = new LinkImpl(link);
+			inwardLink.setDestinationElement(element);
+			long elementId = link.getSourceId();
+			AbstractPersistenceManager sourcePersistenceManager = AbstractPersistenceManager.getPersistenceManager(projectKey, link.getSourceDocumentationLocation());
+			inwardLink.setSourceElement(sourcePersistenceManager.getDecisionKnowledgeElement(link.getSourceId()));
+			inwardLinks.add(inwardLink);
+		}
+		return inwardLinks;
 	}
 
 	@Override
@@ -699,5 +712,4 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		}
 		return validatedPartsOfText;
 	}
-
 }
