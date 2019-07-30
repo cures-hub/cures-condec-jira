@@ -125,18 +125,19 @@ public class FilterExtractor {
 		List<DecisionKnowledgeElement> filteredElements = new ArrayList<>();
 
 		for (DecisionKnowledgeElement element : elements) {
-			// Check if the element is created in time
-			if (checkIfJiraTextMatchesFilter(element)) {
-				// Case no text filter
-				if (filterSettings.getSearchString().equals("")
-						|| filterSettings.getSearchString().equals("?filter=-4")) {
-					filteredElements.add(element);
-				} else {
-					if (element.getDescription() != null && element.getSummary() != null) {
-						// Case Description or summary are containing the search sting
-						if (element.getDescription().contains(filterSettings.getSearchString())
-								|| element.getSummary().contains(filterSettings.getSearchString())) {
-							filteredElements.add(element);
+			// Check if the  Type of the Element is correct
+			if(filterSettings.getNamesOfSelectedJiraIssueTypes().contains(element.getTypeAsString())) {
+				// Check if the element is created in time
+				if (checkIfJiraTextMatchesFilter(element)) {
+					// Case no text filter
+					if (filterSettings.getSearchString().equals("") || filterSettings.getSearchString().equals("?filter=-4")) {
+						filteredElements.add(element);
+					} else {
+						if (element.getDescription() != null && element.getSummary() != null) {
+							// Case Description or summary are containing the search sting
+							if (element.getDescription().contains(filterSettings.getSearchString()) || element.getSummary().contains(filterSettings.getSearchString())) {
+								filteredElements.add(element);
+							}
 						}
 					}
 				}

@@ -133,14 +133,7 @@ public class ViewRest {
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisDataProvider visDataProvider = new VisDataProvider(filterSettings.getProjectKey(), user);
-		VisTimeLine timeLine;
-		// Case: No filter applied
-		if (filterSettings.getSearchString().equals("") && filterSettings.getCreatedEarliest() == -1
-				&& filterSettings.getCreatedLatest() == -1) {
-			timeLine = visDataProvider.getTimeLine();
-		} else {
-			timeLine = visDataProvider.getTimeLineFilterd(filterSettings);
-		}
+		VisTimeLine timeLine = visDataProvider.getTimeLineFilterd(filterSettings);
 		return Response.ok(timeLine.getEvolutionData()).build();
 
 	}
@@ -230,13 +223,7 @@ public class ViewRest {
 					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		if (filterSettings.getCreatedEarliest() == -1 && filterSettings.getCreatedLatest() == -1) {
-			VisDataProvider visDataProvider = new VisDataProvider(filterSettings.getProjectKey(), user);
-			return Response.ok(visDataProvider.getVisGraph()).build();
-		}
-
 		VisDataProvider visDataProvider = new VisDataProvider(filterSettings.getProjectKey(), user);
-
 		return Response.ok(visDataProvider.getVisGraphTimeFilterd(filterSettings)).build();
 	}
 
