@@ -115,15 +115,8 @@ public class FilterExtractor {
 		if (filterSettings.getProjectKey() == null) {
 			return new ArrayList<>();
 		}
-		AbstractPersistenceManager strategy = AbstractPersistenceManager
-				.getDefaultPersistenceStrategy(filterSettings.getProjectKey());
-		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
-		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
-				filterSettings.getProjectKey());
-		elements.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
-
 		List<DecisionKnowledgeElement> filteredElements = new ArrayList<>();
-
+		List<DecisionKnowledgeElement> elements = getElementsInProject();
 		for (DecisionKnowledgeElement element : elements) {
 			// Check if the  Type of the Element is correct
 			if(filterSettings.getNamesOfSelectedJiraIssueTypes().contains(element.getTypeAsString())) {
@@ -140,6 +133,17 @@ public class FilterExtractor {
 			}
 		}
 		return filteredElements;
+	}
+
+	//Get decision knowledge elements from the selected strategy and the sentences
+	private List getElementsInProject(){
+		AbstractPersistenceManager strategy = AbstractPersistenceManager
+				                                      .getDefaultPersistenceStrategy(filterSettings.getProjectKey());
+		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
+		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
+				filterSettings.getProjectKey());
+		elements.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
+		return elements;
 	}
 
 	// Check if the element is created in time
