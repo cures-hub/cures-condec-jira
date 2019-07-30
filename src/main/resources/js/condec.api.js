@@ -347,7 +347,7 @@
 	/*
 	 *external reference: condec.evolution.page.js
 	 */
-    ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed, searchString, issueType2s, callback){
+    ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed, searchString, issueTypes, callback){
         var filterSettings = {
             "projectKey" : projectKey,
             "searchString" : searchString,

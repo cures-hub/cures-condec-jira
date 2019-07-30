@@ -132,8 +132,8 @@ public class ViewRest {
 					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisDataProvider visDataProvider = new VisDataProvider(filterSettings.getProjectKey(), user);
-		VisTimeLine timeLine = visDataProvider.getTimeLineFilterd(filterSettings);
+		VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings);
+		VisTimeLine timeLine = visDataProvider.getTimeLine();
 		return Response.ok(timeLine.getEvolutionData()).build();
 
 	}
@@ -223,8 +223,8 @@ public class ViewRest {
 					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisDataProvider visDataProvider = new VisDataProvider(filterSettings.getProjectKey(), user);
-		return Response.ok(visDataProvider.getVisGraphTimeFilterd(filterSettings)).build();
+		VisDataProvider visDataProvider = new VisDataProvider(user,filterSettings);
+		return Response.ok(visDataProvider.getVisGraph()).build();
 	}
 
 	@Path("/getFilterSettings")
