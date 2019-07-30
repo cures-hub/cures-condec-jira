@@ -347,7 +347,7 @@
 	/*
 	 *external reference: condec.evolution.page.js
 	 */
-    ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed, searchString, issueTypes, callback){
+    ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed, searchString, issueType2s, callback){
         var filterSettings = {
             "projectKey" : projectKey,
             "searchString" : searchString,
@@ -489,7 +489,7 @@
 				error, response) {
 			if (error === null) {
 				showFlag("success", "Extraction from issue comments for this project has been set to "
-						+ isKnowledgeExtractedFromIssues + ".");chronologie-dropdown
+						+ isKnowledgeExtractedFromIssues + ".");
 			}
 		});
 	};
