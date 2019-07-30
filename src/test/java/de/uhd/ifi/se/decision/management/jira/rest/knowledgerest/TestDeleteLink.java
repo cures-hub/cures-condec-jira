@@ -51,7 +51,7 @@ public class TestDeleteLink extends TestSetUp {
 		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement sentence = comment.get(0);
 
-		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
+		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-3");
 		DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);
 		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 

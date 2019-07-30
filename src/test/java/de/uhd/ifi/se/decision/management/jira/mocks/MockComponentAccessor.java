@@ -22,7 +22,6 @@ import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.mock.MockConstantsManager;
 import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.component.MockComponentWorker;
-import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.security.PermissionManager;
 import com.atlassian.jira.security.roles.ProjectRoleManager;
@@ -44,7 +43,7 @@ public class MockComponentAccessor extends ComponentAccessor {
 		ProjectManager projectManager = initProjectManager();
 		UserManager userManager = initUserManager();
 		ConstantsManager constantsManager = initConstantsManager();
-		IssueManager issueManager = initIssueManager(projectManager.getProjects().get(0));
+		IssueManager issueManager = initIssueManager();
 
 		new MockComponentWorker().init().addMock(IssueManager.class, issueManager)
 				.addMock(IssueLinkManager.class, new MockIssueLinkManager())
@@ -56,7 +55,7 @@ public class MockComponentAccessor extends ComponentAccessor {
 				.addMock(VelocityParamFactory.class, new MockVelocityParamFactory())
 				.addMock(AvatarManager.class, new MockAvatarManager())
 				.addMock(IssueTypeManager.class, new MockIssueTypeManager())
-				.addMock(IssueTypeSchemeManager.class, mock(IssueTypeSchemeManager.class))
+				.addMock(IssueTypeSchemeManager.class, new MockIssueTypeSchemeManager())
 				.addMock(FieldConfigScheme.class, mock(FieldConfigScheme.class))
 				.addMock(PluginSettingsFactory.class, new MockPluginSettingsFactory())
 				.addMock(OptionSetManager.class, mock(OptionSetManager.class))
@@ -93,9 +92,9 @@ public class MockComponentAccessor extends ComponentAccessor {
 		return constantsManager;
 	}
 
-	public IssueManager initIssueManager(Project project) {
+	public IssueManager initIssueManager() {
 		MockIssueManager issueManager = new MockIssueManager();
-		for (MutableIssue jiraIssue : JiraIssues.createJiraIssues(project)) {
+		for (MutableIssue jiraIssue : JiraIssues.getTestJiraIssues()) {
 			issueManager.addIssue(jiraIssue);
 		}
 		return issueManager;

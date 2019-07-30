@@ -33,7 +33,7 @@ public class TestDeleteDecisionKnowledgeElement extends TestSetUp {
 		knowledgeRest = new KnowledgeRest();
 		init();
 
-		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
+		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-3");
 		decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);
 		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 

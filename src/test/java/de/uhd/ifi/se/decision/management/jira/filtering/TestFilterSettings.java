@@ -3,6 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -85,15 +88,17 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testSetDocumentationLocations() {
-		filterSettings.setDocumentationLocations(DocumentationLocation.getNamesOfDocumentationLocations());
-		assertEquals(6, filterSettings.getDocumentationLocations().size());
+		List<String> documentationLocations = DocumentationLocation.getAllDocumentationLocations().stream()
+				.map(DocumentationLocation::toString).collect(Collectors.toList());
+		filterSettings.setDocumentationLocations(documentationLocations);
+		assertEquals(5, filterSettings.getDocumentationLocations().size());
 		filterSettings.setDocumentationLocations(null);
 		assertEquals(0, filterSettings.getDocumentationLocations().size());
 	}
 
 	@Test
 	public void testGetNamesOfSelectedJiraIssueTypes() {
-		assertEquals(18, filterSettings.getNamesOfSelectedJiraIssueTypes().size());
+		assertEquals(5, filterSettings.getNamesOfSelectedJiraIssueTypes().size());
 		filterSettings = new FilterSettingsImpl("TEST", "?jql=issuetype in (Decision, Issue)", null);
 		assertEquals(2, filterSettings.getNamesOfSelectedJiraIssueTypes().size());
 	}
@@ -101,6 +106,6 @@ public class TestFilterSettings extends TestSetUp {
 	@Test
 	public void testSetSelectedJiraIssueTypes() {
 		filterSettings.setSelectedJiraIssueTypes(null);
-		assertEquals(18, filterSettings.getNamesOfSelectedJiraIssueTypes().size());
+		assertEquals(5, filterSettings.getNamesOfSelectedJiraIssueTypes().size());
 	}
 }

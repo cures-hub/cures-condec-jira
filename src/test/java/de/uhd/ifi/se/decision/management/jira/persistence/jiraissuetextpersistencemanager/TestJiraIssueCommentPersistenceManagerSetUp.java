@@ -47,7 +47,7 @@ public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUp {
 	protected static void addElementToDataBase() {
 		element = new PartOfJiraIssueTextImpl();
 		element.setProject("TEST");
-		element.setJiraIssueId(12);
+		element.setJiraIssueId(1);
 		element.setId(1);
 		element.setKey("TEST-12231");
 		element.setType("Argument");

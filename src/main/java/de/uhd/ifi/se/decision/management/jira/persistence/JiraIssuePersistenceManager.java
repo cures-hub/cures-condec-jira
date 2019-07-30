@@ -143,7 +143,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 	public boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user) {
 		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueService.IssueResult issue = issueService.getIssue(user, id);
-		if (issue.isValid()) {
+		if (issue.isValid() && issue.getIssue() != null) {
 			IssueService.DeleteValidationResult result = issueService.validateDelete(user, issue.getIssue().getId());
 			if (result.getErrorCollection().hasAnyErrors()) {
 				for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {

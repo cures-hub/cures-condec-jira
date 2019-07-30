@@ -18,8 +18,13 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ErrorCollection;
 import com.atlassian.jira.workflow.TransitionOptions;
 
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
+/**
+ * @issue What is the difference between the IssueManager and the IssueService?
+ *        Do we really need both?
+ */
 public class MockIssueService implements IssueService {
 
 	@Override
@@ -38,18 +43,18 @@ public class MockIssueService implements IssueService {
 	}
 
 	@Override
-	public IssueResult create(ApplicationUser user, CreateValidationResult arg1, String arg2) {
+	public IssueResult create(ApplicationUser user, CreateValidationResult result, String arg2) {
 		return null;
 	}
 
 	@Override
-	public ErrorCollection delete(ApplicationUser user, DeleteValidationResult arg1) {
-		if (user.getName().equalsIgnoreCase("ValidNoResErrors")) {
-			ErrorCollection col = new MockAction();
-			col.addError("Test", "Test");
-			return col;
+	public ErrorCollection delete(ApplicationUser user, DeleteValidationResult result) {
+		if (user == null || user == JiraUsers.BLACK_HEAD.getApplicationUser()) {
+			ErrorCollection errors = new MockAction();
+			errors.addError("user", "User is not authorized.");
+			return errors;
 		}
-		return arg1.getErrorCollection();
+		return result.getErrorCollection();
 	}
 
 	@Override
@@ -60,24 +65,26 @@ public class MockIssueService implements IssueService {
 
 	@Override
 	public IssueResult getIssue(ApplicationUser user, Long issueId) {
-		MutableIssue issue = new MockIssue(issueId);
+		MutableIssue issue = JiraIssues.getTestJiraIssues().stream().filter(jiraIssue -> issueId == jiraIssue.getId())
+				.findFirst().orElse(new MockIssue(issueId));
 		IssueResult result = new IssueResult(issue);
 		if (user == null || JiraUsers.valueOf(user) == JiraUsers.BLACK_HEAD) {
-			ErrorCollection col = new MockAction();
-			col.addError("Test", "Test");
-			return new IssueResult(issue, col);
+			ErrorCollection errors = new MockAction();
+			errors.addError("user", "User is not authorized.");
+			result = new IssueResult(issue, errors);
 		}
 		return result;
 	}
 
 	@Override
 	public IssueResult getIssue(ApplicationUser user, String key) {
-		MutableIssue issue = new MockIssue(1, key);
+		MutableIssue issue = JiraIssues.getTestJiraIssues().stream().filter(jiraIssue -> key.equals(jiraIssue.getKey()))
+				.findFirst().orElse(new MockIssue(1, key));
 		IssueResult result = new IssueResult(issue);
 		if (JiraUsers.valueOf(user) == JiraUsers.BLACK_HEAD) {
-			ErrorCollection col = new MockAction();
-			col.addError("Test", "Test");
-			return new IssueResult(issue, col);
+			ErrorCollection errors = new MockAction();
+			errors.addError("user", "User is not authorized.");
+			result = new IssueResult(issue, errors);
 		}
 		return result;
 	}
@@ -131,27 +138,26 @@ public class MockIssueService implements IssueService {
 		MutableIssue issue = new MockIssue(1, "TEST-12");
 		IssueType issueType = new MockIssueType(12, "Solution");
 		issue.setIssueType(issueType);
-		ErrorCollection col = new MockAction();
+		ErrorCollection errors = new MockAction();
 		Map<String, Object> fieldValuesHolder = new ConcurrentHashMap<>();
 		Map<String, org.codehaus.jackson.JsonNode> properties = new ConcurrentHashMap<>();
 		if (user == null || JiraUsers.valueOf(user) == JiraUsers.BLACK_HEAD) {
-			col.addError("Test", "Test");
-			return new CreateValidationResult(issue, col, fieldValuesHolder, properties);
+			errors.addError("user", "User is not authorized.");
+			return new CreateValidationResult(issue, errors, fieldValuesHolder, properties);
 		}
-		return new CreateValidationResult(issue, col, fieldValuesHolder, properties);
+		return new CreateValidationResult(issue, errors, fieldValuesHolder, properties);
 	}
 
 	@Override
-	public DeleteValidationResult validateDelete(ApplicationUser user, Long arg1) {
+	public DeleteValidationResult validateDelete(ApplicationUser user, Long issueId) {
 		MutableIssue issue = new MockIssue(1, "TEST-12");
 		IssueType issueType = new MockIssueType(12, "Solution");
 		issue.setIssueType(issueType);
-		ErrorCollection col = new MockAction();
+		ErrorCollection errors = new MockAction();
 		if (user == null || JiraUsers.valueOf(user) == JiraUsers.BLACK_HEAD) {
-			col.addError("Test", "Test");
-			return new DeleteValidationResult(issue, col);
+			errors.addError("user", "User is not authorized.");
 		}
-		return new DeleteValidationResult(issue, col);
+		return new DeleteValidationResult(issue, errors);
 	}
 
 	@Override

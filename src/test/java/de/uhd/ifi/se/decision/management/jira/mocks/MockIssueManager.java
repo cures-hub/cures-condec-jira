@@ -1,80 +1,34 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.ofbiz.core.entity.GenericEntityException;
 
-import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
 
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
+
 /**
- * This class provides functions not implemented in the Jira Mock Class
+ * This class mocks the JIRA issue manager. It implements methods that are not
+ * implemented in the MockIssueManager of the jira.mock package.
  */
 public class MockIssueManager extends com.atlassian.jira.mock.MockIssueManager {
 
 	@Override
-	public MutableIssue getIssueByKeyIgnoreCase(String key) {
-		MutableIssue value = getIssueObject(key);
-		if (value != null)
-			return value;
-
-		value = getIssueObject(key.toLowerCase());
-		if (value != null)
-			return value;
-
-		value = getIssueObject(key.toUpperCase());
-		return value;
-	}
-
-	@Override
 	public Collection<Long> getIssueIdsForProject(Long id) throws GenericEntityException {
-		if (id == 10) {
-			throw new GenericEntityException();
-		}
-		Collection<Long> col = new ArrayList<>();
-		if (id == 30) {
-			Issue issue = this.getIssueObject((long) 30);
-			col.add(issue.getId());
-			return col;
-		}
-		// Iterate over the IssueTypes that are added in the TestIssueStrategySetUp
-		for (int i = 2; i <= 15; i++) {
-			Issue issue = this.getIssueObject((long) i);
-			if (id.equals(issue.getProjectId())) {
-				col.add(issue.getId());
-			}
-		}
-		return col;
-	}
-
-	@Override
-	public MutableIssue getIssueByCurrentKey(String key) {
-		if (key.contains("-30")) {
-			return this.getIssueObject(key);
-		}
-		if ("CONDEC-1234".equals(key)) {
-			Issue issue = this.getIssueObject((long) 1234);
-			return (MutableIssue) issue;
-		}
-		for (int i = 2; i <= 16; i++) {
-			Issue issue = this.getIssueObject((long) i);
-			if (key.equals(issue.getId().toString())) {
-				return (MutableIssue) issue;
-			}
-			if (key.equals(issue.getKey())) {
-				return (MutableIssue) issue;
-			}
-		}
-		return null;
+		return JiraIssues.getTestJiraIssues().stream().map(MutableIssue::getId).collect(Collectors.toList());
 	}
 
 	@Override
 	public MutableIssue getIssueObject(String key) {
-		if ("false".equals(key) || !key.startsWith("TEST")) {
-			return null;
-		}
-		Issue issue = this.getIssueObject((long) 14);
-		return (MutableIssue) issue;
+		return getIssueByCurrentKey(key);
+	}
+
+	@Override
+	public MutableIssue getIssueByCurrentKey(String key) {
+		MutableIssue mutableIssue = JiraIssues.getTestJiraIssues().stream()
+				.filter(jiraIssue -> key.equals(jiraIssue.getKey())).findFirst().orElse(null);
+		return mutableIssue;
 	}
 }
