@@ -127,7 +127,12 @@ public class ViewRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getEvolutionData(@Context HttpServletRequest request, FilterSettings filterSettings) {
-		if (filterSettings.getProjectKey() == null || filterSettings.getProjectKey().equals("")) {
+		if (request == null) {
+			return Response.status(Status.BAD_REQUEST)
+					       .entity(ImmutableMap.of("error", "HttpServletRequest is null. Timeline could not be created."))
+					       .build();
+		}
+		if (filterSettings == null || filterSettings.getProjectKey() == null || filterSettings.getProjectKey().equals("")) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not valid."))
 					.build();
 		}
