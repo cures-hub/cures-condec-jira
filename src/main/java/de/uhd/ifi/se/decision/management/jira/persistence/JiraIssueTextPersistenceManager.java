@@ -254,7 +254,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		for (LinkInDatabase link : links) {
 			Link inwardLink = new LinkImpl(link);
 			inwardLink.setDestinationElement(element);
-			long elementId = link.getSourceId();
 			AbstractPersistenceManager sourcePersistenceManager = AbstractPersistenceManager.getPersistenceManager(projectKey, link.getSourceDocumentationLocation());
 			inwardLink.setSourceElement(sourcePersistenceManager.getDecisionKnowledgeElement(link.getSourceId()));
 			inwardLinks.add(inwardLink);

@@ -18,6 +18,9 @@ public class VisDataProvider {
 	private List<DecisionKnowledgeElement> decisionKnowledgeElements;
 
 	public VisDataProvider(ApplicationUser user, FilterSettings filterSettings) {
+		if(user == null || filterSettings == null){
+			return;
+		}
 		this.projectKey = filterSettings.getProjectKey();
 		this.user = user;
 		FilterExtractor filterExtractor = new FilterExtractor(this.user, filterSettings);
