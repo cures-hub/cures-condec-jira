@@ -37,7 +37,9 @@ public class GraphImpl implements Graph {
 
 	public GraphImpl(String projectKey) {
 		this();
-		this.project = new DecisionKnowledgeProjectImpl(projectKey);
+		if(projectKey!=null){
+			this.project = new DecisionKnowledgeProjectImpl(projectKey);
+		}
 	}
 
 	public GraphImpl(DecisionKnowledgeElement rootElement) {

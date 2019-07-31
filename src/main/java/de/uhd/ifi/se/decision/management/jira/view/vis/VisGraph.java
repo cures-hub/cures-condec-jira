@@ -47,6 +47,9 @@ public class VisGraph {
 	}
 
 	public VisGraph(List<DecisionKnowledgeElement> elements,String projectKey) {
+		if(projectKey == null ){
+			return;
+		}
 		this.graph = new GraphImpl(projectKey);
 		this.cid = 0;
 		this.level = 50;
