@@ -227,6 +227,11 @@ public class ViewRest {
 					.entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
 					.build();
 		}
+		if (filterSettings == null) {
+			return Response.status(Status.BAD_REQUEST)
+					       .entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
+					       .build();
+		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisDataProvider visDataProvider = new VisDataProvider(user,filterSettings);
 		return Response.ok(visDataProvider.getVisGraph()).build();
