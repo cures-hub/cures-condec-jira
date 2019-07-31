@@ -22,7 +22,7 @@ public class VisDataProvider {
 		this.user = user;
 		FilterExtractor filterExtractor = new FilterExtractor(this.user, filterSettings);
 		List<DecisionKnowledgeElement> decisionKnowledgeElements = filterExtractor.getAllElementsMatchingCompareFilter();
-		graph = new VisGraph(decisionKnowledgeElements, false);
+		graph = new VisGraph(decisionKnowledgeElements, projectKey);
 		this.timeLine= new VisTimeLine(decisionKnowledgeElements);
 	}
 
