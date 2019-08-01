@@ -39,8 +39,6 @@ public class VisGraph {
 	@JsonIgnore
 	private int level;
 	@JsonIgnore
-	private String documentationLocation;
-	@JsonIgnore
 	private int cid;
 
 	public VisGraph() {
@@ -74,20 +72,8 @@ public class VisGraph {
 
 	}
 
-	public VisGraph(String projectKey, String elementKey, List<DecisionKnowledgeElement> elements,
-			boolean isHyperlinked) {
-		this.graph = new GraphImpl(projectKey, elementKey);
-
-		for (DocumentationLocation location : DocumentationLocation.values()) {
-			this.documentationLocation = this.documentationLocation + DocumentationLocation.getName(location);
-		}
-		if (elements == null) {
-			this.elementsMatchingFilterCriteria = graph.getAllElements();
-		} else {
-			this.elementsMatchingFilterCriteria = elements;
-		}
-		this.setHyperlinked(isHyperlinked);
-		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
+	public VisGraph(DecisionKnowledgeElement rootElement, List<DecisionKnowledgeElement> elements) {
+		this.elementsMatchingFilterCriteria = elements;
 		this.rootElementKey = (rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString());
 		nodes = new HashSet<>();
 		edges = new HashSet<>();
@@ -165,8 +151,7 @@ public class VisGraph {
 	}
 
 	private boolean isCollapsed(DecisionKnowledgeElement element) {
-		return (this.documentationLocation.contains(DocumentationLocation.getName(element.getDocumentationLocation()))
-				&& this.elementsMatchingFilterCriteria.contains(element));
+		return elementsMatchingFilterCriteria.contains(element);
 	}
 
 	public void setNodes(HashSet<VisNode> nodes) {

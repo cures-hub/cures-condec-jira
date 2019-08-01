@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,7 +108,6 @@ public class FilterExtractor {
 				}
 			}
 		}
-
 		return results;
 	}
 
@@ -115,24 +115,8 @@ public class FilterExtractor {
 		if (filterSettings.getProjectKey() == null) {
 			return new ArrayList<>();
 		}
-		List<DecisionKnowledgeElement> filteredElements = new ArrayList<>();
 		List<DecisionKnowledgeElement> elements = getElementsInProject();
-		for (DecisionKnowledgeElement element : elements) {
-			// Check if the  Type of the Element is correct
-			if(filterSettings.getNamesOfSelectedJiraIssueTypes().contains(element.getTypeAsString())) {
-				if (checkIfElementMatchesTimeFilter(element)) {
-					// Case no text filter
-					if (filterSettings.getSearchString().equals("") || filterSettings.getSearchString().equals("?filter=-4")) {
-						filteredElements.add(element);
-					} else {
-						if(checkIfElementMatchesStringFilter(element)) {
-							filteredElements.add(element);
-						}
-					}
-				}
-			}
-		}
-		return filteredElements;
+		return filterElements(elements);
 	}
 
 	//Get decision knowledge elements from the selected strategy and the sentences
@@ -168,6 +152,36 @@ public class FilterExtractor {
 		}
 		return false;
 	}
+
+	private List<DecisionKnowledgeElement> filterElements(List<DecisionKnowledgeElement> elements) {
+		List<DecisionKnowledgeElement> filteredElements = new ArrayList<>();
+		if(elements == null || elements.size()==0){
+			return filteredElements;
+		}
+		for (DecisionKnowledgeElement element : elements) {
+			// Check if the DocumentationLocation is correct
+			if(filterSettings.getDocumentationLocations().contains(element.getDocumentationLocation())||
+					   filterSettings.getDocumentationLocations().size() == 1 &&
+							   filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN)) {
+				// Check if the  Type of the Element is correct
+				if (filterSettings.getNamesOfSelectedJiraIssueTypes().contains(element.getTypeAsString())) {
+					if (checkIfElementMatchesTimeFilter(element)) {
+						// Case no text filter
+						if (filterSettings.getSearchString().equals("") || filterSettings.getSearchString().equals("?filter=-4")
+						||filterSettings.getSearchString().equals("?filter=allopenissues")) {
+							filteredElements.add(element);
+						} else {
+							if (checkIfElementMatchesStringFilter(element)) {
+								filteredElements.add(element);
+							}
+						}
+					}
+				}
+			}
+		}
+		return filteredElements;
+	}
+
 	public FilterSettings getFilterSettings() {
 		return this.filterSettings;
 	}

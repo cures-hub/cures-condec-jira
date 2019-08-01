@@ -65,7 +65,9 @@ public class TestVisGraph extends TestSetUp {
 
 	@Test
 	public void testWithoutFiltering() {
-		VisGraph newVisGraph = new VisGraph(element.getProject().getProjectKey(), element.getKey(), null, false);
+		List<DecisionKnowledgeElement> elements = new ArrayList<>();
+		elements.add(element);
+		VisGraph newVisGraph = new VisGraph(element, elements);
 		assertNotNull(newVisGraph);
 	}
 

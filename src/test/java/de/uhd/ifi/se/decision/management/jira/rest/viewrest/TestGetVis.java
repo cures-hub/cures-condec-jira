@@ -67,7 +67,7 @@ public class TestGetVis extends TestSetUp {
 		assertEquals(
 				Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", INVALID_FILTER_SETTINGS)).build().getEntity(),
-				viewRest.getVis(null, null, "TEST-12").getEntity());
+				viewRest.getVis(null, null, "TEST-14").getEntity());
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class TestGetVis extends TestSetUp {
 	public void testRequestNullFilterSettingsFilledElementFilled() {
 		assertEquals(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error", INVALID_REQUEST)).build().getEntity(),
-				viewRest.getVis(null, filterSettings, "TEST-12").getEntity());
+				viewRest.getVis(null, filterSettings, "TEST-14").getEntity());
 	}
 
 	@Test
@@ -83,6 +83,6 @@ public class TestGetVis extends TestSetUp {
 	public void testRequestFilledFilterSettingsFilledElementFilled() {
 		assertNotNull(AuthenticationManager.getUser(request));
 		assertEquals(Response.Status.OK.getStatusCode(),
-				viewRest.getVis(request, filterSettings, "TEST-12").getStatus());
+				viewRest.getVis(request, filterSettings, "TEST-14").getStatus());
 	}
 }
