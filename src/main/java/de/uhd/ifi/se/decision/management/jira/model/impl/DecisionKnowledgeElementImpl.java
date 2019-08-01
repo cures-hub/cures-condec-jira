@@ -193,7 +193,8 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 
 	@Override
 	public List<Link> getInwardLinks() {
-		return this.getProject().getPersistenceStrategy().getInwardLinks(this);
+		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(this);
+		return persistenceManager.getInwardLinks(this);
 	}
 
 	@Override

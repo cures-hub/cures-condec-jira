@@ -1,9 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +17,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
+
+import static org.junit.Assert.*;
 
 public class TestVisGraph extends TestSetUp {
 	private VisGraph visGraph;
@@ -66,6 +67,48 @@ public class TestVisGraph extends TestSetUp {
 	public void testWithoutFiltering() {
 		VisGraph newVisGraph = new VisGraph(element.getProject().getProjectKey(), element.getKey(), null, false);
 		assertNotNull(newVisGraph);
+	}
+
+	@Test
+	public void testConstWithListNullProjectNull() {
+		VisGraph visGraph = new VisGraph((List) null, (String) null);
+		assertNull(visGraph.getEdges());
+	}
+
+	@Test
+	public void testConstWithListEmptyProjectNull() {
+		List<DecisionKnowledgeElement> elements = new ArrayList<>();
+		VisGraph visGraph = new VisGraph(elements, (String) null);
+		assertNull(visGraph.getEdges());
+	}
+
+	@Test
+	public void testConstWithListFilledProjectNull() {
+		List<DecisionKnowledgeElement> elements = new ArrayList<>();
+		elements.add(element);
+		VisGraph visGraph = new VisGraph(elements, (String) null);
+		assertNull(visGraph.getEdges());
+	}
+
+	@Test
+	public void testConstWithListNullProjectFilled() {
+		VisGraph visGraph = new VisGraph((List) null, "TEST");
+		assertEquals(0, visGraph.getNodes().size(), 0.0);
+	}
+
+	@Test
+	public void testConstWithListEmptyProjectFilled() {
+		List<DecisionKnowledgeElement> elements = new ArrayList<>();
+		VisGraph visGraph = new VisGraph(elements, "TEST");
+		assertEquals(0, visGraph.getNodes().size(), 0.0);
+	}
+
+	@Test
+	public void testConstWithListFilledProjectFilled() {
+		List<DecisionKnowledgeElement> elements = new ArrayList<>();
+		elements.add(element);
+		VisGraph visGraph = new VisGraph(elements, "TEST");
+		assertEquals(1, visGraph.getNodes().size(),0.0);
 	}
 
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {

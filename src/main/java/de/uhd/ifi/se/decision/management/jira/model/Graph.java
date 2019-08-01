@@ -61,6 +61,16 @@ public interface Graph {
 	List<DecisionKnowledgeElement> getAllElements();
 
 	/**
+	 * Return all Links of the list of decision knowledge elements. The list is not sorted.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see Link
+	 * @param elements
+	 * @return list of links of decision knowledge elements
+	 */
+	List<Link> getAllLinks(List<DecisionKnowledgeElement> elements);
+
+	/**
 	 * Get the project that this graph of decision knowledge elements belongs to.
 	 * The project is a JIRA project that is extended with settings for this
 	 * plug-in, for example, whether the plug-in is activated for the project.

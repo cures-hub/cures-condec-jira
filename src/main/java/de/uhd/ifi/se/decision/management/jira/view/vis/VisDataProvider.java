@@ -17,13 +17,16 @@ public class VisDataProvider {
 	private FilterExtractor filterExtractor;
 	private List<DecisionKnowledgeElement> decisionKnowledgeElements;
 
-	public VisDataProvider(String projectKey, ApplicationUser user) {
-		this.projectKey = projectKey;
+	public VisDataProvider(ApplicationUser user, FilterSettings filterSettings) {
+		if(user == null || filterSettings == null){
+			return;
+		}
+		this.projectKey = filterSettings.getProjectKey();
 		this.user = user;
-		this.filterExtractor = new FilterExtractor(projectKey, user, "");
-		this.timeLine = new VisTimeLine(projectKey);
-		decisionKnowledgeElements = filterExtractor.getAllElementsMatchingCompareFilter();
-		graph = new VisGraph(decisionKnowledgeElements, false);
+		FilterExtractor filterExtractor = new FilterExtractor(this.user, filterSettings);
+		List<DecisionKnowledgeElement> decisionKnowledgeElements = filterExtractor.getAllElementsMatchingCompareFilter();
+		graph = new VisGraph(decisionKnowledgeElements, projectKey);
+		this.timeLine= new VisTimeLine(decisionKnowledgeElements);
 	}
 
 	public VisDataProvider(String projectKey, String elementKey, boolean isHyperlinked, String query,
@@ -47,26 +50,10 @@ public class VisDataProvider {
 		return this.graph;
 	}
 
-	public VisGraph getVisGraphTimeFilterd(FilterSettings filterSettings){
-		FilterExtractor extractor = new FilterExtractor(this.user, filterSettings);
-		List<DecisionKnowledgeElement> elements = extractor.getAllElementsMatchingCompareFilter();
-		VisGraph graph = new VisGraph(elements,false);
-		return graph;
-	}
-
 	public VisTimeLine getTimeLine() {
 		if (timeLine == null) {
 			this.timeLine = new VisTimeLine(projectKey);
 		}
 		return this.timeLine;
 	}
-
-	public VisTimeLine getTimeLineFilterd(FilterSettings filterSettings){
-		FilterExtractor extractor = new FilterExtractor(this.user, filterSettings);
-		List<DecisionKnowledgeElement> elements = extractor.getAllElementsMatchingCompareFilter();
-		this.timeLine= new VisTimeLine(elements);
-		return this.timeLine;
-	}
-
-
 }

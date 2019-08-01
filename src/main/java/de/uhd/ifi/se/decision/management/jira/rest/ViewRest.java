@@ -127,20 +127,18 @@ public class ViewRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getEvolutionData(@Context HttpServletRequest request, FilterSettings filterSettings) {
-		if (filterSettings.getProjectKey() == null || filterSettings.getProjectKey().equals("")) {
+		if (request == null) {
+			return Response.status(Status.BAD_REQUEST)
+					       .entity(ImmutableMap.of("error", "HttpServletRequest is null. Timeline could not be created."))
+					       .build();
+		}
+		if (filterSettings == null || filterSettings.getProjectKey() == null || filterSettings.getProjectKey().equals("")) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not valid."))
 					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisDataProvider visDataProvider = new VisDataProvider(filterSettings.getProjectKey(), user);
-		VisTimeLine timeLine;
-		// Case: No filter applied
-		if (filterSettings.getSearchString().equals("") && filterSettings.getCreatedEarliest() == -1
-				&& filterSettings.getCreatedLatest() == -1) {
-			timeLine = visDataProvider.getTimeLine();
-		} else {
-			timeLine = visDataProvider.getTimeLineFilterd(filterSettings);
-		}
+		VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings);
+		VisTimeLine timeLine = visDataProvider.getTimeLine();
 		return Response.ok(timeLine.getEvolutionData()).build();
 
 	}
@@ -229,15 +227,14 @@ public class ViewRest {
 					.entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
 					.build();
 		}
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		if (filterSettings.getCreatedEarliest() == -1 && filterSettings.getCreatedLatest() == -1) {
-			VisDataProvider visDataProvider = new VisDataProvider(filterSettings.getProjectKey(), user);
-			return Response.ok(visDataProvider.getVisGraph()).build();
+		if (filterSettings == null) {
+			return Response.status(Status.BAD_REQUEST)
+					       .entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
+					       .build();
 		}
-
-		VisDataProvider visDataProvider = new VisDataProvider(filterSettings.getProjectKey(), user);
-
-		return Response.ok(visDataProvider.getVisGraphTimeFilterd(filterSettings)).build();
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		VisDataProvider visDataProvider = new VisDataProvider(user,filterSettings);
+		return Response.ok(visDataProvider.getVisGraph()).build();
 	}
 
 	@Path("/getFilterSettings")

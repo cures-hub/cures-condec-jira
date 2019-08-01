@@ -102,7 +102,7 @@ public class FilterExtractor {
 					.getElementsForIssue(currentIssue.getId(), filterSettings.getProjectKey());
 			for (DecisionKnowledgeElement currentElement : elements) {
 				if (!results.contains(currentElement) && currentElement instanceof PartOfJiraIssueText
-						&& checkIfJiraTextMatchesFilter(currentElement)) {
+						&& checkIfElementMatchesTimeFilter(currentElement)) {
 					results.add(currentElement);
 				}
 			}
@@ -115,27 +115,17 @@ public class FilterExtractor {
 		if (filterSettings.getProjectKey() == null) {
 			return new ArrayList<>();
 		}
-		AbstractPersistenceManager strategy = AbstractPersistenceManager
-				.getDefaultPersistenceStrategy(filterSettings.getProjectKey());
-		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
-		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
-				filterSettings.getProjectKey());
-		elements.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
-
 		List<DecisionKnowledgeElement> filteredElements = new ArrayList<>();
-
+		List<DecisionKnowledgeElement> elements = getElementsInProject();
 		for (DecisionKnowledgeElement element : elements) {
-			// Check if the element is created in time
-			if (checkIfJiraTextMatchesFilter(element)) {
-				// Case no text filter
-				if (filterSettings.getSearchString().equals("")
-						|| filterSettings.getSearchString().equals("?filter=-4")) {
-					filteredElements.add(element);
-				} else {
-					if (element.getDescription() != null && element.getSummary() != null) {
-						// Case Description or summary are containing the search sting
-						if (element.getDescription().contains(filterSettings.getSearchString())
-								|| element.getSummary().contains(filterSettings.getSearchString())) {
+			// Check if the  Type of the Element is correct
+			if(filterSettings.getNamesOfSelectedJiraIssueTypes().contains(element.getTypeAsString())) {
+				if (checkIfElementMatchesTimeFilter(element)) {
+					// Case no text filter
+					if (filterSettings.getSearchString().equals("") || filterSettings.getSearchString().equals("?filter=-4")) {
+						filteredElements.add(element);
+					} else {
+						if(checkIfElementMatchesStringFilter(element)) {
 							filteredElements.add(element);
 						}
 					}
@@ -145,13 +135,39 @@ public class FilterExtractor {
 		return filteredElements;
 	}
 
-	private boolean checkIfJiraTextMatchesFilter(DecisionKnowledgeElement element) {
+	//Get decision knowledge elements from the selected strategy and the sentences
+	private List getElementsInProject(){
+		AbstractPersistenceManager strategy = AbstractPersistenceManager
+				                                      .getDefaultPersistenceStrategy(filterSettings.getProjectKey());
+		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
+		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
+				filterSettings.getProjectKey());
+		elements.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
+		return elements;
+	}
+
+	// Check if the element is created in time
+	private boolean checkIfElementMatchesTimeFilter(DecisionKnowledgeElement element) {
 		return !(filterSettings.getCreatedEarliest() > 0
 				&& element.getCreated().getTime() < filterSettings.getCreatedEarliest())
 				|| !(filterSettings.getCreatedLatest() > 0
 						&& element.getCreated().getTime() > filterSettings.getCreatedLatest());
 	}
 
+	// Check if Description, Summary, Key containing the search string
+	private boolean checkIfElementMatchesStringFilter(DecisionKnowledgeElement element){
+		String searchString = filterSettings.getSearchString().toLowerCase();
+		if (element.getDescription() != null){
+			return element.getDescription().toLowerCase().contains(searchString);
+		}
+		if(element.getSummary() != null) {
+			return element.getSummary().toLowerCase().contains(searchString);
+		}
+		if(element.getKey() !=null) {
+			return element.getKey().toLowerCase().contains(searchString);
+		}
+		return false;
+	}
 	public FilterSettings getFilterSettings() {
 		return this.filterSettings;
 	}

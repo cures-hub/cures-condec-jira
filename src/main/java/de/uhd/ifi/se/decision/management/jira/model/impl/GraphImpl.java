@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import org.apache.commons.collections.IteratorUtils;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
@@ -36,7 +37,9 @@ public class GraphImpl implements Graph {
 
 	public GraphImpl(String projectKey) {
 		this();
-		this.project = new DecisionKnowledgeProjectImpl(projectKey);
+		if(projectKey!=null){
+			this.project = new DecisionKnowledgeProjectImpl(projectKey);
+		}
 	}
 
 	public GraphImpl(DecisionKnowledgeElement rootElement) {
@@ -136,6 +139,47 @@ public class GraphImpl implements Graph {
 			}
 		}
 		return allElements;
+	}
+
+	@Override
+	public List<Link> getAllLinks(List<DecisionKnowledgeElement> elements){
+		List<Link> allUniqueLinks = new ArrayList<>();
+		this.genericLinkIds = new ArrayList<>();
+		this.linkIds = new ArrayList<>();
+		for(DecisionKnowledgeElement element: elements) {
+			//Case Jira Issue link
+			if(element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUE)){
+				allUniqueLinks.addAll(getAllJiraIssueLinks(element));
+			} else {
+				List<Link> links = GenericLinkManager.getLinksForElement(element);
+				for (Link link : links) {
+					if (link.isInterProjectLink() || this.genericLinkIds.contains(link.getId())) {
+						continue;
+					}
+					this.genericLinkIds.add(link.getId());
+					allUniqueLinks.add(link);
+				}
+			}
+		}
+		return allUniqueLinks;
+	}
+
+	private List<Link> getAllJiraIssueLinks(DecisionKnowledgeElement element) {
+		AbstractPersistenceManager projectPersistenceManager = this.project.getPersistenceStrategy();
+		List<Link> jiraIssueLinks = new ArrayList<>();
+		List<Link> links = projectPersistenceManager.getLinks(element);
+		for (Link link : links) {
+			if (linkIds.contains(link.getId())) {
+				continue;
+			}
+			DecisionKnowledgeElement oppositeElement = link.getOppositeElement(element);
+			linkIds.add(link.getId());
+			if (oppositeElement == null) {
+				continue;
+			}
+			jiraIssueLinks.add(link);
+		}
+		return jiraIssueLinks;
 	}
 
 	@Override
