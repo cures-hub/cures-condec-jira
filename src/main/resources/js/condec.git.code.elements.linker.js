@@ -1,9 +1,26 @@
-function linkBranchCandidates(
-  _rationale,
-  _branchName,
-  _branchInSequence,
-  _problemSourceCategory
-) {
+/*
+linkBranchCandidates
+  Candidates stands for only possible decision knowledge elements, which might get rejected and not get merged.
+  These elements will be linked in parent child relations.
+  Problems in these relations will be investigated.
+  Problems will be rendered in HTML element for rationale and the status of the branch.
+
+  Arguments:
+  - rationale elements/candidates
+  - branch name of the feature branch containing the elements/candidates
+  - sequence number of the branch among other feature branches (rendered in HTML contains this number in id attributes)
+  - label for the origin of the rationale, either messages or files
+*/
+
+
+(function(global) {
+  var ConDecLinkBranchCandidates = function ConDecLinkBranchCandidates() {};
+
+  // branch status enums
+  var BRANCH_STATUS_UNSET = "No rationale was observed in this branch.";
+  var BRANCH_STATUS_FINE =  "All rationale elements are properly linked in this branch."
+  var BRANCH_STATUS_BAD =  "Some rationale elements should be corrected in this branch."
+
   // bad problem explanations
   var ARGUMENT_WITHOUT_PARENT_ELEMENT = "Argument without parent alternative";
   var ALTERNATIVE_DECISION_WITHOUT_PARENT_ELEMENT =
@@ -19,12 +36,12 @@ function linkBranchCandidates(
   var ISSUE_WITHOUT_DECISIONS = "Issue does not have a decision yet";
   var ISSUE_WITHOUT_ALTERNATIVES = "Issue does not have any alternatives yet";
 
-  var rationale = _rationale;
-  var branchName = _branchName;
-  var branchInSequence = _branchInSequence;
-  var problemSourceCategory = _problemSourceCategory;
+  var rationale;
+  var branchName
+  var branchInSequence;
+  var problemSourceCategory;
 
-  // paser helpers
+  // parser helpers
   var currentIssueId = null;
   var currentAlternativeId = null;
   var currentArgumentId = null; // will not be used at all?
@@ -43,7 +60,29 @@ function linkBranchCandidates(
     nextRationaleExpectedOnLine = null;
   }
 
-  function runCodelinker() {
+  function resetResults() {
+    problemsList = [];
+    linkCandidates = [];
+  }
+
+  ConDecLinkBranchCandidates.prototype.init = function init(
+    _rationale,
+    _branchName,
+    _branchInSequence,
+    _problemSourceCategory
+  )
+  {
+    resetHelpers();
+    resetResults();
+    rationale = _rationale;
+    branchName = _branchName;
+    branchInSequence = _branchInSequence;
+    problemSourceCategory = _problemSourceCategory;
+
+    runCodeLinker();
+  }
+
+  function runCodeLinker() {
     console.log("runCodelinker");
     // map sorted rationale elements to simpler structure
     linkCandidates = rationale.map(function(el, idx) {
@@ -65,27 +104,8 @@ function linkBranchCandidates(
     if (linkCandidates !== null && linkCandidates.length) {
       inferElementLinks();
       captureProblems();
-      attachProblemsToElementsInHTML();
     }
 
-    function setStatusWarningInMenuItem() {
-      setStatusInMenuItem("condec-attention");
-    }
-
-    function setStatusFineInMenuItem() {
-      setStatusInMenuItem("condec-fine");
-    }
-
-    function setStatusInMenuItem() {
-      var menuItems = document.getElementsByClassName("menu-item");
-      if (menuItems && menuItems.length && menuItems.length > 0) {
-        for (var idx = 0; idx < menuItems.length; idx++) {
-          if (menuItems[idx].dataset.condec) {
-            menuItems[idx].classList.add("condec-attention");
-          }
-        }
-      }
-    }
     function inferElementLinks() {
       for (var i = 0; i < linkCandidates.length; i++) {
         element = linkCandidates[i];
@@ -133,107 +153,6 @@ function linkBranchCandidates(
           problemsList.push({ elementId: i, problems: problemsInElement });
         }
       }
-    }
-
-    function attachProblemsToElementsInHTML() {
-      if (problemsList.length === 0) {
-        return;
-      }
-      var errorsGroup = new Set();
-      var warningsGroup = new Set();
-      for (var i = 0; i < problemsList.length; i++) {
-        var problemWithRationale = problemsList[i];
-        var targetId = composeId(problemWithRationale);
-        var target = document.getElementById(targetId);
-        if (!target) {
-          console.error("Could not find element with ID" + targetId);
-          return;
-        }
-        var problemElement = document.createElement("p");
-        problemElement.className = "rat-link-problem";
-        problemElement.title = "";
-
-        // has warnings?
-        if (problemWithRationale.problems.warnings.length > 0) {
-          problemElement.className = problemElement.className + " warning";
-          problemElement.title += problemWithRationale.problems.warnings.toString();
-          problemElement.innerText += problemElement.title;
-          for (
-            var w = 0;
-            w < problemWithRationale.problems.warnings.length;
-            w++
-          ) {
-            warningsGroup.add(problemWithRationale.problems.warnings[w]);
-          }
-        }
-        // has errors?
-        if (problemWithRationale.problems.errors.length > 0) {
-          problemElement.className = problemElement.className + " error";
-          problemElement.title += problemWithRationale.problems.errors.toString();
-          problemElement.innerText += problemElement.title;
-
-          for (
-            var e = 0;
-            e < problemWithRationale.problems.errors.length;
-            e++
-          ) {
-            errorsGroup.add(problemWithRationale.problems.errors[e]);
-          }
-        }
-        target.appendChild(problemElement);
-      }
-      appendElementsToQualitySummary(errorsGroup, warningsGroup);
-    }
-
-    function appendElementsToQualitySummary(errors, warnings) {
-      var id = "branchGroup-" + branchInSequence + "-qualitySummary";
-      var qElem = document.getElementById(id);
-      if (!qElem) {
-        console.error("Could not find element with id: " + id);
-        return;
-      }
-      if (errors.size > 0 || warnings.size > 0) {
-        // reset the initial text
-        qElem.childNodes[0].textContent = "";
-        // draw attention to feature tab menu item
-        setStatusWarningInMenuItem();
-      } else if (errors.size === 0 && warnings.size === 0) {
-        setStatusFineInMenuItem();
-      }
-
-      if (errors.size > 0) {
-        qElem.classList.add("hasErrors");
-        appendProblemCategoryToQualitySummary(qElem, errors, "Errors in ");
-      }
-      if (warnings.size > 0) {
-        qElem.classList.add("hasWarnings");
-        appendProblemCategoryToQualitySummary(qElem, warnings, "Warnings in ");
-      }
-    }
-
-    function appendProblemCategoryToQualitySummary(qElem, categorySet, prefix) {
-      var catElem = document.createElement("p");
-      var problemsAsList = Array.from(categorySet).join("; ");
-      catElem.innerText =
-        prefix + problemSourceCategory + ": " + problemsAsList;
-      qElem.appendChild(catElem);
-    }
-
-    /*
-		TODO: move to git diff utils
-		*/
-    function composeId(problemStructure) {
-      var arrayEllement = linkCandidates[problemStructure.elementId];
-      if (!arrayEllement) {
-        return "";
-      }
-      var htmlID =
-        arrayEllement.rationaleHash +
-        "-" +
-        branchName +
-        "-" +
-        arrayEllement.source;
-      return btoa(htmlID);
     }
 
     function addNewIssue(el) {
@@ -447,5 +366,238 @@ function linkBranchCandidates(
       return problemStructure;
     }
   }
-  runCodelinker();
-}
+
+  ConDecLinkBranchCandidates.prototype.attachProblemsToElementsInHTML =
+    function attachProblemsToElementsInHTML() {
+        if (problemsList.length === 0) {
+            return;
+        }
+
+        function composeId(problemStructure) {
+          var arrayEllement = linkCandidates[problemStructure.elementId];
+          if (!arrayEllement) {
+            return "";
+          }
+          var htmlID =
+            arrayEllement.rationaleHash +
+            "-" +
+            branchName +
+            "-" +
+            arrayEllement.source;
+          return btoa(htmlID);
+        }
+
+      var errorsGroup = new Set();
+      var warningsGroup = new Set();
+      for (var i = 0; i < problemsList.length; i++) {
+        var problemWithRationale = problemsList[i];
+        var targetId = composeId(problemWithRationale);
+        var target = document.getElementById(targetId);
+        if (!target) {
+          console.error("Could not find element with ID" + targetId);
+          return;
+        }
+        var problemElement = document.createElement("p");
+        problemElement.className = "rat-link-problem";
+        problemElement.title = "";
+
+        // has warnings?
+        if (problemWithRationale.problems.warnings.length > 0) {
+          problemElement.className = problemElement.className + " warning";
+          problemElement.title += problemWithRationale.problems.warnings.toString();
+          problemElement.innerText += problemElement.title;
+          for (
+            var w = 0;
+            w < problemWithRationale.problems.warnings.length;
+            w++
+          ) {
+            warningsGroup.add(problemWithRationale.problems.warnings[w]);
+          }
+        }
+        // has errors?
+        if (problemWithRationale.problems.errors.length > 0) {
+          problemElement.className = problemElement.className + " error";
+          problemElement.title += problemWithRationale.problems.errors.toString();
+          problemElement.innerText += problemElement.title;
+
+          for (
+            var e = 0;
+            e < problemWithRationale.problems.errors.length;
+            e++
+          ) {
+            errorsGroup.add(problemWithRationale.problems.errors[e]);
+          }
+        }
+        target.appendChild(problemElement);
+      }
+      appendElementsToQualitySummary(errorsGroup, warningsGroup);
+
+
+        function appendElementsToQualitySummary(errors, warnings) {
+          var id = "branchGroup-" + branchInSequence + "-qualitySummary";
+          var qElem = document.getElementById(id);
+          if (!qElem) {
+            console.error("Could not find element with id: " + id);
+            return;
+          }
+          if (errors.size > 0 || warnings.size > 0) {
+            // reset the initial text
+            qElem.childNodes[0].textContent = "";
+            // draw attention to feature tab menu item
+            setStatusWarningInMenuItem();
+          } else if (errors.size === 0 && warnings.size === 0) {
+            setStatusFineInMenuItem();
+          }
+
+          if (errors.size > 0) {
+            qElem.classList.add("hasErrors");
+            appendProblemCategoryToQualitySummary(qElem, errors, "Errors in ");
+          }
+          if (warnings.size > 0) {
+            qElem.classList.add("hasWarnings");
+            appendProblemCategoryToQualitySummary(qElem, warnings, "Warnings in ");
+          }
+        }
+
+        function appendProblemCategoryToQualitySummary(qElem, categorySet, prefix) {
+          var catElem = document.createElement("p");
+          var problemsAsList = Array.from(categorySet).join("; ");
+          catElem.innerText =
+            prefix + problemSourceCategory + ": " + problemsAsList;
+          qElem.appendChild(catElem);
+        }
+
+        function setStatusWarningInMenuItem() {
+          setStatusInMenuItem("condec-attention");
+        }
+
+        function setStatusFineInMenuItem() {
+          setStatusInMenuItem("condec-fine");
+        }
+
+        function setStatusInMenuItem(status) {
+          var menuItems = document.getElementsByClassName("menu-item");
+          if (menuItems && menuItems.length && menuItems.length > 0) {
+            for (var idx = 0; idx < menuItems.length; idx++) {
+              if (menuItems[idx].dataset.condec) {
+                // if any branch has issues, status is set to bad.
+                if (status === "condec-attention") {
+                    menuItems[idx].className=status;
+                    return;
+                }
+                menuItems[idx].className=status;
+              }
+            }
+          }
+        }
+    }
+
+    /*
+        decodes received position "x:y[:z]" into
+            .positionStartLine = x
+            .positionCursor = y
+            and optionally
+            .positionEndLine = z
+    */
+    ConDecLinkBranchCandidates.prototype.extractPositions= function extractPositions(branchData) {
+      elements = branchData.elements.map(function(e) {
+        positionComponents = e.key.position.split(":");
+        positionComponentsNumber = positionComponents.length;
+        if (positionComponentsNumber === 2 || positionComponentsNumber === 3) {
+          e.key.positionStartLine = parseInt(positionComponents[0]);
+          e.key.positionCursor = parseInt(
+            positionComponents[positionComponentsNumber - 1]
+          );
+        }
+        if (positionComponentsNumber === 3) {
+          e.key.positionEndLine = parseInt(
+            positionComponents[positionComponentsNumber - 2]
+          );
+        }
+        return e;
+      });
+      branchData.elements = elements;
+      return branchData;
+    }
+
+    ConDecLinkBranchCandidates.prototype.sortRationaleDiffOfFiles =
+     function sortRationaleDiffOfFiles(rationale) {
+      /* rationale should appear in the order it was found in code */
+      rationale.sort(function(a, b) {
+        // different files
+        if (a.key.source < b.key.source) {
+          return -1;
+        }
+        if (a.key.source > b.key.source) {
+          return 1;
+        }
+        // same file different lines
+        if (a.key.positionStartLine < b.key.positionStartLine) {
+          return -1;
+        }
+        if (a.key.positionStartLine > b.key.positionStartLine) {
+          return 1;
+        }
+
+        // same file same line different position on line
+        if (a.key.positionCursor < b.key.positionCursor) {
+          return -1;
+        }
+        if (a.key.positionCursor < b.key.positionCursor) {
+          return 1;
+        }
+
+        // same file same line same position on line
+        return 0;
+      });
+      return rationale;
+    }
+
+    ConDecLinkBranchCandidates.prototype.getBranchStatus = function getBranchStatus() {
+        if (!rationale || rationale.length<1) {
+            return BRANCH_STATUS_UNSET; //unset
+        }
+        if (problemsList.length>0) {
+            return BRANCH_STATUS_BAD; // has problems
+        }
+        return BRANCH_STATUS_FINE;
+    }
+
+    ConDecLinkBranchCandidates.prototype.getProblemNamesObserved = function getProblemNamesObserved() {
+        var problemNames = initProblemNames();
+
+        if (problemsList.length>0) {
+            for (var i = 0; i< problemsList.length; i++) {
+                var problemsInElement = problemsList[i].problems.errors.concat(
+                 problemsList[i].problems.warnings);
+
+                for (var j = 0; j< problemsInElement.length; j++) {
+                    var problemNameInElement = problemsInElement[j];
+                    var seenUntilNow = problemNames.get(problemNameInElement)
+                    if (!seenUntilNow) {
+                        seenUntilNow = 0;
+                    }
+                    problemNames.set(problemNameInElement, (seenUntilNow + 1) );
+                }
+            }
+        }
+        return problemNames;
+    }
+
+    function initProblemNames() {
+        var allProblems = new Map();
+
+        allProblems.set(ARGUMENT_WITHOUT_PARENT_ELEMENT,0);
+        allProblems.set(ALTERNATIVE_DECISION_WITHOUT_PARENT_ELEMENT,0);
+        allProblems.set(ISSUE_WITH_MANY_DECISIONS,0);
+        allProblems.set(DECISION_WITHOUT_PRO_ARGUMENTS,0);
+        allProblems.set(ALTERNATIVE_DECISION_WITHOUT_ARGUMENTS,0);
+        allProblems.set(DECISION_ARGUMENTS_MAYBE_WORSE_THAN_ALTERNATIVE,0);
+        allProblems.set(ISSUE_WITHOUT_DECISIONS,0);
+        allProblems.set(ISSUE_WITHOUT_ALTERNATIVES,0);
+
+        return allProblems;
+    }
+
+  global.conDecLinkBranchCandidates  = new ConDecLinkBranchCandidates ();
+})(window);

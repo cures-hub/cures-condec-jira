@@ -50,27 +50,43 @@ import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
 public class ViewRest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ViewRest.class);
 
+	@Path("/elementsFromBranchesOfProject")
+	@GET
+	public Response getAllFeatureBranchesTree(@QueryParam("projectKey") String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+
+		// get all project branches
+		return getDiffViewerResponse(projectKey, projectKey);
+	}
+
 	@Path("/elementsFromBranchesOfJiraIssue")
 	@GET
 	public Response getFeatureBranchTree(@QueryParam("issueKey") String issueKey) {
-		issueKey = normalizeIssueKey(issueKey);
+		issueKey = normalizeIssueKey(issueKey); // ex: issueKey=ConDec-498
 		Issue issue = getIssue(issueKey);
 		if (issue == null) {
 			return issueKeyIsInvalid();
 		}
 
-		// get branches
-		GitClient gitClient = new GitClientImpl(getProjectKey(issueKey)); // ex: issueKey=ConDec-498
+		// get feature branches of an issue
+		return getDiffViewerResponse(getProjectKey(issueKey), issueKey.toUpperCase()+".");
+	}
+
+	private Response getDiffViewerResponse(String projectKey, String branchFilter) {
+		GitClient gitClient = new GitClientImpl(projectKey);
 		List<Ref> branches = gitClient.getRemoteBranches();
 
 		if (branches.isEmpty()) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
 		Map<Ref, List<DecisionKnowledgeElement>> ratBranchList = new HashMap<>();
-		GitDecXtract extractor = new GitDecXtract(getProjectKey(issueKey));
+		GitDecXtract extractor = new GitDecXtract(projectKey);
 		// TODO: move the loop elsewhere or maybe in GitDecXtract
 		for (Ref branch : branches) {
-			if (branch.getName().contains(issueKey.toUpperCase()+".")) {
+			if (branch.getName().contains(branchFilter)) {
 				ratBranchList.put(branch, extractor.getElements(branch));
 			}
 		}
