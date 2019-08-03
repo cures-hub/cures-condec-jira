@@ -155,6 +155,7 @@
 		<resource type="download" name="echarts.js" location="/js/echart/echarts.js" />
 		<resource type="download" name="dataTool.js" location="/js/echart/dataTool.js" />
 		<resource type="download" name="condec.report.js" location="/js/condec.report.js" />
+		<resource type="download" name="condec.report.css" location="/css/condec.report.css" />
 	</web-resource>
 
 	<!-- Decision Knowledge Page -->
