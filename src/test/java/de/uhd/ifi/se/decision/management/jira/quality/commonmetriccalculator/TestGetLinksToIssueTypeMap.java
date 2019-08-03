@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality.commentmetriccalculator;
+package de.uhd.ifi.se.decision.management.jira.quality.commonmetriccalculator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

@@ -48,7 +48,7 @@ if (typeof dev === 'undefined') {
 var __DEV__ = dev;
 
 /**
- * zrender: 生成唯一id
+ * zrender: Generate only id
  *
  * @author errorrik (errorrik@gmail.com)
  */
@@ -60,9 +60,9 @@ var guid = function () {
 };
 
 /**
- * echarts设备环境识别
+ * echarts Equipment environment identification
  *
- * @desc echarts基于Canvas，纯Javascript图表库，提供直观，生动，可交互，可个性化定制的数据统计图表。
+ * @desc echarts Based on Canvas, a pure Javascript chart library that provides intuitive, vivid, interactive, and customizable data statistics charts.
  * @author firede[firede@firede.us]
  * @desc thanks zepto.
  */
@@ -198,7 +198,7 @@ function detect(ua) {
         browser: browser,
         os: os,
         node: false,
-        // 原生canvas支持，改极端点了
+        // Native canvas support, change the extreme point
         // canvasSupported : !(browser.ie && parseFloat(browser.version) < 9)
         canvasSupported: !!document.createElement('canvas').getContext,
         svgSupported: typeof SVGRect !== 'undefined',
@@ -238,7 +238,7 @@ function detect(ua) {
  * @module zrender/core/util
  */
 
-// 用于处理merge时无法遍历Date等对象的问题
+//  Cannot traverse objects such as Date when processing merge
 var BUILTIN_OBJECT = {
     '[object Function]': 1,
     '[object RegExp]': 1,
@@ -371,12 +371,12 @@ function merge(target, source, overwrite) {
                 && !isPrimitive(sourceProp)
                 && !isPrimitive(targetProp)
             ) {
-                // 如果需要递归覆盖，就递归调用merge
+                //  Recursively invoke merge if recursive override is required
                 merge(targetProp, sourceProp, overwrite);
             }
             else if (overwrite || !(key in target)) {
-                // 否则只处理overwrite为true，或者在目标对象中没有此属性的情况
-                // NOTE，在 target[key] 不存在的时候也是直接覆盖
+                //  overwrite true 
+                // NOTE  target[key]  
                 target[key] = clone(source[key], true);
             }
         }
@@ -450,7 +450,7 @@ function getContext() {
 }
 
 /**
- * 查询数组中元素的index
+ *  index
  * @memberOf module:zrender/core/util
  */
 function indexOf(array, value) {
@@ -468,11 +468,11 @@ function indexOf(array, value) {
 }
 
 /**
- * 构造类继承关系
+ *  
  *
  * @memberOf module:zrender/core/util
- * @param {Function} clazz 源类
- * @param {Function} baseClazz 基类
+ * @param {Function} clazz Source class
+ * @param {Function} baseClazz   Base class
  */
 function inherits(clazz, baseClazz) {
     var clazzPrototype = clazz.prototype;
@@ -515,7 +515,7 @@ function isArrayLike(data) {
 }
 
 /**
- * 数组或对象遍历
+ *  
  * @memberOf module:zrender/core/util
  * @param {Object|Array} obj
  * @param {Function} cb
@@ -543,7 +543,7 @@ function each$1(obj, cb, context) {
 }
 
 /**
- * 数组映射
+ *  
  * @memberOf module:zrender/core/util
  * @param {Array} obj
  * @param {Function} cb
@@ -590,7 +590,7 @@ function reduce(obj, cb, memo, context) {
 }
 
 /**
- * 数组过滤
+ *  
  * @memberOf module:zrender/core/util
  * @param {Array} obj
  * @param {Function} cb
@@ -616,7 +616,7 @@ function filter(obj, cb, context) {
 }
 
 /**
- * 数组项查找
+ *  
  * @memberOf module:zrender/core/util
  * @param {Array} obj
  * @param {Function} cb
@@ -954,7 +954,7 @@ var ArrayCtor = typeof Float32Array === 'undefined'
     : Float32Array;
 
 /**
- * 创建一个向量
+ *  
  * @param {number} [x=0]
  * @param {number} [y=0]
  * @return {Vector2}
@@ -973,7 +973,7 @@ function create(x, y) {
 }
 
 /**
- * 复制向量数据
+ *  
  * @param {Vector2} out
  * @param {Vector2} v
  * @return {Vector2}
@@ -985,7 +985,7 @@ function copy(out, v) {
 }
 
 /**
- * 克隆一个向量
+ *  
  * @param {Vector2} v
  * @return {Vector2}
  */
@@ -997,11 +997,11 @@ function clone$1(v) {
 }
 
 /**
- * 设置向量的两个项
+ *  
  * @param {Vector2} out
  * @param {number} a
  * @param {number} b
- * @return {Vector2} 结果
+ * @return {Vector2}  
  */
 function set(out, a, b) {
     out[0] = a;
@@ -1010,7 +1010,7 @@ function set(out, a, b) {
 }
 
 /**
- * 向量相加
+ *  
  * @param {Vector2} out
  * @param {Vector2} v1
  * @param {Vector2} v2
@@ -1022,7 +1022,7 @@ function add(out, v1, v2) {
 }
 
 /**
- * 向量缩放后相加
+ *  
  * @param {Vector2} out
  * @param {Vector2} v1
  * @param {Vector2} v2
@@ -1035,7 +1035,7 @@ function scaleAndAdd(out, v1, v2, a) {
 }
 
 /**
- * 向量相减
+ *  
  * @param {Vector2} out
  * @param {Vector2} v1
  * @param {Vector2} v2
@@ -1047,7 +1047,7 @@ function sub(out, v1, v2) {
 }
 
 /**
- * 向量长度
+ *  
  * @param {Vector2} v
  * @return {number}
  */
@@ -1057,7 +1057,7 @@ function len(v) {
 var length = len; // jshint ignore:line
 
 /**
- * 向量长度平方
+ *  
  * @param {Vector2} v
  * @return {number}
  */
@@ -1067,7 +1067,7 @@ function lenSquare(v) {
 var lengthSquare = lenSquare;
 
 /**
- * 向量乘法
+ *  
  * @param {Vector2} out
  * @param {Vector2} v1
  * @param {Vector2} v2
@@ -1079,7 +1079,7 @@ function mul(out, v1, v2) {
 }
 
 /**
- * 向量除法
+ *  
  * @param {Vector2} out
  * @param {Vector2} v1
  * @param {Vector2} v2
@@ -1091,7 +1091,7 @@ function div(out, v1, v2) {
 }
 
 /**
- * 向量点乘
+ *  
  * @param {Vector2} v1
  * @param {Vector2} v2
  * @return {number}
@@ -1101,7 +1101,7 @@ function dot(v1, v2) {
 }
 
 /**
- * 向量缩放
+ *  
  * @param {Vector2} out
  * @param {Vector2} v
  * @param {number} s
@@ -1113,7 +1113,7 @@ function scale(out, v, s) {
 }
 
 /**
- * 向量归一化
+ *  
  * @param {Vector2} out
  * @param {Vector2} v
  */
@@ -1131,7 +1131,7 @@ function normalize(out, v) {
 }
 
 /**
- * 计算向量间距离
+ *  
  * @param {Vector2} v1
  * @param {Vector2} v2
  * @return {number}
@@ -1145,7 +1145,7 @@ function distance(v1, v2) {
 var dist = distance;
 
 /**
- * 向量距离平方
+ *  
  * @param {Vector2} v1
  * @param {Vector2} v2
  * @return {number}
@@ -1157,7 +1157,7 @@ function distanceSquare(v1, v2) {
 var distSquare = distanceSquare;
 
 /**
- * 求负向量
+ *  
  * @param {Vector2} out
  * @param {Vector2} v
  */
@@ -1168,7 +1168,7 @@ function negate(out, v) {
 }
 
 /**
- * 插值两个点
+ *  
  * @param {Vector2} out
  * @param {Vector2} v1
  * @param {Vector2} v2
@@ -1181,7 +1181,7 @@ function lerp(out, v1, v2, t) {
 }
 
 /**
- * 矩阵左乘向量
+ *  
  * @param {Vector2} out
  * @param {Vector2} v
  * @param {Vector2} m
@@ -1195,7 +1195,7 @@ function applyTransform(out, v, m) {
 }
 
 /**
- * 求两个向量最小值
+ *  
  * @param  {Vector2} out
  * @param  {Vector2} v1
  * @param  {Vector2} v2
@@ -1207,7 +1207,7 @@ function min(out, v1, v2) {
 }
 
 /**
- * 求两个向量最大值
+ *  
  * @param  {Vector2} out
  * @param  {Vector2} v1
  * @param  {Vector2} v2
@@ -1334,7 +1334,7 @@ function param(target, e) {
 /**
  * Event Mixin
  * @module zrender/mixin/Eventful
- * @author Kener (@Kener-林峰, kener.linfeng@gmail.com)
+ * @author Kener (@Kener- , kener.linfeng@gmail.com)
  *         pissang (https://www.github.com/pissang)
  */
 
@@ -1635,9 +1635,9 @@ function normalizeQuery(host, query) {
 }
 
 /**
- * 事件辅助类
+ *  
  * @module zrender/core/event
- * @author Kener (@Kener-林峰, kener.linfeng@gmail.com)
+ * @author Kener (@Kener- , kener.linfeng@gmail.com)
  */
 
 var isDomLevel2 = (typeof window !== 'undefined') && !!window.addEventListener;
@@ -1699,7 +1699,7 @@ function defaultGetZrXY(el, e, out) {
 }
 
 /**
- * 如果存在第三方嵌入的一些dom触发的事件，或touch事件，需要转换一下事件坐标.
+ *  dom touch .
  * `calculate` is optional, default false.
  */
 function normalizeEvent(el, e, calculate) {
@@ -1787,7 +1787,7 @@ function removeEventListener(el, name, handler) {
  *
  * @memberOf module:zrender/core/event
  * @method
- * @param {Event} e : event对象
+ * @param {Event} e : event 
  */
 var stop = isDomLevel2
     ? function (e) {
@@ -2001,8 +2001,8 @@ Handler.prototype = {
     },
 
     /**
-     * 设置默认的cursor style
-     * @param {string} [cursorStyle='default'] 例如 crosshair
+     *  cursor style
+     * @param {string} [cursorStyle='default']   crosshair
      */
     setCursorStyle: function (cursorStyle) {
         var proxy = this.proxy;
@@ -2010,12 +2010,12 @@ Handler.prototype = {
     },
 
     /**
-     * 事件分发代理
+     *  
      *
      * @private
-     * @param {Object} targetInfo {target, topTarget} 目标图形元素
-     * @param {string} eventName 事件名称
-     * @param {Object} event 事件对象
+     * @param {Object} targetInfo {target, topTarget}  
+     * @param {string} eventName  
+     * @param {Object} event  
      */
     dispatchToElement: function (targetInfo, eventName, event) {
         targetInfo = targetInfo || {};
@@ -2040,10 +2040,10 @@ Handler.prototype = {
         }
 
         if (!eventPacket.cancelBubble) {
-            // 冒泡到顶级 zrender 对象
+            //   zrender  
             this.trigger(eventName, eventPacket);
-            // 分发事件到用户自定义层
-            // 用户有可能在全局 click 事件中 dispose，所以需要判断下 painter 是否存在
+            //  
+            //   click   dispose  painter  
             this.painter && this.painter.eachOtherLayer(function (layer) {
                 if (typeof(layer[eventHandler]) == 'function') {
                     layer[eventHandler].call(layer, eventPacket);
@@ -2147,7 +2147,7 @@ mixin(Handler, Eventful);
 mixin(Handler, Draggable);
 
 /**
- * 3x2矩阵操作类
+ * 3x2 
  * @exports zrender/tool/matrix
  */
 
@@ -2167,7 +2167,7 @@ function create$1() {
 }
 
 /**
- * 设置矩阵为单位矩阵
+ *  
  * @param {Float32Array|Array.<number>} out
  */
 function identity(out) {
@@ -2181,7 +2181,7 @@ function identity(out) {
 }
 
 /**
- * 复制矩阵
+ *  
  * @param {Float32Array|Array.<number>} out
  * @param {Float32Array|Array.<number>} m
  */
@@ -2196,7 +2196,7 @@ function copy$1(out, m) {
 }
 
 /**
- * 矩阵相乘
+ *  
  * @param {Float32Array|Array.<number>} out
  * @param {Float32Array|Array.<number>} m1
  * @param {Float32Array|Array.<number>} m2
@@ -2221,7 +2221,7 @@ function mul$1(out, m1, m2) {
 }
 
 /**
- * 平移变换
+ *  
  * @param {Float32Array|Array.<number>} out
  * @param {Float32Array|Array.<number>} a
  * @param {Float32Array|Array.<number>} v
@@ -2237,7 +2237,7 @@ function translate(out, a, v) {
 }
 
 /**
- * 旋转变换
+ *  
  * @param {Float32Array|Array.<number>} out
  * @param {Float32Array|Array.<number>} a
  * @param {number} rad
@@ -2262,7 +2262,7 @@ function rotate(out, a, rad) {
 }
 
 /**
- * 缩放变换
+ *  
  * @param {Float32Array|Array.<number>} out
  * @param {Float32Array|Array.<number>} a
  * @param {Float32Array|Array.<number>} v
@@ -2280,7 +2280,7 @@ function scale$1(out, a, v) {
 }
 
 /**
- * 求逆矩阵
+ *  
  * @param {Float32Array|Array.<number>} out
  * @param {Float32Array|Array.<number>} a
  */
@@ -2331,7 +2331,7 @@ var matrix = (Object.freeze || Object)({
 });
 
 /**
- * 提供变换扩展
+ *  
  * @module zrender/mixin/Transformable
  * @author pissang (https://www.github.com/pissang)
  */
@@ -2353,7 +2353,7 @@ var Transformable = function (opts) {
     // If there are no given position, rotation, scale
     if (!opts.position) {
         /**
-         * 平移
+         *  
          * @type {Array.<number>}
          * @default [0, 0]
          */
@@ -2361,7 +2361,7 @@ var Transformable = function (opts) {
     }
     if (opts.rotation == null) {
         /**
-         * 旋转
+         *  
          * @type {Array.<number>}
          * @default 0
          */
@@ -2369,14 +2369,14 @@ var Transformable = function (opts) {
     }
     if (!opts.scale) {
         /**
-         * 缩放
+         *  
          * @type {Array.<number>}
          * @default [1, 1]
          */
         this.scale = [1, 1];
     }
     /**
-     * 旋转和缩放的原点
+     *  
      * @type {Array.<number>}
      * @default null
      */
@@ -2387,8 +2387,8 @@ var transformableProto = Transformable.prototype;
 transformableProto.transform = null;
 
 /**
- * 判断是否需要有坐标变换
- * 如果有坐标变换, 则从position, rotation, scale以及父节点的transform计算出自身的transform矩阵
+ *  
+ *  ,  position, rotation, scale transform transform 
  */
 transformableProto.needLocalTransform = function () {
     return isNotAroundZero(this.rotation)
@@ -2419,7 +2419,7 @@ transformableProto.updateTransform = function () {
         mIdentity(m);
     }
 
-    // 应用父节点变换
+    //  
     if (parentHasTransform) {
         if (needLocalTransform) {
             mul$1(m, parent.transform, m);
@@ -2428,7 +2428,7 @@ transformableProto.updateTransform = function () {
             copy$1(m, parent.transform);
         }
     }
-    // 保存这个变换矩阵
+    //  
     this.transform = m;
 
     var globalScaleRatio = this.globalScaleRatio;
@@ -2454,7 +2454,7 @@ transformableProto.getLocalTransform = function (m) {
 };
 
 /**
- * 将自己的transform应用到context上
+ *  transform context 
  * @param {CanvasRenderingContext2D} ctx
  */
 transformableProto.setTransform = function (ctx) {
@@ -2505,7 +2505,7 @@ transformableProto.setLocalTransform = function (m) {
     this.rotation = Math.atan2(-m[1] / sy, m[0] / sx);
 };
 /**
- * 分解`transform`矩阵到`position`, `rotation`, `scale`
+ *  `transform` `position`, `rotation`, `scale`
  */
 transformableProto.decomposeTransform = function () {
     if (!this.transform) {
@@ -2554,7 +2554,7 @@ transformableProto.getGlobalScale = function (out) {
     return out;
 };
 /**
- * 变换坐标位置到 shape 的局部坐标空间
+ *   shape  
  * @method
  * @param {number} x
  * @param {number} y
@@ -2570,7 +2570,7 @@ transformableProto.transformCoordToLocal = function (x, y) {
 };
 
 /**
- * 变换局部坐标位置到全局坐标空间
+ *  
  * @method
  * @param {number} x
  * @param {number} y
@@ -2624,7 +2624,7 @@ Transformable.getLocalTransform = function (target, m) {
 };
 
 /**
- * 缓动代码来自 https://github.com/sole/tween.js/blob/master/src/Tween.js
+ *   https://github.com/sole/tween.js/blob/master/src/Tween.js
  * @see http://sole.github.io/tween.js/examples/03_graphs.html
  * @exports zrender/animation/easing
  */
@@ -2662,7 +2662,7 @@ var easing = {
         return -0.5 * (--k * (k - 2) - 1);
     },
 
-    // 三次方的缓动（t^3）
+    //  t^3 
     /**
     * @param {number} k
     * @return {number}
@@ -2688,7 +2688,7 @@ var easing = {
         return 0.5 * ((k -= 2) * k * k + 2);
     },
 
-    // 四次方的缓动（t^4）
+    //  t^4 
     /**
     * @param {number} k
     * @return {number}
@@ -2714,7 +2714,7 @@ var easing = {
         return -0.5 * ((k -= 2) * k * k * k - 2);
     },
 
-    // 五次方的缓动（t^5）
+    //  t^5 
     /**
     * @param {number} k
     * @return {number}
@@ -2740,7 +2740,7 @@ var easing = {
         return 0.5 * ((k -= 2) * k * k * k * k + 2);
     },
 
-    // 正弦曲线的缓动（sin(t)）
+    //  sin(t) 
     /**
     * @param {number} k
     * @return {number}
@@ -2763,7 +2763,7 @@ var easing = {
         return 0.5 * (1 - Math.cos(Math.PI * k));
     },
 
-    // 指数曲线的缓动（2^t）
+    //  2^t 
     /**
     * @param {number} k
     * @return {number}
@@ -2795,7 +2795,7 @@ var easing = {
         return 0.5 * (-Math.pow(2, -10 * (k - 1)) + 2);
     },
 
-    // 圆形曲线的缓动（sqrt(1-t^2)）
+    //  sqrt(1-t^2) 
     /**
     * @param {number} k
     * @return {number}
@@ -2821,7 +2821,7 @@ var easing = {
         return 0.5 * (Math.sqrt(1 - (k -= 2) * k) + 1);
     },
 
-    // 创建类似于弹簧在停止前来回振荡的动画
+    //  
     /**
     * @param {number} k
     * @return {number}
@@ -2897,7 +2897,7 @@ var easing = {
 
     },
 
-    // 在某一动画开始沿指示的路径进行动画处理前稍稍收回该动画的移动
+    //  
     /**
     * @param {number} k
     * @return {number}
@@ -2926,7 +2926,7 @@ var easing = {
         return 0.5 * ((k -= 2) * k * ((s + 1) * k + s) + 2);
     },
 
-    // 创建弹跳效果
+    //  
     /**
     * @param {number} k
     * @return {number}
@@ -2965,12 +2965,12 @@ var easing = {
 };
 
 /**
- * 动画主控制器
- * @config target 动画对象，可以是数组，如果是数组的话会批量分发onframe等事件
- * @config life(1000) 动画时长
- * @config delay(0) 动画延迟时间
+ *  
+ * @config target  onframe 
+ * @config life(1000)  
+ * @config delay(0)  
  * @config loop(true)
- * @config gap(0) 循环的间隔时间
+ * @config gap(0)  
  * @config onframe
  * @config easing(optional)
  * @config ondestroy(optional)
@@ -2983,15 +2983,15 @@ function Clip(options) {
 
     this._target = options.target;
 
-    // 生命周期
+    //  
     this._life = options.life || 1000;
-    // 延时
+    //  
     this._delay = options.delay || 0;
-    // 开始时间
-    // this._startTime = new Date().getTime() + this._delay;// 单位毫秒
+    //  
+    // this._startTime = new Date().getTime() + this._delay;//  
     this._initialized = false;
 
-    // 是否循环
+    //  
     this.loop = options.loop == null ? false : options.loop;
 
     this.gap = options.gap || 0;
@@ -3025,7 +3025,7 @@ Clip.prototype = {
 
         var percent = (globalTime - this._startTime - this._pausedTime) / this._life;
 
-        // 还没开始
+        //  
         if (percent < 0) {
             return;
         }
@@ -3040,17 +3040,17 @@ Clip.prototype = {
 
         this.fire('frame', schedule);
 
-        // 结束
+        //  
         if (percent == 1) {
             if (this.loop) {
                 this.restart (globalTime);
-                // 重新开始周期
-                // 抛出而不是直接调用事件直到 stage.update 后再统一调用这些事件
+                //  
+                //   stage.update  
                 return 'restart';
             }
 
-            // 动画完成将这个控制器标识为待删除
-            // 在Animation.update中进行批量删除
+            //  
+            //  Animation.update 
             this._needsRemove = true;
             return 'destroy';
         }
@@ -4285,9 +4285,9 @@ var Animator = function(target, loop, getter, setter) {
 
 Animator.prototype = {
     /**
-     * 设置动画关键帧
-     * @param  {number} time 关键帧时间，单位是ms
-     * @param  {Object} props 关键帧的属性值，key-value表示
+     *  
+     * @param  {number} time  ms
+     * @param  {Object} props  key-value 
      * @return {module:zrender/animation/Animator}
      */
     when: function(time /* ms */, props) {
@@ -4324,7 +4324,7 @@ Animator.prototype = {
         return this;
     },
     /**
-     * 添加动画每一帧的回调函数
+     *  
      * @param  {Function} callback
      * @return {module:zrender/animation/Animator}
      */
@@ -4364,9 +4364,9 @@ Animator.prototype = {
         }
     },
     /**
-     * 开始执行动画
+     *  
      * @param  {string|Function} [easing]
-     *         动画缓动函数，详见{@link module:zrender/animation/easing}
+     *          {@link module:zrender/animation/easing}
      * @param  {boolean} forceAnimate
      * @return {module:zrender/animation/Animator}
      */
@@ -4425,7 +4425,7 @@ Animator.prototype = {
         return this;
     },
     /**
-     * 停止动画
+     *  
      * @param {boolean} forwardToLast If move to last frame before stop
      */
     stop: function (forwardToLast) {
@@ -4442,8 +4442,8 @@ Animator.prototype = {
         clipList.length = 0;
     },
     /**
-     * 设置动画延迟开始的时间
-     * @param  {number} time 单位ms
+     *  
+     * @param  {number} time  ms
      * @return {module:zrender/animation/Animator}
      */
     delay: function (time) {
@@ -4451,7 +4451,7 @@ Animator.prototype = {
         return this;
     },
     /**
-     * 添加动画结束的回调
+     *  
      * @param  {Function} cb
      * @return {module:zrender/animation/Animator}
      */
@@ -4478,20 +4478,20 @@ if (typeof window !== 'undefined') {
 }
 
 /**
- * config默认配置项
+ * config 
  * @exports zrender/config
- * @author Kener (@Kener-林峰, kener.linfeng@gmail.com)
+ * @author Kener (@Kener- , kener.linfeng@gmail.com)
  */
 
 /**
- * debug日志选项：catchBrushException为true下有效
- * 0 : 不生成debug数据，发布用
- * 1 : 异常抛出，调试用
- * 2 : 控制台输出，调试用
+ * debug catchBrushException true 
+ * 0 :  debug 
+ * 1 :  
+ * 2 :  
  */
 var debugMode = 0;
 
-// retina 屏幕优化
+// retina  
 var devicePixelRatio = dpr;
 
 var log = function () {
@@ -4532,7 +4532,7 @@ Animatable.prototype = {
     constructor: Animatable,
 
     /**
-     * 动画
+     *  
      *
      * @param {string} path The path to fetch value from object, like 'a.b.c'.
      * @param {boolean} [loop] Whether to loop animation.
@@ -4600,7 +4600,7 @@ Animatable.prototype = {
     },
 
     /**
-     * 停止动画
+     *  
      * @param {boolean} forwardToLast If move to last frame before stop
      */
     stopAnimation: function (forwardToLast) {
@@ -4811,7 +4811,7 @@ var Element = function (opts) { // jshint ignore:line
     Animatable.call(this, opts);
 
     /**
-     * 画布元素ID
+     *  ID
      * @type {string}
      */
     this.id = opts.id || guid();
@@ -4820,21 +4820,21 @@ var Element = function (opts) { // jshint ignore:line
 Element.prototype = {
 
     /**
-     * 元素类型
+     *  
      * Element type
      * @type {string}
      */
     type: 'element',
 
     /**
-     * 元素名字
+     *  
      * Element name
      * @type {string}
      */
     name: '',
 
     /**
-     * ZRender 实例对象，会在 element 添加到 zrender 实例中后自动赋值
+     * ZRender   element   zrender  
      * ZRender instance will be assigned when element is associated with zrender
      * @name module:/zrender/Element#__zr
      * @type {module:zrender/ZRender}
@@ -4842,7 +4842,7 @@ Element.prototype = {
     __zr: null,
 
     /**
-     * 图形是否忽略，为true时忽略图形的绘制以及事件触发
+     *  true 
      * If ignore drawing and events of the element object
      * @name module:/zrender/Element#ignore
      * @type {boolean}
@@ -4851,8 +4851,8 @@ Element.prototype = {
     ignore: false,
 
     /**
-     * 用于裁剪的路径(shape)，所有 Group 内的路径在绘制时都会被这个路径裁剪
-     * 该路径会继承被裁减对象的变换
+     *  (shape)  Group  
+     *  
      * @type {module:zrender/graphic/Path}
      * @see http://www.w3.org/TR/2dcontext/#clipping-region
      * @readOnly
@@ -4860,7 +4860,7 @@ Element.prototype = {
     clipPath: null,
 
     /**
-     * 是否是 Group
+     *   Group
      * @type {boolean}
      */
     isGroup: false,
@@ -5014,7 +5014,7 @@ Element.prototype = {
      */
     addSelfToZr: function (zr) {
         this.__zr = zr;
-        // 添加动画
+        //  
         var animators = this.animators;
         if (animators) {
             for (var i = 0; i < animators.length; i++) {
@@ -5034,7 +5034,7 @@ Element.prototype = {
      */
     removeSelfFromZr: function (zr) {
         this.__zr = null;
-        // 移除动画
+        //  
         var animators = this.animators;
         if (animators) {
             for (var i = 0; i < animators.length; i++) {
@@ -5162,7 +5162,7 @@ BoundingRect.prototype = {
 
         var m = create$1();
 
-        // 矩阵右乘
+        //  
         translate(m, m, [-a.x, -a.y]);
         scale$1(m, m, [sx, sy]);
         translate(m, m, [b.x, b.y]);
@@ -5246,7 +5246,7 @@ BoundingRect.create = function (rect) {
 };
 
 /**
- * Group是一个容器，可以插入子节点，Group的变换也会被应用到子节点上
+ * Group Group 
  * @module zrender/graphic/Group
  * @example
  *     var Group = require('zrender/container/Group');
@@ -5301,7 +5301,7 @@ Group.prototype = {
     type: 'group',
 
     /**
-     * 所有子孙元素是否响应鼠标事件
+     *  
      * @name module:/zrender/container/Group#silent
      * @type {boolean}
      * @default false
@@ -5316,7 +5316,7 @@ Group.prototype = {
     },
 
     /**
-     * 获取指定 index 的儿子节点
+     *   index  
      * @param  {number} idx
      * @return {module:zrender/Element}
      */
@@ -5325,7 +5325,7 @@ Group.prototype = {
     },
 
     /**
-     * 获取指定名字的儿子节点
+     *  
      * @param  {string} name
      * @return {module:zrender/Element}
      */
@@ -5346,7 +5346,7 @@ Group.prototype = {
     },
 
     /**
-     * 添加子节点到最后
+     *  
      * @param {module:zrender/Element} child
      */
     add: function (child) {
@@ -5361,7 +5361,7 @@ Group.prototype = {
     },
 
     /**
-     * 添加子节点在 nextSibling 之前
+     *   nextSibling  
      * @param {module:zrender/Element} child
      * @param {module:zrender/Element} nextSibling
      */
@@ -5403,7 +5403,7 @@ Group.prototype = {
     },
 
     /**
-     * 移除子节点
+     *  
      * @param {module:zrender/Element} child
      */
     remove: function (child) {
@@ -5434,7 +5434,7 @@ Group.prototype = {
     },
 
     /**
-     * 移除所有子节点
+     *  
      */
     removeAll: function () {
         var children = this._children;
@@ -5457,7 +5457,7 @@ Group.prototype = {
     },
 
     /**
-     * 遍历所有子节点
+     *  
      * @param  {Function} cb
      * @param  {}   context
      */
@@ -5471,7 +5471,7 @@ Group.prototype = {
     },
 
     /**
-     * 深度优先遍历所有子孙节点
+     *  
      * @param  {Function} cb
      * @param  {}   context
      */
@@ -6233,7 +6233,7 @@ function shapeCompareFunc(a, b) {
     return a.zlevel - b.zlevel;
 }
 /**
- * 内容仓库 (M)
+ *   (M)
  * @alias module:zrender/Storage
  * @constructor
  */
@@ -6260,11 +6260,11 @@ Storage.prototype = {
     },
 
     /**
-     * 返回所有图形的绘制队列
-     * @param {boolean} [update=false] 是否在返回前更新该数组
-     * @param {boolean} [includeIgnore=false] 是否包含 ignore 的数组, 在 update 为 true 的时候有效
+     *  
+     * @param {boolean} [update=false]  
+     * @param {boolean} [includeIgnore=false]   ignore  ,   update   true  
      *
-     * 详见{@link module:zrender/graphic/Displayable.prototype.updateDisplayList}
+     *  {@link module:zrender/graphic/Displayable.prototype.updateDisplayList}
      * @return {Array.<module:zrender/graphic/Displayable>}
      */
     getDisplayList: function (update, includeIgnore) {
@@ -6276,10 +6276,10 @@ Storage.prototype = {
     },
 
     /**
-     * 更新图形的绘制队列。
-     * 每次绘制前都会调用，该方法会先深度优先遍历整个树，更新所有Group和Shape的变换并且把所有可见的Shape保存到数组中，
-     * 最后根据绘制的优先级（zlevel > z > 插入顺序）排序得到绘制队列
-     * @param {boolean} [includeIgnore=false] 是否包含 ignore 的数组
+     *  
+     *  Group Shape Shape 
+     *  zlevel > z >  
+     * @param {boolean} [includeIgnore=false]   ignore  
      */
     updateDisplayList: function (includeIgnore) {
         this._displayListLen = 0;
@@ -6314,7 +6314,7 @@ Storage.prototype = {
         var userSetClipPath = el.clipPath;
         if (userSetClipPath) {
 
-            // FIXME 效率影响
+            // FIXME  
             if (clipPaths) {
                 clipPaths = clipPaths.slice();
             }
@@ -6326,7 +6326,7 @@ Storage.prototype = {
             var parentClipPath = el;
             // Recursively add clip path
             while (currentClipPath) {
-                // clipPath 的变换是基于使用这个 clipPath 的元素
+                // clipPath   clipPath  
                 currentClipPath.parent = parentClipPath;
                 currentClipPath.updateTransform();
 
@@ -6364,7 +6364,7 @@ Storage.prototype = {
     },
 
     /**
-     * 添加图形(Shape)或者组(Group)到根节点
+     *  (Shape) (Group) 
      * @param {module:zrender/Element} el
      */
     addRoot: function (el) {
@@ -6381,12 +6381,12 @@ Storage.prototype = {
     },
 
     /**
-     * 删除指定的图形(Shape)或者组(Group)
-     * @param {string|Array.<string>} [el] 如果为空清空整个Storage
+     *  (Shape) (Group)
+     * @param {string|Array.<string>} [el]  Storage
      */
     delRoot: function (el) {
         if (el == null) {
-            // 不指定el清空
+            //  el 
             for (var i = 0; i < this._roots.length; i++) {
                 var root = this._roots[i];
                 if (root instanceof Group) {
@@ -6436,7 +6436,7 @@ Storage.prototype = {
     },
 
     /**
-     * 清空并且释放Storage
+     *  Storage
      */
     dispose: function () {
         this._renderList =
@@ -6967,10 +6967,10 @@ function returnFalse() {
 }
 
 /**
- * 创建dom
+ *  dom
  *
  * @inner
- * @param {string} id dom id 待用
+ * @param {string} id dom id  
  * @param {Painter} painter painter instance
  * @param {number} number
  */
@@ -7020,7 +7020,7 @@ var Layer = function(id, painter, dpr) {
 
     var domStyle = dom.style;
     if (domStyle) { // Not in node
-        dom.onselectstart = returnFalse; // 避免页面选中的尴尬
+        dom.onselectstart = returnFalse; //  
         domStyle['-webkit-user-select'] = 'none';
         domStyle['user-select'] = 'none';
         domStyle['-webkit-touch-callout'] = 'none';
@@ -7039,19 +7039,19 @@ var Layer = function(id, painter, dpr) {
 
     // Configs
     /**
-     * 每次清空画布的颜色
+     *  
      * @type {string}
      * @default 0
      */
     this.clearColor = 0;
     /**
-     * 是否开启动态模糊
+     *  
      * @type {boolean}
      * @default false
      */
     this.motionBlur = false;
     /**
-     * 在开启动态模糊的时候使用，与上一帧混合的alpha值，值越大尾迹越明显
+     *  alpha 
      * @type {number}
      * @default 0.7
      */
@@ -7128,7 +7128,7 @@ Layer.prototype = {
     },
 
     /**
-     * 清空该层画布
+     *  
      * @param {boolean} [clearAll]=false Clear all with out motion blur
      * @param {Color} [clearColor]
      */
@@ -7567,14 +7567,14 @@ function prepareTruncateOptions(containerWidth, font, ellipsis, options) {
     var minChar = options.minChar = retrieve2(options.minChar, 0);
     // FIXME
     // Other languages?
-    options.cnCharWidth = getWidth('国', font);
+    options.cnCharWidth = getWidth(' ', font);
     // FIXME
     // Consider proportional font?
     var ascCharWidth = options.ascCharWidth = getWidth('a', font);
     options.placeholder = retrieve2(options.placeholder, '');
 
     // Example 1: minChar: 3, text: 'asdfzxcv', truncate result: 'asdf', but not: 'a...'.
-    // Example 2: minChar: 3, text: '维度', truncate result: '维', but not: '...'.
+    // Example 2: minChar: 3, text: ' ', truncate result: ' ', but not: '...'.
     var contentWidth = containerWidth = Math.max(0, containerWidth - 1); // Reserve some gap.
     for (var i = 0; i < minChar && contentWidth >= ascCharWidth; i++) {
         contentWidth -= ascCharWidth;
@@ -7651,7 +7651,7 @@ function estimateLength(text, contentWidth, ascCharWidth, cnCharWidth) {
  */
 function getLineHeight(font) {
     // FIXME A rough approach.
-    return getWidth('国', font);
+    return getWidth(' ', font);
 }
 
 /**
@@ -8646,7 +8646,7 @@ RectText.prototype = {
 };
 
 /**
- * 可绘制的图形基类
+ *  
  * Base class of all displayable graphic objects
  * @module zrender/graphic/Displayable
  */
@@ -8693,7 +8693,7 @@ Displayable.prototype = {
     type: 'displayable',
 
     /**
-     * Displayable 是否为脏，Painter 中会根据该标记判断是否需要是否需要重新绘制
+     * Displayable  Painter  
      * Dirty flag. From which painter will determine if this displayable object needs brush
      * @name module:zrender/graphic/Displayable#__dirty
      * @type {boolean}
@@ -8701,7 +8701,7 @@ Displayable.prototype = {
     __dirty: true,
 
     /**
-     * 图形是否可见，为true时不绘制图形，但是仍能触发鼠标事件
+     *  true 
      * If ignore drawing of the displayable object. Mouse event will still be triggered
      * @name module:/zrender/graphic/Displayable#invisible
      * @type {boolean}
@@ -8724,7 +8724,7 @@ Displayable.prototype = {
     z2: 0,
 
     /**
-     * z层level，决定绘画在哪层canvas中
+     * z level canvas 
      * @name module:/zrender/graphic/Displayable#zlevel
      * @type {number}
      * @default 0
@@ -8732,7 +8732,7 @@ Displayable.prototype = {
     zlevel: 0,
 
     /**
-     * 是否可拖拽
+     *  
      * @name module:/zrender/graphic/Displayable#draggable
      * @type {boolean}
      * @default false
@@ -8740,7 +8740,7 @@ Displayable.prototype = {
     draggable: false,
 
     /**
-     * 是否正在拖拽
+     *  
      * @name module:/zrender/graphic/Displayable#draggable
      * @type {boolean}
      * @default false
@@ -8748,7 +8748,7 @@ Displayable.prototype = {
     dragging: false,
 
     /**
-     * 是否相应鼠标事件
+     *  
      * @name module:/zrender/graphic/Displayable#silent
      * @type {boolean}
      * @default false
@@ -8798,21 +8798,21 @@ Displayable.prototype = {
     afterBrush: function (ctx) {},
 
     /**
-     * 图形绘制方法
+     *  
      * @param {CanvasRenderingContext2D} ctx
      */
     // Interface
     brush: function (ctx, prevEl) {},
 
     /**
-     * 获取最小包围盒
+     *  
      * @return {module:zrender/core/BoundingRect}
      */
     // Interface
     getBoundingRect: function () {},
 
     /**
-     * 判断坐标 x, y 是否在图形上
+     *   x, y  
      * If displayable element contain coord x, y
      * @param  {number} x
      * @param  {number} y
@@ -8831,7 +8831,7 @@ Displayable.prototype = {
     },
 
     /**
-     * 判断坐标 x, y 是否在图形的包围盒上
+     *   x, y  
      * If bounding rect of element contain coord x, y
      * @param  {number} x
      * @param  {number} y
@@ -8844,7 +8844,7 @@ Displayable.prototype = {
     },
 
     /**
-     * 标记图形元素为脏，并且在下一帧重绘
+     *  
      * Mark displayable element dirty and refresh next frame
      */
     dirty: function () {
@@ -8856,11 +8856,11 @@ Displayable.prototype = {
     },
 
     /**
-     * 图形是否会触发事件
+     *  
      * If displayable object binded any event
      * @return {boolean}
      */
-    // TODO, 通过 bind 绑定的事件
+    // TODO,   bind  
     // isSilent: function () {
     //     return !(
     //         this.hoverable || this.draggable
@@ -8946,7 +8946,7 @@ ZImage.prototype = {
             return;
         }
 
-        // 图片已经加载完成
+        //  
         // if (image.nodeName.toUpperCase() == 'IMG') {
         //     if (!image.complete) {
         //         return;
@@ -8971,7 +8971,7 @@ ZImage.prototype = {
             height = image.height;
         }
 
-        // 设置transform
+        //  transform
         this.setTransform(ctx);
 
         if (style.sWidth && style.sHeight) {
@@ -9090,7 +9090,7 @@ function doClip(clipPaths, ctx) {
 function createRoot(width, height) {
     var domRoot = document.createElement('div');
 
-    // domRoot.onselectstart = returnFalse; // 避免页面选中的尴尬
+    // domRoot.onselectstart = returnFalse; //  
     domRoot.style.cssText = [
         'position:relative',
         'overflow:hidden',
@@ -9108,7 +9108,7 @@ function createRoot(width, height) {
 /**
  * @alias module:zrender/Painter
  * @constructor
- * @param {HTMLElement} root 绘图容器
+ * @param {HTMLElement} root  
  * @param {module:zrender/Storage} storage
  * @param {Object} opts
  */
@@ -9132,7 +9132,7 @@ var Painter = function (root, storage, opts) {
      */
     this._singleCanvas = singleCanvas;
     /**
-     * 绘图容器
+     *  
      * @type {HTMLElement}
      */
     this.root = root;
@@ -9261,8 +9261,8 @@ Painter.prototype = {
     },
 
     /**
-     * 刷新
-     * @param {boolean} [paintAll=false] 强制绘制所有displayable
+     *  
+     * @param {boolean} [paintAll=false]  displayable
      */
     refresh: function (paintAll) {
 
@@ -9547,7 +9547,7 @@ Painter.prototype = {
     },
 
     /**
-     * 获取 zlevel 所在层，如果不存在则会创建一个新的层
+     *   zlevel  
      * @param {number} zlevel
      * @param {boolean} virtual Virtual layer will not be inserted into dom.
      * @return {module:zrender/Layer}
@@ -9684,7 +9684,7 @@ Painter.prototype = {
     },
 
     /**
-     * 获取所有已创建的层
+     *  
      * @param {Array.<module:zrender/Layer>} [prevLayer]
      */
     getLayers: function () {
@@ -9778,7 +9778,7 @@ Painter.prototype = {
     },
 
     /**
-     * 清除hover层外所有内容
+     *  hover 
      */
     clear: function () {
         this.eachBuiltinLayer(this._clearLayer);
@@ -9794,14 +9794,14 @@ Painter.prototype = {
     },
 
     /**
-     * 修改指定zlevel的绘制参数
+     *  zlevel 
      *
      * @param {string} zlevel
-     * @param {Object} config 配置对象
-     * @param {string} [config.clearColor=0] 每次清空画布的颜色
-     * @param {string} [config.motionBlur=false] 是否开启动态模糊
+     * @param {Object} config  
+     * @param {string} [config.clearColor=0]  
+     * @param {string} [config.motionBlur=false]  
      * @param {number} [config.lastFrameAlpha=0.7]
-     *                 在开启动态模糊的时候使用，与上一帧混合的alpha值，值越大尾迹越明显
+     *                  alpha 
      */
     configLayer: function (zlevel, config) {
         if (config) {
@@ -9824,8 +9824,8 @@ Painter.prototype = {
     },
 
     /**
-     * 删除指定层
-     * @param {number} zlevel 层所在的zlevel
+     *  
+     * @param {number} zlevel  zlevel
      */
     delLayer: function (zlevel) {
         var layers = this._layers;
@@ -9841,7 +9841,7 @@ Painter.prototype = {
     },
 
     /**
-     * 区域大小变化后重绘
+     *  
      */
     resize: function (width, height) {
         if (!this._domRoot.style) { // Maybe in node or worker
@@ -9868,7 +9868,7 @@ Painter.prototype = {
 
             domRoot.style.display = '';
 
-            // 优化没有实际改变的resize
+            //  resize
             if (this._width != width || height != this._height) {
                 domRoot.style.width = width + 'px';
                 domRoot.style.height = height + 'px';
@@ -9893,7 +9893,7 @@ Painter.prototype = {
     },
 
     /**
-     * 清除单独的一个层
+     *  
      * @param {number} zlevel
      */
     clearLayer: function (zlevel) {
@@ -9904,7 +9904,7 @@ Painter.prototype = {
     },
 
     /**
-     * 释放
+     *  
      */
     dispose: function () {
         this.root.innerHTML = '';
@@ -9962,14 +9962,14 @@ Painter.prototype = {
         return imageLayer.dom;
     },
     /**
-     * 获取绘图区域宽度
+     *  
      */
     getWidth: function () {
         return this._width;
     },
 
     /**
-     * 获取绘图区域高度
+     *  
      */
     getHeight: function () {
         return this._height;
@@ -10062,7 +10062,7 @@ Painter.prototype = {
 };
 
 /**
- * 动画主类, 调度和管理所有动画控制器
+ *  ,  
  *
  * @module zrender/animation/Animation
  * @author pissang(https://github.com/pissang)
@@ -10127,14 +10127,14 @@ Animation.prototype = {
 
     constructor: Animation,
     /**
-     * 添加 clip
+     *   clip
      * @param {module:zrender/animation/Clip} clip
      */
     addClip: function (clip) {
         this._clips.push(clip);
     },
     /**
-     * 添加 animator
+     *   animator
      * @param {module:zrender/animation/Animator} animator
      */
     addAnimator: function (animator) {
@@ -10145,7 +10145,7 @@ Animation.prototype = {
         }
     },
     /**
-     * 删除动画片段
+     *  
      * @param {module:zrender/animation/Clip} clip
      */
     removeClip: function(clip) {
@@ -10156,7 +10156,7 @@ Animation.prototype = {
     },
 
     /**
-     * 删除动画片段
+     *  
      * @param {module:zrender/animation/Animator} animator
      */
     removeAnimator: function (animator) {
@@ -10527,7 +10527,7 @@ var domHandlers = {
         var element = event.toElement || event.relatedTarget;
         if (element != this.dom) {
             while (element && element.nodeType != 9) {
-                // 忽略包含在root中的dom引起的mouseOut
+                //  root dom mouseOut
                 if (element === this.dom) {
                     return;
                 }
@@ -10540,7 +10540,7 @@ var domHandlers = {
     },
 
     /**
-     * Touch开始响应函数
+     * Touch 
      * @inner
      * @param {Event} event
      */
@@ -10567,7 +10567,7 @@ var domHandlers = {
     },
 
     /**
-     * Touch移动响应函数
+     * Touch 
      * @inner
      * @param {Event} event
      */
@@ -10590,7 +10590,7 @@ var domHandlers = {
     },
 
     /**
-     * Touch结束响应函数
+     * Touch 
      * @inner
      * @param {Event} event
      */
@@ -10676,10 +10676,10 @@ each$1(['click', 'mousedown', 'mouseup', 'mousewheel', 'dblclick', 'contextmenu'
 });
 
 /**
- * 为控制类实例初始化dom 事件处理函数
+ *  dom  
  *
  * @inner
- * @param {module:zrender/Handler} instance 控制类实例
+ * @param {module:zrender/Handler} instance  
  */
 function initDomHandler(instance) {
     each$1(touchHandlerNames, function (name) {
@@ -10810,7 +10810,7 @@ var painterCtors = {
     canvas: Painter
 };
 
-var instances$1 = {};    // ZRender实例map索引
+var instances$1 = {};    // ZRender map 
 
 /**
  * @type {string}
@@ -10936,8 +10936,8 @@ var ZRender = function (id, dom, opts) {
      */
     this._needsRefresh;
 
-    // 修改 storage.delFromStorage, 每次删除元素之前删除动画
-    // FIXME 有点ugly
+    //   storage.delFromStorage,  
+    // FIXME  ugly
     var oldDelFromStorage = storage.delFromStorage;
     var oldAddToStorage = storage.addToStorage;
 
@@ -10958,7 +10958,7 @@ ZRender.prototype = {
 
     constructor: ZRender,
     /**
-     * 获取实例唯一标识
+     *  
      * @return {string}
      */
     getId: function () {
@@ -10966,7 +10966,7 @@ ZRender.prototype = {
     },
 
     /**
-     * 添加元素
+     *  
      * @param  {module:zrender/Element} el
      */
     add: function (el) {
@@ -10975,7 +10975,7 @@ ZRender.prototype = {
     },
 
     /**
-     * 删除元素
+     *  
      * @param  {module:zrender/Element} el
      */
     remove: function (el) {
@@ -11163,7 +11163,7 @@ ZRender.prototype = {
 
     /**
      * Set default cursor
-     * @param {string} [cursorStyle='default'] 例如 crosshair
+     * @param {string} [cursorStyle='default']   crosshair
      */
     setCursorStyle: function (cursorStyle) {
         this.handler.setCursorStyle(cursorStyle);
@@ -12170,7 +12170,7 @@ var areaStyleMixin = {
 };
 
 /**
- * 曲线辅助模块
+ *  
  * @module zrender/core/curve
  * @author pissang(https://www.github.com/pissang)
  */
@@ -12184,7 +12184,7 @@ var EPSILON_NUMERIC = 1e-4;
 var THREE_SQRT = mathSqrt$2(3);
 var ONE_THIRD = 1 / 3;
 
-// 临时变量
+//  
 var _v0 = create();
 var _v1 = create();
 var _v2 = create();
@@ -12196,7 +12196,7 @@ function isNotAroundZero$1(val) {
     return val > EPSILON$1 || val < -EPSILON$1;
 }
 /**
- * 计算三次贝塞尔值
+ *  
  * @memberOf module:zrender/core/curve
  * @param  {number} p0
  * @param  {number} p1
@@ -12212,7 +12212,7 @@ function cubicAt(p0, p1, p2, p3, t) {
 }
 
 /**
- * 计算三次贝塞尔导数值
+ *  
  * @memberOf module:zrender/core/curve
  * @param  {number} p0
  * @param  {number} p1
@@ -12230,7 +12230,7 @@ function cubicDerivativeAt(p0, p1, p2, p3, t) {
 }
 
 /**
- * 计算三次贝塞尔方程根，使用盛金公式
+ *  
  * @memberOf module:zrender/core/curve
  * @param  {number} p0
  * @param  {number} p1
@@ -12238,7 +12238,7 @@ function cubicDerivativeAt(p0, p1, p2, p3, t) {
  * @param  {number} p3
  * @param  {number} val
  * @param  {Array.<number>} roots
- * @return {number} 有效根数目
+ * @return {number}  
  */
 function cubicRootAt(p0, p1, p2, p3, val, roots) {
     // Evaluate roots of cubic functions
@@ -12323,14 +12323,14 @@ function cubicRootAt(p0, p1, p2, p3, val, roots) {
 }
 
 /**
- * 计算三次贝塞尔方程极限值的位置
+ *  
  * @memberOf module:zrender/core/curve
  * @param  {number} p0
  * @param  {number} p1
  * @param  {number} p2
  * @param  {number} p3
  * @param  {Array.<number>} extrema
- * @return {number} 有效数目
+ * @return {number}  
  */
 function cubicExtrema(p0, p1, p2, p3, extrema) {
     var b = 6 * p2 - 12 * p1 + 6 * p0;
@@ -12367,7 +12367,7 @@ function cubicExtrema(p0, p1, p2, p3, extrema) {
 }
 
 /**
- * 细分三次贝塞尔曲线
+ *  
  * @memberOf module:zrender/core/curve
  * @param  {number} p0
  * @param  {number} p1
@@ -12398,8 +12398,8 @@ function cubicSubdivide(p0, p1, p2, p3, t, out) {
 }
 
 /**
- * 投射点到三次贝塞尔曲线上，返回投射距离。
- * 投射点有可能会有一个或者多个，这里只返回其中距离最短的一个。
+ *  
+ *  
  * @param {number} x0
  * @param {number} y0
  * @param {number} x1
@@ -12410,7 +12410,7 @@ function cubicSubdivide(p0, p1, p2, p3, t, out) {
  * @param {number} y3
  * @param {number} x
  * @param {number} y
- * @param {Array.<number>} [out] 投射点
+ * @param {Array.<number>} [out]  
  * @return {number}
  */
 function cubicProjectPoint(
@@ -12429,7 +12429,7 @@ function cubicProjectPoint(
     _v0[0] = x;
     _v0[1] = y;
 
-    // 先粗略估计一下可能的最小距离的 t 值
+    //   t  
     // PENDING
     for (var _t = 0; _t < 1; _t += 0.05) {
         _v1[0] = cubicAt(x0, x1, x2, x3, _t);
@@ -12484,7 +12484,7 @@ function cubicProjectPoint(
 }
 
 /**
- * 计算二次方贝塞尔值
+ *  
  * @param  {number} p0
  * @param  {number} p1
  * @param  {number} p2
@@ -12497,7 +12497,7 @@ function quadraticAt(p0, p1, p2, t) {
 }
 
 /**
- * 计算二次方贝塞尔导数值
+ *  
  * @param  {number} p0
  * @param  {number} p1
  * @param  {number} p2
@@ -12509,13 +12509,13 @@ function quadraticDerivativeAt(p0, p1, p2, t) {
 }
 
 /**
- * 计算二次方贝塞尔方程根
+ *  
  * @param  {number} p0
  * @param  {number} p1
  * @param  {number} p2
  * @param  {number} t
  * @param  {Array.<number>} roots
- * @return {number} 有效根数目
+ * @return {number}  
  */
 function quadraticRootAt(p0, p1, p2, val, roots) {
     var a = p0 - 2 * p1 + p2;
@@ -12555,7 +12555,7 @@ function quadraticRootAt(p0, p1, p2, val, roots) {
 }
 
 /**
- * 计算二次贝塞尔方程极限值
+ *  
  * @memberOf module:zrender/core/curve
  * @param  {number} p0
  * @param  {number} p1
@@ -12574,7 +12574,7 @@ function quadraticExtremum(p0, p1, p2) {
 }
 
 /**
- * 细分二次贝塞尔曲线
+ *  
  * @memberOf module:zrender/core/curve
  * @param  {number} p0
  * @param  {number} p1
@@ -12599,8 +12599,8 @@ function quadraticSubdivide(p0, p1, p2, t, out) {
 }
 
 /**
- * 投射点到二次贝塞尔曲线上，返回投射距离。
- * 投射点有可能会有一个或者多个，这里只返回其中距离最短的一个。
+ *  
+ *  
  * @param {number} x0
  * @param {number} y0
  * @param {number} x1
@@ -12609,7 +12609,7 @@ function quadraticSubdivide(p0, p1, p2, t, out) {
  * @param {number} y2
  * @param {number} x
  * @param {number} y
- * @param {Array.<number>} out 投射点
+ * @param {Array.<number>} out  
  * @return {number}
  */
 function quadraticProjectPoint(
@@ -12624,7 +12624,7 @@ function quadraticProjectPoint(
     _v0[0] = x;
     _v0[1] = y;
 
-    // 先粗略估计一下可能的最小距离的 t 值
+    //   t  
     // PENDING
     for (var _t = 0; _t < 1; _t += 0.05) {
         _v1[0] = quadraticAt(x0, x1, x2, _t);
@@ -12692,9 +12692,9 @@ var end = create();
 var extremity = create();
 
 /**
- * 从顶点数组中计算出最小包围盒，写入`min`和`max`中
+ *  `min` `max` 
  * @module zrender/core/bbox
- * @param {Array<Object>} points 顶点数组
+ * @param {Array<Object>} points  
  * @param {number} min
  * @param {number} max
  */
@@ -12742,7 +12742,7 @@ function fromLine(x0, y0, x1, y1, min$$1, max$$1) {
 var xDim = [];
 var yDim = [];
 /**
- * 从三阶贝塞尔曲线(p0, p1, p2, p3)中计算出最小包围盒，写入`min`和`max`中
+ *  (p0, p1, p2, p3) `min` `max` 
  * @memberOf module:zrender/core/bbox
  * @param {number} x0
  * @param {number} y0
@@ -12791,7 +12791,7 @@ function fromCubic(
 }
 
 /**
- * 从二阶贝塞尔曲线(p0, p1, p2)中计算出最小包围盒，写入`min`和`max`中
+ *  (p0, p1, p2) `min` `max` 
  * @memberOf module:zrender/core/bbox
  * @param {number} x0
  * @param {number} y0
@@ -12825,7 +12825,7 @@ function fromQuadratic(x0, y0, x1, y1, x2, y2, min$$1, max$$1) {
 }
 
 /**
- * 从圆弧中计算出最小包围盒，写入`min`和`max`中
+ *  `min` `max` 
  * @method
  * @memberOf module:zrender/core/bbox
  * @param {number} x
@@ -12901,8 +12901,8 @@ function fromArc(
 }
 
 /**
- * Path 代理，可以在`buildPath`中用于替代`ctx`, 会保存每个path操作的命令到pathCommands属性中
- * 可以用于 isInsidePath 判断以及获取boundingRect
+ * Path  `buildPath` `ctx`,  path pathCommands 
+ *   isInsidePath  boundingRect
  *
  * @module zrender/core/PathProxy
  * @author Yi Shen (http://www.github.com/pissang)
@@ -12964,7 +12964,7 @@ var PathProxy = function (notSaveData) {
 };
 
 /**
- * 快速计算Path包围盒（并不是最小包围盒）
+ *  Path 
  * @return {Object}
  */
 PathProxy.prototype = {
@@ -13037,10 +13037,10 @@ PathProxy.prototype = {
         this.addData(CMD.M, x, y);
         this._ctx && this._ctx.moveTo(x, y);
 
-        // x0, y0, xi, yi 是记录在 _dashedXXXXTo 方法中使用
-        // xi, yi 记录当前点, x0, y0 在 closePath 的时候回到起始点。
-        // 有可能在 beginPath 之后直接调用 lineTo，这时候 x0, y0 需要
-        // 在 lineTo 方法中记录，这里先不考虑这种情况，dashed line 也只在 IE10- 中不支持
+        // x0, y0, xi, yi   _dashedXXXXTo  
+        // xi, yi  , x0, y0   closePath  
+        //   beginPath   lineTo  x0, y0  
+        //   lineTo  dashed line   IE10-  
         this._x0 = x;
         this._y0 = y;
 
@@ -13168,8 +13168,8 @@ PathProxy.prototype = {
     },
 
     /**
-     * Context 从外部传入，因为有可能是 rebuildPath 完之后再 fill。
-     * stroke 同样
+     * Context   rebuildPath   fill 
+     * stroke  
      * @param {CanvasRenderingContext2D} ctx
      * @return {module:zrender/core/PathProxy}
      */
@@ -13188,7 +13188,7 @@ PathProxy.prototype = {
     },
 
     /**
-     * 必须在其它绘制命令前调用
+     *  
      * Must be invoked before all other path drawing methods
      * @return {module:zrender/core/PathProxy}
      */
@@ -13208,7 +13208,7 @@ PathProxy.prototype = {
     },
 
     /**
-     * 必须在其它绘制命令前调用
+     *  
      * Must be invoked before all other path drawing methods
      * @return {module:zrender/core/PathProxy}
      */
@@ -13226,7 +13226,7 @@ PathProxy.prototype = {
     },
 
     /**
-     * 直接设置 Path 数据
+     *   Path  
      */
     setData: function (data) {
 
@@ -13244,7 +13244,7 @@ PathProxy.prototype = {
     },
 
     /**
-     * 添加子路径
+     *  
      * @param {module:zrender/core/PathProxy|Array.<module:zrender/core/PathProxy>} path
      */
     appendPath: function (path) {
@@ -13270,8 +13270,8 @@ PathProxy.prototype = {
     },
 
     /**
-     * 填充 Path 数据。
-     * 尽量复用而不申明新的数组。大部分图形重绘的指令数据长度都是不变的。
+     *   Path  
+     *  
      */
     addData: function (cmd) {
         if (!this._saveData) {
@@ -13280,8 +13280,8 @@ PathProxy.prototype = {
 
         var data = this.data;
         if (this._len + arguments.length > data.length) {
-            // 因为之前的数组已经转换成静态的 Float32Array
-            // 所以不够用时需要扩展一个新的动态数组
+            //   Float32Array
+            //  
             this._expandData();
             data = this.data;
         }
@@ -13441,7 +13441,7 @@ PathProxy.prototype = {
     },
 
     /**
-     * 转成静态的 Float32Array 减少堆内存占用
+     *   Float32Array  
      * Convert dynamic array to static Float32Array
      */
     toStatic: function () {
@@ -13471,10 +13471,10 @@ PathProxy.prototype = {
             var cmd = data[i++];
 
             if (i == 1) {
-                // 如果第一个命令是 L, C, Q
-                // 则 previous point 同绘制命令的第一个 point
+                //   L, C, Q
+                //   previous point   point
                 //
-                // 第一个命令为 Arc 的情况下会在后面特殊处理
+                //   Arc  
                 xi = data[i];
                 yi = data[i + 1];
 
@@ -13484,8 +13484,8 @@ PathProxy.prototype = {
 
             switch (cmd) {
                 case CMD.M:
-                    // moveTo 命令重新创建一个新的 subpath, 并且更新新的起点
-                    // 在 closePath 的时候使用
+                    // moveTo   subpath,  
+                    //   closePath  
                     x0 = data[i++];
                     y0 = data[i++];
                     xi = x0;
@@ -13517,20 +13517,20 @@ PathProxy.prototype = {
                     yi = data[i++];
                     break;
                 case CMD.A:
-                    // TODO Arc 判断的开销比较大
+                    // TODO Arc  
                     var cx = data[i++];
                     var cy = data[i++];
                     var rx = data[i++];
                     var ry = data[i++];
                     var startAngle = data[i++];
                     var endAngle = data[i++] + startAngle;
-                    // TODO Arc 旋转
+                    // TODO Arc  
                     var psi = data[i++];
                     var anticlockwise = 1 - data[i++];
 
                     if (i == 1) {
-                        // 直接使用 arc 命令
-                        // 第一个命令起点还未定义
+                        //   arc  
+                        //  
                         x0 = mathCos$1(startAngle) * rx + cx;
                         y0 = mathSin$1(startAngle) * ry + cy;
                     }
@@ -13589,10 +13589,10 @@ PathProxy.prototype = {
             var cmd = d[i++];
 
             if (i == 1) {
-                // 如果第一个命令是 L, C, Q
-                // 则 previous point 同绘制命令的第一个 point
+                //   L, C, Q
+                //   previous point   point
                 //
-                // 第一个命令为 Arc 的情况下会在后面特殊处理
+                //   Arc  
                 xi = d[i];
                 yi = d[i + 1];
 
@@ -13655,8 +13655,8 @@ PathProxy.prototype = {
                     }
 
                     if (i == 1) {
-                        // 直接使用 arc 命令
-                        // 第一个命令起点还未定义
+                        //   arc  
+                        //  
                         x0 = mathCos$1(theta) * rx + cx;
                         y0 = mathSin$1(theta) * ry + cy;
                     }
@@ -13680,7 +13680,7 @@ PathProxy.prototype = {
 PathProxy.CMD = CMD;
 
 /**
- * 线段包含判断
+ *  
  * @param  {number}  x0
  * @param  {number}  y0
  * @param  {number}  x1
@@ -13720,7 +13720,7 @@ function containStroke$1(x0, y0, x1, y1, lineWidth, x, y) {
 }
 
 /**
- * 三次贝塞尔曲线描边包含判断
+ *  
  * @param  {number}  x0
  * @param  {number}  y0
  * @param  {number}  x1
@@ -13756,7 +13756,7 @@ function containStroke$2(x0, y0, x1, y1, x2, y2, x3, y3, lineWidth, x, y) {
 }
 
 /**
- * 二次贝塞尔曲线描边包含判断
+ *  
  * @param  {number}  x0
  * @param  {number}  y0
  * @param  {number}  x1
@@ -13802,7 +13802,7 @@ function normalizeRadian(angle) {
 var PI2$2 = Math.PI * 2;
 
 /**
- * 圆弧描边包含判断
+ *  
  * @param  {number}  cx
  * @param  {number}  cy
  * @param  {number}  r
@@ -13886,7 +13886,7 @@ function isAroundEqual(a, b) {
     return Math.abs(a - b) < EPSILON$2;
 }
 
-// 临时数组
+//  
 var roots = [-1, -1, -1];
 var extrema = [-1, -1];
 
@@ -13933,7 +13933,7 @@ function windingCubic(x0, y0, x1, y1, x2, y2, x3, y3, x, y) {
                 }
             }
             if (nExtrema == 2) {
-                // 分成三段单调函数
+                //  
                 if (t < extrema[0]) {
                     w += y0_ < y0 ? unit : -unit;
                 }
@@ -13945,7 +13945,7 @@ function windingCubic(x0, y0, x1, y1, x2, y2, x3, y3, x, y) {
                 }
             }
             else {
-                // 分成两段单调函数
+                //  
                 if (t < extrema[0]) {
                     w += y0_ < y0 ? unit : -unit;
                 }
@@ -14006,7 +14006,7 @@ function windingQuadratic(x0, y0, x1, y1, x2, y2, x, y) {
 }
 
 // TODO
-// Arc 旋转
+// Arc  
 function windingArc(
     cx, cy, r, startAngle, endAngle, anticlockwise, x, y
 ) {
@@ -14085,17 +14085,17 @@ function containPath(data, lineWidth, isStroke, x, y) {
             if (!isStroke) {
                 w += windingLine(xi, yi, x0, y0, x, y);
             }
-            // 如果被任何一个 subpath 包含
+            //   subpath  
             // if (w !== 0) {
             //     return true;
             // }
         }
 
         if (i == 1) {
-            // 如果第一个命令是 L, C, Q
-            // 则 previous point 同绘制命令的第一个 point
+            //   L, C, Q
+            //   previous point   point
             //
-            // 第一个命令为 Arc 的情况下会在后面特殊处理
+            //   Arc  
             xi = data[i];
             yi = data[i + 1];
 
@@ -14105,8 +14105,8 @@ function containPath(data, lineWidth, isStroke, x, y) {
 
         switch (cmd) {
             case CMD$1.M:
-                // moveTo 命令重新创建一个新的 subpath, 并且更新新的起点
-                // 在 closePath 的时候使用
+                // moveTo   subpath,  
+                //   closePath  
                 x0 = data[i++];
                 y0 = data[i++];
                 xi = x0;
@@ -14119,7 +14119,7 @@ function containPath(data, lineWidth, isStroke, x, y) {
                     }
                 }
                 else {
-                    // NOTE 在第一个命令为 L, C, Q 的时候会计算出 NaN
+                    // NOTE   L, C, Q   NaN
                     w += windingLine(xi, yi, data[i], data[i + 1], x, y) || 0;
                 }
                 xi = data[i++];
@@ -14164,28 +14164,28 @@ function containPath(data, lineWidth, isStroke, x, y) {
                 yi = data[i++];
                 break;
             case CMD$1.A:
-                // TODO Arc 判断的开销比较大
+                // TODO Arc  
                 var cx = data[i++];
                 var cy = data[i++];
                 var rx = data[i++];
                 var ry = data[i++];
                 var theta = data[i++];
                 var dTheta = data[i++];
-                // TODO Arc 旋转
+                // TODO Arc  
                 var psi = data[i++];
                 var anticlockwise = 1 - data[i++];
                 var x1 = Math.cos(theta) * rx + cx;
                 var y1 = Math.sin(theta) * ry + cy;
-                // 不是直接使用 arc 命令
+                //   arc  
                 if (i > 1) {
                     w += windingLine(xi, yi, x1, y1, x, y);
                 }
                 else {
-                    // 第一个命令起点还未定义
+                    //  
                     x0 = x1;
                     y0 = y1;
                 }
-                // zr 使用scale来模拟椭圆, 这里也对x做一定的缩放
+                // zr  scale ,  x 
                 var _x = (x - cx) * ry / rx + cx;
                 if (isStroke) {
                     if (containStroke$4(
@@ -14237,7 +14237,7 @@ function containPath(data, lineWidth, isStroke, x, y) {
                 else {
                     // Close a subpath
                     w += windingLine(xi, yi, x0, y0, x, y);
-                    // 如果被任何一个 subpath 包含
+                    //   subpath  
                     // FIXME subpaths may overlap
                     // if (w !== 0) {
                     //     return true;
@@ -14587,7 +14587,7 @@ Path.prototype = {
 };
 
 /**
- * 扩展一个 Path element, 比如星形，圆等。
+ *   Path element,  
  * Extend a path element
  * @param {Object} props
  * @param {string} props.type Path type
@@ -14625,7 +14625,7 @@ Path.extend = function (defaults$$1) {
 
     inherits(Sub, Path);
 
-    // FIXME 不能 extend position, rotation 等引用对象
+    // FIXME   extend position, rotation  
     for (var name in defaults$$1) {
         // Extending prototype values and methods
         if (name !== 'style' && name !== 'shape') {
@@ -15250,7 +15250,7 @@ Text.prototype = {
 inherits(Text, Displayable);
 
 /**
- * 圆形
+ *  
  * @module zrender/shape/Circle
  */
 
@@ -15349,7 +15349,7 @@ var fixClipWithShadow = function (orignalBrush) {
 };
 
 /**
- * 扇形
+ *  
  * @module zrender/graphic/shape/Sector
  */
 
@@ -15409,7 +15409,7 @@ var Sector = Path.extend({
 });
 
 /**
- * 圆环
+ *  
  * @module zrender/graphic/shape/Ring
  */
 
@@ -15436,10 +15436,10 @@ var Ring = Path.extend({
 });
 
 /**
- * Catmull-Rom spline 插值折线
+ * Catmull-Rom spline  
  * @module zrender/shape/util/smoothSpline
  * @author pissang (https://www.github.com/pissang)
- *         Kener (@Kener-林峰, kener.linfeng@gmail.com)
+ *         Kener (@Kener- , kener.linfeng@gmail.com)
  *         errorrik (errorrik@gmail.com)
  */
 
@@ -15456,7 +15456,7 @@ function interpolate(p0, p1, p2, p3, t, t2, t3) {
 
 /**
  * @alias module:zrender/shape/util/smoothSpline
- * @param {Array} points 线段顶点数组
+ * @param {Array} points  
  * @param {boolean} isLoop
  * @return {Array}
  */
@@ -15504,23 +15504,23 @@ var smoothSpline = function (points, isLoop) {
 };
 
 /**
- * 贝塞尔平滑曲线
+ *  
  * @module zrender/shape/util/smoothBezier
  * @author pissang (https://www.github.com/pissang)
- *         Kener (@Kener-林峰, kener.linfeng@gmail.com)
+ *         Kener (@Kener- , kener.linfeng@gmail.com)
  *         errorrik (errorrik@gmail.com)
  */
 
 /**
- * 贝塞尔平滑曲线
+ *  
  * @alias module:zrender/shape/util/smoothBezier
- * @param {Array} points 线段顶点数组
- * @param {number} smooth 平滑等级, 0-1
+ * @param {Array} points  
+ * @param {number} smooth  , 0-1
  * @param {boolean} isLoop
- * @param {Array} constraint 将计算出来的控制点约束在一个包围盒内
- *                           比如 [[0, 0], [100, 100]], 这个包围盒会与
- *                           整个折线的包围盒做一个并集用来约束控制点。
- * @param {Array} 计算出来的控制点数组
+ * @param {Array} constraint  
+ *                             [[0, 0], [100, 100]],  
+ *                            
+ * @param {Array}  
  */
 var smoothBezier = function (points, smooth, isLoop, constraint) {
     var cps = [];
@@ -15539,7 +15539,7 @@ var smoothBezier = function (points, smooth, isLoop, constraint) {
             min(min$$1, min$$1, points[i]);
             max(max$$1, max$$1, points[i]);
         }
-        // 与指定的包围盒做并集
+        //  
         min(min$$1, min$$1, constraint[0]);
         max(max$$1, max$$1, constraint[1]);
     }
@@ -15632,7 +15632,7 @@ function buildPath$1(ctx, shape, closePath) {
 }
 
 /**
- * 多边形
+ *  
  * @module zrender/shape/Polygon
  */
 
@@ -15681,7 +15681,7 @@ var Polyline = Path.extend({
 });
 
 /**
- * 矩形
+ *  
  * @module zrender/graphic/shape/Rect
  */
 
@@ -15690,11 +15690,11 @@ var Rect = Path.extend({
     type: 'rect',
 
     shape: {
-        // 左上、右上、右下、左下角的半径依次为r1、r2、r3、r4
-        // r缩写为1         相当于 [1, 1, 1, 1]
-        // r缩写为[1]       相当于 [1, 1, 1, 1]
-        // r缩写为[1, 2]    相当于 [1, 2, 1, 2]
-        // r缩写为[1, 2, 3] 相当于 [1, 2, 3, 2]
+        //  r1 r2 r3 r4
+        // r 1           [1, 1, 1, 1]
+        // r [1]         [1, 1, 1, 1]
+        // r [1, 2]      [1, 2, 1, 2]
+        // r [1, 2, 3]   [1, 2, 3, 2]
         r: 0,
 
         x: 0,
@@ -15720,7 +15720,7 @@ var Rect = Path.extend({
 });
 
 /**
- * 直线
+ *  
  * @module zrender/graphic/shape/Line
  */
 
@@ -15779,7 +15779,7 @@ var Line = Path.extend({
 });
 
 /**
- * 贝塞尔曲线
+ *  
  * @module zrender/shape/BezierCurve
  */
 
@@ -15904,7 +15904,7 @@ var BezierCurve = Path.extend({
 });
 
 /**
- * 圆弧
+ *  
  * @module zrender/graphic/shape/Arc
  */
 
@@ -17588,13 +17588,13 @@ Model.prototype = {
     constructor: Model,
 
     /**
-     * Model 的初始化函数
+     * Model  
      * @param {Object} option
      */
     init: null,
 
     /**
-     * 从新的 Option merge
+     *   Option merge
      */
     mergeOption: function (option) {
         merge(this.option, option, true);
@@ -18291,8 +18291,8 @@ function quantityExponent(val) {
 }
 
 /**
- * find a “nice” number approximately equal to x. Round the number if round = true,
- * take ceiling if round = false. The primary observation is that the “nicest”
+ * find a  nice  number approximately equal to x. Round the number if round = true,
+ * take ceiling if round = false. The primary observation is that the  nicest 
  * numbers in decimal are 1, 2, and 5, and all power-of-ten multiples of these numbers.
  *
  * See "Nice Numbers for Graph Labels" of Graphic Gems.
@@ -18510,7 +18510,7 @@ var number = (Object.freeze || Object)({
 // import Text from 'zrender/src/graphic/Text';
 
 /**
- * 每三位默认加,格式化
+ *  , 
  * @param {string|number} x
  * @return {string}
  */
@@ -21188,7 +21188,7 @@ function mergeTheme(option, theme) {
         if (name === 'colorLayer' && notMergeColorLayer) {
             return;
         }
-        // 如果有 component model 则把具体的 merge 逻辑交给该 model 处理
+        //   component model   merge   model  
         if (!ComponentModel.hasClass(name)) {
             if (typeof themeItem === 'object') {
                 option[name] = !option[name]
@@ -21570,7 +21570,7 @@ OptionManager.prototype = {
         rawOption = clone$3(rawOption, true);
 
         // FIXME
-        // 如果 timeline options 或者 media 中设置了某个属性，而baseOption中没有设置，则进行警告。
+        //   timeline options   media  baseOption 
 
         var oldOptionBackup = this._optionBackup;
         var newParsedOption = parseRawOption.call(
@@ -21609,7 +21609,7 @@ OptionManager.prototype = {
         var optionBackup = this._optionBackup;
 
         // TODO
-        // 如果没有reset功能则不clone。
+        //  reset clone 
 
         this._timelineOptions = map$1(optionBackup.timelineOptions, clone$3);
         this._mediaList = map$1(optionBackup.mediaList, clone$3);
@@ -21674,7 +21674,7 @@ OptionManager.prototype = {
         }
 
         // FIXME
-        // 是否mediaDefault应该强制用户设置，否则可能修改不能回归。
+        //  mediaDefault 
         if (!indices.length && mediaDefault) {
             indices = [-1];
         }
@@ -24455,94 +24455,94 @@ var lang = {
     toolbox: {
         brush: {
             title: {
-                rect: '矩形选择',
-                polygon: '圈选',
-                lineX: '横向选择',
-                lineY: '纵向选择',
-                keep: '保持选择',
-                clear: '清除选择'
+                rect: ' ',
+                polygon: ' ',
+                lineX: ' ',
+                lineY: ' ',
+                keep: ' ',
+                clear: ' '
             }
         },
         dataView: {
-            title: '数据视图',
-            lang: ['数据视图', '关闭', '刷新']
+            title: ' ',
+            lang: [' ', ' ', ' ']
         },
         dataZoom: {
             title: {
-                zoom: '区域缩放',
-                back: '区域缩放还原'
+                zoom: ' ',
+                back: ' '
             }
         },
         magicType: {
             title: {
-                line: '切换为折线图',
-                bar: '切换为柱状图',
-                stack: '切换为堆叠',
-                tiled: '切换为平铺'
+                line: ' ',
+                bar: ' ',
+                stack: ' ',
+                tiled: ' '
             }
         },
         restore: {
-            title: '还原'
+            title: ' '
         },
         saveAsImage: {
-            title: '保存为图片',
-            lang: ['右键另存为图片']
+            title: ' ',
+            lang: [' ']
         }
     },
     series: {
         typeNames: {
-            pie: '饼图',
-            bar: '柱状图',
-            line: '折线图',
-            scatter: '散点图',
-            effectScatter: '涟漪散点图',
-            radar: '雷达图',
-            tree: '树图',
-            treemap: '矩形树图',
-            boxplot: '箱型图',
-            candlestick: 'K线图',
-            k: 'K线图',
-            heatmap: '热力图',
-            map: '地图',
-            parallel: '平行坐标图',
-            lines: '线图',
-            graph: '关系图',
-            sankey: '桑基图',
-            funnel: '漏斗图',
-            gauge: '仪表盘图',
-            pictorialBar: '象形柱图',
-            themeRiver: '主题河流图',
-            sunburst: '旭日图'
+            pie: ' ',
+            bar: ' ',
+            line: ' ',
+            scatter: ' ',
+            effectScatter: ' ',
+            radar: ' ',
+            tree: ' ',
+            treemap: ' ',
+            boxplot: ' ',
+            candlestick: 'K ',
+            k: 'K ',
+            heatmap: ' ',
+            map: ' ',
+            parallel: ' ',
+            lines: ' ',
+            graph: ' ',
+            sankey: ' ',
+            funnel: ' ',
+            gauge: ' ',
+            pictorialBar: ' ',
+            themeRiver: ' ',
+            sunburst: ' '
         }
     },
     aria: {
         general: {
-            withTitle: '这是一个关于“{title}”的图表。',
-            withoutTitle: '这是一个图表，'
+            withTitle: ' {title} ',
+            withoutTitle: ' '
         },
         series: {
             single: {
                 prefix: '',
-                withName: '图表类型是{seriesType}，表示{seriesName}。',
-                withoutName: '图表类型是{seriesType}。'
+                withName: ' {seriesType} {seriesName} ',
+                withoutName: ' {seriesType} '
             },
             multiple: {
-                prefix: '它由{seriesCount}个图表系列组成。',
-                withName: '第{seriesId}个系列是一个表示{seriesName}的{seriesType}，',
-                withoutName: '第{seriesId}个系列是一个{seriesType}，',
+                prefix: ' {seriesCount} ',
+                withName: ' {seriesId} {seriesName} {seriesType} ',
+                withoutName: ' {seriesId} {seriesType} ',
                 separator: {
-                    middle: '；',
-                    end: '。'
+                    middle: ' ',
+                    end: ' '
                 }
             }
         },
         data: {
-            allData: '其数据是——',
-            partialData: '其中，前{displayCnt}项是——',
-            withName: '{name}的数据是{value}',
+            allData: ' ',
+            partialData: ' {displayCnt} ',
+            withName: '{name} {value}',
             withoutName: '{value}',
             separator: {
-                middle: '，',
+                middle: ' ',
                 end: ''
             }
         }
@@ -24710,7 +24710,7 @@ var aria = function (dom, ecModel) {
     }
 
     function getSeriesTypeName(type) {
-        return lang.series.typeNames[type] || '自定义图';
+        return lang.series.typeNames[type] || ' ';
     }
 };
 
@@ -25632,7 +25632,7 @@ Component.extend({
 });
 
 /**
- * 椭圆形状
+ *  
  * @module zrender/graphic/shape/Ellipse
  */
 
@@ -25651,9 +25651,9 @@ var Ellipse = Path.extend({
         var y = shape.cy;
         var a = shape.rx;
         var b = shape.ry;
-        var ox = a * k; // 水平控制点偏移量
-        var oy = b * k; // 垂直控制点偏移量
-        // 从椭圆的左端点开始顺时针绘制四条三次贝塞尔曲线
+        var ox = a * k; //  
+        var oy = b * k; //  
+        //  
         ctx.moveTo(x - a, y);
         ctx.bezierCurveTo(x - a, y - oy, x - ox, y - b, x, y - b);
         ctx.bezierCurveTo(x + ox, y - b, x + a, y - oy, x + a, y);
@@ -32795,7 +32795,7 @@ var ONE_MINUTE = ONE_SECOND * 60;
 var ONE_HOUR = ONE_MINUTE * 60;
 var ONE_DAY = ONE_HOUR * 24;
 
-// FIXME 公用？
+// FIXME  
 var bisect = function (a, x, lo, hi) {
     while (lo < hi) {
         var mid = lo + hi >>> 1;
@@ -33942,7 +33942,7 @@ function symbolPathSetColor(color, innerColor) {
             symbolStyle.fill = innerColor || '#fff';
         }
         else {
-            // FIXME 判断图形默认是填充还是描边，使用 onlyStroke ?
+            // FIXME   onlyStroke ?
             symbolStyle.fill && (symbolStyle.fill = color);
             symbolStyle.stroke && (symbolStyle.stroke = color);
         }
@@ -38493,8 +38493,8 @@ axisModelCreator('y', AxisModel, getAxisType, extraOption);
 * under the License.
 */
 
-// Grid 是在有直角坐标系的时候必须要存在的
-// 所以这里也要被 Cartesian2D 依赖
+// Grid  
+//   Cartesian2D  
 
 ComponentModel.extend({
 
@@ -40802,8 +40802,8 @@ var BaseBarSeries = SeriesModel.extend({
     },
 
     defaultOption: {
-        zlevel: 0,                  // 一级层叠
-        z: 2,                       // 二级层叠
+        zlevel: 0,                  //  
+        z: 2,                       //  
         coordinateSystem: 'cartesian2d',
         legendHoverLink: true,
         // stack: null
@@ -40812,9 +40812,9 @@ var BaseBarSeries = SeriesModel.extend({
         // xAxisIndex: 0,
         // yAxisIndex: 0,
 
-        // 最小高度改为0
+        //  0
         barMinHeight: 0,
-        // 最小角度为0，仅对极坐标系下的柱状图有效
+        //  0 
         barMinAngle: 0,
         // cursor: null,
 
@@ -40824,11 +40824,11 @@ var BaseBarSeries = SeriesModel.extend({
         progressiveChunkMode: 'mod',
 
         // barMaxWidth: null,
-        // 默认自适应
+        //  
         // barWidth: null,
-        // 柱间距离，默认为柱形宽度的30%，可设固定值
+        //  30% 
         // barGap: '30%',
-        // 类目间柱形距离，默认为类目间距的20%，可设固定值
+        //  20% 
         // barCategoryGap: '20%',
         // label: {
         //      show: false
@@ -41655,24 +41655,24 @@ var PieSeries = extendSeriesModel({
         legendHoverLink: true,
 
         hoverAnimation: true,
-        // 默认全局居中
+        //  
         center: ['50%', '50%'],
         radius: [0, '75%'],
-        // 默认顺时针
+        //  
         clockwise: true,
         startAngle: 90,
-        // 最小角度改为0
+        //  0
         minAngle: 0,
-        // 选中时扇区偏移量
+        //  
         selectedOffset: 10,
-        // 高亮扇区偏移量
+        //  
         hoverOffset: 10,
 
         // If use strategy to avoid label overlapping
         avoidLabelOverlap: true,
-        // 选择模式，默认关闭，可选single，multiple
+        //  single multiple
         // selectedMode: false,
-        // 南丁格尔玫瑰图模式，'radius'（半径） | 'area'（面积）
+        //  'radius'  | 'area' 
         // roseType: null,
 
         percentPrecision: 2,
@@ -41688,20 +41688,20 @@ var PieSeries = extendSeriesModel({
             show: true,
             // 'outer', 'inside', 'center'
             position: 'outer'
-            // formatter: 标签文本格式器，同Tooltip.formatter，不支持异步回调
-            // 默认使用全局文本样式，详见TEXTSTYLE
-            // distance: 当position为inner时有效，为label位置到圆心的距离与圆半径(环状图为内外半径和)的比例系数
+            // formatter:  Tooltip.formatter 
+            //  TEXTSTYLE
+            // distance:  position inner label ( ) 
         },
         // Enabled when label.normal.position is 'outer'
         labelLine: {
             show: true,
-            // 引导线两段中的第一段长度
+            //  
             length: 15,
-            // 引导线两段中的第二段长度
+            //  
             length2: 15,
             smooth: false,
             lineStyle: {
-                // color: 各异,
+                // color:  ,
                 width: 1,
                 type: 'solid'
             }
@@ -42292,7 +42292,7 @@ function adjustSingleSide(list, cx, cy, r, dir, viewWidth, viewHeight) {
         return a.y - b.y;
     });
 
-    // 压
+    //  
     function shiftDown(start, end, delta, dir) {
         for (var j = start; j < end; j++) {
             list[j].y += delta;
@@ -42308,7 +42308,7 @@ function adjustSingleSide(list, cx, cy, r, dir, viewWidth, viewHeight) {
         shiftUp(end - 1, delta / 2);
     }
 
-    // 弹
+    //  
     function shiftUp(end, delta) {
         for (var j = end; j >= 0; j--) {
             list[j].y -= delta;
@@ -42322,12 +42322,12 @@ function adjustSingleSide(list, cx, cy, r, dir, viewWidth, viewHeight) {
 
     function changeX(list, isDownList, cx, cy, r, dir) {
         var lastDeltaX = dir > 0
-            ? isDownList                // 右侧
-                ? Number.MAX_VALUE      // 下
-                : 0                     // 上
-            : isDownList                // 左侧
-                ? Number.MAX_VALUE      // 下
-                : 0;                    // 上
+            ? isDownList                //  
+                ? Number.MAX_VALUE      //  
+                : 0                     //  
+            : isDownList                //  
+                ? Number.MAX_VALUE      //  
+                : 0;                    //  
 
         for (var i = 0, l = list.length; i < l; i++) {
             // Not change x for center label
@@ -42344,11 +42344,11 @@ function adjustSingleSide(list, cx, cy, r, dir, viewWidth, viewHeight) {
                     )
                 : Math.abs(list[i].x - cx);
             if (isDownList && deltaX >= lastDeltaX) {
-                // 右下，左下
+                //  
                 deltaX = lastDeltaX - 10;
             }
             if (!isDownList && deltaX <= lastDeltaX) {
-                // 右上，左上
+                //  
                 deltaX = lastDeltaX + 10;
             }
 
@@ -42600,7 +42600,7 @@ var pieLayout = function (seriesType, ecModel, api, payload) {
                 return;
             }
 
-            // FIXME 兼容 2.0 但是 roseType 是 area 的时候才是这样？
+            // FIXME   2.0   roseType   area  
             if (roseType !== 'area') {
                 angle = (sum === 0 && stillShowZeroSum)
                     ? unitRadian : (value * unitRadian);
@@ -42817,9 +42817,9 @@ SeriesModel.extend({
         // Geo coordinate system
         // geoIndex: 0,
 
-        // symbol: null,        // 图形类型
-        symbolSize: 10,          // 图形大小，半宽（半径）参数，当图形为方向或菱形则总宽度为symbolSize * 2
-        // symbolRotate: null,  // 图形旋转控制
+        // symbol: null,        //  
+        symbolSize: 10,          //  symbolSize * 2
+        // symbolRotate: null,  //  
 
         large: false,
         // Available when large is true
@@ -42829,14 +42829,14 @@ SeriesModel.extend({
         // label: {
             // show: false
             // distance: 5,
-            // formatter: 标签文本格式器，同Tooltip.formatter，不支持异步回调
-            // position: 默认自适应，水平布局为'top'，垂直布局为'right'，可选为
+            // formatter:  Tooltip.formatter 
+            // position:  'top' 'right' 
             //           'inside'|'left'|'right'|'top'|'bottom'
-            // 默认使用全局文本样式，详见TEXTSTYLE
+            //  TEXTSTYLE
         // },
         itemStyle: {
             opacity: 0.8
-            // color: 各异
+            // color:  
         }
 
         // progressive: null
@@ -44679,7 +44679,7 @@ function doConvert$1(methodName, ecModel, finder, value) {
 * under the License.
 */
 
-// Fix for 南海诸岛
+// Fix for  
 
 var geoCoord = [126, 25];
 
@@ -44713,7 +44713,7 @@ for (var i$1 = 0; i$1 < points$1.length; i$1++) {
 var fixNanhai = function (mapType, regions) {
     if (mapType === 'china') {
         regions.push(new Region(
-            '南海诸岛',
+            ' ',
             map(points$1, function (exterior) {
                 return {
                     type: 'polygon',
@@ -44744,13 +44744,13 @@ var fixNanhai = function (mapType, regions) {
 */
 
 var coordsOffsetMap = {
-    '南海诸岛': [32, 80],
-    // 全国
-    '广东': [0, -10],
-    '香港': [10, 5],
-    '澳门': [-10, 10],
-    //'北京': [-10, 0],
-    '天津': [5, 5]
+    ' ': [32, 80],
+    //  
+    ' ': [0, -10],
+    ' ': [10, 5],
+    ' ': [-10, 10],
+    //' ': [-10, 0],
+    ' ': [5, 5]
 };
 
 var fixTextCoord = function (mapType, region) {
@@ -44819,7 +44819,7 @@ var fixGeoCoord = function (mapType, region) {
 * under the License.
 */
 
-// Fix for 钓鱼岛
+// Fix for  
 
 // var Region = require('../Region');
 // var zrUtil = require('zrender/src/core/util');
@@ -44837,7 +44837,7 @@ var points$2 = [
 ];
 
 var fixDiaoyuIsland = function (mapType, region) {
-    if (mapType === 'china' && region.name === '台湾') {
+    if (mapType === 'china' && region.name === ' ') {
         region.geometries.push({
             type: 'polygon',
             exterior: points$2[0]
@@ -45789,9 +45789,9 @@ var MapSeries = SeriesModel.extend({
     },
 
     defaultOption: {
-        // 一级层叠
+        //  
         zlevel: 0,
-        // 二级层叠
+        //  
         z: 2,
 
         coordinateSystem: 'geo',
@@ -45824,19 +45824,19 @@ var MapSeries = SeriesModel.extend({
         // layoutSize: 100
 
 
-        // 数值合并方式，默认加和，可选为：
+        //  
         // 'sum' | 'average' | 'max' | 'min'
         // mapValueCalculation: 'sum',
-        // 地图数值计算结果小数精度
+        //  
         // mapValuePrecision: 0,
 
 
-        // 显示图例颜色标识（系列标识的小圆点），图例开启时有效
+        //  
         showLegendSymbol: true,
-        // 选择模式，默认关闭，可选single，multiple
+        //  single multiple
         // selectedMode: false,
         dataRangeHoverLink: true,
-        // 是否开启缩放及漫游模式
+        //  
         // roam: false,
 
         // Define left-top, right-bottom coords to control view
@@ -47167,7 +47167,7 @@ var mapVisual = function (ecModel) {
 * under the License.
 */
 
-// FIXME 公用？
+// FIXME  
 /**
  * @param {Array.<module:echarts/data/List>} datas
  * @param {string} statisticType 'average' 'sum'
@@ -48435,7 +48435,7 @@ function nextLeft(node) {
 }
 
 /**
- * If nodeInLeft’s ancestor is a sibling of node, returns nodeInLeft’s ancestor.
+ * If nodeInLeft s ancestor is a sibling of node, returns nodeInLeft s ancestor.
  * Otherwise, returns the specified ancestor.
  * @param  {module:echarts/data/Tree~TreeNode} nodeInLeft
  * @param  {module:echarts/data/Tree~TreeNode} node
@@ -49345,8 +49345,8 @@ SeriesModel.extend({
         squareRatio: 0.5 * (1 + Math.sqrt(5)), // golden ratio
         leafDepth: null,                    // Nodes on depth from root are regarded as leaves.
                                             // Count from zero (zero represents only view root).
-        drillDownIcon: '▶',                 // Use html character temporarily because it is complicated
-                                            // to align specialized icon. ▷▶❒❐▼✚
+        drillDownIcon: ' ',                 // Use html character temporarily because it is complicated
+                                            // to align specialized icon.  
 
         zoomToNodeRatio: 0.32 * 0.32,       // Be effective when using zoomToNode. Specify the proportion of the
                                             // target node area in the view area.
@@ -50112,7 +50112,7 @@ extendChartView({
         var containerGroup = this._containerGroup;
         if (!containerGroup) {
             // FIXME
-            // 加一层containerGroup是为了clip，但是现在clip功能并没有实现。
+            //  containerGroup clip clip 
             containerGroup = this._containerGroup = new Group$2();
             this._initEvents(containerGroup);
             this.group.add(containerGroup);
@@ -51948,7 +51948,7 @@ var treemapLayout = {
         seriesModel.setLayoutInfo(layoutInfo);
 
         // FIXME
-        // 现在没有clip功能，暂时取ec高宽。
+        //  clip ec 
         prunning(
             treeRoot,
             // Transform to base element coordinate system.
@@ -52462,7 +52462,7 @@ function generateNodeKey(id) {
  */
 var Graph = function (directed) {
     /**
-     * 是否是有向图
+     *  
      * @type {boolean}
      * @private
      */
@@ -52857,7 +52857,7 @@ Node.prototype = {
 };
 
 /**
- * 图边
+ *  
  * @alias module:echarts/data/Graph.Edge
  * @param {module:echarts/data/Graph.Node} n1
  * @param {module:echarts/data/Graph.Node} n2
@@ -52866,13 +52866,13 @@ Node.prototype = {
 function Edge(n1, n2, dataIndex) {
 
     /**
-     * 节点1，如果是有向图则为源节点
+     *  1 
      * @type {module:echarts/data/Graph.Node}
      */
     this.node1 = n1;
 
     /**
-     * 节点2，如果是有向图则为目标节点
+     *  2 
      * @type {module:echarts/data/Graph.Node}
      */
     this.node2 = n2;
@@ -54007,7 +54007,7 @@ function intersectCurveCircle(curvePoints, center, radius) {
         }
     }
 
-    // Assume the segment is monotone，Find root through Bisection method
+    // Assume the segment is monotone Find root through Bisection method
     // At most 32 iteration
     for (var i = 0; i < 32; i++) {
         // var prev = t - interval;
@@ -55473,50 +55473,50 @@ var GaugeSeries = SeriesModel.extend({
     defaultOption: {
         zlevel: 0,
         z: 2,
-        // 默认全局居中
+        //  
         center: ['50%', '50%'],
         legendHoverLink: true,
         radius: '75%',
         startAngle: 225,
         endAngle: -45,
         clockwise: true,
-        // 最小值
+        //  
         min: 0,
-        // 最大值
+        //  
         max: 100,
-        // 分割段数，默认为10
+        //  10
         splitNumber: 10,
-        // 坐标轴线
+        //  
         axisLine: {
-            // 默认显示，属性show控制显示与否
+            //  show 
             show: true,
-            lineStyle: {       // 属性lineStyle控制线条样式
+            lineStyle: {       //  lineStyle 
                 color: [[0.2, '#91c7ae'], [0.8, '#63869e'], [1, '#c23531']],
                 width: 30
             }
         },
-        // 分隔线
+        //  
         splitLine: {
-            // 默认显示，属性show控制显示与否
+            //  show 
             show: true,
-            // 属性length控制线长
+            //  length 
             length: 30,
-            // 属性lineStyle（详见lineStyle）控制线条样式
+            //  lineStyle lineStyle 
             lineStyle: {
                 color: '#eee',
                 width: 2,
                 type: 'solid'
             }
         },
-        // 坐标轴小标记
+        //  
         axisTick: {
-            // 属性show控制显示与否，默认不显示
+            //  show 
             show: true,
-            // 每份split细分多少段
+            //  split 
             splitNumber: 5,
-            // 属性length控制线长
+            //  length 
             length: 8,
-            // 属性lineStyle控制线条样式
+            //  lineStyle 
             lineStyle: {
                 color: '#eee',
                 width: 1,
@@ -55539,9 +55539,9 @@ var GaugeSeries = SeriesModel.extend({
         },
         title: {
             show: true,
-            // x, y，单位px
+            // x, y px
             offsetCenter: [0, '-40%'],
-            // 其余属性默认使用全局文本样式，详见TEXTSTYLE
+            //  TEXTSTYLE
             color: '#333',
             fontSize: 15
         },
@@ -55553,10 +55553,10 @@ var GaugeSeries = SeriesModel.extend({
             width: 100,
             height: null, // self-adaption
             padding: [5, 10],
-            // x, y，单位px
+            // x, y px
             offsetCenter: [0, '40%'],
             // formatter: null,
-            // 其余属性默认使用全局文本样式，详见TEXTSTYLE
+            //  TEXTSTYLE
             color: 'auto',
             fontSize: 30
         }
@@ -56133,8 +56133,8 @@ var FunnelSeries = extendSeriesModel({
     },
 
     defaultOption: {
-        zlevel: 0,                  // 一级层叠
-        z: 2,                       // 二级层叠
+        zlevel: 0,                  //  
+        z: 2,                       //  
         legendHoverLink: true,
         left: 80,
         top: 60,
@@ -56143,7 +56143,7 @@ var FunnelSeries = extendSeriesModel({
         // width: {totalWidth} - left - right,
         // height: {totalHeight} - top - bottom,
 
-        // 默认取数据最小最大值
+        //  
         // min: 0,
         // max: 100,
         minSize: '0%',
@@ -56154,19 +56154,19 @@ var FunnelSeries = extendSeriesModel({
         label: {
             show: true,
             position: 'outer'
-            // formatter: 标签文本格式器，同Tooltip.formatter，不支持异步回调
+            // formatter:  Tooltip.formatter 
         },
         labelLine: {
             show: true,
             length: 20,
             lineStyle: {
-                // color: 各异,
+                // color:  ,
                 width: 1,
                 type: 'solid'
             }
         },
         itemStyle: {
-            // color: 各异,
+            // color:  ,
             borderColor: '#fff',
             borderWidth: 1
         },
@@ -57163,10 +57163,10 @@ Parallel.prototype = {
             translate(transform, transform, position);
 
             // TODO
-            // tick等排布信息。
+            // tick 
 
             // TODO
-            // 根据axis order 更新 dimensions顺序。
+            //  axis order   dimensions 
 
             this._axesLayout[dim] = {
                 position: position,
@@ -59229,8 +59229,8 @@ SeriesModel.extend({
     },
 
     defaultOption: {
-        zlevel: 0,                  // 一级层叠
-        z: 2,                       // 二级层叠
+        zlevel: 0,                  //  
+        z: 2,                       //  
 
         coordinateSystem: 'parallel',
         parallelIndex: 0,
@@ -59547,7 +59547,7 @@ function updateElCommon(el, data, dataIndex, seriesScope) {
 // }
 
 // FIXME
-// 公用方法?
+//  ?
 function isEmptyValue(val, axisType) {
     return axisType === 'category'
         ? val == null
@@ -61037,7 +61037,7 @@ var seriesModelMixin = {
         var addOrdinal;
 
         // FIXME
-        // 考虑时间轴
+        //  
 
         if (xAxisType === 'category') {
             option.layout = 'horizontal';
@@ -61171,8 +61171,8 @@ var BoxplotSeries = SeriesModel.extend({
      * @override
      */
     defaultOption: {
-        zlevel: 0,                  // 一级层叠
-        z: 2,                       // 二级层叠
+        zlevel: 0,                  //  
+        z: 2,                       //  
         coordinateSystem: 'cartesian2d',
         legendHoverLink: true,
 
@@ -61703,11 +61703,11 @@ var CandlestickSeries = SeriesModel.extend({
         layout: null, // 'horizontal' or 'vertical'
 
         itemStyle: {
-            color: '#c23531', // 阳线 positive
-            color0: '#314656', // 阴线 negative     '#c23531', '#314656'
+            color: '#c23531', //   positive
+            color0: '#314656', //   negative     '#c23531', '#314656'
             borderWidth: 1,
             // FIXME
-            // ec2中使用的是lineStyle.color 和 lineStyle.color0
+            // ec2 lineStyle.color   lineStyle.color0
             borderColor: '#c23531',
             borderColor0: '#314656'
         },
@@ -62471,9 +62471,9 @@ SeriesModel.extend({
         // Geo coordinate system
         // geoIndex: 0,
 
-        // symbol: null,        // 图形类型
-        symbolSize: 10          // 图形大小，半宽（半径）参数，当图形为方向或菱形则总宽度为symbolSize * 2
-        // symbolRotate: null,  // 图形旋转控制
+        // symbol: null,        //  
+        symbolSize: 10          //  symbolSize * 2
+        // symbolRotate: null,  //  
 
         // large: false,
         // Available when large is true
@@ -63123,7 +63123,7 @@ var LinesSeries = SeriesModel.extend({
             show: false,
             position: 'end'
             // distance: 5,
-            // formatter: 标签文本格式器，同Tooltip.formatter，不支持异步回调
+            // formatter:  Tooltip.formatter 
         },
 
         lineStyle: {
@@ -69023,13 +69023,13 @@ SeriesModel.extend({
         zlevel: 0,
         z: 2,
 
-        // 默认全局居中
+        //  
         center: ['50%', '50%'],
         radius: [0, '75%'],
-        // 默认顺时针
+        //  
         clockwise: true,
         startAngle: 90,
-        // 最小角度改为0
+        //  0
         minAngle: 0,
 
         percentPrecision: 2,
@@ -71873,13 +71873,13 @@ var LegendModel = extendComponentModel({
     },
 
     defaultOption: {
-        // 一级层叠
+        //  
         zlevel: 0,
-        // 二级层叠
+        //  
         z: 4,
         show: true,
 
-        // 布局方式，默认为水平布局，可选为：
+        //  
         // 'horizontal' | 'vertical'
         orient: 'horizontal',
 
@@ -71889,44 +71889,44 @@ var LegendModel = extendComponentModel({
         top: 0,
         // bottom: null,
 
-        // 水平对齐
+        //  
         // 'auto' | 'left' | 'right'
-        // 默认为 'auto', 根据 x 的位置判断是左对齐还是右对齐
+        //   'auto',   x  
         align: 'auto',
 
         backgroundColor: 'rgba(0,0,0,0)',
-        // 图例边框颜色
+        //  
         borderColor: '#ccc',
         borderRadius: 0,
-        // 图例边框线宽，单位px，默认为0（无边框）
+        //  px 0 
         borderWidth: 0,
-        // 图例内边距，单位px，默认各方向内边距为5，
-        // 接受数组分别设定上右下左边距，同css
+        //  px 5 
+        //  css
         padding: 5,
-        // 各个item之间的间隔，单位px，默认为10，
-        // 横向布局时为水平间隔，纵向布局时为纵向间隔
+        //  item px 10 
+        //  
         itemGap: 10,
-        // 图例图形宽度
+        //  
         itemWidth: 25,
-        // 图例图形高度
+        //  
         itemHeight: 14,
 
-        // 图例关闭时候的颜色
+        //  
         inactiveColor: '#ccc',
 
         textStyle: {
-            // 图例文字颜色
+            //  
             color: '#333'
         },
         // formatter: '',
-        // 选择模式，默认开启图例开关
+        //  
         selectedMode: true,
-        // 配置默认选中状态，可配合LEGEND.SELECTED事件做动态数据载入
+        //  LEGEND.SELECTED 
         // selected: null,
-        // 图例内容（详见legend.data，数组中每一项代表一个item
+        //  legend.data item
         // data: [],
 
-        // Tooltip 相关配置
+        // Tooltip  
         tooltip: {
             show: false
         }
@@ -73133,7 +73133,7 @@ extendComponentModel({
 
         show: true,
 
-        // tooltip主体内容
+        // tooltip 
         showContent: true,
 
         // 'trigger' only works on coordinate system.
@@ -73152,57 +73152,57 @@ extendComponentModel({
         // 'html': use html for tooltip
         // 'richText': use canvas, svg, and etc. for tooltip
 
-        // 位置 {Array} | {Function}
+        //   {Array} | {Function}
         // position: null
         // Consider triggered from axisPointer handle, verticalAlign should be 'middle'
         // align: null,
         // verticalAlign: null,
 
-        // 是否约束 content 在 viewRect 中。默认 false 是为了兼容以前版本。
+        //   content   viewRect   false  
         confine: false,
 
-        // 内容格式器：{string}（Template） ¦ {Function}
+        //  {string} Template    {Function}
         // formatter: null
 
         showDelay: 0,
 
-        // 隐藏延迟，单位ms
+        //  ms
         hideDelay: 100,
 
-        // 动画变换时间，单位s
+        //  s
         transitionDuration: 0.4,
 
         enterable: false,
 
-        // 提示背景颜色，默认为透明度为0.7的黑色
+        //  0.7 
         backgroundColor: 'rgba(50,50,50,0.7)',
 
-        // 提示边框颜色
+        //  
         borderColor: '#333',
 
-        // 提示边框圆角，单位px，默认为4
+        //  px 4
         borderRadius: 4,
 
-        // 提示边框线宽，单位px，默认为0（无边框）
+        //  px 0 
         borderWidth: 0,
 
-        // 提示内边距，单位px，默认各方向内边距为5，
-        // 接受数组分别设定上右下左边距，同css
+        //  px 5 
+        //  css
         padding: 5,
 
         // Extra css text
         extraCssText: '',
 
-        // 坐标轴指示器，坐标轴触发有效
+        //  
         axisPointer: {
-            // 默认为直线
-            // 可选为：'line' | 'shadow' | 'cross'
+            //  
+            //  'line' | 'shadow' | 'cross'
             type: 'line',
 
-            // type 为 line 的时候有效，指定 tooltip line 所在的轴，可选
-            // 可选 'x' | 'y' | 'angle' | 'radius' | 'auto'
-            // 默认 'auto'，会选择类型为 category 的轴，对于双数值轴，笛卡尔坐标系会默认选择 x 轴
-            // 极坐标系会默认选择 angle 轴
+            // type   line   tooltip line  
+            //   'x' | 'y' | 'angle' | 'radius' | 'auto'
+            //   'auto'  category   x  
+            //   angle  
             axis: 'auto',
 
             animation: 'auto',
@@ -76347,7 +76347,7 @@ var GeoModel = ComponentModel.extend({
         },
 
         itemStyle: {
-            // color: 各异,
+            // color:  ,
             borderWidth: 0.5,
             borderColor: '#444',
             color: '#eee'
@@ -77511,13 +77511,13 @@ registerVisual(PRIORITY_BRUSH, function (ecModel, api, payload) {
         /**
          * Logic for each series: (If the logic has to be modified one day, do it carefully!)
          *
-         * ( brushed ┬ && ┬hasBrushExist ┬ && linkOthers  ) => StepA: ┬record, ┬ StepB: ┬visualByRecord.
-         *   !brushed┘    ├hasBrushExist ┤                            └nothing,┘        ├visualByRecord.
-         *                └!hasBrushExist┘                                              └nothing.
-         * ( !brushed  && ┬hasBrushExist ┬ && linkOthers  ) => StepA:  nothing,  StepB: ┬visualByRecord.
-         *                └!hasBrushExist┘                                              └nothing.
-         * ( brushed ┬ &&                     !linkOthers ) => StepA:  nothing,  StepB: ┬visualByCheck.
-         *   !brushed┘                                                                  └nothing.
+         * ( brushed   &&  hasBrushExist   && linkOthers  ) => StepA:  record,   StepB:  visualByRecord.
+         *   !brushed      hasBrushExist                               nothing,          visualByRecord.
+         *                 !hasBrushExist                                                nothing.
+         * ( !brushed  &&  hasBrushExist   && linkOthers  ) => StepA:  nothing,  StepB:  visualByRecord.
+         *                 !hasBrushExist                                                nothing.
+         * ( brushed   &&                     !linkOthers ) => StepA:  nothing,  StepB:  visualByCheck.
+         *   !brushed                                                                    nothing.
          * ( !brushed  &&                     !linkOthers ) => StepA:  nothing,  StepB:  nothing.
          */
 
@@ -77790,7 +77790,7 @@ var BrushModel = extendComponentModel({
         throttleDelay: 0,        // Unit: ms, 0 means every event will be triggered.
 
         // FIXME
-        // 试验效果
+        //  
         removeOnClick: true,
 
         z: 10000
@@ -78916,16 +78916,16 @@ var MONTH_TEXT = {
         'Oct', 'Nov', 'Dec'
     ],
     CN: [
-        '一月', '二月', '三月',
-        '四月', '五月', '六月',
-        '七月', '八月', '九月',
-        '十月', '十一月', '十二月'
+        ' ', ' ', ' ',
+        ' ', ' ', ' ',
+        ' ', ' ', ' ',
+        ' ', ' ', ' '
     ]
 };
 
 var WEEK_TEXT = {
     EN: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
-    CN: ['日', '一', '二', '三', '四', '五', '六']
+    CN: [' ', ' ', ' ', ' ', ' ', ' ', ' ']
 };
 
 extendComponentView({
@@ -79431,54 +79431,54 @@ extendComponentModel({
     layoutMode: {type: 'box', ignoreSize: true},
 
     defaultOption: {
-        // 一级层叠
+        //  
         zlevel: 0,
-        // 二级层叠
+        //  
         z: 6,
         show: true,
 
         text: '',
-        // 超链接跳转
+        //  
         // link: null,
-        // 仅支持self | blank
+        //  self | blank
         target: 'blank',
         subtext: '',
 
-        // 超链接跳转
+        //  
         // sublink: null,
-        // 仅支持self | blank
+        //  self | blank
         subtarget: 'blank',
 
-        // 'center' ¦ 'left' ¦ 'right'
-        // ¦ {number}（x坐标，单位px）
+        // 'center'   'left'   'right'
+        //   {number} x px 
         left: 0,
-        // 'top' ¦ 'bottom' ¦ 'center'
-        // ¦ {number}（y坐标，单位px）
+        // 'top'   'bottom'   'center'
+        //   {number} y px 
         top: 0,
 
-        // 水平对齐
+        //  
         // 'auto' | 'left' | 'right' | 'center'
-        // 默认根据 left 的位置判断是左对齐还是右对齐
+        //   left  
         // textAlign: null
         //
-        // 垂直对齐
+        //  
         // 'auto' | 'top' | 'bottom' | 'middle'
-        // 默认根据 top 位置判断是上对齐还是下对齐
+        //   top  
         // textBaseline: null
 
         backgroundColor: 'rgba(0,0,0,0)',
 
-        // 标题边框颜色
+        //  
         borderColor: '#ccc',
 
-        // 标题边框线宽，单位px，默认为0（无边框）
+        //  px 0 
         borderWidth: 0,
 
-        // 标题内边距，单位px，默认各方向内边距为5，
-        // 接受数组分别设定上右下左边距，同css
+        //  px 5 
+        //  css
         padding: 5,
 
-        // 主副标题纵向间隔，单位px，默认为10，
+        //  px 10 
         itemGap: 10,
         textStyle: {
             fontSize: 18,
@@ -80601,8 +80601,8 @@ var DataZoomModel = extendComponentModel({
 
         if (autoAxisIndex) {
             // FIXME
-            // 这里是兼容ec2的写法（没指定xAxisIndex和yAxisIndex时把scatter和双数值轴折柱纳入dataZoom控制），
-            // 但是实际是否需要Grid.js#getScaleByOption来判断（考虑time，log等axis type）？
+            //  ec2 xAxisIndex yAxisIndex scatter dataZoom 
+            //  Grid.js#getScaleByOption time log axis type 
 
             // If both dataZoom.xAxisIndex and dataZoom.yAxisIndex is not specified,
             // dataZoom component auto adopts series that reference to
@@ -80662,8 +80662,8 @@ var DataZoomModel = extendComponentModel({
      */
     _isSeriesHasAllAxesTypeOf: function (seriesModel, axisType) {
         // FIXME
-        // 需要series的xAxisIndex和yAxisIndex都首先自动设置上。
-        // 例如series.type === scatter时。
+        //  series xAxisIndex yAxisIndex 
+        //  series.type === scatter 
 
         var is = true;
         eachAxisDim(function (dimNames) {
@@ -81384,7 +81384,7 @@ var SliderZoomView = DataZoomView.extend({
             // Should consider axis.min/axis.max when drawing dataShadow.
 
             // FIXME
-            // 应该使用统一的空判断？还是在list里进行空判断？
+            //  list 
             var isEmpty = value == null || isNaN(value) || value === '';
             // See #4235.
             var otherCoord = isEmpty
@@ -81661,7 +81661,7 @@ var SliderZoomView = DataZoomView.extend({
         var labelTexts = ['', ''];
 
         // FIXME
-        // date型，支持formatter，autoformatter（ec2 date.getAutoFormatter）
+        // date formatter autoformatter ec2 date.getAutoFormatter 
         if (dataZoomModel.get('showDetail')) {
             var axisProxy = dataZoomModel.findRepresentativeAxisProxy();
 
@@ -81848,7 +81848,7 @@ var SliderZoomView = DataZoomView.extend({
 
 function getOtherDim(thisDim) {
     // FIXME
-    // 这个逻辑和getOtherAxis里一致，但是写在这里是否不好
+    //  getOtherAxis 
     var map$$1 = {x: 'y', y: 'x', radius: 'angle', angle: 'radius'};
     return map$$1[thisDim];
 }
@@ -82907,31 +82907,31 @@ var VisualMapModel = extendComponentModel({
                                 // 'colorLightness', 'colorAlpha',
                                 // 'symbol', 'symbolSize'
 
-        left: 0,                // 'center' ¦ 'left' ¦ 'right' ¦ {number} (px)
+        left: 0,                // 'center'   'left'   'right'   {number} (px)
         right: null,            // The same as left.
-        top: null,              // 'top' ¦ 'bottom' ¦ 'center' ¦ {number} (px)
+        top: null,              // 'top'   'bottom'   'center'   {number} (px)
         bottom: 0,              // The same as top.
 
         itemWidth: null,
         itemHeight: null,
         inverse: false,
-        orient: 'vertical',        // 'horizontal' ¦ 'vertical'
+        orient: 'vertical',        // 'horizontal'   'vertical'
 
         backgroundColor: 'rgba(0,0,0,0)',
-        borderColor: '#ccc',       // 值域边框颜色
+        borderColor: '#ccc',       //  
         contentColor: '#5793f3',
         inactiveColor: '#aaa',
-        borderWidth: 0,            // 值域边框线宽，单位px，默认为0（无边框）
-        padding: 5,                // 值域内边距，单位px，默认各方向内边距为5，
-                                    // 接受数组分别设定上右下左边距，同css
+        borderWidth: 0,            //  px 0 
+        padding: 5,                //  px 5 
+                                    //  css
         textGap: 10,               //
-        precision: 0,              // 小数精度，默认为0，无小数点
-        color: null,               //颜色（deprecated，兼容ec2，顺序同pieces，不同于inRange/outOfRange）
+        precision: 0,              //  0 
+        color: null,               // deprecated ec2 pieces inRange/outOfRange 
 
         formatter: null,
-        text: null,                // 文本，如['高', '低']，兼容ec2，text[0]对应高值，text[1]对应低值
+        text: null,                //  [' ', ' '] ec2 text[0] text[1] 
         textStyle: {
-            color: '#333'          // 值域文字颜色
+            color: '#333'          //  
         }
     },
 
@@ -84059,7 +84059,7 @@ var ContinuousView = VisualMapView.extend({
             bind(this._dragHandle, this, 'all', true)
         ));
 
-        var textRect = visualMapModel.textStyleModel.getTextRect('国');
+        var textRect = visualMapModel.textStyleModel.getTextRect(' ');
         var textSize = mathMax$7(textRect.width, textRect.height);
 
         // Handle
@@ -84544,7 +84544,7 @@ var ContinuousView = VisualMapView.extend({
                 this._showIndicator(cursorValue, valueRange[0], '> ', halfHoverLinkSize);
             }
             else {
-                this._showIndicator(cursorValue, cursorValue, '≈ ', halfHoverLinkSize);
+                this._showIndicator(cursorValue, cursorValue, '  ', halfHoverLinkSize);
             }
         }
 
@@ -85206,8 +85206,8 @@ var resetMethods = {
     categories: function () {
         var thisOption = this.option;
         each$1(thisOption.categories, function (cate) {
-            // FIXME category模式也使用pieceList，但在visualMapping中不是使用pieceList。
-            // 是否改一致。
+            // FIXME category pieceList visualMapping pieceList 
+            //  
             this._pieceList.push({
                 text: this.formatValueText(cate, true),
                 value: cate
@@ -85290,7 +85290,7 @@ var resetMethods = {
 
         each$1(pieceList, function (piece) {
             var close = piece.close;
-            var edgeSymbols = [['<', '≤'][close[1]], ['>', '≥'][close[0]]];
+            var edgeSymbols = [['<', ' '][close[1]], ['>', ' '][close[0]]];
             piece.text = piece.text || this.formatValueText(
                 piece.value != null ? piece.value : piece.interval,
                 false,
@@ -86163,7 +86163,7 @@ MarkerView.extend({
             var itemModel = mpData.getItemModel(idx);
             var symbolSize = itemModel.getShallow('symbolSize');
             if (typeof symbolSize === 'function') {
-                // FIXME 这里不兼容 ECharts 2.x，2.x 貌似参数是整个数据？
+                // FIXME   ECharts 2.x 2.x  
                 symbolSize = symbolSize(
                     mpModel.getRawValue(idx), mpModel.getDataParams(idx)
                 );
@@ -87351,11 +87351,11 @@ var TimelineModel = ComponentModel.extend({
      */
     defaultOption: {
 
-        zlevel: 0,                  // 一级层叠
-        z: 4,                       // 二级层叠
+        zlevel: 0,                  //  
+        z: 4,                       //  
         show: true,
 
-        axisType: 'time',  // 模式是时间类型，支持 value, category
+        axisType: 'time',  //   value, category
 
         realtime: true,
 
@@ -87369,9 +87369,9 @@ var TimelineModel = ComponentModel.extend({
 
         controlPosition: 'left',           // 'left' 'right' 'top' 'bottom' 'none'
         autoPlay: false,
-        rewind: false,                     // 反向播放
+        rewind: false,                     //  
         loop: true,
-        playInterval: 2000,                // 播放时间间隔，单位ms
+        playInterval: 2000,                //  ms
 
         currentIndex: 0,
 
@@ -87545,9 +87545,9 @@ var SliderTimelineModel = TimelineModel.extend({
      */
     defaultOption: {
 
-        backgroundColor: 'rgba(0,0,0,0)',   // 时间轴背景颜色
-        borderColor: '#ccc',               // 时间轴边框颜色
-        borderWidth: 0,                    // 时间轴边框线宽，单位px，默认为0（无边框）
+        backgroundColor: 'rgba(0,0,0,0)',   //  
+        borderColor: '#ccc',               //  
+        borderWidth: 0,                    //  px 0 
 
         orient: 'horizontal',              // 'vertical'
         inverse: false,
@@ -87564,7 +87564,7 @@ var SliderTimelineModel = TimelineModel.extend({
             width: 2,
             color: '#304654'
         },
-        label: {                            // 文本标签
+        label: {                            //  
             position: 'auto',           // auto left right top bottom
                                         // When using number, label position is not
                                         // restricted by viewRect.
@@ -87573,7 +87573,7 @@ var SliderTimelineModel = TimelineModel.extend({
             interval: 'auto',
             rotate: 0,
             // formatter: null,
-            // 其余属性默认使用全局文本样式，详见TEXTSTYLE
+            //  TEXTSTYLE
             color: '#304654'
         },
         itemStyle: {
@@ -87613,7 +87613,7 @@ var SliderTimelineModel = TimelineModel.extend({
         emphasis: {
             label: {
                 show: true,
-                // 其余属性默认使用全局文本样式，详见TEXTSTYLE
+                //  TEXTSTYLE
                 color: '#c23531'
             },
 
@@ -90213,7 +90213,7 @@ if (!env$1.canvasSupported) {
     };
 
     var getZIndex = function (zlevel, z, z2) {
-        // z 的取值范围为 [0, 1000]
+        // z   [0, 1000]
         return (parseFloat(zlevel) || 0) * ZLEVEL_BASE + (parseFloat(z) || 0) * Z_BASE$1 + z2;
     };
 
@@ -90591,7 +90591,7 @@ if (!env$1.canvasSupported) {
                     var p = points$3[k];
 
                     m && applyTransform(p, p, m);
-                    // 不 round 会非常慢
+                    //   round  
                     str.push(
                         round$3(p[0] * Z - Z2), comma, round$3(p[1] * Z - Z2),
                         k < nPoint - 1 ? comma : ''
@@ -90672,7 +90672,7 @@ if (!env$1.canvasSupported) {
      * IMAGE
      **************************************************/
     var isImage = function (img) {
-        // FIXME img instanceof Image 如果 img 是一个字符串的时候，IE8 下会报错
+        // FIXME img instanceof Image   img  IE8  
         return (typeof img === 'object') && img.tagName && img.tagName.toUpperCase() === 'IMG';
         // return img instanceof Image;
     };
@@ -90739,7 +90739,7 @@ if (!env$1.canvasSupported) {
 
         var vmlEl = this._vmlEl;
         if (!vmlEl) {
-            // FIXME 使用 group 在 left, top 都不是 0 的时候就无法显示了。
+            // FIXME   group   left, top   0  
             // vmlEl = vmlCore.createNode('group');
             vmlEl = doc.createElement('div');
             initRootElStyle(vmlEl);
@@ -90786,7 +90786,7 @@ if (!env$1.canvasSupported) {
                         'Dy=', round$3(y * scaleY + m[5]));
 
             vmlElStyle.padding = '0 ' + round$3(maxX) + 'px ' + round$3(maxY) + 'px 0';
-            // FIXME DXImageTransform 在 IE11 的兼容模式下不起作用
+            // FIXME DXImageTransform   IE11  
             vmlElStyle.filter = imageTransformPrefix + '.Matrix('
                 + transformFilter.join('') + ', SizingMethod=clip)';
 
@@ -91121,7 +91121,7 @@ if (!env$1.canvasSupported) {
             this._textVmlEl = textVmlEl;
         }
         else {
-            // 这里是在前面 appendChild 保证顺序的前提下
+            //   appendChild  
             skewEl = textVmlEl.firstChild;
             pathEl = skewEl.nextSibling;
             textPathEl = pathEl.nextSibling;
@@ -91300,7 +91300,7 @@ VMLPainter.prototype = {
     },
 
     /**
-     * 刷新
+     *  
      */
     refresh: function () {
 
@@ -91338,7 +91338,7 @@ VMLPainter.prototype = {
             // Detached from document at first time
             // to avoid page refreshing too many times
 
-            // FIXME 如果每次都先 removeChild 可能会导致一些填充和描边的效果改变
+            // FIXME   removeChild  
             this._vmlViewport.appendChild(vmlRoot);
             this._firstPaint = false;
         }
@@ -91942,7 +91942,7 @@ svgText.drawRectText = svgTextDrawRectText;
 svgText.brush = function (el) {
     var style = el.style;
     if (style.text != null) {
-        // 强制设置 textPosition
+        //   textPosition
         style.textPosition = [0, 0];
         svgTextDrawRectText(el, {
             x: style.x || 0, y: style.y || 0,
@@ -93016,7 +93016,7 @@ function getSvgElement(displayable) {
 /**
  * @alias module:zrender/svg/Painter
  * @constructor
- * @param {HTMLElement} root 绘图容器
+ * @param {HTMLElement} root  
  * @param {module:zrender/Storage} storage
  * @param {Object} opts
  */
@@ -93270,14 +93270,14 @@ SVGPainter.prototype = {
     },
 
     /**
-     * 获取绘图区域宽度
+     *  
      */
     getWidth: function () {
         return this._width;
     },
 
     /**
-     * 获取绘图区域高度
+     *  
      */
     getHeight: function () {
         return this._height;
