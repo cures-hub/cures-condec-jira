@@ -22,12 +22,15 @@ var CONDEC_branchesQuality = [];
     var dashboardFatalErrorNode;
     var dashboardNoContentsNode;
     var dashboardProcessingNode;
+    var dashboardProjectWithoutGit;
+
+    var branchesQuality = [];
 
 	var ConDecBranchesDashboard = function ConDecBranchesDashboard() {
 		console.log("ConDecBranchesDashboard constructor");
 	};
 
-    ConDecBranchesDashboard.prototype.init = function init(_projectKey, _dashboardUID) {
+    ConDecBranchesDashboard.prototype.init = function init(_projectKey, _dashboardUID, _gituri) {
         console.log("received for project: "+ _projectKey +" UID:"+ _dashboardUID);
         projectKey = _projectKey
         dashboardUID = _dashboardUID
@@ -35,17 +38,27 @@ var CONDEC_branchesQuality = [];
         getHTMLNodes( "condec-branches-dashboard-contents-container"+dashboardUID
         , "condec-branches-dashboard-contents-data-error"+dashboardUID
         , "condec-branches-dashboard-no-project"+dashboardUID
-        , "condec-branches-dashboard-processing"+dashboardUID);
+        , "condec-branches-dashboard-processing"+dashboardUID
+        , "condec-branches-dashboard-nogit-error"+dashboardUID);
 
-        getBranches(projectKey)
+        branchesQuality = [];
+
+        if (!_gituri || _gituri.length<1) {
+           showDashboardSection(dashboardProjectWithoutGit)
+        }
+        else {
+            getBranches(projectKey)
+        }
+
     }
 
-    function getHTMLNodes(containerName, dataErrorName, noProjectName, processingName) {
+    function getHTMLNodes(containerName, dataErrorName, noProjectName, processingName, noGitName) {
         if (!dashboardContentNode) {
             dashboardContentNode   = document.getElementById(containerName)
             dashboardDataErrorNode = document.getElementById(dataErrorName)
             dashboardNoContentsNode = document.getElementById(noProjectName)
             dashboardProcessingNode = document.getElementById(processingName)
+            dashboardProjectWithoutGit = document.getElementById(noGitName)
         }
     }
     function showDashboardSection(node) {
@@ -54,6 +67,7 @@ var CONDEC_branchesQuality = [];
         dashboardDataErrorNode.classList.add(hiddenClass);
         dashboardNoContentsNode.classList.add(hiddenClass);
         dashboardProcessingNode.classList.add(hiddenClass);
+        dashboardProjectWithoutGit.classList.add(hiddenClass);
         node.classList.remove(hiddenClass)
     }
 
@@ -139,7 +153,6 @@ var CONDEC_branchesQuality = [];
 
     function processBranches(data){
     var branches = data.branches;
-    var branchesQuality = [];
     for (branchIdx = 0; branchIdx < branches.length; branchIdx++) {
           var lastBranch = conDecLinkBranchCandidates.extractPositions(branches[branchIdx]);
 
@@ -171,8 +184,76 @@ var CONDEC_branchesQuality = [];
           branchQuality.problems = conDecLinkBranchCandidates.getProblemNamesObserved();
           branchesQuality.push(branchQuality);
         }
+        renderData();
+    }
+
+    function renderData(){
+        function statusWithBranchesReducer(accumulator, currentBranch) {
+            BRANCHES_SEPARATOR_TOKEN = ";"
+            var  statusOfBranch = currentBranch.status;
+            var  nameOfBranch = currentBranch.name;
+            if (accumulator.has(statusOfBranch)) {
+                var previousBranchesInStatus = accumulator.get(statusOfBranch);
+                if (previousBranchesInStatus.length<1) {
+                    accumulator.set(statusOfBranch, nameOfBranch);
+                }
+                else {
+                    var newValue = previousBranchesInStatus + BRANCHES_SEPARATOR_TOKEN + nameOfBranch;
+                    accumulator.set(statusOfBranch, newValue);
+                }
+            }
+            else {
+                accumulator.set(statusOfBranch, nameOfBranch);
+            }
+
+            return accumulator;
+        }
+
+        function problemsWithBranchesReducer(accumulator, currentBranch) {
+            BRANCHES_SEPARATOR_TOKEN = ";"
+            var  problems = currentBranch.problems;
+            var  nameOfBranch = currentBranch.name;
+
+            var it = problems.keys();
+            var result = it.next();
+
+            while (!result.done) {
+                var key = result.value;
+                if (problems.get(key)>0) {
+                    // already has a bran chname
+                    if (accumulator.get(key).length>1) {
+                        var newValue = accumulator.get(key)
+                                     + BRANCHES_SEPARATOR_TOKEN
+                                     + nameOfBranch;
+                        accumulator.set(key, newValue);
+                    }
+                    else {
+                        accumulator.set(key,nameOfBranch);
+                    }
+                }
+                result = it.next();
+            }
+            return accumulator;
+        }
+
+        // form data for charts
+        statusesForBranchesData = conDecLinkBranchCandidates.getEmptyMapForStatuses("");
+        problemTypesOccurrance = conDecLinkBranchCandidates.getEmptyMapForProblemTypes("");
+
+        branchesQuality.reduce(statusWithBranchesReducer, statusesForBranchesData);
+        branchesQuality.reduce(problemsWithBranchesReducer, problemTypesOccurrance);
+
+        // render charts
+        conDecReport.initializeChartForBranchSource('piechartRich-QualityStatusForBranches'+dashboardUID,
+         'Quality status', '-',statusesForBranchesData);
+        conDecReport.initializeChartForBranchSource('piechartRich-ProblemTypesInBranches'+dashboardUID,
+         'Problems distribution', '-',problemTypesOccurrance);
+
+        // remember in global scope
         CONDEC_branchesQuality = branchesQuality;
+
     }
 
 	global.conDecBranchesDashboard  = new ConDecBranchesDashboard ();
 })(window);
+
