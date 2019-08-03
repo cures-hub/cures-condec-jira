@@ -35,10 +35,9 @@ public class RationaleFromDiffCodeCommentExtractor {
 	/**
 	 * Moves comment cursor forward for the newer or older version file comments.
 	 *
-	 * @param: move newer instead of older file cursor?
 	 * @return: success if cursor at commentsInFile comment exists.
 	 */
-	public boolean next(boolean forNewerFile) {
+	public boolean next() {
 		fileCursor++;
 		return commentsInFile != null
 				&& (fileCursor + 1) <= commentsInFile.size();
