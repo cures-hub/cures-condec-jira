@@ -1,0 +1,75 @@
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
+<style>
+.condec-dashboard-selection-section {
+    margin:0 1em;
+    text-align:center;
+}
+.condec-dashboard-contents {
+    border:2px dashed blue;
+    border-radius:1em;
+    margin:1em;
+    padding:1em;
+}
+.condec-dashboard-contents.waiting {
+    border-color:orange;
+}
+.condec-dashboard-contents.processing {
+    border:1px solid grey;
+}
+.condec-dashboard-contents.results {
+    border:1px solid grey;
+}
+</style>
+<div class="condec-dashboard-selection-section">
+  <h3>
+    $i18n.getText("condec.dashboard.featurebranch.project.selection.description")
+  </h3>
+  <select id="${selectID}" class="condec-dashboard-select">
+    <option value="">
+    $i18n.getText("condec.dashboard.featurebranch.project.selection.pickone")
+    </option>
+	#foreach ($key in $projectNamesMap.keySet())
+	    <option value="$key"
+	    data-git-uri="$projectGitMap.get($key)"
+	    >
+		$key - $projectNamesMap.get($key)
+		</option>
+	#end
+  </select>
+</div>
+<div id="condec-branches-dashboard-contents-data-error${dashboardUID}" class="condec-dashboard-contents error hidden">
+$i18n.getText("condec.dashboard.featurebranch.project.data.error")
+</div>
+<div id="condec-branches-dashboard-no-project${dashboardUID}" class="condec-dashboard-contents">
+    $i18n.getText("condec.dashboard.featurebranch.project.selection.not.done")
+</div>
+<div id="condec-branches-dashboard-processing${dashboardUID}" class="condec-dashboard-contents waiting hidden">
+    $i18n.getText("condec.dashboard.featurebranch.project.processing")
+</div>
+<div id="condec-branches-dashboard-fatal-error${dashboardUID}" class="condec-dashboard-contents error hidden">
+    $i18n.getText("condec.dashboard.featurebranch.setup.error")
+</div>
+<div id="condec-branches-dashboard-contents-container${dashboardUID}" class="condec-dashboard-contents results hidden">
+</div>
+<script>
+
+// look up https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event
+window.addEventListener('load', (event) => {
+  if (!window.conDecBranchesDashboard) {
+      console.error('Could not find required resources!');
+      errorNode = document.getElementById("condec-branches-dashboard-fatal-error${dashboardUID}");
+      errorNode.classList.remove("hidden");
+      return;
+  }
+  else {
+    function projectSelectorOnchange(event) {
+        projectName = event.target.value
+        conDecBranchesDashboard.init(projectName,"${dashboardUID}")
+    }
+    selectNode = document.getElementById("${selectID}");
+    selectNode.addEventListener('change', projectSelectorOnchange);
+  }
+});
+</script>
+
