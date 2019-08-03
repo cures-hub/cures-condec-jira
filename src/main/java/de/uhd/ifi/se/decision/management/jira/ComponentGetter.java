@@ -16,6 +16,9 @@ import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ActiveObjectPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.GitExtractor;
+import org.eclipse.jgit.api.Git;
+
 /**
  * @description Provides access to JIRA components. Automatically initialized.
  *              The ComponentGetter is similar to the ComponentAccessor that
@@ -71,5 +74,32 @@ public class ComponentGetter {
 		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
 		return applicationProperties.getString(APKeys.JIRA_BASEURL) + "/download/resources/" + PLUGIN_KEY
 				+ ":classifier-resources/";
+	}
+
+	/* TODO: make sure GitExtractor can be accessed only through this method somehow... */
+	public static GitExtractor getGitExtractor(String projectKey){
+		if (gitExtractors==null) {
+			gitExtractors = new HashMap<String, GitExtractor>();
+		}
+
+		if (!gitExtractors.containsKey(projectKey)) {
+			System.err.println("getGitExtractor for project:"+projectKey);
+			try {
+				GitExtractor gE = new GitExtractor(projectKey);
+				// TODO: also check gE status
+				if (gE != null) {
+					gitExtractors.put(projectKey, gE);
+					System.err.println("Set GitExtractor for project:" + projectKey);
+				} else {
+					System.err.println("COULD not set GitExtractor for project:" + projectKey);
+					return null;
+				}
+			}
+			catch (Exception ex) {
+				System.err.println("getGitExtractor exception:"+ex.getMessage());
+			}
+		}
+		System.err.println("Retrieved GitExtractor for project:"+projectKey);
+		return gitExtractors.get(projectKey);
 	}
 }

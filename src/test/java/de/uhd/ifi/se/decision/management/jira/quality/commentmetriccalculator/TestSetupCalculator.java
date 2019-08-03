@@ -23,7 +23,7 @@ public abstract class TestSetupCalculator extends TestSetUp {
 		init();
 		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
 		addElementToDataBase(user);
-		calculator = new CommentMetricCalculator((long) 1, user, "16");
+		calculator = new CommentMetricCalculator((long) 1, user);
 	}
 
 	@AfterClass

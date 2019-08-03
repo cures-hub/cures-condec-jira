@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality.commentmetriccalculator;
+package de.uhd.ifi.se.decision.management.jira.quality.commonmetriccalculator;
 
 import static org.junit.Assert.assertEquals;
 
@@ -12,25 +12,29 @@ public class TestGetNumberOfLinkToOtherElement extends TestSetupCalculator {
 	@Test
 	@NonTransactional
 	public void testLinkFromNullLinkToNull() {
-		assertEquals(0, calculator.getNumberOfLinksToOtherElement(null, null).size(), 0.0);
+		assertEquals(0, calculator._getNumberOfLinksToOtherElement(
+				null, null).size(), 0.0);
 	}
 
 	@Test
 	@NonTransactional
 	public void testLinkFromFilledLinkToNull() {
-		assertEquals(0, calculator.getNumberOfLinksToOtherElement(KnowledgeType.DECISION, null).size(), 0.0);
+		assertEquals(0, calculator._getNumberOfLinksToOtherElement(
+				KnowledgeType.DECISION, null).size(), 0.0);
 	}
 
 	@Test
 	@NonTransactional
 	public void testLinkFromNullLinkToFilled() {
-		assertEquals(0, calculator.getNumberOfLinksToOtherElement(null, KnowledgeType.ISSUE).size(), 0.0);
+		assertEquals(0, calculator._getNumberOfLinksToOtherElement(
+				null, KnowledgeType.ISSUE).size(), 0.0);
 	}
 
 	@Test
 	@NonTransactional
 	public void testLinkFromFilledLinkToFilled() {
-		assertEquals(2, calculator.getNumberOfLinksToOtherElement(KnowledgeType.ARGUMENT, KnowledgeType.ISSUE).size(),
+		assertEquals(2, calculator._getNumberOfLinksToOtherElement(
+				KnowledgeType.ARGUMENT, KnowledgeType.DECISION).size(),
 				0.0);
 	}
 }

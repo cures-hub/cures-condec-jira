@@ -4,105 +4,72 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:repo
 <h3>
 	$i18n.getText("condec.jira.project"): $projectName
 </h3>
+<!--
+Three types of charts are supported thus far:
+* boxplot, which expect [category,decKnowKeysList] entries provided to them.
+  The decKnowKeysList point to decision knowledge elements and can be counted
+  to get occurrences in the category.
+* piechartRich, which expect [category,decKnowKeysList] entries provided to them.
+* piechartInteger, which expect[category,#occurrences] entries provided to them.
+-->
 
 <div>
-	<div id="boxplot-comments-per-jira-issue" class="boxplot" onclick="copyToClipboard(this)"></div>
-	<div id="boxplot-commits-per-jira-issue" class="boxplot" onclick="copyToClipboard(this)"></div>
-	<div id="boxplot-decisions-per-jira-issue" class="boxplot" onclick="copyToClipboard(this)"></div>
-	<div id="boxplot-issues-per-jira-issue" class="boxplot" onclick="copyToClipboard(this)"></div>
-	<div id="boxplot-link-distance-from-issue" class="boxplot" onclick="copyToClipboard(this)"></div>
-	<div id="boxplot-link-distance-from-alternative" class="boxplot" onclick="copyToClipboard(this)"></div>
-	<div id="boxplot-link-distance-from-decision" class="boxplot" onclick="copyToClipboard(this)"></div>
+	<div id="boxplot-CommentsPerJiraIssue" class="notsetyet boxplot"></div>
+	<div id="boxplot-CommitsPerJiraIssue" class="notsetyet boxplot"></div>
+	<div id="boxplot-DecisionsPerJiraIssue" class="notsetyet boxplot"></div>
+	<div id="boxplot-IssuesPerJiraIssue" class="notsetyet boxplot"></div>
+	<div id="boxplot-LinkDistanceFromIssue" class="notsetyet boxplot"></div>
+	<div id="boxplot-LinkDistanceFromAlternative" class="notsetyet boxplot"></div>
+	<div id="boxplot-LinkDistanceFromDecision" class="notsetyet boxplot"></div>
 </div>
 
-<div>
-	<div id="piechart-relevant-sentences" class="piechart"  onclick="copyToClipboard(this)"></div>
-	<div id="piechart-knowledge-type-distribution" class="piechart" onclick="copyToClipboard(this)"></div>
-	<div id="piechart-issues-solved-by-decision" class="piechart" onclick="copyToClipboard(this)"></div>
-	<div id="piechart-issue-documented-for-decision" class="piechart" onclick="copyToClipboard(this)"></div>
-	<div id="piechart-argument-documented-for-alternative" class="piechart" onclick="copyToClipboard(this)"></div>
-	<div id="piechart-issue-documented-for-selected-jira-issue" class="piechart" onclick="copyToClipboard(this)"></div>
-	<div id="piechart-decision-documented-for-selected-jira-issue" class="piechart" onclick="copyToClipboard(this)"></div>
+<div class="report completeness">
+<p>Rationale completeness metrics</p>
+	<div id="piechartRich-IssuesSolvedByDecision" class="notsetyet piechart"></div>
+	<div id="piechartRich-DecisionsSolvingIssues" class="notsetyet piechart"></div>
+	<div id="piechartRich-ConArgumentDocumentedForAlternative" class="notsetyet piechart"></div>
+	<!--<div id="piechartRich-ConArgumentDocumentedForDecision" class="notsetyet piechart"></div>-->
+	<!--<div id="piechartRich-ProArgumentDocumentedForAlternative" class="notsetyet piechart"></div>-->
+	<div id="piechartRich-ProArgumentDocumentedForDecision" class="notsetyet piechart"></div>
+</div>
+
+<div class="report inconsistency">
+<p>Inconsistencies in decision making</p>
+	<div id="piechartRich-IssuesSolvedByManyDecisions" class="notsetyet piechart"></div>
+	<!--<div id="piechartRich-DecisionsMadeWithFewerProArguments" class="notsetyet piechart"></div>
+	<div id="piechartRich-AlternativesRejectedWithFewerConArguments" class="notsetyet piechart"></div>-->
+</div>
+
+<div class="report general">
+<p>Basic statistics</p>
+	<div id="piechartRich-DecisionDocumentedForSelectedJiraIssue" class="notsetyet piechart"></div>
+	<div id="piechartRich-IssueDocumentedForSelectedJiraIssue" class="notsetyet piechart"></div>
+	<div id="piechartInteger-RelevantSentences" class="notsetyet piechart"></div>
+	<div id="piechartInteger-KnowledgeTypeDistribution" class="notsetyet piechart"></div>
 </div>
 
 <script type="text/javascript">
-	map = new Map();
-	#foreach ($item in $numberOfCommentsForJiraIssues.keySet())
-		map.set("$item", $numberOfCommentsForJiraIssues.get("$item"));
-	#end
-	conDecReport.initializeDivWithBoxPlotFromMap("boxplot-comments-per-jira-issue", map, "\#Comments per JIRA Issue", "");
-
-	map = new Map();
-	#foreach ($item in $numberOfDecisionsForJiraIssues.keySet())
-		map.set("$item", $numberOfDecisionsForJiraIssues.get("$item"));
-	#end
-	conDecReport.initializeDivWithBoxPlotFromMap("boxplot-decisions-per-jira-issue", map, "\#Decisions per JIRA Issue", "");
-
-	map = new Map();
-	#foreach ($item in $numberOfIssuesForJiraIssues.keySet())
-		map.set("$item", $numberOfIssuesForJiraIssues.get("$item"));
-	#end
-	conDecReport.initializeDivWithBoxPlotFromMap("boxplot-issues-per-jira-issue", map, "\#Issues per JIRA Issue", "");
-
-	map = new Map();
-	#foreach ($item in $numberOfCommitsForJiraIssues.keySet())
-		map.set("$item", $numberOfCommitsForJiraIssues.get("$item"));
-	#end
-	conDecReport.initializeDivWithBoxPlotFromMap("boxplot-commits-per-jira-issue", map, "\#Commits per JIRA Issue", "");
-
-	conDecReport.initializeDivWithBoxPlot("boxplot-link-distance-from-issue", $numLinkDistanceIssue, "Link Distance from Issue", "");
-	conDecReport.initializeDivWithBoxPlot("boxplot-link-distance-from-alternative", $numLinkDistanceAlternative, "Link Distance from Alternative", "");
-	conDecReport.initializeDivWithBoxPlot("boxplot-link-distance-from-decision", $numLinkDistanceDecision, "Link Distance from Decision", "");
-      
-	map = new Map();
-	#foreach ($item in $numRelevantSentences.keySet())
-		map.set("$item", $numRelevantSentences.get("$item"));
-	#end
-	conDecReport.initializeDivWithPieChart("piechart-relevant-sentences", "", "Relevance of Sentences in JIRA Issue Comments", map);
-
-	map = new Map();
-	#foreach ($item in $distriutionOfKnowledgeTypesInProject.keySet())
-		map.set("$item", $distriutionOfKnowledgeTypesInProject.get("$item"));
-	#end
-	conDecReport.initializeDivWithPieChart("piechart-knowledge-type-distribution", "", "Distribution of Knowledge Types", map);
-
-	map = new Map();
-	#foreach ($item in $numberOfLinksFromIssuesToDecisions.keySet())
-		map.set("$item", $numberOfLinksFromIssuesToDecisions.get("$item"));
-	#end
-	conDecReport.initializeDivWithPieChart("piechart-issues-solved-by-decision", "", "How many issues (=decision problems) are solved by a decision?", map);
-	document.getElementById("piechart-issues-solved-by-decision").setAttribute("list", "$issuesWithoutDecisionLinks");
-
-	map = new Map();
-	#foreach ($item in $numberOfLinksFromDecisionsToIssues.keySet())
-		map.set("$item", $numberOfLinksFromDecisionsToIssues.get("$item"));
-	#end
-	conDecReport.initializeDivWithPieChart("piechart-issue-documented-for-decision", "", "For how many decisions is the issue (=decision problem) documented?", map);
-	document.getElementById("piechart-issue-documented-for-decision").setAttribute("list", "$decisionsWithoutIssueLinks");
-
-	map = new Map();
-	#foreach ($item in $numAlternativeWoArgument.keySet())
-		map.set("$item", $numAlternativeWoArgument.get("$item"));
-	#end
-	conDecReport.initializeDivWithPieChart("piechart-argument-documented-for-alternative", "", "How many alternatives have at least one arguments documented?", map);
-	document.getElementById("piechart-argument-documented-for-alternative").setAttribute("list", "$issuesWithAltWoArg");
-
-	map = new Map();
-	#foreach ($item in $numLinksToIssueTypeIssue.keySet())
-		map.set("$item", $numLinksToIssueTypeIssue.get("$item"));
-	#end
-	conDecReport.initializeDivWithPieChart("piechart-issue-documented-for-selected-jira-issue", "", "For how many JIRA issues of type $issueType is the issue documented?", map);
-	document.getElementById("piechart-issue-documented-for-selected-jira-issue").setAttribute("list", "$jiraIssuesWithoutLinksToIssue");
-
-	map = new Map();
-	#foreach ($item in $numLinksToIssueTypeDecision.keySet())
-		map.set("$item", $numLinksToIssueTypeDecision.get("$item"));
-	#end
-	conDecReport.initializeDivWithPieChart("piechart-decision-documented-for-selected-jira-issue", "", "For how many JIRA issues of type $issueType is the decision documented?", map);
-	document.getElementById("piechart-decision-documented-for-selected-jira-issue").setAttribute("list", "$jiraIssuesWithoutLinksToDecision");
-
-	function copyToClipboard(parent) {
-		var copyText = document.getElementById(parent.id).getAttribute("list");
-		prompt("Data Points:", copyText);
-	}      
+// initialize charts
+#set($title="")
+#foreach ($name in $chartNamesAndPurpose.keySet())
+#set($purpose=$chartNamesAndPurpose.get("$name"))
+#set($data=$chartNamesAndData.get("$name"))
+dataMap = new Map();
+#foreach ($dataName in $data.keySet())
+dataMap.set("$dataName", "$data.get("$dataName")");
+#end
+conDecReport.initializeChart("$name","$title", "$purpose", dataMap);
+#end
+conDecReport.setJiraBaseUrl("$jiraBaseUrl")
 </script>
+
+<!-- TODO: replace with AUI-styled or other with plugin consistent overlay implementations -->
+<div id="decKnowElementsOverlay" class="hidden overlay">
+	<div class="box">
+		<h1>
+			Involved decision knowledge elements:
+		</h1>
+		<div id="extractedDecKnowElements" class="contents">
+		</div>
+	</div>
+</div>
