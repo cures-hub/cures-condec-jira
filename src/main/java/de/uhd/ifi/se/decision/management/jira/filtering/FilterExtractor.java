@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +12,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.JiraQueryHandlerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
@@ -119,10 +119,10 @@ public class FilterExtractor {
 		return filterElements(elements);
 	}
 
-	//Get decision knowledge elements from the selected strategy and the sentences
-	private List getElementsInProject(){
+	// Get decision knowledge elements from the selected strategy and the sentences
+	private List getElementsInProject() {
 		AbstractPersistenceManager strategy = AbstractPersistenceManager
-				                                      .getDefaultPersistenceStrategy(filterSettings.getProjectKey());
+				.getDefaultPersistenceStrategy(filterSettings.getProjectKey());
 		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
 		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
 				filterSettings.getProjectKey());
@@ -139,15 +139,15 @@ public class FilterExtractor {
 	}
 
 	// Check if Description, Summary, Key containing the search string
-	private boolean checkIfElementMatchesStringFilter(DecisionKnowledgeElement element){
+	private boolean checkIfElementMatchesStringFilter(DecisionKnowledgeElement element) {
 		String searchString = filterSettings.getSearchString().toLowerCase();
-		if (element.getDescription() != null){
+		if (element.getDescription() != null) {
 			return element.getDescription().toLowerCase().contains(searchString);
 		}
-		if(element.getSummary() != null) {
+		if (element.getSummary() != null) {
 			return element.getSummary().toLowerCase().contains(searchString);
 		}
-		if(element.getKey() !=null) {
+		if (element.getKey() != null) {
 			return element.getKey().toLowerCase().contains(searchString);
 		}
 		return false;
@@ -155,20 +155,21 @@ public class FilterExtractor {
 
 	private List<DecisionKnowledgeElement> filterElements(List<DecisionKnowledgeElement> elements) {
 		List<DecisionKnowledgeElement> filteredElements = new ArrayList<>();
-		if(elements == null || elements.size()==0){
+		if (elements == null || elements.size() == 0) {
 			return filteredElements;
 		}
 		for (DecisionKnowledgeElement element : elements) {
 			// Check if the DocumentationLocation is correct
-			if(filterSettings.getDocumentationLocations().contains(element.getDocumentationLocation())||
-					   filterSettings.getDocumentationLocations().size() == 1 &&
-							   filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN)) {
-				// Check if the  Type of the Element is correct
+			if (filterSettings.getDocumentationLocations().contains(element.getDocumentationLocation())
+					|| filterSettings.getDocumentationLocations().size() == 1 && filterSettings
+							.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN)) {
+				// Check if the Type of the Element is correct
 				if (filterSettings.getNamesOfSelectedJiraIssueTypes().contains(element.getTypeAsString())) {
 					if (checkIfElementMatchesTimeFilter(element)) {
 						// Case no text filter
-						if (filterSettings.getSearchString().equals("") || filterSettings.getSearchString().equals("?filter=-4")
-						||filterSettings.getSearchString().equals("?filter=allopenissues")) {
+						if (filterSettings.getSearchString().equals("")
+								|| filterSettings.getSearchString().equals("?filter=-4")
+								|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
 							filteredElements.add(element);
 						} else {
 							if (checkIfElementMatchesStringFilter(element)) {
