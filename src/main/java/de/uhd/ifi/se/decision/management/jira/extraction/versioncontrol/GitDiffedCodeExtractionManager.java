@@ -79,9 +79,9 @@ public class GitDiffedCodeExtractionManager {
 	// CodeExtractionResult as an attribute to the ChangedFile class
 	private Map<DiffEntry, CodeExtractionResult> results = new HashMap<>();
 
-	public GitDiffedCodeExtractionManager(Diff diff, GitClient GitClientAtDiffEnd, GitClient GitClientAtDiffStart) {
-		gitClientCheckedOutAtDiffStart = GitClientAtDiffStart;
-		gitClientCheckedOutAtDiffEnd = GitClientAtDiffEnd;
+	public GitDiffedCodeExtractionManager(Diff diff, GitClient gitAtDiffEnd, GitClient gitAtDiffStart) {
+		gitClientCheckedOutAtDiffStart = gitAtDiffStart;
+		gitClientCheckedOutAtDiffEnd = gitAtDiffEnd;
 		this.diff = diff;
 		processEntries();
 	}
@@ -145,10 +145,11 @@ public class GitDiffedCodeExtractionManager {
 		int entrySequenceNumber = 0;
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			CodeExtractionResult entryResults = processEntry(changedFile);
-
-			entryResults.sequence = entrySequenceNumber;
-			results.put(changedFile.getDiffEntry(), entryResults);
-			entrySequenceNumber++;
+			if (entryResults != null) {
+				entryResults.sequence = entrySequenceNumber;
+				results.put(changedFile.getDiffEntry(), entryResults);
+				entrySequenceNumber++;
+			}
 		}
 	}
 
@@ -242,7 +243,7 @@ public class GitDiffedCodeExtractionManager {
 		RationaleFromDiffCodeCommentExtractor rationaleFromDiffCodeCommentExtractor = new RationaleFromDiffCodeCommentExtractor(
 				commentsInFile, changedFile.getEditList());
 
-		while (rationaleFromDiffCodeCommentExtractor.next(newerFile)) {
+		while (rationaleFromDiffCodeCommentExtractor.next()) {
 			returnMap.putAll(rationaleFromDiffCodeCommentExtractor.getRationaleFromComment(newerFile, returnMap));
 		}
 

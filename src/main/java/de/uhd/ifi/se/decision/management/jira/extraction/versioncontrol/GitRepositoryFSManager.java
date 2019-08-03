@@ -21,10 +21,10 @@ public class GitRepositoryFSManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitRepositoryFSManager.class);
 
-	public GitRepositoryFSManager(String home, String project, String repoUri, String defaultBranch) {
+	public GitRepositoryFSManager(String home, String project, String repoUri, String defaultBranchName) {
 		String baseProjectPath = home + File.separator + project;
 		baseProjectUriPath = baseProjectPath + File.separator + getShortHash(repoUri);
-		baseProjectUriDefaultPath = baseProjectUriPath + File.separator + defaultBranch;
+		baseProjectUriDefaultPath = baseProjectUriPath + File.separator + defaultBranchName;
 		// clean up if possible after previous requests.
 		maintainNotUsedBranchPaths();
 	}
@@ -105,12 +105,12 @@ public class GitRepositoryFSManager {
 	}
 
 	/*
-	 * @issue:file system does not allow all charcters for folder and file name,
+	 * @issue:file system does not allow all characters for folder and file name,
 	 * therefore md5 can be used to get unique strings for inputs like uris etc.
 	 * But md5 hashes can produce too long paths and corrupt the filesystem, how
 	 * can this be overcome?
 	 * @decision: use the first 5 characters from the generated hash
-	 * @pro: it is common practise to shorten hashes
+	 * @pro: it is common practice to shorten hashes
 	 * @con: entropy might suffer too much from using only 5 chars.
 	 */
 	private String getShortHash(String text) {

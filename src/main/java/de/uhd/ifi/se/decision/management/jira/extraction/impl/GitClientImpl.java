@@ -52,7 +52,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * This implementation works well only with configuration for one remote
  * git server. Multiple instances of this class are "thread-safe" in the
  * limited way that the checked out branch files are stored in dedicated
- * branch folders and can be read, modifing files is not safe and not
+ * branch folders and can be read, modifying files is not safe and not
  * supported.
  */
 public class GitClientImpl implements GitClient {
