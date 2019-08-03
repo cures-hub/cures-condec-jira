@@ -11,6 +11,10 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     margin:1em;
     padding:1em;
 }
+.condec-dashboard-contents.init {
+    height:400px;
+    min-height:400px;
+}
 .condec-dashboard-contents.waiting {
     border-color:orange;
 }
@@ -31,26 +35,42 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     </option>
 	#foreach ($key in $projectNamesMap.keySet())
 	    <option value="$key"
-	    data-git-uri="$projectGitMap.get($key)"
+	    data-gituri="$projectGitMap.get($key)"
 	    >
 		$key - $projectNamesMap.get($key)
 		</option>
 	#end
   </select>
 </div>
+
 <div id="condec-branches-dashboard-contents-data-error${dashboardUID}" class="condec-dashboard-contents error hidden">
 $i18n.getText("condec.dashboard.featurebranch.project.data.error")
 </div>
-<div id="condec-branches-dashboard-no-project${dashboardUID}" class="condec-dashboard-contents">
+
+
+<div id="condec-branches-dashboard-no-project${dashboardUID}" class="condec-dashboard-contents init">
     $i18n.getText("condec.dashboard.featurebranch.project.selection.not.done")
 </div>
+
+
 <div id="condec-branches-dashboard-processing${dashboardUID}" class="condec-dashboard-contents waiting hidden">
     $i18n.getText("condec.dashboard.featurebranch.project.processing")
 </div>
+
+
 <div id="condec-branches-dashboard-fatal-error${dashboardUID}" class="condec-dashboard-contents error hidden">
     $i18n.getText("condec.dashboard.featurebranch.setup.error")
 </div>
+
+
+<div id="condec-branches-dashboard-nogit-error${dashboardUID}" class="condec-dashboard-contents error hidden">
+    $i18n.getText("condec.dashboard.featurebranch.project.nogit")
+</div>
+
+
 <div id="condec-branches-dashboard-contents-container${dashboardUID}" class="condec-dashboard-contents results hidden">
+	<div id="piechartRich-QualityStatusForBranches${dashboardUID}" class="notsetyet piechart"></div>
+	<div id="piechartRich-ProblemTypesInBranches${dashboardUID}" class="notsetyet piechart"></div>
 </div>
 <script>
 
@@ -65,11 +85,22 @@ window.addEventListener('load', (event) => {
   else {
     function projectSelectorOnchange(event) {
         projectName = event.target.value
-        conDecBranchesDashboard.init(projectName,"${dashboardUID}")
+        selectedOptionIndex = event.target.options.selectedIndex
+        selectedOption = event.target.options[selectedOptionIndex]
+        conDecBranchesDashboard.init(projectName,"${dashboardUID}", selectedOption.dataset.gituri)
     }
     selectNode = document.getElementById("${selectID}");
     selectNode.addEventListener('change', projectSelectorOnchange);
   }
 });
 </script>
+<div id="decKnowElementsOverlay" class="hidden overlay">
+	<div class="box">
+		<h1>
+			Involved decision knowledge elements:
+		</h1>
+		<div id="extractedDecKnowElements" class="contents">
+		</div>
+	</div>
+</div>
 
