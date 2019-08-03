@@ -564,7 +564,7 @@ linkBranchCandidates
     }
 
     ConDecLinkBranchCandidates.prototype.getProblemNamesObserved = function getProblemNamesObserved() {
-        var problemNames = initProblemNames();
+        var problemNames = this.getEmptyMapForProblemTypes(0)
 
         if (problemsList.length>0) {
             for (var i = 0; i< problemsList.length; i++) {
@@ -584,18 +584,25 @@ linkBranchCandidates
         return problemNames;
     }
 
-    function initProblemNames() {
+    ConDecLinkBranchCandidates.prototype.getEmptyMapForStatuses = function(initValue) {
+        var mapInit = new Map();
+        mapInit.set(BRANCH_STATUS_FINE,initValue);
+        mapInit.set(BRANCH_STATUS_BAD,initValue);
+        mapInit.set(BRANCH_STATUS_UNSET,initValue);
+        return mapInit;
+    }
+
+    ConDecLinkBranchCandidates.prototype.getEmptyMapForProblemTypes =
+     function getEmptyMapForProblemTypes(initValue) {
         var allProblems = new Map();
-
-        allProblems.set(ARGUMENT_WITHOUT_PARENT_ELEMENT,0);
-        allProblems.set(ALTERNATIVE_DECISION_WITHOUT_PARENT_ELEMENT,0);
-        allProblems.set(ISSUE_WITH_MANY_DECISIONS,0);
-        allProblems.set(DECISION_WITHOUT_PRO_ARGUMENTS,0);
-        allProblems.set(ALTERNATIVE_DECISION_WITHOUT_ARGUMENTS,0);
-        allProblems.set(DECISION_ARGUMENTS_MAYBE_WORSE_THAN_ALTERNATIVE,0);
-        allProblems.set(ISSUE_WITHOUT_DECISIONS,0);
-        allProblems.set(ISSUE_WITHOUT_ALTERNATIVES,0);
-
+        allProblems.set(ARGUMENT_WITHOUT_PARENT_ELEMENT, initValue);
+        allProblems.set(ALTERNATIVE_DECISION_WITHOUT_PARENT_ELEMENT, initValue);
+        allProblems.set(ISSUE_WITH_MANY_DECISIONS, initValue);
+        allProblems.set(DECISION_WITHOUT_PRO_ARGUMENTS, initValue);
+        allProblems.set(ALTERNATIVE_DECISION_WITHOUT_ARGUMENTS, initValue);
+        allProblems.set(DECISION_ARGUMENTS_MAYBE_WORSE_THAN_ALTERNATIVE, initValue);
+        allProblems.set(ISSUE_WITHOUT_DECISIONS, initValue);
+        allProblems.set(ISSUE_WITHOUT_ALTERNATIVES, initValue);
         return allProblems;
     }
 
