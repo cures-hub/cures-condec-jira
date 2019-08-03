@@ -210,38 +210,6 @@ function removeTildeFromAFilename(lastBranchElementsFromFileslements) {
   });
 }
 
-function sortRationaleDiffOfFile(rationale) {
-  /* rationale should appear in the order it was found in code */
-  rationale.sort(function(a, b) {
-    // different files
-    if (a.key.source < b.key.source) {
-      return -1;
-    }
-    if (a.key.source > b.key.source) {
-      return 1;
-    }
-    // same file different lines
-    if (a.key.positionStartLine < b.key.positionStartLine) {
-      return -1;
-    }
-    if (a.key.positionStartLine > b.key.positionStartLine) {
-      return 1;
-    }
-
-    // same file same line different position on line
-    if (a.key.positionCursor < b.key.positionCursor) {
-      return -1;
-    }
-    if (a.key.positionCursor < b.key.positionCursor) {
-      return 1;
-    }
-
-    // same file same line same position on line
-    return 0;
-  });
-  return rationale;
-}
-
 function getCodeElementsFromSide(blockData, newerSide) {
   console.debug("getCodeElementsFromSide");
   var codeElements = document.createElement("p");
@@ -436,7 +404,7 @@ function appendBranchAllElements(branchNode, elements) {
     lastBranchElementsFromFiles = removeTildeFromAFilename(
       lastBranchElementsFromFiles
     );
-    lastBranchElementsFromFiles = sortRationaleDiffOfFile(
+    lastBranchElementsFromFiles = conDecLinkBranchCandidates.sortRationaleDiffOfFiles(
       lastBranchElementsFromFiles
     );
     appendBranchCodeElementsHtml(lastBranchElementsFromFiles, branchNode);
@@ -492,33 +460,6 @@ function showBranchDiff(data, index) {
   contentHtml.appendChild(branchContainer);
 }
 
-/*
-	decodes received position "x:y[:z]" into
-		.positionStartLine = x
-		.positionCursor = y
-		and optionally
-		.positionEndLine = z
-*/
-function extractPositions(branchData) {
-  elements = branchData.elements.map(function(e) {
-    positionComponents = e.key.position.split(":");
-    positionComponentsNumber = positionComponents.length;
-    if (positionComponentsNumber === 2 || positionComponentsNumber === 3) {
-      e.key.positionStartLine = parseInt(positionComponents[0]);
-      e.key.positionCursor = parseInt(
-        positionComponents[positionComponentsNumber - 1]
-      );
-    }
-    if (positionComponentsNumber === 3) {
-      e.key.positionEndLine = parseInt(
-        positionComponents[positionComponentsNumber - 2]
-      );
-    }
-    return e;
-  });
-  branchData.elements = elements;
-  return branchData;
-}
 function showBranchesDiff(data) {
   console.debug("showBranchesDiff");
   data.timestamp = Date.now();
@@ -537,7 +478,7 @@ function showBranchesDiff(data) {
     });
 
     for (branchIdx = 0; branchIdx < branches.length; branchIdx++) {
-      lastBranch = extractPositions(branches[branchIdx]);
+      lastBranch = conDecLinkBranchCandidates.extractPositions(branches[branchIdx]);
       lastBranchIdx = branchIdx;
       lastBranchBlocks = new Map();
 
@@ -548,19 +489,24 @@ function showBranchesDiff(data) {
 
       showBranchDiff(lastBranch, branchIdx);
 
-      // assess relations between rationale and render results in HTMl
-      linkBranchCandidates(
+      // assess relations between rationale and their problems
+      conDecLinkBranchCandidates.init(
         lastBranchElementsFromMessages,
         lastBranch.branchName,
         branchIdx,
         "messages"
       );
-      linkBranchCandidates(
+      // render results in HTML
+      conDecLinkBranchCandidates.attachProblemsToElementsInHTML();
+
+      conDecLinkBranchCandidates.init(
         lastBranchElementsFromFiles,
         lastBranch.branchName,
         branchIdx,
         "files"
       );
+      // render results in HTML
+      conDecLinkBranchCandidates.attachProblemsToElementsInHTML();
     }
 
     var branchLabels = contentHtml.getElementsByClassName("branchLabel");

@@ -6,6 +6,7 @@
 
  Is referenced in HTML by
  * decisionKnowledgeReport.vm
+ * featureBranchesDashboardItem.vm
  */
 (function(global) {
 

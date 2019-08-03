@@ -2,7 +2,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:report-resources")
 
 <h3>
-	$i18n.getText("condec.jira.project"): $projectName 
+	$i18n.getText("condec.jira.project"): $projectName
 </h3>
 
 <div>
