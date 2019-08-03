@@ -42,6 +42,8 @@ public class SettingsOfAllProjects extends AbstractSettingsServlet {
 		if (request == null) {
 			return new ConcurrentHashMap<>();
 		}
+
+		//AutoCreateDummyProject createPr = new AutoCreateDummyProject();
 		Map<String, DecisionKnowledgeProject> configMap = getProjectsMap();
 		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
 		velocityParameters.put("requestUrl", request.getRequestURL());
