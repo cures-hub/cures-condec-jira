@@ -26,9 +26,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 }
 </style>
 <div class="condec-dashboard-selection-section">
-  <h3>
-    $i18n.getText("condec.dashboard.featurebranch.project.selection.description")
-  </h3>
+  $i18n.getText("condec.dashboard.featurebranch.project.selection.description")
   <select id="${selectID}" class="condec-dashboard-select">
     <option value="">
     $i18n.getText("condec.dashboard.featurebranch.project.selection.pickone")
@@ -97,7 +95,7 @@ window.addEventListener('load', (event) => {
 <div id="decKnowElementsOverlay" class="hidden overlay">
 	<div class="box">
 		<h1>
-			Involved decision knowledge elements:
+			Involved feature task branch(es):
 		</h1>
 		<div id="extractedDecKnowElements" class="contents">
 		</div>
