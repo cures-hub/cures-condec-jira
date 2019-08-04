@@ -279,10 +279,14 @@ public class GitClientImpl implements GitClient {
 	private boolean setConfig() {
 		Repository repository = this.getRepository();
 		StoredConfig config = repository.getConfig();
-		// @issue The internal representation of a file might add system dependent new
-		// line statements, for example CR LF in Windows. How to deal with different
-		// line endings?
-		// @decision Disable system dependent new line statements!
+		/** @issue The internal representation of a file might add system dependent new
+		 * line statements, for example CR LF in Windows. How to deal with different
+		 * line endings?
+		 * @decision Disable system dependent new line statements!
+		 * @pro It is a common approach
+		 * @alternative Ignore the problem! The plug-in in hosted on one machine, which most likely is not Windows.
+		 * @con It is painful for developers to work with local Windows setups.
+		 * */
 		config.setEnum(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_AUTOCRLF, AutoCRLF.TRUE);
 		try {
 			config.save();
@@ -388,18 +392,17 @@ public class GitClientImpl implements GitClient {
 	public List<RevCommit> getFeatureBranchCommits(String featureBranchName) {
 		Ref featureBranch = getBranch(featureBranchName);
 		if (null == featureBranch) {
-			/*
-			 * @issue: What is the return value of methods that would normally return a
-			 * collection (e.g. list) with an invalid input parameter?
-			 *
-			 * @alternative: Methods with an invalid input parameter return an empty list!
-			 *
-			 * @pro: Prevents a null pointer exception.
-			 *
-			 * @con: Is misleading since it is not clear whether the list is empty but has a
-			 * valid input parameter or because of an invalid parameter.
-			 *
-			 * @alternative: Methods with an invalid input parameter return null!
+			/**
+			 * @issue What is the return value of methods that would normally
+			 * return a collection (e.g. list) with an invalid input parameter?
+			 * @alternative Methods with an invalid input parameter return an empty list!
+			 * @pro Would prevent a null pointer exception.
+			 * @con Is misleading since it is not clear whether the list is empty
+			 * but has a valid input parameter or because of an invalid parameter.
+			 * @alternative Methods with an invalid input parameter return null!
+			 * @con null values might be intended as result.
+			 * @decision Throw exception!
+			 * @pro this is the best practice, just look at most libraries.
 			 */
 			return (List<RevCommit>) null;
 		}
@@ -557,16 +560,16 @@ public class GitClientImpl implements GitClient {
 		}
 		/**
 		 * @issue How to get the commits for branches that are not on the master branch?
-		 * @decision Assume that the branch name begins with the JIRA issue key!
+		 * @alternative Assume that the branch name begins with the JIRA issue key!
 		 * @pro This simple rule will work just fine.
 		 * @con The rule is too simple. Issues with low key numbers could collect
 		 *      branches of much higher issues also. ex. search for "CONDEC-1" would
 		 *      find branches beginning with CONDEC-1 BUT as well the ones for issues
 		 *      with keys "CONDEC-10", "CONDEC-11" , "CONDEC-100" etc.
-		 * @alternative Assume the branch name begins with the JIRA issue key and a dot
-		 *              character follows directly afterwards!
-		 * @pro issues with low key number (ex. CONDEC-1) and higher key numbers (ex.
-		 *      CONDEC-1000) will not be confused.
+		 * @decision Assume the branch name begins with the JIRA issue key and a dot
+		 * character follows directly afterwards!
+		 * @pro issues with low key number (ex. CONDEC-1) and higher key numbers
+		 * (ex. CONDEC-1000) will not be confused.
 		 */
 
 		Ref branch = getRef(jiraIssueKey);
@@ -586,34 +589,23 @@ public class GitClientImpl implements GitClient {
 	public List<RevCommit> getCommits() {
 		List<RevCommit> commits = new ArrayList<RevCommit>();
 		for (Ref branch : getRemoteBranches()) {
-			/*
-			 * @issue: All branches will be created in separate file system folders for this
-			 * method's loop. How can this be prevented?
-			 *
-			 * @alternative: remove this method completely, fetching commits from all
-			 * branches is not sensible!
-			 *
-			 * @pro: this method seems to be used only for code testing (TestGetCommits)
-			 *
-			 * @con: scraping it would require coding improvement in test code
-			 * (TestGetCommits), but who wants to spend time on that;)
-			 *
-			 * @alternative: We could check whether the JIRA issue key is part of the branch
-			 * name and - if so - only use the commits from this branch.
-			 *
-			 * @decision: release branch folders if possible, so that in best case only one
-			 * folder will be used!
-			 *
-			 * @pro: implementation does not seem to be complex at all.
-			 *
-			 * @pro: until discussion are not finished, seems like a cheap workaround
-			 *
-			 * @con: a workaround which has potential to stay forever in the code base
-			 *
-			 * @con: still some more code will be written
-			 *
-			 * @con: scraping it, would require coding improvement in test code
-			 * (TestGetCommits)
+			/**
+			 * @issue All branches will be created in separate file system folders
+			 * for this method's loop. How can this be prevented?
+			 * @alternative remove this method completely!
+			 * @pro Fetching commits from all branches is not sensible.
+			 * @con Fetching commits from all branches may still be needed in some use cases.			 *
+			 * @pro this method seems to be used only for code testing (TestGetCommits)
+			 * @con scraping it would require coding improvement in
+			 * test code (TestGetCommits), but who wants to spend time on that ;-)
+			 * @alternative We could check whether the JIRA issue key is part of
+			 * the branch name and - if so - only use the commits from this branch.
+			 * @decision release branch folders if possible, so that in best case
+			 * only one folder will be used!
+			 * @pro implementation does not seem to be complex at all.
+			 * @pro until discussion are not finished, seems like a good trade-off.
+			 * @con still some more code will be written. Scraping it, would require
+			 * coding improvement in test code (TestGetCommits).
 			 */
 			commits.addAll(getCommits(branch));
 		}

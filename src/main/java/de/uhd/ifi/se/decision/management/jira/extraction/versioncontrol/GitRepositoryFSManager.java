@@ -107,11 +107,17 @@ public class GitRepositoryFSManager {
 	/*
 	 * @issue:file system does not allow all characters for folder and file name,
 	 * therefore md5 can be used to get unique strings for inputs like uris etc.
-	 * But md5 hashes can produce too long paths and corrupt the filesystem, how
-	 * can this be overcome?
-	 * @decision: use the first 5 characters from the generated hash
-	 * @pro: it is common practice to shorten hashes
-	 * @con: entropy might suffer too much from using only 5 chars.
+	 * But md5 hashes can produce too long paths and corrupt the filesystem,
+	 * especially for java projects. How can this be overcome?
+	 *
+	 * @alternative use full length of the hash! the project structure should
+	 * never be that big.
+	 * @con this would cause unnecessary refactoring activities for the project
+	 * in git repository.
+	 *
+	 * @decision use the first 5 characters from the generated hash!
+	 * @pro it is common practice to shorten hashes.
+	 * @con entropy might suffer too much from using only 5 chars.
 	 */
 	private String getShortHash(String text) {
 		try {
