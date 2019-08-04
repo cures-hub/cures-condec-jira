@@ -6,6 +6,7 @@
 
  Is referenced in HTML by
  * decisionKnowledgeReport.vm
+ * featureBranchesDashboardItem.vm
  */
 (function(global) {
 
@@ -309,6 +310,7 @@
 
 		for (var i = 0; i < listArray.length;i++) {
 			var span = document.createElement("p");
+			span.dataset.isbranch = !isIssueData;
 			span.innerText=listArray[i];
 			node.appendChild(span);
 		}
