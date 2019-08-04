@@ -69,6 +69,11 @@ $i18n.getText("condec.dashboard.featurebranch.project.data.error")
 <div id="condec-branches-dashboard-contents-container${dashboardUID}" class="condec-dashboard-contents results hidden">
 	<div id="piechartRich-QualityStatusForBranches${dashboardUID}" class="notsetyet piechart"></div>
 	<div id="piechartRich-ProblemTypesInBranches${dashboardUID}" class="notsetyet piechart"></div>
+	<div id="boxplot-IssuesPerBranch${dashboardUID}" class="notsetyet piechart"></div>
+	<div id="boxplot-DecisionsPerBranch${dashboardUID}" class="notsetyet piechart"></div>
+	<div id="boxplot-AlternativesPerBranch${dashboardUID}" class="notsetyet piechart"></div>
+	<div id="boxplot-ProsPerBranch${dashboardUID}" class="notsetyet piechart"></div>
+	<div id="boxplot-ConsPerBranch${dashboardUID}" class="notsetyet piechart"></div>
 </div>
 <script>
 
@@ -92,6 +97,7 @@ window.addEventListener('load', (event) => {
   }
 });
 </script>
+<!-- TODO refactor ids, classes here and in report page for the overlay -->
 <div id="decKnowElementsOverlay" class="hidden overlay">
 	<div class="box">
 		<h1>

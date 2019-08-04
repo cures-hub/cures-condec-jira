@@ -356,7 +356,6 @@
 	-->
 	<web-resource key="dashboard-item-condec-resources" name="ConDec feature task branches Web Resources">
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
-		<resource type="download" name="echarts.js" location="/js/echart/echarts.js" />
 		<resource type="velocity" location="/templates/featureBranchesDashboardItem.vm"
 				  name="Dashboard.Item.ConDec.Feature.Branches.Templates.Static"/>
 		<resource type="download" name="condec.git.branches.dashboard.js"
@@ -367,8 +366,10 @@
 				  location="js/condec.report.js" />
 		<resource type="download" name="condec.dashboard.report.css"
 				  location="/css/condec.report.css" />
-		<resource type="download"
-				  name="dashboard.echarts.js" location="/js/echart/echarts.js" />
+		<resource type="download" name="condec.dashboard.echarts.js"
+				  location="/js/echart/echarts.js" />
+		<resource type="download" name="condec.dashboard.dataTool.js"
+				  location="/js/echart/dataTool.js" />
 
 		<context>atl.dashboard</context>
 		<context>condec-feature-branch-dashboard</context>
