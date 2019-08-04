@@ -35,6 +35,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
  *      effect on the test cases that follow. The order of test cases is
  *      arbitrary.
  * @alternative We could have more than one mock git repositories for testing!
+ * @con we do not have time for it at the moment..
  *
  */
 public abstract class TestSetUpGit extends TestSetUp {
@@ -110,7 +111,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 				"TEST-62 add class A");
 		setupBranchWithDecKnowledge();
 		//
-		// // @issue: Is this really needed? Why do we close the git client here?
+		// TODO: investigate issue: Is this really needed? Why do we close the git client here?
 		// gitClient.close();
 		// gitClient = new GitClientImpl(GIT_URI, DIRECTORY.getAbsolutePath(), "TEST");
 	}
@@ -201,7 +202,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		String testFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
 		File fileB = new File(classLoader.getResource(pathToTestFile).getFile());
 
-		// @issue: How can we create a mock feature branch?
+		// TODO: Check how can we create a mock feature branch?
 		try {
 			currentBranch = git.getRepository().getBranch();
 			git.branchCreate().setName(featureBranch).call();
