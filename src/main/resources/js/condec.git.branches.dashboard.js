@@ -8,7 +8,9 @@
  * featureBranchesDashboardItem.vm
  */
 
+// DEV vars to be removed:
 var CONDEC_branchesQuality = [];
+var CONDEC_branches = [];
 
 (function(global) {
     var dashboards = {};    /* TODO: object muss support more than one dashboard.*/
@@ -44,7 +46,7 @@ var CONDEC_branchesQuality = [];
         branchesQuality = [];
 
         if (!_gituri || _gituri.length<1) {
-           showDashboardSection(dashboardProjectWithoutGit)
+            showDashboardSection(dashboardProjectWithoutGit)
         }
         else {
             getBranches(projectKey)
@@ -104,7 +106,7 @@ var CONDEC_branchesQuality = [];
                 console.log(
                   "Cache is within specified TTL, therefore getting data from local cache instead from server."
                 );
-                return processData(data);
+                return processXhrResponseData(data);
               } else {
                 console.log("Cache TTL expired, therefore starting  REST query.");
               }
@@ -121,18 +123,22 @@ var CONDEC_branchesQuality = [];
           url: url,
           type: "get",
           dataType: "json",
-          async: false,
-          success: processData,
-          error: processDataBad
+          async: true,
+          success: conDecBranchesDashboard.processData,
+          error: conDecBranchesDashboard.processDataBad
         });
     }
 
-    function processDataBad(data) {
-        showDashboardSection(dashboardDataErrorNode)
+    ConDecBranchesDashboard.prototype.processDataBad = function processDataBad(data) {
+        showDashboardSection(dashboardDataErrorNode);
         doneWithXhrRequest();
     }
 
-    function processData(data) {
+    ConDecBranchesDashboard.prototype.processData = function processData(data) {
+        processXhrResponseData(data);
+    }
+
+    function processXhrResponseData(data) {
         doneWithXhrRequest();
         showDashboardSection(dashboardContentNode);
         data.timestamp = Date.now();
@@ -151,39 +157,62 @@ var CONDEC_branchesQuality = [];
         console.warn("Still processing request for: "+processing);
     }
 
+    function countElementType(type, branch) {
+        if (!type || !branch || !branch.elemnts || !branch.elements.length) {
+            return 0;
+        }
+        return branch.elements.filter(function(e){
+            return e.type.toLowerCase() === type.toLowerCase();
+        }).lenght;
+    }
+
+    /* lex sorting */
+    function sortBranches(branches) {
+        return branches.sort(function(a,b){return a.name.localeCompare(b.name); });
+    }
+
     function processBranches(data){
-    var branches = data.branches;
-    for (branchIdx = 0; branchIdx < branches.length; branchIdx++) {
-          var lastBranch = conDecLinkBranchCandidates.extractPositions(branches[branchIdx]);
+        var branches = data.branches;
+        CONDEC_branches = branches;
+        for (branchIdx = 0; branchIdx < branches.length; branchIdx++) {
+            var lastBranch = conDecLinkBranchCandidates.extractPositions(branches[branchIdx]);
 
-          // these elements are sorted by commit age and occurrence in message
-          var lastBranchElementsFromMessages =
-           lastBranch.elements.filter(function(e){return e.key.sourceTypeCommitMessage;});
+            // these elements are sorted by commit age and occurrence in message
+            var lastBranchElementsFromMessages =
+            lastBranch.elements.filter(function(e){return e.key.sourceTypeCommitMessage;});
 
-          // these elements are not sorted, we want only B(final) files.
-          var lastBranchElementsFromFiles_BUT_NotSorted =
-           lastBranch.elements.filter(function(e){return e.key.codeFileB;})
+            // these elements are not sorted, we want only B(final) files.
+            var lastBranchElementsFromFiles_BUT_NotSorted =
+            lastBranch.elements.filter(function(e){return e.key.codeFileB;})
 
-          // sort file elements
-          var lastBranchElementsFromFiles =
-           conDecLinkBranchCandidates.sortRationaleDiffOfFiles(lastBranchElementsFromFiles_BUT_NotSorted);
+            // sort file elements
+            var lastBranchElementsFromFiles =
+            conDecLinkBranchCandidates.sortRationaleDiffOfFiles(lastBranchElementsFromFiles_BUT_NotSorted);
 
-          var lastBranchRelevantElementsSortedWithPosition =
-           lastBranchElementsFromMessages.concat(lastBranchElementsFromFiles);
+            var lastBranchRelevantElementsSortedWithPosition =
+            lastBranchElementsFromMessages.concat(lastBranchElementsFromFiles);
 
-          // assess relations between rationale and their problems
-          conDecLinkBranchCandidates.init(
+            // assess relations between rationale and their problems
+            conDecLinkBranchCandidates.init(
             lastBranchRelevantElementsSortedWithPosition,
             lastBranch.branchName,
             branchIdx,
-            ''
-          );
-          branchQuality = {};
-          branchQuality.name = lastBranch.branchName;
-          branchQuality.status = conDecLinkBranchCandidates.getBranchStatus();
-          branchQuality.problems = conDecLinkBranchCandidates.getProblemNamesObserved();
-          branchesQuality.push(branchQuality);
+            '');
+
+            branchQuality = {};
+            branchQuality.name = lastBranch.branchName;
+            branchQuality.status = conDecLinkBranchCandidates.getBranchStatus();
+            branchQuality.problems = conDecLinkBranchCandidates.getProblemNamesObserved();
+            branchQuality.numIssues = countElementType("Issue", lastBranch);
+            branchQuality.numDecisions = countElementType("Decision", lastBranch);
+            branchQuality.numAlternatives = countElementType("Alternative", lastBranch);
+            branchQuality.numPros = countElementType("Pro", lastBranch);
+            branchQuality.numCons = countElementType("Con", lastBranch);
+            branchesQuality.push(branchQuality);
         }
+        // sort lexicographically
+        branchesQuality = sortBranches(branchesQuality);
+        // render charts and plots
         renderData();
     }
 
@@ -245,9 +274,9 @@ var CONDEC_branchesQuality = [];
 
         // render charts
         conDecReport.initializeChartForBranchSource('piechartRich-QualityStatusForBranches'+dashboardUID,
-         'Quality status', '-',statusesForBranchesData);
+         'Quality status', 'How many branches document rationale well?',statusesForBranchesData);
         conDecReport.initializeChartForBranchSource('piechartRich-ProblemTypesInBranches'+dashboardUID,
-         'Problems distribution', '-',problemTypesOccurrance);
+         'Total problems distribution', 'which documentation mistakes are most common?',problemTypesOccurrance);
 
         // remember in global scope
         CONDEC_branchesQuality = branchesQuality;

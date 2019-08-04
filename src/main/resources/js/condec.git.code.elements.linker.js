@@ -404,7 +404,7 @@ linkBranchCandidates
         // has warnings?
         if (problemWithRationale.problems.warnings.length > 0) {
           problemElement.className = problemElement.className + " warning";
-          problemElement.title += problemWithRationale.problems.warnings.toString();
+          problemElement.title += problemWithRationale.problems.warnings.join("; ");
           problemElement.innerText += problemElement.title;
           for (
             var w = 0;
@@ -417,7 +417,7 @@ linkBranchCandidates
         // has errors?
         if (problemWithRationale.problems.errors.length > 0) {
           problemElement.className = problemElement.className + " error";
-          problemElement.title += problemWithRationale.problems.errors.toString();
+          problemElement.title += problemWithRationale.problems.errors.join("; ");
           problemElement.innerText += problemElement.title;
 
           for (
@@ -482,10 +482,11 @@ linkBranchCandidates
               if (menuItems[idx].dataset.condec) {
                 // if any branch has issues, status is set to bad.
                 if (status === "condec-attention") {
-                    menuItems[idx].className=status;
+                    menuItems[idx].classList.remove("condec-fine");
+                    menuItems[idx].classList.add(status);
                     return;
                 }
-                menuItems[idx].className=status;
+                menuItems[idx].classList.add(status);
               }
             }
           }
