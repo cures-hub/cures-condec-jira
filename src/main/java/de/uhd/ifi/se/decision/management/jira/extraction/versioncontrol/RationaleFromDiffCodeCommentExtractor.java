@@ -62,8 +62,9 @@ public class RationaleFromDiffCodeCommentExtractor {
 			 @issue: A problem was observed within changes of branch
 			  refs/remotes/origin/CONDEC-503.rest.API.feature.branch.rationale
 			 for change on old JAVA file
-			  src/main/java/de/uhd/ifi/se/decision/management/jira/extraction/impl/GitClientImpl.java
-			  https://github.com/cures-hub/cures-condec-jira/pull/147/commits/847c56aaa0e71ee4c2bdf9d8e674f9dd92bf77b9
+			  src/main/java/de/uhd/../jira/extraction/impl/GitClientImpl.java
+			  https://github.com/cures-hub/cures-condec-jira/pull/147/
+			  commits/847c56aaa0e71ee4c2bdf9d8e674f9dd92bf77b9
 			  #diff-1e393b83bbc1e0b69baddee0f2897586L473
 			 at lines 472 and 473.
 			 The DECISION rationale was written on two single line comments, but only text
@@ -75,7 +76,7 @@ public class RationaleFromDiffCodeCommentExtractor {
 			 @pro: less intrusive, tolerates developers' "mistakes" in comment usage
 			 @con: propagates bad habits
 
-			 @alternative: It is expected that multi line comments should be used for
+			 @decision: It is expected that multi line comments should be used for
 			 storing rationale with multi line texts! No actions should be taken.
 
 			 @pro: teaches developers a lesson to use comments correctly.
