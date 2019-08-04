@@ -145,10 +145,11 @@ public class GitDiffedCodeExtractionManager {
 		int entrySequenceNumber = 0;
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			CodeExtractionResult entryResults = processEntry(changedFile);
-
-			entryResults.sequence = entrySequenceNumber;
-			results.put(changedFile.getDiffEntry(), entryResults);
-			entrySequenceNumber++;
+			if (entryResults != null) {
+				entryResults.sequence = entrySequenceNumber;
+				results.put(changedFile.getDiffEntry(), entryResults);
+				entrySequenceNumber++;
+			}
 		}
 	}
 
