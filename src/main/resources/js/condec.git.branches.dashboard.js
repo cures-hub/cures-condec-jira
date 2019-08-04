@@ -157,13 +157,14 @@ var CONDEC_branches = [];
         console.warn("Still processing request for: "+processing);
     }
 
-    function countElementType(type, branch) {
-        if (!type || !branch || !branch.elemnts || !branch.elements.length) {
+    function countElementType(targetType, branch) {
+        if (!targetType || !branch || !branch.elements || !branch.elements.length) {
             return 0;
         }
-        return branch.elements.filter(function(e){
-            return e.type.toLowerCase() === type.toLowerCase();
-        }).lenght;
+        var filtered = branch.elements.filter(function(e){
+            return e.type.toLowerCase() === targetType.toLowerCase();
+        });
+        return filtered.length;
     }
 
     /* lex sorting */
@@ -265,18 +266,74 @@ var CONDEC_branches = [];
             return accumulator;
         }
 
-        // form data for charts
-        statusesForBranchesData = conDecLinkBranchCandidates.getEmptyMapForStatuses("");
-        problemTypesOccurrance = conDecLinkBranchCandidates.getEmptyMapForProblemTypes("");
 
+        function numberIssuesInBranchesReducer(accumulator, currentBranch) {
+            accumulator.set(currentBranch.name, currentBranch.numIssues);
+            accumulator.delete("none");
+            return accumulator;
+        }
+        function numberDecisionsInBranchesReducer(accumulator, currentBranch) {
+            accumulator.set(currentBranch.name, currentBranch.numDecisions);
+            accumulator.delete("none");
+            return accumulator;
+        }
+        function numberAlternativesInBranchesReducer(accumulator, currentBranch) {
+            accumulator.set(currentBranch.name, currentBranch.numAlternatives);
+            accumulator.delete("none");
+            return accumulator;
+        }
+        function numberProsInBranchesReducer(accumulator, currentBranch) {
+            accumulator.set(currentBranch.name, currentBranch.numPros);
+            accumulator.delete("none");
+            return accumulator;
+        }
+        function numberConInBranchesReducer(accumulator, currentBranch) {
+            accumulator.set(currentBranch.name, currentBranch.numCons);
+            accumulator.delete("none");
+            return accumulator;
+        }
+
+        // init data for charts
+        var statusesForBranchesData = conDecLinkBranchCandidates.getEmptyMapForStatuses("");
+        var problemTypesOccurrance = conDecLinkBranchCandidates.getEmptyMapForProblemTypes("");
+        var issuesInBranches = new Map();
+        var decisionsInBranches = new Map();
+        var alternativesInBranches = new Map();
+        var prosInBranches = new Map();
+        var consInBranches = new Map();
+
+        // set something for box plots in case no data will be added to them
+        issuesInBranches.set("none",0);
+        decisionsInBranches.set("none",0);
+        alternativesInBranches.set("none",0);
+        prosInBranches.set("none",0);
+        consInBranches.set("none",0);
+
+        // form data for charts
         branchesQuality.reduce(statusWithBranchesReducer, statusesForBranchesData);
         branchesQuality.reduce(problemsWithBranchesReducer, problemTypesOccurrance);
+        branchesQuality.reduce(numberIssuesInBranchesReducer, issuesInBranches);
+        branchesQuality.reduce(numberDecisionsInBranchesReducer, decisionsInBranches);
+        branchesQuality.reduce(numberAlternativesInBranchesReducer, alternativesInBranches);
+        branchesQuality.reduce(numberProsInBranchesReducer, prosInBranches);
+        branchesQuality.reduce(numberConInBranchesReducer, consInBranches);
 
-        // render charts
+        // render pie-charts
         conDecReport.initializeChartForBranchSource('piechartRich-QualityStatusForBranches'+dashboardUID,
          '', 'How many branches document rationale well?',statusesForBranchesData); //'Quality status'
         conDecReport.initializeChartForBranchSource('piechartRich-ProblemTypesInBranches'+dashboardUID,
          '', 'Which documentation mistakes are most common?',problemTypesOccurrance); //'Total quality problems'
+        // render box-plots
+        conDecReport.initializeChartForBranchSource('boxplot-IssuesPerBranch'+dashboardUID,
+         '', 'Issues distribution in branches',issuesInBranches);
+        conDecReport.initializeChartForBranchSource('boxplot-DecisionsPerBranch'+dashboardUID,
+         '', 'Decisions distribution in branches',decisionsInBranches);
+        conDecReport.initializeChartForBranchSource('boxplot-AlternativesPerBranch'+dashboardUID,
+         '', 'Alternatives distribution in branches',alternativesInBranches);
+        conDecReport.initializeChartForBranchSource('boxplot-ProsPerBranch'+dashboardUID,
+         '', 'Pro arguments distribution in branches',prosInBranches);
+        conDecReport.initializeChartForBranchSource('boxplot-ConsPerBranch'+dashboardUID,
+         '', 'Con arguments distribution in branches',consInBranches);
 
         // remember in global scope
         CONDEC_branchesQuality = branchesQuality;
