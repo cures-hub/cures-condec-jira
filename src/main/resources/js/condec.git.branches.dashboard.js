@@ -274,9 +274,9 @@ var CONDEC_branches = [];
 
         // render charts
         conDecReport.initializeChartForBranchSource('piechartRich-QualityStatusForBranches'+dashboardUID,
-         'Quality status', 'How many branches document rationale well?',statusesForBranchesData);
+         '', 'How many branches document rationale well?',statusesForBranchesData); //'Quality status'
         conDecReport.initializeChartForBranchSource('piechartRich-ProblemTypesInBranches'+dashboardUID,
-         'Total problems distribution', 'which documentation mistakes are most common?',problemTypesOccurrance);
+         '', 'Which documentation mistakes are most common?',problemTypesOccurrance); //'Total quality problems'
 
         // remember in global scope
         CONDEC_branchesQuality = branchesQuality;
