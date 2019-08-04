@@ -361,14 +361,14 @@
 				  name="Dashboard.Item.ConDec.Feature.Branches.Templates.Static"/>
 		<resource type="download" name="condec.git.branches.dashboard.js"
 				  location="js/condec.git.branches.dashboard.js" />
-		<resource type="download" name="condec.git.code.elements.linker.js"
+		<resource type="download" name="condec.dashboard.git.code.elements.linker.js"
 				  location="/js/condec.git.code.elements.linker.js" />
-		<resource type="download" name="condec.report.js"
+		<resource type="download" name="condec.dashboard.report.js"
 				  location="js/condec.report.js" />
-		<resource type="download" name="condec.report.css"
+		<resource type="download" name="condec.dashboard.report.css"
 				  location="/css/condec.report.css" />
 		<resource type="download"
-				  name="echarts.js" location="/js/echart/echarts.js" />
+				  name="dashboard.echarts.js" location="/js/echart/echarts.js" />
 
 		<context>atl.dashboard</context>
 		<context>condec-feature-branch-dashboard</context>

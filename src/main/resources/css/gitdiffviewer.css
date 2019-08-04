@@ -151,7 +151,7 @@
 will be copied if .content is marked and copied */
 .branchGroup .content > span {
 	overflow: hidden;
-	max-width: 0px;
+	max-width: 1px; /* some browsers will not copy this span's text if 0 value is used here.*/
 	display: inline-block;
 }
 
