@@ -6,6 +6,7 @@ target/
 bin/
 .idea/
 .metadata/
+*target/
 
 # Files
 .classpath
