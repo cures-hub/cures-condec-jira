@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.model.Graph;
+import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,6 +36,8 @@ public class TestVisGraph extends TestSetUp {
 		visGraph = new VisGraph();
 		visGraph.setEdges(edges);
 		visGraph.setNodes(nodes);
+		visGraph.setGraph(new GraphImpl());
+		visGraph.setRootElementKey("");
 
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
 		element.setProject(new DecisionKnowledgeProjectImpl("Test"));
@@ -110,7 +114,35 @@ public class TestVisGraph extends TestSetUp {
 		List<DecisionKnowledgeElement> elements = new ArrayList<>();
 		elements.add(element);
 		VisGraph visGraph = new VisGraph(elements, "TEST");
-		assertEquals(1, visGraph.getNodes().size(),0.0);
+		assertEquals(1, visGraph.getNodes().size(), 0.0);
+	}
+
+	@Test
+	public void testisHyperLinked() {
+		assertFalse(visGraph.isHyperlinked());
+	}
+
+	@Test
+	public void testGetRootElementKey() {
+		assertEquals("", visGraph.getRootElementKey());
+	}
+
+	@Test
+	public void testSetRootElementKey() {
+		visGraph.setRootElementKey("TestKey");
+		assertEquals("TestKey", visGraph.getRootElementKey());
+	}
+
+	@Test
+	public void testGetGraph(){
+		assertNotNull(visGraph.getGraph());
+	}
+
+	@Test
+	public void testSetGraph() {
+		Graph newGraph = new GraphImpl();
+		visGraph.setGraph(newGraph);
+		assertEquals(newGraph, visGraph.getGraph());
 	}
 
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
