@@ -182,10 +182,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 			return decisionKnowledgeElements;
 		}
 		for (Issue issue : getIssueIdCollection()) {
-			KnowledgeType type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
-			if (type != KnowledgeType.OTHER) {
-				decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(issue));
-			}
+			decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(issue));
 		}
 		return decisionKnowledgeElements;
 	}
