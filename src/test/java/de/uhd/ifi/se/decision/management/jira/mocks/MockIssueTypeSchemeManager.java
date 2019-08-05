@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.mocks;
 import java.util.Collection;
 import java.util.List;
 
-import com.atlassian.jira.issue.fields.config.FieldConfigSchemeImpl;
 import com.atlassian.jira.issue.fields.config.MockFieldConfigScheme;
 import org.ofbiz.core.entity.GenericValue;
 
