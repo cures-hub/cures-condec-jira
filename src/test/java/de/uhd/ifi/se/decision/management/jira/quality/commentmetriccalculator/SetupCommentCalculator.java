@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.quality.commentmetriccalculator;
 
 import java.io.File;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import org.junit.AfterClass;
 import org.junit.Before;
 
@@ -15,15 +16,28 @@ import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersisten
 import de.uhd.ifi.se.decision.management.jira.quality.CommentMetricCalculator;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public abstract class TestSetupCalculator extends TestSetUp {
+public abstract class SetupCommentCalculator extends TestSetUp {
 	protected CommentMetricCalculator calculator;
+	private long id=1;
+	private long jiraIssueId =12;
+	private long elemIssueId =1;
+	private String projectKey = "TEST";
+
+	protected String baseIssueKey = "TEST-100";
+	protected ApplicationUser user;
+	protected DecisionKnowledgeElement decisionElement;
+	protected DecisionKnowledgeElement argumentElement;
+	protected DecisionKnowledgeElement issueElement;
 
 	@Before
 	public void setUp() {
 		init();
 		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
-		addElementToDataBase(user);
+
 		calculator = new CommentMetricCalculator((long) 1, user);
+		issueElement = addElementToDataBase(user,"Issue");
+		decisionElement = addElementToDataBase(user,"Decision");
+		argumentElement = addElementToDataBase(user,"Argument");
 	}
 
 	@AfterClass
@@ -34,17 +48,19 @@ public abstract class TestSetupCalculator extends TestSetUp {
 		}
 	}
 
-	protected void addElementToDataBase(ApplicationUser user) {
+	protected PartOfJiraIssueText addElementToDataBase(ApplicationUser user, String type ) {
+		id++;
 		PartOfJiraIssueText element;
 		element = new PartOfJiraIssueTextImpl();
-		element.setProject("TEST");
-		element.setJiraIssueId(12);
-		element.setId(1);
-		element.setKey("TEST-12231");
-		element.setType("Argument");
+		element.setProject(projectKey);
+		element.setJiraIssueId(jiraIssueId);
+		element.setId(id);
+		element.setKey(baseIssueKey+ elemIssueId);
+		element.setType(type);
 		element.setProject("TEST");
 		element.setDescription("Old");
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 		JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(element, user);
+		return element;
 	}
 }
