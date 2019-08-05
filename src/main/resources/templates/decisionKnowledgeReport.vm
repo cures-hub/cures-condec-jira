@@ -6,11 +6,11 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:repo
 </h3>
 <!--
 Three types of charts are supported thus far:
-* boxplot, which expect [category,decKnowKeysList] entries provided to them.
+1) boxplot, which expect [category,decKnowKeysList] entries provided to them.
   The decKnowKeysList point to decision knowledge elements and can be counted
   to get occurrences in the category.
-* piechartRich, which expect [category,decKnowKeysList] entries provided to them.
-* piechartInteger, which expect[category,#occurrences] entries provided to them.
+2) piechartRich, which expect category-decKnowKeysList entries provided to them.
+3) piechartInteger, which expect category-#occurrences entries provided to them.
 -->
 
 <div>

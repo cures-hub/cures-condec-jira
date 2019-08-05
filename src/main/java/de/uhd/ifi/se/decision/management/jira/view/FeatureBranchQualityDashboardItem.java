@@ -3,10 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.view;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.Project;
-import com.atlassian.plugin.PluginAccessor;
 import com.atlassian.plugin.PluginParseException;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
-import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.plugin.web.ContextProvider;
 import com.google.common.collect.Maps;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -18,16 +16,12 @@ import java.util.Map;
 
 @Scanned
 public class FeatureBranchQualityDashboardItem  implements ContextProvider {
-    private final PluginAccessor pluginAccessor;
-
-    public FeatureBranchQualityDashboardItem(
-            @ComponentImport PluginAccessor pluginAccessor) {
-        this.pluginAccessor = pluginAccessor;
-    }
 
     @Override
     public void init(final Map<String, String> params) throws PluginParseException {
-
+        /**
+         * No special behaviour is foreseen for now.
+         */
     }
 
     @Override

@@ -49,7 +49,7 @@ linkBranchCandidates
   var ISSUE_WITHOUT_ALTERNATIVES = "Issue does not have any alternatives yet";
 
   var rationale;
-  var branchName
+  var branchName;
   var branchInSequence;
   var problemSourceCategory;
 
@@ -92,7 +92,7 @@ linkBranchCandidates
     problemSourceCategory = _problemSourceCategory;
 
     runCodeLinker();
-  }
+  };
 
   function runCodeLinker() {
     console.log("runCodelinker");
@@ -503,7 +503,7 @@ linkBranchCandidates
             }
           }
         }
-    }
+    };
 
     /*
         decodes received position "x:y[:z]" into
@@ -531,7 +531,7 @@ linkBranchCandidates
       });
       branchData.elements = elements;
       return branchData;
-    }
+    };
 
     ConDecLinkBranchCandidates.prototype.sortRationaleDiffOfFiles =
      function sortRationaleDiffOfFiles(rationale) {
@@ -564,7 +564,7 @@ linkBranchCandidates
         return 0;
       });
       return rationale;
-    }
+    };
 
     ConDecLinkBranchCandidates.prototype.getBranchStatus = function getBranchStatus() {
         if (!rationale || rationale.length<1) {
@@ -574,10 +574,10 @@ linkBranchCandidates
             return BRANCH_STATUS_BAD; // has problems
         }
         return BRANCH_STATUS_FINE;
-    }
+    };
 
     ConDecLinkBranchCandidates.prototype.getProblemNamesObserved = function getProblemNamesObserved() {
-        var problemNames = this.getEmptyMapForProblemTypes(0)
+        var problemNames = this.getEmptyMapForProblemTypes(0);
 
         if (problemsList.length>0) {
             for (var i = 0; i< problemsList.length; i++) {
@@ -586,7 +586,7 @@ linkBranchCandidates
 
                 for (var j = 0; j< problemsInElement.length; j++) {
                     var problemNameInElement = problemsInElement[j];
-                    var seenUntilNow = problemNames.get(problemNameInElement)
+                    var seenUntilNow = problemNames.get(problemNameInElement);
                     if (!seenUntilNow) {
                         seenUntilNow = 0;
                     }
@@ -595,7 +595,7 @@ linkBranchCandidates
             }
         }
         return problemNames;
-    }
+    };
 
     ConDecLinkBranchCandidates.prototype.getEmptyMapForStatuses = function(initValue) {
         var mapInit = new Map();
@@ -603,11 +603,12 @@ linkBranchCandidates
         mapInit.set(BRANCH_STATUS_BAD,initValue);
         mapInit.set(BRANCH_STATUS_UNSET,initValue);
         return mapInit;
-    }
+    };
 
     ConDecLinkBranchCandidates.prototype.getEmptyMapForProblemTypes =
      function getEmptyMapForProblemTypes(initValue) {
         var allProblems = new Map();
+
         allProblems.set(ARGUMENT_WITHOUT_PARENT_ELEMENT, initValue);
         allProblems.set(ALTERNATIVE_DECISION_WITHOUT_PARENT_ELEMENT, initValue);
         allProblems.set(ISSUE_WITH_MANY_DECISIONS, initValue);
@@ -616,8 +617,9 @@ linkBranchCandidates
         allProblems.set(DECISION_ARGUMENTS_MAYBE_WORSE_THAN_ALTERNATIVE, initValue);
         allProblems.set(ISSUE_WITHOUT_DECISIONS, initValue);
         allProblems.set(ISSUE_WITHOUT_ALTERNATIVES, initValue);
+
         return allProblems;
-    }
+    };
 
   global.conDecLinkBranchCandidates  = new ConDecLinkBranchCandidates ();
 })(window);
