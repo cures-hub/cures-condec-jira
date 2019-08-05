@@ -1,28 +1,19 @@
 package de.uhd.ifi.se.decision.management.jira.quality.commonmetriccalculator;
 
-import com.atlassian.activeobjects.test.TestActiveObjects;
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.user.ApplicationUser;
-import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import org.junit.Before;
+
+import com.atlassian.jira.user.ApplicationUser;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.CommonMetricCalculator;
-import net.java.ao.EntityManager;
-import org.junit.AfterClass;
-import org.junit.Before;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-import java.io.File;
-
-public class TestSetupCalculator extends TestSetUpWithIssues {
-	private EntityManager entityManager;
+public class SetupCommonCalculator extends TestSetUp {
 	protected CommonMetricCalculator calculator;
 	private long id=1;
 	private long jiraIssueId =12;
@@ -37,32 +28,13 @@ public class TestSetupCalculator extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
-		initialization();
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
-		user = ComponentAccessor.getUserManager().getUserByName("NoSysAdmin");
+		init();
+		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
 		issueElement = addElementToDataBase(user,"Issue");
 		decisionElement = addElementToDataBase(user,"Decision");
 		argumentElement = addElementToDataBase(user,"Argument");
 
 		calculator = new CommonMetricCalculator((long) 1, user, "16");
-	}
-
-	protected void linkElements(ApplicationUser user, DecisionKnowledgeElement sourceElement
-			, DecisionKnowledgeElement destinationElement, String type) {
-		Link link = new LinkImpl();
-		link.setType(type);
-		link.setSourceElement(sourceElement);
-		link.setDestinationElement(destinationElement);
-		JiraIssueTextPersistenceManager.insertLink(link,user);
-	}
-
-	@AfterClass
-	public static void removeFolder() {
-		File repo = new File(System.getProperty("user.home") + File.separator + "repository");
-		if (repo.exists()) {
-			repo.delete();
-		}
 	}
 
 	protected PartOfJiraIssueText addElementToDataBase(ApplicationUser user, String type ) {
