@@ -10,14 +10,13 @@ import com.atlassian.jira.issue.IssueInputParametersImpl;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.project.AssigneeTypes;
 import com.atlassian.jira.project.Project;
-import com.atlassian.jira.project.type.ProjectTypeKeys;
 import com.atlassian.jira.user.ApplicationUser;
 
 import java.util.Collection;
 
 public class AutoCreateDummyProject {
 	private static final int MAX_ISSUES = 550;
-	ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("admin");
+	private ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("admin");
 
 	public AutoCreateDummyProject() {
 		int projectsAmount = ComponentAccessor.getProjectManager().getProjects().size();

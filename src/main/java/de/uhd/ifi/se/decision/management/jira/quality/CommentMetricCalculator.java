@@ -30,8 +30,6 @@ public class CommentMetricCalculator {
 	private String projectKey;
 	private ApplicationUser user;
 	private List<Issue> jiraIssues;
-	private int absolutDepth;
-	private GitClient gitClient;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(CommentMetricCalculator.class);
 

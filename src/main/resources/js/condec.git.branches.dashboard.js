@@ -9,8 +9,8 @@
  */
 
 // DEV vars to be removed:
-var CONDEC_branchesQuality = [];
-var CONDEC_branches = [];
+var ConDecDevBranchesQuality = [];
+var ConDecDevBranches = [];
 
 (function(global) {
     var dashboards = {};    /* TODO: object muss support more than one dashboard.*/
@@ -34,8 +34,8 @@ var CONDEC_branches = [];
 
     ConDecBranchesDashboard.prototype.init = function init(_projectKey, _dashboardUID, _gituri) {
         console.log("received for project: "+ _projectKey +" UID:"+ _dashboardUID);
-        projectKey = _projectKey
-        dashboardUID = _dashboardUID
+        projectKey = _projectKey;
+        dashboardUID = _dashboardUID;
 
         getHTMLNodes( "condec-branches-dashboard-contents-container"+dashboardUID
         , "condec-branches-dashboard-contents-data-error"+dashboardUID
@@ -46,21 +46,20 @@ var CONDEC_branches = [];
         branchesQuality = [];
 
         if (!_gituri || _gituri.length<1) {
-            showDashboardSection(dashboardProjectWithoutGit)
+            showDashboardSection(dashboardProjectWithoutGit);
         }
         else {
-            getBranches(projectKey)
+            getBranches(projectKey);
         }
-
-    }
+    };
 
     function getHTMLNodes(containerName, dataErrorName, noProjectName, processingName, noGitName) {
         if (!dashboardContentNode) {
-            dashboardContentNode   = document.getElementById(containerName)
-            dashboardDataErrorNode = document.getElementById(dataErrorName)
-            dashboardNoContentsNode = document.getElementById(noProjectName)
-            dashboardProcessingNode = document.getElementById(processingName)
-            dashboardProjectWithoutGit = document.getElementById(noGitName)
+            dashboardContentNode   = document.getElementById(containerName);
+            dashboardDataErrorNode = document.getElementById(dataErrorName);
+            dashboardNoContentsNode = document.getElementById(noProjectName);
+            dashboardProcessingNode = document.getElementById(processingName);
+            dashboardProjectWithoutGit = document.getElementById(noGitName);
         }
     }
     function showDashboardSection(node) {
@@ -70,7 +69,7 @@ var CONDEC_branches = [];
         dashboardNoContentsNode.classList.add(hiddenClass);
         dashboardProcessingNode.classList.add(hiddenClass);
         dashboardProjectWithoutGit.classList.add(hiddenClass);
-        node.classList.remove(hiddenClass)
+        node.classList.remove(hiddenClass);
     }
 
     function getBranches(projectKey){
@@ -87,7 +86,7 @@ var CONDEC_branches = [];
 
         url = AJS.contextPath()
           + "/rest/decisions/latest/view/elementsFromBranchesOfProject.json?projectKey="
-          + projectKey
+          + projectKey;
 
         // get cache or server data?
         if (localStorage.getItem("condec.restCacheTTL")) {
@@ -118,7 +117,7 @@ var CONDEC_branches = [];
             }
           }
         }
-        console.log("Starting  REST query.")
+        console.log("Starting  REST query.");
         AJS.$.ajax({
           url: url,
           type: "get",
@@ -132,11 +131,11 @@ var CONDEC_branches = [];
     ConDecBranchesDashboard.prototype.processDataBad = function processDataBad(data) {
         showDashboardSection(dashboardDataErrorNode);
         doneWithXhrRequest();
-    }
+    };
 
     ConDecBranchesDashboard.prototype.processData = function processData(data) {
         processXhrResponseData(data);
-    }
+    };
 
     function processXhrResponseData(data) {
         doneWithXhrRequest();
@@ -149,7 +148,7 @@ var CONDEC_branches = [];
 
     function doneWithXhrRequest() {
         dashboardProcessingNode.classList.remove("error");
-        showDashboardSection(dashboardProcessingNode)
+        showDashboardSection(dashboardProcessingNode);
     }
 
     function warnStillProcessing() {
@@ -174,7 +173,7 @@ var CONDEC_branches = [];
 
     function processBranches(data){
         var branches = data.branches;
-        CONDEC_branches = branches;
+        ConDecDevBranches = branches; // remember in global scope for development/debugging
         for (branchIdx = 0; branchIdx < branches.length; branchIdx++) {
             var lastBranch = conDecLinkBranchCandidates.extractPositions(branches[branchIdx]);
 
@@ -183,12 +182,12 @@ var CONDEC_branches = [];
             lastBranch.elements.filter(function(e){return e.key.sourceTypeCommitMessage;});
 
             // these elements are not sorted, we want only B(final) files.
-            var lastBranchElementsFromFiles_BUT_NotSorted =
-            lastBranch.elements.filter(function(e){return e.key.codeFileB;})
+            var lastBranchElementsFromFilesButNotSorted =
+            lastBranch.elements.filter(function(e){return e.key.codeFileB;});
 
             // sort file elements
             var lastBranchElementsFromFiles =
-            conDecLinkBranchCandidates.sortRationaleDiffOfFiles(lastBranchElementsFromFiles_BUT_NotSorted);
+            conDecLinkBranchCandidates.sortRationaleDiffOfFiles(lastBranchElementsFromFilesButNotSorted);
 
             var lastBranchRelevantElementsSortedWithPosition =
             lastBranchElementsFromMessages.concat(lastBranchElementsFromFiles);
@@ -219,7 +218,7 @@ var CONDEC_branches = [];
 
     function renderData(){
         function statusWithBranchesReducer(accumulator, currentBranch) {
-            BRANCHES_SEPARATOR_TOKEN = ";"
+            BRANCHES_SEPARATOR_TOKEN = ";";
             var  statusOfBranch = currentBranch.status;
             var  nameOfBranch = currentBranch.name;
             if (accumulator.has(statusOfBranch)) {
@@ -240,7 +239,7 @@ var CONDEC_branches = [];
         }
 
         function problemsWithBranchesReducer(accumulator, currentBranch) {
-            BRANCHES_SEPARATOR_TOKEN = ";"
+            BRANCHES_SEPARATOR_TOKEN = ";";
             var  problems = currentBranch.problems;
             var  nameOfBranch = currentBranch.name;
 
@@ -335,8 +334,8 @@ var CONDEC_branches = [];
         conDecReport.initializeChartForBranchSource('boxplot-ConsPerBranch'+dashboardUID,
          '', 'Con arguments distribution in branches',consInBranches);
 
-        // remember in global scope
-        CONDEC_branchesQuality = branchesQuality;
+        // remember in global scope for development/debugging
+        ConDecDevBranchesQuality = branchesQuality;
 
     }
 

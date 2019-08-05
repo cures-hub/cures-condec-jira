@@ -90,7 +90,7 @@ public class CommonMetricCalculator {
 			GitExtractor gitExtractor = ComponentGetter.getGitExtractor(projectKey);
 			if (gitExtractor!=null) {
 				for (Issue jiraIssue : jiraIssues) {
-					int numberOfCommits = gitExtractor.GetListOfCommitsForJiraIssue(jiraIssue).size();
+					int numberOfCommits = gitExtractor.getListOfCommitsForJiraIssue(jiraIssue).size();
 					resultMap.put(jiraIssue.getKey(), numberOfCommits);
 				}
 			}
@@ -111,7 +111,7 @@ public class CommonMetricCalculator {
 	}
 
 	/* TODO: check why is only tested, never used */
-	public Map<String, Integer> _getNumberOfLinksToOtherElement(KnowledgeType linkFrom, KnowledgeType linkTo) {
+	public Map<String, Integer> getNumberOfLinksToOtherElement(KnowledgeType linkFrom, KnowledgeType linkTo) {
 		if (linkFrom == null || linkTo == null) {
 			return new HashMap<String, Integer>();
 		}
@@ -157,8 +157,6 @@ public class CommonMetricCalculator {
 
 		List<DecisionKnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(linkFrom);
 
-		Map<String, Boolean> observedLinksMoreThanOnce = new HashMap<String, Boolean>();
-
 		for (DecisionKnowledgeElement issue : listOfIssues) {
 			String issueKey = issue.getKey();
 			List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
@@ -190,7 +188,7 @@ public class CommonMetricCalculator {
 	/* TODO: add tests */
 	public Map<String, String> getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(
 			KnowledgeType linkFrom, KnowledgeType linkTo) {
-		if (linkFrom == null || linkTo == null || linkFrom == linkTo) {
+		if (linkFrom == null || linkTo == null || linkFrom.equals(linkTo)) {
 			return new HashMap<String, String>();
 		}
 		String[] data = new String[2];
