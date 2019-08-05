@@ -4,10 +4,10 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class GetAlternativeArgumentsCommon extends SetupCommonCalculator {
+public class TestGetDistributionOfKnowledgeTypesCommon extends SetupCommonCalculator {
 
 	@Test
 	public void testCase() {
-		assertEquals(2, calculator.getAlternativesHavingArguments().size(), 0.0);
+		assertEquals(4, calculator.getDistributionOfKnowledgeTypes().size(), 0.0);
 	}
 }

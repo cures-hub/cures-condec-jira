@@ -4,12 +4,12 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import net.java.ao.test.jdbc.NonTransactional;
+import java.util.HashMap;
+import java.util.Map;
 
-public class TestGetNumberOfCommitsForJiraIssues extends TestSetupCalculator {
+public class TestGetNumberOfCommitsForJiraIssuesCommon extends SetupCommonCalculator {
 
 	@Test
-	@NonTransactional
 	public void testCase() {
 		Map<String, Integer> expectedCommits = new HashMap<>();
 		// TODO: setup some test commits
