@@ -5,35 +5,30 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestGetNumberOfLinkToOtherElement extends TestSetupCalculator {
+public class TestGetNumberOfLinkToOtherElementCommon extends SetupCommonCalculator {
 
 	@Test
-	@NonTransactional
 	public void testLinkFromNullLinkToNull() {
-		assertEquals(0, calculator._getNumberOfLinksToOtherElement(
+		assertEquals(0, calculator.getNumberOfLinksToOtherElement(
 				null, null).size(), 0.0);
 	}
 
 	@Test
-	@NonTransactional
 	public void testLinkFromFilledLinkToNull() {
-		assertEquals(0, calculator._getNumberOfLinksToOtherElement(
+		assertEquals(0, calculator.getNumberOfLinksToOtherElement(
 				KnowledgeType.DECISION, null).size(), 0.0);
 	}
 
 	@Test
-	@NonTransactional
 	public void testLinkFromNullLinkToFilled() {
-		assertEquals(0, calculator._getNumberOfLinksToOtherElement(
+		assertEquals(0, calculator.getNumberOfLinksToOtherElement(
 				null, KnowledgeType.ISSUE).size(), 0.0);
 	}
 
 	@Test
-	@NonTransactional
 	public void testLinkFromFilledLinkToFilled() {
-		assertEquals(2, calculator._getNumberOfLinksToOtherElement(
+		assertEquals(2, calculator.getNumberOfLinksToOtherElement(
 				KnowledgeType.ARGUMENT, KnowledgeType.DECISION).size(),
 				0.0);
 	}
