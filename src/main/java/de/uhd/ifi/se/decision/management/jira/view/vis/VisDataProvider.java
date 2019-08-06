@@ -7,6 +7,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 
 public class VisDataProvider {
 
@@ -17,33 +18,42 @@ public class VisDataProvider {
 	private FilterExtractor filterExtractor;
 	private List<DecisionKnowledgeElement> decisionKnowledgeElements;
 
+	// Evolution Views
 	public VisDataProvider(ApplicationUser user, FilterSettings filterSettings) {
-		if(user == null || filterSettings == null){
+		if (user == null || filterSettings == null) {
 			return;
 		}
 		this.projectKey = filterSettings.getProjectKey();
 		this.user = user;
 		FilterExtractor filterExtractor = new FilterExtractor(this.user, filterSettings);
-		List<DecisionKnowledgeElement> decisionKnowledgeElements = filterExtractor.getAllElementsMatchingCompareFilter();
+		List<DecisionKnowledgeElement> decisionKnowledgeElements = filterExtractor
+				.getAllElementsMatchingCompareFilter();
 		graph = new VisGraph(decisionKnowledgeElements, projectKey);
-		this.timeLine= new VisTimeLine(decisionKnowledgeElements);
+		this.timeLine = new VisTimeLine(decisionKnowledgeElements);
 	}
 
-	public VisDataProvider(String projectKey, String elementKey, boolean isHyperlinked, String query,
-			ApplicationUser user) {
+	// JQL Filter and JIRA Filter
+	public VisDataProvider(String projectKey, String elementKey, String query, ApplicationUser user) {
 		this.projectKey = projectKey;
 		this.user = user;
 		this.filterExtractor = new FilterExtractor(projectKey, user, query);
 		decisionKnowledgeElements = filterExtractor.getAllElementsMatchingQuery();
-		graph = new VisGraph(projectKey, elementKey, decisionKnowledgeElements, isHyperlinked);
+		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager
+				.getDefaultPersistenceStrategy(projectKey);
+		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
+		graph = new VisGraph(rootElement, decisionKnowledgeElements);
 	}
 
-	public VisDataProvider(String elementKey, boolean isHyperlinked, ApplicationUser user, FilterSettings filterSettings) {
+	// Filter Issue Module
+	public VisDataProvider(String elementKey, ApplicationUser user, FilterSettings filterSettings) {
 		this.projectKey = filterSettings.getProjectKey();
 		this.user = user;
 		this.filterExtractor = new FilterExtractor(user, filterSettings);
-		decisionKnowledgeElements = filterExtractor.getAllElementsMatchingQuery();
-		graph = new VisGraph(projectKey, elementKey, decisionKnowledgeElements, isHyperlinked);
+		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager
+				.getDefaultPersistenceStrategy(projectKey);
+		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
+		decisionKnowledgeElements = filterExtractor.getAllElementsMatchingCompareFilter();
+		graph = new VisGraph(rootElement, decisionKnowledgeElements);
 	}
 
 	public VisGraph getVisGraph() {

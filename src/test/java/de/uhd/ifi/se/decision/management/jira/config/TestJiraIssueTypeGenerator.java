@@ -64,6 +64,16 @@ public class TestJiraIssueTypeGenerator {
 	public void testGetJiraIssueTypesZero() {
 		assertEquals(5, JiraIssueTypeGenerator.getJiraIssueTypes(1).size());
 	}
+	
+	@Test
+	public void testGetJiraIssueTypesByProjectKeyValid() {
+		assertEquals(5, JiraIssueTypeGenerator.getJiraIssueTypes("TEST").size());
+	}
+	
+	@Test
+	public void testGetJiraIssueTypesByProjectKeyNull() {
+		assertEquals(0, JiraIssueTypeGenerator.getJiraIssueTypes(null).size());
+	}
 
 	@Test
 	public void testGetJiraIssueTypesOk() {

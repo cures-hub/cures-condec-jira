@@ -7,10 +7,10 @@ import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -154,8 +154,8 @@ public class FilterSettingsImpl implements FilterSettings {
 	@XmlElement(name = "allJiraIssueTypes")
 	public List<String> getAllJiraIssueTypes() {
 		List<String> allIssueTypes = new ArrayList<String>();
-		for (IssueType issueType : ComponentAccessor.getConstantsManager().getAllIssueTypeObjects()) {
-			allIssueTypes.add(issueType.getName());
+		for (IssueType issueType : JiraIssueTypeGenerator.getJiraIssueTypes(projectKey)) {
+			allIssueTypes.add(issueType.getNameTranslation());
 
 		}
 		return allIssueTypes;

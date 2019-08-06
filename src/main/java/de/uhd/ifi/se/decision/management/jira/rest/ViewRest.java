@@ -209,10 +209,10 @@ public class ViewRest {
 		if (filterSettings.getNamesOfSelectedJiraIssueTypes().size() == 0
 				|| (filterSettings.getDocumentationLocations().size() == 1
 						&& filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN))) {
-			visDataProvider = new VisDataProvider(projectKey, elementKey, false, filterSettings.getSearchString(),
+			visDataProvider = new VisDataProvider(projectKey, elementKey, filterSettings.getSearchString(),
 					user);
 		} else {
-			visDataProvider = new VisDataProvider(elementKey, false, user, filterSettings);
+			visDataProvider = new VisDataProvider(elementKey, user, filterSettings);
 		}
 		VisGraph visGraph = visDataProvider.getVisGraph();
 		return Response.ok(visGraph).build();

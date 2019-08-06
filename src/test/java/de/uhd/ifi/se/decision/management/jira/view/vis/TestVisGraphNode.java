@@ -78,4 +78,31 @@ public class TestVisGraphNode extends TestSetUp {
 		node = new VisNode(element, false, 1, 0);
 		assertEquals("collapsed", node.getGroup());
 	}
+
+	@Test
+	public void testGetLevel() {
+		node = new VisNode(element, false, 1, 0);
+		assertEquals(1, node.getLevel(), 0.0);
+	}
+
+	@Test
+	public void testSetLevel() {
+		node = new VisNode(element, false, 1, 0);
+		node.setLevel(20);
+		assertEquals(20, node.getLevel(), 0.0);
+	}
+
+	@Test
+	public void testGetCid() {
+		node = new VisNode(element, false, 1, 12);
+		assertEquals(12, node.getCid(), 0.0);
+	}
+
+	@Test
+	public void testSetCid() {
+		node = new VisNode(element, false, 1, 0);
+		node.setCid(22);
+		assertEquals(22, node.getCid(), 0.0);
+	}
+
 }

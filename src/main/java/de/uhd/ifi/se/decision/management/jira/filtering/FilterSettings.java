@@ -118,8 +118,7 @@ public interface FilterSettings {
 	void setSelectedJiraIssueTypes(List<String> types);
 
 	/**
-	 * TODO This method should only return JIRA issue types of the current project.
-	 * Returns the names of all JIRA issue types available.
+	 * Returns the names of all JIRA issue types of the selected project.
 	 *
 	 * @return list of names of JIRA {@link IssueType}s.
 	 */

@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.testdata;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,6 +70,7 @@ public class JiraIssues {
 		issue.setIssueType(issueType);
 		issue.setSummary(summary);
 		issue.setDescription(summary);
+		issue.setCreated(new Timestamp(System.currentTimeMillis()));
 		return issue;
 	}
 

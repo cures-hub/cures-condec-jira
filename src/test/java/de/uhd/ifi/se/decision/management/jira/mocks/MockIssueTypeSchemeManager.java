@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.mocks;
 import java.util.Collection;
 import java.util.List;
 
+import com.atlassian.jira.issue.fields.config.MockFieldConfigScheme;
 import org.ofbiz.core.entity.GenericValue;
 
 import com.atlassian.jira.issue.Issue;
@@ -54,8 +55,10 @@ public class MockIssueTypeSchemeManager implements IssueTypeSchemeManager {
 
 	@Override
 	public FieldConfigScheme getConfigScheme(Project arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		FieldConfigScheme configScheme = new MockFieldConfigScheme();
+		((MockFieldConfigScheme) configScheme).setId((long)1);
+		((MockFieldConfigScheme) configScheme).setName("TestScheme");
+		return configScheme;
 	}
 
 	@Override

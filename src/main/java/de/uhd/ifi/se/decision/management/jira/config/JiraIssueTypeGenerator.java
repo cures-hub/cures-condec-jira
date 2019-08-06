@@ -54,6 +54,15 @@ public class JiraIssueTypeGenerator implements ValuesGenerator<String> {
 		return issueTypeSchemeManager.getIssueTypesForProject(project);
 	}
 
+	public static Collection<IssueType> getJiraIssueTypes(String projectKey) {
+		if (projectKey == null) {
+			return new ArrayList<IssueType>();
+		}
+		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
+		Project project = ComponentAccessor.getProjectManager().getProjectObjByKey(projectKey);
+		return issueTypeSchemeManager.getIssueTypesForProject(project);
+	}
+
 	public static String getJiraIssueTypeName(String typeId) {
 		if (typeId == null || typeId.equals("")) {
 			return "";
