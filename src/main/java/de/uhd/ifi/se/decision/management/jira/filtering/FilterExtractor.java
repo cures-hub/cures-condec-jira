@@ -153,6 +153,18 @@ public class FilterExtractor {
 		return false;
 	}
 
+	private boolean checkIfTypeMatches(DecisionKnowledgeElement element) {
+		if(element.getTypeAsString() != null){
+			if(filterSettings.getNamesOfSelectedJiraIssueTypes().contains(element.getTypeAsString())){
+				return true;
+			}
+			if(element.getTypeAsString().equals("Con") || element.getTypeAsString().equals("Pro")){
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private List<DecisionKnowledgeElement> filterElements(List<DecisionKnowledgeElement> elements) {
 		List<DecisionKnowledgeElement> filteredElements = new ArrayList<>();
 		if (elements == null || elements.size() == 0) {
@@ -164,7 +176,7 @@ public class FilterExtractor {
 					|| filterSettings.getDocumentationLocations().size() == 1 && filterSettings
 							.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN)) {
 				// Check if the Type of the Element is correct
-				if (filterSettings.getNamesOfSelectedJiraIssueTypes().contains(element.getTypeAsString())) {
+				if (checkIfTypeMatches(element)) {
 					if (checkIfElementMatchesTimeFilter(element)) {
 						// Case no text filter
 						if (filterSettings.getSearchString().equals("")
