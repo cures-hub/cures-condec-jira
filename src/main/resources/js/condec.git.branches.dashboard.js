@@ -8,7 +8,7 @@
  * featureBranchesDashboardItem.vm
  */
 
-// DEV vars to be removed:
+/* DEV vars to be removed: */
 var ConDecDevBranchesQuality = [];
 var ConDecDevBranches = [];
 
@@ -18,6 +18,7 @@ var ConDecDevBranches = [];
     var dashboardUID;
     var processing = null;
     var projectKey = null;
+    var issueKeyRx = null;
 
     var dashboardContentNode;
     var dashboardDataErrorNode;
@@ -35,6 +36,7 @@ var ConDecDevBranches = [];
     ConDecBranchesDashboard.prototype.init = function init(_projectKey, _dashboardUID, _gituri) {
         console.log("received for project: "+ _projectKey +" UID:"+ _dashboardUID);
         projectKey = _projectKey;
+        issueKeyRx = RegExp("origin/(" + _projectKey + "-\\d+)\\.","i");
         dashboardUID = _dashboardUID;
 
         getHTMLNodes( "condec-branches-dashboard-contents-container"+dashboardUID
@@ -54,13 +56,11 @@ var ConDecDevBranches = [];
     };
 
     function getHTMLNodes(containerName, dataErrorName, noProjectName, processingName, noGitName) {
-        if (!dashboardContentNode) {
-            dashboardContentNode   = document.getElementById(containerName);
-            dashboardDataErrorNode = document.getElementById(dataErrorName);
-            dashboardNoContentsNode = document.getElementById(noProjectName);
-            dashboardProcessingNode = document.getElementById(processingName);
-            dashboardProjectWithoutGit = document.getElementById(noGitName);
-        }
+        dashboardContentNode   = document.getElementById(containerName);
+        dashboardDataErrorNode = document.getElementById(dataErrorName);
+        dashboardNoContentsNode = document.getElementById(noProjectName);
+        dashboardProcessingNode = document.getElementById(processingName);
+        dashboardProjectWithoutGit = document.getElementById(noGitName);
     }
     function showDashboardSection(node) {
         var hiddenClass = "hidden";
@@ -128,12 +128,12 @@ var ConDecDevBranches = [];
         });
     }
 
-    ConDecBranchesDashboard.prototype.processDataBad = function processDataBad(data) {
+    ConDecBranchesDashboard.prototype.processDataBad = function processDataBad(data,uid) {
         showDashboardSection(dashboardDataErrorNode);
         doneWithXhrRequest();
     };
 
-    ConDecBranchesDashboard.prototype.processData = function processData(data) {
+    ConDecBranchesDashboard.prototype.processData = function processData(data,uid) {
         processXhrResponseData(data);
     };
 
@@ -217,6 +217,27 @@ var ConDecDevBranches = [];
     }
 
     function renderData(){
+        function branchesPerJiraIssueReducer(accumulator, currentBranch) {
+            var nameOfBranch = currentBranch.name;
+            var issueMatch = nameOfBranch.match(issueKeyRx)
+            var accumulatorField = "";
+            var nextValue = nameOfBranch;
+
+            if (!issueMatch || !issueMatch[1]) {
+                accumulatorField = "no Jira task";
+            }
+            else {
+                accumulatorField = issueMatch[1];
+            }
+
+            if (accumulator.has(accumulatorField)) {
+                nextValue = accumulator.get(accumulatorField)+";"+ nameOfBranch;
+            }
+
+            accumulator.set(accumulatorField, nextValue);
+            return accumulator;
+        }
+
         function statusWithBranchesReducer(accumulator, currentBranch) {
             BRANCHES_SEPARATOR_TOKEN = ";";
             var  statusOfBranch = currentBranch.status;
@@ -295,6 +316,8 @@ var ConDecDevBranches = [];
         // init data for charts
         var statusesForBranchesData = conDecLinkBranchCandidates.getEmptyMapForStatuses("");
         var problemTypesOccurrance = conDecLinkBranchCandidates.getEmptyMapForProblemTypes("");
+
+        var branchesPerIssue = new Map();
         var issuesInBranches = new Map();
         var decisionsInBranches = new Map();
         var alternativesInBranches = new Map();
@@ -308,33 +331,38 @@ var ConDecDevBranches = [];
         prosInBranches.set("none",0);
         consInBranches.set("none",0);
 
+        branchesPerIssue.set("no Jira task","");
+
         // form data for charts
         branchesQuality.reduce(statusWithBranchesReducer, statusesForBranchesData);
         branchesQuality.reduce(problemsWithBranchesReducer, problemTypesOccurrance);
+        branchesQuality.reduce(branchesPerJiraIssueReducer, branchesPerIssue);
         branchesQuality.reduce(numberIssuesInBranchesReducer, issuesInBranches);
         branchesQuality.reduce(numberDecisionsInBranchesReducer, decisionsInBranches);
         branchesQuality.reduce(numberAlternativesInBranchesReducer, alternativesInBranches);
         branchesQuality.reduce(numberProsInBranchesReducer, prosInBranches);
         branchesQuality.reduce(numberConInBranchesReducer, consInBranches);
 
-        // render pie-charts
+        /* render pie-charts */
         conDecReport.initializeChartForBranchSource('piechartRich-QualityStatusForBranches'+dashboardUID,
-         '', 'How many branches document rationale well?',statusesForBranchesData); //'Quality status'
+         '', 'How many branches document rationale well?',statusesForBranchesData); /* 'Quality status' */
         conDecReport.initializeChartForBranchSource('piechartRich-ProblemTypesInBranches'+dashboardUID,
-         '', 'Which documentation mistakes are most common?',problemTypesOccurrance); //'Total quality problems'
-        // render box-plots
+         '', 'Which documentation mistakes are most common?',problemTypesOccurrance); /*'Total quality problems' */
+        conDecReport.initializeChartForBranchSource('piechartRich-BranchesPerIssue'+dashboardUID,
+         '', 'How many branches do Jira tasks have?',branchesPerIssue);
+        /* render box-plots */
         conDecReport.initializeChartForBranchSource('boxplot-IssuesPerBranch'+dashboardUID,
-         '', 'Issues distribution in branches',issuesInBranches);
+         '', 'Issues number in branches',issuesInBranches);
         conDecReport.initializeChartForBranchSource('boxplot-DecisionsPerBranch'+dashboardUID,
-         '', 'Decisions distribution in branches',decisionsInBranches);
+         '', 'Decisions number in branches',decisionsInBranches);
         conDecReport.initializeChartForBranchSource('boxplot-AlternativesPerBranch'+dashboardUID,
-         '', 'Alternatives distribution in branches',alternativesInBranches);
+         '', 'Alternatives number in branches',alternativesInBranches);
         conDecReport.initializeChartForBranchSource('boxplot-ProsPerBranch'+dashboardUID,
-         '', 'Pro arguments distribution in branches',prosInBranches);
+         '', 'Pro arguments number in branches',prosInBranches);
         conDecReport.initializeChartForBranchSource('boxplot-ConsPerBranch'+dashboardUID,
-         '', 'Con arguments distribution in branches',consInBranches);
+         '', 'Con arguments number in branches',consInBranches);
 
-        // remember in global scope for development/debugging
+        /* remember in global scope for development/debugging */
         ConDecDevBranchesQuality = branchesQuality;
 
     }
