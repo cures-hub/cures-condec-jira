@@ -5,6 +5,7 @@
 }
 #decKnowElementsOverlay {
 	position:fixed;
+	z-index:1;
 	top:0;
 	left:0;
 	width:100%;
@@ -31,8 +32,13 @@
 	margin: 1rem 0.5rem;
 	font-size: 1.0rem;
 }
+#extractedDecKnowElements p:hover {
+	color: blue;
+	border-color:blue;
+}
 #extractedDecKnowElements p{
-	margin: 0 0.4rem;
+	margin: 0.1rem 0.4rem;
 	cursor:pointer;
 	display: inline-block;
+	border: 1px solid #2f4554;
 }
