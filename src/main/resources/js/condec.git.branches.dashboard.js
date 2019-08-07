@@ -18,7 +18,7 @@ var ConDecDevBranches = [];
     var dashboardUID;
     var processing = null;
     var projectKey = null;
-    var issueKeyRx = null;
+    var issueBranchKeyRx = null;
 
     var dashboardContentNode;
     var dashboardDataErrorNode;
@@ -36,7 +36,13 @@ var ConDecDevBranches = [];
     ConDecBranchesDashboard.prototype.init = function init(_projectKey, _dashboardUID, _gituri) {
         console.log("received for project: "+ _projectKey +" UID:"+ _dashboardUID);
         projectKey = _projectKey;
-        issueKeyRx = RegExp("origin/(" + _projectKey + "-\\d+)\\.","i");
+
+        /* Match branch names either:
+            starting with issue key followed by dot
+            OR
+            exactly the issue key
+        */
+        issueBranchKeyRx = RegExp("origin/(" + _projectKey + "-\\d+)\\.|origin/(" + _projectKey + "-\\d+)$","i");
         dashboardUID = _dashboardUID;
 
         getHTMLNodes( "condec-branches-dashboard-contents-container"+dashboardUID
@@ -223,15 +229,20 @@ var ConDecDevBranches = [];
     function renderData(){
         function branchesPerJiraIssueReducer(accumulator, currentBranch) {
             var nameOfBranch = currentBranch.name;
-            var issueMatch = nameOfBranch.match(issueKeyRx)
+            var issueMatch = nameOfBranch.match(issueBranchKeyRx);
             var accumulatorField = "";
             var nextValue = nameOfBranch;
 
-            if (!issueMatch || !issueMatch[1]) {
+            if (!issueMatch || (!issueMatch[1] && !issueMatch[2])) {
                 accumulatorField = "no Jira task";
             }
             else {
-                accumulatorField = issueMatch[1];
+                if (issueMatch[1]) {
+                    accumulatorField = issueMatch[1];
+                }
+                if (issueMatch[2]) {
+                    accumulatorField = issueMatch[2];
+                }
             }
 
             if (accumulator.has(accumulatorField)) {

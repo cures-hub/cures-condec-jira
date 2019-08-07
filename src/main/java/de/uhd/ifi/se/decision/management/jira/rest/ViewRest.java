@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -71,13 +73,15 @@ public class ViewRest {
 			return issueKeyIsInvalid();
 		}
 
+		String regexFilter = issueKey.toUpperCase()+"\\.|"+issueKey.toUpperCase()+"$";
 		// get feature branches of an issue
-		return getDiffViewerResponse(getProjectKey(issueKey), issueKey.toUpperCase()+".");
+		return getDiffViewerResponse(getProjectKey(issueKey),regexFilter );
 	}
 
-	private Response getDiffViewerResponse(String projectKey, String branchFilter) {
+	private Response getDiffViewerResponse(String projectKey, String filter) {
 		GitClient gitClient = new GitClientImpl(projectKey);
 		List<Ref> branches = gitClient.getRemoteBranches();
+		Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
 
 		if (branches.isEmpty()) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
@@ -86,7 +90,9 @@ public class ViewRest {
 		GitDecXtract extractor = new GitDecXtract(projectKey);
 		// TODO: move the loop elsewhere or maybe in GitDecXtract
 		for (Ref branch : branches) {
-			if (branch.getName().contains(branchFilter)) {
+			String branchName = branch.getName();
+			Matcher branchMatcher = filterPattern.matcher(branchName);
+			if (branchMatcher.find()) {
 				ratBranchList.put(branch, extractor.getElements(branch));
 			}
 		}
