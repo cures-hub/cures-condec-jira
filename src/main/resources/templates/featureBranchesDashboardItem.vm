@@ -80,8 +80,11 @@ $i18n.getText("condec.dashboard.featurebranch.project.data.error")
 </div>
 <script>
 
-/* look up https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event */
-window.addEventListener('load', (event) => {
+/* look up https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event
+    window.addEventListener('load'.. does not work well for gadgets.. observed with Firefox
+    using jquery instead, which manages gadgets.
+ */
+$(document).ready(function() {
   if (!window.conDecBranchesDashboard) {
       console.error('Could not find required resources!');
       errorNode = document.getElementById("condec-branches-dashboard-fatal-error${dashboardUID}");
