@@ -67,6 +67,9 @@ function getBranchesDiff() {
       }
     }
   }
+  else {
+    localStorage.setItem("condec.restCacheTTL",1000*60*3); /* init 3 minute caching */
+  }
 
   AJS.$.ajax({
     url: url,
@@ -109,7 +112,7 @@ function getCodeElements(elements) {
 }
 
 function getJiraBaseUri() {
-  return "http:/* localhost:2990/jira/"; */
+  return AJS.contextPath();
 }
 
 function getIcon(type) {
@@ -225,7 +228,7 @@ function getCodeElementsFromSide(blockData, newerSide) {
   /*
 	var fileName = document.createElement("p")
 	fileName.className = "filename"
-	fileName.innerText = blockData.filename; /*  getFilenameForHTML(blockData,newerSide) */
+	fileName.innerText = blockData.filename;
 	codeElements.appendChild(fileName)*/
 
   if (rationaleElements.length > 0) {
