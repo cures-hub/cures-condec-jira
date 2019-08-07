@@ -326,8 +326,8 @@
 	/*
 	 * external references: condec.vis
 	 */
-	ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, selectedJiraIssueTypes, createdAfter,
-			createdBefore, documentationLocations, callback) {
+	ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, selectedJiraIssueTypes,
+			createdAfter, createdBefore, documentationLocations, callback) {
 		var filterSettings = {
 			"projectKey" : projectKey,
 			"searchString" : searchTerm,
@@ -345,24 +345,24 @@
 	};
 
 	/*
-	 *external reference: condec.evolution.page.js
+	 * external reference: condec.evolution.page.js
 	 */
-    ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed, searchString, issueTypes, callback){
-        var filterSettings = {
-            "projectKey" : projectKey,
-            "searchString" : searchString,
-            "createdEarliest" : created,
-            "createdLatest" : closed,
-            "documentationLocations" : [ "" ],
-            "selectedJiraIssueTypes" : issueTypes
-        };
-        postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getCompareVis.json", filterSettings,
-            function (error, vis) {
-                if(error === null){
-                    callback(vis);
-                }
-        });
-    };
+	ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed, searchString, issueTypes, callback) {
+		var filterSettings = {
+			"projectKey" : projectKey,
+			"searchString" : searchString,
+			"createdEarliest" : created,
+			"createdLatest" : closed,
+			"documentationLocations" : [ "" ],
+			"selectedJiraIssueTypes" : issueTypes
+		};
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getCompareVis.json", filterSettings, function(error,
+				vis) {
+			if (error === null) {
+				callback(vis);
+			}
+		});
+	};
 	/*
 	 * external reference: condec.jira.issue.module
 	 */
@@ -395,21 +395,22 @@
 	/*
 	 * external references: condec.evolution.page
 	 */
-	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(searchString, created, closed, issueTypes, callback) {
-        var filterSettings = {
-            "projectKey" : projectKey,
-            "searchString" : searchString,
-            "createdEarliest" : created,
-            "createdLatest" : closed,
-            "documentationLocations" : [ "" ],
-            "selectedJiraIssueTypes" : issueTypes
-        };
-        postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getEvolutionData.json", filterSettings,
-				function(error, evolutionData) {
-					if (error === null) {
-						callback(evolutionData);
-					}
-				});
+	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(searchString, created, closed, issueTypes,
+			callback) {
+		var filterSettings = {
+			"projectKey" : projectKey,
+			"searchString" : searchString,
+			"createdEarliest" : created,
+			"createdLatest" : closed,
+			"documentationLocations" : [ "" ],
+			"selectedJiraIssueTypes" : issueTypes
+		};
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getEvolutionData.json", filterSettings, function(
+				error, evolutionData) {
+			if (error === null) {
+				callback(evolutionData);
+			}
+		});
 	};
 
 	/*
@@ -565,7 +566,7 @@
 	}
 
 	/*
-
+	 * 
 	 */
 
 	/*
@@ -715,7 +716,7 @@
 			}
 		};
 		xhr.send();
-	}	
+	}
 
 	function getText(url, callback) {
 		var xhr = new XMLHttpRequest();
@@ -788,12 +789,28 @@
 	}
 
 	/*
-	 * external references: condec.jira.issue.module
+	 * external references: condec.jira.issue.module, and many more..
 	 */
 	function getIssueKey() {
-		var issueKey = JIRA.Issue.getIssueKey();
-		if (issueKey === null) {
-			issueKey = AJS.Meta.get("issue-key");
+		var issueKey = null;
+		if (JIRA && JIRA.Issue && JIRA.Issue.getIssueKey) {
+			issueKey = JIRA.Issue.getIssueKey();
+		}
+		if (issueKey === undefined || !issueKey) {
+			console.log("conDecAPI could not getIssueKey using object JIRA!");
+			if (AJS && AJS.Meta && AJS.Meta.get) {
+				issueKey = AJS.Meta.get("issue-key");
+			}
+		}
+		if (issueKey === undefined || !issueKey) {
+			console.log("conDecAPI could not getIssueKey using object AJS!");
+			var chunks = document.location.pathname.split("/");
+			if (chunks.length > 0) {
+				var lastChunk = chunks[chunks.length - 1];
+				if (lastChunk.includes("-")) {
+					issueKey = lastChunk;
+				}
+			}
 		}
 		console.log("conDecAPI getIssueKey: " + issueKey);
 		return issueKey;
