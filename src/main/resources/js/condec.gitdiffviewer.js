@@ -24,7 +24,7 @@ var NO_QUALITY_PROBLEMS_IN_BRANCH = "No quality problems found in this branch.";
 var NO_QUALITY_PROBLEMS_FOR_NO_RATIONALE_IN_BRANCH =
   "No rationale found in messages and changed files!";
 
-var FILTER_CODE_RATIONALE_TEXT_COMMENT_DOTS = false; // to don use it, may cause confusions
+var FILTER_CODE_RATIONALE_TEXT_COMMENT_DOTS = false; /*  to don use it, may cause confusions */
 
 var url;
 var branches = [];
@@ -39,7 +39,7 @@ function getBranchesDiff() {
     "/rest/decisions/latest/view/elementsFromBranchesOfJiraIssue.json?issueKey=" +
     issue;
 
-  // get cache or server data?
+  /*  get cache or server data? */
   if (localStorage.getItem("condec.restCacheTTL")) {
     if (localStorage.getItem(url)) {
       var data = null;
@@ -109,7 +109,7 @@ function getCodeElements(elements) {
 }
 
 function getJiraBaseUri() {
-  return "http://localhost:2990/jira/";
+  return "http:/* localhost:2990/jira/"; */
 }
 
 function getIcon(type) {
@@ -156,7 +156,7 @@ function getElementAsHTML(element, isFromMessage) {
   root.title = locationText;
   root.dataset.ratType = element.type.toLowerCase();
 
-  // do not set ID for A file-rationale
+  /*  do not set ID for A file-rationale */
   if (!element.key.codeFileA) {
     root.setAttribute(
       "id",
@@ -185,7 +185,7 @@ function getFileLocationShort(fileDecKnowKey) {
     shortNameArr.unshift(longNameArr.pop()) &&
     shortNameArr.length < PATH_DEPTH
   ) {
-      // NOP: unshifting of array ellemts is done in while construct
+      /*  NOP: unshifting of array ellemts is done in while construct */
   }
   return shortNameArr.join("/");
 }
@@ -202,7 +202,7 @@ function getEmptyElementAsHTML(forNewerFile) {
   return emptyE;
 }
 
-// version A (old) files have "~" character prepended to actual file name
+/*  version A (old) files have "~" character prepended to actual file name */
 function removeTildeFromAFilename(lastBranchElementsFromFileslements) {
   return lastBranchElementsFromFiles.map(function(e) {
     e.key.source = e.key.source.replace("~", "");
@@ -225,7 +225,7 @@ function getCodeElementsFromSide(blockData, newerSide) {
   /*
 	var fileName = document.createElement("p")
 	fileName.className = "filename"
-	fileName.innerText = blockData.filename; // getFilenameForHTML(blockData,newerSide)
+	fileName.innerText = blockData.filename; /*  getFilenameForHTML(blockData,newerSide) */
 	codeElements.appendChild(fileName)*/
 
   if (rationaleElements.length > 0) {
@@ -252,7 +252,7 @@ function appendCodeElements(brNode) {
 
     var fileRatElement = document.createElement("p");
 
-    // Start: decode blockKey
+    /*  Start: decode blockKey */
     var block = blockKey.split(" ");
     var blockIsDiffType = false;
     var blockEntry = "";
@@ -260,17 +260,17 @@ function appendCodeElements(brNode) {
       blockIsDiffType = block[0].indexOf("1") === 0;
       blockEntry = block[2];
     }
-    // End: decode blockKey
+    /*  End: decode blockKey */
 
     var fileRatBlockLabel = document.createElement("p");
     fileRatBlockLabel.dataset.blockSequence = blockData.sequence;
-    // rationale changed?
+    /*  rationale changed? */
     if (blockIsDiffType) {
-      // get A side rationale elements
+      /*  get A side rationale elements */
       var codeElements = getCodeElementsFromSide(blockData, false);
       fileRatElement.appendChild(codeElements);
 
-      // add diff edit label
+      /*  add diff edit label */
       fileRatBlockLabel.innerText = blockData.filename + " - " + blockEntry;
       fileRatBlockLabel.className = "fileDiffBlockLabel";
 
@@ -285,7 +285,7 @@ function appendCodeElements(brNode) {
       fileRatElement.className = "fileNonDiffBlock";
     }
 
-    // get B side rationale elements
+    /*  get B side rationale elements */
     codeElements = getCodeElementsFromSide(blockData, true);
     fileRatElement.appendChild(codeElements);
 
@@ -300,7 +300,7 @@ function getBlock(element, counter) {
     block.diffType = true;
     block.entry = element.key.diffEntry + " " + element.key.source;
   } else {
-    // rat. elements outside diff
+    /*  rat. elements outside diff */
     block.diffType = false;
     block.sequence = counter;
     block.entry = element.key.source;
@@ -317,14 +317,14 @@ function getBlock(element, counter) {
 
 function appendBranchMessageElementsHtml(elementsFromMessage, parentNode) {
   if (elementsFromMessage !== null && elementsFromMessage.length > 0) {
-    // group rationale in messages by commit hash
+    /*  group rationale in messages by commit hash */
     var msgCommitIsh = "";
     var messageBlockHtml = null;
     for (m = 0; m < elementsFromMessage.length; m++) {
       if (msgCommitIsh !== elementsFromMessage[m].key.source) {
         msgCommitIsh = elementsFromMessage[m].key.source;
         if (messageBlockHtml) {
-          // add previous message
+          /*  add previous message */
           parentNode.appendChild(messageBlockHtml);
         }
         messageBlockHtml = document.createElement("p");
@@ -449,14 +449,14 @@ function showBranchDiff(data, index) {
   branchContainer.id = "branchGroup-" + index;
   branchContainer.className = "branchGroup";
 
-  // show user the branch name
+  /*  show user the branch name */
   appendBranchLabel(branchContainer, data);
-  // show user the quality assessment for rationale observed in modified files
+  /*  show user the quality assessment for rationale observed in modified files */
   appendBranchQualityAssessment(branchContainer, index);
-  // show user the rationale observed in modified files
+  /*  show user the rationale observed in modified files */
   appendBranchAllElements(branchContainer, data.elements);
 
-  // append branch HTMl to parent HTML container
+  /*  append branch HTMl to parent HTML container */
   contentHtml.appendChild(branchContainer);
 }
 
@@ -468,7 +468,7 @@ function showBranchesDiff(data) {
   contentHtml.innerText = "";
 
   if (data.branches.length > 0) {
-    // branches come not sorted from rest
+    /*  branches come not sorted from rest */
     branches = data.branches.sort(function(a, b) {
       if (a.branchName < b.branchName) {
         return -1;
@@ -482,21 +482,21 @@ function showBranchesDiff(data) {
       lastBranchIdx = branchIdx;
       lastBranchBlocks = new Map();
 
-      // these elements are sorted by commit age and occurrence in message
+      /*  these elements are sorted by commit age and occurrence in message */
       lastBranchElementsFromMessages = getMessageElements(elements);
-      // these elements are not sorted
+      /*  these elements are not sorted */
       lastBranchElementsFromFiles = getCodeElements(elements);
 
       showBranchDiff(lastBranch, branchIdx);
 
-      // assess relations between rationale and their problems
+      /*  assess relations between rationale and their problems */
       conDecLinkBranchCandidates.init(
         lastBranchElementsFromMessages,
         lastBranch.branchName,
         branchIdx,
         "messages"
       );
-      // render results in HTML
+      /*  render results in HTML */
       conDecLinkBranchCandidates.attachProblemsToElementsInHTML();
 
       conDecLinkBranchCandidates.init(
@@ -505,7 +505,7 @@ function showBranchesDiff(data) {
         branchIdx,
         "files"
       );
-      // render results in HTML
+      /*  render results in HTML */
       conDecLinkBranchCandidates.attachProblemsToElementsInHTML();
     }
 
@@ -530,8 +530,12 @@ function showBranchesDiff(data) {
     attachClickEventsOnBlockLabels(blockForNonDiffElements);
     attachClickEventsOnBlockLabels(blockForDiffElements);
 
-    addInvisibleButCopyableElementTypeTags(elementNodes, null); // 2nd argument "messageBox"
-    attachClickEventsOnRationale(elementNodes, null); // 2nd argument "messageBox"
+    addInvisibleButCopyableElementTypeTags(elementNodes, null); /*  2nd argument "messageBox" */
+    attachClickEventsOnRationale(elementNodes, null); /*  2nd argument "messageBox" */
+
+
+    attachClickEventsOnRationaleTypesFilter("branchRationaleFilter");
+
   } else {
     contentHtml.innerText = "No feature branches found for this issue.";
   }
@@ -556,6 +560,28 @@ function attachClickEventsOnRationale(elements) {
     }
   };
   attachClickEvents(elements, expander, "click to hide/show details");
+}
+
+function attachClickEventsOnRationaleTypesFilter(filterControlsClass) {
+  var elements = document.getElementsByClassName(filterControlsClass);
+
+  var handler = function(event) {
+    if (event.target.checked) {
+        console.log("checked");
+        showRatType(event.target.value);
+    }
+    else {
+        hideRatType(event.target.value);
+    }
+  }
+
+  if (elements && elements.length > 0) {
+    for (var i = 0; i < elements.length; i++) {
+      var element = elements[i];
+      element.addEventListener("click", handler);
+    }
+  }
+
 }
 
 function attachClickEventsOnBlockLabels(labels) {
@@ -622,18 +648,18 @@ function addInvisibleButCopyableElementTypeTags(elementNodes, classFilter) {
       var rationaleNode = elementNodes[i];
       if (!classFilter || rationaleNode.classList.contains(classFilter)) {
         contentList = rationaleNode.getElementsByClassName("content");
-        // read type from html
+        /*  read type from html */
         rationaleType = rationaleNode.dataset.ratType;
         if (contentList && rationaleType) {
           rationaleTextParagraphNode = contentList[0];
           if (rationaleTextParagraphNode) {
-            // render tags
+            /*  render tags */
             var startTag = document.createElement("span");
             var endTag = document.createElement("span");
 
             startTag.innerText = "[" + rationaleType + "]";
             endTag.innerText = "[/" + rationaleType + "]";
-            rationaleTextParagraphNode.prepend(startTag); // not supported by IE, EdgeMobile
+            rationaleTextParagraphNode.prepend(startTag); /*  not supported by IE, EdgeMobile */
             rationaleTextParagraphNode.appendChild(endTag);
           }
         }
@@ -675,5 +701,20 @@ function addSelectionHelperForContainer(labels) {
   }
 }
 
-//showBranchDiff(lastBranch)
-//getBranchesDiff()
+function showRatType(type) {
+    Array.from(document.getElementsByClassName(type)).map(
+        function(e) { e.classList.remove("hidden");}
+    )
+}
+
+function hideRatType(type) {
+    Array.from(document.getElementsByClassName(type)).map(
+        function(e) { e.classList.add("hidden");}
+    )
+}
+
+function listRatClasses() {
+    Array.from(document.getElementsByClassName("rationale")).map(
+        function(e) { console.log(e.className);}
+    )
+}
