@@ -394,13 +394,14 @@ public class ConfigRest {
 
 	@Path("/saveArffFile")
 	@POST
-	public Response saveArffFile(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+	public Response saveArffFile(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+								 @QueryParam("useOnlyValidatedData") boolean useOnlyValidatedData) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
 		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
-		File arffFile = trainer.saveArffFile();
+		File arffFile = trainer.saveArffFile(useOnlyValidatedData);
 
 		if (arffFile != null) {
 			return Response.ok(Status.ACCEPTED).entity(

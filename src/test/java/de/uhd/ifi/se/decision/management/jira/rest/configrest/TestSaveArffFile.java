@@ -15,28 +15,31 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestTextSplitter.AoSentenceTestDatabaseUpdater.class)
 public class TestSaveArffFile extends TestConfigSuper {
+	/**
+	 * TODO: TESTS WITH useOnlyValidatedData FLAG
+	 */
 
 	@Test
 	public void testRequestNullProjectKeyNull() {
 		assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-				configRest.saveArffFile(null, null).getEntity());
+				configRest.saveArffFile(null, null, true).getEntity());
 	}
 
 	@Test
 	public void testRequestNullProjectKeyExists() {
 		assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-				configRest.saveArffFile(null, "TEST").getEntity());
+				configRest.saveArffFile(null, "TEST", true).getEntity());
 	}
 
 	@Test
 	public void testRequestValidProjectKeyNull() {
 		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-				configRest.saveArffFile(request, null).getEntity());
+				configRest.saveArffFile(request, null, true).getEntity());
 	}
 
 	@Test
 	@NonTransactional
 	public void testRequestValidProjectKeyExists() {
-		assertEquals(Response.ok().build().getClass(), configRest.saveArffFile(request, "TEST").getClass());
+		assertEquals(Response.ok().build().getClass(), configRest.saveArffFile(request, "TEST", true).getClass());
 	}
 }

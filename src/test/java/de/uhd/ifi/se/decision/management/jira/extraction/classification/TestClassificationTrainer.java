@@ -33,7 +33,9 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestTextSplitter.AoSentenceTestDatabaseUpdater.class)
 public class TestClassificationTrainer extends TestSetUpWithIssues {
-
+	/**
+	 * TODO: TESTS WITH useOnlyValidatedData FLAG
+	 */
 	private EntityManager entityManager;
 
 	@Before
@@ -104,7 +106,7 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 	public void testClassificationTrainerFromArffFile() {
 		List<DecisionKnowledgeElement> trainingElements = getTrainingData();
 		ClassificationTrainer trainer = new ClassificationTrainerImpl("TEST", trainingElements);
-		File file = trainer.saveArffFile();
+		File file = trainer.saveArffFile(true);
 		trainer.setArffFile(file);
 		assertNotNull(trainer.getInstances());
 		trainer = new ClassificationTrainerImpl("TEST", file.getName());
@@ -116,7 +118,7 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 	@Test
 	public void testSaveArffFile() {
 		ClassificationTrainer trainer = new ClassificationTrainerImpl("TEST");
-		File file = trainer.saveArffFile();
+		File file = trainer.saveArffFile(true);
 		assertTrue(file.exists());
 		file.delete();
 	}
