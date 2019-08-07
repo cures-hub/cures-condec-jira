@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class FeatureBranchQualityDashboardItem  implements ContextProvider {
 
@@ -40,8 +41,8 @@ public class FeatureBranchQualityDashboardItem  implements ContextProvider {
 
     private Map<String, Object> attachProjectsMaps() {
         Map<String, Object> newContext = new HashMap<>();
-        Map<String, String> projectNameMap = new HashMap<String, String>();
-        Map<String, String> projectGitMap = new HashMap<String, String>();
+        Map<String, String> projectNameMap = new TreeMap<String, String>();
+        Map<String, String> projectGitMap = new TreeMap<String, String>();
         for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
             String projectKey = project.getKey();
             String projectName = project.getName();
