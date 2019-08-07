@@ -370,6 +370,8 @@
 				  location="/js/echart/echarts.js" />
 		<resource type="download" name="condec.dashboard.dataTool.js"
 				  location="/js/echart/dataTool.js" />
+		<resource type="download" name="condec.dashboard.css"
+				  location="/css/condec.git.dashboard.css" />
 
 		<context>atl.dashboard</context>
 		<context>condec-feature-branch-dashboard</context>
