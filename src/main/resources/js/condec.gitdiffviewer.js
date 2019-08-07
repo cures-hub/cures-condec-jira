@@ -1,4 +1,6 @@
 /*
+TODO: do not pollute global javascript scope!
+
 Known issues:
 	branch sorting is random
 	msg.key.positin contains bad data, it is cursor:length
@@ -26,10 +28,26 @@ var NO_QUALITY_PROBLEMS_FOR_NO_RATIONALE_IN_BRANCH =
 
 var FILTER_CODE_RATIONALE_TEXT_COMMENT_DOTS = false; /*  to don use it, may cause confusions */
 
+var BRANCHES_XHR_ERROR_MSG = "An unspecified error occurred while fetching REST data, please try again.";
+
 var url;
 var branches = [];
 
 function getBranchesDiff() {
+  function getIssueKey() {
+    var issueKey = AJS.$("meta[name='ajs-issue-key']").attr("content");
+    if (issueKey === undefined && JIRA && JIRA.Issue) {
+        issueKey= JIRA.Issue.getIssueKey();
+    }
+    if (issueKey === undefined) {
+        var chunks = document.location.pathname.split("/");
+        if (chunks.length>0) {
+            issueKey = chunks[chunks.length-1];
+        }
+    }
+    return issueKey;
+  }
+
   contentHtml = document.getElementById("featureBranches-container");
   contentHtml.innerText = "Loading ...";
 
@@ -75,7 +93,7 @@ function getBranchesDiff() {
     url: url,
     type: "get",
     dataType: "json",
-    async: false,
+    async: true,
     success: showBranchesDiff,
     error: showError
   });
@@ -83,7 +101,7 @@ function getBranchesDiff() {
 
 function showError(error) {
   console.debug("showError");
-  contentHtml.innerText = "error";
+  contentHtml.innerText = BRANCHES_XHR_ERROR_MSG;
   console.log(error);
 }
 
@@ -123,7 +141,7 @@ function getIcon(type) {
   img = document.createElement("img");
   path =
     getJiraBaseUri() +
-    "download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/";
+    "/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/";
   img.src = path + type + ".png";
   return img;
 }
