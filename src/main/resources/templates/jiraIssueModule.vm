@@ -26,6 +26,18 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 		<div id="vis-container"></div>
 	</div>
 	<div class="tabs-pane" id="featureBranchesTab">
+	    <div class="branchRationaleFilterPanel hidden">
+            <label>Issues: <input type="checkbox" checked=true class="branchRationaleFilter" value="issue" />
+            </label>
+            <label>Decisions: <input type="checkbox" checked=true class="branchRationaleFilter" value="decision" />
+            </label>
+            <label>Alternative: <input type="checkbox" checked=true class="branchRationaleFilter" value="alternative" />
+            </label>
+            <label>Pro: <input type="checkbox" checked=true class="branchRationaleFilter" value="pro" />
+            </label>
+            <label>Con: <input type="checkbox" checked=true class="branchRationaleFilter" value="con" />
+            </label>
+		</div>
 		<div id="featureBranches-container">
 		</div>
 	</div>

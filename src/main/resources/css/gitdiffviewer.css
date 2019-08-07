@@ -1,5 +1,16 @@
 /* some basic looks for rationale from the commit messages and files */
 
+#featureBranchesTab .branchRationaleFilterPanel {
+    margin: 1em;
+    display: flex;
+    justify-content: space-between;
+}
+
+#featureBranchesTab .branchRationaleFilterPanel label {
+    cursor: pointer;
+    border: 1px solid grey;
+}
+
 #featureBranches-container > p {
 }
 .branchGroup {
