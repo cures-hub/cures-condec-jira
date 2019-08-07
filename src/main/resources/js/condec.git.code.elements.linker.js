@@ -16,7 +16,7 @@ linkBranchCandidates
 (function(global) {
   var ConDecLinkBranchCandidates = function ConDecLinkBranchCandidates() {};
 
-  // branch status enums
+  /* branch status enums */
   var BRANCH_STATUS_UNSET = "No rationale";
   var BRANCH_STATUS_FINE =  "Good";
   var BRANCH_STATUS_BAD =  "Incorrect";
@@ -33,14 +33,14 @@ linkBranchCandidates
   var BRANCH_STATUS_BAD =  "Some rationale elements should be corrected in this branch."
   */
 
-  // bad problem explanations
+  /*  bad problem explanations */
   var ARGUMENT_WITHOUT_PARENT_ELEMENT = "Argument without parent alternative";
   var ALTERNATIVE_DECISION_WITHOUT_PARENT_ELEMENT =
     "Alternative without parent problem";
   var ISSUE_WITH_MANY_DECISIONS = "Issue has too many decisions";
   var DECISION_WITHOUT_PRO_ARGUMENTS = "Decision does not have a pro argument";
 
-  // not that bad problem explanations
+  /*  not that bad problem explanations */
   var ALTERNATIVE_DECISION_WITHOUT_ARGUMENTS =
     "Alternative does not have any arguments";
   var DECISION_ARGUMENTS_MAYBE_WORSE_THAN_ALTERNATIVE =
@@ -53,14 +53,14 @@ linkBranchCandidates
   var branchInSequence;
   var problemSourceCategory;
 
-  // parser helpers
+  /*  parser helpers */
   var currentIssueId = null;
   var currentAlternativeId = null;
-  var currentArgumentId = null; // will not be used at all?
+  var currentArgumentId = null; /*  will not be used at all? */
   var currentSource = null;
   var nextRationaleExpectedOnLine = null;
 
-  // results
+  /*  results */
   var problemsList = [];
   var linkCandidates = [];
 
@@ -96,7 +96,7 @@ linkBranchCandidates
 
   function runCodeLinker() {
     console.log("runCodelinker");
-    // map sorted rationale elements to simpler structure
+    /*  map sorted rationale elements to simpler structure */
     linkCandidates = rationale.map(function(el, idx) {
       candidate = {};
       candidate.id = idx;
@@ -108,7 +108,7 @@ linkBranchCandidates
         candidate.positionEndLine = el.key.positionEndLine;
       }
       candidate.positionStartLine = el.key.positionStartLine;
-      // we are interested only in final code elements
+      /*  we are interested only in final code elements */
       candidate.skip = el.key.codeFileA;
       return candidate;
     });
@@ -154,7 +154,7 @@ linkBranchCandidates
     }
 
     function captureProblems() {
-      // reset problems list
+      /*  reset problems list */
       problemsList = [];
       for (var i = 0; i < linkCandidates.length; i++) {
         if (linkCandidates[i].skip) {
@@ -168,13 +168,13 @@ linkBranchCandidates
     }
 
     function addNewIssue(el) {
-      // manage parser variables
+      /*  manage parser variables */
       resetHelpers();
       currentIssueId = el.id;
       currentSource = el.source;
       increaseNextRationaleLatestExpectedLine(el);
 
-      // properties
+      /*  properties */
       el.alternatives = [];
       el.decisions = [];
       el.problems = initProblems();
@@ -187,20 +187,20 @@ linkBranchCandidates
           this.alternatives.push(subElement.id);
         }
       };
-      // has too many decisions
+      /*  has too many decisions */
       el.hasManyDecisions = function() {
         return this.decisions.length > 1;
       };
-      // has no decisions
+      /*  has no decisions */
       el.hasNoDecisions = function() {
         return this.decisions.length === 0;
       };
-      // has no alternatives
+      /*  has no alternatives */
       el.hasNoAlternatives = function() {
         return this.alternatives.length === 0;
       };
 
-      // gather element's problems
+      /*  gather element's problems */
       el.getElementProblems = function() {
         if (this.hasManyDecisions()) {
           this.problems.errors.push(ISSUE_WITH_MANY_DECISIONS);
@@ -218,7 +218,7 @@ linkBranchCandidates
     function addNewAlternative(el, isDecision) {
       el.parent = null;
 
-      // manage parser variables
+      /*  manage parser variables */
       if (canBeLinkedWithParent(el)) {
         if (
           linkCandidates[currentIssueId] &&
@@ -234,7 +234,7 @@ linkBranchCandidates
       currentSource = el.source;
       increaseNextRationaleLatestExpectedLine(el);
 
-      // properties
+      /*  properties */
       el.pros = [];
       el.cons = [];
       el.problems = initProblems();
@@ -248,19 +248,19 @@ linkBranchCandidates
           this.cons.push(subElement.id);
         }
       };
-      //has parent
+      /* has parent */
       el.hasParent = function() {
         return this.parent !== null;
       };
-      // sums up and down votes
+      /*  sums up and down votes */
       el.countVotes = function() {
         return this.pros.length - this.cons.length;
       };
-      // checks if decision has any up votes
+      /*  checks if decision has any up votes */
       el.isDecisionWithoutPros = function() {
         return this.isDecision && this.pros.length === 0;
       };
-      // checks if decision is out voted by any alternative
+      /*  checks if decision is out voted by any alternative */
       el.isDecisionOutvotedByAlternative = function() {
         if (!this.isDecision || !this.hasParent()) {
             return false;
@@ -277,12 +277,12 @@ linkBranchCandidates
         }
         return false;
       };
-      // checks if alternative has any votes
+      /*  checks if alternative has any votes */
       el.isWithoutArguments = function() {
         return this.pros.length === 0 && this.cons.length === 0;
       };
 
-      // gather element's problems
+      /*  gather element's problems */
       el.getElementProblems = function() {
         if (!this.hasParent()) {
           this.problems.errors.push(
@@ -322,17 +322,17 @@ linkBranchCandidates
       currentSource = el.source;
       increaseNextRationaleLatestExpectedLine(el);
 
-      // properties
+      /*  properties */
       el.isProArg = isProArg;
       el.problems = initProblems();
 
       /* methods */
-      //has parent
+      /* has parent */
       el.hasParent = function() {
         return this.parent !== null;
       };
 
-      // gather element's problems
+      /*  gather element's problems */
       el.getElementProblems = function() {
         if (!this.hasParent()) {
           this.problems.errors.push(ARGUMENT_WITHOUT_PARENT_ELEMENT);
@@ -342,11 +342,11 @@ linkBranchCandidates
     }
 
     function canBeLinkedWithParent(element) {
-      // check element's source
+      /*  check element's source */
       if (currentSource === null || currentSource !== element.source) {
         return false;
       }
-      // check line distances for rationale in code, not in commit messages
+      /*  check line distances for rationale in code, not in commit messages */
       if (
         element.positionEndLine &&
         (nextRationaleExpectedOnLine === null ||
@@ -357,13 +357,13 @@ linkBranchCandidates
       return true;
     }
 
-    // can be only applied if line end is known, which is not
-    // the case for rationale from commit messages
+    /*  can be only applied if line end is known, which is not */
+    /*  the case for rationale from commit messages */
     function increaseNextRationaleLatestExpectedLine(element) {
       if (!element.positionEndLine) {
         return;
       }
-      var MAX_DISTANCE = 2; // allows one line between rationale
+      var MAX_DISTANCE = 2; /*  allows one line between rationale */
       nextRationaleExpectedOnLine = MAX_DISTANCE + element.positionEndLine;
     }
 
@@ -413,7 +413,7 @@ linkBranchCandidates
         problemElement.className = "rat-link-problem";
         problemElement.title = "";
 
-        // has warnings?
+        /*  has warnings? */
         if (problemWithRationale.problems.warnings.length > 0) {
           problemElement.className = problemElement.className + " warning";
           problemElement.title += problemWithRationale.problems.warnings.join("; ");
@@ -426,7 +426,7 @@ linkBranchCandidates
             warningsGroup.add(problemWithRationale.problems.warnings[w]);
           }
         }
-        // has errors?
+        /*  has errors? */
         if (problemWithRationale.problems.errors.length > 0) {
           problemElement.className = problemElement.className + " error";
           problemElement.title += problemWithRationale.problems.errors.join("; ");
@@ -453,9 +453,9 @@ linkBranchCandidates
             return;
           }
           if (errors.size > 0 || warnings.size > 0) {
-            // reset the initial text
+            /*  reset the initial text */
             qElem.childNodes[0].textContent = "";
-            // draw attention to feature tab menu item
+            /*  draw attention to feature tab menu item */
             setStatusWarningInMenuItem();
           } else if (errors.size === 0 && warnings.size === 0) {
             setStatusFineInMenuItem();
@@ -492,7 +492,7 @@ linkBranchCandidates
           if (menuItems && menuItems.length && menuItems.length > 0) {
             for (var idx = 0; idx < menuItems.length; idx++) {
               if (menuItems[idx].dataset.condec) {
-                // if any branch has issues, status is set to bad.
+                /*  if any branch has issues, status is set to bad. */
                 if (status === "condec-attention") {
                     menuItems[idx].classList.remove("condec-fine");
                     menuItems[idx].classList.add(status);
@@ -537,14 +537,14 @@ linkBranchCandidates
      function sortRationaleDiffOfFiles(rationale) {
       /* rationale should appear in the order it was found in code */
       rationale.sort(function(a, b) {
-        // different files
+        /*  different files */
         if (a.key.source < b.key.source) {
           return -1;
         }
         if (a.key.source > b.key.source) {
           return 1;
         }
-        // same file different lines
+        /*  same file different lines */
         if (a.key.positionStartLine < b.key.positionStartLine) {
           return -1;
         }
@@ -552,7 +552,7 @@ linkBranchCandidates
           return 1;
         }
 
-        // same file same line different position on line
+        /*  same file same line different position on line */
         if (a.key.positionCursor < b.key.positionCursor) {
           return -1;
         }
@@ -560,7 +560,7 @@ linkBranchCandidates
           return 1;
         }
 
-        // same file same line same position on line
+        /*  same file same line same position on line */
         return 0;
       });
       return rationale;
@@ -568,10 +568,10 @@ linkBranchCandidates
 
     ConDecLinkBranchCandidates.prototype.getBranchStatus = function getBranchStatus() {
         if (!rationale || rationale.length<1) {
-            return BRANCH_STATUS_UNSET; //unset
+            return BRANCH_STATUS_UNSET; /* unset */
         }
         if (problemsList.length>0) {
-            return BRANCH_STATUS_BAD; // has problems
+            return BRANCH_STATUS_BAD; /*  has problems */
         }
         return BRANCH_STATUS_FINE;
     };
