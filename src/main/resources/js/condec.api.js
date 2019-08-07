@@ -788,13 +788,26 @@
 	}
 
 	/*
-	 * external references: condec.jira.issue.module
+	 * external references: condec.jira.issue.module, and many more..
 	 */
 	function getIssueKey() {
-		var issueKey = JIRA.Issue.getIssueKey();
-		if (issueKey === null) {
-			issueKey = AJS.Meta.get("issue-key");
+		var issueKey = null;
+		if (JIRA && JIRA.issueKey && JIRA.issueKey.getIssueKey) {
+		    issueKey = JIRA.Issue.getIssueKey();
 		}
+		if (!issueKey) {
+		    console.log("conDecAPI could not getIssueKey using object JIRA!");
+		    if (AJS && AJS.Meta && AJS.Meta.get) {
+			    issueKey = AJS.Meta.get("issue-key");
+		    }
+		}
+		if (!issueKey) {
+		    console.log("conDecAPI could not getIssueKey using object AJS!");
+            var chunks = document.location.pathname.split("/");
+            if (chunks.length>0) {
+                issueKey = chunks[chunks.length-1];
+            }
+        }
 		console.log("conDecAPI getIssueKey: " + issueKey);
 		return issueKey;
 	}

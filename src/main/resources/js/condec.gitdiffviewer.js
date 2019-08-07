@@ -34,28 +34,14 @@ var url;
 var branches = [];
 
 function getBranchesDiff() {
-  function getIssueKey() {
-    var issueKey = AJS.$("meta[name='ajs-issue-key']").attr("content");
-    if (issueKey === undefined && JIRA && JIRA.Issue) {
-        issueKey= JIRA.Issue.getIssueKey();
-    }
-    if (issueKey === undefined) {
-        var chunks = document.location.pathname.split("/");
-        if (chunks.length>0) {
-            issueKey = chunks[chunks.length-1];
-        }
-    }
-    return issueKey;
-  }
 
   contentHtml = document.getElementById("featureBranches-container");
   contentHtml.innerText = "Loading ...";
 
-  var issue = JIRA.Issue.getIssueKey();
   url =
     AJS.contextPath() +
     "/rest/decisions/latest/view/elementsFromBranchesOfJiraIssue.json?issueKey=" +
-    issue;
+    conDecAPI.getIssueKey();
 
   /*  get cache or server data? */
   if (localStorage.getItem("condec.restCacheTTL")) {
