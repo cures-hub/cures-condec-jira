@@ -711,4 +711,19 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		}
 		return validatedPartsOfText;
 	}
+
+	public List<DecisionKnowledgeElement> getUnvalidatedPartsOfText(String projectKey) {
+		List<DecisionKnowledgeElement> unvalidatedPartsOfText = new ArrayList<DecisionKnowledgeElement>();
+		if (projectKey == null || projectKey.isEmpty()) {
+			return unvalidatedPartsOfText;
+		}
+		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
+				Query.select().where("PROJECT_KEY = ? and VALIDATED = ?", projectKey, false));
+
+		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
+			PartOfJiraIssueText validatedPartOfText = new PartOfJiraIssueTextImpl(databaseEntry);
+			unvalidatedPartsOfText.add(validatedPartOfText);
+		}
+		return unvalidatedPartsOfText;
+	}
 }
