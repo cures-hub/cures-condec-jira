@@ -227,6 +227,7 @@ var ConDecDevBranches = [];
     }
 
     function renderData(){
+        BRANCHES_SEPARATOR_TOKEN = " ";
         function branchesPerJiraIssueReducer(accumulator, currentBranch) {
             var nameOfBranch = currentBranch.name;
             var issueMatch = nameOfBranch.match(issueBranchKeyRx);
@@ -246,7 +247,7 @@ var ConDecDevBranches = [];
             }
 
             if (accumulator.has(accumulatorField)) {
-                nextValue = accumulator.get(accumulatorField)+";"+ nameOfBranch;
+                nextValue = accumulator.get(accumulatorField) + BRANCHES_SEPARATOR_TOKEN + nameOfBranch;
             }
 
             accumulator.set(accumulatorField, nextValue);
@@ -254,7 +255,6 @@ var ConDecDevBranches = [];
         }
 
         function statusWithBranchesReducer(accumulator, currentBranch) {
-            BRANCHES_SEPARATOR_TOKEN = " ";
             var  statusOfBranch = currentBranch.status;
             var  nameOfBranch = currentBranch.name;
             if (accumulator.has(statusOfBranch)) {
@@ -275,7 +275,6 @@ var ConDecDevBranches = [];
         }
 
         function problemsWithBranchesReducer(accumulator, currentBranch) {
-            BRANCHES_SEPARATOR_TOKEN = ";";
             var  problems = currentBranch.problems;
             var  nameOfBranch = currentBranch.name;
 
