@@ -254,7 +254,7 @@ var ConDecDevBranches = [];
         }
 
         function statusWithBranchesReducer(accumulator, currentBranch) {
-            BRANCHES_SEPARATOR_TOKEN = ";";
+            BRANCHES_SEPARATOR_TOKEN = " ";
             var  statusOfBranch = currentBranch.status;
             var  nameOfBranch = currentBranch.name;
             if (accumulator.has(statusOfBranch)) {

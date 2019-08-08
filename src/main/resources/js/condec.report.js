@@ -16,27 +16,29 @@
 
 	var issueKeyParser=/([^a-z]*)([a-z]+)-([0-9]+).*/gi
 
-	var isIssueData = true;
+	var isIssueData = true; /* otherwise git branch data */
 
 	const CHART_RICH_PIE = "piechartRich";
 	const CHART_SIMPLE_PIE = "piechartInteger";
 	const CHART_BOXPLOT = "boxplot";
 	const DEC_STRING_SEPARATOR = " ";
-	const BRANCH_STRING_SEPARATOR = ";";
 
 	var ConDecReport = function ConDecReport() {
 	};
 
+	/* used by reports page decisionKnowledgeReport.vm */
 	ConDecReport.prototype.initializeChart = function(divId, title, subtitle, dataMap) {
-	    isIssueData = true;
+		isIssueData = true;
 	    this.initializeChartForSources(divId, title, subtitle, dataMap);
-    }
+	}
 
+	/* used by branch dashboard item featureBranchesDashboardItem.vm */
 	ConDecReport.prototype.initializeChartForBranchSource = function(divId, title, subtitle, dataMap) {
 	    isIssueData = false;
 	    this.initializeChartForSources(divId, title, subtitle, dataMap);
     }
 
+	/* TODO: Below function does not need to be exposed! */
 	ConDecReport.prototype.initializeChartForSources = function(divId, title, subtitle, dataMap) {
 		var domElement = document.getElementById(divId);
 		if (!domElement) {
@@ -85,6 +87,7 @@
 		return boxplot;
 	};
 
+	/* TODO: Function does not need to be exposed */
 	ConDecReport.prototype.initializeDivWithPieChartData = function(piechart, title, subtitle,
 			objectsMap, hasRichData) {
 		var data = [];
@@ -103,12 +106,7 @@
 			var value = objectsMap.get(key)
 			var entry = new Object();
 			if ( hasRichData && (typeof value === 'string' || value instanceof String)) {
-			    if (isIssueData) {
-				    entry["value"] = value.split(' ').reduce(sourceCounter,0);
-			    }
-			    else { // branch?
-				    entry["value"] = value.split(';').reduce(sourceCounter,0);
-			    }
+				entry["value"] = value.split(' ').reduce(sourceCounter,0);
 			}
 			else if ( !hasRichData && (typeof value === 'string' || value instanceof String)) {
 				entry["value"] = Number(value);
@@ -299,13 +297,9 @@
 	}
 
 	function fillChildNodes(node, flatList, isIssueData) {
-		var listArray;
-		if (isIssueData) {
-		    listArray = flatList.split(DEC_STRING_SEPARATOR);
-		}
-		else {
-		    listArray = flatList.split(BRANCH_STRING_SEPARATOR);
-		    listArray = listArray.map(function(e){ return e.replace("refs/remotes/",""); });
+		var listArray = flatList.split(DEC_STRING_SEPARATOR);;
+		if (!isIssueData) {
+			listArray = listArray.map(function(e){ return e.replace("refs/remotes/",""); });
 		}
 
 		for (var i = 0; i < listArray.length;i++) {
