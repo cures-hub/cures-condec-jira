@@ -259,7 +259,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 
 	var saveAllArffFileButton = document.getElementById("saveAllArffFile-button");
 	saveAllArffFileButton.addEventListener("click", function () {
-		conDecAPI.saveAllArffFile('$projectKey', false, function(fileString) {
+		conDecAPI.saveArffFile('$projectKey', false, function(fileString) {
 			var link = document.createElement('a');
 			var fileName = "AllClassifierTrainingData.arff";
 			link.style.display = 'none';
