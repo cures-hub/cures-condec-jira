@@ -51,6 +51,8 @@
 		<resource type="download" name="addNodeIcon.png" location="/images/addNodeIcon.png" />
 		<resource type="download" name="backIcon.png" location="/images/backIcon.png" />
 		<resource type="download" name="editIcon.png" location="/images/editIcon.png" />
+		<!-- dashboard item thumbnail -->
+		<resource type="download" name="dashboardItem.png" location="/images/dashboardItem.png" />
 		<!-- style sheets -->
 		<resource type="download" name="treant.css" location="/css/treant.css" />
 		<resource type="download" name="condec.css" location="/css/condec.css" />
@@ -386,7 +388,7 @@
 			<author>
 				<name>ConDec team</name>
 			</author>
-			<thumbnail location="/images/decision.png" />
+			<thumbnail location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
 		</definition>
 		<description key="condec.dashboard.featurebranch.description"/>
 		<!--<resource name="view" type="velocity"
