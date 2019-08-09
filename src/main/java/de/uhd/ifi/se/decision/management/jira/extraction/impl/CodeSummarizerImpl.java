@@ -11,6 +11,9 @@ import de.uhd.ifi.se.decision.management.jira.extraction.TangledChangeDetector;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CodeSummarizerImpl implements CodeSummarizer {
 
 	private GitClient gitClient;
@@ -45,6 +48,13 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 			return "";
 		}
 		Diff diff = gitClient.getDiff(commit);
+		List<ChangedFile> isNotJava = new ArrayList<>();
+		for (ChangedFile changedFile :diff.getChangedFiles()) {
+			if(!changedFile.isExistingJavaClass()){
+				isNotJava.add(changedFile);
+			}
+		}
+		diff.getChangedFiles().removeAll(isNotJava);
 		return createSummary(diff);
 	}
 
