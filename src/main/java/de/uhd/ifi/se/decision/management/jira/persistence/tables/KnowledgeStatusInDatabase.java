@@ -5,7 +5,9 @@ import net.java.ao.schema.AutoIncrement;
 import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
 
-@Table("CondecType")
+import java.sql.SQLException;
+
+@Table("CondecStatus")
 public interface KnowledgeStatusInDatabase extends RawEntity<Integer> {
 	@AutoIncrement
 	@PrimaryKey("ID")
@@ -24,4 +26,13 @@ public interface KnowledgeStatusInDatabase extends RawEntity<Integer> {
 	String getDocumentationLocation();
 
 	void setDocumentationLocation(String documentationLocation);
+
+	static boolean deleteStatus(KnowledgeStatusInDatabase elementInDatabase) {
+		try {
+			elementInDatabase.getEntityManager().delete(elementInDatabase);
+			return true;
+		} catch (SQLException e) {
+			return false;
+		}
+	}
 }

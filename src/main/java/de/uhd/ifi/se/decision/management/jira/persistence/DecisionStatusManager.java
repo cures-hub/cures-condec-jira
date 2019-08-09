@@ -4,8 +4,8 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.KnowledgeStatusInDatabase;
+import net.java.ao.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +51,12 @@ public class DecisionStatusManager {
 			}
 		}
 		return false;
+	}
+
+	public static void deleteStatus(DecisionKnowledgeElement element) {
+		for (KnowledgeStatusInDatabase databaseEntry : ACTIVE_OBJECTS.find(KnowledgeStatusInDatabase.class, Query.select().where("ID = ?", element.getId()))) {
+			KnowledgeStatusInDatabase.deleteStatus(databaseEntry);
+		}
 	}
 
 	private static void setParameters(KnowledgeStatusInDatabase statusInDatabase, DecisionKnowledgeElement element, KnowledgeStatus status) {

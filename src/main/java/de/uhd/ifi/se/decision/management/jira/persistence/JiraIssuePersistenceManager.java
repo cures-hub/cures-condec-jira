@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import java.util.*;
 
+import de.uhd.ifi.se.decision.management.jira.model.*;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.ofbiz.core.entity.GenericEntityException;
 import org.slf4j.Logger;
@@ -28,10 +29,6 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ErrorCollection;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 
@@ -300,6 +297,10 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueResult issueResult = issueService.getIssue(user, element.getId());
 		MutableIssue issueToBeUpdated = issueResult.getIssue();
+		DecisionKnowledgeElement knowledgeElementToBeUpdate = new DecisionKnowledgeElementImpl(issueToBeUpdated);
+		if(knowledgeElementToBeUpdate.getType().equals(KnowledgeType.DECISION) && element.getType().equals(KnowledgeType.ALTERNATIVE)){
+			DecisionStatusManager.setStatusForElement(knowledgeElementToBeUpdate, KnowledgeStatus.REJECTED);
+		}
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
 		setParameters(element, issueInputParameters);
 		IssueService.UpdateValidationResult result = issueService.validateUpdate(user, issueToBeUpdated.getId(),
