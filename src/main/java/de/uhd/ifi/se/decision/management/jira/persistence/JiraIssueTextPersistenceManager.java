@@ -57,6 +57,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		boolean isDeleted = false;
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("ID = ?", id))) {
+			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(databaseEntry);
+			DecisionStatusManager.deleteStatus(changeEntryToNewDecision(databaseEntry));
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.JIRAISSUETEXT);
 			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
 		}
@@ -306,10 +308,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		databaseEntry.save();
 		LOGGER.debug("\naddNewSentenceintoAo:\nInsert Sentence " + databaseEntry.getId()
 				+ " into database from comment " + databaseEntry.getCommentId());
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(databaseEntry.getId(),
-				sentence.getSummary(), sentence.getDescription(), sentence.getType(),
-				sentence.getProject().getProjectKey(), sentence.getKey(), sentence.getDocumentationLocation());
-		insertStatus(element);
+
+		insertStatus(changeEntryToNewDecision(databaseEntry));
 		return databaseEntry.getId();
 	}
 
@@ -714,5 +714,13 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 			validatedPartsOfText.add(validatedPartOfText);
 		}
 		return validatedPartsOfText;
+	}
+
+	private static DecisionKnowledgeElement changeEntryToNewDecision(PartOfJiraIssueTextInDatabase databaseEntry){
+		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(databaseEntry);
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(sentence.getId(),
+				sentence.getSummary(), sentence.getDescription(), sentence.getType(),
+				sentence.getProject().getProjectKey(), sentence.getKey(), sentence.getDocumentationLocation());
+		return element;
 	}
 }

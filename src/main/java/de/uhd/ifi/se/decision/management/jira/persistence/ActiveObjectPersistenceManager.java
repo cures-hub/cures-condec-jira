@@ -64,6 +64,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 	public boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user) {
 		boolean isDeleted = false;
 		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", id))) {
+			DecisionStatusManager.deleteStatus(new DecisionKnowledgeElementImpl(databaseEntry));
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.ACTIVEOBJECT);
 			isDeleted = DecisionKnowledgeElementInDatabase.deleteElement(databaseEntry);
 		}
