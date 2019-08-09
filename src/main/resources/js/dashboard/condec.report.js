@@ -305,6 +305,9 @@
 		for (var i = 0; i < listArray.length;i++) {
 			var span = document.createElement("p");
 			span.dataset.isbranch = !isIssueData;
+			if (!isIssueData) {
+			    span.title = ConDecDevBranchesQuality.getTitleByName(listArray[i]);
+			}
 			span.innerText=listArray[i];
 			node.appendChild(span);
 		}

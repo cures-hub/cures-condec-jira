@@ -334,8 +334,27 @@ var ConDecDevBranches = [];
             accumulator.delete("none");
             return accumulator;
         }
+        function sortByBranchNumberDescending(unsortedMap) {
+            var keys = Array.from(unsortedMap.keys());
+            var keyVal = [];
+            for (var i=0; i<keys.length; i++) {
+                var count = 0;
+                if (unsortedMap.get(keys[i]).length>0) {
+                    count = unsortedMap.get(keys[i]).split(" ").length;
+                }
+                keyVal.push([keys[i], count]);
+            }
+            var sortedKeyByVal = keyVal.sort(function(a,b){return b[1]-a[1]; });
+            var sortedMap = new Map();
+            for (var i=0; i<sortedKeyByVal.length; i++) {
+                var mapKey = sortedKeyByVal[i][0];
+                sortedMap.set(mapKey, unsortedMap.get(mapKey));
+            }
+            return sortedMap;
 
-        /* init data for charts */
+        }
+
+        /*  init data for charts */
         var statusesForBranchesData = conDecLinkBranchCandidates.getEmptyMapForStatuses("");
         var problemTypesOccurrance = conDecLinkBranchCandidates.getEmptyMapForProblemTypes("");
 
@@ -365,20 +384,17 @@ var ConDecDevBranches = [];
         branchesQuality.reduce(numberProsInBranchesReducer, prosInBranches);
         branchesQuality.reduce(numberConInBranchesReducer, consInBranches);
 
+        /* sort some data by number of branches */
+        var sortedProblemTypesOccurrance = sortByBranchNumberDescending(problemTypesOccurrance);
+        var sortedBranchesPerIssue = sortByBranchNumberDescending(branchesPerIssue);
+
         /* render pie-charts */
         conDecReport.initializeChartForBranchSource('piechartRich-QualityStatusForBranches'+dashboardUID,
-         '', 'How many branches document rationale well?',statusesForBranchesData); /*
-																					 * 'Quality
-																					 * status'
-																					 */
+         '', 'How many branches document rationale well?',statusesForBranchesData); /* 'Quality status' */
         conDecReport.initializeChartForBranchSource('piechartRich-ProblemTypesInBranches'+dashboardUID,
-         '', 'Which documentation mistakes are most common?',problemTypesOccurrance); /*
-																						 * 'Total
-																						 * quality
-																						 * problems'
-																						 */
+         '', 'Which documentation mistakes are most common?',sortedProblemTypesOccurrance); /*'Total quality problems' */
         conDecReport.initializeChartForBranchSource('piechartRich-BranchesPerIssue'+dashboardUID,
-         '', 'How many branches do Jira tasks have?',branchesPerIssue);
+         '', 'How many branches do Jira tasks have?',sortedBranchesPerIssue);
         /* render box-plots */
         conDecReport.initializeChartForBranchSource('boxplot-IssuesPerBranch'+dashboardUID,
          '', 'Issues number in branches',issuesInBranches);
@@ -392,7 +408,31 @@ var ConDecDevBranches = [];
          '', 'Con arguments number in branches',consInBranches);
 
         /* remember in global scope for development/debugging */
-        ConDecDevBranchesQuality = branchesQuality;
+        ConDecDevBranchesQuality = { branchesQuality : branchesQuality };
+        ConDecDevBranchesQuality.getTitleByName = function(branchNameShortened) {
+            for (var i = 0; i< this.branchesQuality.length; i++) {
+                if (this.branchesQuality[i].name.endsWith(branchNameShortened)) {
+                    return this.getTitle(i);
+                }
+            }
+            return this.getTitle(-1);
+        }
+        ConDecDevBranchesQuality.getTitle = function(idx){
+            if (!this.branchesQuality[idx]) {
+                return "";
+            }
+            var branch = this.branchesQuality[idx];
+            var buffer = " status: " + branch.status
+            //+"\n" + " problemCategoryNum: " + branch.problems.iterateMap..
+            +"\n" + " numAlternatives: " + branch.numAlternatives
+            +"\n" + " numCons: " + branch.numCons
+            +"\n" + " numDecisions: " + branch.numDecisions
+            +"\n" + " numIssues: " + branch.numIssues
+            +"\n" + " numPros: " + branch.numIssues
+            //+"\n" + " name: " + branch.name;
+
+            return buffer;
+        }
 
     }
 
