@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Locale;
 
 public enum KnowledgeStatus {
-	IDEA, TENTATIVE, REJECTED, UNDEFINED;
+	IDEA, TENTATIVE,DECIDED, REJECTED, UNDEFINED;
 
 	public static KnowledgeStatus getKnowledgeStatus(String status){
 		if(status == null || status.isEmpty()){

@@ -269,7 +269,6 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
 			ApplicationUser user) {
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
-
 		setParameters(element, issueInputParameters);
 		issueInputParameters.setReporterId(user.getName());
 		Project project = ComponentAccessor.getProjectManager()
@@ -289,6 +288,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		Issue issue = issueResult.getIssue();
 		element.setId(issue.getId());
 		element.setKey(issue.getKey());
+		insertStatus(element);
 		return element;
 	}
 

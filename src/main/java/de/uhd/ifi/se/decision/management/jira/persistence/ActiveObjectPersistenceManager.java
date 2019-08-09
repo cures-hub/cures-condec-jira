@@ -186,6 +186,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		element.setKey(databaseEntry.getKey());
 		new WebhookConnector(projectKey).sendElementChanges(element);
 		element.setDocumentationLocation(DocumentationLocation.ACTIVEOBJECT);
+		insertStatus(element);
 		return element;
 	}
 

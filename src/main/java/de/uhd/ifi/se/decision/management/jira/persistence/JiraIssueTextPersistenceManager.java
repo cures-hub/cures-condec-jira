@@ -288,6 +288,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		for (PartOfJiraIssueText sentence : sentences) {
 			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUETEXT);
 		}
+		insertStatus(sentences.get(0));
 		return sentences.get(0);
 	}
 
@@ -305,6 +306,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		databaseEntry.save();
 		LOGGER.debug("\naddNewSentenceintoAo:\nInsert Sentence " + databaseEntry.getId()
 				+ " into database from comment " + databaseEntry.getCommentId());
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(databaseEntry.getId(),
+				sentence.getSummary(), sentence.getDescription(), sentence.getType(),
+				sentence.getProject().getProjectKey(), sentence.getKey(), sentence.getDocumentationLocation());
+		insertStatus(element);
 		return databaseEntry.getId();
 	}
 
