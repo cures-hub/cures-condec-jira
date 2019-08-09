@@ -297,6 +297,9 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		if (knowledgeElementToBeUpdate.getType().equals(KnowledgeType.DECISION) && element.getType().equals(KnowledgeType.ALTERNATIVE)) {
 			DecisionStatusManager.setStatusForElement(knowledgeElementToBeUpdate, KnowledgeStatus.REJECTED);
 		}
+		if (knowledgeElementToBeUpdate.getType().equals(KnowledgeType.ALTERNATIVE) && element.getType().equals(KnowledgeType.DECISION)) {
+			DecisionStatusManager.setStatusForElement(knowledgeElementToBeUpdate, KnowledgeStatus.DECIDED);
+		}
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
 		setParameters(element, issueInputParameters);
 		IssueService.UpdateValidationResult result = issueService.validateUpdate(user, issueToBeUpdated.getId(), issueInputParameters);
