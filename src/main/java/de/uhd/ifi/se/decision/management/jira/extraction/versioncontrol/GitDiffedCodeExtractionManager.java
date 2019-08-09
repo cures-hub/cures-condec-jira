@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.Edit;
 import org.slf4j.Logger;
@@ -83,7 +84,27 @@ public class GitDiffedCodeExtractionManager {
 
 	private List<DecisionKnowledgeElement> getNewOrOldDecisionKnowledgeElements(boolean getNew) {
 		List<DecisionKnowledgeElement> resultValues = new ArrayList<>();
+		/*
+			@issue: one rationale modified by more than one edit line.
+			Problem was found in refs/remotes/origin/CONDEC-534.branch.filtering.improvements.RC2
+			An old rationale located at(108:112:13) in file
+			..extraction/versioncontrol/GitRepositoryFSManager.java
+			was linked with two change entries
+			REPLACE(106-108,106-108) and REPLACE(109-114,109-120)
 
+			Such rationale would be touched twice in below streams, making its key unusable.
+
+			@alternative: streams will return reference rationale, but should somehow try not
+			to modify the rationale key more than once!
+			@con: it would not be possible to see that many edits changed rationale.
+			@alternative: streams will return new origin objects in case of detected repetition
+			new object will be created!
+			@con: more code needs to be changed.
+			@pro: information about change by more than one edit will be preserved.
+			@decision: streams will return new rationale objects and never use origin references!
+			@pro: information about change by more than one edit will be preserved.
+
+		 */
 		if (results.size() > 0) {
 			for (Map.Entry<DiffEntry, CodeExtractionResult> dEntry : results.entrySet()) {
 				String newPath;
@@ -102,22 +123,41 @@ public class GitDiffedCodeExtractionManager {
 					if (codeExtractionResult.size() > 0) {
 						for (Map.Entry<Edit, List<DecisionKnowledgeElement>> editListEntry : codeExtractionResult
 								.entrySet()) {
-							if (editListEntry.getKey() != null) {
+							if (editListEntry.getKey()!=null) {
 								resultValues.addAll(editListEntry.getValue().stream().map(d -> {
-									d.setKey(newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
+									DecisionKnowledgeElement n = new DecisionKnowledgeElementImpl();
+									n.setDocumentationLocation(d.getDocumentationLocation());
+									n.setDescription(d.getDescription());
+									n.setId(d.getId());
+									n.setSummary(d.getSummary());
+									n.setType(d.getType());
+
+									String newKey = newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
 											+ String.valueOf(dEntry.getValue().sequence)
 											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
 											+ editListEntry.getKey().toString()
-											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + d.getKey());
-									return d;
+											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + d.getKey();
+
+									n.setKey(newKey);
+									return n;
 								}).collect(Collectors.toList()));
-							} else {
+							}
+							else {
 								resultValues.addAll(editListEntry.getValue().stream().map(d -> {
-									d.setKey(newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
+									DecisionKnowledgeElement n = new DecisionKnowledgeElementImpl();
+									n.setDocumentationLocation(d.getDocumentationLocation());
+									n.setDescription(d.getDescription());
+									n.setId(d.getId());
+									n.setSummary(d.getSummary());
+									n.setType(d.getType());
+
+									String newKey = newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
 											+ String.valueOf(dEntry.getValue().sequence)
 											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + GitDecXtract.RAT_KEY_NOEDIT
-											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + d.getKey());
-									return d;
+											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + d.getKey();
+
+									n.setKey(newKey);
+									return n;
 								}).collect(Collectors.toList()));
 							}
 						}
@@ -294,6 +334,8 @@ public class GitDiffedCodeExtractionManager {
 		public int sequence = -1;
 		/* list of elements modified/created with diff in a file */
 		public Map<Edit, List<DecisionKnowledgeElement>> diffedElementsInNewerVersion = new HashMap<>();
+		/* list of all elements present in file after diff */
+		public Map<DiffEntry, List<DecisionKnowledgeElement>> allElementsInNewerVersion = new HashMap<>();
 		/* list of old elements somehow affected by the diff in a file */
 		public Map<Edit, List<DecisionKnowledgeElement>> diffedElementsInOlderVersion = new HashMap<>();
 	}
