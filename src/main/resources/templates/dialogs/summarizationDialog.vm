@@ -1,4 +1,4 @@
-<section id="summarization-dialog" class="aui-dialog2 aui-dialog2-medium aui-layer" role="dialog" aria-hidden="true">
+<section id="summarization-dialog" class="aui-dialog2 aui-dialog2-medium aui-layer" role="dialog" aria-hidden="true" style="width:700px!important;">
 	<header class="aui-dialog2-header">
 		<h2 id="summarization-dialog-header" class="aui-dialog2-header-main">$i18n.getText("condec.context.menu.summarized.code.item.label")</h2>
 		<a class="aui-dialog2-header-close"> 

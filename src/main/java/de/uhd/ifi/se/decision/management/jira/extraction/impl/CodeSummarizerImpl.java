@@ -66,7 +66,7 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			if (changedFile.getProbabilityOfCorrectness() >= this.minProbabilityOfCorrectness) {
 				rows += this.addRow(this.addTableItem(FilenameUtils.removeExtension(changedFile.getFile().getName()),
-						this.summarizeMethods(changedFile), Float.toString(changedFile.getProbabilityOfCorrectness())));
+						this.summarizeMethods(changedFile), String.format("%.2f", changedFile.getProbabilityOfCorrectness())));
 			}
 		}
 		return this.generateTable(rows);
@@ -82,9 +82,9 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 
 	private String generateTable(String rows) {
 		return "<table style=\"width:100%; border: 1px solid black; border-collapse: collapse;\">" + "<tr>\n"
-				+ "    <th style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Class Name</th>\n"
-				+ "    <th style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Method Names</th> \n"
-				+ "    <th style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Probability of Correct Link</th>\n"
+				+ "    <th style=\"width:40%; border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Class Name</th>\n"
+				+ "    <th style=\"width:40%; border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Method Names</th> \n"
+				+ "    <th style=\"width:20%; border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Probability of Correct Link</th>\n"
 				+ "</tr>\n" + rows + "</table>";
 	}
 
@@ -93,11 +93,11 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 	}
 
 	private String addTableItem(String item1, String item2, String item3) {
-		return "<td style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">"
+		return "<td style=\"width:40%; border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">"
 				+ item1 + "</td>\n"
-				+ "<td style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">"
+				+ "<td style=\"width:40%; border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">"
 				+ item2 + "</td>\n"
-				+ "<td style=\"border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">"
+				+ "<td style=\"width:20%; border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">"
 				+ item3 + "% </td>\n";
 	}
 
