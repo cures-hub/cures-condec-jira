@@ -48,6 +48,15 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		return createSummary(diff);
 	}
 
+
+	/*
+@issue: non-Java methods are returned too, should they be returned?
+@decision: only return summary for JAVA related code!
+@pro: in JavaScript everything is a function, do not mix concepts.
+@issue: test is also returned too.
+@decision: we could use test files to improve the predication
+*/
+
 	@Override
 	public String createSummary(Diff diff) {
 		if (diff == null || diff.getChangedFiles().size() == 0) {
