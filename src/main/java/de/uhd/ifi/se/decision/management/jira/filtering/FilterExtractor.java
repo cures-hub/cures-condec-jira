@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -175,17 +176,18 @@ public class FilterExtractor {
 			if (filterSettings.getDocumentationLocations().contains(element.getDocumentationLocation())
 					|| filterSettings.getDocumentationLocations().size() == 1 && filterSettings
 							.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN)) {
-				// Check if the Type of the Element is correct
-				if (checkIfTypeMatches(element)) {
-					if (checkIfElementMatchesTimeFilter(element)) {
-						// Case no text filter
-						if (filterSettings.getSearchString().equals("")
-								|| filterSettings.getSearchString().equals("?filter=-4")
-								|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
-							filteredElements.add(element);
-						} else {
-							if (checkIfElementMatchesStringFilter(element)) {
+				//Check if the Status is filtered
+				if(filterSettings.getSelectedIssueStatus().contains(DecisionStatusManager.getStatusForElement(element))) {
+					// Check if the Type of the Element is correct
+					if (checkIfTypeMatches(element)) {
+						if (checkIfElementMatchesTimeFilter(element)) {
+							// Case no text filter
+							if (filterSettings.getSearchString().equals("") || filterSettings.getSearchString().equals("?filter=-4") || filterSettings.getSearchString().equals("?filter=allopenissues")) {
 								filteredElements.add(element);
+							} else {
+								if (checkIfElementMatchesStringFilter(element)) {
+									filteredElements.add(element);
+								}
 							}
 						}
 					}

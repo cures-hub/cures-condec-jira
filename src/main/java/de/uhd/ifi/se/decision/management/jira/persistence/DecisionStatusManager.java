@@ -40,6 +40,13 @@ public class DecisionStatusManager {
 		if(element.getType().equals(KnowledgeType.DECISION)){
 			return KnowledgeStatus.DECIDED;
 		}
+		if(!isStatusInDatabase(element)){
+			if(element.getType() == KnowledgeType.ALTERNATIVE) {
+				setStatusForElement(element, KnowledgeStatus.IDEA);
+			} else {
+				return KnowledgeStatus.UNDEFINED;
+			}
+		}
 		for (KnowledgeStatusInDatabase statusInDatabase : ACTIVE_OBJECTS.find(KnowledgeStatusInDatabase.class)) {
 			if (statusInDatabase.getElementId() == element.getId()) {
 				return KnowledgeStatus.getKnowledgeStatus(statusInDatabase.getStatus());

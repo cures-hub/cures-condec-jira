@@ -32,4 +32,17 @@ public enum KnowledgeStatus {
 		return this.name().substring(0,1).toUpperCase(Locale.ENGLISH)
 				+ this.name().substring(1).toLowerCase(Locale.ENGLISH);
 	}
+
+	/**
+	 * Returns a list of all valid knowledge status.
+	 *
+	 * @return list of knowledge status.
+	 */
+	public static List<KnowledgeStatus> getAllKnowledgeStatus() {
+		List<KnowledgeStatus> statuses = new ArrayList<KnowledgeStatus>();
+		for (KnowledgeStatus status : values()) {
+				statuses.add(status);
+		}
+		return statuses;
+	}
 }
