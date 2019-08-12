@@ -357,9 +357,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		if(sentence.getType().equals(KnowledgeType.DECISION) && element.getType().equals(KnowledgeType.ALTERNATIVE)){
 			DecisionStatusManager.setStatusForElement(sentence, KnowledgeStatus.REJECTED);
 		}
-		if(sentence.getType().equals(KnowledgeType.ALTERNATIVE) && element.getType().equals(KnowledgeType.DECISION)){
-			DecisionStatusManager.setStatusForElement(sentence, KnowledgeStatus.DECIDED);
-		}
 		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getType());
 		String changedPartOfText = tag + element.getDescription() + tag;
 

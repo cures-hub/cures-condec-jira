@@ -4,6 +4,7 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.KnowledgeStatusInDatabase;
 import net.java.ao.Query;
 import org.slf4j.Logger;
@@ -37,6 +38,9 @@ public class DecisionStatusManager {
 
 	public static KnowledgeStatus getStatusForElement(DecisionKnowledgeElement element) {
 		for (KnowledgeStatusInDatabase statusInDatabase : ACTIVE_OBJECTS.find(KnowledgeStatusInDatabase.class)) {
+			if(element.getType().equals(KnowledgeType.DECISION)){
+				return KnowledgeStatus.DECIDED;
+			}
 			if (statusInDatabase.getElementId() == element.getId()) {
 				return KnowledgeStatus.getKnowledgeStatus(statusInDatabase.getStatus());
 			}
