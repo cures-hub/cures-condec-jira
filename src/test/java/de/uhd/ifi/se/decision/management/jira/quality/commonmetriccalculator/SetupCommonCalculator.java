@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersisten
 import de.uhd.ifi.se.decision.management.jira.quality.CommonMetricCalculator;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class SetupCommonCalculator extends TestSetUp {
+public abstract class SetupCommonCalculator extends TestSetUp {
 	protected CommonMetricCalculator calculator;
 	private long id=1;
 	private long jiraIssueId =12;

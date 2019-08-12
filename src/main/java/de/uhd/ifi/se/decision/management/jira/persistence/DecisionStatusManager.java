@@ -37,10 +37,10 @@ public class DecisionStatusManager {
 	}
 
 	public static KnowledgeStatus getStatusForElement(DecisionKnowledgeElement element) {
+		if(element.getType().equals(KnowledgeType.DECISION)){
+			return KnowledgeStatus.DECIDED;
+		}
 		for (KnowledgeStatusInDatabase statusInDatabase : ACTIVE_OBJECTS.find(KnowledgeStatusInDatabase.class)) {
-			if(element.getType().equals(KnowledgeType.DECISION)){
-				return KnowledgeStatus.DECIDED;
-			}
 			if (statusInDatabase.getElementId() == element.getId()) {
 				return KnowledgeStatus.getKnowledgeStatus(statusInDatabase.getStatus());
 			}

@@ -70,8 +70,12 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 			this.id = issue.getId();
 			this.summary = issue.getSummary();
 			this.description = issue.getDescription();
-			this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
-			this.project = new DecisionKnowledgeProjectImpl(issue.getProjectObject().getKey());
+			if(issue.getIssueType() != null) {
+				this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
+			}
+			if(issue.getProjectObject() != null) {
+				this.project = new DecisionKnowledgeProjectImpl(issue.getProjectObject().getKey());
+			}
 			this.key = issue.getKey();
 			this.documentationLocation = DocumentationLocation.JIRAISSUE;
 			this.created = issue.getCreated();
