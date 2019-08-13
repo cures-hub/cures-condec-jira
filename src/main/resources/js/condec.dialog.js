@@ -248,6 +248,23 @@
 		AJS.$(selectField).auiSelect2();
 	}
 
+	function fillSelectStatusFiled(selectField, selectedKnowledgeStatus) {
+	    if(selectField === null) {
+	        return;
+        }
+        selectField.innerHTML = "";
+	    var knowledgeStatus = conDecAPI.knowledgeStatus;
+	    for( var index = 0; index < knowledgeStatus.length; index++) {
+	        var isSelected = "";
+	        if(knowledgeStatus[index] === selectedKnowledgeStatus) {
+	            isSelected = "selected";
+            }
+            selectField.insertAdjacentHTML("beforeend", "<option " + isSelected + " value='"
+                + knowledgeStatus[index] + "'>" + knowledgeStatus[index] + "</option>");
+        }
+        AJS.$(selectField).auiSelect2();
+    }
+
 	function isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index) {
 		console.log("conDecDialog isKnowledgeTypeLocatedAtIndex");
 		return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase().split("-")[0];
@@ -295,7 +312,40 @@
 		AJS.dialog2(changeTypeDialog).show();
 	};
 
-	ConDecDialog.prototype.showSummarizedDialog = function showSummarizedDialog(id, documentationLocation) {
+	ConDecDialog.prototype.showChangeStatusDialog = function showChangeStatusDialog(id,documentationLocation) {
+        console.log("conDecDialog showChangeStatusDialog");
+
+        // HTML elements
+        var changeStatusDialog = document.getElementById("change-status-dialog");
+        var selectStatusField = document.getElementById("change-status-form-select-type");
+        var submitButton = document.getElementById("change-status-dialog-submit-button");
+        var cancelButton = document.getElementById("change-status-dialog-cancel-button");
+
+        // Fill HTML elements
+        conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
+          conDecAPI.getStatus(decisionKnowledgeElement, function (status) {
+              fillSelectStatusFiled(selectStatusField, status);
+          });
+        });
+
+        // Set onclick listener on buttons
+        submitButton.onclick = function() {
+            var status = selectStatusField.value;
+            conDecAPI.setStatus(id, documentationLocation, status, function() {
+                conDecObservable.notify();
+            });
+            AJS.dialog2(changeStatusDialog).hide();
+        };
+
+        cancelButton.onclick = function() {
+            AJS.dialog2(changeStatusDialog).hide();
+        };
+
+        // Show dialog
+        AJS.dialog2(changeStatusDialog).show();
+    };
+
+    ConDecDialog.prototype.showSummarizedDialog = function showSummarizedDialog(id, documentationLocation) {
 		// HTML elements
 		var summarizedDialog = document.getElementById("summarization-dialog");
 		var cancelButton = document.getElementById("summarization-dialog-cancel-button");

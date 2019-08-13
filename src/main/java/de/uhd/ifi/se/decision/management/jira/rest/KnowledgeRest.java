@@ -371,6 +371,27 @@ public class KnowledgeRest {
 			return Response.status(Status.OK).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
-				       .entity(ImmutableMap.of("error", "Setting element irrelevant failed.")).build();
+				       .entity(ImmutableMap.of("error", "Setting element status failed.")).build();
+	}
+
+	@Path("/getStatus")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getStatus(@Context HttpServletRequest request, DecisionKnowledgeElement decisionKnowledgeElement) {
+		if (request == null || decisionKnowledgeElement == null || decisionKnowledgeElement.getId() <= 0) {
+			return Response.status(Status.BAD_REQUEST)
+					       .entity(ImmutableMap.of("error", "Setting element status failed due to a bad request."))
+					       .build();
+		}
+		AbstractPersistenceManager manager =
+				AbstractPersistenceManager.getPersistenceManager(decisionKnowledgeElement.getProject().getProjectKey(),
+						decisionKnowledgeElement.getDocumentationLocation().getIdentifier());
+		DecisionKnowledgeElement element = manager.getDecisionKnowledgeElement(decisionKnowledgeElement.getKey());
+		KnowledgeStatus status = DecisionStatusManager.getStatusForElement(element);
+		if(status == null ){
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					       .entity(ImmutableMap.of("error", "Get element status failed.")).build();
+		}
+		return Response.ok(status).build();
 	}
 }

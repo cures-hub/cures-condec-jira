@@ -199,11 +199,26 @@
             "documentationLocation" : documentationLocation,
             "projectKey" : projectKey
         };
-        postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/setStatus.json&status="+ status, element,
+        postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/setStatus.json?status="+ status, element,
             function(error) {
             if (error === null) {
                 showFlag("success", "Decision knowledge element status has been updated.");
                 callback();
+            }
+        });
+    };
+
+	ConDecAPI.prototype.getStatus = function getStatus(decisionElement, callback) {
+        var element = {
+            "id" : decisionElement.id,
+            "key" : decisionElement.key,
+            "documentationLocation" : decisionElement.documentationLocation,
+            "projectKey" : projectKey
+        };
+        postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getStatus.json", element,
+            function (error, status) {
+            if(error === null) {
+                callback(status);
             }
         });
     };
