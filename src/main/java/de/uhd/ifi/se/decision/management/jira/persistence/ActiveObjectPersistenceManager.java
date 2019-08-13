@@ -198,6 +198,10 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 				if (KnowledgeType.getKnowledgeType(databaseEntry.getType()).equals(KnowledgeType.DECISION) && element.getType().equals(KnowledgeType.ALTERNATIVE)) {
 					DecisionStatusManager.setStatusForElement(element, KnowledgeStatus.REJECTED);
 				}
+				if (KnowledgeType.getKnowledgeType(databaseEntry.getType()).equals(KnowledgeType.ALTERNATIVE) &&
+						    element.getType().equals(KnowledgeType.DECISION)) {
+					DecisionStatusManager.deleteStatus(element);
+				}
 				setParameters(element, databaseEntry);
 				databaseEntry.save();
 				new WebhookConnector(projectKey).sendElementChanges(element);
