@@ -23,7 +23,7 @@ public class DecisionStatusManager {
 		}
 		if (isStatusInDatabase(element)) {
 			for (KnowledgeStatusInDatabase statusInDatabase : ACTIVE_OBJECTS.find(KnowledgeStatusInDatabase.class)) {
-				if (statusInDatabase.getId() == element.getId()) {
+				if (statusInDatabase.getElementId() == element.getId()) {
 					setParameters(statusInDatabase, element, status);
 					statusInDatabase.save();
 				}
@@ -65,7 +65,8 @@ public class DecisionStatusManager {
 	}
 
 	public static void deleteStatus(DecisionKnowledgeElement element) {
-		for (KnowledgeStatusInDatabase databaseEntry : ACTIVE_OBJECTS.find(KnowledgeStatusInDatabase.class, Query.select().where("ID = ?", element.getId()))) {
+		for (KnowledgeStatusInDatabase databaseEntry : ACTIVE_OBJECTS.find(KnowledgeStatusInDatabase.class,
+				Query.select().where("ELEMENT_ID = ?", element.getId()))) {
 			KnowledgeStatusInDatabase.deleteStatus(databaseEntry);
 		}
 	}
