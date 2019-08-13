@@ -187,7 +187,7 @@
     function getOptions(){
 	    return {
             layout: {
-                randomSeed: undefined,
+                randomSeed: 2,
                 improvedLayout: true,
                 hierarchical: {
                     enabled: false,

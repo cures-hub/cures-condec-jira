@@ -25,7 +25,7 @@
 		projectKey = getProjectKey();
 		this.knowledgeTypes = getKnowledgeTypes(projectKey);
 		this.extendedKnowledgeTypes = getExtendedKnowledgeTypes(this.knowledgeTypes);
-        this.knowledgeStatus = ["Idea", "Decided","Rejected", "Undefined"];
+        this.knowledgeStatus = ["Idea","Discarded", "Decided","Rejected", "Undefined"];
 	};
 
 	ConDecAPI.prototype.checkIfProjectKeyIsValid = function checkIfProjectKeyIsValid() {
@@ -192,6 +192,21 @@
 					}
 				});
 	};
+
+	ConDecAPI.prototype.setStatus = function setStatus(id,documentationLocation, status, callback) {
+        var element = {
+            "id" : id,
+            "documentationLocation" : documentationLocation,
+            "projectKey" : projectKey
+        };
+        postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/setStatus.json&status="+ status, element,
+            function(error) {
+            if (error === null) {
+                showFlag("success", "Decision knowledge element status has been updated.");
+                callback();
+            }
+        });
+    };
 
 	/*
 	 * external references: condec.jira.issue.module

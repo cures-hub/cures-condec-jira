@@ -24,16 +24,10 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.*;
 
 /**
  * REST resource: Enables creation, editing, and deletion of decision knowledge
@@ -359,5 +353,24 @@ public class KnowledgeRest {
 			summary = "This JIRA issue does not have any code committed.";
 		}
 		return Response.ok(summary).build();
+	}
+
+	@Path("/setStatus")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response setStatus(@Context HttpServletRequest request, @QueryParam("status") String stringStatus,
+	                                      DecisionKnowledgeElement decisionKnowledgeElement) {
+		if (request == null || decisionKnowledgeElement == null || decisionKnowledgeElement.getId() <= 0) {
+			return Response.status(Status.BAD_REQUEST)
+					       .entity(ImmutableMap.of("error", "Setting element status failed due to a bad request."))
+					       .build();
+		}
+		KnowledgeStatus status	= KnowledgeStatus.getKnowledgeStatus(stringStatus);
+		DecisionStatusManager.setStatusForElement(decisionKnowledgeElement, status);
+		if(status.equals(DecisionStatusManager.getStatusForElement(decisionKnowledgeElement))) {
+			return Response.status(Status.OK).build();
+		}
+		return Response.status(Status.INTERNAL_SERVER_ERROR)
+				       .entity(ImmutableMap.of("error", "Setting element irrelevant failed.")).build();
 	}
 }

@@ -30,11 +30,9 @@
 
         network.on("oncontext",
             function (params) {
-                console.log(params);
                 params.event.preventDefault();
                 var nodeIndices = network.body.nodeIndices;
                 var clickedNodeId;
-                console.log(network);
                 for (var i = 0; i < nodeIndices.length; i++) {
                     var nodeId = nodeIndices[i];
                     var boundingBox = network.getBoundingBox(nodeId);
@@ -372,8 +370,8 @@
             interaction: {
                 tooltipDelay: 600
             }
-        };
-    }
+        }
+    };
 
     function getDocumentationLocationFromId(nodeId) {
         return nodeId.toString().substr(-1);
