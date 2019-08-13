@@ -130,13 +130,12 @@
                     issueTypes.push(AJS.$('#compare-dropdown').children().eq(i).text());
                 }
             }
-            for (var j = 0; i< AJS.$('#compare-status-dropdown').children().size(); j++) {
-                if (typeof AJS.$('#compare-status-dropdown').children().eq(i).attr('checked') !== typeof undefined
+            for (var j = 0; j< AJS.$('#compare-status-dropdown').children().size(); j++) {
+                if (typeof AJS.$('#compare-status-dropdown').children().eq(j).attr('checked') !== typeof undefined
                     && AJS.$('#compare-status-dropdown').children().eq(j).attr('checked') !== false) {
                     issueStatus.push(AJS.$('#compare-status-dropdown').children().eq(j).text());
                 }
             }
-
             conDecAPI.getCompareVis(firstDate, secondDate,searchString, issueTypes, issueStatus, function(visData) {
                 var dataRight = {
                     nodes : visData.nodes,
@@ -170,8 +169,8 @@
                     issueTypes.push(AJS.$('#chronologie-dropdown').children().eq(i).text());
                 }
             }
-            for (var j = 0; i< AJS.$('#chronologie-status-dropdown').children().size(); j++) {
-                if (typeof AJS.$('##chronologie-status-dropdown').children().eq(i).attr('checked') !== typeof undefined
+            for (var j = 0; j< AJS.$('#chronologie-status-dropdown').children().size(); j++) {
+                if (typeof AJS.$('#chronologie-status-dropdown').children().eq(j).attr('checked') !== typeof undefined
                     && AJS.$('#chronologie-status-dropdown').children().eq(j).attr('checked') !== false) {
                     issueStatus.push(AJS.$('#chronologie-status-dropdown').children().eq(j).text());
                 }
