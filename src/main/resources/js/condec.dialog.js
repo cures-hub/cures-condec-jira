@@ -256,7 +256,7 @@
 	    var knowledgeStatus = conDecAPI.knowledgeStatus;
 	    for( var index = 0; index < knowledgeStatus.length; index++) {
 	        var isSelected = "";
-	        if(knowledgeStatus[index] === selectedKnowledgeStatus) {
+	        if(knowledgeStatus[index].toLocaleUpperCase() === selectedKnowledgeStatus) {
 	            isSelected = "selected";
             }
             selectField.insertAdjacentHTML("beforeend", "<option " + isSelected + " value='"
