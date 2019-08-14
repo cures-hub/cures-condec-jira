@@ -139,8 +139,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
-		// TODO Auto-generated method stub
-		return null;
+		long commentId = Long.parseLong(key.split(":")[1]);
+		return getPartOfJiraIssueText(commentId);
 	}
 
 	@Override
