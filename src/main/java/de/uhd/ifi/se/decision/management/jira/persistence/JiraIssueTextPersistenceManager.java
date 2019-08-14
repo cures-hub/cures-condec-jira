@@ -57,7 +57,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		boolean isDeleted = false;
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("ID = ?", id))) {
-			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(databaseEntry);
 			DecisionStatusManager.deleteStatus(changeEntryToNewDecision(databaseEntry));
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.JIRAISSUETEXT);
 			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);

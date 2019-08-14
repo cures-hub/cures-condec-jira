@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;

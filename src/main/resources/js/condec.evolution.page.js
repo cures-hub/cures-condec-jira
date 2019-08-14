@@ -43,7 +43,7 @@
 	ConDecEvolutionPage.prototype.buildCompare = function buildCompare() {
 		console.log("ConDec build compare view");
         var issueTypeDropdown = document.getElementById("compare-dropdown");
-        var issueStatusDropdown = document.getElementById("compare-status-dropdown")
+        var issueStatusDropdown = document.getElementById("compare-status-dropdown");
         initIssueTypeSelectCompare(issueTypeDropdown);
         initIssueStatusSelect(issueStatusDropdown);
         conDecAPI.getCompareVis(-1, -1,"",conDecAPI.extendedKnowledgeTypes,

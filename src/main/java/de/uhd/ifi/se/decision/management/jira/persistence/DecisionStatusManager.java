@@ -75,6 +75,5 @@ public class DecisionStatusManager {
 		statusInDatabase.setDocumentationLocation(element.getDocumentationLocationAsString());
 		statusInDatabase.setElementId(element.getId());
 		statusInDatabase.setStatus(status.toString());
-		return;
 	}
 }
