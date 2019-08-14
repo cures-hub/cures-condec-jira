@@ -360,7 +360,7 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response setStatus(@Context HttpServletRequest request, @QueryParam("status") String stringStatus,
 	                                      DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (request == null || decisionKnowledgeElement == null || decisionKnowledgeElement.getId() <= 0) {
+		if (request == null || decisionKnowledgeElement == null || decisionKnowledgeElement.getId() <= 0 || stringStatus == null) {
 			return Response.status(Status.BAD_REQUEST)
 					       .entity(ImmutableMap.of("error", "Setting element status failed due to a bad request."))
 					       .build();
