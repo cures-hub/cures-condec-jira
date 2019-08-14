@@ -152,7 +152,7 @@
 				});
 			}
 		}
-	}
+	};
 
 	// differentiate between issue elements and sentence elements
 	// If you have to add commits here: add a commit class to your commit
