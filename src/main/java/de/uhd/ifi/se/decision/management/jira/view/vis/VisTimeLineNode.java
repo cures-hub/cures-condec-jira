@@ -34,12 +34,12 @@ public class VisTimeLineNode {
 			return;
 		}
 		this.id = ((int) element.getId());
-		this.content = element.getKey();
+		this.content = "<img src=" +'"' + element.getType().getIconUrl()+ '"' + '>' + element.getSummary();
 
 		this.start = createDateString(element.getCreated());
 		this.end = createDateString(element.getClosed());
 		this.className = element.getTypeAsString().toLowerCase();
-		this.title = element.getSummary();
+		this.title = element.getDescription();
 	}
 
 	private String createDateString(Date created) {
