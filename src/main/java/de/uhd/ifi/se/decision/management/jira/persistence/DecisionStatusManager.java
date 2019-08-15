@@ -10,6 +10,8 @@ import net.java.ao.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 public class DecisionStatusManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DecisionStatusManager.class);
@@ -37,11 +39,14 @@ public class DecisionStatusManager {
 	}
 
 	public static KnowledgeStatus getStatusForElement(DecisionKnowledgeElement element) {
-		if(element.getType().equals(KnowledgeType.DECISION)){
+		if (element.getType().equals(KnowledgeType.ISSUE)) {
+			return getIssueKnowledgeStatus(element);
+		}
+		if (element.getType().equals(KnowledgeType.DECISION)) {
 			return KnowledgeStatus.DECIDED;
 		}
-		if(!isStatusInDatabase(element)){
-			if(element.getType() == KnowledgeType.ALTERNATIVE) {
+		if (!isStatusInDatabase(element)) {
+			if (element.getType() == KnowledgeType.ALTERNATIVE) {
 				setStatusForElement(element, KnowledgeStatus.IDEA);
 			} else {
 				return KnowledgeStatus.UNDEFINED;
@@ -65,8 +70,7 @@ public class DecisionStatusManager {
 	}
 
 	public static void deleteStatus(DecisionKnowledgeElement element) {
-		for (KnowledgeStatusInDatabase databaseEntry : ACTIVE_OBJECTS.find(KnowledgeStatusInDatabase.class,
-				Query.select().where("ELEMENT_ID = ?", element.getId()))) {
+		for (KnowledgeStatusInDatabase databaseEntry : ACTIVE_OBJECTS.find(KnowledgeStatusInDatabase.class, Query.select().where("ELEMENT_ID = ?", element.getId()))) {
 			KnowledgeStatusInDatabase.deleteStatus(databaseEntry);
 		}
 	}
@@ -75,5 +79,18 @@ public class DecisionStatusManager {
 		statusInDatabase.setDocumentationLocation(element.getDocumentationLocationAsString());
 		statusInDatabase.setElementId(element.getId());
 		statusInDatabase.setStatus(status.toString());
+	}
+
+	private static KnowledgeStatus getIssueKnowledgeStatus(DecisionKnowledgeElement element) {
+		AbstractPersistenceManager manager =
+				AbstractPersistenceManager.getPersistenceManager(element.getProject().getProjectKey(),
+						element.getDocumentationLocation());
+
+		for(DecisionKnowledgeElement linkedElement: manager.getElementsLinkedWithInwardLinks(element)) {
+			if(linkedElement.getType().equals(KnowledgeType.DECISION)) {
+				return KnowledgeStatus.RESOLVED;
+			}
+		}
+		return KnowledgeStatus.UNRESOLVED;
 	}
 }
