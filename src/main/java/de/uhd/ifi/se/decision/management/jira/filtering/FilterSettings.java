@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -118,9 +119,28 @@ public interface FilterSettings {
 	void setSelectedJiraIssueTypes(List<String> types);
 
 	/**
+	 * Gets the selected issue Status types from the filter
+	 * @return list of issue Status as string
+	 */
+	List<KnowledgeStatus> getSelectedIssueStatus();
+
+	/**
+	 * Sets the issue status that a selected of a Filter
+	 * @param status
+	 */
+	void setSelectedJiraIssueStatus(List<String> status);
+
+	/**
 	 * Returns the names of all JIRA issue types of the selected project.
 	 *
 	 * @return list of names of JIRA {@link IssueType}s.
 	 */
-	public List<String> getAllJiraIssueTypes();
+	List<String> getAllJiraIssueTypes();
+
+	/**
+	 * Returns the names of all JIRA isue status
+	 * @return list of names of JIRA {@link de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus}s.
+	 */
+	List<String> getAllJiraIssueStatus();
+
 }

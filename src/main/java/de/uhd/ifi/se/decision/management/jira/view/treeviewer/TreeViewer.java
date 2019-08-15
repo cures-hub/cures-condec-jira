@@ -77,8 +77,6 @@ public class TreeViewer {
 				dataSet.add(this.makeIdUnique(new Data(sentenceElement)));
 			}
 			this.data = dataSet;
-		} else {
-
 		}
 	}
 
