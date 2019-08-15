@@ -35,11 +35,12 @@ public interface ClassificationTrainer {
 	 * Creats a new Attribute-Relation File Format (ARFF) file for the current
 	 * project that can be used to train the classifier and saves it on the server
 	 * in the JIRA home directory in the data/condec-plugin/project-key folder.
-	 * 
+	 * @param useOnlyValidatedData
+	 *            Boolean flag to indicated whether to use all or only user-validated data.
 	 * @return ARFF file that was created and saved on the server or null if it
 	 *         could not be saved.
 	 */
-	File saveArffFile();
+	File saveArffFile(boolean useOnlyValidatedData);
 
 	/**
 	 * Reads training data from an Attribute-Relation File Format (ARFF) file to

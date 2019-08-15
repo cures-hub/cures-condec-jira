@@ -356,7 +356,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		if (sentence == null) {
 			return false;
 		}
-
         // only the knowledge type has changed
         if (element.getSummary() == null) {
             element.setDescription(sentence.getDescription());

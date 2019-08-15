@@ -142,12 +142,12 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	}
 
 	@Override
-	public File saveArffFile() {
+	public File saveArffFile(boolean useOnlyValidatedData) {
 		File arffFile = null;
 		try {
 			arffFile = new File(directory + File.separator + getArffFileName());
 			arffFile.createNewFile();
-			String arffString = createArffString();
+			String arffString = createArffString(useOnlyValidatedData);
 			PrintWriter writer = new PrintWriter(arffFile, "UTF-8");
 			writer.println(arffString);
 			writer.close();
@@ -167,17 +167,20 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		return prefix + timestamp.getTime() + ".arff";
 	}
 
-	private String createArffString() {
+	private String createArffString(boolean useOnlyValidatedData) {
 		if (instances == null) {
-			instances = loadTrainingDataFromJiraIssueText();
+			instances = loadTrainingDataFromJiraIssueText(useOnlyValidatedData);
 		}
 		return instances.toString();
 	}
 
-	public Instances loadTrainingDataFromJiraIssueText() {
+	public Instances loadTrainingDataFromJiraIssueText(boolean useOnlyValidatedData) {
 		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
-		List<DecisionKnowledgeElement> validatedPartsOfText = manager.getUserValidatedPartsOfText(projectKey);
-		Instances instances = buildDatasetForMeka(validatedPartsOfText);
+		List<DecisionKnowledgeElement> partsOfText = manager.getUserValidatedPartsOfText(projectKey);
+		if(! useOnlyValidatedData){
+			partsOfText.addAll(manager.getUnvalidatedPartsOfText(projectKey));
+		}
+		Instances instances = buildDatasetForMeka(partsOfText);
 		return instances;
 	}
 
