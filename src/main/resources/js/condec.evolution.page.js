@@ -32,10 +32,12 @@
 		conDecAPI.getEvolutionData("", -1, -1 ,conDecAPI.extendedKnowledgeTypes,
             conDecAPI.knowledgeStatus, function(evolutionData) {
 			var container = document.getElementById('evolution-timeline');
-			var data = evolutionData;
+			var data = evolutionData.dataSet;
 			var item = new vis.DataSet(data);
+			var groups = evolutionData.groupSet;
 			var options = {};
 			timeline = new vis.Timeline(container, item, options);
+			timeline.setGroups(groups);
 		});
         addOnClickEventToFilterTimeLineButton();
 	};

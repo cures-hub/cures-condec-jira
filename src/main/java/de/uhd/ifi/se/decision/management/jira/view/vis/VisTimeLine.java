@@ -21,8 +21,6 @@ public class VisTimeLine {
 	@XmlElement
 	private HashSet<VisTimeLineGroup> groupSet;
 
-	private List<ApplicationUser> userList;
-
 	public VisTimeLine(String projectKey) {
 		if (projectKey != null) {
 			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
