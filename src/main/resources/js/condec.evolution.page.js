@@ -178,9 +178,11 @@
                 }
             }
             conDecAPI.getEvolutionData(searchString, firstDate, secondDate,  issueTypes,issueStatus, function (visData) {
-                var data = visData;
+                var data = visData.dataSet;
+                var groups = visData.groupSet;
                 var item = new vis.DataSet(data);
                 timeline.setItems(item);
+                timeline.setGroups(groups);
                 timeline.redraw();
             });
         });

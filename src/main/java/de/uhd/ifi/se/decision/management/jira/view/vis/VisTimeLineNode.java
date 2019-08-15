@@ -19,6 +19,12 @@ public class VisTimeLineNode {
 	private String start;
 
 	@XmlElement
+	private String className;
+
+	@XmlElement
+	private String title;
+
+	@XmlElement
 	private long group;
 
 	private String end;
@@ -32,6 +38,8 @@ public class VisTimeLineNode {
 
 		this.start = createDateString(element.getCreated());
 		this.end = createDateString(element.getClosed());
+		this.className = element.getTypeAsString().toLowerCase();
+		this.title = element.getSummary();
 	}
 
 	private String createDateString(Date created) {
