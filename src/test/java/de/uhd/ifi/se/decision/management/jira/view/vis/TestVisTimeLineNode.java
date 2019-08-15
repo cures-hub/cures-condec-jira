@@ -79,7 +79,8 @@ public class TestVisTimeLineNode extends TestSetUp {
 
 	@Test
 	public void testGetContent() {
-		assertEquals("<img src=" +'"' + element.getType().getIconUrl()+ '"' + '>' + element.getSummary(), timeNode.getContent());
+		assertEquals("<img src=" +'"' + element.getType().getIconUrl()+ '"' + "> " + element.getSummary(),
+				timeNode.getContent());
 	}
 
 	@Test
