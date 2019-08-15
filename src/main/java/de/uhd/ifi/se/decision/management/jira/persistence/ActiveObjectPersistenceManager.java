@@ -211,4 +211,9 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		LOGGER.error("Updating of decision knowledge element in database failed.");
 		return false;
 	}
+
+	@Override
+	public ApplicationUser getCreator(DecisionKnowledgeElement element) {
+		return null;
+	}
 }

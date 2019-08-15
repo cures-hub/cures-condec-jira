@@ -18,6 +18,9 @@ public class VisTimeLineNode {
 	@XmlElement
 	private String start;
 
+	@XmlElement
+	private long group;
+
 	private String end;
 
 	public VisTimeLineNode(DecisionKnowledgeElement element) {
@@ -73,5 +76,13 @@ public class VisTimeLineNode {
 
 	public void setEnd(String end) {
 		this.end = end;
+	}
+
+	public long getGroup() {
+		return group;
+	}
+
+	public void setGroup(long group) {
+		this.group = group;
 	}
 }

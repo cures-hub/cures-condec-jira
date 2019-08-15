@@ -313,6 +313,13 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		return true;
 	}
 
+	@Override
+	public ApplicationUser getCreator(DecisionKnowledgeElement element) {
+		IssueManager issueManager = ComponentAccessor.getIssueManager();
+		Issue issue = issueManager.getIssueByCurrentKey(element.getKey());
+		return issue.getReporterUser();
+	}
+
 	public static void updateJiraIssue(Issue jiraIssue, ApplicationUser user) {
 		ComponentAccessor.getIssueManager().updateIssue(user, (MutableIssue) jiraIssue, EventDispatchOption.ISSUE_UPDATED, true);
 	}
