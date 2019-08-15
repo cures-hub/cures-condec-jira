@@ -77,7 +77,7 @@ public class VisTimeLineNode {
 	public void setStart(String start) {
 		this.start = start;
 	}
-	
+
 	public String getClassName() {
 		return className;
 	}

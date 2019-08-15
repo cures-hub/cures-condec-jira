@@ -113,4 +113,27 @@ public class TestVisTimeLineNode extends TestSetUp {
 		timeNode.setEnd(closedString);
 		assertEquals(closedString, timeNode.getEnd());
 	}
+
+	@Test
+	public void testGetClassName() {
+		assertEquals(element.getTypeAsString().toLowerCase(), timeNode.getClassName());
+	}
+
+	@Test
+	public void testSetClassName() {
+		timeNode.setClassName("Test Class name");
+		assertEquals("Test Class name", timeNode.getClassName());
+	}
+
+	@Test
+	public void testGetAndSetGroup() {
+		timeNode.setGroup((long) 19012);
+		assertEquals(19012, timeNode.getGroup(), 0.0);
+	}
+
+	@Test
+	public void testGetAndSetTitle() {
+		timeNode.setTitle("TestTitle");
+		assertEquals("TestTitle", timeNode.getTitle());
+	}
 }
