@@ -65,7 +65,7 @@ public class MockIssueService implements IssueService {
 
 	@Override
 	public IssueResult getIssue(ApplicationUser user, Long issueId) {
-		MutableIssue issue = JiraIssues.getTestJiraIssues().stream().filter(jiraIssue -> issueId == jiraIssue.getId())
+		MutableIssue issue = JiraIssues.getTestJiraIssues().stream().filter(jiraIssue -> issueId.longValue() == jiraIssue.getId())
 				.findFirst().orElse(new MockIssue(issueId));
 		IssueResult result = new IssueResult(issue);
 		if (user == null || JiraUsers.valueOf(user) == JiraUsers.BLACK_HEAD) {

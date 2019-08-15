@@ -1,5 +1,9 @@
 /* some basic looks for rationale from the commit messages and files */
 
+#featureBranchesTab .condec-rest-force {
+    cursor:pointer;
+    font-size: 0.6em;
+}
 #featureBranchesTab .branchRationaleFilterPanel {
     margin: 1em;
     display: flex;

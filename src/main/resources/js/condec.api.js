@@ -25,6 +25,7 @@
 		projectKey = getProjectKey();
 		this.knowledgeTypes = getKnowledgeTypes(projectKey);
 		this.extendedKnowledgeTypes = getExtendedKnowledgeTypes(this.knowledgeTypes);
+        this.knowledgeStatus = ["Idea","Discarded", "Decided","Rejected", "Undefined"];
 	};
 
 	ConDecAPI.prototype.checkIfProjectKeyIsValid = function checkIfProjectKeyIsValid() {
@@ -192,6 +193,36 @@
 				});
 	};
 
+	ConDecAPI.prototype.setStatus = function setStatus(id,documentationLocation, status, callback) {
+        var element = {
+            "id" : id,
+            "documentationLocation" : documentationLocation,
+            "projectKey" : projectKey
+        };
+        postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/setStatus.json?status="+ status, element,
+            function(error) {
+            if (error === null) {
+                showFlag("success", "Decision knowledge element status has been updated.");
+                callback();
+            }
+        });
+    };
+
+	ConDecAPI.prototype.getStatus = function getStatus(decisionElement, callback) {
+        var element = {
+            "id" : decisionElement.id,
+            "key" : decisionElement.key,
+            "documentationLocation" : decisionElement.documentationLocation,
+            "projectKey" : projectKey
+        };
+        postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getStatus.json", element,
+            function (error, status) {
+            if(error === null) {
+                callback(status);
+            }
+        });
+    };
+
 	/*
 	 * external references: condec.jira.issue.module
 	 */
@@ -313,7 +344,8 @@
 			"createdEarliest" : -1,
 			"createdLatest" : -1,
 			"documentationLocations" : [ "" ],
-			"selectedJiraIssueTypes" : [ "" ]
+			"selectedJiraIssueTypes" : [ "" ],
+            "selectedIssueStatus" : this.knowledgeStatus
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
 				filterSettings, function(error, vis) {
@@ -326,15 +358,16 @@
 	/*
 	 * external references: condec.vis
 	 */
-	ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, selectedJiraIssueTypes, createdAfter,
-			createdBefore, documentationLocations, callback) {
+	ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, selectedJiraIssueTypes,
+			createdAfter, createdBefore, documentationLocations, callback) {
 		var filterSettings = {
 			"projectKey" : projectKey,
 			"searchString" : searchTerm,
 			"createdEarliest" : createdBefore,
 			"createdLatest" : createdAfter,
 			"documentationLocations" : documentationLocations,
-			"selectedJiraIssueTypes" : selectedJiraIssueTypes
+			"selectedJiraIssueTypes" : selectedJiraIssueTypes,
+            "selectedIssueStatus": this.knowledgeStatus
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
 				filterSettings, function(error, vis) {
@@ -345,24 +378,25 @@
 	};
 
 	/*
-	 *external reference: condec.evolution.page.js
+	 * external reference: condec.evolution.page.js
 	 */
-    ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed, searchString, issueTypes, callback){
-        var filterSettings = {
-            "projectKey" : projectKey,
-            "searchString" : searchString,
-            "createdEarliest" : created,
-            "createdLatest" : closed,
-            "documentationLocations" : [ "" ],
-            "selectedJiraIssueTypes" : issueTypes
-        };
-        postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getCompareVis.json", filterSettings,
-            function (error, vis) {
-                if(error === null){
-                    callback(vis);
-                }
-        });
-    };
+	ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed, searchString, issueTypes, issueStatus,  callback) {
+		var filterSettings = {
+			"projectKey" : projectKey,
+			"searchString" : searchString,
+			"createdEarliest" : created,
+			"createdLatest" : closed,
+			"documentationLocations" : [ "" ],
+			"selectedJiraIssueTypes" : issueTypes,
+            "selectedIssueStatus" : issueStatus
+		};
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getCompareVis.json", filterSettings, function(error,
+				vis) {
+			if (error === null) {
+				callback(vis);
+			}
+		});
+	};
 	/*
 	 * external reference: condec.jira.issue.module
 	 */
@@ -395,21 +429,23 @@
 	/*
 	 * external references: condec.evolution.page
 	 */
-	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(searchString, created, closed, issueTypes, callback) {
-        var filterSettings = {
-            "projectKey" : projectKey,
-            "searchString" : searchString,
-            "createdEarliest" : created,
-            "createdLatest" : closed,
-            "documentationLocations" : [ "" ],
-            "selectedJiraIssueTypes" : issueTypes
-        };
-        postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getEvolutionData.json", filterSettings,
-				function(error, evolutionData) {
-					if (error === null) {
-						callback(evolutionData);
-					}
-				});
+	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(searchString, created, closed, issueTypes, issueStatus,
+			callback) {
+		var filterSettings = {
+			"projectKey" : projectKey,
+			"searchString" : searchString,
+			"createdEarliest" : created,
+			"createdLatest" : closed,
+			"documentationLocations" : [ "" ],
+			"selectedJiraIssueTypes" : issueTypes,
+            "selectedIssueStatus" : issueStatus
+		};
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getEvolutionData.json", filterSettings, function(
+				error, evolutionData) {
+			if (error === null) {
+				callback(evolutionData);
+			}
+		});
 	};
 
 	/*
@@ -565,7 +601,7 @@
 	}
 
 	/*
-
+	 * 
 	 */
 
 	/*
@@ -715,7 +751,7 @@
 			}
 		};
 		xhr.send();
-	}	
+	}
 
 	function getText(url, callback) {
 		var xhr = new XMLHttpRequest();
@@ -788,12 +824,28 @@
 	}
 
 	/*
-	 * external references: condec.jira.issue.module
+	 * external references: condec.jira.issue.module, and many more..
 	 */
 	function getIssueKey() {
-		var issueKey = JIRA.Issue.getIssueKey();
-		if (issueKey === null) {
-			issueKey = AJS.Meta.get("issue-key");
+		var issueKey = null;
+		if (JIRA && JIRA.Issue && JIRA.Issue.getIssueKey) {
+			issueKey = JIRA.Issue.getIssueKey();
+		}
+		if (issueKey === undefined || !issueKey) {
+			console.log("conDecAPI could not getIssueKey using object JIRA!");
+			if (AJS && AJS.Meta && AJS.Meta.get) {
+				issueKey = AJS.Meta.get("issue-key");
+			}
+		}
+		if (issueKey === undefined || !issueKey) {
+			console.log("conDecAPI could not getIssueKey using object AJS!");
+			var chunks = document.location.pathname.split("/");
+			if (chunks.length > 0) {
+				var lastChunk = chunks[chunks.length - 1];
+				if (lastChunk.includes("-")) {
+					issueKey = lastChunk;
+				}
+			}
 		}
 		console.log("conDecAPI getIssueKey: " + issueKey);
 		return issueKey;

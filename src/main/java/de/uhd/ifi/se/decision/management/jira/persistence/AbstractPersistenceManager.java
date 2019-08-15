@@ -7,12 +7,7 @@ import java.util.List;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
@@ -580,5 +575,14 @@ public abstract class AbstractPersistenceManager {
 
 	public static boolean isElementLinked(DecisionKnowledgeElement element) {
 		return isElementLinked(element.getId(), element.getDocumentationLocation());
+	}
+
+	protected static void insertStatus(DecisionKnowledgeElement element) {
+		if (element.getType().equals(KnowledgeType.DECISION)) {
+			DecisionStatusManager.setStatusForElement(element, KnowledgeStatus.DECIDED);
+		}
+		if (element.getType().equals(KnowledgeType.ALTERNATIVE)) {
+			DecisionStatusManager.setStatusForElement(element, KnowledgeStatus.IDEA);
+		}
 	}
 }

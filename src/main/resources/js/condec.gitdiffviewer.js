@@ -33,32 +33,18 @@ var BRANCHES_XHR_ERROR_MSG = "An unspecified error occurred while fetching REST 
 var url;
 var branches = [];
 
-function getBranchesDiff() {
-  function getIssueKey() {
-    var issueKey = AJS.$("meta[name='ajs-issue-key']").attr("content");
-    if (issueKey === undefined && JIRA && JIRA.Issue) {
-        issueKey= JIRA.Issue.getIssueKey();
-    }
-    if (issueKey === undefined) {
-        var chunks = document.location.pathname.split("/");
-        if (chunks.length>0) {
-            issueKey = chunks[chunks.length-1];
-        }
-    }
-    return issueKey;
-  }
+function getBranchesDiff(forceRest) {
 
   contentHtml = document.getElementById("featureBranches-container");
   contentHtml.innerText = "Loading ...";
 
-  var issue = JIRA.Issue.getIssueKey();
   url =
     AJS.contextPath() +
     "/rest/decisions/latest/view/elementsFromBranchesOfJiraIssue.json?issueKey=" +
-    issue;
+    conDecAPI.getIssueKey();
 
   /*  get cache or server data? */
-  if (localStorage.getItem("condec.restCacheTTL")) {
+  if (!forceRest && localStorage.getItem("condec.restCacheTTL")) {
     if (localStorage.getItem(url)) {
       var data = null;
       var now = Date.now();
@@ -103,6 +89,7 @@ function showError(error) {
   console.debug("showError");
   contentHtml.innerText = BRANCHES_XHR_ERROR_MSG;
   console.log(error);
+  appendForceRestFetch(contentHtml);
 }
 
 function getMessageElements(elements) {
@@ -481,6 +468,16 @@ function showBranchDiff(data, index) {
   contentHtml.appendChild(branchContainer);
 }
 
+function appendForceRestFetch(parentNode) {
+    forceRestNode = document.createElement("p");
+    forceRestNode.className = "condec-rest-force";
+    forceRestNode.innerText = "Suspecting branch list is not up-to date? Click here to try again.";
+    forceRestNode.addEventListener("click", function(e){
+        getBranchesDiff(true);
+        });
+    parentNode.appendChild(forceRestNode);
+}
+
 function showBranchesDiff(data) {
   console.debug("showBranchesDiff");
   data.timestamp = Date.now();
@@ -560,6 +557,7 @@ function showBranchesDiff(data) {
   } else {
     contentHtml.innerText = "No feature branches found for this issue.";
   }
+  appendForceRestFetch(contentHtml);
 }
 
 /* BEGIN: UI decoration section */

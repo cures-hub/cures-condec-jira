@@ -98,6 +98,10 @@
 			conDecDialog.showChangeTypeDialog(id, documentationLocation);
 		};
 
+		document.getElementById("condec-context-menu-change-status-item").onclick = function () {
+		  conDecDialog.showChangeStatusDialog(id,documentationLocation);
+        };
+
 		document.getElementById("condec-context-menu-issue-item").onclick = function() {
 			conDecAPI.changeKnowledgeType(id, "Issue", documentationLocation, function() {
 				conDecObservable.notify();

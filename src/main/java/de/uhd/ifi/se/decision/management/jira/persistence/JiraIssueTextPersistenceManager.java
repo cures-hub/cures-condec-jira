@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import org.slf4j.Logger;
@@ -22,11 +23,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.JiraIssueTextExtractionEventListener;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
@@ -61,6 +57,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		boolean isDeleted = false;
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("ID = ?", id))) {
+			DecisionStatusManager.deleteStatus(changeEntryToNewDecision(databaseEntry));
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.JIRAISSUETEXT);
 			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
 		}
@@ -142,8 +139,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
-		// TODO Auto-generated method stub
-		return null;
+		long commentId = Long.parseLong(key.split(":")[1]);
+		return getPartOfJiraIssueText(commentId);
 	}
 
 	@Override
@@ -292,6 +289,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		for (PartOfJiraIssueText sentence : sentences) {
 			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUETEXT);
 		}
+		insertStatus(sentences.get(0));
 		return sentences.get(0);
 	}
 
@@ -309,6 +307,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		databaseEntry.save();
 		LOGGER.debug("\naddNewSentenceintoAo:\nInsert Sentence " + databaseEntry.getId()
 				+ " into database from comment " + databaseEntry.getCommentId());
+
+		insertStatus(changeEntryToNewDecision(databaseEntry));
 		return databaseEntry.getId();
 	}
 
@@ -353,7 +353,12 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		if (element.getSummary() == null) {
 			element.setDescription(sentence.getDescription());
 		}
-
+		if(sentence.getType().equals(KnowledgeType.DECISION) && element.getType().equals(KnowledgeType.ALTERNATIVE)){
+			DecisionStatusManager.setStatusForElement(sentence, KnowledgeStatus.REJECTED);
+		}
+		if(sentence.getType().equals(KnowledgeType.ALTERNATIVE) && element.getType().equals(KnowledgeType.DECISION)){
+			DecisionStatusManager.deleteStatus(element);
+		}
 		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getType());
 		String changedPartOfText = tag + element.getDescription() + tag;
 
@@ -712,6 +717,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		return validatedPartsOfText;
 	}
 
+
 	public List<DecisionKnowledgeElement> getUnvalidatedPartsOfText(String projectKey) {
 		List<DecisionKnowledgeElement> unvalidatedPartsOfText = new ArrayList<DecisionKnowledgeElement>();
 		if (projectKey == null || projectKey.isEmpty()) {
@@ -725,5 +731,12 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 			unvalidatedPartsOfText.add(validatedPartOfText);
 		}
 		return unvalidatedPartsOfText;
+
+ private static DecisionKnowledgeElement changeEntryToNewDecision(PartOfJiraIssueTextInDatabase databaseEntry){
+		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(databaseEntry);
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(sentence.getId(),
+				sentence.getSummary(), sentence.getDescription(), sentence.getType(),
+				sentence.getProject().getProjectKey(), sentence.getKey(), sentence.getDocumentationLocation());
+		return element;
 	}
 }
