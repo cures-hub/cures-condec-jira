@@ -77,6 +77,14 @@ public class VisTimeLineNode {
 	public void setStart(String start) {
 		this.start = start;
 	}
+	
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
 
 	public String getEnd() {
 		return end;
@@ -92,5 +100,13 @@ public class VisTimeLineNode {
 
 	public void setGroup(long group) {
 		this.group = group;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 }

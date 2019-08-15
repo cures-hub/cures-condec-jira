@@ -47,8 +47,17 @@ public class VisTimeLine {
 		return elementList;
 	}
 
+
 	public void setElementList(List<DecisionKnowledgeElement> elementList) {
 		this.elementList = elementList;
+	}
+
+	public HashSet<VisTimeLineGroup> getGroupSet() {
+		return groupSet;
+	}
+
+	public void setGroupSet(HashSet<VisTimeLineGroup> groupSet) {
+		this.groupSet = groupSet;
 	}
 
 	private void createDataSet() {
