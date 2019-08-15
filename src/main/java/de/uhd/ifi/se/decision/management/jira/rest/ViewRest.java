@@ -166,7 +166,7 @@ public class ViewRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings);
 		VisTimeLine timeLine = visDataProvider.getTimeLine();
-		return Response.ok(timeLine.getEvolutionData()).build();
+		return Response.ok(timeLine).build();
 
 	}
 

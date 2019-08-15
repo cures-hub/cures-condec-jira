@@ -1,0 +1,75 @@
+.vis-item.decision {
+    background-color: rgba(252,227,190,1);
+}
+
+.vis-item.issue {
+    background-color: rgba(255, 255, 204,1);
+}
+
+.vis-item.alternative {
+    background-color: rgba(252,227,190,1);
+}
+
+.vis-item.pro {
+    background-color: rgba(222, 250, 222,1);
+}
+
+.vis-item.con {
+    background-color: rgba(255, 231, 231,1);
+}
+
+.vis-item.argument {
+    background-color: rgba(255, 255, 255,1);
+}
+
+.vis-item.constraint {
+    background-color: rgba(255, 255, 255,1);
+}
+
+.vis-item.assumption {
+    background-color: rgba(255, 255, 255,1);
+}
+
+.vis-item.implication {
+    background-color: rgba(255, 255, 255,1);
+}
+
+
+.vis-item.context {
+    background-color: rgba(255, 255, 221,1);
+}
+
+.vis-item.problem {
+    background-color: rgba(255, 255, 204,1);
+}
+
+.vis-item.goal {
+    background-color: rgba(255, 255, 255,1);
+}
+
+.vis-item.solution {
+    background-color: rgba(255, 246, 232,1);
+}
+
+.vis-item.claim {
+    background-color: rgba(255, 255, 255,1);
+}
+
+.vis-item.rationale {
+    background-color: rgba(255, 255, 221,1);
+}
+
+.vis-item.question {
+    background-color: rgba(255, 255, 255,1);
+}
+
+.vis-item.assessment {
+    background-color: rgba(255, 255, 255,1);
+}
+
+.vis-item.vis-selected {
+    background-color: white;
+    border-color: black;
+    color: black;
+    box-shadow: 0 0 10px gray;
+}

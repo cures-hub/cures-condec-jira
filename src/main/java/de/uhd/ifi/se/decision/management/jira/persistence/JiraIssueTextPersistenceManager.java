@@ -339,16 +339,23 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
         return updatePartOfJiraIssueText(sentence, user);
     }
 
-    public static boolean updatePartOfJiraIssueText(PartOfJiraIssueText element, ApplicationUser user) {
-        if (element == null) {
-            return false;
-        }
-        // Get corresponding element from database
-        PartOfJiraIssueText sentence = (PartOfJiraIssueText) getPartOfJiraIssueText(element.getId());
-        if (sentence == null) {
-            return false;
-        }
+	@Override
+	public ApplicationUser getCreator(DecisionKnowledgeElement element) {
+		long commentId = Long.parseLong(element.getKey().split(":")[1]);
+		PartOfJiraIssueText issueText = getPartOfJiraIssueText(commentId);
+		Comment comment = issueText.getComment();
+		return comment.getAuthorApplicationUser();
+	}
 
+	public static boolean updatePartOfJiraIssueText(PartOfJiraIssueText element, ApplicationUser user) {
+		if (element == null) {
+			return false;
+		}
+		// Get corresponding element from database
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) getPartOfJiraIssueText(element.getId());
+		if (sentence == null) {
+			return false;
+		}
         // only the knowledge type has changed
         if (element.getSummary() == null) {
             element.setDescription(sentence.getDescription());
