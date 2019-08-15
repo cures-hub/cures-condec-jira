@@ -103,7 +103,7 @@ public class TestClassificationTrainer extends TestSetUp {
 	@Test
 	public void testSaveArffFile() {
 		ClassificationTrainer trainer = new ClassificationTrainerImpl("TEST");
-		File file = trainer.saveArffFile(true);
+		File file = trainer.saveArffFile(false);
 		assertTrue(file.exists());
 		file.delete();
 	}
