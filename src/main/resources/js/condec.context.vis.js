@@ -67,6 +67,12 @@
         contextVisNode.style.zIndex = 9998; // why this number?
         contextVisNode.setAttribute('aria-hidden', 'false');
 
+        conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
+            var typesForStatus =  new Array(["issue", "alternative", "decision"]);
+            if(!typesForStatus.includes(decisionKnowledgeElement.type.toLocaleLowerCase())) {
+                document.getElementById("condec-context-menu-change-status-item").style.display ="none";
+            }
+        });
 
         document.getElementById("condec-context-menu-set-root-item").style.display = "none";
         document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
