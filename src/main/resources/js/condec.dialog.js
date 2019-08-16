@@ -261,6 +261,7 @@
         selectField.innerHTML = "";
 	    for( var index = 0; index < knowledgeStatus.length; index++) {
 	        var isSelected = "";
+	        console.log(elementStatus);
 	        if(knowledgeStatus[index].toLocaleUpperCase() === elementStatus) {
 	            isSelected = "selected";
             }

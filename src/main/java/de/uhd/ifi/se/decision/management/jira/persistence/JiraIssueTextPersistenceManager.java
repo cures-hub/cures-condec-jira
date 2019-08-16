@@ -228,7 +228,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		List<Link> outwardLink = getOutwardLinks(element);
 		List<DecisionKnowledgeElement> outwardElements = new ArrayList<>();
 		for (Link link : outwardLink) {
-			outwardElements.add(link.getSourceElement());
+			outwardElements.add(link.getDestinationElement());
 		}
 		return outwardElements;
 	}
@@ -253,9 +253,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select().where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?",element.getId(), element.getDocumentationLocation().getIdentifier()));
 		for (LinkInDatabase link : links) {
 			Link outwardLink = new LinkImpl(link);
-			outwardLink.setDestinationElement(element);
-			AbstractPersistenceManager sourcePersistenceManager = AbstractPersistenceManager.getPersistenceManager(projectKey, link.getSourceDocumentationLocation());
-			outwardLink.setSourceElement(sourcePersistenceManager.getDecisionKnowledgeElement(link.getSourceId()));
+			outwardLink.setSourceElement(element);
+			AbstractPersistenceManager destinationPersistenceManager =
+					AbstractPersistenceManager.getPersistenceManager(projectKey,	link.getDestDocumentationLocation());
+			outwardLink.setDestinationElement(destinationPersistenceManager.getDecisionKnowledgeElement(link.getDestinationId()));
 			outwardLinks.add(outwardLink);
 		}
 		return outwardLinks;
