@@ -68,9 +68,11 @@
         contextVisNode.setAttribute('aria-hidden', 'false');
 
         conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
-            var typesForStatus =  new Array(["issue", "alternative", "decision"]);
-            if(!typesForStatus.includes(decisionKnowledgeElement.type.toLocaleLowerCase())) {
+            var typesForStatus =  new Array("issue", "alternative", "decision");
+            if(!typesForStatus.includes(decisionKnowledgeElement.type.toLowerCase())) {
                 document.getElementById("condec-context-menu-change-status-item").style.display ="none";
+            } else {
+                document.getElementById("condec-context-menu-change-status-item").style.display ="initial";
             }
         });
 
