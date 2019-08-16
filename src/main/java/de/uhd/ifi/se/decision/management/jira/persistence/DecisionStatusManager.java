@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
+import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
@@ -16,10 +17,31 @@ public class DecisionStatusManager {
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
 
-	public static void setStatusForElement(DecisionKnowledgeElement element, KnowledgeStatus status) {
-		if (element == null || status == null) {
+	public static void setStatusForElement(DecisionKnowledgeElement decisionKnowledgeElement, KnowledgeStatus status) {
+		if (decisionKnowledgeElement == null || status == null) {
 			LOGGER.error("Element or Status are null");
 			return;
+		}
+		AbstractPersistenceManager manager =
+				AbstractPersistenceManager.getPersistenceManager(decisionKnowledgeElement.getProject().getProjectKey(),
+						decisionKnowledgeElement.getDocumentationLocation());
+		DecisionKnowledgeElement element = manager.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
+		if (element.getType().equals(KnowledgeType.DECISION)) {
+			if(status.equals(KnowledgeStatus.REJECTED)|| status.equals(KnowledgeStatus.IDEA) || status.equals(KnowledgeStatus.DISCARDED)) {
+				ApplicationUser user = manager.getCreator(element);
+				element.setType(KnowledgeType.ALTERNATIVE);
+				manager.updateDecisionKnowledgeElement(element, user);
+			}
+			if(status.equals(KnowledgeStatus.DECIDED)) {
+				return;
+			}
+		}
+		if (element.getType().equals(KnowledgeType.ALTERNATIVE)) {
+			if(status.equals(KnowledgeStatus.DECIDED)){
+				ApplicationUser user = manager.getCreator(element);
+				element.setType(KnowledgeType.DECISION);
+				manager.updateDecisionKnowledgeElement(element, user);
+			}
 		}
 		if (isStatusInDatabase(element)) {
 			for (KnowledgeStatusInDatabase statusInDatabase : ACTIVE_OBJECTS.find(KnowledgeStatusInDatabase.class)) {
@@ -38,10 +60,14 @@ public class DecisionStatusManager {
 
 	public static KnowledgeStatus getStatusForElement(DecisionKnowledgeElement element) {
 		if (element.getType().equals(KnowledgeType.ISSUE)) {
-			return getIssueKnowledgeStatus(element);
+			if(!isStatusInDatabase(element)){
+				return getIssueKnowledgeStatus(element);
+			}
 		}
 		if (element.getType().equals(KnowledgeType.DECISION)) {
-			return KnowledgeStatus.DECIDED;
+			if(!isStatusInDatabase(element)) {
+				return KnowledgeStatus.DECIDED;
+			}
 		}
 		if (!isStatusInDatabase(element)) {
 			if (element.getType() == KnowledgeType.ALTERNATIVE) {
