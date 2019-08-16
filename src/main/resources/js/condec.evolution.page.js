@@ -1,95 +1,97 @@
-(function(global) {
+(function (global) {
 
-	/* private vars */
-	var conDecObservable = null;
-	var conDecAPI = null;
-	var conDecVis = null;
-	var networkRight = null;
-	var timeline = null;
+    /* private vars */
+    var conDecObservable = null;
+    var conDecAPI = null;
+    var conDecVis = null;
+    var networkRight = null;
+    var timeline = null;
+    var completeKnowledgeStatus = null;
 
-	var ConDecEvolutionPage = function ConDecEvolutionPage() {
-	};
+    var ConDecEvolutionPage = function ConDecEvolutionPage() {
+    };
 
-	ConDecEvolutionPage.prototype.init = function(_conDecAPI, _conDecObservable, _conDecVis) {
-		console.log("ConDecEvolutionPage init");
-		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)) {
-			conDecAPI = _conDecAPI;
-			conDecObservable = _conDecObservable;
-			conDecVis = _conDecVis;
+    ConDecEvolutionPage.prototype.init = function (_conDecAPI, _conDecObservable, _conDecVis) {
+        console.log("ConDecEvolutionPage init");
+        if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)) {
+            conDecAPI = _conDecAPI;
+            conDecObservable = _conDecObservable;
+            conDecVis = _conDecVis;
+            completeKnowledgeStatus = _conDecAPI.knowledgeStatus;
+            completeKnowledgeStatus = completeKnowledgeStatus.concat(_conDecAPI.issueStatus);
+            conDecObservable.subscribe(this);
+            return true;
+        }
+        return false;
+    };
 
-			conDecObservable.subscribe(this);
-			return true;
-		}
-		return false;
-	};
-	
-	ConDecEvolutionPage.prototype.buildTimeLine = function buildTimeLine() {
-		console.log("ConDec build timeline");
+    ConDecEvolutionPage.prototype.buildTimeLine = function buildTimeLine() {
+        console.log("ConDec build timeline");
         var issueTypeDropdown = document.getElementById("chronologie-dropdown");
         var issueStatusDropdown = document.getElementById("chronologie-status-dropdown");
         initIssueTypeSelectCompare(issueTypeDropdown);
         initIssueStatusSelect(issueStatusDropdown);
-		conDecAPI.getEvolutionData("", -1, -1 ,conDecAPI.extendedKnowledgeTypes,
-            conDecAPI.knowledgeStatus, function(evolutionData) {
-			var container = document.getElementById('evolution-timeline');
-			var data = evolutionData.dataSet;
-			var item = new vis.DataSet(data);
-			var groups = evolutionData.groupSet;
-			var options = {};
-			timeline = new vis.Timeline(container, item, options);
-			timeline.setGroups(groups);
-		});
+        conDecAPI.getEvolutionData("", -1, -1, conDecAPI.extendedKnowledgeTypes, completeKnowledgeStatus,
+            function (evolutionData) {
+            var container = document.getElementById('evolution-timeline');
+            var data = evolutionData.dataSet;
+            var item = new vis.DataSet(data);
+            var groups = evolutionData.groupSet;
+            var options = {};
+            timeline = new vis.Timeline(container, item, options);
+            timeline.setGroups(groups);
+        });
         addOnClickEventToFilterTimeLineButton();
-	};
+    };
 
-	ConDecEvolutionPage.prototype.buildCompare = function buildCompare() {
-		console.log("ConDec build compare view");
+    ConDecEvolutionPage.prototype.buildCompare = function buildCompare() {
+        console.log("ConDec build compare view");
         var issueTypeDropdown = document.getElementById("compare-dropdown");
         var issueStatusDropdown = document.getElementById("compare-status-dropdown");
         initIssueTypeSelectCompare(issueTypeDropdown);
         initIssueStatusSelect(issueStatusDropdown);
-        conDecAPI.getCompareVis(-1, -1,"",conDecAPI.extendedKnowledgeTypes,
-            conDecAPI.knowledgeStatus, function (visData) {
-            var containerLeft = document.getElementById('left-network');
-            var dataLeft = {
-                nodes : visData.nodes,
-                edges : visData.edges
-            };
-            var options = getOptions();
-            var networkLeft = new vis.Network(containerLeft, dataLeft, options);
+        conDecAPI.getCompareVis(-1, -1, "",conDecAPI.extendedKnowledgeTypes,
+            completeKnowledgeStatus,function (visData) {
+                var containerLeft = document.getElementById('left-network');
+                var dataLeft = {
+                    nodes: visData.nodes,
+                    edges: visData.edges
+                };
+                var options = getOptions();
+                var networkLeft = new vis.Network(containerLeft, dataLeft, options);
 
-        });
-        conDecAPI.getCompareVis(-1, -1,"",conDecAPI.extendedKnowledgeTypes,
-            conDecAPI.knowledgeStatus, function (visData) {
-            var containerRight = document.getElementById('right-network');
-            var dataRight = {
-                nodes : visData.nodes,
-                edges : visData.edges
-            };
-            var options = getOptions();
-            networkRight = new vis.Network(containerRight, dataRight, options);
-        });
+            });
+        conDecAPI.getCompareVis(-1, -1, "", conDecAPI.extendedKnowledgeTypes,
+            completeKnowledgeStatus, function (visData) {
+                var containerRight = document.getElementById('right-network');
+                var dataRight = {
+                    nodes: visData.nodes,
+                    edges: visData.edges
+                };
+                var options = getOptions();
+                networkRight = new vis.Network(containerRight, dataRight, options);
+            });
         addOnClickEventToFilterCompareButton();
-	};
+    };
 
-	/*
-	 * Init Helpers
-	 */
-	function isConDecAPIType(conDecAPI) {
-		if (!(conDecAPI !== undefined && conDecAPI.getDecisionKnowledgeElement !== undefined && typeof conDecAPI.getDecisionKnowledgeElement === 'function')) {
-			console.warn("ConDecKnowledgePage: invalid ConDecAPI object received.");
-			return false;
-		}
-		return true;
-	}
+    /*
+     * Init Helpers
+     */
+    function isConDecAPIType(conDecAPI) {
+        if (!(conDecAPI !== undefined && conDecAPI.getDecisionKnowledgeElement !== undefined && typeof conDecAPI.getDecisionKnowledgeElement === 'function')) {
+            console.warn("ConDecKnowledgePage: invalid ConDecAPI object received.");
+            return false;
+        }
+        return true;
+    }
 
-	function isConDecObservableType(conDecObservable) {
-		if (!(conDecObservable !== undefined && conDecObservable.notify !== undefined && typeof conDecObservable.notify === 'function')) {
-			console.warn("ConDecKnowledgePage: invalid ConDecObservable object received.");
-			return false;
-		}
-		return true;
-	}
+    function isConDecObservableType(conDecObservable) {
+        if (!(conDecObservable !== undefined && conDecObservable.notify !== undefined && typeof conDecObservable.notify === 'function')) {
+            console.warn("ConDecKnowledgePage: invalid ConDecObservable object received.");
+            return false;
+        }
+        return true;
+    }
 
     function initIssueTypeSelectCompare(issueTypeDropdown) {
         var issueType = conDecAPI.extendedKnowledgeTypes;
@@ -100,20 +102,19 @@
     }
 
     function initIssueStatusSelect(issueStatusDropdown) {
-	    var issueStatus= conDecAPI.knowledgeStatus;
-        for (var index = 0; index < issueStatus.length; index++) {
+        for (var index = 0; index < completeKnowledgeStatus.length; index++) {
             issueStatusDropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + "checked" + ">"
-                + issueStatus[index] + "</aui-item-checkbox>");
+                + completeKnowledgeStatus[index] + "</aui-item-checkbox>");
         }
     }
 
-	//Compute filter and select new elements
+    //Compute filter and select new elements
     function addOnClickEventToFilterCompareButton() {
         console.log("ConDecJiraEvolutionPage addOnClickEventToFilterButtonCompare");
 
         var filterButton = document.getElementById("filter-button-compare");
 
-        filterButton.addEventListener("click", function(event) {
+        filterButton.addEventListener("click", function (event) {
             var firstDate = -1;
             var secondDate = -1;
             var issueTypes = [];
@@ -132,16 +133,16 @@
                     issueTypes.push(AJS.$('#compare-dropdown').children().eq(i).text());
                 }
             }
-            for (var j = 0; j< AJS.$('#compare-status-dropdown').children().size(); j++) {
+            for (var j = 0; j < AJS.$('#compare-status-dropdown').children().size(); j++) {
                 if (typeof AJS.$('#compare-status-dropdown').children().eq(j).attr('checked') !== typeof undefined
                     && AJS.$('#compare-status-dropdown').children().eq(j).attr('checked') !== false) {
                     issueStatus.push(AJS.$('#compare-status-dropdown').children().eq(j).text());
                 }
             }
-            conDecAPI.getCompareVis(firstDate, secondDate,searchString, issueTypes, issueStatus, function(visData) {
+            conDecAPI.getCompareVis(firstDate, secondDate, searchString, issueTypes, issueStatus, function (visData) {
                 var dataRight = {
-                    nodes : visData.nodes,
-                    edges : visData.edges
+                    nodes: visData.nodes,
+                    edges: visData.edges
                 };
                 networkRight.setData(dataRight);
             });
@@ -153,7 +154,7 @@
         console.log("ConDecJiraEvolutionPage addOnClickEventToFilterButtonTimeLine");
         var filterButton = document.getElementById("filter-button-time");
 
-        filterButton.addEventListener("click", function(event) {
+        filterButton.addEventListener("click", function (event) {
             var firstDate = -1;
             var secondDate = -1;
             var issueTypes = [];
@@ -171,13 +172,13 @@
                     issueTypes.push(AJS.$('#chronologie-dropdown').children().eq(i).text());
                 }
             }
-            for (var j = 0; j< AJS.$('#chronologie-status-dropdown').children().size(); j++) {
+            for (var j = 0; j < AJS.$('#chronologie-status-dropdown').children().size(); j++) {
                 if (typeof AJS.$('#chronologie-status-dropdown').children().eq(j).attr('checked') !== typeof undefined
                     && AJS.$('#chronologie-status-dropdown').children().eq(j).attr('checked') !== false) {
                     issueStatus.push(AJS.$('#chronologie-status-dropdown').children().eq(j).text());
                 }
             }
-            conDecAPI.getEvolutionData(searchString, firstDate, secondDate,  issueTypes,issueStatus, function (visData) {
+            conDecAPI.getEvolutionData(searchString, firstDate, secondDate, issueTypes, issueStatus, function (visData) {
                 var data = visData.dataSet;
                 var groups = visData.groupSet;
                 var item = new vis.DataSet(data);
@@ -188,8 +189,8 @@
         });
     }
 
-    function getOptions(){
-	    return {
+    function getOptions() {
+        return {
             layout: {
                 randomSeed: 2,
                 improvedLayout: true,
@@ -221,7 +222,7 @@
             edges: {
                 arrows: "to"
             },
-	        groups: {
+            groups: {
                 // Setting colors for Decision Knowledge Elements
                 decision: {
                     color: {
@@ -373,5 +374,5 @@
         };
     }
 
-	global.conDecEvolutionPage = new ConDecEvolutionPage();
+    global.conDecEvolutionPage = new ConDecEvolutionPage();
 })(window);

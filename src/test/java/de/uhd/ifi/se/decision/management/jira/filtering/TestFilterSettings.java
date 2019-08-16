@@ -111,6 +111,6 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetAllJiraIssueStatus() {
-		assertEquals(5, filterSettings.getAllJiraIssueStatus().size());
+		assertEquals(7, filterSettings.getAllJiraIssueStatus().size());
 	}
 }

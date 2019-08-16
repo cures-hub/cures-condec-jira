@@ -248,15 +248,16 @@
 		AJS.$(selectField).auiSelect2();
 	}
 
-	function fillSelectStatusFiled(selectField, selectedKnowledgeStatus) {
+	function fillSelectStatusFiled(selectField, elementStatus, element) {
 	    if(selectField === null) {
 	        return;
         }
+	   console.log(element);
         selectField.innerHTML = "";
 	    var knowledgeStatus = conDecAPI.knowledgeStatus;
 	    for( var index = 0; index < knowledgeStatus.length; index++) {
 	        var isSelected = "";
-	        if(knowledgeStatus[index].toLocaleUpperCase() === selectedKnowledgeStatus) {
+	        if(knowledgeStatus[index].toLocaleUpperCase() === elementStatus) {
 	            isSelected = "selected";
             }
             selectField.insertAdjacentHTML("beforeend", "<option " + isSelected + " value='"
@@ -324,7 +325,7 @@
         // Fill HTML elements
         conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
           conDecAPI.getStatus(decisionKnowledgeElement, function (status) {
-              fillSelectStatusFiled(selectStatusField, status);
+              fillSelectStatusFiled(selectStatusField, status, decisionKnowledgeElement);
           });
         });
 

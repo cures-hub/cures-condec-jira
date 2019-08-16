@@ -86,7 +86,7 @@ public class DecisionStatusManager {
 				AbstractPersistenceManager.getPersistenceManager(element.getProject().getProjectKey(),
 						element.getDocumentationLocation());
 
-		for(DecisionKnowledgeElement linkedElement: manager.getElementsLinkedWithInwardLinks(element)) {
+		for(DecisionKnowledgeElement linkedElement: manager.getElementsLinkedWithOutwardLinks(element)) {
 			if(linkedElement.getType().equals(KnowledgeType.DECISION)) {
 				return KnowledgeStatus.RESOLVED;
 			}
