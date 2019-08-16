@@ -252,9 +252,13 @@
 	    if(selectField === null) {
 	        return;
         }
-	   console.log(element);
+        var knowledgeStatus = null;
+        if(element.type === "Issue") {
+	        knowledgeStatus = conDecAPI.issueStatus;
+        } else {
+            knowledgeStatus  = conDecAPI.knowledgeStatus;
+        }
         selectField.innerHTML = "";
-	    var knowledgeStatus = conDecAPI.knowledgeStatus;
 	    for( var index = 0; index < knowledgeStatus.length; index++) {
 	        var isSelected = "";
 	        if(knowledgeStatus[index].toLocaleUpperCase() === elementStatus) {
