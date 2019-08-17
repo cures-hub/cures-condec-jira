@@ -213,6 +213,21 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	@Override
+	public boolean updateDecisionKnowledgeElementWithoutStatusChange(DecisionKnowledgeElement element,
+	                                                                 ApplicationUser user) {
+		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS.find(DecisionKnowledgeElementInDatabase.class)) {
+			if (databaseEntry.getId() == element.getId()) {
+				setParameters(element, databaseEntry);
+				databaseEntry.save();
+				new WebhookConnector(projectKey).sendElementChanges(element);
+				return true;
+			}
+		}
+		LOGGER.error("Updating of decision knowledge element in database failed.");
+		return false;
+	}
+
+	@Override
 	public ApplicationUser getCreator(DecisionKnowledgeElement element) {
 		return null;
 	}

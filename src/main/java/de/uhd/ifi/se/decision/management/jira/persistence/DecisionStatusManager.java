@@ -30,7 +30,7 @@ public class DecisionStatusManager {
 			if(status.equals(KnowledgeStatus.REJECTED)|| status.equals(KnowledgeStatus.IDEA) || status.equals(KnowledgeStatus.DISCARDED)) {
 				ApplicationUser user = manager.getCreator(element);
 				element.setType(KnowledgeType.ALTERNATIVE);
-				manager.updateDecisionKnowledgeElement(element, user);
+				manager.updateDecisionKnowledgeElementWithoutStatusChange(element, user);
 			}
 			if(status.equals(KnowledgeStatus.DECIDED)) {
 				return;
@@ -40,7 +40,7 @@ public class DecisionStatusManager {
 			if(status.equals(KnowledgeStatus.DECIDED)){
 				ApplicationUser user = manager.getCreator(element);
 				element.setType(KnowledgeType.DECISION);
-				manager.updateDecisionKnowledgeElement(element, user);
+				manager.updateDecisionKnowledgeElementWithoutStatusChange(element, user);
 			}
 		}
 		if (isStatusInDatabase(element)) {
