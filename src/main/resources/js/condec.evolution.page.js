@@ -40,6 +40,15 @@
             var options = {};
             timeline = new vis.Timeline(container, item, options);
             timeline.setGroups(groups);
+            timeline.on('contextmenu', function (properties) {
+                console.log('contextmenu', properties,timeline);
+                var nodeId = properties.item;
+                var documentationLocation = null;
+                var timeLineData = timeline.itemsData;
+                documentationLocation = timeLineData._data[nodeId].documentationLocation;
+                conDecContextVis.createContextVis(nodeId,
+                    documentationLocation, properties.event);
+            });
         });
         addOnClickEventToFilterTimeLineButton();
     };
@@ -59,6 +68,10 @@
                 };
                 var options = getOptions();
                 var networkLeft = new vis.Network(containerLeft, dataLeft, options);
+                networkLeft.setSize("100%", "500px");
+                networkLeft.on("oncontext", function (params) {
+                    conDecVis.addContextMenu(params,networkLeft);
+                });
 
             });
         conDecAPI.getCompareVis(-1, -1, "", conDecAPI.extendedKnowledgeTypes,
@@ -70,6 +83,10 @@
                 };
                 var options = getOptions();
                 networkRight = new vis.Network(containerRight, dataRight, options);
+                networkRight.setSize("100%", "500px");
+                networkRight.on("oncontext", function (params) {
+                    conDecVis.addContextMenu(params,networkRight);
+                });
             });
         addOnClickEventToFilterCompareButton();
     };
