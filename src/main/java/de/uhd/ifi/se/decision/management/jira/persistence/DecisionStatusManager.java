@@ -26,22 +26,8 @@ public class DecisionStatusManager {
 				AbstractPersistenceManager.getPersistenceManager(decisionKnowledgeElement.getProject().getProjectKey(),
 						decisionKnowledgeElement.getDocumentationLocation());
 		DecisionKnowledgeElement element = manager.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
-		if (element.getType().equals(KnowledgeType.DECISION)) {
-			if(status.equals(KnowledgeStatus.REJECTED)|| status.equals(KnowledgeStatus.IDEA) || status.equals(KnowledgeStatus.DISCARDED)) {
-				ApplicationUser user = manager.getCreator(element);
-				element.setType(KnowledgeType.ALTERNATIVE);
-				manager.updateDecisionKnowledgeElementWithoutStatusChange(element, user);
-			}
-			if(status.equals(KnowledgeStatus.DECIDED)) {
-				return;
-			}
-		}
-		if (element.getType().equals(KnowledgeType.ALTERNATIVE)) {
-			if(status.equals(KnowledgeStatus.DECIDED)){
-				ApplicationUser user = manager.getCreator(element);
-				element.setType(KnowledgeType.DECISION);
-				manager.updateDecisionKnowledgeElementWithoutStatusChange(element, user);
-			}
+		if(!setTypeByChange(status, element, manager)){
+			return;
 		}
 		if (isStatusInDatabase(element)) {
 			for (KnowledgeStatusInDatabase statusInDatabase : ACTIVE_OBJECTS.find(KnowledgeStatusInDatabase.class)) {
@@ -59,15 +45,11 @@ public class DecisionStatusManager {
 	}
 
 	public static KnowledgeStatus getStatusForElement(DecisionKnowledgeElement element) {
-		if (element.getType().equals(KnowledgeType.ISSUE)) {
-			if(!isStatusInDatabase(element)){
-				return getIssueKnowledgeStatus(element);
-			}
+		if (element.getType().equals(KnowledgeType.ISSUE) && !isStatusInDatabase(element)) {
+			return getIssueKnowledgeStatus(element);
 		}
-		if (element.getType().equals(KnowledgeType.DECISION)) {
-			if(!isStatusInDatabase(element)) {
-				return KnowledgeStatus.DECIDED;
-			}
+		if (element.getType().equals(KnowledgeType.DECISION) && !isStatusInDatabase(element)) {
+			return KnowledgeStatus.DECIDED;
 		}
 		if (!isStatusInDatabase(element)) {
 			if (element.getType() == KnowledgeType.ALTERNATIVE) {
@@ -116,5 +98,26 @@ public class DecisionStatusManager {
 			}
 		}
 		return KnowledgeStatus.UNRESOLVED;
+	}
+
+	private static boolean setTypeByChange(KnowledgeStatus status, DecisionKnowledgeElement element,
+	                                         AbstractPersistenceManager manager) {
+		if (element.getType().equals(KnowledgeType.DECISION)) {
+			if(status.equals(KnowledgeStatus.REJECTED)|| status.equals(KnowledgeStatus.IDEA) || status.equals(KnowledgeStatus.DISCARDED)) {
+				ApplicationUser user = manager.getCreator(element);
+				element.setType(KnowledgeType.ALTERNATIVE);
+				manager.updateDecisionKnowledgeElementWithoutStatusChange(element, user);
+			}
+			if(status.equals(KnowledgeStatus.DECIDED)) {
+				return false;
+			}
+		}
+		if (element.getType().equals(KnowledgeType.ALTERNATIVE) && status.equals(KnowledgeStatus.DECIDED)) {
+			ApplicationUser user = manager.getCreator(element);
+			element.setType(KnowledgeType.DECISION);
+			manager.updateDecisionKnowledgeElementWithoutStatusChange(element, user);
+		}
+		return true;
+
 	}
 }

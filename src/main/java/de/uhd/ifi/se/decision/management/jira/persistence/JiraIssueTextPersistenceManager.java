@@ -31,7 +31,6 @@ import de.uhd.ifi.se.decision.management.jira.model.text.impl.TextSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
 import net.java.ao.Query;
-import scala.App;
 
 /**
  * Extends the abstract class AbstractPersistenceManager. Uses JIRA issue
