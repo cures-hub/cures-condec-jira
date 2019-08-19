@@ -41,11 +41,9 @@
             timeline = new vis.Timeline(container, item, options);
             timeline.setGroups(groups);
             timeline.on('contextmenu', function (properties) {
-                console.log('contextmenu', properties,timeline);
+                properties.event.preventDefault();
                 var nodeId = properties.item;
-                var documentationLocation = null;
-                var timeLineData = timeline.itemsData;
-                documentationLocation = timeLineData._data[nodeId].documentationLocation;
+                var documentationLocation =  timeline.itemsData._data[nodeId].documentationLocation;
                 conDecContextVis.createContextVis(nodeId,
                     documentationLocation, properties.event);
             });
