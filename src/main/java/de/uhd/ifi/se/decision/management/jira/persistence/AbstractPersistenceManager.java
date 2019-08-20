@@ -547,6 +547,9 @@ public abstract class AbstractPersistenceManager {
 	 */
 	public abstract boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
 
+	public abstract boolean updateDecisionKnowledgeElementWithoutStatusChange(DecisionKnowledgeElement element,
+	                                                                         ApplicationUser user);
+
 	public DocumentationLocation getDocumentationLocation() {
 		return documentationLocation;
 	}

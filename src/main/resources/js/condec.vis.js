@@ -28,27 +28,9 @@
         var network = new vis.Network(container, data, options);
         network.setSize("100%", "500px");
 
-        network.on("oncontext",
-            function (params) {
-                params.event.preventDefault();
-                var nodeIndices = network.body.nodeIndices;
-                var clickedNodeId;
-                for (var i = 0; i < nodeIndices.length; i++) {
-                    var nodeId = nodeIndices[i];
-                    var boundingBox = network.getBoundingBox(nodeId);
-                    if (boundingBox.left <= params.pointer.canvas.x && params.pointer.canvas.x <= boundingBox.right
-                        && boundingBox.top <= params.pointer.canvas.y
-                        && params.pointer.canvas.y <= boundingBox.bottom) {
-                        clickedNodeId = nodeId;
-                    }
-                }
-                if (clickedNodeId !== undefined && clickedNodeId !== 'distanceCluster') {
-                    console.log("ContextMenu for ID: " + clickedNodeId.toString().slice(0, -2) + " and location: "
-                        + clickedNodeId.toString().substr(-1));
-                    conDecContextVis.createContextVis(clickedNodeId.toString().slice(0, -2),
-                        getDocumentationLocationFromId(clickedNodeId), params.event);
-                }
-            });
+        network.on("oncontext", function (params) {
+                conDecVis.addContextMenu(params,network);
+        });
 
         network.on("hold",
             function (params) {
@@ -92,6 +74,25 @@
         network.cluster(clusterOptionsByData);
         return network;
     }
+
+    ConDecVis.prototype.addContextMenu = function addContextMenu(params, network) {
+        params.event.preventDefault();
+        var nodeIndices = network.body.nodeIndices;
+        var clickedNodeId;
+        for (var i = 0; i < nodeIndices.length; i++) {
+            var nodeId = nodeIndices[i];
+            var boundingBox = network.getBoundingBox(nodeId);
+            if (boundingBox.left <= params.pointer.canvas.x && params.pointer.canvas.x <= boundingBox.right
+                && boundingBox.top <= params.pointer.canvas.y
+                && params.pointer.canvas.y <= boundingBox.bottom) {
+                clickedNodeId = nodeId;
+            }
+        }
+        if (clickedNodeId !== undefined && clickedNodeId !== 'distanceCluster') {
+            conDecContextVis.createContextVis(clickedNodeId.toString().slice(0, -2),
+                getDocumentationLocationFromId(clickedNodeId), params.event);
+        }
+    };
 
     /*
      * external references: condec.jira.issue.module

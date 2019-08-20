@@ -27,6 +27,9 @@ public class VisTimeLineNode {
 	@XmlElement
 	private long group;
 
+	@XmlElement
+	private String documentationLocation;
+
 	private String end;
 
 	public VisTimeLineNode(DecisionKnowledgeElement element) {
@@ -40,6 +43,7 @@ public class VisTimeLineNode {
 		this.end = createDateString(element.getClosed());
 		this.className = element.getTypeAsString().toLowerCase();
 		this.title = element.getDescription();
+		this.documentationLocation = element.getDocumentationLocation().getIdentifier();
 	}
 
 	private String createDateString(Date created) {

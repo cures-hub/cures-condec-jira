@@ -26,6 +26,7 @@
 		this.knowledgeTypes = getKnowledgeTypes(projectKey);
 		this.extendedKnowledgeTypes = getExtendedKnowledgeTypes(this.knowledgeTypes);
         this.knowledgeStatus = ["Idea","Discarded", "Decided","Rejected", "Undefined"];
+        this.issueStatus = ["Resolved", "Unresolved"];
 	};
 
 	ConDecAPI.prototype.checkIfProjectKeyIsValid = function checkIfProjectKeyIsValid() {
