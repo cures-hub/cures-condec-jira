@@ -1,0 +1,104 @@
+<section id="create-release-note-dialog" class="aui-dialog2 aui-dialog2-xlarge aui-layer" role="dialog"
+         aria-hidden="true">
+    <header class="aui-dialog2-header">
+        <h2 id="create-release-note-header" class="aui-dialog2-header-main">Create Release Note</h2>
+        <a class="aui-dialog2-header-close">
+            <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+        </a>
+    </header>
+    <div id="create-release-note-content" class="aui-dialog2-content">
+        <div class="aui-tabs horizontal-tabs" id="createReleaseNoteTabs">
+            <ul class="tabs-menu" id="tab-list-menu">
+                <li class="menu-item active-tab" id="configurationTab">
+                    <a href="#tab-configuration">Konfiguration</a>
+                </li>
+            </ul>
+
+            <div class="tabs-pane active-pane" id="tab-configuration">
+                <form class="aui" id="configurationForm">
+                    <h1>Zeitraum</h1>
+                    <div class="field-group">
+                        <label for="start-range">Start Zeitpunkt </label>
+                        <input class="aui-date-picker" id="start-range" type="date" max="2012-01-25" min="2011-12-25"/>
+                    </div>
+                    <div class="field-group">
+
+                        <label for="final-range">End Zeitpunkt </label>
+                        <input class="aui-date-picker" id="final-range" type="date" max="2012-01-25" min="2011-12-25"/>
+                    </div>
+                    <div class="field-group">
+
+                        <input class="checkbox" type="checkbox" name="useSprint" id="useSprint">
+                        <label for="checkBoxOne">Sprint Verwenden</label>
+                        <select class="select" id="selectSprints" name="selectSprints">
+                        </select>
+                    </div>
+                    <h1>Zielgruppe</h1>
+                    <div class="field-group">
+                        <label for="checkBoxOne">Zielgruppe</label>
+                        <select class="select" id="selectTargetGroup" name="selectTargetGroup">
+                            <option value="DEVELOPER">Entwickler</option>
+                            <option value="STAKEHOLDER">Stakeholder</option>
+                            <option value="TESTER">Tester</option>
+                            <option value="ENDUSER">Enduser</option>
+                        </select>
+                    </div>
+                    <h1>Zuordnung Issue Typen</h1>
+                    <div class="field-group">
+                        <label for="multiselect">Bug Fixes</label>
+                        <select class="multi-select" size="4" multiple="multiple" id="multipleBugs" name="multipleBugs">
+
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label for="multiselect">New Features</label>
+                        <select class="multi-select" size="4" multiple="multiple" id="multipleFeatures"
+                                name="multipleFeatures">
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label for="multiselect">Improvements</label>
+                        <select class="multi-select" size="4" multiple="multiple" id="multipleImprovements"
+                                name="multipleImprovements">
+                        </select>
+                    </div>
+                    <h1>Auswahl für Fortgeschrittene</h1>
+                    <div class="field-group">
+                        <label for="checkBoxOne">Anwendungsdomäne</label>
+                        <select class="select" id="selectDomain" name="selectDomain">
+                            <option value="simple_website">Einfache Website</option>
+                            <option value="plugin">Plugin</option>
+                            <option value="framework">Framework</option>
+                            <option value="software">Installierbare Software</option>
+                            <option value="api">API</option>
+                        </select>
+                    </div>
+                    <h2>Taks Kriterium Priorität</h2>
+                    <div class="field-group">
+                        <label for="count_comments"># Commentare</label>
+                        <input class="short-field" type="number" step="0.1" value="1" max="10" min="0"
+                               id="count_comments">
+                    </div>
+                    <div class="field-group">
+                        <label for="priority">Priorität des Issues</label>
+                        <input class="short-field" type="number" step="0.1" value="1" max="10" min="0" id="priority">
+                    </div>
+                </form>
+            </div>
+
+            <div class="tabs-pane aui-tabs-disabled" id="tab-issues">
+                <h2>This is tab 2</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            </div>
+        </div>
+
+    </div>
+    <footer class="aui-dialog2-footer">
+        <div class="aui-dialog2-footer-actions">
+            <button id="create-release-note-submit-button"   class="aui-button">Save and Next
+            </button>
+            <button id="create-release-note-dialog-cancel-button" class="aui-button aui-button-link">$i18n.getText(
+                "condec.button.cancel")</button>
+        </div>
+    </footer>
+</section>

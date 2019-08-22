@@ -380,6 +380,160 @@
 		AJS.dialog2(exportDialog).show();
 	};
 
+	ConDecDialog.prototype.showCreateReleaseNoteDialog = function showCreateReleaseNoteDialog() {
+		// HTML elements
+		var releaseNoteDialog = document.getElementById("create-release-note-dialog");
+		var cancelButton = document.getElementById("create-release-note-dialog-cancel-button");
+		var configurationSubmitButton = document.getElementById("create-release-note-submit-button");
+		var loader = document.getElementById("createReleaseNoteDialogLoader");
+		removeListItemIssues();
+		AJS.tabs.change(jQuery('a[href="#tab-configuration"]'));
+		var sprintsArray;
+		//load sprints
+		conDecAPI.getSprintsByProject().then(function (sprints) {
+			sprintsArray = sprints.map(function (sprint) {
+				return sprint.values;
+			});
+			if (sprintsArray && sprintsArray.length && sprintsArray[0] && sprintsArray[0].length) {
+				$('#selectSprints').empty()
+				sprintsArray[0].map(function (sprint) {
+					$('#selectSprints').append('<option value="' + sprint.id + '">' + sprint.name + '</option>');
+				})
+			} else {
+				disableSprintBox();
+			}
+		}).catch(function (err) {
+			disableSprintBox();
+		});
+
+		function removeListItemIssues() {
+			var listItem = document.getElementById("listItemTabIssues");
+			if (listItem) {
+				listItem.remove()
+			}
+		}
+
+		//load issue types
+		conDecAPI.getIssueTypes().then(function (issueTypes) {
+			if (issueTypes && issueTypes.length) {
+				issueTypes.map(function (issueType) {
+					$('#multipleBugs').append('<option value="' + issueType.id + '">' + issueType.name + '</option>');
+					$('#multipleFeatures').append('<option value="' + issueType.id + '">' + issueType.name + '</option>');
+					$('#multipleImprovements').append('<option value="' + issueType.id + '">' + issueType.name + '</option>');
+				})
+			}
+		});
+
+		function disableSprintBox() {
+			$("#useSprint").attr("disabled", true);
+			$("#selectSprints").attr("disabled", true);
+		}
+
+		function addListItemIssues() {
+			var listItem = document.getElementById("listItemTabIssues");
+			if (!listItem) {
+				$("#tab-list-menu").append('<li class="menu-item" id="listItemTabIssues"><a href="#tab-issues">Issues</a></li>')
+			}
+		}
+
+
+		configurationSubmitButton.onclick = function () {
+			var startDate = $("#start-range").val();
+			var endDate = $("#final-range").val();
+			var useSprints = $("#useSprint").prop("checked");
+			var selectedSprint = parseInt($("#selectSprints").val()) || "";
+			//first check : both dates have to be selected or a sprint and the checkbox
+			if ((!useSprints) && (!!startDate === false || !!endDate === false)) {
+				throwAlert("Select Date or Sprint", "The start date and the end date have to be selected, if the sprints are not available or not selected")
+				return
+			}
+
+			function getStartAndEndDate() {
+				var result = {startDate: "", endDate: ""};
+
+				if (useSprints && sprintsArray && sprintsArray.length && sprintsArray[0] && sprintsArray[0].length) {
+					//get dates of selected sprint
+					var selectedDates = sprintsArray[0].filter(function (sprint) {
+						return sprint.id === selectedSprint;
+					});
+					if (selectedDates && selectedDates.length) {
+						result.startDate = selectedDates[0].startDate;
+						result.endDate = selectedDates[0].endDate;
+					} else {
+						throwAlert("An error occured", "Neither a sprint was selected or start dates were filled")
+						return false;
+					}
+				} else if (!!startDate && !!endDate) {
+					result.startDate = startDate;
+					result.endDate = endDate;
+				} else {
+					//throw exception
+					throwAlert("An error occured", "Neither a sprint was selected or start dates were filled")
+					return false;
+				}
+				return result;
+			}
+
+			function throwAlert(title, message) {
+				AJS.flag({
+					type: "error",
+					close: "auto",
+					title: title,
+					body: message
+				});
+			}
+
+			var timeRange = getStartAndEndDate();
+			if (!timeRange) {
+				return
+			}
+			//set button busy and disabled
+			var buttonScope = this;
+			buttonScope.busy();
+			buttonScope.setAttribute('aria-disabled', 'true');
+
+			var targetGroup = $("#selectTargetGroup").val();
+			var bugFixes = $("#multipleBugs").val();
+			var features = $("#multipleFeatures").val();
+			var improvements = $("#multipleImprovements").val();
+			//submit configuration
+			var configuration = {
+				startDate: timeRange.startDate,
+				endDate: timeRange.endDate,
+				sprintId: selectedSprint,
+				targetGroup: targetGroup,
+				bugFixMapping: bugFixes,
+				featureMapping: features,
+				improvementMapping: improvements
+			};
+
+
+			setTimeout(function () {
+				//@todo move this down when backend is ready
+				//set button idle
+				buttonScope.idle();
+				addListItemIssues();
+				//change tab
+				AJS.tabs.change(jQuery('a[href="#tab-issues"]'));
+				buttonScope.setAttribute('aria-disabled', 'false');
+			}, 3000);
+
+			conDecAPI.getProposedIssues(configuration, function (response) {
+				console.log(response)
+				//display issues and information
+			})
+
+		};
+
+
+		cancelButton.onclick = function () {
+			AJS.dialog2(releaseNoteDialog).hide();
+		};
+
+		// Show dialog
+		AJS.dialog2(releaseNoteDialog).show();
+	};
+
 	// export ConDecDialog
 	global.conDecDialog = new ConDecDialog();
 })(window);
