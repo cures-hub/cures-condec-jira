@@ -300,17 +300,23 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		if (knowledgeElementToBeUpdate.getType().equals(KnowledgeType.ALTERNATIVE) && element.getType().equals(KnowledgeType.DECISION)) {
 			DecisionStatusManager.deleteStatus(element);
 		}
-		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
-		setParameters(element, issueInputParameters);
-		IssueService.UpdateValidationResult result = issueService.validateUpdate(user, issueToBeUpdated.getId(), issueInputParameters);
-		if (result.getErrorCollection().hasAnyErrors()) {
-			for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
-				LOGGER.error("Updating decision knowledge element in database failed. " + entry.getKey() + ": " + entry.getValue());
-			}
-			return false;
-		}
-		issueService.update(user, result);
-		return true;
+		return dataUpdateElement(element,issueToBeUpdated,user, issueService);
+	}
+
+	@Override
+	public boolean updateDecisionKnowledgeElementWithoutStatusChange(DecisionKnowledgeElement element,
+	                                                         ApplicationUser user) {
+		IssueService issueService = ComponentAccessor.getIssueService();
+		IssueResult issueResult = issueService.getIssue(user, element.getId());
+		MutableIssue issueToBeUpdated = issueResult.getIssue();
+		return dataUpdateElement(element,issueToBeUpdated,user, issueService);
+	}
+
+	@Override
+	public ApplicationUser getCreator(DecisionKnowledgeElement element) {
+		IssueManager issueManager = ComponentAccessor.getIssueManager();
+		Issue issue = issueManager.getIssueByCurrentKey(element.getKey());
+		return issue.getReporterUser();
 	}
 
 	public static void updateJiraIssue(Issue jiraIssue, ApplicationUser user) {
@@ -333,5 +339,20 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 			issueList.add(issue);
 		}
 		return issueList;
+	}
+
+	private boolean dataUpdateElement(DecisionKnowledgeElement element,MutableIssue issueToBeUpdated,
+	                              ApplicationUser user,IssueService issueService){
+		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
+		setParameters(element, issueInputParameters);
+		IssueService.UpdateValidationResult result = issueService.validateUpdate(user, issueToBeUpdated.getId(), issueInputParameters);
+		if (result.getErrorCollection().hasAnyErrors()) {
+			for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
+				LOGGER.error("Updating decision knowledge element in database failed. " + entry.getKey() + ": " + entry.getValue());
+			}
+			return false;
+		}
+		issueService.update(user, result);
+		return true;
 	}
 }

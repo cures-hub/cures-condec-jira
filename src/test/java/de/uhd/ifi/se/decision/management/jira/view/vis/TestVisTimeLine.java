@@ -4,9 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -95,5 +93,17 @@ public class TestVisTimeLine extends TestSetUp {
 		elementList.add(element2);
 		visTimeLine.setElementList(elementList);
 		assertEquals(2, visTimeLine.getElementList().size(), 0.0);
+	}
+
+	@Test
+	public void testGetGroupSet(){
+		assertEquals(1, visTimeLine.getGroupSet().size(), 0.0);
+	}
+
+	@Test
+	public void testSetGroupSet(){
+		HashSet<VisTimeLineGroup> groups = new HashSet<>();
+		visTimeLine.setGroupSet(groups);
+		assertEquals(0, visTimeLine.getGroupSet().size(), 0.0);
 	}
 }

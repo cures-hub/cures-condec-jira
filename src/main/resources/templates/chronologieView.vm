@@ -25,7 +25,6 @@
 <div class="aui-group">
     <div id="evolution-timeline"></div>
 </div>
-
 <script>
     $(document).ready(function() {
         conDecAPI.checkIfProjectKeyIsValid();

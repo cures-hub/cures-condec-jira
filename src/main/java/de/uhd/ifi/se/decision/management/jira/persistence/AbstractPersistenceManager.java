@@ -547,6 +547,9 @@ public abstract class AbstractPersistenceManager {
 	 */
 	public abstract boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
 
+	public abstract boolean updateDecisionKnowledgeElementWithoutStatusChange(DecisionKnowledgeElement element,
+	                                                                         ApplicationUser user);
+
 	public DocumentationLocation getDocumentationLocation() {
 		return documentationLocation;
 	}
@@ -564,8 +567,7 @@ public abstract class AbstractPersistenceManager {
 	 * @param id
 	 *            id of a decision knowledge element in database. The id is
 	 *            different to the key.
-	 * @param documentation
-	 *            location of the element
+	 * @param documentationLocation of the element
 	 * @return list of linked elements.
 	 */
 	public static boolean isElementLinked(long id, DocumentationLocation documentationLocation) {
@@ -576,6 +578,13 @@ public abstract class AbstractPersistenceManager {
 	public static boolean isElementLinked(DecisionKnowledgeElement element) {
 		return isElementLinked(element.getId(), element.getDocumentationLocation());
 	}
+
+	/**
+	 * Return the creator of an Element
+	 * @param element
+	 * @return ApplicationUser
+	 */
+	public abstract ApplicationUser getCreator(DecisionKnowledgeElement element);
 
 	protected static void insertStatus(DecisionKnowledgeElement element) {
 		if (element.getType().equals(KnowledgeType.DECISION)) {

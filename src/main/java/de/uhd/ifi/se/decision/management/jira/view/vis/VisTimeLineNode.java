@@ -18,6 +18,18 @@ public class VisTimeLineNode {
 	@XmlElement
 	private String start;
 
+	@XmlElement
+	private String className;
+
+	@XmlElement
+	private String title;
+
+	@XmlElement
+	private long group;
+
+	@XmlElement
+	private String documentationLocation;
+
 	private String end;
 
 	public VisTimeLineNode(DecisionKnowledgeElement element) {
@@ -25,10 +37,13 @@ public class VisTimeLineNode {
 			return;
 		}
 		this.id = ((int) element.getId());
-		this.content = element.getKey();
+		this.content = "<img src=" +'"' + element.getType().getIconUrl()+ '"' + "> "+ element.getSummary();
 
 		this.start = createDateString(element.getCreated());
 		this.end = createDateString(element.getClosed());
+		this.className = element.getTypeAsString().toLowerCase();
+		this.title = element.getDescription();
+		this.documentationLocation = element.getDocumentationLocation().getIdentifier();
 	}
 
 	private String createDateString(Date created) {
@@ -67,11 +82,35 @@ public class VisTimeLineNode {
 		this.start = start;
 	}
 
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+
 	public String getEnd() {
 		return end;
 	}
 
 	public void setEnd(String end) {
 		this.end = end;
+	}
+
+	public long getGroup() {
+		return group;
+	}
+
+	public void setGroup(long group) {
+		this.group = group;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 }
