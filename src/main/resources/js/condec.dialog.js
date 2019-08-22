@@ -462,9 +462,16 @@
 					var selectedDates = sprintsArray[0].filter(function (sprint) {
 						return sprint.id === selectedSprint;
 					});
-					if (selectedDates && selectedDates.length) {
-						result.startDate = selectedDates[0].startDate;
-						result.endDate = selectedDates[0].endDate;
+					if (selectedDates && selectedDates.length && selectedDates[0] && selectedDates[0].startDate && selectedDates[0].endDate) {
+						var formattedStartDate = formatSprintDate(selectedDates[0].startDate);
+						var formattedEndDate = formatSprintDate(selectedDates[0].endDate);
+						if (formattedStartDate && formattedEndDate) {
+							result.startDate = formattedStartDate;
+							result.endDate = formattedEndDate;
+						} else {
+							throwAlert("An error occured", "Neither a sprint was selected or start dates were filled")
+							return false;
+						}
 					} else {
 						throwAlert("An error occured", "Neither a sprint was selected or start dates were filled")
 						return false;
@@ -478,6 +485,14 @@
 					return false;
 				}
 				return result;
+			}
+
+			function formatSprintDate(date) {
+				var dateFormat = new Date(date);
+				if (typeof dateFormat.getFullYear === "function") {
+					var month = dateFormat.getMonth() + 1;
+					return dateFormat.getFullYear() + "-" + month + "-" + dateFormat.getDate();
+				}
 			}
 
 			function throwAlert(title, message) {
