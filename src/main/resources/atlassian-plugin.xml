@@ -128,6 +128,16 @@
 			location="/js/condec.knowledge.page.js" />
 	</web-resource>
 
+	<web-resource key="release-note-page-resources"
+				  name="ConDec Release Notes Page Resources">
+		<description>
+			Provides the JavaScript files for the separate release note page of this
+			plug-in.
+		</description>
+		<resource type="download" name="condec.release.note.page.js"
+				  location="/js/condec.release.note.page.js" />
+	</web-resource>
+
 	<web-resource key="jira-issue-module-resources"
 		name="ConDec JIRA Issue Module Resources">
 		<description>
@@ -179,11 +189,35 @@
 		<resource name="view" type="velocity" location="templates/decisionKnowledgePage.vm" />
 	</web-panel>
 
+    <!-- Release-Note Page -->
+    <web-item name="Link to the Release Note Page in Side Bar" key="sidebar-link-release-note"
+              section="jira.project.sidebar.plugins.navigation" weight="1000">
+        <description>Provides the "Release Notes" link in the project's navigation sidebar.
+        </description>
+        <label key="condec.sidebar.link.label.release.note" />
+        <param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-decision" />
+        <link> /projects/$pathEncodedProjectKey?selectedItem=release-note-page</link>
+        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+    </web-item>
+    <web-panel name="Decision Knowledge Page" key="release-note-page"
+               location="release-note-page" weight="1000">
+        <description>
+            Provides the plug-in page that developers use to manage release notes.
+        </description>
+        <resource name="view" type="velocity" location="templates/releaseNotePage.vm" />
+    </web-panel>
+
 	<!-- REST API -->
 	<rest name="Decision Knowledge REST" key="decision-knowledge-rest" path="/decisions"
 		version="1.0">
 		<description>
 			Provides REST resources to manage decision knowledge.
+		</description>
+	</rest>
+	<rest name="Release Note REST" key="release-note-rest" path="/release-note"
+		version="1.0">
+		<description>
+			Provides REST resources to manage Release Notes.
 		</description>
 	</rest>
 

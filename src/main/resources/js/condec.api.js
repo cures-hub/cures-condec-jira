@@ -130,6 +130,60 @@
 			}
 		});
 	};
+	/*
+	 * external references: condec.dialog
+	 */
+	ConDecAPI.prototype.getSprintsByProject = function getSprintsByProject() {
+		//first we need the boards then we can get the Sprints for each board
+		return new Promise(function (resolve, reject) {
+			var boardUrl = "/rest/agile/1.0/board?projectKeyOrId=" + projectKey;
+			var boardPromise = getJSONReturnPromise(AJS.contextPath() + boardUrl);
+			boardPromise.then(function (boards) {
+				if (boards && boards.values && boards.values.length) {
+					var sprintPromises = boards.values.map(function (board) {
+						var sprintUrl = "/rest/agile/1.0/board/" + board.id + "/sprint";
+						return getJSONReturnPromise(AJS.contextPath() + sprintUrl);
+					});
+					Promise.all(sprintPromises)
+					.then(function (sprints) {
+						resolve(sprints);
+					}).catch(function (err) {
+						reject(err);
+					})
+				}else{
+					reject();
+				}
+			}).catch(function (err) {
+				reject(err);
+			})
+		})
+	};
+	ConDecAPI.prototype.getIssueTypes = function getIssueTypes() {
+		//first we need the boards then we can get the Sprints for each board
+		return new Promise(function (resolve, reject) {
+			var issueTypeUrl = "/rest/api/2/issue/createmeta?expand=projects.issuetypes";
+			var issuePromise = getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
+			issuePromise.then(function (result) {
+				if (result && result.projects && result.projects.length) {
+					var correctIssueTypes = result.projects.filter(function (project) {
+						return project.key === projectKey;
+					});
+					correctIssueTypes = correctIssueTypes[0].issuetypes;
+					if (correctIssueTypes && correctIssueTypes.length) {
+						resolve(correctIssueTypes);
+					} else {
+						reject();
+					}
+				} else {
+					reject();
+				}
+
+			}).catch(function (err) {
+				reject(err);
+			})
+		})
+	};
+
 
 	/*
 	 * external references: condec.context.menu, condec.dialog
@@ -719,6 +773,25 @@
 			global.open(decisionKnowledgeElement.url, '_self');
 		});
 	};
+	ConDecAPI.prototype.getReleaseNotes = function getReleaseNotes(callback) {
+		var projectKey=getProjectKey();
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/release-note/getReleaseNotes.json?projectKey="
+			+ projectKey, function(error, elements) {
+			if (error === null) {
+				callback(elements);
+			}
+		});
+	};
+	ConDecAPI.prototype.getProposedIssues = function getReleaseNotes(releaseNoteConfiguration, callback) {
+
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/release-note/getProposedIssues.json?projectKey="
+			+ projectKey, releaseNoteConfiguration,
+			function (error, elements) {
+				if (error === null) {
+					callback(elements);
+				}
+			});
+	};
 
 	function getResponseAsReturnValue(url) {
 		var xhr = new XMLHttpRequest();
@@ -753,6 +826,19 @@
 		};
 		xhr.send();
 	}
+	function getJSONReturnPromise(url){
+		return new Promise(function(resolve,reject){
+			getJSON(url,function(err,result){
+				if(err===null){
+					resolve(result);
+				}else{
+					reject(err);
+				}
+			});
+		});
+
+	}
+
 
 	function getText(url, callback) {
 		var xhr = new XMLHttpRequest();
