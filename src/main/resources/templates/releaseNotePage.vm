@@ -3,7 +3,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:release-note-page-resources")
 <div>
 <h1>release Notes</h1>
-    <button onclick="addReleaseNote()">add</button>
+    <button class="aui-button" id="openCreateReleaseNoteDialogButton" onclick="addReleaseNote()">add</button>
 </div>
 
 #parse("templates/dialogs/createReleaseNoteDialog.vm")

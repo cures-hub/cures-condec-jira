@@ -73,16 +73,8 @@
                             <option value="api">API</option>
                         </select>
                     </div>
-                    <h2>Taks Kriterium Priorität</h2>
-                    <div class="field-group">
-                        <label for="count_comments"># Commentare</label>
-                        <input class="short-field" type="number" step="0.1" value="1" max="10" min="0"
-                               id="count_comments">
-                    </div>
-                    <div class="field-group">
-                        <label for="priority">Priorität des Issues</label>
-                        <input class="short-field" type="number" step="0.1" value="1" max="10" min="0" id="priority">
-                    </div>
+                    <h2 >Taks Kriterium Priorität</h2>
+                    <div id="taskCriteriaPriority"></div>
                 </form>
             </div>
 

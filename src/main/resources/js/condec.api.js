@@ -168,7 +168,7 @@
 					var correctIssueTypes = result.projects.filter(function (project) {
 						return project.key === projectKey;
 					});
-					correctIssueTypes = correctIssueTypes[0].issuetypes
+					correctIssueTypes = correctIssueTypes[0].issuetypes;
 					if (correctIssueTypes && correctIssueTypes.length) {
 						resolve(correctIssueTypes);
 					} else {
@@ -834,7 +834,7 @@
 				}else{
 					reject(err);
 				}
-			})
+			});
 		});
 
 	}
