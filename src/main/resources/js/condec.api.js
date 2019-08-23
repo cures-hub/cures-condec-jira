@@ -137,24 +137,24 @@
 		//first we need the boards then we can get the Sprints for each board
 		return new Promise(function (resolve, reject) {
 			var boardUrl = "/rest/agile/1.0/board?projectKeyOrId=" + projectKey;
-			var boardPromise = getJSONReturnPromise(AJS.contextPath() + boardUrl)
+			var boardPromise = getJSONReturnPromise(AJS.contextPath() + boardUrl);
 			boardPromise.then(function (boards) {
 				if (boards && boards.values && boards.values.length) {
 					var sprintPromises = boards.values.map(function (board) {
 						var sprintUrl = "/rest/agile/1.0/board/" + board.id + "/sprint";
-						return getJSONReturnPromise(AJS.contextPath() + sprintUrl)
+						return getJSONReturnPromise(AJS.contextPath() + sprintUrl);
 					});
 					Promise.all(sprintPromises)
 					.then(function (sprints) {
-						resolve(sprints)
+						resolve(sprints);
 					}).catch(function (err) {
-						reject(err)
+						reject(err);
 					})
 				}else{
-					reject()
+					reject();
 				}
 			}).catch(function (err) {
-				reject(err)
+				reject(err);
 			})
 		})
 	};
@@ -167,7 +167,7 @@
 				if (result && result.projects && result.projects.length) {
 					var correctIssueTypes = result.projects.filter(function (project) {
 						return project.key === projectKey;
-					})
+					});
 					correctIssueTypes = correctIssueTypes[0].issuetypes
 					if (correctIssueTypes && correctIssueTypes.length) {
 						resolve(correctIssueTypes);
@@ -179,7 +179,7 @@
 				}
 
 			}).catch(function (err) {
-				reject(err)
+				reject(err);
 			})
 		})
 	};
@@ -830,12 +830,12 @@
 		return new Promise(function(resolve,reject){
 			getJSON(url,function(err,result){
 				if(err===null){
-					resolve(result)
+					resolve(result);
 				}else{
 					reject(err);
 				}
 			})
-		})
+		});
 
 	}
 

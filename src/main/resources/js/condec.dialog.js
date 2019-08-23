@@ -401,7 +401,7 @@
 				return sprint.values;
 			});
 			if (sprintsArray && sprintsArray.length && sprintsArray[0] && sprintsArray[0].length) {
-				$('#selectSprints').empty()
+				$('#selectSprints').empty();
 				sprintsArray[0].map(function (sprint) {
 					$('#selectSprints').append('<option value="' + sprint.id + '">' + sprint.name + '</option>');
 				})
@@ -415,7 +415,7 @@
 		function removeListItemIssues() {
 			var listItem = document.getElementById("listItemTabIssues");
 			if (listItem) {
-				listItem.remove()
+				listItem.remove();
 			}
 		}
 
@@ -438,7 +438,7 @@
 		function addListItemIssues() {
 			var listItem = document.getElementById("listItemTabIssues");
 			if (!listItem) {
-				$("#tab-list-menu").append('<li class="menu-item" id="listItemTabIssues"><a href="#tab-issues">Issues</a></li>')
+				$("#tab-list-menu").append('<li class="menu-item" id="listItemTabIssues"><a href="#tab-issues">Issues</a></li>');
 			}
 		}
 
@@ -450,7 +450,7 @@
 			var selectedSprint = parseInt($("#selectSprints").val()) || "";
 			//first check : both dates have to be selected or a sprint and the checkbox
 			if ((!useSprints) && (!!startDate === false || !!endDate === false)) {
-				throwAlert("Select Date or Sprint", "The start date and the end date have to be selected, if the sprints are not available or not selected")
+				throwAlert("Select Date or Sprint", "The start date and the end date have to be selected, if the sprints are not available or not selected");
 				return
 			}
 
@@ -469,11 +469,11 @@
 							result.startDate = formattedStartDate;
 							result.endDate = formattedEndDate;
 						} else {
-							throwAlert("An error occured", "Neither a sprint was selected or start dates were filled")
+							throwAlert("An error occured", "Neither a sprint was selected or start dates were filled");
 							return false;
 						}
 					} else {
-						throwAlert("An error occured", "Neither a sprint was selected or start dates were filled")
+						throwAlert("An error occured", "Neither a sprint was selected or start dates were filled");
 						return false;
 					}
 				} else if (!!startDate && !!endDate) {
@@ -481,7 +481,7 @@
 					result.endDate = endDate;
 				} else {
 					//throw exception
-					throwAlert("An error occured", "Neither a sprint was selected or start dates were filled")
+					throwAlert("An error occured", "Neither a sprint was selected or start dates were filled");
 					return false;
 				}
 				return result;
@@ -506,12 +506,12 @@
 
 			var timeRange = getStartAndEndDate();
 			if (!timeRange) {
-				return
+				return;
 			}
 			//set button busy and disabled
-			var buttonScope = this;
-			buttonScope.busy();
-			buttonScope.setAttribute('aria-disabled', 'true');
+			var self = this;
+			self.busy();
+			self.setAttribute('aria-disabled', 'true');
 
 			var targetGroup = $("#selectTargetGroup").val();
 			var bugFixes = $("#multipleBugs").val();
@@ -532,17 +532,17 @@
 			setTimeout(function () {
 				//@todo move this down when backend is ready
 				//set button idle
-				buttonScope.idle();
+				self.idle();
 				addListItemIssues();
 				//change tab
 				AJS.tabs.change(jQuery('a[href="#tab-issues"]'));
-				buttonScope.setAttribute('aria-disabled', 'false');
+				self.setAttribute('aria-disabled', 'false');
 			}, 3000);
 
 			conDecAPI.getProposedIssues(configuration, function (response) {
-				console.log(response)
+				console.log(response);
 				//display issues and information
-			})
+			});
 
 		};
 

@@ -41,8 +41,8 @@
 
 	ConDecReleaseNotePage.prototype.getReleaseNotes = function() {
 		conDecAPI.getReleaseNotes(function(){
-			console.log("get release notes")
-		})
+			console.log("get release notes");
+		});
 
 	};
 
