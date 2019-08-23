@@ -1,0 +1,83 @@
+package de.uhd.ifi.se.decision.management.jira.releasenotes;
+
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteImpl;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+
+/**
+ * Interface for release notes
+ */
+@JsonDeserialize(as = ReleaseNoteImpl.class)
+public interface ReleaseNote {
+
+	/**
+	 * Get the id of the release note.
+	 * @return id of the release note.
+	 */
+	long getId();
+
+	/**
+	 * Set the id of the release note.
+	 * @param id of the release note.
+	 */
+	void setId(long id);
+
+	/**
+	 * Get the title of the release note.
+	 *
+	 * @return title of the release note.
+	 */
+	String getTitle();
+
+	/**
+	 * Set the summary of the release note.
+	 *
+	 * @param title of the release note.
+	 */
+	void setTitle(String title);
+	/**
+	 * Get the project that the release note belongs to. The project
+	 * is a JIRA project that is extended with settings for this plug-in, for
+	 * example, whether the plug-in is activated for the project.
+	 *
+	 * @see DecisionKnowledgeProject
+	 */
+	DecisionKnowledgeProject getProject();
+
+	/**
+	 * Set the project that the release note belongs to. The project
+	 * is a JIRA project that is extended with settings for this plug-in, for
+	 * example, whether the plug-in is activated for the project.
+	 *
+	 * @param project decision knowledge project.
+	 * @see DecisionKnowledgeProject
+	 */
+	void setProject(DecisionKnowledgeProject project);
+
+	/**
+	 * Set the project that the release note belongs to via its key.
+	 * The project is a JIRA project that is extended with settings for this
+	 * plug-in, for example, whether the plug-in is activated for the project.
+	 *
+	 * @param projectKey key of JIRA project.
+	 * @see DecisionKnowledgeProject
+	 */
+	void setProject(String projectKey);
+
+	/**
+	 * Get the content of the release note.
+	 * The content is in HTML, txt or md.
+	 *
+	 * @return content of the release note.
+	 */
+	String getContent();
+
+	/**
+	 * Set the description of the release note. The content
+	 * is in HTML, txt or md.
+	 *
+	 * @param content of the release note.
+	 */
+	void setContent(String content);
+
+}
