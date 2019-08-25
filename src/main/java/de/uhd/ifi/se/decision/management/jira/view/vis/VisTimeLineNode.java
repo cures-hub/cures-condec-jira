@@ -6,6 +6,8 @@ import java.util.Date;
 import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
 
 public class VisTimeLineNode {
 
@@ -37,7 +39,7 @@ public class VisTimeLineNode {
 			return;
 		}
 		this.id = ((int) element.getId());
-		this.content = "<img src=" +'"' + element.getType().getIconUrl()+ '"' + "> "+ element.getSummary();
+		this.content = createContentString(element);
 
 		this.start = createDateString(element.getCreated());
 		this.end = createDateString(element.getClosed());
@@ -56,6 +58,17 @@ public class VisTimeLineNode {
 		int month = calendar.get(Calendar.MONTH);
 		int day = calendar.get(Calendar.DAY_OF_MONTH);
 		return year + "-" + month + "-" + day;
+	}
+
+	private String createContentString(DecisionKnowledgeElement element) {
+		String contentString = "<img src=" +'"' + element.getType().getIconUrl()+ '"' + "> ";
+		KnowledgeStatus elementStatus= DecisionStatusManager.getStatusForElement(element);
+		if(elementStatus.equals(KnowledgeStatus.DISCARDED) || elementStatus.equals(KnowledgeStatus.REJECTED) ||
+		elementStatus.equals(KnowledgeStatus.UNRESOLVED)){
+			return contentString + "<p style=\"color:red\">" + element.getSummary() + "</p>";
+
+		}
+		return contentString + element.getSummary();
 	}
 
 	public int getId() {
