@@ -14,6 +14,7 @@
                 </li>
             </ul>
 
+
             <div class="tabs-pane active-pane" id="tab-configuration">
                 <form class="aui" id="configurationForm">
                     <h1>Zeitraum</h1>
@@ -63,6 +64,8 @@
                         </select>
                     </div>
                     <h1>Auswahl für Fortgeschrittene</h1>
+                    <a id="replace-text-trigger" data-replace-text="Verbergen" class="aui-expander-trigger" aria-controls="expander-with-replace-text-content">Anzeigen</a>
+                    <div id="expander-with-replace-text-content" class="aui-expander-content">
                     <div class="field-group">
                         <label for="checkBoxOne">Anwendungsdomäne</label>
                         <select class="select" id="selectDomain" name="selectDomain">
@@ -75,20 +78,26 @@
                     </div>
                     <h2 >Taks Kriterium Priorität</h2>
                     <div id="taskCriteriaPriority"></div>
+                    </div>
                 </form>
+                <button id="create-release-note-submit-button" class="aui-button aui-button-primary">Save and Next</button>
             </div>
 
             <div class="tabs-pane aui-tabs-disabled" id="tab-issues">
-                <h2>This is tab 2</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                <h2>Suggested Issues</h2>
+            <div id="displayIssueTables"></div>
+                <button id="create-release-note-submit-issues-button" class="aui-button aui-button-primary">Use this issues</button>
+
+            </div>
+            <div class="tabs-pane aui-tabs-disabled" id="tab-editor">
+                <h2>Editor</h2>
+            <div id="displayEditor"></div>
             </div>
         </div>
 
     </div>
     <footer class="aui-dialog2-footer">
         <div class="aui-dialog2-footer-actions">
-            <button id="create-release-note-submit-button"   class="aui-button">Save and Next
-            </button>
             <button id="create-release-note-dialog-cancel-button" class="aui-button aui-button-link">$i18n.getText(
                 "condec.button.cancel")</button>
         </div>
