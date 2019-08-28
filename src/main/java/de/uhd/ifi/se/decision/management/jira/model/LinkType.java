@@ -8,7 +8,42 @@ import java.util.Locale;
  * Type of links between decision knowledge elements
  */
 public enum LinkType {
-	CONTAIN, SUPPORT, ATTACK;
+	CONTAIN("contain", "contains", "is contained by", "contain_style"),
+	SUPPORT("support", "supports", "is supported by", "contain_style"),
+	ATTACK("attack", "attacks", "is attacked by", "contain_style"),
+	CONSTRAINT("constraint", "constrains", "is constrained by", "contain-style"),
+	ENABLE("enable", "enables", "is enabled by", "contain-style"),
+	FORBID("forbid", "forbids", "is forbidden by", "contain-style"),
+	COMPRISE("comprise", "comprises", "is comprised by", "contain-style"),
+	SUBSUME("subsume", "subsumes", "is subsumed by", "contain-style"),
+	OVERRIDE("override", "overrides", "is overridden by", "contain-style"),
+	REPLACE("replace", "replaces", "is replaced by", "contain-style"),
+	RELATE("relate", "relates", "is related by", "contain-style");
+
+	private String name, outwardLink, inwardLink, style;
+
+	private LinkType(String name, String outwardLink, String inwardLink, String style) {
+		this.name = name;
+		this.outwardLink = outwardLink;
+		this.inwardLink = inwardLink;
+		this.style = style;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getOutwardLink() {
+		return outwardLink;
+	}
+
+	public String getInwardLink() {
+		return inwardLink;
+	}
+
+	public String getStyle() {
+		return style;
+	}
 
 	/**
 	 * Convert the link type to a String with lower case letters, e.g., contain,
