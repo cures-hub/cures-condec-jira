@@ -54,7 +54,7 @@ public class VisTimeLineNode {
 		}
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(created);
-		int year = calendar.get(Calendar.YEAR) + 1900;
+		int year = calendar.get(Calendar.YEAR);
 		int month = calendar.get(Calendar.MONTH);
 		int day = calendar.get(Calendar.DAY_OF_MONTH);
 		return year + "-" + month + "-" + day;
