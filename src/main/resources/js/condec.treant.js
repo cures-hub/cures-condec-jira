@@ -22,7 +22,9 @@
 				addContextMenuToTreant();				
 				addTooltip();
 			}
+            changeColorForNodes();
 		});
+
 	};
 
 	function getDepthOfTree() {
@@ -34,6 +36,25 @@
 		}
 		return depthOfTree;
 	}
+
+	function changeColorForNodes() {
+        var treantNodes = document.getElementsByClassName("node");
+        for (var i = 0; i < treantNodes.length; i++) {
+            var node = treantNodes[i];
+            var documentationLocation = node.childNodes.item(2).innerHTML;
+            conDecAPI.getDecisionKnowledgeElement(node.id, documentationLocation, function(decisionKnowledgeElement) {
+                conDecAPI.getStatus(decisionKnowledgeElement, function (status) {
+                    var redStatus =  new Array("discarded", "rejected", "unresolved");
+                    if(redStatus.includes(status.toLowerCase())){
+                        var element = document.getElementById(decisionKnowledgeElement.id);
+                        for(var j = 1; j< element.childNodes.length-1; j++) {
+                            element.childNodes[j].style.color = "red";
+                        }
+                    }
+                });
+            });
+        }
+    }
 
 	function addDragAndDropSupportForTreant() {
 		console.log("conDecTreant addDragAndDropSupportForTreant");
