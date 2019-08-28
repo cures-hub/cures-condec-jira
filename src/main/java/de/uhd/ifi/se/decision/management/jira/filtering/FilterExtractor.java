@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;

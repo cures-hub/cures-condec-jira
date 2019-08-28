@@ -161,6 +161,22 @@ public class TestFilterExtractor extends TestSetUp {
 
 	@Test
 	@NonTransactional
+	public void testGetAllElementsMatchingCompareFilterSettingsFilledCreated() {
+		settings.setCreatedLatest((long)-1);
+		FilterExtractor extractor = new FilterExtractor(user, settings);
+		assertEquals(0, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetAllElementsMatchingCompareFilterSettingsFilledClosed() {
+		settings.setCreatedLatest((long)-1);
+		FilterExtractor extractor = new FilterExtractor(user, settings);
+		assertEquals(0, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
+	}
+
+	@Test
+	@NonTransactional
 	public void testGetAllElementsMatchingCompareFilterSettingsFilled() {
 		FilterExtractor extractor = new FilterExtractor(user, settings);
 		assertEquals(0, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
