@@ -1,0 +1,55 @@
+<html>
+    $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
+    $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
+<form class="aui">
+    <table class="aui" id="matrix" border="1">
+    <script>
+        conDecAPI.getCompareVis(-1, -1,"", ["Decision"],
+                conDecAPI.knowledgeStatus, function (allDecisions) {
+
+            console.log(allDecisions);
+
+            var matrix = document.getElementById("matrix");
+            var tableColumn = document.createElement("th");
+            tableColumn.innerText = "";
+            matrix.appendChild(tableColumn);
+
+            for (dec in allDecisions.nodes) {
+                tableColumn = document.createElement("th");
+                tableColumn.innerText = allDecisions.nodes[dec].label;
+                matrix.appendChild(tableColumn);
+            }
+
+            for (dec in allDecisions.nodes){
+                var idDec = allDecisions.nodes[dec].id;
+                matrix.appendChild(document.createElement("tr"));
+                var tableRow = document.createElement("th");
+                tableRow.innerText = allDecisions.nodes[dec].label;
+                matrix.appendChild(tableRow);
+                for (decdec in allDecisions.nodes) {
+                    var idDecDec = allDecisions.nodes[decdec].id;
+                    var tableRowElement = document.createElement("td");
+                    if (dec == decdec) {
+                        tableRowElement.style.backgroundColor = "LightGray";
+                        matrix.appendChild(tableRowElement);
+                    } else{
+                        for (e in allDecisions.edges){
+                            if ((allDecisions.edges[e].from == idDecDec && allDecisions.edges[e].to == idDec) ||
+                                    (allDecisions.edges[e].to == idDecDec && allDecisions.edges[e].from == idDec)) {
+                                tableRowElement.style.backgroundColor = "Red";
+                                matrix.appendChild(tableRowElement);
+                            } else {
+                                matrix.appendChild(tableRowElement);
+                            }
+                        }
+                    }
+
+
+                }
+            }
+        });
+
+    </script>
+    </table>
+</form>
+</html>
