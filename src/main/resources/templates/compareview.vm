@@ -1,12 +1,4 @@
 <form class="aui">
-    <label for="start-data-picker-compare">$i18n.getText("condec.startdatepicker")<span
-            class="aui-icon icon-required"></span>
-    </label>
-    <input id="start-data-picker-compare" type="date"/>
-    <label for="end-data-picker-compare">$i18n.getText("condec.enddatepicker")<span
-            class="aui-icon icon-required"></span>
-    </label>
-    <input id="end-data-picker-compare" type="date"/>
     <button aria-controls="compare-dropdown" class="aui-button aui-style-default aui-dropdown2-trigger" aria-haspopup="true">
         Issuetypes
     </button>
@@ -23,11 +15,25 @@
 </form>
 <div class="aui-group">
     <div  class="aui-item">
-        <h1>Current Date</h1>
+        <label for="start-data-picker-compare-left">$i18n.getText("condec.startdatepicker")<span
+                class="aui-icon icon-required"></span>
+        </label>
+        <input id="start-data-picker-compare-left" type="date"/>
+        <label for="end-data-picker-compare-left">$i18n.getText("condec.enddatepicker")<span
+                class="aui-icon icon-required"></span>
+        </label>
+        <input id="end-data-picker-compare-left" type="date"/>
         <div id="left-network"></div>
     </div>
     <div class="aui-item">
-        <h1>Selected Time</h1>
+        <label for="start-data-picker-compare-right">$i18n.getText("condec.startdatepicker")<span
+                class="aui-icon icon-required"></span>
+        </label>
+        <input id="start-data-picker-compare-right" type="date"/>
+        <label for="end-data-picker-compare-right">$i18n.getText("condec.enddatepicker")<span
+                class="aui-icon icon-required"></span>
+        </label>
+        <input id="end-data-picker-compare-right" type="date"/>
         <div id="right-network"></div>
     </div>
 </div>
