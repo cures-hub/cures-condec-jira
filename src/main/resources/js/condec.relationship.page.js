@@ -22,19 +22,23 @@
 	ConDecRelationshipPage.prototype.buildDecisionGraph = function() {
 		console.log("ConDec build Decision Relationship Graph");
 
-		conDecAPI.getVis("KB-7", "", function(data){
-			var dataset = {
-				nodes: data.nodes,
-				edges: data.edges
-			};
+		conDecAPI.getCompareVis(-1, -1,"", ["Decision"],
+			conDecAPI.knowledgeStatus, function (data) {
+				var dataset = {
+					nodes: data.nodes,
+					edges: data.edges
+				};
 
-			var graphContainer = document.getElementById('graph-container');
+				var graphContainer = document.getElementById('graph-container');
 
-			var options = {};
+				var options = {
+					edges: {
+						arrows: "to"
+					}
+				};
 
-			var graphNetwork = new vis.Network(graphContainer, dataset, options);
-		})
-
+				var graphNetwork = new vis.Network(graphContainer, dataset, options);
+			});
 	};
 
 	/*
