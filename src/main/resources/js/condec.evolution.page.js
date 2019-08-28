@@ -37,7 +37,15 @@
             var data = evolutionData.dataSet;
             var item = new vis.DataSet(data);
             var groups = evolutionData.groupSet;
-            var options = {};
+            var date = new Date();
+            var endTime = date.toDateString();
+            date.setDate(date.getDate() -7);
+            var startTime = date.toDateString();
+            var options = {
+                locale: 'de',
+                start: startTime,
+                end:endTime
+            };
             timeline = new vis.Timeline(container, item, options);
             timeline.setGroups(groups);
             timeline.on('contextmenu', function (properties) {
@@ -47,6 +55,7 @@
                 conDecContextVis.createContextVis(nodeId,
                     documentationLocation, properties.event);
             });
+            console.log(timeline);
         });
         addOnClickEventToFilterTimeLineButton();
     };
