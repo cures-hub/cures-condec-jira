@@ -159,6 +159,9 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 		//first check if user was already checked
 		SearchService searchProvider = ComponentAccessor.getComponentOfType(SearchService.class);
 		String reporterId = issue.getReporterId();
+		if (reporterId == null) {
+			reporterId = issue.getReporter().getKey();
+		}
 		Integer reporterExistingCount = existingReporterCount.get(reporterId);
 		Integer countReporter = 0;
 
@@ -196,6 +199,9 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 		//not all issues have assigneeId, if it is null use the reporterId
 		if (assigneeId == null) {
 			assigneeId = issue.getReporterId();
+			if(assigneeId== null){
+				assigneeId=issue.getReporter().getKey();
+			}
 		}
 		//first check if user was already checked
 		Integer resolverExistingCount = existingResolverCount.get(assigneeId);

@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
+import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
@@ -228,7 +229,8 @@ public class ReleaseNoteRest {
 		ArrayList<ReleaseNoteIssueProposal> improvements = new ArrayList<ReleaseNoteIssueProposal>();
 		proposals.forEach(proposal -> {
 			Issue issue = issueManager.getIssueByCurrentKey(proposal.getDecisionKnowledgeElement().getKey());
-			Integer issueTypeId = Integer.valueOf(issue.getIssueTypeId());
+			IssueType issueType= issue.getIssueType();
+			Integer issueTypeId = Integer.valueOf(issueType.getId());
 			//new features
 			if (config.getFeatureMapping() != null && config.getFeatureMapping().contains(issueTypeId)) {
 				features.add(proposal);
