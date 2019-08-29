@@ -20,7 +20,10 @@ public enum LinkType {
 	REPLACE("Replaces", "replaces", "is replaced by", "contain-style"),
 	RELATE("Relates", "relates to", "is relates to", "contain-style");
 
-	private String name, outwardLink, inwardLink, style;
+	private String name;
+	private String outwardLink;
+	private String inwardLink;
+	private String style;
 
 	private LinkType(String name, String outwardLink, String inwardLink, String style) {
 		this.name = name;
