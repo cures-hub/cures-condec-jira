@@ -1,13 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
-import com.atlassian.jira.issue.comments.CommentManager;
-import com.atlassian.jira.issue.priority.Priority;
-import com.atlassian.jira.issue.search.SearchException;
-import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
@@ -41,14 +36,14 @@ public class ReleaseNoteRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		List<DecisionKnowledgeElement> queryResult = new ArrayList<DecisionKnowledgeElement>();
-		String query = "?jql=project="+projectKey+" && resolved >= " + releaseNoteConfiguration.getStartDate() + " && resolved <= " + releaseNoteConfiguration.getEndDate();
+		String query = "?jql=project=" + projectKey + " && resolved >= " + releaseNoteConfiguration.getStartDate() + " && resolved <= " + releaseNoteConfiguration.getEndDate();
 		//String query = "?jql=resolved >= 2019-08-01 && resolved <= 2020-08-16";
 		FilterExtractor extractor = new FilterExtractor(projectKey, user, query);
 		List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
 		elementsQueryLinked = extractor.getAllGraphs();
 		ArrayList<ReleaseNoteIssueProposal> proposals = setPriorityValues(elementsQueryLinked, user);
 		ArrayList<ReleaseNoteIssueProposal> comparedProposals = compareProposals(proposals);
-		HashMap<String,ArrayList<ReleaseNoteIssueProposal>> mappedProposals = mapProposals(comparedProposals,releaseNoteConfiguration);
+		HashMap<String, ArrayList<ReleaseNoteIssueProposal>> mappedProposals = mapProposals(comparedProposals, releaseNoteConfiguration);
 		return Response.ok(mappedProposals).build();
 	}
 
@@ -79,7 +74,6 @@ public class ReleaseNoteRest {
 					//create Release note issue proposal with the element and the count of associated decision knowledge
 					// check if DK or Comment
 					ReleaseNoteIssueProposal proposal = new ReleaseNoteIssueProposalImpl(dkElement, lenOfList - 1);
-					EnumMap<TaskCriteriaPrioritisation, Integer> criterias = proposal.getTaskCriteriaPrioritisation();
 					Issue issue = issueManager.getIssueByCurrentKey(dkElement.getKey());
 
 					//set priority
@@ -133,7 +127,7 @@ public class ReleaseNoteRest {
 		//add min and max to lists
 		EnumMap<TaskCriteriaPrioritisation, Integer> minValues = new EnumMap<>(TaskCriteriaPrioritisation.class);
 		EnumMap<TaskCriteriaPrioritisation, Integer> maxValues = new EnumMap<>(TaskCriteriaPrioritisation.class);
-		this.getMinAndMaxValues(minValues,maxValues,countValues);
+		this.getMinAndMaxValues(minValues, maxValues, countValues);
 
 
 		// for each proposal we want to compute the scaling of all criterias
@@ -141,7 +135,6 @@ public class ReleaseNoteRest {
 
 		return proposals;
 	}
-
 
 
 	/**
@@ -161,7 +154,6 @@ public class ReleaseNoteRest {
 		}
 		return ((limitMax - limitMin) * (valueIn - baseMin) / (baseMax - baseMin)) + limitMin;
 	}
-
 
 
 	private EnumMap<TaskCriteriaPrioritisation, ArrayList<Integer>> getFlatListOfValues(ArrayList<ReleaseNoteIssueProposal> proposals) {
@@ -192,7 +184,7 @@ public class ReleaseNoteRest {
 		return countValues;
 	}
 
-	private void getMinAndMaxValues(EnumMap<TaskCriteriaPrioritisation, Integer>minValues, EnumMap<TaskCriteriaPrioritisation, Integer>maxValues,EnumMap<TaskCriteriaPrioritisation, ArrayList<Integer>> countValues){
+	private void getMinAndMaxValues(EnumMap<TaskCriteriaPrioritisation, Integer> minValues, EnumMap<TaskCriteriaPrioritisation, Integer> maxValues, EnumMap<TaskCriteriaPrioritisation, ArrayList<Integer>> countValues) {
 		List<TaskCriteriaPrioritisation> criteriaEnumList = TaskCriteriaPrioritisation.getOriginalList();
 		criteriaEnumList.forEach(criteria -> {
 			ArrayList<Integer> values = countValues.get(criteria);
@@ -202,6 +194,7 @@ public class ReleaseNoteRest {
 			}
 		});
 	}
+
 	private void getAndSetScalingForAllCriteria(ArrayList<ReleaseNoteIssueProposal> proposals, EnumMap<TaskCriteriaPrioritisation, Integer> minValues, EnumMap<TaskCriteriaPrioritisation, Integer> maxValues) {
 		List<TaskCriteriaPrioritisation> criteriaEnumList = TaskCriteriaPrioritisation.getOriginalList();
 
@@ -226,26 +219,26 @@ public class ReleaseNoteRest {
 		});
 	}
 
-	private HashMap<String,ArrayList<ReleaseNoteIssueProposal>> mapProposals(ArrayList<ReleaseNoteIssueProposal> proposals,ReleaseNoteConfiguration config){
+	private HashMap<String, ArrayList<ReleaseNoteIssueProposal>> mapProposals(ArrayList<ReleaseNoteIssueProposal> proposals, ReleaseNoteConfiguration config) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 
-		HashMap<String,ArrayList<ReleaseNoteIssueProposal>> resultMap= new HashMap<String,ArrayList<ReleaseNoteIssueProposal>>();
-		ArrayList<ReleaseNoteIssueProposal> bugs=new ArrayList<ReleaseNoteIssueProposal>();
-		ArrayList<ReleaseNoteIssueProposal> features=new ArrayList<ReleaseNoteIssueProposal>();
-		ArrayList<ReleaseNoteIssueProposal> improvements=new ArrayList<ReleaseNoteIssueProposal>();
-		proposals.forEach(proposal->{
+		HashMap<String, ArrayList<ReleaseNoteIssueProposal>> resultMap = new HashMap<String, ArrayList<ReleaseNoteIssueProposal>>();
+		ArrayList<ReleaseNoteIssueProposal> bugs = new ArrayList<ReleaseNoteIssueProposal>();
+		ArrayList<ReleaseNoteIssueProposal> features = new ArrayList<ReleaseNoteIssueProposal>();
+		ArrayList<ReleaseNoteIssueProposal> improvements = new ArrayList<ReleaseNoteIssueProposal>();
+		proposals.forEach(proposal -> {
 			Issue issue = issueManager.getIssueByCurrentKey(proposal.getDecisionKnowledgeElement().getKey());
-			Integer issueTypeId= Integer.valueOf(issue.getIssueTypeId());
+			Integer issueTypeId = Integer.valueOf(issue.getIssueTypeId());
 			//new features
-			if(config.getFeatureMapping()!=null && config.getFeatureMapping().contains(issueTypeId)){
+			if (config.getFeatureMapping() != null && config.getFeatureMapping().contains(issueTypeId)) {
 				features.add(proposal);
 			}
 			//bugs
-			if(config.getBugFixMapping()!=null && config.getBugFixMapping().contains(issueTypeId)){
+			if (config.getBugFixMapping() != null && config.getBugFixMapping().contains(issueTypeId)) {
 				bugs.add(proposal);
 			}
 			//improvements
-			if(config.getImprovementMapping()!=null && config.getImprovementMapping().contains(issueTypeId)){
+			if (config.getImprovementMapping() != null && config.getImprovementMapping().contains(issueTypeId)) {
 				improvements.add(proposal);
 			}
 
@@ -254,8 +247,8 @@ public class ReleaseNoteRest {
 		Comparator<ReleaseNoteIssueProposal> compareByRating = new Comparator<ReleaseNoteIssueProposal>() {
 			@Override
 			public int compare(ReleaseNoteIssueProposal o1, ReleaseNoteIssueProposal o2) {
-				Double rating1=o1.getRating();
-				Double rating2= o2.getRating();
+				Double rating1 = o1.getRating();
+				Double rating2 = o2.getRating();
 				return rating2.toString().compareTo(rating1.toString());
 			}
 		};
@@ -264,9 +257,9 @@ public class ReleaseNoteRest {
 		improvements.sort(compareByRating);
 
 
-		resultMap.put("bug_fixes",bugs);
-		resultMap.put("new_features",features);
-		resultMap.put("improvements",improvements);
+		resultMap.put("bug_fixes", bugs);
+		resultMap.put("new_features", features);
+		resultMap.put("improvements", improvements);
 		return resultMap;
 	}
 
