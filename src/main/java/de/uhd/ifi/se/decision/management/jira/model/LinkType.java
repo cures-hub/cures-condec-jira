@@ -8,7 +8,6 @@ import java.util.Locale;
  * Type of links between decision knowledge elements
  */
 public enum LinkType {
-	CONTAIN("Contains", "contains", "is contained by", "contain_style"),
 	SUPPORT("Supports", "supports", "is supported by", "contain_style"),
 	ATTACK("Attacks", "attacks", "is attacked by", "contain_style"),
 	CONSTRAINT("Constraint", "constraints", "is constrained by", "contain-style"),
@@ -49,7 +48,7 @@ public enum LinkType {
 	}
 
 	/**
-	 * Convert the link type to a String with lower case letters, e.g., contain,
+	 * Convert the link type to a String with lower case letters, e.g., relate,
 	 * support, and attack.
 	 *
 	 * @return knowledge type as a String starting with a capital letter.
@@ -68,7 +67,7 @@ public enum LinkType {
 	 */
 	public static LinkType getLinkType(String type) {
 		if (type == null) {
-			return LinkType.CONTAIN;
+			return LinkType.RELATE;
 		}
 		switch (type.toLowerCase(Locale.ENGLISH)) {
 		case "support":
@@ -76,14 +75,14 @@ public enum LinkType {
 		case "attack":
 			return LinkType.ATTACK;
 		default:
-			return LinkType.CONTAIN;
+			return LinkType.RELATE;
 		}
 	}
 
 	/**
 	 * Get the link type that is associated to a certain knowledge type, e.g.,
 	 * support for pro-arguments and attack for con-arguments. The default link type
-	 * is contain.
+	 * is relate.
 	 * 
 	 * @param knowledgeTypeOfChildElement
 	 *            knowledge type of the child element.
@@ -96,7 +95,7 @@ public enum LinkType {
 		case CON:
 			return LinkType.ATTACK;
 		default:
-			return LinkType.CONTAIN;
+			return LinkType.RELATE;
 		}
 	}
 
