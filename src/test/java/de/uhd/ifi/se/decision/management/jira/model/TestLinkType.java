@@ -8,7 +8,7 @@ public class TestLinkType {
 
     @Test
     public void testLinkTypeToString(){
-        assertEquals("contain", LinkType.CONTAIN.toString());
+        assertEquals("relate", LinkType.RELATE.toString());
     }
 
     @Test

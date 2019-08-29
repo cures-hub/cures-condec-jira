@@ -125,7 +125,7 @@ public class TestDecisionKnowledgeReport extends TestSetUp {
 	@NonTransactional
 	public void testWithLinkedSentences() {
 		MutableIssue issue = createCommentStructureWithTestIssue("This is a testsentence for test purposes");
-		Link link = new LinkImpl(sentences.get(0), sentences.get(0), LinkType.CONTAIN);
+		Link link = new LinkImpl(sentences.get(0), sentences.get(0), LinkType.RELATE);
 		GenericLinkManager.insertLink(link, null);
 		PartOfJiraIssueText sentence = sentences.get(0);
 		sentence.setType(KnowledgeType.ISSUE);
