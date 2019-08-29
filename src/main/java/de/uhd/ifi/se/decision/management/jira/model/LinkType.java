@@ -8,17 +8,17 @@ import java.util.Locale;
  * Type of links between decision knowledge elements
  */
 public enum LinkType {
-	CONTAIN("contain", "contains", "is contained by", "contain_style"),
-	SUPPORT("support", "supports", "is supported by", "contain_style"),
-	ATTACK("attack", "attacks", "is attacked by", "contain_style"),
-	CONSTRAINT("constraint", "constrains", "is constrained by", "contain-style"),
-	ENABLE("enable", "enables", "is enabled by", "contain-style"),
-	FORBID("forbid", "forbids", "is forbidden by", "contain-style"),
-	COMPRISE("comprise", "comprises", "is comprised by", "contain-style"),
-	SUBSUME("subsume", "subsumes", "is subsumed by", "contain-style"),
-	OVERRIDE("override", "overrides", "is overridden by", "contain-style"),
-	REPLACE("replace", "replaces", "is replaced by", "contain-style"),
-	RELATE("relate", "relates", "is related by", "contain-style");
+	CONTAIN("Contains", "contains", "is contained by", "contain_style"),
+	SUPPORT("Supports", "supports", "is supported by", "contain_style"),
+	ATTACK("Attacks", "attacks", "is attacked by", "contain_style"),
+	CONSTRAINT("Constraint", "constraints", "is constrained by", "contain-style"),
+	ENABLE("Enables", "enables", "is enabled by", "contain-style"),
+	FORBID("Forbids", "forbids", "is forbidden by", "contain-style"),
+	COMPRISE("Comprises", "comprises", "is comprised by", "contain-style"),
+	SUBSUME("Subsumes", "subsumes", "is subsumed by", "contain-style"),
+	OVERRIDE("Overrides", "overrides", "is overridden by", "contain-style"),
+	REPLACE("Replaces", "replaces", "is replaced by", "contain-style"),
+	RELATE("Relates", "relates to", "is relates to", "contain-style");
 
 	private String name, outwardLink, inwardLink, style;
 
