@@ -83,6 +83,7 @@ public class ReleaseNoteRest {
 						Integer currentCount=dkLinkedCount.get(parts[0]);
 						if(currentCount!=null){
 							currentCount +=1;
+							dkLinkedCount.put(parts[0],currentCount);
 						}else{
 							dkLinkedCount.put(parts[0],1);
 						}
