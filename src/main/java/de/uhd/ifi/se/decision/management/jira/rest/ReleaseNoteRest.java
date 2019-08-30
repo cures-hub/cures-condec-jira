@@ -40,9 +40,9 @@ public class ReleaseNoteRest {
 		String query = "?jql=project=" + projectKey + " && resolved >= " + releaseNoteConfiguration.getStartDate() + " && resolved <= " + releaseNoteConfiguration.getEndDate();
 		//String query = "?jql=resolved >= 2019-08-01 && resolved <= 2020-08-16";
 		FilterExtractor extractor = new FilterExtractor(projectKey, user, query);
-		List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
-		elementsQueryLinked = extractor.getAllGraphs();
-		ArrayList<ReleaseNoteIssueProposal> proposals = setPriorityValues(elementsQueryLinked, user);
+		List<DecisionKnowledgeElement> elementsMatchingQuery = new ArrayList<DecisionKnowledgeElement>();
+		elementsMatchingQuery = extractor.getAllElementsMatchingQuery();
+		ArrayList<ReleaseNoteIssueProposal> proposals = setPriorityValues(elementsMatchingQuery, user);
 		ArrayList<ReleaseNoteIssueProposal> comparedProposals = compareProposals(proposals);
 		HashMap<String, ArrayList<ReleaseNoteIssueProposal>> mappedProposals = mapProposals(comparedProposals, releaseNoteConfiguration);
 		return Response.ok(mappedProposals).build();
@@ -51,11 +51,11 @@ public class ReleaseNoteRest {
 	/**
 	 * Gather priority metrics for the Release Note Issue Proposal
 	 *
-	 * @param elementsQueryLinked is the list of DecisionKnowledge Elements
-	 * @param user
-	 * @return
+	 * @param elementsMatchingQuery is the list of DecisionKnowledge Elements
+	 * @param user Application User
+	 * @return Array with Release Note issue Proposals
 	 */
-	private ArrayList<ReleaseNoteIssueProposal> setPriorityValues(List<List<DecisionKnowledgeElement>> elementsQueryLinked, ApplicationUser user) {
+	private ArrayList<ReleaseNoteIssueProposal> setPriorityValues(List<DecisionKnowledgeElement> elementsMatchingQuery, ApplicationUser user) {
 		ArrayList<ReleaseNoteIssueProposal> releaseNoteIssueProposals = new ArrayList<ReleaseNoteIssueProposal>();
 		//set up components we need to gather metrics
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
@@ -65,16 +65,29 @@ public class ReleaseNoteRest {
 		HashMap<String, Integer> reporterIssueCount = new HashMap<String, Integer>();
 		HashMap<String, Integer> resolverIssueCount = new HashMap<String, Integer>();
 		//for each DecisionKnowledgeElement create one ReleaseNoteIssueProposal element with the data
-		elementsQueryLinked.forEach(dkList -> {
-			int lenOfList = dkList.size();
-			dkList.forEach(dkElement -> {
-				//first check if the element is in usedKeys, else add it there
-				if (!usedKeys.contains(dkElement.getKey())) {
+		HashMap<String, Integer> dkLinkedCount = new HashMap<String, Integer>();
+
+		for(int i=0;i<elementsMatchingQuery.size();i++){
+			DecisionKnowledgeElement dkElement=elementsMatchingQuery.get(i);
 					//add key to used keys
 					usedKeys.add(dkElement.getKey());
 					//create Release note issue proposal with the element and the count of associated decision knowledge
 					// check if DK or Comment
-					ReleaseNoteIssueProposal proposal = new ReleaseNoteIssueProposalImpl(dkElement, lenOfList - 1);
+					ReleaseNoteIssueProposal proposal = new ReleaseNoteIssueProposalImpl(dkElement,0);
+					String dkKey= dkElement.getKey();
+
+					//check if it is a dk Issue or just a DK comment
+					//comments are not rated, just counted
+					if(dkKey.contains(":")){
+						String[]parts=dkKey.split(":");
+						Integer currentCount=dkLinkedCount.get(parts[0]);
+						if(currentCount!=null){
+							currentCount +=1;
+							dkLinkedCount.put(parts[0],currentCount);
+						}else{
+							dkLinkedCount.put(parts[0],1);
+						}
+					}else {
 					Issue issue = issueManager.getIssueByCurrentKey(dkElement.getKey());
 
 					//set priority
@@ -101,10 +114,17 @@ public class ReleaseNoteRest {
 					//add to results
 					releaseNoteIssueProposals.add(proposal);
 				}
+			};
+		//now check DK element links
+		for (Map.Entry<String, Integer> entry : dkLinkedCount.entrySet()) {
+			String key = entry.getKey();
+			Integer value = entry.getValue();
+			releaseNoteIssueProposals.forEach(proposal -> {
+				if (proposal.getDecisionKnowledgeElement().getKey().equals(key)) {
+					proposal.getTaskCriteriaPrioritisation().put(TaskCriteriaPrioritisation.COUNT_DECISION_KNOWLEDGE, value);
+				}
 			});
-		});
-
-
+		}
 		return releaseNoteIssueProposals;
 	}
 
