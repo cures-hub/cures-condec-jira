@@ -43,21 +43,21 @@ public class VisGraph {
 	private List<DecisionKnowledgeElement> elementsInGraph;
 
 	public VisGraph() {
-	}
-
-	public VisGraph(List<DecisionKnowledgeElement> elements,String projectKey) {
-
-		if(projectKey == null ){
-			return;
-		}
-		elementsInGraph = new ArrayList<>();
-		this.elementsMatchingFilterCriteria = elements;
-		this.graph = new GraphImpl(projectKey);
 		nodes = new HashSet<>();
 		edges = new HashSet<>();
 		elementsAlreadyAsNode = new ArrayList<>();
 		level = 50;
 		cid = 0;
+		elementsInGraph = new ArrayList<>();
+	}
+
+	public VisGraph(List<DecisionKnowledgeElement> elements,String projectKey) {
+		this();
+		if(projectKey == null ){
+			return;
+		}
+		this.elementsMatchingFilterCriteria = elements;
+		this.graph = new GraphImpl(projectKey);
 		this.setHyperlinked(false);
 		if(elements== null || elements.size() ==0){
 			this.nodes = new HashSet<>();
@@ -72,14 +72,9 @@ public class VisGraph {
 	}
 
 	public VisGraph(DecisionKnowledgeElement rootElement, List<DecisionKnowledgeElement> elements) {
-		elementsInGraph = new ArrayList<>();
+		this();
 		this.elementsMatchingFilterCriteria = elements;
 		this.rootElementKey = (rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString());
-		nodes = new HashSet<>();
-		edges = new HashSet<>();
-		elementsAlreadyAsNode = new ArrayList<>();
-		level = 50;
-		cid = 0;
 		fillNodesAndEdges(rootElement, null, level, cid);
 	}
 
