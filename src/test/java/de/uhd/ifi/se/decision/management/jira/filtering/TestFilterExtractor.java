@@ -159,26 +159,31 @@ public class TestFilterExtractor extends TestSetUp {
 		assertEquals(0, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
 	}
 
+
 	@Test
 	@NonTransactional
 	public void testGetAllElementsMatchingCompareFilterSettingsFilledCreated() {
 		settings.setCreatedLatest((long)-1);
+		settings.setCreatedEarliest(System.currentTimeMillis()-100000);
 		FilterExtractor extractor = new FilterExtractor(user, settings);
-		assertEquals(0, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
+		assertEquals(4, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetAllElementsMatchingCompareFilterSettingsFilledClosed() {
-		settings.setCreatedLatest((long)-1);
+		settings.setCreatedEarliest((long)-1);
+		settings.setCreatedLatest(System.currentTimeMillis()+1000);
 		FilterExtractor extractor = new FilterExtractor(user, settings);
-		assertEquals(0, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
+		assertEquals(4, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetAllElementsMatchingCompareFilterSettingsFilled() {
+		settings.setCreatedLatest(System.currentTimeMillis()+1000);
+		settings.setCreatedEarliest(System.currentTimeMillis()-100000);
 		FilterExtractor extractor = new FilterExtractor(user, settings);
-		assertEquals(0, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
+		assertEquals(4, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
 	}
 }
