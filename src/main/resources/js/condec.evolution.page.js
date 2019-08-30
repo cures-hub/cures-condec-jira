@@ -237,14 +237,12 @@
     function getOptions() {
         return {
             layout: {
-                randomSeed: 2,
-                improvedLayout: true,
                 hierarchical: {
-                    enabled: false,
-                    levelSeparation: 150,
-                    nodeSpacing: 100,
-                    treeSpacing: 200
+                    direction: "UD"
                 }
+            },
+            physics: {
+                enabled: false
             },
             nodes: {
                 shape: "box",
