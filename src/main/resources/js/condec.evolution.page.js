@@ -5,6 +5,7 @@
     var conDecAPI = null;
     var conDecVis = null;
     var networkRight = null;
+    var networkLeft = null;
     var timeline = null;
     var completeKnowledgeStatus = null;
 
@@ -37,7 +38,15 @@
             var data = evolutionData.dataSet;
             var item = new vis.DataSet(data);
             var groups = evolutionData.groupSet;
-            var options = {};
+            var date = new Date();
+            var endTime = date.toDateString();
+            date.setDate(date.getDate() -7);
+            var startTime = date.toDateString();
+            var options = {
+                locale: 'de',
+                start: startTime,
+                end:endTime
+            };
             timeline = new vis.Timeline(container, item, options);
             timeline.setGroups(groups);
             timeline.on('contextmenu', function (properties) {
@@ -57,7 +66,11 @@
         var issueStatusDropdown = document.getElementById("compare-status-dropdown");
         initIssueTypeSelectCompare(issueTypeDropdown);
         initIssueStatusSelect(issueStatusDropdown);
-        conDecAPI.getCompareVis(-1, -1, "",conDecAPI.extendedKnowledgeTypes,
+        var date = new Date();
+        var endTime = date.getTime();
+        date.setDate(date.getDate() -7);
+        var startTime = date.getTime();
+        conDecAPI.getCompareVis(startTime, endTime, "",conDecAPI.extendedKnowledgeTypes,
             completeKnowledgeStatus,function (visData) {
                 var containerLeft = document.getElementById('left-network');
                 var dataLeft = {
@@ -65,14 +78,16 @@
                     edges: visData.edges
                 };
                 var options = getOptions();
-                var networkLeft = new vis.Network(containerLeft, dataLeft, options);
+                networkLeft = new vis.Network(containerLeft, dataLeft, options);
                 networkLeft.setSize("100%", "500px");
                 networkLeft.on("oncontext", function (params) {
                     conDecVis.addContextMenu(params,networkLeft);
                 });
 
-            });
-        conDecAPI.getCompareVis(-1, -1, "", conDecAPI.extendedKnowledgeTypes,
+        });
+        date.setDate(date.getDate() -7);
+        startTime = date.getTime();
+        conDecAPI.getCompareVis(startTime, endTime, "", conDecAPI.extendedKnowledgeTypes,
             completeKnowledgeStatus, function (visData) {
                 var containerRight = document.getElementById('right-network');
                 var dataRight = {
@@ -130,15 +145,23 @@
         var filterButton = document.getElementById("filter-button-compare");
 
         filterButton.addEventListener("click", function (event) {
-            var firstDate = -1;
-            var secondDate = -1;
+            var firstDateLeft = -1;
+            var secondDateLeft = -1;
+            var firstDateRight = -1;
+            var secondDateRight = -1;
             var issueTypes = [];
             var issueStatus = [];
-            if (!isNaN(document.getElementById("start-data-picker-compare").valueAsNumber)) {
-                firstDate = document.getElementById("start-data-picker-compare").valueAsNumber;
+            if (!isNaN(document.getElementById("start-data-picker-compare-left").valueAsNumber)) {
+                firstDateLeft = document.getElementById("start-data-picker-compare-left").valueAsNumber;
             }
-            if (!isNaN(document.getElementById("end-data-picker-compare").valueAsNumber)) {
-                secondDate = document.getElementById("end-data-picker-compare").valueAsNumber;
+            if (!isNaN(document.getElementById("end-data-picker-compare-left").valueAsNumber)) {
+                secondDateLeft = document.getElementById("end-data-picker-compare-left").valueAsNumber;
+            }
+            if (!isNaN(document.getElementById("start-data-picker-compare-right").valueAsNumber)) {
+                firstDateRight= document.getElementById("start-data-picker-compare-right").valueAsNumber;
+            }
+            if (!isNaN(document.getElementById("end-data-picker-compare-right").valueAsNumber)) {
+                secondDateRight= document.getElementById("end-data-picker-compare-right").valueAsNumber;
             }
             var searchString = "";
             searchString = document.getElementById("compare-search-input").value;
@@ -154,12 +177,19 @@
                     issueStatus.push(AJS.$('#compare-status-dropdown').children().eq(j).text());
                 }
             }
-            conDecAPI.getCompareVis(firstDate, secondDate, searchString, issueTypes, issueStatus, function (visData) {
-                var dataRight = {
-                    nodes: visData.nodes,
-                    edges: visData.edges
+            conDecAPI.getCompareVis(firstDateLeft, secondDateLeft, searchString, issueTypes, issueStatus, function (visDataLeft) {
+                var dateLeft = {
+                    nodes: visDataLeft.nodes,
+                    edges: visDataLeft.edges
                 };
-                networkRight.setData(dataRight);
+                networkLeft.setData(dateLeft);
+            });
+            conDecAPI.getCompareVis(firstDateRight, secondDateRight, searchString, issueTypes, issueStatus, function (visDataRight) {
+                var dateRight = {
+                    nodes: visDataRight.nodes,
+                    edges: visDataRight.edges
+                };
+                networkRight.setData(dateRight);
             });
         });
     }
