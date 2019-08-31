@@ -800,7 +800,7 @@
 	};
 
 	ConDecAPI.prototype.postProposedKeys = function postProposedKeys(proposedKeys, callback) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/release-note/getReleaseNoteContent.json?projectKey="
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/release-note/postProposedKeys.json?projectKey="
 			+ projectKey, proposedKeys,
 			function (error, elements) {
 				if (error === null) {

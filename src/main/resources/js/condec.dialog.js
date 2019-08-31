@@ -395,7 +395,10 @@
 		var cancelButton = document.getElementById("create-release-note-dialog-cancel-button");
 		var configurationSubmitButton = document.getElementById("create-release-note-submit-button");
 		var issueSelectSubmitButton= document.getElementById("create-release-note-submit-issues-button");
+		var saveContentButton= document.getElementById("create-release-note-submit-content");
 		var loader = document.getElementById("createReleaseNoteDialogLoader");
+		var editor = new Editor();
+
 		AJS.tabs.setup();
 
 		// add task prioritisation
@@ -637,13 +640,13 @@
 				};
 				var divToAppend = $("#displayIssueTables");
 				var title = "<h2>" + mapCategoryToTitles[category] + "</h2>";
-				var table = "<table><tr>" +
+				var table = "<table class='aui'><thead><tr>" +
 					"<th>Include</th>" +
 					"<th>Rating</th>" +
 					"<th>Key</th>" +
 					"<th>Summary</th>" +
 					"<th>Type</th>" +
-					"</tr>";
+					"</tr></thead>";
 				var tableRows = "";
 				issues.map(function (issue) {
 					var expander = "<div id='expanderOfRating_" +category+ issue.decisionKnowledgeElement.key + "' class='aui-expander-content'>" +
@@ -677,7 +680,6 @@
 
 			}
 		};
-
 		issueSelectSubmitButton.onclick = function () {
 			//set button busy
 			setButtonBusyAndDisabled(issueSelectSubmitButton,true);
@@ -692,23 +694,25 @@
 					}
 				})
 			});
-			setTimeout(function(){
+
+			conDecAPI.postProposedKeys(checkedItems, function (response) {
 				//set button idle
 				setButtonBusyAndDisabled(issueSelectSubmitButton,false);
 				//change tab
 				addTabAndChangeToIt("tab-editor", "Final edit");
-				console.log(response);
-				//display editor and text
-
-			})
-
-			conDecAPI.postProposedKeys(checkedItems, function (response) {
+				if(response.markdown){
+					//display editor and text
+					editor.render();
+					editor.codemirror.setValue(response.markdown);
+				}
 
 			}.bind(this));
 
 
 		};
-
+		saveContentButton.onclick= function(){
+			console.log("editor",editor.codemirror.getValue());
+		};
 		cancelButton.onclick = function () {
 			AJS.dialog2(releaseNoteDialog).hide();
 		};
