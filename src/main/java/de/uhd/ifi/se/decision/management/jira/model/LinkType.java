@@ -10,7 +10,7 @@ import java.util.Locale;
 public enum LinkType {
 	SUPPORT("Supports", "supports", "is supported by", "contain_style"),
 	ATTACK("Attacks", "attacks", "is attacked by", "contain_style"),
-	CONSTRAINT("Constraint", "constraints", "is constrained by", "contain-style"),
+	CONSTRAINT("Constraints", "constraints", "is constrained by", "contain-style"),
 	ENABLE("Enables", "enables", "is enabled by", "contain-style"),
 	FORBID("Forbids", "forbids", "is forbidden by", "contain-style"),
 	COMPRISE("Comprises", "comprises", "is comprised by", "contain-style"),
