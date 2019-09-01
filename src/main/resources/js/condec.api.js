@@ -544,6 +544,16 @@
 		});
 	};
 
+	ConDecAPI.prototype.getMatrixData = function getMatrixData(callback) {
+		const documentationLocation = "i";
+
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getMatrixData.json?projectKey=" + projectKey + "&documentationLocation=" + documentationLocation, function(error, matrix) {
+			if (error == null) {
+				callback(matrix);
+			}
+		});
+	};
+
 	/*
 	 * external references: settingsForSingleProject.vm,
 	 * settingsForAllProjects.vm

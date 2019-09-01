@@ -4,51 +4,46 @@
 <form class="aui">
     <table class="aui" id="matrix" border="1">
     <script>
-        conDecAPI.getCompareVis(-1, -1,"", ["Decision"],
-                conDecAPI.knowledgeStatus, function (allDecisions) {
-
-            console.log(allDecisions);
-
-            var matrix = document.getElementById("matrix");
-            var tableColumn = document.createElement("th");
-            tableColumn.innerText = "";
-            matrix.appendChild(tableColumn);
-
-            for (dec in allDecisions.nodes) {
-                tableColumn = document.createElement("th");
-                tableColumn.innerText = allDecisions.nodes[dec].label;
-                matrix.appendChild(tableColumn);
-            }
-
-            for (dec in allDecisions.nodes){
-                var idDec = allDecisions.nodes[dec].id;
-                matrix.appendChild(document.createElement("tr"));
-                var tableRow = document.createElement("th");
-                tableRow.innerText = allDecisions.nodes[dec].label;
-                matrix.appendChild(tableRow);
-                for (decdec in allDecisions.nodes) {
-                    var idDecDec = allDecisions.nodes[decdec].id;
-                    var tableRowElement = document.createElement("td");
-                    if (dec == decdec) {
-                        tableRowElement.style.backgroundColor = "LightGray";
-                        matrix.appendChild(tableRowElement);
-                    } else{
-                        for (e in allDecisions.edges){
-                            if ((allDecisions.edges[e].from == idDecDec && allDecisions.edges[e].to == idDec) ||
-                                    (allDecisions.edges[e].to == idDecDec && allDecisions.edges[e].from == idDec)) {
-                                tableRowElement.style.backgroundColor = "Red";
-                                matrix.appendChild(tableRowElement);
-                            } else {
-                                matrix.appendChild(tableRowElement);
-                            }
-                        }
-                    }
-
-
-                }
-            }
+        conDecAPI.getMatrixData(function (data) {
+            buildMatrix(data);
         });
 
+        function buildMatrix(data) {
+            const matrix = document.getElementById("matrix");
+            newTableHeaderElement(matrix, "");
+
+            for (let d in data.matrixHeaderRow) {
+                newTableHeaderElement(matrix, data.matrixHeaderRow[d]);
+            }
+
+            for (let d in data.matrixData){
+                const row = data.matrixData[d];
+                newTableRow(matrix, row);
+            }
+        }
+
+        function newTableHeaderElement(matrix, text) {
+            const tableColumn = document.createElement("th");
+            tableColumn.innerText = text;
+            matrix.appendChild(tableColumn);
+        }
+
+        function newTableRow(matrix, row) {
+            matrix.appendChild(document.createElement("tr"));
+            for (let d in row) {
+                if (d == 0) {
+                    newTableHeaderElement(matrix, row[d]);
+                } else {
+                    new newTableElement(matrix, row[d]);
+                }
+            }
+        }
+
+        function newTableElement(matrix, color) {
+            const tableRowElement = document.createElement("td");
+            tableRowElement.style.backgroundColor = color;
+            matrix.appendChild(tableRowElement);
+        }
     </script>
     </table>
 </form>
