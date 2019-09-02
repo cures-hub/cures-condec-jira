@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.matrix;
 
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+
 import javax.xml.bind.annotation.XmlElement;
 
 public class MatrixEntry {
@@ -40,14 +42,14 @@ public class MatrixEntry {
 
     private String getColor(String linkType) {
         switch (linkType) {
-            case "Constraints": return "Green";
-            case "Enables": return "LightGreen";
-            case "Forbids": return "Red";
-            case "Comprises": return "Blue";
-            case "Subsumes": return "LightBlue";
-            case "Overrides": return "Yellow";
-            case "Replaces": return "Orange";
-            case "Relates": return "Purple";
+            case "Constraints": return LinkType.CONSTRAINT.getColor();
+            case "Enables": return LinkType.ENABLE.getColor();
+            case "Forbids": return LinkType.FORBID.getColor();
+            case "Comprises": return LinkType.COMPRISE.getColor();
+            case "Subsumes": return LinkType.SUBSUME.getColor();
+            case "Overrides": return LinkType.OVERRIDE.getColor();
+            case "Replaces": return LinkType.REPLACE.getColor();
+            case "Relates": return LinkType.RELATE.getColor();
             default: return "";
         }
 

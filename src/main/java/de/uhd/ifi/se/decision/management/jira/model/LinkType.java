@@ -8,27 +8,29 @@ import java.util.Locale;
  * Type of links between decision knowledge elements
  */
 public enum LinkType {
-	SUPPORT("Supports", "supports", "is supported by", "contain_style"),
-	ATTACK("Attacks", "attacks", "is attacked by", "contain_style"),
-	CONSTRAINT("Constraints", "constraints", "is constrained by", "contain-style"),
-	ENABLE("Enables", "enables", "is enabled by", "contain-style"),
-	FORBID("Forbids", "forbids", "is forbidden by", "contain-style"),
-	COMPRISE("Comprises", "comprises", "is comprised by", "contain-style"),
-	SUBSUME("Subsumes", "subsumes", "is subsumed by", "contain-style"),
-	OVERRIDE("Overrides", "overrides", "is overridden by", "contain-style"),
-	REPLACE("Replaces", "replaces", "is replaced by", "contain-style"),
-	RELATE("Relates", "relates to", "is relates to", "contain-style");
+	SUPPORT("Supports", "supports", "is supported by", "contain_style", ""),
+	ATTACK("Attacks", "attacks", "is attacked by", "contain_style", ""),
+	FORBID("Forbids", "forbids", "is forbidden by", "contain-style", "#ff0000"),
+	CONSTRAINT("Constraints", "constraints", "is constrained by", "contain-style", "#0066b3"),
+	ENABLE("Enables", "enables", "is enabled by", "contain-style", "#80ff80"),
+	COMPRISE("Comprises", "comprises", "is comprised by", "contain-style", "#BA55D3"),
+	SUBSUME("Subsumes", "subsumes", "is subsumed by", "contain-style", "#00cc00"),
+	RELATE("Relates", "relates to", "is relates to", "contain-style", "#80c9ff"),
+	OVERRIDE("Overrides", "overrides", "is overridden by", "contain-style", "#FFFF00"),
+	REPLACE("Replaces", "replaces", "is replaced by", "contain-style", "#ff8000");
 
 	private String name;
 	private String outwardLink;
 	private String inwardLink;
 	private String style;
+	private String color;
 
-	private LinkType(String name, String outwardLink, String inwardLink, String style) {
+	private LinkType(String name, String outwardLink, String inwardLink, String style, String color) {
 		this.name = name;
 		this.outwardLink = outwardLink;
 		this.inwardLink = inwardLink;
 		this.style = style;
+		this.color = color;
 	}
 
 	public String getName() {
@@ -45,6 +47,10 @@ public enum LinkType {
 
 	public String getStyle() {
 		return style;
+	}
+
+	public String getColor() {
+		return color;
 	}
 
 	/**

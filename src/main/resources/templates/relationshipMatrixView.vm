@@ -44,7 +44,37 @@
             tableRowElement.style.backgroundColor = color;
             matrix.appendChild(tableRowElement);
         }
+
+        conDecAPI.getLinkTypes(function(linkTypes) {
+            console.log(linkTypes);
+            buildLegend(linkTypes);
+        });
+
+        function buildLegend(linkTypes) {
+            const legend = document.getElementById("legendList");
+            for (let linkType in linkTypes) {
+                if (linkTypes[linkType] != "") {
+                    const li = document.createElement("li");
+                    li.innerText = linkType;
+                    const span = document.createElement("span");
+                    span.style.background = linkTypes[linkType];
+                    li.appendChild(span);
+                    legend.appendChild(li);
+                }
+            }
+        }
     </script>
     </table>
 </form>
+
+<br>
+<br>
+
+<div class='my-legend'>
+    <div class='legend-title'>Relationships</div>
+    <div class='legend-scale'>
+        <ul class='legend-labels' id="legendList">
+        </ul>
+    </div>
+</div>
 </html>

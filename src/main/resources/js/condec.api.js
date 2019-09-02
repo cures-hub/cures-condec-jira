@@ -693,6 +693,16 @@
 		}
 	}
 
+	ConDecAPI.prototype.getLinkTypes = function getLinkTypes(callback) {
+		var projectKey= getProjectKey();
+		getJSON(AJS.contextPath()
+			+ "/rest/decisions/latest/config/getLinkTypes.json?projectKey=" + projectKey, function(error, linkTypes) {
+			if (error === null) {
+				callback(linkTypes);
+			}
+		});
+	}
+
 	/*
 	 * Replaces argument with pro-argument and con-argument in knowledge types
 	 * array.
