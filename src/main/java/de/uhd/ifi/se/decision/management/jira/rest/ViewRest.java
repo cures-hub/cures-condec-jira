@@ -296,8 +296,6 @@ public class ViewRest {
 
 		Matrix matrix = new Matrix(projectKey, elements);
 
-		System.out.println(matrix);
-
 		return Response.ok(matrix).build();
 	}
 

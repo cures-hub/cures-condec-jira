@@ -1,9 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -14,6 +12,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -243,6 +243,20 @@ public class ConfigRest {
 			}
 		}
 		return Response.ok(knowledgeTypes).build();
+	}
+
+	@Path("/getLinkTypes")
+	@GET
+	public Response getLinkTypes(@QueryParam("projectKey") final String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		Map<String, String> linkTypes = new HashMap<>();
+		for (LinkType linkType : LinkType.values()) {
+			linkTypes.put(linkType.getName(), linkType.getColor());
+		}
+		return Response.ok(linkTypes).build();
 	}
 
 	@Path("/setWebhookEnabled")
