@@ -17,7 +17,7 @@ import weka.core.Instances;
 
 /**
  * Interface responsible to train the supervised text classifier. For this
- * purpose, the project admin needs to create and select an ARFF file.
+ * purpose, the project admin needs to create and select a file.
  */
 public interface ClassificationTrainer {
 
@@ -32,7 +32,7 @@ public interface ClassificationTrainer {
 	boolean train();
 
 	/**
-	 * Creats a new Attribute-Relation File Format (ARFF) file for the current
+	 * Creates a new file for the current
 	 * project that can be used to train the classifier and saves it on the server
 	 * in the JIRA home directory in the data/condec-plugin/project-key folder.
 	 * @param useOnlyValidatedData
@@ -40,17 +40,17 @@ public interface ClassificationTrainer {
 	 * @return ARFF file that was created and saved on the server or null if it
 	 *         could not be saved.
 	 */
-	File saveArffFile(boolean useOnlyValidatedData);
+	File saveTrainingFile(boolean useOnlyValidatedData);
 
 	/**
-	 * Reads training data from an Attribute-Relation File Format (ARFF) file to
+	 * Reads training data from an file to
 	 * train the classifier.
 	 * 
-	 * @param arffFile
-	 *            Attribute-Relation File Format (ARFF) file to train the
+	 * @param file
+	 *            file to train the
 	 *            classifier.
 	 */
-	void setArffFile(File arffFile);
+	void setTrainingFile(File file);
 
 	/**
 	 * Provides a list of decision knowledge element with a knowledge type and a
@@ -63,21 +63,21 @@ public interface ClassificationTrainer {
 	void setTrainingData(List<DecisionKnowledgeElement> trainingElements);
 
 	/**
-	 * Gets all Attribute-Relation File Format (ARFF) files on the server.
+	 * Gets all files on the server.
 	 * 
-	 * @return all Attribute-Relation File Format (ARFF) files on the server as a
+	 * @return all files on the server as a
 	 *         list.
 	 */
-	List<File> getArffFiles();
+	List<File> getTrainingFiles();
 
 	/**
-	 * Gets the names of all Attribute-Relation File Format (ARFF) files on the
+	 * Gets the names of all files on the
 	 * server.
 	 * 
-	 * @return names of all Attribute-Relation File Format (ARFF) files on the
+	 * @return names of all files on the
 	 *         server as a list of strings.
 	 */
-	List<String> getArffFileNames();
+	List<String> getTrainingFileNames();
 
 	/**
 	 * Gets the supervised binary and fine grained classifier to identify decision
@@ -99,7 +99,7 @@ public interface ClassificationTrainer {
 	Instances getInstances();
 
 	/**
-	 * Trains the default classifier with the default ARFF file.
+	 * Trains the default classifier with the default training file.
 	 * 
 	 * @return true if training succeeded.
 	 */
@@ -108,47 +108,48 @@ public interface ClassificationTrainer {
 	}
 
 	/**
-	 * Trains the classifier with the given ARFF file.
+	 * Trains the classifier with the given training file.
 	 * 
-	 * @param arffFile
-	 *            training data for the classifier in the ARFF format.
+	 * @param file
+	 *            training data for the classifier.
 	 * 
 	 * @return true if training succeeded.
 	 */
-	public static boolean trainClassifier(File arffFile) {
-		if (!arffFile.exists()) {
+	public static boolean trainClassifier(File file) {
+		if (!file.exists()) {
 			LOGGER.error("Could not find default training data for supervised text classifier.");
 			return false;
 		}
 		ClassificationTrainer classificationTrainer = new ClassificationTrainerImpl();
-		classificationTrainer.setArffFile(arffFile);
+		classificationTrainer.setTrainingFile(file);
 		return classificationTrainer.train();
 	}
 
 	/**
-	 * Copies the default ARFF file to the given file.
+	 * Copies the default training file to the given file.
 	 * 
-	 * @param arffFile
-	 *            file to copy default ARFF file to.
+	 * @param file
+	 *            file to copy default training file to.
 	 * 
-	 * @return updated file with default ARFF content.
+	 * @return updated file with default training content.
 	 */
-	public static File copyDefaultTrainingDataToFile(File arffFile) {
-		if (arffFile.exists()) {
-			return arffFile;
+	public static File copyDefaultTrainingDataToFile(File file) {
+		if (file.exists()) {
+			return file;
 		}
-		String pathToArffFile = ComponentGetter.getUrlOfClassifierFolder() + "lucene.arff";
+		//TODO: lucene.arf ändern
+		String pathToTrainingFile = ComponentGetter.getUrlOfClassifierFolder() + "lucene.arff";
 		try {
-			InputStream inputStream = new URL(pathToArffFile).openStream();
+			InputStream inputStream = new URL(pathToTrainingFile).openStream();
 			byte[] buffer = new byte[inputStream.available()];
 			inputStream.read(buffer);
 
-			OutputStream outputStream = new FileOutputStream(arffFile);
+			OutputStream outputStream = new FileOutputStream(file);
 			outputStream.write(buffer);
 			outputStream.close();
 		} catch (IOException e) {
 			LOGGER.error("Failed to copy default training data to file. Message: " + e.getMessage());
 		}
-		return arffFile;
+		return file;
 	}
 }
