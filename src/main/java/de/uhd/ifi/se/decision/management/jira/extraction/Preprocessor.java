@@ -112,6 +112,6 @@ public interface Preprocessor {
      * @param sentence to be preprocessed
      * @return N-Gram numerical representation of sentence
      */
-    public List<Double> preprocess(String sentence);
+    public List preprocess(String sentence);
 
 }

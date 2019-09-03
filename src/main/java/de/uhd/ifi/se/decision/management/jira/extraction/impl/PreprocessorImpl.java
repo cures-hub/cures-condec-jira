@@ -32,15 +32,6 @@ public class PreprocessorImpl implements Preprocessor {
     private NameFinderME nameFinder;
     private Integer nGramN;
 
-    public PreprocessorImpl(Tokenizer tokenizer, Lemmatizer lemmatizer, POSTaggerME tagger, NameFinderME nameFinder) {
-        this.tokenizer = tokenizer;
-        this.tagger = tagger;
-        this.lemmatizer = lemmatizer;
-        this.nameFinder = nameFinder;
-        this.nGramN = 3;
-    }
-
-
     public PreprocessorImpl() {
         InputStream lemmatizerModel = null;
         TokenizerModel tokenizerModel = null;
@@ -82,10 +73,15 @@ public class PreprocessorImpl implements Preprocessor {
 
     @Override
     public List<String> lemmatize(List<String> tokens) {
-        return Arrays.asList(this.lemmatizer.lemmatize(
-                Arrays.copyOf(tokens.toArray(), tokens.size(), String[].class),
-                this.posTags
-        ));
+        try{
+            return Arrays.asList(this.lemmatizer.lemmatize(
+                    Arrays.copyOf(tokens.toArray(), tokens.size(), String[].class),
+                    this.posTags
+            ));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
     }
 
     @Override
@@ -108,26 +104,18 @@ public class PreprocessorImpl implements Preprocessor {
         List<List<Double>> numberTokens = new ArrayList<>();
         PreTrainedGlove glove = PreTrainedGlove.getInstance();
         for (String wordToken : tokens) {
-            //TODO: only add if word is known!
             numberTokens.add(glove.getWordVector(wordToken));
         }
-        //DO NOT FLATTEN!!!!! this needs to happen somewhere else!
         return numberTokens;
-                /*
-                .stream()
-                .flatMap(List::stream)
-                .collect(Collectors.toList());
-
-                 */
     }
 
 
     @Override
-    public List<Double> preprocess(String sentence) {
-        sentence = sentence.toLowerCase();
+    public List preprocess(String sentence) {
         sentence = this.replaceUsingRegEx(sentence, Preprocessor.NUMBER_PATTERN, Preprocessor.NUMBER_TOKEN.toLowerCase());
         sentence = this.replaceUsingRegEx(sentence, Preprocessor.URL_PATTERN, Preprocessor.URL_TOKEN.toLowerCase());
         sentence = this.replaceUsingRegEx(sentence, Preprocessor.WHITESPACE_CHARACTERS_PATTERN, Preprocessor.WHITESPACE_CHARACTERS_TOKEN.toLowerCase());
+        sentence = sentence.toLowerCase();
 
         List<String> tokens = this.tokenize(sentence);
 
@@ -155,12 +143,14 @@ class PreTrainedGlove {
 
     private static PreTrainedGlove instance;
     private Map<String, Double[]> map;
+    private Integer dimensions;
     private static String GLOVE_FILE_PATH = "src" + File.separator + "main" + File.separator + "resources"
             + File.separator + "classifier" + File.separator
             + "language_models" + File.separator;
     ;
 
     private PreTrainedGlove(Integer dimensions) {
+        this.dimensions = dimensions;
         this.map = new HashMap<>();
         String fullFilename = GLOVE_FILE_PATH + "glove.6b." + dimensions + "d.csv";
         try (BufferedReader br = Files.newBufferedReader(Paths.get(fullFilename),
@@ -183,29 +173,31 @@ class PreTrainedGlove {
 
     }
 
-    private PreTrainedGlove() {
-        this(50);
-    }
 
     public static PreTrainedGlove getInstance() {
-        if (PreTrainedGlove.instance == null) {
-            PreTrainedGlove.instance = new PreTrainedGlove();
-        }
-        return PreTrainedGlove.instance;
+        return PreTrainedGlove.getInstance(50);
     }
 
-    public static PreTrainedGlove getInstance(Integer dimensions) {
+    // This method is private because at the moment only the 50D vector is used.
+    private static PreTrainedGlove getInstance(Integer dimensions) {
         if (PreTrainedGlove.instance == null) {
             PreTrainedGlove.instance = new PreTrainedGlove(dimensions);
         }
         return PreTrainedGlove.instance;
     }
 
+    /**
+     *  This method gets a word as a parameter and returns a List of Double values representing the relationship between words.
+     *  If no relationship status is known a Lost of zeroes is returned.
+     *
+     * @param word holds the string for which a vector has to be determined
+     * @return
+     */
     List<Double> getWordVector(String word) {
         try{
             return Arrays.asList(this.map.get(word));
         } catch (Exception e){
-            return new ArrayList<>();
+            return new ArrayList<Double>(Collections.nCopies(this.dimensions, 0.0));
         }
 
     }
