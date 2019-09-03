@@ -401,7 +401,7 @@ public class ConfigRest {
 			return isValidDataResponse;
 		}
 		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
-		File arffFile = trainer.saveArffFile(useOnlyValidatedData);
+		File arffFile = trainer.saveTrainingFile(useOnlyValidatedData);
 
 		if (arffFile != null) {
 			return Response.ok(Status.ACCEPTED).entity(

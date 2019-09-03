@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationTrainerARFF;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -90,9 +91,9 @@ public class TestClassificationTrainer extends TestSetUp {
 	@Test
 	public void testClassificationTrainerFromArffFile() {
 		List<DecisionKnowledgeElement> trainingElements = getTrainingData();
-		ClassificationTrainer trainer = new ClassificationTrainerImpl("TEST", trainingElements);
-		File file = trainer.saveArffFile(true);
-		trainer.setArffFile(file);
+		ClassificationTrainerARFF trainer = new ClassificationTrainerImpl("TEST", trainingElements);
+		File file = trainer.saveTrainingFile(true);
+		trainer.setTrainingFile(file);
 		assertNotNull(trainer.getInstances());
 		trainer = new ClassificationTrainerImpl("TEST", file.getName());
 		assertNotNull(trainer.getInstances());
@@ -103,7 +104,7 @@ public class TestClassificationTrainer extends TestSetUp {
 	@Test
 	public void testSaveArffFile() {
 		ClassificationTrainer trainer = new ClassificationTrainerImpl("TEST");
-		File file = trainer.saveArffFile(false);
+		File file = trainer.saveTrainingFile(false);
 		assertTrue(file.exists());
 		file.delete();
 	}
@@ -119,7 +120,7 @@ public class TestClassificationTrainer extends TestSetUp {
 		ClassificationTrainer trainer = new ClassificationTrainerImpl();
 		File luceneArffFile = getDefaultArffFile();
 		assertTrue(luceneArffFile.exists());
-		trainer.setArffFile(luceneArffFile);
+		trainer.setTrainingFile(luceneArffFile);
 		assertNotNull(trainer.getInstances());
 		// assertTrue(trainer.train());
 		//
@@ -160,8 +161,8 @@ public class TestClassificationTrainer extends TestSetUp {
 
 	@Test
 	public void testGetArffFiles() {
-		ClassificationTrainer trainer = new ClassificationTrainerImpl();
-		assertEquals(ArrayList.class, trainer.getArffFileNames().getClass());
+		ClassificationTrainerARFF trainer = new ClassificationTrainerImpl();
+		assertEquals(ArrayList.class, trainer.getTrainingFileNames().getClass());
 	}
 
 }
