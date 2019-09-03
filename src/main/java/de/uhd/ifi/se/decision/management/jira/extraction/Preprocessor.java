@@ -1,9 +1,21 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
+import scala.util.matching.Regex;
+
 import java.util.List;
 import java.util.regex.Pattern;
 
 public interface Preprocessor {
+
+    public static String URL_PATTERN = "^[a-zA-Z0-9\\-\\.]+\\.(com|org|net|mil|edu|COM|ORG|NET|MIL|EDU)";
+    public static String URL_TOKEN = "URL";
+
+    public static String NUMBER_PATTERN = "[+-]?(([0-9]*[.,-:])?[0-9]+)+";
+    public static String NUMBER_TOKEN = "NUMBER";
+
+    public static String WHITESPACE_CHARACTERS_PATTERN = "[\\t\\n\\r]+";
+    public static String WHITESPACE_CHARACTERS_TOKEN = "";
+
 
     /**
      * Generates a List of tokenized word from a sentence.
@@ -14,14 +26,15 @@ public interface Preprocessor {
     public List<String> tokenize(String sentence);
 
     /**
-     * Removes unwanted patterns from the String using regular expressions.
+     * Replaces unwanted patterns from the String using regular expressions and replacement token.
      * E.g.: removing newline character.
      *
      * @param sentence Sentence that has to be cleaned.
      * @param regex    Regular Expression used to be filter out unwanted parts of text.
+     * @param replaceToken Used to replace the matching pattern of the regex.
      * @return Cleaned sentence.
      */
-    public String removeUsingRegEx(String sentence, Pattern regex);
+    public String replaceUsingRegEx(String sentence, String regex, String replaceToken);
 
     /**
      * Converts a list of tokens into their lemmatized form.
@@ -39,7 +52,7 @@ public interface Preprocessor {
      * @param token word to be lemmatized
      * @return lemmatized word-token
      */
-    public String lemmatize(String token);
+    //public String lemmatize(String token);
 
 
     /**
@@ -83,7 +96,7 @@ public interface Preprocessor {
      * @param tokens List of words in String-representation
      * @return List of words in numerical representation
      */
-    public List<Double> convertToNumbers(List<String> tokens);
+    public List convertToNumbers(List<String> tokens);
 
     /**
      * Converts a single word to its numerical representation.
@@ -91,7 +104,7 @@ public interface Preprocessor {
      * @param token word to be converted
      * @return numerical representation of the parameter word
      */
-    public Double convertToNumbers(String token);
+    //public Double convertToNumbers(String token);
 
     /**
      * This method executes all necessary preprocessing steps.
