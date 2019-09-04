@@ -26,10 +26,12 @@ public interface ClassificationTrainer {
 	static final Logger LOGGER = LoggerFactory.getLogger(ClassificationTrainer.class);
 	/**
 	 * Trains the Classifier with the Data from the Database that was set and
-	 * validated from the user. Creates a new model Files that can be uses to
-	 * classify the comments and description of a Jira issue.
+	 * validated from the user. Creates a new model Files that can be used to
+	 * classify the comments  and description of a Jira issue and Git-commit
+	 * messages.
 	 */
 	boolean train();
+
 
 	/**
 	 * Creates a new file for the current

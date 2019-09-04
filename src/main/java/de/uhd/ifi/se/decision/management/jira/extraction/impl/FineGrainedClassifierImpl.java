@@ -7,6 +7,7 @@ import smile.math.kernel.MercerKernel;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class FineGrainedClassifierImpl extends Classifier {
@@ -37,9 +38,13 @@ public class FineGrainedClassifierImpl extends Classifier {
         super(kernel, model, epochs, numClasses);
     }
 
-    KnowledgeType predictKnowledgeType(Double[] feature){
-        //TODO!
-        return KnowledgeType.OTHER;
+    KnowledgeType predictKnowledgeType(Double[] feature) throws Exception {
+        Double[] probabilities = super.predictProbabilities(feature);
+        int maxAt = -1;
+        for (int i = 0; i < probabilities.length; i++) {
+            maxAt = probabilities[i] > probabilities[maxAt] ? i : maxAt;
+        }
+        return this.mapIndexToKnowledgeType(maxAt);
     }
 
     @Override
@@ -59,5 +64,41 @@ public class FineGrainedClassifierImpl extends Classifier {
     @Override
     public void loadFromFile() throws Exception {
         super.loadFromFile(Classifier.DEFAULT_PATH + FineGrainedClassifierImpl.DEFAULT_MODEL_NAME);
+    }
+
+    private KnowledgeType mapIndexToKnowledgeType(int index){
+        switch (index){
+            case 0:
+                return KnowledgeType.ALTERNATIVE;
+            case 1:
+                return KnowledgeType.PRO;
+            case 2:
+                return KnowledgeType.CON;
+            case 3:
+                return KnowledgeType.DECISION;
+            case 4:
+                return KnowledgeType.ISSUE;
+            default:
+                return KnowledgeType.OTHER;
+        }
+        /*
+        case ALTERNATIVE:
+                instance.setValue(0, 1);
+                break;
+            case PRO:
+                instance.setValue(1, 1);
+                break;
+            case CON:
+                instance.setValue(2, 1);
+                break;
+            case DECISION:
+                instance.setValue(3, 1);
+                break;
+            case ISSUE:
+                instance.setValue(4, 1);
+                break;
+            default:
+                break;
+         */
     }
 }
