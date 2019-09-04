@@ -117,4 +117,10 @@ public class TestGraph extends TestSetUp {
 	public void testGetAllElements() {
 		assertEquals(2, graph.getAllElements().size());
 	}
+
+	@Test
+	@NonTransactional
+	public void testGetAllLinks(){
+		assertEquals(1,graph.getAllLinks(graph.getAllElements()).size(), 0.0);
+	}
 }
