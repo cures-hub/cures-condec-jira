@@ -78,14 +78,14 @@ public class TestVisGraph extends TestSetUp {
 	@Test
 	public void testConstWithListNullProjectNull() {
 		VisGraph visGraph = new VisGraph((List) null, (String) null);
-		assertNull(visGraph.getEdges());
+		assertEquals(0,visGraph.getEdges().size(), 0.0);
 	}
 
 	@Test
 	public void testConstWithListEmptyProjectNull() {
 		List<DecisionKnowledgeElement> elements = new ArrayList<>();
 		VisGraph visGraph = new VisGraph(elements, (String) null);
-		assertNull(visGraph.getEdges());
+		assertEquals(0,visGraph.getEdges().size(), 0.0);
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class TestVisGraph extends TestSetUp {
 		List<DecisionKnowledgeElement> elements = new ArrayList<>();
 		elements.add(element);
 		VisGraph visGraph = new VisGraph(elements, (String) null);
-		assertNull(visGraph.getEdges());
+		assertEquals(0,visGraph.getEdges().size(), 0.0);
 	}
 
 	@Test

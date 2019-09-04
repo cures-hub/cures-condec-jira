@@ -47,7 +47,8 @@ public class JiraIssues {
 		// Issue
 		issue = createJiraIssue(2, jiraIssueTypes.get(1), project, "How can we implement the feature?",user);
 		jiraIssues.add(issue);
-
+		issue = createJiraIssue(12, jiraIssueTypes.get(1), project, "How can we implement the new get function?",user);
+		jiraIssues.add(issue);
 		// Alternative
 		issue = createJiraIssue(3, jiraIssueTypes.get(2), project, "We could do it like this!",user);
 		jiraIssues.add(issue);
