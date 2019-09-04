@@ -286,16 +286,8 @@ public class ViewRest {
 	public Response getMatrixData(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("documentationLocation") String documentationLocation) {
  		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(projectKey,
 				documentationLocation);
-
-		List <DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
-		for(DecisionKnowledgeElement element: persistenceManager.getDecisionKnowledgeElements()) {
-			if(element.getType().equals(KnowledgeType.DECISION)) {
-				elements.add(element);
-			}
-		}
-
-		Matrix matrix = new Matrix(projectKey, elements);
-
+		List <DecisionKnowledgeElement> decisions = persistenceManager.getDecisionKnowledgeElements(KnowledgeType.DECISION);
+		Matrix matrix = new Matrix(projectKey, decisions);
 		return Response.ok(matrix).build();
 	}
 

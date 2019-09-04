@@ -7,28 +7,26 @@ import java.util.*;
 
 public class MatrixRow {
     @XmlElement
-    private List<String> headerRow;
+    private Map<Long, String> headerRow;
 
     @XmlElement
     private List<String> row;
 
-    public List<String> getHeaderRow() {
-        return headerRow;
-    }
+    public Map<Long, String> getHeaderRow() { return headerRow; }
 
     public List<String> getRow() {
         return row;
     }
 
     public MatrixRow(List<DecisionKnowledgeElement> allDecisions) {
-        this.headerRow = new ArrayList<>();
+        this.headerRow = new TreeMap<>();
         for (DecisionKnowledgeElement decision : allDecisions) {
-            this.headerRow.add(decision.getSummary());
+            this.headerRow.put(decision.getId(), decision.getSummary());
         }
     }
 
     public MatrixRow(HashSet<MatrixEntry> allEntries, List<DecisionKnowledgeElement> allDecisions, DecisionKnowledgeElement decision) {
-        Map<Long, String> entriesForRow = new HashMap<>();
+        Map<Long, String> entriesForRow = new TreeMap<>();
         for (MatrixEntry entry : allEntries) {
             if (entry.getIdOfSourceElement().equals(decision.getId())) {
                 entriesForRow.put(entry.getIdOfDestinationElement(), entry.getColor());
