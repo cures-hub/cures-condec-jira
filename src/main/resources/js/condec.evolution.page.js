@@ -237,6 +237,7 @@
     function getOptions() {
         return {
             layout: {
+                randomSeed: 1,
                 hierarchical: {
                     direction: "UD"
                 }
