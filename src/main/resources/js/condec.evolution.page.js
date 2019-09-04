@@ -245,6 +245,9 @@
             physics: {
                 enabled: false
             },
+            interaction: {
+                keyboard: true
+            },
             nodes: {
                 shape: "box",
                 widthConstraint: 120,
