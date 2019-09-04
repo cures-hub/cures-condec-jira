@@ -11,7 +11,7 @@ import java.util.*;
 
 public class Matrix {
     @XmlElement
-    private List<String> matrixHeaderRow;
+    private Map<Long, String> matrixHeaderRow;
 
     @XmlElement
     private Map<Long, List<String>> matrixData;
@@ -31,7 +31,7 @@ public class Matrix {
             entries.add(new MatrixEntry(link.getSourceElement().getId(), link.getDestinationElement().getId(), link.getType()));
         }
 
-        this.matrixData = new HashMap<>();
+        this.matrixData = new TreeMap<>();
         for (DecisionKnowledgeElement decision : allDecisions) {
             List<String> row = new MatrixRow(entries, allDecisions, decision).getRow();
             this.matrixData.put(decision.getId(), row);
