@@ -773,6 +773,9 @@
 			global.open(decisionKnowledgeElement.url, '_self');
 		});
 	};
+	/*
+	 * external references: condec.release.note.page
+	 */
 	ConDecAPI.prototype.getReleaseNotes = function getReleaseNotes(callback) {
 		var projectKey=getProjectKey();
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/release-note/getReleaseNotes.json?projectKey="
@@ -782,10 +785,23 @@
 			}
 		});
 	};
+	/*
+	 * external references: condec.dialog
+	 */
 	ConDecAPI.prototype.getProposedIssues = function getReleaseNotes(releaseNoteConfiguration, callback) {
 
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/release-note/getProposedIssues.json?projectKey="
 			+ projectKey, releaseNoteConfiguration,
+			function (error, elements) {
+				if (error === null) {
+					callback(elements);
+				}
+			});
+	};
+
+	ConDecAPI.prototype.postProposedKeys = function postProposedKeys(proposedKeys, callback) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/release-note/postProposedKeys.json?projectKey="
+			+ projectKey, proposedKeys,
 			function (error, elements) {
 				if (error === null) {
 					callback(elements);

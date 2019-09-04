@@ -37,3 +37,7 @@ a:focus a:hover {
 	display: inline-block;
 	margin-bottom: 20px;
 }
+
+.noDots{
+	list-style: none;
+}

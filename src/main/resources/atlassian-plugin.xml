@@ -75,6 +75,7 @@
 		<dependency>com.atlassian.auiplugin:aui-experimental-iconfont</dependency>
 		<dependency>com.atlassian.auiplugin:aui-tooltips</dependency>
 		<dependency>com.atlassian.auiplugin:tabs</dependency>
+		<dependency>com.atlassian.auiplugin:aui-expander</dependency>
 		<!-- JIRA dialogs -->
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-edit-issue</dependency>
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-create-issue</dependency>
@@ -136,6 +137,22 @@
 		</description>
 		<resource type="download" name="condec.release.note.page.js"
 				  location="/js/condec.release.note.page.js" />
+		<!--Markdown editor-->
+        <resource type="download" name="condec.release.note.markdowneditor.editor.js"
+                  location="/js/markdowneditor/editor.js"/>
+        <resource type="download" name="condec.release.note.markdowneditor.marked.js"
+                  location="/js/markdowneditor/marked.js"/>
+        <resource type="download" name="condec.release.note.markdowneditor.editor.css"
+                  location="/js/markdowneditor/editor.css"/>
+
+        <resource type="download" name="condec.release.note.markdowneditor.icomoon.eot"
+                  location="/js/markdowneditor/icomoon.eot"/>
+        <resource type="download" name="condec.release.note.markdowneditor.icomoon.ttf"
+                  location="/js/markdowneditor/icomoon.ttf"/>
+        <resource type="download" name="condec.release.note.markdowneditor.icomoon.woff"
+                  location="/js/markdowneditor/icomoon.woff"/>
+        <resource type="download" name="condec.release.note.markdowneditor.icomoon_ie.eot"
+                  location="/js/markdowneditor/icomoon_ie.eot"/>
 	</web-resource>
 
 	<web-resource key="jira-issue-module-resources"
