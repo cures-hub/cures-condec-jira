@@ -8,6 +8,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteIssueProposal;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.TaskCriteriaPrioritisation;
@@ -88,32 +89,32 @@ public class ReleaseNoteRest {
 							dkLinkedCount.put(parts[0],1);
 						}
 					}else {
-					Issue issue = issueManager.getIssueByCurrentKey(dkElement.getKey());
+						Issue issue = issueManager.getIssueByCurrentKey(dkElement.getKey());
 
-					//set priority
-					proposal.getAndSetPriority(issue);
+						//set priority
+						proposal.getAndSetPriority(issue);
 
-					//set count of comments
-					proposal.getAndSetCountOfComments(issue);
+						//set count of comments
+						proposal.getAndSetCountOfComments(issue);
 
-					//set size summary
-					proposal.getAndSetSizeOfSummary();
+						//set size summary
+						proposal.getAndSetSizeOfSummary();
 
-					//set size description
-					proposal.getAndSetSizeOfDescription();
+						//set size description
+						proposal.getAndSetSizeOfDescription();
 
-					//set days to complete
-					proposal.getAndSetDaysToCompletion(issue);
+						//set days to complete
+						proposal.getAndSetDaysToCompletion(issue);
 
-					//set experience reporter
-					proposal.getAndSetExperienceReporter(issue, reporterIssueCount, user);
+						//set experience reporter
+						proposal.getAndSetExperienceReporter(issue, reporterIssueCount, user);
 
-					//set experience resolver
-					proposal.getAndSetExperienceResolver(issue, resolverIssueCount, user);
+						//set experience resolver
+						proposal.getAndSetExperienceResolver(issue, resolverIssueCount, user);
 
-					//add to results
-					releaseNoteIssueProposals.add(proposal);
-				}
+						//add to results
+						releaseNoteIssueProposals.add(proposal);
+					}
 			};
 		//now check DK element links
 		for (Map.Entry<String, Integer> entry : dkLinkedCount.entrySet()) {
@@ -249,7 +250,7 @@ public class ReleaseNoteRest {
 		ArrayList<ReleaseNoteIssueProposal> improvements = new ArrayList<ReleaseNoteIssueProposal>();
 		proposals.forEach(proposal -> {
 			Issue issue = issueManager.getIssueByCurrentKey(proposal.getDecisionKnowledgeElement().getKey());
-			IssueType issueType= issue.getIssueType();
+			IssueType issueType = issue.getIssueType();
 			Integer issueTypeId = Integer.valueOf(issueType.getId());
 			//new features
 			if (config.getFeatureMapping() != null && config.getFeatureMapping().contains(issueTypeId)) {
@@ -279,10 +280,97 @@ public class ReleaseNoteRest {
 		improvements.sort(compareByRating);
 
 
-		resultMap.put("bug_fixes", bugs);
-		resultMap.put("new_features", features);
-		resultMap.put("improvements", improvements);
+		resultMap.put(ReleaseNoteCategory.BUG_FIXES.toString(), bugs);
+		resultMap.put(ReleaseNoteCategory.NEW_FEATURES.toString(), features);
+		resultMap.put(ReleaseNoteCategory.IMPROVEMENTS.toString(), improvements);
 		return resultMap;
 	}
 
+	@Path("/postProposedKeys")
+	@POST
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response postProposedKeys(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, HashMap<String, ArrayList<String>> keysForContent) {
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		List<DecisionKnowledgeElement> list = getIssuesFromIssueKeys(user, projectKey, keysForContent);
+		//generate text string
+		String markDownString=generateMarkdownString(list,keysForContent);
+		//return text string
+		HashMap<String,String> result=new HashMap<String,String>();
+		result.put("markdown",markDownString);
+		return Response.ok(result).build();
+	}
+
+	private List<DecisionKnowledgeElement> getIssuesFromIssueKeys(ApplicationUser user, String projectKey, HashMap<String, ArrayList<String>> keysForContent) {
+		String issueQuery = buildQueryFromIssueKeys(keysForContent);
+		//make one jql request and later seperate by bugs, features and improvements
+		String query = "?jql=project=" + projectKey + "&& key in(" + issueQuery + ")";
+		FilterExtractor extractor = new FilterExtractor(projectKey, user, query);
+		List<DecisionKnowledgeElement> elementsQueryLinked = new ArrayList<DecisionKnowledgeElement>();
+		elementsQueryLinked = extractor.getAllElementsMatchingQuery();
+		return elementsQueryLinked;
+	}
+
+	private String buildQueryFromIssueKeys(HashMap<String, ArrayList<String>> keysForContent) {
+		String result = "";
+		StringBuilder jql = new StringBuilder();
+
+		List<String> categories = ReleaseNoteCategory.toList();
+		//create flat
+		List<String> uniqueList = new ArrayList<>();
+		categories.forEach(category -> {
+			ArrayList<String> issueKeys = keysForContent.get(category);
+			if (issueKeys != null && !issueKeys.isEmpty()) {
+				issueKeys.forEach(key -> {
+					if (!uniqueList.contains(key)) {
+						uniqueList.add(key);
+					}
+				});
+			}
+		});
+		if(!uniqueList.isEmpty()){
+			uniqueList.forEach(key->{
+				jql.append(key);
+				jql.append(",");
+			});
+		}
+		if (!jql.toString().isEmpty()) {
+			//remove last comma
+			result = jql.toString().substring(0, jql.length() - 1);
+		}
+		return result;
+	}
+
+	private String generateMarkdownString(List<DecisionKnowledgeElement> issues,HashMap<String, ArrayList<String>> keysForContent){
+		StringBuilder stringBuilder = new StringBuilder();
+		EnumMap<ReleaseNoteCategory, Boolean> containsTitle=ReleaseNoteCategory.toBooleanMap();
+		ReleaseNoteCategory.toList().forEach(cat->{
+			issues.forEach(issue -> {
+				if (keysForContent.get(cat).contains(issue.getKey())) {
+					//add title once
+					if (!containsTitle.get(ReleaseNoteCategory.getTargetGroup(cat))) {
+						stringBuilder.append("##")
+								.append(ReleaseNoteCategory.getTargetGroupReadable(ReleaseNoteCategory.getTargetGroup(cat)))
+								.append(" \n");
+						containsTitle.put(ReleaseNoteCategory.getTargetGroup(cat), true);
+					}
+					//add issue title and url
+					markdownAddIssue(stringBuilder, issue);
+				}
+			});
+			//append new line
+			stringBuilder.append("\n");
+
+		});
+
+		return stringBuilder.toString();
+	}
+	private void markdownAddIssue(StringBuilder stringBuilder,DecisionKnowledgeElement issue){
+		stringBuilder.append("- ")
+				.append(issue.getSummary())
+				.append(" ([")
+				.append(issue.getKey())
+				.append("](")
+				.append(issue.getUrl())
+				.append(")) \n");
+	}
 }
