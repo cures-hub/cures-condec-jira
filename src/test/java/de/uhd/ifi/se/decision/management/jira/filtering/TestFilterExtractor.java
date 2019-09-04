@@ -90,21 +90,21 @@ public class TestFilterExtractor extends TestSetUp {
 	public void testConstructorFilterStringFilledFilledEmpty() {
 		FilterExtractor extractor = new FilterExtractor("TEST", user, "");
 		// the empty query will be changed to "allissues", i.e. "type != null"
-		assertEquals(7, extractor.getAllElementsMatchingQuery().size());
+		assertEquals(8, extractor.getAllElementsMatchingQuery().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testConstructorFilterStringFilledFilledString() {
 		FilterExtractor extractor = new FilterExtractor("TEST", user, "?filter=allopenissues");
-		assertEquals(7, extractor.getAllElementsMatchingQuery().size());
+		assertEquals(8, extractor.getAllElementsMatchingQuery().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testConstructorFilterStringFilledFilledFilledJQL() {
 		FilterExtractor extractor = new FilterExtractor("TEST", user, "?jql=project=TEST");
-		assertEquals(7, extractor.getAllElementsMatchingQuery().size());
+		assertEquals(8, extractor.getAllElementsMatchingQuery().size());
 	}
 
 	@Test
@@ -126,7 +126,7 @@ public class TestFilterExtractor extends TestSetUp {
 	public void testConstructorFilterOwnFilled() {
 		FilterExtractor extractor = new FilterExtractor(user, new FilterSettingsImpl("TEST", ""));
 		// the empty query will be changed to "allissues", i.e. "type != null"
-		assertEquals(7, extractor.getAllElementsMatchingQuery().size());
+		assertEquals(8, extractor.getAllElementsMatchingQuery().size());
 	}
 
 	@Test
@@ -134,14 +134,14 @@ public class TestFilterExtractor extends TestSetUp {
 	public void testGetGraphsMatchingQueryEmpty() {
 		FilterExtractor extractor = new FilterExtractor("Test", user, "");
 		// the empty query will be changed to "allissues", i.e. "type != null"
-		assertEquals(7, extractor.getAllGraphs().size());
+		assertEquals(8, extractor.getAllGraphs().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetGraphsMatchingQueryFilled() {
 		FilterExtractor extractor = new FilterExtractor("Test", user, "?jql=project=TEST");
-		assertEquals(7, extractor.getAllGraphs().size());
+		assertEquals(8, extractor.getAllGraphs().size());
 	}
 
 	@Test
@@ -166,7 +166,7 @@ public class TestFilterExtractor extends TestSetUp {
 		settings.setCreatedLatest((long)-1);
 		settings.setCreatedEarliest(System.currentTimeMillis()-100000);
 		FilterExtractor extractor = new FilterExtractor(user, settings);
-		assertEquals(4, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
+		assertEquals(5, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
 	}
 
 	@Test
@@ -175,7 +175,7 @@ public class TestFilterExtractor extends TestSetUp {
 		settings.setCreatedEarliest((long)-1);
 		settings.setCreatedLatest(System.currentTimeMillis()+1000);
 		FilterExtractor extractor = new FilterExtractor(user, settings);
-		assertEquals(4, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
+		assertEquals(5, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
 	}
 
 	@Test
@@ -184,6 +184,6 @@ public class TestFilterExtractor extends TestSetUp {
 		settings.setCreatedLatest(System.currentTimeMillis()+1000);
 		settings.setCreatedEarliest(System.currentTimeMillis()-100000);
 		FilterExtractor extractor = new FilterExtractor(user, settings);
-		assertEquals(4, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
+		assertEquals(5, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
 	}
 }

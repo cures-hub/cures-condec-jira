@@ -66,10 +66,15 @@
         var issueStatusDropdown = document.getElementById("compare-status-dropdown");
         initIssueTypeSelectCompare(issueTypeDropdown);
         initIssueStatusSelect(issueStatusDropdown);
+
         var date = new Date();
+        var today = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDay();
+        document.getElementById("end-data-picker-compare-left").value = date.toISOString().substr(0,10);
+        document.getElementById("end-data-picker-compare-right").value = date.toISOString().substr(0,10);
         var endTime = date.getTime();
         date.setDate(date.getDate() -7);
         var startTime = date.getTime();
+        document.getElementById("start-data-picker-compare-left").value = date.toISOString().substr(0,10);
         conDecAPI.getCompareVis(startTime, endTime, "",conDecAPI.extendedKnowledgeTypes,
             completeKnowledgeStatus,function (visData) {
                 var containerLeft = document.getElementById('left-network');
@@ -87,6 +92,7 @@
         });
         date.setDate(date.getDate() -7);
         startTime = date.getTime();
+        document.getElementById("start-data-picker-compare-right").value = date.toISOString().substr(0,10);
         conDecAPI.getCompareVis(startTime, endTime, "", conDecAPI.extendedKnowledgeTypes,
             completeKnowledgeStatus, function (visData) {
                 var containerRight = document.getElementById('right-network');
@@ -237,14 +243,16 @@
     function getOptions() {
         return {
             layout: {
-                randomSeed: 2,
-                improvedLayout: true,
+                randomSeed: 1,
                 hierarchical: {
-                    enabled: false,
-                    levelSeparation: 150,
-                    nodeSpacing: 100,
-                    treeSpacing: 200
+                    direction: "UD"
                 }
+            },
+            physics: {
+                enabled: false
+            },
+            interaction: {
+                keyboard: true
             },
             nodes: {
                 shape: "box",
