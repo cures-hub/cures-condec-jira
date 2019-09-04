@@ -290,7 +290,6 @@ public class ReleaseNoteRest {
 	@POST
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response postProposedKeys(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, HashMap<String, ArrayList<String>> keysForContent) {
-		String response = "";
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		List<DecisionKnowledgeElement> list = getIssuesFromIssueKeys(user, projectKey, keysForContent);
 		//generate text string

@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.releasenotes;
 import org.junit.Test;
 
 import static de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory.BUG_FIXES;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class TestReleaseNoteCategory {
 

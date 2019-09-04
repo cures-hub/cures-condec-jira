@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.rest.releasenotes;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 import de.uhd.ifi.se.decision.management.jira.rest.ReleaseNoteRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import org.junit.Before;
@@ -14,7 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory.*;
 import static org.junit.Assert.assertEquals;
 
 public class TestPostProposedKeys extends TestSetUp {
@@ -32,9 +32,9 @@ public class TestPostProposedKeys extends TestSetUp {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
 		keysForContent = new HashMap<String,ArrayList<String>>();
-		keysForContent.put(BUG_FIXES.toString(), new ArrayList<String>(List.of("TEST-14", "TEST-30")));
-		keysForContent.put(NEW_FEATURES.toString(), new ArrayList<String>(List.of("TEST-14", "TEST-30")));
-		keysForContent.put(IMPROVEMENTS.toString(), new ArrayList<String>(List.of("TEST-14", "TEST-30")));
+		keysForContent.put(ReleaseNoteCategory.BUG_FIXES.toString(), new ArrayList<String>(List.of("TEST-14", "TEST-30")));
+		keysForContent.put(ReleaseNoteCategory.NEW_FEATURES.toString(), new ArrayList<String>(List.of("TEST-14", "TEST-30")));
+		keysForContent.put(ReleaseNoteCategory.IMPROVEMENTS.toString(), new ArrayList<String>(List.of("TEST-14", "TEST-30")));
 
 	}
 
