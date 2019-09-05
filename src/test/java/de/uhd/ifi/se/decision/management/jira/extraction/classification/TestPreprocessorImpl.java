@@ -32,7 +32,8 @@ public class TestPreprocessorImpl extends TestSetUp {
     @Test
     public void testReplaceUsingRegExWorks() {
         Preprocessor pp = new PreprocessorImpl();
-        assertEquals(pp.replaceUsingRegEx(TestPreprocessorImpl.testSentence, "jumps", "hops"), "The quick brown fox hops over the lazy dog.");
+        assertEquals("I put it on master branch and also linked it in the Marketplace.",
+                pp.replaceUsingRegEx("I put it on master branch and also linked it in the Marketplace.\r\n\r\n", Preprocessor.WHITESPACE_CHARACTERS_PATTERN, ""));
     }
 
     @Test

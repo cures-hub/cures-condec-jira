@@ -115,6 +115,7 @@ public class PreprocessorImpl implements Preprocessor {
         sentence = this.replaceUsingRegEx(sentence, Preprocessor.NUMBER_PATTERN, Preprocessor.NUMBER_TOKEN.toLowerCase());
         sentence = this.replaceUsingRegEx(sentence, Preprocessor.URL_PATTERN, Preprocessor.URL_TOKEN.toLowerCase());
         sentence = this.replaceUsingRegEx(sentence, Preprocessor.WHITESPACE_CHARACTERS_PATTERN, Preprocessor.WHITESPACE_CHARACTERS_TOKEN.toLowerCase());
+        //replace long words and possible methods!
         sentence = sentence.toLowerCase();
 
         List<String> tokens = this.tokenize(sentence);
