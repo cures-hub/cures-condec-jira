@@ -12,15 +12,14 @@ public class TestReleaseNote {
 	private ReleaseNote note;
 	private long id;
 	private String title;
-	private DecisionKnowledgeProject project;
+	private String projectKey;
 	private String content;
 	@Before
 	public void setUp(){
-		note=new ReleaseNoteImpl();
+		note=new ReleaseNoteImpl(null,null,null);
 		id=312;
 		title="version 1.0 Great title";
-		String projectKey = "test";
-		project = new DecisionKnowledgeProjectImpl(projectKey);
+		projectKey = "test";
 		content="<h1>verision</h2>&/=)(09(=)(=)&%kjhkjhaksdjlklöajlaksdfalsdj";
 	}
 
@@ -39,11 +38,11 @@ public class TestReleaseNote {
 
 	@Test
 	public void testProject() {
-		note.setProject(project);
-		assertEquals(project, note.getProject());
+		note.setProjectKey(projectKey);
+		assertEquals(projectKey, note.getProjectKey());
 		String projectKey2="test2";
-		note.setProject(projectKey2);
-		assertEquals(projectKey2, note.getProject().getProjectKey());
+		note.setProjectKey(projectKey2);
+		assertEquals(projectKey2, note.getProjectKey());
 	}
 
 
