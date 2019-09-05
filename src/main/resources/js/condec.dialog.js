@@ -397,7 +397,7 @@
 		var issueSelectSubmitButton= document.getElementById("create-release-note-submit-issues-button");
 		var saveContentButton= document.getElementById("create-release-note-submit-content");
 		var loader = document.getElementById("createReleaseNoteDialogLoader");
-		var editor = new Editor();
+		var editor;
 
 		AJS.tabs.setup();
 
@@ -417,7 +417,13 @@
 		AJS.tabs.change(jQuery('a[href="#tab-configuration"]'));
 		makeAsyncCalls();
 		var sprintsArray;
-
+		removeEditor();
+		function removeEditor(){
+			var editorDiv=document.getElementById("create-release-note-dialog-contain-editor");
+			editorDiv.parentNode.removeChild(editorDiv);
+			$("#create-release-note-dialog-contain-editor-content").append("<div id='create-release-note-dialog-contain-editor'>" +
+				"<textarea id='create-release-note-textarea'></textarea></div>")
+		}
 		function removeListItemIssues() {
 			var listItem = document.getElementById("listItemTabIssues");
 			if (listItem) {
@@ -702,6 +708,8 @@
 				addTabAndChangeToIt("tab-editor", "Final edit");
 				if(response.markdown){
 					//display editor and text
+					editor=new Editor({element:document.getElementById("create-release-note-textarea")});
+
 					editor.render();
 					editor.codemirror.setValue(response.markdown);
 				}
@@ -712,6 +720,16 @@
 		};
 		saveContentButton.onclick= function(){
 			console.log("editor",editor.codemirror.getValue());
+			var content=editor.codemirror.getValue();
+			conDecAPI.createReleaseNote(content,function (response) {
+				if(response && response>0){
+					var event = new Event('updateReleaseNoteTable');
+					document.getElementById("release-notes-table").dispatchEvent(event);
+					AJS.dialog2(releaseNoteDialog).hide();
+
+				}
+
+			})
 		};
 		cancelButton.onclick = function () {
 			AJS.dialog2(releaseNoteDialog).hide();
@@ -719,6 +737,93 @@
 
 	};
 
+	ConDecDialog.prototype.showEditReleaseNoteDialog = function showEditReleaseNoteDialog(id){
+		var editDialog = document.getElementById("edit-release-note-dialog");
+		var saveButton = document.getElementById("edit-release-note-submit-content");
+		var cancelButton = document.getElementById("edit-release-note-dialog-cancel-button");
+		var openingButton = document.getElementById("openEditReleaseNoteDialogButton_"+id);
+		var deleteButton = document.getElementById("deleteReleaseNote");
+		var titleInput = document.getElementById("edit-release-note-dialog-title");
+		var editor;
+		setButtonBusyAndDisabled(openingButton,true);
+
+		conDecAPI.getReleaseNotesById(id).then(function(result){
+
+			setButtonBusyAndDisabled(openingButton,false);
+			AJS.dialog2(editDialog).show();
+			removeEditor();
+			titleInput.value=result.title;
+			editor=new Editor({element:document.getElementById("edit-release-note-textarea")});
+			editor.render();
+			editor.codemirror.setValue(result.content);
+
+		}).catch(function(error){
+			throwAlert("Retrieving Release notes failed", "Could not retrieve the release notes.")
+		});
+
+		function removeEditor() {
+			var editorDiv = document.getElementById("edit-release-note-dialog-contain-editor");
+			editorDiv.parentNode.removeChild(editorDiv);
+			$("#edit-release-note-dialog-content").append("<div id='edit-release-note-dialog-contain-editor'>" +
+				"<textarea id='edit-release-note-textarea'></textarea>" +
+				"</div>")
+		}
+		function setButtonBusyAndDisabled(button, busy) {
+			if (busy) {
+				button.busy();
+				button.setAttribute('aria-disabled', 'true');
+			} else {
+				button.idle();
+				button.setAttribute('aria-disabled', 'false');
+			}
+		}
+
+
+		saveButton.onclick = function () {
+			setButtonBusyAndDisabled(saveButton,true);
+			var releaseNote = {id: id, title: titleInput.value, content: editor.codemirror.getValue()};
+			conDecAPI.updateReleaseNote(releaseNote,function (response) {
+				if(response){
+					fireChangeEvent();
+					setButtonBusyAndDisabled(saveButton,false);
+					AJS.dialog2(editDialog).hide();
+				}else{
+					throwAlert("Saving failed", "Could not save the release notes")
+				}
+
+			});
+		};
+		cancelButton.onclick = function () {
+
+			AJS.dialog2(editDialog).hide();
+		};
+		deleteButton.onclick = function () {
+			setButtonBusyAndDisabled(deleteButton,true);
+			conDecAPI.deleteReleaseNote(id,function (response) {
+				if(response){
+					fireChangeEvent();
+					setButtonBusyAndDisabled(deleteButton,false);
+					AJS.dialog2(editDialog).hide();
+				}else{
+					throwAlert("Deleting failed","The release notes could not be deleted")
+				}
+
+			});
+		};
+		function fireChangeEvent(){
+			var event = new Event('updateReleaseNoteTable');
+			document.getElementById("release-notes-table").dispatchEvent(event);
+		}
+		function throwAlert(title, message) {
+			AJS.flag({
+				type: "error",
+				close: "auto",
+				title: title,
+				body: message
+			});
+		}
+
+	};
 	// export ConDecDialog
 	global.conDecDialog = new ConDecDialog();
 })(window);
