@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.OnlineClassificationTrainerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -450,7 +451,7 @@ public class ConfigRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
+		OnlineClassificationTrainerImpl trainer = new OnlineClassificationTrainerImpl(projectKey);
 		File arffFile = trainer.saveTrainingFile(useOnlyValidatedData);
 
 		if (arffFile != null) {

@@ -72,9 +72,9 @@ public class ClassificationTrainerImpl extends ClassificationTrainerARFF {
             SerializationHelper.write(directory + File.separator + "fineGrainedClassifier.model",
                     fineGrainedClassifier);
 
-            classifier = new DecisionKnowledgeClassifierImpl(binaryClassifier, fineGrainedClassifier);
-            classifier.setBinaryClassifier(binaryClassifier);
-            classifier.setFineGrainedClassifier(fineGrainedClassifier);
+            //classifier = new DecisionKnowledgeClassifierImpl(binaryClassifier, fineGrainedClassifier);
+            //classifier.setBinaryClassifier(binaryClassifier);
+            //classifier.setFineGrainedClassifier(fineGrainedClassifier);
 
             isTrained = true;
         } catch (Exception e) {
@@ -107,7 +107,6 @@ public class ClassificationTrainerImpl extends ClassificationTrainerARFF {
         return classifier;
     }
 
-    @Override
     public Instances getInstances() {
         return instances;
     }

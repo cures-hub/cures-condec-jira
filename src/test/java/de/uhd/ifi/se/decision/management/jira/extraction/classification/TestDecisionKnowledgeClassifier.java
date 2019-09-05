@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,56 +15,59 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestDecisionKnowledgeClassifier extends TestSetUp {
 
+	private DecisionKnowledgeClassifierImpl decisionKnowledgeClassifier;
+
 	@Before
 	public void setUp() {
 		init();
+		decisionKnowledgeClassifier = new DecisionKnowledgeClassifierImpl();
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetTypeAlternative() {
-		double[] classification = { 1.0, 0.0, 0.0, 0.0, 0.0 };
-		KnowledgeType type = DecisionKnowledgeClassifierImpl.getType(classification);
+		Double[] classification = { 1.0, 0.0, 0.0, 0.0, 0.0 };
+		KnowledgeType type = this.decisionKnowledgeClassifier.getFineGrainedClassifier().mapIndexToKnowledgeType(this.decisionKnowledgeClassifier.getFineGrainedClassifier().maxAtInArray(classification));
 		assertEquals(KnowledgeType.ALTERNATIVE, type);
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetTypePro() {
-		double[] classification = { .0, 1.0, 0.0, 0.0, 0.0 };
-		KnowledgeType type = DecisionKnowledgeClassifierImpl.getType(classification);
+		Double[] classification = { .0, 1.0, 0.0, 0.0, 0.0 };
+		KnowledgeType type = this.decisionKnowledgeClassifier.getFineGrainedClassifier().mapIndexToKnowledgeType(this.decisionKnowledgeClassifier.getFineGrainedClassifier().maxAtInArray(classification));
 		assertEquals(KnowledgeType.PRO, type);
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetTypeCon() {
-		double[] classification = { .0, .0, 1.0, 0.0, 0.0 };
-		KnowledgeType type = DecisionKnowledgeClassifierImpl.getType(classification);
+		Double[] classification = { .0, .0, 1.0, 0.0, 0.0 };
+		KnowledgeType type = this.decisionKnowledgeClassifier.getFineGrainedClassifier().mapIndexToKnowledgeType(this.decisionKnowledgeClassifier.getFineGrainedClassifier().maxAtInArray(classification));
 		assertEquals(KnowledgeType.CON, type);
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetTypeDecision() {
-		double[] classification = { .0, 0.0, 0.0, 1.0, 0.0 };
-		KnowledgeType type = DecisionKnowledgeClassifierImpl.getType(classification);
+		Double[] classification = { .0, 0.0, 0.0, 1.0, 0.0 };
+		KnowledgeType type = this.decisionKnowledgeClassifier.getFineGrainedClassifier().mapIndexToKnowledgeType(this.decisionKnowledgeClassifier.getFineGrainedClassifier().maxAtInArray(classification));
 		assertEquals(KnowledgeType.DECISION, type);
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetTypeIssue() {
-		double[] classification = { .0, 0.0, 0.0, .0, 1.0 };
-		KnowledgeType type = DecisionKnowledgeClassifierImpl.getType(classification);
+		Double[] classification = { .0, 0.0, 0.0, .0, 1.0 };
+		KnowledgeType type = this.decisionKnowledgeClassifier.getFineGrainedClassifier().mapIndexToKnowledgeType(this.decisionKnowledgeClassifier.getFineGrainedClassifier().maxAtInArray(classification));
 		assertEquals(KnowledgeType.ISSUE, type);
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsRelevant() {
-		assertTrue(DecisionKnowledgeClassifierImpl.isRelevant(1.0));
-		assertFalse(DecisionKnowledgeClassifierImpl.isRelevant(0.));
-		assertFalse(DecisionKnowledgeClassifierImpl.isRelevant(0.4));
+
+		assertTrue(this.decisionKnowledgeClassifier.getBinaryClassifier().isRelevant(new Double[]{0.2, 0.8}));
+		assertFalse(this.decisionKnowledgeClassifier.getBinaryClassifier().isRelevant(new Double[]{0.8, 0.2}));
 	}
 }

@@ -4,6 +4,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils;
 
@@ -84,7 +85,7 @@ public abstract class ClassificationTrainerARFF implements ClassificationTrainer
         return prefix + timestamp.getTime() + ".arff";
     }
 
-    public Instances loadTrainingDataFromJiraIssueText(boolean useOnlyValidatedData) {
+    public Instances loadMekaTrainingDataFromJiraIssueText(boolean useOnlyValidatedData) {
         JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
         List<DecisionKnowledgeElement> partsOfText = manager.getUserValidatedPartsOfText(projectKey);
         if (!useOnlyValidatedData) {
@@ -92,6 +93,15 @@ public abstract class ClassificationTrainerARFF implements ClassificationTrainer
         }
         Instances instances = buildDatasetForMeka(partsOfText);
         return instances;
+    }
+
+    public List<DecisionKnowledgeElement> loadTrainingDataFromJiraIssueText(boolean useOnlyValidatedData) {
+        JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
+        List<DecisionKnowledgeElement> partsOfText = manager.getUserValidatedPartsOfText(projectKey);
+        if (!useOnlyValidatedData) {
+            partsOfText.addAll(manager.getUnvalidatedPartsOfText(projectKey));
+        }
+        return partsOfText;
     }
 
     @Override
@@ -112,7 +122,7 @@ public abstract class ClassificationTrainerARFF implements ClassificationTrainer
 
     private String createArffString(boolean useOnlyValidatedData) {
         if (instances == null) {
-            instances = loadTrainingDataFromJiraIssueText(useOnlyValidatedData);
+            instances = loadMekaTrainingDataFromJiraIssueText(useOnlyValidatedData);
         }
         return instances.toString();
     }

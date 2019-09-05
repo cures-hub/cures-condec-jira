@@ -40,12 +40,22 @@ public class FineGrainedClassifierImpl extends Classifier {
 
     KnowledgeType predictKnowledgeType(Double[] feature) throws Exception {
         Double[] probabilities = super.predictProbabilities(feature);
+        int maxAt = maxAtInArray(probabilities);
+        return this.mapIndexToKnowledgeType(maxAt);
+    }
+
+    public int maxAtInArray(Double[] probabilities){
         int maxAt = -1;
         for (int i = 0; i < probabilities.length; i++) {
             maxAt = probabilities[i] > probabilities[maxAt] ? i : maxAt;
         }
-        return this.mapIndexToKnowledgeType(maxAt);
+        return maxAt;
     }
+
+    KnowledgeType predictKnowledgeType(List<Double> feature) throws Exception {
+        return this.predictKnowledgeType(feature.toArray(Double[]::new));
+    }
+
 
     @Override
     public void train(File trainingFile) {
@@ -55,6 +65,11 @@ public class FineGrainedClassifierImpl extends Classifier {
 
         super.train((Double[][]) features.toArray(), (Integer[]) labels.toArray());
     }
+
+    public void train(Double[] feature, KnowledgeType label) {
+        super.train(feature, mapKnowledgeTypeToIndex(label));
+    }
+
 
     @Override
     public void saveToFile() throws Exception {
@@ -66,8 +81,8 @@ public class FineGrainedClassifierImpl extends Classifier {
         super.loadFromFile(Classifier.DEFAULT_PATH + FineGrainedClassifierImpl.DEFAULT_MODEL_NAME);
     }
 
-    private KnowledgeType mapIndexToKnowledgeType(int index){
-        switch (index){
+    public KnowledgeType mapIndexToKnowledgeType(int index) {
+        switch (index) {
             case 0:
                 return KnowledgeType.ALTERNATIVE;
             case 1:
@@ -81,24 +96,23 @@ public class FineGrainedClassifierImpl extends Classifier {
             default:
                 return KnowledgeType.OTHER;
         }
-        /*
-        case ALTERNATIVE:
-                instance.setValue(0, 1);
-                break;
+    }
+
+    public Integer mapKnowledgeTypeToIndex(KnowledgeType knowledgeType) {
+        switch (knowledgeType) {
+            case ALTERNATIVE:
+                return 0;
             case PRO:
-                instance.setValue(1, 1);
-                break;
+                return 1;
             case CON:
-                instance.setValue(2, 1);
-                break;
+                return 2;
             case DECISION:
-                instance.setValue(3, 1);
-                break;
+                return 3;
             case ISSUE:
-                instance.setValue(4, 1);
-                break;
+                return 4;
             default:
                 break;
-         */
+        }
+        return -1;
     }
 }
