@@ -42,7 +42,7 @@ public abstract class Classifier {
     }
 
     public Classifier(Double c, MercerKernel kernel, Integer epochs, Integer numClasses) {
-        this(kernel, new SVM<Double[]>(kernel, c, numClasses, SVM.Multiclass.ONE_VS_ONE), epochs, numClasses);
+        this(kernel, new SVM<Double[]>(kernel, c, numClasses), epochs, numClasses);
 
     }
 
@@ -70,6 +70,15 @@ public abstract class Classifier {
         }
         this.model.finish();
         this.modelIsTrained = true;
+    }
+
+    /**
+     * @param features
+     * @param labels
+     */
+    public void train(List<List<Double>> features, List<Integer> labels) {
+       this.train(features.toArray(Double[][]::new),
+               labels.toArray(Integer[]::new));
     }
 
     /**
@@ -114,7 +123,13 @@ public abstract class Classifier {
      * @throws Exception
      */
     public void loadFromFile(String filePathAndName) throws Exception {
-        this.model = (SVM<Double[]>) SerializationHelper.read(filePathAndName);
+        SVM oldModel = this.model;
+        try{
+            this.model = (SVM<Double[]>) SerializationHelper.read(filePathAndName);
+        }catch (Exception e){
+            this.model = oldModel;
+        }
+
     }
 
     /**

@@ -72,7 +72,7 @@ public class TestClassificationTrainer extends TestSetUp {
 		List<DecisionKnowledgeElement> trainingElements = getTrainingData();
 		ClassificationTrainer trainer = new ClassificationTrainerImpl("TEST");
 		trainer.setTrainingData(trainingElements);
-		assertNotNull(trainer.getInstances());
+		//assertNotNull(trainer.getInstances());
 		assertTrue(trainer.train());
 		// DecisionKnowledgeClassifier classifier = trainer.getClassifier();
 		// List<String> stringsToBeClassified = Arrays.asList("-1", "Issue", "Decision",
@@ -94,9 +94,9 @@ public class TestClassificationTrainer extends TestSetUp {
 		ClassificationTrainerARFF trainer = new ClassificationTrainerImpl("TEST", trainingElements);
 		File file = trainer.saveTrainingFile(true);
 		trainer.setTrainingFile(file);
-		assertNotNull(trainer.getInstances());
+		//assertNotNull(trainer.getInstances());
 		trainer = new ClassificationTrainerImpl("TEST", file.getName());
-		assertNotNull(trainer.getInstances());
+		//assertNotNull(trainer.getInstances());
 		// assertTrue(trainer.train());
 		file.delete();
 	}
@@ -121,7 +121,7 @@ public class TestClassificationTrainer extends TestSetUp {
 		File luceneArffFile = getDefaultArffFile();
 		assertTrue(luceneArffFile.exists());
 		trainer.setTrainingFile(luceneArffFile);
-		assertNotNull(trainer.getInstances());
+		//assertNotNull(trainer.getInstances());
 		// assertTrue(trainer.train());
 		//
 		// DecisionKnowledgeClassifier classifier = trainer.getClassifier();

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.ClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.OnlineClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
@@ -378,6 +380,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 				isUpdated = true;
 			}
 		}
+		if (sentence.isValidated()){
+			//OnlineClassificationTrainerImpl.getInstance().update(sentence);
+			//TODO: hier kommt online upsateing des classifiers rein!
+		}
 		return isUpdated;
 	}
 
@@ -693,6 +699,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		sentence.setDescription(element.getDescription());
 		sentence.setProject(element.getProject());
 		sentence.setValidated(true);
+
+
 		return sentence;
 	}
 

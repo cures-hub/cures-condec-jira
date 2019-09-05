@@ -32,7 +32,6 @@ public interface ClassificationTrainer {
 	 */
 	boolean train();
 
-
 	/**
 	 * Creates a new file for the current
 	 * project that can be used to train the classifier and saves it on the server
@@ -90,15 +89,6 @@ public interface ClassificationTrainer {
 	 * @return instance of DecisionKnowledgeClassifier.
 	 */
 	DecisionKnowledgeClassifier getClassifier();
-
-	/**
-	 * Gets the weighted instances of the classifier.
-	 * 
-	 * @see Instances
-	 * 
-	 * @return weighted instances of the classifier.
-	 */
-	Instances getInstances();
 
 	/**
 	 * Trains the default classifier with the default training file.

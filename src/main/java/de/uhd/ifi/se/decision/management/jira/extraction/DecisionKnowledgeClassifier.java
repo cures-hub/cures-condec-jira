@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.extraction;
 import java.io.File;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.BinaryClassifierImplementation;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.FineGrainedClassifierImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,17 +45,19 @@ public interface DecisionKnowledgeClassifier {
 	 */
 	List<Boolean> makeBinaryPredictions(List<String> stringsToBeClassified);
 
-	/**
-	 * Determines the knowledge type for a list of strings, respectively. The
-	 * classifier needs a list of strings not just one string.
-	 * 
-	 * @see KnowledgeType
-	 * @param stringsToBeClassified
-	 *            list of strings that should be classified into knowledge types.
-	 * @return list of knowledge types in the same order as the input strings. Each
-	 *         value in the list is the knowledge type of the respective string.
-	 */
+	void trainBinaryClassifier(Double[][] features, Integer[] labels);
+
+	void updateBinaryClassifier(Double[] feature, Integer label);
+
 	List<KnowledgeType> makeFineGrainedPredictions(List<String> stringsToBeClassified);
+
+	void trainFineGrainedClassifier(Double[][] features, Integer[] labels);
+
+	void updateFineGrainedClassifier(Double[] feature, Integer label);
+
+	List<Double> preprocess(String stringsToBePreprocessed);
+
+	List<List<Double>> preprocess(List<String> stringsToBePreprocessed);
 
 	/**
 	 * Set the classifier for binary prediction.
@@ -62,7 +66,9 @@ public interface DecisionKnowledgeClassifier {
 	 * @param binaryClassifier
 	 *            classifier for binary prediction.
 	 */
-	void setBinaryClassifier(FilteredClassifier binaryClassifier);
+	void setBinaryClassifier(BinaryClassifierImplementation binaryClassifier);
+
+	BinaryClassifierImplementation getBinaryClassifier();
 
 	/**
 	 * Set the classifier for fine grained prediction.
@@ -71,7 +77,10 @@ public interface DecisionKnowledgeClassifier {
 	 * @param fineGrainedClassifier
 	 *            classifier for fine grained prediction.
 	 */
-	void setFineGrainedClassifier(LC fineGrainedClassifier);
+	void setFineGrainedClassifier(FineGrainedClassifierImpl fineGrainedClassifier);
+
+	FineGrainedClassifierImpl getFineGrainedClassifier();
+
 
 	/**
 	 * Creates a String to Word Vector for the Classifier All Elements are Lowercase
@@ -79,6 +88,7 @@ public interface DecisionKnowledgeClassifier {
 	 * 
 	 * @return StringToWordVector
 	 */
+	@Deprecated
 	public static StringToWordVector getStringToWordVector() {
 		StringToWordVector stringToWordVector = new StringToWordVector();
 		stringToWordVector.setLowerCaseTokens(true);
@@ -93,6 +103,7 @@ public interface DecisionKnowledgeClassifier {
 	 * Creates the tokenizer and sets the Values and Options for the String to Word
 	 * Vector
 	 */
+	@Deprecated
 	public static Tokenizer getTokenizer() {
 		Tokenizer tokenizer = new NGramTokenizer();
 		try {
