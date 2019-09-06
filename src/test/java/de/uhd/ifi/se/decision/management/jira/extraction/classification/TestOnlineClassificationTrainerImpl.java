@@ -17,6 +17,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestOnlineClassificationTrainerImpl extends TestSetUp {
@@ -80,11 +81,10 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
         OnlineClassificationTrainerImpl trainer = new OnlineClassificationTrainerImpl("TEST", trainingElements);
         File file = trainer.saveTrainingFile(true);
         trainer.setTrainingFile(file);
-        //assertNotNull(trainer.getInstances());
+        assertNotNull(trainer.getInstances());
         trainer = new OnlineClassificationTrainerImpl("TEST", file.getName());
-        trainer.train();
         //assertNotNull(trainer.getInstances());
-        // assertTrue(trainer.train());
+        assertTrue(trainer.train());
         file.delete();
     }
 

@@ -95,9 +95,11 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
         try {
             ///TODO ERROR   The classifier could not be trained. Message:Index 6 out of bounds for length 6
             Map<String, List> trainingData = this.extractTrainingData(super.instances);
-
-            this.classifier.getBinaryClassifier().train(trainingData.get("features"), trainingData.get("labelsIsRelevant"));
-            this.classifier.getFineGrainedClassifier().train(trainingData.get("features"), trainingData.get("labelsKnowledgeType"));
+            List<List<Double>> preprocessedSentences = this.classifier.preprocess(trainingData.get("sentences"));
+            this.classifier.getBinaryClassifier().train(preprocessedSentences,
+                    trainingData.get("labelsIsRelevant"));
+            this.classifier.getFineGrainedClassifier().train(preprocessedSentences,
+                    trainingData.get("labelsKnowledgeType"));
 
             //this.evaluateTraining();
 
@@ -138,20 +140,22 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
         List labelsKnowledgeType = new ArrayList();
         //TODO: can we use the names instead of indices?
         //iterate over all instances
-        for (int i = 0; i < instances.size(); i++) {
-            Instance currInstance = super.instances.get(i);
+        for (int i = 0; i < trainingData.size(); i++) {
+            Instance currInstance = trainingData.get(i);
             // last attribute is the sentence that needs to be classified
             sentences.add(currInstance.stringValue(currInstance.numAttributes() - 1));
 
-            Integer[] isRelevant = {0, 0};
-            Integer[] fineGrainedLabel = {0, 0, 0, 0, 0};
+            Integer isRelevant = 0;
+            Integer fineGrainedLabel = -1;
             // iterate over the binary attributes for each possible class
-            for (int j = 0; j < currInstance.numAttributes() - 2; j++) {
-                if (currInstance.value(round(i)) == 1) {
-                    isRelevant[1] = 1;
-                    fineGrainedLabel[j] = 1;
+            for (int j = 0; j < currInstance.numAttributes() - 1; j++) {
+                if (round(currInstance.value(j)) == 1) {
+                    isRelevant = 1;
+                    fineGrainedLabel = j;
                 }
             }
+            labelsIsRelevant.add(isRelevant);
+            labelsKnowledgeType.add(fineGrainedLabel);
         }
 
         extractedTrainingData.put("sentences", sentences);
