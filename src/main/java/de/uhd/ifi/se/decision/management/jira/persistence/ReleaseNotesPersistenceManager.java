@@ -7,12 +7,10 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInD
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteImpl;
 import net.java.ao.Query;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -69,8 +67,6 @@ public class ReleaseNotesPersistenceManager {
 		}
 		ReleaseNotesInDatabase dbEntry = ACTIVE_OBJECTS.create(ReleaseNotesInDatabase.class);
 		dbEntry.setTitle(releaseNote.getTitle());
-		String escaped=StringEscapeUtils.escapeJavaScript(releaseNote.getContent());
-//		String escaped=StringEscapeUtils.escapeJavaScript(releaseNote.getContent());
 		dbEntry.setContent(releaseNote.getContent());
 		dbEntry.setProjectKey(releaseNote.getProjectKey());
 		dbEntry.save();
