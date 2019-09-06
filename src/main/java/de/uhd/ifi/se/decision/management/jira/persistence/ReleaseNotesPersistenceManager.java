@@ -18,9 +18,6 @@ public class ReleaseNotesPersistenceManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseNotesPersistenceManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
-	public ReleaseNotesPersistenceManager() {
-
-	}
 
 	/**
 	 * Delete release notes

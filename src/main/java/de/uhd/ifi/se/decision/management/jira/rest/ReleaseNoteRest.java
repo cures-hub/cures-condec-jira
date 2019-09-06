@@ -405,7 +405,6 @@ public class ReleaseNoteRest {
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response getReleaseNote(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("id") long id) {
-		ApplicationUser user = AuthenticationManager.getUser(request);
 		ReleaseNote releaseNote= ReleaseNotesPersistenceManager.getReleaseNotes(id);
 		return Response.ok(releaseNote).build();
 	}
