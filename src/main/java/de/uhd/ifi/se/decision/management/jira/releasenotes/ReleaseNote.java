@@ -35,24 +35,15 @@ public interface ReleaseNote {
 	 * @param title of the release note.
 	 */
 	void setTitle(String title);
-	/**
-	 * Get the project that the release note belongs to. The project
-	 * is a JIRA project that is extended with settings for this plug-in, for
-	 * example, whether the plug-in is activated for the project.
-	 *
-	 * @see DecisionKnowledgeProject
-	 */
-	DecisionKnowledgeProject getProject();
 
 	/**
-	 * Set the project that the release note belongs to. The project
+	 * Get the project key that the release note belongs to. The project
 	 * is a JIRA project that is extended with settings for this plug-in, for
 	 * example, whether the plug-in is activated for the project.
 	 *
-	 * @param project decision knowledge project.
 	 * @see DecisionKnowledgeProject
 	 */
-	void setProject(DecisionKnowledgeProject project);
+	String getProjectKey();
 
 	/**
 	 * Set the project that the release note belongs to via its key.
@@ -62,7 +53,7 @@ public interface ReleaseNote {
 	 * @param projectKey key of JIRA project.
 	 * @see DecisionKnowledgeProject
 	 */
-	void setProject(String projectKey);
+	void setProjectKey(String projectKey);
 
 	/**
 	 * Get the content of the release note.

@@ -817,7 +817,44 @@
 				}
 			});
 	};
+	ConDecAPI.prototype.createReleaseNote = function createReleaseNote(content, callback) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/release-note/createReleaseNote.json?projectKey="
+			+ projectKey,content,
+			function (error, elements) {
+				if (error === null) {
+					callback(elements);
+				}
+			});
+	};
+	ConDecAPI.prototype.updateReleaseNote = function updateReleaseNote(releaseNote, callback) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/release-note/updateReleaseNote.json?projectKey="
+			+ projectKey, releaseNote,
+			function (error, elements) {
+				if (error === null) {
+					callback(elements);
+				}
+			});
+	};
+	ConDecAPI.prototype.deleteReleaseNote = function deleteReleaseNote(id,callback) {
+		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/release-note/deleteReleaseNote.json?projectKey="
+			+ projectKey +"&id="+id, null,
+			function (error, elements) {
+				if (error === null) {
+					callback(elements);
+				}
+			});
+	};
 
+
+	ConDecAPI.prototype.getReleaseNotesById = function getReleaseNotesById(id) {
+		return getJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/getReleaseNote.json?projectKey="
+			+ projectKey+"&id="+id);
+
+	};
+	ConDecAPI.prototype.getAllReleaseNotes = function getAllReleaseNotes() {
+		return getJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/getAllReleaseNotes.json?projectKey="
+			+ projectKey);
+	};
 	function getResponseAsReturnValue(url) {
 		var xhr = new XMLHttpRequest();
 		xhr.open("GET", url, false);

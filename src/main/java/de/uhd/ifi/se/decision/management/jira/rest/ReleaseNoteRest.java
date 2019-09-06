@@ -8,17 +8,18 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+import de.uhd.ifi.se.decision.management.jira.persistence.ReleaseNotesPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteConfiguration;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteIssueProposal;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.TaskCriteriaPrioritisation;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteImpl;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteIssueProposalImpl;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -53,7 +54,7 @@ public class ReleaseNoteRest {
 	 * Gather priority metrics for the Release Note Issue Proposal
 	 *
 	 * @param elementsMatchingQuery is the list of DecisionKnowledge Elements
-	 * @param user Application User
+	 * @param user                  Application User
 	 * @return Array with Release Note issue Proposals
 	 */
 	private ArrayList<ReleaseNoteIssueProposal> setPriorityValues(List<DecisionKnowledgeElement> elementsMatchingQuery, ApplicationUser user) {
@@ -68,54 +69,55 @@ public class ReleaseNoteRest {
 		//for each DecisionKnowledgeElement create one ReleaseNoteIssueProposal element with the data
 		HashMap<String, Integer> dkLinkedCount = new HashMap<String, Integer>();
 
-		for(int i=0;i<elementsMatchingQuery.size();i++){
-			DecisionKnowledgeElement dkElement=elementsMatchingQuery.get(i);
-					//add key to used keys
-					usedKeys.add(dkElement.getKey());
-					//create Release note issue proposal with the element and the count of associated decision knowledge
-					// check if DK or Comment
-					ReleaseNoteIssueProposal proposal = new ReleaseNoteIssueProposalImpl(dkElement,0);
-					String dkKey= dkElement.getKey();
+		for (int i = 0; i < elementsMatchingQuery.size(); i++) {
+			DecisionKnowledgeElement dkElement = elementsMatchingQuery.get(i);
+			//add key to used keys
+			usedKeys.add(dkElement.getKey());
+			//create Release note issue proposal with the element and the count of associated decision knowledge
+			// check if DK or Comment
+			ReleaseNoteIssueProposal proposal = new ReleaseNoteIssueProposalImpl(dkElement, 0);
+			String dkKey = dkElement.getKey();
 
-					//check if it is a dk Issue or just a DK comment
-					//comments are not rated, just counted
-					if(dkKey.contains(":")){
-						String[]parts=dkKey.split(":");
-						Integer currentCount=dkLinkedCount.get(parts[0]);
-						if(currentCount!=null){
-							currentCount +=1;
-							dkLinkedCount.put(parts[0],currentCount);
-						}else{
-							dkLinkedCount.put(parts[0],1);
-						}
-					}else {
-						Issue issue = issueManager.getIssueByCurrentKey(dkElement.getKey());
+			//check if it is a dk Issue or just a DK comment
+			//comments are not rated, just counted
+			if (dkKey.contains(":")) {
+				String[] parts = dkKey.split(":");
+				Integer currentCount = dkLinkedCount.get(parts[0]);
+				if (currentCount != null) {
+					currentCount += 1;
+					dkLinkedCount.put(parts[0], currentCount);
+				} else {
+					dkLinkedCount.put(parts[0], 1);
+				}
+			} else {
+				Issue issue = issueManager.getIssueByCurrentKey(dkElement.getKey());
 
-						//set priority
-						proposal.getAndSetPriority(issue);
+				//set priority
+				proposal.getAndSetPriority(issue);
 
-						//set count of comments
-						proposal.getAndSetCountOfComments(issue);
+				//set count of comments
+				proposal.getAndSetCountOfComments(issue);
 
-						//set size summary
-						proposal.getAndSetSizeOfSummary();
+				//set size summary
+				proposal.getAndSetSizeOfSummary();
 
-						//set size description
-						proposal.getAndSetSizeOfDescription();
+				//set size description
+				proposal.getAndSetSizeOfDescription();
 
-						//set days to complete
-						proposal.getAndSetDaysToCompletion(issue);
+				//set days to complete
+				proposal.getAndSetDaysToCompletion(issue);
 
-						//set experience reporter
-						proposal.getAndSetExperienceReporter(issue, reporterIssueCount, user);
+				//set experience reporter
+				proposal.getAndSetExperienceReporter(issue, reporterIssueCount, user);
 
-						//set experience resolver
-						proposal.getAndSetExperienceResolver(issue, resolverIssueCount, user);
+				//set experience resolver
+				proposal.getAndSetExperienceResolver(issue, resolverIssueCount, user);
 
-						//add to results
-						releaseNoteIssueProposals.add(proposal);
-					}
-			};
+				//add to results
+				releaseNoteIssueProposals.add(proposal);
+			}
+		}
+
 		//now check DK element links
 		for (Map.Entry<String, Integer> entry : dkLinkedCount.entrySet()) {
 			String key = entry.getKey();
@@ -293,10 +295,10 @@ public class ReleaseNoteRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		List<DecisionKnowledgeElement> list = getIssuesFromIssueKeys(user, projectKey, keysForContent);
 		//generate text string
-		String markDownString=generateMarkdownString(list,keysForContent);
+		String markDownString = generateMarkdownString(list, keysForContent);
 		//return text string
-		HashMap<String,String> result=new HashMap<String,String>();
-		result.put("markdown",markDownString);
+		HashMap<String, String> result = new HashMap<String, String>();
+		result.put("markdown", markDownString);
 		return Response.ok(result).build();
 	}
 
@@ -327,8 +329,8 @@ public class ReleaseNoteRest {
 				});
 			}
 		});
-		if(!uniqueList.isEmpty()){
-			uniqueList.forEach(key->{
+		if (!uniqueList.isEmpty()) {
+			uniqueList.forEach(key -> {
 				jql.append(key);
 				jql.append(",");
 			});
@@ -340,10 +342,10 @@ public class ReleaseNoteRest {
 		return result;
 	}
 
-	private String generateMarkdownString(List<DecisionKnowledgeElement> issues,HashMap<String, ArrayList<String>> keysForContent){
+	private String generateMarkdownString(List<DecisionKnowledgeElement> issues, HashMap<String, ArrayList<String>> keysForContent) {
 		StringBuilder stringBuilder = new StringBuilder();
-		EnumMap<ReleaseNoteCategory, Boolean> containsTitle=ReleaseNoteCategory.toBooleanMap();
-		ReleaseNoteCategory.toList().forEach(cat->{
+		EnumMap<ReleaseNoteCategory, Boolean> containsTitle = ReleaseNoteCategory.toBooleanMap();
+		ReleaseNoteCategory.toList().forEach(cat -> {
 			issues.forEach(issue -> {
 				if (keysForContent.get(cat).contains(issue.getKey())) {
 					//add title once
@@ -364,7 +366,8 @@ public class ReleaseNoteRest {
 
 		return stringBuilder.toString();
 	}
-	private void markdownAddIssue(StringBuilder stringBuilder,DecisionKnowledgeElement issue){
+
+	private void markdownAddIssue(StringBuilder stringBuilder, DecisionKnowledgeElement issue) {
 		stringBuilder.append("- ")
 				.append(issue.getSummary())
 				.append(" ([")
@@ -373,4 +376,53 @@ public class ReleaseNoteRest {
 				.append(issue.getUrl())
 				.append(")) \n");
 	}
+
+	@Path("/createReleaseNote")
+	@POST
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response createReleaseNote(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, String releaseNoteContent) {
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		String title = "asd";
+
+
+		ReleaseNoteImpl releaseNote = new ReleaseNoteImpl(title, releaseNoteContent, projectKey);
+		long id = ReleaseNotesPersistenceManager.createReleaseNotes(releaseNote, user);
+
+		return Response.ok(id).build();
+	}
+	@Path("/updateReleaseNote")
+	@POST
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response updateReleaseNote(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, ReleaseNote releaseNote) {
+		ApplicationUser user = AuthenticationManager.getUser(request);
+
+		boolean updated = ReleaseNotesPersistenceManager.updateReleaseNotes(releaseNote, user);
+
+		return Response.ok(updated).build();
+	}
+
+	@Path("/getReleaseNote")
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getReleaseNote(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("id") long id) {
+		ReleaseNote releaseNote= ReleaseNotesPersistenceManager.getReleaseNotes(id);
+		return Response.ok(releaseNote).build();
+	}
+
+	@Path("/getAllReleaseNotes")
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getAllReleaseNotes(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+		List<ReleaseNote> releaseNotes= ReleaseNotesPersistenceManager.getAllReleaseNotes(projectKey);
+		return Response.ok(releaseNotes).build();
+	}
+	@Path("/deleteReleaseNote")
+	@DELETE
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response deleteReleaseNote(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("id") long id) {
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		boolean deleted= ReleaseNotesPersistenceManager.deleteReleaseNotes(id,user);
+		return Response.ok(deleted).build();
+	}
+
 }
