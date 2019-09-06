@@ -17,10 +17,9 @@ import java.util.List;
 public class ReleaseNotesPersistenceManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseNotesPersistenceManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
-	private String projectKey;
 
-	public ReleaseNotesPersistenceManager(String projectKey) {
-		this.projectKey = projectKey;
+	public ReleaseNotesPersistenceManager() {
+
 	}
 
 	/**

@@ -3,8 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.releasenotes.impl;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInDatabase;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.TargetGroup;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.TaskCriteriaPrioritisation;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import javax.xml.bind.annotation.XmlElement;

@@ -9,11 +9,16 @@ import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ReleaseNotesPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.*;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteConfiguration;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteIssueProposal;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.TaskCriteriaPrioritisation;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteImpl;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteIssueProposalImpl;
 
 import javax.servlet.http.HttpServletRequest;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -112,7 +117,7 @@ public class ReleaseNoteRest {
 				releaseNoteIssueProposals.add(proposal);
 			}
 		}
-		;
+
 		//now check DK element links
 		for (Map.Entry<String, Integer> entry : dkLinkedCount.entrySet()) {
 			String key = entry.getKey();
@@ -409,7 +414,6 @@ public class ReleaseNoteRest {
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response getAllReleaseNotes(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		ApplicationUser user = AuthenticationManager.getUser(request);
 		List<ReleaseNote> releaseNotes= ReleaseNotesPersistenceManager.getAllReleaseNotes(projectKey);
 		return Response.ok(releaseNotes).build();
 	}
