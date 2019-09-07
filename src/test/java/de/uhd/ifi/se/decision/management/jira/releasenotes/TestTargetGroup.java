@@ -8,12 +8,12 @@ public class TestTargetGroup {
 
 	@Test
 	public void testToString() {
-		assertEquals("stakeholder", TargetGroup.STAKEHOLDER.toString());
+		assertEquals("developer", TargetGroup.DEVELOPER.toString());
 	}
 
 	@Test
 	public void testGetTargetGroup() {
-		assertEquals(TargetGroup.STAKEHOLDER, TargetGroup.getTargetGroup("stakeholder"));
+		assertEquals(TargetGroup.DEVELOPER, TargetGroup.getTargetGroup("developer"));
 		assertEquals(TargetGroup.DEVELOPER, TargetGroup.getTargetGroup(null));
 
 	}
