@@ -13,6 +13,8 @@ import org.junit.Test;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
+import java.util.HashMap;
+
 import static org.junit.Assert.assertEquals;
 
 public class TestCRUDReleaseNotes extends TestSetUp {
@@ -21,6 +23,7 @@ public class TestCRUDReleaseNotes extends TestSetUp {
 	private String projectKey;
 	private String releaseNoteContent;
 	private ReleaseNote releaseNote;
+	private HashMap<String,String> postObject;
 
 
 	@Before
@@ -34,12 +37,14 @@ public class TestCRUDReleaseNotes extends TestSetUp {
 		request.setAttribute("user", user);
 		releaseNoteContent = "some short content";
 		releaseNote= new ReleaseNoteImpl();
-
+		postObject=new HashMap<String,String>();
+		postObject.put("title","some title");
+		postObject.put("content",releaseNoteContent);
 	}
 
 	@Test
 	public void testCreateReleaseNotes() {
-		assertEquals(Response.Status.OK.getStatusCode(), releaseNoteRest.createReleaseNote(request, projectKey, releaseNoteContent).getStatus());
+		assertEquals(Response.Status.OK.getStatusCode(), releaseNoteRest.createReleaseNote(request, projectKey, postObject).getStatus());
 	}
 
 	@Test
@@ -48,7 +53,7 @@ public class TestCRUDReleaseNotes extends TestSetUp {
 	}
 	@Test
 	public void testGetAllReleaseNotes() {
-		assertEquals(Response.Status.OK.getStatusCode(), releaseNoteRest.getAllReleaseNotes(request, projectKey).getStatus());
+		assertEquals(Response.Status.OK.getStatusCode(), releaseNoteRest.getAllReleaseNotes(request, projectKey,"").getStatus());
 	}
 	@Test
 	public void testGetReleaseNote() {

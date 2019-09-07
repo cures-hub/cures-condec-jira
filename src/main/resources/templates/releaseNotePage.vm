@@ -4,23 +4,31 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rele
 <div class="aui-page-panel">
     <div class="aui-page-panel-inner">
         <h1>Release Notes</h1>
-    <button class="aui-button" id="openCreateReleaseNoteDialogButton" onclick="addReleaseNote()" resolved=""><span
-            class="aui-icon aui-icon-small aui-iconfont-add"></span> Create new Release Note
-    </button>
-    <table id="release-notes-table">
-        <thead>
-        <tr>
-            <th id="basic-id">#Id</th>
-            <th id="basic-title">Title</th>
-            <th id="basic-content">Content</th>
-        </tr>
-        </thead>
-        <tbody id="release-notes-table-body">
-        </tbody>
-    </table>
-    <aui-spinner id="release-note-table-loader" size="large"></aui-spinner>
 
-</div>
+
+        <input class="aui text long-field" type="text" id="searchReleaseNotesInput" name="searchReleaseNotesInput">
+        <button class="aui-button" id="searchReleasaeNotesButton" onclick="searchReleaseNotes()"><span
+                class="aui-icon aui-icon-small aui-iconfont-search">Search</button>
+
+        <button class="aui-button" id="openCreateReleaseNoteDialogButton" onclick="addReleaseNote()" resolved=""><span
+                class="aui-icon aui-icon-small aui-iconfont-add"></span> Create new Release Notes
+        </button>
+        <table id="release-notes-table" class="aui aui-table-sortable">
+            <thead>
+            <tr>
+                <th class="aui-table-column-issue-key" id="basic-id">#Id</th>
+                <th id="basic-title">Title</th>
+                <th id="basic-title">Start-Date</th>
+                <th id="basic-title">End-Date</th>
+                <th id="basic-content">Content</th>
+            </tr>
+            </thead>
+            <tbody id="release-notes-table-body">
+            </tbody>
+        </table>
+        <aui-spinner id="release-note-table-loader" size="large"></aui-spinner>
+
+    </div>
 </div>
 
 
@@ -33,11 +41,11 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rele
      */
     $(document).ready(function () {
         console.log("conDecReleaseNotePage working")
-
         conDecAPI.checkIfProjectKeyIsValid();
-        if (window.conDecReleaseNotePage.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant, conDecTreeViewer)){
+        if (window.conDecReleaseNotePage.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant, conDecTreeViewer)) {
             window.conDecReleaseNotePage.getReleaseNotes();
-        }else {
+
+        } else {
             console.error("conDecReleaseNotePage could not get its dependencies.");
         }
 
@@ -49,5 +57,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rele
 
     function displayReleaseNote(id) {
         window.conDecReleaseNotePage.displayReleaseNote(id);
+    }
+    function searchReleaseNotes(){
+    	window.conDecReleaseNotePage.getReleaseNotes()
     }
 </script>

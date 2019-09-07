@@ -183,6 +183,22 @@
 			})
 		})
 	};
+	ConDecAPI.prototype.getReleases = function getReleases() {
+		//first we need the boards then we can get the Sprints for each board
+		return new Promise(function (resolve, reject) {
+			var issueTypeUrl = "/rest/projects/1.0/project/"+projectKey+"/release/allversions";
+			var issuePromise = getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
+			issuePromise.then(function (result) {
+				if(result && result.length){
+					resolve(result);
+				}else {
+					reject();
+				}
+			}).catch(function (err) {
+				reject(err);
+			})
+		})
+	};
 
 
 	/*
@@ -851,9 +867,9 @@
 			+ projectKey+"&id="+id);
 
 	};
-	ConDecAPI.prototype.getAllReleaseNotes = function getAllReleaseNotes() {
+	ConDecAPI.prototype.getAllReleaseNotes = function getAllReleaseNotes(query) {
 		return getJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/getAllReleaseNotes.json?projectKey="
-			+ projectKey);
+			+ projectKey+"&query="+query);
 	};
 	function getResponseAsReturnValue(url) {
 		var xhr = new XMLHttpRequest();

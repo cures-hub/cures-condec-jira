@@ -8,17 +8,13 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ReleaseNotesPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteConfiguration;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteIssueProposal;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.TaskCriteriaPrioritisation;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.*;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteImpl;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteIssueProposalImpl;
 
 import javax.servlet.http.HttpServletRequest;
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -47,7 +43,13 @@ public class ReleaseNoteRest {
 		ArrayList<ReleaseNoteIssueProposal> proposals = setPriorityValues(elementsMatchingQuery, user);
 		ArrayList<ReleaseNoteIssueProposal> comparedProposals = compareProposals(proposals);
 		HashMap<String, ArrayList<ReleaseNoteIssueProposal>> mappedProposals = mapProposals(comparedProposals, releaseNoteConfiguration);
-		return Response.ok(mappedProposals).build();
+		HashMap<String,Object> result=new HashMap<String,Object>();
+		result.put("proposals",mappedProposals);
+		result.put("additionalConfiguration",releaseNoteConfiguration.getAdditionalConfiguration());
+		result.put("title",releaseNoteConfiguration.getTitle());
+		result.put("startDate",releaseNoteConfiguration.getStartDate());
+		result.put("endDate",releaseNoteConfiguration.getEndDate());
+		return Response.ok(result).build();
 	}
 
 	/**
@@ -239,7 +241,7 @@ public class ReleaseNoteRest {
 				totalRef.total += scaling;
 			});
 			//set rating
-			dkElement.setRating(totalRef.total);
+			dkElement.setRating(Math.round(totalRef.total));
 		});
 	}
 
@@ -259,7 +261,8 @@ public class ReleaseNoteRest {
 				features.add(proposal);
 			}
 			//bugs
-			if (config.getBugFixMapping() != null && config.getBugFixMapping().contains(issueTypeId)) {
+			//check if include bugs is false
+			if (config.getBugFixMapping() != null && config.getBugFixMapping().contains(issueTypeId) && config.getAdditionalConfiguration().get(AdditionalConfigurationOptions.INCLUDE_BUG_FIXES)) {
 				bugs.add(proposal);
 			}
 			//improvements
@@ -291,11 +294,15 @@ public class ReleaseNoteRest {
 	@Path("/postProposedKeys")
 	@POST
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response postProposedKeys(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, HashMap<String, ArrayList<String>> keysForContent) {
+	public Response postProposedKeys(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, HashMap<String,HashMap<String,ArrayList<String>>> postObject) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
+		HashMap<String,ArrayList<String>> keysForContent = postObject.get("selectedKeys");
+		String title= postObject.get("title").get("id").get(0);
+		ArrayList<String> additionalConfiguration = postObject.get("additionalConfiguration").get("id");
 		List<DecisionKnowledgeElement> list = getIssuesFromIssueKeys(user, projectKey, keysForContent);
+
 		//generate text string
-		String markDownString = generateMarkdownString(list, keysForContent);
+		String markDownString = generateMarkdownString(list, keysForContent,title,additionalConfiguration);
 		//return text string
 		HashMap<String, String> result = new HashMap<String, String>();
 		result.put("markdown", markDownString);
@@ -311,6 +318,7 @@ public class ReleaseNoteRest {
 		elementsQueryLinked = extractor.getAllElementsMatchingQuery();
 		return elementsQueryLinked;
 	}
+
 
 	private String buildQueryFromIssueKeys(HashMap<String, ArrayList<String>> keysForContent) {
 		String result = "";
@@ -342,8 +350,9 @@ public class ReleaseNoteRest {
 		return result;
 	}
 
-	private String generateMarkdownString(List<DecisionKnowledgeElement> issues, HashMap<String, ArrayList<String>> keysForContent) {
+	private String generateMarkdownString(List<DecisionKnowledgeElement> issues, HashMap<String, ArrayList<String>> keysForContent,String title,ArrayList<String> additionalConfiguration) {
 		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("#").append(title).append(" \n");
 		EnumMap<ReleaseNoteCategory, Boolean> containsTitle = ReleaseNoteCategory.toBooleanMap();
 		ReleaseNoteCategory.toList().forEach(cat -> {
 			issues.forEach(issue -> {
@@ -357,14 +366,52 @@ public class ReleaseNoteRest {
 					}
 					//add issue title and url
 					markdownAddIssue(stringBuilder, issue);
+					//add decision knowledge of the issue
+					if(additionalConfiguration!=null && additionalConfiguration.contains(AdditionalConfigurationOptions.INCLUDE_DECISION_KNOWLEDGE.toUpperString())) {
+						List<DecisionKnowledgeElement> comments = new ArrayList<DecisionKnowledgeElement>();
+						issues.forEach(sameIssue -> {
+							//check if dk knowledge is in issues which contains the issuekey and is one of types issue or decision
+							String sameIssueKey = sameIssue.getKey();
+							String issueKey = issue.getKey();
+							Boolean b1 = sameIssueKey.contains(issueKey);
+							Boolean b2 = sameIssueKey.contains(":");
+							Boolean b3 = sameIssueKey.equals(issueKey);
+							Boolean isIssue = sameIssue.getType().equals(KnowledgeType.ISSUE);
+							Boolean isDecision = sameIssue.getType().equals(KnowledgeType.DECISION);
+							if ((b1 && b2 && !b3) && (isIssue || isDecision)) {
+								comments.add(sameIssue);
+							}
+						});
+						markdownAddComments(stringBuilder, comments);
+					}
 				}
 			});
 			//append new line
 			stringBuilder.append("\n");
-
 		});
 
+		addAdditionalConfigurationToMarkDownString(stringBuilder,additionalConfiguration);
+
 		return stringBuilder.toString();
+	}
+
+	private void addAdditionalConfigurationToMarkDownString(StringBuilder stringBuilder, ArrayList<String> additionalConfiguration) {
+		if(additionalConfiguration!=null) {
+			additionalConfiguration.forEach(type->{
+				stringBuilder.append(AdditionalConfigurationOptions.getMarkdownOptionsString(type));
+			});
+
+		}
+	}
+
+	private void markdownAddComments(StringBuilder stringBuilder,List<DecisionKnowledgeElement> dkElements){
+		dkElements.forEach(element->{
+			stringBuilder.append("\t- ")
+					.append(element.getTypeAsString())
+					.append(": ")
+					.append(element.getSummary())
+					.append("\n");
+		});
 	}
 
 	private void markdownAddIssue(StringBuilder stringBuilder, DecisionKnowledgeElement issue) {
@@ -380,12 +427,14 @@ public class ReleaseNoteRest {
 	@Path("/createReleaseNote")
 	@POST
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response createReleaseNote(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, String releaseNoteContent) {
+	public Response createReleaseNote(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, HashMap<String,String> postObject) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		String title = "asd";
+		String title = postObject.get("title");
+		String startDate = postObject.get("startDate");
+		String endDate = postObject.get("endDate");
+		String releaseNoteContent=postObject.get("content");
 
-
-		ReleaseNoteImpl releaseNote = new ReleaseNoteImpl(title, releaseNoteContent, projectKey);
+		ReleaseNoteImpl releaseNote = new ReleaseNoteImpl(title, releaseNoteContent, projectKey,startDate,endDate);
 		long id = ReleaseNotesPersistenceManager.createReleaseNotes(releaseNote, user);
 
 		return Response.ok(id).build();
@@ -412,8 +461,8 @@ public class ReleaseNoteRest {
 	@Path("/getAllReleaseNotes")
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response getAllReleaseNotes(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		List<ReleaseNote> releaseNotes= ReleaseNotesPersistenceManager.getAllReleaseNotes(projectKey);
+	public Response getAllReleaseNotes(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,@QueryParam("query") String query) {
+		List<ReleaseNote> releaseNotes= ReleaseNotesPersistenceManager.getAllReleaseNotes(projectKey,query);
 		return Response.ok(releaseNotes).build();
 	}
 	@Path("/deleteReleaseNote")
