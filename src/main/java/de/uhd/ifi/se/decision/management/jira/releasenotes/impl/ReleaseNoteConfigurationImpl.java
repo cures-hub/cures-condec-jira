@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes.impl;
 
 
+import de.uhd.ifi.se.decision.management.jira.releasenotes.AdditionalConfigurationOptions;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.TargetGroup;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.TaskCriteriaPrioritisation;
@@ -13,6 +14,7 @@ import java.util.List;
  * Model class for Release Notes Configuration
  */
 public class ReleaseNoteConfigurationImpl implements ReleaseNoteConfiguration {
+	private String title;
 	private String startDate;
 	private String endDate;
 	private String sprintId;
@@ -21,7 +23,7 @@ public class ReleaseNoteConfigurationImpl implements ReleaseNoteConfiguration {
 	private List<Integer> bugFixMapping;
 	private List<Integer> featureMapping;
 	private List<Integer> improvementMapping;
-
+	private EnumMap<AdditionalConfigurationOptions, Boolean> additionalConfiguration;
 
 	// This default constructor is necessary for the JSON string to object mapping.
 	// Do not delete it!
@@ -30,6 +32,16 @@ public class ReleaseNoteConfigurationImpl implements ReleaseNoteConfiguration {
 		this.taskCriteriaPrioritisation = TaskCriteriaPrioritisation.toDoubleEnumMap();
 	}
 
+
+	@Override
+	public String getTitle() {
+		return this.title;
+	}
+
+	@Override
+	public void setTitle(String title) {
+		this.title=title;
+	}
 
 	@Override
 	public String getStartDate() {
@@ -117,6 +129,18 @@ public class ReleaseNoteConfigurationImpl implements ReleaseNoteConfiguration {
 	@JsonProperty("improvementMapping")
 	public void setImprovementMapping(List<Integer> improvementMapping) {
 		this.improvementMapping = improvementMapping;
+	}
+
+
+	@Override
+	public EnumMap<AdditionalConfigurationOptions, Boolean> getAdditionalConfiguration() {
+		return this.additionalConfiguration;
+	}
+
+	@Override
+	@JsonProperty("additionalConfiguration")
+	public void setAdditionalConfiguration(EnumMap<AdditionalConfigurationOptions, Boolean> additionalConfiguration) {
+		this.additionalConfiguration = additionalConfiguration;
 	}
 
 }
