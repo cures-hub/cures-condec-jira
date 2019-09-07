@@ -212,7 +212,7 @@
         <description>Provides the "Release Notes" link in the project's navigation sidebar.
         </description>
         <label key="condec.sidebar.link.label.release.note" />
-        <param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-decision" />
+        <param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-queues" />
         <link> /projects/$pathEncodedProjectKey?selectedItem=release-note-page</link>
         <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
     </web-item>
