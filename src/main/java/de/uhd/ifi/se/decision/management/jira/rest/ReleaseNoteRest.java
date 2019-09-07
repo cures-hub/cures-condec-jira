@@ -1,11 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
-import com.atlassian.jira.issue.comments.Comment;
-import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
