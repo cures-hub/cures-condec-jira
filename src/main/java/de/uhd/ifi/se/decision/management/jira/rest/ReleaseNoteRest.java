@@ -308,9 +308,6 @@ public class ReleaseNoteRest {
 		});
 	}
 
-	private void getAndSetScalingForAllCriteria(ArrayList<ReleaseNoteIssueProposal> proposals) {
-
-	}
 
 	private EnumMap<TaskCriteriaPrioritisation, Integer> getMedianOfProposals(ArrayList<ReleaseNoteIssueProposal> proposals) {
 		List<TaskCriteriaPrioritisation> criteriaEnumList = TaskCriteriaPrioritisation.getOriginalList();
@@ -329,10 +326,8 @@ public class ReleaseNoteRest {
 			}
 			//use floor value
 			medianIndex = Math.floor(medianIndex);
-			//cast to int
-			Long medianResult = Math.round(medianIndex);
 			//the median is the value at index medianIndex
-				medians.put(criteria, (flatList.get((int) medianIndex)));
+			medians.put(criteria, (flatList.get((int) medianIndex)));
 		});
 		return medians;
 	}
