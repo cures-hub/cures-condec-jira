@@ -1,7 +1,7 @@
 <section id="create-release-note-dialog" class="aui-dialog2 aui-dialog2-xlarge aui-layer" role="dialog"
          aria-hidden="true">
     <header class="aui-dialog2-header">
-        <h2 id="create-release-note-header" class="aui-dialog2-header-main">Create Release Note</h2>
+        <h2 id="create-release-note-header" class="aui-dialog2-header-main">Create Release Notes</h2>
         <a class="aui-dialog2-header-close">
             <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
         </a>
@@ -10,49 +10,81 @@
         <div class="aui-tabs horizontal-tabs" id="createReleaseNoteTabs">
             <ul class="tabs-menu" id="tab-list-menu">
                 <li class="menu-item active-tab" id="configurationTab">
-                    <a href="#tab-configuration">Konfiguration</a>
+                    <a href="#tab-configuration">Configuration</a>
                 </li>
             </ul>
 
 
             <div class="tabs-pane active-pane" id="tab-configuration">
                 <form class="aui" id="configurationForm">
-                    <h1>Zeitraum</h1>
+                    <h1>General</h1>
                     <div class="field-group">
-                        <label for="start-range">Start Zeitpunkt </label>
-                        <input class="aui-date-picker" id="start-range" type="date" max="2012-01-25" min="2011-12-25"/>
+                        <label for="title">Title</label>
+                        <input class="text" id="title"/>
                     </div>
-                    <div class="field-group">
+                    <h1>Timerange</h1>
 
-                        <label for="final-range">End Zeitpunkt </label>
-                        <input class="aui-date-picker" id="final-range" type="date" max="2012-01-25" min="2011-12-25"/>
-                    </div>
-                    <div class="field-group">
+                    <fieldset class="group">
+                        <div class="radio">
+                            <label for="radioButtonOne">Use standard dates</label>
 
-                        <input class="checkbox" type="checkbox" name="useSprint" id="useSprint">
-                        <label for="checkBoxOne">Sprint Verwenden</label>
-                        <select class="select" id="selectSprints" name="selectSprints">
-                        </select>
-                    </div>
-                    <h1>Zielgruppe</h1>
-                    <div class="field-group">
-                        <label for="checkBoxOne">Zielgruppe</label>
+                            <input class="radio" type="radio" checked="checked"
+                                   name="useWhichDate" id="radioButtonOne">
+                                <label for="start-range">Start date </label>
+                                <input class="aui-date-picker" id="start-range" type="date"/>
+                                <label for="final-range">End date </label>
+                                <input class="aui-date-picker" id="final-range" type="date"/>
+                        </div>
+                        <div class="radio">
+                            <label for="useSprint">Use sprints</label>
+                            <input class="radio" type="radio"
+                                   name="useWhichDate" id="useSprint">
+                            <select class="select" id="selectSprints" name="selectSprints">
+                            </select>
+                        </div>
+                        <div class="radio">
+                            <label for="useReleases">Use releases</label>
+                            <input class="radio" type="radio"
+                                   name="useWhichDate" id="useReleases">
+                            <select class="select" id="selectReleases" name="selectReleases">
+                            </select>
+                        </div>
+                    </fieldset>
+                    <h1>Targetgroup</h1>
+                        <div class="aui-group">
+                            <div class="aui-item">
+                                <div class="field-group">
+
+                                <label for="checkBoxOne">Targetgroup</label>
                         <select class="select" id="selectTargetGroup" name="selectTargetGroup">
-                            <option value="DEVELOPER">Entwickler</option>
-                            <option value="STAKEHOLDER">Stakeholder</option>
-                            <option value="TESTER">Tester</option>
-                            <option value="ENDUSER">Enduser</option>
                         </select>
-                    </div>
-                    <h1>Zuordnung Issue Typen</h1>
+                            </div>
+                            </div>
+                            <div class="aui-item">
+                                <div class="field-group">
+                                    <input class="checkbox advancedOptionalConfiguration" type="checkbox" name="include_decision_knowledge"
+                                           id="include_decision_knowledge">
+                                    <label for="include_decision_knowledge">Include Decision Knowledge</label>
+                                </div>
+                                <div class="field-group"><input class="checkbox advancedOptionalConfiguration" type="checkbox"
+                                                                name="include_bug_fixes"
+                                                                id="include_bug_fixes">
+                                    <label for="include_bug_fixes">Include Bug Fixes</label></div>
+                                <div class="field-group"><input class="checkbox advancedOptionalConfiguration" type="checkbox"
+                                                                name="include_test_instructions"
+                                                                id="include_test_instructions">
+                                    <label for="include_test_instructions">Include Test Instructions</label></div>
+                            </div>
+                            </div>
+                    <h1>Mapping issue types</h1>
                     <div class="field-group">
-                        <label for="multiselect">Bug Fixes</label>
+                        <label for="multiselect">Bug fixes</label>
                         <select class="multi-select" size="4" multiple="multiple" id="multipleBugs" name="multipleBugs">
 
                         </select>
                     </div>
                     <div class="field-group">
-                        <label for="multiselect">New Features</label>
+                        <label for="multiselect">New features</label>
                         <select class="multi-select" size="4" multiple="multiple" id="multipleFeatures"
                                 name="multipleFeatures">
                         </select>
@@ -63,21 +95,35 @@
                                 name="multipleImprovements">
                         </select>
                     </div>
-                    <h1>Auswahl für Fortgeschrittene</h1>
-                    <a id="replace-text-trigger" data-replace-text="Verbergen" class="aui-expander-trigger"
-                       aria-controls="expander-with-replace-text-content">Anzeigen</a>
+                    <h1>Advanced Configuration</h1>
+                    <a id="replace-text-trigger" data-replace-text="Hide" class="aui-expander-trigger"
+                       aria-controls="expander-with-replace-text-content">Show</a>
                     <div id="expander-with-replace-text-content" class="aui-expander-content">
-                        <div class="field-group">
-                            <label for="checkBoxOne">Anwendungsdomäne</label>
-                            <select class="select" id="selectDomain" name="selectDomain">
-                                <option value="simple_website">Einfache Website</option>
-                                <option value="plugin">Plugin</option>
-                                <option value="framework">Framework</option>
-                                <option value="software">Installierbare Software</option>
-                                <option value="api">API</option>
-                            </select>
+                        <div class="aui-group">
+                            <div class="aui-item">
+                                <div class="field-group">
+                                    <label for="checkBoxOne">Softwaretype</label>
+                                    <select class="select" id="selectSoftwareType" name="selectSoftwareType">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="aui-item">
+                                <div class="field-group">
+                                    <input class="checkbox advancedOptionalConfiguration" type="checkbox" name="include_breaking_changes"
+                                           id="include_breaking_changes">
+                                    <label for="include_breaking_changes">Include Breaking Changes</label>
+                                </div>
+                                <div class="field-group"><input class="checkbox advancedOptionalConfiguration" type="checkbox"
+                                                                name="include_upgrade_guide"
+                                                                id="include_upgrade_guide">
+                                    <label for="include_upgrade_guide">Include installation/ upgrade guide</label></div>
+                                <div class="field-group"><input class="checkbox advancedOptionalConfiguration" type="checkbox"
+                                                                name="include_extra_link"
+                                                                id="include_extra_link">
+                                    <label for="include_extra_link">Include extra link to documentation</label></div>
+                            </div>
                         </div>
-                        <h2>Taks Kriterium Priorität</h2>
+                        <h2>Task criteria metrics weighting factor</h2>
                         <div id="taskCriteriaPriority"></div>
                     </div>
                 </form>
@@ -86,18 +132,18 @@
             </div>
 
             <div class="tabs-pane aui-tabs-disabled" id="tab-issues">
-                <h2>Suggested Issues</h2>
+                <h2 id="suggestedIssuesTitle"></h2>
                 <div id="displayIssueTables"></div>
-                <button id="create-release-note-submit-issues-button" class="aui-button aui-button-primary">Use this
+                <button id="create-release-note-submit-issues-button" class="aui-button aui-button-primary">Use this Jira
                     issues
                 </button>
 
             </div>
             <div class="tabs-pane aui-tabs-disabled" id="tab-editor">
-                    <h2>Editor</h2>
+                <h2>Editor</h2>
                 <div id="create-release-note-dialog-contain-editor-content">
 
-                <div id="create-release-note-dialog-contain-editor">
+                    <div id="create-release-note-dialog-contain-editor">
                         <textarea id="create-release-note-textarea"></textarea>
 
                     </div>
@@ -105,14 +151,13 @@
 
                 <button id="create-release-note-submit-content" class="aui-button aui-button-primary">Save</button>
 
-                </div>
+            </div>
 
         </div>
     </div>
     <footer class="aui-dialog2-footer">
         <div class="aui-dialog2-footer-actions">
-            <button id="create-release-note-dialog-cancel-button" class="aui-button aui-button-link">$i18n.getText(
-                "condec.button.cancel")</button>
+            <button id="create-release-note-dialog-cancel-button" class="aui-button aui-button-link">Cancel</button>
         </div>
     </footer>
 </section>

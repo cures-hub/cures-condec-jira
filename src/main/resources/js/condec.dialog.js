@@ -374,18 +374,6 @@
 		// Show dialog
 		AJS.dialog2(summarizedDialog).show();
 	};
-	ConDecDialog.prototype.showExportDialog = function showExportDialog(decisionElementKey) {
-		console.log("conDecDialog exportDialog");
-
-		// HTML elements
-		var exportDialog = document.getElementById("export-dialog");
-		var hiddenDiv = document.getElementById("exportQueryFallback");
-		// set hidden attribute
-		hiddenDiv.setAttribute("data-tree-element-key", decisionElementKey);
-		// open dialog
-		AJS.dialog2(exportDialog).show();
-	};
-
 	ConDecDialog.prototype.showCreateReleaseNoteDialog = function showCreateReleaseNoteDialog() {
 		// HTML elements
 		//set button busy before we show the dialog
@@ -398,12 +386,13 @@
 		var saveContentButton= document.getElementById("create-release-note-submit-content");
 		var loader = document.getElementById("createReleaseNoteDialogLoader");
 		var editor;
+		var firstResultObject={};
 
 		AJS.tabs.setup();
 
 		// add task prioritisation
 		var criteria = [
-			{title: "#Description Knowledge", id: "count_decision_knowledge"},
+			{title: "#Decision Knowledge", id: "count_decision_knowledge"},
 			{title: "Priority", id: "priority"},
 			{title: "#Comments", id: "count_comments"},
 			{title: "Words Description", id: "size_description"},
@@ -412,11 +401,32 @@
 			{title: "Experience Resolver", id: "experience_resolver"},
 			{title: "Experience Reporter", id: "experience_reporter"}
 		];
+
+		var targetGroupMapping = [
+			{id: "DEVELOPER", title: "Developer", includes: ["include_decision_knowledge", "include_bug_fixes"]},
+			{id: "TESTER", title: "Tester", includes: ["include_bug_fixes", "include_test_instructions"]},
+			{id: "ENDUSER", title: "Enduser", includes: []}
+		];
+
+
+		var softwareTypeMapping =
+			[
+				{includes: [], title: "Simple website", id: "simple_website"},
+				{includes: ["include_breaking_changes", "include_extra_link"], title: "Framework", id: "framework"},
+				{includes: ["include_upgrade_guide"], title: "Installable software", id: "software"},
+				{includes: ["include_breaking_changes"], title: "API", id: "api"}
+			];
+
+		var allTargetGroupIncludes=["include_decision_knowledge", "include_bug_fixes","include_test_instructions"];
+		var allSoftwareTypeIncludes=["include_breaking_changes", "include_extra_link","include_upgrade_guide"];
+
 		addTaskCriteriaPrioritisation(criteria);
 		removeListItemIssues();
 		AJS.tabs.change(jQuery('a[href="#tab-configuration"]'));
 		makeAsyncCalls();
+		fillSoftwaretypesAndTargetGroups();
 		var sprintsArray;
+		var releasesArray=[];
 		removeEditor();
 		function removeEditor(){
 			var editorDiv=document.getElementById("create-release-note-dialog-contain-editor");
@@ -430,23 +440,76 @@
 				listItem.remove();
 			}
 		}
+		function prefillDateBox(){
+			var today= new Date();
+			var twoWeeksAgo = new Date(today.getTime()-12096e5);
+			var todayString =today.getFullYear()  + '-' + ('0' + (today.getMonth()+1)).slice(-2) + '-' +('0' + today.getDate()).slice(-2) ;
+			var twoWeeksAgoString =twoWeeksAgo.getFullYear()  + '-' + ('0' + (twoWeeksAgo.getMonth()+1)).slice(-2) + '-' +('0' + twoWeeksAgo.getDate()).slice(-2) ;
+			document.getElementById("start-range").value=twoWeeksAgoString;
+			document.getElementById("final-range").value=todayString;
+		}
 
+		function fillSoftwaretypesAndTargetGroups(){
+			softwareTypeMapping.map(function(type){
+				$("#selectSoftwareType").append("<option value='"+type.id+"'>"+type.title+"</option>")
+			});
+			targetGroupMapping.map(function(targetGroup){
+				$("#selectTargetGroup").append("<option value='"+targetGroup.id+"'>"+targetGroup.title+"</option>")
+			});
+			document.getElementById("selectSoftwareType").onchange=onSoftwareTypeChange;
+			document.getElementById("selectTargetGroup").onchange=onTargetGroupChange;
+			onSoftwareTypeChange();
+			onTargetGroupChange();
+		}
+		function onTargetGroupChange(){
+			var selectedGroup = $("#selectTargetGroup").val();
 
+			var foundGroup=targetGroupMapping.filter(function(targetGroup){
+				return targetGroup.id===selectedGroup
+			});
+			allTargetGroupIncludes.map(function(include){
+				if(foundGroup[0].includes.indexOf(include)>-1){
+					$("#"+include).prop("checked",true);
+				}else{
+					$("#"+include).prop("checked",false);
+				}
+			})
+		}
+		function onSoftwareTypeChange(){
+			var selectedType = $("#selectSoftwareType").val();
+			var foundType=softwareTypeMapping.filter(function(type){
+				return type.id===selectedType
+			});
+			allSoftwareTypeIncludes.map(function(include){
+				if(foundType[0].includes.indexOf(include)>-1){
+					$("#"+include).prop("checked",true);
+				}else{
+					$("#"+include).prop("checked",false);
+				}
+			})
+		}
 		function makeAsyncCalls() {
 
 			//load sprints
 			var sprintPromise = new Promise(function (resolve, reject) {
 				conDecAPI.getSprintsByProject()
 					.then(function (sprints) {
+						var hasValidSprints=false;
 						sprintsArray = sprints.map(function (sprint) {
 							return sprint.values;
 						});
 						if (sprintsArray && sprintsArray.length && sprintsArray[0] && sprintsArray[0].length) {
 							$('#selectSprints').empty();
 							sprintsArray[0].map(function (sprint) {
-								$('#selectSprints').append('<option value="' + sprint.id + '">' + sprint.name + '</option>');
-							})
-						} else {
+								if(sprint && sprint.startDate && sprint.endDate){
+									hasValidSprints=true;
+									$('#selectSprints').append('<option value="' + sprint.id + '">' + sprint.name + '</option>');
+								}else{
+									$('#selectSprints').append('<option disabled value="' + sprint.id + '">' + sprint.name + '</option>');
+								}
+							});
+						}
+						if(!hasValidSprints){
 							disableSprintBox();
 						}
 						resolve();
@@ -473,14 +536,39 @@
 					reject();
 				});
 			});
+			var releasesPromise= new Promise(function(resolve,reject){
+				conDecAPI.getReleases().then(function(releases){
+					var hasValidReleases=false;
+					$('#selectReleases').empty();
+					releases.map(function(release){
+						if(release && release.startDate.iso && release.releaseDate.iso){
+							hasValidReleases=true;
+							$('#selectReleases').append('<option value="' + release.id + '">' + release.name +" "+release.startDate.iso+" until "+release.releaseDate.iso+ '</option>');
+							releasesArray.push(release);
+						}else{
+							$('#selectReleases').append('<option disabled value="' + release.id + '">' + release.name +'</option>');
+						}
+					});
+					if(!hasValidReleases){
+						disableReleaseBox();
+					}
+					resolve();
+				}).catch(function (err) {
+					disableReleaseBox();
+					reject();
+				})
 
-			Promise.all([sprintPromise, issueTypePromise]).finally(function () {
+			});
+
+			Promise.all([sprintPromise, issueTypePromise, releasesPromise]).finally(function () {
 				//disable busy button
 				setButtonBusyAndDisabled(openingButton, false);
 				//open dialog
 
 				// Show dialog
 				AJS.dialog2(releaseNoteDialog).show();
+				prefillDateBox();
+
 			})
 		}
 
@@ -488,7 +576,10 @@
 			$("#useSprint").attr("disabled", true);
 			$("#selectSprints").attr("disabled", true);
 		}
-
+		function disableReleaseBox(){
+			$("#useReleases").attr("disabled", true);
+			$("#selectReleases").attr("disabled", true);
+		}
 		function addTabAndChangeToIt(tabId,title) {
 			var listItem = document.getElementById("listItemTab"+tabId);
 			if (!listItem) {
@@ -525,17 +616,29 @@
 			var startDate = $("#start-range").val();
 			var endDate = $("#final-range").val();
 			var useSprints = $("#useSprint").prop("checked");
+			var useReleases = $("#useReleases").prop("checked");
 			var selectedSprint = parseInt($("#selectSprints").val()) || "";
-			//first check : both dates have to be selected or a sprint and the checkbox
-			if ((!useSprints) && (!!startDate === false || !!endDate === false)) {
-				throwAlert("Select Date or Sprint", "The start date and the end date have to be selected, if the sprints are not available or not selected");
+			var selectedRelease = parseInt($("#selectReleases").val()) || "";
+			//first check : both dates have to be selected or a sprint or releases and the checkbox
+			if ((!useSprints)&& (!useReleases) && (!!startDate === false || !!endDate === false)) {
+				throwAlert("Select Date or Sprint or Release", "The start date and the end date have to be selected, if the sprints or releases are not available or not selected");
 				return
 			}
 
 			function getStartAndEndDate() {
 				var result = {startDate: "", endDate: ""};
-
-				if (useSprints && sprintsArray && sprintsArray.length && sprintsArray[0] && sprintsArray[0].length) {
+				if(useReleases && releasesArray && releasesArray.length){
+					var selectedDates= releasesArray.filter(function(release){
+						return release.id=selectedRelease;
+					});
+					if(selectedDates && selectedDates.length){
+						result.startDate=selectedDates[0].startDate.iso;
+						result.endDate=selectedDates[0].releaseDate.iso;
+					}else{
+						throwAlert("An error occured", "Something went wrong with the release selection");
+						return false;
+					}
+				}else if (useSprints && sprintsArray && sprintsArray.length && sprintsArray[0] && sprintsArray[0].length) {
 					//get dates of selected sprint
 					var selectedDates = sprintsArray[0].filter(function (sprint) {
 						return sprint.id === selectedSprint;
@@ -592,19 +695,31 @@
 				});
 			}
 
+			var additionalConfiguration={};
+			function getAdditionalConfiguration() {
+				$(".advancedOptionalConfiguration").each(function (i) {
+					var item = ($(".advancedOptionalConfiguration").get(i));
+					var name=item.name;
+					var isChecked=item.checked;
+					additionalConfiguration[name.toUpperCase()]=isChecked;
+				})
+			}
 			var timeRange = getStartAndEndDate();
 			if (!timeRange) {
 				return;
 			}
 			//set button busy and disabled
 			setButtonBusyAndDisabled(configurationSubmitButton,true);
+			getAdditionalConfiguration();
 			var taskCriteriaPrioritisation = getTaskCriteriaPrioritisation(criteria);
 			var targetGroup = $("#selectTargetGroup").val();
 			var bugFixes = $("#multipleBugs").val();
 			var features = $("#multipleFeatures").val();
 			var improvements = $("#multipleImprovements").val();
+			var title= $("#title").val();
 			//submit configuration
 			var configuration = {
+				title:title,
 				startDate: timeRange.startDate,
 				endDate: timeRange.endDate,
 				sprintId: selectedSprint,
@@ -612,6 +727,7 @@
 				bugFixMapping: bugFixes,
 				featureMapping: features,
 				improvementMapping: improvements,
+				additionalConfiguration:additionalConfiguration,
 				taskCriteriaPrioritisation: taskCriteriaPrioritisation
 			};
 
@@ -622,10 +738,17 @@
 				addTabAndChangeToIt("tab-issues", "Suggested Issues");
 				console.log(response);
 
+				firstResultObject=response;
 				//display issues and information
-				if (response) {
-					showTables(response);
+				if(response){
+					if (response.proposals) {
+						showTables(response.proposals);
+					}
+					if(response.title){
+						showTitle(response.title)
+					}
 				}
+
 			}.bind(this));
 
 			function showTables(response) {
@@ -636,6 +759,9 @@
 						showTable(category, response[category]);
 					}
 				})
+			}
+			function showTitle(title){
+				$("#suggestedIssuesTitle").text("Suggested Issues for Release Notes: "+title);
 			}
 
 			function showTable(category, issues) {
@@ -658,7 +784,7 @@
 					var expander = "<div id='expanderOfRating_" +category+ issue.decisionKnowledgeElement.key + "' class='aui-expander-content'>" +
 						"<ul class='noDots'>" +
 						"<li>#Comments: "+issue.taskCriteriaPrioritisation.COUNT_COMMENTS+"</li>" +
-						"<li>#DK: "+issue.taskCriteriaPrioritisation.COUNT_DECISION_KNOWLEDGE+"</li>" +
+						"<li>#Decision Knowledge: "+issue.taskCriteriaPrioritisation.COUNT_DECISION_KNOWLEDGE+"</li>" +
 						"<li>Days Completion: "+issue.taskCriteriaPrioritisation.DAYS_COMPLETION+"</li>" +
 						"<li>#Comments: "+issue.taskCriteriaPrioritisation.COUNT_COMMENTS+"</li>" +
 						"<li>Exp. Reporter: "+issue.taskCriteriaPrioritisation.EXPERIENCE_REPORTER+"</li>" +
@@ -700,8 +826,15 @@
 					}
 				})
 			});
+			var additionalConfigurationObjectSelected=[];
+			Object.getOwnPropertyNames(firstResultObject.additionalConfiguration).forEach(function(val, idx, array) {
+				if(firstResultObject.additionalConfiguration[val]){
+					additionalConfigurationObjectSelected.push(val)
+				}
+			});
 
-			conDecAPI.postProposedKeys(checkedItems, function (response) {
+			var postObject={selectedKeys:checkedItems,title:{id:[firstResultObject.title]},additionalConfiguration:{id:additionalConfigurationObjectSelected}};
+			conDecAPI.postProposedKeys(postObject, function (response) {
 				//set button idle
 				setButtonBusyAndDisabled(issueSelectSubmitButton,false);
 				//change tab
@@ -721,7 +854,14 @@
 		saveContentButton.onclick= function(){
 			console.log("editor",editor.codemirror.getValue());
 			var content=editor.codemirror.getValue();
-			conDecAPI.createReleaseNote(content,function (response) {
+			var postObject = {
+				content: content,
+				title: firstResultObject.title,
+				startDate: firstResultObject.startDate,
+				endDate: firstResultObject.endDate
+			};
+
+			conDecAPI.createReleaseNote(postObject,function (response) {
 				if(response && response>0){
 					var event = new Event('updateReleaseNoteTable');
 					document.getElementById("release-notes-table").dispatchEvent(event);
@@ -735,6 +875,18 @@
 			AJS.dialog2(releaseNoteDialog).hide();
 		};
 
+	};
+
+	ConDecDialog.prototype.showExportDialog = function showExportDialog(decisionElementKey) {
+		console.log("conDecDialog exportDialog");
+
+		// HTML elements
+		var exportDialog = document.getElementById("export-dialog");
+		var hiddenDiv = document.getElementById("exportQueryFallback");
+		// set hidden attribute
+		hiddenDiv.setAttribute("data-tree-element-key", decisionElementKey);
+		// open dialog
+		AJS.dialog2(exportDialog).show();
 	};
 
 	ConDecDialog.prototype.showEditReleaseNoteDialog = function showEditReleaseNoteDialog(id){

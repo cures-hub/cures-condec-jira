@@ -16,7 +16,7 @@ public class TestReleaseNote {
 	private String content;
 	@Before
 	public void setUp(){
-		note=new ReleaseNoteImpl(null,null,null);
+		note=new ReleaseNoteImpl(null,null,null,null,null);
 		id=312;
 		title="version 1.0 Great title";
 		projectKey = "test";

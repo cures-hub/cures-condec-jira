@@ -43,7 +43,7 @@ public class TestReleaseNotesPersistenceManager extends TestReleaseNotesPersiste
 		String someChangedContent="some other content";
 		releaseNote.setContent(someChangedContent);
 		ReleaseNotesPersistenceManager.createReleaseNotes(releaseNote, user);
-		assertEquals(2, ReleaseNotesPersistenceManager.getAllReleaseNotes(projectKey).size());
+		assertEquals(2, ReleaseNotesPersistenceManager.getAllReleaseNotes(projectKey,"").size());
 	}
 
 
