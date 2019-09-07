@@ -16,25 +16,33 @@ public class ReleaseNoteImpl implements ReleaseNote {
 	private String title;
 	private String content;
 	private String projectKey;
+	private String startDate;
+	private String endDate;
 
 	// This default constructor is necessary for the JSON string to object mapping.
 	// Do not delete it!
 	public ReleaseNoteImpl() {
 	}
-	public ReleaseNoteImpl(String title, String content,String projectKey){
-		this.title=title;
-		this.content=content;
-		this.projectKey=projectKey;
-	}
-	public ReleaseNoteImpl(ReleaseNotesInDatabase dbEntry) {
-		this(dbEntry.getId(), dbEntry.getTitle(), dbEntry.getProjectKey(), dbEntry.getContent());
+
+	public ReleaseNoteImpl(String title, String content, String projectKey, String startDate, String endDate) {
+		this.title = title;
+		this.content = content;
+		this.projectKey = projectKey;
+		this.startDate = startDate;
+		this.endDate = endDate;
 	}
 
-	private ReleaseNoteImpl(long id, String title, String projectKey, String content) {
+	public ReleaseNoteImpl(ReleaseNotesInDatabase dbEntry) {
+		this(dbEntry.getId(), dbEntry.getTitle(), dbEntry.getProjectKey(), dbEntry.getContent(), dbEntry.getStartDate(), dbEntry.getEndDate());
+	}
+
+	private ReleaseNoteImpl(long id, String title, String projectKey, String content, String startDate, String endDate) {
 		this.id = id;
 		this.title = title;
 		this.projectKey = projectKey;
 		this.content = content;
+		this.startDate = startDate;
+		this.endDate = endDate;
 	}
 
 
@@ -60,6 +68,30 @@ public class ReleaseNoteImpl implements ReleaseNote {
 	@JsonProperty("title")
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	@Override
+	@XmlElement(name = "startDate")
+	public String getStartDate() {
+		return this.startDate;
+	}
+
+	@Override
+	@JsonProperty("startDate")
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+
+	@Override
+	@XmlElement(name = "endDate")
+	public String getEndDate() {
+		return this.endDate;
+	}
+
+	@Override
+	@JsonProperty("endDate")
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
 	}
 
 	@Override
