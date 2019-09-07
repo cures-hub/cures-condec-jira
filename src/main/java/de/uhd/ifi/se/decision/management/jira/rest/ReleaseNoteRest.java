@@ -36,12 +36,11 @@ public class ReleaseNoteRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		List<DecisionKnowledgeElement> queryResult = new ArrayList<DecisionKnowledgeElement>();
 		String query = "?jql=project=" + projectKey + " && resolved >= " + releaseNoteConfiguration.getStartDate() + " && resolved <= " + releaseNoteConfiguration.getEndDate();
-		//String query = "?jql=resolved >= 2019-08-01 && resolved <= 2020-08-16";
 		FilterExtractor extractor = new FilterExtractor(projectKey, user, query);
 		List<DecisionKnowledgeElement> elementsMatchingQuery = new ArrayList<DecisionKnowledgeElement>();
 		elementsMatchingQuery = extractor.getAllElementsMatchingQuery();
 		ArrayList<ReleaseNoteIssueProposal> proposals = setPriorityValues(elementsMatchingQuery, user);
-		ArrayList<ReleaseNoteIssueProposal> comparedProposals = compareProposals(proposals);
+		ArrayList<ReleaseNoteIssueProposal> comparedProposals = compareProposals(proposals,releaseNoteConfiguration.getTaskCriteriaPrioritisation());
 		HashMap<String, ArrayList<ReleaseNoteIssueProposal>> mappedProposals = mapProposals(comparedProposals, releaseNoteConfiguration);
 		HashMap<String,Object> result=new HashMap<String,Object>();
 		result.put("proposals",mappedProposals);
@@ -144,21 +143,86 @@ public class ReleaseNoteRest {
 	 * @param proposals
 	 * @return
 	 */
-	private ArrayList<ReleaseNoteIssueProposal> compareProposals(ArrayList<ReleaseNoteIssueProposal> proposals) {
+	private ArrayList<ReleaseNoteIssueProposal> compareProposals(ArrayList<ReleaseNoteIssueProposal> proposals, EnumMap<TaskCriteriaPrioritisation,Double> userWeighting) {
+
+		List<TaskCriteriaPrioritisation> criteriaEnumList = TaskCriteriaPrioritisation.getOriginalList();
+
+
+		//find median
+		EnumMap<TaskCriteriaPrioritisation,Integer> medianOfProposals= getMedianOfProposals(proposals);
 
 		//for each criteria create a list of integers, so we can then compute min, max values and the scales
 		EnumMap<TaskCriteriaPrioritisation, ArrayList<Integer>> countValues = this.getFlatListOfValues(proposals);
 
+		//we later check in which interval the proposal would be and apply the corresponding lower and higher value
 
 		//add min and max to lists
-		EnumMap<TaskCriteriaPrioritisation, Integer> minValues = new EnumMap<>(TaskCriteriaPrioritisation.class);
-		EnumMap<TaskCriteriaPrioritisation, Integer> maxValues = new EnumMap<>(TaskCriteriaPrioritisation.class);
-		this.getMinAndMaxValues(minValues, maxValues, countValues);
+		//the first value of the ArrayList is for the first interval and the second is for the second interval
+		EnumMap<TaskCriteriaPrioritisation,ArrayList<Integer>> minValues = new EnumMap<>(TaskCriteriaPrioritisation.class);
+		EnumMap<TaskCriteriaPrioritisation, ArrayList<Integer>> maxValues = new EnumMap<>(TaskCriteriaPrioritisation.class);
+		this.getMinAndMaxValues(minValues, maxValues, countValues,medianOfProposals);
+
+		//calculate user weighting:
+		//add all and then divide by count of items
+		var ref= new Object(){
+			Double total=0.0;
+		};
+		userWeighting.values().forEach(weight->{
+			if(weight!=null){
+				ref.total +=weight;
+			}
+		});
+		Double part=ref.total/userWeighting.values().size();
+		//then assign each the corresponding part
+		EnumMap<TaskCriteriaPrioritisation,Double> weightedValues=new EnumMap<>(TaskCriteriaPrioritisation.class);
+		userWeighting.forEach((key, value) -> {
+				if(value!=null) {
+					weightedValues.put(key, value * part);
+				}else{
+					weightedValues.put(key, 0.0);
+				}
+		});
 
 
-		// for each proposal we want to compute the scaling of all criterias
-		getAndSetScalingForAllCriteria(proposals, minValues, maxValues);
+		proposals.forEach(dkElement -> {
+			EnumMap<TaskCriteriaPrioritisation, Integer> existingCriteriaValues = dkElement.getTaskCriteriaPrioritisation();
+			//use ref object due to atomic problem etc.
+			var totalRef = new Object() {
+				Double total = 0.0;
+			};
+			criteriaEnumList.forEach(criteria -> {
+				double scaling=0;
 
+				//check if criteria is in first or second interval
+				int index=0;
+				int minVal=1;
+				int maxVal=5;
+				if(existingCriteriaValues.get(criteria)>medianOfProposals.get(criteria)&& minValues.get(criteria).size()>1 && maxValues.get(criteria).size()>1){
+					index=1;
+					minVal=6;
+					maxVal=10;
+				}
+				//extra treatment for priorities, as there are no outliers and numbers are reversed
+				//we just do the scaling on all using min and max values
+				if (criteria == TaskCriteriaPrioritisation.PRIORITY) {
+					int indexMinPrio=0;
+					int indexMaxPrio=0;
+					if(maxValues.get(criteria).size()>1){
+						indexMaxPrio=1;
+					}
+					scaling = scaleFromSmallToLarge(existingCriteriaValues.get(criteria), minValues.get(criteria).get(indexMinPrio), maxValues.get(criteria).get(indexMaxPrio),1,10);
+					scaling = 11-scaling;
+				}else{
+					scaling = scaleFromSmallToLarge(existingCriteriaValues.get(criteria), minValues.get(criteria).get(index), maxValues.get(criteria).get(index),minVal,maxVal);
+				}
+				//multiply scaling with associated weighting input from user
+				double userWeight=weightedValues.get(criteria);
+				scaling *=  userWeight;
+				totalRef.total += scaling;
+			});
+			//set rating
+			dkElement.setRating(Math.round(totalRef.total));
+		});
 		return proposals;
 	}
 
@@ -171,9 +235,7 @@ public class ReleaseNoteRest {
 	 * @param baseMax
 	 * @return
 	 */
-	private static double scaleFromOneToTen(final double valueIn, final double baseMin, final double baseMax) {
-		double limitMin = 1;
-		double limitMax = 10;
+	private static double scaleFromSmallToLarge(final double valueIn, final double baseMin, final double baseMax,double limitMin,double limitMax) {
 		//check if baseMax===base min
 		if (baseMax - baseMin == 0) {
 			return limitMax;
@@ -210,39 +272,69 @@ public class ReleaseNoteRest {
 		return countValues;
 	}
 
-	private void getMinAndMaxValues(EnumMap<TaskCriteriaPrioritisation, Integer> minValues, EnumMap<TaskCriteriaPrioritisation, Integer> maxValues, EnumMap<TaskCriteriaPrioritisation, ArrayList<Integer>> countValues) {
+	private void getMinAndMaxValues(EnumMap<TaskCriteriaPrioritisation,ArrayList<Integer>> minValues, EnumMap<TaskCriteriaPrioritisation,ArrayList<Integer>> maxValues, EnumMap<TaskCriteriaPrioritisation, ArrayList<Integer>> countValues,EnumMap<TaskCriteriaPrioritisation,Integer> medianOfProposals) {
 		List<TaskCriteriaPrioritisation> criteriaEnumList = TaskCriteriaPrioritisation.getOriginalList();
 		criteriaEnumList.forEach(criteria -> {
 			ArrayList<Integer> values = countValues.get(criteria);
+			ArrayList<ArrayList<Integer>> valuesInInterval= new ArrayList<ArrayList<Integer>>();
+			ArrayList<Integer> firstInterval= new ArrayList<Integer>();
+			ArrayList<Integer> secondInterval= new ArrayList<Integer>();
 			if (values != null && values.size() > 0) {
-				maxValues.put(criteria, Collections.max(values));
-				minValues.put(criteria, Collections.min(values));
+				//first interval
+				values.forEach(value->{
+					if(value<=medianOfProposals.get(criteria)){
+						firstInterval.add(value);
+					}else{
+						//second interval
+						secondInterval.add(value);
+					}
+				});
+				valuesInInterval.add(firstInterval);
+				valuesInInterval.add(secondInterval);
+				ArrayList<Integer> mins=new ArrayList<Integer>();
+				ArrayList<Integer> maxs=new ArrayList<Integer>();
+				if(valuesInInterval.get(0).size()>0){
+					mins.add(Collections.min(valuesInInterval.get(0)));
+					maxs.add(Collections.max(valuesInInterval.get(0)));
+				}
+				if(valuesInInterval.get(1).size()>0){
+					mins.add(Collections.min(valuesInInterval.get(1)));
+					maxs.add(Collections.max(valuesInInterval.get(1)));
+				}
+
+				minValues.put(criteria,mins);
+				maxValues.put(criteria,maxs);
 			}
 		});
 	}
 
-	private void getAndSetScalingForAllCriteria(ArrayList<ReleaseNoteIssueProposal> proposals, EnumMap<TaskCriteriaPrioritisation, Integer> minValues, EnumMap<TaskCriteriaPrioritisation, Integer> maxValues) {
+	private void getAndSetScalingForAllCriteria(ArrayList<ReleaseNoteIssueProposal> proposals) {
+
+	}
+
+	private EnumMap<TaskCriteriaPrioritisation, Integer> getMedianOfProposals(ArrayList<ReleaseNoteIssueProposal> proposals) {
 		List<TaskCriteriaPrioritisation> criteriaEnumList = TaskCriteriaPrioritisation.getOriginalList();
-
-		proposals.forEach(dkElement -> {
-			EnumMap<TaskCriteriaPrioritisation, Integer> existingCriteriaValues = dkElement.getTaskCriteriaPrioritisation();
-			//use ref object due to atomic problem etc.
-			var totalRef = new Object() {
-				Double total = 0.0;
-			};
-			criteriaEnumList.forEach(criteria -> {
-				double scaling = scaleFromOneToTen(existingCriteriaValues.get(criteria), minValues.get(criteria), maxValues.get(criteria));
-
-				//extra treatment for Priority as 1 is good higher is bad
-				if (criteria == TaskCriteriaPrioritisation.PRIORITY) {
-					scaling -= 11;
-				}
-				//@todo multiply scaling with associated weighting input from user
-				totalRef.total += scaling;
+		EnumMap<TaskCriteriaPrioritisation, Integer> medians = new EnumMap<TaskCriteriaPrioritisation, Integer>(TaskCriteriaPrioritisation.class);
+		criteriaEnumList.forEach(criteria -> {
+			ArrayList<Integer> flatList = new ArrayList<Integer>();
+			proposals.forEach(proposal -> {
+				flatList.add(proposal.getTaskCriteriaPrioritisation().get(criteria));
 			});
-			//set rating
-			dkElement.setRating(Math.round(totalRef.total));
+			//sort list
+			Collections.sort(flatList);
+			//find median
+			double medianIndex = 0.0;
+			if (flatList.size() > 0) {
+				medianIndex = ((double) flatList.size()) / 2;
+			}
+			//use floor value
+			medianIndex = Math.floor(medianIndex);
+			//cast to int
+			Long medianResult = Math.round(medianIndex);
+			//the median is the value at index medianIndex
+				medians.put(criteria, (flatList.get((int) medianIndex)));
 		});
+		return medians;
 	}
 
 	private HashMap<String, ArrayList<ReleaseNoteIssueProposal>> mapProposals(ArrayList<ReleaseNoteIssueProposal> proposals, ReleaseNoteConfiguration config) {
