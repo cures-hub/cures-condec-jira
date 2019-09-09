@@ -15,9 +15,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
 import org.eclipse.jgit.lib.Ref;
 import org.slf4j.Logger;
@@ -284,9 +283,12 @@ public class ViewRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getMatrixData(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("documentationLocation") String documentationLocation) {
- 		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(projectKey,
-				documentationLocation);
-		List <DecisionKnowledgeElement> decisions = persistenceManager.getDecisionKnowledgeElements(KnowledgeType.DECISION);
+		AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
+		List<DecisionKnowledgeElement> decisions = strategy.getDecisionKnowledgeElements(KnowledgeType.DECISION);
+
+		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(projectKey);
+		decisions.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements(KnowledgeType.DECISION));
+
 		Matrix matrix = new Matrix(projectKey, decisions);
 		return Response.ok(matrix).build();
 	}
