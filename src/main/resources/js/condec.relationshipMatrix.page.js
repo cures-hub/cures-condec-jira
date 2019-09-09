@@ -21,8 +21,11 @@
 
     ConDecRelationshipMatrixPage.prototype.buildMatrix = function buildMatrix() {
         conDecAPI.getMatrixData(function (data) {
+            console.log(data);
             const matrix = document.getElementById("matrix");
-            newTableHeaderElement(matrix, "");
+            const firstRowHeaderElement = document.createElement("th");
+            firstRowHeaderElement.innerText = "";
+            matrix.appendChild(firstRowHeaderElement);
 
             for (let d in data.matrixHeaderRow) {
                 newTableHeaderElement(matrix, data.matrixHeaderRow[d]);
@@ -39,7 +42,10 @@
 
     function newTableHeaderElement(matrix, text) {
         const tableColumn = document.createElement("th");
-        tableColumn.innerText = text;
+        tableColumn.classList.add("rotate");
+        const div = document.createElement("div");
+        div.innerText = text;
+        tableColumn.appendChild(div);
         matrix.appendChild(tableColumn);
     }
 
@@ -47,7 +53,9 @@
         matrix.appendChild(document.createElement("tr"));
         for (let d in row) {
             if (d == 0) {
-                newTableHeaderElement(matrix, row[d]);
+                const firstRowElement = document.createElement("th");
+                firstRowElement.innerText = row[d];
+                matrix.appendChild(firstRowElement)
             } else {
                 new newTableElement(matrix, row[d]);
             }

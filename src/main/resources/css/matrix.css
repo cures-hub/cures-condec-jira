@@ -30,3 +30,20 @@
 .my-legend a {
     color: #777;
 }
+
+#matrix {
+    width: fit-content;
+    height: fit-content;
+}
+
+.rotate {
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    width: 1.5em;
+}
+
+.rotate div {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+}

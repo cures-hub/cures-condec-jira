@@ -16,15 +16,11 @@ public class Matrix {
     @XmlElement
     private Map<Long, List<String>> matrixData;
 
-    @JsonIgnore
-    private Graph graph;
-
-
     public Matrix(String projectKey, List<DecisionKnowledgeElement> allDecisions) {
         this.matrixHeaderRow = new MatrixRow(allDecisions).getHeaderRow();
 
-        this.graph = new GraphImpl(projectKey);
-        List<Link> links = this.graph.getAllLinks(allDecisions);
+        Graph graph = new GraphImpl(projectKey);
+        List<Link> links = graph.getAllLinks(allDecisions);
 
         HashSet<MatrixEntry> entries = new HashSet<>();
         for (Link link : links) {
