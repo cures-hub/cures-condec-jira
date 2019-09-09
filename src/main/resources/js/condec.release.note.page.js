@@ -47,13 +47,16 @@
 			if(response && response.length){
 				fillTable(response)
 			}else{
-				showLoadingIndicator(false);
+				throwAlert("Info","No Release Notes found!")
 			}
-		}).catch(function (error) {
-			//@todo catch
+		}).catch(function (err) {
+			throwAlert("Error","Could not load Release Notes",err.toString())
+		}).finally(function () {
+			showLoadingIndicator(false);
 		})
 
 	};
+
 
 	ConDecReleaseNotePage.prototype.addReleaseNote = function() {
 		conDecDialog.showCreateReleaseNoteDialog();
@@ -71,6 +74,14 @@
 			tBody.append(createTableRow(releaseNote));
 		})
 		}
+	}
+	function throwAlert(type,title, message) {
+		AJS.flag({
+			type: type,
+			close: "auto",
+			title: title,
+			body: message
+		});
 	}
 	function emptyTable(){
 		showLoadingIndicator(true);
