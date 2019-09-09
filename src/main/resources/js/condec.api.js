@@ -813,52 +813,26 @@
 	/*
 	 * external references: condec.dialog
 	 */
-	ConDecAPI.prototype.getProposedIssues = function getReleaseNotes(releaseNoteConfiguration, callback) {
-
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/release-note/getProposedIssues.json?projectKey="
-			+ projectKey, releaseNoteConfiguration,
-			function (error, elements) {
-				if (error === null) {
-					callback(elements);
-				}
-			});
+	ConDecAPI.prototype.getProposedIssues = function getReleaseNotes(releaseNoteConfiguration) {
+		return postJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/getProposedIssues.json?projectKey="
+			+ projectKey, releaseNoteConfiguration);
 	};
 
-	ConDecAPI.prototype.postProposedKeys = function postProposedKeys(proposedKeys, callback) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/release-note/postProposedKeys.json?projectKey="
-			+ projectKey, proposedKeys,
-			function (error, elements) {
-				if (error === null) {
-					callback(elements);
-				}
-			});
+	ConDecAPI.prototype.postProposedKeys = function postProposedKeys(proposedKeys) {
+		return postJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/postProposedKeys.json?projectKey="
+			+ projectKey, proposedKeys);
 	};
-	ConDecAPI.prototype.createReleaseNote = function createReleaseNote(content, callback) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/release-note/createReleaseNote.json?projectKey="
-			+ projectKey,content,
-			function (error, elements) {
-				if (error === null) {
-					callback(elements);
-				}
-			});
+	ConDecAPI.prototype.createReleaseNote = function createReleaseNote(content) {
+		return postJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/createReleaseNote.json?projectKey="
+			+ projectKey,content);
 	};
-	ConDecAPI.prototype.updateReleaseNote = function updateReleaseNote(releaseNote, callback) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/release-note/updateReleaseNote.json?projectKey="
-			+ projectKey, releaseNote,
-			function (error, elements) {
-				if (error === null) {
-					callback(elements);
-				}
-			});
+	ConDecAPI.prototype.updateReleaseNote = function updateReleaseNote(releaseNote) {
+		return postJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/updateReleaseNote.json?projectKey="
+			+ projectKey, releaseNote)
 	};
-	ConDecAPI.prototype.deleteReleaseNote = function deleteReleaseNote(id,callback) {
-		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/release-note/deleteReleaseNote.json?projectKey="
-			+ projectKey +"&id="+id, null,
-			function (error, elements) {
-				if (error === null) {
-					callback(elements);
-				}
-			});
+	ConDecAPI.prototype.deleteReleaseNote = function deleteReleaseNote(id) {
+		return deleteJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/deleteReleaseNote.json?projectKey="
+			+ projectKey +"&id="+id, null);
 	};
 
 
@@ -915,6 +889,28 @@
 			});
 		});
 
+	}
+	function postJSONReturnPromise(url,data){
+		return new Promise(function (resolve,reject) {
+			postJSON(url,data,function(err,result){
+				if(err===null){
+					resolve(result);
+				}else{
+					reject(err);
+				}
+			})
+		})
+	}
+	function deleteJSONReturnPromise(url,data){
+		return new Promise(function (resolve,reject) {
+			deleteJSON(url,data,function(err,result){
+				if(err===null){
+					resolve(result);
+				}else{
+					reject(err);
+				}
+			})
+		})
 	}
 
 

@@ -488,6 +488,14 @@
 				}
 			})
 		}
+		function throwAlert(title, message) {
+			AJS.flag({
+				type: "error",
+				close: "auto",
+				title: title,
+				body: message
+			});
+		}
 		function makeAsyncCalls() {
 
 			//load sprints
@@ -532,7 +540,7 @@
 							})
 						}
 					}).catch(function (err) {
-					//@todo handle error
+					throwAlert("No issue-types could be loaded");
 					reject();
 				});
 			});
@@ -686,14 +694,7 @@
 				return result;
 			}
 
-			function throwAlert(title, message) {
-				AJS.flag({
-					type: "error",
-					close: "auto",
-					title: title,
-					body: message
-				});
-			}
+
 
 			var additionalConfiguration={};
 			function getAdditionalConfiguration() {
@@ -731,16 +732,15 @@
 				taskCriteriaPrioritisation: taskCriteriaPrioritisation
 			};
 
-			conDecAPI.getProposedIssues(configuration, function (response) {
-				//set button idle
-				setButtonBusyAndDisabled(configurationSubmitButton,false);
-				//change tab
-				addTabAndChangeToIt("tab-issues", "Suggested Issues");
-				console.log(response);
+			conDecAPI.getProposedIssues(configuration).then(function(response){
 
-				firstResultObject=response;
-				//display issues and information
 				if(response){
+					//change tab
+					addTabAndChangeToIt("tab-issues", "Suggested Issues");
+					console.log(response);
+
+					firstResultObject=response;
+					//display issues and information
 					if (response.proposals) {
 						showTables(response.proposals);
 					}
@@ -749,7 +749,12 @@
 					}
 				}
 
-			}.bind(this));
+			}).catch(function(err){
+				//we handle this exception directly in condec.api
+			}).finally(function(){
+				//set button idle
+				setButtonBusyAndDisabled(configurationSubmitButton,false);
+			});
 
 			function showTables(response) {
 				//first remove old tables
@@ -834,20 +839,25 @@
 			});
 
 			var postObject={selectedKeys:checkedItems,title:{id:[firstResultObject.title]},additionalConfiguration:{id:additionalConfigurationObjectSelected}};
-			conDecAPI.postProposedKeys(postObject, function (response) {
-				//set button idle
-				setButtonBusyAndDisabled(issueSelectSubmitButton,false);
-				//change tab
-				addTabAndChangeToIt("tab-editor", "Final edit");
-				if(response.markdown){
-					//display editor and text
-					editor=new Editor({element:document.getElementById("create-release-note-textarea")});
-
-					editor.render();
-					editor.codemirror.setValue(response.markdown);
+			conDecAPI.postProposedKeys(postObject)
+				.then(function (response) {
+				if (response) {
+					//change tab
+					addTabAndChangeToIt("tab-editor", "Final edit");
+					if (response.markdown) {
+						//display editor and text
+						editor = new Editor({element: document.getElementById("create-release-note-textarea")});
+						editor.render();
+						editor.codemirror.setValue(response.markdown);
+					}
 				}
 
-			}.bind(this));
+			}.bind(this)).catch(function(err){
+				throwAlert("An error occurred",err.toString());
+			}).finally(function(){
+				//set button idle
+				setButtonBusyAndDisabled(issueSelectSubmitButton,false);
+			});
 
 
 		};
@@ -861,14 +871,14 @@
 				endDate: firstResultObject.endDate
 			};
 
-			conDecAPI.createReleaseNote(postObject,function (response) {
+			conDecAPI.createReleaseNote(postObject).then(function(response){
 				if(response && response>0){
 					var event = new Event('updateReleaseNoteTable');
 					document.getElementById("release-notes-table").dispatchEvent(event);
 					AJS.dialog2(releaseNoteDialog).hide();
-
 				}
-
+			}).catch(function (err) {
+				throwAlert("An error saving occurred",err.toString());
 			})
 		};
 		cancelButton.onclick = function () {
@@ -900,8 +910,6 @@
 		setButtonBusyAndDisabled(openingButton,true);
 
 		conDecAPI.getReleaseNotesById(id).then(function(result){
-
-			setButtonBusyAndDisabled(openingButton,false);
 			AJS.dialog2(editDialog).show();
 			removeEditor();
 			titleInput.value=result.title;
@@ -911,6 +919,8 @@
 
 		}).catch(function(error){
 			throwAlert("Retrieving Release notes failed", "Could not retrieve the release notes.")
+		}).finally(function(){
+			setButtonBusyAndDisabled(openingButton,false);
 		});
 
 		function removeEditor() {
@@ -934,15 +944,17 @@
 		saveButton.onclick = function () {
 			setButtonBusyAndDisabled(saveButton,true);
 			var releaseNote = {id: id, title: titleInput.value, content: editor.codemirror.getValue()};
-			conDecAPI.updateReleaseNote(releaseNote,function (response) {
+			conDecAPI.updateReleaseNote(releaseNote).then(function (response) {
 				if(response){
 					fireChangeEvent();
-					setButtonBusyAndDisabled(saveButton,false);
 					AJS.dialog2(editDialog).hide();
 				}else{
 					throwAlert("Saving failed", "Could not save the release notes")
 				}
-
+			}).catch(function(err){
+				throwAlert("Saving failed", err.toString());
+			}).finally(function () {
+				setButtonBusyAndDisabled(saveButton,false);
 			});
 		};
 		cancelButton.onclick = function () {
@@ -951,15 +963,18 @@
 		};
 		deleteButton.onclick = function () {
 			setButtonBusyAndDisabled(deleteButton,true);
-			conDecAPI.deleteReleaseNote(id,function (response) {
+			conDecAPI.deleteReleaseNote(id).then(function (response) {
 				if(response){
 					fireChangeEvent();
-					setButtonBusyAndDisabled(deleteButton,false);
 					AJS.dialog2(editDialog).hide();
 				}else{
-					throwAlert("Deleting failed","The release notes could not be deleted")
+					throwAlert("Deleting failed","The release notes could not be deleted");
 				}
+			}).catch(function (err) {
+				throwAlert("Deleting failed",err.toString());
 
+			}).finally(function () {
+				setButtonBusyAndDisabled(deleteButton,false);
 			});
 		};
 		function fireChangeEvent(){

@@ -5,6 +5,7 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
+import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -39,9 +40,20 @@ public class ReleaseNoteRest {
 		FilterExtractor extractor = new FilterExtractor(projectKey, user, query);
 		List<DecisionKnowledgeElement> elementsMatchingQuery = new ArrayList<DecisionKnowledgeElement>();
 		elementsMatchingQuery = extractor.getAllElementsMatchingQuery();
+		if(elementsMatchingQuery.size()==0){
+			return Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"No resolved issues were found in this date range!"))
+					.build();
+		}
 		ArrayList<ReleaseNoteIssueProposal> proposals = setPriorityValues(elementsMatchingQuery, user);
 		ArrayList<ReleaseNoteIssueProposal> comparedProposals = compareProposals(proposals,releaseNoteConfiguration.getTaskCriteriaPrioritisation());
+
 		HashMap<String, ArrayList<ReleaseNoteIssueProposal>> mappedProposals = mapProposals(comparedProposals, releaseNoteConfiguration);
+		if(mappedProposals==null){
+			return Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"No issues with the mapped types are resolved in this date range!"))
+					.build();
+		}
 		HashMap<String,Object> result=new HashMap<String,Object>();
 		result.put("proposals",mappedProposals);
 		result.put("additionalConfiguration",releaseNoteConfiguration.getAdditionalConfiguration());
@@ -339,6 +351,9 @@ public class ReleaseNoteRest {
 		ArrayList<ReleaseNoteIssueProposal> bugs = new ArrayList<ReleaseNoteIssueProposal>();
 		ArrayList<ReleaseNoteIssueProposal> features = new ArrayList<ReleaseNoteIssueProposal>();
 		ArrayList<ReleaseNoteIssueProposal> improvements = new ArrayList<ReleaseNoteIssueProposal>();
+		var ref= new Object(){
+			Boolean hasResult=false;
+		};
 		proposals.forEach(proposal -> {
 			Issue issue = issueManager.getIssueByCurrentKey(proposal.getDecisionKnowledgeElement().getKey());
 			IssueType issueType = issue.getIssueType();
@@ -346,19 +361,24 @@ public class ReleaseNoteRest {
 			//new features
 			if (config.getFeatureMapping() != null && config.getFeatureMapping().contains(issueTypeId)) {
 				features.add(proposal);
+				ref.hasResult=true;
 			}
 			//bugs
 			//check if include bugs is false
 			if (config.getBugFixMapping() != null && config.getBugFixMapping().contains(issueTypeId) && config.getAdditionalConfiguration().get(AdditionalConfigurationOptions.INCLUDE_BUG_FIXES)) {
 				bugs.add(proposal);
+				ref.hasResult=true;
 			}
 			//improvements
 			if (config.getImprovementMapping() != null && config.getImprovementMapping().contains(issueTypeId)) {
 				improvements.add(proposal);
+				ref.hasResult=true;
 			}
 
-
 		});
+		if(!ref.hasResult){
+			return null;
+		}
 		Comparator<ReleaseNoteIssueProposal> compareByRating = new Comparator<ReleaseNoteIssueProposal>() {
 			@Override
 			public int compare(ReleaseNoteIssueProposal o1, ReleaseNoteIssueProposal o2) {
@@ -492,8 +512,19 @@ public class ReleaseNoteRest {
 	}
 
 	private void markdownAddComments(StringBuilder stringBuilder,List<DecisionKnowledgeElement> dkElements){
+		String pathToIcons="https://raw.githubusercontent.com/cures-hub/cures-condec-jira/tree/master/src/main/resources/images/";
 		dkElements.forEach(element->{
+			String iconUrl="decision.png";
+			if(element.getType().equals(KnowledgeType.ISSUE)){
+			 iconUrl="issue.png";
+			}
 			stringBuilder.append("\t- ")
+					.append("![")
+					.append(element.getTypeAsString())
+					.append("](")
+					.append(pathToIcons)
+					.append(iconUrl)
+					.append(")")
 					.append(element.getTypeAsString())
 					.append(": ")
 					.append(element.getSummary())
