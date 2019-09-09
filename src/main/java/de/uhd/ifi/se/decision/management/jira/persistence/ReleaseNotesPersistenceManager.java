@@ -93,7 +93,7 @@ public class ReleaseNotesPersistenceManager {
 
 	public static List<ReleaseNote> getAllReleaseNotes(String projectKey,String query) {
 		List<ReleaseNote> result = new ArrayList<ReleaseNote>();
-		for (ReleaseNotesInDatabase databaseEntry : ACTIVE_OBJECTS.find(ReleaseNotesInDatabase.class, Query.select().where("PROJECT_KEY = ? AND LOWER(CONTENT) LIKE ?", projectKey,"%"+query.toLowerCase()+"%"))) {
+		for (ReleaseNotesInDatabase databaseEntry : ACTIVE_OBJECTS.find(ReleaseNotesInDatabase.class, Query.select().where("PROJECT_KEY = ? AND CONTENT LIKE ?", projectKey,"%"+query+"%"))) {
 			result.add(new ReleaseNoteImpl(databaseEntry));
 		}
 		return result;
