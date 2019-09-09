@@ -512,7 +512,7 @@ public class ReleaseNoteRest {
 	}
 
 	private void markdownAddComments(StringBuilder stringBuilder,List<DecisionKnowledgeElement> dkElements){
-		String pathToIcons="https://raw.githubusercontent.com/cures-hub/cures-condec-jira/tree/master/src/main/resources/images/";
+		String pathToIcons="https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/";
 		dkElements.forEach(element->{
 			String iconUrl="decision.png";
 			if(element.getType().equals(KnowledgeType.ISSUE)){
