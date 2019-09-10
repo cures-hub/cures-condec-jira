@@ -262,7 +262,7 @@
 
     function getClusterOptions(clusterSize) {
         return {
-            joinCondition: function (childOptions) {5
+            joinCondition: function (childOptions) {
                 return ((childOptions.level <= 50 - clusterSize) || (childOptions.level >= 50 + clusterSize) || (childOptions.cid >= clusterSize));
             },
             clusterNodeProperties: {
