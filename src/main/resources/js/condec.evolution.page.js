@@ -39,8 +39,10 @@
             var item = new vis.DataSet(data);
             var groups = evolutionData.groupSet;
             var date = new Date();
+            document.getElementById("end-date-picker-time").value = date.toISOString().substr(0,10);
             var endTime = date.toDateString();
             date.setDate(date.getDate() -7);
+            document.getElementById("start-date-picker-time").value = date.toISOString().substr(0,10);
             var startTime = date.toDateString();
             var options = {
                 locale: 'de',
