@@ -90,6 +90,13 @@
                 networkLeft.on("oncontext", function (params) {
                     conDecVis.addContextMenu(params,networkLeft);
                 });
+                networkLeft.on("hold", function (params) {
+                    conDecVis.holdFunction(params, networkLeft);
+                });
+                networkLeft.on("selectNode", function (params) {
+                    conDecVis.selectNode(params, networkLeft);
+                });
+                networkLeft.cluster(getClusterOptions(4));
 
         });
         date.setDate(date.getDate() -7);
@@ -108,6 +115,13 @@
                 networkRight.on("oncontext", function (params) {
                     conDecVis.addContextMenu(params,networkRight);
                 });
+                networkRight.on("hold", function (params) {
+                    conDecVis.holdFunction(params, networkRight);
+                });
+                networkRight.on("selectNode", function (params) {
+                    conDecVis.selectNode(params, networkRight);
+                });
+                networkRight.cluster(getClusterOptions(4));
             });
         addOnClickEventToFilterCompareButton();
     };
@@ -190,14 +204,18 @@
                     nodes: visDataLeft.nodes,
                     edges: visDataLeft.edges
                 };
+                var distance = document.getElementById("node-distance-picker-compare").value;
                 networkLeft.setData(dateLeft);
+                networkLeft.cluster(getClusterOptions(distance));
             });
             conDecAPI.getCompareVis(firstDateRight, secondDateRight, searchString, issueTypes, issueStatus, function (visDataRight) {
                 var dateRight = {
                     nodes: visDataRight.nodes,
                     edges: visDataRight.edges
                 };
+                var distance = document.getElementById("node-distance-picker-compare").value;
                 networkRight.setData(dateRight);
+                networkRight.cluster(getClusterOptions(distance));
             });
         });
     }
@@ -240,6 +258,22 @@
                 timeline.redraw();
             });
         });
+    }
+
+    function getClusterOptions(clusterSize) {
+        return {
+            joinCondition: function (childOptions) {5
+                return ((childOptions.level <= 50 - clusterSize) || (childOptions.level >= 50 + clusterSize) || (childOptions.cid >= clusterSize));
+            },
+            clusterNodeProperties: {
+                allowSingleNodeCluster: false,
+                id: 'distanceCluster',
+                shape: 'ellipse',
+                label: 'clusteredNodes',
+                level: ((50 * 1) + (clusterSize * 1))
+            }
+
+        };
     }
 
     function getOptions() {
