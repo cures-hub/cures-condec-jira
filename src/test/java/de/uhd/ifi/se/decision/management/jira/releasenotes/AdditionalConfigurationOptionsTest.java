@@ -26,7 +26,7 @@ public class AdditionalConfigurationOptionsTest {
 
 	@Test
 	public void testGetMarkdownOptionsString() {
-		assertEquals("###Breaking Changes\n Add your breaking changes here\n", AdditionalConfigurationOptions.getMarkdownOptionsString(INCLUDE_BREAKING_CHANGES.toUpperString()));
+		assertEquals("### Breaking Changes\n Add your breaking changes here\n", AdditionalConfigurationOptions.getMarkdownOptionsString(INCLUDE_BREAKING_CHANGES.toUpperString()));
 		assertEquals("", AdditionalConfigurationOptions.getMarkdownOptionsString(null));
 
 	}
