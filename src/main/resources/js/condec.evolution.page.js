@@ -96,7 +96,7 @@
                 networkLeft.on("selectNode", function (params) {
                     conDecVis.selectNode(params, networkLeft);
                 });
-                networkLeft.cluster(getClusterOptions(4));
+                networkLeft.cluster(getClusterOptions(4, networkLeft));
 
         });
         date.setDate(date.getDate() -7);
@@ -121,7 +121,7 @@
                 networkRight.on("selectNode", function (params) {
                     conDecVis.selectNode(params, networkRight);
                 });
-                networkRight.cluster(getClusterOptions(4));
+                networkRight.cluster(getClusterOptions(4, networkRight));
             });
         addOnClickEventToFilterCompareButton();
     };
@@ -206,7 +206,7 @@
                 };
                 var distance = document.getElementById("node-distance-picker-compare").value;
                 networkLeft.setData(dateLeft);
-                networkLeft.cluster(getClusterOptions(distance));
+                networkLeft.cluster(getClusterOptions(distance, networkLeft));
             });
             conDecAPI.getCompareVis(firstDateRight, secondDateRight, searchString, issueTypes, issueStatus, function (visDataRight) {
                 var dateRight = {
@@ -215,7 +215,7 @@
                 };
                 var distance = document.getElementById("node-distance-picker-compare").value;
                 networkRight.setData(dateRight);
-                networkRight.cluster(getClusterOptions(distance));
+                networkRight.cluster(getClusterOptions(distance, networkRight));
             });
         });
     }
@@ -259,18 +259,61 @@
             });
         });
     }
+    function shouldBeClustered(network,clusterSize) {
+        var notClusteredNodes = [];
+        var nodes = network.body.nodes;
+        console.log(nodes);
+        for(var nodeId in network.body.nodeIndices) {
+            if(nodes[nodeId].group != "collapsed"){
+                for(var linkedNodeId in network.getConnectedNodes(nodeId)) {
+                    for(var i = 0; i< clusterSize ; i++) {
 
-    function getClusterOptions(clusterSize) {
+                    }
+                }
+            }
+            console.log(nodes[nodeId]);
+        }
+        console.log(network);
+    }
+
+    function clusterGraph(childOptions ,network, clusterSize) {
+        if(childOptions.group !== "collapsed"){
+            shouldBeClustered(network, clusterSize);
+        }
+
+    }
+
+    function findRoot(node, network) {
+        var nodes = network.body.nodes;
+        var rootNode = -1;
+        for(var i =0; i<network.getConnectedNodes(node.id).size; i++) {
+            var linkedNode = nodes[network.getConnectedNodes(node.id)[i]];
+            if(linkedNode.options.group !== "collapsed") {
+                return linkedNode.id;
+            }
+            rootNode = findRoot(linkedNode, network);
+            if(rootNode !== -1) {
+                return rootNode;
+            }
+        }
+        return -1;
+    }
+
+    function getClusterOptions(clusterSize, network) {
+        var clusterId = 0;
         return {
             joinCondition: function (childOptions) {
-                return ((childOptions.level <= 50 - clusterSize) || (childOptions.level >= 50 + clusterSize) || (childOptions.cid >= clusterSize));
+                if(childOptions.group === "collapsed") {
+                    clusterId = findRoot(childOptions, network);
+                    return true;
+                }
             },
             clusterNodeProperties: {
                 allowSingleNodeCluster: false,
-                id: 'distanceCluster',
+                id: clusterId,
                 shape: 'ellipse',
                 label: 'clusteredNodes',
-                level: ((50 * 1) + (clusterSize * 1))
+                level: 51
             }
 
         };
