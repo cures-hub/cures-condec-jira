@@ -459,14 +459,14 @@ public class ReleaseNoteRest {
 
 	private String generateMarkdownString(List<DecisionKnowledgeElement> issues, HashMap<String, ArrayList<String>> keysForContent,String title,ArrayList<String> additionalConfiguration) {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("#").append(title).append(" \n");
+		stringBuilder.append("# ").append(title).append(" \n");
 		EnumMap<ReleaseNoteCategory, Boolean> containsTitle = ReleaseNoteCategory.toBooleanMap();
 		ReleaseNoteCategory.toList().forEach(cat -> {
 			issues.forEach(issue -> {
 				if (keysForContent.get(cat).contains(issue.getKey())) {
 					//add title once
 					if (!containsTitle.get(ReleaseNoteCategory.getTargetGroup(cat))) {
-						stringBuilder.append("##")
+						stringBuilder.append("## ")
 								.append(ReleaseNoteCategory.getTargetGroupReadable(ReleaseNoteCategory.getTargetGroup(cat)))
 								.append(" \n");
 						containsTitle.put(ReleaseNoteCategory.getTargetGroup(cat), true);

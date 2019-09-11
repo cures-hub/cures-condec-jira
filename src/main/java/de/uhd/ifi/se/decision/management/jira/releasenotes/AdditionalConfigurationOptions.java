@@ -48,13 +48,13 @@ public enum AdditionalConfigurationOptions {
 		}
 		switch (type.toLowerCase(Locale.ENGLISH)) {
 			case "include_breaking_changes":
-				return "###Breaking Changes\n Add your breaking changes here\n";
+				return "### Breaking Changes\n Add your breaking changes here\n";
 			case "include_extra_link":
-				return "###More Documentation\n [Add your link here](https://www.google.com)\n";
+				return "### More Documentation\n [Add your link here](https://www.google.com)\n";
 			case "include_test_instructions":
-				return "###Test Instructions\n Add your test instructions here\n";
+				return "### Test Instructions\n Add your test instructions here\n";
 			case "include_upgrade_guide":
-				return "###Installation/ Upgrade Guide\n Add your installation/ Upgrade guide here\n";
+				return "### Installation/ Upgrade Guide\n Add your installation/ Upgrade guide here\n";
 			default:
 				return "";
 		}
