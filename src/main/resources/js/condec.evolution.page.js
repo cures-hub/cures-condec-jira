@@ -90,13 +90,9 @@
                 networkLeft.on("oncontext", function (params) {
                     conDecVis.addContextMenu(params,networkLeft);
                 });
-                networkLeft.on("hold", function (params) {
-                    conDecVis.holdFunction(params, networkLeft);
-                });
                 networkLeft.on("selectNode", function (params) {
-                    conDecVis.selectNode(params, networkLeft);
+                    networkRight.focus(params.nodes[0]);
                 });
-                networkLeft.cluster(getClusterOptions(4, networkLeft));
 
         });
         date.setDate(date.getDate() -7);
@@ -115,13 +111,10 @@
                 networkRight.on("oncontext", function (params) {
                     conDecVis.addContextMenu(params,networkRight);
                 });
-                networkRight.on("hold", function (params) {
-                    conDecVis.holdFunction(params, networkRight);
-                });
+
                 networkRight.on("selectNode", function (params) {
-                    conDecVis.selectNode(params, networkRight);
+                    networkLeft.focus(params.nodes[0]);
                 });
-                networkRight.cluster(getClusterOptions(4, networkRight));
             });
         addOnClickEventToFilterCompareButton();
     };
@@ -206,7 +199,6 @@
                 };
                 var distance = document.getElementById("node-distance-picker-compare").value;
                 networkLeft.setData(dateLeft);
-                networkLeft.cluster(getClusterOptions(distance, networkLeft));
             });
             conDecAPI.getCompareVis(firstDateRight, secondDateRight, searchString, issueTypes, issueStatus, function (visDataRight) {
                 var dateRight = {
@@ -215,7 +207,6 @@
                 };
                 var distance = document.getElementById("node-distance-picker-compare").value;
                 networkRight.setData(dateRight);
-                networkRight.cluster(getClusterOptions(distance, networkRight));
             });
         });
     }
@@ -258,65 +249,6 @@
                 timeline.redraw();
             });
         });
-    }
-    function shouldBeClustered(network,clusterSize) {
-        var notClusteredNodes = [];
-        var nodes = network.body.nodes;
-        console.log(nodes);
-        for(var nodeId in network.body.nodeIndices) {
-            if(nodes[nodeId].group != "collapsed"){
-                for(var linkedNodeId in network.getConnectedNodes(nodeId)) {
-                    for(var i = 0; i< clusterSize ; i++) {
-
-                    }
-                }
-            }
-            console.log(nodes[nodeId]);
-        }
-        console.log(network);
-    }
-
-    function clusterGraph(childOptions ,network, clusterSize) {
-        if(childOptions.group !== "collapsed"){
-            shouldBeClustered(network, clusterSize);
-        }
-
-    }
-
-    function findRoot(node, network) {
-        var nodes = network.body.nodes;
-        var rootNode = -1;
-        for(var i =0; i<network.getConnectedNodes(node.id).size; i++) {
-            var linkedNode = nodes[network.getConnectedNodes(node.id)[i]];
-            if(linkedNode.options.group !== "collapsed") {
-                return linkedNode.id;
-            }
-            rootNode = findRoot(linkedNode, network);
-            if(rootNode !== -1) {
-                return rootNode;
-            }
-        }
-        return -1;
-    }
-
-    function getClusterOptions(clusterSize, network) {
-        var clusterId = 0;
-        return {
-            joinCondition: function (childOptions) {
-                if(childOptions.group === "collapsed") {
-                    clusterId = findRoot(childOptions, network);
-                    return true;
-                }
-            },
-            clusterNodeProperties: {
-                allowSingleNodeCluster: false,
-                id: clusterId,
-                shape: 'ellipse',
-                label: 'clusteredNodes',
-                level: 51
-            }
-
-        };
     }
 
     function getOptions() {
