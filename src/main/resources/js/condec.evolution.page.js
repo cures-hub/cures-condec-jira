@@ -199,7 +199,6 @@
                     nodes: visDataLeft.nodes,
                     edges: visDataLeft.edges
                 };
-                var distance = document.getElementById("node-distance-picker-compare").value;
                 networkLeft.setData(dateLeft);
             });
             conDecAPI.getCompareVis(firstDateRight, secondDateRight, searchString, issueTypes, issueStatus, function (visDataRight) {
@@ -207,7 +206,6 @@
                     nodes: visDataRight.nodes,
                     edges: visDataRight.edges
                 };
-                var distance = document.getElementById("node-distance-picker-compare").value;
                 networkRight.setData(dateRight);
             });
         });
