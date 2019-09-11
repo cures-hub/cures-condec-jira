@@ -92,6 +92,7 @@
                 });
                 networkLeft.on("selectNode", function (params) {
                     networkRight.focus(params.nodes[0]);
+                    networkLeft.focus(params.nodes[0]);
                 });
 
         });
@@ -113,6 +114,7 @@
                 });
 
                 networkRight.on("selectNode", function (params) {
+                    networkRight.focus(params.nodes[0]);
                     networkLeft.focus(params.nodes[0]);
                 });
             });
