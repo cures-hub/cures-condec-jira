@@ -32,31 +32,11 @@
                 conDecVis.addContextMenu(params,network);
         });
 
-        network.on("hold",
-            function (params) {
-                var nodeIndices = network.body.nodeIndices;
-                var clickedNodeId;
-                for (var i = 0; i < nodeIndices.length; i++) {
-                    var nodeId = nodeIndices[i];
-                    var boundingBox = network.getBoundingBox(nodeId);
-                    if (boundingBox.left <= params.pointer.canvas.x && params.pointer.canvas.x <= boundingBox.right
-                        && boundingBox.top <= params.pointer.canvas.y
-                        && params.pointer.canvas.y <= boundingBox.bottom) {
-                        clickedNodeId = nodeId;
-                    }
-                }
-                if (clickedNodeId !== undefined && clickedNodeId !== 'distanceCluster') {
-                    params.event.preventDefault();
-                    conDecDialog.showEditDialog(clickedNodeId.toString().slice(0, -2),
-                        getDocumentationLocationFromId(clickedNodeId));
-                }
-            });
+        network.on("hold", function (params) {
+            conDecVis.holdFunction(params, network);
+        });
         network.on("selectNode", function (params) {
-            if (params.nodes.length === 1) {
-                if (network.isCluster(params.nodes[0]) === true) {
-                    network.openCluster(params.nodes[0]);
-                }
-            }
+            conDecVis.selectNode(params, network);
         });
         var clusterOptionsByData = {
             joinCondition: function (childOptions) {
@@ -374,9 +354,38 @@
         }
     };
 
+    ConDecVis.prototype.holdFunction = function  holdFunction(params, network) {
+        var nodeIndices = network.body.nodeIndices;
+        var clickedNodeId;
+        for (var i = 0; i < nodeIndices.length; i++) {
+            var nodeId = nodeIndices[i];
+            var boundingBox = network.getBoundingBox(nodeId);
+            if (boundingBox.left <= params.pointer.canvas.x && params.pointer.canvas.x <= boundingBox.right
+                && boundingBox.top <= params.pointer.canvas.y
+                && params.pointer.canvas.y <= boundingBox.bottom) {
+                clickedNodeId = nodeId;
+            }
+        }
+        if (clickedNodeId !== undefined && clickedNodeId !== 'distanceCluster') {
+            params.event.preventDefault();
+            conDecDialog.showEditDialog(clickedNodeId.toString().slice(0, -2),
+                getDocumentationLocationFromId(clickedNodeId));
+        }
+    };
+
+    ConDecVis.prototype.selectNode =  function selectNode(params, network) {
+        if (params.nodes.length === 1) {
+            if (network.isCluster(params.nodes[0]) === true) {
+                network.openCluster(params.nodes[0]);
+            }
+        }
+    };
+
     function getDocumentationLocationFromId(nodeId) {
         return nodeId.toString().substr(-1);
     }
+
+
 
     global.conDecVis = new ConDecVis();
 })(window);
