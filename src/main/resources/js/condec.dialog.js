@@ -450,6 +450,8 @@
 		}
 
 		function fillSoftwaretypesAndTargetGroups(){
+			$("#selectSoftwareType").empty();
+			$("#selectTargetGroup").empty();
 			softwareTypeMapping.map(function(type){
 				$("#selectSoftwareType").append("<option value='"+type.id+"'>"+type.title+"</option>")
 			});
@@ -533,10 +535,17 @@
 					.then(function (issueTypes) {
 						resolve();
 						if (issueTypes && issueTypes.length) {
+							//empty lists
+							var bugSelector=$("#multipleBugs");
+							var featureSelector=$("#multipleFeatures");
+							var improvementSelector=$("#multipleImprovements");
+							bugSelector.empty();
+							featureSelector.empty();
+							improvementSelector.empty();
 							issueTypes.map(function (issueType) {
-								$('#multipleBugs').append('<option value="' + issueType.id + '">' + issueType.name + '</option>');
-								$('#multipleFeatures').append('<option value="' + issueType.id + '">' + issueType.name + '</option>');
-								$('#multipleImprovements').append('<option value="' + issueType.id + '">' + issueType.name + '</option>');
+								bugSelector.append('<option value="' + issueType.id + '">' + issueType.name + '</option>');
+								featureSelector.append('<option value="' + issueType.id + '">' + issueType.name + '</option>');
+								improvementSelector.append('<option value="' + issueType.id + '">' + issueType.name + '</option>');
 							})
 						}
 					}).catch(function (err) {
@@ -547,14 +556,15 @@
 			var releasesPromise= new Promise(function(resolve,reject){
 				conDecAPI.getReleases().then(function(releases){
 					var hasValidReleases=false;
-					$('#selectReleases').empty();
+					var releaseSelector=$('#selectReleases');
+					releaseSelector.empty();
 					releases.map(function(release){
 						if(release && release.startDate.iso && release.releaseDate.iso){
 							hasValidReleases=true;
-							$('#selectReleases').append('<option value="' + release.id + '">' + release.name +" "+release.startDate.iso+" until "+release.releaseDate.iso+ '</option>');
+							releaseSelector.append('<option value="' + release.id + '">' + release.name +" "+release.startDate.iso+" until "+release.releaseDate.iso+ '</option>');
 							releasesArray.push(release);
 						}else{
-							$('#selectReleases').append('<option disabled value="' + release.id + '">' + release.name +'</option>');
+							releaseSelector.append('<option disabled value="' + release.id + '">' + release.name +'</option>');
 						}
 					});
 					if(!hasValidReleases){
@@ -601,6 +611,8 @@
 
 		function addTaskCriteriaPrioritisation(listOfCriteria) {
 			var elementToAppend = $("#taskCriteriaPriority");
+			//first empty list
+			elementToAppend.empty();
 			listOfCriteria.map(function (element) {
 				elementToAppend.append("<div class='field-group'>" +
 					"<label for='" + element.id + "'>" + element.title + "</label>" +
@@ -842,6 +854,8 @@
 			conDecAPI.postProposedKeys(postObject)
 				.then(function (response) {
 				if (response) {
+					//remove editor
+					removeEditor();
 					//change tab
 					addTabAndChangeToIt("tab-editor", "Final edit");
 					if (response.markdown) {
