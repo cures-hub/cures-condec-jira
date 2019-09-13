@@ -610,15 +610,17 @@
 		}
 
 		function addjiraIssueMetric(listOfCriteria) {
-			var elementToAppend = $("#taskCriteriaPriority");
+			var elementToAppend = $("#metricWeight");
 			//first empty list
 			elementToAppend.empty();
+			elementToAppend.append("<form class='aui'>")
 			listOfCriteria.map(function (element) {
 				elementToAppend.append("<div class='field-group'>" +
 					"<label for='" + element.id + "'>" + element.title + "</label>" +
-					"<input class='medium-field' type='number' step='0.1' value='1' max='10' min='0' id='" + element.id + "'>" +
+					"<input class='medium-field' type='number' value='1' max='10' min='0' id='" + element.id + "'>" +
 					"</div>")
-			})
+			});
+			elementToAppend.append("</form>")
 		}
 
 		function setButtonBusyAndDisabled(button, busy) {
