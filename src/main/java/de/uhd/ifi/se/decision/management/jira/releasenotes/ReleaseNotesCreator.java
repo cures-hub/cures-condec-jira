@@ -105,7 +105,7 @@ public class ReleaseNotesCreator {
 			Integer value = entry.getValue();
 			releaseNoteIssueProposals.forEach(proposal -> {
 				if (proposal.getDecisionKnowledgeElement().getKey().equals(key)) {
-					proposal.getMetrics().put(IssueMetric.COUNT_DECISION_KNOWLEDGE, value);
+					proposal.getMetrics().put(JiraIssueMetric.COUNT_DECISION_KNOWLEDGE, value);
 				}
 			});
 		}
@@ -121,29 +121,29 @@ public class ReleaseNotesCreator {
 	 * other alternative could be median-interval-separation
 	 */
 	private void compareProposals() {
-		EnumMap<IssueMetric, Double> userWeighting = config.getIssueMetricWeight();
-		List<IssueMetric> criteriaEnumList = IssueMetric.getOriginalList();
+		EnumMap<JiraIssueMetric, Double> userWeighting = config.getJiraIssueMetricWeight();
+		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
 
 
 		//find median
-		EnumMap<IssueMetric, Integer> medianOfProposals = RatingCalculator.getMedianOfProposals(proposals);
+		EnumMap<JiraIssueMetric, Integer> medianOfProposals = RatingCalculator.getMedianOfProposals(proposals);
 
 		//for each criteria create a list of integers, so we can then compute min, max values and the scales
-		EnumMap<IssueMetric, ArrayList<Integer>> countValues = RatingCalculator.getFlatListOfValues(proposals);
+		EnumMap<JiraIssueMetric, ArrayList<Integer>> countValues = RatingCalculator.getFlatListOfValues(proposals);
 
 		//we later check in which interval the proposal would be and apply the corresponding lower and higher value
 
 		//add min and max to lists
 		//the first value of the ArrayList is for the first interval and the second is for the second interval
-		EnumMap<IssueMetric, ArrayList<Integer>> minValues = new EnumMap<>(IssueMetric.class);
-		EnumMap<IssueMetric, ArrayList<Integer>> maxValues = new EnumMap<>(IssueMetric.class);
+		EnumMap<JiraIssueMetric, ArrayList<Integer>> minValues = new EnumMap<>(JiraIssueMetric.class);
+		EnumMap<JiraIssueMetric, ArrayList<Integer>> maxValues = new EnumMap<>(JiraIssueMetric.class);
 		RatingCalculator.getMinAndMaxValues(minValues, maxValues, countValues, medianOfProposals);
 
 
 
 
 		proposals.forEach(dkElement -> {
-			EnumMap<IssueMetric, Integer> existingCriteriaValues = dkElement.getMetrics();
+			EnumMap<JiraIssueMetric, Integer> existingCriteriaValues = dkElement.getMetrics();
 			//use ref object due to atomic problem etc.
 			var totalRef = new Object() {
 				Double total = 0.0;
@@ -162,7 +162,7 @@ public class ReleaseNotesCreator {
 				}
 				//extra treatment for priorities, as there are no outliers and numbers are reversed
 				//we just do the scaling on all using min and max values
-				if (criteria == IssueMetric.PRIORITY) {
+				if (criteria == JiraIssueMetric.PRIORITY) {
 					int indexMinPrio = 0;
 					int indexMaxPrio = 0;
 					if (maxValues.get(criteria).size() > 1) {
@@ -174,7 +174,7 @@ public class ReleaseNotesCreator {
 					scaling = RatingCalculator.scaleFromSmallToLarge(existingCriteriaValues.get(criteria), minValues.get(criteria).get(index), maxValues.get(criteria).get(index), minVal, maxVal);
 				}
 				//multiply scaling with associated weighting input from user
-				Double userWeight = config.getIssueMetricWeight().get(criteria);
+				Double userWeight = config.getJiraIssueMetricWeight().get(criteria);
 				if(userWeight!=null){
 					scaling *= userWeight;
 				}else{

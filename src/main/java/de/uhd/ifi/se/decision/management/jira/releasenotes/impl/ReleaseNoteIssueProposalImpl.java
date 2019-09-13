@@ -9,7 +9,7 @@ import com.atlassian.jira.issue.search.SearchException;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.IssueMetric;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.JiraIssueMetric;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteIssueProposal;
 import org.codehaus.jackson.annotate.JsonProperty;
 
@@ -26,7 +26,7 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 
 	private DecisionKnowledgeElement decisionKnowledgeElement;
 
-	private EnumMap<IssueMetric, Integer> issueMetrics;
+	private EnumMap<JiraIssueMetric, Integer> jiraIssueMetrics;
 	private double rating;
 
 	/**
@@ -38,8 +38,8 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 	public ReleaseNoteIssueProposalImpl(DecisionKnowledgeElement decisionKnowledgeElement, int countDecisionKnowledge) {
 		this.decisionKnowledgeElement = decisionKnowledgeElement;
 		//set default values
-		this.issueMetrics = IssueMetric.toIntegerEnumMap();
-		this.issueMetrics.put(IssueMetric.COUNT_DECISION_KNOWLEDGE, countDecisionKnowledge);
+		this.jiraIssueMetrics = JiraIssueMetric.toIntegerEnumMap();
+		this.jiraIssueMetrics.put(JiraIssueMetric.COUNT_DECISION_KNOWLEDGE, countDecisionKnowledge);
 
 	}
 
@@ -82,22 +82,22 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 	/**
 	 * Get criteria Prioritisation of the ReleaseNoteIssueProposal.
 	 *
-	 * @return issueMetrics of the ReleaseNoteIssueProposal.
+	 * @return jiraIssueMetrics of the ReleaseNoteIssueProposal.
 	 */
 	@Override
-	@XmlElement(name = "issueMetrics")
-	public EnumMap<IssueMetric, Integer> getMetrics() {
-		return this.issueMetrics;
+	@XmlElement(name = "jiraIssueMetrics")
+	public EnumMap<JiraIssueMetric, Integer> getMetrics() {
+		return this.jiraIssueMetrics;
 	}
 
 	/**
-	 * set issueMetrics of the ReleaseNoteIssueProposal.
+	 * set jiraIssueMetrics of the ReleaseNoteIssueProposal.
 	 *
-	 * @param issueMetrics of the ReleaseNoteIssueProposal.
+	 * @param jiraIssueMetrics of the ReleaseNoteIssueProposal.
 	 */
 	@Override
-	public void setMetrics(EnumMap<IssueMetric, Integer> issueMetrics) {
-		this.issueMetrics = issueMetrics;
+	public void setMetrics(EnumMap<JiraIssueMetric, Integer> jiraIssueMetrics) {
+		this.jiraIssueMetrics = jiraIssueMetrics;
 	}
 
 	/**
@@ -109,10 +109,10 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 		Priority priority = issue.getPriority();
 		if (priority != null) {
 			int sequence = Math.toIntExact(priority.getSequence());
-			this.getMetrics().put(IssueMetric.PRIORITY, sequence);
+			this.getMetrics().put(JiraIssueMetric.PRIORITY, sequence);
 		} else {
 			//set medium value for DK elements for priority
-			this.getMetrics().put(IssueMetric.PRIORITY, 3);
+			this.getMetrics().put(JiraIssueMetric.PRIORITY, 3);
 		}
 	}
 
@@ -124,7 +124,7 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 	public void getAndSetCountOfComments(Issue issue) {
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
 		int countComments = commentManager.getComments(issue).size();
-		this.getMetrics().put(IssueMetric.COUNT_COMMENTS, countComments);
+		this.getMetrics().put(JiraIssueMetric.COUNT_COMMENTS, countComments);
 	}
 
 	/**
@@ -132,7 +132,7 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 	 */
 	public void getAndSetSizeOfSummary() {
 		int sizeSummary = countWordsUsingSplit(this.getDecisionKnowledgeElement().getSummary());
-		this.getMetrics().put(IssueMetric.SIZE_SUMMARY, sizeSummary);
+		this.getMetrics().put(JiraIssueMetric.SIZE_SUMMARY, sizeSummary);
 	}
 
 	/**
@@ -140,7 +140,7 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 	 */
 	public void getAndSetSizeOfDescription() {
 		int sizeDescription = countWordsUsingSplit(this.getDecisionKnowledgeElement().getDescription());
-		this.getMetrics().put(IssueMetric.SIZE_DESCRIPTION, sizeDescription);
+		this.getMetrics().put(JiraIssueMetric.SIZE_DESCRIPTION, sizeDescription);
 	}
 
 	/**
@@ -153,7 +153,7 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 		Long resolved = issue.getResolutionDate().getTime();
 		Long diff = resolved - created;
 		int days = (int) Math.floor(diff / (1000 * 60 * 60 * 24));
-		this.getMetrics().put(IssueMetric.DAYS_COMPLETION, days);
+		this.getMetrics().put(JiraIssueMetric.DAYS_COMPLETION, days);
 	}
 
 	/**
@@ -189,7 +189,7 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 			}
 			existingReporterCount.put(reporterId, countReporter);
 		}
-		this.getMetrics().put(IssueMetric.EXPERIENCE_REPORTER, (int) countReporter);
+		this.getMetrics().put(JiraIssueMetric.EXPERIENCE_REPORTER, (int) countReporter);
 	}
 
 	/**
@@ -233,7 +233,7 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 			}
 			existingResolverCount.put(assigneeId, countResolver);
 		}
-		this.getMetrics().put(IssueMetric.EXPERIENCE_RESOLVER, (int) countResolver);
+		this.getMetrics().put(JiraIssueMetric.EXPERIENCE_RESOLVER, (int) countResolver);
 
 	}
 

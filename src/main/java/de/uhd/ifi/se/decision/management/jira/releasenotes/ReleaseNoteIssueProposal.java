@@ -49,14 +49,14 @@ public interface ReleaseNoteIssueProposal {
 	 *
 	 * @return metrics of ReleaseNoteIssueProposal.
 	 */
-	EnumMap<IssueMetric, Integer> getMetrics();
+	EnumMap<JiraIssueMetric, Integer> getMetrics();
 
 	/**
 	 * Set metrics of ReleaseNoteIssueProposal.
 	 *
 	 * @param metrics of ReleaseNoteIssueProposal.
 	 */
-	void setMetrics(EnumMap<IssueMetric, Integer> metrics);
+	void setMetrics(EnumMap<JiraIssueMetric, Integer> metrics);
 
 	/**
 	 * Gets the priority of the issue and sets the priority criteria of the ReleaseNoteIssueProposal

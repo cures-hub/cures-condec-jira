@@ -17,7 +17,7 @@ public class TestReleaseNoteConfiguration {
 	private String endDate;
 	private String sprintId;
 	private TargetGroup targetGroup;
-	private EnumMap<IssueMetric, Double> issueMetric;
+	private EnumMap<JiraIssueMetric, Double> issueMetric;
 	private List<Integer> bugFixMapping;
 	private List<Integer> featureMapping;
 	private List<Integer> improvementMapping;
@@ -30,7 +30,7 @@ public class TestReleaseNoteConfiguration {
 		endDate = "2020-01-12";
 		sprintId = "15";
 		targetGroup = TargetGroup.DEVELOPER;
-		issueMetric = IssueMetric.toDoubleEnumMap();
+		issueMetric = JiraIssueMetric.toDoubleEnumMap();
 		bugFixMapping = new ArrayList<Integer>();
 		featureMapping = new ArrayList<Integer>();
 		improvementMapping = new ArrayList<Integer>();
@@ -70,8 +70,8 @@ public class TestReleaseNoteConfiguration {
 
 	@Test
 	public void testissueMetric() {
-		config.setIssueMetricWeight(issueMetric);
-		assertEquals(issueMetric, config.getIssueMetricWeight());
+		config.setJiraIssueMetricWeight(issueMetric);
+		assertEquals(issueMetric, config.getJiraIssueMetricWeight());
 	}
 
 	@Test

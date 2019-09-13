@@ -92,16 +92,16 @@ public interface ReleaseNoteConfiguration {
 	/**
 	 * Get the issueMetricWeight of the release note.
 	 *
-	 * @return IssueMetric of the release note.
+	 * @return JiraIssueMetric of the release note.
 	 */
-	EnumMap<IssueMetric, Double> getIssueMetricWeight();
+	EnumMap<JiraIssueMetric, Double> getJiraIssueMetricWeight();
 
 	/**
 	 * Set the issueMetricWeight of the release note.
 	 *
 	 * @param issueMetricWeight of the release note.
 	 */
-	void setIssueMetricWeight(EnumMap<IssueMetric, Double> issueMetricWeight);
+	void setJiraIssueMetricWeight(EnumMap<JiraIssueMetric, Double> issueMetricWeight);
 
 	/**
 	 * Get the list with mapped bug fix issues.
