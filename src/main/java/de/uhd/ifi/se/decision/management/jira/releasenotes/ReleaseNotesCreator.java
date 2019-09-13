@@ -121,7 +121,6 @@ public class ReleaseNotesCreator {
 	 * other alternative could be median-interval-separation
 	 */
 	private void compareProposals() {
-		EnumMap<JiraIssueMetric, Double> userWeighting = config.getJiraIssueMetricWeight();
 		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
 
 
