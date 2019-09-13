@@ -139,26 +139,7 @@ public class ReleaseNotesCreator {
 		EnumMap<IssueMetric, ArrayList<Integer>> maxValues = new EnumMap<>(IssueMetric.class);
 		RatingCalculator.getMinAndMaxValues(minValues, maxValues, countValues, medianOfProposals);
 
-		//calculate user weighting:
-		//add all and then divide by count of items
-		var ref = new Object() {
-			Double total = 0.0;
-		};
-		userWeighting.values().forEach(weight -> {
-			if (weight != null) {
-				ref.total += weight;
-			}
-		});
-		Double part = ref.total / userWeighting.values().size();
-		//then assign each the corresponding part
-		EnumMap<IssueMetric, Double> weightedValues = new EnumMap<>(IssueMetric.class);
-		userWeighting.forEach((key, value) -> {
-			if (value != null) {
-				weightedValues.put(key, value * part);
-			} else {
-				weightedValues.put(key, 0.0);
-			}
-		});
+
 
 
 		proposals.forEach(dkElement -> {
@@ -193,8 +174,12 @@ public class ReleaseNotesCreator {
 					scaling = RatingCalculator.scaleFromSmallToLarge(existingCriteriaValues.get(criteria), minValues.get(criteria).get(index), maxValues.get(criteria).get(index), minVal, maxVal);
 				}
 				//multiply scaling with associated weighting input from user
-				double userWeight = weightedValues.get(criteria);
+				Double userWeight = config.getIssueMetricWeight().get(criteria);
+				if(userWeight!=null){
 				scaling *= userWeight;
+				}else{
+					scaling *= 0;
+				}
 				totalRef.total += scaling;
 			});
 			//set rating
