@@ -9,8 +9,8 @@ import com.atlassian.jira.issue.search.SearchException;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.IssueMetric;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteIssueProposal;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.TaskCriteriaPrioritisation;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -20,13 +20,13 @@ import java.util.HashMap;
 
 /**
  * Model class Release Note Issue Proposal
- * It saves the decision knowledge element, the final rating and the task criteria prioritisation metrics.
+ * It saves the decision knowledge element, the final rating and the issue metrics.
  */
 public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 
 	private DecisionKnowledgeElement decisionKnowledgeElement;
 
-	private EnumMap<TaskCriteriaPrioritisation, Integer> taskCriteriaPrioritisation;
+	private EnumMap<IssueMetric, Integer> issueMetrics;
 	private double rating;
 
 	/**
@@ -38,8 +38,8 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 	public ReleaseNoteIssueProposalImpl(DecisionKnowledgeElement decisionKnowledgeElement, int countDecisionKnowledge) {
 		this.decisionKnowledgeElement = decisionKnowledgeElement;
 		//set default values
-		this.taskCriteriaPrioritisation = TaskCriteriaPrioritisation.toIntegerEnumMap();
-		this.taskCriteriaPrioritisation.put(TaskCriteriaPrioritisation.COUNT_DECISION_KNOWLEDGE, countDecisionKnowledge);
+		this.issueMetrics = IssueMetric.toIntegerEnumMap();
+		this.issueMetrics.put(IssueMetric.COUNT_DECISION_KNOWLEDGE, countDecisionKnowledge);
 
 	}
 
@@ -82,78 +82,88 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 	/**
 	 * Get criteria Prioritisation of the ReleaseNoteIssueProposal.
 	 *
-	 * @return taskCriteriaPrioritisation of the ReleaseNoteIssueProposal.
+	 * @return issueMetrics of the ReleaseNoteIssueProposal.
 	 */
 	@Override
-	@XmlElement(name = "taskCriteriaPrioritisation")
-	public EnumMap<TaskCriteriaPrioritisation, Integer> getTaskCriteriaPrioritisation() {
-		return this.taskCriteriaPrioritisation;
+	@XmlElement(name = "issueMetrics")
+	public EnumMap<IssueMetric, Integer> getMetrics() {
+		return this.issueMetrics;
 	}
 
 	/**
-	 * set criteria Prioritisation of the ReleaseNoteIssueProposal.
+	 * set issueMetrics of the ReleaseNoteIssueProposal.
 	 *
-	 * @param taskCriteriaPrioritisation of the ReleaseNoteIssueProposal.
+	 * @param issueMetrics of the ReleaseNoteIssueProposal.
 	 */
 	@Override
-	public void setTaskCriteriaPrioritisation(EnumMap<TaskCriteriaPrioritisation, Integer> taskCriteriaPrioritisation) {
-		this.taskCriteriaPrioritisation = taskCriteriaPrioritisation;
+	public void setMetrics(EnumMap<IssueMetric, Integer> issueMetrics) {
+		this.issueMetrics = issueMetrics;
 	}
+
 	/**
 	 * Gets the priority of the issue and sets the priority criteria of the ReleaseNoteIssueProposal
+	 *
 	 * @param issue of the associated DecisionKnowledgeElement
 	 */
 	public void getAndSetPriority(Issue issue) {
 		Priority priority = issue.getPriority();
 		if (priority != null) {
 			int sequence = Math.toIntExact(priority.getSequence());
-			this.getTaskCriteriaPrioritisation().put(TaskCriteriaPrioritisation.PRIORITY, sequence);
+			this.getMetrics().put(IssueMetric.PRIORITY, sequence);
 		} else {
 			//set medium value for DK elements for priority
-			this.getTaskCriteriaPrioritisation().put(TaskCriteriaPrioritisation.PRIORITY, 3);
+			this.getMetrics().put(IssueMetric.PRIORITY, 3);
 		}
 	}
+
 	/**
 	 * Gets the amount of comments of the issue and sets the count comment criteria of the ReleaseNoteIssueProposal
+	 *
 	 * @param issue of the associated DecisionKnowledgeElement
 	 */
 	public void getAndSetCountOfComments(Issue issue) {
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
 		int countComments = commentManager.getComments(issue).size();
-		this.getTaskCriteriaPrioritisation().put(TaskCriteriaPrioritisation.COUNT_COMMENTS, countComments);
+		this.getMetrics().put(IssueMetric.COUNT_COMMENTS, countComments);
 	}
+
 	/**
 	 * Gets the size of the summary and sets the size summary criteria of the ReleaseNoteIssueProposal
 	 */
 	public void getAndSetSizeOfSummary() {
 		int sizeSummary = countWordsUsingSplit(this.getDecisionKnowledgeElement().getSummary());
-		this.getTaskCriteriaPrioritisation().put(TaskCriteriaPrioritisation.SIZE_SUMMARY, sizeSummary);
+		this.getMetrics().put(IssueMetric.SIZE_SUMMARY, sizeSummary);
 	}
+
 	/**
 	 * Gets the size of the description and sets the size description criteria of the ReleaseNoteIssueProposal
 	 */
 	public void getAndSetSizeOfDescription() {
 		int sizeDescription = countWordsUsingSplit(this.getDecisionKnowledgeElement().getDescription());
-		this.getTaskCriteriaPrioritisation().put(TaskCriteriaPrioritisation.SIZE_DESCRIPTION, sizeDescription);
+		this.getMetrics().put(IssueMetric.SIZE_DESCRIPTION, sizeDescription);
 	}
+
 	/**
 	 * Gets the days to completion of the issue and sets the days to completion criteria of the ReleaseNoteIssueProposal
+	 *
 	 * @param issue of the associated DecisionKnowledgeElement
 	 */
-	public void getAndSetDaysToCompletion( Issue issue) {
+	public void getAndSetDaysToCompletion(Issue issue) {
 		Long created = issue.getCreated().getTime();
 		Long resolved = issue.getResolutionDate().getTime();
 		Long diff = resolved - created;
 		int days = (int) Math.floor(diff / (1000 * 60 * 60 * 24));
-		this.getTaskCriteriaPrioritisation().put(TaskCriteriaPrioritisation.DAYS_COMPLETION, days);
+		this.getMetrics().put(IssueMetric.DAYS_COMPLETION, days);
 	}
+
 	/**
 	 * Gets the total count of created issues of the issue reporter and sets the experienceReporter criteria
 	 * of the ReleaseNoteIssueProposal. The existing Reporter count HashMap is used to avoid duplicated equal JQL queries.
 	 * The result may differ, depending of the logged-in user and his permissions.
-	 * @param issue of the associated DecisionKnowledgeElement
+	 *
+	 * @param issue                 of the associated DecisionKnowledgeElement
 	 * @param existingReporterCount HashMap to save JQL results
-	 * @param user Application user which makes the request
+	 * @param user                  Application user which makes the request
 	 */
 	public void getAndSetExperienceReporter(Issue issue, HashMap<String, Integer> existingReporterCount, ApplicationUser user) {
 		//first check if user was already checked
@@ -179,16 +189,17 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 			}
 			existingReporterCount.put(reporterId, countReporter);
 		}
-		this.getTaskCriteriaPrioritisation().put(TaskCriteriaPrioritisation.EXPERIENCE_REPORTER, (int) countReporter);
+		this.getMetrics().put(IssueMetric.EXPERIENCE_REPORTER, (int) countReporter);
 	}
 
 	/**
 	 * Gets the total count of resolved issues of the issue resolver and sets the experienceResolver criteria
 	 * of the ReleaseNoteIssueProposal. The existing Resolver count HashMap is used to avoid duplicated equal JQL queries.
 	 * The result may differ, depending of the logged-in user and his permissions.
-	 * @param issue of the associated DecisionKnowledgeElement
+	 *
+	 * @param issue                 of the associated DecisionKnowledgeElement
 	 * @param existingResolverCount HashMap to save JQL results
-	 * @param user Application user which makes the request
+	 * @param user                  Application user which makes the request
 	 */
 	public void getAndSetExperienceResolver(Issue issue, HashMap<String, Integer> existingResolverCount, ApplicationUser user) {
 		//the resolver is most of the times the last assigned user
@@ -199,8 +210,8 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 		//not all issues have assigneeId, if it is null use the reporterId
 		if (assigneeId == null) {
 			assigneeId = issue.getReporterId();
-			if(assigneeId== null){
-				assigneeId=issue.getReporter().getKey();
+			if (assigneeId == null) {
+				assigneeId = issue.getReporter().getKey();
 			}
 		}
 		//first check if user was already checked
@@ -222,10 +233,9 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 			}
 			existingResolverCount.put(assigneeId, countResolver);
 		}
-		this.getTaskCriteriaPrioritisation().put(TaskCriteriaPrioritisation.EXPERIENCE_RESOLVER, (int) countResolver);
+		this.getMetrics().put(IssueMetric.EXPERIENCE_RESOLVER, (int) countResolver);
 
 	}
-
 
 
 	/**
@@ -242,8 +252,6 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 		String[] words = input.split("\\s+");
 		return words.length;
 	}
-
-
 
 
 }

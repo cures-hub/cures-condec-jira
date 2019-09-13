@@ -4,7 +4,7 @@ package de.uhd.ifi.se.decision.management.jira.releasenotes.impl;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.AdditionalConfigurationOptions;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.TargetGroup;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.TaskCriteriaPrioritisation;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.IssueMetric;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.util.EnumMap;
@@ -19,7 +19,7 @@ public class ReleaseNoteConfigurationImpl implements ReleaseNoteConfiguration {
 	private String endDate;
 	private String sprintId;
 	private TargetGroup targetGroup;
-	private EnumMap<TaskCriteriaPrioritisation, Double> taskCriteriaPrioritisation;
+	private EnumMap<IssueMetric, Double> issueMetricWeight;
 	private List<Integer> bugFixMapping;
 	private List<Integer> featureMapping;
 	private List<Integer> improvementMapping;
@@ -29,7 +29,7 @@ public class ReleaseNoteConfigurationImpl implements ReleaseNoteConfiguration {
 	// Do not delete it!
 	public ReleaseNoteConfigurationImpl() {
 		this.targetGroup = TargetGroup.getTargetGroup("");
-		this.taskCriteriaPrioritisation = TaskCriteriaPrioritisation.toDoubleEnumMap();
+		this.issueMetricWeight = IssueMetric.toDoubleEnumMap();
 	}
 
 
@@ -89,13 +89,13 @@ public class ReleaseNoteConfigurationImpl implements ReleaseNoteConfiguration {
 	}
 
 	@Override
-	public EnumMap<TaskCriteriaPrioritisation, Double> getTaskCriteriaPrioritisation() {
-		return this.taskCriteriaPrioritisation;
+	public EnumMap<IssueMetric, Double> getIssueMetricWeight() {
+		return this.issueMetricWeight;
 	}
 
 	@Override
-	public void setTaskCriteriaPrioritisation(EnumMap<TaskCriteriaPrioritisation, Double> taskCriteriaPrioritisation) {
-		this.taskCriteriaPrioritisation = taskCriteriaPrioritisation;
+	public void setIssueMetricWeight(EnumMap<IssueMetric, Double> issueMetricWeight) {
+		this.issueMetricWeight = issueMetricWeight;
 	}
 
 	@Override

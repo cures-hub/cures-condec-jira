@@ -90,18 +90,18 @@ public interface ReleaseNoteConfiguration {
 	void setTargetGroup(TargetGroup targetGroup);
 
 	/**
-	 * Get the taskCriteriaPrioritisation of the release note.
+	 * Get the issueMetricWeight of the release note.
 	 *
-	 * @return taskCriteriaPrioritisation of the release note.
+	 * @return IssueMetric of the release note.
 	 */
-	EnumMap<TaskCriteriaPrioritisation, Double> getTaskCriteriaPrioritisation();
+	EnumMap<IssueMetric, Double> getIssueMetricWeight();
 
 	/**
-	 * Set the taskCriteriaPrioritisation of the release note.
+	 * Set the issueMetricWeight of the release note.
 	 *
-	 * @param taskCriteriaPrioritisation of the release note.
+	 * @param issueMetricWeight of the release note.
 	 */
-	void setTaskCriteriaPrioritisation(EnumMap<TaskCriteriaPrioritisation, Double> taskCriteriaPrioritisation);
+	void setIssueMetricWeight(EnumMap<IssueMetric, Double> issueMetricWeight);
 
 	/**
 	 * Get the list with mapped bug fix issues.
