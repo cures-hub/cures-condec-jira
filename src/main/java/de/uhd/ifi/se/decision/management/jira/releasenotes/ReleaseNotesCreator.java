@@ -176,7 +176,7 @@ public class ReleaseNotesCreator {
 				//multiply scaling with associated weighting input from user
 				Double userWeight = config.getIssueMetricWeight().get(criteria);
 				if(userWeight!=null){
-				scaling *= userWeight;
+					scaling *= userWeight;
 				}else{
 					scaling *= 0;
 				}
@@ -228,7 +228,7 @@ public class ReleaseNotesCreator {
 			public int compare(ReleaseNoteIssueProposal o1, ReleaseNoteIssueProposal o2) {
 				Double rating1 = o1.getRating();
 				Double rating2 = o2.getRating();
-				return rating2.toString().compareTo(rating1.toString());
+				return rating2.compareTo(rating1);
 			}
 		};
 		bugs.sort(compareByRating);
