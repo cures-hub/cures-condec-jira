@@ -420,7 +420,7 @@
 		var allTargetGroupIncludes=["include_decision_knowledge", "include_bug_fixes","include_test_instructions"];
 		var allSoftwareTypeIncludes=["include_breaking_changes", "include_extra_link","include_upgrade_guide"];
 
-		addTaskCriteriaPrioritisation(criteria);
+		addjiraIssueMetric(criteria);
 		removeListItemIssues();
 		AJS.tabs.change(jQuery('a[href="#tab-configuration"]'));
 		makeAsyncCalls();
@@ -609,7 +609,7 @@
 
 		}
 
-		function addTaskCriteriaPrioritisation(listOfCriteria) {
+		function addjiraIssueMetric(listOfCriteria) {
 			var elementToAppend = $("#taskCriteriaPriority");
 			//first empty list
 			elementToAppend.empty();
@@ -696,7 +696,7 @@
 				}
 			}
 
-			function getTaskCriteriaPrioritisation(listOfCriteria) {
+			function getjiraIssueMetric(listOfCriteria) {
 				var result = {};
 				listOfCriteria.map(function (element) {
 					var value = $("#" + element.id).val();
@@ -724,7 +724,7 @@
 			//set button busy and disabled
 			setButtonBusyAndDisabled(configurationSubmitButton,true);
 			getAdditionalConfiguration();
-			var taskCriteriaPrioritisation = getTaskCriteriaPrioritisation(criteria);
+			var jiraIssueMetric = getjiraIssueMetric(criteria);
 			var targetGroup = $("#selectTargetGroup").val();
 			var bugFixes = $("#multipleBugs").val();
 			var features = $("#multipleFeatures").val();
@@ -741,7 +741,7 @@
 				featureMapping: features,
 				improvementMapping: improvements,
 				additionalConfiguration:additionalConfiguration,
-				taskCriteriaPrioritisation: taskCriteriaPrioritisation
+				jiraIssueMetric: jiraIssueMetric
 			};
 
 			conDecAPI.getProposedIssues(configuration).then(function(response){
@@ -800,15 +800,15 @@
 				issues.map(function (issue) {
 					var expander = "<div id='expanderOfRating_" +category+ issue.decisionKnowledgeElement.key + "' class='aui-expander-content'>" +
 						"<ul class='noDots'>" +
-						"<li>#Comments: "+issue.taskCriteriaPrioritisation.COUNT_COMMENTS+"</li>" +
-						"<li>#Decision Knowledge: "+issue.taskCriteriaPrioritisation.COUNT_DECISION_KNOWLEDGE+"</li>" +
-						"<li>Days Completion: "+issue.taskCriteriaPrioritisation.DAYS_COMPLETION+"</li>" +
-						"<li>#Comments: "+issue.taskCriteriaPrioritisation.COUNT_COMMENTS+"</li>" +
-						"<li>Exp. Reporter: "+issue.taskCriteriaPrioritisation.EXPERIENCE_REPORTER+"</li>" +
-						"<li>Exp. Resolver: "+issue.taskCriteriaPrioritisation.EXPERIENCE_RESOLVER+"</li>" +
-						"<li>Priority: "+issue.taskCriteriaPrioritisation.PRIORITY+"</li>" +
-						"<li>Description Size: "+issue.taskCriteriaPrioritisation.SIZE_DESCRIPTION+"</li>" +
-						"<li>Summary Size: "+issue.taskCriteriaPrioritisation.SIZE_SUMMARY+"</li>" +
+						"<li>#Comments: "+issue.jiraIssueMetrics.COUNT_COMMENTS+"</li>" +
+						"<li>#Decision Knowledge: "+issue.jiraIssueMetrics.COUNT_DECISION_KNOWLEDGE+"</li>" +
+						"<li>Days Completion: "+issue.jiraIssueMetrics.DAYS_COMPLETION+"</li>" +
+						"<li>#Comments: "+issue.jiraIssueMetrics.COUNT_COMMENTS+"</li>" +
+						"<li>Exp. Reporter: "+issue.jiraIssueMetrics.EXPERIENCE_REPORTER+"</li>" +
+						"<li>Exp. Resolver: "+issue.jiraIssueMetrics.EXPERIENCE_RESOLVER+"</li>" +
+						"<li>Priority: "+issue.jiraIssueMetrics.PRIORITY+"</li>" +
+						"<li>Description Size: "+issue.jiraIssueMetrics.SIZE_DESCRIPTION+"</li>" +
+						"<li>Summary Size: "+issue.jiraIssueMetrics.SIZE_SUMMARY+"</li>" +
 						"</ul>" +
 						"</div>" +
 						"<a data-replace-text='"+issue.rating+" less' class='aui-expander-trigger' aria-controls='expanderOfRating_" +category+ issue.decisionKnowledgeElement.key + "'>"+issue.rating+" details</a>";
