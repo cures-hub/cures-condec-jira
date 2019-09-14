@@ -357,12 +357,12 @@
 		var cancelButton = document.getElementById("summarization-dialog-cancel-button");
 		var content = document.getElementById("summarization-dialog-content");
 		var probabilityOfCorrectness = document.getElementById("summarization-probabilityOfCorrectness").valueAsNumber;
-		var projectId = document.getElementById("summarization-projectId").value;
-		if (projectId === undefined || projectId.length === 0 || projectId === "") {
-			document.getElementById("summarization-projectId").value = id;
-			projectId = id;
+		var summarizationId = document.getElementById("summarization-id").value;
+		if (summarizationId === undefined || summarizationId.length === 0 || summarizationId === "") {
+			document.getElementById("summarization-id").value = id;
+			summarizationId = id;
 		}
-		conDecAPI.getSummarizedCode(parseInt(projectId, 10), documentationLocation, probabilityOfCorrectness, function (text) {
+		conDecAPI.getSummarizedCode(summarizationId, documentationLocation, probabilityOfCorrectness, function (text) {
 			var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";
 			content.innerHTML = insertString;
 		});
@@ -374,6 +374,7 @@
 		// Show dialog
 		AJS.dialog2(summarizedDialog).show();
 	};
+	
 	ConDecDialog.prototype.showCreateReleaseNoteDialog = function showCreateReleaseNoteDialog() {
 		// HTML elements
 		// set button busy before we show the dialog

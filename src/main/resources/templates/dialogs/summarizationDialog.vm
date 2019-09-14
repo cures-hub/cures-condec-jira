@@ -1,33 +1,19 @@
-<section id="summarization-dialog" class="aui-dialog2 aui-dialog2-medium aui-layer" role="dialog" aria-hidden="true" style="width:700px!important;">
+<section id="summarization-dialog" class="aui-dialog2 aui-dialog2-xlarge aui-layer" role="dialog" aria-hidden="true">
 	<header class="aui-dialog2-header">
 		<h2 id="summarization-dialog-header" class="aui-dialog2-header-main">$i18n.getText("condec.context.menu.summarized.code.item.label")</h2>
+		<div class="aui-dialog2-header-secondary">			
+		    <span class="aui-icon aui-icon-small aui-iconfont-filter">Filter</span> 
+	        <label for="summarization-probabilityOfCorrectness">Probability of correctness:</label>
+	        <input type="range" id="summarization-probabilityOfCorrectness" min="0" max="100" value="0" 
+	        	onchange="conDecDialog.showSummarizedDialog()">
+	        <input hidden type="text" id="summarization-id" name="projectId" value="">
+	    </div>
 		<a class="aui-dialog2-header-close"> 
 			<span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
 		</a>
 	</header>
-    <div style="text-align: right; margin-top: 5px; margin-right: 6%; margin-bottom: 2px;" onclick="showFilter()">
-    <span class="aui-icon aui-icon-small aui-iconfont-filter">Filter</span>
-    </div>
-    <div id ="summary-filter" style="display: none; text-align: right; margin-right: 6%; margin-top: 2px; padding-bottom: 5px; border-bottom: double">
-        <label for="probabilityOfTangledness">probability of correctness:</label>
-        <input type="range" list="tickmarks" id="summarization-probabilityOfCorrectness" name="probabilityOfCorrectness" value="0" onchange="window.conDecDialog.showSummarizedDialog()">
-        <datalist id="tickmarks">
-            <option value="0" label="0%">
-            <option value="10">
-            <option value="20">
-            <option value="30">
-            <option value="40">
-            <option value="50" label="50%">
-            <option value="60">
-            <option value="70">
-            <option value="80">
-            <option value="90">
-            <option value="100" label="100%">
-        </datalist>
-        <input hidden type="text" id= "summarization-projectId" name="projectId" value="">
-    </div>
 	<div id="summarization-dialog-content" class="aui-dialog2-content">
-		Please wait a moment
+		Please wait a moment. <aui-spinner size="medium"></aui-spinner>
     </div>
 	<footer class="aui-dialog2-footer">
 		<div class="aui-dialog2-footer-actions">
@@ -35,13 +21,3 @@
 		</div>
 	</footer>
 </section>
-<script>
-    function showFilter() {
-        var filter = document.getElementById("summary-filter");
-        if(filter.style.display == "none"){
-            filter.style.display = "block";
-        }else {
-            filter.style.display = "none";
-        }
-    }
-</script>

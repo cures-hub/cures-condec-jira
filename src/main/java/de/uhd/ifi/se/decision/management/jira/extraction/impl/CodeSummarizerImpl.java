@@ -24,7 +24,13 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		this.gitClient = gitClient;
 	}
 
-	// TODO Add overloaded method createSummary(Issue jiraIssue)
+	/**
+	 * TODO: Enable filtering in Java script
+	 * 
+	 * @issue Currently, the filtering of classes regarding the probability of
+	 *        correct linkage is done in the backend. How can we filter in the Java
+	 *        script side?
+	 */
 	@Override
 	public String createSummary(Issue jiraIssue, int minProbabilityOfCorrectness) {
 		if (jiraIssue == null) {
@@ -89,6 +95,7 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		return summarizedMethods;
 	}
 
+	// TODO The table should be built on the frontend, not here. Only the data should be transmitted.
 	private String generateTable(String rows) {
 		return "<table style=\"width:100%; border: 1px solid black; border-collapse: collapse;\">" + "<tr>\n"
 				+ "    <th style=\"width:40%; border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Class Name</th>\n"
