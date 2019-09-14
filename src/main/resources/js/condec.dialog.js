@@ -357,12 +357,12 @@
 		var cancelButton = document.getElementById("summarization-dialog-cancel-button");
 		var content = document.getElementById("summarization-dialog-content");
 		var probabilityOfCorrectness = document.getElementById("summarization-probabilityOfCorrectness").valueAsNumber;
-		var projectId = document.getElementById("summarization-projectId").value;
-		if (projectId === undefined || projectId.length === 0 || projectId === "") {
-			document.getElementById("summarization-projectId").value = id;
-			projectId = id;
+		var summarizationId = document.getElementById("summarization-id").value;
+		if (summarizationId === undefined || summarizationId.length === 0 || summarizationId === "") {
+			document.getElementById("summarization-id").value = id;
+			summarizationId = id;
 		}
-		conDecAPI.getSummarizedCode(parseInt(projectId, 10), documentationLocation, probabilityOfCorrectness, function (text) {
+		conDecAPI.getSummarizedCode(summarizationId, documentationLocation, probabilityOfCorrectness, function (text) {
 			var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";
 			content.innerHTML = insertString;
 		});
@@ -374,9 +374,10 @@
 		// Show dialog
 		AJS.dialog2(summarizedDialog).show();
 	};
+	
 	ConDecDialog.prototype.showCreateReleaseNoteDialog = function showCreateReleaseNoteDialog() {
 		// HTML elements
-		//set button busy before we show the dialog
+		// set button busy before we show the dialog
 		var openingButton = document.getElementById("openCreateReleaseNoteDialogButton");
 		setButtonBusyAndDisabled(openingButton, true);
 		var releaseNoteDialog = document.getElementById("create-release-note-dialog");
@@ -500,7 +501,7 @@
 		}
 		function makeAsyncCalls() {
 
-			//load sprints
+			// load sprints
 			var sprintPromise = new Promise(function (resolve, reject) {
 				conDecAPI.getSprintsByProject()
 					.then(function (sprints) {
@@ -529,13 +530,13 @@
 				});
 
 			});
-			//load issue types
+			// load issue types
 			var issueTypePromise = new Promise(function (resolve, reject) {
 				conDecAPI.getIssueTypes()
 					.then(function (issueTypes) {
 						resolve();
 						if (issueTypes && issueTypes.length) {
-							//empty lists
+							// empty lists
 							var bugSelector=$("#multipleBugs");
 							var featureSelector=$("#multipleFeatures");
 							var improvementSelector=$("#multipleImprovements");
@@ -579,9 +580,9 @@
 			});
 
 			Promise.all([sprintPromise, issueTypePromise, releasesPromise]).finally(function () {
-				//disable busy button
+				// disable busy button
 				setButtonBusyAndDisabled(openingButton, false);
-				//open dialog
+				// open dialog
 
 				// Show dialog
 				AJS.dialog2(releaseNoteDialog).show();
@@ -611,7 +612,7 @@
 
 		function addjiraIssueMetric(listOfCriteria) {
 			var elementToAppend = $("#metricWeight");
-			//first empty list
+			// first empty list
 			elementToAppend.empty();
 			elementToAppend.append("<form class='aui'>")
 			listOfCriteria.map(function (element) {
@@ -641,7 +642,8 @@
 			var useReleases = $("#useReleases").prop("checked");
 			var selectedSprint = parseInt($("#selectSprints").val()) || "";
 			var selectedRelease = parseInt($("#selectReleases").val()) || "";
-			//first check : both dates have to be selected or a sprint or releases and the checkbox
+			// first check : both dates have to be selected or a sprint or
+			// releases and the checkbox
 			if ((!useSprints)&& (!useReleases) && (!!startDate === false || !!endDate === false)) {
 				throwAlert("Select Date or Sprint or Release", "The start date and the end date have to be selected, if the sprints or releases are not available or not selected");
 				return
@@ -661,7 +663,7 @@
 						return false;
 					}
 				}else if (useSprints && sprintsArray && sprintsArray.length && sprintsArray[0] && sprintsArray[0].length) {
-					//get dates of selected sprint
+					// get dates of selected sprint
 					var selectedDates = sprintsArray[0].filter(function (sprint) {
 						return sprint.id === selectedSprint;
 					});
@@ -683,7 +685,7 @@
 					result.startDate = startDate;
 					result.endDate = endDate;
 				} else {
-					//throw exception
+					// throw exception
 					throwAlert("An error occured", "Neither a sprint was selected or start dates were filled");
 					return false;
 				}
@@ -723,7 +725,7 @@
 			if (!timeRange) {
 				return;
 			}
-			//set button busy and disabled
+			// set button busy and disabled
 			setButtonBusyAndDisabled(configurationSubmitButton,true);
 			getAdditionalConfiguration();
 			var jiraIssueMetric = getjiraIssueMetric(criteria);
@@ -732,7 +734,7 @@
 			var features = $("#multipleFeatures").val();
 			var improvements = $("#multipleImprovements").val();
 			var title= $("#title").val();
-			//submit configuration
+			// submit configuration
 			var configuration = {
 				title:title,
 				startDate: timeRange.startDate,
@@ -749,12 +751,12 @@
 			conDecAPI.getProposedIssues(configuration).then(function(response){
 
 				if(response){
-					//change tab
+					// change tab
 					addTabAndChangeToIt("tab-issues", "Suggested Issues");
 					console.log(response);
 
 					firstResultObject=response;
-					//display issues and information
+					// display issues and information
 					if (response.proposals) {
 						showTables(response.proposals);
 					}
@@ -764,14 +766,14 @@
 				}
 
 			}).catch(function(err){
-				//we handle this exception directly in condec.api
+				// we handle this exception directly in condec.api
 			}).finally(function(){
-				//set button idle
+				// set button idle
 				setButtonBusyAndDisabled(configurationSubmitButton,false);
 			});
 
 			function showTables(response) {
-				//first remove old tables
+				// first remove old tables
 				$("#displayIssueTables").empty();
 				Object.keys(response).map(function (category) {
 					if (response[category] && response[category].length) {
@@ -832,7 +834,7 @@
 			}
 		};
 		issueSelectSubmitButton.onclick = function () {
-			//set button busy
+			// set button busy
 			setButtonBusyAndDisabled(issueSelectSubmitButton,true);
 
 			var checkedItems={"bug_fixes":[],"new_features":[],"improvements":[]}
@@ -856,12 +858,12 @@
 			conDecAPI.postProposedKeys(postObject)
 				.then(function (response) {
 				if (response) {
-					//remove editor
+					// remove editor
 					removeEditor();
-					//change tab
+					// change tab
 					addTabAndChangeToIt("tab-editor", "Final edit");
 					if (response.markdown) {
-						//display editor and text
+						// display editor and text
 						editor = new Editor({element: document.getElementById("create-release-note-textarea")});
 						editor.render();
 						editor.codemirror.setValue(response.markdown);
@@ -871,7 +873,7 @@
 			}.bind(this)).catch(function(err){
 				throwAlert("An error occurred",err.toString());
 			}).finally(function(){
-				//set button idle
+				// set button idle
 				setButtonBusyAndDisabled(issueSelectSubmitButton,false);
 			});
 

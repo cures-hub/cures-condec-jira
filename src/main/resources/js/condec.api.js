@@ -378,7 +378,6 @@
 						callback(summary);
 					}
 				});
-
 	};
 
 	/*

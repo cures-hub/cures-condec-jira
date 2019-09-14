@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,6 +51,12 @@ public class TestCodeSummarizer extends TestSetUpGit {
 	public void testRevCommitNull() {
 		assertEquals("", summarizer.createSummary((RevCommit) null));
 	}
+	
+	@Test
+	public void testRevCommitExisting() {
+		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
+		assertNotNull(summarizer.createSummary(commits.get(0)));
+	}
 
 	@Test
 	public void testDiffNull() {
@@ -59,17 +67,4 @@ public class TestCodeSummarizer extends TestSetUpGit {
 	public void testDiffEmpty() {
 		assertEquals("", summarizer.createSummary(new DiffImpl()));
 	}
-	
-	// TODO
-	@Test
-	public void testGetProjectKey() {
-		assertEquals(null, ((CodeSummarizerImpl) summarizer).getProjectKey());
-	}
-	
-	// TODO
-	@Test
-	public void testGetIssueKey() {
-		assertEquals(null, ((CodeSummarizerImpl) summarizer).getIssueKey());
-	}
-
 }
