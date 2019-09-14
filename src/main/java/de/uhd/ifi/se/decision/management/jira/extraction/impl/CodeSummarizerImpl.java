@@ -15,11 +15,8 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 
 	private GitClient gitClient;
 	private int minProbabilityOfCorrectness;
-	private String projectKey;
-	private String issueKey;
 
 	public CodeSummarizerImpl(String projectKey) {
-		this.projectKey = projectKey;
 		this.gitClient = new GitClientImpl(projectKey);
 	}
 
@@ -34,7 +31,6 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 			return "";
 		}
 		this.minProbabilityOfCorrectness = minProbabilityOfCorrectness;
-		this.issueKey = jiraIssue.getKey();
 		Diff diff = gitClient.getDiff(jiraIssue);
 		return createSummary(diff);
 	}
@@ -48,15 +44,18 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		return createSummary(diff);
 	}
 
-
-	/*
-@issue: non-Java methods are returned too, should they be returned?
-@decision: only return summary for JAVA related code!
-@pro: in JavaScript everything is a function, do not mix concepts.
-@issue: test is also returned too.
-@decision: we could use test files to improve the predication
-*/
-
+	/**
+	 * @issue Which file types should be shown in the summary of code changes?
+	 * @decision Only include Java files into the summary of code changes!
+	 * @pro The package distance to predict whether a change is tangled/trace link
+	 *      is wrong can only be calculated for Java classes in packages.
+	 * 
+	 * @issue Should the test classes be integrated into the summary of code
+	 *        changes?
+	 * @decision Integrate test class in the summary of code changes!
+	 * @pro If both the "normal" and the test class are changed together, the change
+	 *      might be untangled and the package distance returns a better prediction.
+	 */
 	@Override
 	public String createSummary(Diff diff) {
 		if (diff == null || diff.getChangedFiles().size() == 0) {
@@ -75,7 +74,8 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			if (changedFile.getProbabilityOfCorrectness() >= this.minProbabilityOfCorrectness) {
 				rows += this.addRow(this.addTableItem(FilenameUtils.removeExtension(changedFile.getFile().getName()),
-						this.summarizeMethods(changedFile), String.format("%.2f", changedFile.getProbabilityOfCorrectness())));
+						this.summarizeMethods(changedFile),
+						String.format("%.2f", changedFile.getProbabilityOfCorrectness())));
 			}
 		}
 		return this.generateTable(rows);
@@ -108,13 +108,5 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 				+ item2 + "</td>\n"
 				+ "<td style=\"width:20%; border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">"
 				+ item3 + "% </td>\n";
-	}
-
-	public String getProjectKey() {
-		return projectKey;
-	}
-
-	public String getIssueKey() {
-		return issueKey;
 	}
 }
