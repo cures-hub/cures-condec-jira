@@ -20,6 +20,9 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 
+	/**
+	 * TODO: TESTS WITH useOnlyValidatedData FLAG
+	 */
 public class TestClassificationTrainer extends TestSetUp {
 
 	@Before
@@ -88,7 +91,7 @@ public class TestClassificationTrainer extends TestSetUp {
 	public void testClassificationTrainerFromArffFile() {
 		List<DecisionKnowledgeElement> trainingElements = getTrainingData();
 		ClassificationTrainer trainer = new ClassificationTrainerImpl("TEST", trainingElements);
-		File file = trainer.saveArffFile();
+		File file = trainer.saveArffFile(true);
 		trainer.setArffFile(file);
 		assertNotNull(trainer.getInstances());
 		trainer = new ClassificationTrainerImpl("TEST", file.getName());
@@ -100,7 +103,7 @@ public class TestClassificationTrainer extends TestSetUp {
 	@Test
 	public void testSaveArffFile() {
 		ClassificationTrainer trainer = new ClassificationTrainerImpl("TEST");
-		File file = trainer.saveArffFile();
+		File file = trainer.saveArffFile(false);
 		assertTrue(file.exists());
 		file.delete();
 	}

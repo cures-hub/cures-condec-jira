@@ -57,6 +57,7 @@
 		<resource type="download" name="treant.css" location="/css/treant.css" />
 		<resource type="download" name="condec.css" location="/css/condec.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
+        <resource type="download" name="visTimeLine.css" location="/css/visTimeLine.css"/>
 
 		<resource type="download" name="vis.css" location="/vis/dist/vis.css" />
 		<resource type="download" name="gitdiffviewer.css" location="/css/gitdiffviewer.css" />		<!-- look and feel like JIRA -->
@@ -74,6 +75,7 @@
 		<dependency>com.atlassian.auiplugin:aui-experimental-iconfont</dependency>
 		<dependency>com.atlassian.auiplugin:aui-tooltips</dependency>
 		<dependency>com.atlassian.auiplugin:tabs</dependency>
+		<dependency>com.atlassian.auiplugin:aui-expander</dependency>
 		<!-- JIRA dialogs -->
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-edit-issue</dependency>
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-create-issue</dependency>
@@ -127,6 +129,32 @@
 			location="/js/condec.knowledge.page.js" />
 	</web-resource>
 
+	<web-resource key="release-note-page-resources"
+				  name="ConDec Release Notes Page Resources">
+		<description>
+			Provides the JavaScript files for the separate release note page of this
+			plug-in.
+		</description>
+		<resource type="download" name="condec.release.note.page.js"
+				  location="/js/condec.release.note.page.js" />
+		<!--Markdown editor-->
+        <resource type="download" name="condec.release.note.markdowneditor.editor.js"
+                  location="/js/markdowneditor/editor.js"/>
+        <resource type="download" name="condec.release.note.markdowneditor.marked.js"
+                  location="/js/markdowneditor/marked.js"/>
+        <resource type="download" name="condec.release.note.markdowneditor.editor.css"
+                  location="/js/markdowneditor/editor.css"/>
+
+        <resource type="download" name="condec.release.note.markdowneditor.icomoon.eot"
+                  location="/js/markdowneditor/icomoon.eot"/>
+        <resource type="download" name="condec.release.note.markdowneditor.icomoon.ttf"
+                  location="/js/markdowneditor/icomoon.ttf"/>
+        <resource type="download" name="condec.release.note.markdowneditor.icomoon.woff"
+                  location="/js/markdowneditor/icomoon.woff"/>
+        <resource type="download" name="condec.release.note.markdowneditor.icomoon_ie.eot"
+                  location="/js/markdowneditor/icomoon_ie.eot"/>
+	</web-resource>
+
 	<web-resource key="jira-issue-module-resources"
 		name="ConDec JIRA Issue Module Resources">
 		<description>
@@ -178,11 +206,35 @@
 		<resource name="view" type="velocity" location="templates/decisionKnowledgePage.vm" />
 	</web-panel>
 
+    <!-- Release-Note Page -->
+    <web-item name="Link to the Release Note Page in Side Bar" key="sidebar-link-release-note"
+              section="jira.project.sidebar.plugins.navigation" weight="1000">
+        <description>Provides the "Release Notes" link in the project's navigation sidebar.
+        </description>
+        <label key="condec.sidebar.link.label.release.note" />
+        <param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-queues" />
+        <link> /projects/$pathEncodedProjectKey?selectedItem=release-note-page</link>
+        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+    </web-item>
+    <web-panel name="Decision Knowledge Page" key="release-note-page"
+               location="release-note-page" weight="1000">
+        <description>
+            Provides the plug-in page that developers use to manage release notes.
+        </description>
+        <resource name="view" type="velocity" location="templates/releaseNotePage.vm" />
+    </web-panel>
+
 	<!-- REST API -->
 	<rest name="Decision Knowledge REST" key="decision-knowledge-rest" path="/decisions"
 		version="1.0">
 		<description>
 			Provides REST resources to manage decision knowledge.
+		</description>
+	</rest>
+	<rest name="Release Note REST" key="release-note-rest" path="/release-note"
+		version="1.0">
+		<description>
+			Provides REST resources to manage Release Notes.
 		</description>
 	</rest>
 
@@ -248,6 +300,12 @@
 		</entity>
 		<entity>
 			de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase
+		</entity>
+        <entity>
+            de.uhd.ifi.se.decision.management.jira.persistence.tables.KnowledgeStatusInDatabase
+        </entity>
+		<entity>
+			de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInDatabase
 		</entity>
 	</ao>
 

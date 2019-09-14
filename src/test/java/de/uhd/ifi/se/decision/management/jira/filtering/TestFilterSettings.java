@@ -108,4 +108,9 @@ public class TestFilterSettings extends TestSetUp {
 		filterSettings.setSelectedJiraIssueTypes(null);
 		assertEquals(5, filterSettings.getNamesOfSelectedJiraIssueTypes().size());
 	}
+
+	@Test
+	public void testGetAllJiraIssueStatus() {
+		assertEquals(7, filterSettings.getAllJiraIssueStatus().size());
+	}
 }

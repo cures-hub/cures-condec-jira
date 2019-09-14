@@ -1,8 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
+import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.Map;
 
 /**
  * Model class for vis.js Node.
@@ -22,6 +26,9 @@ public class VisNode {
 
 	@XmlElement
 	private int level;
+
+	@XmlElement
+	private Map<String, String> font;
 
 	@XmlElement
 	private int cid;
@@ -48,6 +55,13 @@ public class VisNode {
 		}
 		this.setTitle("<b>" + element.getTypeAsString().toUpperCase() + " <br> " + element.getKey() + ":</b> "
 				+ element.getSummary() + "<br> <i>" + element.getDescription() + "</i>");
+		KnowledgeStatus elementStatus= DecisionStatusManager.getStatusForElement(element);
+		if(elementStatus.equals(KnowledgeStatus.DISCARDED) || elementStatus.equals(KnowledgeStatus.REJECTED) ||
+				   elementStatus.equals(KnowledgeStatus.UNRESOLVED)){
+			this.font = ImmutableMap.of("color", "red");
+		} else {
+			this.font = ImmutableMap.of("color", "black");
+		}
 	}
 
 	public VisNode(DecisionKnowledgeElement element, String type, boolean collapsed, int level, int cid) {

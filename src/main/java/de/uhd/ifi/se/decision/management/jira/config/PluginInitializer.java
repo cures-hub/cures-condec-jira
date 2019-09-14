@@ -30,6 +30,7 @@ import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.project.Project;
 
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
@@ -167,15 +168,12 @@ public class PluginInitializer implements InitializingBean {
 		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		List<String> existingIssueLinkTypeNames = getNamesOfExistingIssueLinkTypes();
 
-		if (!existingIssueLinkTypeNames.contains("contain")) {
-			issueLinkTypeManager.createIssueLinkType("contain", "contains", "is contained by", "contain_style");
+		for (LinkType linkType: LinkType.values()) {
+			if (!existingIssueLinkTypeNames.contains(linkType.getName())) {
+				issueLinkTypeManager.createIssueLinkType(linkType.getName(), linkType.getOutwardLink(), linkType.getInwardLink(), linkType.getStyle());
+			}
 		}
-		if (!existingIssueLinkTypeNames.contains("attack")) {
-			issueLinkTypeManager.createIssueLinkType("attack", "attacks", "is attacked by", "contain_style");
-		}
-		if (!existingIssueLinkTypeNames.contains("support")) {
-			issueLinkTypeManager.createIssueLinkType("support", "supports", "is supported by", "contain_style");
-		}
+
 	}
 
 	public List<String> getNamesOfExistingIssueLinkTypes() {

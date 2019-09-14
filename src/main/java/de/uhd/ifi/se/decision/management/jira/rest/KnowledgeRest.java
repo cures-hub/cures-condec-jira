@@ -26,12 +26,14 @@ import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
@@ -99,11 +101,20 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createDecisionKnowledgeElement(@Context HttpServletRequest request,
 			DecisionKnowledgeElement element, @QueryParam("idOfExistingElement") long idOfExistingElement,
-			@QueryParam("documentationLocationOfExistingElement") String documentationLocationOfExistingElement) {
+			@QueryParam("documentationLocationOfExistingElement") String documentationLocationOfExistingElement,
+			@QueryParam("keyOfExistingElement") String keyOfExistingElement) {
 		if (element == null || request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Creation of decision knowledge element failed due to a bad request (element or request is null)."))
 					.build();
+		}
+
+		if (idOfExistingElement == 0) {
+			if (keyOfExistingElement != null && !keyOfExistingElement.isEmpty()) {
+				IssueManager issueManager = ComponentAccessor.getIssueManager();
+				Issue issue = issueManager.getIssueByCurrentKey(keyOfExistingElement);
+				idOfExistingElement = issue.getId();
+			}
 		}
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
@@ -260,7 +271,7 @@ public class KnowledgeRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		List<DecisionKnowledgeElement> queryResult = new ArrayList<DecisionKnowledgeElement>();
-		FilterExtractor extractor = new FilterExtractor(projectKey,user, query);
+		FilterExtractor extractor = new FilterExtractor(projectKey, user, query);
 		if (allTrees) {
 			List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
 			elementsQueryLinked = extractor.getAllGraphs();
@@ -311,7 +322,8 @@ public class KnowledgeRest {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 					.entity(ImmutableMap.of("error", "Only sentence elements can be set to irrelevant.")).build();
 		}
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager
+				.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 		if (sentence == null) {
 			return Response.status(Status.NOT_FOUND)
 					.entity(ImmutableMap.of("error", "Element could not be found in database.")).build();
@@ -334,7 +346,8 @@ public class KnowledgeRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getSummarizedCode(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
-			@QueryParam("documentationLocation") String documentationLocation, @QueryParam("probability") int probability) {
+			@QueryParam("documentationLocation") String documentationLocation,
+			@QueryParam("probability") int probability) {
 		if (projectKey == null || id <= 0) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Getting summarized code failed due to a bad request.")).build();
@@ -354,10 +367,49 @@ public class KnowledgeRest {
 					.build();
 		}
 
-		String summary = new CodeSummarizerImpl(projectKey).createSummary(jiraIssue,probability);
+		String summary = new CodeSummarizerImpl(projectKey).createSummary(jiraIssue, probability);
 		if (summary == null || summary.isEmpty()) {
 			summary = "This JIRA issue does not have any code committed.";
 		}
 		return Response.ok(summary).build();
+	}
+
+	@Path("/setStatus")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response setStatus(@Context HttpServletRequest request, @QueryParam("status") String stringStatus,
+			DecisionKnowledgeElement decisionKnowledgeElement) {
+		if (request == null || decisionKnowledgeElement == null || decisionKnowledgeElement.getId() <= 0
+				|| stringStatus == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Setting element status failed due to a bad request.")).build();
+		}
+		KnowledgeStatus status = KnowledgeStatus.getKnowledgeStatus(stringStatus);
+		DecisionStatusManager.setStatusForElement(decisionKnowledgeElement, status);
+		if (status.equals(DecisionStatusManager.getStatusForElement(decisionKnowledgeElement))) {
+			return Response.status(Status.OK).build();
+		}
+		return Response.status(Status.INTERNAL_SERVER_ERROR)
+				.entity(ImmutableMap.of("error", "Setting element status failed.")).build();
+	}
+
+	@Path("/getStatus")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getStatus(@Context HttpServletRequest request, DecisionKnowledgeElement decisionKnowledgeElement) {
+		if (request == null || decisionKnowledgeElement == null || decisionKnowledgeElement.getId() <= 0) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Setting element status failed due to a bad request.")).build();
+		}
+		AbstractPersistenceManager manager = AbstractPersistenceManager.getPersistenceManager(
+				decisionKnowledgeElement.getProject().getProjectKey(),
+				decisionKnowledgeElement.getDocumentationLocation().getIdentifier());
+		DecisionKnowledgeElement element = manager.getDecisionKnowledgeElement(decisionKnowledgeElement.getKey());
+		KnowledgeStatus status = DecisionStatusManager.getStatusForElement(element);
+		if (status == null) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Get element status failed.")).build();
+		}
+		return Response.ok(status).build();
 	}
 }

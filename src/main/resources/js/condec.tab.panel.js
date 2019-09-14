@@ -84,7 +84,6 @@
 				var searchString = $(this).val();
 				jQueryConDec("#jstree").jstree(true).search(searchString);
 			});
-			console.log(treeViewer)
 			treeViewer.addDragAndDropSupportForTreeViewer();
 			treeViewer.addContextMenuToTreeViewer("issue-container");
 		});

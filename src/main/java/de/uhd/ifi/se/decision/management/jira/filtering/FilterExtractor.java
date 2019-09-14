@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +48,7 @@ public class FilterExtractor {
 		}
 		this.user = user;
 		this.filterSettings = filterSettings;
-		this.queryHandler = new JiraQueryHandlerImpl(user, filterSettings.getProjectKey(),
-				filterSettings.getSearchString());
+		this.queryHandler = new JiraQueryHandlerImpl(user, filterSettings.getProjectKey(), filterSettings.getSearchString());
 	}
 
 	/**
@@ -99,11 +99,9 @@ public class FilterExtractor {
 		for (Issue currentIssue : jiraIssues) {
 			// Add all Matching Elements from Query as a DecisionKnowledgeElement
 			results.add(new DecisionKnowledgeElementImpl(currentIssue));
-			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
-					.getElementsForIssue(currentIssue.getId(), filterSettings.getProjectKey());
+			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager.getElementsForIssue(currentIssue.getId(), filterSettings.getProjectKey());
 			for (DecisionKnowledgeElement currentElement : elements) {
-				if (!results.contains(currentElement) && currentElement instanceof PartOfJiraIssueText
-						&& checkIfElementMatchesTimeFilter(currentElement)) {
+				if (!results.contains(currentElement) && currentElement instanceof PartOfJiraIssueText && checkIfElementMatchesTimeFilter(currentElement)) {
 					results.add(currentElement);
 				}
 			}
@@ -121,44 +119,65 @@ public class FilterExtractor {
 
 	// Get decision knowledge elements from the selected strategy and the sentences
 	private List getElementsInProject() {
-		AbstractPersistenceManager strategy = AbstractPersistenceManager
-				.getDefaultPersistenceStrategy(filterSettings.getProjectKey());
+		AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(filterSettings.getProjectKey());
 		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
-		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
-				filterSettings.getProjectKey());
+		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(filterSettings.getProjectKey());
 		elements.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
 		return elements;
 	}
 
 	// Check if the element is created in time
 	private boolean checkIfElementMatchesTimeFilter(DecisionKnowledgeElement element) {
-		return !(filterSettings.getCreatedEarliest() > 0
-				&& element.getCreated().getTime() < filterSettings.getCreatedEarliest())
-				|| !(filterSettings.getCreatedLatest() > 0
-						&& element.getCreated().getTime() > filterSettings.getCreatedLatest());
+		if ((filterSettings.getCreatedEarliest() == -1 && filterSettings.getCreatedLatest() == -1)){
+			return true;
+		}
+		if (filterSettings.getCreatedEarliest() != -1 && filterSettings.getCreatedLatest() != -1) {
+			if (element.getCreated().getTime() >= filterSettings.getCreatedEarliest() &&
+					    element.getCreated().getTime() <= filterSettings.getCreatedLatest()) {
+				return true;
+			}
+			return false;
+		}
+		if (filterSettings.getCreatedEarliest() != -1) {
+			if (element.getCreated().getTime() >= filterSettings.getCreatedEarliest()) {
+				return true;
+			}
+		}
+		if (filterSettings.getCreatedLatest() != -1) {
+			if (element.getCreated().getTime() <= filterSettings.getCreatedLatest()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	// Check if Description, Summary, Key containing the search string
 	private boolean checkIfElementMatchesStringFilter(DecisionKnowledgeElement element) {
 		String searchString = filterSettings.getSearchString().toLowerCase();
 		if (element.getDescription() != null) {
-			return element.getDescription().toLowerCase().contains(searchString);
+			if (element.getDescription().toLowerCase().contains(searchString)) {
+				return true;
+			}
 		}
 		if (element.getSummary() != null) {
-			return element.getSummary().toLowerCase().contains(searchString);
+			if (element.getSummary().toLowerCase().contains(searchString)) {
+				return true;
+			}
 		}
 		if (element.getKey() != null) {
-			return element.getKey().toLowerCase().contains(searchString);
+			if (element.getKey().toLowerCase().contains(searchString)) {
+				return true;
+			}
 		}
 		return false;
 	}
 
 	private boolean checkIfTypeMatches(DecisionKnowledgeElement element) {
-		if(element.getTypeAsString() != null){
-			if(filterSettings.getNamesOfSelectedJiraIssueTypes().contains(element.getTypeAsString())){
+		if (element.getTypeAsString() != null) {
+			if (filterSettings.getNamesOfSelectedJiraIssueTypes().contains(element.getTypeAsString())) {
 				return true;
 			}
-			if(element.getTypeAsString().equals("Con") || element.getTypeAsString().equals("Pro")){
+			if (element.getTypeAsString().equals("Con") || element.getTypeAsString().equals("Pro")) {
 				return true;
 			}
 		}
@@ -172,20 +191,19 @@ public class FilterExtractor {
 		}
 		for (DecisionKnowledgeElement element : elements) {
 			// Check if the DocumentationLocation is correct
-			if (filterSettings.getDocumentationLocations().contains(element.getDocumentationLocation())
-					|| filterSettings.getDocumentationLocations().size() == 1 && filterSettings
-							.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN)) {
-				// Check if the Type of the Element is correct
-				if (checkIfTypeMatches(element)) {
-					if (checkIfElementMatchesTimeFilter(element)) {
-						// Case no text filter
-						if (filterSettings.getSearchString().equals("")
-								|| filterSettings.getSearchString().equals("?filter=-4")
-								|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
-							filteredElements.add(element);
-						} else {
-							if (checkIfElementMatchesStringFilter(element)) {
+			if (filterSettings.getDocumentationLocations().contains(element.getDocumentationLocation()) || filterSettings.getDocumentationLocations().size() == 1 && filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN)) {
+				//Check if the Status is filtered
+				if (filterSettings.getSelectedIssueStatus().contains(DecisionStatusManager.getStatusForElement(element))) {
+					// Check if the Type of the Element is correct
+					if (checkIfTypeMatches(element)) {
+						if (checkIfElementMatchesTimeFilter(element)) {
+							// Case no text filter
+							if (filterSettings.getSearchString().equals("") || filterSettings.getSearchString().equals("?filter=-4") || filterSettings.getSearchString().equals("?filter=allopenissues")) {
 								filteredElements.add(element);
+							} else {
+								if (checkIfElementMatchesStringFilter(element)) {
+									filteredElements.add(element);
+								}
 							}
 						}
 					}

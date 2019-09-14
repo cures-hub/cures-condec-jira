@@ -25,6 +25,8 @@
 		projectKey = getProjectKey();
 		this.knowledgeTypes = getKnowledgeTypes(projectKey);
 		this.extendedKnowledgeTypes = getExtendedKnowledgeTypes(this.knowledgeTypes);
+        this.knowledgeStatus = ["Idea","Discarded", "Decided","Rejected", "Undefined"];
+        this.issueStatus = ["Resolved", "Unresolved"];
 	};
 
 	ConDecAPI.prototype.checkIfProjectKeyIsValid = function checkIfProjectKeyIsValid() {
@@ -128,6 +130,76 @@
 			}
 		});
 	};
+	/*
+	 * external references: condec.dialog
+	 */
+	ConDecAPI.prototype.getSprintsByProject = function getSprintsByProject() {
+		//first we need the boards then we can get the Sprints for each board
+		return new Promise(function (resolve, reject) {
+			var boardUrl = "/rest/agile/1.0/board?projectKeyOrId=" + projectKey;
+			var boardPromise = getJSONReturnPromise(AJS.contextPath() + boardUrl);
+			boardPromise.then(function (boards) {
+				if (boards && boards.values && boards.values.length) {
+					var sprintPromises = boards.values.map(function (board) {
+						var sprintUrl = "/rest/agile/1.0/board/" + board.id + "/sprint";
+						return getJSONReturnPromise(AJS.contextPath() + sprintUrl);
+					});
+					Promise.all(sprintPromises)
+					.then(function (sprints) {
+						resolve(sprints);
+					}).catch(function (err) {
+						reject(err);
+					})
+				}else{
+					reject();
+				}
+			}).catch(function (err) {
+				reject(err);
+			})
+		})
+	};
+	ConDecAPI.prototype.getIssueTypes = function getIssueTypes() {
+		//first we need the boards then we can get the Sprints for each board
+		return new Promise(function (resolve, reject) {
+			var issueTypeUrl = "/rest/api/2/issue/createmeta?expand=projects.issuetypes";
+			var issuePromise = getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
+			issuePromise.then(function (result) {
+				if (result && result.projects && result.projects.length) {
+					var correctIssueTypes = result.projects.filter(function (project) {
+						return project.key === projectKey;
+					});
+					correctIssueTypes = correctIssueTypes[0].issuetypes;
+					if (correctIssueTypes && correctIssueTypes.length) {
+						resolve(correctIssueTypes);
+					} else {
+						reject();
+					}
+				} else {
+					reject();
+				}
+
+			}).catch(function (err) {
+				reject(err);
+			})
+		})
+	};
+	ConDecAPI.prototype.getReleases = function getReleases() {
+		//first we need the boards then we can get the Sprints for each board
+		return new Promise(function (resolve, reject) {
+			var issueTypeUrl = "/rest/projects/1.0/project/"+projectKey+"/release/allversions";
+			var issuePromise = getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
+			issuePromise.then(function (result) {
+				if(result && result.length){
+					resolve(result);
+				}else {
+					reject();
+				}
+			}).catch(function (err) {
+				reject(err);
+			})
+		})
+	};
+
 
 	/*
 	 * external references: condec.context.menu, condec.dialog
@@ -191,6 +263,36 @@
 					}
 				});
 	};
+
+	ConDecAPI.prototype.setStatus = function setStatus(id,documentationLocation, status, callback) {
+        var element = {
+            "id" : id,
+            "documentationLocation" : documentationLocation,
+            "projectKey" : projectKey
+        };
+        postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/setStatus.json?status="+ status, element,
+            function(error) {
+            if (error === null) {
+                showFlag("success", "Decision knowledge element status has been updated.");
+                callback();
+            }
+        });
+    };
+
+	ConDecAPI.prototype.getStatus = function getStatus(decisionElement, callback) {
+        var element = {
+            "id" : decisionElement.id,
+            "key" : decisionElement.key,
+            "documentationLocation" : decisionElement.documentationLocation,
+            "projectKey" : projectKey
+        };
+        postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getStatus.json", element,
+            function (error, status) {
+            if(error === null) {
+                callback(status);
+            }
+        });
+    };
 
 	/*
 	 * external references: condec.jira.issue.module
@@ -313,7 +415,8 @@
 			"createdEarliest" : -1,
 			"createdLatest" : -1,
 			"documentationLocations" : [ "" ],
-			"selectedJiraIssueTypes" : [ "" ]
+			"selectedJiraIssueTypes" : [ "" ],
+            "selectedIssueStatus" : this.knowledgeStatus
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
 				filterSettings, function(error, vis) {
@@ -334,7 +437,8 @@
 			"createdEarliest" : createdBefore,
 			"createdLatest" : createdAfter,
 			"documentationLocations" : documentationLocations,
-			"selectedJiraIssueTypes" : selectedJiraIssueTypes
+			"selectedJiraIssueTypes" : selectedJiraIssueTypes,
+            "selectedIssueStatus": this.knowledgeStatus
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
 				filterSettings, function(error, vis) {
@@ -347,18 +451,28 @@
 	/*
 	 * external reference: condec.evolution.page.js
 	 */
-	ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed, searchString, issueTypes, callback) {
+	ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed, searchString, issueTypes, issueStatus,  callback) {
 		var filterSettings = {
 			"projectKey" : projectKey,
 			"searchString" : searchString,
 			"createdEarliest" : created,
 			"createdLatest" : closed,
 			"documentationLocations" : [ "" ],
-			"selectedJiraIssueTypes" : issueTypes
+			"selectedJiraIssueTypes" : issueTypes,
+            "selectedIssueStatus" : issueStatus
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getCompareVis.json", filterSettings, function(error,
 				vis) {
 			if (error === null) {
+			    vis.nodes.sort(function(a, b) {
+                    if (a.id > b.id) {
+                        return 1;
+                    }
+                    if (a.id < b.id) {
+                        return -1;
+                    }
+                    return 0;
+                });
 				callback(vis);
 			}
 		});
@@ -395,7 +509,7 @@
 	/*
 	 * external references: condec.evolution.page
 	 */
-	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(searchString, created, closed, issueTypes,
+	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(searchString, created, closed, issueTypes, issueStatus,
 			callback) {
 		var filterSettings = {
 			"projectKey" : projectKey,
@@ -403,7 +517,8 @@
 			"createdEarliest" : created,
 			"createdLatest" : closed,
 			"documentationLocations" : [ "" ],
-			"selectedJiraIssueTypes" : issueTypes
+			"selectedJiraIssueTypes" : issueTypes,
+            "selectedIssueStatus" : issueStatus
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getEvolutionData.json", filterSettings, function(
 				error, evolutionData) {
@@ -651,8 +766,8 @@
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
-	ConDecAPI.prototype.saveArffFile = function saveArffFile(projectKey, callback) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/saveArffFile.json?projectKey=" + projectKey, null,
+	ConDecAPI.prototype.saveArffFile = function saveArffFile(projectKey, useOnlyValidatedData, callback) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/saveArffFile.json?projectKey=" + projectKey + "&useOnlyValidatedData=" + useOnlyValidatedData, null,
 				function(error, response) {
 					if (error === null) {
 						showFlag("success", "The ARFF file was successfully created and saved in "
@@ -683,7 +798,53 @@
 			global.open(decisionKnowledgeElement.url, '_self');
 		});
 	};
+	/*
+	 * external references: condec.release.note.page
+	 */
+	ConDecAPI.prototype.getReleaseNotes = function getReleaseNotes(callback) {
+		var projectKey=getProjectKey();
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/release-note/getReleaseNotes.json?projectKey="
+			+ projectKey, function(error, elements) {
+			if (error === null) {
+				callback(elements);
+			}
+		});
+	};
+	/*
+	 * external references: condec.dialog
+	 */
+	ConDecAPI.prototype.getProposedIssues = function getReleaseNotes(releaseNoteConfiguration) {
+		return postJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/getProposedIssues.json?projectKey="
+			+ projectKey, releaseNoteConfiguration);
+	};
 
+	ConDecAPI.prototype.postProposedKeys = function postProposedKeys(proposedKeys) {
+		return postJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/postProposedKeys.json?projectKey="
+			+ projectKey, proposedKeys);
+	};
+	ConDecAPI.prototype.createReleaseNote = function createReleaseNote(content) {
+		return postJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/createReleaseNote.json?projectKey="
+			+ projectKey,content);
+	};
+	ConDecAPI.prototype.updateReleaseNote = function updateReleaseNote(releaseNote) {
+		return postJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/updateReleaseNote.json?projectKey="
+			+ projectKey, releaseNote)
+	};
+	ConDecAPI.prototype.deleteReleaseNote = function deleteReleaseNote(id) {
+		return deleteJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/deleteReleaseNote.json?projectKey="
+			+ projectKey +"&id="+id, null);
+	};
+
+
+	ConDecAPI.prototype.getReleaseNotesById = function getReleaseNotesById(id) {
+		return getJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/getReleaseNote.json?projectKey="
+			+ projectKey+"&id="+id);
+
+	};
+	ConDecAPI.prototype.getAllReleaseNotes = function getAllReleaseNotes(query) {
+		return getJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/getAllReleaseNotes.json?projectKey="
+			+ projectKey+"&query="+query);
+	};
 	function getResponseAsReturnValue(url) {
 		var xhr = new XMLHttpRequest();
 		xhr.open("GET", url, false);
@@ -717,6 +878,41 @@
 		};
 		xhr.send();
 	}
+	function getJSONReturnPromise(url){
+		return new Promise(function(resolve,reject){
+			getJSON(url,function(err,result){
+				if(err===null){
+					resolve(result);
+				}else{
+					reject(err);
+				}
+			});
+		});
+
+	}
+	function postJSONReturnPromise(url,data){
+		return new Promise(function (resolve,reject) {
+			postJSON(url,data,function(err,result){
+				if(err===null){
+					resolve(result);
+				}else{
+					reject(err);
+				}
+			})
+		})
+	}
+	function deleteJSONReturnPromise(url,data){
+		return new Promise(function (resolve,reject) {
+			deleteJSON(url,data,function(err,result){
+				if(err===null){
+					resolve(result);
+				}else{
+					reject(err);
+				}
+			})
+		})
+	}
+
 
 	function getText(url, callback) {
 		var xhr = new XMLHttpRequest();
