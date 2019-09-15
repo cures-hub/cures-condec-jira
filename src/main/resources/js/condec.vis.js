@@ -29,7 +29,7 @@
         network.setSize("100%", "500px");
 
         network.on("oncontext", function (params) {
-                conDecVis.addContextMenu(params,network);
+                conDecVis.addContextMenu(params, network);
         });
 
         network.on("hold", function (params) {
@@ -69,8 +69,8 @@
             }
         }
         if (clickedNodeId !== undefined && clickedNodeId !== 'distanceCluster') {
-            conDecContextVis.createContextVis(clickedNodeId.toString().slice(0, -2),
-                getDocumentationLocationFromId(clickedNodeId), params.event);
+            conDecContextMenu.createContextMenu(clickedNodeId.toString().slice(0, -2),
+                getDocumentationLocationFromId(clickedNodeId), params.event, "vis-container");
         }
     };
 

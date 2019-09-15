@@ -7,11 +7,13 @@
  Is required by
  * conDecContextMenu
  * conDecDialog
+ * conDecEvolutionPage
  * conDecTreant
  * conDecTreeViewer
  * conDecJiraIssueModule
  * conDecKnowledgePage
  * conDecTabPanel
+ * conDecVis
   
  Is referenced in HTML by
  * settingsForAllProjects.vm 
@@ -134,7 +136,7 @@
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.getSprintsByProject = function getSprintsByProject() {
-		//first we need the boards then we can get the Sprints for each board
+		// first we need the boards then we can get the Sprints for each board
 		return new Promise(function (resolve, reject) {
 			var boardUrl = "/rest/agile/1.0/board?projectKeyOrId=" + projectKey;
 			var boardPromise = getJSONReturnPromise(AJS.contextPath() + boardUrl);
@@ -159,7 +161,7 @@
 		})
 	};
 	ConDecAPI.prototype.getIssueTypes = function getIssueTypes() {
-		//first we need the boards then we can get the Sprints for each board
+		// first we need the boards then we can get the Sprints for each board
 		return new Promise(function (resolve, reject) {
 			var issueTypeUrl = "/rest/api/2/issue/createmeta?expand=projects.issuetypes";
 			var issuePromise = getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
@@ -184,7 +186,7 @@
 		})
 	};
 	ConDecAPI.prototype.getReleases = function getReleases() {
-		//first we need the boards then we can get the Sprints for each board
+		// first we need the boards then we can get the Sprints for each board
 		return new Promise(function (resolve, reject) {
 			var issueTypeUrl = "/rest/projects/1.0/project/"+projectKey+"/release/allversions";
 			var issuePromise = getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
@@ -1010,9 +1012,6 @@
 		xhr.send(JSON.stringify(data));
 	}
 
-	/*
-	 * external references: condec.jira.issue.module, and many more..
-	 */
 	function getIssueKey() {
 		var issueKey = null;
 		if (JIRA && JIRA.Issue && JIRA.Issue.getIssueKey) {
@@ -1038,6 +1037,10 @@
 		return issueKey;
 	}
 
+	/*
+	 * external references: condec.jira.issue.module, condec.export,
+	 * condec.gitdiffviewer
+	 */
 	ConDecAPI.prototype.getIssueKey = getIssueKey;
 
 	function getProjectKey() {
