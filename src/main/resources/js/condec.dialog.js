@@ -969,6 +969,8 @@
 		var openingButton = document.getElementById("openEditReleaseNoteDialogButton_"+id);
 		var deleteButton = document.getElementById("deleteReleaseNote");
 		var titleInput = document.getElementById("edit-release-note-dialog-title");
+		var exportMDButton= document.getElementById("edit-release-note-dialog-export-as-markdown-button");
+		var exportWordButton= document.getElementById("edit-release-note-dialog-export-as-word-button");
 		var editor;
 		setButtonBusyAndDisabled(openingButton,true);
 
@@ -1043,6 +1045,31 @@
 		function fireChangeEvent(){
 			var event = new Event('updateReleaseNoteTable');
 			document.getElementById("release-notes-table").dispatchEvent(event);
+		}
+		exportMDButton.onclick = function () {
+			var mdString ="data:text/plain;charset=utf-8,"+ encodeURIComponent(editor.codemirror.getValue());
+			downloadFile(mdString,"md")
+		};
+		exportWordButton.onclick =function () {
+			var htmlString=$(".editor-preview").html();
+			if(htmlString){
+				var htmlContent=$("<html>").html(htmlString).html();
+				var wordString ="data:text/html,"+ htmlContent;
+				downloadFile(wordString,"doc")
+			}else{
+				throwAlert("Error downloading Word","Please change to the preview view of the editor first, then try again.")
+			}
+		};
+
+		function downloadFile(content,fileEnding){
+			var fileName="releaseNote."+fileEnding;
+			var link = document.createElement('a');
+			link.style.display = 'none';
+			link.setAttribute('href', content);
+			link.setAttribute('download', fileName);
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
 		}
 		function throwAlert(title, message) {
 			AJS.flag({

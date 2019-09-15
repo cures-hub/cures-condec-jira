@@ -33,6 +33,9 @@
 
 
         <div class="aui-dialog2-footer-actions">
+            <button id="edit-release-note-dialog-export-as-markdown-button" class="aui-button">Download as Markdown</button>
+            <button id="edit-release-note-dialog-export-as-word-button" class="aui-button">Download as Document</button>
+
             <button id="edit-release-note-submit-content" class="aui-button aui-button-primary">Save</button>
 
             <button id="edit-release-note-dialog-cancel-button" class="aui-button aui-button-link">$i18n.getText(
