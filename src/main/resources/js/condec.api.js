@@ -199,6 +199,21 @@
 			})
 		})
 	};
+	ConDecAPI.prototype.getProjectWideSelectedIssueTypes= function getProjectWideSelectedIssueTypes(){
+		return new Promise(function (resolve,reject) {
+			var preSelectedIssueUrl = "/rest/decisions/latest/config/getReleaseNoteMapping.json?projectKey=" + projectKey;
+			var issuePromise = getJSONReturnPromise(AJS.contextPath() + preSelectedIssueUrl);
+			issuePromise.then(function (result) {
+				if(result){
+					resolve(result);
+				}else {
+					reject();
+				}
+			}).catch(function (err) {
+				reject(err);
+			})
+		})
+	};
 
 
 	/*
@@ -716,6 +731,18 @@
 				error, response) {
 			if (error === null) {
 				showFlag("success", "The webhook root element type was changed for this project.");
+			}
+		});
+	};
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setReleaseNoteMapping = function setReleaseNoteMapping(releaseNoteCategory, projectKey, selectedIssueTypes) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setReleaseNoteMapping.json?projectKey="+projectKey+"&releaseNoteCategory="+releaseNoteCategory, selectedIssueTypes, function(
+				error, response) {
+			if (error === null) {
+				showFlag("success", "The associated issuetypes for the category: "+releaseNoteCategory+" were changed for this project.");
 			}
 		});
 	};

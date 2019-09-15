@@ -534,21 +534,8 @@
 			var issueTypePromise = new Promise(function (resolve, reject) {
 				conDecAPI.getIssueTypes()
 					.then(function (issueTypes) {
-						resolve();
-						if (issueTypes && issueTypes.length) {
-							// empty lists
-							var bugSelector=$("#multipleBugs");
-							var featureSelector=$("#multipleFeatures");
-							var improvementSelector=$("#multipleImprovements");
-							bugSelector.empty();
-							featureSelector.empty();
-							improvementSelector.empty();
-							issueTypes.map(function (issueType) {
-								bugSelector.append('<option value="' + issueType.id + '">' + issueType.name + '</option>');
-								featureSelector.append('<option value="' + issueType.id + '">' + issueType.name + '</option>');
-								improvementSelector.append('<option value="' + issueType.id + '">' + issueType.name + '</option>');
-							})
-						}
+						resolve(issueTypes);
+
 					}).catch(function (err) {
 					throwAlert("No issue-types could be loaded");
 					reject();
@@ -579,7 +566,21 @@
 
 			});
 
-			Promise.all([sprintPromise, issueTypePromise, releasesPromise]).finally(function () {
+			var preSelectedIssueTypesPromise = new Promise(function(resolve,reject){
+				conDecAPI.getProjectWideSelectedIssueTypes().then(function(result){
+					resolve(result);
+				}).catch(function(err){
+					reject();
+				})
+			});
+
+			Promise.all([sprintPromise, issueTypePromise, releasesPromise, preSelectedIssueTypesPromise]).then(function (values) {
+				//set issue types
+				var issueTypes = values[1];
+				var preSelectedIssueTypes = values[3];
+				manageIssueTypes(issueTypes, preSelectedIssueTypes);
+
+
 				// disable busy button
 				setButtonBusyAndDisabled(openingButton, false);
 				// open dialog
@@ -589,6 +590,50 @@
 				prefillDateBox();
 
 			})
+		}
+		function manageIssueTypes(issueTypes, preSelectedIssueTypes){
+			if (issueTypes && issueTypes.length) {
+				// empty lists
+				var bugSelector=$("#multipleBugs");
+				var featureSelector=$("#multipleFeatures");
+				var improvementSelector=$("#multipleImprovements");
+				bugSelector.empty();
+				featureSelector.empty();
+				improvementSelector.empty();
+				console.log(preSelectedIssueTypes);
+				issueTypes.map(function (issueType) {
+					var bugSelected=false;
+					var bugString='<option value="' + issueType.id + '"';
+					var featureSelected=false;
+					var featureString='<option value="' + issueType.id + '"';
+					var improvementSelected=false;
+					var improvementString='<option value="' + issueType.id + '"';
+					if(preSelectedIssueTypes){
+						if(preSelectedIssueTypes.bug_fixes){
+							bugSelected=preSelectedIssueTypes.bug_fixes.indexOf(issueType.name)>-1;
+						}
+						if(preSelectedIssueTypes.new_features){
+							featureSelected = preSelectedIssueTypes.new_features.indexOf(issueType.name)>-1;
+						}
+						if(preSelectedIssueTypes.improvements){
+							improvementSelected = preSelectedIssueTypes.improvements.indexOf(issueType.name)>-1;
+						}
+					}
+					if(bugSelected){
+						bugString +="selected";
+					}
+					if(featureSelected){
+						featureString +="selected";
+					}
+					if(improvementSelected){
+						improvementString +="selected";
+					}
+					bugSelector.append(bugString+'>' + issueType.name + '</option>');
+					featureSelector.append(featureString+'>' + issueType.name + '</option>');
+					improvementSelector.append(improvementString+'>' + issueType.name + '</option>');
+
+				})
+			}
 		}
 
 		function disableSprintBox() {

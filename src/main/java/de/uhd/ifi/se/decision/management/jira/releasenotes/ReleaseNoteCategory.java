@@ -74,4 +74,16 @@ public enum ReleaseNoteCategory {
 		}
 		return releaseNoteCategoryTypes;
 	}
+	/**
+	 *
+	 * @return list of Categories .
+	 */
+	public static List<ReleaseNoteCategory> toOriginalList() {
+		List<ReleaseNoteCategory> releaseNoteCategoryTypes = new ArrayList<ReleaseNoteCategory>();
+		for (ReleaseNoteCategory releaseNoteCategory : ReleaseNoteCategory.values()) {
+			releaseNoteCategoryTypes.add(releaseNoteCategory);
+		}
+		return releaseNoteCategoryTypes;
+	}
+
 }
