@@ -386,6 +386,13 @@
 		var issueSelectSubmitButton= document.getElementById("create-release-note-submit-issues-button");
 		var saveContentButton= document.getElementById("create-release-note-submit-content");
 		var loader = document.getElementById("createReleaseNoteDialogLoader");
+		var useSprintSelect= document.getElementById("useSprint");
+		var titleInput= document.getElementById("title");
+		var sprintOptions= document.getElementById("selectSprints");
+		var useReleaseSelect= document.getElementById("useReleases");
+		var releaseOptions= document.getElementById("selectReleases");
+
+		var titleWasChanged=false;
 		var editor;
 		var firstResultObject={};
 
@@ -514,9 +521,9 @@
 							sprintsArray[0].map(function (sprint) {
 								if(sprint && sprint.startDate && sprint.endDate){
 									hasValidSprints=true;
-									$('#selectSprints').append('<option value="' + sprint.id + '">' + sprint.name + '</option>');
+									$('#selectSprints').append('<option class="sprint-option" value="' + sprint.id + '">' + sprint.name + '</option>');
 								}else{
-									$('#selectSprints').append('<option disabled value="' + sprint.id + '">' + sprint.name + '</option>');
+									$('#selectSprints').append('<option class="sprint-option" disabled value="' + sprint.id + '">' + sprint.name + '</option>');
 								}
 							});
 						}
@@ -549,7 +556,7 @@
 					releases.map(function(release){
 						if(release && release.startDate.iso && release.releaseDate.iso){
 							hasValidReleases=true;
-							releaseSelector.append('<option value="' + release.id + '">' + release.name +" "+release.startDate.iso+" until "+release.releaseDate.iso+ '</option>');
+							releaseSelector.append('<option value="' + release.id + '">' + release.name+'</option>');
 							releasesArray.push(release);
 						}else{
 							releaseSelector.append('<option disabled value="' + release.id + '">' + release.name +'</option>');
@@ -678,6 +685,31 @@
 				button.setAttribute('aria-disabled', 'false');
 			}
 		}
+		useSprintSelect.onchange= function(){
+			setSprintOrReleaseOption("selectSprints");
+		};
+		sprintOptions.onchange= function(){
+			setSprintOrReleaseOption("selectSprints");
+		};
+		useReleaseSelect.onchange = function () {
+			setSprintOrReleaseOption("selectReleases")
+		};
+		releaseOptions.onchange =function () {
+			setSprintOrReleaseOption("selectReleases")
+		};
+		function setSprintOrReleaseOption(selectId) {
+			if (!titleWasChanged) {
+				var options = document.getElementById(selectId).options;
+				for (var i=0;i<options.length;i++){
+					if(options[i].selected){
+						titleInput.value=options[i].innerText;
+					}
+				}
+			}
+		}
+		titleInput.onchange = function(){
+			titleWasChanged = titleInput.value;
+		};
 
 
 		configurationSubmitButton.onclick = function () {
