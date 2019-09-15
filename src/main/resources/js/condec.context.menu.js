@@ -29,10 +29,10 @@
 		/*
 		 * @issue This event gets launched many times at the same time! Check
 		 * what fires it. Probably more and more onclick event handlers get
-		 * added instead of just one.
+		 * added instead of just one. How can we set the event listener only once?
 		 * 
 		 * @decision On click and on blur event handlers are only set in the
-		 * constructor (see above).
+		 * constructor (see above)!
 		 */
 		if (isContextMenuOpen) {
 			console.log("contextmenu closed");
@@ -47,7 +47,7 @@
 	}
 
 	/*
-	 * external references: condec.treant, condec.tree.viewer
+	 * external references: condec.treant, condec.tree.viewer, condec.vis, condec.evolution.page
 	 */
 	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(id, documentationLocation, event,
 			container) {
@@ -60,21 +60,17 @@
 			return;
 		}
 
+		showOrHideContextMenuItems(id, documentationLocation, container);
 		setContextMenuItemsEventHandlers(id, documentationLocation);
 
 		var position = getPosition(event, container);
-		var posX = position["x"];
-		var posY = position["y"];
-
 		$(contextMenuNode).css({
-			left : posX,
-			top : posY
+			left : position["x"],
+			top : position["y"]
 		});
 
 		contextMenuNode.style.zIndex = 9998; // why this number?
-		contextMenuNode.setAttribute('aria-hidden', 'false');
-
-		showOrHideContextMenuItems(id, documentationLocation, container);
+		contextMenuNode.setAttribute('aria-hidden', 'false');		
 	};
 
 	function setContextMenuItemsEventHandlers(id, documentationLocation) {
