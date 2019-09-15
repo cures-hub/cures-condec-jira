@@ -1,17 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
-import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import org.junit.Test;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.atlassian.httpclient.api.HttpStatus.ACCEPTED;
 import static org.junit.Assert.assertEquals;
 
 public class TestSetReleaseNoteMapping extends TestConfigSuper {
