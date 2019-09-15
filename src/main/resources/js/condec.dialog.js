@@ -13,6 +13,7 @@
  
  Is required by
  * conDecContextMenu
+ * conDecReleaseNotePage
  */
 (function (global) {
 

@@ -13,7 +13,10 @@ var ConDecDevBranchesQuality = [];
 var ConDecDevBranches = [];
 
 (function(global) {
-    var dashboards = {};    /* TODO: object muss support more than one dashboard.*/
+    var dashboards = {};    /*
+							 * TODO: object muss support more than one
+							 * dashboard.
+							 */
 
     var dashboardUID;
     var processing = null;
@@ -37,11 +40,10 @@ var ConDecDevBranches = [];
         console.log("received for project: "+ _projectKey +" UID:"+ _dashboardUID);
         projectKey = _projectKey;
 
-        /* Match branch names either:
-            starting with issue key followed by dot
-            OR
-            exactly the issue key
-        */
+        /*
+		 * Match branch names either: starting with issue key followed by dot OR
+		 * exactly the issue key
+		 */
         issueBranchKeyRx = RegExp("origin/(" + _projectKey + "-\\d+)\\.|origin/(" + _projectKey + "-\\d+)$","i");
         dashboardUID = _dashboardUID;
 
@@ -82,11 +84,10 @@ var ConDecDevBranches = [];
         if (!projectKey || !projectKey.length || !projectKey.length>0) {
             return;
         }
-        /* on XHR HTTP failure codes the code aborts instead of processing with processDataBad() !?
-        if (processing) {
-            return warnStillProcessing();
-        }
-        */
+        /*
+		 * on XHR HTTP failure codes the code aborts instead of processing with
+		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
+		 */
         processing = projectKey;
         showDashboardSection(dashboardProcessingNode);
 
@@ -94,7 +95,7 @@ var ConDecDevBranches = [];
           + "/rest/decisions/latest/view/elementsFromBranchesOfProject.json?projectKey="
           + projectKey;
 
-        /*  get cache or server data? */
+        /* get cache or server data? */
         if (localStorage.getItem("condec.restCacheTTL")) {
           console.log("condec.restCacheTTL setting found");
           if (localStorage.getItem(url)) {
@@ -124,7 +125,11 @@ var ConDecDevBranches = [];
           }
         }
         else {
-          localStorage.setItem("condec.restCacheTTL",1000*60*3); /* init 3 minute caching */
+          localStorage.setItem("condec.restCacheTTL",1000*60*3); /*
+																	 * init 3
+																	 * minute
+																	 * caching
+																	 */
         }
 
         console.log("Starting  REST query.");
@@ -183,26 +188,29 @@ var ConDecDevBranches = [];
 
     function processBranches(data){
         var branches = data.branches;
-        ConDecDevBranches = branches; /*  remember in global scope for development/debugging */
+        ConDecDevBranches = branches; /*
+										 * remember in global scope for
+										 * development/debugging
+										 */
         for (branchIdx = 0; branchIdx < branches.length; branchIdx++) {
             var lastBranch = conDecLinkBranchCandidates.extractPositions(branches[branchIdx]);
 
-            /*  these elements are sorted by commit age and occurrence in message */
+            /* these elements are sorted by commit age and occurrence in message */
             var lastBranchElementsFromMessages =
             lastBranch.elements.filter(function(e){return e.key.sourceTypeCommitMessage;});
 
-            /*  these elements are not sorted, we want only B(final) files. */
+            /* these elements are not sorted, we want only B(final) files. */
             var lastBranchElementsFromFilesButNotSorted =
             lastBranch.elements.filter(function(e){return e.key.codeFileB;});
 
-            /*  sort file elements */
+            /* sort file elements */
             var lastBranchElementsFromFiles =
             conDecLinkBranchCandidates.sortRationaleDiffOfFiles(lastBranchElementsFromFilesButNotSorted);
 
             var lastBranchRelevantElementsSortedWithPosition =
             lastBranchElementsFromMessages.concat(lastBranchElementsFromFiles);
 
-            /*  assess relations between rationale and their problems */
+            /* assess relations between rationale and their problems */
             conDecLinkBranchCandidates.init(
             lastBranchRelevantElementsSortedWithPosition,
             lastBranch.branchName,
@@ -220,9 +228,9 @@ var ConDecDevBranches = [];
             branchQuality.numCons = countElementType("Con", lastBranch);
             branchesQuality.push(branchQuality);
         }
-        /*  sort lexicographically */
+        /* sort lexicographically */
         branchesQuality = sortBranches(branchesQuality);
-        /*  render charts and plots */
+        /* render charts and plots */
         renderData();
     }
 
@@ -284,7 +292,7 @@ var ConDecDevBranches = [];
             while (!result.done) {
                 var key = result.value;
                 if (problems.get(key)>0) {
-                    /*  already has a bran chname */
+                    /* already has a bran chname */
                     if (accumulator.get(key).length>1) {
                         var newValue = accumulator.get(key)
                                      + BRANCHES_SEPARATOR_TOKEN
@@ -327,7 +335,7 @@ var ConDecDevBranches = [];
             return accumulator;
         }
 
-        /*  init data for charts */
+        /* init data for charts */
         var statusesForBranchesData = conDecLinkBranchCandidates.getEmptyMapForStatuses("");
         var problemTypesOccurrance = conDecLinkBranchCandidates.getEmptyMapForProblemTypes("");
 
@@ -338,7 +346,7 @@ var ConDecDevBranches = [];
         var prosInBranches = new Map();
         var consInBranches = new Map();
 
-        /*  set something for box plots in case no data will be added to them */
+        /* set something for box plots in case no data will be added to them */
         issuesInBranches.set("none",0);
         decisionsInBranches.set("none",0);
         alternativesInBranches.set("none",0);
@@ -347,7 +355,7 @@ var ConDecDevBranches = [];
 
         branchesPerIssue.set("no Jira task","");
 
-        /*  form data for charts */
+        /* form data for charts */
         branchesQuality.reduce(statusWithBranchesReducer, statusesForBranchesData);
         branchesQuality.reduce(problemsWithBranchesReducer, problemTypesOccurrance);
         branchesQuality.reduce(branchesPerJiraIssueReducer, branchesPerIssue);
@@ -359,9 +367,16 @@ var ConDecDevBranches = [];
 
         /* render pie-charts */
         conDecReport.initializeChartForBranchSource('piechartRich-QualityStatusForBranches'+dashboardUID,
-         '', 'How many branches document rationale well?',statusesForBranchesData); /* 'Quality status' */
+         '', 'How many branches document rationale well?',statusesForBranchesData); /*
+																					 * 'Quality
+																					 * status'
+																					 */
         conDecReport.initializeChartForBranchSource('piechartRich-ProblemTypesInBranches'+dashboardUID,
-         '', 'Which documentation mistakes are most common?',problemTypesOccurrance); /*'Total quality problems' */
+         '', 'Which documentation mistakes are most common?',problemTypesOccurrance); /*
+																						 * 'Total
+																						 * quality
+																						 * problems'
+																						 */
         conDecReport.initializeChartForBranchSource('piechartRich-BranchesPerIssue'+dashboardUID,
          '', 'How many branches do Jira tasks have?',branchesPerIssue);
         /* render box-plots */
@@ -383,4 +398,3 @@ var ConDecDevBranches = [];
 
 	global.conDecBranchesDashboard  = new ConDecBranchesDashboard ();
 })(window);
-

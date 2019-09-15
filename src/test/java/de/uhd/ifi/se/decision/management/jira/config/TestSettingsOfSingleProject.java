@@ -85,7 +85,7 @@ public class TestSettingsOfSingleProject {
 
 	@Test
 	public void testGetTemplatePath() {
-		assertEquals("templates/settingsForSingleProject.vm", servlet.getTemplatePath());
+		assertEquals("templates/settings/settingsForSingleProject.vm", servlet.getTemplatePath());
 	}
 
 	@Test

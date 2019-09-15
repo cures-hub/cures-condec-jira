@@ -52,7 +52,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 #parse("templates/dialogs/changeStatusDialog.vm")
 #parse("templates/dialogs/summarizationDialog.vm")
 #parse("templates/dialogs/exportDialog.vm")
-#parse("templates/dialogs/deleteElementVisDialog.vm")
 #parse("templates/contextMenu.vm")
 
 <script>
@@ -63,7 +62,7 @@ $(document).ready(function() {
     conDecAPI.checkIfProjectKeyIsValid();
 
     if (window.conDecJiraIssueModule.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant,
-            conDecVis, conDecContextVis)) {
+            conDecVis)) {
 
         // set REST caching
         if (!localStorage.getItem("condec.restCacheTTL")) {
