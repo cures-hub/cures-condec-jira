@@ -873,7 +873,7 @@
 				var title = "<h2>" + mapCategoryToTitles[category] + "</h2>";
 				var table = "<table class='aui'><thead><tr>" +
 					"<th>Include</th>" +
-					"<th>Rating</th>" +
+					"<th>Relevance-Rating</th>" +
 					"<th>Key</th>" +
 					"<th>Summary</th>" +
 					"<th>Type</th>" +
