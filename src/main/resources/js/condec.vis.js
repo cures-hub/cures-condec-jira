@@ -70,7 +70,7 @@
         }
         if (clickedNodeId !== undefined && clickedNodeId !== 'distanceCluster') {
             conDecContextMenu.createContextMenu(clickedNodeId.toString().slice(0, -2),
-                getDocumentationLocationFromId(clickedNodeId), params.event);
+                getDocumentationLocationFromId(clickedNodeId), params.event, "vis-container");
         }
     };
 

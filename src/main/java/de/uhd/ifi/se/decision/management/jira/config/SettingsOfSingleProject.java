@@ -29,7 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 public class SettingsOfSingleProject extends AbstractSettingsServlet {
 
 	private static final long serialVersionUID = 8699708658914306058L;
-	private static final String TEMPLATEPATH = "templates/settingsForSingleProject.vm";
+	private static final String TEMPLATEPATH = "templates/settings/settingsForSingleProject.vm";
 
 	@Inject
 	public SettingsOfSingleProject(TemplateRenderer renderer) {

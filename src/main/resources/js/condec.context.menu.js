@@ -9,6 +9,8 @@
  Is required by
  * conDecTreant
  * conDecTreeViewer
+ * conDecVis
+ * conDecEvolutionPage
  */
 (function(global) {
 
@@ -81,8 +83,13 @@
 			}
 		});
 
-		document.getElementById("condec-context-menu-set-root-item").style.display = "none";
-		document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
+		if (container.includes("vis")) {
+			document.getElementById("condec-context-menu-set-root-item").style.display = "none";
+			document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
+		} else {
+			document.getElementById("condec-context-menu-set-root-item").style.display = "initial";
+			document.getElementById("condec-context-menu-delete-link-item").style.display = "initial";
+		}
 		if (documentationLocation === "s") {
 			document.getElementById("condec-context-menu-link-item").style.display = "none";
 			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "initial";
@@ -186,7 +193,7 @@
 				conDecObservable.notify();
 			});
 		};
-		
+
 		document.getElementById("condec-context-menu-export").onclick = function() {
 			conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
 				conDecDialog.showExportDialog(decisionKnowledgeElement.key);
