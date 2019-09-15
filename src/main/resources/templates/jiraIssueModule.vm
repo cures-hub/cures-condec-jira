@@ -52,7 +52,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 #parse("templates/dialogs/changeStatusDialog.vm")
 #parse("templates/dialogs/summarizationDialog.vm")
 #parse("templates/dialogs/exportDialog.vm")
-#parse("templates/dialogs/deleteElementVisDialog.vm")
 #parse("templates/contextMenu.vm")
 
 <script>
