@@ -209,6 +209,14 @@
 				y : event.pageY
 			};
 		}
+
+		if (container.includes("vis")) {
+			return {
+				x : event.layerX + "px",
+				y : event.screenY + "px"
+			};
+		}
+
 		var xPosition = 0;
 		var yPosition = 0;
 
