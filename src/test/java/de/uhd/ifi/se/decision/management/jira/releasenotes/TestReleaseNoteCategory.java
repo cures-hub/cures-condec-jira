@@ -21,6 +21,10 @@ public class TestReleaseNoteCategory {
 	public void testToList() {
 		assertEquals(3, ReleaseNoteCategory.toList().size(), 0.0);
 	}
+	@Test
+	public void testToOriginalList() {
+		assertEquals(3, ReleaseNoteCategory.toOriginalList().size(), 0.0);
+	}
 
 	@Test
 	public void testToBooleanMap() {
