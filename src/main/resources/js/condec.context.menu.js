@@ -72,16 +72,17 @@
 		contextMenuNode.style.zIndex = 9998; // why this number?
 		contextMenuNode.setAttribute('aria-hidden', 'false');
 
-        conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
-            var typesForStatus =  new Array("issue", "alternative", "decision");
-            if(!typesForStatus.includes(decisionKnowledgeElement.type.toLowerCase())) {
-                document.getElementById("condec-context-menu-change-status-item").style.display ="none";
-            } else {
-                document.getElementById("condec-context-menu-change-status-item").style.display ="initial";
-            }
-        });
+		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
+			var typesForStatus = new Array("issue", "alternative", "decision");
+			if (!typesForStatus.includes(decisionKnowledgeElement.type.toLowerCase())) {
+				document.getElementById("condec-context-menu-change-status-item").style.display = "none";
+			} else {
+				document.getElementById("condec-context-menu-change-status-item").style.display = "initial";
+			}
+		});
 
-
+		document.getElementById("condec-context-menu-set-root-item").style.display = "none";
+		document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
 		if (documentationLocation === "s") {
 			document.getElementById("condec-context-menu-link-item").style.display = "none";
 			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "initial";
@@ -108,9 +109,9 @@
 			conDecDialog.showChangeTypeDialog(id, documentationLocation);
 		};
 
-		document.getElementById("condec-context-menu-change-status-item").onclick = function () {
-		  conDecDialog.showChangeStatusDialog(id,documentationLocation);
-        };
+		document.getElementById("condec-context-menu-change-status-item").onclick = function() {
+			conDecDialog.showChangeStatusDialog(id, documentationLocation);
+		};
 
 		document.getElementById("condec-context-menu-issue-item").onclick = function() {
 			conDecAPI.changeKnowledgeType(id, "Issue", documentationLocation, function() {
@@ -152,7 +153,7 @@
 		document.getElementById("condec-context-menu-delete-link-item").onclick = function() {
 			conDecDialog.showDeleteLinkDialog(id, documentationLocation);
 		};
-		
+
 		document.getElementById("condec-context-menu-summarized-code").onclick = function() {
 			conDecDialog.showSummarizedDialog(id, documentationLocation);
 		};
@@ -185,6 +186,7 @@
 				conDecObservable.notify();
 			});
 		};
+		
 		document.getElementById("condec-context-menu-export").onclick = function() {
 			conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
 				conDecDialog.showExportDialog(decisionKnowledgeElement.key);

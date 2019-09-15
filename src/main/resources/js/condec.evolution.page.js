@@ -55,7 +55,7 @@
                 properties.event.preventDefault();
                 var nodeId = properties.item;
                 var documentationLocation =  timeline.itemsData._data[nodeId].documentationLocation;
-                conDecContextVis.createContextVis(nodeId,
+                conDecContextMenu.createContextMenu(nodeId,
                     documentationLocation, properties.event);
             });
         });

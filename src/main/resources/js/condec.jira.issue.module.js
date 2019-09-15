@@ -18,7 +18,6 @@
 	var conDecContextMenu = null;
 	var treant = null;
 	var vis = null;
-	var condecContextVis = null;
 
 	var issueKey = "";
 	var search = "";
@@ -28,13 +27,13 @@
 	};
 
 	ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog,
-			_conDecContextMenu, _treant, _vis, _condecContextVis) {
+			_conDecContextMenu, _treant, _vis) {
 
 		console.log("ConDecJiraIssueModule init");
 
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
 				&& isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
-				&& isConDecTreantType(_treant) && isConDecVisType(_vis) && isCondecContextVisType(_condecContextVis)) {
+				&& isConDecTreantType(_treant) && isConDecVisType(_vis)) {
 
 			conDecAPI = _conDecAPI;
 			conDecObservable = _conDecObservable;
@@ -42,7 +41,6 @@
 			conDecContextMenu = _conDecContextMenu;
 			treant = _treant;
 			vis = _vis;
-			condecContextVis = _condecContextVis;
 
 			// Register/subscribe this view as an observer
 			conDecObservable.subscribe(this);
@@ -239,14 +237,6 @@
 	function isConDecVisType(conDecVis) {
 		if (!(conDecVis !== undefined && conDecVis.buildVis !== undefined && typeof conDecVis.buildVis === 'function')) {
 			console.warn("ConDecJiraIssueModule: invalid conDecVis object received.");
-			return false;
-		}
-		return true;
-	}
-
-	function isCondecContextVisType(conDecContextVis) {
-		if (!(conDecContextVis !== undefined && conDecContextVis.createContextVis !== undefined && typeof conDecContextVis.createContextVis === 'function')) {
-			console.warn("ConDecJiraIssueModule: invalid conDecContextVis object received.");
 			return false;
 		}
 		return true;

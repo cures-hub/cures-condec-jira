@@ -63,7 +63,7 @@ $(document).ready(function() {
     conDecAPI.checkIfProjectKeyIsValid();
 
     if (window.conDecJiraIssueModule.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant,
-            conDecVis, conDecContextVis)) {
+            conDecVis)) {
 
         // set REST caching
         if (!localStorage.getItem("condec.restCacheTTL")) {
