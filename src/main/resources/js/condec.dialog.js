@@ -1008,6 +1008,7 @@
 		setButtonBusyAndDisabled(openingButton,true);
 
 		conDecAPI.getReleaseNotesById(id).then(function(result){
+			$(".editor-preview").empty();
 			AJS.dialog2(editDialog).show();
 			removeEditor();
 			titleInput.value=result.title;
