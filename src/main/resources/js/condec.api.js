@@ -153,7 +153,7 @@
 						reject(err);
 					})
 				}else{
-					reject();
+					reject("No Boards could be found, so the sprints could also not be loaded");
 				}
 			}).catch(function (err) {
 				reject(err);
@@ -174,10 +174,10 @@
 					if (correctIssueTypes && correctIssueTypes.length) {
 						resolve(correctIssueTypes);
 					} else {
-						reject();
+						reject("No issue-types could be found for this project");
 					}
 				} else {
-					reject();
+					reject("No Projects were found.");
 				}
 
 			}).catch(function (err) {
@@ -194,7 +194,7 @@
 				if(result && result.length){
 					resolve(result);
 				}else {
-					reject();
+					reject("No Releases were found");
 				}
 			}).catch(function (err) {
 				reject(err);
