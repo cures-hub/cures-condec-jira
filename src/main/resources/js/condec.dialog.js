@@ -528,27 +528,39 @@
 								}
 							});
 						}
-						if(!hasValidSprints){
-							disableSprintBox();
+						if(hasValidSprints){
+							resolve();
+						}else{
+							reject("No valid Sprints found");
 						}
-						resolve();
 					}).catch(function (err) {
-					disableSprintBox();
-					reject();
+					reject(err);
 				});
-
+			}).catch(function(err){
+				disableSprintBox();
+				throwAlert("No sprints could be loaded",err);
 			});
 			// load issue types
 			var issueTypePromise = new Promise(function (resolve, reject) {
 				conDecAPI.getIssueTypes()
 					.then(function (issueTypes) {
-						resolve(issueTypes);
-
+						conDecAPI.getProjectWideSelectedIssueTypes().then(function (preSelectedIssueTypes) {
+							resolve({issueTypes: issueTypes, preSelectedIssueTypes: preSelectedIssueTypes});
+						}).catch(function () {
+							resolve({issueTypes: issueTypes, preSelectedIssueTypes: null});
+						});
 					}).catch(function (err) {
-					throwAlert("No issue-types could be loaded");
-					reject();
+					reject(err);
 				});
+			}).then(function (values) {
+				//set issue types
+				var issueTypes = values.issueTypes;
+				var preSelectedIssueTypes = values.preSelectedIssueTypes;
+				manageIssueTypes(issueTypes, preSelectedIssueTypes);
+			}).catch(function(err){
+				throwAlert("No issue-types could be loaded", "This won't be working without Jira-Issues associated to a project: "+err);
 			});
+
 			var releasesPromise= new Promise(function(resolve,reject){
 				conDecAPI.getReleases().then(function(releases){
 					var hasValidReleases=false;
@@ -569,34 +581,20 @@
 					resolve();
 				}).catch(function (err) {
 					disableReleaseBox();
-					reject();
+					reject(err);
 				})
-
+			}).catch(function(err){
+				throwAlert("Loading the Releases went wrong",err)
 			});
 
-			var preSelectedIssueTypesPromise = new Promise(function(resolve,reject){
-				conDecAPI.getProjectWideSelectedIssueTypes().then(function(result){
-					resolve(result);
-				}).catch(function(err){
-					reject();
-				})
-			});
 
-			Promise.all([sprintPromise, issueTypePromise, releasesPromise, preSelectedIssueTypesPromise]).then(function (values) {
-				//set issue types
-				var issueTypes = values[1];
-				var preSelectedIssueTypes = values[3];
-				manageIssueTypes(issueTypes, preSelectedIssueTypes);
-
-
+			Promise.all([sprintPromise, issueTypePromise, releasesPromise])
+			.finally(function () {
 				// disable busy button
 				setButtonBusyAndDisabled(openingButton, false);
-				// open dialog
-
 				// Show dialog
 				AJS.dialog2(releaseNoteDialog).show();
 				prefillDateBox();
-
 			})
 		}
 		function manageIssueTypes(issueTypes, preSelectedIssueTypes){
@@ -1008,6 +1006,7 @@
 		setButtonBusyAndDisabled(openingButton,true);
 
 		conDecAPI.getReleaseNotesById(id).then(function(result){
+			$(".editor-preview").empty();
 			AJS.dialog2(editDialog).show();
 			removeEditor();
 			titleInput.value=result.title;
