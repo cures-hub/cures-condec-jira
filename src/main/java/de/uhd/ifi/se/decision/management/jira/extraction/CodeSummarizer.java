@@ -7,6 +7,9 @@ import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
+/**
+ * Interface to create a summary of code changes linked to Jira issues (e.g. to work items).
+ */
 public interface CodeSummarizer {
 
 	/**
