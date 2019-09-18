@@ -132,21 +132,21 @@ public interface GitClient {
 	List<Ref> getRemoteBranches();
 
 	/**
-	 * Get a list of all commits of a "feature" branch, which do not exist in the
-	 * "default" branch. Commits are sorted by age, beginning with the oldest.
+	 * Get a list of all commits of a <b>feature</b> branch, which do not exist in the
+	 * <b>default</b> branch. Commits are sorted by age, beginning with the oldest.
 	 *
 	 * @param featureBranchName
-	 *            name of the feature branch
+	 *            name of the feature branch.
 	 * @return ordered list of commits unique to this branch.
 	 */
 	List<RevCommit> getFeatureBranchCommits(String featureBranchName);
 
 	/**
-	 * Get a list of all commits of a "feature" branch, which do not exist in the
-	 * "default" branch. Commits are sorted by age, beginning with the oldest.
+	 * Get a list of all commits of a <b>feature</b> branch, which do not exist in the
+	 * <b>default</b> branch. Commits are sorted by age, beginning with the oldest.
 	 *
 	 * @param featureBranch
-	 *            ref of the feature branch
+	 *            ref of the feature branch.
 	 * @return ordered list of commits unique to this branch.
 	 */
 	List<RevCommit> getFeatureBranchCommits(Ref featureBranch);

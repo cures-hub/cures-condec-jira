@@ -183,11 +183,11 @@
         <artifactId>org.eclipse.jgit</artifactId>
         <version>5.4.0.201906121030-r</version>
     </dependency>
-    <!-- Code Summarization -->
+    <!-- Summarization of code changes and extraction of decision knowledge from code comments -->
     <dependency>
         <groupId>com.github.javaparser</groupId>
         <artifactId>javaparser-core</artifactId>
-        <version>3.12.0</version>
+        <version>3.14.13</version>
     </dependency>
     <!-- Webhook -->
     <dependency>
