@@ -1,15 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.model.git;
 
-/** purpose: structure to store comment text
- * and area it occupies in a source code file
+/**
+ * Model class for comment text and the area it occupies in a source code file.
  *
  * @issue How should this class be called?
  * @decision Simply call this model class "CodeComment"!
- * @pro It is inherent that a CodeComment has a beginning and an end,
- * it does not need to be made explicit in the class' name.
+ * @pro It is inherent that a CodeComment has a beginning and an end, it does
+ *      not need to be made explicit in the class' name.
  * @alternative Call this model class "CodeCommentWithRange"!
- * @pro the name suggests the comment is positioned within a range in a file
- * @con the meaning of "WithRange" is not really clear
+ * @pro The name suggests the comment is positioned within a range in a file.
+ * @con The meaning of "WithRange" is not really clear.
  */
 public class CodeComment {
 	public String commentContent = null;

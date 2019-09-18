@@ -16,58 +16,45 @@ import de.uhd.ifi.se.decision.management.jira.extraction.CodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.JavaCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 /**
- * purpose: extract decision knowledge elements from files modified by a
- * sequence of commits.
+ * Extracts decision knowledge elements from files modified by a sequence of
+ * commits.
  *
  * Decision knowledge can be documented in code using following syntax inside a
- * source code comment: """
+ * source code comment:
  *
- * @decKnowledgeTag: knowledge summary text
+ * <p>
+ * <b>@decKnowledgeTag: knowledge summary text</b>
+ * <p>
+ * where [decKnowledgeTag] belongs to set of {@link KnowledgeType}s, for example
+ * issue, alternative, decision, pro, and con. Empty two lines denote the end of
+ * the decision knowledge element. The observation of another tag ends the
+ * element, too. Comment end ends also the decision knowledge element.
  *
- *                   knowledge description text after empty line
- *
- *
- *                   """
- *
- *                   where [decKnowledgeTag] belongs to set of
- *                   {@link KnowledgeType}s, for example issue, alternative,
- *                   decision etc. and where empty two lines denote the end of
- *                   the decision knowledge element. The observation of another
- *                   tag ends the element too. Comment end ends also the
- *                   decision knowledge element.
- *
- *                   This class will: 1) fetch with gitClient necessary files
- *                   from code repository, 2) delegate comment extraction to
- *                   specialized classes and 3) extract evolution of knowledge
- *                   elements in files.
+ * This class will: 1) fetch with gitClient necessary files from code
+ * repository, 2) delegate comment extraction to specialized classes, and 3)
+ * extract evolution of knowledge elements in files.
  */
 public class GitDiffedCodeExtractionManager {
 	private static final String OLD_FILE_SYMBOL_PREPENDER = "~";
-	/*
-	 * @issue: Modified files may add, modify or delete rationale. For extraction of
-	 * rationale on modified files their contents from the base and changed versions
-	 * are required. How should both versions of affected files be accessed?
-	 *
-	 * @decision: Use two gitClientImpl instances each checked out at different
-	 * commit of the diff range!
-	 * 
-	 * @pro: no additional checkouts need to be performed by the gitClientImpl
-	 * 
-	 * @con: requires on more gitClientImpl object in the memory
-	 *
-	 * @alternative: Switch between commits using one gitClientImpl instance!
-	 * 
-	 * @con: frequent checkouts take time
-	 * 
-	 * @con: requires implementation of another special mode in the client
-	 *
+	/**
+	 * @issue Modified files may add, modify, or delete rationale. For extraction of
+	 *        rationale on modified files their contents from the base and changed
+	 *        versions are required. How should both versions of affected files be
+	 *        accessed?
+	 * @decision Use two gitClientImpl instances each checked out at different
+	 *           commit of the diff range!
+	 * @pro no additional checkouts need to be performed by the gitClientImpl
+	 * @con requires on more gitClientImpl object in the memory
+	 * @alternative Switch between commits using one gitClientImpl instance!
+	 * @con frequent checkouts take time
+	 * @con requires implementation of another special mode in the client
 	 */
-
 	private final GitClient gitClientCheckedOutAtDiffStart;
 	private final GitClient gitClientCheckedOutAtDiffEnd;
 	private final Diff diff;
@@ -115,16 +102,16 @@ public class GitDiffedCodeExtractionManager {
 					if (codeExtractionResult.size() > 0) {
 						for (Map.Entry<Edit, List<DecisionKnowledgeElement>> editListEntry : codeExtractionResult
 								.entrySet()) {
-							if (editListEntry.getKey()!=null) {
+							if (editListEntry.getKey() != null) {
 								resultValues.addAll(editListEntry.getValue().stream().map(d -> {
 									d.setKey(newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
 											+ String.valueOf(dEntry.getValue().sequence)
-											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + editListEntry.getKey().toString()
+											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
+											+ editListEntry.getKey().toString()
 											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + d.getKey());
 									return d;
 								}).collect(Collectors.toList()));
-							}
-							else {
+							} else {
 								resultValues.addAll(editListEntry.getValue().stream().map(d -> {
 									d.setKey(newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
 											+ String.valueOf(dEntry.getValue().sequence)
@@ -307,8 +294,6 @@ public class GitDiffedCodeExtractionManager {
 		public int sequence = -1;
 		/* list of elements modified/created with diff in a file */
 		public Map<Edit, List<DecisionKnowledgeElement>> diffedElementsInNewerVersion = new HashMap<>();
-		/* list of all elements present in file after diff */
-		public Map<DiffEntry, List<DecisionKnowledgeElement>> allElementsInNewerVersion = new HashMap<>();
 		/* list of old elements somehow affected by the diff in a file */
 		public Map<Edit, List<DecisionKnowledgeElement>> diffedElementsInOlderVersion = new HashMap<>();
 	}

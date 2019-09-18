@@ -18,8 +18,8 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 /**
- * purpose: extract decision knowledge elements stored in git repository
- * out-of-scope linking decision knowledge elements among each other
+ * Extract decision knowledge elements stored in git repository. 
+ * Out-of-scope: linking decision knowledge elements among each other.
  */
 public class GitDecXtract {
 

@@ -82,7 +82,7 @@ public class GitClientImpl implements GitClient {
 
 	public GitClientImpl(String uri, String defaultDirectory, String projectKey) {
 		// TODO: the last parameter should be a setting retrievable with
-		// ConfigPersistenceM
+		// ConfigPersistenceManager
 		repoInitSuccess = pullOrCloneRepository(projectKey, defaultDirectory, uri, "develop");
 	}
 
@@ -206,11 +206,10 @@ public class GitClientImpl implements GitClient {
 	}
 
 	/**
-	 * Based on file timestamp decides if pull is necessary.
+	 * Based on file timestamp, the method decides if pull is necessary.
 	 *
-	 * @return decision whether to make or make not the git pull call
+	 * @return decision whether to make or not make the git pull call.
 	 */
-
 	private boolean isPullNeeded() {
 		String trackerFilename = "condec.pullstamp.";
 		// if (true) return true;
@@ -359,12 +358,12 @@ public class GitClientImpl implements GitClient {
 	}
 
 	/**
+	 * Temporally switches git client's directory to feature branch directory to
+	 * fetch commits, afterwards returns to default branch directory after.
+	 * 
 	 * @param featureBranch
-	 *            ref of the feature branch
+	 *            ref of the feature branch.
 	 * @return list of unique commits.
-	 * @implNote Temporally switches git client's directory to feature branch
-	 *           directory to fetch commits, afterwards returns to default branch
-	 *           directory after.
 	 */
 	@Override
 	public List<RevCommit> getFeatureBranchCommits(Ref featureBranch) {
@@ -390,9 +389,6 @@ public class GitClientImpl implements GitClient {
 	}
 
 	@Override
-	/**
-	 * @implNote see getFeatureBranchCommits(Ref featureBranch)
-	 */
 	public List<RevCommit> getFeatureBranchCommits(String featureBranchName) {
 		Ref featureBranch = getBranch(featureBranchName);
 		if (null == featureBranch) {
@@ -502,11 +498,11 @@ public class GitClientImpl implements GitClient {
 		directory.delete();
 	}
 
-	@Override
 	/**
-	 * Switches git client's directory to feature branch directory and i.e. DOES NOT
-	 * go back to default branch directory.
+	 * Switches git client's directory to feature branch directory, i.e., DOES NOT
+	 * go back to the default branch directory.
 	 */
+	@Override
 	public boolean checkoutFeatureBranch(String featureBranchShortName) {
 		Ref featureBranch = getBranch(featureBranchShortName);
 		if (null == featureBranch) {
@@ -516,12 +512,12 @@ public class GitClientImpl implements GitClient {
 
 	}
 
-	@Override
 	/**
-	 * Switches git client's directory to commit directory checks out files in
-	 * working dir for the commit and i.e. DOES NOT go back to default branch
+	 * Switches git client's directory to commit directory, checks out files in
+	 * working dir for the commit. I.e., DOES NOT go back to default branch
 	 * directory.
 	 */
+	@Override
 	public boolean checkoutCommit(RevCommit commit) {
 		String commitName = commit.getName();
 
@@ -535,11 +531,11 @@ public class GitClientImpl implements GitClient {
 		return checkout(branchShortName, false);
 	}
 
-	@Override
 	/**
-	 * Switches git client's directory to feature branch directory and i.e. DOES NOT
+	 * Switches git client's directory to feature branch directory, i.e., DOES NOT
 	 * go back to default branch directory.
 	 */
+	@Override
 	public boolean checkoutFeatureBranch(Ref featureBranch) {
 		String branchNameComponents[] = featureBranch.getName().split("/");
 		String branchShortName = branchNameComponents[branchNameComponents.length - 1];
@@ -572,7 +568,6 @@ public class GitClientImpl implements GitClient {
 		 * @pro issues with low key number (ex. CONDEC-1) and higher key numbers (ex.
 		 *      CONDEC-1000) will not be confused.
 		 */
-
 		Ref branch = getRef(jiraIssueKey);
 		List<RevCommit> commits = getCommits(branch);
 		for (RevCommit commit : commits) {
