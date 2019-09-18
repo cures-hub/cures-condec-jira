@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
