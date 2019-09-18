@@ -294,8 +294,6 @@ public class GitDiffedCodeExtractionManager {
 		public int sequence = -1;
 		/* list of elements modified/created with diff in a file */
 		public Map<Edit, List<DecisionKnowledgeElement>> diffedElementsInNewerVersion = new HashMap<>();
-		/* list of all elements present in file after diff */
-		public Map<DiffEntry, List<DecisionKnowledgeElement>> allElementsInNewerVersion = new HashMap<>();
 		/* list of old elements somehow affected by the diff in a file */
 		public Map<Edit, List<DecisionKnowledgeElement>> diffedElementsInOlderVersion = new HashMap<>();
 	}
