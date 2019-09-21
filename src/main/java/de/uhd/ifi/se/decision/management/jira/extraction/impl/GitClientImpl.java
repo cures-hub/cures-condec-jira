@@ -195,13 +195,19 @@ public class GitClientImpl implements GitClient {
 		try {
 			List<RemoteConfig> remotes = git.remoteList().call();
 			for (RemoteConfig remote : remotes) {
-				git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
+				git.fetch()
+					.setRemote(remote.getName())
+					.setRefSpecs(remote.getFetchRefSpecs())
+					.setRemoveDeletedRefs(true)
+					.call();
+				LOGGER.info("Fetched branches in "+git.getRepository().getDirectory());
 			}
 			git.pull().call();
 		} catch (GitAPIException e) {
 			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t" + e.getMessage());
 			return false;
 		}
+		LOGGER.info("Pulled from remote in "+git.getRepository().getDirectory());
 		return true;
 	}
 
@@ -212,37 +218,36 @@ public class GitClientImpl implements GitClient {
 	 */
 	private boolean isPullNeeded() {
 		String trackerFilename = "condec.pullstamp.";
-		// if (true) return true;
 		Repository repository = this.getRepository();
-		String branch = "";
-
-		try {
-			branch = repository.getBranch();
-		} catch (IOException ex) {
-			LOGGER.error("Could not get branch, repositories will be fetched on each request.");
-			return true;
-		}
-		trackerFilename += branch;
 		File file = new File(repository.getDirectory(), trackerFilename);
 
 		if (!file.isFile()) {
 			file.setWritable(true);
 			try {
 				file.createNewFile();
-			} catch (IOException ex) {
+			}
+			catch (IOException ex) {
 				LOGGER.error("Could not create a file, repositories will be fetched on each request.");
 			}
 			return true;
 		}
-
-		Date date = new Date();
-		long fileLifespan = date.getTime() - file.lastModified();
-		updateFileModifyTime(file, date);
-		boolean needsFetch = fileLifespan > REPO_OUTDATED_AFTER;
-		return needsFetch;
+		else {
+			if (isRepoOutdated(file.lastModified())) {
+				updateFileModifyTime(file);
+				return true;
+			}
+			return false;
+		}
 	}
 
-	private boolean updateFileModifyTime(File file, Date date) {
+	private boolean isRepoOutdated(long lastModified) {
+		Date date = new Date();
+		long fileLifespan = date.getTime() - lastModified;
+		return fileLifespan > REPO_OUTDATED_AFTER;
+	}
+
+	private boolean updateFileModifyTime(File file) {
+		Date date = new Date();
 		if (!file.setLastModified(date.getTime())) {
 			LOGGER.error("Could not modify a file modify time, repositories will be fetched on each request.");
 			return false;
