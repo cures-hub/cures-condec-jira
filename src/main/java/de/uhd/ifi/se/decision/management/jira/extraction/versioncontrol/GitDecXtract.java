@@ -87,7 +87,7 @@ public class GitDecXtract {
 
 		return elementsFromCode.stream().map(element -> {
 			element.setProject(projecKey);
-			element.setKey(updateKeyForCommentExtractedElement(element));
+			element.setKey(updateKeyForCodeExtractedElementWithInformationHash(element));
 			return element;
 		}).collect(Collectors.toList());
 	}
@@ -106,7 +106,7 @@ public class GitDecXtract {
 	/*
 	 * Appends rationale text hash to the DecisionKnowledgeElement key.
 	 */
-	private String updateKeyForCommentExtractedElement(DecisionKnowledgeElement elementWithoutTextHash) {
+	private String updateKeyForCodeExtractedElementWithInformationHash(DecisionKnowledgeElement elementWithoutTextHash) {
 		String key = elementWithoutTextHash.getKey();
 		String rationaleText = elementWithoutTextHash.getSummary() + elementWithoutTextHash.getDescription();
 
