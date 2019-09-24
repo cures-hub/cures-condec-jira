@@ -1,7 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.Preprocessor;
 import org.slf4j.Logger;
@@ -13,8 +15,6 @@ import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.filters.Filter;
-import weka.filters.unsupervised.attribute.StringToWordVector;
 
 /**
  * Class to identify decision knowledge in natural language texts using a binary
@@ -84,17 +84,17 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 
     }
 
-	@Override
-	public void trainBinaryClassifier(Double[][] features, Integer[] labels) {
-		this.binaryClassifier.train(features, labels);
-	}
+    @Override
+    public void trainBinaryClassifier(Double[][] features, Integer[] labels) {
+        this.binaryClassifier.train(features, labels);
+    }
 
-	@Override
-	public void updateBinaryClassifier(Double[] feature, Integer label) {
-		this.binaryClassifier.train(feature, label);
-	}
+    @Override
+    public void updateBinaryClassifier(Double[] feature, Integer label) {
+        this.binaryClassifier.train(feature, label);
+    }
 
-	public List<KnowledgeType> makeFineGrainedPredictions(List<String> stringsToBeClassified) {
+    public List<KnowledgeType> makeFineGrainedPredictions(List<String> stringsToBeClassified) {
         List<List<Double>> instances = preprocess(stringsToBeClassified);
         List<KnowledgeType> fineGrainedPredictionResults = new ArrayList<KnowledgeType>();
 
@@ -113,29 +113,49 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
         return fineGrainedPredictionResults;
     }
 
-	@Override
-	public void trainFineGrainedClassifier(Double[][] features, Integer[] labels) {
-		this.fineGrainedClassifier.train(features, labels);
-	}
+    @Override
+    public void trainFineGrainedClassifier(Double[][] features, Integer[] labels) {
+        this.fineGrainedClassifier.train(features, labels);
+    }
 
-	@Override
-	public void updateFineGrainedClassifier(Double[] feature, Integer label) {
-		this.fineGrainedClassifier.train(feature, label);
-	}
+    @Override
+    public void updateFineGrainedClassifier(Double[] feature, Integer label) {
+        this.fineGrainedClassifier.train(feature, label);
+    }
 
-	@Override
+    @Override
     public List<Double> preprocess(String stringsToBePreprocessed) {
         return this.preprocessor.preprocess(stringsToBePreprocessed);
     }
 
     @Override
+    public Map<String, List> preprocess(List<String> stringsToBePreprocessed, List labels) {
+        List preprocessedSentences = new ArrayList();
+        List updatedLabels = new ArrayList();
+        Map preprocessedFeaturesWithLabels = new HashMap();
+        for (int i = 0; i< stringsToBePreprocessed.size(); i++) {
+            List preprocessedSentence = this.preprocessor.preprocess(stringsToBePreprocessed.get(i));
+            for(int _i = 0; _i < preprocessedSentence.size(); _i++){
+                updatedLabels.add(labels.get(i));
+            }
+            preprocessedSentences.addAll(preprocessedSentence);
+        }
+        preprocessedFeaturesWithLabels.put("labels", updatedLabels);
+        preprocessedFeaturesWithLabels.put("features", preprocessedSentences);
+        return preprocessedFeaturesWithLabels;
+    }
+
+
     public List<List<Double>> preprocess(List<String> stringsToBePreprocessed) {
         List preprocessedSentences = new ArrayList();
-        for (String stringToBePreprocessed : stringsToBePreprocessed) {
-            preprocessedSentences.add(this.preprocessor.preprocess(stringToBePreprocessed));
+        for (int i = 0; i< stringsToBePreprocessed.size(); i++) {
+            List preprocessedSentence = this.preprocessor.preprocess(stringsToBePreprocessed.get(i));
+
+            preprocessedSentences.addAll(preprocessedSentence);
         }
         return preprocessedSentences;
     }
+
 
     @Override
     public void setBinaryClassifier(BinaryClassifierImplementation binaryClassifier) {
@@ -156,7 +176,6 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
     public FineGrainedClassifierImpl getFineGrainedClassifier() {
         return this.fineGrainedClassifier;
     }
-
 
 
     private Instances createDatasetForBinaryClassification(List<String> stringsToBeClassified) {
@@ -188,7 +207,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
         return relevantAttribute;
     }
 
-	@Deprecated
+    @Deprecated
     private Instances createDatasetForFineGrainedClassification(List<String> stringsToBeClassified) {
         List<Attribute> wekaAttributes = new ArrayList<Attribute>();
 

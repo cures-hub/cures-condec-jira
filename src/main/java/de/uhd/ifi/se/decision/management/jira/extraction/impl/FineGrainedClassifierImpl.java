@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
+import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 import de.uhd.ifi.se.decision.management.jira.extraction.Classifier;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import smile.classification.SVM;
@@ -39,13 +40,13 @@ public class FineGrainedClassifierImpl extends Classifier {
     }
 
     KnowledgeType predictKnowledgeType(Double[] feature) throws Exception {
-        Double[] probabilities = super.predictProbabilities(feature);
+        Double[] probabilities = ArrayUtils.toObject(super.predictProbabilities(feature));
         int maxAt = maxAtInArray(probabilities);
         return this.mapIndexToKnowledgeType(maxAt);
     }
 
     public int maxAtInArray(Double[] probabilities){
-        int maxAt = -1;
+        int maxAt = 0;
         for (int i = 0; i < probabilities.length; i++) {
             maxAt = probabilities[i] > probabilities[maxAt] ? i : maxAt;
         }

@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.BinaryClassifierImplementation;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.FineGrainedClassifierImpl;
@@ -58,6 +59,10 @@ public interface DecisionKnowledgeClassifier {
 	List<Double> preprocess(String stringsToBePreprocessed);
 
 	List<List<Double>> preprocess(List<String> stringsToBePreprocessed);
+
+	Map<String, List> preprocess(List<String> stringsToBePreprocessed, List labels);
+
+
 
 	/**
 	 * Set the classifier for binary prediction.
