@@ -1,8 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import mst.In;
 import smile.classification.SVM;
 import smile.math.kernel.BinarySparseGaussianKernel;
 import smile.math.kernel.MercerKernel;
@@ -66,18 +64,26 @@ public abstract class Classifier {
      */
     public void train(Double[][] features, Integer[] labels) {
         for (int i = 0; i < this.epochs; i++) {
-            this.model.learn(features, ArrayUtils.toPrimitive(labels));
+            /*TODO: ERROR -
+            class [Ljava.lang.Double; cannot be cast to class
+            [I ([Ljava.lang.Double; and [I are in module java.base of loader 'bootstrap')
+             */
+            this.model.learn((Double[][]) features, (int[]) ArrayUtils.toPrimitive(labels));
         }
         this.model.finish();
         this.modelIsTrained = true;
     }
 
-    /**
+    /**{1})
      * @param features
      * @param labels
      */
     public void train(List<List<Double>> features, List<Integer> labels) {
-       this.train(features.toArray(Double[][]::new),
+       Double[][] featuresArray = new Double[features.size()][features.get(0).size()];
+       for (int i = 0; i < features.size(); i++){
+           featuresArray[i] = (Double[]) features.get(i).toArray(Double[]::new);
+       }
+        this.train(featuresArray,
                labels.toArray(Integer[]::new));
     }
 
@@ -94,10 +100,10 @@ public abstract class Classifier {
      * @param feature
      * @return probabilities of the labels
      */
-    public Double[] predictProbabilities(Double[] feature) throws Exception {
+    public double[] predictProbabilities(Double[] feature) throws Exception {
         if (this.modelIsTrained) {
-            Double[] probabilities = new Double[this.numClasses];
-            this.model.predict(feature, ArrayUtils.toPrimitive(probabilities));
+            double[] probabilities = new double[this.numClasses];
+            this.model.predict(feature, probabilities);
             return probabilities;
         } else {
             throw new Exception("Classifier has not been trained!");

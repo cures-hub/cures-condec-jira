@@ -95,7 +95,7 @@ public class PreprocessorImpl implements Preprocessor {
     private List concat(List tokens, int start, int end) {
         List gram = new ArrayList();
         for (int i = start; i < end; i++)
-            gram.add(tokens.get(i));
+            gram.addAll((List<Double>) tokens.get(i));
         return gram;
     }
 

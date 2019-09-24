@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
+import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 import de.uhd.ifi.se.decision.management.jira.extraction.Classifier;
 import smile.classification.SVM;
 import smile.math.kernel.MercerKernel;
@@ -38,7 +39,7 @@ public class BinaryClassifierImplementation extends Classifier {
 
     boolean predictIsKnowledge(Double[] feature) throws Exception {
         // If the probability for being relevant is greater than 0.5, true is returned.
-        return this.isRelevant(super.predictProbabilities(feature));
+        return this.isRelevant(ArrayUtils.toObject(super.predictProbabilities(feature)));
     }
 
     boolean predictIsKnowledge(List<Double> feature) throws Exception {
