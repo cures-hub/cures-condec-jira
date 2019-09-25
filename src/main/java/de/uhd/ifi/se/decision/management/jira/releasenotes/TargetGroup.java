@@ -6,7 +6,7 @@ import java.util.Locale;
  * Type of Target Groups for Release Notes
  */
 public enum TargetGroup {
-	DEVELOPER, STAKEHOLDER, TESTER, ENDUSER;
+	DEVELOPER,  TESTER, ENDUSER;
 
 
 	@Override
@@ -20,8 +20,6 @@ public enum TargetGroup {
 			return TargetGroup.DEVELOPER;
 		}
 		switch (type.toLowerCase(Locale.ENGLISH)) {
-			case "stakeholder":
-				return TargetGroup.STAKEHOLDER;
 			case "tester":
 				return TargetGroup.TESTER;
 			case "enduser":

@@ -40,4 +40,5 @@ a:focus a:hover {
 
 .noDots{
 	list-style: none;
+	padding-left: 0;
 }

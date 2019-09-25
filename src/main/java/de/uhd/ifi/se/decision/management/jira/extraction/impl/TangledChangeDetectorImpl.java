@@ -7,8 +7,8 @@ import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 /**
- * Class for the estimation whether a {@link Diff} of {@ChangedFile}s
- * contains wrong links, i.e., is tangled.
+ * Class for the estimation whether a {@link Diff} of {@ChangedFile}s contains
+ * wrong links, i.e., is tangled.
  */
 public class TangledChangeDetectorImpl implements TangledChangeDetector {
 
@@ -94,7 +94,7 @@ public class TangledChangeDetectorImpl implements TangledChangeDetector {
 			for (ChangedFile changedFile : diff.getChangedFiles()) {
 				changedFile.setProbabilityOfCorrectness(((max - changedFile.getPackageDistance()) / (max - min)) * 100);
 			}
-		} else {
+		} else if (!diff.getChangedFiles().isEmpty()) {
 			diff.getChangedFiles().get(0).setProbabilityOfCorrectness(100);
 		}
 	}

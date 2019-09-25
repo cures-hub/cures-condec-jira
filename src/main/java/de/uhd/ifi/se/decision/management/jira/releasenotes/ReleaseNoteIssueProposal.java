@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 /**
  * Interface Release Note Issue Proposal
- * It saves the decision knowledge element, the final rating and the task criteria prioritisation metrics.
+ * It saves the decision knowledge element, the final rating and the issue metrics.
  */
 @JsonDeserialize(as = ReleaseNoteIssueProposalImpl.class)
 public interface ReleaseNoteIssueProposal {
@@ -45,18 +45,18 @@ public interface ReleaseNoteIssueProposal {
 	void setRating(double rating);
 
 	/**
-	 * Get criteria prioritisation of the ReleaseNoteIssueProposal.
+	 * Get metrics of the ReleaseNoteIssueProposal.
 	 *
-	 * @return taskCriteriaPrioritisation of ReleaseNoteIssueProposal.
+	 * @return metrics of ReleaseNoteIssueProposal.
 	 */
-	EnumMap<TaskCriteriaPrioritisation, Integer> getTaskCriteriaPrioritisation();
+	EnumMap<JiraIssueMetric, Integer> getMetrics();
 
 	/**
-	 * Set criteria prioritisation of ReleaseNoteIssueProposal.
+	 * Set metrics of ReleaseNoteIssueProposal.
 	 *
-	 * @param taskCriteriaPrioritisation of ReleaseNoteIssueProposal.
+	 * @param metrics of ReleaseNoteIssueProposal.
 	 */
-	void setTaskCriteriaPrioritisation(EnumMap<TaskCriteriaPrioritisation, Integer> taskCriteriaPrioritisation);
+	void setMetrics(EnumMap<JiraIssueMetric, Integer> metrics);
 
 	/**
 	 * Gets the priority of the issue and sets the priority criteria of the ReleaseNoteIssueProposal

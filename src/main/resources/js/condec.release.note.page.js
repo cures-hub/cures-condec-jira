@@ -31,26 +31,80 @@
 			conDecObservable = _conDecObservable;
 			conDecDialog = _conDecDialog;
 
-			// Register/subscribe this view as an observer
-			conDecObservable.subscribe(this);
-
+			//subscribe to event on table
+			document.getElementById("release-notes-table").addEventListener("updateReleaseNoteTable",function(event){
+				this.getReleaseNotes();
+			}.bind(this));
 			return true;
 		}
 		return false;
 	};
 
 	ConDecReleaseNotePage.prototype.getReleaseNotes = function() {
-		conDecAPI.getReleaseNotes(function(){
-			console.log("get release notes");
-		});
+		var query=$("#searchReleaseNotesInput").val();
+		emptyTable();
+		conDecAPI.getAllReleaseNotes(query).then(function(response){
+			if(response && response.length){
+				fillTable(response)
+			}else{
+				throwAlert("Info","No Release Notes found!")
+			}
+		}).catch(function (err) {
+			throwAlert("Error","Could not load Release Notes",err.toString())
+		}).finally(function () {
+			showLoadingIndicator(false);
+		})
 
 	};
+
 
 	ConDecReleaseNotePage.prototype.addReleaseNote = function() {
 		conDecDialog.showCreateReleaseNoteDialog();
 	};
 
+	ConDecReleaseNotePage.prototype.displayReleaseNote = function(id) {
+		conDecDialog.showEditReleaseNoteDialog(id);
+	};
 
+	function fillTable(response) {
+		var tBody=$("#release-notes-table-body");
+		if(response && response.length){
+		response.map(function(releaseNote){
+			showLoadingIndicator(false);
+			tBody.append(createTableRow(releaseNote));
+		})
+		}
+	}
+	function throwAlert(type,title, message) {
+		AJS.flag({
+			type: type,
+			close: "auto",
+			title: title,
+			body: message
+		});
+	}
+	function emptyTable(){
+		showLoadingIndicator(true);
+		var tBody=$("#release-notes-table-body");
+		tBody.empty();
+	}
+	function showLoadingIndicator(display){
+		if(display){
+			$("#release-note-table-loader").css("display","block")
+		}else{
+			$("#release-note-table-loader").css("display","none");
+		}
+	}
+	function createTableRow(releaseNote){
+		var tableRow="<tr>";
+		tableRow +="<td>"+releaseNote.id+"</td>";
+		tableRow +="<td>"+releaseNote.title+"</td>";
+		tableRow +="<td>"+releaseNote.startDate+"</td>";
+		tableRow +="<td>"+releaseNote.endDate+"</td>";
+		tableRow +="<td><button class='aui-button' id='openEditReleaseNoteDialogButton_"+releaseNote.id+"' onclick='displayReleaseNote("+releaseNote.id+")'>Display</button></td>";
+		tableRow +="</tr>";
+		return tableRow
+	}
 
 	/*
 	 * Init Helpers

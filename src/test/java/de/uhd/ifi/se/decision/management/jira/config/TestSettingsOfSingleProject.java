@@ -85,7 +85,7 @@ public class TestSettingsOfSingleProject {
 
 	@Test
 	public void testGetTemplatePath() {
-		assertEquals("templates/settingsForSingleProject.vm", servlet.getTemplatePath());
+		assertEquals("templates/settings/settingsForSingleProject.vm", servlet.getTemplatePath());
 	}
 
 	@Test
@@ -97,6 +97,6 @@ public class TestSettingsOfSingleProject {
 	@NonTransactional
 	public void testGetVelocityParametersFilled() {
 		request.setAttribute("projectKey", "TEST");
-		assertEquals(8, servlet.getVelocityParameters(request).size());
+		assertEquals(11, servlet.getVelocityParameters(request).size());
 	}
 }

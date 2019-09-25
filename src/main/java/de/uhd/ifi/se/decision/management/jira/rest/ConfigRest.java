@@ -1,23 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -28,7 +10,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 import com.google.common.collect.ImmutableMap;
-
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManagerForJiraIssueComments;
@@ -39,6 +20,23 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 /**
  * REST resource for plug-in configuration
@@ -300,14 +298,49 @@ public class ConfigRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (webhookType == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "webhook Type = null")).build();
-		}
 		try {
 			ConfigPersistenceManager.setWebhookType(projectKey, webhookType, isWebhookTypeEnabled);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error("Failed to set the webhook type: "+ webhookType + " Message: " + e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
+	}
+
+	@Path("/setReleaseNoteMapping")
+	@POST
+	public Response setReleaseNoteMapping(@Context HttpServletRequest request,
+										  @QueryParam("projectKey") final String projectKey,
+										  @QueryParam("releaseNoteCategory") final ReleaseNoteCategory category,
+										  List<String> selectedIssueNames
+	) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		try {
+			ConfigPersistenceManager.setReleaseNoteMapping(projectKey, category, selectedIssueNames);
+			return Response.ok(Status.ACCEPTED).build();
+		} catch (Exception e) {
+			return Response.status(Status.CONFLICT).build();
+		}
+	}
+
+	@Path("/getReleaseNoteMapping")
+	@GET
+	public Response getReleaseNoteMapping(@Context HttpServletRequest request,
+										  @QueryParam("projectKey") final String projectKey
+	) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		try {
+			HashMap<ReleaseNoteCategory,List<String>> mapping=new HashMap<>();
+			ReleaseNoteCategory.toOriginalList().forEach(category -> {
+				mapping.put(category,ConfigPersistenceManager.getReleaseNoteMapping(projectKey,category));
+			});
+			return Response.ok(mapping).build();
+		} catch (Exception e) {
 			return Response.status(Status.CONFLICT).build();
 		}
 	}

@@ -21,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.implementation.Clas
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 
 /**
  * Renders the administration page to change the plug-in configuration of a
@@ -29,7 +30,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 public class SettingsOfSingleProject extends AbstractSettingsServlet {
 
 	private static final long serialVersionUID = 8699708658914306058L;
-	private static final String TEMPLATEPATH = "templates/settingsForSingleProject.vm";
+	private static final String TEMPLATEPATH = "templates/settings/settingsForSingleProject.vm";
 
 	@Inject
 	public SettingsOfSingleProject(TemplateRenderer renderer) {
@@ -68,6 +69,10 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("rootTypes", ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
 		velocityParameters.put("arffFiles", trainer.getTrainingFileNames());
 		velocityParameters.put("selectedArffFile", ConfigPersistenceManager.getArffFileForClassifier(projectKey));
+		velocityParameters.put("releaseNoteMapping_improvements",ConfigPersistenceManager.getReleaseNoteMapping(projectKey, ReleaseNoteCategory.IMPROVEMENTS));
+		velocityParameters.put("releaseNoteMapping_bug_fixes",ConfigPersistenceManager.getReleaseNoteMapping(projectKey, ReleaseNoteCategory.BUG_FIXES));
+		velocityParameters.put("releaseNoteMapping_new_features",ConfigPersistenceManager.getReleaseNoteMapping(projectKey, ReleaseNoteCategory.NEW_FEATURES));
+
 		return velocityParameters;
 	}
 	

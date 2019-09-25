@@ -27,7 +27,7 @@ public class RationaleFromCodeCommentExtractor {
 
 	public RationaleFromCodeCommentExtractor(CodeComment comment) {
 		String tagSearch = String.join("|", decKnowTags.stream()
-				.map(tag -> "@" + tag + "\\:?") //at-char + ratType + colon
+				.map(tag -> "@" + tag + "\\:?") //at-char + ratType + colon or blank
 				.collect(Collectors.toList()));
 		TAGS_SEARCH_PATTERN = Pattern.compile(tagSearch, Pattern.CASE_INSENSITIVE);
 		TWO_EMPTY_LINES_PATTERN = Pattern.compile("\\s*\\n\\s*\\n\\s*\\n"); //with optional white spaces

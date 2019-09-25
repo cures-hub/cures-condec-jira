@@ -88,6 +88,7 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 		Comment comment = this.getComment();
 		if (comment == null) {
 			text = getJiraIssueDescription();
+			this.setCreated(issue.getCreated());
 		} else {
 			text = comment.getBody();
 			this.setCreated(comment.getCreated());

@@ -8,6 +8,7 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.AdditionalConfigurationOptions;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteConfigurationImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.ReleaseNoteRest;
@@ -47,6 +48,7 @@ public class TestGetProposedIssues extends TestSetUp {
 		releaseNoteConfiguration.setBugFixMapping(issueKeyList);
 		releaseNoteConfiguration.setFeatureMapping(issueKeyList);
 		releaseNoteConfiguration.setImprovementMapping(issueKeyList);
+		releaseNoteConfiguration.setAdditionalConfiguration(AdditionalConfigurationOptions.toBooleanList(true));
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
 		issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");
