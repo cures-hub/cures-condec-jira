@@ -25,8 +25,8 @@ public class BinaryClassifierImplementation extends Classifier {
         super(svm, epochs, 2);
     }
 
-    public BinaryClassifierImplementation(Double c, Double sigma, Integer epochs) {
-        super(c, sigma, epochs, 2);
+    public BinaryClassifierImplementation(Double c, Integer degree, Integer epochs) {
+        super(c, degree, epochs, 2);
     }
 
     public BinaryClassifierImplementation(Double c, MercerKernel kernel, Integer epochs) {

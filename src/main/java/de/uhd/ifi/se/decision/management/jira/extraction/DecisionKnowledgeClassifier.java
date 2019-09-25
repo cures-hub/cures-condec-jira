@@ -50,9 +50,15 @@ public interface DecisionKnowledgeClassifier {
 
 	void updateBinaryClassifier(Double[] feature, Integer label);
 
+	void trainBinaryClassifier(List<List<Double>> features, List<Integer> labels);
+
+
 	List<KnowledgeType> makeFineGrainedPredictions(List<String> stringsToBeClassified);
 
 	void trainFineGrainedClassifier(Double[][] features, Integer[] labels);
+
+	void trainFineGrainedClassifier(List<List<Double>> features, List<Integer> labels);
+
 
 	void updateFineGrainedClassifier(Double[] feature, Integer label);
 

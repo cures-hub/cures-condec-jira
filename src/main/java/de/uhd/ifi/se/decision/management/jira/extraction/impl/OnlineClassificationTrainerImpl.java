@@ -93,15 +93,14 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
     public boolean train() {
         boolean isTrained = false;
         try {
-            ///TODO ERROR   The classifier could not be trained. Message:Index 6 out of bounds for length 6
             Map<String, List> trainingData = this.extractTrainingData(super.instances);
             Map preprocessedIsRelevantSentences = this.classifier.preprocess(trainingData.get("sentences"),
                     trainingData.get("labelsIsRelevant"));
-            this.classifier.getBinaryClassifier().train((List<List<Double>>) preprocessedIsRelevantSentences.get("features"),
+            this.classifier.trainBinaryClassifier((List<List<Double>>) preprocessedIsRelevantSentences.get("features"),
                     (List<Integer>) preprocessedIsRelevantSentences.get("labels"));
             Map preprocessedFineSentences = this.classifier.preprocess(trainingData.get("sentences"),
                     trainingData.get("labelsKnowledgeType"));
-            this.classifier.getFineGrainedClassifier().train((List<List<Double>>) preprocessedIsRelevantSentences.get("features"),
+            this.classifier.trainFineGrainedClassifier((List<List<Double>>) preprocessedIsRelevantSentences.get("features"),
                     (List<Integer>) preprocessedIsRelevantSentences.get("labels"));
 
             //this.evaluateTraining();
