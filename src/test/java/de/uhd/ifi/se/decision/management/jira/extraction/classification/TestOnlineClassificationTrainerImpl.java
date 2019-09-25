@@ -1,9 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationTrainer;
-import de.uhd.ifi.se.decision.management.jira.extraction.DecisionKnowledgeClassifier;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.OnlineClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassificationTrainer;
+import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;

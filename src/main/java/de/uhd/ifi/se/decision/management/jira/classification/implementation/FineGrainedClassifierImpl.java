@@ -1,14 +1,11 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.impl;
+package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
-import de.uhd.ifi.se.decision.management.jira.extraction.Classifier;
+import de.uhd.ifi.se.decision.management.jira.classification.Classifier;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import smile.classification.SVM;
 import smile.math.kernel.MercerKernel;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class FineGrainedClassifierImpl extends Classifier {
@@ -57,15 +54,6 @@ public class FineGrainedClassifierImpl extends Classifier {
         return this.predictKnowledgeType(feature.toArray(Double[]::new));
     }
 
-
-    @Override
-    public void train(File trainingFile) {
-        List<Double[]> features = new ArrayList<>();
-        List<Integer> labels = new ArrayList<>();
-        //TODO!
-
-        super.train((Double[][]) features.toArray(), (Integer[]) labels.toArray());
-    }
 
     public void train(Double[] feature, KnowledgeType label) {
         super.train(feature, mapKnowledgeTypeToIndex(label));

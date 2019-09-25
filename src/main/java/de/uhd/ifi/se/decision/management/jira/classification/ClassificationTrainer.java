@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction;
+package de.uhd.ifi.se.decision.management.jira.classification;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,15 +9,15 @@ import java.net.URL;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.ClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import weka.core.Instances;
 
 /**
  * Interface responsible to train the supervised text classifier. For this
  * purpose, the project admin needs to create and select a file.
+ * This abstraction was introduced to allow for different training-file formats.
  */
 public interface ClassificationTrainer {
 

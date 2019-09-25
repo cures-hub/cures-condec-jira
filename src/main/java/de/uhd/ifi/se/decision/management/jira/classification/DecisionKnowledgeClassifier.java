@@ -1,11 +1,11 @@
-package de.uhd.ifi.se.decision.management.jira.extraction;
+package de.uhd.ifi.se.decision.management.jira.classification;
 
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.BinaryClassifierImplementation;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.FineGrainedClassifierImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.BinaryClassifierImplementation;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.FineGrainedClassifierImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

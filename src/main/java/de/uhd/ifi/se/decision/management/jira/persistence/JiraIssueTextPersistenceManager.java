@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.ClassificationTrainerImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.OnlineClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
