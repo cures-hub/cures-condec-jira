@@ -104,4 +104,5 @@ public class FineGrainedClassifierImpl extends Classifier {
         }
         return -1;
     }
+
 }

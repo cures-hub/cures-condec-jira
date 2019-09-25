@@ -60,6 +60,8 @@ public abstract class Classifier {
         for (int i = 0; i < this.epochs; i++) {
             this.model.learn(features, ArrayUtils.toPrimitive(labels));
         }
+        this.model.trainPlattScaling(features, ArrayUtils.toPrimitive(labels));
+
         this.model.finish();
         this.modelIsTrained = true;
     }
@@ -73,7 +75,7 @@ public abstract class Classifier {
     public void train(List<List<Double>> features, List<Integer> labels) {
         Double[][] featuresArray = new Double[features.size()][features.get(0).size()];
         for (int i = 0; i < features.size(); i++) {
-            featuresArray[i] = (Double[]) features.get(i).toArray(Double[]::new);
+            featuresArray[i] = features.get(i).toArray(Double[]::new);
         }
         this.train(featuresArray,
                 labels.toArray(Integer[]::new));
@@ -145,6 +147,8 @@ public abstract class Classifier {
      */
     public abstract void loadFromFile() throws Exception;
 
-
+    public Integer getNumClasses() {
+        return numClasses;
+    }
 }
 

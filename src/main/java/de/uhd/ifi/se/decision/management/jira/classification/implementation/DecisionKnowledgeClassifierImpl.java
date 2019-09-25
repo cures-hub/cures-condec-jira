@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 
+import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
@@ -68,13 +71,22 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 
     @Override
     public List<Boolean> makeBinaryPredictions(List<String> stringsToBeClassified) {
-        List<List<Double>> instances = preprocess(stringsToBeClassified);
         List<Boolean> binaryPredictionResults = new ArrayList<Boolean>();
 
         try {
-            for (List<Double> instance : instances) {
-                boolean predictionResult = binaryClassifier.predictIsKnowledge(instance);
-                binaryPredictionResults.add(predictionResult);
+            // Classify string instances
+            for (String stringToBeClassified : stringsToBeClassified) {
+                List<List<Double>> features = preprocess(stringToBeClassified);
+                double[] predictionResult = new double[this.binaryClassifier.getNumClasses()];
+                //Make predictions for each nGram; then determine maximum probability of all added together.
+                for (List<Double> feature : features) {
+                    double[] currentPredictionResult = binaryClassifier.predictProbabilities(feature.toArray(Double[]::new));
+                    IntStream.range(0, predictionResult.length)
+                            .forEach(i -> predictionResult[i] = predictionResult[i] + currentPredictionResult[i]);
+                }
+                boolean predictedIsRelevant = binaryClassifier.isRelevant(ArrayUtils.toObject(predictionResult));
+
+                binaryPredictionResults.add(predictedIsRelevant);
             }
         } catch (Exception e) {
             LOGGER.error("Binary classification failed. Message: " + e.getMessage());
@@ -101,16 +113,27 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 
     }
 
+    @Override
     public List<KnowledgeType> makeFineGrainedPredictions(List<String> stringsToBeClassified) {
-        List<List<Double>> instances = preprocess(stringsToBeClassified);
         List<KnowledgeType> fineGrainedPredictionResults = new ArrayList<KnowledgeType>();
 
         try {
 
             // Classify string instances
-            for (List<Double> instance : instances) {
-                KnowledgeType predictionResult = fineGrainedClassifier.predictKnowledgeType(instance);
-                fineGrainedPredictionResults.add(predictionResult);
+            for (String stringToBeClassified : stringsToBeClassified) {
+                List<List<Double>> features = preprocess(stringToBeClassified);
+                double[] predictionResult = new double[this.fineGrainedClassifier.getNumClasses()];
+                //Make predictions for each nGram; then determine maximum probability of all added together.
+                for (List<Double> feature : features) {
+                    double[] currentPredictionResult = fineGrainedClassifier.predictProbabilities(feature.toArray(Double[]::new));
+                    IntStream.range(0, predictionResult.length)
+                            .forEach(i -> predictionResult[i] = predictionResult[i] + currentPredictionResult[i]);
+                }
+                KnowledgeType predictedKnowledgeType = fineGrainedClassifier.mapIndexToKnowledgeType(
+                        fineGrainedClassifier.maxAtInArray(ArrayUtils.toObject(predictionResult))
+                );
+                fineGrainedPredictionResults.add(predictedKnowledgeType);
+
             }
         } catch (Exception e) {
             LOGGER.error("Fine grained classification failed. Message: " + e.getMessage());
@@ -136,7 +159,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
     }
 
     @Override
-    public List<Double> preprocess(String stringsToBePreprocessed) {
+    public List<List<Double>> preprocess(String stringsToBePreprocessed) {
         return this.preprocessor.preprocess(stringsToBePreprocessed);
     }
 
@@ -145,9 +168,9 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
         List preprocessedSentences = new ArrayList();
         List updatedLabels = new ArrayList();
         Map preprocessedFeaturesWithLabels = new HashMap();
-        for (int i = 0; i< stringsToBePreprocessed.size(); i++) {
+        for (int i = 0; i < stringsToBePreprocessed.size(); i++) {
             List preprocessedSentence = this.preprocessor.preprocess(stringsToBePreprocessed.get(i));
-            for(int _i = 0; _i < preprocessedSentence.size(); _i++){
+            for (int _i = 0; _i < preprocessedSentence.size(); _i++) {
                 updatedLabels.add(labels.get(i));
             }
             preprocessedSentences.addAll(preprocessedSentence);
@@ -160,7 +183,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 
     public List<List<Double>> preprocess(List<String> stringsToBePreprocessed) {
         List preprocessedSentences = new ArrayList();
-        for (int i = 0; i< stringsToBePreprocessed.size(); i++) {
+        for (int i = 0; i < stringsToBePreprocessed.size(); i++) {
             List preprocessedSentence = this.preprocessor.preprocess(stringsToBePreprocessed.get(i));
 
             preprocessedSentences.addAll(preprocessedSentence);

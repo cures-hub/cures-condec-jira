@@ -62,7 +62,7 @@ public interface DecisionKnowledgeClassifier {
 
 	void updateFineGrainedClassifier(Double[] feature, Integer label);
 
-	List<Double> preprocess(String stringsToBePreprocessed);
+	List<List<Double>> preprocess(String stringsToBePreprocessed);
 
 	List<List<Double>> preprocess(List<String> stringsToBePreprocessed);
 
