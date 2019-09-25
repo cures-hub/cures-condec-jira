@@ -28,7 +28,7 @@
             matrix.appendChild(firstRowHeaderElement);
 
             for (let d in data.matrixHeaderRow) {
-                newTableHeaderElement(matrix, data.matrixHeaderRow[d]);
+                newTableHeaderElement(matrix, data.matrixHeaderRow[d], "columnHeader");
             }
 
             for (let d in data.matrixData){
@@ -40,22 +40,20 @@
 
     }
 
-    function newTableHeaderElement(matrix, text) {
-        const tableColumn = document.createElement("th");
-        tableColumn.classList.add("rotate");
+    function newTableHeaderElement(matrix, text, styleClass) {
+        const element = document.createElement("th");
+        element.classList.add(styleClass);
         const div = document.createElement("div");
         div.innerText = text;
-        tableColumn.appendChild(div);
-        matrix.appendChild(tableColumn);
+        element.appendChild(div);
+        matrix.appendChild(element);
     }
 
     function newTableRow(matrix, row) {
         matrix.appendChild(document.createElement("tr"));
         for (let d in row) {
             if (d == 0) {
-                const firstRowElement = document.createElement("th");
-                firstRowElement.innerText = row[d];
-                matrix.appendChild(firstRowElement)
+                newTableHeaderElement(matrix, row[d], "rowHeader");
             } else {
                 new newTableElement(matrix, row[d]);
             }

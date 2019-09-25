@@ -17,7 +17,9 @@ public class Matrix {
     private Map<Long, List<String>> matrixData;
 
     public Matrix(String projectKey, List<DecisionKnowledgeElement> allDecisions) {
-        this.matrixHeaderRow = new MatrixRow(allDecisions).getHeaderRow();
+        this.matrixHeaderRow = new TreeMap<>();
+
+        matrixHeaderRow.putAll(new MatrixRow(allDecisions).getHeaderRow());
 
         Graph graph = new GraphImpl(projectKey);
         List<Link> links = graph.getAllLinks(allDecisions);
@@ -29,7 +31,7 @@ public class Matrix {
 
         this.matrixData = new TreeMap<>();
         for (DecisionKnowledgeElement decision : allDecisions) {
-            List<String> row = new MatrixRow(entries, allDecisions, decision).getRow();
+            List<String> row = new MatrixRow(entries, matrixHeaderRow, decision).getRow();
             this.matrixData.put(decision.getId(), row);
         }
     }
