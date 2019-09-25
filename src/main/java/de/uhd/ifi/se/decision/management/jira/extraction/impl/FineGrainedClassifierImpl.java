@@ -27,8 +27,8 @@ public class FineGrainedClassifierImpl extends Classifier {
         super(svm, epochs, numClasses);
     }
 
-    public FineGrainedClassifierImpl(Double c, Double sigma, Integer epochs, Integer numClasses) {
-        super(c, sigma, epochs, numClasses);
+    public FineGrainedClassifierImpl(Double c, Integer degree, Integer epochs, Integer numClasses) {
+        super(c, degree, epochs, numClasses);
     }
 
     public FineGrainedClassifierImpl(Double c, MercerKernel kernel, Integer epochs, Integer numClasses) {

@@ -94,6 +94,12 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
         this.binaryClassifier.train(feature, label);
     }
 
+    @Override
+    public void trainBinaryClassifier(List<List<Double>> features, List<Integer> labels) {
+        this.binaryClassifier.train(features, labels);
+
+    }
+
     public List<KnowledgeType> makeFineGrainedPredictions(List<String> stringsToBeClassified) {
         List<List<Double>> instances = preprocess(stringsToBeClassified);
         List<KnowledgeType> fineGrainedPredictionResults = new ArrayList<KnowledgeType>();
@@ -115,6 +121,11 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 
     @Override
     public void trainFineGrainedClassifier(Double[][] features, Integer[] labels) {
+        this.fineGrainedClassifier.train(features, labels);
+    }
+
+    @Override
+    public void trainFineGrainedClassifier(List<List<Double>> features, List<Integer> labels) {
         this.fineGrainedClassifier.train(features, labels);
     }
 

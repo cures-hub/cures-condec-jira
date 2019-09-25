@@ -2,8 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 import smile.classification.SVM;
-import smile.math.kernel.BinarySparseGaussianKernel;
 import smile.math.kernel.MercerKernel;
+import smile.math.kernel.PolynomialKernel;
 import weka.core.SerializationHelper;
 
 
@@ -24,19 +24,19 @@ public abstract class Classifier {
 
 
     public Classifier(Integer numClasses) {
-        this(0.5, 0.5, 3, numClasses);
+        this(0.5, 2, 3, numClasses);
     }
 
     public Classifier(SVM<Double[]> svm, Integer numClasses) {
-        this(new BinarySparseGaussianKernel(0.5), svm, 3, numClasses);
+        this(new PolynomialKernelDouble(2), svm, 3, numClasses);
     }
 
     public Classifier(SVM<Double[]> svm, Integer epochs, Integer numClasses) {
-        this(new BinarySparseGaussianKernel(0.5), svm, epochs, numClasses);
+        this(new PolynomialKernelDouble(2), svm, epochs, numClasses);
     }
 
-    public Classifier(Double c, Double sigma, Integer epochs, Integer numClasses) {
-        this(c, new BinarySparseGaussianKernel(sigma), epochs, numClasses);
+    public Classifier(Double c, Integer degrees, Integer epochs, Integer numClasses) {
+        this(c, new PolynomialKernelDouble(degrees), epochs, numClasses);
     }
 
     public Classifier(Double c, MercerKernel kernel, Integer epochs, Integer numClasses) {
@@ -68,7 +68,7 @@ public abstract class Classifier {
             class [Ljava.lang.Double; cannot be cast to class
             [I ([Ljava.lang.Double; and [I are in module java.base of loader 'bootstrap')
              */
-            this.model.learn((Double[][]) features, (int[]) ArrayUtils.toPrimitive(labels));
+            this.model.learn(features, ArrayUtils.toPrimitive(labels));
         }
         this.model.finish();
         this.modelIsTrained = true;
@@ -144,4 +144,18 @@ public abstract class Classifier {
     public abstract void loadFromFile() throws Exception;
 
 
+}
+
+class PolynomialKernelDouble implements MercerKernel<Double[]>{
+
+    MercerKernel PolyKernel;
+
+    public PolynomialKernelDouble(Integer degree){
+        this.PolyKernel = new PolynomialKernel(degree);
+    }
+
+    @Override
+    public double k(Double[] t1, Double[] t2) {
+        return this.PolyKernel.k(ArrayUtils.toPrimitive(t1), ArrayUtils.toPrimitive(t2));
+    }
 }
