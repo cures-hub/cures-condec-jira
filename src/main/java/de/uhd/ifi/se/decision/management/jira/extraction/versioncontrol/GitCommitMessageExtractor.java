@@ -1,38 +1,36 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-/**
- * purpose: extract decision knowledge elements from single git
- * commit fullMessage text.
- *
- *
- * Decision knowledge can be documented in commit messages
- * using following syntax:
- * """
- * [decKnowledgeTag]knowledge summary text
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 
- * knowledge description text after empty[/decKnowledgeTag]
- * """
+/**
+ * Extracts decision knowledge elements from the message of a single git commit.
  *
- * where [decKnowledgeTag] belongs to set of know Knowledge Types,
- * for example issue, alternative, decision etc.
+ * 
+ * Decision knowledge can be documented in commit messages using the following
+ * syntax:
+ * <p>
+ * <b>[decisionKnowledgeTag]</b>knowledge summary
+ * text<b>[/decisionKnowledgeTag]</b>
+ * <p>
+ *
+ * where [decisionKnowledgeTag] belongs to a set of {@link KnowledgeType}s, for
+ * example, issue, alternative, decision, pro, and con.
  */
 public class GitCommitMessageExtractor {
 
 	private final static List<String> decKnowTags = KnowledgeType.toList();
 	/**
-	 * DecisionKnowledgeElement's key part to be replaced, probably by object
-	 * higher in hierarchy than this object, with commit ish.
+	 * DecisionKnowledgeElement's key part to be replaced, probably by object higher
+	 * in hierarchy than this object, with commit ish.
 	 */
 	public static final String COMMIT_PLACEHOLDER = "commitish";
 	private final Pattern START_TAGS_SEARCH_PATTERN;
@@ -48,13 +46,11 @@ public class GitCommitMessageExtractor {
 		parseWarnings = new ArrayList<>();
 		fullMessage = message;
 
-		String startTagSearch = String.join("|", decKnowTags.stream()
-				.map(tag -> "\\[" + tag + "\\]")
-				.collect(Collectors.toList()));
+		String startTagSearch = String.join("|",
+				decKnowTags.stream().map(tag -> "\\[" + tag + "\\]").collect(Collectors.toList()));
 
-		String endTagSearch = String.join("|", decKnowTags.stream()
-				.map(tag -> "\\[\\/" + tag + "\\]")
-				.collect(Collectors.toList()));
+		String endTagSearch = String.join("|",
+				decKnowTags.stream().map(tag -> "\\[\\/" + tag + "\\]").collect(Collectors.toList()));
 
 		START_TAGS_SEARCH_PATTERN = Pattern.compile(startTagSearch, Pattern.CASE_INSENSITIVE);
 		END_TAGS_SEARCH_PATTERN = Pattern.compile(endTagSearch, Pattern.CASE_INSENSITIVE);
@@ -63,8 +59,7 @@ public class GitCommitMessageExtractor {
 	}
 
 	/**
-	 * extracts decision knowledge elements one by one
-	 * in their order of appearance.
+	 * Extracts decision knowledge elements one by one in their order of appearance.
 	 */
 	private void extract() {
 		if (fullMessage == null || fullMessage.trim().equals("")) {
@@ -81,8 +76,7 @@ public class GitCommitMessageExtractor {
 		/* parsers position in the message, can only move forward */
 		int cursorPosition = 0;
 
-		while (startTagMatcher.find()
-				&& cursorPosition <= startTagMatcher.start()) {
+		while (startTagMatcher.find() && cursorPosition <= startTagMatcher.start()) {
 			cursorPosition = extractElementAndMoveCursor(startTagMatcher);
 		}
 		checkOrphanCloseTags(cursorPosition);
@@ -105,7 +99,7 @@ public class GitCommitMessageExtractor {
 			extractedElements.add(element);
 		} else {
 			parseError = rationaleType + " has no end tag";
-			cursorPosition = fullMessage.length() - 1; //ends further parsing
+			cursorPosition = fullMessage.length() - 1; // ends further parsing
 		}
 		return cursorPosition;
 	}
@@ -114,15 +108,10 @@ public class GitCommitMessageExtractor {
 		return rationaleTypeStartTag.substring(1, rationaleTypeStartTag.length() - 1);
 	}
 
-	private DecisionKnowledgeElement createElement(int start, String rationaleType
-			, String rationaleText, int end) {
-		return new DecisionKnowledgeElementImpl(0
-				, getSummary(rationaleText)
-				, getDescription(rationaleText)
-				, rationaleType.toUpperCase()
-				, "" // unknown, not needed at the moment
-				, COMMIT_PLACEHOLDER + String.valueOf(start) + ":" + String.valueOf(end)
-				, DocumentationLocation.COMMIT);
+	private DecisionKnowledgeElement createElement(int start, String rationaleType, String rationaleText, int end) {
+		return new DecisionKnowledgeElementImpl(0, getSummary(rationaleText), getDescription(rationaleText),
+				rationaleType.toUpperCase(), "" // unknown, not needed at the moment
+				, COMMIT_PLACEHOLDER + String.valueOf(start) + ":" + String.valueOf(end), DocumentationLocation.COMMIT);
 	}
 
 	private String getDescription(String rationaleText) {
@@ -138,7 +127,9 @@ public class GitCommitMessageExtractor {
 		return rationaleText.length();
 	}
 
-	/* checks the rest of the message for orphan closing tags */
+	/**
+	 *  Checks the rest of the message for orphan closing tags.
+	 */
 	private void checkOrphanCloseTags(int cursor) {
 		Matcher matcher = END_TAGS_SEARCH_PATTERN.matcher(fullMessage);
 		while (matcher.find()) {

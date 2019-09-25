@@ -1,8 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model.git.impl;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -17,17 +15,17 @@ import org.eclipse.jgit.diff.EditList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseProblemException;
+import com.github.javaparser.ParseResult;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.JavaCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.MethodVisitor;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 
 public class ChangedFileImpl implements ChangedFile {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChangedFile.class);
 
 	@JsonIgnore
@@ -38,16 +36,18 @@ public class ChangedFileImpl implements ChangedFile {
 	private File file;
 
 	private Set<String> methodDeclarations;
-	private float probabilityOfCorrectness;	
+	private float probabilityOfCorrectness;
 
-	// @issue How to model whether a changed file is correctly linked to a
-	// requirement/work item/knowledge element?
-	// @decision Add the isCorrect boolean attribute to the changed file class.
-	// @con Changed files might be correctly linked to one requirement but
-	// incorrectly linked to another requirement, so it should not be an attribute
-	// of the object.
-	// @alternative Add class to represent a link between a changed file and a
-	// knowledge element.
+	/**
+	 * @issue How to model whether a changed file is correctly linked to a
+	 *        requirement/work item/knowledge element?
+	 * @decision Add the isCorrect boolean attribute to the changed file class!
+	 * @con Changed files might be correctly linked to one requirement but
+	 *      incorrectly linked to another requirement, so it should not be an
+	 *      attribute of the object.
+	 * @alternative Add class to represent a link between a changed file and a
+	 *              knowledge element!
+	 */
 	private boolean isCorrect;
 
 	@JsonIgnore
@@ -129,22 +129,11 @@ public class ChangedFileImpl implements ChangedFile {
 	}
 
 	private MethodVisitor getMethodVisitor() {
-		this.compilationUnit = parseJavaFile(file);
+		ParseResult<CompilationUnit> parseResult = JavaCodeCommentParser.parseJavaFile(file);
+		this.compilationUnit = parseResult.getResult().get();
 		MethodVisitor methodVistor = new MethodVisitor();
 		compilationUnit.accept(methodVistor, null);
 		return methodVistor;
-	}
-
-	private static CompilationUnit parseJavaFile(File inspectedFile) {
-		CompilationUnit compilationUnit = null;
-		try {
-			FileInputStream fileInputStream = new FileInputStream(inspectedFile.toString());
-			compilationUnit = JavaParser.parse(fileInputStream);
-			fileInputStream.close();
-		} catch (ParseProblemException | IOException e) {
-			LOGGER.error(e.getMessage());
-		}
-		return compilationUnit;
 	}
 
 	@Override
@@ -203,7 +192,7 @@ public class ChangedFileImpl implements ChangedFile {
 			return "";
 		}
 		Optional<PackageDeclaration> optional = getCompilationUnit().getPackageDeclaration();
-		
+
 		try {
 			packageDeclaration = optional.get().toString();
 			packageDeclaration = packageDeclaration.replaceAll("\n", "").replaceAll(";", "").replaceAll("\r", "");

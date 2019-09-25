@@ -12,6 +12,21 @@ import java.util.List;
 @JsonDeserialize(as = ReleaseNoteConfigurationImpl.class)
 public interface ReleaseNoteConfiguration {
 
+	/**
+	 * Get the title of the release note.
+	 *
+	 * @return title of the release note.
+	 */
+	String getTitle();
+
+
+	/**
+	 * Set the title of the release note.
+	 *
+	 * @param title of the release note.
+	 */
+	void setTitle(String title);
+
 
 	/**
 	 * Get the startDate of the release note.
@@ -75,18 +90,18 @@ public interface ReleaseNoteConfiguration {
 	void setTargetGroup(TargetGroup targetGroup);
 
 	/**
-	 * Get the taskCriteriaPrioritisation of the release note.
+	 * Get the issueMetricWeight of the release note.
 	 *
-	 * @return taskCriteriaPrioritisation of the release note.
+	 * @return JiraIssueMetric of the release note.
 	 */
-	EnumMap<TaskCriteriaPrioritisation, Double> getTaskCriteriaPrioritisation();
+	EnumMap<JiraIssueMetric, Double> getJiraIssueMetricWeight();
 
 	/**
-	 * Set the taskCriteriaPrioritisation of the release note.
+	 * Set the issueMetricWeight of the release note.
 	 *
-	 * @param taskCriteriaPrioritisation of the release note.
+	 * @param issueMetricWeight of the release note.
 	 */
-	void setTaskCriteriaPrioritisation(EnumMap<TaskCriteriaPrioritisation, Double> taskCriteriaPrioritisation);
+	void setJiraIssueMetricWeight(EnumMap<JiraIssueMetric, Double> issueMetricWeight);
 
 	/**
 	 * Get the list with mapped bug fix issues.
@@ -130,4 +145,16 @@ public interface ReleaseNoteConfiguration {
 	 */
 	void setImprovementMapping(List<Integer> improvementMapping);
 
+	/**
+	 * Get the hash mpa with the additional configuration
+	 * @return EnumMap<AdditionalConfigurationOptions,Boolean>
+	 */
+	EnumMap<AdditionalConfigurationOptions,Boolean> getAdditionalConfiguration();
+
+	/**
+	 * Set the hash map with the additional configuration.
+	 *
+	 * @param additionalConfiguration of the release note.
+	 */
+ 	void setAdditionalConfiguration(EnumMap<AdditionalConfigurationOptions,Boolean> additionalConfiguration);
 }

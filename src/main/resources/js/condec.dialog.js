@@ -13,6 +13,7 @@
  
  Is required by
  * conDecContextMenu
+ * conDecReleaseNotePage
  */
 (function (global) {
 
@@ -357,12 +358,12 @@
 		var cancelButton = document.getElementById("summarization-dialog-cancel-button");
 		var content = document.getElementById("summarization-dialog-content");
 		var probabilityOfCorrectness = document.getElementById("summarization-probabilityOfCorrectness").valueAsNumber;
-		var projectId = document.getElementById("summarization-projectId").value;
-		if (projectId === undefined || projectId.length === 0 || projectId === "") {
-			document.getElementById("summarization-projectId").value = id;
-			projectId = id;
+		var summarizationId = document.getElementById("summarization-id").value;
+		if (summarizationId === undefined || summarizationId.length === 0 || summarizationId === "") {
+			document.getElementById("summarization-id").value = id;
+			summarizationId = id;
 		}
-		conDecAPI.getSummarizedCode(parseInt(projectId, 10), documentationLocation, probabilityOfCorrectness, function (text) {
+		conDecAPI.getSummarizedCode(summarizationId, documentationLocation, probabilityOfCorrectness, function (text) {
 			var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";
 			content.innerHTML = insertString;
 		});
@@ -374,33 +375,33 @@
 		// Show dialog
 		AJS.dialog2(summarizedDialog).show();
 	};
-	ConDecDialog.prototype.showExportDialog = function showExportDialog(decisionElementKey) {
-		console.log("conDecDialog exportDialog");
-
-		// HTML elements
-		var exportDialog = document.getElementById("export-dialog");
-		var hiddenDiv = document.getElementById("exportQueryFallback");
-		// set hidden attribute
-		hiddenDiv.setAttribute("data-tree-element-key", decisionElementKey);
-		// open dialog
-		AJS.dialog2(exportDialog).show();
-	};
-
+	
 	ConDecDialog.prototype.showCreateReleaseNoteDialog = function showCreateReleaseNoteDialog() {
 		// HTML elements
-		//set button busy before we show the dialog
+		// set button busy before we show the dialog
 		var openingButton = document.getElementById("openCreateReleaseNoteDialogButton");
 		setButtonBusyAndDisabled(openingButton, true);
 		var releaseNoteDialog = document.getElementById("create-release-note-dialog");
 		var cancelButton = document.getElementById("create-release-note-dialog-cancel-button");
 		var configurationSubmitButton = document.getElementById("create-release-note-submit-button");
 		var issueSelectSubmitButton= document.getElementById("create-release-note-submit-issues-button");
+		var saveContentButton= document.getElementById("create-release-note-submit-content");
 		var loader = document.getElementById("createReleaseNoteDialogLoader");
+		var useSprintSelect= document.getElementById("useSprint");
+		var titleInput= document.getElementById("title");
+		var sprintOptions= document.getElementById("selectSprints");
+		var useReleaseSelect= document.getElementById("useReleases");
+		var releaseOptions= document.getElementById("selectReleases");
+
+		var titleWasChanged=false;
+		var editor;
+		var firstResultObject={};
+
 		AJS.tabs.setup();
 
 		// add task prioritisation
 		var criteria = [
-			{title: "#Description Knowledge", id: "count_decision_knowledge"},
+			{title: "#Decision Knowledge", id: "count_decision_knowledge"},
 			{title: "Priority", id: "priority"},
 			{title: "#Comments", id: "count_comments"},
 			{title: "Words Description", id: "size_description"},
@@ -409,77 +410,246 @@
 			{title: "Experience Resolver", id: "experience_resolver"},
 			{title: "Experience Reporter", id: "experience_reporter"}
 		];
-		addTaskCriteriaPrioritisation(criteria);
+
+		var targetGroupMapping = [
+			{id: "DEVELOPER", title: "Developer", includes: ["include_decision_knowledge", "include_bug_fixes"]},
+			{id: "TESTER", title: "Tester", includes: ["include_bug_fixes", "include_test_instructions"]},
+			{id: "ENDUSER", title: "Enduser", includes: []}
+		];
+
+
+		var softwareTypeMapping =
+			[
+				{includes: [], title: "Simple website", id: "simple_website"},
+				{includes: ["include_breaking_changes", "include_extra_link"], title: "Framework", id: "framework"},
+				{includes: ["include_upgrade_guide"], title: "Installable software", id: "software"},
+				{includes: ["include_breaking_changes"], title: "API", id: "api"}
+			];
+
+		var allTargetGroupIncludes=["include_decision_knowledge", "include_bug_fixes","include_test_instructions"];
+		var allSoftwareTypeIncludes=["include_breaking_changes", "include_extra_link","include_upgrade_guide"];
+
+		addjiraIssueMetric(criteria);
 		removeListItemIssues();
 		AJS.tabs.change(jQuery('a[href="#tab-configuration"]'));
 		makeAsyncCalls();
+		fillSoftwaretypesAndTargetGroups();
 		var sprintsArray;
-
+		var releasesArray=[];
+		removeEditor();
+		function removeEditor(){
+			var editorDiv=document.getElementById("create-release-note-dialog-contain-editor");
+			editorDiv.parentNode.removeChild(editorDiv);
+			$("#create-release-note-dialog-contain-editor-content").append("<div id='create-release-note-dialog-contain-editor'>" +
+				"<textarea id='create-release-note-textarea'></textarea></div>")
+		}
 		function removeListItemIssues() {
 			var listItem = document.getElementById("listItemTabIssues");
 			if (listItem) {
 				listItem.remove();
 			}
 		}
+		function prefillDateBox(){
+			var today= new Date();
+			var twoWeeksAgo = new Date(today.getTime()-12096e5);
+			var todayString =today.getFullYear()  + '-' + ('0' + (today.getMonth()+1)).slice(-2) + '-' +('0' + today.getDate()).slice(-2) ;
+			var twoWeeksAgoString =twoWeeksAgo.getFullYear()  + '-' + ('0' + (twoWeeksAgo.getMonth()+1)).slice(-2) + '-' +('0' + twoWeeksAgo.getDate()).slice(-2) ;
+			document.getElementById("start-range").value=twoWeeksAgoString;
+			document.getElementById("final-range").value=todayString;
+		}
 
+		function fillSoftwaretypesAndTargetGroups(){
+			$("#selectSoftwareType").empty();
+			$("#selectTargetGroup").empty();
+			softwareTypeMapping.map(function(type){
+				$("#selectSoftwareType").append("<option value='"+type.id+"'>"+type.title+"</option>")
+			});
+			targetGroupMapping.map(function(targetGroup){
+				$("#selectTargetGroup").append("<option value='"+targetGroup.id+"'>"+targetGroup.title+"</option>")
+			});
+			document.getElementById("selectSoftwareType").onchange=onSoftwareTypeChange;
+			document.getElementById("selectTargetGroup").onchange=onTargetGroupChange;
+			onSoftwareTypeChange();
+			onTargetGroupChange();
+		}
+		function onTargetGroupChange(){
+			var selectedGroup = $("#selectTargetGroup").val();
 
+			var foundGroup=targetGroupMapping.filter(function(targetGroup){
+				return targetGroup.id===selectedGroup
+			});
+			allTargetGroupIncludes.map(function(include){
+				if(foundGroup[0].includes.indexOf(include)>-1){
+					$("#"+include).prop("checked",true);
+				}else{
+					$("#"+include).prop("checked",false);
+				}
+			})
+		}
+		function onSoftwareTypeChange(){
+			var selectedType = $("#selectSoftwareType").val();
+			var foundType=softwareTypeMapping.filter(function(type){
+				return type.id===selectedType
+			});
+			allSoftwareTypeIncludes.map(function(include){
+				if(foundType[0].includes.indexOf(include)>-1){
+					$("#"+include).prop("checked",true);
+				}else{
+					$("#"+include).prop("checked",false);
+				}
+			})
+		}
+		function throwAlert(title, message) {
+			AJS.flag({
+				type: "error",
+				close: "auto",
+				title: title,
+				body: message
+			});
+		}
 		function makeAsyncCalls() {
 
-			//load sprints
+			// load sprints
 			var sprintPromise = new Promise(function (resolve, reject) {
 				conDecAPI.getSprintsByProject()
 					.then(function (sprints) {
+						var hasValidSprints=false;
 						sprintsArray = sprints.map(function (sprint) {
 							return sprint.values;
 						});
 						if (sprintsArray && sprintsArray.length && sprintsArray[0] && sprintsArray[0].length) {
 							$('#selectSprints').empty();
 							sprintsArray[0].map(function (sprint) {
-								$('#selectSprints').append('<option value="' + sprint.id + '">' + sprint.name + '</option>');
-							})
-						} else {
-							disableSprintBox();
+								if(sprint && sprint.startDate && sprint.endDate){
+									hasValidSprints=true;
+									$('#selectSprints').append('<option class="sprint-option" value="' + sprint.id + '">' + sprint.name + '</option>');
+								}else{
+									$('#selectSprints').append('<option class="sprint-option" disabled value="' + sprint.id + '">' + sprint.name + '</option>');
+								}
+							});
 						}
-						resolve();
+						if(hasValidSprints){
+							resolve();
+						}else{
+							reject("No valid Sprints found");
+						}
 					}).catch(function (err) {
-					disableSprintBox();
-					reject();
+					reject(err);
 				});
-
+			}).catch(function(err){
+				disableSprintBox();
+				throwAlert("No sprints could be loaded",err);
 			});
-			//load issue types
+			// load issue types
 			var issueTypePromise = new Promise(function (resolve, reject) {
 				conDecAPI.getIssueTypes()
 					.then(function (issueTypes) {
-						resolve();
-						if (issueTypes && issueTypes.length) {
-							issueTypes.map(function (issueType) {
-								$('#multipleBugs').append('<option value="' + issueType.id + '">' + issueType.name + '</option>');
-								$('#multipleFeatures').append('<option value="' + issueType.id + '">' + issueType.name + '</option>');
-								$('#multipleImprovements').append('<option value="' + issueType.id + '">' + issueType.name + '</option>');
-							})
-						}
+						conDecAPI.getProjectWideSelectedIssueTypes().then(function (preSelectedIssueTypes) {
+							resolve({issueTypes: issueTypes, preSelectedIssueTypes: preSelectedIssueTypes});
+						}).catch(function () {
+							resolve({issueTypes: issueTypes, preSelectedIssueTypes: null});
+						});
 					}).catch(function (err) {
-					//@todo handle error
-					reject();
+					reject(err);
 				});
+			}).then(function (values) {
+				//set issue types
+				var issueTypes = values.issueTypes;
+				var preSelectedIssueTypes = values.preSelectedIssueTypes;
+				manageIssueTypes(issueTypes, preSelectedIssueTypes);
+			}).catch(function(err){
+				throwAlert("No issue-types could be loaded", "This won't be working without Jira-Issues associated to a project: "+err);
 			});
 
-			Promise.all([sprintPromise, issueTypePromise]).finally(function () {
-				//disable busy button
-				setButtonBusyAndDisabled(openingButton, false);
-				//open dialog
+			var releasesPromise= new Promise(function(resolve,reject){
+				conDecAPI.getReleases().then(function(releases){
+					var hasValidReleases=false;
+					var releaseSelector=$('#selectReleases');
+					releaseSelector.empty();
+					releases.map(function(release){
+						if(release && release.startDate.iso && release.releaseDate.iso){
+							hasValidReleases=true;
+							releaseSelector.append('<option value="' + release.id + '">' + release.name+'</option>');
+							releasesArray.push(release);
+						}else{
+							releaseSelector.append('<option disabled value="' + release.id + '">' + release.name +'</option>');
+						}
+					});
+					if(!hasValidReleases){
+						disableReleaseBox();
+					}
+					resolve();
+				}).catch(function (err) {
+					disableReleaseBox();
+					reject(err);
+				})
+			}).catch(function(err){
+				throwAlert("Loading the Releases went wrong",err)
+			});
 
+
+			Promise.all([sprintPromise, issueTypePromise, releasesPromise])
+			.finally(function () {
+				// disable busy button
+				setButtonBusyAndDisabled(openingButton, false);
 				// Show dialog
 				AJS.dialog2(releaseNoteDialog).show();
+				prefillDateBox();
 			})
+		}
+		function manageIssueTypes(issueTypes, preSelectedIssueTypes){
+			if (issueTypes && issueTypes.length) {
+				// empty lists
+				var bugSelector=$("#multipleBugs");
+				var featureSelector=$("#multipleFeatures");
+				var improvementSelector=$("#multipleImprovements");
+				bugSelector.empty();
+				featureSelector.empty();
+				improvementSelector.empty();
+				console.log(preSelectedIssueTypes);
+				issueTypes.map(function (issueType) {
+					var bugSelected=false;
+					var bugString='<option value="' + issueType.id + '"';
+					var featureSelected=false;
+					var featureString='<option value="' + issueType.id + '"';
+					var improvementSelected=false;
+					var improvementString='<option value="' + issueType.id + '"';
+					if(preSelectedIssueTypes){
+						if(preSelectedIssueTypes.bug_fixes){
+							bugSelected=preSelectedIssueTypes.bug_fixes.indexOf(issueType.name)>-1;
+						}
+						if(preSelectedIssueTypes.new_features){
+							featureSelected = preSelectedIssueTypes.new_features.indexOf(issueType.name)>-1;
+						}
+						if(preSelectedIssueTypes.improvements){
+							improvementSelected = preSelectedIssueTypes.improvements.indexOf(issueType.name)>-1;
+						}
+					}
+					if(bugSelected){
+						bugString +="selected";
+					}
+					if(featureSelected){
+						featureString +="selected";
+					}
+					if(improvementSelected){
+						improvementString +="selected";
+					}
+					bugSelector.append(bugString+'>' + issueType.name + '</option>');
+					featureSelector.append(featureString+'>' + issueType.name + '</option>');
+					improvementSelector.append(improvementString+'>' + issueType.name + '</option>');
+
+				})
+			}
 		}
 
 		function disableSprintBox() {
 			$("#useSprint").attr("disabled", true);
 			$("#selectSprints").attr("disabled", true);
 		}
-
+		function disableReleaseBox(){
+			$("#useReleases").attr("disabled", true);
+			$("#selectReleases").attr("disabled", true);
+		}
 		function addTabAndChangeToIt(tabId,title) {
 			var listItem = document.getElementById("listItemTab"+tabId);
 			if (!listItem) {
@@ -491,14 +661,18 @@
 
 		}
 
-		function addTaskCriteriaPrioritisation(listOfCriteria) {
-			var elementToAppend = $("#taskCriteriaPriority");
+		function addjiraIssueMetric(listOfCriteria) {
+			var elementToAppend = $("#metricWeight");
+			// first empty list
+			elementToAppend.empty();
+			elementToAppend.append("<form class='aui'>")
 			listOfCriteria.map(function (element) {
 				elementToAppend.append("<div class='field-group'>" +
 					"<label for='" + element.id + "'>" + element.title + "</label>" +
-					"<input class='medium-field' type='number' step='0.1' value='1' max='10' min='0' id='" + element.id + "'>" +
+					"<input class='medium-field' type='number' value='1' max='10' min='0' id='" + element.id + "'>" +
 					"</div>")
-			})
+			});
+			elementToAppend.append("</form>")
 		}
 
 		function setButtonBusyAndDisabled(button, busy) {
@@ -510,24 +684,62 @@
 				button.setAttribute('aria-disabled', 'false');
 			}
 		}
+		useSprintSelect.onchange= function(){
+			setSprintOrReleaseOption("selectSprints");
+		};
+		sprintOptions.onchange= function(){
+			setSprintOrReleaseOption("selectSprints");
+		};
+		useReleaseSelect.onchange = function () {
+			setSprintOrReleaseOption("selectReleases")
+		};
+		releaseOptions.onchange =function () {
+			setSprintOrReleaseOption("selectReleases")
+		};
+		function setSprintOrReleaseOption(selectId) {
+			if (!titleWasChanged) {
+				var options = document.getElementById(selectId).options;
+				for (var i=0;i<options.length;i++){
+					if(options[i].selected){
+						titleInput.value=options[i].innerText;
+					}
+				}
+			}
+		}
+		titleInput.onchange = function(){
+			titleWasChanged = titleInput.value;
+		};
 
 
 		configurationSubmitButton.onclick = function () {
 			var startDate = $("#start-range").val();
 			var endDate = $("#final-range").val();
 			var useSprints = $("#useSprint").prop("checked");
+			var useReleases = $("#useReleases").prop("checked");
 			var selectedSprint = parseInt($("#selectSprints").val()) || "";
-			//first check : both dates have to be selected or a sprint and the checkbox
-			if ((!useSprints) && (!!startDate === false || !!endDate === false)) {
-				throwAlert("Select Date or Sprint", "The start date and the end date have to be selected, if the sprints are not available or not selected");
+			var selectedRelease = parseInt($("#selectReleases").val()) || "";
+			// first check : both dates have to be selected or a sprint or
+			// releases and the checkbox
+			if ((!useSprints)&& (!useReleases) && (!!startDate === false || !!endDate === false)) {
+				throwAlert("Select Date or Sprint or Release", "The start date and the end date have to be selected, if the sprints or releases are not available or not selected");
 				return
 			}
 
 			function getStartAndEndDate() {
 				var result = {startDate: "", endDate: ""};
-
-				if (useSprints && sprintsArray && sprintsArray.length && sprintsArray[0] && sprintsArray[0].length) {
-					//get dates of selected sprint
+				if(useReleases && releasesArray && releasesArray.length){
+					var selectedDates= releasesArray.filter(function(release){
+						return release.id=selectedRelease;
+					});
+					if(selectedDates && selectedDates.length){
+						result.startDate=selectedDates[0].startDate.iso;
+						result.endDate=selectedDates[0].releaseDate.iso;
+					}else{
+						throwAlert("An error occured", "Something went wrong with the release selection");
+						return false;
+					}
+				}else if (useSprints && sprintsArray && sprintsArray.length && sprintsArray[0] && sprintsArray[0].length) {
+					// get dates of selected sprint
 					var selectedDates = sprintsArray[0].filter(function (sprint) {
 						return sprint.id === selectedSprint;
 					});
@@ -549,7 +761,7 @@
 					result.startDate = startDate;
 					result.endDate = endDate;
 				} else {
-					//throw exception
+					// throw exception
 					throwAlert("An error occured", "Neither a sprint was selected or start dates were filled");
 					return false;
 				}
@@ -564,7 +776,7 @@
 				}
 			}
 
-			function getTaskCriteriaPrioritisation(listOfCriteria) {
+			function getjiraIssueMetric(listOfCriteria) {
 				var result = {};
 				listOfCriteria.map(function (element) {
 					var value = $("#" + element.id).val();
@@ -574,28 +786,33 @@
 				return result;
 			}
 
-			function throwAlert(title, message) {
-				AJS.flag({
-					type: "error",
-					close: "auto",
-					title: title,
-					body: message
-				});
-			}
 
+
+			var additionalConfiguration={};
+			function getAdditionalConfiguration() {
+				$(".advancedOptionalConfiguration").each(function (i) {
+					var item = ($(".advancedOptionalConfiguration").get(i));
+					var name=item.name;
+					var isChecked=item.checked;
+					additionalConfiguration[name.toUpperCase()]=isChecked;
+				})
+			}
 			var timeRange = getStartAndEndDate();
 			if (!timeRange) {
 				return;
 			}
-			//set button busy and disabled
+			// set button busy and disabled
 			setButtonBusyAndDisabled(configurationSubmitButton,true);
-			var taskCriteriaPrioritisation = getTaskCriteriaPrioritisation(criteria);
+			getAdditionalConfiguration();
+			var jiraIssueMetric = getjiraIssueMetric(criteria);
 			var targetGroup = $("#selectTargetGroup").val();
 			var bugFixes = $("#multipleBugs").val();
 			var features = $("#multipleFeatures").val();
 			var improvements = $("#multipleImprovements").val();
-			//submit configuration
+			var title= $("#title").val();
+			// submit configuration
 			var configuration = {
+				title:title,
 				startDate: timeRange.startDate,
 				endDate: timeRange.endDate,
 				sprintId: selectedSprint,
@@ -603,30 +820,45 @@
 				bugFixMapping: bugFixes,
 				featureMapping: features,
 				improvementMapping: improvements,
-				taskCriteriaPrioritisation: taskCriteriaPrioritisation
+				additionalConfiguration:additionalConfiguration,
+				jiraIssueMetric: jiraIssueMetric
 			};
 
-			conDecAPI.getProposedIssues(configuration, function (response) {
-				//set button idle
-				setButtonBusyAndDisabled(configurationSubmitButton,false);
-				//change tab
-				addTabAndChangeToIt("tab-issues", "Suggested Issues");
-				console.log(response);
+			conDecAPI.getProposedIssues(configuration).then(function(response){
 
-				//display issues and information
-				if (response) {
-					showTables(response);
+				if(response){
+					// change tab
+					addTabAndChangeToIt("tab-issues", "Suggested Issues");
+					console.log(response);
+
+					firstResultObject=response;
+					// display issues and information
+					if (response.proposals) {
+						showTables(response.proposals);
+					}
+					if(response.title){
+						showTitle(response.title)
+					}
 				}
-			}.bind(this));
+
+			}).catch(function(err){
+				// we handle this exception directly in condec.api
+			}).finally(function(){
+				// set button idle
+				setButtonBusyAndDisabled(configurationSubmitButton,false);
+			});
 
 			function showTables(response) {
-				//first remove old tables
+				// first remove old tables
 				$("#displayIssueTables").empty();
 				Object.keys(response).map(function (category) {
 					if (response[category] && response[category].length) {
 						showTable(category, response[category]);
 					}
 				})
+			}
+			function showTitle(title){
+				$("#suggestedIssuesTitle").text("Suggested Issues for Release Notes: "+title);
 			}
 
 			function showTable(category, issues) {
@@ -637,26 +869,26 @@
 				};
 				var divToAppend = $("#displayIssueTables");
 				var title = "<h2>" + mapCategoryToTitles[category] + "</h2>";
-				var table = "<table><tr>" +
+				var table = "<table class='aui'><thead><tr>" +
 					"<th>Include</th>" +
-					"<th>Rating</th>" +
+					"<th>Relevance-Rating</th>" +
 					"<th>Key</th>" +
 					"<th>Summary</th>" +
 					"<th>Type</th>" +
-					"</tr>";
+					"</tr></thead>";
 				var tableRows = "";
 				issues.map(function (issue) {
 					var expander = "<div id='expanderOfRating_" +category+ issue.decisionKnowledgeElement.key + "' class='aui-expander-content'>" +
 						"<ul class='noDots'>" +
-						"<li>#Comments: "+issue.taskCriteriaPrioritisation.COUNT_COMMENTS+"</li>" +
-						"<li>#DK: "+issue.taskCriteriaPrioritisation.COUNT_DECISION_KNOWLEDGE+"</li>" +
-						"<li>Days Completion: "+issue.taskCriteriaPrioritisation.DAYS_COMPLETION+"</li>" +
-						"<li>#Comments: "+issue.taskCriteriaPrioritisation.COUNT_COMMENTS+"</li>" +
-						"<li>Exp. Reporter: "+issue.taskCriteriaPrioritisation.EXPERIENCE_REPORTER+"</li>" +
-						"<li>Exp. Resolver: "+issue.taskCriteriaPrioritisation.EXPERIENCE_RESOLVER+"</li>" +
-						"<li>Priority: "+issue.taskCriteriaPrioritisation.PRIORITY+"</li>" +
-						"<li>Description Size: "+issue.taskCriteriaPrioritisation.SIZE_DESCRIPTION+"</li>" +
-						"<li>Summary Size: "+issue.taskCriteriaPrioritisation.SIZE_SUMMARY+"</li>" +
+						"<li>#Comments: "+issue.jiraIssueMetrics.COUNT_COMMENTS+"</li>" +
+						"<li>#Decision Knowledge: "+issue.jiraIssueMetrics.COUNT_DECISION_KNOWLEDGE+"</li>" +
+						"<li>Days Completion: "+issue.jiraIssueMetrics.DAYS_COMPLETION+"</li>" +
+						"<li>#Comments: "+issue.jiraIssueMetrics.COUNT_COMMENTS+"</li>" +
+						"<li>Exp. Reporter: "+issue.jiraIssueMetrics.EXPERIENCE_REPORTER+"</li>" +
+						"<li>Exp. Resolver: "+issue.jiraIssueMetrics.EXPERIENCE_RESOLVER+"</li>" +
+						"<li>Priority: "+issue.jiraIssueMetrics.PRIORITY+"</li>" +
+						"<li>Description Size: "+issue.jiraIssueMetrics.SIZE_DESCRIPTION+"</li>" +
+						"<li>Summary Size: "+issue.jiraIssueMetrics.SIZE_SUMMARY+"</li>" +
 						"</ul>" +
 						"</div>" +
 						"<a data-replace-text='"+issue.rating+" less' class='aui-expander-trigger' aria-controls='expanderOfRating_" +category+ issue.decisionKnowledgeElement.key + "'>"+issue.rating+" details</a>";
@@ -677,9 +909,8 @@
 
 			}
 		};
-
 		issueSelectSubmitButton.onclick = function () {
-			//set button busy
+			// set button busy
 			setButtonBusyAndDisabled(issueSelectSubmitButton,true);
 
 			var checkedItems={"bug_fixes":[],"new_features":[],"improvements":[]}
@@ -692,29 +923,196 @@
 					}
 				})
 			});
-			setTimeout(function(){
-				//set button idle
+			var additionalConfigurationObjectSelected=[];
+			Object.getOwnPropertyNames(firstResultObject.additionalConfiguration).forEach(function(val, idx, array) {
+				if(firstResultObject.additionalConfiguration[val]){
+					additionalConfigurationObjectSelected.push(val)
+				}
+			});
+
+			var postObject={selectedKeys:checkedItems,title:{id:[firstResultObject.title]},additionalConfiguration:{id:additionalConfigurationObjectSelected}};
+			conDecAPI.postProposedKeys(postObject)
+				.then(function (response) {
+				if (response) {
+					// remove editor
+					removeEditor();
+					// change tab
+					addTabAndChangeToIt("tab-editor", "Final edit");
+					if (response.markdown) {
+						// display editor and text
+						editor = new Editor({element: document.getElementById("create-release-note-textarea")});
+						editor.render();
+						editor.codemirror.setValue(response.markdown);
+					}
+				}
+
+			}.bind(this)).catch(function(err){
+				throwAlert("An error occurred",err.toString());
+			}).finally(function(){
+				// set button idle
 				setButtonBusyAndDisabled(issueSelectSubmitButton,false);
-				//change tab
-				addTabAndChangeToIt("tab-editor", "Final edit");
-				console.log(response);
-				//display editor and text
-
-			})
-
-			conDecAPI.postProposedKeys(checkedItems, function (response) {
-
-			}.bind(this));
+			});
 
 
 		};
+		saveContentButton.onclick= function(){
+			console.log("editor",editor.codemirror.getValue());
+			var content=editor.codemirror.getValue();
+			var postObject = {
+				content: content,
+				title: firstResultObject.title,
+				startDate: firstResultObject.startDate,
+				endDate: firstResultObject.endDate
+			};
 
+			conDecAPI.createReleaseNote(postObject).then(function(response){
+				if(response && response>0){
+					var event = new Event('updateReleaseNoteTable');
+					document.getElementById("release-notes-table").dispatchEvent(event);
+					AJS.dialog2(releaseNoteDialog).hide();
+				}
+			}).catch(function (err) {
+				throwAlert("An error saving occurred",err.toString());
+			})
+		};
 		cancelButton.onclick = function () {
 			AJS.dialog2(releaseNoteDialog).hide();
 		};
 
 	};
 
+	ConDecDialog.prototype.showExportDialog = function showExportDialog(decisionElementKey) {
+		console.log("conDecDialog exportDialog");
+
+		// HTML elements
+		var exportDialog = document.getElementById("export-dialog");
+		var hiddenDiv = document.getElementById("exportQueryFallback");
+		// set hidden attribute
+		hiddenDiv.setAttribute("data-tree-element-key", decisionElementKey);
+		// open dialog
+		AJS.dialog2(exportDialog).show();
+	};
+
+	ConDecDialog.prototype.showEditReleaseNoteDialog = function showEditReleaseNoteDialog(id){
+		var editDialog = document.getElementById("edit-release-note-dialog");
+		var saveButton = document.getElementById("edit-release-note-submit-content");
+		var cancelButton = document.getElementById("edit-release-note-dialog-cancel-button");
+		var openingButton = document.getElementById("openEditReleaseNoteDialogButton_"+id);
+		var deleteButton = document.getElementById("deleteReleaseNote");
+		var titleInput = document.getElementById("edit-release-note-dialog-title");
+		var exportMDButton= document.getElementById("edit-release-note-dialog-export-as-markdown-button");
+		var exportWordButton= document.getElementById("edit-release-note-dialog-export-as-word-button");
+		var editor;
+		setButtonBusyAndDisabled(openingButton,true);
+
+		conDecAPI.getReleaseNotesById(id).then(function(result){
+			$(".editor-preview").empty();
+			AJS.dialog2(editDialog).show();
+			removeEditor();
+			titleInput.value=result.title;
+			editor=new Editor({element:document.getElementById("edit-release-note-textarea")});
+			editor.render();
+			editor.codemirror.setValue(result.content);
+
+		}).catch(function(error){
+			throwAlert("Retrieving Release notes failed", "Could not retrieve the release notes.")
+		}).finally(function(){
+			setButtonBusyAndDisabled(openingButton,false);
+		});
+
+		function removeEditor() {
+			var editorDiv = document.getElementById("edit-release-note-dialog-contain-editor");
+			editorDiv.parentNode.removeChild(editorDiv);
+			$("#edit-release-note-dialog-content").append("<div id='edit-release-note-dialog-contain-editor'>" +
+				"<textarea id='edit-release-note-textarea'></textarea>" +
+				"</div>")
+		}
+		function setButtonBusyAndDisabled(button, busy) {
+			if (busy) {
+				button.busy();
+				button.setAttribute('aria-disabled', 'true');
+			} else {
+				button.idle();
+				button.setAttribute('aria-disabled', 'false');
+			}
+		}
+
+
+		saveButton.onclick = function () {
+			setButtonBusyAndDisabled(saveButton,true);
+			var releaseNote = {id: id, title: titleInput.value, content: editor.codemirror.getValue()};
+			conDecAPI.updateReleaseNote(releaseNote).then(function (response) {
+				if(response){
+					fireChangeEvent();
+					AJS.dialog2(editDialog).hide();
+				}else{
+					throwAlert("Saving failed", "Could not save the release notes")
+				}
+			}).catch(function(err){
+				throwAlert("Saving failed", err.toString());
+			}).finally(function () {
+				setButtonBusyAndDisabled(saveButton,false);
+			});
+		};
+		cancelButton.onclick = function () {
+
+			AJS.dialog2(editDialog).hide();
+		};
+		deleteButton.onclick = function () {
+			setButtonBusyAndDisabled(deleteButton,true);
+			conDecAPI.deleteReleaseNote(id).then(function (response) {
+				if(response){
+					fireChangeEvent();
+					AJS.dialog2(editDialog).hide();
+				}else{
+					throwAlert("Deleting failed","The release notes could not be deleted");
+				}
+			}).catch(function (err) {
+				throwAlert("Deleting failed",err.toString());
+
+			}).finally(function () {
+				setButtonBusyAndDisabled(deleteButton,false);
+			});
+		};
+		function fireChangeEvent(){
+			var event = new Event('updateReleaseNoteTable');
+			document.getElementById("release-notes-table").dispatchEvent(event);
+		}
+		exportMDButton.onclick = function () {
+			var mdString ="data:text/plain;charset=utf-8,"+ encodeURIComponent(editor.codemirror.getValue());
+			downloadFile(mdString,"md")
+		};
+		exportWordButton.onclick =function () {
+			var htmlString=$(".editor-preview").html();
+			if(htmlString){
+				var htmlContent=$("<html>").html(htmlString).html();
+				var wordString ="data:text/html,"+ htmlContent;
+				downloadFile(wordString,"doc")
+			}else{
+				throwAlert("Error downloading Word","Please change to the preview view of the editor first, then try again.")
+			}
+		};
+
+		function downloadFile(content,fileEnding){
+			var fileName="releaseNote."+fileEnding;
+			var link = document.createElement('a');
+			link.style.display = 'none';
+			link.setAttribute('href', content);
+			link.setAttribute('download', fileName);
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		}
+		function throwAlert(title, message) {
+			AJS.flag({
+				type: "error",
+				close: "auto",
+				title: title,
+				body: message
+			});
+		}
+
+	};
 	// export ConDecDialog
 	global.conDecDialog = new ConDecDialog();
 })(window);

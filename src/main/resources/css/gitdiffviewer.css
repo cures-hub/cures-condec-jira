@@ -208,6 +208,7 @@ will be copied if .content is marked and copied */
 	animation: rat-link-blinking 2s infinite;
 
     margin:0;
+    cursor: help;
 }
 
 /* text mode */

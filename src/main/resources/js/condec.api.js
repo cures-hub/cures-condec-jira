@@ -7,11 +7,13 @@
  Is required by
  * conDecContextMenu
  * conDecDialog
+ * conDecEvolutionPage
  * conDecTreant
  * conDecTreeViewer
  * conDecJiraIssueModule
  * conDecKnowledgePage
  * conDecTabPanel
+ * conDecVis
   
  Is referenced in HTML by
  * settingsForAllProjects.vm 
@@ -134,7 +136,7 @@
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.getSprintsByProject = function getSprintsByProject() {
-		//first we need the boards then we can get the Sprints for each board
+		// first we need the boards then we can get the Sprints for each board
 		return new Promise(function (resolve, reject) {
 			var boardUrl = "/rest/agile/1.0/board?projectKeyOrId=" + projectKey;
 			var boardPromise = getJSONReturnPromise(AJS.contextPath() + boardUrl);
@@ -151,7 +153,7 @@
 						reject(err);
 					})
 				}else{
-					reject();
+					reject("No Boards could be found, so the sprints could also not be loaded");
 				}
 			}).catch(function (err) {
 				reject(err);
@@ -159,7 +161,7 @@
 		})
 	};
 	ConDecAPI.prototype.getIssueTypes = function getIssueTypes() {
-		//first we need the boards then we can get the Sprints for each board
+		// first we need the boards then we can get the Sprints for each board
 		return new Promise(function (resolve, reject) {
 			var issueTypeUrl = "/rest/api/2/issue/createmeta?expand=projects.issuetypes";
 			var issuePromise = getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
@@ -172,12 +174,43 @@
 					if (correctIssueTypes && correctIssueTypes.length) {
 						resolve(correctIssueTypes);
 					} else {
-						reject();
+						reject("No issue-types could be found for this project");
 					}
 				} else {
-					reject();
+					reject("No Projects were found.");
 				}
 
+			}).catch(function (err) {
+				reject(err);
+			})
+		})
+	};
+	ConDecAPI.prototype.getReleases = function getReleases() {
+		// first we need the boards then we can get the Sprints for each board
+		return new Promise(function (resolve, reject) {
+			var issueTypeUrl = "/rest/projects/1.0/project/"+projectKey+"/release/allversions";
+			var issuePromise = getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
+			issuePromise.then(function (result) {
+				if(result && result.length){
+					resolve(result);
+				}else {
+					reject("No Releases were found");
+				}
+			}).catch(function (err) {
+				reject(err);
+			})
+		})
+	};
+	ConDecAPI.prototype.getProjectWideSelectedIssueTypes= function getProjectWideSelectedIssueTypes(){
+		return new Promise(function (resolve,reject) {
+			var preSelectedIssueUrl = "/rest/decisions/latest/config/getReleaseNoteMapping.json?projectKey=" + projectKey;
+			var issuePromise = getJSONReturnPromise(AJS.contextPath() + preSelectedIssueUrl);
+			issuePromise.then(function (result) {
+				if(result){
+					resolve(result);
+				}else {
+					reject();
+				}
 			}).catch(function (err) {
 				reject(err);
 			})
@@ -362,7 +395,6 @@
 						callback(summary);
 					}
 				});
-
 	};
 
 	/*
@@ -448,6 +480,15 @@
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getCompareVis.json", filterSettings, function(error,
 				vis) {
 			if (error === null) {
+			    vis.nodes.sort(function(a, b) {
+                    if (a.id > b.id) {
+                        return 1;
+                    }
+                    if (a.id < b.id) {
+                        return -1;
+                    }
+                    return 0;
+                });
 				callback(vis);
 			}
 		});
@@ -719,6 +760,18 @@
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
+	ConDecAPI.prototype.setReleaseNoteMapping = function setReleaseNoteMapping(releaseNoteCategory, projectKey, selectedIssueTypes) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setReleaseNoteMapping.json?projectKey="+projectKey+"&releaseNoteCategory="+releaseNoteCategory, selectedIssueTypes, function(
+				error, response) {
+			if (error === null) {
+				showFlag("success", "The associated issuetypes for the category: "+releaseNoteCategory+" were changed for this project.");
+			}
+		});
+	};
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
 	ConDecAPI.prototype.clearSentenceDatabase = function clearSentenceDatabase(projectKey) {
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/clearSentenceDatabase.json?projectKey="
 				+ projectKey, null, function(error, response) {
@@ -808,27 +861,38 @@
 	/*
 	 * external references: condec.dialog
 	 */
-	ConDecAPI.prototype.getProposedIssues = function getReleaseNotes(releaseNoteConfiguration, callback) {
-
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/release-note/getProposedIssues.json?projectKey="
-			+ projectKey, releaseNoteConfiguration,
-			function (error, elements) {
-				if (error === null) {
-					callback(elements);
-				}
-			});
+	ConDecAPI.prototype.getProposedIssues = function getReleaseNotes(releaseNoteConfiguration) {
+		return postJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/getProposedIssues.json?projectKey="
+			+ projectKey, releaseNoteConfiguration);
 	};
 
-	ConDecAPI.prototype.postProposedKeys = function postProposedKeys(proposedKeys, callback) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/release-note/getReleaseNoteContent.json?projectKey="
-			+ projectKey, proposedKeys,
-			function (error, elements) {
-				if (error === null) {
-					callback(elements);
-				}
-			});
+	ConDecAPI.prototype.postProposedKeys = function postProposedKeys(proposedKeys) {
+		return postJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/postProposedKeys.json?projectKey="
+			+ projectKey, proposedKeys);
+	};
+	ConDecAPI.prototype.createReleaseNote = function createReleaseNote(content) {
+		return postJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/createReleaseNote.json?projectKey="
+			+ projectKey,content);
+	};
+	ConDecAPI.prototype.updateReleaseNote = function updateReleaseNote(releaseNote) {
+		return postJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/updateReleaseNote.json?projectKey="
+			+ projectKey, releaseNote)
+	};
+	ConDecAPI.prototype.deleteReleaseNote = function deleteReleaseNote(id) {
+		return deleteJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/deleteReleaseNote.json?projectKey="
+			+ projectKey +"&id="+id, null);
 	};
 
+
+	ConDecAPI.prototype.getReleaseNotesById = function getReleaseNotesById(id) {
+		return getJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/getReleaseNote.json?projectKey="
+			+ projectKey+"&id="+id);
+
+	};
+	ConDecAPI.prototype.getAllReleaseNotes = function getAllReleaseNotes(query) {
+		return getJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/getAllReleaseNotes.json?projectKey="
+			+ projectKey+"&query="+query);
+	};
 	function getResponseAsReturnValue(url) {
 		var xhr = new XMLHttpRequest();
 		xhr.open("GET", url, false);
@@ -873,6 +937,28 @@
 			});
 		});
 
+	}
+	function postJSONReturnPromise(url,data){
+		return new Promise(function (resolve,reject) {
+			postJSON(url,data,function(err,result){
+				if(err===null){
+					resolve(result);
+				}else{
+					reject(err);
+				}
+			})
+		})
+	}
+	function deleteJSONReturnPromise(url,data){
+		return new Promise(function (resolve,reject) {
+			deleteJSON(url,data,function(err,result){
+				if(err===null){
+					resolve(result);
+				}else{
+					reject(err);
+				}
+			})
+		})
 	}
 
 
@@ -946,9 +1032,6 @@
 		xhr.send(JSON.stringify(data));
 	}
 
-	/*
-	 * external references: condec.jira.issue.module, and many more..
-	 */
 	function getIssueKey() {
 		var issueKey = null;
 		if (JIRA && JIRA.Issue && JIRA.Issue.getIssueKey) {
@@ -974,6 +1057,10 @@
 		return issueKey;
 	}
 
+	/*
+	 * external references: condec.jira.issue.module, condec.export,
+	 * condec.gitdiffviewer
+	 */
 	ConDecAPI.prototype.getIssueKey = getIssueKey;
 
 	function getProjectKey() {

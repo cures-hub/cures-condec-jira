@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.model.git;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
+
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,6 +13,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.model.git.impl.ChangedFileImpl;
 
 public class TestChangedFile extends TestSetUpGit {
 
@@ -44,6 +47,15 @@ public class TestChangedFile extends TestSetUpGit {
 		MethodDeclaration methodDeclaration = new MethodDeclaration();
 		changedFile.addMethodDeclaration(methodDeclaration.getDeclarationAsString());
 		assertEquals(3, changedFile.getMethodDeclarations().size());
+
+		ChangedFile changedFile = new ChangedFileImpl(new File("readme"));
+		assertEquals(0, changedFile.getMethodDeclarations().size());
+	}
+
+	@Test
+	public void testParsingMethodsOfNonJavaFile() {
+		ChangedFile changedFile = new ChangedFileImpl(new File("readme"));
+		assertEquals(0, changedFile.getMethodDeclarations().size());
 	}
 
 	@Test
@@ -57,12 +69,12 @@ public class TestChangedFile extends TestSetUpGit {
 	public void testGetPackageName() {
 		assertEquals(9, changedFile.getPartsOfPackageDeclaration().size());
 	}
-	
+
 	@Test
 	public void testGetDiffEntry() {
 		assertEquals(ChangeType.ADD, changedFile.getDiffEntry().getChangeType());
 	}
-	
+
 	@Test
 	public void testGetEditList() {
 		assertEquals("EditList[INSERT(0-0,0-29)]", changedFile.getEditList().toString());

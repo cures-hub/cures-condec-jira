@@ -344,6 +344,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		long commentId = Long.parseLong(element.getKey().split(":")[1]);
 		PartOfJiraIssueText issueText = getPartOfJiraIssueText(commentId);
 		Comment comment = issueText.getComment();
+		if(comment == null) {
+			Issue issue =((PartOfJiraIssueText)element).getJiraIssue();
+			return issue.getReporter();
+		}
 		return comment.getAuthorApplicationUser();
 	}
 

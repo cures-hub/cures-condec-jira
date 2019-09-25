@@ -1,10 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -16,6 +11,11 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 @XmlRootElement(name = "vis")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -39,19 +39,25 @@ public class VisGraph {
 	private int level;
 	@JsonIgnore
 	private int cid;
+	@JsonIgnore
+	private List<DecisionKnowledgeElement> elementsInGraph;
 
 	public VisGraph() {
+		nodes = new HashSet<>();
+		edges = new HashSet<>();
+		elementsAlreadyAsNode = new ArrayList<>();
+		level = 50;
+		cid = 0;
+		elementsInGraph = new ArrayList<>();
 	}
 
 	public VisGraph(List<DecisionKnowledgeElement> elements,String projectKey) {
+		this();
 		if(projectKey == null ){
 			return;
 		}
+		this.elementsMatchingFilterCriteria = elements;
 		this.graph = new GraphImpl(projectKey);
-		this.cid = 0;
-		this.level = 50;
-		this.nodes = new HashSet<>();
-		this.edges = new HashSet<>();
 		this.setHyperlinked(false);
 		if(elements== null || elements.size() ==0){
 			this.nodes = new HashSet<>();
@@ -59,26 +65,16 @@ public class VisGraph {
 			this.rootElementKey= "";
 			return;
 		}
+
 		for(DecisionKnowledgeElement element: elements){
-			this.nodes.add(new VisNode(element, true, level, cid));
-			level += 1;
-			cid += 1;
+			fillNodesAndEdges(element, null, level, cid);
 		}
-		for(Link edge: graph.getAllLinks(elements)){
-			this.edges.add(new VisEdge(edge));
-		}
-
-
 	}
 
 	public VisGraph(DecisionKnowledgeElement rootElement, List<DecisionKnowledgeElement> elements) {
+		this();
 		this.elementsMatchingFilterCriteria = elements;
 		this.rootElementKey = (rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString());
-		nodes = new HashSet<>();
-		edges = new HashSet<>();
-		elementsAlreadyAsNode = new ArrayList<>();
-		level = 50;
-		cid = 0;
 		fillNodesAndEdges(rootElement, null, level, cid);
 	}
 
@@ -91,7 +87,12 @@ public class VisGraph {
 		if (graph == null) {
 			graph = new GraphImpl(element);
 		}
-
+		//No duplicated elements in the graphs
+		if(elementsInGraph.contains(element)){
+			return;
+		} else {
+			elementsInGraph.add(element);
+		}
 		if (link != null) {
 			switch (link.getType()) {
 			case "support":

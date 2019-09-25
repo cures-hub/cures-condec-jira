@@ -18,8 +18,8 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 /**
- * purpose: extract decision knowledge elements stored in git repository
- * out-of-scope linking decision knowledge elements among each other
+ * Extract decision knowledge elements stored in git repository. 
+ * Out-of-scope: linking decision knowledge elements among each other.
  */
 public class GitDecXtract {
 
@@ -87,7 +87,7 @@ public class GitDecXtract {
 
 		return elementsFromCode.stream().map(element -> {
 			element.setProject(projecKey);
-			element.setKey(updateKeyForCommentExtractedElement(element));
+			element.setKey(updateKeyForCodeExtractedElementWithInformationHash(element));
 			return element;
 		}).collect(Collectors.toList());
 	}
@@ -106,7 +106,7 @@ public class GitDecXtract {
 	/*
 	 * Appends rationale text hash to the DecisionKnowledgeElement key.
 	 */
-	private String updateKeyForCommentExtractedElement(DecisionKnowledgeElement elementWithoutTextHash) {
+	private String updateKeyForCodeExtractedElementWithInformationHash(DecisionKnowledgeElement elementWithoutTextHash) {
 		String key = elementWithoutTextHash.getKey();
 		String rationaleText = elementWithoutTextHash.getSummary() + elementWithoutTextHash.getDescription();
 
