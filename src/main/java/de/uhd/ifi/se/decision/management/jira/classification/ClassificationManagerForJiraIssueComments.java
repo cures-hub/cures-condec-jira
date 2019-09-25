@@ -59,17 +59,18 @@ public class ClassificationManagerForJiraIssueComments {
         if (sentences == null) {
             return new ArrayList<PartOfJiraIssueText>();
         }
-        List<String> stringsToBeClassified = getStringsForBinaryClassification(sentences);
+        List<PartOfJiraIssueText> sentencesToBeClassified = getSentencesForFineGrainedClassification(sentences);
+        List<String> stringsToBeClassified = extractStringsFromPoji(sentencesToBeClassified);
         List<Boolean> classificationResult = classifierTrainer.getClassifier().makeBinaryPredictions(stringsToBeClassified);
-        updateSentencesWithBinaryClassificationResult(classificationResult, sentences);
+        updateSentencesWithBinaryClassificationResult(classificationResult, sentencesToBeClassified);
         return sentences;
     }
 
-    private List<String> getStringsForBinaryClassification(List<PartOfJiraIssueText> sentences) {
-        List<String> stringsToBeClassified = new ArrayList<String>();
+    private List<PartOfJiraIssueText> getSentencesForBinaryClassification(List<PartOfJiraIssueText> sentences) {
+        List<PartOfJiraIssueText> stringsToBeClassified = new ArrayList<PartOfJiraIssueText>();
         for (PartOfJiraIssueText sentence : sentences) {
             if (isSentenceQualifiedForBinaryClassification(sentence)) {
-                stringsToBeClassified.add(sentence.getDescription());
+                stringsToBeClassified.add(sentence);
             }
         }
         return stringsToBeClassified;
@@ -110,17 +111,28 @@ public class ClassificationManagerForJiraIssueComments {
         if (sentences == null) {
             return new ArrayList<PartOfJiraIssueText>();
         }
-        List<String> stringsToBeClassified = getStringsForFineGrainedClassification(sentences);
+        //make getStringsForFineGrainedClassification return List<PartOfJiraIssueText>
+        // add method to extract text
+        List<PartOfJiraIssueText> sentencesToBeClassified = getSentencesForFineGrainedClassification(sentences);
+        List<String> stringsToBeClassified = extractStringsFromPoji(sentencesToBeClassified);
         List<KnowledgeType> classificationResult = this.classifierTrainer.getClassifier().makeFineGrainedPredictions(stringsToBeClassified);
-        updateSentencesWithFineGrainedClassificationResult(classificationResult, sentences);
+        updateSentencesWithFineGrainedClassificationResult(classificationResult, sentencesToBeClassified);
         return sentences;
     }
 
-    private List<String> getStringsForFineGrainedClassification(List<PartOfJiraIssueText> sentences) {
-        List<String> stringsToBeClassified = new ArrayList<String>();
+    private List<String> extractStringsFromPoji(List<PartOfJiraIssueText> sentences) {
+        List<String> extractedStringsFromPoji = new ArrayList<String>();
+        for (PartOfJiraIssueText sentence : sentences){
+            extractedStringsFromPoji.add(sentence.getDescription());
+        }
+        return extractedStringsFromPoji;
+    }
+
+    private List<PartOfJiraIssueText> getSentencesForFineGrainedClassification(List<PartOfJiraIssueText> sentences) {
+        List<PartOfJiraIssueText> stringsToBeClassified = new ArrayList<PartOfJiraIssueText>();
         for (PartOfJiraIssueText sentence : sentences) {
             if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
-                stringsToBeClassified.add(sentence.getDescription());
+                stringsToBeClassified.add(sentence);
             }
         }
         return stringsToBeClassified;

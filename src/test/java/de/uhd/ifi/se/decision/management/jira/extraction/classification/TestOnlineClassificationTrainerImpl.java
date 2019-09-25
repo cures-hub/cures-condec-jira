@@ -15,10 +15,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestOnlineClassificationTrainerImpl extends TestSetUp {
 

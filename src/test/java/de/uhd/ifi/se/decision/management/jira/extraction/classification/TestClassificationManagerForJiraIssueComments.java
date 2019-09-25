@@ -4,27 +4,80 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.comments.Comment;
+import com.atlassian.jira.issue.comments.CommentManager;
+import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManagerForJiraIssueComments;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import net.java.ao.test.jdbc.NonTransactional;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
-/*
+
 	private List<PartOfJiraIssueText> sentences;
 	private ClassificationManagerForJiraIssueComments classificationManager;
 	private Issue issue;
 
-	@Before
-	public void setUp() {
-		init();
-		classificationManager = new ClassificationManagerForJiraIssueComments();
-		FilteredClassifier binaryClassifier = new BinaryClassifierMock();
-		classificationManager.getClassifierTrainer().setBinaryClassifier(binaryClassifier);
-		LC lc = new FineGrainedClassifierMock(5);
-		classificationManager.getClassifierTrainer().setFineGrainedClassifier(lc);
-		issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");
+    private DecisionKnowledgeElement createElement(KnowledgeType type, String summary) {
+        DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+        element.setType(type);
+        element.setSummary(summary);
+        return element;
+    }
 
-		addCommentsToIssue();
-		fillSentenceList();
-	}
+    @Before
+    public void setUp() {
+        init();
+        classificationManager = new ClassificationManagerForJiraIssueComments();
+        classificationManager.getClassifierTrainer().setTrainingData(getTrainingData());
+        classificationManager.getClassifierTrainer().train();
+
+        issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");
+
+        addCommentsToIssue();
+        fillSentenceList();
+    }
+
+    private List<DecisionKnowledgeElement> getTrainingData() {
+        List<DecisionKnowledgeElement> trainingElements = new ArrayList<DecisionKnowledgeElement>();
+        trainingElements.add(createElement(KnowledgeType.ISSUE, "I have an issue"));
+        trainingElements.add(createElement(KnowledgeType.DECISION, "Thats is a Decision"));
+        trainingElements.add(createElement(KnowledgeType.ALTERNATIVE, "This is an Alternative"));
+        trainingElements.add(createElement(KnowledgeType.PRO, "Pro"));
+        trainingElements.add(createElement(KnowledgeType.CON, "Con"));
+        trainingElements.add(createElement(KnowledgeType.OTHER, "Pizza is preferred"));
+        trainingElements.add(createElement(KnowledgeType.ISSUE, "How to do that"));
+        trainingElements.add(createElement(KnowledgeType.DECISION, "We decided on option A."));
+        trainingElements.add(createElement(KnowledgeType.ALTERNATIVE, "An option would be"));
+        trainingElements.add(createElement(KnowledgeType.PRO, "+1"));
+        trainingElements.add(createElement(KnowledgeType.CON, "-1"));
+        trainingElements.add(createElement(KnowledgeType.OTHER, "Lunch"));
+        trainingElements.add(createElement(KnowledgeType.ISSUE, "I don't know how we can"));
+        trainingElements.add(createElement(KnowledgeType.DECISION, "We will do"));
+        trainingElements.add(createElement(KnowledgeType.ALTERNATIVE, "A possible solution could be"));
+        trainingElements.add(createElement(KnowledgeType.PRO, "Very good."));
+        trainingElements.add(createElement(KnowledgeType.CON, "I don't agree"));
+        trainingElements.add(createElement(KnowledgeType.OTHER, "Party tonight"));
+        trainingElements.add(createElement(KnowledgeType.ISSUE, "The question is"));
+        trainingElements.add(createElement(KnowledgeType.DECISION, "I implemented the feature."));
+        trainingElements.add(createElement(KnowledgeType.ALTERNATIVE, "We could have done option A."));
+        trainingElements.add(createElement(KnowledgeType.PRO, "Great work guys!"));
+        trainingElements.add(createElement(KnowledgeType.CON, "No that is not ok"));
+        trainingElements.add(createElement(KnowledgeType.OTHER, "Hello"));
+        return trainingElements;
+    }
 
 	private void addCommentsToIssue() {
 		// Get the current logged in user
@@ -73,7 +126,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 	@NonTransactional
 	public void testFineGrainedClassificationWithValidDataInAO() {
 		sentences.get(0).setRelevant(true);
-		sentences.get(0).setDescription("[issue]nonplaintext[/issue]");
+		sentences.get(0).setDescription("An option would be");
 
 		sentences = classificationManager.classifySentencesFineGrained(sentences);
 
@@ -81,5 +134,5 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 		assertTrue(sentences.get(0).isTagged());
 	}
 
- */
+
 }

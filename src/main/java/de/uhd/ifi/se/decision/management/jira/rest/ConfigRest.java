@@ -10,6 +10,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 import com.google.common.collect.ImmutableMap;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManagerForJiraIssueComments;

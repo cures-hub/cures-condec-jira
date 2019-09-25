@@ -115,13 +115,16 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
 
 
     public void update(PartOfJiraIssueText sentence) {
-        List<Double> feature = this.classifier.preprocess(sentence.getText());
+        List<List<Double>> features = this.classifier.preprocess(sentence.getText());
         // classifier needs numerical value
         Integer labelIsRelevant = sentence.isRelevant() ? 1 : 0;
-        this.classifier.getBinaryClassifier().train(feature.toArray(Double[]::new), labelIsRelevant);
+        for (List<Double> feature : features){
+            this.classifier.getBinaryClassifier().train(feature.toArray(Double[]::new), labelIsRelevant);
 
-        KnowledgeType labelKnowledgeType = sentence.getType();
-        this.classifier.getFineGrainedClassifier().train(feature.toArray(Double[]::new), labelKnowledgeType);
+            KnowledgeType labelKnowledgeType = sentence.getType();
+            this.classifier.getFineGrainedClassifier().train(feature.toArray(Double[]::new), labelKnowledgeType);
+        }
+
     }
 
     @Override
