@@ -62,7 +62,7 @@ class PreTrainedGloveSingleton {
      * @param word holds the string for which a vector has to be determined
      * @return
      */
-    List<Double> getWordVector(String word) {
+    public List<Double> getWordVector(String word) {
         try{
             return Arrays.asList(this.map.get(word));
         } catch (Exception e){

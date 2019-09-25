@@ -16,7 +16,6 @@ public abstract class Classifier {
             File.separator;
 
 
-    private MercerKernel kernel;
     protected SVM<Double[]> model;
     private Integer epochs;
     private boolean modelIsTrained;
@@ -45,7 +44,6 @@ public abstract class Classifier {
     }
 
     public Classifier(MercerKernel kernel, SVM<Double[]> model, Integer epochs, Integer numClasses) {
-        this.kernel = kernel;
         this.model = model;
         this.epochs = epochs;
         this.modelIsTrained = false;
@@ -102,7 +100,7 @@ public abstract class Classifier {
             this.model.predict(feature, probabilities);
             return probabilities;
         } else {
-            throw new Exception("Classifier has not been trained!");
+            throw new InstantiationError("Classifier has not been trained!");
         }
 
     }

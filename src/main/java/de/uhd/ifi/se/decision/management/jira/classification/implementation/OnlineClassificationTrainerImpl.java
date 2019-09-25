@@ -94,10 +94,10 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
             Map<String, List> trainingData = this.extractTrainingData(super.instances);
             Map preprocessedIsRelevantSentences = this.classifier.preprocess(trainingData.get("sentences"),
                     trainingData.get("labelsIsRelevant"));
+
             this.classifier.trainBinaryClassifier((List<List<Double>>) preprocessedIsRelevantSentences.get("features"),
                     (List<Integer>) preprocessedIsRelevantSentences.get("labels"));
-            Map preprocessedFineSentences = this.classifier.preprocess(trainingData.get("sentences"),
-                    trainingData.get("labelsKnowledgeType"));
+
             this.classifier.trainFineGrainedClassifier((List<List<Double>>) preprocessedIsRelevantSentences.get("features"),
                     (List<Integer>) preprocessedIsRelevantSentences.get("labels"));
 
@@ -166,25 +166,7 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
         return extractedTrainingData;
     }
 
-
-    private void evaluateTraining(LC binaryRelevance) throws Exception {
-        Evaluation rate = new Evaluation(instances);
-        Random seed = new Random(1);
-        Instances datarandom = new Instances(instances);
-        datarandom.randomize(seed);
-
-        int folds = 10;
-        datarandom.stratify(folds);
-        rate.crossValidateModel(binaryRelevance, instances, folds, seed);
-
-        LOGGER.info(rate.toSummaryString());
-        LOGGER.info("Structure num classes: " + instances.numClasses());
-
-        // for (int i = 0; i < instances.numClasses(); i++) {
-        // System.out.println(rate.fMeasure(i));
-        // }
-    }
-
+    //TODO implement
     private void evaluateTraining(Classifier classfier) throws Exception {
         Evaluation rate = new Evaluation(instances);
         Random seed = new Random(1);

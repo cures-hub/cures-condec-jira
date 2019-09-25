@@ -35,12 +35,12 @@ public class BinaryClassifierImplementation extends Classifier {
         super(kernel, model, epochs, 2);
     }
 
-    boolean predictIsKnowledge(Double[] feature) throws Exception {
+    public boolean predictIsKnowledge(Double[] feature) throws Exception {
         // If the probability for being relevant is greater than 0.5, true is returned.
         return this.isRelevant(ArrayUtils.toObject(super.predictProbabilities(feature)));
     }
 
-    boolean predictIsKnowledge(List<Double> feature) throws Exception {
+    public boolean predictIsKnowledge(List<Double> feature) throws Exception {
         // If the probability for being relevant is greater than 0.5, true is returned.
         return this.predictIsKnowledge(feature.toArray(Double[]::new));
     }

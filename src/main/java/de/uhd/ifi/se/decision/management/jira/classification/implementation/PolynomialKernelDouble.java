@@ -10,7 +10,7 @@ import smile.math.kernel.PolynomialKernel;
  */
 public class PolynomialKernelDouble implements MercerKernel<Double[]> {
 
-    MercerKernel PolyKernel;
+    private MercerKernel PolyKernel;
 
     public PolynomialKernelDouble(Integer degree){
         this.PolyKernel = new PolynomialKernel(degree);
