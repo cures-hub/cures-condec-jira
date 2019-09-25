@@ -25,7 +25,7 @@ public class MatrixRow {
         }
     }
 
-    public MatrixRow(HashSet<MatrixEntry> allEntries, List<DecisionKnowledgeElement> allDecisions, DecisionKnowledgeElement decision) {
+    public MatrixRow(HashSet<MatrixEntry> allEntries, Map<Long, String> headerRow, DecisionKnowledgeElement decision) {
         Map<Long, String> entriesForRow = new TreeMap<>();
         for (MatrixEntry entry : allEntries) {
             if (entry.getIdOfSourceElement().equals(decision.getId())) {
@@ -37,11 +37,11 @@ public class MatrixRow {
 
         this.row.add(decision.getSummary());
 
-        for (DecisionKnowledgeElement element : allDecisions) {
-            if (element.getId() == decision.getId()) {
+        for (Map.Entry<Long, String> headerRowDecision : headerRow.entrySet()) {
+            if (headerRowDecision.getValue().equals(decision.getSummary())) {
                 this.row.add("LightGray");
-            } else if (entriesForRow.get(element.getId()) != null) {
-                this.row.add(entriesForRow.get(element.getId()));
+            } else if (entriesForRow.get(headerRowDecision.getKey()) != null) {
+                this.row.add(entriesForRow.get(headerRowDecision.getKey()));
             } else {
                 this.row.add("White");
             }
