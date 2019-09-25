@@ -23,7 +23,7 @@ public class PreprocessorImpl implements Preprocessor {
     private Lemmatizer lemmatizer;
     private POSTaggerME tagger;
     private String[] posTags;
-    private NameFinderME nameFinder;
+    //private NameFinderME nameFinder;
     private Integer nGramN;
 
     public PreprocessorImpl() {
@@ -45,9 +45,9 @@ public class PreprocessorImpl implements Preprocessor {
             posModel = new POSModel(modelIn);
             this.tagger = new POSTaggerME(posModel);
 
-            modelIn = new FileInputStream(LANGUAGE_MODEL_PATH + "person.bin");
-            TokenNameFinderModel model = new TokenNameFinderModel(modelIn);
-            this.nameFinder = new NameFinderME(model);
+            //modelIn = new FileInputStream(LANGUAGE_MODEL_PATH + "person.bin");
+            //TokenNameFinderModel model = new TokenNameFinderModel(modelIn);
+            //this.nameFinder = new NameFinderME(model);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -106,13 +106,13 @@ public class PreprocessorImpl implements Preprocessor {
 
     @Override
     public List preprocess(String sentence) {
-        sentence = this.replaceUsingRegEx(sentence, Preprocessor.NUMBER_PATTERN, Preprocessor.NUMBER_TOKEN.toLowerCase());
-        sentence = this.replaceUsingRegEx(sentence, Preprocessor.URL_PATTERN, Preprocessor.URL_TOKEN.toLowerCase());
-        sentence = this.replaceUsingRegEx(sentence, Preprocessor.WHITESPACE_CHARACTERS_PATTERN, Preprocessor.WHITESPACE_CHARACTERS_TOKEN.toLowerCase());
+        String cleaned_sentence = this.replaceUsingRegEx(sentence, Preprocessor.NUMBER_PATTERN, Preprocessor.NUMBER_TOKEN.toLowerCase());
+        cleaned_sentence = this.replaceUsingRegEx(cleaned_sentence, Preprocessor.URL_PATTERN, Preprocessor.URL_TOKEN.toLowerCase());
+        cleaned_sentence = this.replaceUsingRegEx(cleaned_sentence, Preprocessor.WHITESPACE_CHARACTERS_PATTERN, Preprocessor.WHITESPACE_CHARACTERS_TOKEN.toLowerCase());
         //replace long words and possible methods!
-        sentence = sentence.toLowerCase();
+        cleaned_sentence = cleaned_sentence.toLowerCase();
 
-        List<String> tokens = this.tokenize(sentence);
+        List<String> tokens = this.tokenize(cleaned_sentence);
 
 
         this.posTags = this.tagger.tag(Arrays.copyOf(tokens.toArray(), tokens.size(), String[].class));

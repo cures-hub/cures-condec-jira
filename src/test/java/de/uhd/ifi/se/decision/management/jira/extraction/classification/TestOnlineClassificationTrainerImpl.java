@@ -22,12 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestOnlineClassificationTrainerImpl extends TestSetUp {
 
-    private OnlineClassificationTrainerImpl trainer;
-
     @Before
     public void setUp() {
         init();
-        trainer = new OnlineClassificationTrainerImpl();
     }
 
 

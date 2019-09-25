@@ -50,7 +50,7 @@ public class FineGrainedClassifierImpl extends Classifier {
         return maxAt;
     }
 
-    KnowledgeType predictKnowledgeType(List<Double> feature) throws Exception {
+    public KnowledgeType predictKnowledgeType(List<Double> feature) throws Exception {
         return this.predictKnowledgeType(feature.toArray(Double[]::new));
     }
 
