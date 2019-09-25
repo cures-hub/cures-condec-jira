@@ -1,15 +1,16 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.impl;
+package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.Preprocessor;
+import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import weka.core.Attribute;
 import weka.core.DenseInstance;

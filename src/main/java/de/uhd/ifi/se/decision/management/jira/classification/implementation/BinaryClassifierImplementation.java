@@ -1,12 +1,10 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.impl;
+package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
-import de.uhd.ifi.se.decision.management.jira.extraction.Classifier;
+import de.uhd.ifi.se.decision.management.jira.classification.Classifier;
 import smile.classification.SVM;
 import smile.math.kernel.MercerKernel;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class BinaryClassifierImplementation extends Classifier {
@@ -47,13 +45,6 @@ public class BinaryClassifierImplementation extends Classifier {
         return this.predictIsKnowledge(feature.toArray(Double[]::new));
     }
 
-    @Override
-    public void train(File trainingFile) {
-        List<Double[]> features = new ArrayList<>();
-        List<Integer> labels = new ArrayList<>();
-        //TODO!
-        super.train((Double[][]) features.toArray(), (Integer[]) labels.toArray());
-    }
 
     public void loadFromFile() throws Exception {
         super.loadFromFile(Classifier.DEFAULT_PATH + BinaryClassifierImplementation.DEFAULT_MODEL_NAME);

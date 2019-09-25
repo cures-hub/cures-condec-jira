@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.Preprocessor;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.PreprocessorImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
 import org.junit.Test;
 
 import java.util.ArrayList;

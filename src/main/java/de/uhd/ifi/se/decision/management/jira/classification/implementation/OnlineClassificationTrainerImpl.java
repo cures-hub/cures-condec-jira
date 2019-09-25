@@ -1,17 +1,15 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.impl;
+package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationTrainerARFF;
-import de.uhd.ifi.se.decision.management.jira.extraction.Classifier;
-import de.uhd.ifi.se.decision.management.jira.extraction.DecisionKnowledgeClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassificationTrainerARFF;
+import de.uhd.ifi.se.decision.management.jira.classification.Classifier;
+import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import meka.classifiers.multilabel.LC;
-import mst.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import weka.classifiers.Evaluation;
-import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
 

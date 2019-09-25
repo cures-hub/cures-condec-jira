@@ -1,9 +1,9 @@
-package de.uhd.ifi.se.decision.management.jira.extraction;
+package de.uhd.ifi.se.decision.management.jira.classification;
 
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.PolynomialKernelDouble;
 import smile.classification.SVM;
 import smile.math.kernel.MercerKernel;
-import smile.math.kernel.PolynomialKernel;
 import weka.core.SerializationHelper;
 
 
@@ -16,11 +16,11 @@ public abstract class Classifier {
             File.separator;
 
 
-    protected MercerKernel kernel;
+    private MercerKernel kernel;
     protected SVM<Double[]> model;
-    protected Integer epochs;
-    protected boolean modelIsTrained;
-    protected Integer numClasses;
+    private Integer epochs;
+    private boolean modelIsTrained;
+    private Integer numClasses;
 
 
     public Classifier(Integer numClasses) {
@@ -54,40 +54,36 @@ public abstract class Classifier {
 
 
     /**
-     * @param trainingFile
-     */
-    public abstract void train(File trainingFile);
-
-    /**
+     * Trains the model using supervised training data, features and labels.
      * @param features
      * @param labels
      */
     public void train(Double[][] features, Integer[] labels) {
         for (int i = 0; i < this.epochs; i++) {
-            /*TODO: ERROR -
-            class [Ljava.lang.Double; cannot be cast to class
-            [I ([Ljava.lang.Double; and [I are in module java.base of loader 'bootstrap')
-             */
             this.model.learn(features, ArrayUtils.toPrimitive(labels));
         }
         this.model.finish();
         this.modelIsTrained = true;
     }
 
-    /**{1})
+    /**
+     * Trains the model using supervised training data, features and labels.
+     *
      * @param features
      * @param labels
      */
     public void train(List<List<Double>> features, List<Integer> labels) {
-       Double[][] featuresArray = new Double[features.size()][features.get(0).size()];
-       for (int i = 0; i < features.size(); i++){
-           featuresArray[i] = (Double[]) features.get(i).toArray(Double[]::new);
-       }
+        Double[][] featuresArray = new Double[features.size()][features.get(0).size()];
+        for (int i = 0; i < features.size(); i++) {
+            featuresArray[i] = (Double[]) features.get(i).toArray(Double[]::new);
+        }
         this.train(featuresArray,
-               labels.toArray(Integer[]::new));
+                labels.toArray(Integer[]::new));
     }
 
     /**
+     * Trains the model using supervised training data, features and labels.
+     *
      * @param features
      * @param label
      */
@@ -112,6 +108,8 @@ public abstract class Classifier {
     }
 
     /**
+     * Saves model to a file. So that it can be loaded at a later time.
+     *
      * @param filePathAndName
      * @throws Exception
      */
@@ -120,25 +118,31 @@ public abstract class Classifier {
     }
 
     /**
+     * Saves model to a file. So that it can be loaded at a later time.
+     *
      * @throws Exception
      */
     public abstract void saveToFile() throws Exception;
 
     /**
+     * Loads pre-trained model from file.
+     *
      * @param filePathAndName
      * @throws Exception
      */
     public void loadFromFile(String filePathAndName) throws Exception {
-        SVM oldModel = this.model;
-        try{
+        SVM<Double[]> oldModel = this.model;
+        try {
             this.model = (SVM<Double[]>) SerializationHelper.read(filePathAndName);
-        }catch (Exception e){
+        } catch (Exception e) {
             this.model = oldModel;
         }
 
     }
 
     /**
+     * Loads pre-trained model from file.
+     *
      * @throws Exception
      */
     public abstract void loadFromFile() throws Exception;
@@ -146,16 +150,3 @@ public abstract class Classifier {
 
 }
 
-class PolynomialKernelDouble implements MercerKernel<Double[]>{
-
-    MercerKernel PolyKernel;
-
-    public PolynomialKernelDouble(Integer degree){
-        this.PolyKernel = new PolynomialKernel(degree);
-    }
-
-    @Override
-    public double k(Double[] t1, Double[] t2) {
-        return this.PolyKernel.k(ArrayUtils.toPrimitive(t1), ArrayUtils.toPrimitive(t2));
-    }
-}

@@ -1,7 +1,7 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.impl;
+package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationTrainerARFF;
-import de.uhd.ifi.se.decision.management.jira.extraction.DecisionKnowledgeClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassificationTrainerARFF;
+import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import meka.classifiers.multilabel.LC;
 import org.slf4j.Logger;
@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
 import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayesMultinomial;
 import weka.classifiers.meta.FilteredClassifier;
-import weka.core.Attribute;
-import weka.core.DenseInstance;
 import weka.core.Instances;
 import weka.core.SerializationHelper;
 import weka.filters.unsupervised.attribute.StringToWordVector;

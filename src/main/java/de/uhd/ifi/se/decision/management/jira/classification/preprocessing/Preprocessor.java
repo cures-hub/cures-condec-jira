@@ -1,20 +1,17 @@
-package de.uhd.ifi.se.decision.management.jira.extraction;
-
-import scala.util.matching.Regex;
+package de.uhd.ifi.se.decision.management.jira.classification.preprocessing;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 public interface Preprocessor {
 
-    public static String URL_PATTERN = "^[a-zA-Z0-9\\-\\.]+\\.(com|org|net|mil|edu|COM|ORG|NET|MIL|EDU)";
-    public static String URL_TOKEN = "URL";
+    String URL_PATTERN = "^[a-zA-Z0-9\\-\\.]+\\.(com|org|net|mil|edu|COM|ORG|NET|MIL|EDU)";
+    String URL_TOKEN = "URL";
 
-    public static String NUMBER_PATTERN = "[+-]?(([0-9]*[.,-:])?[0-9]+)+";
-    public static String NUMBER_TOKEN = "NUMBER";
+    String NUMBER_PATTERN = "[+-]?(([0-9]*[.,-:])?[0-9]+)+";
+    String NUMBER_TOKEN = "NUMBER";
 
-    public static String WHITESPACE_CHARACTERS_PATTERN = "[\\t\\n\\r]+";
-    public static String WHITESPACE_CHARACTERS_TOKEN = "";
+    String WHITESPACE_CHARACTERS_PATTERN = "[\\t\\n\\r]+";
+    String WHITESPACE_CHARACTERS_TOKEN = "";
 
 
     /**
@@ -74,7 +71,7 @@ public interface Preprocessor {
      * @param token to be stemmed
      * @return stemmed word token
      *
-     * Not useful when already using lemmatizer.
+     * Not useful when already using a lemmatizer.
      * public String stem(String token);
      */
 
