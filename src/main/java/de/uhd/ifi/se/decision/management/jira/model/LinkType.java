@@ -25,7 +25,7 @@ public enum LinkType {
 	private String style;
 	private String color;
 
-	private LinkType(String name, String outwardLink, String inwardLink, String style, String color) {
+	LinkType(String name, String outwardLink, String inwardLink, String style, String color) {
 		this.name = name;
 		this.outwardLink = outwardLink;
 		this.inwardLink = inwardLink;
