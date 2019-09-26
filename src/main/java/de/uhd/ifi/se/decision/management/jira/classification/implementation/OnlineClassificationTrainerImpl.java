@@ -35,7 +35,7 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
     protected static final Logger LOGGER = LoggerFactory.getLogger(OnlineClassificationTrainerImpl.class);
 
     public OnlineClassificationTrainerImpl() {
-        this.classifier = new DecisionKnowledgeClassifierImpl();
+        this.classifier = DecisionKnowledgeClassifierImpl.getInstance();
         super.directory = new File(DecisionKnowledgeClassifier.DEFAULT_DIR);
         directory.mkdirs();
     }

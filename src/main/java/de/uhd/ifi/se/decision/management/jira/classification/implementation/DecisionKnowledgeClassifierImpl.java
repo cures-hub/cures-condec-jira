@@ -40,11 +40,20 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
     }
      */
 
-    public DecisionKnowledgeClassifierImpl() {
+    private static DecisionKnowledgeClassifierImpl instance;
+
+    private DecisionKnowledgeClassifierImpl() {
         loadDefaultBinaryClassifier();
         loadDefaultFineGrainedClassifier();
         this.preprocessor = new PreprocessorImpl();
 
+    }
+
+    public static DecisionKnowledgeClassifierImpl getInstance(){
+        if (instance == null){
+            instance = new DecisionKnowledgeClassifierImpl();
+        }
+        return instance;
     }
 
     private void loadDefaultBinaryClassifier() {
