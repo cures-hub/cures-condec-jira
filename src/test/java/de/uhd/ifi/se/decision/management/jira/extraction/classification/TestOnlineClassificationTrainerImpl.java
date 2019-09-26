@@ -1,18 +1,23 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.comments.MutableComment;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.ClassificationTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
+import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static junit.framework.TestCase.assertNotNull;
@@ -22,9 +27,13 @@ import static org.junit.Assert.assertFalse;
 
 public class TestOnlineClassificationTrainerImpl extends TestSetUp {
 
+    private OnlineClassificationTrainerImpl trainer;
+
     @Before
     public void setUp() {
         init();
+        trainer = new OnlineClassificationTrainerImpl("TEST");
+        trainer.setTrainingData(getTrainingData());
     }
 
 
@@ -67,7 +76,6 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
     @Test
     public void testOnlineClassificationTrainerSetTrainingData() {
         List<DecisionKnowledgeElement> trainingElements = getTrainingData();
-        OnlineClassificationTrainerImpl trainer = new OnlineClassificationTrainerImpl("TEST");
         trainer.setTrainingData(trainingElements);
         Assert.assertTrue(trainer.train());
     }
@@ -75,7 +83,6 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
     @Test
     public void testOnlineClassificationTrainerFromArffFile() {
         List<DecisionKnowledgeElement> trainingElements = getTrainingData();
-        OnlineClassificationTrainerImpl trainer = new OnlineClassificationTrainerImpl("TEST", trainingElements);
         File file = trainer.saveTrainingFile(true);
         trainer.setTrainingFile(file);
         assertNotNull(trainer.getInstances());
@@ -87,7 +94,6 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
 
     @Test
     public void testSaveArffFile() {
-        OnlineClassificationTrainerImpl trainer = new OnlineClassificationTrainerImpl("TEST");
         File file = trainer.saveTrainingFile(false);
         Assert.assertTrue(file.exists());
         file.delete();
@@ -101,7 +107,6 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
 
     @Test
     public void testDefaultArffFile() {
-        OnlineClassificationTrainerImpl trainer = new OnlineClassificationTrainerImpl();
         File luceneArffFile = getDefaultArffFile();
         Assert.assertTrue(luceneArffFile.exists());
         trainer.setTrainingFile(luceneArffFile);
@@ -129,8 +134,45 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
 
     @Test
     public void testGetArffFiles() {
-        OnlineClassificationTrainerImpl trainer = new OnlineClassificationTrainerImpl();
         assertEquals(ArrayList.class, trainer.getTrainingFileNames().getClass());
     }
+
+    @Test
+    @NonTransactional
+    public void testEvaluateClassifier(){
+        trainer.train();
+        boolean executionSuccessful = true;
+        try{
+            trainer.evaluateClassifier();
+        }catch (Exception e){
+            executionSuccessful = false;
+        }
+        assertTrue(executionSuccessful);
+    }
+
+
+    @Test
+    public void testUpdate() {
+        trainer.train();
+
+        PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl();
+        sentence.setDescription("In my opinion the query would be better!");
+        sentence.setRelevant(true);
+        sentence.setType(KnowledgeType.ALTERNATIVE);
+        sentence.setValidated(true);
+
+        assertTrue(trainer.update(sentence));
+    }
+
+    @Test
+    public void testGetClassifier() {
+        assertNotNull(this.trainer.getClassifier());
+    }
+
+    @Test
+    public void testGetInstances() {
+        assertNotNull(this.trainer.getInstances());
+    }
+
 
 }

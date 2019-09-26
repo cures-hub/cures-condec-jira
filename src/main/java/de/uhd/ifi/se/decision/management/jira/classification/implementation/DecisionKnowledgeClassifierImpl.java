@@ -1,24 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
-
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.Instance;
-import weka.core.Instances;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 
 /**
  * Class to identify decision knowledge in natural language texts using a binary
@@ -38,11 +32,13 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
      */
     private static final String[] KNOWLEDGE_TYPES = {"isAlternative", "isPro", "isCon", "isDecision", "isIssue"};
 
+    /*
     public DecisionKnowledgeClassifierImpl(BinaryClassifierImplementation binaryClassifier, FineGrainedClassifierImpl fineGrainedClassifier) {
         this.binaryClassifier = binaryClassifier;
         this.fineGrainedClassifier = fineGrainedClassifier;
         this.preprocessor = new PreprocessorImpl();
     }
+     */
 
     public DecisionKnowledgeClassifierImpl() {
         loadDefaultBinaryClassifier();
@@ -213,6 +209,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
     }
 
 
+    /*
     private Instances createDatasetForBinaryClassification(List<String> stringsToBeClassified) {
         List<Attribute> wekaAttributes = createBinaryAttributes();
         Instances datasetForBinaryClassification = new Instances("sentences", (ArrayList<Attribute>) wekaAttributes,
@@ -233,7 +230,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
         wekaAttributes.add(new Attribute("isRelevant", createClassAttributeList()));
         return wekaAttributes;
     }
-
+    */
     private List<String> createClassAttributeList() {
         // Declare Class value with {0,1} as possible values
         List<String> relevantAttribute = new ArrayList<String>();
@@ -242,6 +239,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
         return relevantAttribute;
     }
 
+    /*
     @Deprecated
     private Instances createDatasetForFineGrainedClassification(List<String> stringsToBeClassified) {
         List<Attribute> wekaAttributes = new ArrayList<Attribute>();
@@ -265,5 +263,6 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
         }
         return data;
     }
+     */
 
 }

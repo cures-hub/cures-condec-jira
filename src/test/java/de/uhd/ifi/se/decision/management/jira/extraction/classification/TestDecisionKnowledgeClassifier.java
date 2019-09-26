@@ -65,8 +65,8 @@ public class TestDecisionKnowledgeClassifier extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsRelevant() {
-
 		assertTrue(this.decisionKnowledgeClassifier.getBinaryClassifier().isRelevant(new Double[]{0.2, 0.8}));
 		assertFalse(this.decisionKnowledgeClassifier.getBinaryClassifier().isRelevant(new Double[]{0.8, 0.2}));
 	}
+
 }
