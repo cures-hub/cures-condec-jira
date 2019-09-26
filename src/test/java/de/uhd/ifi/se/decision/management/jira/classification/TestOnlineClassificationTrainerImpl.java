@@ -69,6 +69,7 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
     }
 
     @Test
+    @NonTransactional
     public void testOnlineClassificationTrainerSetTrainingData() {
         List<DecisionKnowledgeElement> trainingElements = getTrainingData();
         trainer.setTrainingData(trainingElements);
@@ -76,6 +77,7 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
     }
 
     @Test
+    @NonTransactional
     public void testOnlineClassificationTrainerFromArffFile() {
         File file = trainer.saveTrainingFile(true);
         trainer.setTrainingFile(file);
@@ -87,6 +89,7 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
     }
 
     @Test
+    @NonTransactional
     public void testSaveArffFile() {
         File file = trainer.saveTrainingFile(false);
         Assert.assertTrue(file.exists());
@@ -94,12 +97,14 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
     }
 
     @Test
+    @NonTransactional
     public void testMockingOfClassifierDirectoryWorks() {
         assertEquals(DecisionKnowledgeClassifier.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data"
                 + File.separator + "condec-plugin" + File.separator + "classifier" + File.separator);
     }
 
     @Test
+    @NonTransactional
     public void testDefaultArffFile() {
         File luceneArffFile = getDefaultArffFile();
         Assert.assertTrue(luceneArffFile.exists());
@@ -107,6 +112,7 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
     }
 
     @Test
+    @NonTransactional
     public void testCopyDefaultTrainingDataToFile() {
         assertFalse(ClassificationTrainer.copyDefaultTrainingDataToFile(new File("")).exists());
         File luceneArffFile = getDefaultArffFile();
@@ -114,6 +120,7 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
     }
 
     @Test
+    @NonTransactional
     public void testTrainDefaultClassifier() {
         // File luceneArffFile = getDefaultArffFile();
         // assertTrue(OnlineClassificationTrainer.trainClassifier(luceneArffFile));
@@ -127,6 +134,7 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
     }
 
     @Test
+    @NonTransactional
     public void testGetArffFiles() {
         assertEquals(ArrayList.class, trainer.getTrainingFileNames().getClass());
     }
@@ -146,6 +154,7 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
 
 
     @Test
+    @NonTransactional
     public void testUpdate() {
         trainer.train();
 
@@ -159,11 +168,13 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
     }
 
     @Test
+    @NonTransactional
     public void testGetClassifier() {
         assertNotNull(this.trainer.getClassifier());
     }
 
     @Test
+    @NonTransactional
     public void testGetInstances() {
         assertNotNull(this.trainer.getInstances());
     }
