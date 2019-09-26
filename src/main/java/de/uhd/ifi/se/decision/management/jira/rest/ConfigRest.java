@@ -34,10 +34,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * REST resource for plug-in configuration
@@ -425,6 +422,29 @@ public class ConfigRest {
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error", "The classifier could not be trained due to an internal server error.")).build();
+	}
+
+	@Path("/evaluateModel")
+	@POST
+	public Response evaluateModel(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey){
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		
+		OnlineClassificationTrainerImpl trainer = new OnlineClassificationTrainerImpl(projectKey);
+
+		try {
+			Map<String, Double> evaluationResults = trainer.evaluateClassifier();
+
+			return Response.ok(Status.ACCEPTED).entity(
+					ImmutableMap.of("content", evaluationResults.toString() ))
+					.build();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", e.getMessage())).build();
+		}
 	}
 
 	@Path("/saveArffFile")

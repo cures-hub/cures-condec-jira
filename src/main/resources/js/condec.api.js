@@ -791,6 +791,17 @@
 		return 0.0;
 	};
 
+
+	ConDecAPI.prototype.evaluateModel = function evaluateModel(projectKey, useOnlyValidatedData, callback) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/evaluateModel.json?projectKey=" + projectKey + "&useOnlyValidatedData=" + useOnlyValidatedData, null,
+			function(error, response) {
+				if (error === null) {
+					showFlag("success", "The evaluation results file was successfully created.");
+					//console.log(response["content"]);
+					callback(response["content"]);
+				}
+			});
+	};
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
