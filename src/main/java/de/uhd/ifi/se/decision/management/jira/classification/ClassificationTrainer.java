@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  */
 public interface ClassificationTrainer {
 
-	public static final File DEFAULT_TRAINING_DATA = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "lucene.arff");
+	public static final File DEFAULT_TRAINING_DATA = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff");
 
 	static final Logger LOGGER = LoggerFactory.getLogger(ClassificationTrainer.class);
 	/**
@@ -131,8 +131,8 @@ public interface ClassificationTrainer {
 		if (file.exists()) {
 			return file;
 		}
-		//TODO: lucene.arf ändern
-		String pathToTrainingFile = ComponentGetter.getUrlOfClassifierFolder() + "lucene.arff";
+		//DONE: changed file
+		String pathToTrainingFile = ComponentGetter.getUrlOfClassifierFolder() + "defaultTrainingData.arff";
 		try {
 			InputStream inputStream = new URL(pathToTrainingFile).openStream();
 			byte[] buffer = new byte[inputStream.available()];

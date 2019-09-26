@@ -140,7 +140,7 @@ public class TestClassificationTrainer extends TestSetUp {
 
 	private File getDefaultArffFile() {
 		File luceneArffFile = new File("src" + File.separator + "main" + File.separator + "resources" + File.separator
-				+ "classifier" + File.separator + "lucene.arff");
+				+ "classifier" + File.separator + "defaultTrainingData.arff");
 		return luceneArffFile;
 	}
 
