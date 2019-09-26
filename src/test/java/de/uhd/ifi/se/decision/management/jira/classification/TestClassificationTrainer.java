@@ -71,18 +71,6 @@ public class TestClassificationTrainer extends TestSetUp {
 		trainer.setTrainingData(trainingElements);
 		//assertNotNull(trainer.getInstances());
 		assertTrue(trainer.train());
-		// DecisionKnowledgeClassifier classifier = trainer.getClassifier();
-		// List<String> stringsToBeClassified = Arrays.asList("-1", "Issue", "Decision",
-		// "Alternative", "Party tonight",
-		// "+1", "Very good.");
-		// List<Boolean> isRelevant =
-		// classifier.makeBinaryPredictions(stringsToBeClassified);
-		// System.out.println(isRelevant);
-		//
-		// List<KnowledgeType> types =
-		// classifier.makeFineGrainedPredictions(stringsToBeClassified);
-		// System.out.println(types);
-		// // assertTrue(isRelevant.get(1));
 	}
 
 	@Test
