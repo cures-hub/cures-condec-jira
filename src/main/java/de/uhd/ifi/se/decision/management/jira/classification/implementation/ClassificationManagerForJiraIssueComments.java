@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.classification;
+package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,7 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
@@ -120,13 +121,15 @@ public class ClassificationManagerForJiraIssueComments {
         return sentences;
     }
 
-    private List<String> extractStringsFromPoji(List<PartOfJiraIssueText> sentences) {
+    public static List<String> extractStringsFromPoji(List<PartOfJiraIssueText> sentences) {
         List<String> extractedStringsFromPoji = new ArrayList<String>();
         for (PartOfJiraIssueText sentence : sentences){
             extractedStringsFromPoji.add(sentence.getDescription());
         }
         return extractedStringsFromPoji;
     }
+
+
 
     private List<PartOfJiraIssueText> getSentencesForFineGrainedClassification(List<PartOfJiraIssueText> sentences) {
         List<PartOfJiraIssueText> stringsToBeClassified = new ArrayList<PartOfJiraIssueText>();

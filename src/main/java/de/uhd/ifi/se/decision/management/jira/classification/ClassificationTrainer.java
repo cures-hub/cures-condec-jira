@@ -32,6 +32,8 @@ public interface ClassificationTrainer {
 	 */
 	boolean train();
 
+
+
 	/**
 	 * Creates a new file for the current
 	 * project that can be used to train the classifier and saves it on the server

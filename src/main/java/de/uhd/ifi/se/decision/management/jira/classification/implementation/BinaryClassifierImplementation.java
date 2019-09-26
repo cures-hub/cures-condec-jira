@@ -15,6 +15,7 @@ public class BinaryClassifierImplementation extends Classifier {
         super(2);
     }
 
+    /* unused constructors
     public BinaryClassifierImplementation(SVM<Double[]> svm) {
         super(svm, 2);
     }
@@ -34,6 +35,7 @@ public class BinaryClassifierImplementation extends Classifier {
     public BinaryClassifierImplementation(MercerKernel kernel, SVM<Double[]> model, Integer epochs) {
         super(kernel, model, epochs, 2);
     }
+    */
 
     public boolean predictIsKnowledge(Double[] feature) throws Exception {
         // If the probability for being relevant is greater than 0.5, true is returned.
