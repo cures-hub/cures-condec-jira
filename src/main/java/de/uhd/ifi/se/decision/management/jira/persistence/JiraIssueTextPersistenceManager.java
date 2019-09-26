@@ -384,7 +384,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		}
 		if (sentence.isValidated()){
 			//OnlineClassificationTrainerImpl.getInstance().update(sentence);
-			//TODO: hier kommt online upsateing des classifiers rein!
+			//TODO: online updateing of classifiers here!
 		}
 		return isUpdated;
 	}

@@ -30,7 +30,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
      * The knowledge types need to be present in the weka classifier. They do not
      * relate to tags like {Issue}.
      */
-    private static final String[] KNOWLEDGE_TYPES = {"isAlternative", "isPro", "isCon", "isDecision", "isIssue"};
+    //private static final String[] KNOWLEDGE_TYPES = {"isAlternative", "isPro", "isCon", "isDecision", "isIssue"};
 
     /*
     public DecisionKnowledgeClassifierImpl(BinaryClassifierImplementation binaryClassifier, FineGrainedClassifierImpl fineGrainedClassifier) {
@@ -230,7 +230,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
         wekaAttributes.add(new Attribute("isRelevant", createClassAttributeList()));
         return wekaAttributes;
     }
-    */
+
     private List<String> createClassAttributeList() {
         // Declare Class value with {0,1} as possible values
         List<String> relevantAttribute = new ArrayList<String>();
@@ -238,6 +238,8 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
         relevantAttribute.add("1");
         return relevantAttribute;
     }
+    */
+
 
     /*
     @Deprecated

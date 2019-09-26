@@ -1,10 +1,6 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.classification;
+package de.uhd.ifi.se.decision.management.jira.classification;
 
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.comments.MutableComment;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.classification.ClassificationTrainer;
-import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
@@ -17,7 +13,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static junit.framework.TestCase.assertNotNull;
@@ -82,7 +77,6 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
 
     @Test
     public void testOnlineClassificationTrainerFromArffFile() {
-        List<DecisionKnowledgeElement> trainingElements = getTrainingData();
         File file = trainer.saveTrainingFile(true);
         trainer.setTrainingFile(file);
         assertNotNull(trainer.getInstances());

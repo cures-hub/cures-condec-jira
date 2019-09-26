@@ -2,8 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 import de.uhd.ifi.se.decision.management.jira.classification.Classifier;
-import smile.classification.SVM;
-import smile.math.kernel.MercerKernel;
 
 import java.util.List;
 
