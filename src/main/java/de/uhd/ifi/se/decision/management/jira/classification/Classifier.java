@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
+import com.atlassian.jira.util.NanoStopWatch;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.PolynomialKernelDouble;
 import smile.classification.SVM;
 import smile.math.kernel.MercerKernel;
@@ -26,20 +27,16 @@ public abstract class Classifier {
         this(0.5, 2, 3, numClasses);
     }
 
-    public Classifier(SVM<Double[]> svm, Integer numClasses) {
-        this(svm, 3, numClasses);
-    }
-
     public Classifier(Double c, Integer degrees, Integer epochs, Integer numClasses) {
         this(c, new PolynomialKernelDouble(degrees), epochs, numClasses);
     }
 
-    public Classifier(Double c, MercerKernel kernel, Integer epochs, Integer numClasses) {
-        this(new SVM<Double[]>(kernel, c, numClasses), epochs, numClasses);
-    }
-
-    public Classifier(SVM<Double[]> model, Integer epochs, Integer numClasses) {
-        this.model = model;
+    public Classifier(Double c, MercerKernel kernel,Integer epochs, Integer numClasses) {
+        if(numClasses <= 2){
+            this.model = new SVM<Double[]>(kernel, c, numClasses);
+        }else{
+            this.model = new SVM<Double[]>(kernel, c, numClasses, SVM.Multiclass.ONE_VS_ONE);
+        }
         this.epochs = epochs;
         this.modelIsTrained = false;
         this.numClasses = numClasses;
@@ -83,7 +80,12 @@ public abstract class Classifier {
      * @param label
      */
     public void train(Double[] features, Integer label) {
-        this.model.learn(features, label);
+        //TODO: remove try catch
+        try{
+            this.model.learn(features, label);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
         this.modelIsTrained = true;
     }
 

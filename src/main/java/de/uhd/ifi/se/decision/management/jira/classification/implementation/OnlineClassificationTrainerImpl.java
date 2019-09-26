@@ -90,11 +90,12 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
         List<List<Double>> features = this.classifier.preprocess(sentence.getDescription());
         // classifier needs numerical value
         Integer labelIsRelevant = sentence.isRelevant() ? 1 : 0;
+
         for (List<Double> feature : features) {
             this.classifier.getBinaryClassifier().train(feature.toArray(Double[]::new), labelIsRelevant);
-
-            KnowledgeType labelKnowledgeType = sentence.getType();
-            this.classifier.getFineGrainedClassifier().train(feature.toArray(Double[]::new), labelKnowledgeType);
+            if(sentence.isRelevant()){
+                this.classifier.getFineGrainedClassifier().train(feature.toArray(Double[]::new), sentence.getType());
+            }
         }
         return true;
     }

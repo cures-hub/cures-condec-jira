@@ -13,27 +13,6 @@ public class BinaryClassifierImplementation extends Classifier {
         super(2);
     }
 
-    /* unused constructors
-    public BinaryClassifierImplementation(SVM<Double[]> svm) {
-        super(svm, 2);
-    }
-
-    public BinaryClassifierImplementation(SVM<Double[]> svm, Integer epochs) {
-        super(svm, epochs, 2);
-    }
-
-    public BinaryClassifierImplementation(Double c, Integer degree, Integer epochs) {
-        super(c, degree, epochs, 2);
-    }
-
-    public BinaryClassifierImplementation(Double c, MercerKernel kernel, Integer epochs) {
-        super(c, kernel, epochs, 2);
-    }
-
-    public BinaryClassifierImplementation(MercerKernel kernel, SVM<Double[]> model, Integer epochs) {
-        super(kernel, model, epochs, 2);
-    }
-    */
 
     public boolean predictIsKnowledge(Double[] feature) throws Exception {
         // If the probability for being relevant is greater than 0.5, true is returned.
@@ -54,7 +33,7 @@ public class BinaryClassifierImplementation extends Classifier {
         super.saveToFile(Classifier.DEFAULT_PATH + BinaryClassifierImplementation.DEFAULT_MODEL_NAME);
     }
 
-    public boolean isRelevant (Double[] probabilities){
+    public boolean isRelevant(Double[] probabilities) {
         return probabilities[1] > 0.5;
     }
 }
