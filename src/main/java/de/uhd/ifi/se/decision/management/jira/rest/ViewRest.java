@@ -283,6 +283,11 @@ public class ViewRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getMatrixData(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("documentationLocation") String documentationLocation) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+
 		AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
 		List<DecisionKnowledgeElement> decisions = strategy.getDecisionKnowledgeElements(KnowledgeType.DECISION);
 
