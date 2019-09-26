@@ -33,10 +33,10 @@ public class FineGrainedClassifierImpl extends Classifier {
     }
 
     public FineGrainedClassifierImpl(MercerKernel kernel, SVM<Double[]> model, Integer epochs, Integer numClasses) {
-        super(kernel, model, epochs, numClasses);
+        super(model, epochs, numClasses);
     }
 
-    KnowledgeType predictKnowledgeType(Double[] feature) throws Exception {
+    public KnowledgeType predictKnowledgeType(Double[] feature) throws Exception {
         Double[] probabilities = ArrayUtils.toObject(super.predictProbabilities(feature));
         int maxAt = maxAtInArray(probabilities);
         return this.mapIndexToKnowledgeType(maxAt);

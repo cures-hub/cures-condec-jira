@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.classification;
+package de.uhd.ifi.se.decision.management.jira.classification;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;

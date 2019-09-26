@@ -67,6 +67,7 @@ public class ClassificationManagerForJiraIssueComments {
         return sentences;
     }
 
+    /*
     private List<PartOfJiraIssueText> getSentencesForBinaryClassification(List<PartOfJiraIssueText> sentences) {
         List<PartOfJiraIssueText> stringsToBeClassified = new ArrayList<PartOfJiraIssueText>();
         for (PartOfJiraIssueText sentence : sentences) {
@@ -76,6 +77,7 @@ public class ClassificationManagerForJiraIssueComments {
         }
         return stringsToBeClassified;
     }
+    */
 
     /**
      * Determines whether a part of JIRA issue comment (substring) should be the

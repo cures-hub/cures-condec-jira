@@ -27,11 +27,7 @@ public abstract class Classifier {
     }
 
     public Classifier(SVM<Double[]> svm, Integer numClasses) {
-        this(new PolynomialKernelDouble(2), svm, 3, numClasses);
-    }
-
-    public Classifier(SVM<Double[]> svm, Integer epochs, Integer numClasses) {
-        this(new PolynomialKernelDouble(2), svm, epochs, numClasses);
+        this(svm, 3, numClasses);
     }
 
     public Classifier(Double c, Integer degrees, Integer epochs, Integer numClasses) {
@@ -39,11 +35,10 @@ public abstract class Classifier {
     }
 
     public Classifier(Double c, MercerKernel kernel, Integer epochs, Integer numClasses) {
-        this(kernel, new SVM<Double[]>(kernel, c, numClasses), epochs, numClasses);
-
+        this(new SVM<Double[]>(kernel, c, numClasses), epochs, numClasses);
     }
 
-    public Classifier(MercerKernel kernel, SVM<Double[]> model, Integer epochs, Integer numClasses) {
+    public Classifier(SVM<Double[]> model, Integer epochs, Integer numClasses) {
         this.model = model;
         this.epochs = epochs;
         this.modelIsTrained = false;
