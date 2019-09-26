@@ -19,7 +19,7 @@ public class TestDecisionKnowledgeClassifier extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		decisionKnowledgeClassifier = new DecisionKnowledgeClassifierImpl();
+		decisionKnowledgeClassifier = DecisionKnowledgeClassifierImpl.getInstance();
 	}
 
 	@Test
