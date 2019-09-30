@@ -9,7 +9,7 @@ import java.net.URL;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +114,7 @@ public interface ClassificationTrainer {
 			LOGGER.error("Could not find default training data for supervised text classifier.");
 			return false;
 		}
-		ClassificationTrainer classificationTrainer = new ClassificationTrainerImpl();
+		ClassificationTrainer classificationTrainer = new OnlineClassificationTrainerImpl();
 		classificationTrainer.setTrainingFile(file);
 		return classificationTrainer.train();
 	}
@@ -131,7 +131,6 @@ public interface ClassificationTrainer {
 		if (file.exists()) {
 			return file;
 		}
-		//DONE: changed file
 		String pathToTrainingFile = ComponentGetter.getUrlOfClassifierFolder() + "defaultTrainingData.arff";
 		try {
 			InputStream inputStream = new URL(pathToTrainingFile).openStream();

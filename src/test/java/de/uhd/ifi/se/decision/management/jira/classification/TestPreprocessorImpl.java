@@ -17,6 +17,7 @@ public class TestPreprocessorImpl extends TestSetUp {
 
     @Test
     public void testTokenizingWorks() {
+        //@pdesombre TODO: change preprocessing resource loading for testing!
         Preprocessor pp = new PreprocessorImpl();
         List<String> tokenizedTestSentence = Arrays.asList("The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog", ".");
         assertEquals(pp.tokenize(TestPreprocessorImpl.testSentence), tokenizedTestSentence);

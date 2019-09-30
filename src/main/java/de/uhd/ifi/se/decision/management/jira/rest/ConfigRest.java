@@ -32,7 +32,6 @@ import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.classification.ClassificationTrainer;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -444,7 +443,7 @@ public class ConfigRest {
 					"The classifier could not be trained since the ARFF file name is invalid.")).build();
 		}
 		ConfigPersistenceManager.setArffFileForClassifier(projectKey, arffFileName);
-		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey, arffFileName);
+		ClassificationTrainer trainer = new OnlineClassificationTrainerImpl(projectKey, arffFileName);
 		boolean isTrained = trainer.train();
 		if (isTrained) {
 			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();

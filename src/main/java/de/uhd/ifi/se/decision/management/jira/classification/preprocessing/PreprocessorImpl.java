@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.classification.preprocessing;
 
+import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import opennlp.tools.lemmatizer.DictionaryLemmatizer;
 import opennlp.tools.lemmatizer.Lemmatizer;
 import opennlp.tools.postag.POSModel;
@@ -16,11 +17,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static de.uhd.ifi.se.decision.management.jira.ComponentGetter.getUrlOfClassifierFolder;
+
 public class PreprocessorImpl implements Preprocessor {
 
-    public static String LANGUAGE_MODEL_PATH = "src" + File.separator + "main" + File.separator + "resources"
-            + File.separator + "classifier" + File.separator
+    //TODO: Path seems to be wrong in jira system!
+    public static String LANGUAGE_MODEL_PATH =  DecisionKnowledgeClassifier.DEFAULT_DIR;
+    /*
+
+             "." + File.separator;
+
+            + "language_models/";
+
+            "src" + File.separator
+            + "main" + File.separator
+            + "resources" + File.separator
+            + "classifier" + File.separator
             + "language_models" + File.separator;
+            */
 
     private Tokenizer tokenizer;
     private Lemmatizer lemmatizer;
