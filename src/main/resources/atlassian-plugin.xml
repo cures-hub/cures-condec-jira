@@ -171,8 +171,16 @@
 			comments such as the model files for Weka and Meka classifiers.
 		</description>
 		<context>jira.view.issue</context>
-		<resource type="download" name="lucene.arff" location="/classifier/lucene.arff" />
+		<resource type="download" name="defaultTrainingData.arff" location="/classifier/defaultTrainingData.arff" />
 		<resource type="download" name="condec.tab.panel.js" location="/js/condec.tab.panel.js" />
+
+		<!--Language models-->
+		<resource type="download" name="person.bin" location="/classifier/person.bin" />
+		<resource type="download" name="lemmatizer.dict" location="/classifier/lemmatizer.dict" />
+		<resource type="download" name="glove.6b.50d.csv" location="/classifier/glove.6b.50d.csv" />
+		<resource type="download" name="pos.bin" location="/classifier/pos.bin" />
+		<resource type="download" name="token.bin" location="/classifier/token.bin" />
+
 	</web-resource>
 
 	<web-resource key="report-resources" name="Resources for Decision Knowledge Report">

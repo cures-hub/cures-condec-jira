@@ -21,6 +21,7 @@ import java.util.Random;
  * Class responsible to train the supervised text classifier. For this purpose,
  * the project admin needs to create and select an ARFF file.
  */
+/*
 public class ClassificationTrainerImpl extends ClassificationTrainerARFF {
 
     private DecisionKnowledgeClassifier classifier;
@@ -109,3 +110,5 @@ public class ClassificationTrainerImpl extends ClassificationTrainerARFF {
         return instances;
     }
 }
+*/
+

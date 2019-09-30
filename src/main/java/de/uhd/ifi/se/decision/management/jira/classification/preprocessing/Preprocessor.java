@@ -1,9 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.classification.preprocessing;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
+
+import java.io.*;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public interface Preprocessor {
 
+    List<String> PREPROCESSOR_FILE_NAMES = Arrays.asList("token.bin", "pos.bin", "person.bin", "lemmatizer.dict", "glove.6b.50d.csv");
     String URL_PATTERN = "^[a-zA-Z0-9\\-\\.]+\\.(com|org|net|mil|edu|COM|ORG|NET|MIL|EDU)";
     String URL_TOKEN = "URL";
 
@@ -26,8 +34,8 @@ public interface Preprocessor {
      * Replaces unwanted patterns from the String using regular expressions and replacement token.
      * E.g.: removing newline character.
      *
-     * @param sentence Sentence that has to be cleaned.
-     * @param regex    Regular Expression used to be filter out unwanted parts of text.
+     * @param sentence     Sentence that has to be cleaned.
+     * @param regex        Regular Expression used to be filter out unwanted parts of text.
      * @param replaceToken Used to replace the matching pattern of the regex.
      * @return Cleaned sentence.
      */
@@ -110,6 +118,43 @@ public interface Preprocessor {
      * @return N-Gram numerical representation of sentence
      */
     public List preprocess(String sentence);
+
+
+    /**
+     * Copies the default preprocessing files to the files in the plugin target.
+     *
+     **/
+    public static void copyDefaultPreprocessingDataToFile() {
+
+
+        for(String currentPreprocessingFileName : PREPROCESSOR_FILE_NAMES){
+            String pathToFile = ComponentGetter.getUrlOfClassifierFolder() + currentPreprocessingFileName;
+            File file = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + currentPreprocessingFileName);
+            if (!file.exists()) {
+                //DONE: changed file
+                Thread thread = new Thread(() -> {
+                    try {
+                        InputStream inputStream = new URL(pathToFile).openStream();
+                        byte[] buffer = new byte[inputStream.available()];
+                        inputStream.read(buffer);
+
+                        OutputStream outputStream = new FileOutputStream(file);
+                        outputStream.write(buffer);
+                        outputStream.close();
+                        System.out.println("Copied default preprocessing data to file. Message: " + file.getName());
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        System.err.println("Failed to copy default preprocessing data to file. Message: " + e.getMessage());
+                    }
+                });
+
+                thread.start();
+
+            }
+        }
+
+    }
 
 
 }

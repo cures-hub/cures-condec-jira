@@ -17,7 +17,8 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.ClassificationTrainer;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -58,7 +59,8 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		Set<String> issueTypes = getJiraIssueTypeNames(projectKey);
 
 		ClassificationTrainer.copyDefaultTrainingDataToFile(ClassificationTrainer.DEFAULT_TRAINING_DATA);
-		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
+		Preprocessor.copyDefaultPreprocessingDataToFile();
+		ClassificationTrainer trainer = new OnlineClassificationTrainerImpl(projectKey);
 
 		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
 		velocityParameters.put("projectKey", projectKey);
