@@ -4,7 +4,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
-import org.codehaus.jackson.annotate.JsonIgnore;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.*;
@@ -17,22 +16,38 @@ public class Matrix {
     private Map<Long, List<String>> matrixData;
 
     public Matrix(String projectKey, List<DecisionKnowledgeElement> allDecisions) {
+        this.setMatrixHeaderRow(allDecisions);
+        this.setMatrixData(projectKey, allDecisions);
+    }
+
+    public Map<Long, String> getMatrixHeaderRow() {
+        return matrixHeaderRow;
+    }
+
+    public void setMatrixHeaderRow(List<DecisionKnowledgeElement> allDecisions) {
         this.matrixHeaderRow = new TreeMap<>();
+        this.matrixHeaderRow.putAll(new MatrixRow(allDecisions).getHeaderRow());
+    }
 
-        matrixHeaderRow.putAll(new MatrixRow(allDecisions).getHeaderRow());
+    public Map<Long, List<String>> getMatrixData() {
+        return matrixData;
+    }
 
+    public void setMatrixData(String projectKey, List<DecisionKnowledgeElement> allDecisions) {
+        this.matrixData = new TreeMap<>();
+        for (DecisionKnowledgeElement decision : allDecisions) {
+            List<String> row = new MatrixRow(this.getMatrixEntries(projectKey, allDecisions), this.getMatrixHeaderRow(), decision).getRow();
+            this.matrixData.put(decision.getId(), row);
+        }
+    }
+
+    private HashSet<MatrixEntry> getMatrixEntries(String projectKey, List<DecisionKnowledgeElement> allDecisions) {
         Graph graph = new GraphImpl(projectKey);
         List<Link> links = graph.getAllLinks(allDecisions);
-
         HashSet<MatrixEntry> entries = new HashSet<>();
         for (Link link : links) {
             entries.add(new MatrixEntry(link.getSourceElement().getId(), link.getDestinationElement().getId(), link.getType()));
         }
-
-        this.matrixData = new TreeMap<>();
-        for (DecisionKnowledgeElement decision : allDecisions) {
-            List<String> row = new MatrixRow(entries, matrixHeaderRow, decision).getRow();
-            this.matrixData.put(decision.getId(), row);
-        }
+        return entries;
     }
 }
