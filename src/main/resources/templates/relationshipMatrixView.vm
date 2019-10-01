@@ -22,7 +22,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
             window.conDecRelationshipMatrixPage.buildLegend();
         }
         else {
-            console.error("ConDecEvolutionPage could not get its dependencies.");
+            console.error("ConDecRelationshipMatrixPage could not get its dependencies.");
         }
     });
 </script>

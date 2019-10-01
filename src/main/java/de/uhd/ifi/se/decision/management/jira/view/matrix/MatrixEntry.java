@@ -17,11 +17,11 @@ public class MatrixEntry {
     @XmlElement
     private String color;
 
-    public MatrixEntry(Long idOfSourceElement, Long idOfDestinationElement, String linkType) {
+    public MatrixEntry(Long idOfSourceElement, Long idOfDestinationElement, String linkTypeName) {
         this.idOfSourceElement = idOfSourceElement;
         this.idOfDestinationElement = idOfDestinationElement;
-        this.linkType = linkType;
-        this.color = getColor(linkType);
+        this.linkType = linkTypeName;
+        this.color = LinkType.getLinkTypeColor(linkTypeName);
     }
 
     public Long getIdOfSourceElement() {
@@ -38,20 +38,5 @@ public class MatrixEntry {
 
     public String getColor() {
         return color;
-    }
-
-    private String getColor(String linkType) {
-        switch (linkType) {
-            case "Constraints": return LinkType.CONSTRAINT.getColor();
-            case "Enables": return LinkType.ENABLE.getColor();
-            case "Forbids": return LinkType.FORBID.getColor();
-            case "Comprises": return LinkType.COMPRISE.getColor();
-            case "Subsumes": return LinkType.SUBSUME.getColor();
-            case "Overrides": return LinkType.OVERRIDE.getColor();
-            case "Replaces": return LinkType.REPLACE.getColor();
-            case "Relates": return LinkType.RELATE.getColor();
-            default: return "";
-        }
-
     }
 }
