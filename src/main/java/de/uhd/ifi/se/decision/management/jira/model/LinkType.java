@@ -65,24 +65,30 @@ public enum LinkType {
 	}
 
 	/**
-	 * Convert a string to a link type.
+	 * Convert a link type name to a link type.
 	 *
-	 * @param type
-	 *            as a String.
+	 * @param name
 	 * @return link type.
 	 */
-	public static LinkType getLinkType(String type) {
-		if (type == null) {
+	public static LinkType getLinkType(String name) {
+		if (name == null) {
 			return LinkType.RELATE;
 		}
-		switch (type.toLowerCase(Locale.ENGLISH)) {
-		case "support":
-			return LinkType.SUPPORT;
-		case "attack":
-			return LinkType.ATTACK;
-		default:
-			return LinkType.RELATE;
+		for (LinkType linkType : LinkType.values()) {
+			if (linkType.name().matches(name)) {
+				return linkType;
+			}
 		}
+		return LinkType.RELATE;
+	}
+
+	public static String getLinkTypeColor(LinkType linkType) {
+		return linkType.getColor();
+	}
+
+	public static String getLinkTypeColor(String linkTypeName) {
+		LinkType linkType = getLinkType(linkTypeName);
+		return linkType.getColor();
 	}
 
 	/**
