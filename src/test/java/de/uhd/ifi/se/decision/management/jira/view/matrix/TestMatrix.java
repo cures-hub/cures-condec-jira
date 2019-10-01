@@ -6,20 +6,18 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestMatrix extends TestSetUp {
 	private Matrix matrix;
-	private Map<Long, String> matrixHeaderRow;
-	private Map<Long, List<String>> matrixData;
 
 	@Before
 	public void setUp() {
 		init();
-		matrixHeaderRow = new TreeMap<>();
-		matrixData = new TreeMap<>();
 		List<DecisionKnowledgeElement> decisions = new ArrayList<>();
 
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
