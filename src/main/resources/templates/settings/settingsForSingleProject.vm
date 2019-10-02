@@ -305,45 +305,18 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 
 	var evaluateModelButton = document.getElementById("evaluateModel-button");
 	evaluateModelButton.addEventListener("click", function () {
-		conDecAPI.evaluateModel('$projectKey', function(fileString) {
-			var link = document.createElement('a');
-			var fileName = "evaluation_results.json";
-			link.style.display = 'none';
-			link.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(fileString));
-			link.setAttribute('download', fileName);
-			document.body.appendChild(link);
-			link.click();
-			document.body.removeChild(link);
-		});
+		conDecAPI.evaluateModel('$projectKey', saveToFile("evaluation_results.json"));
 	});
 	
 	var saveArffFileButton = document.getElementById("saveArffFile-button");
     saveArffFileButton.addEventListener("click", function () {
-    	conDecAPI.saveArffFile('$projectKey', true, function(fileString) {
-    		var link = document.createElement('a');
-            var fileName = "ClassifierTrainingData.arff";
-            link.style.display = 'none';
-            link.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(fileString));
-            link.setAttribute('download', fileName);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);    		
-    	});        
+    	conDecAPI.saveArffFile('$projectKey', true, saveToFile("ClassifierTrainingData.arff"));
     });
 
 
 	var saveAllArffFileButton = document.getElementById("saveAllArffFile-button");
 	saveAllArffFileButton.addEventListener("click", function () {
-		conDecAPI.saveArffFile('$projectKey', false, function(fileString) {
-			var link = document.createElement('a');
-			var fileName = "AllClassifierTrainingData.arff";
-			link.style.display = 'none';
-			link.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(fileString));
-			link.setAttribute('download', fileName);
-			document.body.appendChild(link);
-			link.click();
-			document.body.removeChild(link);
-		});
+		conDecAPI.saveArffFile('$projectKey', false, saveToFile("AllClassifierTrainingData.arff"));
 	});
 
     var trainClassifier = document.getElementById("trainClassifier-button");
@@ -460,6 +433,18 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
         }
         conDecAPI.setReleaseNoteMapping(type.toUpperCase(), '$projectKey', selectedItems);
     }
+
+    var saveToFile = function (name) {
+    	return function(content){
+			var link = document.createElement('a');
+			link.style.display = 'none';
+			link.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+			link.setAttribute('download', name);
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		}
+	}
 
 </script>
 </form>
