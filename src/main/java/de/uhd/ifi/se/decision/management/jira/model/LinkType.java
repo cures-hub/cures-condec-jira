@@ -75,7 +75,7 @@ public enum LinkType {
 			return LinkType.RELATE;
 		}
 		for (LinkType linkType : LinkType.values()) {
-			if (linkType.name().matches(name)) {
+			if (linkType.getName().toLowerCase(Locale.ENGLISH).matches(name.toLowerCase(Locale.ENGLISH))) {
 				return linkType;
 			}
 		}

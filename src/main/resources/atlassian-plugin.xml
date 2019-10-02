@@ -60,8 +60,6 @@
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
         <resource type="download" name="visTimeLine.css" location="/css/visTimeLine.css"/>
 		<resource type="download" name="matrix.css" location="/css/matrix.css"/>
-		<resource type="download" name="visTimeLine.css" location="/css/visTimeLine.css" />
-		<resource type="download" name="matrix.css" location="/css/matrix.css"/>
 
 		<resource type="download" name="vis.css" location="/js/lib/vis/dist/vis.css" />
 		<resource type="download" name="gitdiffviewer.css" location="/css/gitdiffviewer.css" />		<!-- look and feel like JIRA -->
