@@ -58,7 +58,8 @@
 		<resource type="download" name="treant.css" location="/css/treant.css" />
 		<resource type="download" name="condec.css" location="/css/condec.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
-		<resource type="download" name="visTimeLine.css" location="/css/visTimeLine.css" />
+        <resource type="download" name="visTimeLine.css" location="/css/visTimeLine.css"/>
+		<resource type="download" name="matrix.css" location="/css/matrix.css"/>
 
 		<resource type="download" name="vis.css" location="/js/lib/vis/dist/vis.css" />
 		<resource type="download" name="gitdiffviewer.css" location="/css/gitdiffviewer.css" />		<!-- look and feel like JIRA -->
@@ -116,6 +117,10 @@
 		<resource type="download" name="condec.export.js" location="/js/condec.export.js" />
 		<resource type="download" name="condec.evolution.page.js"
 			location="/js/condec.evolution.page.js" />
+		<resource type="download" name="condec.relationship.page.js"
+				  location="/js/condec.relationship.page.js" />
+		<resource type="download" name="condec.relationshipMatrix.page.js"
+				  location="/js/condec.relationshipMatrix.page.js" />
 	</web-resource>
 
 	<web-resource key="decision-knowledge-page-resources"
@@ -407,7 +412,7 @@
 	</report>
 
 	<!-- ConDec feature branch dashboard item -->
-	<!-- https://developer.atlassian.com/server/jira/platform/building-a-dashboard-item/ https://developer.atlassian.com/server/jira/platform/writing-a-dashboard-item-app/ 
+	<!-- https://developer.atlassian.com/server/jira/platform/building-a-dashboard-item/ https://developer.atlassian.com/server/jira/platform/writing-a-dashboard-item-app/
 		Dashboard item will eventually replace gadgets: https://developer.atlassian.com/server/jira/platform/dashboard-item-module/ -->
 	<web-resource key="dashboard-item-condec-resources"
 		name="ConDec feature task branches Web Resources">
@@ -447,7 +452,7 @@
 				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
 		</definition>
 		<description key="condec.dashboard.featurebranch.description" />
-		<!--<resource name="view" type="velocity" location=":dashboard-item-condec-resources/Dashboard.Item.ConDec.Feature.Branches.Templates.Static" 
+		<!--<resource name="view" type="velocity" location=":dashboard-item-condec-resources/Dashboard.Item.ConDec.Feature.Branches.Templates.Static"
 			/> -->
 		<resource name="view" type="velocity"
 			location="/templates/dashboard/featureBranchesDashboardItem.vm" />
