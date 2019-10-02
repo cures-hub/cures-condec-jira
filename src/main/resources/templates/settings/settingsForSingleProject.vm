@@ -307,7 +307,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 	evaluateModelButton.addEventListener("click", function () {
 		conDecAPI.evaluateModel('$projectKey', function(fileString) {
 			var link = document.createElement('a');
-			var fileName = "results.txt";
+			var fileName = "evaluation_results.json";
 			link.style.display = 'none';
 			link.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(fileString));
 			link.setAttribute('download', fileName);
