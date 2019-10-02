@@ -14,10 +14,8 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.IntStream;
 
 import static java.lang.Math.round;
 import static java.util.stream.Collectors.toList;
@@ -250,17 +248,31 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
 
         //calculate measurements for each ClassificationMeasure in measurements
         for (ClassificationMeasure measurement : measurements) {
-            String binaryKey = measurement.getClass().getName() + "_binary";
+            String binaryKey = measurement.getClass().getSimpleName() + "_binary";
             Double binaryMeasurement = measurement.measure(ArrayUtils.toPrimitive(binaryTruths), ArrayUtils.toPrimitive(binaryPredictions));
             resultsMap.put(binaryKey, binaryMeasurement);
 
-            String fineGrainedKey = measurement.getClass().getName() + "_fineGrained";
-            Double fineGrainedMeasurement = measurement.measure(ArrayUtils.toPrimitive(fineGrainedTruths), ArrayUtils.toPrimitive(fineGrainedPredictions));
-            resultsMap.put(fineGrainedKey, fineGrainedMeasurement);
+            for(int classLabel :  IntStream.range(0, this.classifier.getFineGrainedClassifier().getNumClasses()).toArray()){
+                String fineGrainedKey = measurement.getClass().getSimpleName() + "_fineGrained_" + this.classifier.getFineGrainedClassifier().mapIndexToKnowledgeType(classLabel);
+
+                Integer[] currentFineGrainedTruths = mapFineGrainedToBinaryResults(fineGrainedTruths, classLabel);
+                Integer[] currentFineGrainedPredictions = mapFineGrainedToBinaryResults(fineGrainedPredictions, classLabel);
+
+                Double fineGrainedMeasurement = measurement.measure(ArrayUtils.toPrimitive(currentFineGrainedTruths), ArrayUtils.toPrimitive(currentFineGrainedPredictions));
+                resultsMap.put(fineGrainedKey, fineGrainedMeasurement);
+            }
+
 
         }
         //return results
         return resultsMap;
+    }
+
+    private Integer[] mapFineGrainedToBinaryResults(Integer[] array, Integer currentElement){
+        return Arrays.stream(array)
+                .map(x -> x.equals(currentElement)? 1 : 0)
+                .toArray(Integer[]::new);
+
     }
 
 }
