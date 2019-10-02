@@ -6,15 +6,11 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import org.apache.commons.collections.IteratorUtils;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.Graph;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 
@@ -90,10 +86,20 @@ public class GraphImpl implements Graph {
 		if (!element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUE)) {
 			return linkedElementsAndLinks;
 		}
-		List<Link> links = this.project.getPersistenceStrategy().getOutwardLinks(element);
+		List<Link> links = new ArrayList<>();
+		if(rootElement == null || rootElement.getType() == KnowledgeType.OTHER){
+			links = this.project.getPersistenceStrategy().getLinks(element);
+		} else {
+			links = this.project.getPersistenceStrategy().getOutwardLinks(element);
+		}
 		for (Link link : links) {
 			if (linkIds.contains(link.getId())) {
 				continue;
+			}
+			if(rootElement != null && rootElement.getType() != KnowledgeType.OTHER) {
+				if (link.getDestinationElement().getType() == KnowledgeType.OTHER) {
+					continue;
+				}
 			}
 			DecisionKnowledgeElement oppositeElement = link.getOppositeElement(element);
 			linkIds.add(link.getId());
@@ -109,11 +115,20 @@ public class GraphImpl implements Graph {
 	protected Map<DecisionKnowledgeElement, Link> getLinkedSentencesAndLinks(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
-		List<Link> links = GenericLinkManager.getOutwardLinks(element);
-
+		List<Link> links = new ArrayList<>();
+		if(rootElement == null || rootElement.getType() == KnowledgeType.OTHER){
+			links = this.project.getPersistenceStrategy().getLinks(element);
+		} else {
+			links = this.project.getPersistenceStrategy().getOutwardLinks(element);
+		}
 		for (Link link : links) {
 			if (link.isInterProjectLink() || this.genericLinkIds.contains(link.getId())) {
 				continue;
+			}
+			if(rootElement != null && rootElement.getType() != KnowledgeType.OTHER) {
+				if (link.getDestinationElement().getType() == KnowledgeType.OTHER) {
+					continue;
+				}
 			}
 			this.genericLinkIds.add(link.getId());
 			linkedElementsAndLinks.put(link.getOppositeElement(element), link);
