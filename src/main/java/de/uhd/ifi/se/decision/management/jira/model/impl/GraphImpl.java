@@ -77,8 +77,9 @@ public class GraphImpl implements Graph {
 		if (element == null) {
 			return linkedElementsAndLinks;
 		}
-
+		//Get Links and Elements from the default Documentation Location
 		linkedElementsAndLinks.putAll(this.getLinkedFirstClassElementsAndLinks(element));
+		//Get Links and Elements from the sentences
 		linkedElementsAndLinks.putAll(this.getLinkedSentencesAndLinks(element));
 		return linkedElementsAndLinks;
 	}
@@ -89,7 +90,7 @@ public class GraphImpl implements Graph {
 		if (!element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUE)) {
 			return linkedElementsAndLinks;
 		}
-		List<Link> links = this.project.getPersistenceStrategy().getLinks(element);
+		List<Link> links = this.project.getPersistenceStrategy().getOutwardLinks(element);
 		for (Link link : links) {
 			if (linkIds.contains(link.getId())) {
 				continue;
@@ -108,7 +109,7 @@ public class GraphImpl implements Graph {
 	protected Map<DecisionKnowledgeElement, Link> getLinkedSentencesAndLinks(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
-		List<Link> links = GenericLinkManager.getLinksForElement(element);
+		List<Link> links = GenericLinkManager.getOutwardLinks(element);
 
 		for (Link link : links) {
 			if (link.isInterProjectLink() || this.genericLinkIds.contains(link.getId())) {
