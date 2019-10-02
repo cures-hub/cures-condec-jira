@@ -58,8 +58,12 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 
 		Set<String> issueTypes = getJiraIssueTypeNames(projectKey);
 
+		//TODO -- Start
+		// TODO: check if directory exists (last folder) and create it if not!
 		ClassificationTrainer.copyDefaultTrainingDataToFile(ClassificationTrainer.DEFAULT_TRAINING_DATA);
 		Preprocessor.copyDefaultPreprocessingDataToFile();
+		//TODO -- End
+
 		ClassificationTrainer trainer = new OnlineClassificationTrainerImpl(projectKey);
 
 		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();

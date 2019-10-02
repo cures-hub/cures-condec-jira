@@ -21,7 +21,7 @@ public class FineGrainedClassifierImpl extends Classifier {
         return this.mapIndexToKnowledgeType(maxAt);
     }
 
-    public int maxAtInArray(Double[] probabilities){
+    public int maxAtInArray(Double[] probabilities) {
         int maxAt = 0;
         for (int i = 0; i < probabilities.length; i++) {
             maxAt = probabilities[i] > probabilities[maxAt] ? i : maxAt;
@@ -45,8 +45,8 @@ public class FineGrainedClassifierImpl extends Classifier {
     }
 
     @Override
-    public void loadFromFile() throws Exception {
-        super.loadFromFile(Classifier.DEFAULT_PATH + FineGrainedClassifierImpl.DEFAULT_MODEL_NAME);
+    public boolean loadFromFile() {
+        return super.loadFromFile(Classifier.DEFAULT_PATH + FineGrainedClassifierImpl.DEFAULT_MODEL_NAME);
     }
 
     public KnowledgeType mapIndexToKnowledgeType(int index) {

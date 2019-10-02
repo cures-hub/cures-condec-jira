@@ -88,7 +88,7 @@
 	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElementAsChild(summary,
 			description, type, documentationLocation, idOfExistingElement, documentationLocationOfExistingElement,
 			callback) {
-		console.log("conDecAPI createDecisionKnowledgeElement");
+		//console.log("conDecAPI createDecisionKnowledgeElement");
 		var newElement = {
 			"summary" : summary,
 			"type" : type,
@@ -387,7 +387,7 @@
 	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getSummarizedCode = function getSummarizedCode(id, documentationLocation, probability, callback) {
-		console.log(probability);
+		//console.log(probability);
 		getText(AJS.contextPath() + "/rest/decisions/latest/decisions/getSummarizedCode?projectKey=" + projectKey
 				+ "&id=" + id + "&documentationLocation=" + documentationLocation + "&probability=" + probability,
 				function(error, summary) {
@@ -765,6 +765,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.classifyWholeProject = function classifyWholeProject(projectKey) {
+		console.log("classifyWholeProject");
 		var response = postWithResponseAsReturnValue(AJS.contextPath()
 				+ "/rest/decisions/latest/config/classifyWholeProject.json?projectKey=" + projectKey);
 		if (response["isSucceeded"]) {
@@ -782,7 +783,7 @@
 		var response = postWithResponseAsReturnValue(AJS.contextPath()
 				+ "/rest/decisions/latest/config/trainClassifier.json?projectKey=" + projectKey + "&arffFileName="
 				+ arffFileName);
-		console.log(response);
+		//console.log(response);
 		if (response["isSucceeded"]) {
 			showFlag("success", "The classifier was successfully retrained.");
 			return 1.0;
@@ -792,12 +793,13 @@
 	};
 
 
-	ConDecAPI.prototype.evaluateModel = function evaluateModel(projectKey, useOnlyValidatedData, callback) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/evaluateModel.json?projectKey=" + projectKey + "&useOnlyValidatedData=" + useOnlyValidatedData, null,
+	ConDecAPI.prototype.evaluateModel = function evaluateModel(projectKey, callback) {
+		//console.log("ConDecAPI.prototype.evaluateModel");
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/evaluateModel.json?projectKey=" + projectKey, null,
 			function(error, response) {
 				if (error === null) {
 					showFlag("success", "The evaluation results file was successfully created.");
-					//console.log(response["content"]);
+					////console.log(response["content"]);
 					callback(response["content"]);
 				}
 			});
@@ -811,7 +813,7 @@
 					if (error === null) {
 						showFlag("success", "The ARFF file was successfully created and saved in "
 								+ response["arffFile"] + ".");
-						console.log(response["content"]);
+						//console.log(response["content"]);
 						callback(response["content"]);
 					}
 				});
@@ -1029,13 +1031,13 @@
 			issueKey = JIRA.Issue.getIssueKey();
 		}
 		if (issueKey === undefined || !issueKey) {
-			console.log("conDecAPI could not getIssueKey using object JIRA!");
+			//console.log("conDecAPI could not getIssueKey using object JIRA!");
 			if (AJS && AJS.Meta && AJS.Meta.get) {
 				issueKey = AJS.Meta.get("issue-key");
 			}
 		}
 		if (issueKey === undefined || !issueKey) {
-			console.log("conDecAPI could not getIssueKey using object AJS!");
+			//console.log("conDecAPI could not getIssueKey using object AJS!");
 			var chunks = document.location.pathname.split("/");
 			if (chunks.length > 0) {
 				var lastChunk = chunks[chunks.length - 1];
@@ -1044,7 +1046,7 @@
 				}
 			}
 		}
-		console.log("conDecAPI getIssueKey: " + issueKey);
+		//console.log("conDecAPI getIssueKey: " + issueKey);
 		return issueKey;
 	}
 
@@ -1055,19 +1057,19 @@
 	ConDecAPI.prototype.getIssueKey = getIssueKey;
 
 	function getProjectKey() {
-		console.log("conDecAPI getProjectKey");
+		//console.log("conDecAPI getProjectKey");
 		var projectKey;
 		try {
 			projectKey = JIRA.API.Projects.getCurrentProjectKey();
 		} catch (error) {
-			console.log(error);
+			//console.log(error);
 		}
 		if (projectKey === undefined) {
 			try {
 				var issueKey = getIssueKey();
 				projectKey = issueKey.split("-")[0];
 			} catch (error) {
-				console.log(error);
+				//console.log(error);
 			}
 		}
 		return projectKey;

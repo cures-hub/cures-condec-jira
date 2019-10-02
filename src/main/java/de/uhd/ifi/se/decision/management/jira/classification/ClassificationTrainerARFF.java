@@ -68,6 +68,25 @@ public abstract class ClassificationTrainerARFF implements ClassificationTrainer
         return getInstancesFromArffFile(arffFile);
     }
 
+    public Instances getInstances(){
+        if (instances == null){
+            this.instances = loadInstances();
+        }
+        return this.instances;
+    }
+
+    private Instances loadInstances() {
+        Instances loadedInstances;
+
+        List<File> trainingFiles = getTrainingFiles();
+        loadedInstances = new Instances(getInstancesFromArffFile(trainingFiles.get(0)));
+        for(File trainingFile : trainingFiles.subList(1, trainingFiles.size())){
+            loadedInstances.addAll(getInstancesFromArffFile(trainingFile));
+        }
+
+        return loadedInstances;
+    }
+
 
     @Override
     public void setTrainingFile(File file) {
