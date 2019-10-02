@@ -58,6 +58,8 @@
 		<resource type="download" name="treant.css" location="/css/treant.css" />
 		<resource type="download" name="condec.css" location="/css/condec.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
+        <resource type="download" name="visTimeLine.css" location="/css/visTimeLine.css"/>
+		<resource type="download" name="matrix.css" location="/css/matrix.css"/>
 		<resource type="download" name="visTimeLine.css" location="/css/visTimeLine.css" />
 		<resource type="download" name="matrix.css" location="/css/matrix.css"/>
 
