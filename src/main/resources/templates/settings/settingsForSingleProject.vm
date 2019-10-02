@@ -100,13 +100,17 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		    <span class="aui-progress-indicator-value"></span>
 		</div>		
 		<script>
-			AJS.progressBars.update("#progress-bar", 0.0);
+			//AJS.progressBars.update("#progress-bar", 0.0);
 			var classifyAllIssuesInProjectButton = document.getElementById("classifyAllIssuesInProject");
+			console.log("classifyAllIssuesInProject");
 			classifyAllIssuesInProjectButton.addEventListener("click", function() {
+				console.log("classifyAllIssuesInProject:clicked");
+
 				if (confirm('Are you sure you want to classify all issue comments? This might take some time if the project is big.')) {
-					AJS.progressBars.setIndeterminate("#progress-bar");
-	        		var isSucceeded = conDecAPI.classifyWholeProject('$projectKey'); 
-	        		AJS.progressBars.update("#progress-bar", isSucceeded);               		
+					//AJS.progressBars.setIndeterminate("#progress-bar");
+	        		conDecAPI.classifyWholeProject('$projectKey');
+					//AJS.progressBars.update("#progress-bar", isSucceeded);
+
 	        	}
 	    	});
 		</script>	

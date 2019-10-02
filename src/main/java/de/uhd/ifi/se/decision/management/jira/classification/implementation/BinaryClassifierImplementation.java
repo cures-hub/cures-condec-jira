@@ -25,8 +25,8 @@ public class BinaryClassifierImplementation extends Classifier {
     }
 
 
-    public void loadFromFile() throws Exception {
-        super.loadFromFile(Classifier.DEFAULT_PATH + BinaryClassifierImplementation.DEFAULT_MODEL_NAME);
+    public boolean loadFromFile() {
+        return super.loadFromFile(Classifier.DEFAULT_PATH + BinaryClassifierImplementation.DEFAULT_MODEL_NAME);
     }
 
     public void saveToFile() throws Exception {

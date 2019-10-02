@@ -24,7 +24,7 @@ public abstract class Classifier {
 
 
     public Classifier(Integer numClasses) {
-        this(0.5, 2, 3, numClasses);
+        this(0.5, 2, 1, numClasses);
     }
 
     public Classifier(Double c, Integer degrees, Integer epochs, Integer numClasses) {
@@ -127,14 +127,16 @@ public abstract class Classifier {
      * @param filePathAndName
      * @throws Exception
      */
-    public void loadFromFile(String filePathAndName) throws Exception {
+    public boolean loadFromFile(String filePathAndName) {
         SVM<Double[]> oldModel = this.model;
         try {
             this.model = (SVM<Double[]>) SerializationHelper.read(filePathAndName);
+            this.modelIsTrained = true;
         } catch (Exception e) {
             this.model = oldModel;
+            return false;
         }
-
+        return true;
     }
 
     /**
@@ -142,7 +144,7 @@ public abstract class Classifier {
      *
      * @throws Exception
      */
-    public abstract void loadFromFile() throws Exception;
+    public abstract boolean loadFromFile();
 
     public Integer getNumClasses() {
         return numClasses;

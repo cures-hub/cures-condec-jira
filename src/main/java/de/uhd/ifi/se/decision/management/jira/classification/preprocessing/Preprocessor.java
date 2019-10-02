@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface Preprocessor {
 
-    List<String> PREPROCESSOR_FILE_NAMES = Arrays.asList("token.bin", "pos.bin", "person.bin", "lemmatizer.dict", "glove.6b.50d.csv");
+    List<String> PREPROCESSOR_FILE_NAMES = Arrays.asList("token.bin", "pos.bin", "lemmatizer.dict", "glove.6b.50d.csv");
     String URL_PATTERN = "^[a-zA-Z0-9\\-\\.]+\\.(com|org|net|mil|edu|COM|ORG|NET|MIL|EDU)";
     String URL_TOKEN = "URL";
 
@@ -125,31 +125,39 @@ public interface Preprocessor {
      *
      **/
     public static void copyDefaultPreprocessingDataToFile() {
-
+        File classfierDir = new File(DecisionKnowledgeClassifier.DEFAULT_DIR);
+        if (!classfierDir.exists()){
+            //creates directory if it does not exist
+            classfierDir.mkdirs();
+        }
 
         for(String currentPreprocessingFileName : PREPROCESSOR_FILE_NAMES){
             String pathToFile = ComponentGetter.getUrlOfClassifierFolder() + currentPreprocessingFileName;
             File file = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + currentPreprocessingFileName);
             if (!file.exists()) {
                 //DONE: changed file
-                Thread thread = new Thread(() -> {
+                //Thread thread = new Thread(() -> {
                     try {
-                        InputStream inputStream = new URL(pathToFile).openStream();
-                        byte[] buffer = new byte[inputStream.available()];
-                        inputStream.read(buffer);
+                        file.createNewFile();
 
-                        OutputStream outputStream = new FileOutputStream(file);
-                        outputStream.write(buffer);
-                        outputStream.close();
+                        InputStream inputStream = new URL(pathToFile).openStream();
+                        FileOutputStream outputStream = new FileOutputStream(file);
+
+                        int read;
+                        byte[] bytes = new byte[1024];
+
+                        while ((read = inputStream.read(bytes)) != -1) {
+                            outputStream.write(bytes, 0, read);
+                        }
                         System.out.println("Copied default preprocessing data to file. Message: " + file.getName());
 
-                    } catch (IOException e) {
+                   } catch (IOException e) {
                         e.printStackTrace();
                         System.err.println("Failed to copy default preprocessing data to file. Message: " + e.getMessage());
                     }
-                });
+                //});
 
-                thread.start();
+                //thread.start();
 
             }
         }

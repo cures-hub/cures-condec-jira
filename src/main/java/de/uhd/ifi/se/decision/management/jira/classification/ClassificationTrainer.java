@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
@@ -128,18 +129,41 @@ public interface ClassificationTrainer {
 	 * @return updated file with default training content.
 	 */
 	public static File copyDefaultTrainingDataToFile(File file) {
+		//TODO: check if directory exists (last folder) and create it if not!
+		File classfierDir = new File(DecisionKnowledgeClassifier.DEFAULT_DIR);
+		if (!classfierDir.exists()){
+			//creates directory if it does not exist
+			classfierDir.mkdirs();
+		}
+
 		if (file.exists()) {
 			return file;
 		}
+
+
 		String pathToTrainingFile = ComponentGetter.getUrlOfClassifierFolder() + "defaultTrainingData.arff";
 		try {
+
+			file.createNewFile();
 			InputStream inputStream = new URL(pathToTrainingFile).openStream();
+			FileOutputStream outputStream = new FileOutputStream(file);
+
+				int read;
+				byte[] bytes = new byte[1024];
+
+				while ((read = inputStream.read(bytes)) != -1) {
+					outputStream.write(bytes, 0, read);
+				}
+				/*
 			byte[] buffer = new byte[inputStream.available()];
 			inputStream.read(buffer);
 
 			OutputStream outputStream = new FileOutputStream(file);
 			outputStream.write(buffer);
+			outputStream.flush();
 			outputStream.close();
+
+				 */
 		} catch (IOException e) {
 			LOGGER.error("Failed to copy default training data to file. Message: " + e.getMessage());
 		}

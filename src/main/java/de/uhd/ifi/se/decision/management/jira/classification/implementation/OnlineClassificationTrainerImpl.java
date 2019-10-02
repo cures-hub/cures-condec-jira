@@ -63,20 +63,31 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
     public boolean train() {
         boolean isTrained = false;
         try {
-            Map<String, List> trainingData = this.extractTrainingData(super.instances);
-            Map preprocessedIsRelevantSentences = this.classifier.preprocess(trainingData.get("sentences"),
+            Map<String, List> trainingData = this.extractTrainingData(super.getInstances());
+            Map preprocessedSentences;
+            //if (!this.classifier.getBinaryClassifier().loadFromFile()) {
+            preprocessedSentences = this.classifier.preprocess(trainingData.get("sentences"),
                     trainingData.get("labelsIsRelevant"));
 
-            this.classifier.trainBinaryClassifier((List<List<Double>>) preprocessedIsRelevantSentences.get("features"),
-                    (List<Integer>) preprocessedIsRelevantSentences.get("labels"));
+            this.classifier.trainBinaryClassifier((List<List<Double>>) preprocessedSentences.get("features"),
+                    (List<Integer>) preprocessedSentences.get("labels"));
+            this.classifier.getBinaryClassifier().saveToFile();
 
-            this.classifier.trainFineGrainedClassifier((List<List<Double>>) preprocessedIsRelevantSentences.get("features"),
-                    (List<Integer>) preprocessedIsRelevantSentences.get("labels"));
+            //}
+
+            //if (!this.classifier.getFineGrainedClassifier().loadFromFile()) {
+            preprocessedSentences = this.classifier.preprocess(trainingData.get("relevantSentences"),
+                    trainingData.get("labelKnowledgeType"));
+
+            this.classifier.trainFineGrainedClassifier((List<List<Double>>) preprocessedSentences.get("features"),
+                    (List<Integer>) preprocessedSentences.get("labels"));
+            this.classifier.getFineGrainedClassifier().saveToFile();
+
+            // }
+
 
             //this.evaluateTraining();
 
-            this.classifier.getBinaryClassifier().saveToFile();
-            this.classifier.getFineGrainedClassifier().saveToFile();
 
             isTrained = true;
         } catch (Exception e) {
@@ -93,7 +104,7 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
 
         for (List<Double> feature : features) {
             this.classifier.getBinaryClassifier().train(feature.toArray(Double[]::new), labelIsRelevant);
-            if(sentence.isRelevant()){
+            if (sentence.isRelevant()) {
                 this.classifier.getFineGrainedClassifier().train(feature.toArray(Double[]::new), sentence.getType());
             }
         }
@@ -112,10 +123,12 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
     private Map<String, List> extractTrainingData(Instances trainingData) {
         Map extractedTrainingData = new HashMap();
         List sentences = new ArrayList();
+        List relevantSentences = new ArrayList();
         List labelsIsRelevant = new ArrayList();
         List labelsKnowledgeType = new ArrayList();
         //TODO: can we use the names instead of indices?
         //iterate over all instances
+
         for (int i = 0; i < trainingData.size(); i++) {
             Instance currInstance = trainingData.get(i);
             // last attribute is the sentence that needs to be classified
@@ -127,16 +140,19 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
             for (int j = 0; j < currInstance.numAttributes() - 1; j++) {
                 if (round(currInstance.value(j)) == 1) {
                     isRelevant = 1;
-                    fineGrainedLabel = j;
+                    labelsKnowledgeType.add(j);
+                    relevantSentences.add(currInstance.stringValue(currInstance.numAttributes() - 1));
+
                 }
             }
             labelsIsRelevant.add(isRelevant);
-            labelsKnowledgeType.add(fineGrainedLabel);
         }
 
         extractedTrainingData.put("sentences", sentences);
+        extractedTrainingData.put("relevantSentences", relevantSentences);
+
         extractedTrainingData.put("labelsIsRelevant", labelsIsRelevant);
-        extractedTrainingData.put("labelsKnowledgeType", labelsKnowledgeType);
+        extractedTrainingData.put("labelKnowledgeType", labelsKnowledgeType);
 
 
         return extractedTrainingData;
@@ -184,6 +200,7 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
         // create and initialize default measurements list
         List<ClassificationMeasure> defaultMeasurements = new ArrayList<>();
         defaultMeasurements.add(new FMeasure());
+        //TODO how to apply to more than binary classification
         defaultMeasurements.add(new Precision());
         defaultMeasurements.add(new Accuracy());
         defaultMeasurements.add(new Recall());
@@ -195,7 +212,7 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
     }
 
     public Map<String, Double> evaluateClassifier(List<ClassificationMeasure> measurements, List<DecisionKnowledgeElement> partOfJiraIssueTexts) throws Exception {
-        Map<String, Double> resultsMap = new HashMap();
+        Map<String, Double> resultsMap = new HashMap<>();
         List<DecisionKnowledgeElement> relevantPartOfJiraIssueTexts = partOfJiraIssueTexts
                 .stream()
                 .filter(x -> !x.getType().equals(KnowledgeType.OTHER))
