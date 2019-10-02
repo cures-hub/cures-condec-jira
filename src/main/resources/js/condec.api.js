@@ -544,6 +544,16 @@
 		});
 	};
 
+	ConDecAPI.prototype.getMatrixData = function getMatrixData(callback) {
+		const documentationLocation = "i";
+
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getMatrixData.json?projectKey=" + projectKey + "&documentationLocation=" + documentationLocation, function(error, matrix) {
+			if (error == null) {
+				callback(matrix);
+			}
+		});
+	};
+
 	/*
 	 * external references: settingsForSingleProject.vm,
 	 * settingsForAllProjects.vm
@@ -681,6 +691,16 @@
 		if (knowledgeTypes !== null) {
 			return knowledgeTypes;
 		}
+	}
+
+	ConDecAPI.prototype.getLinkTypes = function getLinkTypes(callback) {
+		var projectKey= getProjectKey();
+		getJSON(AJS.contextPath()
+			+ "/rest/decisions/latest/config/getLinkTypes.json?projectKey=" + projectKey, function(error, linkTypes) {
+			if (error === null) {
+				callback(linkTypes);
+			}
+		});
 	}
 
 	/*

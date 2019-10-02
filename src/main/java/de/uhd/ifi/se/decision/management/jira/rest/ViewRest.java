@@ -1,9 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,6 +15,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
 import org.eclipse.jgit.lib.Ref;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -277,6 +277,25 @@ public class ViewRest {
 		// FilterDataProvider filterDataProvider = new FilterDataProvider(projectKey,
 		// searchTerm, user);
 		return Response.ok(new FilterSettingsImpl(projectKey, searchTerm, user)).build();
+	}
+
+	@Path("/getMatrixData")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getMatrixData(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("documentationLocation") String documentationLocation) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+
+		AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
+		List<DecisionKnowledgeElement> decisions = strategy.getDecisionKnowledgeElements(KnowledgeType.DECISION);
+
+		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(projectKey);
+		decisions.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements(KnowledgeType.DECISION));
+
+		Matrix matrix = new Matrix(projectKey, decisions);
+		return Response.ok(matrix).build();
 	}
 
 	private String getProjectKey(String elementKey) {
