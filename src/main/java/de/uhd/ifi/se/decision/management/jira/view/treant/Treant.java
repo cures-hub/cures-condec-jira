@@ -29,7 +29,7 @@ public class Treant {
 	private Chart chart;
 
 	@XmlElement
-	private Node nodeStructure;
+	private TreantNode nodeStructure;
 
 	private Graph graph;
 	private boolean isHyperlinked;
@@ -64,9 +64,9 @@ public class Treant {
 		this(projectKey, elementKey, depth, query, user, false);
 	}
 
-	public Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth) {
+	public TreantNode createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth) {
 		if (element == null || element.getProject() == null) {
-			return new Node();
+			return new TreantNode();
 		}
 
 		if (graph == null) {
@@ -79,20 +79,20 @@ public class Treant {
 			isCollapsed = true;
 		}
 
-		Node node;
+		TreantNode node;
 		if (link != null) {
-			node = new Node(element, link, isCollapsed, isHyperlinked);
+			node = new TreantNode(element, link, isCollapsed, isHyperlinked);
 		} else {
-			node = new Node(element, isCollapsed, isHyperlinked);
+			node = new TreantNode(element, isCollapsed, isHyperlinked);
 		}
 
 		if (currentDepth == depth + 1) {
 			return node;
 		}
 
-		List<Node> nodes = new ArrayList<Node>();
+		List<TreantNode> nodes = new ArrayList<TreantNode>();
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-			Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
+			TreantNode newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
 					currentDepth + 1);
 			nodes.add(newChildNode);
 		}
@@ -109,11 +109,11 @@ public class Treant {
 		this.chart = chart;
 	}
 
-	public Node getNodeStructure() {
+	public TreantNode getNodeStructure() {
 		return nodeStructure;
 	}
 
-	public void setNodeStructure(Node nodeStructure) {
+	public void setNodeStructure(TreantNode nodeStructure) {
 		this.nodeStructure = nodeStructure;
 	}
 

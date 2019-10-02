@@ -27,11 +27,11 @@ public class TestNode extends TestSetUp {
 	private String htmlClass;
 	private long htmlId;
 	private String innerHTML;
-	private List<Node> children;
+	private List<TreantNode> children;
 	private boolean isCollapsed;
 	private boolean isHyperlinked;
 
-	private Node node;
+	private TreantNode node;
 	private DecisionKnowledgeElement element;
 
 	@Before
@@ -44,7 +44,7 @@ public class TestNode extends TestSetUp {
 		innerHTML = "Test";
 		children = new ArrayList<>();
 
-		node = new Node();
+		node = new TreantNode();
 		node.setChildren(children);
 		node.setHtmlClass(htmlClass);
 		node.setHtmlId(htmlId);
@@ -67,7 +67,7 @@ public class TestNode extends TestSetUp {
 
 	@Test
 	public void testConstructor() {
-		this.node = new Node(element, isCollapsed, isHyperlinked);
+		this.node = new TreantNode(element, isCollapsed, isHyperlinked);
 		assertNotNull(node);
 	}
 
@@ -75,7 +75,7 @@ public class TestNode extends TestSetUp {
 	public void testElementLinkEmptyConstructor() {
 		Link link = new LinkImpl();
 		link.setType("Test");
-		Node newNode = new Node(element, link, isCollapsed, isHyperlinked);
+		TreantNode newNode = new TreantNode(element, link, isCollapsed, isHyperlinked);
 		assertNotNull(newNode);
 	}
 
@@ -83,7 +83,7 @@ public class TestNode extends TestSetUp {
 	public void testElementLinkSupportConstructor() {
 		Link link = new LinkImpl(element, element);
 		link.setType("support");
-		Node newNode = new Node(element, link, isCollapsed, isHyperlinked);
+		TreantNode newNode = new TreantNode(element, link, isCollapsed, isHyperlinked);
 		assertNotNull(newNode);
 	}
 
@@ -91,7 +91,7 @@ public class TestNode extends TestSetUp {
 	public void testElementLinkAttackConstructor() {
 		Link link = new LinkImpl(element, element);
 		link.setType("attack");
-		Node newNode = new Node(element, link, isCollapsed, isHyperlinked);
+		TreantNode newNode = new TreantNode(element, link, isCollapsed, isHyperlinked);
 		assertNotNull(newNode);
 	}
 
@@ -162,7 +162,7 @@ public class TestNode extends TestSetUp {
 
 	@Test
 	public void testSetChildren() {
-		List<Node> newchildren = new ArrayList<Node>();
+		List<TreantNode> newchildren = new ArrayList<TreantNode>();
 		this.node.setChildren(newchildren);
 		assertEquals(newchildren, this.node.getChildren());
 	}

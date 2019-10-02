@@ -35,7 +35,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
+import de.uhd.ifi.se.decision.management.jira.view.treant.TreantNode;
 
 public class CommonMetricCalculator {
 
@@ -340,21 +340,21 @@ public class CommonMetricCalculator {
 		return absolutDepth;
 	}
 
-	private Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth,
-			Graph graph) {
+	private TreantNode createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth,
+	                                       Graph graph) {
 		if (element == null || element.getProject() == null || element.getType() == KnowledgeType.OTHER) {
-			return new Node();
+			return new TreantNode();
 		}
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getAdjacentElementsAndLinks(element);
-		Node node;
+		TreantNode node;
 		if (link != null) {
-			node = new Node(element, link, false, false);
+			node = new TreantNode(element, link, false, false);
 		} else {
-			node = new Node(element, false, false);
+			node = new TreantNode(element, false, false);
 		}
-		List<Node> nodes = new ArrayList<Node>();
+		List<TreantNode> nodes = new ArrayList<TreantNode>();
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-			Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
+			TreantNode newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
 					currentDepth + 1, graph);
 			if (absolutDepth < currentDepth) {
 				absolutDepth = currentDepth;

@@ -21,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 @JsonAutoDetect
 public class GraphImpl implements Graph {
 
+
 	protected DecisionKnowledgeElement rootElement;
 	protected DecisionKnowledgeProject project;
 	protected List<Long> linkIds;

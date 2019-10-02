@@ -28,14 +28,14 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestTreant extends TestSetUp {
 	private Chart chart;
-	private Node nodeStructure;
+	private TreantNode nodeStructure;
 	private Treant treant;
 	private AbstractPersistenceManager persistenceStrategy;
 
 	@Before
 	public void setUp() {
 		this.chart = new Chart();
-		this.nodeStructure = new Node();
+		this.nodeStructure = new TreantNode();
 		this.treant = new Treant();
 		this.treant.setChart(chart);
 		this.treant.setNodeStructure(nodeStructure);
@@ -62,7 +62,7 @@ public class TestTreant extends TestSetUp {
 
 	@Test
 	public void testSetNodeStructure() {
-		Node newNode = new Node();
+		TreantNode newNode = new TreantNode();
 		this.treant.setNodeStructure(newNode);
 		assertEquals(newNode, this.treant.getNodeStructure());
 	}
@@ -100,37 +100,37 @@ public class TestTreant extends TestSetUp {
 
 	@Test
 	public void testCreateNodeStructureNullNullZeroZero() {
-		assertEquals(Node.class, treant.createNodeStructure(null, null, 0, 0).getClass());
+		assertEquals(TreantNode.class, treant.createNodeStructure(null, null, 0, 0).getClass());
 	}
 
 	@Test
 	public void testCreateNodeStructureEmptyNullZeroZero() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		assertEquals(Node.class, treant.createNodeStructure(element, null, 0, 0).getClass());
+		assertEquals(TreantNode.class, treant.createNodeStructure(element, null, 0, 0).getClass());
 	}
 
 	@Test
 	@NonTransactional
 	public void testCreateNodeStructureFilledNullZeroZero() {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
-		assertEquals(Node.class, treant.createNodeStructure(element, null, 0, 0).getClass());
+		assertEquals(TreantNode.class, treant.createNodeStructure(element, null, 0, 0).getClass());
 	}
 
 	@Test
 	public void testCreateNodeStructureNullNullFilledFilled() {
-		assertEquals(Node.class, treant.createNodeStructure(null, null, 4, 0).getClass());
+		assertEquals(TreantNode.class, treant.createNodeStructure(null, null, 4, 0).getClass());
 	}
 
 	public void testCreateNodeStructureEmptyNullFilledFilled() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		assertEquals(Node.class, treant.createNodeStructure(element, null, 4, 0).getClass());
+		assertEquals(TreantNode.class, treant.createNodeStructure(element, null, 4, 0).getClass());
 	}
 
 	@Test
 	@NonTransactional
 	public void testCreateNodeStructureFilledNullFilledFilled() {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
-		assertEquals(Node.class, treant.createNodeStructure(element, null, 4, 0).getClass());
+		assertEquals(TreantNode.class, treant.createNodeStructure(element, null, 4, 0).getClass());
 	}
 
 	@Test
@@ -144,7 +144,7 @@ public class TestTreant extends TestSetUp {
 		link.setDestinationElement(persistenceStrategy.getDecisionKnowledgeElement(14));
 		link.setSourceElement(persistenceStrategy.getDecisionKnowledgeElement(1));
 		link.setId(23);
-		assertEquals(Node.class, treant.createNodeStructure(element, link, 4, 0).getClass());
+		assertEquals(TreantNode.class, treant.createNodeStructure(element, link, 4, 0).getClass());
 	}
 
 	@Test
@@ -154,8 +154,8 @@ public class TestTreant extends TestSetUp {
 		sentences.get(0).setRelevant(true);
 		DecisionKnowledgeElement element = persistenceStrategy
 				.getDecisionKnowledgeElement(sentences.get(0).getJiraIssueId());
-		Node nodeStructure = treant.createNodeStructure(element, null, 4, 0);
-		assertEquals(Node.class, nodeStructure.getClass());
+		TreantNode nodeStructure = treant.createNodeStructure(element, null, 4, 0);
+		assertEquals(TreantNode.class, nodeStructure.getClass());
 		assertTrue(nodeStructure.getChildren().size() == 0);
 	}
 
