@@ -85,6 +85,11 @@ public class Treant {
 		} else {
 			node = new Node(element, isCollapsed, isHyperlinked);
 		}
+
+		if (currentDepth == depth + 1) {
+			return node;
+		}
+
 		List<Node> nodes = new ArrayList<Node>();
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
 			Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
