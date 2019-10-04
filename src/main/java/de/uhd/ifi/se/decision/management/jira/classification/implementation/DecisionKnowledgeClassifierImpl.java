@@ -43,15 +43,26 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
     private static DecisionKnowledgeClassifierImpl instance;
 
     private DecisionKnowledgeClassifierImpl() {
+        this(new PreprocessorImpl());
+    }
+
+    private DecisionKnowledgeClassifierImpl(Preprocessor pp) {
         loadDefaultBinaryClassifier();
         loadDefaultFineGrainedClassifier();
-        this.preprocessor = new PreprocessorImpl();
+        this.preprocessor = pp;
 
     }
 
     public static DecisionKnowledgeClassifierImpl getInstance(){
         if (instance == null){
             instance = new DecisionKnowledgeClassifierImpl();
+        }
+        return instance;
+    }
+
+    public static DecisionKnowledgeClassifier getInstance(Preprocessor pp) {
+        if (instance == null){
+            instance = new DecisionKnowledgeClassifierImpl(pp);
         }
         return instance;
     }

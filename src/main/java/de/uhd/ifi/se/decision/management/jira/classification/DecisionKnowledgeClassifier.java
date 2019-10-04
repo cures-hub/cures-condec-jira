@@ -73,7 +73,6 @@ public interface DecisionKnowledgeClassifier {
 	/**
 	 * Set the classifier for binary prediction.
 	 * 
-	 * @see FilteredClassifier
 	 * @param binaryClassifier
 	 *            classifier for binary prediction.
 	 */
@@ -83,8 +82,7 @@ public interface DecisionKnowledgeClassifier {
 
 	/**
 	 * Set the classifier for fine grained prediction.
-	 * 
-	 * @see LC
+	 *
 	 * @param fineGrainedClassifier
 	 *            classifier for fine grained prediction.
 	 */
@@ -92,38 +90,4 @@ public interface DecisionKnowledgeClassifier {
 
 	FineGrainedClassifierImpl getFineGrainedClassifier();
 
-
-	/**
-	 * Creates a String to Word Vector for the Classifier All Elements are Lowercase
-	 * Tokens
-	 * 
-	 * @return StringToWordVector
-	 */
-	@Deprecated
-	public static StringToWordVector getStringToWordVector() {
-		StringToWordVector stringToWordVector = new StringToWordVector();
-		stringToWordVector.setLowerCaseTokens(true);
-		stringToWordVector.setIDFTransform(true);
-		stringToWordVector.setTFTransform(true);
-		stringToWordVector.setTokenizer(getTokenizer());
-		stringToWordVector.setWordsToKeep(1000000);
-		return stringToWordVector;
-	}
-
-	/**
-	 * Creates the tokenizer and sets the Values and Options for the String to Word
-	 * Vector
-	 */
-	@Deprecated
-	public static Tokenizer getTokenizer() {
-		Tokenizer tokenizer = new NGramTokenizer();
-		try {
-			String[] options = weka.core.Utils.splitOptions(
-					"weka.core.tokenizers.NGramTokenizer -max 3 -min 1 -delimiters \" \\r\\n\\t.,;:\\'\\\"()?!\"");
-			tokenizer.setOptions(options);
-		} catch (Exception e) {
-			LOGGER.error("Failed to get the tokenizer. Message: " + e.getMessage());
-		}
-		return tokenizer;
-	}
 }

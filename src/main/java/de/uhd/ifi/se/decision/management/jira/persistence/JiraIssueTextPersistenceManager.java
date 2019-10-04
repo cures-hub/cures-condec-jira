@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
@@ -42,10 +43,17 @@ import net.java.ao.Query;
 public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextPersistenceManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
+	private static OnlineClassificationTrainerImpl classificationTrainer =  new OnlineClassificationTrainerImpl();
 
 	public JiraIssueTextPersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
 		this.documentationLocation = DocumentationLocation.JIRAISSUETEXT;
+	}
+
+	public JiraIssueTextPersistenceManager(String projectKey, Preprocessor pp) {
+		this.projectKey = projectKey;
+		this.documentationLocation = DocumentationLocation.JIRAISSUETEXT;
+		classificationTrainer = new OnlineClassificationTrainerImpl(pp);
 	}
 
 	@Override
@@ -313,7 +321,12 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		databaseEntry.setRelevant(element.isRelevant());
 		databaseEntry.setValidated(element.isValidated());
 		if(element.isValidated()){
-			(new OnlineClassificationTrainerImpl()).update(element);
+			try {
+				classificationTrainer.update(element);
+			}catch (Exception e){
+				System.err.println("Could not update Classifier.");
+				e.printStackTrace();
+			}
 		}
 		databaseEntry.setStartPosition(element.getStartPosition());
 		databaseEntry.setEndPosition(element.getEndPosition());

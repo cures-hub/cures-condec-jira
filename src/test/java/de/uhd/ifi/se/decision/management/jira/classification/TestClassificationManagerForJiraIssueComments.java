@@ -11,6 +11,7 @@ import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
@@ -21,6 +22,7 @@ import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +42,10 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
     @Before
     public void setUp() {
         init();
-        classificationManager = new ClassificationManagerForJiraIssueComments();
+        classificationManager = new ClassificationManagerForJiraIssueComments(new PreprocessorImpl(
+				new File(TestPreprocessorImpl.PATH + "lemmatizer.dict"),
+				new File(TestPreprocessorImpl.PATH + "token.bin"),
+				new File(TestPreprocessorImpl.PATH + "pos.bin")));
         classificationManager.getClassifierTrainer().setTrainingData(getTrainingData());
         classificationManager.getClassifierTrainer().train();
 
