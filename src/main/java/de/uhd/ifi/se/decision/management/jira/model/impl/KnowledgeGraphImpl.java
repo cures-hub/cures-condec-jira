@@ -2,24 +2,30 @@ package de.uhd.ifi.se.decision.management.jira.model.impl;
 
 import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
+import org.jgrapht.Graph;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
+import org.jgrapht.graph.Subgraph;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> implements KnowledgeGraph {
 
 	private DecisionKnowledgeProject project;
-	private Node rootNode;
-	private List<Node> allNodes;
-	private List<Link> allEdges;
+	private Set<Node> allNodes;
+	private Set<Link> allEdges;
 
-	public KnowledgeGraphImpl(String projectKey, DecisionKnowledgeElement rootElement) {
+	public KnowledgeGraphImpl(String projectKey) {
 		super(LinkImpl.class);
 		this.project = new DecisionKnowledgeProjectImpl(projectKey);
-		this.rootNode = new NodeImpl(rootElement);
 		createGraph();
+	}
+
+	@Override
+	public KnowledgeGraph getSubGraph(Node subRootNode) {
+		//TODO Compute subset of Nodes
+		//TODO Test first
+		Graph subGraph = new Subgraph<Node, Link, KnowledgeGraph>(this, allNodes, allEdges);
+		return (KnowledgeGraph) subGraph;
 	}
 
 	private void createGraph() {
@@ -28,9 +34,9 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	}
 
 	private void addNodes() {
-		allNodes = new ArrayList<>();
-		allNodes.add(rootNode);
-		ListIterator<Node> iterator = allNodes.listIterator();
+		allNodes = new HashSet<>();
+		List<Node> nodesList = new ArrayList<>();
+		ListIterator<Node> iterator = nodesList.listIterator();
 		while (iterator.hasNext()) {
 			for (Node adjacentNode : this.getAdjacentElements(iterator.next())) {
 				if (!this.containsVertex(adjacentNode)) {
@@ -39,13 +45,14 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 				}
 			}
 		}
+		allNodes.addAll(nodesList);
 	}
 
 	private void addEdges() {
+		allEdges = new HashSet<>();
 		for (Node node : allNodes) {
 			AbstractPersistenceManager manager = AbstractPersistenceManager.getPersistenceManager(project.getProjectKey(), node.getDocumentationLocation());
-			//TODO Implement with id or change to DecisionKnowledgeElement
-			List<Link> links = manager.getLinks(node);
+			List<Link> links = manager.getLinks((DecisionKnowledgeElement)node);
 			for (Link link : links) {
 				if (!this.containsEdge(link)) {
 					allEdges.add(link);

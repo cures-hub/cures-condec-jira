@@ -25,14 +25,11 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowled
 /**
  * Model class for decision knowledge elements
  */
-public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
+public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKnowledgeElement {
 
-	private long id;
 	private String summary;
 	private String description;
 	protected KnowledgeType type;
-	protected DocumentationLocation documentationLocation;
-	private DecisionKnowledgeProject project;
 	private String key;
 	private Date created;
 	private Date closed;

@@ -1,24 +1,30 @@
 package de.uhd.ifi.se.decision.management.jira.model.impl;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
 
 public class NodeImpl implements Node {
-	private long id;
-	private DocumentationLocation location;
+    protected long id;
+    protected DocumentationLocation documentationLocation;
+	protected DecisionKnowledgeProject project;
 
-	public NodeImpl(DecisionKnowledgeElement element){
-		id = element.getId();
-		location = element.getDocumentationLocation();
+    public NodeImpl() {
+    }
+
+	public NodeImpl(DecisionKnowledgeElement element) {
+		this.id = element.getId();
+		this.documentationLocation = element.getDocumentationLocation();
+		this.project = element.getProject();
 	}
 
-	public long getId() {
-		return id;
-	}
+    public long getId() {
+        return id;
+    }
 
-	@Override
-	public DocumentationLocation getDocumentationLocation() {
-		return location;
-	}
+    @Override
+    public DocumentationLocation getDocumentationLocation() {
+        return documentationLocation;
+    }
 }
