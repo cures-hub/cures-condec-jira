@@ -53,23 +53,23 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		while (iterator.hasNext()) {
 			for (Node adjacentNode : this.getAdjacentElements(iterator.next())) {
 				if (!this.containsVertex(adjacentNode)) {
+					this.allNodes.add(adjacentNode);
 					this.addVertex(adjacentNode);
 					iterator.add(adjacentNode);
 					iterator.previous();
 				}
 			}
 		}
-		allNodes.addAll(nodesList);
 	}
 
 	private void addEdges() {
 		allEdges = new HashSet<>();
 		for (Node node : allNodes) {
 			AbstractPersistenceManager manager = AbstractPersistenceManager.getPersistenceManager(project.getProjectKey(), node.getDocumentationLocation());
-			List<Link> links = manager.getLinks((DecisionKnowledgeElement) node);
+			List<Link> links = manager.getLinks(node.getId());
 			for (Link link : links) {
 				if (!this.containsEdge(link)) {
-					this.addEdge(new NodeImpl(link.getSourceElement()),new NodeImpl(link.getDestinationElement()));
+					this.addEdge(new NodeImpl(link.getSourceElement()), new NodeImpl(link.getDestinationElement()));
 					allEdges.add(link);
 				}
 			}
@@ -83,5 +83,25 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 			adjacentNodes.add(new NodeImpl(element));
 		}
 		return adjacentNodes;
+	}
+
+	@Override
+	public boolean containsVertex(Node node) {
+		for (Node containNode : allNodes) {
+			if (containNode.getId() == node.getId()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean containsEdge(Link link) {
+		for (Link containLink : allEdges) {
+			if (containLink.getId() == link.getId()) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

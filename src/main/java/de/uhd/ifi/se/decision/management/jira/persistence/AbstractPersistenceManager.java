@@ -447,6 +447,19 @@ public abstract class AbstractPersistenceManager {
 	}
 
 	/**
+	 * Get all links where the id of the node or decision knowledge element is either the source
+	 * or the destination element.
+	 *
+	 * @param id of the node or the DecisionKnowledgeElement
+	 * @return list of links where the given decision knowledge element is either
+	 *         the source or the destination element.
+	 */
+	public List<Link> getLinks(long id) {
+		DecisionKnowledgeElement element = this.getDecisionKnowledgeElement(id);
+		return this.getLinks(element);
+	}
+
+	/**
 	 * Get all links where the decision knowledge element is the source element.
 	 *
 	 * @see Link
