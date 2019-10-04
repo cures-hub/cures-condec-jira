@@ -11,11 +11,14 @@ import java.util.*;
 public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> implements KnowledgeGraph {
 
 	private DecisionKnowledgeProject project;
+
 	private Set<Node> allNodes;
 	private Set<Link> allEdges;
+	private Node rootNode;
 
-	public KnowledgeGraphImpl(String projectKey) {
+	public KnowledgeGraphImpl(String projectKey, DecisionKnowledgeElement rootElement) {
 		super(LinkImpl.class);
+		this.rootNode = new NodeImpl(rootElement);
 		this.project = new DecisionKnowledgeProjectImpl(projectKey);
 		createGraph();
 	}
@@ -28,6 +31,15 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		return (KnowledgeGraph) subGraph;
 	}
 
+	@Override
+	public Set<Node> getAllNodes() {
+		return allNodes;
+	}
+
+	public Set<Link> getAllEdges() {
+		return allEdges;
+	}
+
 	private void createGraph() {
 		addNodes();
 		addEdges();
@@ -36,10 +48,12 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	private void addNodes() {
 		allNodes = new HashSet<>();
 		List<Node> nodesList = new ArrayList<>();
+		nodesList.add(rootNode);
 		ListIterator<Node> iterator = nodesList.listIterator();
 		while (iterator.hasNext()) {
 			for (Node adjacentNode : this.getAdjacentElements(iterator.next())) {
 				if (!this.containsVertex(adjacentNode)) {
+					this.addVertex(adjacentNode);
 					iterator.add(adjacentNode);
 					iterator.previous();
 				}
@@ -52,9 +66,10 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		allEdges = new HashSet<>();
 		for (Node node : allNodes) {
 			AbstractPersistenceManager manager = AbstractPersistenceManager.getPersistenceManager(project.getProjectKey(), node.getDocumentationLocation());
-			List<Link> links = manager.getLinks((DecisionKnowledgeElement)node);
+			List<Link> links = manager.getLinks((DecisionKnowledgeElement) node);
 			for (Link link : links) {
 				if (!this.containsEdge(link)) {
+					this.addEdge(new NodeImpl(link.getSourceElement()),new NodeImpl(link.getDestinationElement()));
 					allEdges.add(link);
 				}
 			}
