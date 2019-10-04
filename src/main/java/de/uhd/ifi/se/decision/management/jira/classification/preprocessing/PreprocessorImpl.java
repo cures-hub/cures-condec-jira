@@ -21,21 +21,6 @@ import static de.uhd.ifi.se.decision.management.jira.ComponentGetter.getUrlOfCla
 
 public class PreprocessorImpl implements Preprocessor {
 
-    //TODO: Path seems to be wrong in jira system!
-    public static String LANGUAGE_MODEL_PATH =  DecisionKnowledgeClassifier.DEFAULT_DIR;
-    /*
-
-             "." + File.separator;
-
-            + "language_models/";
-
-            "src" + File.separator
-            + "main" + File.separator
-            + "resources" + File.separator
-            + "classifier" + File.separator
-            + "language_models" + File.separator;
-            */
-
     private Tokenizer tokenizer;
     private Lemmatizer lemmatizer;
     private POSTaggerME tagger;
@@ -43,23 +28,19 @@ public class PreprocessorImpl implements Preprocessor {
     //private NameFinderME nameFinder;
     private Integer nGramN;
 
-    public PreprocessorImpl() {
-        InputStream lemmatizerModel = null;
-        TokenizerModel tokenizerModel = null;
-        InputStream modelIn = null;
-        POSModel posModel = null;
+    public PreprocessorImpl(File lemmatizerFile, File tokenizerFile, File posFile) {
         this.nGramN = 3;
         try {
-            lemmatizerModel = new FileInputStream(LANGUAGE_MODEL_PATH + "lemmatizer.dict");
-            this.lemmatizer = new DictionaryLemmatizer(lemmatizerModel);
+            InputStream lemmatizerModelIn = new FileInputStream(lemmatizerFile);
+            this.lemmatizer = new DictionaryLemmatizer(lemmatizerModelIn);
             //lemmatizerModel = new LemmatizerModel(modelIn);
 
-            modelIn = new FileInputStream(LANGUAGE_MODEL_PATH + "token.bin");
-            tokenizerModel = new TokenizerModel(modelIn);
+            InputStream tokenizerModelIn = new FileInputStream(tokenizerFile);
+            TokenizerModel tokenizerModel = new TokenizerModel(tokenizerModelIn);
             this.tokenizer = new TokenizerME(tokenizerModel);
 
-            modelIn = new FileInputStream(LANGUAGE_MODEL_PATH + "pos.bin");
-            posModel = new POSModel(modelIn);
+            InputStream posModelIn = new FileInputStream(posFile);
+            POSModel posModel = new POSModel(posModelIn);
             this.tagger = new POSTaggerME(posModel);
 
             //modelIn = new FileInputStream(LANGUAGE_MODEL_PATH + "person.bin");
@@ -68,7 +49,12 @@ public class PreprocessorImpl implements Preprocessor {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public PreprocessorImpl() {
+        this(new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "lemmatizer.dict"),
+                new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "token.bin"),
+                new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "pos.bin"));
     }
 
 
@@ -84,12 +70,12 @@ public class PreprocessorImpl implements Preprocessor {
 
     @Override
     public List<String> lemmatize(List<String> tokens) {
-        try{
+        try {
             return Arrays.asList(this.lemmatizer.lemmatize(
                     Arrays.copyOf(tokens.toArray(), tokens.size(), String[].class),
                     this.posTags
             ));
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return new ArrayList<>();

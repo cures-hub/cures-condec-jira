@@ -9,6 +9,7 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -26,6 +27,10 @@ public class ClassificationManagerForJiraIssueComments {
 
     public ClassificationManagerForJiraIssueComments() {
         this.classifierTrainer = new OnlineClassificationTrainerImpl();
+    }
+
+    public ClassificationManagerForJiraIssueComments(Preprocessor pp) {
+        this.classifierTrainer = new OnlineClassificationTrainerImpl(pp);
     }
 
     public void classifyJiraIssueText(Issue issue) {

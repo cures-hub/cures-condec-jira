@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 import de.uhd.ifi.se.decision.management.jira.classification.ClassificationTrainerARFF;
 import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -51,9 +52,31 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
         this.instances = super.getInstancesFromArffFile(fileName);
     }
 
-    public OnlineClassificationTrainerImpl(String projectKey, List<DecisionKnowledgeElement> trainingElement) {
+    public OnlineClassificationTrainerImpl(String projectKey, List<DecisionKnowledgeElement> trainingElements) {
         this(projectKey);
-        this.setTrainingData(trainingElement);
+        this.setTrainingData(trainingElements);
+    }
+
+    public OnlineClassificationTrainerImpl(Preprocessor pp) {
+        super.directory = new File(DecisionKnowledgeClassifier.DEFAULT_DIR);
+        directory.mkdirs();
+        this.classifier = DecisionKnowledgeClassifierImpl.getInstance(pp);
+    }
+
+    public OnlineClassificationTrainerImpl(String projectKey, Preprocessor pp) {
+        this(projectKey);
+        this.classifier = DecisionKnowledgeClassifierImpl.getInstance(pp);
+    }
+
+    public OnlineClassificationTrainerImpl(String projectKey, List<DecisionKnowledgeElement> trainingElements, Preprocessor pp) {
+        this(projectKey, pp);
+        this.setTrainingData(trainingElements);
+
+    }
+
+    public OnlineClassificationTrainerImpl(String projectKey, String fileName, Preprocessor pp) {
+        this(projectKey, pp);
+        super.setInstances(getInstancesFromArffFile(fileName));
     }
 
     @Override
@@ -252,7 +275,7 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
             Double binaryMeasurement = measurement.measure(ArrayUtils.toPrimitive(binaryTruths), ArrayUtils.toPrimitive(binaryPredictions));
             resultsMap.put(binaryKey, binaryMeasurement);
 
-            for(int classLabel :  IntStream.range(0, this.classifier.getFineGrainedClassifier().getNumClasses()).toArray()){
+            for (int classLabel : IntStream.range(0, this.classifier.getFineGrainedClassifier().getNumClasses()).toArray()) {
                 String fineGrainedKey = measurement.getClass().getSimpleName() + "_fineGrained_" + this.classifier.getFineGrainedClassifier().mapIndexToKnowledgeType(classLabel);
 
                 Integer[] currentFineGrainedTruths = mapFineGrainedToBinaryResults(fineGrainedTruths, classLabel);
@@ -268,9 +291,9 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
         return resultsMap;
     }
 
-    private Integer[] mapFineGrainedToBinaryResults(Integer[] array, Integer currentElement){
+    private Integer[] mapFineGrainedToBinaryResults(Integer[] array, Integer currentElement) {
         return Arrays.stream(array)
-                .map(x -> x.equals(currentElement)? 1 : 0)
+                .map(x -> x.equals(currentElement) ? 1 : 0)
                 .toArray(Integer[]::new);
 
     }

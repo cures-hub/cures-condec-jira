@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
 import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -27,7 +28,10 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
     @Before
     public void setUp() {
         init();
-        trainer = new OnlineClassificationTrainerImpl("TEST");
+        trainer = new OnlineClassificationTrainerImpl("TEST",  new PreprocessorImpl(
+                new File(TestPreprocessorImpl.PATH + "lemmatizer.dict"),
+                new File(TestPreprocessorImpl.PATH + "token.bin"),
+                new File(TestPreprocessorImpl.PATH + "pos.bin")));
         trainer.setTrainingData(getTrainingData());
     }
 

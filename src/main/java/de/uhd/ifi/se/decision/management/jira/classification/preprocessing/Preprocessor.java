@@ -122,42 +122,37 @@ public interface Preprocessor {
 
     /**
      * Copies the default preprocessing files to the files in the plugin target.
-     *
      **/
     public static void copyDefaultPreprocessingDataToFile() {
         File classfierDir = new File(DecisionKnowledgeClassifier.DEFAULT_DIR);
-        if (!classfierDir.exists()){
+        if (!classfierDir.exists()) {
             //creates directory if it does not exist
             classfierDir.mkdirs();
         }
 
-        for(String currentPreprocessingFileName : PREPROCESSOR_FILE_NAMES){
+        for (String currentPreprocessingFileName : PREPROCESSOR_FILE_NAMES) {
             String pathToFile = ComponentGetter.getUrlOfClassifierFolder() + currentPreprocessingFileName;
             File file = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + currentPreprocessingFileName);
             if (!file.exists()) {
-                //DONE: changed file
-                //Thread thread = new Thread(() -> {
-                    try {
-                        file.createNewFile();
+                try {
+                    file.createNewFile();
 
-                        InputStream inputStream = new URL(pathToFile).openStream();
-                        FileOutputStream outputStream = new FileOutputStream(file);
+                    InputStream inputStream = new URL(pathToFile).openStream();
+                    FileOutputStream outputStream = new FileOutputStream(file);
 
-                        int read;
-                        byte[] bytes = new byte[1024];
+                    int read;
+                    byte[] bytes = new byte[1024];
 
-                        while ((read = inputStream.read(bytes)) != -1) {
-                            outputStream.write(bytes, 0, read);
-                        }
-                        System.out.println("Copied default preprocessing data to file. Message: " + file.getName());
-
-                   } catch (IOException e) {
-                        e.printStackTrace();
-                        System.err.println("Failed to copy default preprocessing data to file. Message: " + e.getMessage());
+                    while ((read = inputStream.read(bytes)) != -1) {
+                        outputStream.write(bytes, 0, read);
                     }
-                //});
+                    System.out.println("Copied default preprocessing data to file. Message: " + file.getName());
 
-                //thread.start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    System.err.println("Failed to copy default preprocessing data to file. Message: " + e.getMessage());
+                }
+
 
             }
         }

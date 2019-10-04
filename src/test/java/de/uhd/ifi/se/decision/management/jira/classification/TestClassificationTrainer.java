@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,9 +25,15 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
  */
 public class TestClassificationTrainer extends TestSetUp {
 
+    private Preprocessor pp;
+
     @Before
     public void setUp() {
         init();
+        this.pp = new PreprocessorImpl(
+                new File(TestPreprocessorImpl.PATH + "lemmatizer.dict"),
+                new File(TestPreprocessorImpl.PATH + "token.bin"),
+                new File(TestPreprocessorImpl.PATH + "pos.bin"));
     }
 
     private DecisionKnowledgeElement createElement(KnowledgeType type, String summary) {
@@ -67,7 +75,7 @@ public class TestClassificationTrainer extends TestSetUp {
     @Test
     public void testClassificationTrainerSetTrainingData() {
         List<DecisionKnowledgeElement> trainingElements = getTrainingData();
-        ClassificationTrainer trainer = new OnlineClassificationTrainerImpl("TEST");
+        ClassificationTrainer trainer = new OnlineClassificationTrainerImpl("TEST", pp);
         trainer.setTrainingData(trainingElements);
         //assertNotNull(trainer.getInstances());
         assertTrue(trainer.train());
@@ -76,19 +84,19 @@ public class TestClassificationTrainer extends TestSetUp {
     @Test
     public void testClassificationTrainerFromArffFile() {
         List<DecisionKnowledgeElement> trainingElements = getTrainingData();
-        ClassificationTrainerARFF trainer = new OnlineClassificationTrainerImpl("TEST", trainingElements);
+        ClassificationTrainerARFF trainer = new OnlineClassificationTrainerImpl("TEST", trainingElements, pp);
         File file = trainer.saveTrainingFile(true);
         trainer.setTrainingFile(file);
-        //assertNotNull(trainer.getInstances());
-        trainer = new OnlineClassificationTrainerImpl("TEST", file.getName());
-        //assertNotNull(trainer.getInstances());
-        // assertTrue(trainer.train());
+        assertNotNull(trainer.getInstances());
+        trainer = new OnlineClassificationTrainerImpl("TEST", file.getName(), pp);
+        assertNotNull(trainer.getInstances());
+        assertTrue(trainer.train());
         file.delete();
     }
 
     @Test
     public void testSaveArffFile() {
-        ClassificationTrainer trainer = new OnlineClassificationTrainerImpl("TEST");
+        ClassificationTrainer trainer = new OnlineClassificationTrainerImpl("TEST", pp);
         File file = trainer.saveTrainingFile(false);
         assertTrue(file.exists());
         file.delete();
@@ -102,7 +110,7 @@ public class TestClassificationTrainer extends TestSetUp {
 
     @Test
     public void testDefaultArffFile() {
-        ClassificationTrainer trainer = new OnlineClassificationTrainerImpl();
+        ClassificationTrainer trainer = new OnlineClassificationTrainerImpl(pp);
         File luceneArffFile = getDefaultArffFile();
         assertTrue(luceneArffFile.exists());
         trainer.setTrainingFile(luceneArffFile);
@@ -146,7 +154,7 @@ public class TestClassificationTrainer extends TestSetUp {
 
     @Test
     public void testGetArffFiles() {
-        ClassificationTrainerARFF trainer = new OnlineClassificationTrainerImpl();
+        ClassificationTrainerARFF trainer = new OnlineClassificationTrainerImpl(pp);
         assertEquals(ArrayList.class, trainer.getTrainingFileNames().getClass());
     }
 

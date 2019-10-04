@@ -254,4 +254,7 @@ public abstract class ClassificationTrainerARFF implements ClassificationTrainer
         return instance;
     }
 
+    protected void setInstances(Instances instances) {
+        this.instances = instances;
+    }
 }
