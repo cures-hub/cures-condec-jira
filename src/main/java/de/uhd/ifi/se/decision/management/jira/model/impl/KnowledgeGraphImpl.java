@@ -1,12 +1,21 @@
 package de.uhd.ifi.se.decision.management.jira.model.impl;
 
-import de.uhd.ifi.se.decision.management.jira.model.*;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import org.jgrapht.Graph;
-import org.jgrapht.graph.DirectedWeightedMultigraph;
-import org.jgrapht.graph.Subgraph;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
 
-import java.util.*;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.AsSubgraph;
+import org.jgrapht.graph.DirectedWeightedMultigraph;
+
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.Node;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 
 public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> implements KnowledgeGraph {
 
@@ -18,17 +27,17 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 
 	public KnowledgeGraphImpl(String projectKey, DecisionKnowledgeElement rootElement) {
 		super(LinkImpl.class);
-		this.rootNode = new NodeImpl(rootElement);
+		this.rootNode = rootElement;
 		this.project = new DecisionKnowledgeProjectImpl(projectKey);
 		createGraph();
 	}
 
 	@Override
-	public KnowledgeGraph getSubGraph(Node subRootNode) {
-		//TODO Compute subset of Nodes
-		//TODO Test first
-		Graph subGraph = new Subgraph<Node, Link, KnowledgeGraph>(this, allNodes, allEdges);
-		return (KnowledgeGraph) subGraph;
+	public Graph<Node, Link> getSubGraph(Node subRootNode) {
+		// TODO Compute subset of Nodes
+		// TODO Test first
+		Graph<Node, Link> subGraph = new AsSubgraph<Node, Link>(this);
+		return subGraph;
 	}
 
 	@Override
@@ -65,11 +74,12 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	private void addEdges() {
 		allEdges = new HashSet<>();
 		for (Node node : allNodes) {
-			AbstractPersistenceManager manager = AbstractPersistenceManager.getPersistenceManager(project.getProjectKey(), node.getDocumentationLocation());
+			AbstractPersistenceManager manager = AbstractPersistenceManager
+					.getPersistenceManager(project.getProjectKey(), node.getDocumentationLocation());
 			List<Link> links = manager.getLinks(node.getId());
 			for (Link link : links) {
 				if (!this.containsEdge(link)) {
-					this.addEdge(new NodeImpl(link.getSourceElement()), new NodeImpl(link.getDestinationElement()));
+					this.addEdge(link.getSourceElement(), link.getDestinationElement());
 					allEdges.add(link);
 				}
 			}
@@ -77,10 +87,11 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	}
 
 	private List<Node> getAdjacentElements(Node node) {
-		AbstractPersistenceManager manager = AbstractPersistenceManager.getPersistenceManager(project.getProjectKey(), node.getDocumentationLocation());
+		AbstractPersistenceManager manager = AbstractPersistenceManager.getPersistenceManager(project.getProjectKey(),
+				node.getDocumentationLocation());
 		List<Node> adjacentNodes = new ArrayList<>();
 		for (DecisionKnowledgeElement element : manager.getAdjacentElements(node.getId())) {
-			adjacentNodes.add(new NodeImpl(element));
+			adjacentNodes.add(element);
 		}
 		return adjacentNodes;
 	}
