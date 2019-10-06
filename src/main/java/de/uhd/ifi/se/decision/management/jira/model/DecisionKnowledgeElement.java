@@ -11,7 +11,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
  * Interface for decision knowledge elements
  */
 @JsonDeserialize(as = DecisionKnowledgeElementImpl.class)
-public interface DecisionKnowledgeElement extends Node{
+public interface DecisionKnowledgeElement extends Node {
 
 	/**
 	 * Get the id of the decision knowledge element. This id is the internal

@@ -67,10 +67,10 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 			this.id = issue.getId();
 			this.summary = issue.getSummary();
 			this.description = issue.getDescription();
-			if(issue.getIssueType() != null) {
+			if (issue.getIssueType() != null) {
 				this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
 			}
-			if(issue.getProjectObject() != null) {
+			if (issue.getProjectObject() != null) {
 				this.project = new DecisionKnowledgeProjectImpl(issue.getProjectObject().getKey());
 			}
 			this.key = issue.getKey();
@@ -256,9 +256,10 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 		}
 		DecisionKnowledgeElement element = (DecisionKnowledgeElement) object;
 		return this.id == element.getId()
-		/* At least compare also the key, otherwise comparison will not work for
-		elements with same/not initialized ID.
-		 */
+				/*
+				 * At least compare also the key, otherwise comparison will not work for
+				 * elements with same/not initialized ID.
+				 */
 				&& element.getKey().equals(getKey());
 	}
 
@@ -288,7 +289,7 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 				documentationLocation);
 		return elementInDatabase.getId() > 0;
 	}
-	
+
 	@Override
 	public String toString() {
 		return this.getDescription();

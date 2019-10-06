@@ -19,6 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceMan
 
 public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> implements KnowledgeGraph {
 
+	private static final long serialVersionUID = 1L;
 	private DecisionKnowledgeProject project;
 
 	private Set<Node> allNodes;

@@ -128,6 +128,9 @@ public class TestTreeViewer extends TestSetUp {
 	@NonTransactional
 	public void testGetDataStructureFilled() {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
+		assertNotNull(element);
+		assertEquals(14, element.getId());
+		assertEquals("TEST-14", element.getKey());
 		assertEquals("tv14", treeViewer.getDataStructure(element).getId());
 	}
 
