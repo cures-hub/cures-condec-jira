@@ -199,10 +199,9 @@
     <dependency>
         <groupId>org.jgrapht</groupId>
         <artifactId>jgrapht-core</artifactId>
-        <version>1.0.1</version>
+        <version>1.3.1</version>
     </dependency>
     </dependencies>
-
 
     <build>
     <finalName>cures-condec-jira</finalName>
@@ -288,11 +287,11 @@
 	</profiles>
 
 	<properties>
-	<jira.version>8.3.0</jira.version>
+	<jira.version>8.4.2</jira.version>
 	<amps.version>8.0.2</amps.version>
 	<ao.version>3.1.6</ao.version>
 	<jacoco-version>0.8.4</jacoco-version>
-	<atlassian.spring.scanner.version>2.1.10</atlassian.spring.scanner.version>
+	<atlassian.spring.scanner.version>2.1.12</atlassian.spring.scanner.version>
 	<!-- This key is also used in atlassian-plugin.xml -->
 	<atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
