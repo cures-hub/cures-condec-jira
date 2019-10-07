@@ -85,7 +85,7 @@ public class PreprocessorImpl implements Preprocessor {
     public List<String> lemmatize(List<String> tokens) {
         try {
             return Arrays.asList(this.lemmatizer.lemmatize(
-                    Arrays.copyOf(tokens.toArray(), tokens.size(), String[].class),
+                    tokens.toArray(new String[tokens.size()]),
                     this.posTags
             ));
         } catch (Exception e) {
