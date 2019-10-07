@@ -270,28 +270,28 @@ public class ConfigRest {
 		return Response.ok(linkTypes).build();
 	}
 
-	@Path("/setWebhookEnabled")
-	@POST
-	public Response setWebhookEnabled(@Context HttpServletRequest request,
-									  @QueryParam("projectKey") final String projectKey,
-									  @QueryParam("isActivated") final String isActivatedString) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		if (isActivatedString == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Webhook activation boolean = null")).build();
-		}
-		try {
-			boolean isActivated = Boolean.valueOf(isActivatedString);
-			ConfigPersistenceManager.setWebhookEnabled(projectKey, isActivated);
-			return Response.ok(Status.ACCEPTED).build();
-		} catch (Exception e) {
-			LOGGER.error("Failed to enable or disable the webhook. Message: " + e.getMessage());
-			return Response.status(Status.CONFLICT).build();
-		}
-	}
+    @Path("/setWebhookEnabled")
+    @POST
+    public Response setWebhookEnabled(@Context HttpServletRequest request,
+                                      @QueryParam("projectKey") final String projectKey,
+                                      @QueryParam("isActivated") final String isActivatedString) {
+        Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+        if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+            return isValidDataResponse;
+        }
+        if (isActivatedString == null) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity(ImmutableMap.of("error", "Webhook activation boolean = null")).build();
+        }
+        try {
+            boolean isActivated = Boolean.valueOf(isActivatedString);
+            ConfigPersistenceManager.setWebhookEnabled(projectKey, isActivated);
+            return Response.ok(Status.ACCEPTED).build();
+        } catch (Exception e) {
+            LOGGER.error("Failed to enable or disable the webhook. Message: " + e.getMessage());
+            return Response.status(Status.CONFLICT).build();
+        }
+    }
 
     @Path("/setWebhookData")
     @POST
