@@ -3,15 +3,17 @@
 	/* private vars */
 	var conDecObservable = null;
 	var conDecAPI = null;
+	var conDecVis = null;
 
 	var ConDecRelationshipPage = function ConDecRelationshipPage() {
 	};
 
-	ConDecRelationshipPage.prototype.init = function(_conDecAPI, _conDecObservable) {
+	ConDecRelationshipPage.prototype.init = function(_conDecAPI, _conDecObservable, _conDecVis) {
 		console.log("ConDecRelationshipPage init");
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)) {
 			conDecAPI = _conDecAPI;
 			conDecObservable = _conDecObservable;
+			conDecVis = _conDecVis;
 
 			conDecObservable.subscribe(this);
 			return true;
@@ -50,6 +52,10 @@
 				};
 
 				var graphNetwork = new vis.Network(graphContainer, dataset, options);
+
+				graphNetwork.on("oncontext", function(params) {
+					conDecVis.addContextMenu(params, graphNetwork);
+				});
 			});
 	};
 
