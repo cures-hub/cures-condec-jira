@@ -1,10 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model.impl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
+import java.util.*;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.AsSubgraph;
@@ -16,6 +12,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
+import org.jgrapht.traverse.BreadthFirstIterator;
+import org.jgrapht.traverse.DepthFirstIterator;
 
 public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> implements KnowledgeGraph {
 
@@ -33,11 +31,27 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		createGraph();
 	}
 
+	public KnowledgeGraphImpl(DecisionKnowledgeProject project, Node rootNode) {
+		super(LinkImpl.class);
+		this.rootNode = rootNode;
+		this.project = project;
+	}
+
 	@Override
-	public Graph<Node, Link> getSubGraph(Node subRootNode) {
-		// TODO Compute subset of Nodes
-		// TODO Test first
-		Graph<Node, Link> subGraph = new AsSubgraph<Node, Link>(this);
+	public KnowledgeGraph getSubGraph(Node subRootNode) {
+		KnowledgeGraph subGraph = new KnowledgeGraphImpl(this.project, subRootNode);
+		Iterator<Node> iterator = new BreadthFirstIterator<>(this);
+		while (iterator.hasNext()) {
+			Node iterNode = iterator.next();
+			if(iterNode.getId() == subRootNode.getId()){
+				Iterator<Node> subIterator = new DepthFirstIterator<>(this, iterNode);
+				while (subIterator.hasNext()) {
+					Node subNodeIt = subIterator.next();
+					subGraph.addVertex(subNodeIt);
+				}
+				break;
+			}
+		}
 		return subGraph;
 	}
 
@@ -46,6 +60,7 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		return allNodes;
 	}
 
+	@Override
 	public Set<Link> getAllEdges() {
 		return allEdges;
 	}

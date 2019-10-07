@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -39,9 +40,9 @@ public class TestKnowledgeGraph extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testGetSubGraph() {
-		org.jgrapht.Graph<Node, Link> compareGraph = graph.getSubGraph(element);
+		KnowledgeGraph compareGraph = graph.getSubGraph(element);
+		assertTrue(compareGraph.containsVertex(element));
 		assertEquals(graph.getAllNodes().size(), compareGraph.vertexSet().size(), 0.0);
 	}
 
