@@ -175,8 +175,7 @@ public class TextSplitterImpl implements TextSplitter {
 	 *
 	 * @param body
 	 * @param projectKey
-	 * @param lookOutForIcons
-	 *            search also for icons
+	 *
 	 * @return tagged knowledge type of a given string
 	 */
 	public static KnowledgeType getKnowledgeTypeFromTag(String body, String projectKey) {

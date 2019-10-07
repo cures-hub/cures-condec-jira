@@ -31,7 +31,9 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
         trainer = new OnlineClassificationTrainerImpl("TEST",  new PreprocessorImpl(
                 new File(TestPreprocessorImpl.PATH + "lemmatizer.dict"),
                 new File(TestPreprocessorImpl.PATH + "token.bin"),
-                new File(TestPreprocessorImpl.PATH + "pos.bin")));
+                new File(TestPreprocessorImpl.PATH + "pos.bin"),
+                new File(TestPreprocessorImpl.PATH + "glove.6b.50d.csv")
+        ));
         trainer.setTrainingData(getTrainingData());
     }
 

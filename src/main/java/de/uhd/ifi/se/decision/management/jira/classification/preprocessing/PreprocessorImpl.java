@@ -24,12 +24,16 @@ public class PreprocessorImpl implements Preprocessor {
     private Tokenizer tokenizer;
     private Lemmatizer lemmatizer;
     private POSTaggerME tagger;
+    private PreTrainedGloveSingleton glove;
     private String[] posTags;
     //private NameFinderME nameFinder;
     private Integer nGramN;
 
-    public PreprocessorImpl(File lemmatizerFile, File tokenizerFile, File posFile) {
+    public PreprocessorImpl(File lemmatizerFile, File tokenizerFile, File posFile, File gloveFile) {
         this.nGramN = 3;
+
+        this.glove = PreTrainedGloveSingleton.getInstance(gloveFile);
+
         try {
             InputStream lemmatizerModelIn = new FileInputStream(lemmatizerFile);
             this.lemmatizer = new DictionaryLemmatizer(lemmatizerModelIn);
@@ -49,13 +53,22 @@ public class PreprocessorImpl implements Preprocessor {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+    }
+
+    public PreprocessorImpl(File lemmatizerFile, File tokenizerFile, File posFile) {
+        this(lemmatizerFile, tokenizerFile, posFile, new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "glove.6b.50d.csv"));
     }
 
     public PreprocessorImpl() {
         this(new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "lemmatizer.dict"),
                 new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "token.bin"),
                 new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "pos.bin"));
+        this.glove = PreTrainedGloveSingleton.getInstance();
+
     }
+
+
 
 
     @Override
@@ -99,7 +112,6 @@ public class PreprocessorImpl implements Preprocessor {
     @Override
     public List convertToNumbers(List<String> tokens) {
         List<List<Double>> numberTokens = new ArrayList<>();
-        PreTrainedGloveSingleton glove = PreTrainedGloveSingleton.getInstance();
         for (String wordToken : tokens) {
             numberTokens.add(glove.getWordVector(wordToken));
         }

@@ -29,7 +29,9 @@ public class TestPreprocessorImpl extends TestSetUp {
         this.pp = new PreprocessorImpl(
                 new File(PATH + "lemmatizer.dict"),
                 new File(PATH + "token.bin"),
-                new File(PATH + "pos.bin"));
+                new File(PATH + "pos.bin"),
+                new File(PATH + "glove.6b.50d.csv")
+        );
     }
 
     @Test

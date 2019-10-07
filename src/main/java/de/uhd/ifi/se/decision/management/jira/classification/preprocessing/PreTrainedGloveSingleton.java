@@ -1,7 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.classification.preprocessing;
 
+import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
+
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -13,17 +16,11 @@ class PreTrainedGloveSingleton {
     private static PreTrainedGloveSingleton instance;
     private Map<String, Double[]> map;
     private Integer dimensions;
-    private static String GLOVE_FILE_PATH = "src" + File.separator + "main" + File.separator + "resources"
-            + File.separator + "classifier" + File.separator
-            + "language_models" + File.separator;
-    ;
+    private static String GLOVE_FILE_PATH = DecisionKnowledgeClassifier.DEFAULT_DIR;
 
-    private PreTrainedGloveSingleton(Integer dimensions) {
-        this.dimensions = dimensions;
+    private PreTrainedGloveSingleton(File file) {
         this.map = new HashMap<>();
-        String fullFilename = GLOVE_FILE_PATH + "glove.6b." + dimensions + "d.csv";
-        try (BufferedReader br = Files.newBufferedReader(Paths.get(fullFilename),
-                StandardCharsets.UTF_8)) {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
             while (line != null) {
                 String[] attributes = line.split(" ");
@@ -44,13 +41,13 @@ class PreTrainedGloveSingleton {
 
 
     public static PreTrainedGloveSingleton getInstance() {
-        return PreTrainedGloveSingleton.getInstance(50);
+        return PreTrainedGloveSingleton.getInstance(new File(GLOVE_FILE_PATH + "glove.6b.50d.csv"));
     }
 
     // This method is private because at the moment only the 50D vector is used.
-    private static PreTrainedGloveSingleton getInstance(Integer dimensions) {
+    public static PreTrainedGloveSingleton getInstance(File file) {
         if (PreTrainedGloveSingleton.instance == null) {
-            PreTrainedGloveSingleton.instance = new PreTrainedGloveSingleton(dimensions);
+            PreTrainedGloveSingleton.instance = new PreTrainedGloveSingleton(file);
         }
         return PreTrainedGloveSingleton.instance;
     }

@@ -31,7 +31,17 @@ public class JiraIssueTextExtractionEventListener {
 
     private String projectKey;
     private IssueEvent issueEvent;
+    private ClassificationManagerForJiraIssueComments classificationManagerForJiraIssueComments;
     private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextExtractionEventListener.class);
+
+    public JiraIssueTextExtractionEventListener(ClassificationManagerForJiraIssueComments classificationManagerForJiraIssueComments){
+        this.classificationManagerForJiraIssueComments = classificationManagerForJiraIssueComments;
+    }
+
+    public JiraIssueTextExtractionEventListener(){
+        this.classificationManagerForJiraIssueComments = new ClassificationManagerForJiraIssueComments();
+
+    }
 
     /**
      * Locks the edit comment event function if a REST service edits comments.
@@ -98,7 +108,7 @@ public class JiraIssueTextExtractionEventListener {
     private void handleNewComment() {
         parseIconsToTags();
         if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
-            new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
+            this.classificationManagerForJiraIssueComments.classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
         } else {
             MutableComment comment = (MutableComment) issueEvent.getComment();
             JiraIssueTextPersistenceManager.getPartsOfComment(comment);
@@ -122,7 +132,7 @@ public class JiraIssueTextExtractionEventListener {
 
 			JiraIssueTextPersistenceManager.updateComment(comment);
 
-			new ClassificationManagerForJiraIssueComments().classifyJiraIssueText(this.issueEvent.getIssue());
+			this.classificationManagerForJiraIssueComments.classifyJiraIssueText(this.issueEvent.getIssue());
         } else {
             MutableComment comment = (MutableComment) issueEvent.getComment();
             JiraIssueTextPersistenceManager.updateComment(comment);
@@ -142,7 +152,7 @@ public class JiraIssueTextExtractionEventListener {
 
         if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
             JiraIssueTextPersistenceManager.deletePartsOfDescription(issueEvent.getIssue());
-            new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
+            this.classificationManagerForJiraIssueComments.classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
         } else {
             JiraIssueTextPersistenceManager.updateDescription(issueEvent.getIssue());
         }
