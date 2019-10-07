@@ -24,9 +24,18 @@
 
 		conDecAPI.getCompareVis(-1, -1,"", ["Decision"],
 			conDecAPI.knowledgeStatus, function (data) {
-				var dataset = {
+			var coloredEdges = [];
+		    for (var e in data.edges) {
+		            data.edges[e].color = {
+				        color: data.edges[e].color,
+                        inherit: false
+                    }
+                    coloredEdges.push(data.edges[e]);
+                }
+
+		        var dataset = {
 					nodes: data.nodes,
-					edges: data.edges
+					edges: coloredEdges
 				};
 
 				var graphContainer = document.getElementById('graph-container');
@@ -34,7 +43,10 @@
 				var options = {
 					edges: {
 						arrows: "to"
-					}
+					},
+                    layout : {
+                        randomSeed : 228332
+                    }
 				};
 
 				var graphNetwork = new vis.Network(graphContainer, dataset, options);
