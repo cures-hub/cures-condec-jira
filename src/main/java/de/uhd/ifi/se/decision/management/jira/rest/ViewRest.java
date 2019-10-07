@@ -294,9 +294,9 @@ public class ViewRest {
 		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(projectKey);
 		decisions.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements(KnowledgeType.DECISION));
 
-		Matrix matrix = new Matrix(projectKey, decisions);
-		return Response.ok(matrix).build();
-	}
+        Matrix matrix = new Matrix(projectKey, decisions);
+        return Response.ok(matrix).build();
+    }
 
 	private String getProjectKey(String elementKey) {
 		return elementKey.split("-")[0];
