@@ -35,7 +35,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetEdges() {
-		assertEquals(1, graph.getAllEdges().size(), 0.0);
+		assertEquals(4, graph.getAllEdges().size(), 0.0);
 	}
 
 	@Test

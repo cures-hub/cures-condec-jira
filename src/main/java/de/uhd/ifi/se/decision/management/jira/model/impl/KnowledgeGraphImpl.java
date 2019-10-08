@@ -111,24 +111,4 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		}
 		return adjacentNodes;
 	}
-
-	@Override
-	public boolean containsVertex(Node node) {
-		for (Node containNode : allNodes) {
-			if (containNode.getId() == node.getId()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public boolean containsEdge(Link link) {
-		for (Link containLink : allEdges) {
-			if (containLink.getId() == link.getId()) {
-				return true;
-			}
-		}
-		return false;
-	}
 }
