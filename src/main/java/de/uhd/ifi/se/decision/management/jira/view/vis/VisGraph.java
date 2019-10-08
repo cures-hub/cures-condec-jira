@@ -30,8 +30,6 @@ public class VisGraph {
 	@JsonIgnore
 	private boolean isHyperlinked;
 	@JsonIgnore
-	private List<DecisionKnowledgeElement> elementsAlreadyAsNode;
-	@JsonIgnore
 	private List<DecisionKnowledgeElement> elementsMatchingFilterCriteria;
 	@JsonIgnore
 	private List<DecisionKnowledgeElement> elementsInGraph;
@@ -39,8 +37,6 @@ public class VisGraph {
 	public VisGraph() {
 		nodes = new HashSet<>();
 		edges = new HashSet<>();
-		elementsAlreadyAsNode = new ArrayList<>();
-		elementsInGraph = new ArrayList<>();
 	}
 
 	public VisGraph(List<DecisionKnowledgeElement> elements,String projectKey) {
@@ -70,8 +66,6 @@ public class VisGraph {
 		fillNodesAndEdges(rootElement);
 	}
 
-	// TODO Reduce complexity of this function
-	// Way too big needs to be split in small functions
 	private void fillNodesAndEdges(DecisionKnowledgeElement element) {
 		int level = 50;
 		int cid = 0;
@@ -90,44 +84,26 @@ public class VisGraph {
 				switch (iterLink.getType()) {
 					case "support":
 						if (element.getId() == iterLink.getSourceElement().getId()) {
-							if (!(this.elementsAlreadyAsNode.contains(element))) {
-								this.elementsAlreadyAsNode.add(element);
-								this.nodes.add(new VisNode(element, "pro", isCollapsed(element), level + 2, cid));
-							}
+							this.nodes.add(new VisNode(element, "pro", isCollapsed(element), level + 2, cid));
 						} else {
-							if (!(this.elementsAlreadyAsNode.contains(element))) {
-								this.elementsAlreadyAsNode.add(element);
-								this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
-							}
+							this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
 						}
 						break;
 					case "attack":
 						if (element.getId() == iterLink.getSourceElement().getId()) {
-							if (!(this.elementsAlreadyAsNode.contains(element))) {
-								this.elementsAlreadyAsNode.add(element);
-								this.nodes.add(new VisNode(element, "con", isCollapsed(element), level + 2, cid));
-							}
+							this.nodes.add(new VisNode(element, "con", isCollapsed(element), level + 2, cid));
 						} else {
-							if (!(this.elementsAlreadyAsNode.contains(element))) {
-								this.elementsAlreadyAsNode.add(element);
-								this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
-							}
+							this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
 						}
 						break;
 					default:
-						if (!(this.elementsAlreadyAsNode.contains(element))) {
-							this.elementsAlreadyAsNode.add(element);
-							this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
-						}
+						this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
 						break;
 				}
 				this.edges.add(new VisEdge(iterLink));
 
 			} else {
-				if (!(this.elementsAlreadyAsNode.contains(element))) {
-					this.elementsAlreadyAsNode.add(element);
-					this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
-				}
+				this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
 			}
 			//Check Depth
 			if(parentNode == null){
@@ -138,8 +114,6 @@ public class VisGraph {
 				level++;
 			}
 			cid++;
-
-
 		}
 	}
 
