@@ -5,17 +5,15 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.NodeImpl;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Graph;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
+import org.jgrapht.traverse.BreadthFirstIterator;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @XmlRootElement(name = "vis")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -28,7 +26,7 @@ public class VisGraph {
 	private String rootElementKey;
 
 	@JsonIgnore
-	private Graph graph;
+	private KnowledgeGraph graph;
 	@JsonIgnore
 	private boolean isHyperlinked;
 	@JsonIgnore
@@ -36,18 +34,12 @@ public class VisGraph {
 	@JsonIgnore
 	private List<DecisionKnowledgeElement> elementsMatchingFilterCriteria;
 	@JsonIgnore
-	private int level;
-	@JsonIgnore
-	private int cid;
-	@JsonIgnore
 	private List<DecisionKnowledgeElement> elementsInGraph;
 
 	public VisGraph() {
 		nodes = new HashSet<>();
 		edges = new HashSet<>();
 		elementsAlreadyAsNode = new ArrayList<>();
-		level = 50;
-		cid = 0;
 		elementsInGraph = new ArrayList<>();
 	}
 
@@ -57,7 +49,7 @@ public class VisGraph {
 			return;
 		}
 		this.elementsMatchingFilterCriteria = elements;
-		this.graph = new GraphImpl(projectKey);
+		this.graph = new KnowledgeGraphImpl(projectKey);
 		this.setHyperlinked(false);
 		if(elements== null || elements.size() ==0){
 			this.nodes = new HashSet<>();
@@ -67,7 +59,7 @@ public class VisGraph {
 		}
 
 		for(DecisionKnowledgeElement element: elements){
-			fillNodesAndEdges(element, null, level, cid);
+			fillNodesAndEdges(element);
 		}
 	}
 
@@ -75,78 +67,79 @@ public class VisGraph {
 		this();
 		this.elementsMatchingFilterCriteria = elements;
 		this.rootElementKey = (rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString());
-		fillNodesAndEdges(rootElement, null, level, cid);
+		fillNodesAndEdges(rootElement);
 	}
 
 	// TODO Reduce complexity of this function
 	// Way too big needs to be split in small functions
-	private void fillNodesAndEdges(DecisionKnowledgeElement element, Link link, int level, int cid) {
+	private void fillNodesAndEdges(DecisionKnowledgeElement element) {
+		int level = 50;
+		int cid = 0;
 		if (element == null || element.getProject() == null) {
 			return;
 		}
 		if (graph == null) {
-			graph = new GraphImpl(element);
+			graph = new KnowledgeGraphImpl(element.getProject().getProjectKey());
 		}
-		//No duplicated elements in the graphs
-		if(elementsInGraph.contains(element)){
-			return;
-		} else {
-			elementsInGraph.add(element);
-		}
-		if (link != null) {
-			switch (link.getType()) {
-			case "support":
-				if (element.getId() == link.getSourceElement().getId()) {
-					if (!(this.elementsAlreadyAsNode.contains(element))) {
-						this.elementsAlreadyAsNode.add(element);
-						this.nodes.add(new VisNode(element, "pro", isCollapsed(element), level + 2, cid));
-					}
-				} else {
-					if (!(this.elementsAlreadyAsNode.contains(element))) {
-						this.elementsAlreadyAsNode.add(element);
-						this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
-					}
+		BreadthFirstIterator<Node,Link> iterator = new BreadthFirstIterator<>(graph, element);
+		Node parentNode = null;
+		while (iterator.hasNext()) {
+			Node iterNode = iterator.next();
+			Link iterLink = iterator.getSpanningTreeEdge(iterNode);
+			if (iterLink != null) {
+				switch (iterLink.getType()) {
+					case "support":
+						if (element.getId() == iterLink.getSourceElement().getId()) {
+							if (!(this.elementsAlreadyAsNode.contains(element))) {
+								this.elementsAlreadyAsNode.add(element);
+								this.nodes.add(new VisNode(element, "pro", isCollapsed(element), level + 2, cid));
+							}
+						} else {
+							if (!(this.elementsAlreadyAsNode.contains(element))) {
+								this.elementsAlreadyAsNode.add(element);
+								this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
+							}
+						}
+						break;
+					case "attack":
+						if (element.getId() == iterLink.getSourceElement().getId()) {
+							if (!(this.elementsAlreadyAsNode.contains(element))) {
+								this.elementsAlreadyAsNode.add(element);
+								this.nodes.add(new VisNode(element, "con", isCollapsed(element), level + 2, cid));
+							}
+						} else {
+							if (!(this.elementsAlreadyAsNode.contains(element))) {
+								this.elementsAlreadyAsNode.add(element);
+								this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
+							}
+						}
+						break;
+					default:
+						if (!(this.elementsAlreadyAsNode.contains(element))) {
+							this.elementsAlreadyAsNode.add(element);
+							this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
+						}
+						break;
 				}
-				break;
-			case "attack":
-				if (element.getId() == link.getSourceElement().getId()) {
-					if (!(this.elementsAlreadyAsNode.contains(element))) {
-						this.elementsAlreadyAsNode.add(element);
-						this.nodes.add(new VisNode(element, "con", isCollapsed(element), level + 2, cid));
-					}
-				} else {
-					if (!(this.elementsAlreadyAsNode.contains(element))) {
-						this.elementsAlreadyAsNode.add(element);
-						this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
-					}
-				}
-				break;
-			default:
+				this.edges.add(new VisEdge(iterLink));
+
+			} else {
 				if (!(this.elementsAlreadyAsNode.contains(element))) {
 					this.elementsAlreadyAsNode.add(element);
 					this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
 				}
-				break;
 			}
-			this.edges.add(new VisEdge(link));
+			//Check Depth
+			if(parentNode == null){
+				parentNode = iterNode;
+			}
+			if(iterator.getParent(iterNode) != parentNode) {
+				parentNode = iterator.getParent(iterNode);
+				level++;
+			}
+			cid++;
 
-		} else {
-			if (!(this.elementsAlreadyAsNode.contains(element))) {
-				this.elementsAlreadyAsNode.add(element);
-				this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
-			}
-		}
-		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getAdjacentElementsAndLinks(element);
-		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-			if (childAndLink.getKey() != null) {
-				if (childAndLink.getValue().getSourceElement().equals(element)) {
-					this.level = level + 1;
-				} else {
-					this.level = level - 1;
-				}
-				this.cid = cid + 1;
-				fillNodesAndEdges(childAndLink.getKey(), childAndLink.getValue(), this.level, this.cid);
-			}
+
 		}
 	}
 
@@ -162,7 +155,7 @@ public class VisGraph {
 		this.edges = edges;
 	}
 
-	public void setGraph(Graph graph) {
+	public void setGraph(KnowledgeGraph graph) {
 		this.graph = graph;
 
 	}
@@ -179,7 +172,7 @@ public class VisGraph {
 		return edges;
 	}
 
-	public Graph getGraph() {
+	public KnowledgeGraph getGraph() {
 		return graph;
 	}
 
