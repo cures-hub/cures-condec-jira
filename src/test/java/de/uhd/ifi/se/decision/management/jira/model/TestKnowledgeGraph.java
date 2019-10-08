@@ -23,27 +23,26 @@ public class TestKnowledgeGraph extends TestSetUp {
 	public void setUp() {
 		init();
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 4));
-		graph = new KnowledgeGraphImpl(element.getProject().getProjectKey(), element);
+		graph = new KnowledgeGraphImpl(element.getProject().getProjectKey());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetNodes() {
-		assertEquals(3, graph.getAllNodes().size(), 0.0);
+		assertEquals(6, graph.getAllNodes().size(), 0.0);
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetEdges() {
-		assertEquals(4, graph.getAllEdges().size(), 0.0);
+		assertEquals(6, graph.getAllEdges().size(), 0.0);
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetSubGraph() {
 		KnowledgeGraph compareGraph = graph.getSubGraph(element);
-		assertTrue(compareGraph.containsVertex(element));
-		assertEquals(graph.getAllNodes().size(), compareGraph.vertexSet().size(), 0.0);
+		assertEquals(4, compareGraph.vertexSet().size(), 0.0);
 	}
 
 }

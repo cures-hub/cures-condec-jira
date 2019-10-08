@@ -19,14 +19,10 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 
 	private static final long serialVersionUID = 1L;
 	private DecisionKnowledgeProject project;
-
-	private Set<Node> allNodes;
-	private Set<Link> allEdges;
 	private Node rootNode;
 
-	public KnowledgeGraphImpl(String projectKey, DecisionKnowledgeElement rootElement) {
+	public KnowledgeGraphImpl(String projectKey) {
 		super(LinkImpl.class);
-		this.rootNode = rootElement;
 		this.project = new DecisionKnowledgeProjectImpl(projectKey);
 		createGraph();
 	}
@@ -57,12 +53,12 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 
 	@Override
 	public Set<Node> getAllNodes() {
-		return allNodes;
+		return this.vertexSet();
 	}
 
 	@Override
 	public Set<Link> getAllEdges() {
-		return allEdges;
+		return this.edgeSet();
 	}
 
 	private void createGraph() {
@@ -71,14 +67,12 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	}
 
 	private void addNodes() {
-		allNodes = new HashSet<>();
-		List<Node> nodesList = new ArrayList<>();
-		nodesList.add(rootNode);
+		AbstractPersistenceManager manager = project.getPersistenceStrategy();
+		List<Node> nodesList = computeToNode(manager.getDecisionKnowledgeElements());
 		ListIterator<Node> iterator = nodesList.listIterator();
 		while (iterator.hasNext()) {
 			for (Node adjacentNode : this.getAdjacentElements(iterator.next())) {
 				if (!this.containsVertex(adjacentNode)) {
-					this.allNodes.add(adjacentNode);
 					this.addVertex(adjacentNode);
 					iterator.add(adjacentNode);
 					iterator.previous();
@@ -88,15 +82,13 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	}
 
 	private void addEdges() {
-		allEdges = new HashSet<>();
-		for (Node node : allNodes) {
+		for (Node node : this.vertexSet()) {
 			AbstractPersistenceManager manager = AbstractPersistenceManager
 					.getPersistenceManager(project.getProjectKey(), node.getDocumentationLocation());
 			List<Link> links = manager.getLinks(node.getId());
 			for (Link link : links) {
 				if (!this.containsEdge(link)) {
 					this.addEdge(link.getSourceElement(), link.getDestinationElement());
-					allEdges.add(link);
 				}
 			}
 		}
@@ -105,10 +97,14 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	private List<Node> getAdjacentElements(Node node) {
 		AbstractPersistenceManager manager = AbstractPersistenceManager.getPersistenceManager(project.getProjectKey(),
 				node.getDocumentationLocation());
-		List<Node> adjacentNodes = new ArrayList<>();
-		for (DecisionKnowledgeElement element : manager.getAdjacentElements(node.getId())) {
-			adjacentNodes.add(element);
+		return computeToNode(manager.getAdjacentElements(node.getId()));
+	}
+
+	private List<Node> computeToNode(List<DecisionKnowledgeElement> elements) {
+		List<Node> nodeList = new ArrayList<>();
+		for(DecisionKnowledgeElement element: elements){
+			nodeList.add(element);
 		}
-		return adjacentNodes;
+		return nodeList;
 	}
 }
