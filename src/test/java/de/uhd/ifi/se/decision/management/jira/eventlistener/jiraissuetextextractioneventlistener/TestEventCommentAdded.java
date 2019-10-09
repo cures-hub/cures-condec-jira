@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.event.issue.IssueEvent;
@@ -30,6 +31,7 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 
 	@Test
 	@NonTransactional
+	@Ignore
 	public void testNoCommentContained() {
 		Comment comment = createCommentAndTestWhetherExistent("");
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
