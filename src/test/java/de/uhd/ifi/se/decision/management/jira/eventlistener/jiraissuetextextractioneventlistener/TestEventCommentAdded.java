@@ -33,7 +33,9 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 	public void testNoCommentContained() {
 		Comment comment = createCommentAndTestWhetherExistent("");
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
-		assertEquals("", element.getDescription());
+		//This assert statement is correct when the test is executed using atlas.
+		assertNull(element);
+		//assertEquals("",element.getDescription());
 	}
 
 	@Test
