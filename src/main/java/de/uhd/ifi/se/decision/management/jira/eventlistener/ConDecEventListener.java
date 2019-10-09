@@ -50,7 +50,6 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 		summarizationEventListener = new SummarizationEventListener();
 	}
 
-	@Autowired
 	public ConDecEventListener(EventPublisher eventPublisher, Preprocessor pp) {
 		this.eventPublisher = eventPublisher;
 		LOGGER.info("ConDec event listener object was created.");
