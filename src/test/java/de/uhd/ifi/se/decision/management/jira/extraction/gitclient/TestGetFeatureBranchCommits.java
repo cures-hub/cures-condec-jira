@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
@@ -24,6 +25,7 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 		repoBaseDirectory = super.getRepoBaseDirectory();
 	}
 
+	@Ignore
 	@Test
 	public void testGetFeatureBranchCommitsByString() {
 		// fetches the 'default' branch commits. Do not use TestSetUpGit' gitClient
@@ -34,6 +36,7 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 		assertEquals(expectedFirstCommitMessage, commits.get(0).getFullMessage());
 	}
 
+	@Ignore
 	@Test
 	public void testGetFeatureBranchCommitsByRef() {
 		// fetches the 'default' branch commits. Do not use TestSetUpGit' gitClient

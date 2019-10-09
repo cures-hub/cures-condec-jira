@@ -16,6 +16,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static de.uhd.ifi.se.decision.management.jira.ComponentGetter.getUrlOfClassifierFolder;
 
@@ -69,8 +71,6 @@ public class PreprocessorImpl implements Preprocessor {
     }
 
 
-
-
     @Override
     public List<String> tokenize(String sentence) {
         return Arrays.asList(this.tokenizer.tokenize(sentence));
@@ -84,10 +84,21 @@ public class PreprocessorImpl implements Preprocessor {
     @Override
     public List<String> lemmatize(List<String> tokens) {
         try {
-            return Arrays.asList(this.lemmatizer.lemmatize(
+            final List<String> lemmatizedTokens = Arrays.asList(this.lemmatizer.lemmatize(
                     tokens.toArray(new String[tokens.size()]),
                     this.posTags
             ));
+            // Unknown words are replaced by "O" by the lemmatizer.
+            // To give the methode for mapping words to numbers a
+            // chance we leave unknown words as is.
+            // e.g.: tokens: {"jira" "does" "not" "work"}
+            // --lemmatize--> {"O" "do" "not" "work"}
+            // --next line returns--> {"jira" "do" "not" "work"}
+           return IntStream.range(0, lemmatizedTokens.size())
+                    .mapToObj(i -> lemmatizedTokens.get(i).equals("O")? tokens.get(i) : lemmatizedTokens.get(i))
+                    .collect(Collectors.toList());
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }

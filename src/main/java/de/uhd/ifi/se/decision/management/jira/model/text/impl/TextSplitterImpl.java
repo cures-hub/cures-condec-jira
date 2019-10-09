@@ -49,6 +49,7 @@ public class TextSplitterImpl implements TextSplitter {
 			partOfText.setType(type);
 			if (type != KnowledgeType.OTHER) {
 				partOfText.setRelevant(true);
+				//TODO: Why is this set here?
 				partOfText.setValidated(true);
 			}
 			parts.add(partOfText);

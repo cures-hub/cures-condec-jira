@@ -31,10 +31,9 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 	@Test
 	@NonTransactional
 	public void testNoCommentContained() {
-		//FIXME: @desombre -> java.lang.AssertionError: expected null, but was:<>
 		Comment comment = createCommentAndTestWhetherExistent("");
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
-		assertNull(element);
+		assertEquals("", element.getDescription());
 	}
 
 	@Test

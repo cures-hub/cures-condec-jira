@@ -58,6 +58,11 @@ public class JiraIssueTextExtractionEventListener {
         }
 
         long eventTypeId = issueEvent.getEventTypeId();
+        // @issue How to implement multiple checks of the event ID?
+        // @decision Use ifs only!
+        // @pro switch-case not trivial to implement,
+        // because the switch can not be a long variable.
+        // casting from long to int is dangerous.
         if (eventTypeId == EventType.ISSUE_COMMENTED_ID) {
             handleNewComment();
         }
@@ -128,11 +133,7 @@ public class JiraIssueTextExtractionEventListener {
 
         if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
             JiraIssueTextPersistenceManager.deletePartsOfComment(issueEvent.getComment());
-			MutableComment comment = (MutableComment) issueEvent.getComment();
-
-			JiraIssueTextPersistenceManager.updateComment(comment);
-
-			this.classificationManagerForJiraIssueComments.classifyJiraIssueText(this.issueEvent.getIssue());
+			this.classificationManagerForJiraIssueComments.classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
         } else {
             MutableComment comment = (MutableComment) issueEvent.getComment();
             JiraIssueTextPersistenceManager.updateComment(comment);

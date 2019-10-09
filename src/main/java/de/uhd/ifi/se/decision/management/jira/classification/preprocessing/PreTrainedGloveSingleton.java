@@ -19,6 +19,7 @@ class PreTrainedGloveSingleton {
     private static String GLOVE_FILE_PATH = DecisionKnowledgeClassifier.DEFAULT_DIR;
 
     private PreTrainedGloveSingleton(File file) {
+        this.dimensions = 50;
         this.map = new HashMap<>();
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
@@ -53,16 +54,17 @@ class PreTrainedGloveSingleton {
     }
 
     /**
-     *  This method gets a word as a parameter and returns a List of Double values representing the relationship between words.
-     *  If no relationship status is known a Lost of zeroes is returned.
+     * This method gets a word as a parameter and returns a List of Double values representing the relationship between words.
+     * If no relationship status is known a Lost of zeroes is returned.
      *
      * @param word holds the string for which a vector has to be determined
      * @return
      */
     public List<Double> getWordVector(String word) {
-        try{
-            return Arrays.asList(this.map.get(word));
-        } catch (Exception e){
+        Double[] gloveResult = this.map.get(word);
+        if (gloveResult != null) {
+            return Arrays.asList(gloveResult);
+        } else {
             return new ArrayList<Double>(Collections.nCopies(this.dimensions, 0.0));
         }
 
