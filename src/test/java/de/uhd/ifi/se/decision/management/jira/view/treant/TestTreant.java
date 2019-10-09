@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -137,10 +138,8 @@ public class TestTreant extends TestSetUp {
 	@NonTransactional
 	public void testCreateNodeStructureFilledFilledFilledFilled() {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
-		Link link = new LinkImpl();
+		Link link = new LinkImpl(1, 14, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		link.setType("support");
-		link.setSourceElement(1, "i");
-		link.setDestinationElement(14, "i");
 		link.setDestinationElement(persistenceStrategy.getDecisionKnowledgeElement(14));
 		link.setSourceElement(persistenceStrategy.getDecisionKnowledgeElement(1));
 		link.setId(23);

@@ -29,20 +29,20 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetNodes() {
-		assertEquals(6, graph.getAllNodes().size(), 0.0);
+		assertEquals(8, graph.getAllNodes().size(), 0.0);
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetEdges() {
-		assertEquals(6, graph.getAllEdges().size(), 0.0);
+		assertEquals(8, graph.getAllEdges().size(), 0.0);
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetSubGraph() {
 		KnowledgeGraph compareGraph = graph.getSubGraph(element);
-		assertEquals(4, compareGraph.vertexSet().size(), 0.0);
+		assertEquals(5, compareGraph.vertexSet().size(), 0.0);
 	}
 
 }

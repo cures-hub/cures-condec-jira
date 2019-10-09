@@ -5,7 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,11 +38,11 @@ public class TestVisGraph extends TestSetUp {
 		visGraph = new VisGraph();
 		visGraph.setEdges(edges);
 		visGraph.setNodes(nodes);
-		visGraph.setGraph(new GraphImpl());
+		visGraph.setGraph(new KnowledgeGraphImpl("TEST"));
 		visGraph.setRootElementKey("");
 
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
-		element.setProject(new DecisionKnowledgeProjectImpl("Test"));
+		element.setProject(new DecisionKnowledgeProjectImpl("TEST"));
 	}
 
 	@Test
@@ -140,7 +142,7 @@ public class TestVisGraph extends TestSetUp {
 
 	@Test
 	public void testSetGraph() {
-		Graph newGraph = new GraphImpl();
+		KnowledgeGraph newGraph = new KnowledgeGraphImpl("ConDec");
 		visGraph.setGraph(newGraph);
 		assertEquals(newGraph, visGraph.getGraph());
 	}

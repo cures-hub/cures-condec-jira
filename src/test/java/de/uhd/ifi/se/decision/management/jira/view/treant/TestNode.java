@@ -72,14 +72,6 @@ public class TestNode extends TestSetUp {
 	}
 
 	@Test
-	public void testElementLinkEmptyConstructor() {
-		Link link = new LinkImpl();
-		link.setType("Test");
-		TreantNode newNode = new TreantNode(element, link, isCollapsed, isHyperlinked);
-		assertNotNull(newNode);
-	}
-
-	@Test
 	public void testElementLinkSupportConstructor() {
 		Link link = new LinkImpl(element, element);
 		link.setType("support");

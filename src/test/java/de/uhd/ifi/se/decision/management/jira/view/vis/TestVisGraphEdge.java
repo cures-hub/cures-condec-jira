@@ -38,9 +38,7 @@ public class TestVisGraphEdge extends TestSetUp {
 		to.setSummary("TESTfwf");
 		to.setDocumentationLocation("i");
 
-		link = new LinkImpl();
-		link.setSourceElement(from);
-		link.setDestinationElement(to);
+		link = new LinkImpl(from , to);
 		link.setType("test");
 		link.setId(1);
 	}

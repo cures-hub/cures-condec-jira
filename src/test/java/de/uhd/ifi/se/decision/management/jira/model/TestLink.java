@@ -28,16 +28,17 @@ public class TestLink {
 		type = "contain";
 		idOfSourceElement = 14;
 		idOfDestinationElement = 15;
-		link = new LinkImpl();
-		link.setType(type);
+
 		DecisionKnowledgeElement sourceElement = new DecisionKnowledgeElementImpl();
+		DecisionKnowledgeElement destinationElement = new DecisionKnowledgeElementImpl();
 		sourceElement.setId(idOfSourceElement);
 		sourceElement.setKey("TestSourceElement");
-		DecisionKnowledgeElement destinationElement = new DecisionKnowledgeElementImpl();
+
 		destinationElement.setId(idOfDestinationElement);
 		destinationElement.setKey("TestDestinationElement");
-		link.setSourceElement(sourceElement);
-		link.setDestinationElement(destinationElement);
+
+		link = new LinkImpl(sourceElement, destinationElement);
+		link.setType(type);
 	}
 
 	@Test

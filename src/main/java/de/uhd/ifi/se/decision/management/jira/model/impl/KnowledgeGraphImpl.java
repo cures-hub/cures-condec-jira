@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.model.impl;
 
 import java.util.*;
 
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.AsSubgraph;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
@@ -66,17 +67,21 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		addEdges();
 	}
 
+	private List getElementsInProject() {
+		AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(project.getProjectKey());
+		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
+		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(project.getProjectKey());
+		elements.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
+		return elements;
+	}
+
 	private void addNodes() {
-		AbstractPersistenceManager manager = project.getPersistenceStrategy();
-		List<Node> nodesList = computeToNode(manager.getDecisionKnowledgeElements());
+		List<Node> nodesList = getElementsInProject();
 		ListIterator<Node> iterator = nodesList.listIterator();
 		while (iterator.hasNext()) {
-			for (Node adjacentNode : this.getAdjacentElements(iterator.next())) {
-				if (!this.containsVertex(adjacentNode)) {
-					this.addVertex(adjacentNode);
-					iterator.add(adjacentNode);
-					iterator.previous();
-				}
+			Node node = iterator.next();
+			if(!this.containsVertex(node)){
+				this.addVertex(node);
 			}
 		}
 	}
@@ -88,23 +93,11 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 			List<Link> links = manager.getLinks(node.getId());
 			for (Link link : links) {
 				if (!this.containsEdge(link)) {
-					this.addEdge(link.getSourceElement(), link.getDestinationElement());
+					if(this.containsVertex(link.getDestinationElement()) && this.containsVertex(link.getSourceElement())) {
+						this.addEdge(link.getSourceElement(), link.getDestinationElement());
+					}
 				}
 			}
 		}
-	}
-
-	private List<Node> getAdjacentElements(Node node) {
-		AbstractPersistenceManager manager = AbstractPersistenceManager.getPersistenceManager(project.getProjectKey(),
-				node.getDocumentationLocation());
-		return computeToNode(manager.getAdjacentElements(node.getId()));
-	}
-
-	private List<Node> computeToNode(List<DecisionKnowledgeElement> elements) {
-		List<Node> nodeList = new ArrayList<>();
-		for(DecisionKnowledgeElement element: elements){
-			nodeList.add(element);
-		}
-		return nodeList;
 	}
 }

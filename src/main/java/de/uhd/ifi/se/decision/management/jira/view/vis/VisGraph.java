@@ -32,7 +32,9 @@ public class VisGraph {
 	@JsonIgnore
 	private List<DecisionKnowledgeElement> elementsMatchingFilterCriteria;
 	@JsonIgnore
-	private List<DecisionKnowledgeElement> elementsInGraph;
+	int level = 50;
+	@JsonIgnore
+	int cid = 0;
 
 	public VisGraph() {
 		nodes = new HashSet<>();
@@ -53,9 +55,8 @@ public class VisGraph {
 			this.rootElementKey= "";
 			return;
 		}
-
 		for(DecisionKnowledgeElement element: elements){
-			fillNodesAndEdges(element);
+				fillNodesAndEdges(element);
 		}
 	}
 
@@ -63,12 +64,11 @@ public class VisGraph {
 		this();
 		this.elementsMatchingFilterCriteria = elements;
 		this.rootElementKey = (rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString());
+		this.graph = new KnowledgeGraphImpl(rootElement.getProject().getProjectKey());
 		fillNodesAndEdges(rootElement);
 	}
 
 	private void fillNodesAndEdges(DecisionKnowledgeElement element) {
-		int level = 50;
-		int cid = 0;
 		if (element == null || element.getProject() == null) {
 			return;
 		}
@@ -108,10 +108,11 @@ public class VisGraph {
 			//Check Depth
 			if(parentNode == null){
 				parentNode = iterNode;
-			}
-			if(iterator.getParent(iterNode) != parentNode) {
-				parentNode = iterator.getParent(iterNode);
-				level++;
+			} else {
+				if (iterator.getParent(iterNode) != parentNode) {
+					parentNode = iterator.getParent(iterNode);
+					level++;
+				}
 			}
 			cid++;
 		}
