@@ -200,6 +200,8 @@ public abstract class AbstractPersistenceManager {
 		return GenericLinkManager.insertLink(link, user);
 	}
 
+	public abstract long getLinkId(DecisionKnowledgeElement source, DecisionKnowledgeElement destination);
+
 	/**
 	 * Update new link in database.
 	 *

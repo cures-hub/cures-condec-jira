@@ -118,6 +118,18 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		return 0;
 	}
 
+	@Override
+	public long getLinkId(DecisionKnowledgeElement source, DecisionKnowledgeElement destination) {
+		List<IssueLink> links = this.getInwardIssueLinks(source);
+		links.addAll(this.getOutwardIssueLinks(source));
+		for(IssueLink link: links) {
+			if(link.getSourceId() == source.getId() && link.getDestinationId() == destination.getId()){
+				return link.getId();
+			}
+		}
+		return 0;
+	}
+
 	private static void setParameters(DecisionKnowledgeElement element, IssueInputParameters issueInputParameters) {
 		String summary = element.getSummary();
 		if (summary != null) {

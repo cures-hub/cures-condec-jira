@@ -84,6 +84,27 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 
 	@Override
 	public long getId() {
+		DocumentationLocation sourceLocation = this.getSourceElement().getDocumentationLocation();
+		DocumentationLocation destLocation = this.getDestinationElement().getDocumentationLocation();
+		if(id == 0) {
+			if(sourceLocation != destLocation) {
+					if(sourceLocation == DocumentationLocation.JIRAISSUETEXT) {
+						AbstractPersistenceManager manager =
+								AbstractPersistenceManager.getPersistenceManager(this.getSourceElement().getProject().getProjectKey(),
+										sourceLocation.getIdentifier());
+						id = manager.getLinkId(this.getSourceElement(), this.getDestinationElement());
+					}
+					if(destLocation == DocumentationLocation.JIRAISSUETEXT) {
+						AbstractPersistenceManager manager =
+								AbstractPersistenceManager.getPersistenceManager(this.getDestinationElement().getProject().getProjectKey(),
+										destLocation.getIdentifier());
+						id = manager.getLinkId(this.getSourceElement(), this.getDestinationElement());
+					}
+			} else {
+				id =this.getSourceElement().getProject().getPersistenceStrategy().getLinkId(this.getSourceElement(),
+						this.getDestinationElement());
+			}
+		}
 		return id;
 	}
 

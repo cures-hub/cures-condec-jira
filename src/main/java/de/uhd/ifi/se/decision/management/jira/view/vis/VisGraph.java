@@ -7,10 +7,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.NodeImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import org.codehaus.jackson.annotate.JsonIgnore;
-
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
 import java.util.*;
@@ -41,22 +39,22 @@ public class VisGraph {
 		edges = new HashSet<>();
 	}
 
-	public VisGraph(List<DecisionKnowledgeElement> elements,String projectKey) {
+	public VisGraph(List<DecisionKnowledgeElement> elements, String projectKey) {
 		this();
-		if(projectKey == null ){
+		if (projectKey == null) {
 			return;
 		}
 		this.elementsMatchingFilterCriteria = elements;
 		this.graph = new KnowledgeGraphImpl(projectKey);
 		this.setHyperlinked(false);
-		if(elements== null || elements.size() ==0){
+		if (elements == null || elements.size() == 0) {
 			this.nodes = new HashSet<>();
 			this.edges = new HashSet<>();
-			this.rootElementKey= "";
+			this.rootElementKey = "";
 			return;
 		}
-		for(DecisionKnowledgeElement element: elements){
-				fillNodesAndEdges(element);
+		for (DecisionKnowledgeElement element : elements) {
+			fillNodesAndEdges(element);
 		}
 	}
 
@@ -75,38 +73,42 @@ public class VisGraph {
 		if (graph == null) {
 			graph = new KnowledgeGraphImpl(element.getProject().getProjectKey());
 		}
-		BreadthFirstIterator<Node,Link> iterator = new BreadthFirstIterator<>(graph, element);
+		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<>(graph, element);
 		Node parentNode = null;
 		while (iterator.hasNext()) {
 			Node iterNode = iterator.next();
+			DecisionKnowledgeElement nodeElement = null;
+			if (iterNode instanceof DecisionKnowledgeElement) {
+				nodeElement = (DecisionKnowledgeElement) iterNode;
+			}
 			Link iterLink = iterator.getSpanningTreeEdge(iterNode);
 			if (iterLink != null) {
 				switch (iterLink.getType()) {
 					case "support":
-						if (element.getId() == iterLink.getSourceElement().getId()) {
-							this.nodes.add(new VisNode(element, "pro", isCollapsed(element), level + 2, cid));
+						if (nodeElement.getId() == iterLink.getSourceElement().getId()) {
+							this.nodes.add(new VisNode(nodeElement, "pro", isCollapsed(nodeElement), level + 2, cid));
 						} else {
-							this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
+							this.nodes.add(new VisNode(nodeElement, isCollapsed(nodeElement), level, cid));
 						}
 						break;
 					case "attack":
-						if (element.getId() == iterLink.getSourceElement().getId()) {
-							this.nodes.add(new VisNode(element, "con", isCollapsed(element), level + 2, cid));
+						if (nodeElement.getId() == iterLink.getSourceElement().getId()) {
+							this.nodes.add(new VisNode(nodeElement, "con", isCollapsed(nodeElement), level + 2, cid));
 						} else {
-							this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
+							this.nodes.add(new VisNode(nodeElement, isCollapsed(nodeElement), level, cid));
 						}
 						break;
 					default:
-						this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
+						this.nodes.add(new VisNode(nodeElement, isCollapsed(nodeElement), level, cid));
 						break;
 				}
 				this.edges.add(new VisEdge(iterLink));
 
 			} else {
-				this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
+				this.nodes.add(new VisNode(element, isCollapsed(nodeElement), level, cid));
 			}
 			//Check Depth
-			if(parentNode == null){
+			if (parentNode == null) {
 				parentNode = iterNode;
 			} else {
 				if (iterator.getParent(iterNode) != parentNode) {
