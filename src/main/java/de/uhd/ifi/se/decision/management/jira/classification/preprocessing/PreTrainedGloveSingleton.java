@@ -36,6 +36,7 @@ class PreTrainedGloveSingleton {
 
 
     public static PreTrainedGloveSingleton getInstance() {
+        System.out.println(PreprocessorImpl.DEFAULT_DIR + "glove.6b.50d.csv");
         return PreTrainedGloveSingleton.getInstance(new File(PreprocessorImpl.DEFAULT_DIR + "glove.6b.50d.csv"));
     }
 

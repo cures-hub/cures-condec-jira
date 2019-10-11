@@ -39,8 +39,6 @@ public class PreprocessorImpl implements Preprocessor {
         File posFile = new File(PreprocessorImpl.DEFAULT_DIR + "pos.bin");
         this.nGramN = 3;
 
-        this.glove = PreTrainedGloveSingleton.getInstance();
-
         try {
             InputStream lemmatizerModelIn = new FileInputStream(lemmatizerFile);
             this.lemmatizer = new DictionaryLemmatizer(lemmatizerModelIn);
