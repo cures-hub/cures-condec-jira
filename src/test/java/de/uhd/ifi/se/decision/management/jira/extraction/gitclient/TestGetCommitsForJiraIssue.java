@@ -19,7 +19,7 @@ public class TestGetCommitsForJiraIssue extends TestSetUpGit {
 		assertEquals(0, commits.size());
 	}
 
-	@Ignore
+
 	@Test
 	public void testJiraIssue() {
 		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);

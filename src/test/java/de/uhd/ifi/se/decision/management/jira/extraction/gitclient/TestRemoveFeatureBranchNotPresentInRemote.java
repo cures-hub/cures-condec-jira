@@ -54,7 +54,6 @@ public class TestRemoveFeatureBranchNotPresentInRemote extends TestSetUpGit {
 		assertNull(commits);
 	}
 
-	@Ignore
 	@Test
 	public void testGetFeatureBranchNotOnRemoteLocalPullCache() {
 		System.out.println("testGetFeatureBranchNotOnRemoteLocalPullCache");

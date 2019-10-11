@@ -56,7 +56,6 @@ public class TestGetDiff extends TestSetUpGit {
 		assertNull(diff);
 	}
 
-	@Ignore
 	@Test
 	public void testJiraIssueKeyExisting() {
 		Diff diff = gitClient.getDiff(mockJiraIssueForGitTests);

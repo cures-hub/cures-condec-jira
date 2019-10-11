@@ -10,7 +10,6 @@ import org.junit.Test;
 
 public class TestGetCommits extends TestSetUpGit {
 
-	@Ignore
 	@Test
 	public void testRepositoryExisting() {
 		List<RevCommit> allCommits = gitClient.getCommits();

@@ -28,7 +28,6 @@ public class TestGitDecXtract extends TestSetUpGit {
         Assert.assertEquals(numberExpectedElements, gotElements.size());
     }
 
-    @Ignore
     @Test
     public void fromFeatureBranchCommits() {
         // git repository is setup already

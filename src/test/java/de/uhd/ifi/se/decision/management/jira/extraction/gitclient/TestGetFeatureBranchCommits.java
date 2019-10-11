@@ -25,7 +25,6 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 		repoBaseDirectory = super.getRepoBaseDirectory();
 	}
 
-	@Ignore
 	@Test
 	public void testGetFeatureBranchCommitsByString() {
 		// fetches the 'default' branch commits. Do not use TestSetUpGit' gitClient
@@ -36,7 +35,6 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 		assertEquals(expectedFirstCommitMessage, commits.get(0).getFullMessage());
 	}
 
-	@Ignore
 	@Test
 	public void testGetFeatureBranchCommitsByRef() {
 		// fetches the 'default' branch commits. Do not use TestSetUpGit' gitClient
