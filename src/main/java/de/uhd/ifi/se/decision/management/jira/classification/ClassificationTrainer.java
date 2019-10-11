@@ -119,10 +119,7 @@ public interface ClassificationTrainer {
 	}
 
 	/**
-	 * Copies the default training file to the given file.
-	 * 
-	 * @param file
-	 *            file to copy default training file to.
+	 * Copies the default training file to a folder in the target.
 	 * 
 	 * @return updated file with default training content.
 	 */
