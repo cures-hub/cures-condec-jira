@@ -28,7 +28,6 @@ public class TestClassificationTrainer extends TestSetUp {
     @Before
     public void setUp() {
         init();
-        initClassifierPaths();
     }
 
     private DecisionKnowledgeElement createElement(KnowledgeType type, String summary) {

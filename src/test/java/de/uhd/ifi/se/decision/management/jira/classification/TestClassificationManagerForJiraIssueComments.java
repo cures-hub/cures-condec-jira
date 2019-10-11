@@ -40,7 +40,6 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
     @Before
     public void setUp() {
         init();
-        initClassifierPaths();
         classificationManager = new ClassificationManagerForJiraIssueComments();
         classificationManager.getClassifierTrainer().setTrainingData(getTrainingData());
         classificationManager.getClassifierTrainer().train();

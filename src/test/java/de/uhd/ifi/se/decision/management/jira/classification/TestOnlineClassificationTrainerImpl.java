@@ -27,7 +27,6 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
     @Before
     public void setUp() {
         init();
-        initClassifierPaths();
         trainer = new OnlineClassificationTrainerImpl("TEST");
         trainer.setTrainingData(getTrainingData());
     }

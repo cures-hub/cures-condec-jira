@@ -12,7 +12,6 @@ public class TestTrainClassifier extends TestConfigSuper {
 	@Before
 	public void setUp() {
 		super.setUp();
-		initClassifierPaths();
 	}
 
 	@Test

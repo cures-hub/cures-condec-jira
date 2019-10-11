@@ -30,7 +30,6 @@ public abstract class TestSetUpEventListener extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		initClassifierPaths();
 		EventPublisher publisher = new MockEventPublisher();
 		listener = new ConDecEventListener(publisher);
 		jiraIssue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");

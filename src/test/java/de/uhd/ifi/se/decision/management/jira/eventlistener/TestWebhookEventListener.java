@@ -34,7 +34,6 @@ public class TestWebhookEventListener extends TestSetUp {
 	@Before
 	public void setUp() {
 		TestSetUp.init();
-		TestSetUp.initClassifierPaths();
 		EventPublisher publisher = new MockEventPublisher();
 		listener = new ConDecEventListener(publisher);
 		issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");

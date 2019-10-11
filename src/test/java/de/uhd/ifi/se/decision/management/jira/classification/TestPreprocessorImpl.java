@@ -21,7 +21,6 @@ public class TestPreprocessorImpl extends TestSetUp {
     @Before
     public void setUp() {
         init();
-        initClassifierPaths();
         pp = new PreprocessorImpl();
     }
 

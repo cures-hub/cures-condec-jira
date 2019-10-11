@@ -27,7 +27,6 @@ public class TestFilterExtractor extends TestSetUp {
     @Before
     public void setUp() {
         init();
-        initClassifierPaths();
         user = JiraUsers.SYS_ADMIN.getApplicationUser();
         settings = new FilterSettingsImpl();
         List<String> doculoco = new ArrayList<>();

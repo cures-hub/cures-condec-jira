@@ -46,6 +46,7 @@ public abstract class TestSetUp {
     public static void init() {
         initComponentAccessor();
         initComponentGetter();
+        initClassifierPaths();
     }
 
     /**
