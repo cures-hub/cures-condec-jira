@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static junit.framework.TestCase.assertNotNull;
@@ -23,6 +24,7 @@ import static org.junit.Assert.assertFalse;
 public class TestOnlineClassificationTrainerImpl extends TestSetUp {
 
     private OnlineClassificationTrainerImpl trainer;
+    private static final List<String> TEST_SENTENCES = Arrays.asList("Pizza is preferred", "I have an issue");
 
     @Before
     public void setUp() {
@@ -163,6 +165,18 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
         assertNotNull(this.trainer.getInstances());
     }
 
+    @Test
+    @NonTransactional
+    public void testMakeBinaryPredicition() {
+        assertEquals(2, this.trainer.getClassifier().makeBinaryPredictions(TEST_SENTENCES).size());
+    }
+
+    @Test
+    @NonTransactional
+    public void testMakeFineGrainedPredicition() {
+        assertEquals(2, this.trainer.getClassifier().makeFineGrainedPredictions(TEST_SENTENCES).size());
+    }
+
     private File getTrimmedDefaultArffFile() {
         File fullDefaultFile = new File("src/main/resources/classifier/defaultTrainingData.arff");
         File trimmedDefaultFile = new File("defaultTrainingData.arff");
@@ -187,7 +201,7 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
             e.printStackTrace();
         }
         return fullDefaultFile;
-
     }
+
 
 }

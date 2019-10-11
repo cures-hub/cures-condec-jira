@@ -158,35 +158,6 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
         return extractedTrainingData;
     }
 
-    /*
-    public Map<ClassificationMeasure, Double> evaluateClassifier(Classifier classifier, List<ClassificationMeasure> measurements, List<PartOfJiraIssueText> sentences) throws Exception {
-        Map measurementResults = new HashMap();
-        // load validated data from database
-        Instances sentences = loadMekaTrainingDataFromJiraIssueText(true);
-        //predict classes
-        //int[] predictions = classifier.predictProbabilities(features);
-        //calculate measurements for each ClassificationMeasure in measurements
-        for(ClassificationMeasure measurement : measurements){
-         //   measurement.measure(truths, predictions);
-        }
-        //return results
-        return measurementResults;
-    }
-
-    public Map<ClassificationMeasure, Double> evaluateClassifier(Classifier classifier, List<ClassificationMeasure> measurements) throws Exception {
-        sente
-        return evaluateClassifier(classifier, measurements, sentences);
-    }
-
-
-    public Map<ClassificationMeasure, Double> evaluateClassifier(Classifier classifier) throws Exception {
-        //return results
-        List<ClassificationMeasure> defaultMeasurements = new ArrayList<>();
-        defaultMeasurements.add(new FMeasure());
-        return evaluateClassifier(classifier, defaultMeasurements);
-    }
-
-     */
 
     private List<String> extractStringsFromDke(List<DecisionKnowledgeElement> sentences) {
         List<String> extractedStringsFromPoji = new ArrayList<String>();
