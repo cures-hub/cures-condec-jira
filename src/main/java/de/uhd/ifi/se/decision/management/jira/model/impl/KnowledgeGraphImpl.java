@@ -92,12 +92,27 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 					.getPersistenceManager(project.getProjectKey(), node.getDocumentationLocation());
 			List<Link> links = manager.getLinks(node.getId());
 			for (Link link : links) {
-				if (!this.containsEdge(link)) {
+				if(this.getAllEdges().size() == 0) {
+					this.addEdge(link.getSourceElement(), link.getDestinationElement());
+				}
+				if(!containsLink(link)){
 					if(this.containsVertex(link.getDestinationElement()) && this.containsVertex(link.getSourceElement())) {
-						this.addEdge(link.getSourceElement(), link.getDestinationElement());
+							this.addEdge(link.getSourceElement(), link.getDestinationElement());
 					}
 				}
 			}
 		}
+	}
+
+	private boolean containsLink(Link containedEdge) {
+		if(this.getAllEdges().size() == 0) {
+			return false;
+		}
+		for(Link link: this.getAllEdges()) {
+			if(link.getId() == containedEdge.getId()){
+				return true;
+			}
+		}
+		return false;
 	}
 }

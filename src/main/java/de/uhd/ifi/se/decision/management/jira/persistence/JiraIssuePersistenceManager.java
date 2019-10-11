@@ -102,7 +102,8 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		if (element == null) {
 			return new ArrayList<IssueLink>();
 		}
-		return ComponentAccessor.getIssueLinkManager().getOutwardLinks(element.getId());
+		List<IssueLink> links = ComponentAccessor.getIssueLinkManager().getOutwardLinks(element.getId());
+		return links;
 	}
 
 	public static long insertLink(Link link, ApplicationUser user) {
@@ -121,9 +122,19 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 	@Override
 	public long getLinkId(DecisionKnowledgeElement source, DecisionKnowledgeElement destination) {
 		List<IssueLink> links = this.getInwardIssueLinks(source);
-		links.addAll(this.getOutwardIssueLinks(source));
+		long issueLinkId = 0;
+		issueLinkId = checkForIssueLinkId(links, source.getId(), destination.getId());
+		if(issueLinkId != 0){
+			return issueLinkId;
+		}
+		links = this.getOutwardIssueLinks(source);
+		issueLinkId = checkForIssueLinkId(links, source.getId(), destination.getId());
+		return issueLinkId;
+	}
+
+	private long checkForIssueLinkId(List<IssueLink> links, long sid, long did) {
 		for(IssueLink link: links) {
-			if(link.getSourceId() == source.getId() && link.getDestinationId() == destination.getId()){
+			if(link.getSourceId() == sid && link.getDestinationId() == did){
 				return link.getId();
 			}
 		}

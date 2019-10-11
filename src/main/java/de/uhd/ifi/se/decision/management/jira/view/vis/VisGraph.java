@@ -81,42 +81,23 @@ public class VisGraph {
 			if (iterNode instanceof DecisionKnowledgeElement) {
 				nodeElement = (DecisionKnowledgeElement) iterNode;
 			}
-			Link iterLink = iterator.getSpanningTreeEdge(iterNode);
-			if (iterLink != null) {
-				switch (iterLink.getType()) {
-					case "support":
-						if (nodeElement.getId() == iterLink.getSourceElement().getId()) {
-							this.nodes.add(new VisNode(nodeElement, "pro", isCollapsed(nodeElement), level + 2, cid));
-						} else {
-							this.nodes.add(new VisNode(nodeElement, isCollapsed(nodeElement), level, cid));
-						}
-						break;
-					case "attack":
-						if (nodeElement.getId() == iterLink.getSourceElement().getId()) {
-							this.nodes.add(new VisNode(nodeElement, "con", isCollapsed(nodeElement), level + 2, cid));
-						} else {
-							this.nodes.add(new VisNode(nodeElement, isCollapsed(nodeElement), level, cid));
-						}
-						break;
-					default:
-						this.nodes.add(new VisNode(nodeElement, isCollapsed(nodeElement), level, cid));
-						break;
-				}
-				this.edges.add(new VisEdge(iterLink));
-
-			} else {
-				this.nodes.add(new VisNode(element, isCollapsed(nodeElement), level, cid));
-			}
+			this.nodes.add(new VisNode(nodeElement, isCollapsed(nodeElement), level, cid));
 			//Check Depth
 			if (parentNode == null) {
 				parentNode = iterNode;
 			} else {
-				if (iterator.getParent(iterNode) != parentNode) {
+				Node parentNodeTmp = iterator.getParent(iterNode);
+				if (parentNodeTmp.getId() != parentNode.getId()) {
 					parentNode = iterator.getParent(iterNode);
 					level++;
 				}
 			}
 			cid++;
+		}
+		for(Link link: this.graph.getAllEdges()) {
+			if(this.elementsMatchingFilterCriteria.contains(link.getSourceElement()) && this.elementsMatchingFilterCriteria.contains(link.getDestinationElement())) {
+				this.edges.add(new VisEdge(link));
+			}
 		}
 	}
 
