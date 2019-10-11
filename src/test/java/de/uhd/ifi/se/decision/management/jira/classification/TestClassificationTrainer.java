@@ -5,13 +5,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,15 +24,11 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
  */
 public class TestClassificationTrainer extends TestSetUp {
 
-    private Preprocessor pp;
 
     @Before
     public void setUp() {
         init();
-        this.pp = new PreprocessorImpl(
-                new File(TestPreprocessorImpl.PATH + "lemmatizer.dict"),
-                new File(TestPreprocessorImpl.PATH + "token.bin"),
-                new File(TestPreprocessorImpl.PATH + "pos.bin"));
+        initClassifierPaths();
     }
 
     private DecisionKnowledgeElement createElement(KnowledgeType type, String summary) {
@@ -77,7 +71,7 @@ public class TestClassificationTrainer extends TestSetUp {
     @NonTransactional
     public void testClassificationTrainerSetTrainingData() {
         List<DecisionKnowledgeElement> trainingElements = getTrainingData();
-        ClassificationTrainer trainer = new OnlineClassificationTrainerImpl("TEST", pp);
+        ClassificationTrainer trainer = new OnlineClassificationTrainerImpl("TEST");
         trainer.setTrainingData(trainingElements);
         //assertNotNull(trainer.getInstances());
         assertTrue(trainer.train());
@@ -87,11 +81,11 @@ public class TestClassificationTrainer extends TestSetUp {
     @NonTransactional
     public void testClassificationTrainerFromArffFile() {
         List<DecisionKnowledgeElement> trainingElements = getTrainingData();
-        ClassificationTrainerARFF trainer = new OnlineClassificationTrainerImpl("TEST", trainingElements, pp);
+        ClassificationTrainerARFF trainer = new OnlineClassificationTrainerImpl("TEST", trainingElements);
         File file = trainer.saveTrainingFile(true);
         trainer.setTrainingFile(file);
         assertNotNull(trainer.getInstances());
-        trainer = new OnlineClassificationTrainerImpl("TEST", file.getName(), pp);
+        trainer = new OnlineClassificationTrainerImpl("TEST", file.getName());
         assertNotNull(trainer.getInstances());
         assertTrue(trainer.train());
         file.delete();
@@ -100,7 +94,7 @@ public class TestClassificationTrainer extends TestSetUp {
     @Test
     @NonTransactional
     public void testSaveArffFile() {
-        ClassificationTrainer trainer = new OnlineClassificationTrainerImpl("TEST", pp);
+        ClassificationTrainer trainer = new OnlineClassificationTrainerImpl("TEST");
         File file = trainer.saveTrainingFile(false);
         assertTrue(file.exists());
         file.delete();
@@ -116,8 +110,8 @@ public class TestClassificationTrainer extends TestSetUp {
     @Test
     @NonTransactional
     public void testDefaultArffFile() {
-        ClassificationTrainer trainer = new OnlineClassificationTrainerImpl(pp);
-        File luceneArffFile = getDefaultArffFile();
+        ClassificationTrainer trainer = new OnlineClassificationTrainerImpl();
+        File luceneArffFile = getTrimmedDefaultArffFile();
         assertTrue(luceneArffFile.exists());
         trainer.setTrainingFile(luceneArffFile);
         //assertNotNull(trainer.getInstances());
@@ -141,29 +135,48 @@ public class TestClassificationTrainer extends TestSetUp {
     @Test
     @NonTransactional
     public void testCopyDefaultTrainingDataToFile() {
-        assertFalse(ClassificationTrainer.copyDefaultTrainingDataToFile(new File("")).exists());
-        File luceneArffFile = getDefaultArffFile();
-        assertTrue(ClassificationTrainer.copyDefaultTrainingDataToFile(luceneArffFile).exists());
+        assertTrue(ClassificationTrainer.copyDefaultTrainingDataToFile().exists());
     }
 
     @Test
     @NonTransactional
     public void testTrainDefaultClassifier() {
-        // File luceneArffFile = getDefaultArffFile();
-        // assertTrue(ClassificationTrainer.trainClassifier(luceneArffFile));
-        assertFalse(ClassificationTrainer.trainDefaultClassifier());
+        File trainingFile = getTrimmedDefaultArffFile();
+        assertTrue(ClassificationTrainer.trainClassifier(trainingFile));
     }
 
-    private File getDefaultArffFile() {
-        File luceneArffFile = new File("src" + File.separator + "main" + File.separator + "resources" + File.separator
-                + "classifier" + File.separator + "defaultTrainingData.arff");
-        return luceneArffFile;
+    private File getTrimmedDefaultArffFile() {
+        File fullDefaultFile = new File("src/main/resources/classifier/defaultTrainingData.arff");
+        File trimmedDefaultFile = new File("defaultTrainingData.arff");
+
+        int numberOfLines = 25;
+
+        BufferedWriter writer = null;
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(fullDefaultFile));
+            writer = new BufferedWriter(new FileWriter(trimmedDefaultFile));
+
+            String currentLine;
+            int counter = 0;
+            while ((currentLine = reader.readLine()) != null && counter < numberOfLines) {
+                writer.write(currentLine + System.getProperty("line.separator"));
+                counter++;
+            }
+            writer.close();
+            reader.close();
+            return trimmedDefaultFile;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return fullDefaultFile;
+
     }
+
 
     @Test
     @NonTransactional
     public void testGetArffFiles() {
-        ClassificationTrainerARFF trainer = new OnlineClassificationTrainerImpl(pp);
+        ClassificationTrainerARFF trainer = new OnlineClassificationTrainerImpl();
         assertEquals(ArrayList.class, trainer.getTrainingFileNames().getClass());
     }
 

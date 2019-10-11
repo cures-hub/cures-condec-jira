@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.classification.preprocessing;
 
-import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.util.JiraHome;
 import opennlp.tools.lemmatizer.DictionaryLemmatizer;
 import opennlp.tools.lemmatizer.Lemmatizer;
 import opennlp.tools.postag.POSModel;
@@ -19,9 +20,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static de.uhd.ifi.se.decision.management.jira.ComponentGetter.getUrlOfClassifierFolder;
-
 public class PreprocessorImpl implements Preprocessor {
+
+    public static String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
+            .getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "classifier" + File.separator;
 
     private Tokenizer tokenizer;
     private Lemmatizer lemmatizer;
@@ -31,10 +33,13 @@ public class PreprocessorImpl implements Preprocessor {
     //private NameFinderME nameFinder;
     private Integer nGramN;
 
-    public PreprocessorImpl(File lemmatizerFile, File tokenizerFile, File posFile, File gloveFile) {
+    public PreprocessorImpl() {
+        File lemmatizerFile = new File(PreprocessorImpl.DEFAULT_DIR + "lemmatizer.dict");
+        File tokenizerFile = new File(PreprocessorImpl.DEFAULT_DIR + "token.bin");
+        File posFile = new File(PreprocessorImpl.DEFAULT_DIR + "pos.bin");
         this.nGramN = 3;
 
-        this.glove = PreTrainedGloveSingleton.getInstance(gloveFile);
+        this.glove = PreTrainedGloveSingleton.getInstance();
 
         try {
             InputStream lemmatizerModelIn = new FileInputStream(lemmatizerFile);
@@ -55,17 +60,6 @@ public class PreprocessorImpl implements Preprocessor {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-    }
-
-    public PreprocessorImpl(File lemmatizerFile, File tokenizerFile, File posFile) {
-        this(lemmatizerFile, tokenizerFile, posFile, new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "glove.6b.50d.csv"));
-    }
-
-    public PreprocessorImpl() {
-        this(new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "lemmatizer.dict"),
-                new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "token.bin"),
-                new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "pos.bin"));
         this.glove = PreTrainedGloveSingleton.getInstance();
 
     }
@@ -84,7 +78,7 @@ public class PreprocessorImpl implements Preprocessor {
     @Override
     public List<String> lemmatize(List<String> tokens) {
         try {
-            final List<String> lemmatizedTokens = Arrays.asList(this.lemmatizer.lemmatize(
+            List<String> lemmatizedTokens = Arrays.asList(this.lemmatizer.lemmatize(
                     tokens.toArray(new String[tokens.size()]),
                     this.posTags
             ));
@@ -94,8 +88,8 @@ public class PreprocessorImpl implements Preprocessor {
             // e.g.: tokens: {"jira" "does" "not" "work"}
             // --lemmatize--> {"O" "do" "not" "work"}
             // --next line returns--> {"jira" "do" "not" "work"}
-           return IntStream.range(0, lemmatizedTokens.size())
-                    .mapToObj(i -> lemmatizedTokens.get(i).equals("O")? tokens.get(i) : lemmatizedTokens.get(i))
+            return IntStream.range(0, lemmatizedTokens.size())
+                    .mapToObj(i -> lemmatizedTokens.get(i).equals("O") ? tokens.get(i) : lemmatizedTokens.get(i))
                     .collect(Collectors.toList());
 
 
@@ -129,6 +123,10 @@ public class PreprocessorImpl implements Preprocessor {
         return numberTokens;
     }
 
+    public String[] calculatePosTags(List<String> tokens){
+        return this.tagger.tag(Arrays.copyOf(tokens.toArray(), tokens.size(), String[].class));
+    }
+
 
     @Override
     public List preprocess(String sentence) {
@@ -141,7 +139,7 @@ public class PreprocessorImpl implements Preprocessor {
         List<String> tokens = this.tokenize(cleaned_sentence);
 
 
-        this.posTags = this.tagger.tag(Arrays.copyOf(tokens.toArray(), tokens.size(), String[].class));
+        this.posTags = this.calculatePosTags(tokens);
 
         /* TODO: if time is sufficient
         Span[] spans = this.nameFinder.find((String[]) tokens.toArray());
@@ -157,6 +155,10 @@ public class PreprocessorImpl implements Preprocessor {
         List<List<Double>> numberTokens = this.convertToNumbers(tokens);
 
         return this.generateNGram(numberTokens, this.nGramN);
+    }
+
+    public void setPosTags(String[] posTags) {
+        this.posTags = posTags;
     }
 }
 

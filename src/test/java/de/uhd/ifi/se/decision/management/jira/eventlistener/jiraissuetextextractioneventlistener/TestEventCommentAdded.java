@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import com.atlassian.activeobjects.external.ActiveObjects;
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -61,6 +64,10 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 	@Test
 	@NonTransactional
 	public void testRationaleIcon() {
+		//Delete the element that was still in the Database
+		// FIXME: there should be a more elegant way.
+		ActiveObjects ao = ComponentGetter.getActiveObjects();
+		ao.deleteWithSQL(PartOfJiraIssueTextInDatabase.class, "ID = 1");
 		Comment comment = createCommentAndTestWhetherExistent("(!)This is a very severe issue.",
 				"{issue}This is a very severe issue.{issue}");
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);

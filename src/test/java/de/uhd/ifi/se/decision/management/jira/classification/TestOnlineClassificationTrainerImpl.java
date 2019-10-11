@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
 import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -12,7 +11,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,12 +27,8 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
     @Before
     public void setUp() {
         init();
-        trainer = new OnlineClassificationTrainerImpl("TEST",  new PreprocessorImpl(
-                new File(TestPreprocessorImpl.PATH + "lemmatizer.dict"),
-                new File(TestPreprocessorImpl.PATH + "token.bin"),
-                new File(TestPreprocessorImpl.PATH + "pos.bin"),
-                new File(TestPreprocessorImpl.PATH + "glove.6b.50d.csv")
-        ));
+        initClassifierPaths();
+        trainer = new OnlineClassificationTrainerImpl("TEST");
         trainer.setTrainingData(getTrainingData());
     }
 
@@ -112,31 +107,15 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
     @Test
     @NonTransactional
     public void testDefaultArffFile() {
-        File luceneArffFile = getDefaultArffFile();
-        Assert.assertTrue(luceneArffFile.exists());
-        trainer.setTrainingFile(luceneArffFile);
+        File file = getTrimmedDefaultArffFile();
+        Assert.assertTrue(file.exists());
+        trainer.setTrainingFile(file);
     }
 
     @Test
     @NonTransactional
     public void testCopyDefaultTrainingDataToFile() {
-        assertFalse(ClassificationTrainer.copyDefaultTrainingDataToFile(new File("")).exists());
-        File luceneArffFile = getDefaultArffFile();
-        Assert.assertTrue(ClassificationTrainer.copyDefaultTrainingDataToFile(luceneArffFile).exists());
-    }
-
-    @Test
-    @NonTransactional
-    public void testTrainDefaultClassifier() {
-        // File luceneArffFile = getDefaultArffFile();
-        // assertTrue(OnlineClassificationTrainer.trainClassifier(luceneArffFile));
-        assertFalse(ClassificationTrainer.trainDefaultClassifier());
-    }
-
-    private File getDefaultArffFile() {
-        File luceneArffFile = new File("src" + File.separator + "main" + File.separator + "resources" + File.separator
-                + "classifier" + File.separator + "defaultTrainingData.arff");
-        return luceneArffFile;
+        assertTrue(ClassificationTrainer.copyDefaultTrainingDataToFile().exists());
     }
 
     @Test
@@ -185,5 +164,31 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
         assertNotNull(this.trainer.getInstances());
     }
 
+    private File getTrimmedDefaultArffFile() {
+        File fullDefaultFile = new File("src/main/resources/classifier/defaultTrainingData.arff");
+        File trimmedDefaultFile = new File("defaultTrainingData.arff");
+
+        int numberOfLines = 25;
+
+        BufferedWriter writer = null;
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(fullDefaultFile));
+            writer = new BufferedWriter(new FileWriter(trimmedDefaultFile));
+
+            String currentLine;
+            int counter = 0;
+            while ((currentLine = reader.readLine()) != null && counter < numberOfLines) {
+                writer.write(currentLine + System.getProperty("line.separator"));
+                counter++;
+            }
+            writer.close();
+            reader.close();
+            return trimmedDefaultFile;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return fullDefaultFile;
+
+    }
 
 }

@@ -1,12 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.eventlistener.jiraissuetextextractioneventlistener;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.classification.TestPreprocessorImpl;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
 import org.junit.Before;
 
 import com.atlassian.event.api.EventPublisher;
@@ -34,14 +30,9 @@ public abstract class TestSetUpEventListener extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
+		initClassifierPaths();
 		EventPublisher publisher = new MockEventPublisher();
-		listener = new ConDecEventListener(publisher,
-				new PreprocessorImpl(
-						new File(TestPreprocessorImpl.PATH + "lemmatizer.dict"),
-						new File(TestPreprocessorImpl.PATH + "token.bin"),
-						new File(TestPreprocessorImpl.PATH + "pos.bin"),
-						new File(TestPreprocessorImpl.PATH + "glove.6b.50d.csv")
-				));
+		listener = new ConDecEventListener(publisher);
 		jiraIssue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}

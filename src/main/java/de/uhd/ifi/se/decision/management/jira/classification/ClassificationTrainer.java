@@ -22,9 +22,9 @@ import org.slf4j.LoggerFactory;
  */
 public interface ClassificationTrainer {
 
-	public static final File DEFAULT_TRAINING_DATA = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff");
-
 	static final Logger LOGGER = LoggerFactory.getLogger(ClassificationTrainer.class);
+	public static File DEFAULT_TRAINING_DATA = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff");
+
 	/**
 	 * Trains the Classifier with the Data from the Database that was set and
 	 * validated from the user. Creates a new model Files that can be used to
@@ -128,7 +128,8 @@ public interface ClassificationTrainer {
 	 * 
 	 * @return updated file with default training content.
 	 */
-	public static File copyDefaultTrainingDataToFile(File file) {
+	public static File copyDefaultTrainingDataToFile() {
+		File file = ClassificationTrainerARFF.DEFAULT_TRAINING_DATA;
 		//TODO: check if directory exists (last folder) and create it if not!
 		File classfierDir = new File(DecisionKnowledgeClassifier.DEFAULT_DIR);
 		if (!classfierDir.exists()){

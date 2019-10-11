@@ -1,14 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.classification.preprocessing;
 
-import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 class PreTrainedGloveSingleton {
@@ -16,7 +11,7 @@ class PreTrainedGloveSingleton {
     private static PreTrainedGloveSingleton instance;
     private Map<String, Double[]> map;
     private Integer dimensions;
-    private static String GLOVE_FILE_PATH = DecisionKnowledgeClassifier.DEFAULT_DIR;
+    private static String GLOVE_FILE_PATH = PreprocessorImpl.DEFAULT_DIR;
 
     private PreTrainedGloveSingleton(File file) {
         this.dimensions = 50;

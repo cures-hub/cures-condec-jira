@@ -21,6 +21,8 @@ public abstract class ClassificationTrainerARFF implements ClassificationTrainer
     protected Instances instances;
     protected String projectKey;
 
+    public static File DEFAULT_TRAINING_DATA = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff");
+
 
     @Override
     public List<File> getTrainingFiles() {
