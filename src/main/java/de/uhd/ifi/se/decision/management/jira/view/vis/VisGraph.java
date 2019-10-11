@@ -70,6 +70,7 @@ public class VisGraph {
 		if (element == null || element.getProject() == null) {
 			return;
 		}
+
 		if (graph == null) {
 			graph = new KnowledgeGraphImpl(element.getProject().getProjectKey());
 		}
@@ -83,14 +84,16 @@ public class VisGraph {
 			}
 			this.nodes.add(new VisNode(nodeElement, isCollapsed(nodeElement), level, cid));
 			//Check Depth
+			Node parentNodeTmp = iterator.getParent(iterNode);
+			//Is Root Node and will be alone as Top Element
 			if (parentNode == null) {
 				parentNode = iterNode;
-			} else {
-				Node parentNodeTmp = iterator.getParent(iterNode);
-				if (parentNodeTmp.getId() != parentNode.getId()) {
-					parentNode = iterator.getParent(iterNode);
-					level++;
-				}
+				level++;
+			}
+			//New Parent Node means next level
+			if (parentNodeTmp != null && parentNodeTmp.getId() != parentNode.getId()) {
+				parentNode = parentNodeTmp;
+				level++;
 			}
 			cid++;
 		}
