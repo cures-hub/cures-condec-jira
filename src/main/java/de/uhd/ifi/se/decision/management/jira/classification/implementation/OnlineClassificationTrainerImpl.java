@@ -57,27 +57,6 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
         this.setTrainingData(trainingElements);
     }
 
-    public OnlineClassificationTrainerImpl(Preprocessor pp) {
-        super.directory = new File(DecisionKnowledgeClassifier.DEFAULT_DIR);
-        directory.mkdirs();
-        this.classifier = DecisionKnowledgeClassifierImpl.getInstance(pp);
-    }
-
-    public OnlineClassificationTrainerImpl(String projectKey, Preprocessor pp) {
-        this(projectKey);
-        this.classifier = DecisionKnowledgeClassifierImpl.getInstance(pp);
-    }
-
-    public OnlineClassificationTrainerImpl(String projectKey, List<DecisionKnowledgeElement> trainingElements, Preprocessor pp) {
-        this(projectKey, pp);
-        this.setTrainingData(trainingElements);
-
-    }
-
-    public OnlineClassificationTrainerImpl(String projectKey, String fileName, Preprocessor pp) {
-        this(projectKey, pp);
-        super.setInstances(getInstancesFromArffFile(fileName));
-    }
 
     @Override
     //is called after setting training-file

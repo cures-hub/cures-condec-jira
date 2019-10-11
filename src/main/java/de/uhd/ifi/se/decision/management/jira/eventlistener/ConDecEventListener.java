@@ -50,17 +50,6 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 		summarizationEventListener = new SummarizationEventListener();
 	}
 
-	public ConDecEventListener(EventPublisher eventPublisher, Preprocessor pp) {
-		this.eventPublisher = eventPublisher;
-		LOGGER.info("ConDec event listener object was created.");
-		webhookEventListener = new WebhookEventListener();
-		jiraIssueTextExtractionEventListener = new JiraIssueTextExtractionEventListener(
-				new ClassificationManagerForJiraIssueComments(pp)
-		);
-
-		summarizationEventListener = new SummarizationEventListener();
-	}
-
 	/**
 	 * Called when the plugin has been enabled.
 	 *

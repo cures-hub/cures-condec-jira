@@ -1,9 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
-import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 import de.uhd.ifi.se.decision.management.jira.classification.Classifier;
-
-import java.util.List;
 
 public class BinaryClassifierImplementation extends Classifier {
 
@@ -11,17 +8,6 @@ public class BinaryClassifierImplementation extends Classifier {
 
     public BinaryClassifierImplementation() {
         super(2);
-    }
-
-
-    public boolean predictIsKnowledge(Double[] feature) throws Exception {
-        // If the probability for being relevant is greater than 0.5, true is returned.
-        return this.isRelevant(ArrayUtils.toObject(super.predictProbabilities(feature)));
-    }
-
-    public boolean predictIsKnowledge(List<Double> feature) throws Exception {
-        // If the probability for being relevant is greater than 0.5, true is returned.
-        return this.predictIsKnowledge(feature.toArray(Double[]::new));
     }
 
 

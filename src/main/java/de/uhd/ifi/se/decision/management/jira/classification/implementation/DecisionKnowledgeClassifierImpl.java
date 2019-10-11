@@ -60,13 +60,6 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
         return instance;
     }
 
-    public static DecisionKnowledgeClassifier getInstance(Preprocessor pp) {
-        if (instance == null){
-            instance = new DecisionKnowledgeClassifierImpl(pp);
-        }
-        return instance;
-    }
-
     private void loadDefaultBinaryClassifier() {
         this.binaryClassifier = new BinaryClassifierImplementation();
         try {
@@ -114,16 +107,6 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
     }
 
     @Override
-    public void trainBinaryClassifier(Double[][] features, Integer[] labels) {
-        this.binaryClassifier.train(features, labels);
-    }
-
-    @Override
-    public void updateBinaryClassifier(Double[] feature, Integer label) {
-        this.binaryClassifier.train(feature, label);
-    }
-
-    @Override
     public void trainBinaryClassifier(List<List<Double>> features, List<Integer> labels) {
         this.binaryClassifier.train(features, labels);
 
@@ -160,19 +143,10 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
     }
 
     @Override
-    public void trainFineGrainedClassifier(Double[][] features, Integer[] labels) {
-        this.fineGrainedClassifier.train(features, labels);
-    }
-
-    @Override
     public void trainFineGrainedClassifier(List<List<Double>> features, List<Integer> labels) {
         this.fineGrainedClassifier.train(features, labels);
     }
 
-    @Override
-    public void updateFineGrainedClassifier(Double[] feature, Integer label) {
-        this.fineGrainedClassifier.train(feature, label);
-    }
 
     @Override
     public List<List<Double>> preprocess(String stringsToBePreprocessed) {

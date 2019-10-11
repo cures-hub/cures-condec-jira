@@ -50,12 +50,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		this.documentationLocation = DocumentationLocation.JIRAISSUETEXT;
 	}
 
-	public JiraIssueTextPersistenceManager(String projectKey, Preprocessor pp) {
-		this.projectKey = projectKey;
-		this.documentationLocation = DocumentationLocation.JIRAISSUETEXT;
-		classificationTrainer = new OnlineClassificationTrainerImpl(pp);
-	}
-
 	@Override
 	public boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user) {
 		if (id <= 0 || user == null) {

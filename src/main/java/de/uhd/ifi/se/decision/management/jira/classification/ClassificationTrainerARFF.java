@@ -115,15 +115,6 @@ public abstract class ClassificationTrainerARFF implements ClassificationTrainer
         return instances;
     }
 
-    public List<DecisionKnowledgeElement> loadTrainingDataFromJiraIssueText(boolean useOnlyValidatedData) {
-        JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
-        List<DecisionKnowledgeElement> partsOfText = manager.getUserValidatedPartsOfText(projectKey);
-        if (!useOnlyValidatedData) {
-            partsOfText.addAll(manager.getUnvalidatedPartsOfText(projectKey));
-        }
-        return partsOfText;
-    }
-
     @Override
     public File saveTrainingFile(boolean useOnlyValidatedData) {
         File arffFile = null;
@@ -256,7 +247,4 @@ public abstract class ClassificationTrainerARFF implements ClassificationTrainer
         return instance;
     }
 
-    protected void setInstances(Instances instances) {
-        this.instances = instances;
-    }
 }

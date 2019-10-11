@@ -29,11 +29,6 @@ public class FineGrainedClassifierImpl extends Classifier {
         return maxAt;
     }
 
-    public KnowledgeType predictKnowledgeType(List<Double> feature) throws Exception {
-        return this.predictKnowledgeType(feature.toArray(Double[]::new));
-    }
-
-
     public void train(Double[] feature, KnowledgeType label) {
         super.train(feature, mapKnowledgeTypeToIndex(label));
     }

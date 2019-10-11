@@ -29,16 +29,6 @@ public class ClassificationManagerForJiraIssueComments {
         this.classifierTrainer = new OnlineClassificationTrainerImpl();
     }
 
-    public ClassificationManagerForJiraIssueComments(Preprocessor pp) {
-        this.classifierTrainer = new OnlineClassificationTrainerImpl(pp);
-    }
-
-    public void classifyJiraIssueText(Issue issue) {
-        if (issue == null) {
-            return;
-        }
-    }
-
     public void classifyAllCommentsOfJiraIssue(Issue issue) {
         if (issue == null) {
             return;
