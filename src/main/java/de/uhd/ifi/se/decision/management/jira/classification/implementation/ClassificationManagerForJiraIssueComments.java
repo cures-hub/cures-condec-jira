@@ -1,19 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
-
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class to classify the text in JIRA issue comments as either irrelevant in

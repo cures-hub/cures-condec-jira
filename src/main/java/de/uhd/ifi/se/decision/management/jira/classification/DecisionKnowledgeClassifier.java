@@ -1,23 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import java.io.File;
-import java.util.List;
-import java.util.Map;
-
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.util.JiraHome;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.BinaryClassifierImplementation;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.FineGrainedClassifierImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.util.JiraHome;
-
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import meka.classifiers.multilabel.LC;
-import weka.classifiers.meta.FilteredClassifier;
-import weka.core.tokenizers.NGramTokenizer;
-import weka.core.tokenizers.Tokenizer;
-import weka.filters.unsupervised.attribute.StringToWordVector;
+import java.io.File;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Interface to identify decision knowledge in natural language texts using a

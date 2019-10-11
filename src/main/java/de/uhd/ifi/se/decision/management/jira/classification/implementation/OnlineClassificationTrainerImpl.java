@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 import de.uhd.ifi.se.decision.management.jira.classification.ClassificationTrainerARFF;
 import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;

@@ -70,8 +70,8 @@ public abstract class ClassificationTrainerARFF implements ClassificationTrainer
         return getInstancesFromArffFile(arffFile);
     }
 
-    public Instances getInstances(){
-        if (instances == null){
+    public Instances getInstances() {
+        if (instances == null) {
             this.instances = loadInstances();
         }
         return this.instances;
@@ -82,7 +82,7 @@ public abstract class ClassificationTrainerARFF implements ClassificationTrainer
 
         List<File> trainingFiles = getTrainingFiles();
         loadedInstances = new Instances(getInstancesFromArffFile(trainingFiles.get(0)));
-        for(File trainingFile : trainingFiles.subList(1, trainingFiles.size())){
+        for (File trainingFile : trainingFiles.subList(1, trainingFiles.size())) {
             loadedInstances.addAll(getInstancesFromArffFile(trainingFile));
         }
 

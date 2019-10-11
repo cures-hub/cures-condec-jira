@@ -1,12 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
-import com.atlassian.jira.util.NanoStopWatch;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.PolynomialKernelDouble;
 import smile.classification.SVM;
 import smile.math.kernel.MercerKernel;
 import weka.core.SerializationHelper;
-
 
 import java.io.File;
 import java.util.List;

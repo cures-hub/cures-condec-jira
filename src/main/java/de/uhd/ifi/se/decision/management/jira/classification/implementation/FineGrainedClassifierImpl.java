@@ -4,8 +4,6 @@ import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 import de.uhd.ifi.se.decision.management.jira.classification.Classifier;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-import java.util.List;
-
 public class FineGrainedClassifierImpl extends Classifier {
 
     public static final String DEFAULT_MODEL_NAME = "fineGrainedClassifier.model";
