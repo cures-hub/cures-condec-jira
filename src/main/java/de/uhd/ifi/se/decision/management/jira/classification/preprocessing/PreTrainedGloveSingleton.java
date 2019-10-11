@@ -11,7 +11,6 @@ class PreTrainedGloveSingleton {
     private static PreTrainedGloveSingleton instance;
     private Map<String, Double[]> map;
     private Integer dimensions;
-    private static String GLOVE_FILE_PATH = PreprocessorImpl.DEFAULT_DIR;
 
     private PreTrainedGloveSingleton(File file) {
         this.dimensions = 50;
@@ -37,7 +36,7 @@ class PreTrainedGloveSingleton {
 
 
     public static PreTrainedGloveSingleton getInstance() {
-        return PreTrainedGloveSingleton.getInstance(new File(GLOVE_FILE_PATH + "glove.6b.50d.csv"));
+        return PreTrainedGloveSingleton.getInstance(new File(PreprocessorImpl.DEFAULT_DIR + "glove.6b.50d.csv"));
     }
 
     // This method is private because at the moment only the 50D vector is used.

@@ -76,6 +76,10 @@ public abstract class TestSetUp {
     }
 
 
+    /**
+     * Adapts the paths for the files used for preprocessing and classification.
+     *
+     */
     public static void initClassifierPaths() {
         PreprocessorImpl.DEFAULT_DIR = "src/main/resources/classifier/";
         ClassificationTrainerARFF.DEFAULT_TRAINING_DATA = new File("src/main/resources/classifier/defaultTrainingData.arff");
