@@ -12,13 +12,6 @@ public class FineGrainedClassifierImpl extends Classifier {
         super(numClasses);
     }
 
-
-    public KnowledgeType predictKnowledgeType(Double[] feature) throws Exception {
-        Double[] probabilities = ArrayUtils.toObject(super.predictProbabilities(feature));
-        int maxAt = maxAtInArray(probabilities);
-        return this.mapIndexToKnowledgeType(maxAt);
-    }
-
     public int maxAtInArray(Double[] probabilities) {
         int maxAt = 0;
         for (int i = 0; i < probabilities.length; i++) {

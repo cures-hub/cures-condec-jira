@@ -69,5 +69,16 @@ public class TestDecisionKnowledgeClassifier extends TestSetUp {
         assertFalse(this.decisionKnowledgeClassifier.getBinaryClassifier().isRelevant(new Double[]{0.8, 0.2}));
     }
 
+    @Test
+    @NonTransactional
+    public void testMapKnowledgeTypeToIndex() {
+        assertEquals(Integer.valueOf(0), this.decisionKnowledgeClassifier.getFineGrainedClassifier().mapKnowledgeTypeToIndex(KnowledgeType.ALTERNATIVE));
+        assertEquals(Integer.valueOf(1), this.decisionKnowledgeClassifier.getFineGrainedClassifier().mapKnowledgeTypeToIndex(KnowledgeType.PRO));
+        assertEquals(Integer.valueOf(2), this.decisionKnowledgeClassifier.getFineGrainedClassifier().mapKnowledgeTypeToIndex(KnowledgeType.CON));
+        assertEquals(Integer.valueOf(3), this.decisionKnowledgeClassifier.getFineGrainedClassifier().mapKnowledgeTypeToIndex(KnowledgeType.DECISION));
+        assertEquals(Integer.valueOf(4), this.decisionKnowledgeClassifier.getFineGrainedClassifier().mapKnowledgeTypeToIndex(KnowledgeType.ISSUE));
+        assertEquals(Integer.valueOf(-1), this.decisionKnowledgeClassifier.getFineGrainedClassifier().mapKnowledgeTypeToIndex(KnowledgeType.OTHER));
+    }
+
 
 }

@@ -47,29 +47,9 @@ public interface DecisionKnowledgeClassifier {
 
 	List<List<Double>> preprocess(String stringsToBePreprocessed);
 
-	List<List<Double>> preprocess(List<String> stringsToBePreprocessed);
-
 	Map<String, List> preprocess(List<String> stringsToBePreprocessed, List labels);
 
-
-
-	/**
-	 * Set the classifier for binary prediction.
-	 * 
-	 * @param binaryClassifier
-	 *            classifier for binary prediction.
-	 */
-	void setBinaryClassifier(BinaryClassifierImplementation binaryClassifier);
-
 	BinaryClassifierImplementation getBinaryClassifier();
-
-	/**
-	 * Set the classifier for fine grained prediction.
-	 *
-	 * @param fineGrainedClassifier
-	 *            classifier for fine grained prediction.
-	 */
-	void setFineGrainedClassifier(FineGrainedClassifierImpl fineGrainedClassifier);
 
 	FineGrainedClassifierImpl getFineGrainedClassifier();
 
