@@ -1,7 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.Map;
 import java.util.Set;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import org.jgrapht.Graph;
 
 /**
@@ -22,6 +24,8 @@ public interface KnowledgeGraph extends Graph<Node, Link> {
 	 * @return a part of the project graph as as new graph
 	 */
 	KnowledgeGraph getSubGraph(Node subRootNode);
+
+	Map<DecisionKnowledgeElement, Link> getAdjacentElementsAndLinks(DecisionKnowledgeElement element);
 
 	/**
 	 * @return all nodes in the graph

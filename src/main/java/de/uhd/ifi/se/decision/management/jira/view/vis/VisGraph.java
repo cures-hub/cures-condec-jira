@@ -7,7 +7,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.jgrapht.traverse.BreadthFirstIterator;
 

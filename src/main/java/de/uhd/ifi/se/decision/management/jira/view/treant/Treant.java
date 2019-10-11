@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.treant;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,11 +14,9 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryType;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Graph;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
+import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 
 /**
  * Creates Treant content
@@ -31,7 +30,8 @@ public class Treant {
 	@XmlElement
 	private TreantNode nodeStructure;
 
-	private Graph graph;
+	private KnowledgeGraph graph;
+	private List<DecisionKnowledgeElement> elementsMatchingFilterCriteria;
 	private boolean isHyperlinked;
 
 	public Treant() {
@@ -49,12 +49,14 @@ public class Treant {
 			boolean isHyperlinked) {
 		FilterExtractor filterExtractor = new FilterExtractor(projectKey, user, query);
 		if (filterExtractor.getQueryHandler() != null
-				&& filterExtractor.getQueryHandler().getQueryType() != JiraQueryType.OTHER) {
-			this.graph = new GraphImplFiltered(projectKey, elementKey, filterExtractor);
+				    && filterExtractor.getQueryHandler().getQueryType() != JiraQueryType.OTHER) {
+			this.elementsMatchingFilterCriteria = filterExtractor.getAllElementsMatchingQuery();
 		} else {
-			this.graph = new GraphImpl(projectKey, elementKey);
+			this.elementsMatchingFilterCriteria = filterExtractor.getAllElementsMatchingCompareFilter();
 		}
-		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
+		this.graph = new KnowledgeGraphImpl(projectKey);
+		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
+		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
 		this.setHyperlinked(isHyperlinked);
@@ -70,10 +72,9 @@ public class Treant {
 		}
 
 		if (graph == null) {
-			graph = new GraphImpl(element);
+			graph = new KnowledgeGraphImpl(element.getProject().getProjectKey());
 		}
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getAdjacentElementsAndLinks(element);
-
 		boolean isCollapsed = false;
 		if (currentDepth == depth && childrenAndLinks.size() != 0) {
 			isCollapsed = true;

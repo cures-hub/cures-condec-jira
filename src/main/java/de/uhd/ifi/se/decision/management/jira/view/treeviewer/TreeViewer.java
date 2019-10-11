@@ -14,17 +14,14 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.Graph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import org.jgrapht.traverse.BreadthFirstIterator;
 
 /**
  * Creates tree viewer content
@@ -43,7 +40,7 @@ public class TreeViewer {
 	@XmlElement
 	protected Set<Data> data;
 
-	protected Graph graph;
+	protected KnowledgeGraph graph;
 	private List<String> ids;
 	private long index;
 
@@ -148,7 +145,7 @@ public class TreeViewer {
 		if (decisionKnowledgeElement == null) {
 			return new Data();
 		}
-		this.graph = new GraphImpl(decisionKnowledgeElement);
+		this.graph = new KnowledgeGraphImpl(decisionKnowledgeElement.getProject().getProjectKey());
 		Data data = new Data(decisionKnowledgeElement);
 		data = this.makeIdUnique(data);
 		List<Data> children = this.getChildren(decisionKnowledgeElement);
@@ -158,18 +155,27 @@ public class TreeViewer {
 
 	protected List<Data> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Data> children = new ArrayList<>();
-		Map<DecisionKnowledgeElement, Link> childrenAndLinks = this.graph
-				.getAdjacentElementsAndLinks(decisionKnowledgeElement);
-
-		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-			Data dataChild = new Data(childAndLink.getKey(), childAndLink.getValue());
-			if (dataChild.getNode().getProject() != null && dataChild.getNode().getProject().getProjectKey()
-					.equals(decisionKnowledgeElement.getProject().getProjectKey())) {
-				dataChild = this.makeIdUnique(dataChild);
-				List<Data> childrenOfElement = this.getChildren(childAndLink.getKey());
-				dataChild.setChildren(childrenOfElement);
-				children.add(dataChild);
+		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<>(graph, decisionKnowledgeElement);
+		iterator.next();
+		while (iterator.hasNext()) {
+			Node iterNode = iterator.next();
+			Node parentNode = iterator.getParent(iterNode);
+			if(parentNode.getId() == decisionKnowledgeElement.getId()){
+				DecisionKnowledgeElement nodeElement = null;
+				if (iterNode instanceof DecisionKnowledgeElement) {
+					nodeElement = (DecisionKnowledgeElement) iterNode;
+				}
+				Link edge = this.graph.getEdge(parentNode, iterNode);
+				Data dataChild = new Data(nodeElement, edge);
+				if (dataChild.getNode().getProject() != null && dataChild.getNode().getProject().getProjectKey()
+						                                                .equals(decisionKnowledgeElement.getProject().getProjectKey())) {
+					dataChild = this.makeIdUnique(dataChild);
+					List<Data> childrenOfElement = this.getChildren(nodeElement);
+					dataChild.setChildren(childrenOfElement);
+					children.add(dataChild);
+				}
 			}
+
 		}
 		return children;
 	}

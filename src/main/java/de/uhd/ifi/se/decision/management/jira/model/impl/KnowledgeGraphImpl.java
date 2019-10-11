@@ -53,6 +53,25 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	}
 
 	@Override
+	public Map<DecisionKnowledgeElement, Link> getAdjacentElementsAndLinks(DecisionKnowledgeElement element) {
+		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<>(this, element);
+		//Use First element as parent node
+		Node parentNode = iterator.next();
+		Map<DecisionKnowledgeElement, Link> childrenAndLinks = new HashMap<>();
+		while (iterator.hasNext()) {
+			Node iterNode = iterator.next();
+			if (iterator.getParent(iterNode).getId() == parentNode.getId()) {
+				if (iterNode instanceof DecisionKnowledgeElement) {
+					DecisionKnowledgeElement nodeElement = (DecisionKnowledgeElement) iterNode;
+					childrenAndLinks.put(nodeElement, this.getEdge(parentNode, iterNode));
+				}
+
+			}
+		}
+		return childrenAndLinks;
+	}
+
+	@Override
 	public Set<Node> getAllNodes() {
 		return this.vertexSet();
 	}

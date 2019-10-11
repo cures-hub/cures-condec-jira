@@ -3,7 +3,10 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
+import org.jgrapht.traverse.BreadthFirstIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,12 +15,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.JiraQueryHandlerImpl;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
@@ -65,7 +63,10 @@ public class FilterExtractor {
 			if (!addedElements.contains(current)) {
 				// if not get the connected tree
 				String currentElementKey = current.getKey();
-				List<DecisionKnowledgeElement> filteredElements = getElementsInGraph(currentElementKey);
+				AbstractPersistenceManager persistenceManager =
+						AbstractPersistenceManager.getDefaultPersistenceStrategy(this.filterSettings.getProjectKey());
+				DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(currentElementKey);
+				List<DecisionKnowledgeElement> filteredElements = getElementsInGraph(element);
 				// add each element to the list
 				addedElements.addAll(filteredElements);
 				// add list to the big list
@@ -75,14 +76,17 @@ public class FilterExtractor {
 		return elementsQueryLinked;
 	}
 
-	private List<DecisionKnowledgeElement> getElementsInGraph(String elementKey) {
-		Graph graph;
-		if (queryHandler.getQueryType() != JiraQueryType.OTHER) {
-			graph = new GraphImplFiltered(filterSettings.getProjectKey(), elementKey, this);
-		} else {
-			graph = new GraphImpl(filterSettings.getProjectKey(), elementKey);
+	private List<DecisionKnowledgeElement> getElementsInGraph(DecisionKnowledgeElement element) {
+		KnowledgeGraph graph = new KnowledgeGraphImpl(filterSettings.getProjectKey());
+		List<DecisionKnowledgeElement> elements = new ArrayList<>();
+		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<>(graph, element);
+		while (iterator.hasNext()) {
+			Node node = iterator.next();
+			if(node instanceof DecisionKnowledgeElement) {
+				elements.add((DecisionKnowledgeElement) node);
+			}
 		}
-		return graph.getAllElements();
+		return elements;
 	}
 
 	// Problem Filtered Issues from sideFilter will be filterd again
