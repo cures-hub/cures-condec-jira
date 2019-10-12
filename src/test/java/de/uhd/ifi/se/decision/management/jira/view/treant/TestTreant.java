@@ -2,11 +2,9 @@ package de.uhd.ifi.se.decision.management.jira.view.treant;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,6 +13,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
@@ -155,7 +154,7 @@ public class TestTreant extends TestSetUp {
 				.getDecisionKnowledgeElement(sentences.get(0).getJiraIssueId());
 		TreantNode nodeStructure = treant.createNodeStructure(element, null, 4, 0);
 		assertEquals(TreantNode.class, nodeStructure.getClass());
-		assertTrue(nodeStructure.getChildren().size() == 0);
+		assertEquals(1, nodeStructure.getChildren().size());
 	}
 
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {

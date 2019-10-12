@@ -1,11 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.model.impl;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
-import org.jgrapht.Graph;
-import org.jgrapht.graph.AsSubgraph;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
+import org.jgrapht.traverse.BreadthFirstIterator;
+import org.jgrapht.traverse.DepthFirstIterator;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -13,8 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import org.jgrapht.traverse.BreadthFirstIterator;
-import org.jgrapht.traverse.DepthFirstIterator;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> implements KnowledgeGraph {
 
@@ -30,7 +33,7 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 
 	public KnowledgeGraphImpl(DecisionKnowledgeProject project, Node rootNode) {
 		super(LinkImpl.class);
-		this.rootNode = rootNode;
+		this.setRootNode(rootNode);
 		this.project = project;
 	}
 
@@ -40,7 +43,7 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		Iterator<Node> iterator = new BreadthFirstIterator<>(this);
 		while (iterator.hasNext()) {
 			Node iterNode = iterator.next();
-			if(iterNode.getId() == subRootNode.getId()){
+			if (iterNode.getId() == subRootNode.getId()) {
 				Iterator<Node> subIterator = new DepthFirstIterator<>(this, iterNode);
 				while (subIterator.hasNext()) {
 					Node subNodeIt = subIterator.next();
@@ -55,7 +58,7 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	@Override
 	public Map<DecisionKnowledgeElement, Link> getAdjacentElementsAndLinks(DecisionKnowledgeElement element) {
 		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<>(this, element);
-		//Use First element as parent node
+		// Use First element as parent node
 		Node parentNode = iterator.next();
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = new HashMap<>();
 		while (iterator.hasNext()) {
@@ -86,23 +89,23 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		addEdges();
 	}
 
-	private List getElementsInProject() {
-		AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(project.getProjectKey());
-		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
-		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(project.getProjectKey());
-		elements.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
-		return elements;
-	}
-
 	private void addNodes() {
-		List<Node> nodesList = getElementsInProject();
-		ListIterator<Node> iterator = nodesList.listIterator();
+		List<DecisionKnowledgeElement> nodesList = getElementsInProject();
+		ListIterator<DecisionKnowledgeElement> iterator = nodesList.listIterator();
 		while (iterator.hasNext()) {
 			Node node = iterator.next();
-			if(!this.containsVertex(node)){
-				this.addVertex(node);
-			}
+			this.addVertex(node);
 		}
+	}
+
+	private List<DecisionKnowledgeElement> getElementsInProject() {
+		AbstractPersistenceManager strategy = AbstractPersistenceManager
+				.getDefaultPersistenceStrategy(project.getProjectKey());
+		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
+		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
+				project.getProjectKey());
+		elements.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
+		return elements;
 	}
 
 	private void addEdges() {
@@ -111,27 +114,18 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 					.getPersistenceManager(project.getProjectKey(), node.getDocumentationLocation());
 			List<Link> links = manager.getLinks(node.getId());
 			for (Link link : links) {
-				if(this.getAllEdges().size() == 0) {
+				if (this.containsVertex(link.getDestinationElement()) && this.containsVertex(link.getSourceElement())) {
 					this.addEdge(link.getSourceElement(), link.getDestinationElement());
-				}
-				if(!containsLink(link)){
-					if(this.containsVertex(link.getDestinationElement()) && this.containsVertex(link.getSourceElement())) {
-							this.addEdge(link.getSourceElement(), link.getDestinationElement());
-					}
 				}
 			}
 		}
 	}
 
-	private boolean containsLink(Link containedEdge) {
-		if(this.getAllEdges().size() == 0) {
-			return false;
-		}
-		for(Link link: this.getAllEdges()) {
-			if(link.getId() == containedEdge.getId()){
-				return true;
-			}
-		}
-		return false;
+	public Node getRootNode() {
+		return rootNode;
+	}
+
+	public void setRootNode(Node rootNode) {
+		this.rootNode = rootNode;
 	}
 }

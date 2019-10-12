@@ -3,17 +3,21 @@ package de.uhd.ifi.se.decision.management.jira.model.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.model.*;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLink;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Model class for links between decision knowledge elements
@@ -26,8 +30,9 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	private DecisionKnowledgeElement target;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(LinkImpl.class);
+	private static final long serialVersionUID = 1L;
 
-	public LinkImpl(){
+	public LinkImpl() {
 		super();
 	}
 
@@ -86,22 +91,20 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	public long getId() {
 		DocumentationLocation sourceLocation = this.getSourceElement().getDocumentationLocation();
 		DocumentationLocation destLocation = this.getDestinationElement().getDocumentationLocation();
-		if(id == 0) {
-			if(sourceLocation != destLocation) {
-					if(sourceLocation == DocumentationLocation.JIRAISSUETEXT) {
-						AbstractPersistenceManager manager =
-								AbstractPersistenceManager.getPersistenceManager(this.getSourceElement().getProject().getProjectKey(),
-										sourceLocation.getIdentifier());
-						id = manager.getLinkId(this.getSourceElement(), this.getDestinationElement());
-					}
-					if(destLocation == DocumentationLocation.JIRAISSUETEXT) {
-						AbstractPersistenceManager manager =
-								AbstractPersistenceManager.getPersistenceManager(this.getDestinationElement().getProject().getProjectKey(),
-										destLocation.getIdentifier());
-						id = manager.getLinkId(this.getSourceElement(), this.getDestinationElement());
-					}
+		if (id == 0) {
+			if (sourceLocation != destLocation) {
+				if (sourceLocation == DocumentationLocation.JIRAISSUETEXT) {
+					AbstractPersistenceManager manager = AbstractPersistenceManager.getPersistenceManager(
+							this.getSourceElement().getProject().getProjectKey(), sourceLocation.getIdentifier());
+					id = manager.getLinkId(this.getSourceElement(), this.getDestinationElement());
+				}
+				if (destLocation == DocumentationLocation.JIRAISSUETEXT) {
+					AbstractPersistenceManager manager = AbstractPersistenceManager.getPersistenceManager(
+							this.getDestinationElement().getProject().getProjectKey(), destLocation.getIdentifier());
+					id = manager.getLinkId(this.getSourceElement(), this.getDestinationElement());
+				}
 			} else {
-				id =this.getSourceElement().getProject().getPersistenceStrategy().getLinkId(this.getSourceElement(),
+				id = this.getSourceElement().getProject().getPersistenceStrategy().getLinkId(this.getSourceElement(),
 						this.getDestinationElement());
 			}
 		}
@@ -142,7 +145,7 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 
 	@Override
 	public DecisionKnowledgeElement getSourceElement() {
-		if(source == null) {
+		if (source == null) {
 			return (DecisionKnowledgeElement) super.getSource();
 		}
 		return source;
@@ -170,7 +173,7 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 
 	@Override
 	public DecisionKnowledgeElement getDestinationElement() {
-		if(target == null) {
+		if (target == null) {
 			return (DecisionKnowledgeElement) super.getTarget();
 		}
 		return target;
@@ -250,8 +253,7 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	public String toString() {
 		String sourceElementIdPrefix = DocumentationLocation.getIdentifier(source);
 		String destinationElementIdPrefix = DocumentationLocation.getIdentifier(target);
-		return sourceElementIdPrefix + source.getId() + " to " + destinationElementIdPrefix
-				+ target.getId();
+		return sourceElementIdPrefix + source.getId() + " to " + destinationElementIdPrefix + target.getId();
 	}
 
 	@Override
@@ -272,8 +274,8 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 		DocumentationLocation documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
 		if (this.target.getDocumentationLocation() != documentationLocation) {
-			this.target = AbstractPersistenceManager
-					.getDecisionKnowledgeElement(this.target.getId(), documentationLocation);
+			this.target = AbstractPersistenceManager.getDecisionKnowledgeElement(this.target.getId(),
+					documentationLocation);
 		}
 		this.getDestinationElement().setDocumentationLocation(documentationLocation);
 	}
@@ -292,7 +294,7 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 
 	@Override
 	public Node getSource() {
-		if(super.getSource() == null) {
+		if (super.getSource() == null) {
 			return this.source;
 		}
 		return (Node) super.getSource();
@@ -300,10 +302,10 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 
 	@Override
 	public Node getTarget() {
-		if(super.getTarget() == null) {
+		if (super.getTarget() == null) {
 			return target;
 		}
-		return (Node)super.getTarget();
+		return (Node) super.getTarget();
 	}
 
 	@Override

@@ -1,10 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -29,20 +27,20 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetNodes() {
-		assertEquals(8, graph.getAllNodes().size(), 0.0);
+		assertEquals(8, graph.getAllNodes().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetEdges() {
-		assertEquals(8, graph.getAllEdges().size(), 0.0);
+		assertEquals(8, graph.getAllEdges().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetSubGraph() {
 		KnowledgeGraph compareGraph = graph.getSubGraph(element);
-		assertEquals(5, compareGraph.vertexSet().size(), 0.0);
+		assertEquals(5, compareGraph.vertexSet().size());
 	}
 
 }

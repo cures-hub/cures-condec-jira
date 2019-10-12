@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.treant;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +13,9 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryType;
-import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 
@@ -31,7 +32,6 @@ public class Treant {
 	private TreantNode nodeStructure;
 
 	private KnowledgeGraph graph;
-	private List<DecisionKnowledgeElement> elementsMatchingFilterCriteria;
 	private boolean isHyperlinked;
 
 	public Treant() {
@@ -49,13 +49,14 @@ public class Treant {
 			boolean isHyperlinked) {
 		FilterExtractor filterExtractor = new FilterExtractor(projectKey, user, query);
 		if (filterExtractor.getQueryHandler() != null
-				    && filterExtractor.getQueryHandler().getQueryType() != JiraQueryType.OTHER) {
-			this.elementsMatchingFilterCriteria = filterExtractor.getAllElementsMatchingQuery();
+				&& filterExtractor.getQueryHandler().getQueryType() != JiraQueryType.OTHER) {
+			filterExtractor.getAllElementsMatchingQuery();
 		} else {
-			this.elementsMatchingFilterCriteria = filterExtractor.getAllElementsMatchingCompareFilter();
+			filterExtractor.getAllElementsMatchingCompareFilter();
 		}
 		this.graph = new KnowledgeGraphImpl(projectKey);
-		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
+		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager
+				.getDefaultPersistenceStrategy(projectKey);
 		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
