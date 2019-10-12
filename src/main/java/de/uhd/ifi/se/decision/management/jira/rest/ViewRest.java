@@ -279,24 +279,40 @@ public class ViewRest {
 		return Response.ok(new FilterSettingsImpl(projectKey, searchTerm, user)).build();
 	}
 
-	@Path("/getMatrixData")
+	@Path("/getDecisionMatrix")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getMatrixData(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("documentationLocation") String documentationLocation) {
+	public Response getDecisionMatrix(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
+		List<DecisionKnowledgeElement> decisions = getDecisionData(projectKey);
+		Matrix matrix = new Matrix(projectKey, decisions);
+		return Response.ok(matrix).build();
+    }
 
+	@Path("/getDecisionGraph")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getDecisionGraph(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		List<DecisionKnowledgeElement> decisions = getDecisionData(projectKey);
+		VisGraph graph = new VisGraph(decisions, projectKey);
+		return Response.ok(graph).build();
+	}
+
+	private List<DecisionKnowledgeElement> getDecisionData(String projectKey) {
 		AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
 		List<DecisionKnowledgeElement> decisions = strategy.getDecisionKnowledgeElements(KnowledgeType.DECISION);
 
 		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(projectKey);
 		decisions.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements(KnowledgeType.DECISION));
-
-        Matrix matrix = new Matrix(projectKey, decisions);
-        return Response.ok(matrix).build();
-    }
+		return decisions;
+	}
 
 	private String getProjectKey(String elementKey) {
 		return elementKey.split("-")[0];

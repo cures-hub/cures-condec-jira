@@ -24,8 +24,7 @@
 	ConDecRelationshipPage.prototype.buildDecisionGraph = function() {
 		console.log("ConDec build Decision Relationship Graph");
 
-		conDecAPI.getCompareVis(-1, -1,"", ["Decision"],
-			conDecAPI.knowledgeStatus, function (data) {
+		conDecAPI.getDecisionGraph(function (data) {
 			var coloredEdges = [];
 		    for (var e in data.edges) {
 		            data.edges[e].color = {
@@ -44,11 +43,29 @@
 
 				var options = {
 					edges: {
-						arrows: "to"
+						arrows: "to",
+						length: 200
 					},
                     layout : {
                         randomSeed : 228332
-                    }
+                    },
+					manipulation: {
+						enabled: true,
+						addNode: function(data, callback) {
+							conDecVis.addNode(data, callback);
+						},
+						deleteNode: function(data, callback) {
+							conDecVis.deleteNode(data, callback);
+						},
+						editNode: false,
+						addEdge: function (data, callback) {
+							conDecVis.addEdgeWithType(data, callback);
+						},
+						deleteEdge: function(data, callback) {
+							conDecVis.deleteEdge(data, dataset, callback);
+						},
+						editEdge: false
+					}
 				};
 
 				var graphNetwork = new vis.Network(graphContainer, dataset, options);
@@ -58,6 +75,10 @@
 				});
 			});
 	};
+
+	ConDecRelationshipPage.prototype.updateView = function() {
+		conDecRelationshipPage.buildDecisionGraph();
+	}
 
 	/*
 	 * Init Helpers

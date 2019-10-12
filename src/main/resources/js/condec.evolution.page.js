@@ -20,7 +20,7 @@
 			conDecVis = _conDecVis;
 			completeKnowledgeStatus = _conDecAPI.knowledgeStatus;
 			completeKnowledgeStatus = completeKnowledgeStatus.concat(_conDecAPI.issueStatus);
-			conDecObservable.subscribe(this);
+			//conDecObservable.subscribe(this);
 			return true;
 		}
 		return false;

@@ -54,6 +54,12 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 		this.documentationLocation = documentationLocation;
 	}
 
+	public DecisionKnowledgeElementImpl(long id, String projectKey, String documentationLocation) {
+		this.id = id;
+		this.project = new DecisionKnowledgeProjectImpl(projectKey);
+		this.documentationLocation = DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation);
+	}
+
 	public DecisionKnowledgeElementImpl(long id, String summary, String description, String type, String projectKey,
 			String key, String documentationLocation) {
 		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key,

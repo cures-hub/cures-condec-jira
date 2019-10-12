@@ -24,11 +24,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
@@ -94,6 +90,29 @@ public class KnowledgeRest {
 				documentationLocation);
 		List<DecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = persistenceManager.getUnlinkedElements(id);
 		return Response.ok(unlinkedDecisionKnowledgeElements).build();
+	}
+
+	@Path("/createUnlinkedDecisionKnowledgeElement")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response createUnlinkedDecisionKnowledgeElement(@Context HttpServletRequest request,
+												   DecisionKnowledgeElement element) {
+		if (element == null || request == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"Creation of decision knowledge element failed due to a bad request (element or request is null)."))
+					.build();
+		}
+		ApplicationUser user = AuthenticationManager.getUser(request);
+
+		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(element);
+		DecisionKnowledgeElement newElement = persistenceManager.insertDecisionKnowledgeElement(element, user);
+
+		if (newElement == null) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
+		}
+
+		return Response.status(Status.OK).entity(newElement).build();
 	}
 
 	@Path("/createDecisionKnowledgeElement")
@@ -207,29 +226,27 @@ public class KnowledgeRest {
 	@Path("/createLink")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createLink(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("knowledgeTypeOfChild") String knowledgeTypeOfChild, @QueryParam("idOfParent") long idOfParent,
-			@QueryParam("documentationLocationOfParent") String documentationLocationOfParent,
-			@QueryParam("idOfChild") long idOfChild,
-			@QueryParam("documentationLocationOfChild") String documentationLocationOfChild) {
+	public Response createLink(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("knowledgeTypeOfChild") String knowledgeTypeOfChild, @QueryParam("idOfParent") long idOfParent,
+							   @QueryParam("documentationLocationOfParent") String documentationLocationOfParent,
+							   @QueryParam("idOfChild") long idOfChild,
+							   @QueryParam("documentationLocationOfChild") String documentationLocationOfChild, @QueryParam("linkTypeName") String linkTypeName) {
 		if (request == null || projectKey == null || idOfChild <= 0 || idOfParent <= 0) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Link could not be created due to a bad request.")).build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
-		parentElement.setId(idOfParent);
-		parentElement.setDocumentationLocation(documentationLocationOfParent);
-		parentElement.setProject(projectKey);
+		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(idOfParent, projectKey, documentationLocationOfParent);
+		DecisionKnowledgeElement childElement = new DecisionKnowledgeElementImpl(idOfChild, projectKey, documentationLocationOfChild);
 
-		DecisionKnowledgeElement childElement = new DecisionKnowledgeElementImpl();
-		childElement.setId(idOfChild);
-		childElement.setDocumentationLocation(documentationLocationOfChild);
-		childElement.setType(knowledgeTypeOfChild);
-		childElement.setProject(projectKey);
-
-		Link link = Link.instantiateDirectedLink(parentElement, childElement);
+		Link link;
+		if (linkTypeName == null) {
+			childElement.setType(knowledgeTypeOfChild);
+			link = Link.instantiateDirectedLink(parentElement, childElement);
+		} else {
+			LinkType linkType = LinkType.getLinkType(linkTypeName);
+			link = Link.instantiateDirectedLink(parentElement, childElement, linkType);
+		}
 		long linkId = AbstractPersistenceManager.insertLink(link, user);
 		if (linkId == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)

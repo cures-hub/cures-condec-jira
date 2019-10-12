@@ -35,51 +35,51 @@ public class TestCreateLink extends TestSetUp {
 	@Test
 	public void testRequestFilledProjectKeyFilledChildElementFilledParentElementFilled() {
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createLink(request, "TEST", "Decision", 4, "i", 1, "i").getStatus());
+				knowledgeRest.createLink(request, "TEST", "Decision", 4, "i", 1, "i", null).getStatus());
 	}
 
 	@Test
 	public void testRequestFilledProjectKeyFilledChildKnowledgeTypeNullParentElementFilled() {
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createLink(request, "TEST", null, 4, "i", 1, "i").getStatus());
+				knowledgeRest.createLink(request, "TEST", null, 4, "i", 1, "i", null).getStatus());
 	}
 
 	@Test
 	public void testRequestFilledProjectKeyFilledChildElementFilledParentElementFilledDocumentationLocationUnknown() {
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createLink(request, "TEST", "Decision", 4, "", 1, "").getStatus());
+				knowledgeRest.createLink(request, "TEST", "Decision", 4, "", 1, "", null).getStatus());
 	}
 
 	@Test
 	@NonTransactional
 	public void testRequestFilledProjectKeyFilledChildElementFilledParentElementFilledDocumentationLocationJiraIssueComments() {
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createLink(request, "TEST", "Decision", 4, "s", 1, "s").getStatus());
+				knowledgeRest.createLink(request, "TEST", "Decision", 4, "s", 1, "s", null).getStatus());
 	}
 
 	@Test
 	@NonTransactional
 	public void testRequestFilledProjectKeyFilledChildElementFilledParentElementFilledDocumentationLocationDiffer() {
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createLink(request, "TEST", "Decision", 4, "i", 3, "s").getStatus());
+				knowledgeRest.createLink(request, "TEST", "Decision", 4, "i", 3, "s", null).getStatus());
 	}
 
 	@Test
 	public void testRequestNullProjectKeyNullChildElementFilledParentElementFilled() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink(null, null, "Decision", 4, "i", 1, "i").getEntity());
+				.getEntity(), knowledgeRest.createLink(null, null, "Decision", 4, "i", 1, "i", null).getEntity());
 	}
 
 	@Test
 	public void testRequestFilledProjectKeyNullChildElementFilledParentElementFilled() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink(request, null, "Decision", 4, "i", 1, "i").getEntity());
+				.getEntity(), knowledgeRest.createLink(request, null, "Decision", 4, "i", 1, "i", null).getEntity());
 	}
 
 	@Test
 	public void testRequestNullProjectKeyFilledChildElementFilledParentElementFilled() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink(null, "TEST", "Decision", 4, "i", 1, "i").getEntity());
+				.getEntity(), knowledgeRest.createLink(null, "TEST", "Decision", 4, "i", 1, "i", null).getEntity());
 	}
 
 	@Test
@@ -87,7 +87,7 @@ public class TestCreateLink extends TestSetUp {
 		assertEquals(
 				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 						.getEntity(),
-				knowledgeRest.createLink(request, "TEST", "Decision", 0, "i", 1, "i").getEntity());
+				knowledgeRest.createLink(request, "TEST", "Decision", 0, "i", 1, "i", null).getEntity());
 	}
 
 	@Test
@@ -95,6 +95,6 @@ public class TestCreateLink extends TestSetUp {
 		assertEquals(
 				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 						.getEntity(),
-				knowledgeRest.createLink(request, "TEST", "Decision", 4, "i", 0, "i").getEntity());
+				knowledgeRest.createLink(request, "TEST", "Decision", 4, "i", 0, "i", null).getEntity());
 	}
 }
