@@ -114,7 +114,7 @@ public class FilterExtractor {
 	}
 
 	public List<DecisionKnowledgeElement> getAllElementsMatchingCompareFilter() {
-		if (filterSettings.getProjectKey() == null) {
+		if (filterSettings == null || filterSettings.getProjectKey() == null) {
 			return new ArrayList<>();
 		}
 		List<DecisionKnowledgeElement> elements = getElementsInProject();

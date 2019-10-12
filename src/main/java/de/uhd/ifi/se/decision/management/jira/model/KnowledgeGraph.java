@@ -3,8 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import java.util.Map;
 import java.util.Set;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import org.jgrapht.Graph;
+
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 
 /**
  * Interface to create a knowledge graph for the entire project or a sub-graph
