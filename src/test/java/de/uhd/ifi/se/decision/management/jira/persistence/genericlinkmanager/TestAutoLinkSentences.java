@@ -75,6 +75,6 @@ public class TestAutoLinkSentences extends TestJiraIssueCommentPersistenceManage
 		List<PartOfJiraIssueText> comment = TestTextSplitter
 				.getSentencesForCommentText("{issue}first sentence{issue} {pro}second sentence{pro}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.get(1)).get(0);
-		assertEquals("s3 to i30", sentenceLink.toString());
+		assertEquals("i30 to s3", sentenceLink.toString());
 	}
 }

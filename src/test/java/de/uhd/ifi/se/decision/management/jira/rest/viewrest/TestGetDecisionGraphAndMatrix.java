@@ -15,7 +15,7 @@ import javax.ws.rs.core.Response;
 
 import static org.junit.Assert.assertEquals;
 
-public class TestGetMatrixData extends TestSetUp {
+public class TestGetDecisionGraphAndMatrix extends TestSetUp {
 	private ViewRest viewRest;
 	protected HttpServletRequest request;
 	private static final String INVALID_PROJECTKEY = "Decision knowledge elements cannot be shown since project key is invalid.";
@@ -30,33 +30,38 @@ public class TestGetMatrixData extends TestSetUp {
 	}
 
 	@Test
-	public void testProjectKeyNullDocumentationLocationNull() {
+	public void testDecisionGraphProjectKeyNull() {
 		assertEquals(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", INVALID_PROJECTKEY))
-				.build().getEntity(), viewRest.getMatrixData(request, null, null).getEntity());
+				.build().getEntity(), viewRest.getDecisionGraph(request, null).getEntity());
 	}
 
 	@Test
-	public void testProjectKeyNonExistentDocumentationLocationNull() {
+	public void testDecisionGraphProjectKeyNonExistent() {
 		assertEquals(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", INVALID_PROJECTKEY))
-				.build().getEntity(), viewRest.getMatrixData(request, "NotTEST", null).getEntity());
+				.build().getEntity(), viewRest.getDecisionGraph(request, "NotTEST").getEntity());
 	}
 
 	@Test
 	@NonTransactional
-	public void testProjectKeyExistentDocumentationLocationNull() {
-		assertEquals(200, viewRest.getMatrixData(request,"TEST", null).getStatus());
+	public void testDecisionGraphProjectKeyExistent() {
+		assertEquals(200, viewRest.getDecisionGraph(request,"TEST").getStatus());
+	}
+
+	@Test
+	public void testDecisionMatrixProjectKeyNull() {
+		assertEquals(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", INVALID_PROJECTKEY))
+				.build().getEntity(), viewRest.getDecisionMatrix(request, null).getEntity());
+	}
+
+	@Test
+	public void testDecisionMatrixProjectKeyNonExistent() {
+		assertEquals(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", INVALID_PROJECTKEY))
+				.build().getEntity(), viewRest.getDecisionMatrix(request, "NotTEST").getEntity());
 	}
 
 	@Test
 	@NonTransactional
-	public void testProjectKeyExistentDocumentationLocationJiraIssue() {
-		assertEquals(200, viewRest.getMatrixData(request,"TEST", "i").getStatus());
+	public void testDecisionMatrixProjectKeyExistent() {
+		assertEquals(200, viewRest.getDecisionMatrix(request,"TEST").getStatus());
 	}
-
-	@Test
-	@NonTransactional
-	public void testProjectKeyExistentDocumentationLocationJiraIssueComment() {
-		assertEquals(200, viewRest.getMatrixData(request,"TEST", "s").getStatus());
-	}
-
 }

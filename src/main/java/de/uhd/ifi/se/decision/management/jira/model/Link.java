@@ -232,14 +232,7 @@ public interface Link {
 	 */
 	public static Link instantiateDirectedLink(DecisionKnowledgeElement parentElement,
 			DecisionKnowledgeElement childElement, LinkType linkType) {
-		switch (linkType) {
-		case ATTACK:
-			return new LinkImpl(childElement, parentElement, linkType);
-		case SUPPORT:
-			return new LinkImpl(childElement, parentElement, linkType);
-		default:
-			return new LinkImpl(parentElement, childElement, linkType);
-		}
+		return new LinkImpl(parentElement, childElement, linkType.getName());
 	}
 
 	/**

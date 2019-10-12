@@ -126,7 +126,7 @@
 		conDecAPI.deleteLink(oldParentElement.id, childId, documentationLocationOfOldParent,
 				documentationLocationOfChild, function() {
 					conDecAPI.createLink(null, target.id, draggedElement.id, documentationLocationOfNewParent,
-							documentationLocationOfChild, function() {
+							documentationLocationOfChild, null, function() {
 								conDecObservable.notify();
 							});
 				});

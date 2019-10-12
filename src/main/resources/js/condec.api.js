@@ -83,6 +83,29 @@
 	};
 
 	/*
+	 * external references:
+	 */
+	ConDecAPI.prototype.createUnlinkedDecisionKnowledgeElement = function createUnlinkedDecisionKnowledgeElementAsChild(summary,
+																										description, type, documentationLocation,
+																										callback) {
+		var newElement = {
+			"summary" : summary,
+			"type" : type,
+			"projectKey" : projectKey,
+			"description" : description,
+			"documentationLocation" : documentationLocation,
+		};
+
+		postJSON(AJS.contextPath()
+			+ "/rest/decisions/latest/decisions/createUnlinkedDecisionKnowledgeElement.json?", newElement, function(error, newElement) {
+			if (error === null) {
+				showFlag("success", type + " and link have been created.");
+				callback(newElement.id);
+			}
+		});
+	};
+
+	/*
 	 * external references: condec.knowledge.page, condec.dialog
 	 */
 	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElementAsChild(summary,
@@ -248,11 +271,10 @@
 	 * external references: condec.dialog, condec.treant, condec.tree.viewer
 	 */
 	ConDecAPI.prototype.createLink = function createLink(knowledgeTypeOfChild, idOfParent, idOfChild,
-			documentationLocationOfParent, documentationLocationOfChild, callback) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLink.json?projectKey=" + projectKey
-				+ "&knowledgeTypeOfChild=" + knowledgeTypeOfChild + "&idOfParent=" + idOfParent
-				+ "&documentationLocationOfParent=" + documentationLocationOfParent + "&idOfChild=" + idOfChild
-				+ "&documentationLocationOfChild=" + documentationLocationOfChild, null, function(error, link) {
+														 documentationLocationOfParent, documentationLocationOfChild, linkType, callback) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLink.json?projectKey=" + projectKey + "&knowledgeTypeOfChild=" + knowledgeTypeOfChild
+			+ "&idOfParent=" + idOfParent + "&documentationLocationOfParent=" + documentationLocationOfParent + "&idOfChild=" + idOfChild
+			+ "&documentationLocationOfChild=" + documentationLocationOfChild + "&linkTypeName=" + linkType, null, function(error, link) {
 			if (error === null) {
 				showFlag("success", "Link has been created.");
 				callback(link);
@@ -276,7 +298,7 @@
 				link, function(error, link) {
 					if (error === null) {
 						showFlag("success", "Link has been deleted.");
-						callback();
+						callback(link);
 					}
 				});
 	};
@@ -544,12 +566,20 @@
 		});
 	};
 
-	ConDecAPI.prototype.getMatrixData = function getMatrixData(callback) {
-		const documentationLocation = "i";
-
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getMatrixData.json?projectKey=" + projectKey + "&documentationLocation=" + documentationLocation, function(error, matrix) {
+	ConDecAPI.prototype.getDecisionMatrix = function getDecisionMatrix(callback) {
+		var projectKey= getProjectKey();
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getDecisionMatrix.json?projectKey=" + projectKey, function(error, matrix) {
 			if (error == null) {
 				callback(matrix);
+			}
+		});
+	};
+
+	ConDecAPI.prototype.getDecisionGraph = function getDecisionGraph(callback) {
+		var projectKey= getProjectKey();
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getDecisionGraph.json?projectKey=" + projectKey, function(error, graph) {
+			if (error == null) {
+				callback(graph);
 			}
 		});
 	};

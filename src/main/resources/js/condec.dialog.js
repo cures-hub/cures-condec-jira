@@ -45,10 +45,16 @@
 			var description = inputDescriptionField.value;
 			var type = selectTypeField.value;
 			var documentationLocation = selectLocationField.value;
-			conDecAPI.createDecisionKnowledgeElement(summary, description, type, documentationLocation,
-				idOfParentElement, documentationLocationOfParentElement, function () {
+			if (idOfParentElement == "") {
+				conDecAPI.createUnlinkedDecisionKnowledgeElement(summary, description, type, documentationLocation, function(id) {
 					conDecObservable.notify();
-				});
+				})
+			} else {
+				conDecAPI.createDecisionKnowledgeElement(summary, description, type, documentationLocation,
+					idOfParentElement, documentationLocationOfParentElement, function (id) {
+						conDecObservable.notify();
+					});
+			}
 			AJS.dialog2(createDialog).hide();
 		};
 
@@ -85,6 +91,32 @@
 		AJS.dialog2(deleteDialog).show();
 	};
 
+	ConDecDialog.prototype.showDeleteDecisionLinkDialog = function showDeleteDecisionLinkDialog(idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild) {
+		console.log("conDecDialog showDeleteLinkDialog");
+
+		// HTML elements
+		var deleteLinkDialog = document.getElementById("delete-link-dialog");
+		var content = document.getElementById("delete-link-dialog-content");
+		var submitButton = document.getElementById("delete-link-dialog-submit-button");
+		var cancelButton = document.getElementById("delete-link-dialog-cancel-button");
+
+		// Set onclick listener on buttons
+		submitButton.onclick = function () {
+			conDecAPI.deleteLink(idOfParent, idOfChild, documentationLocationOfParent,
+				documentationLocationOfChild, function () {
+					conDecObservable.notify();
+				});
+			AJS.dialog2(deleteLinkDialog).hide();
+		};
+
+		cancelButton.onclick = function () {
+			AJS.dialog2(deleteLinkDialog).hide();
+		};
+
+		// Show dialog
+		AJS.dialog2(deleteLinkDialog).show();
+	};
+
 	ConDecDialog.prototype.showDeleteLinkDialog = function showDeleteLinkDialog(id, documentationLocation) {
 		console.log("conDecDialog showDeleteLinkDialog");
 
@@ -110,6 +142,61 @@
 
 		// Show dialog
 		AJS.dialog2(deleteLinkDialog).show();
+	};
+
+	ConDecDialog.prototype.showDecisionLinkDialog = function showDecisionLinkDialog(idOfParent, idOfChild) {
+		console.log("conDecDialog showDecisionLinkDialog");
+
+		// HTML elements
+		var linkDialog = document.getElementById("linkDecisions-dialog");
+		var selectElementField = document.getElementById("linkDecisions-form-select-element");
+		var submitButton = document.getElementById("linkDecisions-dialog-submit-button");
+		var cancelButton = document.getElementById("linkDecisions-dialog-cancel-button");
+		var argumentFieldGroup = document.getElementById("argument-field-group");
+		var linkType = "Relates";
+		var linkTypeColor = "#80c9ff";
+
+		// Fill HTML elements
+		selectElementField.innerHTML = "";
+		conDecAPI.getLinkTypes(function (linkTypes) {
+			var linkTypeNames = Object.keys(linkTypes);
+			var linkTypeColors = Object.values(linkTypes);
+			var insertString = "";
+			var isSelected = "";
+			for (var index in linkTypeNames) {
+				if (linkTypeNames[index] == "Relates") {
+					isSelected = "selected";
+				} else {
+					isSelected = "";
+				}
+				console.log(linkTypeNames[index]);
+				insertString += "<option " + isSelected + " value='" + linkTypeColors[index] + "'>"
+					+ linkTypeNames[index] + "</option>";
+			}
+			selectElementField.insertAdjacentHTML("afterBegin", insertString);
+		});
+		AJS.$(selectElementField).auiSelect2();
+
+		argumentFieldGroup.style.display = "none";
+		selectElementField.onchange = function (option) {
+			linkType = option.added.text;
+			linkTypeColor = option.val;
+		};
+
+		// Set onclick listener on buttons
+		submitButton.onclick = function () {
+			conDecAPI.createLink(null, idOfParent, idOfChild, "i", "i", linkType, function () {
+				conDecObservable.notify();
+			});
+			AJS.dialog2(linkDialog).hide();
+		};
+
+		cancelButton.onclick = function () {
+			AJS.dialog2(linkDialog).hide();
+		};
+
+		// Show dialog
+		AJS.dialog2(linkDialog).show();
 	};
 
 	ConDecDialog.prototype.showLinkDialog = function showLinkDialog(id, documentationLocation) {
@@ -143,7 +230,7 @@
 		submitButton.onclick = function () {
 			var childId = selectElementField.value;
 			var knowledgeTypeOfChild = $('input[name=form-radio-argument]:checked').val();
-			conDecAPI.createLink(knowledgeTypeOfChild, id, childId, "i", "i", function () {
+			conDecAPI.createLink(knowledgeTypeOfChild, id, childId, "i", "i", null,function () {
 				conDecObservable.notify();
 			});
 			AJS.dialog2(linkDialog).hide();

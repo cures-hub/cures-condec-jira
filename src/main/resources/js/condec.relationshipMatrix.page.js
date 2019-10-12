@@ -19,8 +19,8 @@
         return false;
     };
 
-    ConDecRelationshipMatrixPage.prototype.buildMatrix = function buildMatrix() {
-        conDecAPI.getMatrixData(function (data) {
+    ConDecRelationshipMatrixPage.prototype.buildMatrix = function() {
+        conDecAPI.getDecisionMatrix(function (data) {
             console.log(data);
             const matrix = document.getElementById("matrix");
             const firstRowHeaderElement = document.createElement("th");
@@ -36,9 +36,13 @@
                 newTableRow(matrix, row);
             }
         });
+    };
 
-
-    }
+    ConDecRelationshipMatrixPage.prototype.updateView = function() {
+        const matrix = document.getElementById("matrix");
+        matrix.innerHTML = "";
+        conDecRelationshipMatrixPage.buildMatrix();
+    };
 
     function newTableHeaderElement(matrix, text, styleClass) {
         const element = document.createElement("th");
@@ -47,7 +51,7 @@
         div.innerText = text;
         element.appendChild(div);
         matrix.appendChild(element);
-    }
+    };
 
     function newTableRow(matrix, row) {
         matrix.appendChild(document.createElement("tr"));
@@ -58,13 +62,13 @@
                 new newTableElement(matrix, row[d]);
             }
         }
-    }
+    };
 
     function newTableElement(matrix, color) {
         const tableRowElement = document.createElement("td");
         tableRowElement.style.backgroundColor = color;
         matrix.appendChild(tableRowElement);
-    }
+    };
 
     ConDecRelationshipMatrixPage.prototype.buildLegend = function buildLegend() {
         conDecAPI.getLinkTypes(function(linkTypes) {
@@ -81,7 +85,7 @@
             }
         });
 
-    }
+    };
 
     /*
      * Init Helpers
@@ -92,7 +96,7 @@
             return false;
         }
         return true;
-    }
+    };
 
     function isConDecObservableType(conDecObservable) {
         if (!(conDecObservable !== undefined && conDecObservable.notify !== undefined && typeof conDecObservable.notify === 'function')) {
@@ -100,7 +104,7 @@
             return false;
         }
         return true;
-    }
+    };
 
     global.conDecRelationshipMatrixPage = new ConDecRelationshipMatrixPage();
 })(window);
