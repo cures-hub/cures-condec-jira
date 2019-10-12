@@ -15,7 +15,7 @@ import javax.ws.rs.core.Response;
 
 import static org.junit.Assert.assertEquals;
 
-public class TestGetDecisionGraph extends TestSetUp {
+public class TestGetDecisionGraphAndMatrix extends TestSetUp {
 	private ViewRest viewRest;
 	protected HttpServletRequest request;
 	private static final String INVALID_PROJECTKEY = "Decision knowledge elements cannot be shown since project key is invalid.";
@@ -30,20 +30,38 @@ public class TestGetDecisionGraph extends TestSetUp {
 	}
 
 	@Test
-	public void testProjectKeyNull() {
+	public void testDecisionGraphProjectKeyNull() {
 		assertEquals(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", INVALID_PROJECTKEY))
 				.build().getEntity(), viewRest.getDecisionGraph(request, null).getEntity());
 	}
 
 	@Test
-	public void testProjectKeyNonExistent() {
+	public void testDecisionGraphProjectKeyNonExistent() {
 		assertEquals(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", INVALID_PROJECTKEY))
 				.build().getEntity(), viewRest.getDecisionGraph(request, "NotTEST").getEntity());
 	}
 
 	@Test
 	@NonTransactional
-	public void testProjectKeyExistent() {
+	public void testDecisionGraphProjectKeyExistent() {
 		assertEquals(200, viewRest.getDecisionGraph(request,"TEST").getStatus());
+	}
+
+	@Test
+	public void testDecisionMatrixProjectKeyNull() {
+		assertEquals(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", INVALID_PROJECTKEY))
+				.build().getEntity(), viewRest.getDecisionMatrix(request, null).getEntity());
+	}
+
+	@Test
+	public void testDecisionMatrixProjectKeyNonExistent() {
+		assertEquals(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", INVALID_PROJECTKEY))
+				.build().getEntity(), viewRest.getDecisionMatrix(request, "NotTEST").getEntity());
+	}
+
+	@Test
+	@NonTransactional
+	public void testDecisionMatrixProjectKeyExistent() {
+		assertEquals(200, viewRest.getDecisionMatrix(request,"TEST").getStatus());
 	}
 }
