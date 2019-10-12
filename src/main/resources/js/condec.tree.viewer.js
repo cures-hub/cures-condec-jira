@@ -96,7 +96,7 @@
 					var newParentType = (parentNode.li_attr['class'] === "sentence") ? "s" : "i";
 
 					if (oldParentNode === "#" && parentNode !== "#") {
-						conDecAPI.createLink(null, parentNode.data.id, nodeId, newParentType, sourceType, function() {
+						conDecAPI.createLink(null, parentNode.data.id, nodeId, newParentType, sourceType, null, function() {
 							conDecObservable.notify();
 						});
 					}
@@ -107,7 +107,7 @@
 					}
 					if (parentNode !== '#' && oldParentNode !== '#') {
 						conDecAPI.deleteLink(oldParentNode.data.id, nodeId, oldParentType, sourceType, function() {
-							conDecAPI.createLink(null, parentNode.data.id, nodeId, newParentType, sourceType,
+							conDecAPI.createLink(null, parentNode.data.id, nodeId, newParentType, sourceType, null,
 									function() {
 										conDecObservable.notify();
 									});

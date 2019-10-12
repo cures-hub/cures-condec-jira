@@ -72,14 +72,14 @@ public enum LinkType {
 	 */
 	public static LinkType getLinkType(String name) {
 		if (name == null) {
-			return LinkType.RELATE;
+			return LinkType.getDefaultLinkType();
 		}
 		for (LinkType linkType : LinkType.values()) {
 			if (linkType.getName().toLowerCase(Locale.ENGLISH).matches(name.toLowerCase(Locale.ENGLISH))) {
 				return linkType;
 			}
 		}
-		return LinkType.RELATE;
+		return LinkType.getDefaultLinkType();
 	}
 
 	public static String getLinkTypeColor(LinkType linkType) {
@@ -107,9 +107,13 @@ public enum LinkType {
 		case CON:
 			return LinkType.ATTACK;
 		default:
-			return LinkType.RELATE;
+			return LinkType.getDefaultLinkType();
 		}
 	}
+
+	public static LinkType getDefaultLinkType() {
+		return LinkType.RELATE;
+	};
 
 	public static LinkType getLinkTypeForKnowledgeType(String knowledgeTypeOfChildElement) {
 		KnowledgeType type = KnowledgeType.getKnowledgeType(knowledgeTypeOfChildElement);

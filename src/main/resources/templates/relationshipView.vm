@@ -12,7 +12,7 @@
 <script>
     $(document).ready(function() {
         conDecAPI.checkIfProjectKeyIsValid();
-        if(window.conDecRelationshipPage.init(conDecAPI, conDecObservable)) {
+        if(window.conDecRelationshipPage.init(conDecAPI, conDecObservable, conDecVis)) {
             conDecAPI.checkIfProjectKeyIsValid();
             window.conDecRelationshipPage.buildDecisionGraph();
         }
