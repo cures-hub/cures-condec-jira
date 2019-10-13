@@ -98,11 +98,11 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
 		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
 				project.getProjectKey());
-		
+
 		elements.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
 
 		// remove irrelevant sentences from graph
-		elements.removeIf(e -> (e instanceof PartOfJiraIssueText && ((PartOfJiraIssueText) e).isRelevant()));
+		elements.removeIf(e -> (e instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) e).isRelevant()));
 		return elements;
 	}
 
@@ -112,15 +112,18 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 					.getPersistenceManager(project.getProjectKey(), node.getDocumentationLocation());
 			List<Link> links = manager.getLinks(node.getId());
 			for (Link link : links) {
-				if (linkIds.contains(link.getId())) {
-					continue;
-				}
 				Node destination = link.getDestinationElement();
 				Node source = link.getSourceElement();
+				if (destination == null || source == null) {
+					continue;
+				}
 				if (destination.equals(source)) {
 					continue;
 				}
 				if (!this.containsVertex(destination) || !this.containsVertex(source)) {
+					continue;
+				}
+				if (linkIds.contains(link.getId())) {
 					continue;
 				}
 				this.addEdge(link.getSourceElement(), link.getDestinationElement());

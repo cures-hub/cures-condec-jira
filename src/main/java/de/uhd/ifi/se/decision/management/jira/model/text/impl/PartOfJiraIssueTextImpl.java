@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.model.text.impl;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -15,8 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Model class for textual parts (substrings) of JIRA issue comments or the
@@ -68,7 +68,7 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 	}
 
 	public PartOfJiraIssueTextImpl(long id, int endSubstringCount, int startSubstringCount, boolean isValidated,
-								   boolean isRelevant, String projectKey, long commentId, long issueId, String type) {
+			boolean isRelevant, String projectKey, long commentId, long issueId, String type) {
 		this();
 		this.setId(id);
 		this.setEndPosition(endSubstringCount);
@@ -88,7 +88,9 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 		Comment comment = this.getComment();
 		if (comment == null) {
 			text = getJiraIssueDescription();
-			this.setCreated(issue.getCreated());
+			if (issue != null) {
+				this.setCreated(issue.getCreated());
+			}
 		} else {
 			text = comment.getBody();
 			this.setCreated(comment.getCreated());
