@@ -16,6 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
@@ -97,7 +98,11 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
 		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
 				project.getProjectKey());
+		
 		elements.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
+
+		// remove irrelevant sentences from graph
+		elements.removeIf(e -> (e instanceof PartOfJiraIssueText && ((PartOfJiraIssueText) e).isRelevant()));
 		return elements;
 	}
 
@@ -110,10 +115,16 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 				if (linkIds.contains(link.getId())) {
 					continue;
 				}
-				if (this.containsVertex(link.getDestinationElement()) && this.containsVertex(link.getSourceElement())) {
-					this.addEdge(link.getSourceElement(), link.getDestinationElement());
-					linkIds.add(link.getId());
+				Node destination = link.getDestinationElement();
+				Node source = link.getSourceElement();
+				if (destination.equals(source)) {
+					continue;
 				}
+				if (!this.containsVertex(destination) || !this.containsVertex(source)) {
+					continue;
+				}
+				this.addEdge(link.getSourceElement(), link.getDestinationElement());
+				linkIds.add(link.getId());
 			}
 		}
 	}

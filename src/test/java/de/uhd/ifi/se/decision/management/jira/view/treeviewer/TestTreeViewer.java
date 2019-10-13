@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,8 +23,10 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
@@ -151,11 +154,25 @@ public class TestTreeViewer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testTreeViewerWithComment() {
-		TreeViewer tree = new TreeViewer();
 		List<PartOfJiraIssueText> comment = TestTextSplitter
 				.getSentencesForCommentText("This is a testcomment with some text");
-		comment.get(0).setType(KnowledgeType.ALTERNATIVE);
-		assertNotNull(tree.getDataStructure(comment.get(0)));
+		PartOfJiraIssueText sentence = comment.get(0);
+
+		sentence.setType(KnowledgeType.ALTERNATIVE);
+		sentence.setRelevant(true);
+		String projectKey = sentence.getProject().getProjectKey();
+		assertEquals("TEST", projectKey);
+		DecisionKnowledgeElement element = (DecisionKnowledgeElement) sentence;
+		assertTrue(((PartOfJiraIssueText) element).isRelevant());
+
+		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(projectKey);
+		assertTrue(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements().contains(sentence));
+
+		KnowledgeGraph graph = new KnowledgeGraphImpl(projectKey);
+		assertTrue(graph.containsVertex(sentence));
+
+		TreeViewer tree = new TreeViewer(projectKey, KnowledgeType.ALTERNATIVE);
+		assertNotNull(tree.getDataStructure((DecisionKnowledgeElement) sentence));
 	}
 
 	@Test
