@@ -1,14 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import java.util.*;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import de.uhd.ifi.se.decision.management.jira.model.*;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.ofbiz.core.entity.GenericEntityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.sql.Timestamp;
 
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.IssueService.CreateValidationResult;
@@ -30,6 +33,11 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ErrorCollection;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 
@@ -57,7 +65,8 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		Collection<IssueLinkType> issueLinkTypes = issueLinkTypeManager.getIssueLinkTypes();
 		for (IssueLinkType linkType : issueLinkTypes) {
 			long typeId = linkType.getId();
-			IssueLink issueLink = issueLinkManager.getIssueLink(link.getDestinationElement().getId(), link.getSourceElement().getId(), typeId);
+			IssueLink issueLink = issueLinkManager.getIssueLink(link.getDestinationElement().getId(),
+					link.getSourceElement().getId(), typeId);
 			if (issueLink != null) {
 				issueLinkManager.removeIssueLink(issueLink, user);
 				return true;
@@ -110,8 +119,10 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		long linkTypeId = getLinkTypeId(link.getType());
 		try {
-			issueLinkManager.createIssueLink(link.getSourceElement().getId(), link.getDestinationElement().getId(), linkTypeId, (long) 0, user);
-			IssueLink issueLink = issueLinkManager.getIssueLink(link.getSourceElement().getId(), link.getDestinationElement().getId(), linkTypeId);
+			issueLinkManager.createIssueLink(link.getSourceElement().getId(), link.getDestinationElement().getId(),
+					linkTypeId, (long) 0, user);
+			IssueLink issueLink = issueLinkManager.getIssueLink(link.getSourceElement().getId(),
+					link.getDestinationElement().getId(), linkTypeId);
 			return issueLink.getId();
 		} catch (CreateException | NullPointerException e) {
 			LOGGER.error("Insertion of link into database failed. Message: " + e.getMessage());
@@ -121,20 +132,23 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 
 	@Override
 	public long getLinkId(DecisionKnowledgeElement source, DecisionKnowledgeElement destination) {
-		List<IssueLink> links = this.getInwardIssueLinks(source);
+		if (source == null || destination == null) {
+			return 0;
+		}
+		List<IssueLink> links = JiraIssuePersistenceManager.getInwardIssueLinks(source);
 		long issueLinkId = 0;
 		issueLinkId = checkForIssueLinkId(links, source.getId(), destination.getId());
-		if(issueLinkId != 0){
+		if (issueLinkId != 0) {
 			return issueLinkId;
 		}
-		links = this.getOutwardIssueLinks(source);
+		links = JiraIssuePersistenceManager.getOutwardIssueLinks(source);
 		issueLinkId = checkForIssueLinkId(links, source.getId(), destination.getId());
 		return issueLinkId;
 	}
 
 	private long checkForIssueLinkId(List<IssueLink> links, long sid, long did) {
-		for(IssueLink link: links) {
-			if(link.getSourceId() == sid && link.getDestinationId() == did){
+		for (IssueLink link : links) {
+			if (link.getSourceId() != null && link.getSourceId() == sid && link.getDestinationId() == did) {
 				return link.getId();
 			}
 		}
@@ -167,7 +181,8 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 			IssueService.DeleteValidationResult result = issueService.validateDelete(user, issue.getIssue().getId());
 			if (result.getErrorCollection().hasAnyErrors()) {
 				for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
-					LOGGER.error("Deletion of decision knowledge element in database failed. " + entry.getKey() + ": " + entry.getValue());
+					LOGGER.error("Deletion of decision knowledge element in database failed. " + entry.getKey() + ": "
+							+ entry.getValue());
 				}
 				return false;
 			}
@@ -217,11 +232,11 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		Timestamp closeStamp = new Timestamp(closed.getTime());
 		for (Issue issue : getIssueIdCollection()) {
 			if (issue.getCreated().after(creationStamp)) {
-				//Issue is not resolved jet
+				// Issue is not resolved jet
 				if (issue.getResolutionDate() == null) {
 					decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(issue));
 				}
-				//Issue is resolved before the time filter
+				// Issue is resolved before the time filter
 				if (issue.getResolutionDate().before(closeStamp)) {
 					decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(issue));
 				}
@@ -288,18 +303,21 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 	}
 
 	@Override
-	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
+	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
+			ApplicationUser user) {
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
 		setParameters(element, issueInputParameters);
 		issueInputParameters.setReporterId(user.getName());
-		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(element.getProject().getProjectKey());
+		Project project = ComponentAccessor.getProjectManager()
+				.getProjectByCurrentKey(element.getProject().getProjectKey());
 		issueInputParameters.setProjectId(project.getId());
 
 		IssueService issueService = ComponentAccessor.getIssueService();
 		CreateValidationResult result = issueService.validateCreate(user, issueInputParameters);
 		if (result.getErrorCollection().hasAnyErrors()) {
 			for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
-				LOGGER.error("Insertion of decision knowledge element into database failed. " + entry.getKey() + ": " + entry.getValue());
+				LOGGER.error("Insertion of decision knowledge element into database failed. " + entry.getKey() + ": "
+						+ entry.getValue());
 			}
 			return null;
 		}
@@ -317,22 +335,24 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		IssueResult issueResult = issueService.getIssue(user, element.getId());
 		MutableIssue issueToBeUpdated = issueResult.getIssue();
 		DecisionKnowledgeElement knowledgeElementToBeUpdate = new DecisionKnowledgeElementImpl(issueToBeUpdated);
-		if (knowledgeElementToBeUpdate.getType().equals(KnowledgeType.DECISION) && element.getType().equals(KnowledgeType.ALTERNATIVE)) {
+		if (knowledgeElementToBeUpdate.getType().equals(KnowledgeType.DECISION)
+				&& element.getType().equals(KnowledgeType.ALTERNATIVE)) {
 			DecisionStatusManager.setStatusForElement(knowledgeElementToBeUpdate, KnowledgeStatus.REJECTED);
 		}
-		if (knowledgeElementToBeUpdate.getType().equals(KnowledgeType.ALTERNATIVE) && element.getType().equals(KnowledgeType.DECISION)) {
+		if (knowledgeElementToBeUpdate.getType().equals(KnowledgeType.ALTERNATIVE)
+				&& element.getType().equals(KnowledgeType.DECISION)) {
 			DecisionStatusManager.deleteStatus(element);
 		}
-		return dataUpdateElement(element,issueToBeUpdated,user, issueService);
+		return dataUpdateElement(element, issueToBeUpdated, user, issueService);
 	}
 
 	@Override
 	public boolean updateDecisionKnowledgeElementWithoutStatusChange(DecisionKnowledgeElement element,
-	                                                         ApplicationUser user) {
+			ApplicationUser user) {
 		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueResult issueResult = issueService.getIssue(user, element.getId());
 		MutableIssue issueToBeUpdated = issueResult.getIssue();
-		return dataUpdateElement(element,issueToBeUpdated,user, issueService);
+		return dataUpdateElement(element, issueToBeUpdated, user, issueService);
 	}
 
 	@Override
@@ -343,7 +363,8 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 	}
 
 	public static void updateJiraIssue(Issue jiraIssue, ApplicationUser user) {
-		ComponentAccessor.getIssueManager().updateIssue(user, (MutableIssue) jiraIssue, EventDispatchOption.ISSUE_UPDATED, true);
+		ComponentAccessor.getIssueManager().updateIssue(user, (MutableIssue) jiraIssue,
+				EventDispatchOption.ISSUE_UPDATED, true);
 	}
 
 	private List<Issue> getIssueIdCollection() {
@@ -364,14 +385,16 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		return issueList;
 	}
 
-	private boolean dataUpdateElement(DecisionKnowledgeElement element,MutableIssue issueToBeUpdated,
-	                              ApplicationUser user,IssueService issueService){
+	private boolean dataUpdateElement(DecisionKnowledgeElement element, MutableIssue issueToBeUpdated,
+			ApplicationUser user, IssueService issueService) {
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
 		setParameters(element, issueInputParameters);
-		IssueService.UpdateValidationResult result = issueService.validateUpdate(user, issueToBeUpdated.getId(), issueInputParameters);
+		IssueService.UpdateValidationResult result = issueService.validateUpdate(user, issueToBeUpdated.getId(),
+				issueInputParameters);
 		if (result.getErrorCollection().hasAnyErrors()) {
 			for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
-				LOGGER.error("Updating decision knowledge element in database failed. " + entry.getKey() + ": " + entry.getValue());
+				LOGGER.error("Updating decision knowledge element in database failed. " + entry.getKey() + ": "
+						+ entry.getValue());
 			}
 			return false;
 		}

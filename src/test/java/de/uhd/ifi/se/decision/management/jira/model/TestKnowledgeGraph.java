@@ -27,13 +27,13 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetNodes() {
-		assertEquals(8, graph.getAllNodes().size());
+		assertEquals(8, graph.vertexSet().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetEdges() {
-		assertEquals(8, graph.getAllEdges().size());
+		assertEquals(8, graph.edgeSet().size());
 	}
 
 	@Test

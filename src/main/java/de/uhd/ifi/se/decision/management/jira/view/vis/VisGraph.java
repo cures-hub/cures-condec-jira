@@ -1,16 +1,21 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
+import java.util.HashSet;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import de.uhd.ifi.se.decision.management.jira.model.*;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
-import java.util.*;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.Node;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 
 @XmlRootElement(name = "vis")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -82,22 +87,23 @@ public class VisGraph {
 				nodeElement = (DecisionKnowledgeElement) iterNode;
 			}
 			this.nodes.add(new VisNode(nodeElement, isCollapsed(nodeElement), level, cid));
-			//Check Depth
+			// Check Depth
 			Node parentNodeTmp = iterator.getParent(iterNode);
-			//Is Root Node and will be alone as Top Element
+			// Is Root Node and will be alone as Top Element
 			if (parentNode == null) {
 				parentNode = iterNode;
 				level++;
 			}
-			//New Parent Node means next level
+			// New Parent Node means next level
 			if (parentNodeTmp != null && parentNodeTmp.getId() != parentNode.getId()) {
 				parentNode = parentNodeTmp;
 				level++;
 			}
 			cid++;
 		}
-		for(Link link: this.graph.getAllEdges()) {
-			if(this.elementsMatchingFilterCriteria.contains(link.getSourceElement()) && this.elementsMatchingFilterCriteria.contains(link.getDestinationElement())) {
+		for (Link link : this.graph.edgeSet()) {
+			if (this.elementsMatchingFilterCriteria.contains(link.getSourceElement())
+					&& this.elementsMatchingFilterCriteria.contains(link.getDestinationElement())) {
 				this.edges.add(new VisEdge(link));
 			}
 		}

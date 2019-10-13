@@ -1,11 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.Map;
-import java.util.Set;
 
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.jgrapht.Graph;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 
 /**
  * Interface to create a knowledge graph for the entire project or a sub-graph
@@ -17,6 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
  * @see GitClient
  * @see Graph
  */
+@JsonDeserialize(as = KnowledgeGraphImpl.class)
 public interface KnowledgeGraph extends Graph<Node, Link> {
 
 	/**
@@ -27,14 +29,4 @@ public interface KnowledgeGraph extends Graph<Node, Link> {
 	KnowledgeGraph getSubGraph(Node subRootNode);
 
 	Map<DecisionKnowledgeElement, Link> getAdjacentElementsAndLinks(DecisionKnowledgeElement element);
-
-	/**
-	 * @return all nodes in the graph
-	 */
-	Set<Node> getAllNodes();
-
-	/**
-	 * @return all edges in the graph
-	 */
-	Set<Link> getAllEdges();
 }

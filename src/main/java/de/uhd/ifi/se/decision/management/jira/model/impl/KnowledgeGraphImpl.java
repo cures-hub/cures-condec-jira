@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Set;
 
 import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
@@ -72,16 +71,6 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 			}
 		}
 		return childrenAndLinks;
-	}
-
-	@Override
-	public Set<Node> getAllNodes() {
-		return this.vertexSet();
-	}
-
-	@Override
-	public Set<Link> getAllEdges() {
-		return this.edgeSet();
 	}
 
 	private void createGraph() {
