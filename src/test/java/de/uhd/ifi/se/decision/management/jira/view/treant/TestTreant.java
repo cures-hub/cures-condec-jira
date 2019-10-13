@@ -154,7 +154,7 @@ public class TestTreant extends TestSetUp {
 				.getDecisionKnowledgeElement(sentences.get(0).getJiraIssueId());
 		TreantNode nodeStructure = treant.createNodeStructure(element, null, 4, 0);
 		assertEquals(TreantNode.class, nodeStructure.getClass());
-		assertEquals(1, nodeStructure.getChildren().size());
+		assertEquals(0, nodeStructure.getChildren().size());
 	}
 
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {

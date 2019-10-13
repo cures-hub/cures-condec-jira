@@ -10,6 +10,7 @@ import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
@@ -28,16 +29,10 @@ public class TestWebhookConnector extends TestSetUp {
 		init();
 		Collection<String> rootTypes = new ArrayList<String>();
 		rootTypes.add("DECISION");
-		webhookConnector = new WebhookConnector("ConDec",
+		webhookConnector = new WebhookConnector("TEST",
 				"https://cuu-staging.ase.in.tum.de/api/v1/projects/ConDecDev/integrations/conDec",
 				"03f90207-73bc-44d9-9848-d3f1f8c8254e", rootTypes);
-		element = new DecisionKnowledgeElementImpl();
-		element.setProject("TEST");
-		element.setType("DECISION");
-		element.setId(14);
-		element.setDescription("Test description");
-		element.setKey("TEST-14");
-		element.setSummary("Test summary");
+		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 4));
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 
@@ -101,7 +96,9 @@ public class TestWebhookConnector extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSendElementChangesWorks() {
-		assertTrue(webhookConnector.sendElementChanges(element));
+		// Sending does only work for project key "ConDec". Currently, the project key
+		// is "TEST".
+		assertFalse(webhookConnector.sendElementChanges(element));
 	}
 
 	@Test

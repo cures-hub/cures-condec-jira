@@ -33,14 +33,14 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetEdges() {
-		assertEquals(8, graph.edgeSet().size());
+		assertEquals(1, graph.edgeSet().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetSubGraph() {
 		KnowledgeGraph compareGraph = graph.getSubGraph(element);
-		assertEquals(5, compareGraph.vertexSet().size());
+		assertEquals(1, compareGraph.vertexSet().size());
 	}
 
 }

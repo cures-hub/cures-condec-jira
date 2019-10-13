@@ -62,7 +62,7 @@ public class JiraIssues {
 		// Pro-Argument for the decision
 		issue = createJiraIssue(5, jiraIssueTypes.get(4), project, "This is a great solution.", user);
 		jiraIssues.add(issue);
-		issue.setParentId((long) 5);
+		issue.setParentId((long) 4);
 		return jiraIssues;
 	}
 

@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -23,15 +24,18 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	private static final long serialVersionUID = 1L;
 	private DecisionKnowledgeProject project;
 	private Node rootNode;
+	protected List<Long> linkIds;
 
 	public KnowledgeGraphImpl(String projectKey) {
 		super(LinkImpl.class);
+		linkIds = new ArrayList<Long>();
 		this.project = new DecisionKnowledgeProjectImpl(projectKey);
 		createGraph();
 	}
 
 	public KnowledgeGraphImpl(DecisionKnowledgeProject project, Node rootNode) {
 		super(LinkImpl.class);
+		linkIds = new ArrayList<Long>();
 		this.setRootNode(rootNode);
 		this.project = project;
 	}
@@ -103,8 +107,12 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 					.getPersistenceManager(project.getProjectKey(), node.getDocumentationLocation());
 			List<Link> links = manager.getLinks(node.getId());
 			for (Link link : links) {
+				if (linkIds.contains(link.getId())) {
+					continue;
+				}
 				if (this.containsVertex(link.getDestinationElement()) && this.containsVertex(link.getSourceElement())) {
 					this.addEdge(link.getSourceElement(), link.getDestinationElement());
+					linkIds.add(link.getId());
 				}
 			}
 		}
