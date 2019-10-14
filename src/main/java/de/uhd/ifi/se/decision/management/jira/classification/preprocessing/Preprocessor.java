@@ -30,7 +30,7 @@ public interface Preprocessor {
      * @param sentence
      * @return List of word tokens
      */
-    public List<String> tokenize(String sentence);
+    List<String> tokenize(String sentence);
 
     /**
      * Replaces unwanted patterns from the String using regular expressions and replacement token.
@@ -41,7 +41,7 @@ public interface Preprocessor {
      * @param replaceToken Used to replace the matching pattern of the regex.
      * @return Cleaned sentence.
      */
-    public String replaceUsingRegEx(String sentence, String regex, String replaceToken);
+    String replaceUsingRegEx(String sentence, String regex, String replaceToken);
 
     /**
      * Converts a list of tokens into their lemmatized form.
@@ -51,7 +51,7 @@ public interface Preprocessor {
      * @param tokens of words to be lemmatized.
      * @return List of lemmatized tokens.
      */
-    public List<String> lemmatize(List<String> tokens);
+    List<String> lemmatize(List<String> tokens);
 
     /**
      * Converts a word-token into its lemmatized form.
@@ -95,7 +95,7 @@ public interface Preprocessor {
      * @param N      N-Gram number
      * @return List of N-Grams
      */
-    public List generateNGram(List tokens, Integer N);
+    List generateNGram(List tokens, Integer N);
 
     /**
      * Converts word tokens to a numerical representation. This is necessary for calculations for the classification.
@@ -103,7 +103,7 @@ public interface Preprocessor {
      * @param tokens List of words in String-representation
      * @return List of words in numerical representation
      */
-    public List convertToNumbers(List<String> tokens);
+    List convertToNumbers(List<String> tokens);
 
     /**
      * Converts a single word to its numerical representation.
@@ -119,13 +119,13 @@ public interface Preprocessor {
      * @param sentence to be preprocessed
      * @return N-Gram numerical representation of sentence
      */
-    public List preprocess(String sentence);
+    List preprocess(String sentence);
 
 
     /**
      * Copies the default preprocessing files to the files in the plugin target.
      **/
-    public static void copyDefaultPreprocessingDataToFile() {
+    static void copyDefaultPreprocessingDataToFile() {
         File classfierDir = new File(DecisionKnowledgeClassifier.DEFAULT_DIR);
         if (!classfierDir.exists()) {
             //creates directory if it does not exist
@@ -148,7 +148,7 @@ public interface Preprocessor {
                     while ((read = inputStream.read(bytes)) != -1) {
                         outputStream.write(bytes, 0, read);
                     }
-                    System.out.println("Copied default preprocessing data to file. Message: " + file.getName());
+                    //System.out.println("Copied default preprocessing data to file. Message: " + file.getName());
 
                 } catch (IOException e) {
                     e.printStackTrace();
