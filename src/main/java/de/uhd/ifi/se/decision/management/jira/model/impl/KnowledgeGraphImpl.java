@@ -94,12 +94,11 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 				if (destination.equals(source)) {
 					continue;
 				}
-				if (!this.containsVertex(destination) || !this.containsVertex(source)) {
-					continue;
-				}
 				if (!linkIds.contains(link.getId())) {
-					this.addEdge(link.getSourceElement(), link.getDestinationElement());
-					linkIds.add(link.getId());
+					if (this.containsVertex(link.getDestinationElement()) && this.containsVertex(link.getSourceElement())) {
+						this.addEdge(link.getSourceElement(), link.getDestinationElement(), link);
+						linkIds.add(link.getId());
+					}
 				}
 			}
 		}
