@@ -33,6 +33,7 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ErrorCollection;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
@@ -359,6 +360,9 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 	public ApplicationUser getCreator(DecisionKnowledgeElement element) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue issue = issueManager.getIssueByCurrentKey(element.getKey());
+		if (issue == null) {	
+			return ComponentAccessor.getUserManager().getUserEvenWhenUnknown("Unknown User");
+		}
 		return issue.getReporterUser();
 	}
 
