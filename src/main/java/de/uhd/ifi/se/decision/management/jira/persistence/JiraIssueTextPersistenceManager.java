@@ -353,14 +353,18 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 
 	@Override
 	public ApplicationUser getCreator(DecisionKnowledgeElement element) {
-		long commentId = Long.parseLong(element.getKey().split(":")[1]);
-		PartOfJiraIssueText issueText = getPartOfJiraIssueText(commentId);
-		Comment comment = issueText.getComment();
-		if(comment == null) {
-			Issue issue =((PartOfJiraIssueText)element).getJiraIssue();
-			return issue.getReporter();
+		if(element.getKey().contains(":")) {
+			long commentId = Long.parseLong(element.getKey().split(":")[1]);
+			PartOfJiraIssueText issueText = getPartOfJiraIssueText(commentId);
+			Comment comment = issueText.getComment();
+			if(comment == null) {
+				Issue issue =((PartOfJiraIssueText)element).getJiraIssue();
+				return issue.getReporter();
+			}
+			return comment.getAuthorApplicationUser();
 		}
-		return comment.getAuthorApplicationUser();
+		LOGGER.error("Element is not a Sentence");
+		return element.getProject().getPersistenceStrategy().getCreator(element);
 	}
 
 	public static boolean updatePartOfJiraIssueText(PartOfJiraIssueText element, ApplicationUser user) {
