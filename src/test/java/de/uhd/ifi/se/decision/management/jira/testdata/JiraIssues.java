@@ -37,7 +37,7 @@ public class JiraIssues {
 		List<IssueType> jiraIssueTypes = JiraIssueTypes.getTestTypes();
 
 		// Work items
-		MutableIssue issue = createJiraIssue(1, jiraIssueTypes.get(0), project, "WI: Implement feature",user);
+		MutableIssue issue = createJiraIssue(1, jiraIssueTypes.get(0), project, "WI: Implement feature", user);
 		jiraIssues.add(issue);
 		issue = createJiraIssue(14, jiraIssueTypes.get(0), project, "WI: Yet another work item", user);
 		jiraIssues.add(issue);
@@ -45,12 +45,15 @@ public class JiraIssues {
 		jiraIssues.add(issue);
 
 		// Issue
-		issue = createJiraIssue(2, jiraIssueTypes.get(1), project, "How can we implement the feature?",user);
+		issue = createJiraIssue(2, jiraIssueTypes.get(1), project, "How can we implement the feature?", user);
+		// insert circle
+		issue.setParentId((long) 4);
 		jiraIssues.add(issue);
-		issue = createJiraIssue(12, jiraIssueTypes.get(1), project, "How can we implement the new get function?",user);
+
+		issue = createJiraIssue(12, jiraIssueTypes.get(1), project, "How can we implement the new get function?", user);
 		jiraIssues.add(issue);
 		// Alternative
-		issue = createJiraIssue(3, jiraIssueTypes.get(2), project, "We could do it like this!",user);
+		issue = createJiraIssue(3, jiraIssueTypes.get(2), project, "We could do it like this!", user);
 		jiraIssues.add(issue);
 		issue.setParentId((long) 2);
 
@@ -67,7 +70,7 @@ public class JiraIssues {
 	}
 
 	private static MutableIssue createJiraIssue(int id, IssueType issueType, Project project, String summary,
-	                                            ApplicationUser user) {
+			ApplicationUser user) {
 		MutableIssue issue = new MockIssue(id, project.getKey() + "-" + id);
 		((MockIssue) issue).setProjectId(project.getId());
 		issue.setProjectObject(project);
@@ -75,7 +78,7 @@ public class JiraIssues {
 		issue.setSummary(summary);
 		issue.setDescription(summary);
 		issue.setCreated(new Timestamp(System.currentTimeMillis()));
-		issue.setResolutionDate(new Timestamp(System.currentTimeMillis()+10000));
+		issue.setResolutionDate(new Timestamp(System.currentTimeMillis() + 10000));
 		((MockIssue) issue).setReporter(user);
 		return issue;
 	}
