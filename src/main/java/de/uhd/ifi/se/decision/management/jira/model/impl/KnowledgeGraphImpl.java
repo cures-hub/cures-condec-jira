@@ -2,14 +2,12 @@ package de.uhd.ifi.se.decision.management.jira.model.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
 import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
-import org.jgrapht.traverse.DepthFirstIterator;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -95,7 +93,8 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 					continue;
 				}
 				if (!linkIds.contains(link.getId())) {
-					if (this.containsVertex(link.getDestinationElement()) && this.containsVertex(link.getSourceElement())) {
+					if (this.containsVertex(link.getDestinationElement())
+							&& this.containsVertex(link.getSourceElement())) {
 						this.addEdge(link.getSourceElement(), link.getDestinationElement(), link);
 						linkIds.add(link.getId());
 					}

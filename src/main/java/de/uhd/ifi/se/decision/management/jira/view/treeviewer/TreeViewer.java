@@ -162,28 +162,33 @@ public class TreeViewer {
 	}
 
 	protected List<Data> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
-		List<Data> children = new ArrayList<>();
-		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<>(graph, decisionKnowledgeElement);
-		iterator.next();
+		List<Data> children = new ArrayList<Data>();
+		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<Node, Link>(graph,
+				decisionKnowledgeElement);
 		while (iterator.hasNext()) {
 			Node iterNode = iterator.next();
 			Node parentNode = iterator.getParent(iterNode);
-			if (parentNode.getId() == decisionKnowledgeElement.getId()) {
-				DecisionKnowledgeElement nodeElement = null;
-				if (iterNode instanceof DecisionKnowledgeElement) {
-					nodeElement = (DecisionKnowledgeElement) iterNode;
-				}
-				Link edge = this.graph.getEdge(parentNode, iterNode);
-				Data dataChild = new Data(nodeElement, edge);
-				if (dataChild.getNode().getProject() != null && dataChild.getNode().getProject().getProjectKey()
-						.equals(decisionKnowledgeElement.getProject().getProjectKey())) {
-					dataChild = this.makeIdUnique(dataChild);
-					List<Data> childrenOfElement = this.getChildren(nodeElement);
-					dataChild.setChildren(childrenOfElement);
-					children.add(dataChild);
-				}
+			if (parentNode == null || parentNode.getId() != decisionKnowledgeElement.getId()) {
+				continue;
 			}
-
+			if (!(iterNode instanceof DecisionKnowledgeElement)) {
+				continue;
+			}
+			DecisionKnowledgeElement nodeElement = (DecisionKnowledgeElement) iterNode;
+			Link edge = this.graph.getEdge(parentNode, nodeElement);
+			Data dataChild = new Data(nodeElement, edge);
+			if (dataChild.getNode().getProject() == null || !dataChild.getNode().getProject().getProjectKey()
+					.equals(decisionKnowledgeElement.getProject().getProjectKey())) {
+				continue;
+			}
+			dataChild = this.makeIdUnique(dataChild);
+			if (index > 20) {
+				// duplicated nodes are included more than 20 times, this might be an endless loop
+				break;
+			}
+			List<Data> childrenOfElement = this.getChildren(nodeElement);
+			dataChild.setChildren(childrenOfElement);
+			children.add(dataChild);
 		}
 		return children;
 	}

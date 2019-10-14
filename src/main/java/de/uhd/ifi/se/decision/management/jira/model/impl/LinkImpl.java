@@ -37,7 +37,7 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	}
 
 	public LinkImpl(DecisionKnowledgeElement sourceElement, DecisionKnowledgeElement destinationElement) {
-		super();
+		this();
 		this.source = sourceElement;
 		this.target = destinationElement;
 	}
@@ -328,8 +328,9 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 			return false;
 		}
 		Link link = (Link) object;
-		return this.source.getId() == link.getSourceElement().getId()
-				&& this.target.getId() == link.getDestinationElement().getId();
+		return this.getId() == link.getId();
+//		return this.source.getId() == link.getSourceElement().getId()
+//				&& this.target.getId() == link.getDestinationElement().getId();
 	}
 
 	public boolean equals(LinkInDatabase linkInDatabase) {
