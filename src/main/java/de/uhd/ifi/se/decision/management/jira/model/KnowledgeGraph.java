@@ -21,12 +21,5 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 @JsonDeserialize(as = KnowledgeGraphImpl.class)
 public interface KnowledgeGraph extends Graph<Node, Link> {
 
-	/**
-	 *
-	 * @param subRootNode
-	 * @return a part of the project graph as as new graph
-	 */
-	KnowledgeGraph getSubGraph(Node subRootNode);
-
 	Map<DecisionKnowledgeElement, Link> getAdjacentElementsAndLinks(DecisionKnowledgeElement element);
 }
