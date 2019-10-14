@@ -14,6 +14,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryType;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
@@ -55,8 +56,15 @@ public class Treant {
 			filterExtractor.getAllElementsMatchingCompareFilter();
 		}
 		this.graph = new KnowledgeGraphImpl(projectKey);
-		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager
-				.getDefaultPersistenceStrategy(projectKey);
+
+		AbstractPersistenceManager persistenceManager;
+		if(elementKey.contains(":")) {
+			persistenceManager =
+					AbstractPersistenceManager.getPersistenceManager(projectKey,
+							DocumentationLocation.JIRAISSUETEXT.getIdentifier());
+		} else {
+			persistenceManager = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
+		}
 		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
