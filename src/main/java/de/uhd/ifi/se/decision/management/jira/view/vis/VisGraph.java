@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -38,9 +39,12 @@ public class VisGraph {
 	@JsonIgnore
 	int cid = 0;
 
+	private List<Long> linkIdsVisited;
+
 	public VisGraph() {
 		nodes = new HashSet<>();
 		edges = new HashSet<>();
+		linkIdsVisited = new ArrayList<>();
 	}
 
 	public VisGraph(List<DecisionKnowledgeElement> elements, String projectKey) {
@@ -104,7 +108,10 @@ public class VisGraph {
 		for (Link link : this.graph.edgeSet()) {
 			if (this.elementsMatchingFilterCriteria.contains(link.getSourceElement())
 					&& this.elementsMatchingFilterCriteria.contains(link.getDestinationElement())) {
-				this.edges.add(new VisEdge(link));
+				if(!this.linkIdsVisited.contains(link.getId())){
+					this.linkIdsVisited.add(link.getId());
+					this.edges.add(new VisEdge(link));
+				}
 			}
 		}
 	}

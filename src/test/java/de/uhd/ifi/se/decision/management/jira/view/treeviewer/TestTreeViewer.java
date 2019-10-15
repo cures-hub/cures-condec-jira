@@ -1,8 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +26,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceMan
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
+
+import static org.junit.Assert.*;
 
 public class TestTreeViewer extends TestSetUp {
 	private AbstractPersistenceManager persistenceStrategy;
@@ -131,7 +130,7 @@ public class TestTreeViewer extends TestSetUp {
 		assertNotNull(element);
 		assertEquals(14, element.getId());
 		assertEquals("TEST-14", element.getKey());
-		assertEquals("0tv14", treeViewer.getDataStructure(element).getId());
+		assertTrue(treeViewer.getDataStructure(element).getId().endsWith("tv14"));
 	}
 
 	@Test

@@ -21,23 +21,29 @@ public class JiraIssueLinks {
 
 	private static List<IssueLink> createIssueLinks() {
 		List<IssueLink> issueLinks = new ArrayList<>();
-		IssueLink issueLink = createJiraIssueLink(2, 4);
+		IssueLink issueLink = createJiraIssueLink(2, 4,2);
 		issueLinks.add(issueLink);
-		issueLink = createJiraIssueLink(4,2);
+		issueLink = createJiraIssueLink(4,2,3);
 		issueLinks.add(issueLink);
-		issueLink = createJiraIssueLink(4,30);
+		issueLink = createJiraIssueLink(4,30,4);
 		issueLinks.add(issueLink);
-		issueLink = createJiraIssueLink(2, 3);
+		issueLink = createJiraIssueLink(2, 3,5);
 		issueLinks.add(issueLink);
-		issueLink = createJiraIssueLink(4,5);
+		issueLink = createJiraIssueLink(4,5,6);
 		issueLinks.add(issueLink);
-		issueLink = createJiraIssueLink(4,14);
+		issueLink = createJiraIssueLink(4,14,7);
+		issueLinks.add(issueLink);
+		issueLink = createJiraIssueLink(14,3,8);
+		issueLinks.add(issueLink);
+		issueLink = createJiraIssueLink(3,1,9);
+		issueLinks.add(issueLink);
+		issueLink = createJiraIssueLink(1,5,10);
 		issueLinks.add(issueLink);
 		return issueLinks;
 	}
 
-	private static  IssueLink createJiraIssueLink(long sourceIssueId, long destIssueId) {
-		return  new MockIssueLink(sourceIssueId,destIssueId);
+	private static  IssueLink createJiraIssueLink(long sourceIssueId, long destIssueId, long issueLinkId) {
+		return  new MockIssueLink(sourceIssueId,destIssueId, issueLinkId);
 
 	}
 }

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,7 +40,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetEdges() {
-		assertEquals(1, graph.edgeSet().size());
+		assertEquals(JiraIssueLinks.getTestIssueLinks().size(), graph.edgeSet().size());
 	}
 
 

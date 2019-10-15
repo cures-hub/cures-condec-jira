@@ -116,7 +116,7 @@ public class TestVisGraph extends TestSetUp {
 		List<DecisionKnowledgeElement> elements = new ArrayList<>();
 		elements.add(element);
 		VisGraph visGraph = new VisGraph(elements, "TEST");
-		assertEquals(1, visGraph.getNodes().size(), 0.0);
+		assertEquals(4, visGraph.getNodes().size());
 	}
 
 	@Test

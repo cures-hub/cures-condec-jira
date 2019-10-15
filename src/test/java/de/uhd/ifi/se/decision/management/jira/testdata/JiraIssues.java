@@ -43,29 +43,20 @@ public class JiraIssues {
 		jiraIssues.add(issue);
 		issue = createJiraIssue(30, jiraIssueTypes.get(0), project, "WI: Do an interesting task", user);
 		jiraIssues.add(issue);
-
 		// Issue
 		issue = createJiraIssue(2, jiraIssueTypes.get(1), project, "How can we implement the feature?", user);
-		// insert circle
-		issue.setParentId((long) 4);
 		jiraIssues.add(issue);
-
 		issue = createJiraIssue(12, jiraIssueTypes.get(1), project, "How can we implement the new get function?", user);
 		jiraIssues.add(issue);
 		// Alternative
 		issue = createJiraIssue(3, jiraIssueTypes.get(2), project, "We could do it like this!", user);
 		jiraIssues.add(issue);
-		issue.setParentId((long) 2);
-
 		// Decision
 		issue = createJiraIssue(4, jiraIssueTypes.get(3), project, "We will do it like this!", user);
 		jiraIssues.add(issue);
-		issue.setParentId((long) 2);
-
 		// Pro-Argument for the decision
 		issue = createJiraIssue(5, jiraIssueTypes.get(4), project, "This is a great solution.", user);
 		jiraIssues.add(issue);
-		issue.setParentId((long) 4);
 		return jiraIssues;
 	}
 

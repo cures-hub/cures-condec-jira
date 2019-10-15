@@ -121,7 +121,7 @@ public class TestLink {
 
 	@Test
 	public void testConstructorIssueLink() {
-		IssueLink issueLink = new MockIssueLink(1, 2);
+		IssueLink issueLink = new MockIssueLink(1, 2,1);
 		Link link = new LinkImpl(issueLink);
 		assertNotNull(link);
 	}

@@ -64,7 +64,7 @@ public class MockIssueLinkManager implements IssueLinkManager {
 				return link;
 			}
 		}
-		return new MockIssueLink(sourceIssueId, destinationIssueId);
+		return new MockIssueLink(sourceIssueId, destinationIssueId, 1);
 	}
 
 	@Override

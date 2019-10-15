@@ -79,14 +79,14 @@ public class TestWebhookEventListener extends TestSetUp {
 
 	@Test
 	public void testIssueLinkCreated() {
-		IssueLink link = new MockIssueLink(1, 2);
+		IssueLink link = new MockIssueLink(1, 2,1);
 		IssueLinkCreatedEvent event = new IssueLinkCreatedEvent(link, null);
 		listener.onLinkCreatedIssueEvent(event);
 	}
 
 	@Test
 	public void testIssueLinkDeleted() {
-		IssueLink link = new MockIssueLink(1, 2);
+		IssueLink link = new MockIssueLink(1, 2,1 );
 		IssueLinkDeletedEvent event = new IssueLinkDeletedEvent(link, null);
 		listener.onLinkDeletedIssueEvent(event);
 	}
