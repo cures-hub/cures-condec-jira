@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
 import org.ofbiz.core.entity.GenericValue;
 
 import com.atlassian.jira.exception.CreateException;
@@ -34,30 +35,44 @@ public class MockIssueLinkManager implements IssueLinkManager {
 	@Override
 	public List<IssueLink> getInwardLinks(Long issueId) {
 		List<IssueLink> inwardIssueLinks = new ArrayList<>();
-		if (issueId == 0) {
+		if(issueId == 0) {
 			return inwardIssueLinks;
 		}
-		long childId = issueId - 1;
-		if (childId > 0) {
-			MockIssueLink link = new MockIssueLink(childId, issueId);
-			inwardIssueLinks.add(link);
+		for(IssueLink link: JiraIssueLinks.getTestIssueLinks()) {
+			if(link.getDestinationId() == issueId) {
+				inwardIssueLinks.add(link);
+			}
 		}
 		return inwardIssueLinks;
 	}
 
 	@Override
-	public IssueLink getIssueLink(Long issueId) {
-		return new MockIssueLink(1, 2);
+	public IssueLink getIssueLink(Long issueLinkId) {
+		for(IssueLink link: JiraIssueLinks.getTestIssueLinks()) {
+			if(link.getId() == issueLinkId) {
+				return link;
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public IssueLink getIssueLink(Long sourceIssueId, Long destinationIssueId, Long issueLinkTypeId) {
+		for(IssueLink link: JiraIssueLinks.getTestIssueLinks()) {
+			if(link.getSourceId() == sourceIssueId && link.getDestinationId() == destinationIssueId &&
+					   link.getIssueLinkType().getId() == issueLinkTypeId) {
+				return link;
+			}
+		}
 		return new MockIssueLink(sourceIssueId, destinationIssueId);
 	}
 
 	@Override
 	public Collection<IssueLink> getIssueLinks(Long issueId) {
-		return null;
+		Collection<IssueLink> issueLinks = new ArrayList<>();
+		issueLinks.addAll(this.getInwardLinks(issueId));
+		issueLinks.addAll(this.getOutwardLinks(issueId));
+		return issueLinks;
 	}
 
 	@Override
@@ -83,13 +98,13 @@ public class MockIssueLinkManager implements IssueLinkManager {
 	@Override
 	public List<IssueLink> getOutwardLinks(Long issueId) {
 		List<IssueLink> outwardIssueLinks = new ArrayList<IssueLink>();
-		if (issueId == 0) {
+		if(issueId == 0) {
 			return outwardIssueLinks;
 		}
-		long parentId = issueId - 1;
-		if (parentId > 0) {
-			MockIssueLink link = new MockIssueLink(issueId, parentId);
-			outwardIssueLinks.add(link);
+		for(IssueLink link: JiraIssueLinks.getTestIssueLinks()) {
+			if(link.getDestinationId() == issueId) {
+				outwardIssueLinks.add(link);
+			}
 		}
 		return outwardIssueLinks;
 	}

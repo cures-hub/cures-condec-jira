@@ -134,14 +134,14 @@ public class TestFilterExtractor extends TestSetUp {
 	public void testGetGraphsMatchingQueryEmpty() {
 		FilterExtractor extractor = new FilterExtractor("TEST", user, "");
 		// the empty query will be changed to "allissues", i.e. "type != null"
-		assertEquals(7, extractor.getAllGraphs().size());
+		assertEquals(8, extractor.getAllGraphs().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetGraphsMatchingQueryFilled() {
 		FilterExtractor extractor = new FilterExtractor("TEST", user, "?jql=project=TEST");
-		assertEquals(7, extractor.getAllGraphs().size());
+		assertEquals(8, extractor.getAllGraphs().size());
 	}
 
 	@Test

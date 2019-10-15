@@ -52,7 +52,7 @@ public class MockIssueLink implements IssueLink {
 
 	@Override
 	public Long getDestinationId() {
-		return null;
+		return destinationId;
 	}
 
 	@Override
@@ -97,7 +97,7 @@ public class MockIssueLink implements IssueLink {
 
 	@Override
 	public Long getSourceId() {
-		return null;
+		return sourceId;
 	}
 
 	@Override

@@ -131,7 +131,7 @@ public class TestTreeViewer extends TestSetUp {
 		assertNotNull(element);
 		assertEquals(14, element.getId());
 		assertEquals("TEST-14", element.getKey());
-		assertEquals("tv14", treeViewer.getDataStructure(element).getId());
+		assertEquals("0tv14", treeViewer.getDataStructure(element).getId());
 	}
 
 	@Test

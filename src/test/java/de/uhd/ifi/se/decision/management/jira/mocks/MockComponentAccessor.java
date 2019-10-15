@@ -17,6 +17,7 @@ import com.atlassian.jira.issue.fields.config.FieldConfigScheme;
 import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
 import com.atlassian.jira.issue.fields.option.OptionSetManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
+import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.mock.MockConstantsManager;
@@ -32,10 +33,7 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.velocity.VelocityManager;
 
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueTypes;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import de.uhd.ifi.se.decision.management.jira.testdata.*;
 
 public class MockComponentAccessor extends ComponentAccessor {
 
@@ -46,7 +44,7 @@ public class MockComponentAccessor extends ComponentAccessor {
 		IssueManager issueManager = initIssueManager();
 
 		new MockComponentWorker().init().addMock(IssueManager.class, issueManager)
-				.addMock(IssueLinkManager.class, new MockIssueLinkManager())
+				.addMock(IssueLinkManager.class, initIssueLinkManager())
 				.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager())
 				.addMock(IssueService.class, new MockIssueService()).addMock(ProjectManager.class, projectManager)
 				.addMock(UserManager.class, userManager).addMock(ConstantsManager.class, constantsManager)
@@ -98,5 +96,10 @@ public class MockComponentAccessor extends ComponentAccessor {
 			issueManager.addIssue(jiraIssue);
 		}
 		return issueManager;
+	}
+
+	public IssueLinkManager initIssueLinkManager() {
+		MockIssueLinkManager issueLinkManager = new MockIssueLinkManager();
+		return issueLinkManager;
 	}
 }
