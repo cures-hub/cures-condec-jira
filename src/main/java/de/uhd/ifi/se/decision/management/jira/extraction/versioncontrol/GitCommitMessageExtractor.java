@@ -39,12 +39,14 @@ public class GitCommitMessageExtractor {
 	private String parseError;
 	private List<String> parseWarnings;
 	private String fullMessage;
+	private DecisionKnowledgeClassifier decisionKnowledgeClassifier;
 
 	GitCommitMessageExtractor(String message) {
 		extractedElements = new ArrayList<>();
 		parseError = null;
 		parseWarnings = new ArrayList<>();
 		fullMessage = message;
+		decisionKnowledgeClassifier = new DecisionKnowledgeClassifierImpl();
 
 		String startTagSearch = String.join("|",
 				decKnowTags.stream().map(tag -> "\\[" + tag + "\\]").collect(Collectors.toList()));
@@ -66,9 +68,50 @@ public class GitCommitMessageExtractor {
 			return;
 		}
 		if (hasNoDecisionKnowledgeStartTags()) {
-			return;
+			//we assume that if a user has marked ANY knowledge he has marked all relevant knowledge
+			classifyMessage();
 		}
 		extractSequences();
+	}
+
+	private void classifyMessage() {
+		//@pdesombre TODO: If no Decision Knowledge was manually annotated -> Classifier should be called
+		String delimiters = "(?<=[\\r\\n\\t\\.,;:'\"\\(\\)\\?!])+";
+		Pattern pattern = Pattern.compile(delimiters);
+		Matcher matcher = pattern.matcher(fullMessage);
+		//Split message in its sentences for classification.
+		List<String> messageToBeClassified = new ArrayList<>();//Arrays.asList(fullMessage.split(delimiters));
+		List<Integer> startPositions = new ArrayList<>();
+		List<Integer> endPositions = new ArrayList<>();
+
+		while (matcher.find()) {
+			startPositions.add(matcher.start());
+			endPositions.add(matcher.end());
+			messageToBeClassified.add(matcher.group());
+		}
+		// Binary classification: isRelevant or not
+		List<Boolean> isRelevantPredictions = decisionKnowledgeClassifier.makeBinaryPredictions(messageToBeClassified);
+
+		List<String> isRelevantMessages = new ArrayList<>();
+		for (int i = 0; i < messageToBeClassified.size(); i++){
+			if(isRelevantPredictions.get(i)){
+				isRelevantMessages.add(messageToBeClassified.get(i));
+			}
+		}
+		//fine grained classification of relevant messages
+		List<KnowledgeType> fineGrainedPredictions = decisionKnowledgeClassifier.makeFineGrainedPredictions(isRelevantMessages);
+
+		for (int i = 0; i < messageToBeClassified.size(); i++){
+			if(isRelevantPredictions.get(i)){
+				// Add new extracted element for each relevant knowledge part.
+				extractedElements.add(createElement(
+						startPositions.get(i),
+						fineGrainedPredictions.get(i),
+						messageToBeClassified.get(i),
+						endPositions.get(i)
+				));
+			}
+		}
 	}
 
 	private void extractSequences() {
@@ -94,8 +137,9 @@ public class GitCommitMessageExtractor {
 			int textStart = cursorPosition + rationaleTypeStartTag.length();
 
 			cursorPosition += textEnd + getEndingTagForStartTag(rationaleTypeStartTag).length();
-
+			//Create new DecisionKnowledgeElement of extracted string
 			DecisionKnowledgeElement element = createElement(textStart, rationaleType, rationaleText, textEnd);
+			// add it to the extracted elements
 			extractedElements.add(element);
 		} else {
 			parseError = rationaleType + " has no end tag";
@@ -112,6 +156,30 @@ public class GitCommitMessageExtractor {
 		return new DecisionKnowledgeElementImpl(0, getSummary(rationaleText), getDescription(rationaleText),
 				rationaleType.toUpperCase(), "" // unknown, not needed at the moment
 				, COMMIT_PLACEHOLDER + String.valueOf(start) + ":" + String.valueOf(end), DocumentationLocation.COMMIT);
+	}
+
+	private DecisionKnowledgeElement createElement(int start, KnowledgeType rationaleType,
+												   String rationaleText, int end){
+		// id is set to a useful value in GitDecExtract.getElementsFromMessage!
+		return new DecisionKnowledgeElementImpl(0
+				, getSummary(rationaleText)
+				, getDescription(rationaleText)
+				, rationaleType
+				, "" // unknown, not needed at the moment
+				, COMMIT_PLACEHOLDER + String.valueOf(start) + ":" + String.valueOf(end)
+				, DocumentationLocation.COMMIT);
+	}
+
+	private DecisionKnowledgeElement createElement(int start, KnowledgeType rationaleType,
+												   String rationaleText, int end){
+		// id is set to a useful value in GitDecExtract.getElementsFromMessage!
+		return new DecisionKnowledgeElementImpl(0
+				, getSummary(rationaleText)
+				, getDescription(rationaleText)
+				, rationaleType
+				, "" // unknown, not needed at the moment
+				, COMMIT_PLACEHOLDER + String.valueOf(start) + ":" + String.valueOf(end)
+				, DocumentationLocation.COMMIT);
 	}
 
 	private String getDescription(String rationaleText) {
