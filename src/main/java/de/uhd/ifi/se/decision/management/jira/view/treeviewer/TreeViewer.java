@@ -50,6 +50,8 @@ public class TreeViewer {
 	private List<String> ids;
 	private long index;
 
+	private List<Long> alreadyVisetedEdge;
+
 	/** Effects (if true) that irrelevant sentences are added to Graph. */
 	public static boolean isCalledFromIssueTabPanel = false;
 
@@ -58,8 +60,8 @@ public class TreeViewer {
 		this.checkCallback = true;
 		this.themes = ImmutableMap.of("icons", true);
 
+		this.alreadyVisetedEdge = new ArrayList<>();
 		this.ids = new ArrayList<String>();
-		this.index = 1;
 	}
 
 	public TreeViewer(String projectKey, KnowledgeType rootElementType) {
@@ -92,7 +94,7 @@ public class TreeViewer {
 	 *
 	 * @param issueKey
 	 *            the issue id
-	 * @param isCalledFromTabPanel
+	 * @param showKnowledgeTypes
 	 *            the show relevant (deprecated) currently used to distinguish
 	 *            between Constructors
 	 */
@@ -176,16 +178,16 @@ public class TreeViewer {
 			}
 			DecisionKnowledgeElement nodeElement = (DecisionKnowledgeElement) iterNode;
 			Link edge = this.graph.getEdge(parentNode, nodeElement);
+			if(this.alreadyVisetedEdge.contains( edge.getId())){
+				continue;
+			}
+			this.alreadyVisetedEdge.add(edge.getId());
 			Data dataChild = new Data(nodeElement, edge);
 			if (dataChild.getNode().getProject() == null || !dataChild.getNode().getProject().getProjectKey()
 					.equals(decisionKnowledgeElement.getProject().getProjectKey())) {
 				continue;
 			}
 			dataChild = this.makeIdUnique(dataChild);
-			if (index > 20) {
-				// duplicated nodes are included more than 20 times, this might be an endless loop
-				break;
-			}
 			List<Data> childrenOfElement = this.getChildren(nodeElement);
 			dataChild.setChildren(childrenOfElement);
 			children.add(dataChild);
