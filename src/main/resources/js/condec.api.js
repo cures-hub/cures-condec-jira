@@ -520,8 +520,11 @@
 	/*
 	 * external reference: condec.jira.issue.module
 	 */
-	ConDecAPI.prototype.getFilterSettings = function getFilterSettings(elementKey, searchTerm, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getFilterSettings.json?elementKey=" + elementKey
+	ConDecAPI.prototype.getFilterSettings = function getFilterSettings(key, searchTerm, callback) {
+		if (key = "projectKey") {
+			key = getProjectKey();
+		}
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getFilterSettings.json?key=" + key
 				+ "&searchTerm=" + searchTerm, function(error, filterSettings) {
 			if (error === null) {
 				callback(filterSettings);
@@ -580,6 +583,26 @@
 	ConDecAPI.prototype.getDecisionGraph = function getDecisionGraph(callback) {
 		var projectKey= getProjectKey();
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getDecisionGraph.json?projectKey=" + projectKey, function(error, graph) {
+			if (error == null) {
+				callback(graph);
+			}
+		});
+	};
+
+	ConDecAPI.prototype.getDecisionGraphFiltered = function getDecisionGraphFiltered(selectedLinkTypes, callback) {
+		var projectKey= getProjectKey();
+		var filterSettings = {
+			"projectKey" : projectKey,
+			"searchString" : "",
+			"createdEarliest" : -1,
+			"createdLatest" : -1,
+			"documentationLocations" : [ "" ],
+			"selectedJiraIssueTypes" : ["Decision"],
+			"selectedIssueStatus": [ "" ],
+			"selectedLinkTypes": selectedLinkTypes
+		};
+
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getDecisionGraphFiltered.json?projectKey=" + projectKey, filterSettings, function(error, graph) {
 			if (error == null) {
 				callback(graph);
 			}

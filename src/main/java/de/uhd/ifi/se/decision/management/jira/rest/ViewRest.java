@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -270,14 +271,21 @@ public class ViewRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getFilterSettings(@Context HttpServletRequest request, @QueryParam("searchTerm") String searchTerm,
-			@QueryParam("elementKey") String elementKey) {
-		if (checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()) {
-			return checkIfElementIsValid(elementKey);
+			@QueryParam("key") String key) {
+		boolean isElementKey = true;
+		if (checkIfElementIsValid(key).getStatus() != Status.OK.getStatusCode()) {
+			isElementKey = false;
+			if (checkIfProjectKeyIsValid(key).getStatus() != Status.OK.getStatusCode()){
+				return checkIfElementIsValid(key);
+			}
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		String projectKey = getProjectKey(elementKey);
-		// FilterDataProvider filterDataProvider = new FilterDataProvider(projectKey,
-		// searchTerm, user);
+		String projectKey;
+		if (isElementKey) {
+			projectKey = getProjectKey(key);
+		} else {
+			projectKey = key;
+		}
 		return Response.ok(new FilterSettingsImpl(projectKey, searchTerm, user)).build();
 	}
 
@@ -305,6 +313,21 @@ public class ViewRest {
 		}
 		List<DecisionKnowledgeElement> decisions = getAllDecisions(projectKey);
 		VisGraph graph = new VisGraph(decisions, projectKey);
+		return Response.ok(graph).build();
+	}
+
+	@Path("/getDecisionGraphFiltered")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getDecisionGraphFiltered(@Context HttpServletRequest request, FilterSettings filterSettings, @QueryParam("projectKey") String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		List<DecisionKnowledgeElement> decisions = getDecisionData(projectKey);
+		VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings, decisions);
+		VisGraph graph = visDataProvider.getVisGraph();
 		return Response.ok(graph).build();
 	}
 

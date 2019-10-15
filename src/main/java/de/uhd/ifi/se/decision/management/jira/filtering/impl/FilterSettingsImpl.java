@@ -6,6 +6,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -29,6 +30,7 @@ public class FilterSettingsImpl implements FilterSettings {
 	private List<DocumentationLocation> documentationLocations;
 	private List<String> namesOfSelectedJiraIssueTypes;
 	private List<KnowledgeStatus> issueStatus;
+	private List<String> namesOfSelectedLinkTypes;
 
 	@XmlElement
 	private long startDate;
@@ -46,6 +48,7 @@ public class FilterSettingsImpl implements FilterSettings {
 		this.projectKey = projectKey;
 		this.searchString = searchString;
 		this.namesOfSelectedJiraIssueTypes = getAllJiraIssueTypes();
+		this.namesOfSelectedLinkTypes = getAllLinkTypes();
 		this.startDate = -1;
 		this.endDate = -1;
 		this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
@@ -180,6 +183,22 @@ public class FilterSettingsImpl implements FilterSettings {
 	}
 
 	@Override
+	@XmlElement(name = "selectedLinkTypes")
+	public List<String> getNamesOfSelectedLinkTypes() {
+		if (namesOfSelectedLinkTypes == null) {
+			namesOfSelectedLinkTypes = getAllLinkTypes();
+		}
+		return namesOfSelectedLinkTypes;
+	}
+
+	@Override
+	@JsonProperty("selectedLinkTypes")
+	public void setSelectedLinkTypes(List<String> namesOfTypes) {
+		namesOfSelectedLinkTypes = namesOfTypes;
+	}
+
+
+	@Override
 	@XmlElement(name = "allJiraIssueTypes")
 	public List<String> getAllJiraIssueTypes() {
 		List<String> allIssueTypes = new ArrayList<String>();
@@ -194,6 +213,12 @@ public class FilterSettingsImpl implements FilterSettings {
 	@XmlElement(name = "allIssueStatus")
 	public List<String> getAllJiraIssueStatus() {
 		return KnowledgeStatus.toList();
+	}
+
+	@Override
+	@XmlElement(name = "allLinkTypes")
+	public List<String> getAllLinkTypes() {
+		return LinkType.toList();
 	}
 
 }

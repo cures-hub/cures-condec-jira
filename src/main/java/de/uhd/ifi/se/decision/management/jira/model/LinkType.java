@@ -136,7 +136,7 @@ public enum LinkType {
 	public static List<String> toList() {
 		List<String> linkTypes = new ArrayList<String>();
 		for (LinkType linkType : LinkType.values()) {
-			linkTypes.add(linkType.toString());
+			linkTypes.add(linkType.getName());
 		}
 		return linkTypes;
 	}

@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -126,9 +127,21 @@ public interface FilterSettings {
 
 	/**
 	 * Sets the issue status that a selected of a Filter
-	 * @param status
+	 * @param linkTypes
 	 */
-	void setSelectedJiraIssueStatus(List<String> status);
+	void setSelectedLinkTypes(List<String> linkTypes);
+
+	/**
+	 * Gets the selected link types from the filter
+	 * @return list of link types as string
+	 */
+	List<String> getNamesOfSelectedLinkTypes();
+
+	/**
+	 * Sets the link types that a selected of a Filter
+	 * @param linkTypes
+	 */
+	void setSelectedJiraIssueStatus(List<String> linkTypes);
 
 	/**
 	 * Returns the names of all JIRA issue types of the selected project.
@@ -142,5 +155,11 @@ public interface FilterSettings {
 	 * @return list of names of JIRA {@link de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus}s.
 	 */
 	List<String> getAllJiraIssueStatus();
+
+	/**
+	 * Returns the names of all link types
+	 * @return list of names of {@link de.uhd.ifi.se.decision.management.jira.model.LinkType}s.
+	 */
+	List<String> getAllLinkTypes();
 
 }
