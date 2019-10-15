@@ -170,6 +170,18 @@ public class GitCommitMessageExtractor {
 				, DocumentationLocation.COMMIT);
 	}
 
+	private DecisionKnowledgeElement createElement(int start, KnowledgeType rationaleType,
+												   String rationaleText, int end){
+		// id is set to a useful value in GitDecExtract.getElementsFromMessage!
+		return new DecisionKnowledgeElementImpl(0
+				, getSummary(rationaleText)
+				, getDescription(rationaleText)
+				, rationaleType
+				, "" // unknown, not needed at the moment
+				, COMMIT_PLACEHOLDER + String.valueOf(start) + ":" + String.valueOf(end)
+				, DocumentationLocation.COMMIT);
+	}
+
 	private String getDescription(String rationaleText) {
 		return rationaleText.substring(getSummaryEndPosition(rationaleText));
 	}
