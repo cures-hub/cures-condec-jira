@@ -16,7 +16,7 @@ import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.util.collect.MapBuilder;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationManagerForJiraIssueComments;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
@@ -29,143 +29,158 @@ import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersisten
  */
 public class JiraIssueTextExtractionEventListener {
 
-	private String projectKey;
-	private IssueEvent issueEvent;
-	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextExtractionEventListener.class);
+    private String projectKey;
+    private IssueEvent issueEvent;
+    private ClassificationManagerForJiraIssueComments classificationManagerForJiraIssueComments;
+    private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextExtractionEventListener.class);
 
-	/**
-	 * Locks the edit comment event function if a REST service edits comments.
-	 */
-	public static boolean editCommentLock;
+    public JiraIssueTextExtractionEventListener(ClassificationManagerForJiraIssueComments classificationManagerForJiraIssueComments){
+        this.classificationManagerForJiraIssueComments = classificationManagerForJiraIssueComments;
+    }
 
-	public void onIssueEvent(IssueEvent issueEvent) {
-		this.issueEvent = issueEvent;
-		this.projectKey = issueEvent.getProject().getKey();
+    public JiraIssueTextExtractionEventListener(){
+        this.classificationManagerForJiraIssueComments = new ClassificationManagerForJiraIssueComments();
 
-		if (!ConfigPersistenceManager.isActivated(this.projectKey)
-				&& !ConfigPersistenceManager.isKnowledgeExtractedFromIssues(this.projectKey)) {
-			return;
-		}
+    }
 
-		long eventTypeId = issueEvent.getEventTypeId();
-		if (eventTypeId == EventType.ISSUE_COMMENTED_ID) {
-			handleNewComment();
-		}
-		if (eventTypeId == EventType.ISSUE_COMMENT_DELETED_ID) {
-			handleDeleteComment();
-		}
-		if (eventTypeId == EventType.ISSUE_COMMENT_EDITED_ID) {
-			handleEditComment();
-		}
-		if (eventTypeId == EventType.ISSUE_DELETED_ID) {
-			handleDeleteIssue();
-		}
-		if (eventTypeId == EventType.ISSUE_UPDATED_ID) {
-			handleUpdateDescription();
-		}
-	}
+    /**
+     * Locks the edit comment event function if a REST service edits comments.
+     */
+    public static boolean editCommentLock;
 
-	private void parseIconsToTags() {
-		String projectKey = issueEvent.getProject().getKey();
-		if (!ConfigPersistenceManager.isIconParsing(projectKey)) {
-			return;
-		}
-		MutableComment comment = (MutableComment) issueEvent.getComment();
-		if (comment == null) {
-			MutableIssue jiraIssue = (MutableIssue) issueEvent.getIssue();
-			String description = jiraIssue.getDescription();
-			description = TextSplitter.parseIconsToTags(description);
-			jiraIssue.setDescription(description);
-			JiraIssuePersistenceManager.updateJiraIssue(jiraIssue, issueEvent.getUser());
-		} else {
-			String commentBody = comment.getBody();
-			commentBody = TextSplitter.parseIconsToTags(commentBody);
-			comment.setBody(commentBody);
-			ComponentAccessor.getCommentManager().update(comment, true);
-		}
-	}
+    public void onIssueEvent(IssueEvent issueEvent) {
+        this.issueEvent = issueEvent;
+        this.projectKey = issueEvent.getProject().getKey();
 
-	private void handleDeleteIssue() {
-		JiraIssueTextPersistenceManager.cleanSentenceDatabase(projectKey);
-		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
-	}
+        if (!ConfigPersistenceManager.isActivated(this.projectKey)
+                && !ConfigPersistenceManager.isKnowledgeExtractedFromIssues(this.projectKey)) {
+            return;
+        }
 
-	private void handleDeleteComment() {
-		JiraIssueTextPersistenceManager.cleanSentenceDatabase(this.projectKey);
-		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
-	}
+        long eventTypeId = issueEvent.getEventTypeId();
+        // @issue How to implement multiple checks of the event ID?
+        // @decision Use ifs only!
+        // @pro switch-case not trivial to implement,
+        // because the switch can not be a long variable.
+        // casting from long to int is dangerous.
+        if (eventTypeId == EventType.ISSUE_COMMENTED_ID) {
+            handleNewComment();
+        }
+        if (eventTypeId == EventType.ISSUE_COMMENT_DELETED_ID) {
+            handleDeleteComment();
+        }
+        if (eventTypeId == EventType.ISSUE_COMMENT_EDITED_ID) {
+            handleEditComment();
+        }
+        if (eventTypeId == EventType.ISSUE_DELETED_ID) {
+            handleDeleteIssue();
+        }
+        if (eventTypeId == EventType.ISSUE_UPDATED_ID) {
+            handleUpdateDescription();
+        }
+    }
 
-	private void handleNewComment() {
-		parseIconsToTags();
-		if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
-			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
-		} else {
-			MutableComment comment = (MutableComment) issueEvent.getComment();
-			JiraIssueTextPersistenceManager.getPartsOfComment(comment);
-		}
-		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
-	}
+    private void parseIconsToTags() {
+        String projectKey = issueEvent.getProject().getKey();
+        if (!ConfigPersistenceManager.isIconParsing(projectKey)) {
+            return;
+        }
+        MutableComment comment = (MutableComment) issueEvent.getComment();
+        if (comment == null) {
+            MutableIssue jiraIssue = (MutableIssue) issueEvent.getIssue();
+            String description = jiraIssue.getDescription();
+            description = TextSplitter.parseIconsToTags(description);
+            jiraIssue.setDescription(description);
+            JiraIssuePersistenceManager.updateJiraIssue(jiraIssue, issueEvent.getUser());
+        } else {
+            String commentBody = comment.getBody();
+            commentBody = TextSplitter.parseIconsToTags(commentBody);
+            comment.setBody(commentBody);
+            ComponentAccessor.getCommentManager().update(comment, true);
+        }
+    }
 
-	private void handleEditComment() {
-		if (JiraIssueTextExtractionEventListener.editCommentLock) {
-			// If locked, a REST service is currently manipulating the comment and should
-			// not be handled by this event listener.
-			LOGGER.debug("DecXtract event listener:\nEditing comment is still locked.");
-			return;
-		}
+    private void handleDeleteIssue() {
+        JiraIssueTextPersistenceManager.cleanSentenceDatabase(projectKey);
+        JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+    }
 
-		parseIconsToTags();
+    private void handleDeleteComment() {
+        JiraIssueTextPersistenceManager.cleanSentenceDatabase(this.projectKey);
+        JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+    }
 
-		if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
-			JiraIssueTextPersistenceManager.deletePartsOfComment(issueEvent.getComment());
-			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
-		} else {
-			MutableComment comment = (MutableComment) issueEvent.getComment();
-			JiraIssueTextPersistenceManager.updateComment(comment);
-		}
-		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
-	}
+    private void handleNewComment() {
+        parseIconsToTags();
+        if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
+            this.classificationManagerForJiraIssueComments.classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
+        } else {
+            MutableComment comment = (MutableComment) issueEvent.getComment();
+            JiraIssueTextPersistenceManager.getPartsOfComment(comment);
+        }
+        JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+    }
 
-	private void handleUpdateDescription() {
-		if (JiraIssueTextExtractionEventListener.editCommentLock) {
-			// If locked, a REST service is currently manipulating the comment and should
-			// not be handled by this event listener.
-			LOGGER.debug("DecXtract event listener:\nEditing description is still locked.");
-			return;
-		}
+    private void handleEditComment() {
+        if (JiraIssueTextExtractionEventListener.editCommentLock) {
+            // If locked, a REST service is currently manipulating the comment and should
+            // not be handled by this event listener.
+            LOGGER.debug("DecXtract event listener:\nEditing comment is still locked.");
+            return;
+        }
 
-		parseIconsToTags();
+        parseIconsToTags();
 
-		if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
-			JiraIssueTextPersistenceManager.deletePartsOfDescription(issueEvent.getIssue());
-			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
-		} else {
-			JiraIssueTextPersistenceManager.updateDescription(issueEvent.getIssue());
-		}
-		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
-	}
+        if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
+            JiraIssueTextPersistenceManager.deletePartsOfComment(issueEvent.getComment());
+			this.classificationManagerForJiraIssueComments.classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
+        } else {
+            MutableComment comment = (MutableComment) issueEvent.getComment();
+            JiraIssueTextPersistenceManager.updateComment(comment);
+        }
+        JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+    }
 
-	public Map<String, String> getChangedString(IssueEvent issueEvent) {
-		Map<String, String> changedString = new HashMap<String, String>();
+    private void handleUpdateDescription() {
+        if (JiraIssueTextExtractionEventListener.editCommentLock) {
+            // If locked, a REST service is currently manipulating the comment and should
+            // not be handled by this event listener.
+            LOGGER.debug("DecXtract event listener:\nEditing description is still locked.");
+            return;
+        }
 
-		GenericValue changeLog = issueEvent.getChangeLog();
-		Long changeId = changeLog.getLong("id");
-		if (changeId == null) {
-			return changedString;
-		}
+        parseIconsToTags();
 
-		try {
-			List<GenericValue> changes = changeLog.internalDelegator.findByAnd("ChangeItem",
-					MapBuilder.build("group", changeId));
-			for (GenericValue changeItem : changes) {
-				String oldValue = changeItem.getString("oldstring");
-				String newValue = changeItem.getString("newstring");
-				changedString.put(oldValue, newValue);
-			}
-		} catch (NullPointerException | GenericEntityException e) {
-			LOGGER.error("Get changed string during a JIRA issue event failed. Message: " + e.getMessage());
-		}
+        if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
+            JiraIssueTextPersistenceManager.deletePartsOfDescription(issueEvent.getIssue());
+            this.classificationManagerForJiraIssueComments.classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
+        } else {
+            JiraIssueTextPersistenceManager.updateDescription(issueEvent.getIssue());
+        }
+        JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+    }
 
-		return changedString;
-	}
+    public Map<String, String> getChangedString(IssueEvent issueEvent) {
+        Map<String, String> changedString = new HashMap<String, String>();
+
+        GenericValue changeLog = issueEvent.getChangeLog();
+        Long changeId = changeLog.getLong("id");
+        if (changeId == null) {
+            return changedString;
+        }
+
+        try {
+            List<GenericValue> changes = changeLog.internalDelegator.findByAnd("ChangeItem",
+                    MapBuilder.build("group", changeId));
+            for (GenericValue changeItem : changes) {
+                String oldValue = changeItem.getString("oldstring");
+                String newValue = changeItem.getString("newstring");
+                changedString.put(oldValue, newValue);
+            }
+        } catch (NullPointerException | GenericEntityException e) {
+            LOGGER.error("Get changed string during a JIRA issue event failed. Message: " + e.getMessage());
+        }
+
+        return changedString;
+    }
 }

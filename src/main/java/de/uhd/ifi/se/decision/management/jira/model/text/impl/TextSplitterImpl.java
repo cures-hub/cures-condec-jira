@@ -49,6 +49,7 @@ public class TextSplitterImpl implements TextSplitter {
 			partOfText.setType(type);
 			if (type != KnowledgeType.OTHER) {
 				partOfText.setRelevant(true);
+				//TODO: Why is this set here?
 				partOfText.setValidated(true);
 			}
 			parts.add(partOfText);
@@ -175,8 +176,7 @@ public class TextSplitterImpl implements TextSplitter {
 	 *
 	 * @param body
 	 * @param projectKey
-	 * @param lookOutForIcons
-	 *            search also for icons
+	 *
 	 * @return tagged knowledge type of a given string
 	 */
 	public static KnowledgeType getKnowledgeTypeFromTag(String body, String projectKey) {
