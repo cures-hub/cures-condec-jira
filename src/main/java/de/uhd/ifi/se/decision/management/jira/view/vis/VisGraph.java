@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -39,12 +38,9 @@ public class VisGraph {
 	@JsonIgnore
 	int cid = 0;
 
-	private List<Long> linkIdsVisited;
-
 	public VisGraph() {
 		nodes = new HashSet<>();
 		edges = new HashSet<>();
-		linkIdsVisited = new ArrayList<>();
 	}
 
 	public VisGraph(List<DecisionKnowledgeElement> elements, String projectKey) {
@@ -112,17 +108,18 @@ public class VisGraph {
 			if (iterNode instanceof DecisionKnowledgeElement) {
 				nodeElement = (DecisionKnowledgeElement) iterNode;
 			}
-			this.nodes.add(new VisNode(nodeElement, isCollapsed(nodeElement), level, cid));
-			parentNode = checkDepth(iterator, iterNode, parentNode);
-			cid++;
+			if(!containsNode(nodeElement)) {
+				this.nodes.add(new VisNode(nodeElement, isCollapsed(nodeElement), level, cid));
+				parentNode = checkDepth(iterator, iterNode, parentNode);
+				cid++;
+			}
 		}
 	}
 
 	private void computeEdges() {
 		for (Link link : this.graph.edgeSet()) {
 			if (this.elementsMatchingFilterCriteria.contains(link.getSourceElement()) && this.elementsMatchingFilterCriteria.contains(link.getDestinationElement())) {
-				if (!this.linkIdsVisited.contains(link.getId())) {
-					this.linkIdsVisited.add(link.getId());
+				if (!containsEdge(link)) {
 					this.edges.add(new VisEdge(link));
 				}
 			}
@@ -172,5 +169,23 @@ public class VisGraph {
 
 	public void setRootElementKey(String rootElementKey) {
 		this.rootElementKey = rootElementKey;
+	}
+
+	private boolean containsNode(Node node) {
+		for(VisNode visNode: this.nodes) {
+			if(visNode.getId().equals(node.getId()+"_"+ node.getDocumentationLocation())){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean containsEdge(Link link) {
+		for(VisEdge visEdge: this.edges) {
+			if(Long.parseLong(visEdge.getId()) == link.getId()) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
