@@ -123,16 +123,6 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getDecisionKnowledgeElementsInTimeSpan(Date creation, Date closed) {
-		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<>();
-		DecisionKnowledgeElementInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("PROJECT_KEY = ? AND CREATED >= ? AND CLOSED <= ?", projectKey, creation.getTime(), closed.getTime()));
-		for (DecisionKnowledgeElementInDatabase databaseEntry : databaseEntries) {
-			decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(databaseEntry));
-		}
-		return decisionKnowledgeElements;
-	}
-
-	@Override
 	public List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Link> inwardLinks = this.getInwardLinks(decisionKnowledgeElement);
 		List<DecisionKnowledgeElement> sourceElements = new ArrayList<DecisionKnowledgeElement>();

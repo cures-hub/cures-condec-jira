@@ -331,15 +331,6 @@ public abstract class AbstractPersistenceManager {
     }
 
     /**
-     * Get all decision knowledge elements for a project in a certain timespan.
-     *
-     * @param creation
-     * @param closed
-     * @return all decision knowledge elements in a timespan.
-     */
-    public abstract List<DecisionKnowledgeElement> getDecisionKnowledgeElementsInTimeSpan(Date creation, Date closed);
-
-    /**
      * Get all linked elements of the decision knowledge element for a project where
      * this decision knowledge element is the destination element.
      *

@@ -221,29 +221,6 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		return decisionKnowledgeElements;
 	}
 
-	@Override
-	public List<DecisionKnowledgeElement> getDecisionKnowledgeElementsInTimeSpan(Date creation, Date closed) {
-		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<>();
-		if (creation == null || closed == null) {
-			LOGGER.error("Time is not set correctly. Creation of close time are null");
-			return decisionKnowledgeElements;
-		}
-		Timestamp creationStamp = new Timestamp(creation.getTime());
-		Timestamp closeStamp = new Timestamp(closed.getTime());
-		for (Issue issue : getIssueIdCollection()) {
-			if (issue.getCreated().after(creationStamp)) {
-				// Issue is not resolved jet
-				if (issue.getResolutionDate() == null) {
-					decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(issue));
-				}
-				// Issue is resolved before the time filter
-				if (issue.getResolutionDate().before(closeStamp)) {
-					decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(issue));
-				}
-			}
-		}
-		return decisionKnowledgeElements;
-	}
 
 	@Override
 	public List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element) {
