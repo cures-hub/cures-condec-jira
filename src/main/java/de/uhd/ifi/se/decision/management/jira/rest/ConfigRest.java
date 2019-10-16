@@ -29,12 +29,11 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 import com.google.common.collect.ImmutableMap;
-
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
-import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationManagerForJiraIssueComments;
-import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationTrainer;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.ClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassificationTrainer;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
@@ -48,7 +47,7 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
  */
 @Path("/config")
 public class ConfigRest {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigRest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigRest.class);
 
 	@Path("/setActivated")
 	@POST
@@ -72,23 +71,23 @@ public class ConfigRest {
 		}
 	}
 
-	private static void setDefaultKnowledgeTypesEnabled(String projectKey, boolean isActivated) {
-		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaultTypes();
-		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
-			ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), isActivated);
-		}
-	}
+    private static void setDefaultKnowledgeTypesEnabled(String projectKey, boolean isActivated) {
+        Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaultTypes();
+        for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
+            ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), isActivated);
+        }
+    }
 
-	@Path("/isIssueStrategy")
-	@GET
-	public Response isIssueStrategy(@QueryParam("projectKey") final String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		Boolean isIssueStrategy = ConfigPersistenceManager.isIssueStrategy(projectKey);
-		return Response.ok(isIssueStrategy).build();
-	}
+    @Path("/isIssueStrategy")
+    @GET
+    public Response isIssueStrategy(@QueryParam("projectKey") final String projectKey) {
+        Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+        if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+            return checkIfProjectKeyIsValidResponse;
+        }
+        Boolean isIssueStrategy = ConfigPersistenceManager.isIssueStrategy(projectKey);
+        return Response.ok(isIssueStrategy).build();
+    }
 
 	@Path("/setIssueStrategy")
 	@POST
@@ -113,18 +112,18 @@ public class ConfigRest {
 		}
 	}
 
-	public static void manageDefaultIssueTypes(String projectKey, boolean isIssueStrategy) {
-		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaultTypes();
-		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
-			if (isIssueStrategy) {
-				ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), true);
-				PluginInitializer.createIssueType(knowledgeType.toString());
-				PluginInitializer.addIssueTypeToScheme(knowledgeType.toString(), projectKey);
-			} else {
-				PluginInitializer.removeIssueTypeFromScheme(knowledgeType.toString(), projectKey);
-			}
-		}
-	}
+    public static void manageDefaultIssueTypes(String projectKey, boolean isIssueStrategy) {
+        Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaultTypes();
+        for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
+            if (isIssueStrategy) {
+                ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), true);
+                PluginInitializer.createIssueType(knowledgeType.toString());
+                PluginInitializer.addIssueTypeToScheme(knowledgeType.toString(), projectKey);
+            } else {
+                PluginInitializer.removeIssueTypeFromScheme(knowledgeType.toString(), projectKey);
+            }
+        }
+    }
 
 	@Path("/setKnowledgeExtractedFromGit")
 	@POST
@@ -233,22 +232,22 @@ public class ConfigRest {
 		}
 	}
 
-	@Path("/getKnowledgeTypes")
-	@GET
-	public Response getKnowledgeTypes(@QueryParam("projectKey") final String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		List<String> knowledgeTypes = new ArrayList<String>();
-		for (KnowledgeType knowledgeType : KnowledgeType.values()) {
-			boolean isEnabled = ConfigPersistenceManager.isKnowledgeTypeEnabled(projectKey, knowledgeType);
-			if (isEnabled) {
-				knowledgeTypes.add(knowledgeType.toString());
-			}
-		}
-		return Response.ok(knowledgeTypes).build();
-	}
+    @Path("/getKnowledgeTypes")
+    @GET
+    public Response getKnowledgeTypes(@QueryParam("projectKey") final String projectKey) {
+        Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+        if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+            return checkIfProjectKeyIsValidResponse;
+        }
+        List<String> knowledgeTypes = new ArrayList<String>();
+        for (KnowledgeType knowledgeType : KnowledgeType.values()) {
+            boolean isEnabled = ConfigPersistenceManager.isKnowledgeTypeEnabled(projectKey, knowledgeType);
+            if (isEnabled) {
+                knowledgeTypes.add(knowledgeType.toString());
+            }
+        }
+        return Response.ok(knowledgeTypes).build();
+    }
 
 	@Path("/getLinkTypes")
 	@GET
@@ -388,161 +387,190 @@ public class ConfigRest {
 		}
 	}
 
-	@Path("/classifyWholeProject")
-	@POST
-	public Response classifyWholeProject(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
+    @Path("/classifyWholeProject")
+    @POST
+    public Response classifyWholeProject(@Context HttpServletRequest request,
+                                         @QueryParam("projectKey") final String projectKey) {
+        Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+        if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+            return isValidDataResponse;
+        }
 
-		if (!ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey)) {
-			return Response.status(Status.FORBIDDEN)
-					.entity(ImmutableMap.of("error", "Automatic classification is disabled for this project.")).build();
-		}
-		try {
-			ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
-			JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
-			SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
+        if (!ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey)) {
+            return Response.status(Status.FORBIDDEN)
+                    .entity(ImmutableMap.of("error", "Automatic classification is disabled for this project.")).build();
+        }
+        try {
+            ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
+            JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
+            SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
 
-			Query query = jqlClauseBuilder.project(projectKey).buildQuery();
-			SearchResults<Issue> searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
+            Query query = jqlClauseBuilder.project(projectKey).buildQuery();
+            SearchResults<Issue> searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
 
-			ClassificationManagerForJiraIssueComments classificationManager = new ClassificationManagerForJiraIssueComments();
-			for (Issue issue : JiraSearchServiceHelper.getJiraIssues(searchResults)) {
-				classificationManager.classifyAllCommentsOfJiraIssue(issue);
-			}
+            ClassificationManagerForJiraIssueComments classificationManager = new ClassificationManagerForJiraIssueComments();
+            for (Issue issue : JiraSearchServiceHelper.getJiraIssues(searchResults)) {
+                classificationManager.classifyAllCommentsOfJiraIssue(issue);
+            }
 
-			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
-		} catch (Exception e) {
-			LOGGER.error("Failed to classify the whole project. Message: " + e.getMessage());
-			return Response.status(Status.CONFLICT).entity(ImmutableMap.of("isSucceeded", false)).build();
-		}
-	}
+            return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
+        } catch (Exception e) {
+            LOGGER.error("Failed to classify the whole project. Message: " + e.getMessage());
+            return Response.status(Status.CONFLICT).entity(ImmutableMap.of("isSucceeded", false)).build();
+        }
+    }
 
-	@Path("/trainClassifier")
-	@POST
-	public Response trainClassifier(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("arffFileName") String arffFileName) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		if (arffFileName == null || arffFileName.isEmpty()) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"The classifier could not be trained since the ARFF file name is invalid.")).build();
-		}
-		ConfigPersistenceManager.setArffFileForClassifier(projectKey, arffFileName);
-		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey, arffFileName);
-		boolean isTrained = trainer.train();
-		if (isTrained) {
-			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
-		}
-		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(
-				ImmutableMap.of("error", "The classifier could not be trained due to an internal server error."))
-				.build();
-	}
+    @Path("/trainClassifier")
+    @POST
+    public Response trainClassifier(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+                                    @QueryParam("arffFileName") String arffFileName) {
+        Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+        if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+            return isValidDataResponse;
+        }
+        if (arffFileName == null || arffFileName.isEmpty()) {
+            return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+                    "The classifier could not be trained since the ARFF file name is invalid.")).build();
+        }
+        ConfigPersistenceManager.setArffFileForClassifier(projectKey, arffFileName);
+        ClassificationTrainer trainer = new OnlineClassificationTrainerImpl(projectKey, arffFileName);
+        boolean isTrained = trainer.train();
+        if (isTrained) {
+            return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
+        }
+        return Response.status(Status.INTERNAL_SERVER_ERROR)
+                .entity(ImmutableMap.of("error", "The classifier could not be trained due to an internal server error.")).build();
+    }
 
-	@Path("/saveArffFile")
-	@POST
-	public Response saveArffFile(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("useOnlyValidatedData") boolean useOnlyValidatedData) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
-		File arffFile = trainer.saveArffFile(useOnlyValidatedData);
+    @Path("/evaluateModel")
+    @POST
+    public Response evaluateModel(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+        Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+        if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+            return isValidDataResponse;
+        }
 
-		if (arffFile != null) {
-			return Response.ok(Status.ACCEPTED).entity(
-					ImmutableMap.of("arffFile", arffFile.toString(), "content", trainer.getInstances().toString()))
-					.build();
-		}
-		return Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error", "ARFF file could not be created because of an internal server error."))
-				.build();
-	}
+        OnlineClassificationTrainerImpl trainer = new OnlineClassificationTrainerImpl(projectKey);
 
-	@Path("/setIconParsing")
-	@POST
-	public Response setIconParsing(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivatedString") String isActivatedString) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		if (isActivatedString == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
-		}
-		try {
-			boolean isActivated = Boolean.valueOf(isActivatedString);
-			ConfigPersistenceManager.setIconParsing(projectKey, isActivated);
-			return Response.ok(Status.ACCEPTED).build();
-		} catch (Exception e) {
-			LOGGER.error("Failed to enable or disable icon parsing. Message: " + e.getMessage());
-			return Response.status(Status.CONFLICT).build();
-		}
-	}
+        try {
+            Map<String, Double> evaluationResults = trainer.evaluateClassifier();
 
-	@Path("/setUseClassifierForIssueComments")
-	@POST
-	public Response setUseClassifierForIssueComments(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isClassifierUsedForIssues") String isActivatedString) {
-		System.out.println(isActivatedString);
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		if (isActivatedString == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
-		}
-		try {
-			boolean isActivated = Boolean.valueOf(isActivatedString);
-			ConfigPersistenceManager.setUseClassiferForIssueComments(projectKey, isActivated);
-			return Response.ok(Status.ACCEPTED).build();
-		} catch (Exception e) {
-			LOGGER.error("Failed to enable or disable the classifier for JIRA issue text. Message: " + e.getMessage());
-			return Response.status(Status.CONFLICT).build();
-		}
-	}
+            StringBuilder prettyMapOutput = new StringBuilder();
+            prettyMapOutput.append("{" + System.lineSeparator());
+            for (Map.Entry<String, Double> e : evaluationResults.entrySet()) {
+                prettyMapOutput.append("\"" + e.getKey() + "\" : \"" + e.getValue() + "\"," + System.lineSeparator());
+            }
+            prettyMapOutput.append("}");
 
-	private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {
-		if (request == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build();
-		}
+            return Response.ok(Status.ACCEPTED).entity(
+                    ImmutableMap.of("content", prettyMapOutput.toString()))
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity(ImmutableMap.of("error", e.getMessage())).build();
+        }
+    }
 
-		Response projectResponse = checkIfProjectKeyIsValid(projectKey);
-		if (projectResponse.getStatus() != Status.OK.getStatusCode()) {
-			return projectResponse;
-		}
+    @Path("/saveArffFile")
+    @POST
+    public Response saveArffFile(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+                                 @QueryParam("useOnlyValidatedData") boolean useOnlyValidatedData) {
+        Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+        if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+            return isValidDataResponse;
+        }
+        OnlineClassificationTrainerImpl trainer = new OnlineClassificationTrainerImpl(projectKey);
+        File arffFile = trainer.saveTrainingFile(useOnlyValidatedData);
 
-		Response userResponse = checkIfUserIsAuthorized(request, projectKey);
-		if (userResponse.getStatus() != Status.OK.getStatusCode()) {
-			return userResponse;
-		}
+        if (arffFile != null) {
+            return Response.ok(Status.ACCEPTED).entity(
+                    ImmutableMap.of("arffFile", arffFile.toString(), "content", trainer.getInstances().toString()))
+                    .build();
+        }
+        return Response.status(Status.INTERNAL_SERVER_ERROR)
+                .entity(ImmutableMap.of("error", "ARFF file could not be created because of an internal server error."))
+                .build();
+    }
 
-		return Response.status(Status.OK).build();
-	}
+    @Path("/setIconParsing")
+    @POST
+    public Response setIconParsing(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+                                   @QueryParam("isActivatedString") String isActivatedString) {
+        Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+        if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+            return isValidDataResponse;
+        }
+        if (isActivatedString == null) {
+            return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
+        }
+        try {
+            boolean isActivated = Boolean.valueOf(isActivatedString);
+            ConfigPersistenceManager.setIconParsing(projectKey, isActivated);
+            return Response.ok(Status.ACCEPTED).build();
+        } catch (Exception e) {
+            LOGGER.error("Failed to enable or disable icon parsing. Message: " + e.getMessage());
+            return Response.status(Status.CONFLICT).build();
+        }
+    }
 
-	private Response checkIfUserIsAuthorized(HttpServletRequest request, String projectKey) {
-		String username = AuthenticationManager.getUsername(request);
-		boolean isProjectAdmin = AuthenticationManager.isProjectAdmin(username, projectKey);
-		if (isProjectAdmin) {
-			return Response.status(Status.OK).build();
-		}
-		LOGGER.warn("Unauthorized user (name:{}) tried to change configuration.", username);
-		return Response.status(Status.UNAUTHORIZED).entity(ImmutableMap.of("error", "Authorization failed.")).build();
-	}
+    @Path("/setUseClassifierForIssueComments")
+    @POST
+    public Response setUseClassifierForIssueComments(@Context HttpServletRequest request,
+                                                     @QueryParam("projectKey") String projectKey,
+                                                     @QueryParam("isClassifierUsedForIssues") String isActivatedString) {
+        System.out.println(isActivatedString);
+        Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+        if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+            return isValidDataResponse;
+        }
+        if (isActivatedString == null) {
+            return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
+        }
+        try {
+            boolean isActivated = Boolean.valueOf(isActivatedString);
+            ConfigPersistenceManager.setUseClassiferForIssueComments(projectKey, isActivated);
+            return Response.ok(Status.ACCEPTED).build();
+        } catch (Exception e) {
+            LOGGER.error("Failed to enable or disable the classifier for JIRA issue text. Message: " + e.getMessage());
+            return Response.status(Status.CONFLICT).build();
+        }
+    }
 
-	private Response checkIfProjectKeyIsValid(String projectKey) {
-		if (projectKey == null || projectKey.equals("")) {
-			LOGGER.error("Project configuration could not be changed since the project key is invalid.");
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project key is invalid."))
-					.build();
-		}
-		return Response.status(Status.OK).build();
-	}
+    private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {
+        if (request == null) {
+            return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build();
+        }
+
+        Response projectResponse = checkIfProjectKeyIsValid(projectKey);
+        if (projectResponse.getStatus() != Status.OK.getStatusCode()) {
+            return projectResponse;
+        }
+
+        Response userResponse = checkIfUserIsAuthorized(request, projectKey);
+        if (userResponse.getStatus() != Status.OK.getStatusCode()) {
+            return userResponse;
+        }
+
+        return Response.status(Status.OK).build();
+    }
+
+    private Response checkIfUserIsAuthorized(HttpServletRequest request, String projectKey) {
+        String username = AuthenticationManager.getUsername(request);
+        boolean isProjectAdmin = AuthenticationManager.isProjectAdmin(username, projectKey);
+        if (isProjectAdmin) {
+            return Response.status(Status.OK).build();
+        }
+        LOGGER.warn("Unauthorized user (name:{}) tried to change configuration.", username);
+        return Response.status(Status.UNAUTHORIZED).entity(ImmutableMap.of("error", "Authorization failed.")).build();
+    }
+
+    private Response checkIfProjectKeyIsValid(String projectKey) {
+        if (projectKey == null || projectKey.equals("")) {
+            LOGGER.error("Project configuration could not be changed since the project key is invalid.");
+            return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project key is invalid."))
+                    .build();
+        }
+        return Response.status(Status.OK).build();
+    }
 }
