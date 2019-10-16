@@ -17,4 +17,4 @@ bin/
 config.properties
 
 
-defaultTrainingData.arff
+./defaultTrainingData.arff
