@@ -329,8 +329,6 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 		}
 		Link link = (Link) object;
 		return this.getId() == link.getId();
-//		return this.source.getId() == link.getSourceElement().getId()
-//				&& this.target.getId() == link.getDestinationElement().getId();
 	}
 
 	public boolean equals(LinkInDatabase linkInDatabase) {

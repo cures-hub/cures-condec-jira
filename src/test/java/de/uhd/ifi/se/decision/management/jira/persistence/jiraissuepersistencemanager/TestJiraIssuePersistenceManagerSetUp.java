@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuepersistencemanager;
 
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import org.junit.BeforeClass;
 
 import com.atlassian.jira.user.ApplicationUser;
@@ -25,5 +26,6 @@ public abstract class TestJiraIssuePersistenceManagerSetUp extends TestSetUp {
 		numberOfElements = issueStrategy.getDecisionKnowledgeElements().size();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		link = new LinkImpl(1,4,DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
+		link.setType(LinkType.RELATE.toString());
 	}
 }
