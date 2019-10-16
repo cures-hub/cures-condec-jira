@@ -75,7 +75,7 @@ public class ViewRest {
 
 		String regexFilter = issueKey.toUpperCase()+"\\.|"+issueKey.toUpperCase()+"$";
 		// get feature branches of an issue
-		return getDiffViewerResponse(getProjectKey(issueKey),regexFilter );
+		return getDiffViewerResponse(getProjectKey(issueKey), regexFilter);
 	}
 
 	private Response getDiffViewerResponse(String projectKey, String filter) {

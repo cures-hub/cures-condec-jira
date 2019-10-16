@@ -18,7 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 /**
- * Extract decision knowledge elements stored in git repository. 
+ * Extract decision knowledge elements stored in git repository.
  * Out-of-scope: linking decision knowledge elements among each other.
  */
 public class GitDecXtract {
@@ -93,7 +93,7 @@ public class GitDecXtract {
 	}
 
 	private List<DecisionKnowledgeElement> getElementsFromMessage(RevCommit commit) {
-		GitCommitMessageExtractor extractorFromMessage = new GitCommitMessageExtractor(commit.getFullMessage());
+		GitCommitMessageExtractor extractorFromMessage = new GitCommitMessageExtractor(commit.getFullMessage(), this.projecKey);
 		List<DecisionKnowledgeElement> elementsFromMessage = extractorFromMessage.getElements().stream()
 				.map(element -> { // need to update project and key attributes
 					element.setProject(projecKey);
