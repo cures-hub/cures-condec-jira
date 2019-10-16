@@ -110,6 +110,10 @@ public class FilterExtractor {
 		// Search in every Jira issue for decision knowledge elements and if
 		// there are some add them
 		for (Issue currentIssue : jiraIssues) {
+			//Only Issues of the selected Project
+			if(!currentIssue.getProjectObject().getKey().equals(this.filterSettings.getProjectKey())){
+				continue;
+			}
 			// Add all Matching Elements from Query as a DecisionKnowledgeElement
 			results.add(new DecisionKnowledgeElementImpl(currentIssue));
 			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
