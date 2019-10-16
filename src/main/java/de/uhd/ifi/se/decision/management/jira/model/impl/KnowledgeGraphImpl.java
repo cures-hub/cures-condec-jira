@@ -39,12 +39,9 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = new HashMap<>();
 		while (iterator.hasNext()) {
 			Node iterNode = iterator.next();
-			if (iterator.getParent(iterNode).getId() == parentNode.getId()) {
-				if (iterNode instanceof DecisionKnowledgeElement) {
-					DecisionKnowledgeElement nodeElement = (DecisionKnowledgeElement) iterNode;
-					childrenAndLinks.put(nodeElement, this.getEdge(parentNode, iterNode));
-				}
-
+			if (iterator.getParent(iterNode).getId() == parentNode.getId() && iterNode instanceof DecisionKnowledgeElement) {
+				DecisionKnowledgeElement nodeElement = (DecisionKnowledgeElement) iterNode;
+				childrenAndLinks.put(nodeElement, this.getEdge(parentNode, iterNode));
 			}
 		}
 		return childrenAndLinks;
@@ -92,12 +89,10 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 				if (destination.equals(source)) {
 					continue;
 				}
-				if (!linkIds.contains(link.getId())) {
-					if (this.containsVertex(link.getDestinationElement())
+				if (!linkIds.contains(link.getId()) && this.containsVertex(link.getDestinationElement())
 							&& this.containsVertex(link.getSourceElement())) {
-						this.addEdge(link.getSourceElement(), link.getDestinationElement(), link);
-						linkIds.add(link.getId());
-					}
+					this.addEdge(link.getSourceElement(), link.getDestinationElement(), link);
+					linkIds.add(link.getId());
 				}
 			}
 		}

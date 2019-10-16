@@ -82,6 +82,28 @@ public class VisGraph {
 		if (graph == null) {
 			graph = new KnowledgeGraphImpl(element.getProject().getProjectKey());
 		}
+		computeNodes(element);
+		computeEdges();
+	}
+
+	private Node checkDepth(BreadthFirstIterator<Node, Link> iterator, Node iterNode, Node parentNode) {
+		// Check Depth
+		Node parentNodeTmp = iterator.getParent(iterNode);
+		// Is Root Node and will be alone as Top Element
+		if (parentNode == null) {
+			level++;
+			return iterNode;
+
+		}
+		// New Parent Node means next level
+		if (parentNodeTmp != null && parentNodeTmp.getId() != parentNode.getId()) {
+			level++;
+			return parentNodeTmp;
+		}
+		return parentNode;
+	}
+
+	private void computeNodes(DecisionKnowledgeElement element) {
 		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<>(graph, element);
 		Node parentNode = null;
 		while (iterator.hasNext()) {
@@ -91,24 +113,15 @@ public class VisGraph {
 				nodeElement = (DecisionKnowledgeElement) iterNode;
 			}
 			this.nodes.add(new VisNode(nodeElement, isCollapsed(nodeElement), level, cid));
-			// Check Depth
-			Node parentNodeTmp = iterator.getParent(iterNode);
-			// Is Root Node and will be alone as Top Element
-			if (parentNode == null) {
-				parentNode = iterNode;
-				level++;
-			}
-			// New Parent Node means next level
-			if (parentNodeTmp != null && parentNodeTmp.getId() != parentNode.getId()) {
-				parentNode = parentNodeTmp;
-				level++;
-			}
+			parentNode = checkDepth(iterator, iterNode, parentNode);
 			cid++;
 		}
+	}
+
+	private void computeEdges() {
 		for (Link link : this.graph.edgeSet()) {
-			if (this.elementsMatchingFilterCriteria.contains(link.getSourceElement())
-					&& this.elementsMatchingFilterCriteria.contains(link.getDestinationElement())) {
-				if(!this.linkIdsVisited.contains(link.getId())){
+			if (this.elementsMatchingFilterCriteria.contains(link.getSourceElement()) && this.elementsMatchingFilterCriteria.contains(link.getDestinationElement())) {
+				if (!this.linkIdsVisited.contains(link.getId())) {
 					this.linkIdsVisited.add(link.getId());
 					this.edges.add(new VisEdge(link));
 				}

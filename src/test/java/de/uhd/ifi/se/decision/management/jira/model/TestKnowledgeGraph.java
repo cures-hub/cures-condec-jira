@@ -22,12 +22,11 @@ import net.java.ao.test.jdbc.NonTransactional;
 public class TestKnowledgeGraph extends TestSetUp {
 
 	private KnowledgeGraph graph;
-	private DecisionKnowledgeElement element;
 
 	@Before
 	public void setUp() {
 		init();
-		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 4));
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 4));
 		graph = new KnowledgeGraphImpl(element.getProject().getProjectKey());
 	}
 
@@ -47,8 +46,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGraphWithIrrelevantComment() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter
-				.getSentencesForCommentText("This is a test comment with some irrelevant text.");
+		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("This is a test comment with some irrelevant text.");
 		PartOfJiraIssueText sentence = comment.get(0);
 		String projectKey = sentence.getProject().getProjectKey();
 		KnowledgeGraph graph = new KnowledgeGraphImpl(projectKey);
@@ -58,8 +56,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGraphWithRelevantComment() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter
-				.getSentencesForCommentText("{alternative} This would be a great solution option! {alternative}");
+		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("{alternative} This would be a great solution option! {alternative}");
 		PartOfJiraIssueText sentence = comment.get(0);
 		String projectKey = sentence.getProject().getProjectKey();
 		KnowledgeGraph graph = new KnowledgeGraphImpl(projectKey);

@@ -149,11 +149,8 @@ public class FilterExtractor {
 			return true;
 		}
 		if (filterSettings.getCreatedEarliest() != -1 && filterSettings.getCreatedLatest() != -1) {
-			if (element.getCreated().getTime() >= filterSettings.getCreatedEarliest()
-					&& element.getCreated().getTime() <= filterSettings.getCreatedLatest()) {
-				return true;
-			}
-			return false;
+			return (element.getCreated().getTime() >= filterSettings.getCreatedEarliest()
+					&& element.getCreated().getTime() <= filterSettings.getCreatedLatest());
 		}
 		if (filterSettings.getCreatedEarliest() != -1) {
 			if (element.getCreated().getTime() >= filterSettings.getCreatedEarliest()) {
@@ -215,17 +212,15 @@ public class FilterExtractor {
 				if (filterSettings.getSelectedIssueStatus()
 						.contains(DecisionStatusManager.getStatusForElement(element))) {
 					// Check if the Type of the Element is correct
-					if (checkIfTypeMatches(element)) {
-						if (checkIfElementMatchesTimeFilter(element)) {
-							// Case no text filter
-							if (filterSettings.getSearchString().equals("")
-									|| filterSettings.getSearchString().equals("?filter=-4")
-									|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
+					if (checkIfTypeMatches(element) && checkIfElementMatchesTimeFilter(element)) {
+						// Case no text filter
+						if (filterSettings.getSearchString().equals("")
+								|| filterSettings.getSearchString().equals("?filter=-4")
+								|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
+							filteredElements.add(element);
+						} else {
+							if (checkIfElementMatchesStringFilter(element)) {
 								filteredElements.add(element);
-							} else {
-								if (checkIfElementMatchesStringFilter(element)) {
-									filteredElements.add(element);
-								}
 							}
 						}
 					}

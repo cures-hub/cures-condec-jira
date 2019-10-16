@@ -9,9 +9,6 @@ public class NodeImpl implements Node {
 	protected DocumentationLocation documentationLocation;
 	protected DecisionKnowledgeProject project;
 
-	public NodeImpl() {
-	}
-
 	public long getId() {
 		return id;
 	}

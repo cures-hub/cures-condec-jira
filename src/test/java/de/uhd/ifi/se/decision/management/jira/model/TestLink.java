@@ -3,9 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.persistence.jiraissuepersistencemanager.TestJiraIssuePersistenceManagerSetUp;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.jira.issue.link.IssueLink;
