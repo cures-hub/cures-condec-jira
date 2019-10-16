@@ -68,8 +68,8 @@ public class FilterExtractor {
 			if (!addedElements.contains(current)) {
 				// if not get the connected tree
 				String currentElementKey = current.getKey();
-				AbstractPersistenceManager persistenceManager = AbstractPersistenceManager
-						.getDefaultPersistenceStrategy(this.filterSettings.getProjectKey());
+				AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(
+						this.filterSettings.getProjectKey(), current.getDocumentationLocation().getIdentifier());
 				DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(currentElementKey);
 				List<DecisionKnowledgeElement> filteredElements = getElementsInGraph(element);
 				// add each element to the list
@@ -84,6 +84,10 @@ public class FilterExtractor {
 	private List<DecisionKnowledgeElement> getElementsInGraph(DecisionKnowledgeElement element) {
 		KnowledgeGraph graph = new KnowledgeGraphImpl(filterSettings.getProjectKey());
 		List<DecisionKnowledgeElement> elements = new ArrayList<>();
+		if(!graph.vertexSet().contains(element)){
+			elements.add(element);
+			return elements;
+		}
 		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<>(graph, element);
 		while (iterator.hasNext()) {
 			Node node = iterator.next();
