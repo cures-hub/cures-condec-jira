@@ -173,7 +173,7 @@ public class VisGraph {
 
 	private boolean containsNode(Node node) {
 		for(VisNode visNode: this.nodes) {
-			if(visNode.getId().equals(node.getId()+"_"+ node.getDocumentationLocation())){
+			if(visNode.getId().equals(node.getId()+"_"+ node.getDocumentationLocation().getIdentifier())){
 				return true;
 			}
 		}
