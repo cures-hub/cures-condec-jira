@@ -85,14 +85,8 @@ public class VisGraph {
 	private Node checkDepth(BreadthFirstIterator<Node, Link> iterator, Node iterNode, Node parentNode) {
 		// Check Depth
 		Node parentNodeTmp = iterator.getParent(iterNode);
-		// Is Root Node and will be alone as Top Element
-		if (parentNode == null) {
-			level++;
-			return iterNode;
-
-		}
 		// New Parent Node means next level
-		if (parentNodeTmp != null && parentNodeTmp.getId() != parentNode.getId()) {
+		if (parentNodeTmp != null  && parentNode != null && parentNodeTmp.getId() != parentNode.getId()) {
 			level++;
 			return parentNodeTmp;
 		}
@@ -109,8 +103,12 @@ public class VisGraph {
 				nodeElement = (DecisionKnowledgeElement) iterNode;
 			}
 			if(!containsNode(nodeElement)) {
-				this.nodes.add(new VisNode(nodeElement, isCollapsed(nodeElement), level, cid));
 				parentNode = checkDepth(iterator, iterNode, parentNode);
+				this.nodes.add(new VisNode(nodeElement, isCollapsed(nodeElement), level, cid));
+				if(parentNode == null) {
+					parentNode = iterNode;
+					level++;
+				}
 				cid++;
 			}
 		}
