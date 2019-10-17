@@ -27,6 +27,7 @@ public class GitDecXtract {
 	public static final String RAT_KEY_NOEDIT = "-";
 	private final GitClient gitClient;
 	private final String projecKey;
+	private GitCommitMessageExtractor extractorFromMessage;
 
 	public GitDecXtract(String projecKey) {
 		this.projecKey = projecKey;
@@ -61,6 +62,10 @@ public class GitDecXtract {
 		return gatheredElements;
 	}
 
+	public String getExtractedCommentString(){
+		return extractorFromMessage.getComment();
+	}
+
 	private List<DecisionKnowledgeElement> getElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd,
 			String featureBranchShortName) {
 		List<DecisionKnowledgeElement> elementsFromCode = new ArrayList<>();
@@ -93,7 +98,7 @@ public class GitDecXtract {
 	}
 
 	private List<DecisionKnowledgeElement> getElementsFromMessage(RevCommit commit) {
-		GitCommitMessageExtractor extractorFromMessage = new GitCommitMessageExtractor(commit.getFullMessage(), this.projecKey);
+		extractorFromMessage = new GitCommitMessageExtractor(commit.getFullMessage(), this.projecKey);
 		List<DecisionKnowledgeElement> elementsFromMessage = extractorFromMessage.getElements().stream()
 				.map(element -> { // need to update project and key attributes
 					element.setProject(projecKey);

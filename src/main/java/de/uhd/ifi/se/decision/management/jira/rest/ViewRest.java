@@ -15,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
@@ -50,311 +51,320 @@ import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
  */
 @Path("/view")
 public class ViewRest {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ViewRest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ViewRest.class);
+    private GitClient gitClient;
+    private GitDecXtract extractor;
 
-	@Path("/elementsFromBranchesOfProject")
-	@GET
-	public Response getAllFeatureBranchesTree(@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
+    @Path("/elementsFromBranchesOfProject")
+    @GET
+    public Response getAllFeatureBranchesTree(@QueryParam("projectKey") String projectKey) {
+        Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+        if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+            return checkIfProjectKeyIsValidResponse;
+        }
 
-		// get all project branches
-		return getDiffViewerResponse(projectKey, projectKey);
-	}
-
-	@Path("/elementsFromBranchesOfJiraIssue")
-	@GET
-	public Response getFeatureBranchTree(@QueryParam("issueKey") String issueKey) {
-		issueKey = normalizeIssueKey(issueKey); // ex: issueKey=ConDec-498
-		Issue issue = getIssue(issueKey);
-		if (issue == null) {
-			return issueKeyIsInvalid();
-		}
-
-		String regexFilter = issueKey.toUpperCase()+"\\.|"+issueKey.toUpperCase()+"$";
-		// get feature branches of an issue
-		return getDiffViewerResponse(getProjectKey(issueKey), regexFilter);
-	}
-
-	private Response getDiffViewerResponse(String projectKey, String filter) {
-		GitClient gitClient = new GitClientImpl(projectKey);
-		List<Ref> branches = gitClient.getRemoteBranches();
-		Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
-
-		if (branches.isEmpty()) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-		}
-		Map<Ref, List<DecisionKnowledgeElement>> ratBranchList = new HashMap<>();
-		GitDecXtract extractor = new GitDecXtract(projectKey);
-		// TODO: move the loop elsewhere or maybe in GitDecXtract
-		for (Ref branch : branches) {
-			String branchName = branch.getName();
-			Matcher branchMatcher = filterPattern.matcher(branchName);
-			if (branchMatcher.find()) {
-				ratBranchList.put(branch, extractor.getElements(branch));
-			}
-		}
-		extractor.close();
-		gitClient.close();
-
-		DiffViewer diffView = new DiffViewer(ratBranchList);
-		Response resp = null;
-		try {
-			Response.ResponseBuilder respBuilder = Response.ok(diffView);
-			resp = respBuilder.build();
-		} catch (Exception ex) {
-			LOGGER.error(ex.getMessage());
-		}
-		return resp;
-	}
-
-	private String normalizeIssueKey(String issueKey) {
-		return issueKey.toUpperCase();
-	}
-
-	@Path("/getTreeViewer")
-	@GET
-	public Response getTreeViewer(@QueryParam("projectKey") String projectKey,
-			@QueryParam("rootElementType") String rootElementType) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		if (rootElementType == null) {
-			rootElementType = "decision";
-		}
-
-		TreeViewer treeViewer = new TreeViewer(projectKey, KnowledgeType.getKnowledgeType(rootElementType));
-		return Response.ok(treeViewer).build();
-	}
-
-	@Path("/getTreeViewer2")
-	@GET
-	public Response getTreeViewer2(@QueryParam("issueKey") String issueKey,
-			@QueryParam("showRelevant") String showRelevant) {
-		if (!issueKey.contains("-")) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Issue Key is not valid."))
-					.build();
-		}
-		Boolean[] booleanArray = Arrays.stream(showRelevant.split(",")).map(Boolean::parseBoolean)
-				.toArray(Boolean[]::new);
-		String projectKey = issueKey.substring(0, issueKey.indexOf("-"));
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-
-		TreeViewer treeViewer = new TreeViewer(issueKey, booleanArray);
-		return Response.ok(treeViewer).build();
-	}
-
-	@Path("/getEvolutionData")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getEvolutionData(@Context HttpServletRequest request, FilterSettings filterSettings) {
-		if (request == null) {
-			return Response.status(Status.BAD_REQUEST)
-					       .entity(ImmutableMap.of("error", "HttpServletRequest is null. Timeline could not be created."))
-					       .build();
-		}
-		if (filterSettings == null || filterSettings.getProjectKey() == null || filterSettings.getProjectKey().equals("")) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not valid."))
-					.build();
-		}
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings);
-		VisTimeLine timeLine = visDataProvider.getTimeLine();
-		return Response.ok(timeLine).build();
-
-	}
-
-	@Path("/getTreant")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getTreant(@QueryParam("elementKey") String elementKey,
-			@QueryParam("depthOfTree") String depthOfTree, @QueryParam("searchTerm") String searchTerm,
-			@Context HttpServletRequest request) {
-
-		if (elementKey == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build();
-		}
-		String projectKey = getProjectKey(elementKey);
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		int depth = 4; // default value
-		try {
-			depth = Integer.parseInt(depthOfTree);
-		} catch (NumberFormatException e) {
-			LOGGER.error(
-					"Depth of tree could not be parsed, the default value of 4 is used. Message: " + e.getMessage());
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Treant cannot be shown since depth of Tree is NaN")).build();
-		}
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		Treant treant = new Treant(projectKey, elementKey, depth, searchTerm, user);
-		return Response.ok(treant).build();
-	}
-
-	private Issue getIssue(String issueKey) {
-		Issue issue = null;
-		if (issueKey == null || issueKey.trim().equals(""))
-			return null;
-		try {
-			issue = ComponentAccessor.getIssueManager().getIssueObject(issueKey);
-		} catch (Exception ex) {
-			LOGGER.error(ex.getMessage());
-		}
-		return issue;
-	}
-
-	@Path("/getVis")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getVis(@Context HttpServletRequest request, FilterSettings filterSettings,
-			@QueryParam("elementKey") String elementKey) {
-		if (checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()) {
-			return checkIfElementIsValid(elementKey);
-		}
-		if (filterSettings == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
-					.build();
-		}
-		if (request == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
-					.build();
-		}
-		String projectKey = filterSettings.getProjectKey();
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisDataProvider visDataProvider;
-		if (filterSettings.getNamesOfSelectedJiraIssueTypes().size() == 0
-				|| (filterSettings.getDocumentationLocations().size() == 1
-						&& filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN))) {
-			visDataProvider = new VisDataProvider(projectKey, elementKey, filterSettings.getSearchString(),
-					user);
-		} else {
-			visDataProvider = new VisDataProvider(elementKey, user, filterSettings);
-		}
-		VisGraph visGraph = visDataProvider.getVisGraph();
-		return Response.ok(visGraph).build();
-	}
-
-	@Path("/getCompareVis")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getCompareVis(@Context HttpServletRequest request, FilterSettings filterSettings) {
-		if (request == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
-					.build();
-		}
-		if (filterSettings == null) {
-			return Response.status(Status.BAD_REQUEST)
-					       .entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
-					       .build();
-		}
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisDataProvider visDataProvider = new VisDataProvider(user,filterSettings);
-		return Response.ok(visDataProvider.getVisGraph()).build();
-	}
-
-	@Path("/getFilterSettings")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getFilterSettings(@Context HttpServletRequest request, @QueryParam("searchTerm") String searchTerm,
-			@QueryParam("elementKey") String elementKey) {
-		if (checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()) {
-			return checkIfElementIsValid(elementKey);
-		}
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		String projectKey = getProjectKey(elementKey);
-		// FilterDataProvider filterDataProvider = new FilterDataProvider(projectKey,
-		// searchTerm, user);
-		return Response.ok(new FilterSettingsImpl(projectKey, searchTerm, user)).build();
-	}
-
-	@Path("/getDecisionMatrix")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionMatrix(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		List<DecisionKnowledgeElement> decisions = getDecisionData(projectKey);
-		Matrix matrix = new Matrix(projectKey, decisions);
-		return Response.ok(matrix).build();
+        // get all project branches
+        return getDiffViewerResponse(projectKey, projectKey);
     }
 
-	@Path("/getDecisionGraph")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionGraph(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		List<DecisionKnowledgeElement> decisions = getDecisionData(projectKey);
-		VisGraph graph = new VisGraph(decisions, projectKey);
-		return Response.ok(graph).build();
-	}
+    @Path("/elementsFromBranchesOfJiraIssue")
+    @GET
+    public Response getFeatureBranchTree(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey) {
+        issueKey = normalizeIssueKey(issueKey); // ex: issueKey=ConDec-498
+        Issue issue = getIssue(issueKey);
+        if (issue == null) {
+            return issueKeyIsInvalid();
+        }
 
-	private List<DecisionKnowledgeElement> getDecisionData(String projectKey) {
-		AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
-		List<DecisionKnowledgeElement> decisions = strategy.getDecisionKnowledgeElements(KnowledgeType.DECISION);
+        String regexFilter = issueKey.toUpperCase() + "\\.|" + issueKey.toUpperCase() + "$";
+        // get feature branches of an issue
+        return getDiffViewerResponse(getProjectKey(issueKey), regexFilter,
+                ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey),
+                AuthenticationManager.getUser(request));
+    }
 
-		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(projectKey);
-		decisions.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements(KnowledgeType.DECISION));
-		return decisions;
-	}
+    private Response getDiffViewerResponse(String projectKey, String filter, Issue issue, ApplicationUser user) {
+        Response resp = this.getDiffViewerResponse(projectKey, filter);
+        ComponentAccessor.getCommentManager().create(issue, user, extractor.getExtractedCommentString(), true);
+        return resp;
+    }
 
-	private String getProjectKey(String elementKey) {
-		return elementKey.split("-")[0];
-	}
+    private Response getDiffViewerResponse(String projectKey, String filter) {
+        gitClient = new GitClientImpl(projectKey);
+        List<Ref> branches = gitClient.getRemoteBranches();
+        Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
 
-	private Response checkIfProjectKeyIsValid(String projectKey) {
-		if (projectKey == null) {
-			return projectKeyIsInvalid();
-		}
-		ProjectManager projectManager = ComponentAccessor.getProjectManager();
-		Project project = projectManager.getProjectObjByKey(projectKey);
-		if (project == null) {
-			return projectKeyIsInvalid();
-		}
-		return Response.status(Status.OK).build();
-	}
+        if (branches.isEmpty()) {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+        }
+        Map<Ref, List<DecisionKnowledgeElement>> ratBranchList = new HashMap<>();
+        extractor = new GitDecXtract(projectKey);
+        // TODO: move the loop elsewhere or maybe in GitDecXtract
+        for (Ref branch : branches) {
+            String branchName = branch.getName();
+            Matcher branchMatcher = filterPattern.matcher(branchName);
+            if (branchMatcher.find()) {
+                ratBranchList.put(branch, extractor.getElements(branch));
+            }
+        }
+        extractor.close();
+        gitClient.close();
+        DiffViewer diffView = new DiffViewer(ratBranchList);
+        Response resp = null;
+        try {
+            Response.ResponseBuilder respBuilder = Response.ok(diffView);
+            resp = respBuilder.build();
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage());
+        }
+        return resp;
+    }
 
-	private Response checkIfElementIsValid(String elementKey) {
-		if (elementKey == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Visualization cannot be shown since element key is invalid."))
-					.build();
-		}
-		String projectKey = getProjectKey(elementKey);
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		return Response.status(Status.OK).build();
-	}
+    private String normalizeIssueKey(String issueKey) {
+        return issueKey.toUpperCase();
+    }
 
-	private Response projectKeyIsInvalid() {
-		LOGGER.error("Decision knowledge elements cannot be shown since project key is invalid.");
-		return Response.status(Status.BAD_REQUEST).entity(
-				ImmutableMap.of("error", "Decision knowledge elements cannot be shown since project key is invalid."))
-				.build();
-	}
+    @Path("/getTreeViewer")
+    @GET
+    public Response getTreeViewer(@QueryParam("projectKey") String projectKey,
+                                  @QueryParam("rootElementType") String rootElementType) {
+        Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+        if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+            return checkIfProjectKeyIsValidResponse;
+        }
+        if (rootElementType == null) {
+            rootElementType = "decision";
+        }
 
-	private Response issueKeyIsInvalid() {
-		String msg = "Decision knowledge elements cannot be shown" + " since issue key is invalid.";
-		LOGGER.error(msg);
-		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", msg)).build();
-	}
+        TreeViewer treeViewer = new TreeViewer(projectKey, KnowledgeType.getKnowledgeType(rootElementType));
+        return Response.ok(treeViewer).build();
+    }
+
+    @Path("/getTreeViewer2")
+    @GET
+    public Response getTreeViewer2(@QueryParam("issueKey") String issueKey,
+                                   @QueryParam("showRelevant") String showRelevant) {
+        if (!issueKey.contains("-")) {
+            return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Issue Key is not valid."))
+                    .build();
+        }
+        Boolean[] booleanArray = Arrays.stream(showRelevant.split(",")).map(Boolean::parseBoolean)
+                .toArray(Boolean[]::new);
+        String projectKey = issueKey.substring(0, issueKey.indexOf("-"));
+        Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+        if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+            return checkIfProjectKeyIsValidResponse;
+        }
+
+        TreeViewer treeViewer = new TreeViewer(issueKey, booleanArray);
+        return Response.ok(treeViewer).build();
+    }
+
+    @Path("/getEvolutionData")
+    @POST
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getEvolutionData(@Context HttpServletRequest request, FilterSettings filterSettings) {
+        if (request == null) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity(ImmutableMap.of("error", "HttpServletRequest is null. Timeline could not be created."))
+                    .build();
+        }
+        if (filterSettings == null || filterSettings.getProjectKey() == null || filterSettings.getProjectKey().equals("")) {
+            return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not valid."))
+                    .build();
+        }
+        ApplicationUser user = AuthenticationManager.getUser(request);
+        VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings);
+        VisTimeLine timeLine = visDataProvider.getTimeLine();
+        return Response.ok(timeLine).build();
+
+    }
+
+    @Path("/getTreant")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getTreant(@QueryParam("elementKey") String elementKey,
+                              @QueryParam("depthOfTree") String depthOfTree, @QueryParam("searchTerm") String searchTerm,
+                              @Context HttpServletRequest request) {
+
+        if (elementKey == null) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build();
+        }
+        String projectKey = getProjectKey(elementKey);
+        Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+        if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+            return checkIfProjectKeyIsValidResponse;
+        }
+        int depth = 4; // default value
+        try {
+            depth = Integer.parseInt(depthOfTree);
+        } catch (NumberFormatException e) {
+            LOGGER.error(
+                    "Depth of tree could not be parsed, the default value of 4 is used. Message: " + e.getMessage());
+            return Response.status(Status.BAD_REQUEST)
+                    .entity(ImmutableMap.of("error", "Treant cannot be shown since depth of Tree is NaN")).build();
+        }
+        ApplicationUser user = AuthenticationManager.getUser(request);
+        Treant treant = new Treant(projectKey, elementKey, depth, searchTerm, user);
+        return Response.ok(treant).build();
+    }
+
+    private Issue getIssue(String issueKey) {
+        Issue issue = null;
+        if (issueKey == null || issueKey.trim().equals(""))
+            return null;
+        try {
+            issue = ComponentAccessor.getIssueManager().getIssueObject(issueKey);
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage());
+        }
+        return issue;
+    }
+
+    @Path("/getVis")
+    @POST
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getVis(@Context HttpServletRequest request, FilterSettings filterSettings,
+                           @QueryParam("elementKey") String elementKey) {
+        if (checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()) {
+            return checkIfElementIsValid(elementKey);
+        }
+        if (filterSettings == null) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
+                    .build();
+        }
+        if (request == null) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
+                    .build();
+        }
+        String projectKey = filterSettings.getProjectKey();
+        ApplicationUser user = AuthenticationManager.getUser(request);
+        VisDataProvider visDataProvider;
+        if (filterSettings.getNamesOfSelectedJiraIssueTypes().size() == 0
+                || (filterSettings.getDocumentationLocations().size() == 1
+                && filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN))) {
+            visDataProvider = new VisDataProvider(projectKey, elementKey, filterSettings.getSearchString(),
+                    user);
+        } else {
+            visDataProvider = new VisDataProvider(elementKey, user, filterSettings);
+        }
+        VisGraph visGraph = visDataProvider.getVisGraph();
+        return Response.ok(visGraph).build();
+    }
+
+    @Path("/getCompareVis")
+    @POST
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getCompareVis(@Context HttpServletRequest request, FilterSettings filterSettings) {
+        if (request == null) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
+                    .build();
+        }
+        if (filterSettings == null) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
+                    .build();
+        }
+        ApplicationUser user = AuthenticationManager.getUser(request);
+        VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings);
+        return Response.ok(visDataProvider.getVisGraph()).build();
+    }
+
+    @Path("/getFilterSettings")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getFilterSettings(@Context HttpServletRequest request, @QueryParam("searchTerm") String searchTerm,
+                                      @QueryParam("elementKey") String elementKey) {
+        if (checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()) {
+            return checkIfElementIsValid(elementKey);
+        }
+        ApplicationUser user = AuthenticationManager.getUser(request);
+        String projectKey = getProjectKey(elementKey);
+        // FilterDataProvider filterDataProvider = new FilterDataProvider(projectKey,
+        // searchTerm, user);
+        return Response.ok(new FilterSettingsImpl(projectKey, searchTerm, user)).build();
+    }
+
+    @Path("/getDecisionMatrix")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getDecisionMatrix(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+        Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+        if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+            return checkIfProjectKeyIsValidResponse;
+        }
+        List<DecisionKnowledgeElement> decisions = getDecisionData(projectKey);
+        Matrix matrix = new Matrix(projectKey, decisions);
+        return Response.ok(matrix).build();
+    }
+
+    @Path("/getDecisionGraph")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getDecisionGraph(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+        Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+        if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+            return checkIfProjectKeyIsValidResponse;
+        }
+        List<DecisionKnowledgeElement> decisions = getDecisionData(projectKey);
+        VisGraph graph = new VisGraph(decisions, projectKey);
+        return Response.ok(graph).build();
+    }
+
+    private List<DecisionKnowledgeElement> getDecisionData(String projectKey) {
+        AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
+        List<DecisionKnowledgeElement> decisions = strategy.getDecisionKnowledgeElements(KnowledgeType.DECISION);
+
+        AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(projectKey);
+        decisions.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements(KnowledgeType.DECISION));
+        return decisions;
+    }
+
+    private String getProjectKey(String elementKey) {
+        return elementKey.split("-")[0];
+    }
+
+    private Response checkIfProjectKeyIsValid(String projectKey) {
+        if (projectKey == null) {
+            return projectKeyIsInvalid();
+        }
+        ProjectManager projectManager = ComponentAccessor.getProjectManager();
+        Project project = projectManager.getProjectObjByKey(projectKey);
+        if (project == null) {
+            return projectKeyIsInvalid();
+        }
+        return Response.status(Status.OK).build();
+    }
+
+    private Response checkIfElementIsValid(String elementKey) {
+        if (elementKey == null) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity(ImmutableMap.of("error", "Visualization cannot be shown since element key is invalid."))
+                    .build();
+        }
+        String projectKey = getProjectKey(elementKey);
+        Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+        if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+            return checkIfProjectKeyIsValidResponse;
+        }
+        return Response.status(Status.OK).build();
+    }
+
+    private Response projectKeyIsInvalid() {
+        LOGGER.error("Decision knowledge elements cannot be shown since project key is invalid.");
+        return Response.status(Status.BAD_REQUEST).entity(
+                ImmutableMap.of("error", "Decision knowledge elements cannot be shown since project key is invalid."))
+                .build();
+    }
+
+    private Response issueKeyIsInvalid() {
+        String msg = "Decision knowledge elements cannot be shown" + " since issue key is invalid.";
+        LOGGER.error(msg);
+        return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", msg)).build();
+    }
 
 }

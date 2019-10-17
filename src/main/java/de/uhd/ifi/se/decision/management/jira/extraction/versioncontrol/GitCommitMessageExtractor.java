@@ -1,18 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import com.atlassian.crowd.embedded.api.User;
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.model.querydsl.QApplicationUser;
-import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.user.LazyLoadingApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.DecisionKnowledgeClassifierImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -22,7 +11,13 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.TextSplitterImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Extracts decision knowledge elements from the message of a single git commit.
@@ -52,17 +47,16 @@ public class GitCommitMessageExtractor {
     private String parseError;
     private List<String> parseWarnings;
     private String fullMessage;
-    private String commentString;
+    private String comment;
     private String projectKey;
-    private Issue correspondingIssue;
     private DecisionKnowledgeClassifier decisionKnowledgeClassifier;
 
-    GitCommitMessageExtractor(String message, String projectKey){//, Issue issue) {
+    GitCommitMessageExtractor(String message, String projectKey) {
         extractedElements = new ArrayList<>();
         parseError = null;
         parseWarnings = new ArrayList<>();
         fullMessage = message;
-        commentString = new String();
+        comment = new String();
         this.projectKey = projectKey;
         decisionKnowledgeClassifier = DecisionKnowledgeClassifierImpl.getInstance();
 
@@ -85,25 +79,27 @@ public class GitCommitMessageExtractor {
         if (fullMessage == null || fullMessage.trim().equals("")) {
             return;
         }
-        if (hasNoDecisionKnowledgeStartTags()) {
+        if (!hasNoDecisionKnowledgeStartTags()) {
             //we assume that if a user has marked ANY knowledge he has marked all relevant knowledge
-            classifyMessage();
-        } else {
+            generateCommentString();
             extractSequences();
+        } else {
+            this.comment = this.fullMessage;
         }
-        postAsComment();
     }
 
-    private void postAsComment() {
-        // TODO: implement post as comment
-        // If Decision Knowledge is annotated we assume that it was manually validated by a human.
-        boolean isValidated = !hasNoDecisionKnowledgeStartTags();
-        ComponentAccessor.getCommentManager().create(this.correspondingIssue, ComponentAccessor.getUserManager().getUserByKeyEvenWhenUnknown(null), this.commentString, true);
-        // orientation: JiraIssueTextPersistenceManager extends AbstractPersistenceManager
+    private void generateCommentString() {
+        this.comment = fullMessage;
+        for (String tag : decKnowTags) {
+            String regexToReplace = "\\[" + tag + "\\]" + "|" + "\\[\\/" + tag + "\\]";
+            String replaceString = "{" + tag + "}";
+            this.comment = this.comment.replaceAll(regexToReplace, replaceString);
+        }
     }
+
 
     //TODO: Unit-Test
-    public void classifyMessage() {
+    private void classifyMessage() {
         // If no Decision Knowledge was manually annotated -> The Classifier is called.
         // Create splitted text.
         TextSplitter splitter = new TextSplitterImpl();
@@ -142,7 +138,7 @@ public class GitCommitMessageExtractor {
                 builder.append(partStrings.get(partsIndex));
             }
         }
-        this.commentString = builder.toString();
+        this.comment = builder.toString();
     }
 
     private void extractSequences() {
@@ -250,5 +246,9 @@ public class GitCommitMessageExtractor {
 
     public List<DecisionKnowledgeElement> getElements() {
         return extractedElements;
+    }
+
+    public String getComment() {
+        return comment;
     }
 }
