@@ -67,6 +67,20 @@ public class GenericLinkManager {
 		return links;
 	}
 
+	public static List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
+		String identifier = element.getDocumentationLocation().getIdentifier();
+		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select().where(
+				"SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?",
+				element.getId(), identifier));
+
+		List<Link> links = new ArrayList<Link>();
+		for (LinkInDatabase linkInDatabase : linksInDatabase) {
+			Link link = new LinkImpl(linkInDatabase);
+			links.add(link);
+		}
+		return links;
+	}
+
 	public static long insertLink(Link link, ApplicationUser user) {
 		if (isLinkAlreadyInDatabase(link) != -1) {
 			return isLinkAlreadyInDatabase(link);

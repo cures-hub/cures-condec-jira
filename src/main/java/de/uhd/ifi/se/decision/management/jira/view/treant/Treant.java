@@ -14,10 +14,11 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryType;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Graph;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 
 /**
  * Creates Treant content
@@ -29,9 +30,9 @@ public class Treant {
 	private Chart chart;
 
 	@XmlElement
-	private Node nodeStructure;
+	private TreantNode nodeStructure;
 
-	private Graph graph;
+	private KnowledgeGraph graph;
 	private boolean isHyperlinked;
 
 	public Treant() {
@@ -50,11 +51,21 @@ public class Treant {
 		FilterExtractor filterExtractor = new FilterExtractor(projectKey, user, query);
 		if (filterExtractor.getQueryHandler() != null
 				&& filterExtractor.getQueryHandler().getQueryType() != JiraQueryType.OTHER) {
-			this.graph = new GraphImplFiltered(projectKey, elementKey, filterExtractor);
+			filterExtractor.getAllElementsMatchingQuery();
 		} else {
-			this.graph = new GraphImpl(projectKey, elementKey);
+			filterExtractor.getAllElementsMatchingCompareFilter();
 		}
-		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
+		this.graph = new KnowledgeGraphImpl(projectKey);
+
+		AbstractPersistenceManager persistenceManager;
+		if(elementKey.contains(":")) {
+			persistenceManager =
+					AbstractPersistenceManager.getPersistenceManager(projectKey,
+							DocumentationLocation.JIRAISSUETEXT.getIdentifier());
+		} else {
+			persistenceManager = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
+		}
+		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
 		this.setHyperlinked(isHyperlinked);
@@ -64,35 +75,34 @@ public class Treant {
 		this(projectKey, elementKey, depth, query, user, false);
 	}
 
-	public Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth) {
+	public TreantNode createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth) {
 		if (element == null || element.getProject() == null) {
-			return new Node();
+			return new TreantNode();
 		}
 
 		if (graph == null) {
-			graph = new GraphImpl(element);
+			graph = new KnowledgeGraphImpl(element.getProject().getProjectKey());
 		}
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getAdjacentElementsAndLinks(element);
-
 		boolean isCollapsed = false;
 		if (currentDepth == depth && childrenAndLinks.size() != 0) {
 			isCollapsed = true;
 		}
 
-		Node node;
+		TreantNode node;
 		if (link != null) {
-			node = new Node(element, link, isCollapsed, isHyperlinked);
+			node = new TreantNode(element, link, isCollapsed, isHyperlinked);
 		} else {
-			node = new Node(element, isCollapsed, isHyperlinked);
+			node = new TreantNode(element, isCollapsed, isHyperlinked);
 		}
 
 		if (currentDepth == depth + 1) {
 			return node;
 		}
 
-		List<Node> nodes = new ArrayList<Node>();
+		List<TreantNode> nodes = new ArrayList<TreantNode>();
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-			Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
+			TreantNode newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
 					currentDepth + 1);
 			nodes.add(newChildNode);
 		}
@@ -109,11 +119,11 @@ public class Treant {
 		this.chart = chart;
 	}
 
-	public Node getNodeStructure() {
+	public TreantNode getNodeStructure() {
 		return nodeStructure;
 	}
 
-	public void setNodeStructure(Node nodeStructure) {
+	public void setNodeStructure(TreantNode nodeStructure) {
 		this.nodeStructure = nodeStructure;
 	}
 

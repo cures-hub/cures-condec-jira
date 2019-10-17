@@ -190,23 +190,30 @@ public abstract class AbstractPersistenceManager {
         return GenericLinkManager.insertLink(link, user);
     }
 
-    /**
-     * Update new link in database.
-     *
-     * @param element                              child element of the link with the new knowledge type.
-     * @param formerKnowledgeType                  former knowledge type of the child element before it was updated.
-     * @param idOfParentElement                    id of the parent element.
-     * @param documentationLocationOfParentElement documentation location of the parent element.
-     * @param user                                 authenticated JIRA application user
-     * @return internal database id of updated link, zero if updating failed.
-     * @see DecisionKnowledgeElement
-     * @see KnowledgeType
-     * @see DocumentationLocation
-     * @see Link
-     * @see ApplicationUser
-     */
-    public static long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType,
-                                  long idOfParentElement, String documentationLocationOfParentElement, ApplicationUser user) {
+	public abstract long getLinkId(DecisionKnowledgeElement source, DecisionKnowledgeElement destination);
+
+	/**
+	 * Update new link in database.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeType
+	 * @see DocumentationLocation
+	 * @see Link
+	 * @see ApplicationUser
+	 * @param element
+	 *            child element of the link with the new knowledge type.
+	 * @param formerKnowledgeType
+	 *            former knowledge type of the child element before it was updated.
+	 * @param idOfParentElement
+	 *            id of the parent element.
+	 * @param documentationLocationOfParentElement
+	 *            documentation location of the parent element.
+	 * @param user
+	 *            authenticated JIRA application user
+	 * @return internal database id of updated link, zero if updating failed.
+	 */
+	public static long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType,
+			long idOfParentElement, String documentationLocationOfParentElement, ApplicationUser user) {
 
         if (LinkType.linkTypesAreEqual(formerKnowledgeType, element.getType()) || idOfParentElement == 0) {
             return -1;
@@ -324,15 +331,6 @@ public abstract class AbstractPersistenceManager {
     }
 
     /**
-     * Get all decision knowledge elements for a project in a certain timespan.
-     *
-     * @param creation
-     * @param closed
-     * @return all decision knowledge elements in a timespan.
-     */
-    public abstract List<DecisionKnowledgeElement> getDecisionKnowledgeElementsInTimeSpan(Date creation, Date closed);
-
-    /**
      * Get all linked elements of the decision knowledge element for a project where
      * this decision knowledge element is the destination element.
      *
@@ -418,15 +416,29 @@ public abstract class AbstractPersistenceManager {
         return links;
     }
 
-    /**
-     * Get all links where the decision knowledge element is the source element.
-     *
-     * @param element decision knowledge element with id in database.
-     * @return list of links where the given decision knowledge element is the
-     * source element.
-     * @see Link
-     */
-    public abstract List<Link> getOutwardLinks(DecisionKnowledgeElement element);
+	/**
+	 * Get all links where the id of the node or decision knowledge element is either the source
+	 * or the destination element.
+	 *
+	 * @param id of the node or the DecisionKnowledgeElement
+	 * @return list of links where the given decision knowledge element is either
+	 *         the source or the destination element.
+	 */
+	public List<Link> getLinks(long id) {
+		DecisionKnowledgeElement element = this.getDecisionKnowledgeElement(id);
+		return this.getLinks(element);
+	}
+
+	/**
+	 * Get all links where the decision knowledge element is the source element.
+	 *
+	 * @see Link
+	 * @param element
+	 *            decision knowledge element with id in database.
+	 * @return list of links where the given decision knowledge element is the
+	 *         source element.
+	 */
+	public abstract List<Link> getOutwardLinks(DecisionKnowledgeElement element);
 
     /**
      * Get all unlinked elements of the decision knowledge element for a project.

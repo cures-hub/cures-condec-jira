@@ -292,6 +292,29 @@ public interface Link {
 	void setDocumentationLocationOfSourceElement(String documentationLocation);
 
 	/**
+	 * Retrieves the source element of this link (=edge).
+	 *
+	 * @see Node
+	 * @return source element of this link.
+	 */
+	Node getSource();
+
+	/**
+	 * Retrieves the target (=destination) element of this link (=edge).
+	 *
+	 * @see Node
+	 * @return destination element of this link.
+	 */
+	Node getTarget();
+
+	/**
+	 * Retrieves the weight of this link (=edge).
+	 *
+	 * @return weight of this link.
+	 */
+	double getWeight();
+
+	/**
 	 * Set the documentation location of the destination element of this link.
 	 * Retrieves a new decision knowledge element from database if the destination
 	 * element currently has a different documentation location.

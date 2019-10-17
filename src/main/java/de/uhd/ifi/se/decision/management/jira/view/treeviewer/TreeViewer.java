@@ -10,17 +10,20 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.jgrapht.traverse.BreadthFirstIterator;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.Graph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -43,9 +46,11 @@ public class TreeViewer {
 	@XmlElement
 	protected Set<Data> data;
 
-	protected Graph graph;
+	protected KnowledgeGraph graph;
 	private List<String> ids;
 	private long index;
+
+	private List<Long> alreadyVisetedEdge;
 
 	/** Effects (if true) that irrelevant sentences are added to Graph. */
 	public static boolean isCalledFromIssueTabPanel = false;
@@ -55,29 +60,29 @@ public class TreeViewer {
 		this.checkCallback = true;
 		this.themes = ImmutableMap.of("icons", true);
 
+		this.alreadyVisetedEdge = new ArrayList<>();
 		this.ids = new ArrayList<String>();
-		this.index = 1;
 	}
 
 	public TreeViewer(String projectKey, KnowledgeType rootElementType) {
 		this();
-		if (rootElementType != KnowledgeType.OTHER) {
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
-			List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements(rootElementType);
-
-			Set<Data> dataSet = new HashSet<Data>();
-			for (DecisionKnowledgeElement element : elements) {
-				dataSet.add(this.getDataStructure(element));
-			}
-
-			AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
-					projectKey);
-			for (DecisionKnowledgeElement sentenceElement : jiraIssueCommentPersistenceManager
-					.getDecisionKnowledgeElements(rootElementType)) {
-				dataSet.add(this.makeIdUnique(new Data(sentenceElement)));
-			}
-			this.data = dataSet;
+		if (rootElementType == KnowledgeType.OTHER) {
+			return;
 		}
+		AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
+		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements(rootElementType);
+
+		Set<Data> dataSet = new HashSet<Data>();
+		for (DecisionKnowledgeElement element : elements) {
+			dataSet.add(this.getDataStructure(element));
+		}
+
+		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(projectKey);
+		for (DecisionKnowledgeElement sentenceElement : jiraIssueCommentPersistenceManager
+				.getDecisionKnowledgeElements(rootElementType)) {
+			dataSet.add(this.makeIdUnique(new Data(sentenceElement)));
+		}
+		this.data = dataSet;
 	}
 
 	public TreeViewer(String projectKey) {
@@ -89,12 +94,13 @@ public class TreeViewer {
 	 *
 	 * @param issueKey
 	 *            the issue id
-	 * @param isCalledFromTabPanel
+	 * @param showKnowledgeTypes
 	 *            the show relevant (deprecated) currently used to distinguish
 	 *            between Constructors
 	 */
 	public TreeViewer(String issueKey, Boolean[] showKnowledgeTypes) {
 		this();
+		// TODO Replace isCalledFromIssueTabPanel by a more clear variable or remove it.
 		TreeViewer.isCalledFromIssueTabPanel = true;
 		if (issueKey == null) {
 			return;
@@ -141,14 +147,15 @@ public class TreeViewer {
 	}
 
 	private boolean isSentenceShown(DecisionKnowledgeElement element) {
-		return !((PartOfJiraIssueText) element).isRelevant() && ((PartOfJiraIssueText) element).getDescription().length() > 0;
+		return !((PartOfJiraIssueText) element).isRelevant()
+				&& ((PartOfJiraIssueText) element).getDescription().length() > 0;
 	}
 
 	public Data getDataStructure(DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement == null) {
 			return new Data();
 		}
-		this.graph = new GraphImpl(decisionKnowledgeElement);
+		this.graph = new KnowledgeGraphImpl(decisionKnowledgeElement.getProject().getProjectKey());
 		Data data = new Data(decisionKnowledgeElement);
 		data = this.makeIdUnique(data);
 		List<Data> children = this.getChildren(decisionKnowledgeElement);
@@ -157,19 +164,33 @@ public class TreeViewer {
 	}
 
 	protected List<Data> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
-		List<Data> children = new ArrayList<>();
-		Map<DecisionKnowledgeElement, Link> childrenAndLinks = this.graph
-				.getAdjacentElementsAndLinks(decisionKnowledgeElement);
-
-		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-			Data dataChild = new Data(childAndLink.getKey(), childAndLink.getValue());
-			if (dataChild.getNode().getProject() != null && dataChild.getNode().getProject().getProjectKey()
-					.equals(decisionKnowledgeElement.getProject().getProjectKey())) {
-				dataChild = this.makeIdUnique(dataChild);
-				List<Data> childrenOfElement = this.getChildren(childAndLink.getKey());
-				dataChild.setChildren(childrenOfElement);
-				children.add(dataChild);
+		List<Data> children = new ArrayList<Data>();
+		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<Node, Link>(graph,
+				decisionKnowledgeElement);
+		while (iterator.hasNext()) {
+			Node iterNode = iterator.next();
+			Node parentNode = iterator.getParent(iterNode);
+			if (parentNode == null || parentNode.getId() != decisionKnowledgeElement.getId()) {
+				continue;
 			}
+			if (!(iterNode instanceof DecisionKnowledgeElement)) {
+				continue;
+			}
+			DecisionKnowledgeElement nodeElement = (DecisionKnowledgeElement) iterNode;
+			Link edge = this.graph.getEdge(parentNode, nodeElement);
+			if(this.alreadyVisetedEdge.contains( edge.getId())){
+				continue;
+			}
+			this.alreadyVisetedEdge.add(edge.getId());
+			Data dataChild = new Data(nodeElement, edge);
+			if (dataChild.getNode().getProject() == null || !dataChild.getNode().getProject().getProjectKey()
+					.equals(decisionKnowledgeElement.getProject().getProjectKey())) {
+				continue;
+			}
+			dataChild = this.makeIdUnique(dataChild);
+			List<Data> childrenOfElement = this.getChildren(nodeElement);
+			dataChild.setChildren(childrenOfElement);
+			children.add(dataChild);
 		}
 		return children;
 	}

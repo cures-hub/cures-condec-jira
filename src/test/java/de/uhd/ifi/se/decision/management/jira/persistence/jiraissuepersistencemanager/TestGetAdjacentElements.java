@@ -45,15 +45,13 @@ public class TestGetAdjacentElements extends TestJiraIssuePersistenceManagerSetU
 
 		issueStrategy.insertDecisionKnowledgeElement(element, user);
 		for (KnowledgeType type : KnowledgeType.values()) {
-			Link link = new LinkImpl();
-			link.setType("support");
 			if (type != KnowledgeType.DECISION) {
 				DecisionKnowledgeElementImpl decisionKnowledgeElement = new DecisionKnowledgeElementImpl(i,
 						"TESTSummary", "TestDescription", type, project.getKey(), "TEST-" + i,
 						DocumentationLocation.JIRAISSUE);
 				issueStrategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
-				link.setDestinationElement(element);
-				link.setSourceElement(decisionKnowledgeElement);
+				Link link = new LinkImpl(decisionKnowledgeElement, element);
+				link.setType("support");
 				AbstractPersistenceManager.insertLink(link, user);
 			}
 			i++;
