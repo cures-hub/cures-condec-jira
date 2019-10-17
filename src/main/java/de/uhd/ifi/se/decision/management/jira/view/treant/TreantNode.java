@@ -20,7 +20,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 /**
  * Model class for Treant node
  */
-public class Node {
+public class TreantNode {
 	@XmlElement(name = "text")
 	@JsonProperty("text")
 	private Map<String, String> nodeContent;
@@ -47,16 +47,16 @@ public class Node {
 	private String innerHTML;
 
 	@XmlElement
-	private List<Node> children;
+	private List<TreantNode> children;
 
 	@XmlElement
 	private Map<String, Boolean> collapsed;
 
-	public Node() {
+	public TreantNode() {
 		this.connectors = ImmutableMap.of("style", ImmutableMap.of("stroke", "#000000"));
 	}
 
-	public Node(DecisionKnowledgeElement decisionKnowledgeElement, boolean isCollapsed, boolean isHyperlinked) {
+	public TreantNode(DecisionKnowledgeElement decisionKnowledgeElement, boolean isCollapsed, boolean isHyperlinked) {
 		this();
 		this.nodeContent = ImmutableMap.of("title", decisionKnowledgeElement.getSummary(), "documentationLocation",
 				decisionKnowledgeElement.getDocumentationLocationAsString(), "desc", decisionKnowledgeElement.getKey());
@@ -82,7 +82,7 @@ public class Node {
 		return ComponentGetter.getUrlOfImageFolder() + element.getType().toString() + ".png";
 	}
 
-	public Node(DecisionKnowledgeElement decisionKnowledgeElement, Link link, boolean isCollapsed,
+	public TreantNode(DecisionKnowledgeElement decisionKnowledgeElement, Link link, boolean isCollapsed,
 			boolean isHyperlinked) {
 		this(decisionKnowledgeElement, isCollapsed, isHyperlinked);
 		this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement, link.getType());
@@ -142,11 +142,11 @@ public class Node {
 		this.innerHTML = innerHTML;
 	}
 
-	public List<Node> getChildren() {
+	public List<TreantNode> getChildren() {
 		return children;
 	}
 
-	public void setChildren(List<Node> children) {
+	public void setChildren(List<TreantNode> children) {
 		this.children = children;
 	}
 

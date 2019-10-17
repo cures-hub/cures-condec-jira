@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,17 +27,11 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.Graph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
+import de.uhd.ifi.se.decision.management.jira.view.treant.TreantNode;
 
 public class CommonMetricCalculator {
 
@@ -335,26 +331,26 @@ public class CommonMetricCalculator {
 
 	private int graphRecursionBot(DecisionKnowledgeElement dke) {
 		this.absolutDepth = 0;
-		Graph graph = new GraphImpl(projectKey, dke.getKey());
+		KnowledgeGraph graph = new KnowledgeGraphImpl(projectKey);
 		this.createNodeStructure(dke, null, 100, 1, graph);
 		return absolutDepth;
 	}
 
-	private Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth,
-			Graph graph) {
+	private TreantNode createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth,
+	                                       KnowledgeGraph graph) {
 		if (element == null || element.getProject() == null || element.getType() == KnowledgeType.OTHER) {
-			return new Node();
+			return new TreantNode();
 		}
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getAdjacentElementsAndLinks(element);
-		Node node;
+		TreantNode node;
 		if (link != null) {
-			node = new Node(element, link, false, false);
+			node = new TreantNode(element, link, false, false);
 		} else {
-			node = new Node(element, false, false);
+			node = new TreantNode(element, false, false);
 		}
-		List<Node> nodes = new ArrayList<Node>();
+		List<TreantNode> nodes = new ArrayList<TreantNode>();
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-			Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
+			TreantNode newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
 					currentDepth + 1, graph);
 			if (absolutDepth < currentDepth) {
 				absolutDepth = currentDepth;

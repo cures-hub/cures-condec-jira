@@ -1,15 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
-import com.atlassian.jira.issue.issuetype.IssueType;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteConfigurationImpl;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
+
+import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteConfigurationImpl;
 
 public class TestReleaseNoteConfiguration {
 	private ReleaseNoteConfiguration config;
@@ -21,7 +21,6 @@ public class TestReleaseNoteConfiguration {
 	private List<Integer> bugFixMapping;
 	private List<Integer> featureMapping;
 	private List<Integer> improvementMapping;
-	private IssueType issueType;
 
 	@Before
 	public void setUp() {
@@ -45,13 +44,11 @@ public class TestReleaseNoteConfiguration {
 		assertEquals(startDate, config.getStartDate());
 	}
 
-
 	@Test
 	public void testEndDate() {
 		config.setEndDate(endDate);
 		assertEquals(endDate, config.getEndDate());
 	}
-
 
 	@Test
 	public void testSprintId() {
@@ -60,13 +57,11 @@ public class TestReleaseNoteConfiguration {
 
 	}
 
-
 	@Test
 	public void testTargetGroup() {
 		config.setTargetGroup(targetGroup);
 		assertEquals(targetGroup, config.getTargetGroup());
 	}
-
 
 	@Test
 	public void testissueMetric() {
@@ -80,7 +75,6 @@ public class TestReleaseNoteConfiguration {
 		assertEquals(bugFixMapping, config.getBugFixMapping());
 
 	}
-
 
 	@Test
 	public void testFeatureMapping() {

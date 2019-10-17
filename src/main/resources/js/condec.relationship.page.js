@@ -57,7 +57,6 @@
 						deleteNode: function(data, callback) {
 							conDecVis.deleteNode(data, callback);
 						},
-						editNode: false,
 						addEdge: function (data, callback) {
 							conDecVis.addEdgeWithType(data, callback);
 						},
