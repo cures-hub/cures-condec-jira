@@ -131,6 +131,9 @@ public class VisGraph {
 				new DijkstraShortestPath<>(graph);
 		ShortestPathAlgorithm.SingleSourcePaths<Node, Link> paths = dijkstraAlg.getPaths(allNodeIterator.next());
 		GraphPath<Node, Link> path = paths.getPath(element);
+		if(path == null ) {
+			return element;
+		}
 		for(Node node: path.getVertexList()){
 			if (node instanceof DecisionKnowledgeElement) {
 				DecisionKnowledgeElement nodeElement = (DecisionKnowledgeElement) node;
