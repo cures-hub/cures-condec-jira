@@ -8,13 +8,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import de.uhd.ifi.se.decision.management.jira.model.*;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.jgrapht.GraphPath;
+import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 
 @XmlRootElement(name = "vis")
@@ -94,7 +94,8 @@ public class VisGraph {
 	}
 
 	private void computeNodes(DecisionKnowledgeElement element) {
-		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<>(graph, element);
+		Node rootNode = findRootKnowledgeElement(element);
+		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<>(graph, rootNode);
 		Node parentNode = null;
 		while (iterator.hasNext()) {
 			Node iterNode = iterator.next();
@@ -122,6 +123,26 @@ public class VisGraph {
 				}
 			}
 		}
+	}
+
+	private Node findRootKnowledgeElement(DecisionKnowledgeElement element){
+		BreadthFirstIterator<Node, Link> allNodeIterator = new BreadthFirstIterator<>(graph);
+		DijkstraShortestPath<Node, Link> dijkstraAlg =
+				new DijkstraShortestPath<>(graph);
+		ShortestPathAlgorithm.SingleSourcePaths<Node, Link> paths = dijkstraAlg.getPaths(allNodeIterator.next());
+		GraphPath<Node, Link> path = paths.getPath(element);
+		if(path == null ) {
+			return element;
+		}
+		for(Node node: path.getVertexList()){
+			if (node instanceof DecisionKnowledgeElement) {
+				DecisionKnowledgeElement nodeElement = (DecisionKnowledgeElement) node;
+				if(KnowledgeType.getDefaultTypes().contains(nodeElement.getType())){
+					return nodeElement;
+				}
+			}
+		}
+		return  element;
 	}
 
 	private boolean isCollapsed(DecisionKnowledgeElement element) {
