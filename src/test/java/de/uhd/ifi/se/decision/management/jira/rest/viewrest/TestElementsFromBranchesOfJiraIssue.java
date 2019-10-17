@@ -2,9 +2,13 @@ package de.uhd.ifi.se.decision.management.jira.rest.viewrest;
 
 import static org.junit.Assert.assertEquals;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+import com.atlassian.jira.user.ApplicationUser;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import org.junit.Before;
 import org.junit.Test;
 import org.ofbiz.core.entity.GenericEntityException;
@@ -19,29 +23,33 @@ public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 	private ViewRest viewRest;
 
 	private static final String INVALID_ISSUEKEY = "Decision knowledge elements cannot be shown since issue key is invalid.";
+	protected HttpServletRequest request;
 
 	@Before
 	public void setUp() {
 		viewRest = new ViewRest();
 		init();
+		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
+		request = new MockHttpServletRequest();
+		request.setAttribute("user", user);
 	}
 
 	@Test
 	public void testEmptyIssueKey() throws GenericEntityException {
-		assertEquals(400, viewRest.getFeatureBranchTree("").getStatus());
+		assertEquals(400, viewRest.getFeatureBranchTree(request,"").getStatus());
 	}
 
 	@Test
 	public void testUnknownIssueKey() throws GenericEntityException {
-		assertEquals(400, viewRest.getFeatureBranchTree("HOUDINI-1").getStatus());
+		assertEquals(400, viewRest.getFeatureBranchTree(request,"HOUDINI-1").getStatus());
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", INVALID_ISSUEKEY))
-				.build().getEntity(), viewRest.getFeatureBranchTree("HOUDINI-1").getEntity());
+				.build().getEntity(), viewRest.getFeatureBranchTree(request,"HOUDINI-1").getEntity());
 	}
 
 	@Test
 	public void testExistingIssueKey() throws GenericEntityException {
-		assertEquals(200, viewRest.getFeatureBranchTree("TEST-2").getStatus());
-		Object receivedEntity = viewRest.getFeatureBranchTree("TEST-2").getEntity();
+		assertEquals(200, viewRest.getFeatureBranchTree(request,"TEST-2").getStatus());
+		Object receivedEntity = viewRest.getFeatureBranchTree(request,"TEST-2").getEntity();
 
 		Object expectedEntity = new DiffViewer(null);
 		assertEquals(expectedEntity.getClass(), receivedEntity.getClass());

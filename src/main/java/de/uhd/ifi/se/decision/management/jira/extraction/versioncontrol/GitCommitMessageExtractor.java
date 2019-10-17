@@ -47,18 +47,12 @@ public class GitCommitMessageExtractor {
     private String parseError;
     private List<String> parseWarnings;
     private String fullMessage;
-    private String comment;
-    private String projectKey;
-    private DecisionKnowledgeClassifier decisionKnowledgeClassifier;
 
-    GitCommitMessageExtractor(String message, String projectKey) {
+    GitCommitMessageExtractor(String message) {
         extractedElements = new ArrayList<>();
         parseError = null;
         parseWarnings = new ArrayList<>();
         fullMessage = message;
-        comment = new String();
-        this.projectKey = projectKey;
-        decisionKnowledgeClassifier = DecisionKnowledgeClassifierImpl.getInstance();
 
         String startTagSearch = String.join("|",
                 decKnowTags.stream().map(tag -> "\\[" + tag + "\\]").collect(Collectors.toList()));
@@ -81,24 +75,12 @@ public class GitCommitMessageExtractor {
         }
         if (!hasNoDecisionKnowledgeStartTags()) {
             //we assume that if a user has marked ANY knowledge he has marked all relevant knowledge
-            generateCommentString();
+            //generateCommentString();
             extractSequences();
-        } else {
-            this.comment = this.fullMessage;
         }
     }
 
-    private void generateCommentString() {
-        this.comment = fullMessage;
-        for (String tag : decKnowTags) {
-            String regexToReplace = "\\[" + tag + "\\]" + "|" + "\\[\\/" + tag + "\\]";
-            String replaceString = "{" + tag + "}";
-            this.comment = this.comment.replaceAll(regexToReplace, replaceString);
-        }
-    }
-
-
-    //TODO: Unit-Test
+    /*
     private void classifyMessage() {
         // If no Decision Knowledge was manually annotated -> The Classifier is called.
         // Create splitted text.
@@ -140,6 +122,8 @@ public class GitCommitMessageExtractor {
         }
         this.comment = builder.toString();
     }
+     */
+
 
     private void extractSequences() {
         Matcher startTagMatcher = START_TAGS_SEARCH_PATTERN.matcher(fullMessage);
@@ -248,7 +232,4 @@ public class GitCommitMessageExtractor {
         return extractedElements;
     }
 
-    public String getComment() {
-        return comment;
-    }
 }

@@ -15,11 +15,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +69,7 @@ public class ViewRest {
         return getDiffViewerResponse(projectKey, projectKey);
     }
 
+    //FIXME: Unit test
     @Path("/elementsFromBranchesOfJiraIssue")
     @GET
     public Response getFeatureBranchTree(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey) {
@@ -85,7 +88,21 @@ public class ViewRest {
 
     private Response getDiffViewerResponse(String projectKey, String filter, Issue issue, ApplicationUser user) {
         Response resp = this.getDiffViewerResponse(projectKey, filter);
-        ComponentAccessor.getCommentManager().create(issue, user, extractor.getExtractedCommentString(), true);
+        Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
+
+        // get current branch name
+        // iterate over commits to get all messages and post each one as a comment
+        // make sure to not post duplicates
+        List<Ref> branches = gitClient.getRemoteBranches();
+        for (Ref branch : branches) {
+            Matcher branchMatcher = filterPattern.matcher(branch.getName());
+            if (branchMatcher.find()) {
+                for(RevCommit commit : gitClient.getFeatureBranchCommits(GitDecXtract.generateBranchShortName(branch))){
+                    String transformedCommitMessage = (new CommitMessageToCommentTranscriber(commit.getFullMessage())).generateCommentString();
+                    ComponentAccessor.getCommentManager().create(issue, user, transformedCommitMessage, true);
+                }
+            }
+        }
         return resp;
     }
 
