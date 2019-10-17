@@ -1,17 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.model.impl;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
 
 public class NodeImpl implements Node {
-	private long id;
-	private DocumentationLocation location;
-
-	public NodeImpl(DecisionKnowledgeElement element){
-		id = element.getId();
-		location = element.getDocumentationLocation();
-	}
+	protected long id;
+	protected DocumentationLocation documentationLocation;
+	protected DecisionKnowledgeProject project;
 
 	public long getId() {
 		return id;
@@ -19,6 +15,21 @@ public class NodeImpl implements Node {
 
 	@Override
 	public DocumentationLocation getDocumentationLocation() {
-		return location;
+		return documentationLocation;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (o == this) {
+			return true;
+		}
+		if (!(o instanceof Node)) {
+			return false;
+		}
+		Node node = (Node) o;
+		return this.id == node.getId();
 	}
 }

@@ -14,10 +14,11 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryType;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Graph;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 
 /**
  * Creates Treant content
@@ -31,7 +32,7 @@ public class Treant {
 	@XmlElement
 	private TreantNode nodeStructure;
 
-	private Graph graph;
+	private KnowledgeGraph graph;
 	private boolean isHyperlinked;
 
 	public Treant() {
@@ -50,11 +51,21 @@ public class Treant {
 		FilterExtractor filterExtractor = new FilterExtractor(projectKey, user, query);
 		if (filterExtractor.getQueryHandler() != null
 				&& filterExtractor.getQueryHandler().getQueryType() != JiraQueryType.OTHER) {
-			this.graph = new GraphImplFiltered(projectKey, elementKey, filterExtractor);
+			filterExtractor.getAllElementsMatchingQuery();
 		} else {
-			this.graph = new GraphImpl(projectKey, elementKey);
+			filterExtractor.getAllElementsMatchingCompareFilter();
 		}
-		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
+		this.graph = new KnowledgeGraphImpl(projectKey);
+
+		AbstractPersistenceManager persistenceManager;
+		if(elementKey.contains(":")) {
+			persistenceManager =
+					AbstractPersistenceManager.getPersistenceManager(projectKey,
+							DocumentationLocation.JIRAISSUETEXT.getIdentifier());
+		} else {
+			persistenceManager = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
+		}
+		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
 		this.setHyperlinked(isHyperlinked);
@@ -70,10 +81,9 @@ public class Treant {
 		}
 
 		if (graph == null) {
-			graph = new GraphImpl(element);
+			graph = new KnowledgeGraphImpl(element.getProject().getProjectKey());
 		}
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getAdjacentElementsAndLinks(element);
-
 		boolean isCollapsed = false;
 		if (currentDepth == depth && childrenAndLinks.size() != 0) {
 			isCollapsed = true;

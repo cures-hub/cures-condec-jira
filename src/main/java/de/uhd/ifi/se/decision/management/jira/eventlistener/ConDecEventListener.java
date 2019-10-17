@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.eventlistener;
 
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -16,6 +19,8 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+
+import java.io.File;
 
 /**
  * This class is responsible for all the event listeners used in this plug-in.
@@ -41,6 +46,7 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 		LOGGER.info("ConDec event listener object was created.");
 		webhookEventListener = new WebhookEventListener();
 		jiraIssueTextExtractionEventListener = new JiraIssueTextExtractionEventListener();
+
 		summarizationEventListener = new SummarizationEventListener();
 	}
 

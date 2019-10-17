@@ -1,25 +1,50 @@
 package de.uhd.ifi.se.decision.management.jira.model.impl;
 
-import de.uhd.ifi.se.decision.management.jira.model.*;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import org.jgrapht.graph.DirectedWeightedMultigraph;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
+
+import org.jgrapht.graph.DirectedWeightedMultigraph;
+import org.jgrapht.traverse.BreadthFirstIterator;
+
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.Node;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> implements KnowledgeGraph {
 
+	private static final long serialVersionUID = 1L;
 	private DecisionKnowledgeProject project;
-	private Node rootNode;
-	private List<Node> allNodes;
-	private List<Link> allEdges;
+	protected List<Long> linkIds;
 
-	public KnowledgeGraphImpl(String projectKey, DecisionKnowledgeElement rootElement) {
+	public KnowledgeGraphImpl(String projectKey) {
 		super(LinkImpl.class);
+		linkIds = new ArrayList<Long>();
 		this.project = new DecisionKnowledgeProjectImpl(projectKey);
-		this.rootNode = new NodeImpl(rootElement);
 		createGraph();
+	}
+
+	@Override
+	public Map<DecisionKnowledgeElement, Link> getAdjacentElementsAndLinks(DecisionKnowledgeElement element) {
+		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<>(this, element);
+		// Use First element as parent node
+		Node parentNode = iterator.next();
+		Map<DecisionKnowledgeElement, Link> childrenAndLinks = new HashMap<>();
+		while (iterator.hasNext()) {
+			Node iterNode = iterator.next();
+			if (iterator.getParent(iterNode).getId() == parentNode.getId() && iterNode instanceof DecisionKnowledgeElement) {
+				DecisionKnowledgeElement nodeElement = (DecisionKnowledgeElement) iterNode;
+				childrenAndLinks.put(nodeElement, this.getEdge(parentNode, iterNode));
+			}
+		}
+		return childrenAndLinks;
 	}
 
 	private void createGraph() {
@@ -28,38 +53,48 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	}
 
 	private void addNodes() {
-		allNodes = new ArrayList<>();
-		allNodes.add(rootNode);
-		ListIterator<Node> iterator = allNodes.listIterator();
+		List<DecisionKnowledgeElement> nodesList = getElementsInProject();
+		ListIterator<DecisionKnowledgeElement> iterator = nodesList.listIterator();
 		while (iterator.hasNext()) {
-			for (Node adjacentNode : this.getAdjacentElements(iterator.next())) {
-				if (!this.containsVertex(adjacentNode)) {
-					iterator.add(adjacentNode);
-					iterator.previous();
-				}
-			}
+			Node node = iterator.next();
+			this.addVertex(node);
 		}
+	}
+
+	private List<DecisionKnowledgeElement> getElementsInProject() {
+		AbstractPersistenceManager strategy = AbstractPersistenceManager
+				.getDefaultPersistenceStrategy(project.getProjectKey());
+		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
+		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
+				project.getProjectKey());
+
+		elements.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
+
+		// remove irrelevant sentences from graph
+		elements.removeIf(e -> (e instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) e).isRelevant()));
+		return elements;
 	}
 
 	private void addEdges() {
-		for (Node node : allNodes) {
-			AbstractPersistenceManager manager = AbstractPersistenceManager.getPersistenceManager(project.getProjectKey(), node.getDocumentationLocation());
-			//TODO Implement with id or change to DecisionKnowledgeElement
-			List<Link> links = manager.getLinks(node);
+		for (Node node : this.vertexSet()) {
+			AbstractPersistenceManager manager = AbstractPersistenceManager
+					.getPersistenceManager(project.getProjectKey(), node.getDocumentationLocation());
+			List<Link> links = manager.getLinks(node.getId());
 			for (Link link : links) {
-				if (!this.containsEdge(link)) {
-					allEdges.add(link);
+				Node destination = link.getDestinationElement();
+				Node source = link.getSourceElement();
+				if (destination == null || source == null) {
+					continue;
+				}
+				if (destination.equals(source)) {
+					continue;
+				}
+				if (!linkIds.contains(link.getId()) && this.containsVertex(link.getDestinationElement())
+							&& this.containsVertex(link.getSourceElement())) {
+					this.addEdge(link.getSourceElement(), link.getDestinationElement(), link);
+					linkIds.add(link.getId());
 				}
 			}
 		}
-	}
-
-	private List<Node> getAdjacentElements(Node node) {
-		AbstractPersistenceManager manager = AbstractPersistenceManager.getPersistenceManager(project.getProjectKey(), node.getDocumentationLocation());
-		List<Node> adjacentNodes = new ArrayList<>();
-		for (DecisionKnowledgeElement element : manager.getAdjacentElements(node.getId())) {
-			adjacentNodes.add(new NodeImpl(element));
-		}
-		return adjacentNodes;
 	}
 }

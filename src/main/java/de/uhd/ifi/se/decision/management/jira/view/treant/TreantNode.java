@@ -83,7 +83,7 @@ public class TreantNode {
 	}
 
 	public TreantNode(DecisionKnowledgeElement decisionKnowledgeElement, Link link, boolean isCollapsed,
-	                  boolean isHyperlinked) {
+			boolean isHyperlinked) {
 		this(decisionKnowledgeElement, isCollapsed, isHyperlinked);
 		this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement, link.getType());
 		switch (link.getType()) {

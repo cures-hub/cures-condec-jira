@@ -1,8 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +26,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceMan
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
+
+import static org.junit.Assert.*;
 
 public class TestTreeViewer extends TestSetUp {
 	private AbstractPersistenceManager persistenceStrategy;
@@ -128,7 +127,10 @@ public class TestTreeViewer extends TestSetUp {
 	@NonTransactional
 	public void testGetDataStructureFilled() {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
-		assertEquals("tv14", treeViewer.getDataStructure(element).getId());
+		assertNotNull(element);
+		assertEquals(14, element.getId());
+		assertEquals("TEST-14", element.getKey());
+		assertTrue(treeViewer.getDataStructure(element).getId().endsWith("tv14"));
 	}
 
 	@Test
@@ -148,11 +150,11 @@ public class TestTreeViewer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testTreeViewerWithComment() {
-		TreeViewer tree = new TreeViewer();
 		List<PartOfJiraIssueText> comment = TestTextSplitter
-				.getSentencesForCommentText("This is a testcomment with some text");
-		comment.get(0).setType(KnowledgeType.ALTERNATIVE);
-		assertNotNull(tree.getDataStructure(comment.get(0)));
+				.getSentencesForCommentText("{alternative} This would be a great solution option! {alternative}");
+		PartOfJiraIssueText sentence = comment.get(0);
+		TreeViewer tree = new TreeViewer(sentence.getProject().getProjectKey());
+		assertNotNull(tree.getDataStructure((DecisionKnowledgeElement) sentence));
 	}
 
 	@Test

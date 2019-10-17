@@ -232,14 +232,7 @@ public interface Link {
 	 */
 	public static Link instantiateDirectedLink(DecisionKnowledgeElement parentElement,
 			DecisionKnowledgeElement childElement, LinkType linkType) {
-		switch (linkType) {
-		case ATTACK:
-			return new LinkImpl(childElement, parentElement, linkType);
-		case SUPPORT:
-			return new LinkImpl(childElement, parentElement, linkType);
-		default:
-			return new LinkImpl(parentElement, childElement, linkType);
-		}
+		return new LinkImpl(parentElement, childElement, linkType.getName());
 	}
 
 	/**
@@ -297,6 +290,29 @@ public interface Link {
 	 *            of the source element of this link, e.g., "i" for JIRA issue.
 	 */
 	void setDocumentationLocationOfSourceElement(String documentationLocation);
+
+	/**
+	 * Retrieves the source element of this link (=edge).
+	 *
+	 * @see Node
+	 * @return source element of this link.
+	 */
+	Node getSource();
+
+	/**
+	 * Retrieves the target (=destination) element of this link (=edge).
+	 *
+	 * @see Node
+	 * @return destination element of this link.
+	 */
+	Node getTarget();
+
+	/**
+	 * Retrieves the weight of this link (=edge).
+	 *
+	 * @return weight of this link.
+	 */
+	double getWeight();
 
 	/**
 	 * Set the documentation location of the destination element of this link.

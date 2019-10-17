@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,13 +27,7 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.Graph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
@@ -335,13 +331,13 @@ public class CommonMetricCalculator {
 
 	private int graphRecursionBot(DecisionKnowledgeElement dke) {
 		this.absolutDepth = 0;
-		Graph graph = new GraphImpl(projectKey, dke.getKey());
+		KnowledgeGraph graph = new KnowledgeGraphImpl(projectKey);
 		this.createNodeStructure(dke, null, 100, 1, graph);
 		return absolutDepth;
 	}
 
 	private TreantNode createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth,
-	                                       Graph graph) {
+	                                       KnowledgeGraph graph) {
 		if (element == null || element.getProject() == null || element.getType() == KnowledgeType.OTHER) {
 			return new TreantNode();
 		}

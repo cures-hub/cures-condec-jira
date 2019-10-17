@@ -18,16 +18,6 @@ public class AutoCreateDummyProject {
 	private static final int MAX_ISSUES = 550;
 	private ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("admin");
 
-	public AutoCreateDummyProject() {
-		int projectsAmount = ComponentAccessor.getProjectManager().getProjects().size();
-		if (projectsAmount<1) {
-			Project prj = createDummyProject();
-			if (prj!=null) {
-				createDummyIssues(prj);
-			}
-		}
-	}
-
 	private void createDummyIssues(Project prj) {
 		IssueService issueService = ComponentAccessor.getComponent(IssueService.class);
 

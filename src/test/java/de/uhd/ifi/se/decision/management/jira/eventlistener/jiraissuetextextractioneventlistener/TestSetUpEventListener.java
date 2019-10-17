@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.eventlistener.jiraissuetextextrac
 import java.util.HashMap;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 
 import com.atlassian.event.api.EventPublisher;
@@ -67,5 +68,10 @@ public abstract class TestSetUpEventListener extends TestSetUp {
 			return elements.get(0);
 		}
 		return null;
+	}
+
+	@After
+	public void tearDown() {
+		jiraIssue.setDescription("");
 	}
 }

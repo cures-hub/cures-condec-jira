@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.view.treant;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -14,6 +13,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
@@ -137,10 +137,8 @@ public class TestTreant extends TestSetUp {
 	@NonTransactional
 	public void testCreateNodeStructureFilledFilledFilledFilled() {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
-		Link link = new LinkImpl();
+		Link link = new LinkImpl(1, 14, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		link.setType("support");
-		link.setSourceElement(1, "i");
-		link.setDestinationElement(14, "i");
 		link.setDestinationElement(persistenceStrategy.getDecisionKnowledgeElement(14));
 		link.setSourceElement(persistenceStrategy.getDecisionKnowledgeElement(1));
 		link.setId(23);
@@ -156,7 +154,7 @@ public class TestTreant extends TestSetUp {
 				.getDecisionKnowledgeElement(sentences.get(0).getJiraIssueId());
 		TreantNode nodeStructure = treant.createNodeStructure(element, null, 4, 0);
 		assertEquals(TreantNode.class, nodeStructure.getClass());
-		assertTrue(nodeStructure.getChildren().size() == 0);
+		assertEquals(0, nodeStructure.getChildren().size());
 	}
 
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {

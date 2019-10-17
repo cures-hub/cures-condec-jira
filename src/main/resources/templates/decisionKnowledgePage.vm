@@ -40,8 +40,22 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 #parse("templates/dialogs/deleteDialog.vm")
 #parse("templates/dialogs/deleteLinkDialog.vm")
 #parse("templates/dialogs/linkDialog.vm")
+#parse("templates/dialogs/linkDecisionsDialog.vm")
 #parse("templates/dialogs/changeTypeDialog.vm")
 #parse("templates/dialogs/changeStatusDialog.vm")
 #parse("templates/dialogs/summarizationDialog.vm")
 #parse("templates/dialogs/exportDialog.vm")
 #parse("templates/contextMenu.vm")
+<script>
+/*
+ * Instantiate the ConDecKnowledgePage object controlling this view:
+ */
+$(document).ready(function() {
+	conDecAPI.checkIfProjectKeyIsValid();
+    if ( window.conDecKnowledgePage.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant, conDecTreeViewer) )
+        window.conDecKnowledgePage.fetchAndRender();
+    else {
+        console.error("ConDecKnowledgePage could not get its dependencies.");
+    }
+});
+</script>

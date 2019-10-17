@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLink;
@@ -12,29 +15,31 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Model class for links between decision knowledge elements
  */
-public class LinkImpl implements Link {
+public class LinkImpl extends DefaultWeightedEdge implements Link {
 
 	private long id;
 	private String type;
-	private DecisionKnowledgeElement sourceElement;
-	private DecisionKnowledgeElement destinationElement;
+	private DecisionKnowledgeElement source;
+	private DecisionKnowledgeElement target;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(LinkImpl.class);
+	private static final long serialVersionUID = 1L;
 
 	public LinkImpl() {
+		super();
 	}
 
 	public LinkImpl(DecisionKnowledgeElement sourceElement, DecisionKnowledgeElement destinationElement) {
-		this.sourceElement = sourceElement;
-		this.destinationElement = destinationElement;
+		this();
+		this.source = sourceElement;
+		this.target = destinationElement;
 	}
 
 	public LinkImpl(DecisionKnowledgeElement sourceElement, DecisionKnowledgeElement destinationElement,
@@ -50,24 +55,27 @@ public class LinkImpl implements Link {
 
 	public LinkImpl(long idOfSourceElement, long idOfDestinationElement,
 			DocumentationLocation sourceDocumentationLocation, DocumentationLocation destDocumentationLocation) {
+		super();
 		this.setSourceElement(idOfSourceElement, sourceDocumentationLocation);
 		this.setDestinationElement(idOfDestinationElement, destDocumentationLocation);
 	}
 
 	public LinkImpl(IssueLink issueLink) {
+		super();
 		this.id = issueLink.getId();
 		this.type = issueLink.getIssueLinkType().getName();
 		Issue sourceIssue = issueLink.getSourceObject();
 		if (sourceIssue != null) {
-			this.sourceElement = new DecisionKnowledgeElementImpl(sourceIssue);
+			this.source = new DecisionKnowledgeElementImpl(sourceIssue);
 		}
 		Issue destinationIssue = issueLink.getDestinationObject();
 		if (destinationIssue != null) {
-			this.destinationElement = new DecisionKnowledgeElementImpl(destinationIssue);
+			this.target = new DecisionKnowledgeElementImpl(destinationIssue);
 		}
 	}
 
 	public LinkImpl(LinkInDatabase linkInDatabase) {
+		super();
 		if (linkInDatabase.getSourceId() > 0) {
 			this.setSourceElement(linkInDatabase.getSourceId(), linkInDatabase.getSourceDocumentationLocation());
 		}
@@ -81,6 +89,28 @@ public class LinkImpl implements Link {
 
 	@Override
 	public long getId() {
+		DocumentationLocation sourceLocation = this.getSourceElement().getDocumentationLocation();
+		DocumentationLocation destLocation = this.getDestinationElement().getDocumentationLocation();
+		if (id == 0) {
+			if (sourceLocation.equals(destLocation)) {
+				if (sourceLocation == DocumentationLocation.JIRAISSUETEXT) {
+					AbstractPersistenceManager manager = AbstractPersistenceManager.getPersistenceManager(
+							this.getSourceElement().getProject().getProjectKey(), sourceLocation.getIdentifier());
+					id = manager.getLinkId(this.getSourceElement(), this.getDestinationElement());
+				}
+				if (destLocation == DocumentationLocation.JIRAISSUETEXT) {
+					AbstractPersistenceManager manager = AbstractPersistenceManager.getPersistenceManager(
+							this.getDestinationElement().getProject().getProjectKey(), destLocation.getIdentifier());
+					id = manager.getLinkId(this.getSourceElement(), this.getDestinationElement());
+				}
+			} else {
+				AbstractPersistenceManager manager =
+						AbstractPersistenceManager.getPersistenceManager(this.getDestinationElement().getProject().getProjectKey(),
+								destLocation.getIdentifier());
+
+				id = manager.getLinkId(this.getSourceElement(), this.getDestinationElement());
+			}
+		}
 		return id;
 	}
 
@@ -92,7 +122,7 @@ public class LinkImpl implements Link {
 	@Override
 	public String getType() {
 		if (type == null || type.equals("")) {
-			return "contain";
+			return "Relates";
 		}
 		return type;
 	}
@@ -104,11 +134,11 @@ public class LinkImpl implements Link {
 
 	@Override
 	public void setSourceElement(long id, DocumentationLocation documentationLocation) {
-		if (this.sourceElement == null) {
-			this.sourceElement = AbstractPersistenceManager.getDecisionKnowledgeElement(id, documentationLocation);
+		if (this.source == null) {
+			this.source = AbstractPersistenceManager.getDecisionKnowledgeElement(id, documentationLocation);
 		}
-		this.sourceElement.setId(id);
-		this.sourceElement.setDocumentationLocation(documentationLocation);
+		this.source.setId(id);
+		this.source.setDocumentationLocation(documentationLocation);
 	}
 
 	@Override
@@ -118,21 +148,24 @@ public class LinkImpl implements Link {
 
 	@Override
 	public DecisionKnowledgeElement getSourceElement() {
-		return sourceElement;
+		if (source == null) {
+			return (DecisionKnowledgeElement) super.getSource();
+		}
+		return source;
 	}
 
 	@Override
 	public void setSourceElement(DecisionKnowledgeElement sourceElement) {
-		this.sourceElement = sourceElement;
+		this.source = sourceElement;
 	}
 
 	@Override
 	public void setDestinationElement(long id, DocumentationLocation documentationLocation) {
-		if (this.destinationElement == null) {
-			this.destinationElement = AbstractPersistenceManager.getDecisionKnowledgeElement(id, documentationLocation);
+		if (this.target == null) {
+			this.target = AbstractPersistenceManager.getDecisionKnowledgeElement(id, documentationLocation);
 		}
-		this.destinationElement.setId(id);
-		this.destinationElement.setDocumentationLocation(documentationLocation);
+		this.target.setId(id);
+		this.target.setDocumentationLocation(documentationLocation);
 	}
 
 	@Override
@@ -143,30 +176,33 @@ public class LinkImpl implements Link {
 
 	@Override
 	public DecisionKnowledgeElement getDestinationElement() {
-		return destinationElement;
+		if (target == null) {
+			return (DecisionKnowledgeElement) super.getTarget();
+		}
+		return target;
 	}
 
 	@Override
 	public void setDestinationElement(DecisionKnowledgeElement destinationElement) {
-		this.destinationElement = destinationElement;
+		this.target = destinationElement;
 	}
 
 	@Override
 	@JsonProperty("idOfSourceElement")
 	public void setIdOfSourceElement(long id) {
-		if (this.sourceElement == null) {
-			this.sourceElement = new DecisionKnowledgeElementImpl();
+		if (this.source == null) {
+			this.source = new DecisionKnowledgeElementImpl();
 		}
-		this.sourceElement.setId(id);
+		this.source.setId(id);
 	}
 
 	@Override
 	@JsonProperty("idOfDestinationElement")
 	public void setIdOfDestinationElement(long id) {
-		if (this.destinationElement == null) {
-			this.destinationElement = new DecisionKnowledgeElementImpl();
+		if (this.target == null) {
+			this.target = new DecisionKnowledgeElementImpl();
 		}
-		this.destinationElement.setId(id);
+		this.target.setId(id);
 	}
 
 	@Override
@@ -174,11 +210,11 @@ public class LinkImpl implements Link {
 		if (!this.isValid()) {
 			return null;
 		}
-		if (this.sourceElement.getId() == elementId) {
-			return destinationElement;
+		if (this.source.getId() == elementId) {
+			return target;
 		}
-		if (this.destinationElement.getId() == elementId) {
-			return sourceElement;
+		if (this.target.getId() == elementId) {
+			return source;
 		}
 		return null;
 	}
@@ -191,20 +227,20 @@ public class LinkImpl implements Link {
 	@Override
 	public List<DecisionKnowledgeElement> getBothElements() throws NullPointerException {
 		List<DecisionKnowledgeElement> bothElements = new ArrayList<DecisionKnowledgeElement>();
-		bothElements.add(destinationElement);
-		bothElements.add(sourceElement);
+		bothElements.add(target);
+		bothElements.add(source);
 		return bothElements;
 	}
 
 	@Override
 	public boolean isValid() {
-		return sourceElement.existsInDatabase() && destinationElement.existsInDatabase();
+		return source.existsInDatabase() && target.existsInDatabase();
 	}
 
 	@Override
 	public boolean isInterProjectLink() {
 		try {
-			return !sourceElement.getProject().getProjectKey().equals(destinationElement.getProject().getProjectKey());
+			return !source.getProject().getProjectKey().equals(target.getProject().getProjectKey());
 		} catch (NullPointerException e) {
 			LOGGER.error("Link is not valid. Message: " + e.getMessage());
 			return false;
@@ -218,10 +254,9 @@ public class LinkImpl implements Link {
 
 	@Override
 	public String toString() {
-		String sourceElementIdPrefix = DocumentationLocation.getIdentifier(sourceElement);
-		String destinationElementIdPrefix = DocumentationLocation.getIdentifier(destinationElement);
-		return sourceElementIdPrefix + sourceElement.getId() + " to " + destinationElementIdPrefix
-				+ destinationElement.getId();
+		String sourceElementIdPrefix = DocumentationLocation.getIdentifier(source);
+		String destinationElementIdPrefix = DocumentationLocation.getIdentifier(target);
+		return sourceElementIdPrefix + source.getId() + " to " + destinationElementIdPrefix + target.getId();
 	}
 
 	@Override
@@ -229,8 +264,8 @@ public class LinkImpl implements Link {
 	public void setDocumentationLocationOfSourceElement(String documentationLocationIdentifier) {
 		DocumentationLocation documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
-		if (this.sourceElement.getDocumentationLocation() != documentationLocation) {
-			this.sourceElement = AbstractPersistenceManager.getDecisionKnowledgeElement(this.sourceElement.getId(),
+		if (this.source.getDocumentationLocation() != documentationLocation) {
+			this.source = AbstractPersistenceManager.getDecisionKnowledgeElement(this.source.getId(),
 					documentationLocation);
 		}
 		this.getSourceElement().setDocumentationLocation(documentationLocation);
@@ -241,9 +276,9 @@ public class LinkImpl implements Link {
 	public void setDocumentationLocationOfDestinationElement(String documentationLocationIdentifier) {
 		DocumentationLocation documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
-		if (this.destinationElement.getDocumentationLocation() != documentationLocation) {
-			this.destinationElement = AbstractPersistenceManager
-					.getDecisionKnowledgeElement(this.destinationElement.getId(), documentationLocation);
+		if (this.target.getDocumentationLocation() != documentationLocation) {
+			this.target = AbstractPersistenceManager.getDecisionKnowledgeElement(this.target.getId(),
+					documentationLocation);
 		}
 		this.getDestinationElement().setDocumentationLocation(documentationLocation);
 	}
@@ -261,6 +296,27 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
+	public Node getSource() {
+		if (super.getSource() == null) {
+			return this.source;
+		}
+		return (Node) super.getSource();
+	}
+
+	@Override
+	public Node getTarget() {
+		if (super.getTarget() == null) {
+			return target;
+		}
+		return (Node) super.getTarget();
+	}
+
+	@Override
+	public double getWeight() {
+		return super.getWeight();
+	}
+
+	@Override
 	public boolean equals(Object object) {
 		if (object == null) {
 			return false;
@@ -272,12 +328,11 @@ public class LinkImpl implements Link {
 			return false;
 		}
 		Link link = (Link) object;
-		return this.sourceElement.getId() == link.getSourceElement().getId()
-				&& this.destinationElement.getId() == link.getDestinationElement().getId();
+		return this.getId() == link.getId();
 	}
 
 	public boolean equals(LinkInDatabase linkInDatabase) {
-		return this.sourceElement.getId() == linkInDatabase.getSourceId()
-				&& this.destinationElement.getId() == linkInDatabase.getDestinationId();
+		return this.source.getId() == linkInDatabase.getSourceId()
+				&& this.target.getId() == linkInDatabase.getDestinationId();
 	}
 }

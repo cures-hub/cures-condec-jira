@@ -4,8 +4,10 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
     <table class="aui" id="matrix" border="1"/>
     </table>
 </form>
+
 <br>
 <br>
+
 <div class='my-legend'>
     <div class='legend-title'>Relationships</div>
     <div class='legend-scale'>

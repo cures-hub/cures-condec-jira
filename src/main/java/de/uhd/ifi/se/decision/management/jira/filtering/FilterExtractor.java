@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
+import org.jgrapht.traverse.BreadthFirstIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,12 +14,14 @@ import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.JiraQueryHandlerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.Graph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 /**
@@ -48,7 +50,8 @@ public class FilterExtractor {
 		}
 		this.user = user;
 		this.filterSettings = filterSettings;
-		this.queryHandler = new JiraQueryHandlerImpl(user, filterSettings.getProjectKey(), filterSettings.getSearchString());
+		this.queryHandler = new JiraQueryHandlerImpl(user, filterSettings.getProjectKey(),
+				filterSettings.getSearchString());
 	}
 
 	/**
@@ -65,7 +68,10 @@ public class FilterExtractor {
 			if (!addedElements.contains(current)) {
 				// if not get the connected tree
 				String currentElementKey = current.getKey();
-				List<DecisionKnowledgeElement> filteredElements = getElementsInGraph(currentElementKey);
+				AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(
+						this.filterSettings.getProjectKey(), current.getDocumentationLocation().getIdentifier());
+				DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(currentElementKey);
+				List<DecisionKnowledgeElement> filteredElements = getElementsInGraph(element);
 				// add each element to the list
 				addedElements.addAll(filteredElements);
 				// add list to the big list
@@ -75,14 +81,21 @@ public class FilterExtractor {
 		return elementsQueryLinked;
 	}
 
-	private List<DecisionKnowledgeElement> getElementsInGraph(String elementKey) {
-		Graph graph;
-		if (queryHandler.getQueryType() != JiraQueryType.OTHER) {
-			graph = new GraphImplFiltered(filterSettings.getProjectKey(), elementKey, this);
-		} else {
-			graph = new GraphImpl(filterSettings.getProjectKey(), elementKey);
+	private List<DecisionKnowledgeElement> getElementsInGraph(DecisionKnowledgeElement element) {
+		KnowledgeGraph graph = new KnowledgeGraphImpl(filterSettings.getProjectKey());
+		List<DecisionKnowledgeElement> elements = new ArrayList<>();
+		if(!graph.vertexSet().contains(element)){
+			elements.add(element);
+			return elements;
 		}
-		return graph.getAllElements();
+		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<>(graph, element);
+		while (iterator.hasNext()) {
+			Node node = iterator.next();
+			if (node instanceof DecisionKnowledgeElement) {
+				elements.add((DecisionKnowledgeElement) node);
+			}
+		}
+		return elements;
 	}
 
 	// Problem Filtered Issues from sideFilter will be filterd again
@@ -97,11 +110,17 @@ public class FilterExtractor {
 		// Search in every Jira issue for decision knowledge elements and if
 		// there are some add them
 		for (Issue currentIssue : jiraIssues) {
+			//Only Issues of the selected Project
+			if(!currentIssue.getProjectObject().getKey().equals(this.filterSettings.getProjectKey())){
+				continue;
+			}
 			// Add all Matching Elements from Query as a DecisionKnowledgeElement
 			results.add(new DecisionKnowledgeElementImpl(currentIssue));
-			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager.getElementsForIssue(currentIssue.getId(), filterSettings.getProjectKey());
+			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
+					.getElementsForIssue(currentIssue.getId(), filterSettings.getProjectKey());
 			for (DecisionKnowledgeElement currentElement : elements) {
-				if (!results.contains(currentElement) && currentElement instanceof PartOfJiraIssueText && checkIfElementMatchesTimeFilter(currentElement)) {
+				if (!results.contains(currentElement) && currentElement instanceof PartOfJiraIssueText
+						&& checkIfElementMatchesTimeFilter(currentElement)) {
 					results.add(currentElement);
 				}
 			}
@@ -110,7 +129,7 @@ public class FilterExtractor {
 	}
 
 	public List<DecisionKnowledgeElement> getAllElementsMatchingCompareFilter() {
-		if (filterSettings.getProjectKey() == null) {
+		if (filterSettings == null || filterSettings.getProjectKey() == null) {
 			return new ArrayList<>();
 		}
 		List<DecisionKnowledgeElement> elements = getElementsInProject();
@@ -119,24 +138,23 @@ public class FilterExtractor {
 
 	// Get decision knowledge elements from the selected strategy and the sentences
 	private List getElementsInProject() {
-		AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(filterSettings.getProjectKey());
+		AbstractPersistenceManager strategy = AbstractPersistenceManager
+				.getDefaultPersistenceStrategy(filterSettings.getProjectKey());
 		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
-		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(filterSettings.getProjectKey());
+		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
+				filterSettings.getProjectKey());
 		elements.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
 		return elements;
 	}
 
 	// Check if the element is created in time
 	private boolean checkIfElementMatchesTimeFilter(DecisionKnowledgeElement element) {
-		if ((filterSettings.getCreatedEarliest() == -1 && filterSettings.getCreatedLatest() == -1)){
+		if ((filterSettings.getCreatedEarliest() == -1 && filterSettings.getCreatedLatest() == -1)) {
 			return true;
 		}
 		if (filterSettings.getCreatedEarliest() != -1 && filterSettings.getCreatedLatest() != -1) {
-			if (element.getCreated().getTime() >= filterSettings.getCreatedEarliest() &&
-					    element.getCreated().getTime() <= filterSettings.getCreatedLatest()) {
-				return true;
-			}
-			return false;
+			return (element.getCreated().getTime() >= filterSettings.getCreatedEarliest()
+					&& element.getCreated().getTime() <= filterSettings.getCreatedLatest());
 		}
 		if (filterSettings.getCreatedEarliest() != -1) {
 			if (element.getCreated().getTime() >= filterSettings.getCreatedEarliest()) {
@@ -191,19 +209,22 @@ public class FilterExtractor {
 		}
 		for (DecisionKnowledgeElement element : elements) {
 			// Check if the DocumentationLocation is correct
-			if (filterSettings.getDocumentationLocations().contains(element.getDocumentationLocation()) || filterSettings.getDocumentationLocations().size() == 1 && filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN)) {
-				//Check if the Status is filtered
-				if (filterSettings.getSelectedIssueStatus().contains(DecisionStatusManager.getStatusForElement(element))) {
+			if (filterSettings.getDocumentationLocations().contains(element.getDocumentationLocation())
+					|| filterSettings.getDocumentationLocations().size() == 1 && filterSettings
+							.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN)) {
+				// Check if the Status is filtered
+				if (filterSettings.getSelectedIssueStatus()
+						.contains(DecisionStatusManager.getStatusForElement(element))) {
 					// Check if the Type of the Element is correct
-					if (checkIfTypeMatches(element)) {
-						if (checkIfElementMatchesTimeFilter(element)) {
-							// Case no text filter
-							if (filterSettings.getSearchString().equals("") || filterSettings.getSearchString().equals("?filter=-4") || filterSettings.getSearchString().equals("?filter=allopenissues")) {
+					if (checkIfTypeMatches(element) && checkIfElementMatchesTimeFilter(element)) {
+						// Case no text filter
+						if (filterSettings.getSearchString().equals("")
+								|| filterSettings.getSearchString().equals("?filter=-4")
+								|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
+							filteredElements.add(element);
+						} else {
+							if (checkIfElementMatchesStringFilter(element)) {
 								filteredElements.add(element);
-							} else {
-								if (checkIfElementMatchesStringFilter(element)) {
-									filteredElements.add(element);
-								}
 							}
 						}
 					}

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
@@ -41,10 +43,23 @@ import net.java.ao.Query;
 public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextPersistenceManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
+	private static OnlineClassificationTrainerImpl classificationTrainer =  new OnlineClassificationTrainerImpl();
 
 	public JiraIssueTextPersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
 		this.documentationLocation = DocumentationLocation.JIRAISSUETEXT;
+	}
+
+	@Override
+	public long getLinkId(DecisionKnowledgeElement source, DecisionKnowledgeElement destination) {
+		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select().where(
+				"SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ? AND DESTINATION_ID = ? AND DEST_DOCUMENTATION_LOCATION = ?",
+				source.getId(), source.getDocumentationLocation().getIdentifier(), destination.getId(),
+				destination.getDocumentationLocation().getIdentifier()));
+		if(links.length == 1){
+			return links[0].getId();
+		}
+		return 0;
 	}
 
 	@Override
@@ -139,15 +154,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements() {
 		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			decisionKnowledgeElements.add(new PartOfJiraIssueTextImpl(databaseEntry));
-		}
-		return decisionKnowledgeElements;
-	}
-
-	@Override
-	public List<DecisionKnowledgeElement> getDecisionKnowledgeElementsInTimeSpan(Date creation, Date closed) {
-		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
-		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class, Query.select().where("PROJECT_KEY = ? AND CREATED >= ? AND CLOSED <= ?", projectKey, creation.getTime(), closed.getTime()))) {
 			decisionKnowledgeElements.add(new PartOfJiraIssueTextImpl(databaseEntry));
 		}
 		return decisionKnowledgeElements;
@@ -311,6 +317,14 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		databaseEntry.setType(element.getTypeAsString());
 		databaseEntry.setRelevant(element.isRelevant());
 		databaseEntry.setValidated(element.isValidated());
+		if(element.isValidated()){
+			try {
+				classificationTrainer.update(element);
+			}catch (Exception e){
+				System.err.println("Could not update Classifier.");
+				e.printStackTrace();
+			}
+		}
 		databaseEntry.setStartPosition(element.getStartPosition());
 		databaseEntry.setEndPosition(element.getEndPosition());
 		databaseEntry.setJiraIssueId(element.getJiraIssueId());
@@ -341,14 +355,18 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 
 	@Override
 	public ApplicationUser getCreator(DecisionKnowledgeElement element) {
-		long commentId = Long.parseLong(element.getKey().split(":")[1]);
-		PartOfJiraIssueText issueText = getPartOfJiraIssueText(commentId);
-		Comment comment = issueText.getComment();
-		if(comment == null) {
-			Issue issue =((PartOfJiraIssueText)element).getJiraIssue();
-			return issue.getReporter();
+		if(element.getKey().contains(":")) {
+			long commentId = Long.parseLong(element.getKey().split(":")[1]);
+			PartOfJiraIssueText issueText = getPartOfJiraIssueText(commentId);
+			Comment comment = issueText.getComment();
+			if(comment == null) {
+				Issue issue =((PartOfJiraIssueText)element).getJiraIssue();
+				return issue.getReporter();
+			}
+			return comment.getAuthorApplicationUser();
 		}
-		return comment.getAuthorApplicationUser();
+		LOGGER.error("Element is not a Sentence");
+		return element.getProject().getPersistenceStrategy().getCreator(element);
 	}
 
 	public static boolean updatePartOfJiraIssueText(PartOfJiraIssueText element, ApplicationUser user) {
@@ -381,6 +399,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 				databaseEntry.save();
 				isUpdated = true;
 			}
+		}
+		if (sentence.isValidated()){
+			//OnlineClassificationTrainerImpl.getInstance().update(sentence);
+			(new OnlineClassificationTrainerImpl()).update(sentence);
 		}
 		return isUpdated;
 	}
@@ -697,6 +719,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		sentence.setDescription(element.getDescription());
 		sentence.setProject(element.getProject());
 		sentence.setValidated(true);
+
+
 		return sentence;
 	}
 
