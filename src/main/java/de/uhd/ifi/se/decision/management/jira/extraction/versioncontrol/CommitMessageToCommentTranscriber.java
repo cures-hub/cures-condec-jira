@@ -25,14 +25,14 @@ public class CommitMessageToCommentTranscriber {
     }
 
     public void postComment(Issue issue, ApplicationUser user, String comment) {
-        if (comment != null || comment != "") {
+        if (comment != null && !comment.equals("")) {
             // AskAnja: Should we make custom git-commit-message user?
             // ComponentAccessor.getUserManager().createUser(new UserDetails("git-commit-message", "git-commit-message"));
             /*
              * @Issue: Should we make a user for commenting commit messages under an issue?
              */
-            for(Comment alreadyWrittenComment : ComponentAccessor.getCommentManager().getCommentsForUser(issue, user)){
-                if (alreadyWrittenComment.getBody().equals(comment)){
+            for (Comment alreadyWrittenComment : ComponentAccessor.getCommentManager().getComments(issue)) {
+                if (alreadyWrittenComment.getBody().equals(comment)) {
                     return;
                 }
             }
