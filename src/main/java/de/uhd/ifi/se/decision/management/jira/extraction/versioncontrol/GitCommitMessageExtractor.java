@@ -55,10 +55,10 @@ public class GitCommitMessageExtractor {
         fullMessage = message;
 
         String startTagSearch = String.join("|",
-                decKnowTags.stream().map(tag -> "\\[" + tag + "\\]").collect(Collectors.toList()));
+                decKnowTags.stream().map(tag -> GitDecXtract.generateRegexForOpenTag(tag)).collect(Collectors.toList()));
 
         String endTagSearch = String.join("|",
-                decKnowTags.stream().map(tag -> "\\[\\/" + tag + "\\]").collect(Collectors.toList()));
+                decKnowTags.stream().map(tag -> GitDecXtract.generateRegexForCloseTag(tag)).collect(Collectors.toList()));
 
         START_TAGS_SEARCH_PATTERN = Pattern.compile(startTagSearch, Pattern.CASE_INSENSITIVE);
         END_TAGS_SEARCH_PATTERN = Pattern.compile(endTagSearch, Pattern.CASE_INSENSITIVE);

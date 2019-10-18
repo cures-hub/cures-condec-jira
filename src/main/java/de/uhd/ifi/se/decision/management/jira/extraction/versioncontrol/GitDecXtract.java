@@ -158,4 +158,16 @@ public class GitDecXtract {
         String[] branchNameComponents = branch.getName().split("/");
         return branchNameComponents[branchNameComponents.length - 1];
     }
+
+    public static String generateRegexToFindAllTags(String tag){
+        return generateRegexForOpenTag(tag) + "|" + generateRegexForCloseTag(tag);
+    }
+
+    public static String generateRegexForOpenTag(String tag){
+        return "(?i)(\\[(" + tag + ")\\])";
+    }
+
+    public static String generateRegexForCloseTag(String tag){
+        return "(?i)(\\[\\/(" + tag + ")\\])";
+    }
 }

@@ -13,20 +13,10 @@ public class CommitMessageToCommentTranscriber {
         String comment = this.commitMessage;
         for (String tag : KnowledgeType.toList()) {
             String replaceString = "{" + tag.toLowerCase() + "}";
-            comment = comment.replaceAll(generateRegexToFindAllTags(tag), replaceString);
+            comment = comment.replaceAll(GitDecXtract.generateRegexToFindAllTags(tag), replaceString);
         }
         return comment;
     }
 
-    public static String generateRegexToFindAllTags(String tag){
-        return generateRegexForOpenTag(tag) + "|" + generateRegexForCloseTag(tag);
-    }
 
-    public static String generateRegexForOpenTag(String tag){
-        return "(?i)(\\[(" + tag + ")\\])";
-    }
-
-    public static String generateRegexForCloseTag(String tag){
-        return "(?i)(\\[\\/(" + tag + ")\\])";
-    }
 }
