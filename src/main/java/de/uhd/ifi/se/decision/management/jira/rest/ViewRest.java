@@ -15,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.atlassian.jira.user.UserDetails;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
@@ -89,7 +90,7 @@ public class ViewRest {
     private Response getDiffViewerResponse(String projectKey, String filter, Issue issue, ApplicationUser user) {
         Response resp = this.getDiffViewerResponse(projectKey, filter);
         Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
-
+        CommitMessageToCommentTranscriber transcriber;
         // get current branch name
         // iterate over commits to get all messages and post each one as a comment
         // make sure to not post duplicates
@@ -97,9 +98,10 @@ public class ViewRest {
         for (Ref branch : branches) {
             Matcher branchMatcher = filterPattern.matcher(branch.getName());
             if (branchMatcher.find()) {
-                for(RevCommit commit : gitClient.getFeatureBranchCommits(GitDecXtract.generateBranchShortName(branch))){
-                    String transformedCommitMessage = (new CommitMessageToCommentTranscriber(commit.getFullMessage())).generateCommentString();
-                    ComponentAccessor.getCommentManager().create(issue, user, transformedCommitMessage, true);
+                for (RevCommit commit : gitClient.getFeatureBranchCommits(GitDecXtract.generateBranchShortName(branch))) {
+                    transcriber = new CommitMessageToCommentTranscriber(commit.getFullMessage());
+                    transcriber.generateCommentString();
+                    transcriber.postComment(issue, user);
                 }
             }
         }
