@@ -12,10 +12,21 @@ public class CommitMessageToCommentTranscriber {
     public String generateCommentString() {
         String comment = this.commitMessage;
         for (String tag : KnowledgeType.toList()) {
-            String regexToReplace = "\\[" + tag + "\\]" + "|" + "\\[\\/" + tag + "\\]";
-            String replaceString = "{" + tag + "}";
-            comment = comment.replaceAll(regexToReplace, replaceString);
+            String replaceString = "{" + tag.toLowerCase() + "}";
+            comment = comment.replaceAll(generateRegexToFindAllTags(tag), replaceString);
         }
         return comment;
+    }
+
+    public static String generateRegexToFindAllTags(String tag){
+        return generateRegexForOpenTag(tag) + "|" + generateRegexForCloseTag(tag);
+    }
+
+    public static String generateRegexForOpenTag(String tag){
+        return "(?i)(\\[(" + tag + ")\\])";
+    }
+
+    public static String generateRegexForCloseTag(String tag){
+        return "(?i)(\\[\\/(" + tag + ")\\])";
     }
 }
