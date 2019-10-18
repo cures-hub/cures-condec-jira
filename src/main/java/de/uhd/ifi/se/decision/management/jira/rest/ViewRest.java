@@ -15,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.user.UserDetails;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
@@ -73,7 +74,7 @@ public class ViewRest {
     //FIXME: Unit test
     @Path("/elementsFromBranchesOfJiraIssue")
     @GET
-    public Response getFeatureBranchTree(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey) {
+    public Response getFeatureBranchTree(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey) throws PermissionException {
         issueKey = normalizeIssueKey(issueKey); // ex: issueKey=ConDec-498
         Issue issue = getIssue(issueKey);
         if (issue == null) {
@@ -83,11 +84,10 @@ public class ViewRest {
         String regexFilter = issueKey.toUpperCase() + "\\.|" + issueKey.toUpperCase() + "$";
         // get feature branches of an issue
         return getDiffViewerResponse(getProjectKey(issueKey), regexFilter,
-                ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey),
-                AuthenticationManager.getUser(request));
+                ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey));
     }
 
-    private Response getDiffViewerResponse(String projectKey, String filter, Issue issue, ApplicationUser user) {
+    private Response getDiffViewerResponse(String projectKey, String filter, Issue issue) throws PermissionException {
         Response resp = this.getDiffViewerResponse(projectKey, filter);
         Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
         CommitMessageToCommentTranscriber transcriber;
@@ -101,7 +101,7 @@ public class ViewRest {
                 for (RevCommit commit : gitClient.getFeatureBranchCommits(GitDecXtract.generateBranchShortName(branch))) {
                     transcriber = new CommitMessageToCommentTranscriber(commit.getFullMessage());
                     transcriber.generateCommentString();
-                    transcriber.postComment(issue, user);
+                    transcriber.postComment(issue);
                 }
             }
         }

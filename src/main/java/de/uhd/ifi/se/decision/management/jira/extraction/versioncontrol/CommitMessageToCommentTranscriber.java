@@ -1,14 +1,20 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.exception.CreateException;
+import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.user.UserDetails;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import org.hsqldb.User;
 
 public class CommitMessageToCommentTranscriber {
     private String commitMessage;
     private String comment;
+    private static String DEFAULT_COMMIT_COMMENTATOR_USR_NAME = "GIT-COMMIT-COMMENTATOR";
+    private static UserDetails DEFAULT_COMMIT_COMMENTATOR_USR_DETAILS = new UserDetails(DEFAULT_COMMIT_COMMENTATOR_USR_NAME, DEFAULT_COMMIT_COMMENTATOR_USR_NAME);
 
     public CommitMessageToCommentTranscriber(String commitMessage) {
         this.commitMessage = commitMessage;
@@ -26,8 +32,6 @@ public class CommitMessageToCommentTranscriber {
 
     public void postComment(Issue issue, ApplicationUser user, String comment) {
         if (comment != null && !comment.equals("")) {
-            // AskAnja: Should we make custom git-commit-message user?
-            // ComponentAccessor.getUserManager().createUser(new UserDetails("git-commit-message", "git-commit-message"));
             /*
              * @Issue: Should we make a user for commenting commit messages under an issue?
              */
@@ -40,8 +44,14 @@ public class CommitMessageToCommentTranscriber {
         }
     }
 
-    public void postComment(Issue issue, ApplicationUser user) {
-        this.postComment(issue, user, this.comment);
+    public void postComment(Issue issue) throws PermissionException {
+        ApplicationUser defaultUser;
+        try {
+            defaultUser = ComponentAccessor.getUserManager().createUser(DEFAULT_COMMIT_COMMENTATOR_USR_DETAILS);
+        } catch (CreateException e) {
+            defaultUser = ComponentAccessor.getUserManager().getUserByName(DEFAULT_COMMIT_COMMENTATOR_USR_NAME);
+        }
+        this.postComment(issue, defaultUser, this.comment);
     }
 
 
