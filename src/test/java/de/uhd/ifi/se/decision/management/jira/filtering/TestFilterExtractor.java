@@ -24,7 +24,7 @@ public class TestFilterExtractor extends TestSetUp {
 
 	private ApplicationUser user;
 	private FilterSettings settings;
-
+	
 	@Before
 	public void setUp() {
 		init();

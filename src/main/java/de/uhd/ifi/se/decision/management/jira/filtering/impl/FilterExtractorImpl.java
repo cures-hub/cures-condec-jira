@@ -39,7 +39,7 @@ public class FilterExtractorImpl implements FilterExtractor {
 	private FilterSettings filterSettings;
 
 	public FilterExtractorImpl(String projectKey, ApplicationUser user, String query) {
-		if (projectKey == null || projectKey.equals("") || query == null || user == null) {
+		if (projectKey == null || projectKey.isBlank() || query == null || user == null) {
 			LOGGER.error("FilterExtractor could not be created due to an invalid input.");
 			return;
 		}
@@ -121,10 +121,6 @@ public class FilterExtractorImpl implements FilterExtractor {
 		}
 		// Retrieve linked decision knowledge elements for every Jira issue
 		for (Issue currentIssue : jiraIssues) {
-			// Only Issues of the selected Project
-			if (!currentIssue.getProjectObject().getKey().equals(this.filterSettings.getProjectKey())) {
-				continue;
-			}
 			// Add all Matching Elements from Query as a DecisionKnowledgeElement
 			results.add(new DecisionKnowledgeElementImpl(currentIssue));
 			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
