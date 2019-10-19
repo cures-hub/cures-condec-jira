@@ -30,8 +30,5 @@ public interface FilterExtractor {
 
 	FilterSettings getFilterSettings();
 
-	JiraQueryHandler getQueryHandler();
-
 	ApplicationUser getUser();
-
 }

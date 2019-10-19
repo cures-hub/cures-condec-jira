@@ -50,19 +50,13 @@ public class Treant {
 	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user,
 			boolean isHyperlinked) {
 		FilterExtractor filterExtractor = new FilterExtractorImpl(projectKey, user, query);
-		if (filterExtractor.getQueryHandler() != null
-				&& filterExtractor.getQueryHandler().getQueryType() != JiraQueryType.OTHER) {
-			filterExtractor.getAllElementsMatchingQuery();
-		} else {
-			filterExtractor.getAllElementsMatchingCompareFilter();
-		}
+		filterExtractor.getAllElementsMatchingQuery();
 		this.graph = new KnowledgeGraphImpl(projectKey);
 
 		AbstractPersistenceManager persistenceManager;
-		if(elementKey.contains(":")) {
-			persistenceManager =
-					AbstractPersistenceManager.getPersistenceManager(projectKey,
-							DocumentationLocation.JIRAISSUETEXT.getIdentifier());
+		if (elementKey.contains(":")) {
+			persistenceManager = AbstractPersistenceManager.getPersistenceManager(projectKey,
+					DocumentationLocation.JIRAISSUETEXT.getIdentifier());
 		} else {
 			persistenceManager = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
 		}

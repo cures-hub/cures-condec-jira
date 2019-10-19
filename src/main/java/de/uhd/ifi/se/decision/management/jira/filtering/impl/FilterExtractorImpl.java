@@ -13,6 +13,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
+import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryType;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -36,7 +37,6 @@ public class FilterExtractorImpl implements FilterExtractor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilterExtractorImpl.class);
 	private ApplicationUser user;
 	private FilterSettings filterSettings;
-	private JiraQueryHandler queryHandler;
 
 	public FilterExtractorImpl(String projectKey, ApplicationUser user, String query) {
 		if (projectKey == null || projectKey.equals("") || query == null || user == null) {
@@ -45,7 +45,6 @@ public class FilterExtractorImpl implements FilterExtractor {
 		}
 		this.filterSettings = new FilterSettingsImpl(projectKey, query);
 		this.user = user;
-		this.queryHandler = new JiraQueryHandlerImpl(user, projectKey, filterSettings.getSearchString());
 	}
 
 	public FilterExtractorImpl(ApplicationUser user, FilterSettings filterSettings) {
@@ -55,8 +54,6 @@ public class FilterExtractorImpl implements FilterExtractor {
 		}
 		this.user = user;
 		this.filterSettings = filterSettings;
-		this.queryHandler = new JiraQueryHandlerImpl(user, filterSettings.getProjectKey(),
-				filterSettings.getSearchString());
 	}
 
 	/**
@@ -110,6 +107,11 @@ public class FilterExtractorImpl implements FilterExtractor {
 	@Override
 	public List<DecisionKnowledgeElement> getAllElementsMatchingQuery() {
 		List<DecisionKnowledgeElement> results = new ArrayList<DecisionKnowledgeElement>();
+		JiraQueryHandler queryHandler = new JiraQueryHandlerImpl(user, filterSettings.getProjectKey(),
+				filterSettings.getSearchString());
+		if (queryHandler == null || queryHandler.getQueryType() != JiraQueryType.OTHER) {
+			this.getAllElementsMatchingCompareFilter();
+		}
 		List<Issue> jiraIssues = queryHandler.getJiraIssuesFromQuery();
 		if (jiraIssues == null) {
 			return results;
@@ -245,11 +247,6 @@ public class FilterExtractorImpl implements FilterExtractor {
 	@Override
 	public FilterSettings getFilterSettings() {
 		return this.filterSettings;
-	}
-
-	@Override
-	public JiraQueryHandler getQueryHandler() {
-		return queryHandler;
 	}
 
 	@Override
