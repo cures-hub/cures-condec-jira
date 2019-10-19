@@ -15,14 +15,12 @@ import com.atlassian.jira.component.ComponentAccessor;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
-import net.java.ao.EntityManager;
-import net.java.ao.test.jdbc.DatabaseUpdater;
 
 public class TestVisGraph extends TestSetUp {
 	private VisGraph visGraph;
@@ -147,13 +145,13 @@ public class TestVisGraph extends TestSetUp {
 		assertEquals(newGraph, visGraph.getGraph());
 	}
 
-	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
-		@SuppressWarnings("unchecked")
-		@Override
-		public void update(EntityManager entityManager) throws Exception {
-			entityManager.migrate(PartOfJiraIssueTextInDatabase.class);
-			entityManager.migrate(LinkInDatabase.class);
-		}
+	@Test
+	public void addNewNodeToGraph() {
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(42, "", "", KnowledgeType.DECISION, "TEST",
+				"TEST-42", DocumentationLocation.JIRAISSUE);
+		VisGraph visGraph = new VisGraph(element, new ArrayList<DecisionKnowledgeElement>());
+		KnowledgeGraph newGraph = KnowledgeGraph.getOrCreate("ConDec");
+		visGraph.setGraph(newGraph);
+		assertEquals(newGraph, visGraph.getGraph());
 	}
-
 }

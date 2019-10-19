@@ -123,12 +123,12 @@ public class TestFilterSettings extends TestSetUp {
 	
 	@Test
 	public void testSetSelectedStatus() {
-		filterSettings.setSelectedJiraIssueStatus(null);;
+		filterSettings.setSelectedJiraIssueStatus(null);
 		assertEquals(7, filterSettings.getSelectedIssueStatus().size());
 		
 		List<String> status = new ArrayList<String>();
 		status.add(KnowledgeStatus.UNRESOLVED.toString());
-		filterSettings.setSelectedJiraIssueStatus(status);;
+		filterSettings.setSelectedJiraIssueStatus(status);
 		assertEquals(8, filterSettings.getSelectedIssueStatus().size());
 	}
 }

@@ -59,6 +59,7 @@ public class JiraQueryHandlerImpl implements JiraQueryHandler {
 			break;
 		default:
 			finalQuery = "type = null";
+			break;
 		}
 		finalQuery = appendProjectKey(finalQuery);
 		return finalQuery;
