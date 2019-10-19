@@ -21,7 +21,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
@@ -61,27 +60,30 @@ public class FilterExtractorImpl implements FilterExtractor {
 	 */
 	@Override
 	public List<List<DecisionKnowledgeElement>> getAllGraphs() {
-		List<DecisionKnowledgeElement> tempQueryResult = getAllElementsMatchingQuery();
+		List<List<DecisionKnowledgeElement>> allGraphs = new ArrayList<List<DecisionKnowledgeElement>>();
 		List<DecisionKnowledgeElement> addedElements = new ArrayList<DecisionKnowledgeElement>();
-		List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
 
-		// now iti over query result
-		for (DecisionKnowledgeElement current : tempQueryResult) {
-			// check if in addedElements list
-			if (!addedElements.contains(current)) {
-				// if not get the connected tree
-				String currentElementKey = current.getKey();
-				AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(
-						this.filterSettings.getProjectKey(), current.getDocumentationLocation().getIdentifier());
-				DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(currentElementKey);
-				List<DecisionKnowledgeElement> filteredElements = getElementsInGraph(element);
-				// add each element to the list
-				addedElements.addAll(filteredElements);
-				// add list to the big list
-				elementsQueryLinked.add(filteredElements);
-			}
+		List<Issue> jiraIssues = getJiraIssuesFromQuery();
+		if (jiraIssues == null) {
+			allGraphs.add(this.getAllElementsMatchingCompareFilter());
+			return allGraphs;
 		}
-		return elementsQueryLinked;
+
+		// Retrieve linked decision knowledge elements for every Jira issue
+		for (Issue currentIssue : jiraIssues) {
+			DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(currentIssue);
+			if (addedElements.contains(element)) {
+				continue;
+			}
+
+			addedElements.add(element);
+			List<DecisionKnowledgeElement> filteredElements = getElementsInGraph(element);
+			// add each element to the list
+			addedElements.addAll(filteredElements);
+			// add list to the big list
+			allGraphs.add(filteredElements);
+		}
+		return allGraphs;
 	}
 
 	private List<DecisionKnowledgeElement> getElementsInGraph(DecisionKnowledgeElement element) {
@@ -106,19 +108,12 @@ public class FilterExtractorImpl implements FilterExtractor {
 	// location so everything is collapsed
 	@Override
 	public List<DecisionKnowledgeElement> getAllElementsMatchingQuery() {
-		List<DecisionKnowledgeElement> results = new ArrayList<DecisionKnowledgeElement>();
-		JiraQueryHandler queryHandler = null;
-		if (filterSettings != null) {
-			queryHandler = new JiraQueryHandlerImpl(user, filterSettings.getProjectKey(),
-					filterSettings.getSearchString());
-		}
-		if (queryHandler == null || queryHandler.getQueryType() == JiraQueryType.OTHER) {
+		List<Issue> jiraIssues = getJiraIssuesFromQuery();
+		if (jiraIssues == null) {
 			return this.getAllElementsMatchingCompareFilter();
 		}
-		List<Issue> jiraIssues = queryHandler.getJiraIssuesFromQuery();
-		if (jiraIssues == null) {
-			return results;
-		}
+
+		List<DecisionKnowledgeElement> results = new ArrayList<DecisionKnowledgeElement>();
 		// Retrieve linked decision knowledge elements for every Jira issue
 		for (Issue currentIssue : jiraIssues) {
 			// Add all Matching Elements from Query as a DecisionKnowledgeElement
@@ -126,8 +121,10 @@ public class FilterExtractorImpl implements FilterExtractor {
 			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
 					.getElementsForIssue(currentIssue.getId(), filterSettings.getProjectKey());
 			for (DecisionKnowledgeElement currentElement : elements) {
-				if (!results.contains(currentElement) && currentElement instanceof PartOfJiraIssueText
-						&& checkIfElementMatchesTimeFilter(currentElement)) {
+				if (results.contains(currentElement)) {
+					continue;
+				}
+				if (checkIfElementMatchesTimeFilter(currentElement)) {
 					results.add(currentElement);
 				}
 			}
@@ -135,17 +132,29 @@ public class FilterExtractorImpl implements FilterExtractor {
 		return results;
 	}
 
+	private List<Issue> getJiraIssuesFromQuery() {
+		if (filterSettings == null) {
+			return null;
+		}
+		JiraQueryHandler queryHandler = new JiraQueryHandlerImpl(user, filterSettings.getProjectKey(),
+				filterSettings.getSearchString());
+		if (queryHandler == null || queryHandler.getQueryType() == JiraQueryType.OTHER) {
+			return null;
+		}
+		return queryHandler.getJiraIssuesFromQuery();
+	}
+
 	@Override
 	public List<DecisionKnowledgeElement> getAllElementsMatchingCompareFilter() {
 		if (filterSettings == null || filterSettings.getProjectKey() == null) {
-			return new ArrayList<>();
+			return new ArrayList<DecisionKnowledgeElement>();
 		}
 		List<DecisionKnowledgeElement> elements = getElementsInProject();
 		return filterElements(elements);
 	}
 
 	// Get decision knowledge elements from the selected strategy and the sentences
-	private List getElementsInProject() {
+	private List<DecisionKnowledgeElement> getElementsInProject() {
 		AbstractPersistenceManager strategy = AbstractPersistenceManager
 				.getDefaultPersistenceStrategy(filterSettings.getProjectKey());
 		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();

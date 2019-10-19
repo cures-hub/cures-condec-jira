@@ -128,6 +128,7 @@ public class TestFilterExtractor extends TestSetUp {
 	public void testConstructorFilterOwnFilled() {
 		FilterExtractor extractor = new FilterExtractorImpl(user, new FilterSettingsImpl("TEST", ""));
 		// the empty query will be changed to "allissues", i.e. "type != null"
+		// no, it is changed to "type = null" currently!
 		assertEquals(8, extractor.getAllElementsMatchingQuery().size());
 	}
 
@@ -136,7 +137,8 @@ public class TestFilterExtractor extends TestSetUp {
 	public void testGetGraphsMatchingQueryEmpty() {
 		FilterExtractor extractor = new FilterExtractorImpl("TEST", user, "");
 		// the empty query will be changed to "allissues", i.e. "type != null"
-		assertEquals(5, extractor.getAllGraphs().size());
+		// no, it is changed to "type = null" currently!
+		assertEquals(1, extractor.getAllGraphs().size());
 	}
 
 	@Test
