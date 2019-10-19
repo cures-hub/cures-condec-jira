@@ -105,6 +105,7 @@ public class TestFilterExtractor extends TestSetUp {
 	@NonTransactional
 	public void testConstructorFilterStringFilledFilledFilledJQL() {
 		FilterExtractor extractor = new FilterExtractorImpl("TEST", user, "?jql=project=TEST");
+		assertEquals("?jql=project=TEST", extractor.getFilterSettings().getSearchString());
 		assertEquals(8, extractor.getAllElementsMatchingQuery().size());
 	}
 

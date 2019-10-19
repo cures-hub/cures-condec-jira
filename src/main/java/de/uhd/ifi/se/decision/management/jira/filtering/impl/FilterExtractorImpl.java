@@ -107,17 +107,19 @@ public class FilterExtractorImpl implements FilterExtractor {
 	@Override
 	public List<DecisionKnowledgeElement> getAllElementsMatchingQuery() {
 		List<DecisionKnowledgeElement> results = new ArrayList<DecisionKnowledgeElement>();
-		JiraQueryHandler queryHandler = new JiraQueryHandlerImpl(user, filterSettings.getProjectKey(),
-				filterSettings.getSearchString());
-		if (queryHandler == null || queryHandler.getQueryType() != JiraQueryType.OTHER) {
-			this.getAllElementsMatchingCompareFilter();
+		JiraQueryHandler queryHandler = null;
+		if (filterSettings != null) {
+			queryHandler = new JiraQueryHandlerImpl(user, filterSettings.getProjectKey(),
+					filterSettings.getSearchString());
+		}
+		if (queryHandler == null || queryHandler.getQueryType() == JiraQueryType.OTHER) {
+			return this.getAllElementsMatchingCompareFilter();
 		}
 		List<Issue> jiraIssues = queryHandler.getJiraIssuesFromQuery();
 		if (jiraIssues == null) {
 			return results;
 		}
-		// Search in every Jira issue for decision knowledge elements and if
-		// there are some add them
+		// Retrieve linked decision knowledge elements for every Jira issue
 		for (Issue currentIssue : jiraIssues) {
 			// Only Issues of the selected Project
 			if (!currentIssue.getProjectObject().getKey().equals(this.filterSettings.getProjectKey())) {
