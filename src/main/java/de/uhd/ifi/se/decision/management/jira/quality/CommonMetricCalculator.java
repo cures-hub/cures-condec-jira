@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import de.uhd.ifi.se.decision.management.jira.model.*;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -331,7 +330,7 @@ public class CommonMetricCalculator {
 
 	private int graphRecursionBot(DecisionKnowledgeElement dke) {
 		this.absolutDepth = 0;
-		KnowledgeGraph graph = new KnowledgeGraphImpl(projectKey);
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
 		this.createNodeStructure(dke, null, 100, 1, graph);
 		return absolutDepth;
 	}

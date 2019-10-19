@@ -36,13 +36,13 @@ public class TestGetElements extends TestSetUp {
 	@NonTransactional
 	public void testNull() {
 		assertEquals(Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERROR))
-				.build().getEntity(), knowledgeRest.getElements(false, null, null, null, null).getEntity());
+				.build().getEntity(), knowledgeRest.getElements(false, null, null, null).getEntity());
 	}
 
 	@Test
 	@NonTransactional
 	public void testFilledAllTreesTrue() {
-		Response response = knowledgeRest.getElements(true, "TEST", "", "TEST-4", request);
+		Response response = knowledgeRest.getElements(true, "TEST", "", request);
 
 		// TODO Why are there no Jira issue keys?
 //		assertEquals(
@@ -54,7 +54,7 @@ public class TestGetElements extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testFilledAllTreesFalse() {
-		Response response = knowledgeRest.getElements(false, "TEST", "", "TEST-4", request);
+		Response response = knowledgeRest.getElements(false, "TEST", "", request);
 		
 //		assertEquals(
 //				"[WI: Implement feature, WI: Yet another work item, WI: Do an interesting task, How can we implement the feature?, How can we implement the new get function?, We could do it like this!, We will do it like this!, This is a great solution.]",

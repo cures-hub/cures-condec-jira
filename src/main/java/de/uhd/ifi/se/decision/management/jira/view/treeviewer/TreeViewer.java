@@ -23,7 +23,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -155,7 +154,7 @@ public class TreeViewer {
 		if (decisionKnowledgeElement == null) {
 			return new Data();
 		}
-		this.graph = new KnowledgeGraphImpl(decisionKnowledgeElement.getProject().getProjectKey());
+		this.graph = KnowledgeGraph.getOrCreate(decisionKnowledgeElement.getProject().getProjectKey());
 		Data data = new Data(decisionKnowledgeElement);
 		data = this.makeIdUnique(data);
 		List<Data> children = this.getChildren(decisionKnowledgeElement);
@@ -165,8 +164,13 @@ public class TreeViewer {
 
 	protected List<Data> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Data> children = new ArrayList<Data>();
-		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<Node, Link>(graph,
-				decisionKnowledgeElement);
+		BreadthFirstIterator<Node, Link> iterator;
+		try {
+			iterator = new BreadthFirstIterator<>(graph, decisionKnowledgeElement);
+		} catch (IllegalArgumentException e) {
+			graph.addVertex(decisionKnowledgeElement);
+			iterator = new BreadthFirstIterator<>(graph, decisionKnowledgeElement);
+		}
 		while (iterator.hasNext()) {
 			Node iterNode = iterator.next();
 			Node parentNode = iterator.getParent(iterNode);
@@ -178,7 +182,7 @@ public class TreeViewer {
 			}
 			DecisionKnowledgeElement nodeElement = (DecisionKnowledgeElement) iterNode;
 			Link edge = this.graph.getEdge(parentNode, nodeElement);
-			if(this.alreadyVisetedEdge.contains( edge.getId())){
+			if (this.alreadyVisetedEdge.contains(edge.getId())) {
 				continue;
 			}
 			this.alreadyVisetedEdge.add(edge.getId());

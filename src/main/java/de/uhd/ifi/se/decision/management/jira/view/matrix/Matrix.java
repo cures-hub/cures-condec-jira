@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.view.matrix;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.*;
@@ -42,7 +41,7 @@ public class Matrix {
     }
 
     private HashSet<MatrixEntry> getMatrixEntries(String projectKey) {
-        KnowledgeGraph graph = new KnowledgeGraphImpl(projectKey);
+        KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
         Set<Link> links = graph.edgeSet();
         HashSet<MatrixEntry> entries = new HashSet<>();
         for (Link link : links) {

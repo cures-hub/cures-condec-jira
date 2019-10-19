@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,6 +13,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 
 public class TestFilterSettings extends TestSetUp {
 	private FilterSettings filterSettings;
@@ -112,5 +114,21 @@ public class TestFilterSettings extends TestSetUp {
 	@Test
 	public void testGetAllJiraIssueStatus() {
 		assertEquals(7, filterSettings.getAllJiraIssueStatus().size());
+	}
+	
+	@Test
+	public void testGetSelectedStatus() {
+		assertEquals(7, filterSettings.getSelectedIssueStatus().size());
+	}
+	
+	@Test
+	public void testSetSelectedStatus() {
+		filterSettings.setSelectedJiraIssueStatus(null);
+		assertEquals(7, filterSettings.getSelectedIssueStatus().size());
+		
+		List<String> status = new ArrayList<String>();
+		status.add(KnowledgeStatus.UNRESOLVED.toString());
+		filterSettings.setSelectedJiraIssueStatus(status);
+		assertEquals(8, filterSettings.getSelectedIssueStatus().size());
 	}
 }

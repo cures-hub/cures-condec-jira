@@ -1,7 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterExtractorImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
@@ -38,7 +40,7 @@ public class MarkdownCreator {
 		String issueQuery = buildQueryFromIssueKeys(keysForContent);
 		//make one jql request and later seperate by bugs, features and improvements
 		String query = "?jql=project=" + projectKey + "&& key in(" + issueQuery + ")";
-		FilterExtractor extractor = new FilterExtractor(projectKey, user, query);
+		FilterExtractor extractor = new FilterExtractorImpl(projectKey, user, query);
 		List<DecisionKnowledgeElement> elementsQueryLinked = new ArrayList<DecisionKnowledgeElement>();
 		elementsQueryLinked = extractor.getAllElementsMatchingQuery();
 		return elementsQueryLinked;

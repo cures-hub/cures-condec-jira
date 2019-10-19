@@ -24,12 +24,13 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterExtractorImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
@@ -101,7 +102,7 @@ public class KnowledgeRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createUnlinkedDecisionKnowledgeElement(@Context HttpServletRequest request,
-												   DecisionKnowledgeElement element) {
+			DecisionKnowledgeElement element) {
 		if (element == null || request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Creation of decision knowledge element failed due to a bad request (element or request is null)."))
@@ -231,18 +232,22 @@ public class KnowledgeRest {
 	@Path("/createLink")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createLink(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("knowledgeTypeOfChild") String knowledgeTypeOfChild, @QueryParam("idOfParent") long idOfParent,
-							   @QueryParam("documentationLocationOfParent") String documentationLocationOfParent,
-							   @QueryParam("idOfChild") long idOfChild,
-							   @QueryParam("documentationLocationOfChild") String documentationLocationOfChild, @QueryParam("linkTypeName") String linkTypeName) {
+	public Response createLink(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			@QueryParam("knowledgeTypeOfChild") String knowledgeTypeOfChild, @QueryParam("idOfParent") long idOfParent,
+			@QueryParam("documentationLocationOfParent") String documentationLocationOfParent,
+			@QueryParam("idOfChild") long idOfChild,
+			@QueryParam("documentationLocationOfChild") String documentationLocationOfChild,
+			@QueryParam("linkTypeName") String linkTypeName) {
 		if (request == null || projectKey == null || idOfChild <= 0 || idOfParent <= 0) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Link could not be created due to a bad request.")).build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(idOfParent, projectKey, documentationLocationOfParent);
-		DecisionKnowledgeElement childElement = new DecisionKnowledgeElementImpl(idOfChild, projectKey, documentationLocationOfChild);
+		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(idOfParent, projectKey,
+				documentationLocationOfParent);
+		DecisionKnowledgeElement childElement = new DecisionKnowledgeElementImpl(idOfChild, projectKey,
+				documentationLocationOfChild);
 
 		Link link;
 		if (linkTypeName == null) {
@@ -284,8 +289,7 @@ public class KnowledgeRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getElements(@QueryParam("allTrees") boolean allTrees, @QueryParam("projectKey") String projectKey,
-			@QueryParam("query") String query, @QueryParam("elementKey") String elementKey,
-			@Context HttpServletRequest request) {
+			@QueryParam("query") String query, @Context HttpServletRequest request) {
 		if (query == null || request == null || projectKey == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Getting elements failed due to a bad request.")).build();
@@ -293,7 +297,7 @@ public class KnowledgeRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		List<DecisionKnowledgeElement> queryResult = new ArrayList<DecisionKnowledgeElement>();
-		FilterExtractor extractor = new FilterExtractor(projectKey, user, query);
+		FilterExtractor extractor = new FilterExtractorImpl(projectKey, user, query);
 		if (allTrees) {
 			List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
 			elementsQueryLinked = extractor.getAllGraphs();
