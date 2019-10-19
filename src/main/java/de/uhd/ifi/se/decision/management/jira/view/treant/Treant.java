@@ -13,6 +13,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryType;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterExtractorImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -48,7 +49,7 @@ public class Treant {
 
 	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user,
 			boolean isHyperlinked) {
-		FilterExtractor filterExtractor = new FilterExtractor(projectKey, user, query);
+		FilterExtractor filterExtractor = new FilterExtractorImpl(projectKey, user, query);
 		if (filterExtractor.getQueryHandler() != null
 				&& filterExtractor.getQueryHandler().getQueryType() != JiraQueryType.OTHER) {
 			filterExtractor.getAllElementsMatchingQuery();
