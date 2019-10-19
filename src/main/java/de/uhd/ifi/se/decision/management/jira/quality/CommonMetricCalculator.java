@@ -331,7 +331,7 @@ public class CommonMetricCalculator {
 
 	private int graphRecursionBot(DecisionKnowledgeElement dke) {
 		this.absolutDepth = 0;
-		KnowledgeGraph graph = new KnowledgeGraphImpl(projectKey);
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
 		this.createNodeStructure(dke, null, 100, 1, graph);
 		return absolutDepth;
 	}

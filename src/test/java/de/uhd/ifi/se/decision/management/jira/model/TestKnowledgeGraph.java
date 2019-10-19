@@ -49,7 +49,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("This is a test comment with some irrelevant text.");
 		PartOfJiraIssueText sentence = comment.get(0);
 		String projectKey = sentence.getProject().getProjectKey();
-		KnowledgeGraph graph = new KnowledgeGraphImpl(projectKey);
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
 		assertFalse(graph.containsVertex(sentence));
 	}
 

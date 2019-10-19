@@ -42,7 +42,7 @@ public class Matrix {
     }
 
     private HashSet<MatrixEntry> getMatrixEntries(String projectKey) {
-        KnowledgeGraph graph = new KnowledgeGraphImpl(projectKey);
+        KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
         Set<Link> links = graph.edgeSet();
         HashSet<MatrixEntry> entries = new HashSet<>();
         for (Link link : links) {

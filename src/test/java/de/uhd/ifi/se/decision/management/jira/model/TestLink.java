@@ -31,12 +31,12 @@ public class TestLink extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test
 	public void testGetIdOfSourceElement() {
-		assertEquals(1, link.getSourceElement().getId(), 0.0);
+		assertEquals(1, link.getSourceElement().getId());
 	}
 
 	@Test
 	public void testGetIdOfDestinationElement() {
-		assertEquals(4, link.getDestinationElement().getId(), 0.0);
+		assertEquals(4, link.getDestinationElement().getId());
 	}
 
 	@Test

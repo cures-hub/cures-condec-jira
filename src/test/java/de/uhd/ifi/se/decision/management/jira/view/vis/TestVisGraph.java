@@ -142,7 +142,7 @@ public class TestVisGraph extends TestSetUp {
 
 	@Test
 	public void testSetGraph() {
-		KnowledgeGraph newGraph = new KnowledgeGraphImpl("ConDec");
+		KnowledgeGraph newGraph = KnowledgeGraph.getOrCreate("ConDec");
 		visGraph.setGraph(newGraph);
 		assertEquals(newGraph, visGraph.getGraph());
 	}

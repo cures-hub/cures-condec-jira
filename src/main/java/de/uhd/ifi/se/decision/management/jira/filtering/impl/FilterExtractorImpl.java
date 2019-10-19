@@ -20,7 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
@@ -87,7 +86,7 @@ public class FilterExtractorImpl implements FilterExtractor {
 	}
 
 	private List<DecisionKnowledgeElement> getElementsInGraph(DecisionKnowledgeElement element) {
-		KnowledgeGraph graph = new KnowledgeGraphImpl(filterSettings.getProjectKey());
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
 		List<DecisionKnowledgeElement> elements = new ArrayList<>();
 		if (!graph.vertexSet().contains(element)) {
 			elements.add(element);

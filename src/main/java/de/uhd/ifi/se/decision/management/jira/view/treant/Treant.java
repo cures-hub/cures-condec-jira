@@ -12,13 +12,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
-import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryType;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterExtractorImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 
 /**
@@ -51,7 +49,7 @@ public class Treant {
 			boolean isHyperlinked) {
 		FilterExtractor filterExtractor = new FilterExtractorImpl(projectKey, user, query);
 		filterExtractor.getAllElementsMatchingQuery();
-		this.graph = new KnowledgeGraphImpl(projectKey);
+		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 
 		AbstractPersistenceManager persistenceManager;
 		if (elementKey.contains(":")) {
@@ -76,7 +74,7 @@ public class Treant {
 		}
 
 		if (graph == null) {
-			graph = new KnowledgeGraphImpl(element.getProject().getProjectKey());
+			graph = KnowledgeGraph.getOrCreate(element.getProject().getProjectKey());
 		}
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getAdjacentElementsAndLinks(element);
 		boolean isCollapsed = false;
