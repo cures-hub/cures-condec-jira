@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import de.uhd.ifi.se.decision.management.jira.model.*;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

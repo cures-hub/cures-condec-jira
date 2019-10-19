@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.view.matrix;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.*;

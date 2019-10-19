@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
