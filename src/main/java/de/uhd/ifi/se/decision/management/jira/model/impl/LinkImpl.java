@@ -136,7 +136,7 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	@Override
 	public void setSourceElement(long id, DocumentationLocation documentationLocation) {
 		if (this.source == null) {
-			this.source = AbstractPersistenceManager.getDecisionKnowledgeElement(id, documentationLocation);
+			this.source = PersistenceInterface.getDecisionKnowledgeElement(id, documentationLocation);
 		}
 		this.source.setId(id);
 		this.source.setDocumentationLocation(documentationLocation);
@@ -163,7 +163,7 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	@Override
 	public void setDestinationElement(long id, DocumentationLocation documentationLocation) {
 		if (this.target == null) {
-			this.target = AbstractPersistenceManager.getDecisionKnowledgeElement(id, documentationLocation);
+			this.target = PersistenceInterface.getDecisionKnowledgeElement(id, documentationLocation);
 		}
 		this.target.setId(id);
 		this.target.setDocumentationLocation(documentationLocation);
@@ -266,7 +266,7 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 		DocumentationLocation documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
 		if (this.source.getDocumentationLocation() != documentationLocation) {
-			this.source = AbstractPersistenceManager.getDecisionKnowledgeElement(this.source.getId(),
+			this.source = PersistenceInterface.getDecisionKnowledgeElement(this.source.getId(),
 					documentationLocation);
 		}
 		this.getSourceElement().setDocumentationLocation(documentationLocation);
@@ -278,7 +278,7 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 		DocumentationLocation documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
 		if (this.target.getDocumentationLocation() != documentationLocation) {
-			this.target = AbstractPersistenceManager.getDecisionKnowledgeElement(this.target.getId(),
+			this.target = PersistenceInterface.getDecisionKnowledgeElement(this.target.getId(),
 					documentationLocation);
 		}
 		this.getDestinationElement().setDocumentationLocation(documentationLocation);

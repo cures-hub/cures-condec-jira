@@ -595,7 +595,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 
 		PartOfJiraIssueText element = (PartOfJiraIssueText) this.getDecisionKnowledgeElement(aoId);
 
-		JiraIssuePersistenceManager persistenceManager = new JiraIssuePersistenceManager(this.projectKey);
+		JiraIssuePersistenceManager persistenceManager = PersistenceInterface.getOrCreate(this.projectKey).getJiraIssuePersistenceManager();
 		DecisionKnowledgeElement decElement = persistenceManager.insertDecisionKnowledgeElement(element, user);
 
 		MutableIssue issue = ComponentAccessor.getIssueService().getIssue(user, decElement.getId()).getIssue();

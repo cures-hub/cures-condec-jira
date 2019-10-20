@@ -250,4 +250,27 @@ public interface PersistenceInterface {
 			DecisionStatusManager.setStatusForElement(element, KnowledgeStatus.IDEA);
 		}
 	}
+
+	/**
+	 * Get a decision knowledge element in database by its id and its documentation
+	 * location.
+	 *
+	 * @param id
+	 *            id of the decision knowledge element in database.
+	 * @param documentationLocation
+	 *            of the element.
+	 * @return decision knowledge element.
+	 * @see DecisionKnowledgeElement
+	 * @see DocumentationLocation
+	 */
+	static DecisionKnowledgeElement getDecisionKnowledgeElement(long id,
+			DocumentationLocation documentationLocation) {
+		AbstractPersistenceManager persistenceManager = getPersistenceManager("",
+				documentationLocation);
+		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(id);
+		if (element == null) {
+			return new DecisionKnowledgeElementImpl();
+		}
+		return element;
+	}
 }

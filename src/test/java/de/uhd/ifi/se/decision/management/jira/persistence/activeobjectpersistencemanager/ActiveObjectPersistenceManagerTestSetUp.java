@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectpersisten
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -13,7 +14,7 @@ public abstract class ActiveObjectPersistenceManagerTestSetUp extends TestSetUp 
 
 	public static void initialisation() {
 		init();
-		aoStrategy = new ActiveObjectPersistenceManager("TEST");
+		aoStrategy = PersistenceInterface.getOrCreate("TEST").getActiveObjectPersistenceManager();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 }

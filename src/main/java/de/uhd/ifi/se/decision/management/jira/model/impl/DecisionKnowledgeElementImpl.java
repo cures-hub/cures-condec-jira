@@ -296,7 +296,7 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 
 	@Override
 	public boolean existsInDatabase() {
-		DecisionKnowledgeElement elementInDatabase = AbstractPersistenceManager.getDecisionKnowledgeElement(id,
+		DecisionKnowledgeElement elementInDatabase = PersistenceInterface.getDecisionKnowledgeElement(id,
 				documentationLocation);
 		return elementInDatabase.getId() > 0;
 	}

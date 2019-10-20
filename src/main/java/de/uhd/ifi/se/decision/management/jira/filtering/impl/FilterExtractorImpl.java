@@ -22,7 +22,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 
 /**
@@ -149,7 +148,8 @@ public class FilterExtractorImpl implements FilterExtractor {
 		if (filterSettings == null || filterSettings.getProjectKey() == null) {
 			return new ArrayList<DecisionKnowledgeElement>();
 		}
-		List<DecisionKnowledgeElement> elements = PersistenceInterface.getDecisionKnowledgeElements(filterSettings.getProjectKey());
+		List<DecisionKnowledgeElement> elements = PersistenceInterface
+				.getDecisionKnowledgeElements(filterSettings.getProjectKey());
 		return filterElements(elements);
 	}
 

@@ -11,9 +11,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
 
 /**
  * Abstract class to create, edit, delete and retrieve decision knowledge
@@ -70,29 +68,6 @@ public abstract class AbstractPersistenceManager {
 	 * @see DecisionKnowledgeElement
 	 */
 	public abstract DecisionKnowledgeElement getDecisionKnowledgeElement(long id);
-
-	/**
-	 * Get a decision knowledge element in database by its id and its documentation
-	 * location.
-	 *
-	 * @param id
-	 *            id of the decision knowledge element in database.
-	 * @param documentationLocation
-	 *            of the element.
-	 * @return decision knowledge element.
-	 * @see DecisionKnowledgeElement
-	 * @see DocumentationLocation
-	 */
-	public static DecisionKnowledgeElement getDecisionKnowledgeElement(long id,
-			DocumentationLocation documentationLocation) {
-		AbstractPersistenceManager persistenceManager = PersistenceInterface.getPersistenceManager("",
-				documentationLocation);
-		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(id);
-		if (element == null) {
-			return new DecisionKnowledgeElementImpl();
-		}
-		return element;
-	}
 
 	/**
 	 * Get a decision knowledge element in database by its key.
