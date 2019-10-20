@@ -63,7 +63,7 @@ public class VisTimeLine {
 		if (elementList != null) {
 			Set<Long> usedApplicationUser = new HashSet<Long>();
 			for (DecisionKnowledgeElement element : elementList) {
-				AbstractPersistenceManager manager = AbstractPersistenceManager.getPersistenceManager(
+				AbstractPersistenceManager manager = PersistenceInterface.getPersistenceManager(
 						element.getProject().getProjectKey(), element.getDocumentationLocation());
 				ApplicationUser user = manager.getCreator(element);
 				if (user == null) {

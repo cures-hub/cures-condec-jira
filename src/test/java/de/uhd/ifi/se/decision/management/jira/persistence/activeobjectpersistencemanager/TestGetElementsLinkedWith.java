@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGetElementsLinkedWith extends ActiveObjectPersistenceManagerTestSetUp {
@@ -42,7 +42,7 @@ public class TestGetElementsLinkedWith extends ActiveObjectPersistenceManagerTes
 		DecisionKnowledgeElement linkedDecisionWithDatabaseId = aoStrategy
 				.insertDecisionKnowledgeElement(linkedDecision, user);
 		link = new LinkImpl(elementWithDatabaseId, linkedDecisionWithDatabaseId);
-		AbstractPersistenceManager.insertLink(link, user);
+		PersistenceInterface.insertLink(link, user);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -60,7 +60,7 @@ public class TestGetElementsLinkedWith extends ActiveObjectPersistenceManagerTes
 	@Test
 	@NonTransactional
 	public void testElementInTableInward() {
-		AbstractPersistenceManager.insertLink(link, user);
+		PersistenceInterface.insertLink(link, user);
 		assertEquals(0, aoStrategy.getElementsLinkedWithInwardLinks(link.getSourceElement()).size(), 0.0);
 	}
 
@@ -79,7 +79,7 @@ public class TestGetElementsLinkedWith extends ActiveObjectPersistenceManagerTes
 	@Test
 	@NonTransactional
 	public void testElementInTableOutward() {
-		AbstractPersistenceManager.insertLink(link, user);
+		PersistenceInterface.insertLink(link, user);
 		assertEquals(0, aoStrategy.getElementsLinkedWithOutwardLinks(link.getDestinationElement()).size(), 0.0);
 	}
 }

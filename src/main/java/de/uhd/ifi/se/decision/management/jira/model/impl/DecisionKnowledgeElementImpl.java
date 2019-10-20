@@ -19,6 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
 
@@ -201,7 +202,7 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 
 	@Override
 	public List<Link> getInwardLinks() {
-		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(this);
+		AbstractPersistenceManager persistenceManager = PersistenceInterface.getPersistenceManager(this);
 		return persistenceManager.getInwardLinks(this);
 	}
 

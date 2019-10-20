@@ -39,6 +39,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
 
 /**
  * Extends the abstract class AbstractPersistenceStrategy. Uses JIRA issues to
@@ -301,7 +302,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		Issue issue = issueResult.getIssue();
 		element.setId(issue.getId());
 		element.setKey(issue.getKey());
-		insertStatus(element);
+		PersistenceInterface.insertStatus(element);
 		return element;
 	}
 

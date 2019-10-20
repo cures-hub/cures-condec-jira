@@ -64,7 +64,7 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 
 	private void addEdges() {
 		for (Node node : this.vertexSet()) {
-			AbstractPersistenceManager manager = AbstractPersistenceManager
+			AbstractPersistenceManager manager = PersistenceInterface
 					.getPersistenceManager(project.getProjectKey(), node.getDocumentationLocation());
 			List<Link> links = manager.getLinks(node.getId());
 			for (Link link : links) {

@@ -15,7 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestDeleteLink extends ActiveObjectPersistenceManagerTestSetUp {
@@ -41,26 +41,26 @@ public class TestDeleteLink extends ActiveObjectPersistenceManagerTestSetUp {
 		DecisionKnowledgeElement linkedDecisionWithDatabaseId = aoStrategy
 				.insertDecisionKnowledgeElement(linkedDecisision, user);
 		Link link = new LinkImpl(linkedDecisionWithDatabaseId, elementWithDatabaseId);
-		AbstractPersistenceManager.insertLink(link, user);
+		PersistenceInterface.insertLink(link, user);
 	}
 
 	@Test(expected = NullPointerException.class)
 	@NonTransactional
 	public void testLinkNullUserNull() {
-		AbstractPersistenceManager.deleteLink(null, null);
+		PersistenceInterface.deleteLink(null, null);
 	}
 
 	@Test(expected = NullPointerException.class)
 	@NonTransactional
 	public void testLinkNullUserFilled() {
-		AbstractPersistenceManager.deleteLink(null, user);
+		PersistenceInterface.deleteLink(null, user);
 	}
 
 	@Test
 	@NonTransactional
 	public void testLinkFilledUserNull() {
 		List<Link> links = aoStrategy.getLinks(linkedDecisision);
-		boolean isDeleted = AbstractPersistenceManager.deleteLink(links.get(0), user);
+		boolean isDeleted = PersistenceInterface.deleteLink(links.get(0), user);
 		assertTrue(isDeleted);
 	}
 
@@ -68,7 +68,7 @@ public class TestDeleteLink extends ActiveObjectPersistenceManagerTestSetUp {
 	@NonTransactional
 	public void testLinkFilledUserFilledLinkNotInTable() {
 		Link emptyLink = new LinkImpl(linkedDecisision, linkedDecisision);
-		assertFalse(AbstractPersistenceManager.deleteLink(emptyLink, user));
+		assertFalse(PersistenceInterface.deleteLink(emptyLink, user));
 	}
 
 	@Test
@@ -78,7 +78,7 @@ public class TestDeleteLink extends ActiveObjectPersistenceManagerTestSetUp {
 		Link link = links.get(0);
 		long linkId = GenericLinkManager.isLinkAlreadyInDatabase(link);
 		assertTrue(linkId > 0);
-		boolean isDeleted = AbstractPersistenceManager.deleteLink(link, user);
+		boolean isDeleted = PersistenceInterface.deleteLink(link, user);
 		assertTrue(isDeleted);
 	}
 }

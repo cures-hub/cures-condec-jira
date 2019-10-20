@@ -8,7 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 
 /**
- * Interface for links between knowledge elements. The links are directed, i.e.,
+ * Interface for links (=edges) between knowledge elements. The links are directed, i.e.,
  * they are arrows starting from a source element and ending in a destination
  * element.
  */
@@ -337,4 +337,6 @@ public interface Link {
 	 * @return true if objects have the same source and destination id.
 	 */
 	boolean equals(LinkInDatabase linkInDatabase);
+
+	void setDefaultDocumentationLocation(String projectKey);
 }

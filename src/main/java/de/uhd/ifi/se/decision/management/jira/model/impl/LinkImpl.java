@@ -16,6 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 
@@ -94,18 +95,18 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 		if (id == 0) {
 			if (sourceLocation.equals(destLocation)) {
 				if (sourceLocation == DocumentationLocation.JIRAISSUETEXT) {
-					AbstractPersistenceManager manager = AbstractPersistenceManager.getPersistenceManager(
+					AbstractPersistenceManager manager = PersistenceInterface.getPersistenceManager(
 							this.getSourceElement().getProject().getProjectKey(), sourceLocation.getIdentifier());
 					id = manager.getLinkId(this.getSourceElement(), this.getDestinationElement());
 				}
 				if (destLocation == DocumentationLocation.JIRAISSUETEXT) {
-					AbstractPersistenceManager manager = AbstractPersistenceManager.getPersistenceManager(
+					AbstractPersistenceManager manager = PersistenceInterface.getPersistenceManager(
 							this.getDestinationElement().getProject().getProjectKey(), destLocation.getIdentifier());
 					id = manager.getLinkId(this.getSourceElement(), this.getDestinationElement());
 				}
 			} else {
 				AbstractPersistenceManager manager =
-						AbstractPersistenceManager.getPersistenceManager(this.getDestinationElement().getProject().getProjectKey(),
+						PersistenceInterface.getPersistenceManager(this.getDestinationElement().getProject().getProjectKey(),
 								destLocation.getIdentifier());
 
 				id = manager.getLinkId(this.getSourceElement(), this.getDestinationElement());
@@ -334,5 +335,17 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	public boolean equals(LinkInDatabase linkInDatabase) {
 		return this.source.getId() == linkInDatabase.getSourceId()
 				&& this.target.getId() == linkInDatabase.getDestinationId();
+	}
+	
+	public void setDefaultDocumentationLocation(String projectKey) {
+		AbstractPersistenceManager defaultPersistenceManager = PersistenceInterface.getDefaultPersistenceManager(projectKey);
+		String defaultDocumentationLocation = DocumentationLocation
+				.getIdentifier(defaultPersistenceManager.getDocumentationLocation());
+		if (this.getDestinationElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN) {
+			this.setDocumentationLocationOfDestinationElement(defaultDocumentationLocation);
+		}
+		if (this.getSourceElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN) {
+			this.setDocumentationLocationOfSourceElement(defaultDocumentationLocation);
+		}
 	}
 }

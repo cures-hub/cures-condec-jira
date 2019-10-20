@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.Set;
 
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
@@ -116,7 +117,7 @@ public interface DecisionKnowledgeProject {
 	 *         strategy is the default strategy.
 	 */
 	static AbstractPersistenceManager getPersistenceStrategy(String projectKey) {
-		return AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
+		return PersistenceInterface.getDefaultPersistenceManager(projectKey);
 	}
 
 	/**

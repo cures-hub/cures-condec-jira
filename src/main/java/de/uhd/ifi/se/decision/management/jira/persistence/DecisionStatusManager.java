@@ -24,7 +24,7 @@ public class DecisionStatusManager {
 			return;
 		}
 		AbstractPersistenceManager manager =
-				AbstractPersistenceManager.getPersistenceManager(decisionKnowledgeElement.getProject().getProjectKey(),
+				PersistenceInterface.getPersistenceManager(decisionKnowledgeElement.getProject().getProjectKey(),
 						decisionKnowledgeElement.getDocumentationLocation());
 		DecisionKnowledgeElement element = manager.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 		if(!setTypeByChange(status, element, manager)){
@@ -90,7 +90,7 @@ public class DecisionStatusManager {
 
 	private static KnowledgeStatus getIssueKnowledgeStatus(DecisionKnowledgeElement element) {
 		AbstractPersistenceManager manager =
-				AbstractPersistenceManager.getPersistenceManager(element.getProject().getProjectKey(),
+				PersistenceInterface.getPersistenceManager(element.getProject().getProjectKey(),
 						element.getDocumentationLocation());
 
 		for(DecisionKnowledgeElement linkedElement: manager.getElementsLinkedWithOutwardLinks(element)) {
