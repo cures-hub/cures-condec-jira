@@ -48,7 +48,7 @@ public class TestVisTimeLine extends TestSetUp {
 	@Test
 	public void testConstEmpty() {
 		VisTimeLine timeLine = new VisTimeLine("");
-		assertEquals(0, timeLine.getElementList().size(), 0.0);
+		assertEquals(0, timeLine.getElementList().size());
 	}
 
 	@Test

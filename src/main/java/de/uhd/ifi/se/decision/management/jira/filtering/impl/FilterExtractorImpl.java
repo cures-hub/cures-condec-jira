@@ -23,6 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
 
 /**
  * Class for accessing the filtered knowledge graphs. The filter criteria are
@@ -148,19 +149,8 @@ public class FilterExtractorImpl implements FilterExtractor {
 		if (filterSettings == null || filterSettings.getProjectKey() == null) {
 			return new ArrayList<DecisionKnowledgeElement>();
 		}
-		List<DecisionKnowledgeElement> elements = getElementsInProject();
+		List<DecisionKnowledgeElement> elements = PersistenceInterface.getDecisionKnowledgeElements(filterSettings.getProjectKey());
 		return filterElements(elements);
-	}
-
-	// Get decision knowledge elements from the selected strategy and the sentences
-	private List<DecisionKnowledgeElement> getElementsInProject() {
-		AbstractPersistenceManager strategy = AbstractPersistenceManager
-				.getDefaultPersistenceStrategy(filterSettings.getProjectKey());
-		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
-		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
-				filterSettings.getProjectKey());
-		elements.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
-		return elements;
 	}
 
 	// Check if the element is created in time

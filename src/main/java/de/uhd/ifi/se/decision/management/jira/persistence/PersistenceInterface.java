@@ -1,22 +1,33 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 
 public interface PersistenceInterface {
 
-	public static List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey) {
-		AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
-		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
-		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(projectKey);
+	/**
+	 * Persistence instances that are identified by the project key.
+	 */
+	public static Map<String, PersistenceInterface> instances = new HashMap<String, PersistenceInterface>();
 
-		elements.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
-
-		// remove irrelevant sentences from graph
-		elements.removeIf(e -> (e instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) e).isRelevant()));
-		return elements;
+	public static PersistenceInterface getOrCreate(String projectKey) {
+		if (projectKey == null) {
+			return null;
+		}
+		if (instances.containsKey(projectKey)) {
+			return instances.get(projectKey);
+		}
+		PersistenceInterface persistenceInterface = new PersistenceInterfaceImpl(projectKey);
+		instances.put(projectKey, persistenceInterface);
+		return instances.get(projectKey);
 	}
 
+	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements();
+
+	public static List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey) {
+		return PersistenceInterface.getOrCreate(projectKey).getDecisionKnowledgeElements();
+	}
 }

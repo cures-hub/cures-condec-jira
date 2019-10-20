@@ -11,6 +11,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
 
 public class VisTimeLine {
 
@@ -24,11 +25,7 @@ public class VisTimeLine {
 
 	public VisTimeLine(String projectKey) {
 		if (projectKey != null) {
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
-			elementList = strategy.getDecisionKnowledgeElements();
-			AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
-					projectKey);
-			elementList.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
+			elementList = PersistenceInterface.getDecisionKnowledgeElements(projectKey);
 		}
 		createDataSet();
 	}
