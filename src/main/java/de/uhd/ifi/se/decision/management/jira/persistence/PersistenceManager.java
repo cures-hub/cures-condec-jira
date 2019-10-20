@@ -20,14 +20,30 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPers
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.PersistenceManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
+/**
+ * Interface that integates all available persistence managers for single
+ * documentation locations for a given project.
+ * 
+ * @see AbstractPersistenceManagerForSingleLocation
+ * @see JiraIssuePersistenceManager
+ * @see JiraIssueTextPersistenceManager
+ * @see ActiveObjectPersistenceManager
+ */
 public interface PersistenceManager {
 
 	/**
 	 * Persistence manager instances that are identified by the project key.
+	 * 
+	 * @issue How can we reuse existing objects instead of recreating them all the
+	 *        time?
+	 * @decision Use a map of project keys and respective objects to reuse existing
+	 *           objects instead of recreating them all the time! Use the
+	 *           getOrCreate() method to either create or retrieve an existing
+	 *           object!
 	 */
-	public static Map<String, PersistenceManager> instances = new HashMap<String, PersistenceManager>();
+	static Map<String, PersistenceManager> instances = new HashMap<String, PersistenceManager>();
 
-	public static PersistenceManager getOrCreate(String projectKey) {
+	static PersistenceManager getOrCreate(String projectKey) {
 		if (projectKey == null) {
 			throw new IllegalArgumentException("The project key cannot be null.");
 		}
@@ -177,8 +193,8 @@ public interface PersistenceManager {
 	 *         cannot be found.
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
-	static AbstractPersistenceManagerForSingleLocation getPersistenceManagerForDocumentationLocation(
-			String projectKey, DocumentationLocation documentationLocation) {
+	static AbstractPersistenceManagerForSingleLocation getPersistenceManagerForDocumentationLocation(String projectKey,
+			DocumentationLocation documentationLocation) {
 		if (documentationLocation == null) {
 			return getOrCreate(projectKey).getDefaultPersistenceManager();
 		}
@@ -209,8 +225,7 @@ public interface PersistenceManager {
 	 *         the element cannot be found.
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
-	static AbstractPersistenceManagerForSingleLocation getPersistenceManager(
-			DecisionKnowledgeElement element) {
+	static AbstractPersistenceManagerForSingleLocation getPersistenceManager(DecisionKnowledgeElement element) {
 		if (element == null) {
 			throw new IllegalArgumentException("The element cannot be null.");
 		}
@@ -274,4 +289,6 @@ public interface PersistenceManager {
 	List<DecisionKnowledgeElement> getDecisionKnowledgeElements();
 
 	String getProjectKey();
+
+	List<DecisionKnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type);
 }

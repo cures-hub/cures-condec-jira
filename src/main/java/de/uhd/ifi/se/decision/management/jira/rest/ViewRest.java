@@ -287,7 +287,7 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		List<DecisionKnowledgeElement> decisions = getDecisionData(projectKey);
+		List<DecisionKnowledgeElement> decisions = getAllDecisions(projectKey);
 		Matrix matrix = new Matrix(projectKey, decisions);
 		return Response.ok(matrix).build();
     }
@@ -300,18 +300,13 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		List<DecisionKnowledgeElement> decisions = getDecisionData(projectKey);
+		List<DecisionKnowledgeElement> decisions = getAllDecisions(projectKey);
 		VisGraph graph = new VisGraph(decisions, projectKey);
 		return Response.ok(graph).build();
 	}
 
-	private List<DecisionKnowledgeElement> getDecisionData(String projectKey) {
-		AbstractPersistenceManagerForSingleLocation strategy = PersistenceManager.getOrCreate(projectKey).getDefaultPersistenceManager();
-		List<DecisionKnowledgeElement> decisions = strategy.getDecisionKnowledgeElements(KnowledgeType.DECISION);
-
-		AbstractPersistenceManagerForSingleLocation jiraIssueCommentPersistenceManager = PersistenceManager.getOrCreate(projectKey).getJiraIssueTextPersistenceManager();
-		decisions.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements(KnowledgeType.DECISION));
-		return decisions;
+	private List<DecisionKnowledgeElement> getAllDecisions(String projectKey) {
+		return PersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements(KnowledgeType.DECISION);
 	}
 
 	private String getProjectKey(String elementKey) {
