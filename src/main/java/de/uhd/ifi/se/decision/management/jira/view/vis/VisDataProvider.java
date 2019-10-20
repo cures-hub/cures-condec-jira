@@ -8,8 +8,8 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterExtractorImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 
 public class VisDataProvider {
 
@@ -40,8 +40,8 @@ public class VisDataProvider {
 		this.user = user;
 		this.filterExtractor = new FilterExtractorImpl(projectKey, user, query);
 		decisionKnowledgeElements = filterExtractor.getAllElementsMatchingQuery();
-		AbstractPersistenceManager persistenceManager = PersistenceInterface
-				.getDefaultPersistenceManager(projectKey);
+		AbstractPersistenceManagerForSingleLocation persistenceManager = PersistenceManager
+				.getOrCreate(projectKey).getDefaultPersistenceManager();
 		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
 		graph = new VisGraph(rootElement, decisionKnowledgeElements);
 	}
@@ -51,8 +51,8 @@ public class VisDataProvider {
 		this.projectKey = filterSettings.getProjectKey();
 		this.user = user;
 		this.filterExtractor = new FilterExtractorImpl(user, filterSettings);
-		AbstractPersistenceManager persistenceManager = PersistenceInterface
-				.getDefaultPersistenceManager(projectKey);
+		AbstractPersistenceManagerForSingleLocation persistenceManager = PersistenceManager
+				.getOrCreate(projectKey).getDefaultPersistenceManager();
 		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
 		decisionKnowledgeElements = filterExtractor.getAllElementsMatchingCompareFilter();
 		graph = new VisGraph(rootElement, decisionKnowledgeElements);

@@ -24,7 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
  * @see ActiveObjectPersistenceManager
  * @see JiraIssueTextPersistenceManager
  */
-public abstract class AbstractPersistenceManager {
+public abstract class AbstractPersistenceManagerForSingleLocation {
 
 	protected String projectKey;
 	protected DocumentationLocation documentationLocation;

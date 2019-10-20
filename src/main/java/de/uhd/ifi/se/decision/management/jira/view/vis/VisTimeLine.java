@@ -9,8 +9,8 @@ import javax.xml.bind.annotation.XmlElement;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 
 public class VisTimeLine {
 
@@ -24,7 +24,7 @@ public class VisTimeLine {
 
 	public VisTimeLine(String projectKey) {
 		if (projectKey != null) {
-			elementList = PersistenceInterface.getDecisionKnowledgeElements(projectKey);
+			elementList = PersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
 		}
 		createDataSet();
 	}
@@ -62,8 +62,9 @@ public class VisTimeLine {
 		if (elementList != null) {
 			Set<Long> usedApplicationUser = new HashSet<Long>();
 			for (DecisionKnowledgeElement element : elementList) {
-				AbstractPersistenceManager manager = PersistenceInterface.getPersistenceManager(
-						element.getProject().getProjectKey(), element.getDocumentationLocation());
+				AbstractPersistenceManagerForSingleLocation manager = PersistenceManager
+						.getPersistenceManagerForDocumentationLocation(element.getProject().getProjectKey(),
+								element.getDocumentationLocation());
 				ApplicationUser user = manager.getCreator(element);
 				if (user == null) {
 					continue;

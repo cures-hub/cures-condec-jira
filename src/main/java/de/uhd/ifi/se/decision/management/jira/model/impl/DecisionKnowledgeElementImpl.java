@@ -19,8 +19,8 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
 
 /**
@@ -202,7 +202,7 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 
 	@Override
 	public List<Link> getInwardLinks() {
-		AbstractPersistenceManager persistenceManager = PersistenceInterface.getPersistenceManager(this);
+		AbstractPersistenceManagerForSingleLocation persistenceManager = PersistenceManager.getPersistenceManager(this);
 		return persistenceManager.getInwardLinks(this);
 	}
 
@@ -296,7 +296,7 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 
 	@Override
 	public boolean existsInDatabase() {
-		DecisionKnowledgeElement elementInDatabase = PersistenceInterface.getDecisionKnowledgeElement(id,
+		DecisionKnowledgeElement elementInDatabase = PersistenceManager.getDecisionKnowledgeElement(id,
 				documentationLocation);
 		return elementInDatabase.getId() > 0;
 	}

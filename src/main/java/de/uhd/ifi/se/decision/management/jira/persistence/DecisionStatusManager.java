@@ -6,7 +6,7 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.KnowledgeStatusInDatabase;
 import net.java.ao.Query;
 import org.slf4j.Logger;
@@ -23,8 +23,8 @@ public class DecisionStatusManager {
 			LOGGER.error("Element or Status are null");
 			return;
 		}
-		AbstractPersistenceManager manager =
-				PersistenceInterface.getPersistenceManager(decisionKnowledgeElement.getProject().getProjectKey(),
+		AbstractPersistenceManagerForSingleLocation manager =
+				PersistenceManager.getPersistenceManagerForDocumentationLocation(decisionKnowledgeElement.getProject().getProjectKey(),
 						decisionKnowledgeElement.getDocumentationLocation());
 		DecisionKnowledgeElement element = manager.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 		if(!setTypeByChange(status, element, manager)){
@@ -89,8 +89,8 @@ public class DecisionStatusManager {
 	}
 
 	private static KnowledgeStatus getIssueKnowledgeStatus(DecisionKnowledgeElement element) {
-		AbstractPersistenceManager manager =
-				PersistenceInterface.getPersistenceManager(element.getProject().getProjectKey(),
+		AbstractPersistenceManagerForSingleLocation manager =
+				PersistenceManager.getPersistenceManagerForDocumentationLocation(element.getProject().getProjectKey(),
 						element.getDocumentationLocation());
 
 		for(DecisionKnowledgeElement linkedElement: manager.getElementsLinkedWithOutwardLinks(element)) {
@@ -102,7 +102,7 @@ public class DecisionStatusManager {
 	}
 
 	private static boolean setTypeByChange(KnowledgeStatus status, DecisionKnowledgeElement element,
-	                                         AbstractPersistenceManager manager) {
+	                                         AbstractPersistenceManagerForSingleLocation manager) {
 		if (element.getType().equals(KnowledgeType.DECISION)) {
 			if(status.equals(KnowledgeStatus.REJECTED)|| status.equals(KnowledgeStatus.IDEA) || status.equals(KnowledgeStatus.DISCARDED)) {
 				ApplicationUser user = manager.getCreator(element);

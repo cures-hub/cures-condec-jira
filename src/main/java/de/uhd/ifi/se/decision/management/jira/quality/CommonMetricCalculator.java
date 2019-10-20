@@ -29,7 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.treant.TreantNode;
 
@@ -48,7 +48,7 @@ public class CommonMetricCalculator {
 	public CommonMetricCalculator(long projectId, ApplicationUser user, String jiraIssueTypeId) {
 		this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
 		this.user = user;
-		this.persistenceManager = PersistenceInterface.getJiraIssueTextPersistenceManager(projectKey);
+		this.persistenceManager = PersistenceManager.getOrCreate(projectKey).getJiraIssueTextPersistenceManager();
 		this.jiraIssueTypeId = jiraIssueTypeId;
 		this.jiraIssues = getJiraIssuesForProject(projectId);
 	}

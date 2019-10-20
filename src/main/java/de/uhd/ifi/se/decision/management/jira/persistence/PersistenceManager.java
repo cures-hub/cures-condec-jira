@@ -13,28 +13,28 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.IntegratedPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.PersistenceManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
-public interface PersistenceInterface {
+public interface PersistenceManager {
 
 	/**
-	 * Persistence instances that are identified by the project key.
+	 * Persistence manager instances that are identified by the project key.
 	 */
-	public static Map<String, IntegratedPersistenceManager> instances = new HashMap<String, IntegratedPersistenceManager>();
+	public static Map<String, PersistenceManager> instances = new HashMap<String, PersistenceManager>();
 
-	public static IntegratedPersistenceManager getOrCreate(String projectKey) {
+	public static PersistenceManager getOrCreate(String projectKey) {
 		if (projectKey == null) {
-			return null;
+			throw new IllegalArgumentException("The project key cannot be null.");
 		}
 		if (instances.containsKey(projectKey)) {
 			return instances.get(projectKey);
 		}
-		IntegratedPersistenceManager persistenceInterface = new IntegratedPersistenceManager(projectKey);
+		PersistenceManager persistenceInterface = new PersistenceManagerImpl(projectKey);
 		instances.put(projectKey, persistenceInterface);
 		return instances.get(projectKey);
 	}
@@ -59,96 +59,96 @@ public interface PersistenceInterface {
 	 *            authenticated JIRA application user
 	 * @return internal database id of updated link, zero if updating failed.
 	 */
-	static long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType,
-			long idOfParentElement, String documentationLocationOfParentElement, ApplicationUser user) {
-	
-	    if (LinkType.linkTypesAreEqual(formerKnowledgeType, element.getType()) || idOfParentElement == 0) {
-	        return -1;
-	    }
-	
-	    LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerKnowledgeType);
-	    LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
-	
-	    DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
-	    parentElement.setId(idOfParentElement);
-	    parentElement.setDocumentationLocation(documentationLocationOfParentElement);
-	    parentElement.setProject(element.getProject().getProjectKey());
-	
-	    Link formerLink = Link.instantiateDirectedLink(parentElement, element, formerLinkType);
-	    if (!deleteLink(formerLink, user)) {
-	        return 0;
-	    }
-	
-	    Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
-	    return insertLink(link, user);
+	static long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType, long idOfParentElement,
+			String documentationLocationOfParentElement, ApplicationUser user) {
+
+		if (LinkType.linkTypesAreEqual(formerKnowledgeType, element.getType()) || idOfParentElement == 0) {
+			return -1;
+		}
+
+		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerKnowledgeType);
+		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
+
+		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
+		parentElement.setId(idOfParentElement);
+		parentElement.setDocumentationLocation(documentationLocationOfParentElement);
+		parentElement.setProject(element.getProject().getProjectKey());
+
+		Link formerLink = Link.instantiateDirectedLink(parentElement, element, formerLinkType);
+		if (!deleteLink(formerLink, user)) {
+			return 0;
+		}
+
+		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
+		return insertLink(link, user);
 	}
 
 	/**
 	 * Insert a new link into database.
 	 *
-	 * @param link link between a source and a destination decision knowledge
-	 *             element.
-	 * @param user authenticated JIRA application user
+	 * @param link
+	 *            link between a source and a destination decision knowledge
+	 *            element.
+	 * @param user
+	 *            authenticated JIRA application user
 	 * @return internal database id of inserted link, zero if insertion failed.
 	 * @see Link
 	 * @see ApplicationUser
 	 */
 	static long insertLink(Link link, ApplicationUser user) {
-	    String projectKey = link.getSourceElement().getProject().getProjectKey();
-	    if (link.containsUnknownDocumentationLocation()) {
-	        link.setDefaultDocumentationLocation(projectKey);
-	    }
-	
-	    if (link.isIssueLink()) {
-	        return JiraIssuePersistenceManager.insertLink(link, user);
-	    }
-	    if (ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
-	        DecisionKnowledgeElement sourceElement = link.getSourceElement();
-	        new WebhookConnector(projectKey).sendElementChanges(sourceElement);
-	    }
-	    return GenericLinkManager.insertLink(link, user);
+		String projectKey = link.getSourceElement().getProject().getProjectKey();
+		if (link.containsUnknownDocumentationLocation()) {
+			link.setDefaultDocumentationLocation(projectKey);
+		}
+
+		if (link.isIssueLink()) {
+			return JiraIssuePersistenceManager.insertLink(link, user);
+		}
+		if (ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
+			DecisionKnowledgeElement sourceElement = link.getSourceElement();
+			new WebhookConnector(projectKey).sendElementChanges(sourceElement);
+		}
+		return GenericLinkManager.insertLink(link, user);
 	}
 
 	/**
 	 * Delete an existing link in database.
 	 *
-	 * @param link link between a source and a destination decision knowledge
-	 *             element.
-	 * @param user authenticated JIRA application user
+	 * @param link
+	 *            link between a source and a destination decision knowledge
+	 *            element.
+	 * @param user
+	 *            authenticated JIRA application user
 	 * @return true if insertion was successful.
 	 * @see Link
 	 * @see ApplicationUser
 	 */
 	static boolean deleteLink(Link link, ApplicationUser user) {
-	    String projectKey = link.getSourceElement().getProject().getProjectKey();
-	    if (link.containsUnknownDocumentationLocation()) {
-	        link.setDefaultDocumentationLocation(projectKey);
-	    }
-	
-	    boolean isDeleted = false;
-	    if (link.isIssueLink()) {
-	        isDeleted = JiraIssuePersistenceManager.deleteLink(link, user);
-	        if (!isDeleted) {
-	            isDeleted = JiraIssuePersistenceManager.deleteLink(link.flip(), user);
-	        }
-	        return isDeleted;
-	    }
-	    isDeleted = GenericLinkManager.deleteLink(link);
-	    if (!isDeleted) {
-	        isDeleted = GenericLinkManager.deleteLink(link.flip());
-	    }
-	
-	    if (isDeleted && ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
-	        DecisionKnowledgeElement sourceElement = link.getSourceElement();
-	        new WebhookConnector(projectKey).sendElementChanges(sourceElement);
-	    }
-	    return isDeleted;
+		String projectKey = link.getSourceElement().getProject().getProjectKey();
+		if (link.containsUnknownDocumentationLocation()) {
+			link.setDefaultDocumentationLocation(projectKey);
+		}
+
+		boolean isDeleted = false;
+		if (link.isIssueLink()) {
+			isDeleted = JiraIssuePersistenceManager.deleteLink(link, user);
+			if (!isDeleted) {
+				isDeleted = JiraIssuePersistenceManager.deleteLink(link.flip(), user);
+			}
+			return isDeleted;
+		}
+		isDeleted = GenericLinkManager.deleteLink(link);
+		if (!isDeleted) {
+			isDeleted = GenericLinkManager.deleteLink(link.flip());
+		}
+
+		if (isDeleted && ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
+			DecisionKnowledgeElement sourceElement = link.getSourceElement();
+			new WebhookConnector(projectKey).sendElementChanges(sourceElement);
+		}
+		return isDeleted;
 	}
 
-	public static List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey) {
-		return PersistenceInterface.getOrCreate(projectKey).getDecisionKnowledgeElements();
-	}
-	
 	/**
 	 * Get the persistence strategy for autarkical decision knowledge elements used
 	 * in a project. This elements are directly stored in JIRA and independent from
@@ -159,20 +159,11 @@ public interface PersistenceInterface {
 	 * @return persistence strategy for "first class" decision knowledge elements
 	 *         used in the given project, either issue strategy or active object
 	 *         strategy. The active object strategy is the default strategy.
-	 * @see AbstractPersistenceManager
+	 * @see AbstractPersistenceManagerForSingleLocation
 	 * @see JiraIssuePersistenceManager
 	 * @see ActiveObjectPersistenceManager
 	 */
-	public static AbstractPersistenceManager getDefaultPersistenceManager(String projectKey) {
-		if (projectKey == null) {
-			throw new IllegalArgumentException("The project key cannot be null.");
-		}
-		return PersistenceInterface.getOrCreate(projectKey).getDefaultPersistenceManager();
-	}
-	
-	public static JiraIssueTextPersistenceManager getJiraIssueTextPersistenceManager(String projectKey) {
-		return PersistenceInterface.getOrCreate(projectKey).getJiraIssueTextPersistenceManager();
-	}
+	AbstractPersistenceManagerForSingleLocation getDefaultPersistenceManager();
 
 	/**
 	 * Get the persistence manager for a given project and documentation location.
@@ -184,12 +175,12 @@ public interface PersistenceInterface {
 	 * @return persistence manager associated to a documentation location. Returns
 	 *         the default persistence manager in case the documentation location
 	 *         cannot be found.
-	 * @see AbstractPersistenceManager
+	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
-	static AbstractPersistenceManager getPersistenceManager(String projectKey,
-			DocumentationLocation documentationLocation) {
+	static AbstractPersistenceManagerForSingleLocation getPersistenceManagerForDocumentationLocation(
+			String projectKey, DocumentationLocation documentationLocation) {
 		if (documentationLocation == null) {
-			return getDefaultPersistenceManager(projectKey);
+			return getOrCreate(projectKey).getDefaultPersistenceManager();
 		}
 		switch (documentationLocation) {
 		case JIRAISSUE:
@@ -197,11 +188,15 @@ public interface PersistenceInterface {
 		case ACTIVEOBJECT:
 			return getOrCreate(projectKey).getActiveObjectPersistenceManager();
 		case JIRAISSUETEXT:
-			return getJiraIssueTextPersistenceManager(projectKey);
+			return getOrCreate(projectKey).getJiraIssueTextPersistenceManager();
 		default:
-			return getDefaultPersistenceManager(projectKey);
+			return getOrCreate(projectKey).getDefaultPersistenceManager();
 		}
 	}
+
+	JiraIssueTextPersistenceManager getJiraIssueTextPersistenceManager();
+
+	JiraIssuePersistenceManager getJiraIssuePersistenceManager();
 
 	/**
 	 * Get the persistence manager of a given decision knowledge elements.
@@ -212,14 +207,15 @@ public interface PersistenceInterface {
 	 * @return persistence manager of a given decision knowledge elements. Returns
 	 *         the default persistence manager in case the documentation location of
 	 *         the element cannot be found.
-	 * @see AbstractPersistenceManager
+	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
-	static AbstractPersistenceManager getPersistenceManager(DecisionKnowledgeElement element) {
+	static AbstractPersistenceManagerForSingleLocation getPersistenceManager(
+			DecisionKnowledgeElement element) {
 		if (element == null) {
 			throw new IllegalArgumentException("The element cannot be null.");
 		}
 		String projectKey = element.getProject().getProjectKey();
-		return getPersistenceManager(projectKey, element.getDocumentationLocation());
+		return getPersistenceManagerForDocumentationLocation(projectKey, element.getDocumentationLocation());
 	}
 
 	/**
@@ -233,13 +229,13 @@ public interface PersistenceInterface {
 	 * @return persistence manager associated to a documentation location. Returns
 	 *         the default persistence manager in case the documentation location
 	 *         cannot be found.
-	 * @see AbstractPersistenceManager
+	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
-	static AbstractPersistenceManager getPersistenceManager(String projectKey,
+	static AbstractPersistenceManagerForSingleLocation getPersistenceManager(String projectKey,
 			String documentationLocationIdentifier) {
 		DocumentationLocation documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
-		return getPersistenceManager(projectKey, documentationLocation);
+		return getPersistenceManagerForDocumentationLocation(projectKey, documentationLocation);
 	}
 
 	public static void insertStatus(DecisionKnowledgeElement element) {
@@ -263,14 +259,19 @@ public interface PersistenceInterface {
 	 * @see DecisionKnowledgeElement
 	 * @see DocumentationLocation
 	 */
-	static DecisionKnowledgeElement getDecisionKnowledgeElement(long id,
-			DocumentationLocation documentationLocation) {
-		AbstractPersistenceManager persistenceManager = getPersistenceManager("",
-				documentationLocation);
+	static DecisionKnowledgeElement getDecisionKnowledgeElement(long id, DocumentationLocation documentationLocation) {
+		AbstractPersistenceManagerForSingleLocation persistenceManager = getPersistenceManagerForDocumentationLocation(
+				"", documentationLocation);
 		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(id);
 		if (element == null) {
 			return new DecisionKnowledgeElementImpl();
 		}
 		return element;
 	}
+
+	ActiveObjectPersistenceManager getActiveObjectPersistenceManager();
+
+	List<DecisionKnowledgeElement> getDecisionKnowledgeElements();
+
+	String getProjectKey();
 }

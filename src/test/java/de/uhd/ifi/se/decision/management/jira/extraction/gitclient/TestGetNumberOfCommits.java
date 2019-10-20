@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.issue.Issue;

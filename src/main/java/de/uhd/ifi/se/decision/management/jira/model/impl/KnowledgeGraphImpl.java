@@ -14,8 +14,8 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 
 public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> implements KnowledgeGraph {
 
@@ -53,8 +53,8 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	}
 
 	private void addNodes() {
-		List<DecisionKnowledgeElement> nodesList = PersistenceInterface
-				.getDecisionKnowledgeElements(project.getProjectKey());
+		List<DecisionKnowledgeElement> nodesList = PersistenceManager.getOrCreate(project.getProjectKey())
+				.getDecisionKnowledgeElements();
 		ListIterator<DecisionKnowledgeElement> iterator = nodesList.listIterator();
 		while (iterator.hasNext()) {
 			Node node = iterator.next();
@@ -64,8 +64,8 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 
 	private void addEdges() {
 		for (Node node : this.vertexSet()) {
-			AbstractPersistenceManager manager = PersistenceInterface
-					.getPersistenceManager(project.getProjectKey(), node.getDocumentationLocation());
+			AbstractPersistenceManagerForSingleLocation manager = PersistenceManager
+					.getPersistenceManagerForDocumentationLocation(project.getProjectKey(), node.getDocumentationLocation());
 			List<Link> links = manager.getLinks(node.getId());
 			for (Link link : links) {
 				Node destination = link.getDestinationElement();

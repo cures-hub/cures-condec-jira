@@ -9,7 +9,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -23,7 +23,7 @@ public abstract class TestJiraIssuePersistenceManagerSetUp extends TestSetUp {
 	@BeforeClass
 	public static void setUp() {
 		init();
-		issueStrategy = PersistenceInterface.getOrCreate("TEST").getJiraIssuePersistenceManager();
+		issueStrategy = PersistenceManager.getOrCreate("TEST").getJiraIssuePersistenceManager();
 		numberOfElements = issueStrategy.getDecisionKnowledgeElements().size();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		link = new LinkImpl(1,4,DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);

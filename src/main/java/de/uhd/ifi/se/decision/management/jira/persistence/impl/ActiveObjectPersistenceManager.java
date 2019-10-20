@@ -17,7 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
@@ -28,10 +28,10 @@ import net.java.ao.Query;
  * relational mapping with the help of the active object framework to store
  * decision knowledge.
  *
- * @see AbstractPersistenceManager
+ * @see AbstractPersistenceManagerForSingleLocation
  */
 @JsonAutoDetect
-public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
+public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerForSingleLocation {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectPersistenceManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 	private static final String PREFIX = DocumentationLocation.getIdentifier(DocumentationLocation.ACTIVEOBJECT);
@@ -191,7 +191,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		element.setKey(databaseEntry.getKey());
 		new WebhookConnector(projectKey).sendElementChanges(element);
 		element.setDocumentationLocation(DocumentationLocation.ACTIVEOBJECT);
-		PersistenceInterface.insertStatus(element);
+		PersistenceManager.insertStatus(element);
 		return element;
 	}
 

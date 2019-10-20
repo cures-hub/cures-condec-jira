@@ -5,29 +5,23 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
 
-public class IntegratedPersistenceManager {
+public class PersistenceManagerImpl implements PersistenceManager {
 
 	private String projectKey;
 	private JiraIssuePersistenceManager jiraIssuePersistenceManager;
 	private ActiveObjectPersistenceManager activeObjectPersistenceManager;
-	public JiraIssuePersistenceManager getJiraIssuePersistenceManager() {
-		return jiraIssuePersistenceManager;
-	}
-
-	public ActiveObjectPersistenceManager getActiveObjectPersistenceManager() {
-		return activeObjectPersistenceManager;
-	}
-
 	private JiraIssueTextPersistenceManager jiraIssueTextPersistenceManager;
 
-	public IntegratedPersistenceManager(String projectKey) {
+	public PersistenceManagerImpl(String projectKey) {
 		this.projectKey = projectKey;
 		this.jiraIssuePersistenceManager = new JiraIssuePersistenceManager(projectKey);
 		this.activeObjectPersistenceManager = new ActiveObjectPersistenceManager(projectKey);
 		this.jiraIssueTextPersistenceManager = new JiraIssueTextPersistenceManager(projectKey);
 	}
 
+	@Override
 	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements() {
 		List<DecisionKnowledgeElement> elements = getDefaultPersistenceManager().getDecisionKnowledgeElements();
 		elements.addAll(jiraIssueTextPersistenceManager.getDecisionKnowledgeElements());
@@ -37,11 +31,13 @@ public class IntegratedPersistenceManager {
 		return elements;
 	}
 
+	@Override
 	public String getProjectKey() {
 		return projectKey;
 	}
 
-	public AbstractPersistenceManager getDefaultPersistenceManager() {
+	@Override
+	public AbstractPersistenceManagerForSingleLocation getDefaultPersistenceManager() {
 		if (projectKey == null) {
 			throw new IllegalArgumentException("The project key cannot be null.");
 		}
@@ -53,7 +49,18 @@ public class IntegratedPersistenceManager {
 		return activeObjectPersistenceManager;
 	}
 
+	@Override
 	public JiraIssueTextPersistenceManager getJiraIssueTextPersistenceManager() {
 		return jiraIssueTextPersistenceManager;
+	}
+	
+	@Override
+	public JiraIssuePersistenceManager getJiraIssuePersistenceManager() {
+		return jiraIssuePersistenceManager;
+	}
+
+	@Override
+	public ActiveObjectPersistenceManager getActiveObjectPersistenceManager() {
+		return activeObjectPersistenceManager;
 	}
 }

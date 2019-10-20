@@ -34,7 +34,7 @@ import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTex
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.TextSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
@@ -44,9 +44,9 @@ import net.java.ao.Query;
  * Extends the abstract class AbstractPersistenceManager. Uses JIRA issue
  * comments or the description to store decision knowledge.
  *
- * @see AbstractPersistenceManager
+ * @see AbstractPersistenceManagerForSingleLocation
  */
-public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager {
+public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerForSingleLocation {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextPersistenceManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 	private static OnlineClassificationTrainerImpl classificationTrainer = new OnlineClassificationTrainerImpl();
@@ -269,7 +269,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		for (LinkInDatabase link : links) {
 			Link inwardLink = new LinkImpl(link);
 			inwardLink.setDestinationElement(element);
-			AbstractPersistenceManager sourcePersistenceManager = PersistenceInterface
+			AbstractPersistenceManagerForSingleLocation sourcePersistenceManager = PersistenceManager
 					.getPersistenceManager(projectKey, link.getSourceDocumentationLocation());
 			inwardLink.setSourceElement(sourcePersistenceManager.getDecisionKnowledgeElement(link.getSourceId()));
 			inwardLinks.add(inwardLink);
@@ -286,7 +286,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		for (LinkInDatabase link : links) {
 			Link outwardLink = new LinkImpl(link);
 			outwardLink.setSourceElement(element);
-			AbstractPersistenceManager destinationPersistenceManager = PersistenceInterface
+			AbstractPersistenceManagerForSingleLocation destinationPersistenceManager = PersistenceManager
 					.getPersistenceManager(projectKey, link.getDestDocumentationLocation());
 			outwardLink.setDestinationElement(
 					destinationPersistenceManager.getDecisionKnowledgeElement(link.getDestinationId()));
@@ -320,7 +320,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		for (PartOfJiraIssueText sentence : sentences) {
 			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUETEXT);
 		}
-		PersistenceInterface.insertStatus(sentences.get(0));
+		PersistenceManager.insertStatus(sentences.get(0));
 		return sentences.get(0);
 	}
 
@@ -339,7 +339,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		LOGGER.debug("\naddNewSentenceintoAo:\nInsert Sentence " + databaseEntry.getId()
 				+ " into database from comment " + databaseEntry.getCommentId());
 
-		PersistenceInterface.insertStatus(changeEntryToNewDecision(databaseEntry));
+		PersistenceManager.insertStatus(changeEntryToNewDecision(databaseEntry));
 		return databaseEntry.getId();
 	}
 
@@ -477,7 +477,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 	}
 
 	public static void createSmartLinkForSentence(PartOfJiraIssueText sentence) {
-		if (sentence == null || AbstractPersistenceManager.isElementLinked(sentence)) {
+		if (sentence == null || AbstractPersistenceManagerForSingleLocation.isElementLinked(sentence)) {
 			return;
 		}
 		boolean smartLinkCreated = false;
@@ -518,7 +518,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 	}
 
 	public static void checkIfSentenceHasAValidLink(long sentenceId, long issueId, LinkType linkType) {
-		if (!AbstractPersistenceManager.isElementLinked(sentenceId, DocumentationLocation.JIRAISSUETEXT)) {
+		if (!AbstractPersistenceManagerForSingleLocation.isElementLinked(sentenceId, DocumentationLocation.JIRAISSUETEXT)) {
 			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
 			parentElement.setId(issueId);
 			parentElement.setDocumentationLocation("i");
@@ -595,7 +595,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 
 		PartOfJiraIssueText element = (PartOfJiraIssueText) this.getDecisionKnowledgeElement(aoId);
 
-		JiraIssuePersistenceManager persistenceManager = PersistenceInterface.getOrCreate(this.projectKey).getJiraIssuePersistenceManager();
+		JiraIssuePersistenceManager persistenceManager = PersistenceManager.getOrCreate(this.projectKey).getJiraIssuePersistenceManager();
 		DecisionKnowledgeElement decElement = persistenceManager.insertDecisionKnowledgeElement(element, user);
 
 		MutableIssue issue = ComponentAccessor.getIssueService().getIssue(user, decElement.getId()).getIssue();

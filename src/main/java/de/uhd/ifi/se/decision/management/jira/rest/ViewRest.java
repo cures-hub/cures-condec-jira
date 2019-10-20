@@ -15,9 +15,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
 import org.eclipse.jgit.lib.Ref;
 import org.slf4j.Logger;
@@ -307,10 +306,10 @@ public class ViewRest {
 	}
 
 	private List<DecisionKnowledgeElement> getDecisionData(String projectKey) {
-		AbstractPersistenceManager strategy = PersistenceInterface.getDefaultPersistenceManager(projectKey);
+		AbstractPersistenceManagerForSingleLocation strategy = PersistenceManager.getOrCreate(projectKey).getDefaultPersistenceManager();
 		List<DecisionKnowledgeElement> decisions = strategy.getDecisionKnowledgeElements(KnowledgeType.DECISION);
 
-		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(projectKey);
+		AbstractPersistenceManagerForSingleLocation jiraIssueCommentPersistenceManager = PersistenceManager.getOrCreate(projectKey).getJiraIssueTextPersistenceManager();
 		decisions.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements(KnowledgeType.DECISION));
 		return decisions;
 	}
