@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import de.uhd.ifi.se.decision.management.jira.model.*;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +12,11 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
@@ -36,7 +40,8 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 	private static final String PREFIX = DocumentationLocation.getIdentifier(DocumentationLocation.ACTIVEOBJECT);
 
-	private static void setParameters(DecisionKnowledgeElement element, DecisionKnowledgeElementInDatabase databaseEntry) {
+	private static void setParameters(DecisionKnowledgeElement element,
+			DecisionKnowledgeElementInDatabase databaseEntry) {
 		String summary = element.getSummary();
 		if (summary != null) {
 			databaseEntry.setSummary(summary);
@@ -55,11 +60,13 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 
 	@Override
 	public long getLinkId(DecisionKnowledgeElement source, DecisionKnowledgeElement destination) {
-		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select().where("SOURCE_ID = ? AND " +
-				                                                                                        "SOURCE_DOCUMENTATION_LOCATION = ? AND" + "DESTINATION_ID = ? AND DEST_DOCUMENTATION_LOCATION = ?",
-				source.getId(), source.getDocumentationLocation().getIdentifier(), destination.getId(),
-				destination.getDocumentationLocation().getIdentifier()));
-		if(links.length == 1){
+		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class,
+				Query.select()
+						.where("SOURCE_ID = ? AND " + "SOURCE_DOCUMENTATION_LOCATION = ? AND"
+								+ "DESTINATION_ID = ? AND DEST_DOCUMENTATION_LOCATION = ?", source.getId(),
+								source.getDocumentationLocation().getIdentifier(), destination.getId(),
+								destination.getDocumentationLocation().getIdentifier()));
+		if (links.length == 1) {
 			return links[0].getId();
 		}
 		return 0;
@@ -77,7 +84,8 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 	@Override
 	public boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user) {
 		boolean isDeleted = false;
-		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", id))) {
+		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
+				.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", id))) {
 			DecisionStatusManager.deleteStatus(new DecisionKnowledgeElementImpl(databaseEntry));
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.ACTIVEOBJECT);
 			isDeleted = DecisionKnowledgeElementInDatabase.deleteElement(databaseEntry);
@@ -88,7 +96,8 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id) {
 		DecisionKnowledgeElement element = null;
-		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", id))) {
+		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
+				.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", id))) {
 			element = new DecisionKnowledgeElementImpl(databaseEntry);
 		}
 		return element;
@@ -117,7 +126,8 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 	@Override
 	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements() {
 		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
-		DecisionKnowledgeElementInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("PROJECT_KEY = ?", projectKey));
+		DecisionKnowledgeElementInDatabase[] databaseEntries = ACTIVE_OBJECTS
+				.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("PROJECT_KEY = ?", projectKey));
 		for (DecisionKnowledgeElementInDatabase databaseEntry : databaseEntries) {
 			decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(databaseEntry));
 		}
@@ -125,11 +135,14 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
+	public List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(
+			DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Link> inwardLinks = this.getInwardLinks(decisionKnowledgeElement);
 		List<DecisionKnowledgeElement> sourceElements = new ArrayList<DecisionKnowledgeElement>();
 		for (Link link : inwardLinks) {
-			DecisionKnowledgeElementInDatabase[] entityList = ACTIVE_OBJECTS.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", link.getSourceElement().getId()));
+			DecisionKnowledgeElementInDatabase[] entityList = ACTIVE_OBJECTS.find(
+					DecisionKnowledgeElementInDatabase.class,
+					Query.select().where("ID = ?", link.getSourceElement().getId()));
 			if (entityList.length == 1) {
 				sourceElements.add(new DecisionKnowledgeElementImpl(entityList[0]));
 			}
@@ -138,13 +151,16 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
+	public List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(
+			DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Link> outwardLinks = this.getOutwardLinks(decisionKnowledgeElement);
 		List<DecisionKnowledgeElement> destinationElements = new ArrayList<DecisionKnowledgeElement>();
 
 		ACTIVE_OBJECTS.find(LinkInDatabase.class);
 		for (Link link : outwardLinks) {
-			DecisionKnowledgeElementInDatabase[] entityList = ACTIVE_OBJECTS.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", link.getDestinationElement().getId()));
+			DecisionKnowledgeElementInDatabase[] entityList = ACTIVE_OBJECTS.find(
+					DecisionKnowledgeElementInDatabase.class,
+					Query.select().where("ID = ?", link.getDestinationElement().getId()));
 			if (entityList.length == 1) {
 				destinationElements.add(new DecisionKnowledgeElementImpl(entityList[0]));
 			}
@@ -155,7 +171,8 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 	@Override
 	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
 		List<Link> inwardLinks = new ArrayList<Link>();
-		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select().where("DESTINATION_ID = ? AND DEST_DOCUMENTATION_LOCATION = ?", element.getId(), PREFIX));
+		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select()
+				.where("DESTINATION_ID = ? AND DEST_DOCUMENTATION_LOCATION = ?", element.getId(), PREFIX));
 		for (LinkInDatabase link : links) {
 			Link inwardLink = new LinkImpl(link);
 			inwardLink.setDestinationElement(element);
@@ -169,7 +186,8 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 	@Override
 	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
 		List<Link> outwardLinks = new ArrayList<Link>();
-		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select().where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", element.getId(), PREFIX));
+		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class,
+				Query.select().where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", element.getId(), PREFIX));
 		for (LinkInDatabase link : links) {
 			Link outwardLink = new LinkImpl(link);
 			outwardLink.setSourceElement(element);
@@ -181,9 +199,12 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 	}
 
 	@Override
-	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
-		DecisionKnowledgeElementInDatabase databaseEntry = ACTIVE_OBJECTS.create(DecisionKnowledgeElementInDatabase.class);
-		databaseEntry.setKey(element.getProject().getProjectKey().toUpperCase(Locale.ENGLISH) + "-" + databaseEntry.getId());
+	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
+			ApplicationUser user) {
+		DecisionKnowledgeElementInDatabase databaseEntry = ACTIVE_OBJECTS
+				.create(DecisionKnowledgeElementInDatabase.class);
+		databaseEntry
+				.setKey(element.getProject().getProjectKey().toUpperCase(Locale.ENGLISH) + "-" + databaseEntry.getId());
 		setParameters(element, databaseEntry);
 		databaseEntry.setProjectKey(element.getProject().getProjectKey());
 		databaseEntry.save();
@@ -197,13 +218,15 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 
 	@Override
 	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
-		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS.find(DecisionKnowledgeElementInDatabase.class)) {
+		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
+				.find(DecisionKnowledgeElementInDatabase.class)) {
 			if (databaseEntry.getId() == element.getId()) {
-				if (KnowledgeType.getKnowledgeType(databaseEntry.getType()).equals(KnowledgeType.DECISION) && element.getType().equals(KnowledgeType.ALTERNATIVE)) {
+				if (KnowledgeType.getKnowledgeType(databaseEntry.getType()).equals(KnowledgeType.DECISION)
+						&& element.getType().equals(KnowledgeType.ALTERNATIVE)) {
 					DecisionStatusManager.setStatusForElement(element, KnowledgeStatus.REJECTED);
 				}
-				if (KnowledgeType.getKnowledgeType(databaseEntry.getType()).equals(KnowledgeType.ALTERNATIVE) &&
-						    element.getType().equals(KnowledgeType.DECISION)) {
+				if (KnowledgeType.getKnowledgeType(databaseEntry.getType()).equals(KnowledgeType.ALTERNATIVE)
+						&& element.getType().equals(KnowledgeType.DECISION)) {
 					DecisionStatusManager.deleteStatus(element);
 				}
 				setParameters(element, databaseEntry);
@@ -218,8 +241,9 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 
 	@Override
 	public boolean updateDecisionKnowledgeElementWithoutStatusChange(DecisionKnowledgeElement element,
-	                                                                 ApplicationUser user) {
-		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS.find(DecisionKnowledgeElementInDatabase.class)) {
+			ApplicationUser user) {
+		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
+				.find(DecisionKnowledgeElementInDatabase.class)) {
 			if (databaseEntry.getId() == element.getId()) {
 				setParameters(element, databaseEntry);
 				databaseEntry.save();

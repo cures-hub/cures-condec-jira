@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence.impl;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -84,5 +85,23 @@ public class PersistenceManagerImpl implements PersistenceManager {
 		List<DecisionKnowledgeElement> elements = getDefaultPersistenceManager().getDecisionKnowledgeElements(type);
 		elements.addAll(jiraIssueTextPersistenceManager.getDecisionKnowledgeElements(type));
 		return elements;
+	}
+
+	@Override
+	public AbstractPersistenceManagerForSingleLocation getPersistenceManager(
+			DocumentationLocation documentationLocation) {
+		if (documentationLocation == null) {
+			return getDefaultPersistenceManager();
+		}
+		switch (documentationLocation) {
+		case JIRAISSUE:
+			return jiraIssuePersistenceManager;
+		case ACTIVEOBJECT:
+			return activeObjectPersistenceManager;
+		case JIRAISSUETEXT:
+			return jiraIssueTextPersistenceManager;
+		default:
+			return getDefaultPersistenceManager();
+		}
 	}
 }

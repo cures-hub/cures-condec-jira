@@ -7,6 +7,7 @@ import java.util.Map;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -32,7 +33,9 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 public interface PersistenceManager {
 
 	/**
-	 * Persistence manager instances that are identified by the project key.
+	 * Map of persistence manager instances that are identified by the project key.
+	 * Use the {@link PersistenceManager#getOrCreate()} method to either create or
+	 * retrieve an existing object
 	 * 
 	 * @issue How can we reuse existing objects instead of recreating them all the
 	 *        time?
@@ -43,6 +46,17 @@ public interface PersistenceManager {
 	 */
 	static Map<String, PersistenceManager> instances = new HashMap<String, PersistenceManager>();
 
+	/**
+	 * Retrieves an existing PersistenceManager instance or creates a new instance
+	 * if there is no instance for the given project key.
+	 * 
+	 * @param projectKey
+	 *            of the Jira project that this persistence manager is responsible
+	 *            for.
+	 * @return either a new or already existing PersistenceManager instance.
+	 * 
+	 * @see DecisionKnowledgeProject
+	 */
 	static PersistenceManager getOrCreate(String projectKey) {
 		if (projectKey == null) {
 			throw new IllegalArgumentException("The project key cannot be null.");
@@ -56,7 +70,15 @@ public interface PersistenceManager {
 	}
 
 	/**
-	 * Update new link in database.
+	 * Returns the key of the project that this persistence manager is responsible
+	 * for.
+	 * 
+	 * @return key of the Jira project as a string.
+	 */
+	String getProjectKey();
+
+	/**
+	 * Update link in database.
 	 *
 	 * @see DecisionKnowledgeElement
 	 * @see KnowledgeType
@@ -166,15 +188,17 @@ public interface PersistenceManager {
 	}
 
 	/**
-	 * Get the persistence strategy for autarkical decision knowledge elements used
-	 * in a project. This elements are directly stored in JIRA and independent from
-	 * other JIRA issues. These elements are "first class" elements.
+	 * Returns the default persistence manager for autarkical decision knowledge
+	 * elements used in the project. These elements are directly stored in Jira and
+	 * independent from other Jira issues. These elements are real "first-class"
+	 * elements.
 	 *
 	 * @param projectKey
-	 *            of the JIRA project.
-	 * @return persistence strategy for "first class" decision knowledge elements
-	 *         used in the given project, either issue strategy or active object
-	 *         strategy. The active object strategy is the default strategy.
+	 *            of the Jira project.
+	 * @return persistence manager for real "first-class" decision knowledge
+	 *         elements used in the given project, either Jira issue manager or
+	 *         active object manager. The active object manager is the default
+	 *         manager if the user did not decide differently.
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 * @see JiraIssuePersistenceManager
 	 * @see ActiveObjectPersistenceManager
@@ -182,7 +206,8 @@ public interface PersistenceManager {
 	AbstractPersistenceManagerForSingleLocation getDefaultPersistenceManager();
 
 	/**
-	 * Get the persistence manager for a given project and documentation location.
+	 * Returns the persistence manager for a given project and documentation
+	 * location.
 	 *
 	 * @param projectKey
 	 *            of a JIRA project.
@@ -193,22 +218,7 @@ public interface PersistenceManager {
 	 *         cannot be found.
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
-	static AbstractPersistenceManagerForSingleLocation getPersistenceManagerForDocumentationLocation(String projectKey,
-			DocumentationLocation documentationLocation) {
-		if (documentationLocation == null) {
-			return getOrCreate(projectKey).getDefaultPersistenceManager();
-		}
-		switch (documentationLocation) {
-		case JIRAISSUE:
-			return getOrCreate(projectKey).getJiraIssuePersistenceManager();
-		case ACTIVEOBJECT:
-			return getOrCreate(projectKey).getActiveObjectPersistenceManager();
-		case JIRAISSUETEXT:
-			return getOrCreate(projectKey).getJiraIssueTextPersistenceManager();
-		default:
-			return getOrCreate(projectKey).getDefaultPersistenceManager();
-		}
-	}
+	AbstractPersistenceManagerForSingleLocation getPersistenceManager(DocumentationLocation documentationLocation);
 
 	JiraIssueTextPersistenceManager getJiraIssueTextPersistenceManager();
 
@@ -230,7 +240,7 @@ public interface PersistenceManager {
 			throw new IllegalArgumentException("The element cannot be null.");
 		}
 		String projectKey = element.getProject().getProjectKey();
-		return getPersistenceManagerForDocumentationLocation(projectKey, element.getDocumentationLocation());
+		return getOrCreate(projectKey).getPersistenceManager(element.getDocumentationLocation());
 	}
 
 	/**
@@ -250,10 +260,10 @@ public interface PersistenceManager {
 			String documentationLocationIdentifier) {
 		DocumentationLocation documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
-		return getPersistenceManagerForDocumentationLocation(projectKey, documentationLocation);
+		return getOrCreate(projectKey).getPersistenceManager(documentationLocation);
 	}
 
-	public static void insertStatus(DecisionKnowledgeElement element) {
+	static void insertStatus(DecisionKnowledgeElement element) {
 		if (element.getType().equals(KnowledgeType.DECISION)) {
 			DecisionStatusManager.setStatusForElement(element, KnowledgeStatus.DECIDED);
 		}
@@ -275,8 +285,8 @@ public interface PersistenceManager {
 	 * @see DocumentationLocation
 	 */
 	static DecisionKnowledgeElement getDecisionKnowledgeElement(long id, DocumentationLocation documentationLocation) {
-		AbstractPersistenceManagerForSingleLocation persistenceManager = getPersistenceManagerForDocumentationLocation(
-				"", documentationLocation);
+		AbstractPersistenceManagerForSingleLocation persistenceManager = getOrCreate("")
+				.getPersistenceManager(documentationLocation);
 		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(id);
 		if (element == null) {
 			return new DecisionKnowledgeElementImpl();
@@ -287,8 +297,6 @@ public interface PersistenceManager {
 	ActiveObjectPersistenceManager getActiveObjectPersistenceManager();
 
 	List<DecisionKnowledgeElement> getDecisionKnowledgeElements();
-
-	String getProjectKey();
 
 	List<DecisionKnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type);
 }
