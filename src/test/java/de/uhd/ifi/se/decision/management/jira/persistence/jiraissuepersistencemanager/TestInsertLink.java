@@ -1,13 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuepersistencemanager;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import org.junit.Test;
 
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
@@ -26,7 +25,7 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 		link.setType("contains");
 		link.getDestinationElement().setProject("TEST");
 		link.getSourceElement().setProject("TEST");
-		assertEquals(0, PersistenceManager.insertLink(link, null), 0.0);
+		assertEquals(0, PersistenceManager.insertLink(link, null));
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -43,17 +42,8 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 		link.getSourceElement().setProject("TEST");
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		long linkId = PersistenceManager.insertLink(link, user);
-		assertNotNull(linkId);
-	}
-
-	@Test
-	public void testLinkFilledUserFilledIssueLinkNull() {
-		Link link = new LinkImpl(2, 3, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
-		link.setType("contains");
-		link.getDestinationElement().setProject("TEST");
-		link.getSourceElement().setProject("TEST");
-		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		assertEquals(1, PersistenceManager.insertLink(link, user));
+		PersistenceManager.deleteLink(link, user);
+		assertEquals(1, linkId);
 	}
 
 	@Test
@@ -72,6 +62,7 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 		link.setType("Contains");
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		assertEquals(1, PersistenceManager.insertLink(link, user));
+		PersistenceManager.deleteLink(link, user);
 	}
 
 	@Test
@@ -80,5 +71,6 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 		link.setType("Contains");
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		assertEquals(1, PersistenceManager.insertLink(link, user));
+		PersistenceManager.deleteLink(link, user);
 	}
 }

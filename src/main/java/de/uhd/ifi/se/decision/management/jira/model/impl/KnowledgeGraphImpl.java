@@ -78,10 +78,27 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 				}
 				if (!linkIds.contains(link.getId()) && this.containsVertex(link.getDestinationElement())
 						&& this.containsVertex(link.getSourceElement())) {
-					this.addEdge(link.getSourceElement(), link.getDestinationElement(), link);
+					this.addEdge(link);
 					linkIds.add(link.getId());
 				}
 			}
+		}
+	}
+
+	@Override
+	public void addEdge(Link link) {
+		DecisionKnowledgeElement source = link.getSourceElement();
+		if (!containsVertex(source)) {
+			addVertex(source);
+		}
+		DecisionKnowledgeElement destination = link.getDestinationElement();
+		if (!containsVertex(destination)) {
+			addVertex(destination);
+		}
+		try {
+			this.addEdge(source, destination, link);
+		} catch (IllegalArgumentException e) {
+
 		}
 	}
 }
