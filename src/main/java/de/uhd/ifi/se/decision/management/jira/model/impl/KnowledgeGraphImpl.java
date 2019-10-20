@@ -14,9 +14,8 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceInterface;
 
 public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> implements KnowledgeGraph {
 
@@ -39,7 +38,8 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = new HashMap<>();
 		while (iterator.hasNext()) {
 			Node iterNode = iterator.next();
-			if (iterator.getParent(iterNode).getId() == parentNode.getId() && iterNode instanceof DecisionKnowledgeElement) {
+			if (iterator.getParent(iterNode).getId() == parentNode.getId()
+					&& iterNode instanceof DecisionKnowledgeElement) {
 				DecisionKnowledgeElement nodeElement = (DecisionKnowledgeElement) iterNode;
 				childrenAndLinks.put(nodeElement, this.getEdge(parentNode, iterNode));
 			}
@@ -53,26 +53,13 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	}
 
 	private void addNodes() {
-		List<DecisionKnowledgeElement> nodesList = getElementsInProject();
+		List<DecisionKnowledgeElement> nodesList = PersistenceInterface
+				.getDecisionKnowledgeElements(project.getProjectKey());
 		ListIterator<DecisionKnowledgeElement> iterator = nodesList.listIterator();
 		while (iterator.hasNext()) {
 			Node node = iterator.next();
 			this.addVertex(node);
 		}
-	}
-
-	private List<DecisionKnowledgeElement> getElementsInProject() {
-		AbstractPersistenceManager strategy = AbstractPersistenceManager
-				.getDefaultPersistenceStrategy(project.getProjectKey());
-		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
-		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
-				project.getProjectKey());
-
-		elements.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
-
-		// remove irrelevant sentences from graph
-		elements.removeIf(e -> (e instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) e).isRelevant()));
-		return elements;
 	}
 
 	private void addEdges() {
@@ -90,7 +77,7 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 					continue;
 				}
 				if (!linkIds.contains(link.getId()) && this.containsVertex(link.getDestinationElement())
-							&& this.containsVertex(link.getSourceElement())) {
+						&& this.containsVertex(link.getSourceElement())) {
 					this.addEdge(link.getSourceElement(), link.getDestinationElement(), link);
 					linkIds.add(link.getId());
 				}
