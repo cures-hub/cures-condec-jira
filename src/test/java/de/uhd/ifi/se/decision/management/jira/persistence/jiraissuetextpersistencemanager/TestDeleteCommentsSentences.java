@@ -4,7 +4,7 @@ import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestDeleteCommentsSentences extends TestJiraIssueCommentPersistenceManagerSetUp {

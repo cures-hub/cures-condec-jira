@@ -2,9 +2,9 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.Set;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.ActiveObjectPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 
 /**
  * Interface for a project and its configuration. The project is a JIRA project

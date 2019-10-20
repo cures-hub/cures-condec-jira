@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.PersistenceInterfaceImpl;
 
 public interface PersistenceInterface {
 
