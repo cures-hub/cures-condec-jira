@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 
 public class TestDeleteLink extends TestJiraIssuePersistenceManagerSetUp {
 

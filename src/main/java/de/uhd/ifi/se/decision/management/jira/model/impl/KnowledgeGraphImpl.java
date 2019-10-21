@@ -14,9 +14,8 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 
 public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> implements KnowledgeGraph {
 
@@ -39,7 +38,8 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = new HashMap<>();
 		while (iterator.hasNext()) {
 			Node iterNode = iterator.next();
-			if (iterator.getParent(iterNode).getId() == parentNode.getId() && iterNode instanceof DecisionKnowledgeElement) {
+			if (iterator.getParent(iterNode).getId() == parentNode.getId()
+					&& iterNode instanceof DecisionKnowledgeElement) {
 				DecisionKnowledgeElement nodeElement = (DecisionKnowledgeElement) iterNode;
 				childrenAndLinks.put(nodeElement, this.getEdge(parentNode, iterNode));
 			}
@@ -53,7 +53,8 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	}
 
 	private void addNodes() {
-		List<DecisionKnowledgeElement> nodesList = getElementsInProject();
+		List<DecisionKnowledgeElement> nodesList = PersistenceManager.getOrCreate(project.getProjectKey())
+				.getDecisionKnowledgeElements();
 		ListIterator<DecisionKnowledgeElement> iterator = nodesList.listIterator();
 		while (iterator.hasNext()) {
 			Node node = iterator.next();
@@ -61,24 +62,10 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		}
 	}
 
-	private List<DecisionKnowledgeElement> getElementsInProject() {
-		AbstractPersistenceManager strategy = AbstractPersistenceManager
-				.getDefaultPersistenceStrategy(project.getProjectKey());
-		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
-		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
-				project.getProjectKey());
-
-		elements.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
-
-		// remove irrelevant sentences from graph
-		elements.removeIf(e -> (e instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) e).isRelevant()));
-		return elements;
-	}
-
 	private void addEdges() {
 		for (Node node : this.vertexSet()) {
-			AbstractPersistenceManager manager = AbstractPersistenceManager
-					.getPersistenceManager(project.getProjectKey(), node.getDocumentationLocation());
+			AbstractPersistenceManagerForSingleLocation manager = PersistenceManager
+					.getOrCreate(project.getProjectKey()).getPersistenceManager(node.getDocumentationLocation());
 			List<Link> links = manager.getLinks(node.getId());
 			for (Link link : links) {
 				Node destination = link.getDestinationElement();
@@ -90,11 +77,28 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 					continue;
 				}
 				if (!linkIds.contains(link.getId()) && this.containsVertex(link.getDestinationElement())
-							&& this.containsVertex(link.getSourceElement())) {
-					this.addEdge(link.getSourceElement(), link.getDestinationElement(), link);
+						&& this.containsVertex(link.getSourceElement())) {
+					this.addEdge(link);
 					linkIds.add(link.getId());
 				}
 			}
+		}
+	}
+
+	@Override
+	public void addEdge(Link link) {
+		DecisionKnowledgeElement source = link.getSourceElement();
+		if (!containsVertex(source)) {
+			addVertex(source);
+		}
+		DecisionKnowledgeElement destination = link.getDestinationElement();
+		if (!containsVertex(destination)) {
+			addVertex(destination);
+		}
+		try {
+			this.addEdge(source, destination, link);
+		} catch (IllegalArgumentException e) {
+
 		}
 	}
 }

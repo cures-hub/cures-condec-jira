@@ -4,7 +4,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import org.eclipse.jgit.lib.Ref;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Iterator;

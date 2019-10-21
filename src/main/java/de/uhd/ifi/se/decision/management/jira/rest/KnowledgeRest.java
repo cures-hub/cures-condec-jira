@@ -33,11 +33,12 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 
 /**
  * REST resource: Enables creation, editing, and deletion of decision knowledge
@@ -56,8 +57,8 @@ public class KnowledgeRest {
 					"Decision knowledge element could not be received due to a bad request (element id or project key was missing)."))
 					.build();
 		}
-		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(projectKey,
-				documentationLocation);
+		AbstractPersistenceManagerForSingleLocation persistenceManager = PersistenceManager
+				.getPersistenceManager(projectKey, documentationLocation);
 		DecisionKnowledgeElement decisionKnowledgeElement = persistenceManager.getDecisionKnowledgeElement(id);
 		if (decisionKnowledgeElement != null) {
 			return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
@@ -76,8 +77,8 @@ public class KnowledgeRest {
 					"Linked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
 					.build();
 		}
-		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(projectKey,
-				documentationLocation);
+		AbstractPersistenceManagerForSingleLocation persistenceManager = PersistenceManager
+				.getPersistenceManager(projectKey, documentationLocation);
 		List<DecisionKnowledgeElement> linkedDecisionKnowledgeElements = persistenceManager.getAdjacentElements(id);
 		return Response.ok(linkedDecisionKnowledgeElements).build();
 	}
@@ -92,8 +93,8 @@ public class KnowledgeRest {
 					"Unlinked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
 					.build();
 		}
-		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(projectKey,
-				documentationLocation);
+		AbstractPersistenceManagerForSingleLocation persistenceManager = PersistenceManager
+				.getPersistenceManager(projectKey, documentationLocation);
 		List<DecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = persistenceManager.getUnlinkedElements(id);
 		return Response.ok(unlinkedDecisionKnowledgeElements).build();
 	}
@@ -110,7 +111,8 @@ public class KnowledgeRest {
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(element);
+		AbstractPersistenceManagerForSingleLocation persistenceManager = PersistenceManager
+				.getPersistenceManager(element);
 		DecisionKnowledgeElement newElement = persistenceManager.insertDecisionKnowledgeElement(element, user);
 
 		if (newElement == null) {
@@ -149,7 +151,8 @@ public class KnowledgeRest {
 		existingElement.setDocumentationLocation(documentationLocationOfExistingElement);
 		existingElement.setProject(element.getProject().getProjectKey());
 
-		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(element);
+		AbstractPersistenceManagerForSingleLocation persistenceManager = PersistenceManager
+				.getPersistenceManager(element);
 		DecisionKnowledgeElement elementWithId = persistenceManager.insertDecisionKnowledgeElement(element, user,
 				existingElement);
 
@@ -162,7 +165,7 @@ public class KnowledgeRest {
 			return Response.status(Status.OK).entity(elementWithId).build();
 		}
 		Link link = Link.instantiateDirectedLink(existingElement, elementWithId);
-		long linkId = AbstractPersistenceManager.insertLink(link, user);
+		long linkId = PersistenceManager.insertLink(link, user);
 		if (linkId == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
@@ -182,7 +185,8 @@ public class KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Element could not be updated due to a bad request.")).build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(element);
+		AbstractPersistenceManagerForSingleLocation persistenceManager = PersistenceManager
+				.getPersistenceManager(element);
 
 		DecisionKnowledgeElement formerElement = persistenceManager.getDecisionKnowledgeElement(element.getId());
 		if (formerElement == null) {
@@ -199,7 +203,7 @@ public class KnowledgeRest {
 					.build();
 		}
 
-		long linkId = AbstractPersistenceManager.updateLink(element, formerElement.getType(), idOfParentElement,
+		long linkId = PersistenceManager.updateLink(element, formerElement.getType(), idOfParentElement,
 				documentationLocationOfParentElement, user);
 		if (linkId == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -217,7 +221,7 @@ public class KnowledgeRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
 		}
-		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager
+		AbstractPersistenceManagerForSingleLocation persistenceManager = PersistenceManager
 				.getPersistenceManager(decisionKnowledgeElement);
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
@@ -257,7 +261,7 @@ public class KnowledgeRest {
 			LinkType linkType = LinkType.getLinkType(linkTypeName);
 			link = Link.instantiateDirectedLink(parentElement, childElement, linkType);
 		}
-		long linkId = AbstractPersistenceManager.insertLink(link, user);
+		long linkId = PersistenceManager.insertLink(link, user);
 		if (linkId == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
@@ -276,7 +280,7 @@ public class KnowledgeRest {
 		}
 		link.getSourceElement().setProject(projectKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		boolean isDeleted = AbstractPersistenceManager.deleteLink(link, user);
+		boolean isDeleted = PersistenceManager.deleteLink(link, user);
 
 		if (isDeleted) {
 			return Response.status(Status.OK).build();
@@ -321,8 +325,9 @@ public class KnowledgeRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		JiraIssueTextPersistenceManager persistenceManager = new JiraIssueTextPersistenceManager(
-				decisionKnowledgeElement.getProject().getProjectKey());
+		JiraIssueTextPersistenceManager persistenceManager = PersistenceManager
+				.getOrCreate(decisionKnowledgeElement.getProject().getProjectKey())
+				.getJiraIssueTextPersistenceManager();
 		Issue issue = persistenceManager.createJIRAIssueFromSentenceObject(decisionKnowledgeElement.getId(), user);
 
 		if (issue != null) {
@@ -342,7 +347,7 @@ public class KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Setting element irrelevant failed due to a bad request."))
 					.build();
 		}
-		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager
+		AbstractPersistenceManagerForSingleLocation persistenceManager = PersistenceManager
 				.getPersistenceManager(decisionKnowledgeElement);
 		if (decisionKnowledgeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
@@ -427,7 +432,7 @@ public class KnowledgeRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Setting element status failed due to a bad request.")).build();
 		}
-		AbstractPersistenceManager manager = AbstractPersistenceManager.getPersistenceManager(
+		AbstractPersistenceManagerForSingleLocation manager = PersistenceManager.getPersistenceManager(
 				decisionKnowledgeElement.getProject().getProjectKey(),
 				decisionKnowledgeElement.getDocumentationLocation().getIdentifier());
 		DecisionKnowledgeElement element = manager.getDecisionKnowledgeElement(decisionKnowledgeElement.getKey());

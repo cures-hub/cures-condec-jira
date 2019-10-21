@@ -37,7 +37,7 @@ public interface KnowledgeGraph extends Graph<Node, Link> {
 	 * 
 	 * @see KnowledgeGraphImpl
 	 */
-	public static KnowledgeGraph getOrCreate(String projectKey) {
+	static KnowledgeGraph getOrCreate(String projectKey) {
 		if (projectKey == null || projectKey.isBlank()) {
 			return null;
 		}
@@ -50,4 +50,6 @@ public interface KnowledgeGraph extends Graph<Node, Link> {
 	}
 
 	Map<DecisionKnowledgeElement, Link> getAdjacentElementsAndLinks(DecisionKnowledgeElement element);
+
+	void addEdge(Link link);
 }

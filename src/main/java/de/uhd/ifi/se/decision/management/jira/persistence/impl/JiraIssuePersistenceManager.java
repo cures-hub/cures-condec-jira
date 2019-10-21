@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence;
+package de.uhd.ifi.se.decision.management.jira.persistence.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,15 +38,17 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
 
 /**
  * Extends the abstract class AbstractPersistenceStrategy. Uses JIRA issues to
  * store decision knowledge.
  *
- * @see AbstractPersistenceManager
+ * @see AbstractPersistenceManagerForSingleLocation
  */
 @JsonAutoDetect
-public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
+public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSingleLocation {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssuePersistenceManager.class);
 
 	public JiraIssuePersistenceManager(String projectKey) {
@@ -300,7 +302,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		Issue issue = issueResult.getIssue();
 		element.setId(issue.getId());
 		element.setKey(issue.getKey());
-		insertStatus(element);
+		PersistenceManager.insertStatus(element);
 		return element;
 	}
 

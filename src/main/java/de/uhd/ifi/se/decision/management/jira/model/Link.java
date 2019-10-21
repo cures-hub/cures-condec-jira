@@ -8,7 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 
 /**
- * Interface for links between knowledge elements. The links are directed, i.e.,
+ * Interface for links (=edges) between knowledge elements. The links are directed, i.e.,
  * they are arrows starting from a source element and ending in a destination
  * element.
  */
@@ -250,7 +250,7 @@ public interface Link {
 	 * 
 	 * @return a link object.
 	 */
-	public static Link instantiateDirectedLink(DecisionKnowledgeElement parentElement,
+	static Link instantiateDirectedLink(DecisionKnowledgeElement parentElement,
 			DecisionKnowledgeElement childElement) {
 		KnowledgeType knowledgeTypeOfChildElement = childElement.getType();
 		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(knowledgeTypeOfChildElement);
@@ -266,7 +266,7 @@ public interface Link {
 	 * @return true if both source and destination element of the link are
 	 *         documented as JIRA issues.
 	 */
-	public boolean isIssueLink();
+	boolean isIssueLink();
 
 	/**
 	 * Determine if the source and/or destination element of the link have an
@@ -277,7 +277,7 @@ public interface Link {
 	 * @return true if the source and/or the destination element of the link have an
 	 *         unknown documentation location.
 	 */
-	public boolean containsUnknownDocumentationLocation();
+	boolean containsUnknownDocumentationLocation();
 
 	/**
 	 * Set the documentation location of the source element of this link. Retrieves
@@ -337,4 +337,6 @@ public interface Link {
 	 * @return true if objects have the same source and destination id.
 	 */
 	boolean equals(LinkInDatabase linkInDatabase);
+
+	void setDefaultDocumentationLocation(String projectKey);
 }

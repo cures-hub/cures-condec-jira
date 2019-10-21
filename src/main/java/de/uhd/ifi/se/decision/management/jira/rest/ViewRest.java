@@ -1,6 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,9 +18,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
 import org.eclipse.jgit.lib.Ref;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,9 @@ import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
+import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisDataProvider;
@@ -73,9 +75,9 @@ public class ViewRest {
 			return issueKeyIsInvalid();
 		}
 
-		String regexFilter = issueKey.toUpperCase()+"\\.|"+issueKey.toUpperCase()+"$";
+		String regexFilter = issueKey.toUpperCase() + "\\.|" + issueKey.toUpperCase() + "$";
 		// get feature branches of an issue
-		return getDiffViewerResponse(getProjectKey(issueKey),regexFilter );
+		return getDiffViewerResponse(getProjectKey(issueKey), regexFilter);
 	}
 
 	private Response getDiffViewerResponse(String projectKey, String filter) {
@@ -156,10 +158,11 @@ public class ViewRest {
 	public Response getEvolutionData(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST)
-					       .entity(ImmutableMap.of("error", "HttpServletRequest is null. Timeline could not be created."))
-					       .build();
+					.entity(ImmutableMap.of("error", "HttpServletRequest is null. Timeline could not be created."))
+					.build();
 		}
-		if (filterSettings == null || filterSettings.getProjectKey() == null || filterSettings.getProjectKey().equals("")) {
+		if (filterSettings == null || filterSettings.getProjectKey() == null
+				|| filterSettings.getProjectKey().equals("")) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not valid."))
 					.build();
 		}
@@ -236,8 +239,7 @@ public class ViewRest {
 		if (filterSettings.getNamesOfSelectedJiraIssueTypes().size() == 0
 				|| (filterSettings.getDocumentationLocations().size() == 1
 						&& filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN))) {
-			visDataProvider = new VisDataProvider(projectKey, elementKey, filterSettings.getSearchString(),
-					user);
+			visDataProvider = new VisDataProvider(projectKey, elementKey, filterSettings.getSearchString(), user);
 		} else {
 			visDataProvider = new VisDataProvider(elementKey, user, filterSettings);
 		}
@@ -256,11 +258,11 @@ public class ViewRest {
 		}
 		if (filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
-					       .entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
-					       .build();
+					.entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
+					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisDataProvider visDataProvider = new VisDataProvider(user,filterSettings);
+		VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings);
 		return Response.ok(visDataProvider.getVisGraph()).build();
 	}
 
@@ -282,15 +284,16 @@ public class ViewRest {
 	@Path("/getDecisionMatrix")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionMatrix(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+	public Response getDecisionMatrix(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		List<DecisionKnowledgeElement> decisions = getDecisionData(projectKey);
+		List<DecisionKnowledgeElement> decisions = getAllDecisions(projectKey);
 		Matrix matrix = new Matrix(projectKey, decisions);
 		return Response.ok(matrix).build();
-    }
+	}
 
 	@Path("/getDecisionGraph")
 	@GET
@@ -300,18 +303,13 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		List<DecisionKnowledgeElement> decisions = getDecisionData(projectKey);
+		List<DecisionKnowledgeElement> decisions = getAllDecisions(projectKey);
 		VisGraph graph = new VisGraph(decisions, projectKey);
 		return Response.ok(graph).build();
 	}
 
-	private List<DecisionKnowledgeElement> getDecisionData(String projectKey) {
-		AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
-		List<DecisionKnowledgeElement> decisions = strategy.getDecisionKnowledgeElements(KnowledgeType.DECISION);
-
-		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(projectKey);
-		decisions.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements(KnowledgeType.DECISION));
-		return decisions;
+	private List<DecisionKnowledgeElement> getAllDecisions(String projectKey) {
+		return PersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements(KnowledgeType.DECISION);
 	}
 
 	private String getProjectKey(String elementKey) {

@@ -20,9 +20,9 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 
 /**
  * Class for accessing the filtered knowledge graphs. The filter criteria are
@@ -148,19 +148,9 @@ public class FilterExtractorImpl implements FilterExtractor {
 		if (filterSettings == null || filterSettings.getProjectKey() == null) {
 			return new ArrayList<DecisionKnowledgeElement>();
 		}
-		List<DecisionKnowledgeElement> elements = getElementsInProject();
+		List<DecisionKnowledgeElement> elements = PersistenceManager.getOrCreate(filterSettings.getProjectKey())
+				.getDecisionKnowledgeElements();
 		return filterElements(elements);
-	}
-
-	// Get decision knowledge elements from the selected strategy and the sentences
-	private List<DecisionKnowledgeElement> getElementsInProject() {
-		AbstractPersistenceManager strategy = AbstractPersistenceManager
-				.getDefaultPersistenceStrategy(filterSettings.getProjectKey());
-		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements();
-		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
-				filterSettings.getProjectKey());
-		elements.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
-		return elements;
 	}
 
 	// Check if the element is created in time

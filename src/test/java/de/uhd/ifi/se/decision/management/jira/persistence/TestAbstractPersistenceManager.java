@@ -9,6 +9,9 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 
 public class TestAbstractPersistenceManager extends TestSetUp {
 
@@ -23,37 +26,37 @@ public class TestAbstractPersistenceManager extends TestSetUp {
 
 	@Test(expected = java.lang.IllegalArgumentException.class)
 	public void testProjectKeyNull() {
-		AbstractPersistenceManager.getDefaultPersistenceStrategy(null);
+		PersistenceManager.getOrCreate(null).getDefaultPersistenceManager();
 	}
 
 	@Test
 	public void testGetPersistenceStrategyProjectKeyNonExistent() {
-		assertTrue(AbstractPersistenceManager
-				.getDefaultPersistenceStrategy("TESTNOT") instanceof JiraIssuePersistenceManager);
+		assertTrue(PersistenceManager.getOrCreate("TESTNOT")
+				.getDefaultPersistenceManager() instanceof JiraIssuePersistenceManager);
 	}
 
 	@Test
 	public void testGetPersistenceStrategyProjectKeyExistent() {
-		assertTrue(AbstractPersistenceManager
-				.getDefaultPersistenceStrategy("TEST") instanceof JiraIssuePersistenceManager);
+		assertTrue(PersistenceManager.getOrCreate("TEST")
+				.getDefaultPersistenceManager() instanceof JiraIssuePersistenceManager);
 	}
 
 	@Test
 	public void testGetPersistenceManagerElementExistentJiraIssue() {
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUE);
-		assertTrue(AbstractPersistenceManager.getPersistenceManager(element) instanceof JiraIssuePersistenceManager);
+		assertTrue(PersistenceManager.getPersistenceManager(element) instanceof JiraIssuePersistenceManager);
 	}
 
 	@Test
 	public void testGetPersistenceManagerElementExistentActiveObject() {
 		element.setDocumentationLocation(DocumentationLocation.ACTIVEOBJECT);
-		assertTrue(AbstractPersistenceManager.getPersistenceManager(element) instanceof ActiveObjectPersistenceManager);
+		assertTrue(PersistenceManager.getPersistenceManager(element) instanceof ActiveObjectPersistenceManager);
 	}
 
 	@Test
 	public void testGetPersistenceManagerElementExistentJiraIssueComment() {
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 		assertTrue(
-				AbstractPersistenceManager.getPersistenceManager(element) instanceof JiraIssueTextPersistenceManager);
+				PersistenceManager.getPersistenceManager(element) instanceof JiraIssueTextPersistenceManager);
 	}
 }

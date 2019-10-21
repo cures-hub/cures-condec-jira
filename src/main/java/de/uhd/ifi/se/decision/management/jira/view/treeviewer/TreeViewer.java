@@ -24,9 +24,9 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 
 /**
  * Creates tree viewer content
@@ -68,7 +68,11 @@ public class TreeViewer {
 		if (rootElementType == KnowledgeType.OTHER) {
 			return;
 		}
-		AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
+		// TODO Call
+		// PersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements(rootElementType)
+		// to get all elements for all documentation locations
+		AbstractPersistenceManagerForSingleLocation strategy = PersistenceManager.getOrCreate(projectKey)
+				.getDefaultPersistenceManager();
 		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements(rootElementType);
 
 		Set<Data> dataSet = new HashSet<Data>();
@@ -76,7 +80,8 @@ public class TreeViewer {
 			dataSet.add(this.getDataStructure(element));
 		}
 
-		AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(projectKey);
+		AbstractPersistenceManagerForSingleLocation jiraIssueCommentPersistenceManager = PersistenceManager
+				.getOrCreate(projectKey).getJiraIssueTextPersistenceManager();
 		for (DecisionKnowledgeElement sentenceElement : jiraIssueCommentPersistenceManager
 				.getDecisionKnowledgeElements(rootElementType)) {
 			dataSet.add(this.makeIdUnique(new Data(sentenceElement)));

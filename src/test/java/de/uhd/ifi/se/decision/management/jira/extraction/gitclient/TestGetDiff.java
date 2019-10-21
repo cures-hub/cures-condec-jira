@@ -11,7 +11,6 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.issue.Issue;

@@ -6,6 +6,7 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.KnowledgeStatusInDatabase;
 import net.java.ao.Query;
 import org.slf4j.Logger;
@@ -16,17 +17,16 @@ public class DecisionStatusManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DecisionStatusManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
-
 	public static void setStatusForElement(DecisionKnowledgeElement decisionKnowledgeElement, KnowledgeStatus status) {
 		if (decisionKnowledgeElement == null || status == null) {
 			LOGGER.error("Element or Status are null");
 			return;
 		}
-		AbstractPersistenceManager manager =
-				AbstractPersistenceManager.getPersistenceManager(decisionKnowledgeElement.getProject().getProjectKey(),
-						decisionKnowledgeElement.getDocumentationLocation());
+		AbstractPersistenceManagerForSingleLocation manager = PersistenceManager
+				.getOrCreate(decisionKnowledgeElement.getProject().getProjectKey())
+				.getPersistenceManager(decisionKnowledgeElement.getDocumentationLocation());
 		DecisionKnowledgeElement element = manager.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
-		if(!setTypeByChange(status, element, manager)){
+		if (!setTypeByChange(status, element, manager)) {
 			return;
 		}
 		if (isStatusInDatabase(element)) {
@@ -37,7 +37,8 @@ public class DecisionStatusManager {
 				}
 			}
 		} else {
-			KnowledgeStatusInDatabase knowledgeStatusInDatabase = ACTIVE_OBJECTS.create(KnowledgeStatusInDatabase.class);
+			KnowledgeStatusInDatabase knowledgeStatusInDatabase = ACTIVE_OBJECTS
+					.create(KnowledgeStatusInDatabase.class);
 			setParameters(knowledgeStatusInDatabase, element, status);
 			knowledgeStatusInDatabase.save();
 		}
@@ -76,24 +77,26 @@ public class DecisionStatusManager {
 	}
 
 	public static void deleteStatus(DecisionKnowledgeElement element) {
-		for (KnowledgeStatusInDatabase databaseEntry : ACTIVE_OBJECTS.find(KnowledgeStatusInDatabase.class, Query.select().where("ELEMENT_ID = ?", element.getId()))) {
+		for (KnowledgeStatusInDatabase databaseEntry : ACTIVE_OBJECTS.find(KnowledgeStatusInDatabase.class,
+				Query.select().where("ELEMENT_ID = ?", element.getId()))) {
 			KnowledgeStatusInDatabase.deleteStatus(databaseEntry);
 		}
 	}
 
-	private static void setParameters(KnowledgeStatusInDatabase statusInDatabase, DecisionKnowledgeElement element, KnowledgeStatus status) {
+	private static void setParameters(KnowledgeStatusInDatabase statusInDatabase, DecisionKnowledgeElement element,
+			KnowledgeStatus status) {
 		statusInDatabase.setDocumentationLocation(element.getDocumentationLocationAsString());
 		statusInDatabase.setElementId(element.getId());
 		statusInDatabase.setStatus(status.toString());
 	}
 
 	private static KnowledgeStatus getIssueKnowledgeStatus(DecisionKnowledgeElement element) {
-		AbstractPersistenceManager manager =
-				AbstractPersistenceManager.getPersistenceManager(element.getProject().getProjectKey(),
-						element.getDocumentationLocation());
+		AbstractPersistenceManagerForSingleLocation manager = PersistenceManager
+				.getOrCreate(element.getProject().getProjectKey())
+				.getPersistenceManager(element.getDocumentationLocation());
 
-		for(DecisionKnowledgeElement linkedElement: manager.getElementsLinkedWithOutwardLinks(element)) {
-			if(linkedElement.getType().equals(KnowledgeType.DECISION)) {
+		for (DecisionKnowledgeElement linkedElement : manager.getElementsLinkedWithOutwardLinks(element)) {
+			if (linkedElement.getType().equals(KnowledgeType.DECISION)) {
 				return KnowledgeStatus.RESOLVED;
 			}
 		}
@@ -101,14 +104,15 @@ public class DecisionStatusManager {
 	}
 
 	private static boolean setTypeByChange(KnowledgeStatus status, DecisionKnowledgeElement element,
-	                                         AbstractPersistenceManager manager) {
+			AbstractPersistenceManagerForSingleLocation manager) {
 		if (element.getType().equals(KnowledgeType.DECISION)) {
-			if(status.equals(KnowledgeStatus.REJECTED)|| status.equals(KnowledgeStatus.IDEA) || status.equals(KnowledgeStatus.DISCARDED)) {
+			if (status.equals(KnowledgeStatus.REJECTED) || status.equals(KnowledgeStatus.IDEA)
+					|| status.equals(KnowledgeStatus.DISCARDED)) {
 				ApplicationUser user = manager.getCreator(element);
 				element.setType(KnowledgeType.ALTERNATIVE);
 				manager.updateDecisionKnowledgeElementWithoutStatusChange(element, user);
 			}
-			if(status.equals(KnowledgeStatus.DECIDED)) {
+			if (status.equals(KnowledgeStatus.DECIDED)) {
 				return false;
 			}
 		}
