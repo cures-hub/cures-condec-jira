@@ -11,9 +11,19 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import net.java.ao.Query;
 
+/**
+ * Class responsible for links (=edges) between all kinds of nodes in the
+ * {@link KnowledgeGraph}, except of Jira issue links. Jira {@link IssueLink}s
+ * are stored in the internal database by Jira by the Jira
+ * {@link IssueLinkManager}.
+ * 
+ * @see LinkInDatabase
+ * @see JiraIssuePersistenceManager
+ */
 public class GenericLinkManager {
 
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
@@ -123,19 +133,4 @@ public class GenericLinkManager {
 		}
 		return linkId;
 	}
-
-	// public static long getLinkId(DecisionKnowledgeElement source,
-	// DecisionKnowledgeElement destination) {
-	// LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class,
-	// Query.select().where(
-	// "SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ? AND DESTINATION_ID = ?
-	// AND DEST_DOCUMENTATION_LOCATION = ?",
-	// source.getId(), source.getDocumentationLocation().getIdentifier(),
-	// destination.getId(),
-	// destination.getDocumentationLocation().getIdentifier()));
-	// if (links.length == 1) {
-	// return links[0].getId();
-	// }
-	// return 0;
-	// }
 }
