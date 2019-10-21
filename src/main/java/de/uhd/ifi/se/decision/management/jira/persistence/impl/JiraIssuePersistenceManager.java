@@ -131,26 +131,25 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		return 0;
 	}
 
-	public static long getLinkId(DecisionKnowledgeElement source, DecisionKnowledgeElement destination) {
-		if (source == null || destination == null) {
-			return 0;
-		}
-		List<IssueLink> links = JiraIssuePersistenceManager.getInwardIssueLinks(source);
-		long issueLinkId = 0;
-		issueLinkId = checkForIssueLinkId(links, source.getId(), destination.getId());
-		if (issueLinkId != 0) {
-			return issueLinkId;
-		}
-		links = JiraIssuePersistenceManager.getOutwardIssueLinks(source);
-		issueLinkId = checkForIssueLinkId(links, source.getId(), destination.getId());
-		return issueLinkId;
-	}
-
-	private static long checkForIssueLinkId(List<IssueLink> links, long sid, long did) {
-		for (IssueLink link : links) {
-			if (link.getSourceId() != null && link.getSourceId() == sid && link.getDestinationId() == did) {
-				return link.getId();
-			}
+	/**
+	 * Returns the database id of a link object if it is a Jira issue link. Returns
+	 * a value <= 0 if the link is not existing in the database.
+	 * 
+	 * @param link
+	 *            {@link Link} object.
+	 * @return database id of a link object. Returns a value <= 0 if the link is not
+	 *         existing in the database.
+	 * @see IssueLink
+	 */
+	public static long getLinkId(Link link) {
+		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
+		try {
+			long linkTypeId = getLinkTypeId(link.getType());
+			IssueLink issueLink = issueLinkManager.getIssueLink(link.getSourceElement().getId(),
+					link.getDestinationElement().getId(), linkTypeId);
+			return issueLink.getId();
+		} catch (NullPointerException e) {
+			LOGGER.error("Id of link in database could not be retrieved. Message: " + e.getMessage());
 		}
 		return 0;
 	}

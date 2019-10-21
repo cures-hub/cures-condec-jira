@@ -227,11 +227,33 @@ public interface PersistenceManager {
 		return isDeleted;
 	}
 
+	/**
+	 * Returns the database id of a link object (either a Jira issue link or a
+	 * generic link). Returns a value <= 0 if the link is not existing in one of
+	 * these databases.
+	 * 
+	 * @param link
+	 *            {@link Link} object.
+	 * @return database id of a link object (either a Jira issue link or a generic
+	 *         link). Returns a value <= 0 if the link is not existing in one of
+	 *         these databases.
+	 * @see GenericLinkManager
+	 * @see IssueLink
+	 */
 	static long getLinkId(Link link) {
+		long linkId = -1;
 		if (link.isIssueLink()) {
-			return JiraIssuePersistenceManager.getLinkId(link.getSourceElement(), link.getDestinationElement());
+			linkId = JiraIssuePersistenceManager.getLinkId(link);
+			if (linkId <= 0) {
+				JiraIssuePersistenceManager.getLinkId(link.flip());
+			}
+			return linkId;
 		}
-		return GenericLinkManager.isLinkAlreadyInDatabase(link);
+		linkId = GenericLinkManager.isLinkAlreadyInDatabase(link);
+		if (linkId <= 0) {
+			GenericLinkManager.isLinkAlreadyInDatabase(link.flip());
+		}
+		return linkId;
 	}
 
 	/**
