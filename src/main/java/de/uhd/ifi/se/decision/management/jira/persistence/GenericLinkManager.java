@@ -69,9 +69,8 @@ public class GenericLinkManager {
 
 	public static List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
 		String identifier = element.getDocumentationLocation().getIdentifier();
-		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select().where(
-				"SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?",
-				element.getId(), identifier));
+		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select()
+				.where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", element.getId(), identifier));
 
 		List<Link> links = new ArrayList<Link>();
 		for (LinkInDatabase linkInDatabase : linksInDatabase) {
@@ -107,6 +106,13 @@ public class GenericLinkManager {
 		return linkInDatabase.getId();
 	}
 
+	/**
+	 * Returns the link id if the link already exists in database, otherwise -1.
+	 * 
+	 * @param link
+	 *            {@link Link} object.
+	 * @return link id if the link already exists in database, otherwise -1.
+	 */
 	public static long isLinkAlreadyInDatabase(Link link) {
 		long linkId = -1;
 		Link flippedLink = link.flip();
@@ -117,4 +123,19 @@ public class GenericLinkManager {
 		}
 		return linkId;
 	}
+
+	// public static long getLinkId(DecisionKnowledgeElement source,
+	// DecisionKnowledgeElement destination) {
+	// LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class,
+	// Query.select().where(
+	// "SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ? AND DESTINATION_ID = ?
+	// AND DEST_DOCUMENTATION_LOCATION = ?",
+	// source.getId(), source.getDocumentationLocation().getIdentifier(),
+	// destination.getId(),
+	// destination.getDocumentationLocation().getIdentifier()));
+	// if (links.length == 1) {
+	// return links[0].getId();
+	// }
+	// return 0;
+	// }
 }

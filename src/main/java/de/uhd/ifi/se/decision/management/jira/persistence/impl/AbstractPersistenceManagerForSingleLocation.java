@@ -29,8 +29,6 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	protected String projectKey;
 	protected DocumentationLocation documentationLocation;
 
-	public abstract long getLinkId(DecisionKnowledgeElement source, DecisionKnowledgeElement destination);
-
 	/**
 	 * Delete an existing decision knowledge element in database.
 	 *

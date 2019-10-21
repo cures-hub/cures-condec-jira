@@ -227,6 +227,13 @@ public interface PersistenceManager {
 		return isDeleted;
 	}
 
+	static long getLinkId(Link link) {
+		if (link.isIssueLink()) {
+			return JiraIssuePersistenceManager.getLinkId(link.getSourceElement(), link.getDestinationElement());
+		}
+		return GenericLinkManager.isLinkAlreadyInDatabase(link);
+	}
+
 	/**
 	 * Returns the persistence manager for a single documentation location that uses
 	 * Jira issue comments or the description to store decision knowledge.

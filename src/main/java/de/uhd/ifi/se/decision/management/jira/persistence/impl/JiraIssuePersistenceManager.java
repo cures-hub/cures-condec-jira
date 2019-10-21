@@ -131,8 +131,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		return 0;
 	}
 
-	@Override
-	public long getLinkId(DecisionKnowledgeElement source, DecisionKnowledgeElement destination) {
+	public static long getLinkId(DecisionKnowledgeElement source, DecisionKnowledgeElement destination) {
 		if (source == null || destination == null) {
 			return 0;
 		}
@@ -147,7 +146,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		return issueLinkId;
 	}
 
-	private long checkForIssueLinkId(List<IssueLink> links, long sid, long did) {
+	private static long checkForIssueLinkId(List<IssueLink> links, long sid, long did) {
 		for (IssueLink link : links) {
 			if (link.getSourceId() != null && link.getSourceId() == sid && link.getDestinationId() == did) {
 				return link.getId();

@@ -60,20 +60,6 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 	}
 
 	@Override
-	public long getLinkId(DecisionKnowledgeElement source, DecisionKnowledgeElement destination) {
-		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class,
-				Query.select()
-						.where("SOURCE_ID = ? AND " + "SOURCE_DOCUMENTATION_LOCATION = ? AND"
-								+ "DESTINATION_ID = ? AND DEST_DOCUMENTATION_LOCATION = ?", source.getId(),
-								source.getDocumentationLocation().getIdentifier(), destination.getId(),
-								destination.getDocumentationLocation().getIdentifier()));
-		if (links.length == 1) {
-			return links[0].getId();
-		}
-		return 0;
-	}
-
-	@Override
 	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
 		if (element == null) {
 			return false;
