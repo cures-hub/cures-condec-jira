@@ -75,56 +75,30 @@ public interface PersistenceManager {
 	 * for.
 	 * 
 	 * @return key of the Jira project as a string.
+	 * @see DecisionKnowledgeProject
 	 */
 	String getProjectKey();
 
 	/**
-	 * Update link in database.
+	 * Returns all decision knowledge elements for a project.
 	 *
+	 * @return list of all decision knowledge elements for a project.
 	 * @see DecisionKnowledgeElement
-	 * @see KnowledgeType
-	 * @see DocumentationLocation
-	 * @see Link
-	 * @see ApplicationUser
-	 * @param element
-	 *            child element of the link with the new knowledge type.
-	 * @param formerKnowledgeType
-	 *            former knowledge type of the child element before it was updated.
-	 * @param idOfParentElement
-	 *            id of the parent element.
-	 * @param documentationLocationOfParentElement
-	 *            documentation location of the parent element.
-	 * @param user
-	 *            authenticated JIRA application user
-	 * @return internal database id of updated link, zero if updating failed.
+	 * @see DecisionKnowledgeProject
 	 */
-	static long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType, long idOfParentElement,
-			String documentationLocationOfParentElement, ApplicationUser user) {
+	List<DecisionKnowledgeElement> getDecisionKnowledgeElements();
 
-		if (LinkType.linkTypesAreEqual(formerKnowledgeType, element.getType()) || idOfParentElement == 0) {
-			return -1;
-		}
-
-		String projectKey = element.getProject().getProjectKey();
-
-		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerKnowledgeType);
-		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
-
-		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
-		parentElement.setId(idOfParentElement);
-		parentElement.setDocumentationLocation(documentationLocationOfParentElement);
-		parentElement.setProject(projectKey);
-
-		Link formerLink = Link.instantiateDirectedLink(parentElement, element, formerLinkType);
-		if (!deleteLink(formerLink, user)) {
-			return 0;
-		}
-		KnowledgeGraph.getOrCreate(projectKey).removeEdge(formerLink);
-
-		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
-		KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
-		return insertLink(link, user);
-	}
+	/**
+	 * Returns all decision knowledge elements for a project with a certain
+	 * knowledge type.
+	 *
+	 * @return list of all decision knowledge elements for a project with a certain
+	 *         knowledge type.
+	 * @see DecisionKnowledgeElement
+	 * @see DecisionKnowledgeProject
+	 * @see KnowledgeType
+	 */
+	List<DecisionKnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type);
 
 	/**
 	 * Insert a new link into database.
@@ -167,14 +141,61 @@ public interface PersistenceManager {
 	}
 
 	/**
-	 * Delete an existing link in database.
+	 * Updates an existing link in database.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeType
+	 * @see DocumentationLocation
+	 * @see Link
+	 * @param element
+	 *            child element of the link with the new knowledge type.
+	 * @param formerKnowledgeType
+	 *            former knowledge type of the child element before it was updated.
+	 * @param idOfParentElement
+	 *            id of the parent element.
+	 * @param documentationLocationOfParentElement
+	 *            documentation location of the parent element.
+	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}
+	 * @return internal database id of updated link, zero if updating failed.
+	 */
+	static long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType, long idOfParentElement,
+			String documentationLocationOfParentElement, ApplicationUser user) {
+
+		if (LinkType.linkTypesAreEqual(formerKnowledgeType, element.getType()) || idOfParentElement == 0) {
+			return -1;
+		}
+
+		String projectKey = element.getProject().getProjectKey();
+
+		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerKnowledgeType);
+		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
+
+		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
+		parentElement.setId(idOfParentElement);
+		parentElement.setDocumentationLocation(documentationLocationOfParentElement);
+		parentElement.setProject(projectKey);
+
+		Link formerLink = Link.instantiateDirectedLink(parentElement, element, formerLinkType);
+		if (!deleteLink(formerLink, user)) {
+			return 0;
+		}
+		KnowledgeGraph.getOrCreate(projectKey).removeEdge(formerLink);
+
+		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
+		KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
+		return insertLink(link, user);
+	}
+
+	/**
+	 * Deletes an existing link in database.
 	 *
 	 * @param link
 	 *            link between a source and a destination decision knowledge
 	 *            element.
 	 * @param user
 	 *            authenticated JIRA application user
-	 * @return true if insertion was successful.
+	 * @return true if deletion was successful.
 	 * @see Link
 	 * @see ApplicationUser
 	 */
@@ -207,13 +228,45 @@ public interface PersistenceManager {
 	}
 
 	/**
+	 * Returns the persistence manager for a single documentation location that uses
+	 * Jira issue comments or the description to store decision knowledge.
+	 * 
+	 * @return persistence manager that uses Jira issue comments or the description
+	 *         to store decision knowledge.
+	 * 
+	 * @see AbstractPersistenceManagerForSingleLocation
+	 */
+	JiraIssueTextPersistenceManager getJiraIssueTextManager();
+
+	/**
+	 * Returns the persistence manager for a single documentation location that uses
+	 * entire Jira issues with specific types to store decision knowledge.
+	 * 
+	 * @return persistence manager that uses entire Jira issues with specific types
+	 *         to store decision knowledge.
+	 * 
+	 * @see AbstractPersistenceManagerForSingleLocation
+	 */
+	JiraIssuePersistenceManager getJiraIssueManager();
+
+	/**
+	 * Returns the persistence manager for a single documentation location that uses
+	 * object relational mapping with the help of the active object framework to
+	 * store decision knowledge.
+	 * 
+	 * @return persistence manager that uses entire Jira issues with specific types
+	 *         to store decision knowledge.
+	 * 
+	 * @see AbstractPersistenceManagerForSingleLocation
+	 */
+	ActiveObjectPersistenceManager getActiveObjectManager();
+
+	/**
 	 * Returns the default persistence manager for autarkical decision knowledge
 	 * elements used in the project. These elements are directly stored in Jira and
 	 * independent from other Jira issues. These elements are real "first-class"
 	 * elements.
 	 *
-	 * @param projectKey
-	 *            of the Jira project.
 	 * @return persistence manager for real "first-class" decision knowledge
 	 *         elements used in the given project, either Jira issue manager or
 	 *         active object manager. The active object manager is the default
@@ -225,11 +278,8 @@ public interface PersistenceManager {
 	AbstractPersistenceManagerForSingleLocation getDefaultPersistenceManager();
 
 	/**
-	 * Returns the persistence manager for a given project and documentation
-	 * location.
+	 * Returns the persistence manager for a single documentation location.
 	 *
-	 * @param projectKey
-	 *            of a JIRA project.
 	 * @param documentationLocation
 	 *            of knowledge.
 	 * @return persistence manager associated to a documentation location. Returns
@@ -239,9 +289,19 @@ public interface PersistenceManager {
 	 */
 	AbstractPersistenceManagerForSingleLocation getPersistenceManager(DocumentationLocation documentationLocation);
 
-	JiraIssueTextPersistenceManager getJiraIssueTextPersistenceManager();
-
-	JiraIssuePersistenceManager getJiraIssuePersistenceManager();
+	/**
+	 * Gets the persistence manager for a single documentation location by the
+	 * identifier of the location.
+	 *
+	 * @param documentationLocationIdentifier
+	 *            String identifier indicating the documentation location of
+	 *            knowledge (e.g., i for Jira issue).
+	 * @return persistence manager associated to a documentation location. Returns
+	 *         the default persistence manager in case the documentation location
+	 *         cannot be found.
+	 * @see AbstractPersistenceManagerForSingleLocation
+	 */
+	AbstractPersistenceManagerForSingleLocation getPersistenceManager(String documentationLocationIdentifier);
 
 	/**
 	 * Get the persistence manager of a given decision knowledge elements.
@@ -260,35 +320,6 @@ public interface PersistenceManager {
 		}
 		String projectKey = element.getProject().getProjectKey();
 		return getOrCreate(projectKey).getPersistenceManager(element.getDocumentationLocation());
-	}
-
-	/**
-	 * Get the persistence manager for a given project and documentation location.
-	 *
-	 * @param projectKey
-	 *            of a JIRA project.
-	 * @param documentationLocationIdentifier
-	 *            String identifier indicating the documentation location of
-	 *            knowledge (e.g., i for JIRA issue).
-	 * @return persistence manager associated to a documentation location. Returns
-	 *         the default persistence manager in case the documentation location
-	 *         cannot be found.
-	 * @see AbstractPersistenceManagerForSingleLocation
-	 */
-	static AbstractPersistenceManagerForSingleLocation getPersistenceManager(String projectKey,
-			String documentationLocationIdentifier) {
-		DocumentationLocation documentationLocation = DocumentationLocation
-				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
-		return getOrCreate(projectKey).getPersistenceManager(documentationLocation);
-	}
-
-	static void insertStatus(DecisionKnowledgeElement element) {
-		if (element.getType().equals(KnowledgeType.DECISION)) {
-			DecisionStatusManager.setStatusForElement(element, KnowledgeStatus.DECIDED);
-		}
-		if (element.getType().equals(KnowledgeType.ALTERNATIVE)) {
-			DecisionStatusManager.setStatusForElement(element, KnowledgeStatus.IDEA);
-		}
 	}
 
 	/**
@@ -313,9 +344,12 @@ public interface PersistenceManager {
 		return element;
 	}
 
-	ActiveObjectPersistenceManager getActiveObjectPersistenceManager();
-
-	List<DecisionKnowledgeElement> getDecisionKnowledgeElements();
-
-	List<DecisionKnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type);
+	static void insertStatus(DecisionKnowledgeElement element) {
+		if (element.getType().equals(KnowledgeType.DECISION)) {
+			DecisionStatusManager.setStatusForElement(element, KnowledgeStatus.DECIDED);
+		}
+		if (element.getType().equals(KnowledgeType.ALTERNATIVE)) {
+			DecisionStatusManager.setStatusForElement(element, KnowledgeStatus.IDEA);
+		}
+	}
 }

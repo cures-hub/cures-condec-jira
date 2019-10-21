@@ -23,7 +23,7 @@ public abstract class TestJiraIssuePersistenceManagerSetUp extends TestSetUp {
 	@BeforeClass
 	public static void setUp() {
 		init();
-		issueStrategy = PersistenceManager.getOrCreate("TEST").getJiraIssuePersistenceManager();
+		issueStrategy = PersistenceManager.getOrCreate("TEST").getJiraIssueManager();
 		numberOfElements = issueStrategy.getDecisionKnowledgeElements().size();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		link = new LinkImpl(1,4,DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);

@@ -178,7 +178,7 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
         defaultMeasurements.add(new Recall());
 
         // load validated Jira Issue texts
-        JiraIssueTextPersistenceManager manager = PersistenceManager.getOrCreate(projectKey).getJiraIssueTextPersistenceManager();
+        JiraIssueTextPersistenceManager manager = PersistenceManager.getOrCreate(projectKey).getJiraIssueTextManager();
         List<DecisionKnowledgeElement> partsOfText = manager.getUserValidatedPartsOfText(projectKey);
         return evaluateClassifier(defaultMeasurements, partsOfText);
     }

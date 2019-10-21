@@ -81,7 +81,7 @@ public class TreeViewer {
 		}
 
 		AbstractPersistenceManagerForSingleLocation jiraIssueCommentPersistenceManager = PersistenceManager
-				.getOrCreate(projectKey).getJiraIssueTextPersistenceManager();
+				.getOrCreate(projectKey).getJiraIssueTextManager();
 		for (DecisionKnowledgeElement sentenceElement : jiraIssueCommentPersistenceManager
 				.getDecisionKnowledgeElements(rootElementType)) {
 			dataSet.add(this.makeIdUnique(new Data(sentenceElement)));

@@ -95,19 +95,21 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 		if (id == 0) {
 			if (sourceLocation.equals(destLocation)) {
 				if (sourceLocation == DocumentationLocation.JIRAISSUETEXT) {
-					AbstractPersistenceManagerForSingleLocation manager = PersistenceManager.getPersistenceManager(
-							this.getSourceElement().getProject().getProjectKey(), sourceLocation.getIdentifier());
+					AbstractPersistenceManagerForSingleLocation manager = PersistenceManager
+							.getOrCreate(this.getSourceElement().getProject().getProjectKey())
+							.getPersistenceManager(sourceLocation);
 					id = manager.getLinkId(this.getSourceElement(), this.getDestinationElement());
 				}
 				if (destLocation == DocumentationLocation.JIRAISSUETEXT) {
-					AbstractPersistenceManagerForSingleLocation manager = PersistenceManager.getPersistenceManager(
-							this.getDestinationElement().getProject().getProjectKey(), destLocation.getIdentifier());
+					AbstractPersistenceManagerForSingleLocation manager = PersistenceManager
+							.getOrCreate(this.getDestinationElement().getProject().getProjectKey())
+							.getPersistenceManager(destLocation);
 					id = manager.getLinkId(this.getSourceElement(), this.getDestinationElement());
 				}
 			} else {
-				AbstractPersistenceManagerForSingleLocation manager =
-						PersistenceManager.getPersistenceManager(this.getDestinationElement().getProject().getProjectKey(),
-								destLocation.getIdentifier());
+				AbstractPersistenceManagerForSingleLocation manager = PersistenceManager
+						.getOrCreate(this.getDestinationElement().getProject().getProjectKey())
+						.getPersistenceManager(destLocation);
 
 				id = manager.getLinkId(this.getSourceElement(), this.getDestinationElement());
 			}
@@ -266,8 +268,7 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 		DocumentationLocation documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
 		if (this.source.getDocumentationLocation() != documentationLocation) {
-			this.source = PersistenceManager.getDecisionKnowledgeElement(this.source.getId(),
-					documentationLocation);
+			this.source = PersistenceManager.getDecisionKnowledgeElement(this.source.getId(), documentationLocation);
 		}
 		this.getSourceElement().setDocumentationLocation(documentationLocation);
 	}
@@ -278,8 +279,7 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 		DocumentationLocation documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
 		if (this.target.getDocumentationLocation() != documentationLocation) {
-			this.target = PersistenceManager.getDecisionKnowledgeElement(this.target.getId(),
-					documentationLocation);
+			this.target = PersistenceManager.getDecisionKnowledgeElement(this.target.getId(), documentationLocation);
 		}
 		this.getDestinationElement().setDocumentationLocation(documentationLocation);
 	}
@@ -336,9 +336,10 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 		return this.source.getId() == linkInDatabase.getSourceId()
 				&& this.target.getId() == linkInDatabase.getDestinationId();
 	}
-	
+
 	public void setDefaultDocumentationLocation(String projectKey) {
-		AbstractPersistenceManagerForSingleLocation defaultPersistenceManager = PersistenceManager.getOrCreate(projectKey).getDefaultPersistenceManager();
+		AbstractPersistenceManagerForSingleLocation defaultPersistenceManager = PersistenceManager
+				.getOrCreate(projectKey).getDefaultPersistenceManager();
 		String defaultDocumentationLocation = DocumentationLocation
 				.getIdentifier(defaultPersistenceManager.getDocumentationLocation());
 		if (this.getDestinationElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN) {

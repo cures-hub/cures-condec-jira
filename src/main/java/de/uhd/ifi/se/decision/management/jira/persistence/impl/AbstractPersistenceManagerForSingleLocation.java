@@ -78,20 +78,23 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	public abstract DecisionKnowledgeElement getDecisionKnowledgeElement(String key);
 
 	/**
-	 * Get all decision knowledge elements for a project.
+	 * Get all decision knowledge elements for a project of a certain documentation
+	 * location, e.g. all elements in Jira issue descriptions and comments.
 	 *
-	 * @return list of all decision knowledge elements for a project.
+	 * @return list of all decision knowledge elements for a project of a certain
+	 *         documentation location.
 	 * @see DecisionKnowledgeElement
 	 * @see DecisionKnowledgeProject
 	 */
 	public abstract List<DecisionKnowledgeElement> getDecisionKnowledgeElements();
 
 	/**
-	 * Get all decision knowledge elements for a project with a certain knowledge
-	 * type.
+	 * Get all decision knowledge elements for a project of a certain documentation
+	 * location, e.g. all elements in Jira issue descriptions and comments, and with
+	 * a certain knowledge type.
 	 *
 	 * @return list of all decision knowledge elements for a project with a certain
-	 *         knowledge type.
+	 *         knowledge type of a certain documentation location.
 	 * @see DecisionKnowledgeElement
 	 * @see DecisionKnowledgeProject
 	 * @see KnowledgeType

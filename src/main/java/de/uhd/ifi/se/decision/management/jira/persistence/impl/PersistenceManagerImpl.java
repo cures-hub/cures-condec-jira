@@ -66,17 +66,17 @@ public class PersistenceManagerImpl implements PersistenceManager {
 	}
 
 	@Override
-	public JiraIssueTextPersistenceManager getJiraIssueTextPersistenceManager() {
+	public JiraIssueTextPersistenceManager getJiraIssueTextManager() {
 		return jiraIssueTextPersistenceManager;
 	}
 
 	@Override
-	public JiraIssuePersistenceManager getJiraIssuePersistenceManager() {
+	public JiraIssuePersistenceManager getJiraIssueManager() {
 		return jiraIssuePersistenceManager;
 	}
 
 	@Override
-	public ActiveObjectPersistenceManager getActiveObjectPersistenceManager() {
+	public ActiveObjectPersistenceManager getActiveObjectManager() {
 		return activeObjectPersistenceManager;
 	}
 
@@ -103,5 +103,15 @@ public class PersistenceManagerImpl implements PersistenceManager {
 		default:
 			return getDefaultPersistenceManager();
 		}
+	}
+
+	@Override
+	public AbstractPersistenceManagerForSingleLocation getPersistenceManager(String documentationLocationIdentifier) {
+		if (documentationLocationIdentifier == null) {
+			return getDefaultPersistenceManager();
+		}
+		DocumentationLocation documentationLocation = DocumentationLocation
+				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
+		return getPersistenceManager(documentationLocation);
 	}
 }

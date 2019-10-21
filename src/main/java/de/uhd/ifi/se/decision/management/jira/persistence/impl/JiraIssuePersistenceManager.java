@@ -42,7 +42,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
 
 /**
- * Extends the abstract class AbstractPersistenceStrategy. Uses JIRA issues to
+ * Extends the abstract class
+ * {@link AbstractPersistenceManagerForSingleLocation}. Uses JIRA issues to
  * store decision knowledge.
  *
  * @see AbstractPersistenceManagerForSingleLocation
@@ -220,7 +221,6 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		}
 		return decisionKnowledgeElements;
 	}
-
 
 	@Override
 	public List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element) {

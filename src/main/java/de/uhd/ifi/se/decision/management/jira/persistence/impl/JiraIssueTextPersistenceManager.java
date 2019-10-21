@@ -41,8 +41,9 @@ import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClass
 import net.java.ao.Query;
 
 /**
- * Extends the abstract class AbstractPersistenceManager. Uses JIRA issue
- * comments or the description to store decision knowledge.
+ * Extends the abstract class
+ * {@link AbstractPersistenceManagerForSingleLocation}. Uses Jira issue comments
+ * or the description to store decision knowledge.
  *
  * @see AbstractPersistenceManagerForSingleLocation
  */
@@ -270,7 +271,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			Link inwardLink = new LinkImpl(link);
 			inwardLink.setDestinationElement(element);
 			AbstractPersistenceManagerForSingleLocation sourcePersistenceManager = PersistenceManager
-					.getPersistenceManager(projectKey, link.getSourceDocumentationLocation());
+					.getOrCreate(projectKey).getPersistenceManager(link.getSourceDocumentationLocation());
 			inwardLink.setSourceElement(sourcePersistenceManager.getDecisionKnowledgeElement(link.getSourceId()));
 			inwardLinks.add(inwardLink);
 		}
@@ -287,7 +288,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			Link outwardLink = new LinkImpl(link);
 			outwardLink.setSourceElement(element);
 			AbstractPersistenceManagerForSingleLocation destinationPersistenceManager = PersistenceManager
-					.getPersistenceManager(projectKey, link.getDestDocumentationLocation());
+					.getOrCreate(projectKey).getPersistenceManager(link.getDestDocumentationLocation());
 			outwardLink.setDestinationElement(
 					destinationPersistenceManager.getDecisionKnowledgeElement(link.getDestinationId()));
 			outwardLinks.add(outwardLink);
@@ -518,7 +519,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	public static void checkIfSentenceHasAValidLink(long sentenceId, long issueId, LinkType linkType) {
-		if (!AbstractPersistenceManagerForSingleLocation.isElementLinked(sentenceId, DocumentationLocation.JIRAISSUETEXT)) {
+		if (!AbstractPersistenceManagerForSingleLocation.isElementLinked(sentenceId,
+				DocumentationLocation.JIRAISSUETEXT)) {
 			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
 			parentElement.setId(issueId);
 			parentElement.setDocumentationLocation("i");
@@ -595,7 +597,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 		PartOfJiraIssueText element = (PartOfJiraIssueText) this.getDecisionKnowledgeElement(aoId);
 
-		JiraIssuePersistenceManager persistenceManager = PersistenceManager.getOrCreate(this.projectKey).getJiraIssuePersistenceManager();
+		JiraIssuePersistenceManager persistenceManager = PersistenceManager.getOrCreate(this.projectKey)
+				.getJiraIssueManager();
 		DecisionKnowledgeElement decElement = persistenceManager.insertDecisionKnowledgeElement(element, user);
 
 		MutableIssue issue = ComponentAccessor.getIssueService().getIssue(user, decElement.getId()).getIssue();

@@ -48,7 +48,7 @@ public class CommonMetricCalculator {
 	public CommonMetricCalculator(long projectId, ApplicationUser user, String jiraIssueTypeId) {
 		this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
 		this.user = user;
-		this.persistenceManager = PersistenceManager.getOrCreate(projectKey).getJiraIssueTextPersistenceManager();
+		this.persistenceManager = PersistenceManager.getOrCreate(projectKey).getJiraIssueTextManager();
 		this.jiraIssueTypeId = jiraIssueTypeId;
 		this.jiraIssues = getJiraIssuesForProject(projectId);
 	}
