@@ -54,8 +54,8 @@ public class Treant {
 
 		AbstractPersistenceManagerForSingleLocation persistenceManager;
 		if (elementKey.contains(":")) {
-			persistenceManager = PersistenceManager.getPersistenceManager(projectKey,
-					DocumentationLocation.JIRAISSUETEXT.getIdentifier());
+			persistenceManager = PersistenceManager.getOrCreate(projectKey)
+					.getPersistenceManager(DocumentationLocation.JIRAISSUETEXT);
 		} else {
 			persistenceManager = PersistenceManager.getOrCreate(projectKey).getDefaultPersistenceManager();
 		}

@@ -1,19 +1,34 @@
-package de.uhd.ifi.se.decision.management.jira.persistence;
+package de.uhd.ifi.se.decision.management.jira.persistence.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
+import com.atlassian.jira.issue.link.IssueLink;
+import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import net.java.ao.Query;
 
+/**
+ * Class responsible for links (=edges) between all kinds of nodes in the
+ * {@link KnowledgeGraph}, except of Jira issue links. Jira {@link IssueLink}s
+ * are stored in the internal database by Jira and managed by the Jira
+ * {@link IssueLinkManager}. If you are not sure whether your link is a Jira
+ * issue link or not, use the methods of {@link PersistenceManager} interface.
+ * 
+ * @see PersistenceManager
+ * @see LinkInDatabase
+ * @see JiraIssuePersistenceManager
+ */
 public class GenericLinkManager {
 
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
@@ -69,9 +84,8 @@ public class GenericLinkManager {
 
 	public static List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
 		String identifier = element.getDocumentationLocation().getIdentifier();
-		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select().where(
-				"SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?",
-				element.getId(), identifier));
+		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select()
+				.where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", element.getId(), identifier));
 
 		List<Link> links = new ArrayList<Link>();
 		for (LinkInDatabase linkInDatabase : linksInDatabase) {
@@ -107,6 +121,13 @@ public class GenericLinkManager {
 		return linkInDatabase.getId();
 	}
 
+	/**
+	 * Returns the link id if the link already exists in database, otherwise -1.
+	 * 
+	 * @param link
+	 *            {@link Link} object.
+	 * @return link id if the link already exists in database, otherwise -1.
+	 */
 	public static long isLinkAlreadyInDatabase(Link link) {
 		long linkId = -1;
 		Link flippedLink = link.flip();

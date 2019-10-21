@@ -11,7 +11,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 
 /**
  * Abstract class to create, edit, delete and retrieve decision knowledge
@@ -28,8 +27,6 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 
 	protected String projectKey;
 	protected DocumentationLocation documentationLocation;
-
-	public abstract long getLinkId(DecisionKnowledgeElement source, DecisionKnowledgeElement destination);
 
 	/**
 	 * Delete an existing decision knowledge element in database.
@@ -78,20 +75,23 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	public abstract DecisionKnowledgeElement getDecisionKnowledgeElement(String key);
 
 	/**
-	 * Get all decision knowledge elements for a project.
+	 * Get all decision knowledge elements for a project of a certain documentation
+	 * location, e.g. all elements in Jira issue descriptions and comments.
 	 *
-	 * @return list of all decision knowledge elements for a project.
+	 * @return list of all decision knowledge elements for a project of a certain
+	 *         documentation location.
 	 * @see DecisionKnowledgeElement
 	 * @see DecisionKnowledgeProject
 	 */
 	public abstract List<DecisionKnowledgeElement> getDecisionKnowledgeElements();
 
 	/**
-	 * Get all decision knowledge elements for a project with a certain knowledge
-	 * type.
+	 * Get all decision knowledge elements for a project of a certain documentation
+	 * location, e.g. all elements in Jira issue descriptions and comments, and with
+	 * a certain knowledge type.
 	 *
 	 * @return list of all decision knowledge elements for a project with a certain
-	 *         knowledge type.
+	 *         knowledge type of a certain documentation location.
 	 * @see DecisionKnowledgeElement
 	 * @see DecisionKnowledgeProject
 	 * @see KnowledgeType

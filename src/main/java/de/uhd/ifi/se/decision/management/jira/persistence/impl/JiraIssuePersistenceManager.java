@@ -33,6 +33,7 @@ import com.atlassian.jira.util.ErrorCollection;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -42,7 +43,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
 
 /**
- * Extends the abstract class AbstractPersistenceStrategy. Uses JIRA issues to
+ * Extends the abstract class
+ * {@link AbstractPersistenceManagerForSingleLocation}. Uses JIRA issues to
  * store decision knowledge.
  *
  * @see AbstractPersistenceManagerForSingleLocation
@@ -56,6 +58,19 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		this.documentationLocation = DocumentationLocation.JIRAISSUE;
 	}
 
+	/**
+	 * Deletes an existing Jira {@link IssueLink} in database. The link needs to be
+	 * between two Jira issues in the {@link KnowledgeGraph}, i.e., the link is a
+	 * Jira {@link IssueLink}.
+	 *
+	 * @param link
+	 *            link (=edge) between a source and a destination decision knowledge
+	 *            element as a {@link Link} object. Needs to be a Jira
+	 *            {@link IssueLink}.
+	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}.
+	 * @return true if deletion was successful.
+	 */
 	public static boolean deleteLink(Link link, ApplicationUser user) {
 		if (link == null || user == null) {
 			return false;
@@ -115,6 +130,19 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		return links;
 	}
 
+	/**
+	 * Inserts a new link into database. The link can be between any kinds of nodes
+	 * in the {@link KnowledgeGraph}. The link needs to be between two Jira issues
+	 * in the {@link KnowledgeGraph}, i.e., the link is a Jira {@link IssueLink}.
+	 *
+	 * @param link
+	 *            link (=edge) between a source and a destination decision knowledge
+	 *            element as a {@link Link} object. Needs to be a Jira
+	 *            {@link IssueLink}.
+	 * @param user
+	 *            authenticated JIRA {@link ApplicationUser}.
+	 * @return internal database id of inserted link, zero if insertion failed.
+	 */
 	public static long insertLink(Link link, ApplicationUser user) {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		long linkTypeId = getLinkTypeId(link.getType());
@@ -130,27 +158,25 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		return 0;
 	}
 
-	@Override
-	public long getLinkId(DecisionKnowledgeElement source, DecisionKnowledgeElement destination) {
-		if (source == null || destination == null) {
-			return 0;
-		}
-		List<IssueLink> links = JiraIssuePersistenceManager.getInwardIssueLinks(source);
-		long issueLinkId = 0;
-		issueLinkId = checkForIssueLinkId(links, source.getId(), destination.getId());
-		if (issueLinkId != 0) {
-			return issueLinkId;
-		}
-		links = JiraIssuePersistenceManager.getOutwardIssueLinks(source);
-		issueLinkId = checkForIssueLinkId(links, source.getId(), destination.getId());
-		return issueLinkId;
-	}
-
-	private long checkForIssueLinkId(List<IssueLink> links, long sid, long did) {
-		for (IssueLink link : links) {
-			if (link.getSourceId() != null && link.getSourceId() == sid && link.getDestinationId() == did) {
-				return link.getId();
-			}
+	/**
+	 * Returns the database id of a link object if it is a Jira issue link. Returns
+	 * a value <= 0 if the link is not existing in the database.
+	 * 
+	 * @param link
+	 *            {@link Link} object.
+	 * @return database id of a link object. Returns a value <= 0 if the link is not
+	 *         existing in the database.
+	 * @see IssueLink
+	 */
+	public static long getLinkId(Link link) {
+		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
+		try {
+			long linkTypeId = getLinkTypeId(link.getType());
+			IssueLink issueLink = issueLinkManager.getIssueLink(link.getSourceElement().getId(),
+					link.getDestinationElement().getId(), linkTypeId);
+			return issueLink.getId();
+		} catch (NullPointerException e) {
+			LOGGER.error("Id of link in database could not be retrieved. Message: " + e.getMessage());
 		}
 		return 0;
 	}
@@ -220,7 +246,6 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		}
 		return decisionKnowledgeElements;
 	}
-
 
 	@Override
 	public List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element) {

@@ -9,7 +9,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.jiraissuetextpersistencemanager.TestJiraIssueCommentPersistenceManagerSetUp;
 import net.java.ao.test.jdbc.NonTransactional;
 

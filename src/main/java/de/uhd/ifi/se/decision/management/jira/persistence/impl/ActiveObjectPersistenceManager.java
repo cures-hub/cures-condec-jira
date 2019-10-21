@@ -20,7 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
@@ -28,9 +27,10 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 import net.java.ao.Query;
 
 /**
- * Extends the abstract class AbstractPersistenceStrategy. Uses object
- * relational mapping with the help of the active object framework to store
- * decision knowledge.
+ * Extends the abstract class
+ * {@link AbstractPersistenceManagerForSingleLocation}. Uses object relational
+ * mapping with the help of the active object framework to store decision
+ * knowledge.
  *
  * @see AbstractPersistenceManagerForSingleLocation
  */
@@ -56,20 +56,6 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 	public ActiveObjectPersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
 		this.documentationLocation = DocumentationLocation.ACTIVEOBJECT;
-	}
-
-	@Override
-	public long getLinkId(DecisionKnowledgeElement source, DecisionKnowledgeElement destination) {
-		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class,
-				Query.select()
-						.where("SOURCE_ID = ? AND " + "SOURCE_DOCUMENTATION_LOCATION = ? AND"
-								+ "DESTINATION_ID = ? AND DEST_DOCUMENTATION_LOCATION = ?", source.getId(),
-								source.getDocumentationLocation().getIdentifier(), destination.getId(),
-								destination.getDocumentationLocation().getIdentifier()));
-		if (links.length == 1) {
-			return links[0].getId();
-		}
-		return 0;
 	}
 
 	@Override

@@ -14,7 +14,7 @@ public abstract class ActiveObjectPersistenceManagerTestSetUp extends TestSetUp 
 
 	public static void initialisation() {
 		init();
-		aoStrategy = PersistenceManager.getOrCreate("TEST").getActiveObjectPersistenceManager();
+		aoStrategy = PersistenceManager.getOrCreate("TEST").getActiveObjectManager();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 }
