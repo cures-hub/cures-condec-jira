@@ -1,26 +1,31 @@
-package de.uhd.ifi.se.decision.management.jira.persistence;
+package de.uhd.ifi.se.decision.management.jira.persistence.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
+import com.atlassian.jira.issue.link.IssueLink;
+import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import net.java.ao.Query;
 
 /**
  * Class responsible for links (=edges) between all kinds of nodes in the
  * {@link KnowledgeGraph}, except of Jira issue links. Jira {@link IssueLink}s
- * are stored in the internal database by Jira by the Jira
- * {@link IssueLinkManager}.
+ * are stored in the internal database by Jira and managed by the Jira
+ * {@link IssueLinkManager}. If you are not sure whether your link is a Jira
+ * issue link or not, use the methods of {@link PersistenceManager} interface.
  * 
+ * @see PersistenceManager
  * @see LinkInDatabase
  * @see JiraIssuePersistenceManager
  */

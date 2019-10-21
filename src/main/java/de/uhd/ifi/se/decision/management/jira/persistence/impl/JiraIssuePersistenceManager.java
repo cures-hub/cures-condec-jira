@@ -33,6 +33,7 @@ import com.atlassian.jira.util.ErrorCollection;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -57,6 +58,17 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		this.documentationLocation = DocumentationLocation.JIRAISSUE;
 	}
 
+	/**
+	 * Deletes an existing Jira {@link IssueLink} in database. The link needs to be between two Jira issues
+	 * in the {@link KnowledgeGraph}, i.e., the link is a Jira {@link IssueLink}.
+	 *
+	 * @param link
+	 *            link (=edge) between a source and a destination decision knowledge
+	 *            element as a {@link Link} object. Needs to be a Jira {@link IssueLink}.
+	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}.
+	 * @return true if deletion was successful.
+	 */
 	public static boolean deleteLink(Link link, ApplicationUser user) {
 		if (link == null || user == null) {
 			return false;
@@ -116,6 +128,18 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		return links;
 	}
 
+	/**
+	 * Inserts a new link into database. The link can be between any kinds of
+	 * nodes in the {@link KnowledgeGraph}. The link needs to be between two Jira issues
+	 * in the {@link KnowledgeGraph}, i.e., the link is a Jira {@link IssueLink}.
+	 *
+	 * @param link
+	 *            link (=edge) between a source and a destination decision knowledge
+	 *            element as a {@link Link} object. Needs to be a Jira {@link IssueLink}.
+	 * @param user
+	 *            authenticated JIRA {@link ApplicationUser}.
+	 * @return internal database id of inserted link, zero if insertion failed.
+	 */
 	public static long insertLink(Link link, ApplicationUser user) {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		long linkTypeId = getLinkTypeId(link.getType());

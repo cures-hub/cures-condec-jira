@@ -17,6 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.PersistenceManagerImpl;
@@ -101,16 +102,15 @@ public interface PersistenceManager {
 	List<DecisionKnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type);
 
 	/**
-	 * Insert a new link into database.
+	 * Inserts a new link into database. The link can be between any kinds of
+	 * nodes in the {@link KnowledgeGraph}.
 	 *
 	 * @param link
-	 *            link between a source and a destination decision knowledge
-	 *            element.
+	 *            link (=edge) between a source and a destination decision knowledge
+	 *            element as a {@link Link} object.
 	 * @param user
-	 *            authenticated JIRA application user
+	 *            authenticated JIRA {@link ApplicationUser}.
 	 * @return internal database id of inserted link, zero if insertion failed.
-	 * @see Link
-	 * @see ApplicationUser
 	 */
 	static long insertLink(Link link, ApplicationUser user) {
 		String projectKey = link.getSourceElement().getProject().getProjectKey();
@@ -141,12 +141,9 @@ public interface PersistenceManager {
 	}
 
 	/**
-	 * Updates an existing link in database.
+	 * Updates an existing link in database. The link can be between any kinds of
+	 * nodes in the {@link KnowledgeGraph}.
 	 *
-	 * @see DecisionKnowledgeElement
-	 * @see KnowledgeType
-	 * @see DocumentationLocation
-	 * @see Link
 	 * @param element
 	 *            child element of the link with the new knowledge type.
 	 * @param formerKnowledgeType
@@ -156,8 +153,13 @@ public interface PersistenceManager {
 	 * @param documentationLocationOfParentElement
 	 *            documentation location of the parent element.
 	 * @param user
-	 *            authenticated Jira {@link ApplicationUser}
+	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return internal database id of updated link, zero if updating failed.
+	 * 
+	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeType
+	 * @see DocumentationLocation
+	 * @see Link
 	 */
 	static long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType, long idOfParentElement,
 			String documentationLocationOfParentElement, ApplicationUser user) {
@@ -188,16 +190,15 @@ public interface PersistenceManager {
 	}
 
 	/**
-	 * Deletes an existing link in database.
+	 * Deletes an existing link in database. The link can be between any kinds of
+	 * nodes in the {@link KnowledgeGraph}.
 	 *
 	 * @param link
-	 *            link between a source and a destination decision knowledge
-	 *            element.
+	 *            link (=edge) between a source and a destination decision knowledge
+	 *            element as a {@link Link} object.
 	 * @param user
-	 *            authenticated JIRA application user
+	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return true if deletion was successful.
-	 * @see Link
-	 * @see ApplicationUser
 	 */
 	static boolean deleteLink(Link link, ApplicationUser user) {
 		String projectKey = link.getSourceElement().getProject().getProjectKey();
