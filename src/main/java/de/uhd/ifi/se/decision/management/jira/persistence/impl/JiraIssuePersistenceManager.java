@@ -59,12 +59,14 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	/**
-	 * Deletes an existing Jira {@link IssueLink} in database. The link needs to be between two Jira issues
-	 * in the {@link KnowledgeGraph}, i.e., the link is a Jira {@link IssueLink}.
+	 * Deletes an existing Jira {@link IssueLink} in database. The link needs to be
+	 * between two Jira issues in the {@link KnowledgeGraph}, i.e., the link is a
+	 * Jira {@link IssueLink}.
 	 *
 	 * @param link
 	 *            link (=edge) between a source and a destination decision knowledge
-	 *            element as a {@link Link} object. Needs to be a Jira {@link IssueLink}.
+	 *            element as a {@link Link} object. Needs to be a Jira
+	 *            {@link IssueLink}.
 	 * @param user
 	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return true if deletion was successful.
@@ -129,13 +131,14 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	/**
-	 * Inserts a new link into database. The link can be between any kinds of
-	 * nodes in the {@link KnowledgeGraph}. The link needs to be between two Jira issues
+	 * Inserts a new link into database. The link can be between any kinds of nodes
+	 * in the {@link KnowledgeGraph}. The link needs to be between two Jira issues
 	 * in the {@link KnowledgeGraph}, i.e., the link is a Jira {@link IssueLink}.
 	 *
 	 * @param link
 	 *            link (=edge) between a source and a destination decision knowledge
-	 *            element as a {@link Link} object. Needs to be a Jira {@link IssueLink}.
+	 *            element as a {@link Link} object. Needs to be a Jira
+	 *            {@link IssueLink}.
 	 * @param user
 	 *            authenticated JIRA {@link ApplicationUser}.
 	 * @return internal database id of inserted link, zero if insertion failed.

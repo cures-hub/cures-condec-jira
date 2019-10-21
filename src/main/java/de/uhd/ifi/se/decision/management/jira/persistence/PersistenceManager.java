@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -24,8 +25,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.PersistenceManage
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
- * Interface that integates all available persistence managers for single
- * documentation locations for a given project.
+ * Interface that integrates all available persistence managers for single
+ * documentation locations for a given project. Responsible to create, edit,
+ * delete and retrieve decision knowledge elements and their links.
  * 
  * @see AbstractPersistenceManagerForSingleLocation
  * @see JiraIssuePersistenceManager
@@ -102,8 +104,8 @@ public interface PersistenceManager {
 	List<DecisionKnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type);
 
 	/**
-	 * Inserts a new link into database. The link can be between any kinds of
-	 * nodes in the {@link KnowledgeGraph}.
+	 * Inserts a new link into database. The link can be between any kinds of nodes
+	 * in the {@link KnowledgeGraph}.
 	 *
 	 * @param link
 	 *            link (=edge) between a source and a destination decision knowledge
