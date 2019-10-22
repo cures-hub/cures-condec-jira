@@ -19,7 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.TestConfigPersistenceM
 public class MockPluginSettings implements PluginSettings {
 	private Map<String, Object> settings;
 
-	public final Map<String, Object> DEFAULT_SETTINGS = getDefaultSettings();
+	private final Map<String, Object> DEFAULT_SETTINGS = getDefaultSettings();
 
 	public MockPluginSettings() {
 		settings = DEFAULT_SETTINGS;
@@ -52,6 +52,8 @@ public class MockPluginSettings implements PluginSettings {
 	}
 
 	@Override
+	// @issue: The settings are always true, even if they were set to false before.
+	// Why?
 	public Object put(String parameter, Object object) {
 		settings.put(ComponentGetter.PLUGIN_KEY + "." + parameter, object);
 		return object;

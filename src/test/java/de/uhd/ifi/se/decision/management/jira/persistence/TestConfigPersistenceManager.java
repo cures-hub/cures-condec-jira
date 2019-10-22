@@ -21,6 +21,9 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
  * are mocked in the {@link MockPluginSettings} class.
  * 
  * @see MockPluginSettings#getDefaultSettings()
+ * 
+ * @issue How can we enable that settings can be set during testing? Currently,
+ *        they can only be retrieved.
  */
 public class TestConfigPersistenceManager extends TestSetUp {
 
@@ -466,17 +469,17 @@ public class TestConfigPersistenceManager extends TestSetUp {
 
 	@Test
 	public void testGetEnabledWebhookTypesNull() {
-		assertEquals(0, ConfigPersistenceManager.getEnabledWebhookTypes(null).size(), 0.0);
+		assertEquals(0, ConfigPersistenceManager.getEnabledWebhookTypes(null).size());
 	}
 
 	@Test
 	public void testGetEnabledWebhookTypesEmpty() {
-		assertEquals(0, ConfigPersistenceManager.getEnabledWebhookTypes("").size(), 0.0);
+		assertEquals(0, ConfigPersistenceManager.getEnabledWebhookTypes("").size());
 	}
 
 	@Test
 	public void testGetEnabledWebhookTypesFilled() {
-		assertEquals(13, ConfigPersistenceManager.getEnabledWebhookTypes("TEST").size(), 0.0);
+		assertEquals(13, ConfigPersistenceManager.getEnabledWebhookTypes("TEST").size());
 	}
 
 	@Test
@@ -493,6 +496,5 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		ReleaseNoteCategory category = ReleaseNoteCategory.IMPROVEMENTS;
 		ConfigPersistenceManager.setReleaseNoteMapping("TEST", category, input);
 		assertEquals(input, ConfigPersistenceManager.getReleaseNoteMapping("TEST", category));
-
 	}
 }
