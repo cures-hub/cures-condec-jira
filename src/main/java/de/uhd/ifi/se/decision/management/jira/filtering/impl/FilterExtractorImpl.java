@@ -20,7 +20,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgeStatusManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 
@@ -220,7 +220,7 @@ public class FilterExtractorImpl implements FilterExtractor {
 							.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN)) {
 				// Check if the Status is filtered
 				if (filterSettings.getSelectedIssueStatus()
-						.contains(DecisionStatusManager.getStatusForElement(element))) {
+						.contains(KnowledgeStatusManager.getStatusForElement(element))) {
 					// Check if the Type of the Element is correct
 					if (checkIfTypeMatches(element) && checkIfElementMatchesTimeFilter(element)) {
 						// Case no text filter

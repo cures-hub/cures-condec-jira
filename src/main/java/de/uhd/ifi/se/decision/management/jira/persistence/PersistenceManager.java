@@ -378,10 +378,10 @@ public interface PersistenceManager {
 
 	static void insertStatus(DecisionKnowledgeElement element) {
 		if (element.getType().equals(KnowledgeType.DECISION)) {
-			DecisionStatusManager.setStatusForElement(element, KnowledgeStatus.DECIDED);
+			KnowledgeStatusManager.setStatusForElement(element, KnowledgeStatus.DECIDED);
 		}
 		if (element.getType().equals(KnowledgeType.ALTERNATIVE)) {
-			DecisionStatusManager.setStatusForElement(element, KnowledgeStatus.IDEA);
+			KnowledgeStatusManager.setStatusForElement(element, KnowledgeStatus.IDEA);
 		}
 	}
 }

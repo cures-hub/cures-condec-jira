@@ -32,7 +32,7 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.TextSplitterImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgeStatusManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
@@ -66,7 +66,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		boolean isDeleted = false;
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("ID = ?", id))) {
-			DecisionStatusManager.deleteStatus(changeEntryToNewDecision(databaseEntry));
+			KnowledgeStatusManager.deleteStatus(changeEntryToNewDecision(databaseEntry));
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.JIRAISSUETEXT);
 			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
 		}
@@ -403,10 +403,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			element.setDescription(sentence.getDescription());
 		}
 		if (sentence.getType().equals(KnowledgeType.DECISION) && element.getType().equals(KnowledgeType.ALTERNATIVE)) {
-			DecisionStatusManager.setStatusForElement(sentence, KnowledgeStatus.REJECTED);
+			KnowledgeStatusManager.setStatusForElement(sentence, KnowledgeStatus.REJECTED);
 		}
 		if (sentence.getType().equals(KnowledgeType.ALTERNATIVE) && element.getType().equals(KnowledgeType.DECISION)) {
-			DecisionStatusManager.deleteStatus(element);
+			KnowledgeStatusManager.deleteStatus(element);
 		}
 		return updateElementInDatabase(element, sentence, user);
 	}
