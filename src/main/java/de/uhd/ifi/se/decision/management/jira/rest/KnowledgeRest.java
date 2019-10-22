@@ -129,7 +129,7 @@ public class KnowledgeRest {
 	public Response createDecisionKnowledgeElement(@Context HttpServletRequest request,
 			DecisionKnowledgeElement element, @QueryParam("idOfExistingElement") long idOfExistingElement,
 			@QueryParam("documentationLocationOfExistingElement") String documentationLocationOfExistingElement,
-			@QueryParam("keyOfExistingElement") String keyOfExistingElement) {
+			                                       @QueryParam("keyOfExistingElement") String keyOfExistingElement) {
 		if (element == null || request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Creation of decision knowledge element failed due to a bad request (element or request is null)."))
@@ -148,8 +148,12 @@ public class KnowledgeRest {
 
 		DecisionKnowledgeElement existingElement = new DecisionKnowledgeElementImpl();
 		existingElement.setId(idOfExistingElement);
-		existingElement.setDocumentationLocation(documentationLocationOfExistingElement);
 		existingElement.setProject(element.getProject().getProjectKey());
+
+
+		AbstractPersistenceManagerForSingleLocation persistenceManagerForExistingElement =
+				PersistenceManager.getOrCreate(element.getProject().getProjectKey()).getPersistenceManager(documentationLocationOfExistingElement);
+		existingElement = persistenceManagerForExistingElement.getDecisionKnowledgeElement(idOfExistingElement);
 
 		AbstractPersistenceManagerForSingleLocation persistenceManager = PersistenceManager
 				.getPersistenceManager(element);
@@ -165,6 +169,10 @@ public class KnowledgeRest {
 			return Response.status(Status.OK).entity(elementWithId).build();
 		}
 		Link link = Link.instantiateDirectedLink(existingElement, elementWithId);
+		if (link.getSourceElement() == null || link.getTarget() == null) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					       .entity(ImmutableMap.of("error", "Creation of link failed.")).build();
+		}
 		long linkId = PersistenceManager.insertLink(link, user);
 		if (linkId == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)

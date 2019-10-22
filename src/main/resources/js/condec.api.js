@@ -119,9 +119,9 @@
 			"type" : type,
 			"projectKey" : projectKey,
 			"description" : description,
-			"documentationLocation" : documentationLocation,
+			"documentationLocation" : documentationLocation
 		};
-
+        console.log(newElement);
 		postJSON(AJS.contextPath()
 				+ "/rest/decisions/latest/decisions/createDecisionKnowledgeElement.json?idOfExistingElement="
 				+ idOfExistingElement + "&documentationLocationOfExistingElement="

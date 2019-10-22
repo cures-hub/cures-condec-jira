@@ -45,7 +45,7 @@
 			var description = inputDescriptionField.value;
 			var type = selectTypeField.value;
 			var documentationLocation = selectLocationField.value;
-			if (idOfParentElement == "") {
+			if (idOfParentElement === "") {
 				conDecAPI.createUnlinkedDecisionKnowledgeElement(summary, description, type, documentationLocation, function(id) {
 					conDecObservable.notify();
 				})

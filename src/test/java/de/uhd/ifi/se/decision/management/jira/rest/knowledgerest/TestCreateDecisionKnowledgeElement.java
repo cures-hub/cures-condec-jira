@@ -47,7 +47,7 @@ public class TestCreateDecisionKnowledgeElement extends TestSetUp {
 	@Test
 	public void testRequestNullElementNullParentIdZeroParentDocumentationLocationNullKeyNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERROR)).build()
-				.getEntity(), knowledgeRest.createDecisionKnowledgeElement(null, null, 0, null, null).getEntity());
+				             .getEntity(), knowledgeRest.createDecisionKnowledgeElement(null, null, 0, null, null).getEntity());
 	}
 
 	@Test
@@ -61,7 +61,7 @@ public class TestCreateDecisionKnowledgeElement extends TestSetUp {
 	@Test
 	public void testRequestFilledElementNullParentIdZeroParentDocumentationLocationNullKeyNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERROR)).build()
-				.getEntity(), knowledgeRest.createDecisionKnowledgeElement(request, null, 0, null, null).getEntity());
+				             .getEntity(), knowledgeRest.createDecisionKnowledgeElement(request, null, 0, null, null).getEntity());
 	}
 
 	@Test
@@ -93,13 +93,13 @@ public class TestCreateDecisionKnowledgeElement extends TestSetUp {
 
 	@Test
 	public void testRequestFilledElementFilledParentIdFilledParentDocumentationLocationJiraIssueKeyNull() {
-		assertEquals(Status.OK.getStatusCode(),
+		assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(),
 				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 7, "i", null).getStatus());
 	}
 
 	@Test
 	public void testRequestFilledElementFilledParentIdFilledParentDocumentationLocationEmptyKeyNull() {
-		assertEquals(Status.OK.getStatusCode(),
+		assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(),
 				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 7, "", null).getStatus());
 	}
 
@@ -115,7 +115,7 @@ public class TestCreateDecisionKnowledgeElement extends TestSetUp {
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "s", "").getStatus());
 	}
-	
+
 	@Test
 	public void testRequestFilledElementFilledParentIdZeroParentDocumentationLocationNullKeyExisting() {
 		assertEquals(Status.OK.getStatusCode(),
