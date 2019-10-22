@@ -7,7 +7,15 @@ import com.atlassian.sal.api.pluginsettings.PluginSettings;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.TestConfigPersistenceManager;
 
+/**
+ * Mock class for plugin settings necessary to test the
+ * {@link ConfigPersistenceManager} class.
+ * 
+ * @see TestConfigPersistenceManager
+ */
 public class MockPluginSettings implements PluginSettings {
 	private Map<String, Object> settings;
 
@@ -19,7 +27,8 @@ public class MockPluginSettings implements PluginSettings {
 
 	/**
 	 * Returns the map of parameter name and default value, e.g.: isActivated:true
-	 * @return
+	 * 
+	 * @return map of parameter name and default value, e.g.: isActivated:true
 	 */
 	public static Map<String, Object> getDefaultSettings() {
 		String subfix = ComponentGetter.PLUGIN_KEY + ".";
