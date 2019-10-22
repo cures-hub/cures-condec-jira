@@ -6,7 +6,7 @@ import java.util.Set;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 
 /**
@@ -70,7 +70,7 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	@Override
 	public AbstractPersistenceManagerForSingleLocation getPersistenceStrategy() {
 		if (this.persistenceStrategy == null) {
-			this.persistenceStrategy = PersistenceManager.getOrCreate(projectKey).getDefaultPersistenceManager();
+			this.persistenceStrategy = KnowledgePersistenceManager.getOrCreate(projectKey).getDefaultPersistenceManager();
 		}
 		return this.persistenceStrategy;
 	}

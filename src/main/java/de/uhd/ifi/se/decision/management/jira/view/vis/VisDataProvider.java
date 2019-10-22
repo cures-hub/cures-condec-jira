@@ -8,7 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterExtractorImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 
 public class VisDataProvider {
@@ -40,7 +40,7 @@ public class VisDataProvider {
 		this.user = user;
 		this.filterExtractor = new FilterExtractorImpl(projectKey, user, query);
 		decisionKnowledgeElements = filterExtractor.getAllElementsMatchingQuery();
-		AbstractPersistenceManagerForSingleLocation persistenceManager = PersistenceManager
+		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(projectKey).getDefaultPersistenceManager();
 		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
 		graph = new VisGraph(rootElement, decisionKnowledgeElements);
@@ -51,7 +51,7 @@ public class VisDataProvider {
 		this.projectKey = filterSettings.getProjectKey();
 		this.user = user;
 		this.filterExtractor = new FilterExtractorImpl(user, filterSettings);
-		AbstractPersistenceManagerForSingleLocation persistenceManager = PersistenceManager
+		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(projectKey).getDefaultPersistenceManager();
 		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
 		decisionKnowledgeElements = filterExtractor.getAllElementsMatchingCompareFilter();

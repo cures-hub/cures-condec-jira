@@ -26,37 +26,37 @@ public class TestAbstractPersistenceManager extends TestSetUp {
 
 	@Test(expected = java.lang.IllegalArgumentException.class)
 	public void testProjectKeyNull() {
-		PersistenceManager.getOrCreate(null).getDefaultPersistenceManager();
+		KnowledgePersistenceManager.getOrCreate(null).getDefaultPersistenceManager();
 	}
 
 	@Test
 	public void testGetPersistenceStrategyProjectKeyNonExistent() {
-		assertTrue(PersistenceManager.getOrCreate("TESTNOT")
+		assertTrue(KnowledgePersistenceManager.getOrCreate("TESTNOT")
 				.getDefaultPersistenceManager() instanceof JiraIssuePersistenceManager);
 	}
 
 	@Test
 	public void testGetPersistenceStrategyProjectKeyExistent() {
-		assertTrue(PersistenceManager.getOrCreate("TEST")
+		assertTrue(KnowledgePersistenceManager.getOrCreate("TEST")
 				.getDefaultPersistenceManager() instanceof JiraIssuePersistenceManager);
 	}
 
 	@Test
 	public void testGetPersistenceManagerElementExistentJiraIssue() {
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUE);
-		assertTrue(PersistenceManager.getPersistenceManager(element) instanceof JiraIssuePersistenceManager);
+		assertTrue(KnowledgePersistenceManager.getPersistenceManager(element) instanceof JiraIssuePersistenceManager);
 	}
 
 	@Test
 	public void testGetPersistenceManagerElementExistentActiveObject() {
 		element.setDocumentationLocation(DocumentationLocation.ACTIVEOBJECT);
-		assertTrue(PersistenceManager.getPersistenceManager(element) instanceof ActiveObjectPersistenceManager);
+		assertTrue(KnowledgePersistenceManager.getPersistenceManager(element) instanceof ActiveObjectPersistenceManager);
 	}
 
 	@Test
 	public void testGetPersistenceManagerElementExistentJiraIssueComment() {
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 		assertTrue(
-				PersistenceManager.getPersistenceManager(element) instanceof JiraIssueTextPersistenceManager);
+				KnowledgePersistenceManager.getPersistenceManager(element) instanceof JiraIssueTextPersistenceManager);
 	}
 }

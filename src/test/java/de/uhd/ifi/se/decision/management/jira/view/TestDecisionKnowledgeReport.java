@@ -23,7 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
@@ -47,7 +47,7 @@ public class TestDecisionKnowledgeReport extends TestSetUp {
 		params.put("issueType", "WI");
 		this.report.validate(pas, params);
 
-		persistenceStrategy = PersistenceManager.getOrCreate("TEST").getDefaultPersistenceManager();
+		persistenceStrategy = KnowledgePersistenceManager.getOrCreate("TEST").getDefaultPersistenceManager();
 	}
 
 	private MutableIssue createCommentStructureWithTestIssue(String text) {

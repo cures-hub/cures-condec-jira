@@ -7,7 +7,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 /**
  * Class that integates all available persistence managers for single
@@ -23,14 +23,14 @@ import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
  * @see JiraIssueTextPersistenceManager
  * @see ActiveObjectPersistenceManager
  */
-public class PersistenceManagerImpl implements PersistenceManager {
+public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceManager {
 
 	private String projectKey;
 	private JiraIssuePersistenceManager jiraIssuePersistenceManager;
 	private ActiveObjectPersistenceManager activeObjectPersistenceManager;
 	private JiraIssueTextPersistenceManager jiraIssueTextPersistenceManager;
 
-	public PersistenceManagerImpl(String projectKey) {
+	public KnowledgePersistenceManagerImpl(String projectKey) {
 		this.projectKey = projectKey;
 		this.jiraIssuePersistenceManager = new JiraIssuePersistenceManager(projectKey);
 		this.activeObjectPersistenceManager = new ActiveObjectPersistenceManager(projectKey);

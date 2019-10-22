@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import net.java.ao.Query;
 
@@ -23,10 +23,10 @@ import net.java.ao.Query;
  * {@link KnowledgeGraph}, except of Jira issue links. Jira {@link IssueLink}s
  * are stored in the internal database by Jira and managed by the Jira
  * {@link IssueLinkManager}. If you are not sure whether your link is a Jira
- * issue link or not, use the methods of the {@link PersistenceManager}
+ * issue link or not, use the methods of the {@link KnowledgePersistenceManager}
  * interface.
  * 
- * @see PersistenceManager
+ * @see KnowledgePersistenceManager
  * @see LinkInDatabase
  * @see JiraIssuePersistenceManager
  */
@@ -50,7 +50,7 @@ public class GenericLinkManager {
 	 * Jira {@link IssueLink}, use the method
 	 * {@link JiraIssuePersistenceManager#deleteLink(Link, ApplicationUser)}
 	 * instead. If you are not sure what kind of link it is, use
-	 * {@link PersistenceManager#deleteLink(Link, ApplicationUser)}.
+	 * {@link KnowledgePersistenceManager#deleteLink(Link, ApplicationUser)}.
 	 * 
 	 * @param link
 	 *            (=edge) between a source and a destination decision knowledge
@@ -74,7 +74,7 @@ public class GenericLinkManager {
 	 * you want to delete a Jira {@link IssueLink}, use the method
 	 * {@link JiraIssuePersistenceManager#deleteLink(Link, ApplicationUser)}. If you
 	 * are not sure what kind of link it is, use
-	 * {@link PersistenceManager#deleteLink(Link, ApplicationUser)}.
+	 * {@link KnowledgePersistenceManager#deleteLink(Link, ApplicationUser)}.
 	 * 
 	 * @param elementId
 	 *            id of the node.
@@ -178,7 +178,7 @@ public class GenericLinkManager {
 	 * want to insert a Jira {@link IssueLink}, use the method
 	 * {@link JiraIssuePersistenceManager#insertLink(Link, ApplicationUser)}
 	 * instead. If you are not sure what kind of link it is, use
-	 * {@link PersistenceManager#insertLink(Link, ApplicationUser)}.
+	 * {@link KnowledgePersistenceManager#insertLink(Link, ApplicationUser)}.
 	 *
 	 * @param link
 	 *            link (=edge) between a source and a destination decision knowledge

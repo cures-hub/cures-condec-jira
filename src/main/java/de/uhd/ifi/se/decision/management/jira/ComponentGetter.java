@@ -18,7 +18,7 @@ import com.atlassian.sal.api.user.UserManager;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 /**
  * Provides access to JIRA components. Automatically initialized. The
@@ -29,7 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
  * users in HTTP requests.
  * 
  * @see AuthenticationManager
- * @see PersistenceManager
+ * @see KnowledgePersistenceManager
  */
 @Named("ComponentUtil")
 public class ComponentGetter {

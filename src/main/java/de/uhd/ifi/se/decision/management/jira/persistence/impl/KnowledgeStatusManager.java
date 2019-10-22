@@ -6,7 +6,7 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.KnowledgeStatusInDatabase;
 import net.java.ao.Query;
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ public class KnowledgeStatusManager {
 			LOGGER.error("Element or Status are null");
 			return;
 		}
-		AbstractPersistenceManagerForSingleLocation manager = PersistenceManager
+		AbstractPersistenceManagerForSingleLocation manager = KnowledgePersistenceManager
 				.getOrCreate(decisionKnowledgeElement.getProject().getProjectKey())
 				.getPersistenceManager(decisionKnowledgeElement.getDocumentationLocation());
 		DecisionKnowledgeElement element = manager.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
@@ -91,7 +91,7 @@ public class KnowledgeStatusManager {
 	}
 
 	private static KnowledgeStatus getIssueKnowledgeStatus(DecisionKnowledgeElement element) {
-		AbstractPersistenceManagerForSingleLocation manager = PersistenceManager
+		AbstractPersistenceManagerForSingleLocation manager = KnowledgePersistenceManager
 				.getOrCreate(element.getProject().getProjectKey())
 				.getPersistenceManager(element.getDocumentationLocation());
 

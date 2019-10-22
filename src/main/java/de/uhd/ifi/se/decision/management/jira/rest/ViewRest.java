@@ -38,7 +38,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
@@ -309,7 +309,7 @@ public class ViewRest {
 	}
 
 	private List<DecisionKnowledgeElement> getAllDecisions(String projectKey) {
-		return PersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements(KnowledgeType.DECISION);
+		return KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements(KnowledgeType.DECISION);
 	}
 
 	private String getProjectKey(String elementKey) {

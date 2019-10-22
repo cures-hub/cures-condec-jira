@@ -22,7 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManage
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgeStatusManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.PersistenceManagerImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgePersistenceManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
@@ -35,11 +35,11 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
  * @see JiraIssueTextPersistenceManager
  * @see ActiveObjectPersistenceManager
  */
-public interface PersistenceManager {
+public interface KnowledgePersistenceManager {
 
 	/**
 	 * Map of persistence manager instances that are identified by the project key.
-	 * Use the {@link PersistenceManager#getOrCreate()} method to either create or
+	 * Use the {@link KnowledgePersistenceManager#getOrCreate()} method to either create or
 	 * retrieve an existing object
 	 * 
 	 * @issue How can we reuse existing objects instead of recreating them all the
@@ -49,7 +49,7 @@ public interface PersistenceManager {
 	 *           getOrCreate() method to either create or retrieve an existing
 	 *           object!
 	 */
-	static Map<String, PersistenceManager> instances = new HashMap<String, PersistenceManager>();
+	static Map<String, KnowledgePersistenceManager> instances = new HashMap<String, KnowledgePersistenceManager>();
 
 	/**
 	 * Retrieves an existing PersistenceManager instance or creates a new instance
@@ -62,14 +62,14 @@ public interface PersistenceManager {
 	 * 
 	 * @see DecisionKnowledgeProject
 	 */
-	static PersistenceManager getOrCreate(String projectKey) {
+	static KnowledgePersistenceManager getOrCreate(String projectKey) {
 		if (projectKey == null) {
 			throw new IllegalArgumentException("The project key cannot be null.");
 		}
 		if (instances.containsKey(projectKey)) {
 			return instances.get(projectKey);
 		}
-		PersistenceManager persistenceInterface = new PersistenceManagerImpl(projectKey);
+		KnowledgePersistenceManager persistenceInterface = new KnowledgePersistenceManagerImpl(projectKey);
 		instances.put(projectKey, persistenceInterface);
 		return instances.get(projectKey);
 	}

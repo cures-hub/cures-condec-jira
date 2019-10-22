@@ -24,7 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 
@@ -71,7 +71,7 @@ public class TreeViewer {
 		// TODO Call
 		// PersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements(rootElementType)
 		// to get all elements for all documentation locations
-		AbstractPersistenceManagerForSingleLocation strategy = PersistenceManager.getOrCreate(projectKey)
+		AbstractPersistenceManagerForSingleLocation strategy = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getDefaultPersistenceManager();
 		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements(rootElementType);
 
@@ -80,7 +80,7 @@ public class TreeViewer {
 			dataSet.add(this.getDataStructure(element));
 		}
 
-		AbstractPersistenceManagerForSingleLocation jiraIssueCommentPersistenceManager = PersistenceManager
+		AbstractPersistenceManagerForSingleLocation jiraIssueCommentPersistenceManager = KnowledgePersistenceManager
 				.getOrCreate(projectKey).getJiraIssueTextManager();
 		for (DecisionKnowledgeElement sentenceElement : jiraIssueCommentPersistenceManager
 				.getDecisionKnowledgeElements(rootElementType)) {

@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestDeleteDecisionKnowledgeElement extends ActiveObjectPersistenceManagerTestSetUp {
@@ -74,7 +74,7 @@ public class TestDeleteDecisionKnowledgeElement extends ActiveObjectPersistenceM
 		DecisionKnowledgeElement linkedDecisionWithDatabaseId = aoStrategy
 				.insertDecisionKnowledgeElement(linkedDecisision, user);
 		Link link = new LinkImpl(linkedDecisionWithDatabaseId, elementWithDatabaseId);
-		PersistenceManager.insertLink(link, user);
+		KnowledgePersistenceManager.insertLink(link, user);
 		assertTrue(aoStrategy.deleteDecisionKnowledgeElement(elementWithDatabaseId, user));
 	}
 }
