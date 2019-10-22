@@ -93,13 +93,13 @@ public class TestCreateDecisionKnowledgeElement extends TestSetUp {
 
 	@Test
 	public void testRequestFilledElementFilledParentIdFilledParentDocumentationLocationJiraIssueKeyNull() {
-		assertEquals(Status.OK.getStatusCode(),
+		assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(),
 				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 7, "i", null).getStatus());
 	}
 
 	@Test
 	public void testRequestFilledElementFilledParentIdFilledParentDocumentationLocationEmptyKeyNull() {
-		assertEquals(Status.OK.getStatusCode(),
+		assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(),
 				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 7, "", null).getStatus());
 	}
 
