@@ -47,7 +47,7 @@ public class TestCreateDecisionKnowledgeElement extends TestSetUp {
 	@Test
 	public void testRequestNullElementNullParentIdZeroParentDocumentationLocationNullKeyNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERROR)).build()
-				.getEntity(), knowledgeRest.createDecisionKnowledgeElement(null, null, 0, null, null).getEntity());
+				.getEntity(), knowledgeRest.createDecisionKnowledgeElement(null, null, 0, null).getEntity());
 	}
 
 	@Test
@@ -55,70 +55,70 @@ public class TestCreateDecisionKnowledgeElement extends TestSetUp {
 		assertEquals(
 				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERROR)).build()
 						.getEntity(),
-				knowledgeRest.createDecisionKnowledgeElement(null, decisionKnowledgeElement, 0, null, null).getEntity());
+				knowledgeRest.createDecisionKnowledgeElement(null, decisionKnowledgeElement, 0, null).getEntity());
 	}
 
 	@Test
 	public void testRequestFilledElementNullParentIdZeroParentDocumentationLocationNullKeyNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERROR)).build()
-				.getEntity(), knowledgeRest.createDecisionKnowledgeElement(request, null, 0, null, null).getEntity());
+				.getEntity(), knowledgeRest.createDecisionKnowledgeElement(request, null, 0, null).getEntity());
 	}
 
 	@Test
 	public void testRequestFilledElementFilledParentIdZeroParentDocumentationLocationNullKeyNull() {
 
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, null, null).getStatus());
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, null).getStatus());
 	}
 
 	@Test
 	public void testRequestFilledElementFilledAsProArgumentParentIdZeroParentDocumentationLocationNullKeyNull() {
 		decisionKnowledgeElement.setType("Pro-argument");
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, null, null).getStatus());
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, null).getStatus());
 	}
 
 	@Test
 	public void testRequestFilledElementFilledAsConArgumentParentIdZeroParentDocumentationLocationNullKeyNull() {
 		decisionKnowledgeElement.setType("Con-argument");
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, null, null).getStatus());
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, null).getStatus());
 	}
 
 	@Test
 	public void testRequestFilledElementFilledParentIdZeroParentDocumentationLocationJiraIssueKeyNull() {
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "i", null).getStatus());
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "i").getStatus());
 	}
 
 	@Test
 	public void testRequestFilledElementFilledParentIdFilledParentDocumentationLocationJiraIssueKeyNull() {
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 7, "i", null).getStatus());
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 7, "i").getStatus());
 	}
 
 	@Test
 	public void testRequestFilledElementFilledParentIdFilledParentDocumentationLocationEmptyKeyNull() {
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 7, "", null).getStatus());
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 7, "").getStatus());
 	}
 
 	@Test
 	public void testRequestFilledElementFilledParentIdFilledParentDocumentationLocationNullKeyNull() {
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 3, null, null).getStatus());
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 3, null).getStatus());
 	}
 
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledParentIdZeroParentDocumentationLocationJiraIssueCommentKeyEmpty() {
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "s", "").getStatus());
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "s").getStatus());
 	}
 	
 	@Test
 	public void testRequestFilledElementFilledParentIdZeroParentDocumentationLocationNullKeyExisting() {
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, null, "TEST-3").getStatus());
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 3, null).getStatus());
 	}
 }

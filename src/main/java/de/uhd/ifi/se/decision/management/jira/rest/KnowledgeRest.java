@@ -128,20 +128,11 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createDecisionKnowledgeElement(@Context HttpServletRequest request,
 			DecisionKnowledgeElement element, @QueryParam("idOfExistingElement") long idOfExistingElement,
-			@QueryParam("documentationLocationOfExistingElement") String documentationLocationOfExistingElement,
-			@QueryParam("keyOfExistingElement") String keyOfExistingElement) {
+			@QueryParam("documentationLocationOfExistingElement") String documentationLocationOfExistingElement) {
 		if (element == null || request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Creation of decision knowledge element failed due to a bad request (element or request is null)."))
 					.build();
-		}
-
-		if (idOfExistingElement == 0) {
-			if (keyOfExistingElement != null && !keyOfExistingElement.isEmpty()) {
-				IssueManager issueManager = ComponentAccessor.getIssueManager();
-				Issue issue = issueManager.getIssueByCurrentKey(keyOfExistingElement);
-				idOfExistingElement = issue.getId();
-			}
 		}
 
 		ApplicationUser user = AuthenticationManager.getUser(request);

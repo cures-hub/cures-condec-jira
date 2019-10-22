@@ -40,6 +40,12 @@ public enum KnowledgeType {
 		if (type == null || type.isEmpty()) {
 			return KnowledgeType.OTHER;
 		}
+		if(type.contains("Pro")){
+			return PRO;
+		}
+		if(type.contains("Con")){
+			return CON;
+		}
 		for (KnowledgeType knowledgeType : KnowledgeType.values()) {
 			if (knowledgeType.name().toLowerCase(Locale.ENGLISH).matches(type.toLowerCase(Locale.ENGLISH) + "(.)*")) {
 				return knowledgeType;
