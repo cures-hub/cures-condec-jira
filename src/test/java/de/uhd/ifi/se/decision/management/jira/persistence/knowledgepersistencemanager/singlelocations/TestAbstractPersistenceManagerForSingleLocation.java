@@ -25,7 +25,7 @@ public class TestAbstractPersistenceManagerForSingleLocation extends TestSetUp {
 		element.setProject("TEST");
 	}
 
-	@Test(expected = java.lang.IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void testProjectKeyNull() {
 		KnowledgePersistenceManager.getOrCreate(null).getDefaultPersistenceManager();
 	}

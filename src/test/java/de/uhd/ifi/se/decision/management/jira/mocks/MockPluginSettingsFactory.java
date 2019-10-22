@@ -5,15 +5,15 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 
 public class MockPluginSettingsFactory implements PluginSettingsFactory {
 
+	public static PluginSettings pluginSettings = new MockPluginSettings();
+
 	@Override
 	public PluginSettings createSettingsForKey(String projectKey) {
-		PluginSettings settings = new MockPluginSettings();
-		return settings;
+		return pluginSettings;
 	}
 
 	@Override
 	public PluginSettings createGlobalSettings() {
-		PluginSettings settings = new MockPluginSettings();
-		return settings;
+		return pluginSettings;
 	}
 }
