@@ -62,6 +62,7 @@
 		<resource type="download" name="matrix.css" location="/css/matrix.css"/>
 
 		<resource type="download" name="vis.css" location="/js/lib/vis/dist/vis.css" />
+		<resource type="download" name="handsontable.full.min.css" location="/js/lib/handsontable/dist/handsontable.full.min.css" />
 		<resource type="download" name="gitdiffviewer.css" location="/css/gitdiffviewer.css" />		<!-- look and feel like JIRA -->
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
 		<dependency>com.atlassian.auiplugin:aui-flag</dependency>
@@ -100,6 +101,8 @@
 			location="/js/lib/jquery/jquery.easing.js" />
 		<!--Vis -->
 		<resource type="download" name="vis.js" location="/js/lib/vis/dist/vis.js" />
+		<!--Handsontable -->
+		<resource type="download" name="handsontable.full.min.js" location="/js/lib/handsontable/dist/handsontable.full.min.js" />
 		<!-- ConDec java script files -->
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
 		<resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />

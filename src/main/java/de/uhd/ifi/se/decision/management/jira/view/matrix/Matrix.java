@@ -10,35 +10,90 @@ import java.util.*;
 
 public class Matrix {
     @XmlElement
-    private Map<Long, String> matrixHeaderRow;
+    private Map<Long, String> headers;
 
     @XmlElement
-    private Map<Long, List<String>> matrixData;
+    private Map<Long, List<String>> data;
+
+    @XmlElement
+    private List<String> headerArray;
+
+    @XmlElement
+    private List<List<String>> dataArray;
 
     public Matrix(String projectKey, List<DecisionKnowledgeElement> allDecisions) {
-        this.setMatrixHeaderRow(allDecisions);
-        this.setMatrixData(projectKey, allDecisions);
+        this.setHeaders(allDecisions);
+        this.setData(projectKey, allDecisions);
+
+        this.setHeaderArray();
+        this.setDataArray();
     }
 
-    public Map<Long, String> getMatrixHeaderRow() {
-        return matrixHeaderRow;
+    public Map<Long, String> getHeaders() {
+        return headers;
     }
 
-    public void setMatrixHeaderRow(List<DecisionKnowledgeElement> allDecisions) {
-        this.matrixHeaderRow = new TreeMap<>();
-        this.matrixHeaderRow.putAll(new MatrixRow(allDecisions).getHeaderRow());
-    }
-
-    public Map<Long, List<String>> getMatrixData() {
-        return matrixData;
-    }
-
-    public void setMatrixData(String projectKey, List<DecisionKnowledgeElement> allDecisions) {
-        this.matrixData = new TreeMap<>();
+    public void setHeaders(List<DecisionKnowledgeElement> allDecisions) {
+        this.headers = new TreeMap<>();
         for (DecisionKnowledgeElement decision : allDecisions) {
-            List<String> row = new MatrixRow(this.getMatrixEntries(projectKey, allDecisions), this.getMatrixHeaderRow(), decision).getRow();
-            this.matrixData.put(decision.getId(), row);
+            this.headers.put(decision.getId(), decision.getSummary());
         }
+    }
+
+    public Map<Long, List<String>> getData() {
+        return data;
+    }
+
+    public void setData(String projectKey, List<DecisionKnowledgeElement> allDecisions) {
+        this.data = new TreeMap<>();
+        var allEntries = this.getMatrixEntries(projectKey, allDecisions);
+
+        for (DecisionKnowledgeElement decision : allDecisions) {
+            List<String> row = new ArrayList<>();
+
+            for (Map.Entry<Long, String> headerRowDecision : this.getHeaders().entrySet()) {
+                if (headerRowDecision.getValue().equals(decision.getSummary())) {
+                    row.add("LightGray");
+                } else if (this.getEntriesForRow(allEntries, decision).get(headerRowDecision.getKey()) != null) {
+                    row.add(this.getEntriesForRow(allEntries, decision).get(headerRowDecision.getKey()));
+                } else {
+                    row.add("White");
+                }
+            }
+            this.data.put(decision.getId(), row);
+        }
+    }
+
+    public List<String> getHeaderArray() {
+        return headerArray;
+    }
+
+    public void setHeaderArray() {
+        this.headerArray = new ArrayList<>();
+        for (Map.Entry<Long, String> header : this.getHeaders().entrySet()) {
+            this.headerArray.add(header.getValue());
+        }
+    }
+
+    public List<List<String>> getDataArray() {
+        return dataArray;
+    }
+
+    public void setDataArray() {
+        this.dataArray = new ArrayList<>();
+        for (Map.Entry<Long, List<String>> row : this.getData().entrySet()) {
+            this.dataArray.add(row.getValue());
+        }
+    }
+
+    private Map<Long, String> getEntriesForRow(HashSet<MatrixEntry> allEntries, DecisionKnowledgeElement decision) {
+        Map<Long, String> entriesForRow = new TreeMap<>();
+        for (MatrixEntry entry : allEntries) {
+            if (entry.getIdOfSourceElement().equals(decision.getId())) {
+                entriesForRow.put(entry.getIdOfDestinationElement(), entry.getColor());
+            }
+        }
+        return entriesForRow;
     }
 
     private HashSet<MatrixEntry> getMatrixEntries(String projectKey, List<DecisionKnowledgeElement> allDecisions) {

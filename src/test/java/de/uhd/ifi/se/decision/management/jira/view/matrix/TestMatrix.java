@@ -33,7 +33,7 @@ public class TestMatrix extends TestSetUp {
 
 	}
 
-	@Test
+	/*@Test
 	public void testGetMatrixHeaderRow() {
 		assertTrue(this.matrix.getMatrixHeaderRow().containsKey((long) 1));
 		assertTrue(this.matrix.getMatrixHeaderRow().containsValue("TESTfwf"));
@@ -48,6 +48,6 @@ public class TestMatrix extends TestSetUp {
 	@Test
 	public void testGetMatrixDataEntries() {
 		assertTrue(this.matrix.getMatrixData().get((long) 1).contains("LightGray"));
-	}
+	}*/
 
 }

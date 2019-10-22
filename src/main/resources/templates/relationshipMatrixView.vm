@@ -1,9 +1,11 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
-<form class="aui">
+#*<form class="aui">
     <table class="aui" id="matrix" border="1"/>
     </table>
-</form>
+</form>*#
+
+<div id="matrix"></div>
 
 <br>
 <br>

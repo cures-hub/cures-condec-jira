@@ -36,28 +36,6 @@
     height: fit-content;
 }
 
-.columnHeader {
-    position: sticky;
-}
-
-.columnHeader div {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
+th .relative {
     text-align: left;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 1.5em;
-    height: 15em;
-    background-color: #e2e2e2;
-}
-
-.rowHeader div {
-    text-align: left;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 15em;
-    height: 1.5em;
-    background-color: #e2e2e2;
 }

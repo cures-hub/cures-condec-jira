@@ -22,21 +22,39 @@
     ConDecRelationshipMatrixPage.prototype.buildMatrix = function() {
         conDecAPI.getDecisionMatrix(function (data) {
             console.log(data);
-            const matrix = document.getElementById("matrix");
-            const firstRowHeaderElement = document.createElement("th");
-            firstRowHeaderElement.innerText = "";
-            matrix.appendChild(firstRowHeaderElement);
+            const div = document.getElementById("matrix");
 
-            for (let d in data.matrixHeaderRow) {
-                newTableHeaderElement(matrix, data.matrixHeaderRow[d], "columnHeader");
-            }
-
-            for (let d in data.matrixData){
-                const row = data.matrixData[d];
-                newTableRow(matrix, row);
-            }
+            var matrix = new Handsontable(div, {
+                data: data.dataArray,
+                renderer: customRenderer,
+                rowHeaders: data.headerArray,
+                rowHeaderWidth: 150,
+                colHeaders: data.headerArray,
+                //manualColumnResize: true,
+                //colWidths: 50,
+                selectionMode: "single",
+                dropdownMenu: {
+                    callback: function (key, selection, clickEvent) {
+                        // Common callback for all options
+                        console.log(key, selection, clickEvent);
+                        console.log(this.getSelectedLast());
+                    },
+                    items: {
+                        "test": {
+                            name: "xyz"
+                        }
+                    }
+                },
+                licenseKey: "non-commercial-and-evaluation"
+            });
         });
     };
+
+    function customRenderer(instance, td) {
+        Handsontable.renderers.TextRenderer.apply(this, arguments);
+        td.style.backgroundColor = td.innerText;
+        td.innerText = "";
+    }
 
     ConDecRelationshipMatrixPage.prototype.updateView = function() {
         const matrix = document.getElementById("matrix");
@@ -44,31 +62,9 @@
         conDecRelationshipMatrixPage.buildMatrix();
     };
 
-    function newTableHeaderElement(matrix, text, styleClass) {
-        const element = document.createElement("th");
-        element.classList.add(styleClass);
-        const div = document.createElement("div");
-        div.innerText = text;
-        element.appendChild(div);
-        matrix.appendChild(element);
-    };
+    ConDecRelationshipMatrixPage.prototype.addContextMenu = function() {
 
-    function newTableRow(matrix, row) {
-        matrix.appendChild(document.createElement("tr"));
-        for (let d in row) {
-            if (d == 0) {
-                newTableHeaderElement(matrix, row[d], "rowHeader");
-            } else {
-                new newTableElement(matrix, row[d]);
-            }
-        }
-    };
-
-    function newTableElement(matrix, color) {
-        const tableRowElement = document.createElement("td");
-        tableRowElement.style.backgroundColor = color;
-        matrix.appendChild(tableRowElement);
-    };
+    }
 
     ConDecRelationshipMatrixPage.prototype.buildLegend = function buildLegend() {
         conDecAPI.getLinkTypes(function(linkTypes) {
@@ -84,7 +80,6 @@
                 }
             }
         });
-
     };
 
     /*
