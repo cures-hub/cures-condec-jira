@@ -168,7 +168,7 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
-	public static void setUseClassiferForIssueComments(String projectKey, boolean isActivated) {
+	public static void setUseClassifierForIssueComments(String projectKey, boolean isActivated) {
 		setValue(projectKey, "setClassiferForIssueComments", Boolean.toString(isActivated));
 	}
 

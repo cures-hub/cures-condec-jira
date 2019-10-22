@@ -12,9 +12,16 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestGitClient;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 
+/**
+ * Test class for the persistence of the plugin settings. The plugin settings
+ * are mocked in the {@link MockPluginSettings} class.
+ * 
+ * @see MockPluginSettings#getDefaultSettings()
+ */
 public class TestConfigPersistenceManager extends TestSetUp {
 
 	@BeforeClass
@@ -27,7 +34,13 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertEquals("true", ConfigPersistenceManager.getValue("isActivated"));
 	}
 
-	// IsIssueStrategy
+	@Test
+	public void testSetValue() {
+		ConfigPersistenceManager.setValue("isActivated", "true");
+		assertEquals("true", ConfigPersistenceManager.getValue("isActivated"));
+	}
+
+	// isIssueStrategy
 	@Test
 	public void testIsIssueStrategyInvalid() {
 		assertFalse(ConfigPersistenceManager.isIssueStrategy(null));
@@ -38,17 +51,11 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertTrue(ConfigPersistenceManager.isIssueStrategy("TEST"));
 	}
 
-	// SetIssueStrategy
+	// setIssueStrategy
 	@Test
 	public void testSetIssueStrategyNullFalse() {
 		ConfigPersistenceManager.setIssueStrategy(null, false);
-		assertTrue(ConfigPersistenceManager.isIssueStrategy("TEST"));
-	}
-
-	@Test
-	public void testSetIssueStrategyNullTrue() {
-		ConfigPersistenceManager.setIssueStrategy(null, true);
-		assertTrue(ConfigPersistenceManager.isIssueStrategy("TEST"));
+		assertFalse(ConfigPersistenceManager.isIssueStrategy(null));
 	}
 
 	// @issue: The settings are always true, even if they were set to false before.

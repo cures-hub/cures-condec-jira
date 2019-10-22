@@ -17,11 +17,16 @@ public class MockPluginSettings implements PluginSettings {
 		settings = DEFAULT_SETTINGS;
 	}
 
+	/**
+	 * Returns the map of parameter name and default value, e.g.: isActivated:true
+	 * @return
+	 */
 	public static Map<String, Object> getDefaultSettings() {
 		String subfix = ComponentGetter.PLUGIN_KEY + ".";
 		Map<String, Object> settings = new HashMap<String, Object>();
 		settings.put(subfix + "gitUri", TestSetUpGit.GIT_URI);
 		settings.put(subfix + "webhookUrl", "http://true");
+		settings.put(subfix + "isActivated", "true");
 		settings.put(subfix + "isIssueStrategy", "true");
 		settings.put(subfix + "isKnowledgeExtractedFromIssues", "true");
 		settings.put(subfix + "isIconParsing", "true");
