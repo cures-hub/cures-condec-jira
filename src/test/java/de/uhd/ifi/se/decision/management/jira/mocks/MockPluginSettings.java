@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.TestConfigPersistenceManager;
@@ -18,7 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.TestConfigPersistenceM
  */
 public class MockPluginSettings implements PluginSettings {
 	private Map<String, Object> settings;
-
 	private final Map<String, Object> DEFAULT_SETTINGS = getDefaultSettings();
 
 	public MockPluginSettings() {
@@ -31,14 +29,9 @@ public class MockPluginSettings implements PluginSettings {
 	 * @return map of parameter name and default value, e.g.: isActivated:true
 	 */
 	public static Map<String, Object> getDefaultSettings() {
-		String subfix = ComponentGetter.PLUGIN_KEY + ".";
 		Map<String, Object> settings = new HashMap<String, Object>();
-		settings.put(subfix + "gitUri", TestSetUpGit.GIT_URI);
-		settings.put(subfix + "webhookUrl", "http://true");
-		settings.put(subfix + "isActivated", "true");
-		settings.put(subfix + "isIssueStrategy", "true");
-		settings.put(subfix + "isKnowledgeExtractedFromIssues", "true");
-		settings.put(subfix + "isIconParsing", "true");
+		settings.put("gitUri", TestSetUpGit.GIT_URI);
+		settings.put("webhookUrl", "http://true");
 		return settings;
 	}
 
@@ -52,10 +45,8 @@ public class MockPluginSettings implements PluginSettings {
 	}
 
 	@Override
-	// @issue: The settings are always true, even if they were set to false before.
-	// Why?
 	public Object put(String parameter, Object object) {
-		settings.put(ComponentGetter.PLUGIN_KEY + "." + parameter, object);
+		settings.put(parameter, object);
 		return object;
 	}
 

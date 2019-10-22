@@ -124,7 +124,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static boolean isWebhookTypeEnabled(String projectKey, String webhookType) {
-		if (webhookType == null || webhookType.equals("")) {
+		if (webhookType == null || webhookType.isBlank()) {
 			return false;
 		}
 		String isWebhookTypeEnabled = getValue(projectKey, "webhookType" + "." + webhookType);
