@@ -10,7 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.jiraissuetextpersistencemanager.TestJiraIssueCommentPersistenceManagerSetUp;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.jiraissuetextpersistencemanager.TestJiraIssueCommentPersistenceManagerSetUp;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestAutoLinkSentences extends TestJiraIssueCommentPersistenceManagerSetUp {
@@ -50,7 +50,7 @@ public class TestAutoLinkSentences extends TestJiraIssueCommentPersistenceManage
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.get(1)).get(0);
 		assertEquals(sentenceLink.getOppositeElement(comment.get(0)).getId(), comment.get(1).getId());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForAlternativeIssue() {

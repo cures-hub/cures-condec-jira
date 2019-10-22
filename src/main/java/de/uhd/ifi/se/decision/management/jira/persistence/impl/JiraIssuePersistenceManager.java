@@ -202,7 +202,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		IssueService.IssueResult issue = issueService.getIssue(user, id);
 		if (issue.isValid() && issue.getIssue() != null) {
 			DecisionKnowledgeElement elementToDeletion = new DecisionKnowledgeElementImpl(issue.getIssue());
-			KnowledgeStatusManager.deleteStatus(elementToDeletion);
+			StatusPersistenceManager.deleteStatus(elementToDeletion);
 			IssueService.DeleteValidationResult result = issueService.validateDelete(user, issue.getIssue().getId());
 			if (result.getErrorCollection().hasAnyErrors()) {
 				for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
@@ -338,11 +338,11 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		DecisionKnowledgeElement knowledgeElementToBeUpdate = new DecisionKnowledgeElementImpl(issueToBeUpdated);
 		if (knowledgeElementToBeUpdate.getType().equals(KnowledgeType.DECISION)
 				&& element.getType().equals(KnowledgeType.ALTERNATIVE)) {
-			KnowledgeStatusManager.setStatusForElement(knowledgeElementToBeUpdate, KnowledgeStatus.REJECTED);
+			StatusPersistenceManager.setStatusForElement(knowledgeElementToBeUpdate, KnowledgeStatus.REJECTED);
 		}
 		if (knowledgeElementToBeUpdate.getType().equals(KnowledgeType.ALTERNATIVE)
 				&& element.getType().equals(KnowledgeType.DECISION)) {
-			KnowledgeStatusManager.deleteStatus(element);
+			StatusPersistenceManager.deleteStatus(element);
 		}
 		return dataUpdateElement(element, issueToBeUpdated, user, issueService);
 	}

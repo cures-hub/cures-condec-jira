@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersi
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 
-public class TestAbstractPersistenceManager extends TestSetUp {
+public class TestAbstractPersistenceManagerForSingleLocation extends TestSetUp {
 
 	private static DecisionKnowledgeElement element;
 

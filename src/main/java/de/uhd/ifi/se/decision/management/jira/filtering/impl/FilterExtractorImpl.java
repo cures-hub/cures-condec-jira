@@ -22,7 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgeStatusManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.StatusPersistenceManager;
 
 /**
  * Class for accessing the filtered knowledge graphs. The filter criteria are
@@ -220,7 +220,7 @@ public class FilterExtractorImpl implements FilterExtractor {
 							.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN)) {
 				// Check if the Status is filtered
 				if (filterSettings.getSelectedIssueStatus()
-						.contains(KnowledgeStatusManager.getStatusForElement(element))) {
+						.contains(StatusPersistenceManager.getStatusForElement(element))) {
 					// Check if the Type of the Element is correct
 					if (checkIfTypeMatches(element) && checkIfElementMatchesTimeFilter(element)) {
 						// Case no text filter

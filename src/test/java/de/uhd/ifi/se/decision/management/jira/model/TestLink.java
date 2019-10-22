@@ -1,9 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.jiraissuepersistencemanager.TestJiraIssuePersistenceManagerSetUp;
 import org.junit.Test;
 
 import com.atlassian.jira.issue.link.IssueLink;
@@ -11,6 +13,7 @@ import com.atlassian.jira.issue.link.IssueLink;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.jiraissuepersistencemanager.TestJiraIssuePersistenceManagerSetUp;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 
 /**
@@ -104,7 +107,7 @@ public class TestLink extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test
 	public void testConstructorIssueLink() {
-		IssueLink issueLink = new MockIssueLink(1, 2,1);
+		IssueLink issueLink = new MockIssueLink(1, 2, 1);
 		Link link = new LinkImpl(issueLink);
 		assertNotNull(link);
 	}
@@ -126,7 +129,7 @@ public class TestLink extends TestJiraIssuePersistenceManagerSetUp {
 	}
 
 	@Test
-	public void testGetSource(){
+	public void testGetSource() {
 		assertEquals(link.getSourceElement().getId(), link.getSource().getId());
 	}
 
@@ -142,7 +145,7 @@ public class TestLink extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test
 	public void testEqualsNull() {
-		assertFalse(link.equals((Object)null));
+		assertFalse(link.equals((Object) null));
 	}
 
 	@Test

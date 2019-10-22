@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgeStatusManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.StatusPersistenceManager;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.Map;
@@ -55,7 +55,7 @@ public class VisNode {
 		}
 		this.setTitle("<b>" + element.getTypeAsString().toUpperCase() + " <br> " + element.getKey() + ":</b> "
 				+ element.getSummary() + "<br> <i>" + element.getDescription() + "</i>");
-		KnowledgeStatus elementStatus= KnowledgeStatusManager.getStatusForElement(element);
+		KnowledgeStatus elementStatus= StatusPersistenceManager.getStatusForElement(element);
 		if(elementStatus.equals(KnowledgeStatus.DISCARDED) || elementStatus.equals(KnowledgeStatus.REJECTED) ||
 				   elementStatus.equals(KnowledgeStatus.UNRESOLVED)){
 			this.font = ImmutableMap.of("color", "red");

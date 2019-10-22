@@ -38,7 +38,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgeStatusManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.StatusPersistenceManager;
 
 /**
  * REST resource: Enables creation, editing, and deletion of decision knowledge
@@ -419,8 +419,8 @@ public class KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Setting element status failed due to a bad request.")).build();
 		}
 		KnowledgeStatus status = KnowledgeStatus.getKnowledgeStatus(stringStatus);
-		KnowledgeStatusManager.setStatusForElement(decisionKnowledgeElement, status);
-		if (status.equals(KnowledgeStatusManager.getStatusForElement(decisionKnowledgeElement))) {
+		StatusPersistenceManager.setStatusForElement(decisionKnowledgeElement, status);
+		if (status.equals(StatusPersistenceManager.getStatusForElement(decisionKnowledgeElement))) {
 			return Response.status(Status.OK).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -439,7 +439,7 @@ public class KnowledgeRest {
 				.getOrCreate(decisionKnowledgeElement.getProject().getProjectKey())
 				.getPersistenceManager(decisionKnowledgeElement.getDocumentationLocation().getIdentifier());
 		DecisionKnowledgeElement element = manager.getDecisionKnowledgeElement(decisionKnowledgeElement.getKey());
-		KnowledgeStatus status = KnowledgeStatusManager.getStatusForElement(element);
+		KnowledgeStatus status = StatusPersistenceManager.getStatusForElement(element);
 		if (status == null) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Get element status failed.")).build();

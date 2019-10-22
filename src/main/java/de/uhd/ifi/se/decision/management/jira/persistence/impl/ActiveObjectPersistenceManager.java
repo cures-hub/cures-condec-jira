@@ -71,7 +71,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 		boolean isDeleted = false;
 		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", id))) {
-			KnowledgeStatusManager.deleteStatus(new DecisionKnowledgeElementImpl(databaseEntry));
+			StatusPersistenceManager.deleteStatus(new DecisionKnowledgeElementImpl(databaseEntry));
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.ACTIVEOBJECT);
 			isDeleted = DecisionKnowledgeElementInDatabase.deleteElement(databaseEntry);
 		}
@@ -208,11 +208,11 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 			if (databaseEntry.getId() == element.getId()) {
 				if (KnowledgeType.getKnowledgeType(databaseEntry.getType()).equals(KnowledgeType.DECISION)
 						&& element.getType().equals(KnowledgeType.ALTERNATIVE)) {
-					KnowledgeStatusManager.setStatusForElement(element, KnowledgeStatus.REJECTED);
+					StatusPersistenceManager.setStatusForElement(element, KnowledgeStatus.REJECTED);
 				}
 				if (KnowledgeType.getKnowledgeType(databaseEntry.getType()).equals(KnowledgeType.ALTERNATIVE)
 						&& element.getType().equals(KnowledgeType.DECISION)) {
-					KnowledgeStatusManager.deleteStatus(element);
+					StatusPersistenceManager.deleteStatus(element);
 				}
 				setParameters(element, databaseEntry);
 				databaseEntry.save();

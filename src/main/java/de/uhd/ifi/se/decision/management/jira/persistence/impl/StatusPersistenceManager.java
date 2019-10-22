@@ -12,9 +12,9 @@ import net.java.ao.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class KnowledgeStatusManager {
+public class StatusPersistenceManager {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeStatusManager.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(StatusPersistenceManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
 	public static void setStatusForElement(DecisionKnowledgeElement decisionKnowledgeElement, KnowledgeStatus status) {

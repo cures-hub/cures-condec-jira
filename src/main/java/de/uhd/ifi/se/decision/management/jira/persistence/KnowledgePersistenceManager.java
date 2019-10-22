@@ -21,7 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersi
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgeStatusManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.StatusPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgePersistenceManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
@@ -379,10 +379,10 @@ public interface KnowledgePersistenceManager {
 
 	static void insertStatus(DecisionKnowledgeElement element) {
 		if (element.getType().equals(KnowledgeType.DECISION)) {
-			KnowledgeStatusManager.setStatusForElement(element, KnowledgeStatus.DECIDED);
+			StatusPersistenceManager.setStatusForElement(element, KnowledgeStatus.DECIDED);
 		}
 		if (element.getType().equals(KnowledgeType.ALTERNATIVE)) {
-			KnowledgeStatusManager.setStatusForElement(element, KnowledgeStatus.IDEA);
+			StatusPersistenceManager.setStatusForElement(element, KnowledgeStatus.IDEA);
 		}
 	}
 }

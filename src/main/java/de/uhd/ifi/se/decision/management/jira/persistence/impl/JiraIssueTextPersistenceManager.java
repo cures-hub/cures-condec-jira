@@ -65,7 +65,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		boolean isDeleted = false;
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("ID = ?", id))) {
-			KnowledgeStatusManager.deleteStatus(changeEntryToNewDecision(databaseEntry));
+			StatusPersistenceManager.deleteStatus(changeEntryToNewDecision(databaseEntry));
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.JIRAISSUETEXT);
 			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
 		}
@@ -402,10 +402,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			element.setDescription(sentence.getDescription());
 		}
 		if (sentence.getType().equals(KnowledgeType.DECISION) && element.getType().equals(KnowledgeType.ALTERNATIVE)) {
-			KnowledgeStatusManager.setStatusForElement(sentence, KnowledgeStatus.REJECTED);
+			StatusPersistenceManager.setStatusForElement(sentence, KnowledgeStatus.REJECTED);
 		}
 		if (sentence.getType().equals(KnowledgeType.ALTERNATIVE) && element.getType().equals(KnowledgeType.DECISION)) {
-			KnowledgeStatusManager.deleteStatus(element);
+			StatusPersistenceManager.deleteStatus(element);
 		}
 		return updateElementInDatabase(element, sentence, user);
 	}
