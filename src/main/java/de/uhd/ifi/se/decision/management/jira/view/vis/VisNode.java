@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgeStatusManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgeStatusManager;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.Map;

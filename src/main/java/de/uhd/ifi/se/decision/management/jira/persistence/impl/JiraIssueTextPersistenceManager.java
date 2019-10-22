@@ -32,7 +32,6 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.TextSplitterImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgeStatusManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;

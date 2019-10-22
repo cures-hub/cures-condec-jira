@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgeStatusManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgeStatusManager;
 
 public class VisTimeLineNode {
 

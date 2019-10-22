@@ -21,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersi
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgeStatusManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.PersistenceManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
@@ -153,7 +154,7 @@ public interface PersistenceManager {
 	 * @param idOfParentElement
 	 *            id of the parent element.
 	 * @param documentationLocationOfParentElement
-	 *            documentation location of the parent element.
+	 *            {@link DocumentationLocation} of the parent element.
 	 * @param user
 	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return internal database id of updated link, zero if updating failed.
