@@ -21,7 +21,7 @@ import net.java.ao.Query;
 /**
  * Class responsible for links (=edges) between all kinds of nodes in the
  * {@link KnowledgeGraph}, except of Jira issue links. Jira {@link IssueLink}s
- * are stored in the internal database by Jira and managed by the Jira
+ * are stored in the internal database of Jira and managed by the Jira
  * {@link IssueLinkManager}. If you are not sure whether your link is a Jira
  * issue link or not, use the methods of the {@link KnowledgePersistenceManager}
  * interface.

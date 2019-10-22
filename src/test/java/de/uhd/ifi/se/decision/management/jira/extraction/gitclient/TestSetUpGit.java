@@ -41,8 +41,8 @@ import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 public abstract class TestSetUpGit extends TestSetUp {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestSetUpGit.class);
-	public static String GIT_URI;
-	public static File DIRECTORY;
+	public static String GIT_URI = getExampleUri();
+	public static File DIRECTORY = getExampleDirectory();
 	protected static GitClient gitClient;
 	protected MockIssue mockJiraIssueForGitTests;
 	protected MockIssue mockJiraIssueForGitTestsTangled;
@@ -53,9 +53,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 		if (gitClient != null && gitClient.getDirectory() != null) {
 			return;
 		}
-
-		GIT_URI = getExampleUri();
-		DIRECTORY = getExampleDirectory();
 
 		ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
 		String pathToExtractionVCSTestFilesDir = "extraction/versioncontrol/";

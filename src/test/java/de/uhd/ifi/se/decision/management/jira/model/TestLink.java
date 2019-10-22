@@ -13,7 +13,7 @@ import com.atlassian.jira.issue.link.IssueLink;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.jiraissuepersistencemanager.TestJiraIssuePersistenceManagerSetUp;
+import de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencemanager.singlelocations.jiraissuepersistencemanager.TestJiraIssuePersistenceManagerSetUp;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 
 /**

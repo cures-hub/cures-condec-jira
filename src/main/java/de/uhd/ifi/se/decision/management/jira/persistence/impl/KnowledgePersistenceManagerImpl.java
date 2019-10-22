@@ -86,6 +86,16 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		elements.addAll(jiraIssueTextPersistenceManager.getDecisionKnowledgeElements(type));
 		return elements;
 	}
+	
+	@Override
+	public AbstractPersistenceManagerForSingleLocation getPersistenceManager(String documentationLocationIdentifier) {
+		if (documentationLocationIdentifier == null) {
+			return getDefaultPersistenceManager();
+		}
+		DocumentationLocation documentationLocation = DocumentationLocation
+				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
+		return getPersistenceManager(documentationLocation);
+	}
 
 	@Override
 	public AbstractPersistenceManagerForSingleLocation getPersistenceManager(
@@ -103,15 +113,5 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		default:
 			return getDefaultPersistenceManager();
 		}
-	}
-
-	@Override
-	public AbstractPersistenceManagerForSingleLocation getPersistenceManager(String documentationLocationIdentifier) {
-		if (documentationLocationIdentifier == null) {
-			return getDefaultPersistenceManager();
-		}
-		DocumentationLocation documentationLocation = DocumentationLocation
-				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
-		return getPersistenceManager(documentationLocation);
 	}
 }

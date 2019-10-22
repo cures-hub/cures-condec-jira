@@ -1,25 +1,30 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestGitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import java.util.ArrayList;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 
-public class TestConfigPersistenceManager extends TestSetUpGit {
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestGitClient;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+
+public class TestConfigPersistenceManager extends TestSetUp {
 
 	@BeforeClass
 	public static void setUpBeforeClass() {
 		init();
+	}
+
+	@Test
+	public void testGetValue() {
+		assertEquals("true", ConfigPersistenceManager.getValue("isActivated"));
 	}
 
 	// IsIssueStrategy
@@ -472,12 +477,12 @@ public class TestConfigPersistenceManager extends TestSetUpGit {
 		assertEquals(TestGitClient.GIT_URI, ConfigPersistenceManager.getGitUri("TEST"));
 	}
 
-	//@todo fix this test, it always returns a true value
+	// TODO fix this test, it always returns a true value
 	@Test
 	public void testSetAndGetReleaseNoteMapping() {
 		ArrayList<String> input = new ArrayList<String>();
 		input.add("true");
-//		input.add("someOtherString");
+		// input.add("someOtherString");
 		ReleaseNoteCategory category = ReleaseNoteCategory.IMPROVEMENTS;
 		ConfigPersistenceManager.setReleaseNoteMapping("TEST", category, input);
 		assertEquals(input, ConfigPersistenceManager.getReleaseNoteMapping("TEST", category));
