@@ -142,6 +142,10 @@ public class KnowledgeRest {
 		existingElement.setDocumentationLocation(documentationLocationOfExistingElement);
 		existingElement.setProject(element.getProject().getProjectKey());
 
+		AbstractPersistenceManagerForSingleLocation persistenceManagerForExistingElement =
+				PersistenceManager.getPersistenceManager(existingElement);
+		existingElement = persistenceManagerForExistingElement.getDecisionKnowledgeElement(idOfExistingElement);
+
 		AbstractPersistenceManagerForSingleLocation persistenceManager = PersistenceManager
 				.getPersistenceManager(element);
 		DecisionKnowledgeElement elementWithId = persistenceManager.insertDecisionKnowledgeElement(element, user,

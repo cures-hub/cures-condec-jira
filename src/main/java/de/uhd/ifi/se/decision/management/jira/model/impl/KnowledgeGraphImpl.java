@@ -16,8 +16,12 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> implements KnowledgeGraph {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeGraphImpl.class);
 
 	private static final long serialVersionUID = 1L;
 	private DecisionKnowledgeProject project;
@@ -98,7 +102,7 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		try {
 			this.addEdge(source, destination, link);
 		} catch (IllegalArgumentException e) {
-
+			LOGGER.error("Error adding link to the graph: " + e.getMessage());
 		}
 	}
 }
