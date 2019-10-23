@@ -74,18 +74,8 @@ public class Treant {
 			return new TreantNode();
 		}
 		Set<Link> linksToTraverse = graph.edgesOf(element);
-
-		boolean isCollapsed = false;
-		if (currentDepth == depth && !linksToTraverse.containsAll(traversedLinks)) {
-			isCollapsed = true;
-		}
-
-		TreantNode node;
-		if (link != null) {
-			node = new TreantNode(element, link, isCollapsed, isHyperlinked);
-		} else {
-			node = new TreantNode(element, isCollapsed, isHyperlinked);
-		}
+		boolean isCollapsed = isNodeCollapsed(linksToTraverse, currentDepth);
+		TreantNode node = createTreantNode(element, link, isCollapsed);
 
 		if (currentDepth == depth + 1) {
 			return node;
@@ -96,8 +86,27 @@ public class Treant {
 
 		return node;
 	}
-	
-	private List<TreantNode> getChildren(DecisionKnowledgeElement rootElement, Set<Link> linksToTraverse, int currentDepth) {
+
+	private boolean isNodeCollapsed(Set<Link> linksToTraverse, int currentDepth) {
+		boolean isCollapsed = false;
+		if (currentDepth == depth && !traversedLinks.containsAll(linksToTraverse)) {
+			isCollapsed = true;
+		}
+		return isCollapsed;
+	}
+
+	private TreantNode createTreantNode(DecisionKnowledgeElement element, Link link, boolean isCollapsed) {
+		TreantNode node;
+		if (link != null) {
+			node = new TreantNode(element, link, isCollapsed, isHyperlinked);
+		} else {
+			node = new TreantNode(element, isCollapsed, isHyperlinked);
+		}
+		return node;
+	}
+
+	private List<TreantNode> getChildren(DecisionKnowledgeElement rootElement, Set<Link> linksToTraverse,
+			int currentDepth) {
 		List<TreantNode> nodes = new ArrayList<TreantNode>();
 		for (Link currentLink : linksToTraverse) {
 			if (!traversedLinks.add(currentLink)) {
