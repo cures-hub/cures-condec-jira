@@ -6,20 +6,39 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.atlassian.jira.issue.link.IssueLink;
+import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencemanager.singlelocations.jiraissuepersistencemanager.TestJiraIssuePersistenceManagerSetUp;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 /**
  * Test class for links between decision knowledge elements
  */
-public class TestLink extends TestJiraIssuePersistenceManagerSetUp {
+public class TestLink extends TestSetUp {
+
+	protected static ApplicationUser user;
+	protected Link link;
+
+	@BeforeClass
+	public static void setUpBeforeClass() {
+		init();
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
+	}
+
+	@Before
+	public void setUp() {
+		link = new LinkImpl(1, 4, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
+		link.setType(LinkType.RELATE.toString());
+	}
 
 	@Test
 	public void testGetType() {

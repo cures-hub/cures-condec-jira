@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.TestConfigPersistenceManager;
@@ -29,9 +30,11 @@ public class MockPluginSettings implements PluginSettings {
 	 * @return map of parameter name and default value, e.g.: isActivated:true
 	 */
 	public static Map<String, Object> getDefaultSettings() {
+		String subfix = ComponentGetter.PLUGIN_KEY + ".";
 		Map<String, Object> settings = new HashMap<String, Object>();
-		settings.put("gitUri", TestSetUpGit.GIT_URI);
-		settings.put("webhookUrl", "http://true");
+		settings.put(subfix + "gitUri", TestSetUpGit.GIT_URI);
+		settings.put(subfix + "webhookUrl", "http://true");
+		settings.put(subfix + "webhookSecret", "myhoneybee");
 		return settings;
 	}
 
@@ -41,12 +44,17 @@ public class MockPluginSettings implements PluginSettings {
 		if (returnVal != null) {
 			return returnVal;
 		}
+		returnVal = settings.get(ComponentGetter.PLUGIN_KEY + "." + parameter);
+		if (returnVal != null) {
+			return returnVal;
+		}
 		return "true";
 	}
 
 	@Override
 	public Object put(String parameter, Object object) {
 		settings.put(parameter, object);
+		settings.put(ComponentGetter.PLUGIN_KEY + "." + parameter, object);
 		return object;
 	}
 

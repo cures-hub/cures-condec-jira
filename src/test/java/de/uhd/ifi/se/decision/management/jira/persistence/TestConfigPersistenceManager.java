@@ -37,29 +37,14 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		init();
 	}
 
+	// test global (=across project) configuration
 	@Test
-	public void testGetGlobalValue() {
+	public void testSetGlobalValue() {
+		ConfigPersistenceManager.setValue("isActivated", "true");
 		assertEquals("true", ConfigPersistenceManager.getValue("isActivated"));
 	}
 
-	@Test
-	public void testSetValue() {
-		ConfigPersistenceManager.setValue("isActivated", "false");
-		assertEquals("false", ConfigPersistenceManager.getValue("isActivated"));
-	}
-
-	// isIssueStrategy
-	@Test
-	public void testIsIssueStrategyInvalid() {
-		assertFalse(ConfigPersistenceManager.isIssueStrategy(null));
-	}
-
-	@Test
-	public void testIsIssueStrategyOk() {
-		assertTrue(ConfigPersistenceManager.isIssueStrategy("TEST"));
-	}
-
-	// setIssueStrategy
+	// configure persistence in Jira issues
 	@Test
 	public void testSetIssueStrategyNullFalse() {
 		ConfigPersistenceManager.setIssueStrategy(null, false);
@@ -72,70 +57,28 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertTrue(ConfigPersistenceManager.isIssueStrategy("TEST"));
 	}
 
-	// IsActivated
-	@Test
-	public void testIsActivatedInvalid() {
-		ConfigPersistenceManager.setActivated("InvalidKey", true);
-		assertTrue(ConfigPersistenceManager.isActivated("InvalidKey"));
-	}
-
-	// SetActivated
+	// plugin activation
 	@Test
 	public void testSetActivatedNullFalse() {
 		ConfigPersistenceManager.setActivated("TEST", false);
 		assertFalse(ConfigPersistenceManager.isActivated("TEST"));
 	}
-	
+
 	@Test
 	public void testSetActivatedValid() {
 		ConfigPersistenceManager.setActivated("TEST", true);
 		assertTrue(ConfigPersistenceManager.isActivated("TEST"));
 	}
 
-	// IsKnowledgeExtractedFromGit
-	@Test
-	public void testIsKnowledgeExtractedNull() {
-		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromGit(null));
-	}
-
+	// knowledge extraction from git
 	@Test
 	public void testIsKnowledgeExtractedFilled() {
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", false);
-		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromGit("TEST"));
-	}
-
-	// SetKnowledgeExtractedFromGit
-	@Test
-	public void testSetKnowledgeExtractedNullFalse() {
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit(null, false);
 		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromGit(null));
-	}
 
-	@Test
-	public void testSetKnowledgeExtractedNullTrue() {
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit(null, true);
-		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromGit(null));
-	}
-
-	@Test
-	public void testSetKnowledgeExtractedInvalidFalse() {
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit("NotTEST", false);
-		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromGit("NotTEST"));
-	}
-
-	@Test
-	public void testSetKnowledgeExtractedInvalidTrue() {
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit("NotTEST", true);
-		assertTrue(ConfigPersistenceManager.isKnowledgeExtractedFromGit("NotTEST"));
-	}
-
-	@Test
-	public void testSetKnowledgeExtractedFilledFalse() {
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", false);
-	}
+		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromGit("TEST"));
 
-	@Test
-	public void testSetKnowledgeExtractedFilledTrue() {
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", true);
 		assertTrue(ConfigPersistenceManager.isKnowledgeExtractedFromGit("TEST"));
 	}
@@ -476,7 +419,6 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertEquals(TestGitClient.GIT_URI, ConfigPersistenceManager.getGitUri("TEST"));
 	}
 
-	// TODO fix this test, it always returns a true value
 	@Test
 	public void testSetAndGetReleaseNoteMapping() {
 		List<String> input = new ArrayList<String>();
@@ -485,9 +427,10 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		ConfigPersistenceManager.setReleaseNoteMapping("TEST", category, input);
 		assertEquals(input, ConfigPersistenceManager.getReleaseNoteMapping("TEST", category));
 	}
-	
+
 	@AfterClass
 	public static void tearDown() {
+		// reset plugin settings to default settings
 		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}
 }
