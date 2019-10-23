@@ -57,6 +57,8 @@ public class Treant {
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 
 		AbstractPersistenceManagerForSingleLocation persistenceManager;
+		// TODO pass entire element object to the constructors instead of only the key
+		// and use the documentation location of the element
 		if (elementKey.contains(":")) {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 					.getPersistenceManager(DocumentationLocation.JIRAISSUETEXT);

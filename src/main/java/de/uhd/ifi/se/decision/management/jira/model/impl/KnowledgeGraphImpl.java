@@ -1,15 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.model.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 
-import org.jgrapht.Graph;
-import org.jgrapht.Graphs;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
-import org.jgrapht.traverse.BreadthFirstIterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -18,8 +15,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> implements KnowledgeGraph {
 
@@ -34,23 +29,6 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		linkIds = new ArrayList<Long>();
 		this.project = new DecisionKnowledgeProjectImpl(projectKey);
 		createGraph();
-	}
-
-	@Override
-	public Map<DecisionKnowledgeElement, Link> getAdjacentElementsAndLinks(DecisionKnowledgeElement element) {
-		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<>(this, element);
-		// Use First element as parent node
-		Node parentNode = iterator.next();
-		Map<DecisionKnowledgeElement, Link> childrenAndLinks = new HashMap<>();
-		while (iterator.hasNext()) {
-			Node iterNode = iterator.next();
-			if (iterator.getParent(iterNode).getId() == parentNode.getId()
-					&& iterNode instanceof DecisionKnowledgeElement) {
-				DecisionKnowledgeElement nodeElement = (DecisionKnowledgeElement) iterNode;
-				childrenAndLinks.put(nodeElement, this.getEdge(parentNode, iterNode));
-			}
-		}
-		return childrenAndLinks;
 	}
 
 	private void createGraph() {
@@ -92,7 +70,8 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	}
 
 	@Override
-	public void addEdge(Link link) {
+	public boolean addEdge(Link link) {
+		boolean isEdgeCreated = false;
 		DecisionKnowledgeElement source = link.getSourceElement();
 		if (!containsVertex(source)) {
 			addVertex(source);
@@ -102,9 +81,10 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 			addVertex(destination);
 		}
 		try {
-			this.addEdge(source, destination, link);
+			isEdgeCreated = this.addEdge(source, destination, link);
 		} catch (IllegalArgumentException e) {
 			LOGGER.error("Error adding link to the graph: " + e.getMessage());
 		}
+		return isEdgeCreated;
 	}
 }

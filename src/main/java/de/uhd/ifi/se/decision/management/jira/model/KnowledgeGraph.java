@@ -49,7 +49,26 @@ public interface KnowledgeGraph extends Graph<Node, Link> {
 		return knowledgeGraph;
 	}
 
-	Map<DecisionKnowledgeElement, Link> getAdjacentElementsAndLinks(DecisionKnowledgeElement element);
-
-	void addEdge(Link link);
+	/**
+	 * Adds the specified edge ({@link Link} object) to this graph, going from the
+	 * source vertex to the target vertex. More formally, adds the specified edge,
+	 * <code>e</code>, to this graph if this graph contains no edge <code>e2</code>
+	 * such that <code>e2.equals(e)</code>. If this graph already contains such an
+	 * edge, the call leaves this graph unchanged and returns <tt>false</tt>. Some
+	 * graphs do not allow edge-multiplicity. In such cases, if the graph already
+	 * contains an edge from the specified source to the specified target, than this
+	 * method does not change the graph and returns <code>
+	 * false</code>. If the edge was added to the graph, returns <code>
+	 * true</code>.
+	 *
+	 * @param link
+	 *            edge to be added to this graph as a {@link Link} object.
+	 *
+	 * @return <tt>true</tt> if this graph did not already contain the specified
+	 *         edge.
+	 *
+	 * @see #addEdge(Object, Object)
+	 * @see #getEdgeSupplier()
+	 */
+	boolean addEdge(Link link);
 }

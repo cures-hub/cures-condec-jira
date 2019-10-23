@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.uhd.ifi.se.decision.management.jira.model.*;
+import org.jgrapht.traverse.BreadthFirstIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,12 +26,17 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.view.treant.TreantNode;
 
 public class CommonMetricCalculator {
 
@@ -40,7 +45,6 @@ public class CommonMetricCalculator {
 	private JiraIssueTextPersistenceManager persistenceManager;
 	private String jiraIssueTypeId;
 	private List<Issue> jiraIssues;
-	private int absolutDepth;
 	private final String dataStringSeparator = " ";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CommonMetricCalculator.class);
@@ -274,12 +278,31 @@ public class CommonMetricCalculator {
 		List<DecisionKnowledgeElement> listOfDecKnowElements = persistenceManager.getDecisionKnowledgeElements(type);
 		Integer i = 0;
 		for (DecisionKnowledgeElement currentElement : listOfDecKnowElements) {
-			int depth = graphRecursionBot(currentElement);
+			int depth = getLinkDistanceFromSingleNode(currentElement);
 			i++;
 			linkDistances.put(String.valueOf(i) + currentElement.getKey(), depth);
 		}
 
 		return linkDistances;
+	}
+
+	private int getLinkDistanceFromSingleNode(DecisionKnowledgeElement dke) {
+		int absolutDepth = 0;
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
+		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<>(graph, dke);
+		Node parentNode = iterator.next();
+		int currentDepth = 0;
+		while (iterator.hasNext()) {
+			Node iterNode = iterator.next();
+			++currentDepth;
+			if (iterator.getParent(iterNode).equals(parentNode)) {
+				currentDepth = 1;
+			}
+			if (absolutDepth < currentDepth) {
+				absolutDepth = currentDepth;
+			}
+		}
+		return absolutDepth;
 	}
 
 	public Map<String, String> getLinksToIssueTypeMap(KnowledgeType knowledgeType) {
@@ -328,37 +351,4 @@ public class CommonMetricCalculator {
 		String jiraIssueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(jiraIssueTypeId);
 		return issueType2.getName().equalsIgnoreCase(jiraIssueTypeName);
 	}
-
-	private int graphRecursionBot(DecisionKnowledgeElement dke) {
-		this.absolutDepth = 0;
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
-		this.createNodeStructure(dke, null, 100, 1, graph);
-		return absolutDepth;
-	}
-
-	private TreantNode createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth,
-	                                       KnowledgeGraph graph) {
-		if (element == null || element.getProject() == null || element.getType() == KnowledgeType.OTHER) {
-			return new TreantNode();
-		}
-		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getAdjacentElementsAndLinks(element);
-		TreantNode node;
-		if (link != null) {
-			node = new TreantNode(element, link, false, false);
-		} else {
-			node = new TreantNode(element, false, false);
-		}
-		List<TreantNode> nodes = new ArrayList<TreantNode>();
-		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-			TreantNode newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
-					currentDepth + 1, graph);
-			if (absolutDepth < currentDepth) {
-				absolutDepth = currentDepth;
-			}
-			nodes.add(newChildNode);
-		}
-		node.setChildren(nodes);
-		return node;
-	}
-
 }
