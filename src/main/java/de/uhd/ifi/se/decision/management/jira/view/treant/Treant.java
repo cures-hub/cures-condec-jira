@@ -22,7 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersisten
 
 /**
  * Creates a tree data structure from the {@link KnowledgeGraph}. Uses the
- * Treant.js framework.
+ * Treant.js framework for visualization of the knowledge tree.
  */
 @XmlRootElement(name = "treant")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -36,10 +36,7 @@ public class Treant {
 	private KnowledgeGraph graph;
 	private boolean isHyperlinked;
 	private Set<Link> traversedLinks;
-
-	public Treant() {
-		traversedLinks = new HashSet<Link>();
-	}
+	private int depth;
 
 	public Treant(String projectKey, String elementKey, int depth, boolean isHyperlinked) {
 		this(projectKey, elementKey, depth, null, null, isHyperlinked);
@@ -55,8 +52,9 @@ public class Treant {
 
 	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user,
 			boolean isHyperlinked) {
-		this();
-		graph = KnowledgeGraph.getOrCreate(projectKey);
+		this.traversedLinks = new HashSet<Link>();
+		this.depth = depth;
+		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 
 		AbstractPersistenceManagerForSingleLocation persistenceManager;
 		if (elementKey.contains(":")) {
@@ -67,23 +65,18 @@ public class Treant {
 		}
 		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
 		this.setChart(new Chart());
-		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
+		this.setNodeStructure(this.createNodeStructure(rootElement, null, 1));
 		this.setHyperlinked(isHyperlinked);
 	}
 
-	public TreantNode createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth) {
+	public TreantNode createNodeStructure(DecisionKnowledgeElement element, Link link, int currentDepth) {
 		if (element == null || element.getProject() == null) {
 			return new TreantNode();
 		}
-
-		if (graph == null) {
-			graph = KnowledgeGraph.getOrCreate(element.getProject().getProjectKey());
-		}
 		Set<Link> linksToTraverse = graph.edgesOf(element);
-		//linksToTraverse.removeAll(traversedLinks);
 
 		boolean isCollapsed = false;
-		if (currentDepth == depth && linksToTraverse.size() != 0) {
+		if (currentDepth == depth && !linksToTraverse.containsAll(traversedLinks)) {
 			isCollapsed = true;
 		}
 
@@ -98,21 +91,26 @@ public class Treant {
 			return node;
 		}
 
+		List<TreantNode> nodes = getChildren(element, linksToTraverse, currentDepth);
+		node.setChildren(nodes);
+
+		return node;
+	}
+	
+	private List<TreantNode> getChildren(DecisionKnowledgeElement rootElement, Set<Link> linksToTraverse, int currentDepth) {
 		List<TreantNode> nodes = new ArrayList<TreantNode>();
 		for (Link currentLink : linksToTraverse) {
 			if (!traversedLinks.add(currentLink)) {
 				continue;
 			}
-			DecisionKnowledgeElement oppositeElement = currentLink.getOppositeElement(element);
+			DecisionKnowledgeElement oppositeElement = currentLink.getOppositeElement(rootElement);
 			if (oppositeElement.getType() == KnowledgeType.OTHER) {
 				continue;
 			}
-			TreantNode newChildNode = createNodeStructure(oppositeElement, currentLink, depth, currentDepth + 1);
+			TreantNode newChildNode = createNodeStructure(oppositeElement, currentLink, currentDepth + 1);
 			nodes.add(newChildNode);
 		}
-		node.setChildren(nodes);
-
-		return node;
+		return nodes;
 	}
 
 	public Chart getChart() {
