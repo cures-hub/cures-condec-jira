@@ -259,12 +259,12 @@ public interface Link {
 
 	/**
 	 * Determine if both source and destination element of the link are documented
-	 * as JIRA issues.
+	 * as Jira issues.
 	 *
 	 * @see DecisionKnowledgeElement
 	 * 
 	 * @return true if both source and destination element of the link are
-	 *         documented as JIRA issues.
+	 *         documented as Jira issues.
 	 */
 	boolean isIssueLink();
 

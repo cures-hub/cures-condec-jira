@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.StatusPersistenceManager;
 
 public class VisTimeLineNode {
 
@@ -63,7 +63,7 @@ public class VisTimeLineNode {
 
 	private String createContentString(DecisionKnowledgeElement element) {
 		String contentString = "<img src=" +'"' + element.getType().getIconUrl()+ '"' + "> ";
-		KnowledgeStatus elementStatus= DecisionStatusManager.getStatusForElement(element);
+		KnowledgeStatus elementStatus= StatusPersistenceManager.getStatusForElement(element);
 		if(elementStatus.equals(KnowledgeStatus.DISCARDED) || elementStatus.equals(KnowledgeStatus.REJECTED) ||
 		elementStatus.equals(KnowledgeStatus.UNRESOLVED)){
 			return contentString + "<p style=\"color:red\">" + element.getSummary() + "</p>";

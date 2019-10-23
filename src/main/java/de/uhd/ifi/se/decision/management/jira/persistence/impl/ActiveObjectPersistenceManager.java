@@ -19,8 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
@@ -72,7 +71,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 		boolean isDeleted = false;
 		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", id))) {
-			DecisionStatusManager.deleteStatus(new DecisionKnowledgeElementImpl(databaseEntry));
+			StatusPersistenceManager.deleteStatus(new DecisionKnowledgeElementImpl(databaseEntry));
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.ACTIVEOBJECT);
 			isDeleted = DecisionKnowledgeElementInDatabase.deleteElement(databaseEntry);
 		}
@@ -198,7 +197,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 		element.setKey(databaseEntry.getKey());
 		new WebhookConnector(projectKey).sendElementChanges(element);
 		element.setDocumentationLocation(DocumentationLocation.ACTIVEOBJECT);
-		PersistenceManager.insertStatus(element);
+		KnowledgePersistenceManager.insertStatus(element);
 		return element;
 	}
 
@@ -209,11 +208,11 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 			if (databaseEntry.getId() == element.getId()) {
 				if (KnowledgeType.getKnowledgeType(databaseEntry.getType()).equals(KnowledgeType.DECISION)
 						&& element.getType().equals(KnowledgeType.ALTERNATIVE)) {
-					DecisionStatusManager.setStatusForElement(element, KnowledgeStatus.REJECTED);
+					StatusPersistenceManager.setStatusForElement(element, KnowledgeStatus.REJECTED);
 				}
 				if (KnowledgeType.getKnowledgeType(databaseEntry.getType()).equals(KnowledgeType.ALTERNATIVE)
 						&& element.getType().equals(KnowledgeType.DECISION)) {
-					DecisionStatusManager.deleteStatus(element);
+					StatusPersistenceManager.deleteStatus(element);
 				}
 				setParameters(element, databaseEntry);
 				databaseEntry.save();

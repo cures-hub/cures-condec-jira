@@ -39,8 +39,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 /**
  * Extends the abstract class
@@ -203,7 +202,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		IssueService.IssueResult issue = issueService.getIssue(user, id);
 		if (issue.isValid() && issue.getIssue() != null) {
 			DecisionKnowledgeElement elementToDeletion = new DecisionKnowledgeElementImpl(issue.getIssue());
-			DecisionStatusManager.deleteStatus(elementToDeletion);
+			StatusPersistenceManager.deleteStatus(elementToDeletion);
 			IssueService.DeleteValidationResult result = issueService.validateDelete(user, issue.getIssue().getId());
 			if (result.getErrorCollection().hasAnyErrors()) {
 				for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
@@ -327,7 +326,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		Issue issue = issueResult.getIssue();
 		element.setId(issue.getId());
 		element.setKey(issue.getKey());
-		PersistenceManager.insertStatus(element);
+		KnowledgePersistenceManager.insertStatus(element);
 		return element;
 	}
 
@@ -339,11 +338,11 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		DecisionKnowledgeElement knowledgeElementToBeUpdate = new DecisionKnowledgeElementImpl(issueToBeUpdated);
 		if (knowledgeElementToBeUpdate.getType().equals(KnowledgeType.DECISION)
 				&& element.getType().equals(KnowledgeType.ALTERNATIVE)) {
-			DecisionStatusManager.setStatusForElement(knowledgeElementToBeUpdate, KnowledgeStatus.REJECTED);
+			StatusPersistenceManager.setStatusForElement(knowledgeElementToBeUpdate, KnowledgeStatus.REJECTED);
 		}
 		if (knowledgeElementToBeUpdate.getType().equals(KnowledgeType.ALTERNATIVE)
 				&& element.getType().equals(KnowledgeType.DECISION)) {
-			DecisionStatusManager.deleteStatus(element);
+			StatusPersistenceManager.deleteStatus(element);
 		}
 		return dataUpdateElement(element, issueToBeUpdated, user, issueService);
 	}

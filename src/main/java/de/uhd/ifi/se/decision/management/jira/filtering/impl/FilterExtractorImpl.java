@@ -20,9 +20,9 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionStatusManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.StatusPersistenceManager;
 
 /**
  * Class for accessing the filtered knowledge graphs. The filter criteria are
@@ -148,7 +148,7 @@ public class FilterExtractorImpl implements FilterExtractor {
 		if (filterSettings == null || filterSettings.getProjectKey() == null) {
 			return new ArrayList<DecisionKnowledgeElement>();
 		}
-		List<DecisionKnowledgeElement> elements = PersistenceManager.getOrCreate(filterSettings.getProjectKey())
+		List<DecisionKnowledgeElement> elements = KnowledgePersistenceManager.getOrCreate(filterSettings.getProjectKey())
 				.getDecisionKnowledgeElements();
 		return filterElements(elements);
 	}
@@ -220,7 +220,7 @@ public class FilterExtractorImpl implements FilterExtractor {
 							.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN)) {
 				// Check if the Status is filtered
 				if (filterSettings.getSelectedIssueStatus()
-						.contains(DecisionStatusManager.getStatusForElement(element))) {
+						.contains(StatusPersistenceManager.getStatusForElement(element))) {
 					// Check if the Type of the Element is correct
 					if (checkIfTypeMatches(element) && checkIfElementMatchesTimeFilter(element)) {
 						// Case no text filter

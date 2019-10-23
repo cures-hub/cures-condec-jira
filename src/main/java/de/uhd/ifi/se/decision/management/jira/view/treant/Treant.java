@@ -17,7 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 
 /**
@@ -54,10 +54,10 @@ public class Treant {
 
 		AbstractPersistenceManagerForSingleLocation persistenceManager;
 		if (elementKey.contains(":")) {
-			persistenceManager = PersistenceManager.getOrCreate(projectKey)
+			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 					.getPersistenceManager(DocumentationLocation.JIRAISSUETEXT);
 		} else {
-			persistenceManager = PersistenceManager.getOrCreate(projectKey).getDefaultPersistenceManager();
+			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey).getDefaultPersistenceManager();
 		}
 		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
 		this.setChart(new Chart());

@@ -529,7 +529,7 @@ public class ConfigRest {
         }
         try {
             boolean isActivated = Boolean.valueOf(isActivatedString);
-            ConfigPersistenceManager.setUseClassiferForIssueComments(projectKey, isActivated);
+            ConfigPersistenceManager.setUseClassifierForIssueComments(projectKey, isActivated);
             return Response.ok(Status.ACCEPTED).build();
         } catch (Exception e) {
             LOGGER.error("Failed to enable or disable the classifier for JIRA issue text. Message: " + e.getMessage());

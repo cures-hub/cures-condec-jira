@@ -124,7 +124,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static boolean isWebhookTypeEnabled(String projectKey, String webhookType) {
-		if (webhookType == null || webhookType.equals("")) {
+		if (webhookType == null || webhookType.isBlank()) {
 			return false;
 		}
 		String isWebhookTypeEnabled = getValue(projectKey, "webhookType" + "." + webhookType);
@@ -168,7 +168,7 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
-	public static void setUseClassiferForIssueComments(String projectKey, boolean isActivated) {
+	public static void setUseClassifierForIssueComments(String projectKey, boolean isActivated) {
 		setValue(projectKey, "setClassiferForIssueComments", Boolean.toString(isActivated));
 	}
 

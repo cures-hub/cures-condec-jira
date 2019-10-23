@@ -18,7 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
@@ -41,7 +41,7 @@ public class TestTreant extends TestSetUp {
 		this.treant.setChart(chart);
 		this.treant.setNodeStructure(nodeStructure);
 		init();
-		persistenceStrategy = PersistenceManager.getOrCreate("TEST").getDefaultPersistenceManager();
+		persistenceStrategy = KnowledgePersistenceManager.getOrCreate("TEST").getDefaultPersistenceManager();
 	}
 
 	@Test

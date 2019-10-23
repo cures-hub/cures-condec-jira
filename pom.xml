@@ -300,6 +300,11 @@
                                 </goals>
                             </execution>
                         </executions>
+                        <configuration>
+							<excludes>
+								<exclude>**/persistence/tables/*</exclude>
+							</excludes>
+						</configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -307,7 +312,7 @@
     </profiles>
 
     <properties>
-        <jira.version>8.3.0</jira.version>
+        <jira.version>8.5.0</jira.version>
         <amps.version>8.0.2</amps.version>
         <ao.version>3.1.6</ao.version>
         <jacoco-version>0.8.4</jacoco-version>

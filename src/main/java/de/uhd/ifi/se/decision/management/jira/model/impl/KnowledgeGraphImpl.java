@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +57,7 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	}
 
 	private void addNodes() {
-		List<DecisionKnowledgeElement> nodesList = PersistenceManager.getOrCreate(project.getProjectKey())
+		List<DecisionKnowledgeElement> nodesList = KnowledgePersistenceManager.getOrCreate(project.getProjectKey())
 				.getDecisionKnowledgeElements();
 		ListIterator<DecisionKnowledgeElement> iterator = nodesList.listIterator();
 		while (iterator.hasNext()) {
@@ -68,7 +68,7 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 
 	private void addEdges() {
 		for (Node node : this.vertexSet()) {
-			AbstractPersistenceManagerForSingleLocation manager = PersistenceManager
+			AbstractPersistenceManagerForSingleLocation manager = KnowledgePersistenceManager
 					.getOrCreate(project.getProjectKey()).getPersistenceManager(node.getDocumentationLocation());
 			List<Link> links = manager.getLinks(node.getId());
 			for (Link link : links) {
