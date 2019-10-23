@@ -20,7 +20,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestJiraIssuePersistence
 	@Test
 	public void testElementNonExistentUserNull() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		issueStrategy.updateDecisionKnowledgeElement(element, null);
+		assertFalse(issueStrategy.updateDecisionKnowledgeElement(element, null));
 	}
 
 	@Test

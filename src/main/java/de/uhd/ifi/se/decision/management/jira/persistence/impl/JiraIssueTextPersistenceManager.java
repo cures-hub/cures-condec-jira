@@ -493,15 +493,16 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		}
 	}
 
-	public static void createLinksForNonLinkedElementsForProject(String projectKey) {
+	public static boolean createLinksForNonLinkedElementsForProject(String projectKey) {
 		if (projectKey == null || projectKey.equals("")) {
-			return;
+			return false;
 		}
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
 			checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getJiraIssueId(),
 					LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()));
 		}
+		return true;
 	}
 
 	public static void checkIfSentenceHasAValidLink(long sentenceId, long issueId, LinkType linkType) {
@@ -554,9 +555,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * Migration function on button "Validate Sentence Database" Adds Link types to
 	 * "empty" links. Can be deleted in a future release
 	 */
-	public static void migrateArgumentTypesInLinks(String projectKey) {
+	public static boolean migrateArgumentTypesInLinks(String projectKey) {
 		if (projectKey == null || projectKey.equals("")) {
-			return;
+			return false;
 		}
 		PartOfJiraIssueTextInDatabase[] sentencesInProject = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey));
@@ -573,6 +574,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				}
 			}
 		}
+		return true;
 	}
 
 	public Issue createJIRAIssueFromSentenceObject(long aoId, ApplicationUser user) {

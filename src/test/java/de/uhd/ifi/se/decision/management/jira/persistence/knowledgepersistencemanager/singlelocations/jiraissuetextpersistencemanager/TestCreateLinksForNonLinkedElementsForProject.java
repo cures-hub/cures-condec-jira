@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencemanager.singlelocations.jiraissuetextpersistencemanager;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPers
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestCreateLinksForNonLinkedElementsForProject extends TestJiraIssueCommentPersistenceManagerSetUp {
+
 	@Test
 	@NonTransactional
 	public void testLinkAllUnlikedSentence() {
@@ -30,12 +32,12 @@ public class TestCreateLinksForNonLinkedElementsForProject extends TestJiraIssue
 	@Test
 	@NonTransactional
 	public void testProjectKeyNull() {
-		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForProject(null);
+		assertFalse(JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForProject(null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testProjectKeyEmpty() {
-		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForProject("");
+		assertFalse(JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForProject(""));
 	}
 }
