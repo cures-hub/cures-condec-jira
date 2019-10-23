@@ -84,7 +84,7 @@ public class TestTreant extends TestSetUp {
 		assertNotNull(treant.getNodeStructure());
 		// assertEquals("decision", treant.getNodeStructure().getHtmlClass());
 		assertEquals("WI: Do an interesting task", treant.getNodeStructure().getNodeContent().get("title"));
-		assertEquals(0, treant.getNodeStructure().getChildren().size());
+		assertEquals(1, treant.getNodeStructure().getChildren().size());
 	}
 
 	@Test
@@ -95,7 +95,7 @@ public class TestTreant extends TestSetUp {
 		assertNotNull(this.treant);
 		assertNotNull(treant.getNodeStructure());
 		assertEquals("WI: Do an interesting task", treant.getNodeStructure().getNodeContent().get("title"));
-		assertEquals(0, treant.getNodeStructure().getChildren().size());
+		assertEquals(1, treant.getNodeStructure().getChildren().size());
 	}
 
 	@Test
@@ -154,7 +154,7 @@ public class TestTreant extends TestSetUp {
 				.getDecisionKnowledgeElement(sentences.get(0).getJiraIssueId());
 		TreantNode nodeStructure = treant.createNodeStructure(element, null, 4, 0);
 		assertEquals(TreantNode.class, nodeStructure.getClass());
-		assertEquals(0, nodeStructure.getChildren().size());
+		assertEquals(1, nodeStructure.getChildren().size());
 	}
 
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {

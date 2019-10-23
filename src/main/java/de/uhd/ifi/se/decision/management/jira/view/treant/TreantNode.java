@@ -64,8 +64,7 @@ public class TreantNode {
 		this.htmlId = decisionKnowledgeElement.getId();
 		DecisionKnowledgeProject project = decisionKnowledgeElement.getProject();
 		this.link = new HashMap<String, String>();
-		if (decisionKnowledgeElement.getDescription() != null
-				&& !decisionKnowledgeElement.getDescription().equals("")) {
+		if (decisionKnowledgeElement.getDescription() != null && !decisionKnowledgeElement.getDescription().isBlank()) {
 			this.link.put("title", decisionKnowledgeElement.getDescription());
 		}
 		if (project.isIssueStrategy() && isHyperlinked) {

@@ -1,8 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.view.treant;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -11,17 +12,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterExtractorImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 
 /**
- * Creates Treant content
+ * Creates a tree data structure from the {@link KnowledgeGraph}. Uses the
+ * Treant.js framework.
  */
 @XmlRootElement(name = "treant")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -34,8 +35,10 @@ public class Treant {
 
 	private KnowledgeGraph graph;
 	private boolean isHyperlinked;
+	private Set<Link> traversedLinks;
 
 	public Treant() {
+		traversedLinks = new HashSet<Link>();
 	}
 
 	public Treant(String projectKey, String elementKey, int depth, boolean isHyperlinked) {
@@ -46,11 +49,14 @@ public class Treant {
 		this(projectKey, elementKey, depth, false);
 	}
 
+	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user) {
+		this(projectKey, elementKey, depth, query, user, false);
+	}
+
 	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user,
 			boolean isHyperlinked) {
-		FilterExtractor filterExtractor = new FilterExtractorImpl(projectKey, user, query);
-		filterExtractor.getAllElementsMatchingQuery();
-		this.graph = KnowledgeGraph.getOrCreate(projectKey);
+		this();
+		graph = KnowledgeGraph.getOrCreate(projectKey);
 
 		AbstractPersistenceManagerForSingleLocation persistenceManager;
 		if (elementKey.contains(":")) {
@@ -65,10 +71,6 @@ public class Treant {
 		this.setHyperlinked(isHyperlinked);
 	}
 
-	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user) {
-		this(projectKey, elementKey, depth, query, user, false);
-	}
-
 	public TreantNode createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth) {
 		if (element == null || element.getProject() == null) {
 			return new TreantNode();
@@ -77,9 +79,11 @@ public class Treant {
 		if (graph == null) {
 			graph = KnowledgeGraph.getOrCreate(element.getProject().getProjectKey());
 		}
-		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getAdjacentElementsAndLinks(element);
+		Set<Link> linksToTraverse = graph.edgesOf(element);
+		//linksToTraverse.removeAll(traversedLinks);
+
 		boolean isCollapsed = false;
-		if (currentDepth == depth && childrenAndLinks.size() != 0) {
+		if (currentDepth == depth && linksToTraverse.size() != 0) {
 			isCollapsed = true;
 		}
 
@@ -95,9 +99,15 @@ public class Treant {
 		}
 
 		List<TreantNode> nodes = new ArrayList<TreantNode>();
-		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-			TreantNode newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
-					currentDepth + 1);
+		for (Link currentLink : linksToTraverse) {
+			if (!traversedLinks.add(currentLink)) {
+				continue;
+			}
+			DecisionKnowledgeElement oppositeElement = currentLink.getOppositeElement(element);
+			if (oppositeElement.getType() == KnowledgeType.OTHER) {
+				continue;
+			}
+			TreantNode newChildNode = createNodeStructure(oppositeElement, currentLink, depth, currentDepth + 1);
 			nodes.add(newChildNode);
 		}
 		node.setChildren(nodes);
