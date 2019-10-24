@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -86,5 +87,38 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 			LOGGER.error("Error adding link to the graph: " + e.getMessage());
 		}
 		return isEdgeCreated;
+	}
+
+	@Override
+	public void updateNode(Node node) {
+		if(!this.containsVertex(node)){
+			this.addVertex(node);
+		} else {
+			Iterator<Node> iter = this.vertexSet().iterator();
+			while (iter.hasNext()) {
+				Node iterNode = iter.next();
+				/*  the node need to be updated. To update the node we remove the old element and add the new.
+					the ids need to be the same. the vertex set has no get function because of this we iterate the set
+				 */
+				if(iterNode.getId() == node.getId()) {
+					this.vertexSet().remove(iterNode);
+					this.vertexSet().add(node);
+					break;
+				}
+			}
+		}
+	}
+
+	@Override
+	public void updateLink(Link link) {
+		/*  If the links is not in the graph it will be added. If the link exists the link will be removed and the
+			new version will be added again.
+		*/
+		if(!containsEdge(link)) {
+			this.addEdge(link);
+		} else {
+			this.removeEdge(link.getSource(), link.getTarget());
+			this.addEdge(link);
+		}
 	}
 }

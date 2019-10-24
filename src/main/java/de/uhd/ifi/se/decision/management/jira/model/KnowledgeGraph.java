@@ -71,4 +71,16 @@ public interface KnowledgeGraph extends Graph<Node, Link> {
 	 * @see #getEdgeSupplier()
 	 */
 	boolean addEdge(Link link);
+
+	/**
+	 * Updates a node.If it is not in the graph else it will be added
+	 * @param node
+	 */
+	void updateNode(Node node);
+
+	/**
+	 * Updated a link. If it is not in the graph the link will be added
+	 * @param link
+	 */
+	void updateLink(Link link);
 }
