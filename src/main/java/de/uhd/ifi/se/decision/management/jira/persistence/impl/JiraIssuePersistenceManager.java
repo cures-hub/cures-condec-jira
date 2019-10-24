@@ -83,6 +83,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 					link.getSourceElement().getId(), typeId);
 			if (issueLink != null) {
 				issueLinkManager.removeIssueLink(issueLink, user);
+				KnowledgePersistenceManager.removeGraphEdge(link);
 				return true;
 			}
 		}
@@ -150,6 +151,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 					linkTypeId, (long) 0, user);
 			IssueLink issueLink = issueLinkManager.getIssueLink(link.getSourceElement().getId(),
 					link.getDestinationElement().getId(), linkTypeId);
+			KnowledgePersistenceManager.updateGraphLinks(link);
 			return issueLink.getId();
 		} catch (CreateException | NullPointerException e) {
 			LOGGER.error("Insertion of link into database failed. Message: " + e.getMessage());
@@ -212,7 +214,10 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 				return false;
 			}
 			ErrorCollection errorCollection = issueService.delete(user, result);
-			return !errorCollection.hasAnyErrors();
+			if(!errorCollection.hasAnyErrors()){
+				KnowledgePersistenceManager.removeGraphNode(elementToDeletion);
+				return true;
+			}
 		}
 		return false;
 	}
@@ -327,6 +332,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		element.setId(issue.getId());
 		element.setKey(issue.getKey());
 		KnowledgePersistenceManager.insertStatus(element);
+		KnowledgePersistenceManager.updateGraphNode(element);
 		return element;
 	}
 
@@ -402,6 +408,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 			}
 			return false;
 		}
+		KnowledgePersistenceManager.updateGraphNode(element);
 		issueService.update(user, result);
 		return true;
 	}

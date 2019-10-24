@@ -32,4 +32,9 @@ public class NodeImpl implements Node {
 		Node node = (Node) o;
 		return this.id == node.getId();
 	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
 }

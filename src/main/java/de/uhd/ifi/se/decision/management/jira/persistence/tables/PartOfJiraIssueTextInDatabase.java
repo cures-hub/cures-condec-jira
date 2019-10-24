@@ -3,6 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.persistence.tables;
 import java.sql.SQLException;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
 import net.java.ao.schema.PrimaryKey;
@@ -58,6 +61,8 @@ public interface PartOfJiraIssueTextInDatabase extends RawEntity<Long> {
 
 	static boolean deleteElement(PartOfJiraIssueTextInDatabase elementToDelete) {
 		try {
+			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(elementToDelete);
+			KnowledgePersistenceManager.removeGraphNode(sentence);
 			elementToDelete.getEntityManager().delete(elementToDelete);
 			return true;
 		} catch (SQLException e) {

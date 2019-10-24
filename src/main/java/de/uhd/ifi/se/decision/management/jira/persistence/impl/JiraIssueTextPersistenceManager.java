@@ -308,6 +308,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUETEXT);
 		}
 		KnowledgePersistenceManager.insertStatus(sentences.get(0));
+		KnowledgePersistenceManager.updateGraphNode(element);
 		return sentences.get(0);
 	}
 
@@ -327,6 +328,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				+ " into database from comment " + databaseEntry.getCommentId());
 
 		KnowledgePersistenceManager.insertStatus(changeEntryToNewDecision(databaseEntry));
+		KnowledgePersistenceManager.updateGraphNode(sentence);
 		return databaseEntry.getId();
 	}
 
@@ -417,11 +419,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				setParameters(sentence, databaseEntry);
 				databaseEntry.save();
 				isUpdated = true;
+				KnowledgePersistenceManager.updateGraphNode(sentence);
 			}
-		}
-		if (sentence.isValidated()) {
-			// OnlineClassificationTrainerImpl.getInstance().update(sentence);
-			(new OnlineClassificationTrainerImpl()).update(sentence);
 		}
 		return isUpdated;
 	}
@@ -460,6 +459,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		}
 		Link link = Link.instantiateDirectedLink(lastElement, sentence);
 		GenericLinkManager.insertLink(link, null);
+		KnowledgePersistenceManager.updateGraphLinks(link);
 		return true;
 	}
 
@@ -665,6 +665,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				long sentenceId = insertDecisionKnowledgeElement(sentence, null);
 				sentence = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
 						.getDecisionKnowledgeElement(sentenceId);
+				KnowledgePersistenceManager.updateGraphNode(sentence);
 			}
 			createSmartLinkForSentence(sentence);
 			knowledgeElementsInText.set(i, sentence);
@@ -685,12 +686,14 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				// Update AO entry
 				sentence.setId(parts.get(i).getId());
 				updateInDatabase(sentence);
+				KnowledgePersistenceManager.updateGraphNode(sentence);
 				parts.set(i, sentence);
 			} else {
 				// Create new AO entry
 				long sentenceId = insertDecisionKnowledgeElement(sentence, null);
 				sentence = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
 						.getDecisionKnowledgeElement(sentenceId);
+				KnowledgePersistenceManager.updateGraphNode(sentence);
 				parts.add(sentence);
 			}
 			createSmartLinkForSentence(sentence);

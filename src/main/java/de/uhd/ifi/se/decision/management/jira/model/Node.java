@@ -16,4 +16,8 @@ public interface Node {
 	long getId();
 
 	DocumentationLocation getDocumentationLocation();
+
+	boolean equals(Object o);
+
+	int hashCode();
 }

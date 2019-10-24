@@ -211,6 +211,7 @@ public class GenericLinkManager {
 		linkInDatabase.setType(link.getType());
 		linkInDatabase.save();
 		ACTIVE_OBJECTS.find(LinkInDatabase.class);
+		KnowledgePersistenceManager.updateGraphLinks(link);
 		return linkInDatabase.getId();
 	}
 
