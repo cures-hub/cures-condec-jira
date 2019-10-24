@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.eventlistener.jiraissuetextextrac
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import org.junit.Test;
 
 import com.atlassian.jira.event.issue.IssueEvent;

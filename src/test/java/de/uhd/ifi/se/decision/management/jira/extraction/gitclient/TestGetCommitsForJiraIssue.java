@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
@@ -18,7 +17,6 @@ public class TestGetCommitsForJiraIssue extends TestSetUpGit {
 		List<RevCommit> commits = gitClient.getCommits(null);
 		assertEquals(0, commits.size());
 	}
-
 
 	@Test
 	public void testJiraIssue() {

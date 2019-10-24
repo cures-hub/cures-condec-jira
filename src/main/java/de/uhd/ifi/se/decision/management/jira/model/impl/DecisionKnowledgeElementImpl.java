@@ -19,20 +19,18 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
 
 /**
  * Model class for decision knowledge elements
  */
-public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
+public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKnowledgeElement {
 
-	private long id;
 	private String summary;
 	private String description;
 	protected KnowledgeType type;
-	protected DocumentationLocation documentationLocation;
-	private DecisionKnowledgeProject project;
 	private String key;
 	private Date created;
 	private Date closed;
@@ -57,7 +55,8 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	public DecisionKnowledgeElementImpl(long id, String projectKey, String documentationLocation) {
 		this.id = id;
 		this.project = new DecisionKnowledgeProjectImpl(projectKey);
-		this.documentationLocation = DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation);
+		this.documentationLocation = DocumentationLocation
+				.getDocumentationLocationFromIdentifier(documentationLocation);
 	}
 
 	public DecisionKnowledgeElementImpl(long id, String summary, String description, String type, String projectKey,
@@ -76,10 +75,10 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 			this.id = issue.getId();
 			this.summary = issue.getSummary();
 			this.description = issue.getDescription();
-			if(issue.getIssueType() != null) {
+			if (issue.getIssueType() != null) {
 				this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
 			}
-			if(issue.getProjectObject() != null) {
+			if (issue.getProjectObject() != null) {
 				this.project = new DecisionKnowledgeProjectImpl(issue.getProjectObject().getKey());
 			}
 			this.key = issue.getKey();
@@ -203,7 +202,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 
 	@Override
 	public List<Link> getInwardLinks() {
-		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(this);
+		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager.getPersistenceManager(this);
 		return persistenceManager.getInwardLinks(this);
 	}
 
@@ -265,14 +264,18 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 		}
 		DecisionKnowledgeElement element = (DecisionKnowledgeElement) object;
 		return this.id == element.getId()
-		/* At least compare also the key, otherwise comparison will not work for
-		elements with same/not initialized ID.
-		 */
+				/*
+				 * At least compare also the key, otherwise comparison will not work for
+				 * elements with same/not initialized ID.
+				 */
 				&& element.getKey().equals(getKey());
 	}
 
 	@Override
 	public Date getCreated() {
+		if (created == null) {
+			return new Date();
+		}
 		return this.created;
 	}
 
@@ -293,11 +296,11 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 
 	@Override
 	public boolean existsInDatabase() {
-		DecisionKnowledgeElement elementInDatabase = AbstractPersistenceManager.getDecisionKnowledgeElement(id,
+		DecisionKnowledgeElement elementInDatabase = KnowledgePersistenceManager.getDecisionKnowledgeElement(id,
 				documentationLocation);
 		return elementInDatabase.getId() > 0;
 	}
-	
+
 	@Override
 	public String toString() {
 		return this.getDescription();

@@ -31,35 +31,39 @@ public class TestGetTreeViewer extends TestSetUp {
 	}
 
 	@Test
-	public void testProjectKeyNullKnowledgeTypeNull() throws GenericEntityException {
+	@NonTransactional
+	public void testProjectKeyNullKnowledgeTypeNull() {
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", INVALID_PROJECTKEY))
 				.build().getEntity(), viewRest.getTreeViewer(null, null).getEntity());
 	}
 
 	@Test
-	public void testProjectKeyNonExistentKnowledgeTypeNull() throws GenericEntityException {
+	@NonTransactional
+	public void testProjectKeyNonExistentKnowledgeTypeNull() {
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", INVALID_PROJECTKEY))
 				.build().getEntity(), viewRest.getTreeViewer("NotTEST", null).getEntity());
 	}
 
 	@Test
 	@NonTransactional
-	public void testProjectKeyExistentKnowledgeTypeNull() throws GenericEntityException {
+	public void testProjectKeyExistentKnowledgeTypeNull() {
 		assertEquals(200, viewRest.getTreeViewer("TEST", null).getStatus());
 	}
 
 	@Test
-	public void testProjectKeyExistentKnowledgeTypeEmpty() throws GenericEntityException {
+	@NonTransactional
+	public void testProjectKeyExistentKnowledgeTypeEmpty() {
 		assertEquals(200, viewRest.getTreeViewer("TEST", "").getStatus());
 	}
 
 	@Test
 	@NonTransactional
-	public void testProjectKeyExistentKnowledgeTypeFilled() throws GenericEntityException {
+	public void testProjectKeyExistentKnowledgeTypeFilled() {
 		assertEquals(200, viewRest.getTreeViewer("TEST", "Issue").getStatus());
 	}
 
 	@Test
+	@NonTransactional
 	public void testProjectKeyExistentWithNoElements() throws GenericEntityException {
 		ProjectManager projectManager = ComponentAccessor.getProjectManager();
 		Project project = new MockProject(2, "TESTNO");

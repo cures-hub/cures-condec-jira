@@ -19,10 +19,12 @@ public class MockIssueLink implements IssueLink {
 	private long sourceId;
 	private long destinationId;
 	private long sequence;
+	private long linkId;
 
-	public MockIssueLink(long sourceId, long destinationId) {
+	public MockIssueLink(long sourceId, long destinationId, long linkId) {
 		this.sourceId = sourceId;
 		this.destinationId = destinationId;
+		this.linkId = linkId;
 	}
 
 	@Override
@@ -52,7 +54,7 @@ public class MockIssueLink implements IssueLink {
 
 	@Override
 	public Long getDestinationId() {
-		return null;
+		return destinationId;
 	}
 
 	@Override
@@ -73,7 +75,7 @@ public class MockIssueLink implements IssueLink {
 
 	@Override
 	public Long getId() {
-		return (long) 1;
+		return linkId;
 	}
 
 	@Override
@@ -97,7 +99,7 @@ public class MockIssueLink implements IssueLink {
 
 	@Override
 	public Long getSourceId() {
-		return null;
+		return sourceId;
 	}
 
 	@Override

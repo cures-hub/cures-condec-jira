@@ -22,7 +22,7 @@ import com.atlassian.query.Query;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 
 public class CommentMetricCalculator {
 

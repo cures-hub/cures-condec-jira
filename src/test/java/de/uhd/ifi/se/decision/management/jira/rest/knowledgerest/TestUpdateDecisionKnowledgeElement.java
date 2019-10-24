@@ -25,8 +25,8 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import net.java.ao.test.jdbc.NonTransactional;
 

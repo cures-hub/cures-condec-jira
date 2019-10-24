@@ -29,6 +29,8 @@
 		this.extendedKnowledgeTypes = getExtendedKnowledgeTypes(this.knowledgeTypes);
         this.knowledgeStatus = ["Idea","Discarded", "Decided","Rejected", "Undefined"];
         this.issueStatus = ["Resolved", "Unresolved"];
+
+        this.extendedStatus = getExtendedStatus();
 	};
 
 	ConDecAPI.prototype.checkIfProjectKeyIsValid = function checkIfProjectKeyIsValid() {
@@ -117,9 +119,9 @@
 			"type" : type,
 			"projectKey" : projectKey,
 			"description" : description,
-			"documentationLocation" : documentationLocation,
+			"documentationLocation" : documentationLocation
 		};
-
+        console.log(newElement);
 		postJSON(AJS.contextPath()
 				+ "/rest/decisions/latest/decisions/createDecisionKnowledgeElement.json?idOfExistingElement="
 				+ idOfExistingElement + "&documentationLocationOfExistingElement="
@@ -454,7 +456,7 @@
 			"createdLatest" : -1,
 			"documentationLocations" : [ "" ],
 			"selectedJiraIssueTypes" : [ "" ],
-            "selectedIssueStatus" : this.knowledgeStatus
+            "selectedIssueStatus" : this.extendedStatus
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
 				filterSettings, function(error, vis) {
@@ -476,7 +478,7 @@
 			"createdLatest" : createdAfter,
 			"documentationLocations" : documentationLocations,
 			"selectedJiraIssueTypes" : selectedJiraIssueTypes,
-            "selectedIssueStatus": this.knowledgeStatus
+            "selectedIssueStatus": this.extendedStatus
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
 				filterSettings, function(error, vis) {
@@ -1136,6 +1138,14 @@
 			body : message
 		});
 	}
+
+	function getExtendedStatus() {
+	    var extendedStatus = this.knowledgeStatus;
+	    for(var issueStat in this.issueStatus) {
+	        extendedStatus.push(issueStat);
+        }
+	    return extendedStatus
+    }
 
 	// export ConDecAPI
 	global.conDecAPI = new ConDecAPI();

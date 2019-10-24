@@ -6,7 +6,9 @@ import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeCl
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smile.validation.*;
@@ -176,7 +178,7 @@ public class OnlineClassificationTrainerImpl extends ClassificationTrainerARFF {
         defaultMeasurements.add(new Recall());
 
         // load validated Jira Issue texts
-        JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
+        JiraIssueTextPersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueTextManager();
         List<DecisionKnowledgeElement> partsOfText = manager.getUserValidatedPartsOfText(projectKey);
         return evaluateClassifier(defaultMeasurements, partsOfText);
     }

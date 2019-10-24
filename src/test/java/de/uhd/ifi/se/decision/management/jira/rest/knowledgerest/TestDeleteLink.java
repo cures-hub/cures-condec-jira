@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,7 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -70,9 +71,7 @@ public class TestDeleteLink extends TestSetUp {
 
 	@Test
 	public void testProjectKeyFilledRequestFilledLinkNotExistentInDatabaseDocumentationLocationMixed() {
-		Link link = new LinkImpl();
-		link.setSourceElement(1, "s");
-		link.setDestinationElement(15, "i");
+		Link link = new LinkImpl(1,15,DocumentationLocation.JIRAISSUETEXT, DocumentationLocation.JIRAISSUE);
 		link.setType("contain");
 		assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
 				knowledgeRest.deleteLink("TEST", request, link).getStatus());
@@ -80,9 +79,7 @@ public class TestDeleteLink extends TestSetUp {
 
 	@Test
 	public void testProjectKeyFilledRequestFilledLinkFilledDocumentationLocationJiraIssueComments() {
-		Link link = new LinkImpl();
-		link.setSourceElement(14, "s");
-		link.setDestinationElement(15, "s");
+		Link link = new LinkImpl(14,15, DocumentationLocation.JIRAISSUETEXT, DocumentationLocation.JIRAISSUETEXT);
 		link.setType("contain");
 		assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
 				knowledgeRest.deleteLink("TEST", request, link).getStatus());
@@ -123,9 +120,7 @@ public class TestDeleteLink extends TestSetUp {
 
 	@Test
 	public void testProjectKeyNullRequestNullLinkFilled() {
-		Link link = new LinkImpl();
-		link.setSourceElement(14, "s");
-		link.setDestinationElement(15, "s");
+		Link link = new LinkImpl(14,15, DocumentationLocation.JIRAISSUETEXT, DocumentationLocation.JIRAISSUETEXT);
 		link.setType("contain");
 		assertEquals(Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error", DELETION_ERROR))
 				.build().getEntity(), knowledgeRest.deleteLink(null, null, link).getEntity());

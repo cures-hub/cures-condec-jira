@@ -45,7 +45,7 @@
 			var description = inputDescriptionField.value;
 			var type = selectTypeField.value;
 			var documentationLocation = selectLocationField.value;
-			if (idOfParentElement == "") {
+			if (idOfParentElement === "") {
 				conDecAPI.createUnlinkedDecisionKnowledgeElement(summary, description, type, documentationLocation, function(id) {
 					conDecObservable.notify();
 				})
@@ -970,7 +970,6 @@
 						"<li>#Comments: "+issue.jiraIssueMetrics.COUNT_COMMENTS+"</li>" +
 						"<li>#Decision Knowledge: "+issue.jiraIssueMetrics.COUNT_DECISION_KNOWLEDGE+"</li>" +
 						"<li>Days Completion: "+issue.jiraIssueMetrics.DAYS_COMPLETION+"</li>" +
-						"<li>#Comments: "+issue.jiraIssueMetrics.COUNT_COMMENTS+"</li>" +
 						"<li>Exp. Reporter: "+issue.jiraIssueMetrics.EXPERIENCE_REPORTER+"</li>" +
 						"<li>Exp. Resolver: "+issue.jiraIssueMetrics.EXPERIENCE_RESOLVER+"</li>" +
 						"<li>Priority: "+issue.jiraIssueMetrics.PRIORITY+"</li>" +

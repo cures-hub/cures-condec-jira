@@ -19,8 +19,8 @@ import com.atlassian.jira.util.collect.MapBuilder;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 
 /**
  * Triggers the extraction of decision knowledge elements and their integration

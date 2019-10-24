@@ -23,16 +23,17 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestDecisionKnowledgeReport extends TestSetUp {
 
 	private DecisionKnowledgeReport report;
-	private AbstractPersistenceManager persistenceStrategy;
+	private AbstractPersistenceManagerForSingleLocation persistenceStrategy;
 	private List<PartOfJiraIssueText> sentences;
 
 	@Before
@@ -46,7 +47,7 @@ public class TestDecisionKnowledgeReport extends TestSetUp {
 		params.put("issueType", "WI");
 		this.report.validate(pas, params);
 
-		persistenceStrategy = AbstractPersistenceManager.getDefaultPersistenceStrategy("TEST");
+		persistenceStrategy = KnowledgePersistenceManager.getOrCreate("TEST").getDefaultPersistenceManager();
 	}
 
 	private MutableIssue createCommentStructureWithTestIssue(String text) {

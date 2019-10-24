@@ -1,81 +1,67 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestGitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import java.util.ArrayList;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class TestConfigPersistenceManager extends TestSetUpGit {
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestGitClient;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+
+/**
+ * Test class for the persistence of the plugin settings. The plugin settings
+ * are mocked in the {@link MockPluginSettings} class.
+ * 
+ * @see MockPluginSettings
+ * @see MockPluginSettingsFactory
+ * 
+ * @issue How can we enable that settings can be set during testing?
+ * @decision Implement MockPluginSettings and MockPluginSettingsFactory classes
+ *           to enable that settings can be set during testing!
+ */
+public class TestConfigPersistenceManager extends TestSetUp {
 
 	@BeforeClass
 	public static void setUpBeforeClass() {
 		init();
 	}
 
-	// IsIssueStrategy
+	// test global (=across project) configuration
 	@Test
-	public void testIsIssueStrategyInvalid() {
-		assertFalse(ConfigPersistenceManager.isIssueStrategy(null));
+	public void testSetGlobalValue() {
+		ConfigPersistenceManager.setValue("isActivated", "true");
+		assertEquals("true", ConfigPersistenceManager.getValue("isActivated"));
 	}
 
-	@Test
-	public void testIsIssueStrategyOk() {
-		assertTrue(ConfigPersistenceManager.isIssueStrategy("TEST"));
-	}
-
-	// SetIssueStrategy
+	// configure persistence in Jira issues
 	@Test
 	public void testSetIssueStrategyNullFalse() {
 		ConfigPersistenceManager.setIssueStrategy(null, false);
-		assertTrue(ConfigPersistenceManager.isIssueStrategy("TEST"));
+		assertFalse(ConfigPersistenceManager.isIssueStrategy(null));
 	}
 
-	@Test
-	public void testSetIssueStrategyNullTrue() {
-		ConfigPersistenceManager.setIssueStrategy(null, true);
-		assertTrue(ConfigPersistenceManager.isIssueStrategy("TEST"));
-	}
-
-	// @issue: The settings are always true, even if they were set to false before.
-	// Why?
 	@Test
 	public void testSetIssueStrategyValidTrue() {
 		ConfigPersistenceManager.setIssueStrategy("TEST", true);
 		assertTrue(ConfigPersistenceManager.isIssueStrategy("TEST"));
 	}
 
-	// IsActivated
-	@Test
-	public void testIsActivatedInvalid() {
-		assertTrue(ConfigPersistenceManager.isActivated("InvalidKey"));
-	}
-
-	@Test
-	public void testIsActivatedOk() {
-		assertTrue(ConfigPersistenceManager.isActivated("TEST"));
-	}
-
-	// SetActivated
+	// plugin activation
 	@Test
 	public void testSetActivatedNullFalse() {
-		ConfigPersistenceManager.setActivated(null, false);
-		assertTrue(ConfigPersistenceManager.isActivated("TEST"));
-	}
-
-	@Test
-	public void testSetActivateNullTrue() {
-		ConfigPersistenceManager.setActivated(null, true);
-		assertTrue(ConfigPersistenceManager.isActivated("TEST"));
+		ConfigPersistenceManager.setActivated("TEST", false);
+		assertFalse(ConfigPersistenceManager.isActivated("TEST"));
 	}
 
 	@Test
@@ -84,49 +70,15 @@ public class TestConfigPersistenceManager extends TestSetUpGit {
 		assertTrue(ConfigPersistenceManager.isActivated("TEST"));
 	}
 
-	// IsKnowledgeExtractedFromGit
-	@Test
-	public void testIsKnowledgeExtractedNull() {
-		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromGit(null));
-	}
-
+	// knowledge extraction from git
 	@Test
 	public void testIsKnowledgeExtractedFilled() {
-		assertTrue(ConfigPersistenceManager.isKnowledgeExtractedFromGit("TEST"));
-	}
-
-	// SetKnowledgeExtractedFromGit
-	@Test
-	public void testSetKnowledgeExtractedNullFalse() {
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit(null, false);
 		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromGit(null));
-	}
 
-	@Test
-	public void testSetKnowledgeExtractedNullTrue() {
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit(null, true);
-		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromGit(null));
-	}
-
-	@Test
-	public void testSetKnowledgeExtractedInvalidFalse() {
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit("NotTEST", false);
-		assertTrue(ConfigPersistenceManager.isKnowledgeExtractedFromGit("NotTEST"));
-	}
-
-	@Test
-	public void testSetKnowledgeExtractedInvalidTrue() {
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit("NotTEST", true);
-		assertTrue(ConfigPersistenceManager.isKnowledgeExtractedFromGit("NotTEST"));
-	}
-
-	@Test
-	public void testSetKnowledgeExtractedFilledFalse() {
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", false);
-	}
+		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromGit("TEST"));
 
-	@Test
-	public void testSetKnowledgeExtractedFilledTrue() {
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", true);
 		assertTrue(ConfigPersistenceManager.isKnowledgeExtractedFromGit("TEST"));
 	}
@@ -139,7 +91,8 @@ public class TestConfigPersistenceManager extends TestSetUpGit {
 
 	@Test
 	public void testIsKnowledgeExtractedIssuesKeyFilled() {
-		assertTrue(ConfigPersistenceManager.isKnowledgeExtractedFromIssues("TEST"));
+		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", true);
+		assertTrue(ConfigPersistenceManager.isKnowledgeExtractedFromGit("TEST"));
 	}
 
 	// isKnowledgeTypeEnabled
@@ -150,6 +103,7 @@ public class TestConfigPersistenceManager extends TestSetUpGit {
 
 	@Test
 	public void testIsKnowledgeTypeEnabledKeyFilledTypeFilled() {
+		ConfigPersistenceManager.setKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString(), true);
 		assertTrue(ConfigPersistenceManager.isKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString()));
 	}
 
@@ -270,11 +224,6 @@ public class TestConfigPersistenceManager extends TestSetUpGit {
 	}
 
 	@Test
-	public void testGetWebhookUrlFilled() {
-		assertEquals("http://true", ConfigPersistenceManager.getWebhookUrl("TEST"));
-	}
-
-	@Test
 	public void testSetWebhookSecretNullNull() {
 		ConfigPersistenceManager.setWebhookSecret(null, null);
 		assertEquals("", ConfigPersistenceManager.getWebhookSecret(null));
@@ -293,18 +242,13 @@ public class TestConfigPersistenceManager extends TestSetUpGit {
 
 	@Test
 	public void testSetWebhookSecretFilledFilled() {
-		ConfigPersistenceManager.setWebhookSecret("TEST", "http://true");
-		assertEquals("true", ConfigPersistenceManager.getWebhookSecret("TEST"));
+		ConfigPersistenceManager.setWebhookSecret("TEST", "myhoneybee");
+		assertEquals("myhoneybee", ConfigPersistenceManager.getWebhookSecret("TEST"));
 	}
 
 	@Test
 	public void testGetWebhookSecretNull() {
 		assertEquals("", ConfigPersistenceManager.getWebhookSecret(null));
-	}
-
-	@Test
-	public void testGetWebhookSecretFilled() {
-		assertEquals("true", ConfigPersistenceManager.getWebhookSecret("TEST"));
 	}
 
 	@Test
@@ -342,6 +286,7 @@ public class TestConfigPersistenceManager extends TestSetUpGit {
 
 	@Test
 	public void testIsWebhookEnabledFilled() {
+		ConfigPersistenceManager.setWebhookEnabled("TEST", true);
 		assertTrue(ConfigPersistenceManager.isWebhookEnabled("TEST"));
 	}
 
@@ -449,38 +394,43 @@ public class TestConfigPersistenceManager extends TestSetUpGit {
 
 	@Test
 	public void testIsWebhookTypeEnabledFilledFilled() {
+		ConfigPersistenceManager.setWebhookType("TEST", "Task", true);
 		assertTrue(ConfigPersistenceManager.isWebhookTypeEnabled("TEST", "Task"));
 	}
 
 	@Test
 	public void testGetEnabledWebhookTypesNull() {
-		assertEquals(0, ConfigPersistenceManager.getEnabledWebhookTypes(null).size(), 0.0);
+		assertEquals(0, ConfigPersistenceManager.getEnabledWebhookTypes(null).size());
 	}
 
 	@Test
 	public void testGetEnabledWebhookTypesEmpty() {
-		assertEquals(0, ConfigPersistenceManager.getEnabledWebhookTypes("").size(), 0.0);
+		assertEquals(0, ConfigPersistenceManager.getEnabledWebhookTypes("").size());
 	}
 
 	@Test
 	public void testGetEnabledWebhookTypesFilled() {
-		assertEquals(13, ConfigPersistenceManager.getEnabledWebhookTypes("TEST").size(), 0.0);
+		assertEquals(13, ConfigPersistenceManager.getEnabledWebhookTypes("TEST").size());
 	}
 
 	@Test
 	public void testGetGitUri() {
+		ConfigPersistenceManager.setGitUri("TEST", TestGitClient.GIT_URI);
 		assertEquals(TestGitClient.GIT_URI, ConfigPersistenceManager.getGitUri("TEST"));
 	}
 
-	//@todo fix this test, it always returns a true value
 	@Test
 	public void testSetAndGetReleaseNoteMapping() {
-		ArrayList<String> input = new ArrayList<String>();
-		input.add("true");
-//		input.add("someOtherString");
+		List<String> input = new ArrayList<String>();
+		input.add("someOtherString");
 		ReleaseNoteCategory category = ReleaseNoteCategory.IMPROVEMENTS;
 		ConfigPersistenceManager.setReleaseNoteMapping("TEST", category, input);
 		assertEquals(input, ConfigPersistenceManager.getReleaseNoteMapping("TEST", category));
+	}
 
+	@AfterClass
+	public static void tearDown() {
+		// reset plugin settings to default settings
+		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}
 }
