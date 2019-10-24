@@ -76,10 +76,12 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		DecisionKnowledgeElement source = link.getSourceElement();
 		if (!containsVertex(source)) {
 			addVertex(source);
+			System.out.println("Source node was created in graph");
 		}
 		DecisionKnowledgeElement destination = link.getDestinationElement();
 		if (!containsVertex(destination)) {
 			addVertex(destination);
+			System.out.println("Destination node was created in graph");
 		}
 		try {
 			isEdgeCreated = this.addEdge(source, destination, link);
@@ -106,19 +108,6 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 					break;
 				}
 			}
-		}
-	}
-
-	@Override
-	public void updateLink(Link link) {
-		/*  If the links is not in the graph it will be added. If the link exists the link will be removed and the
-			new version will be added again.
-		*/
-		if(!containsEdge(link)) {
-			this.addEdge(link);
-		} else {
-			this.removeEdge(link.getSource(), link.getTarget());
-			this.addEdge(link);
 		}
 	}
 }

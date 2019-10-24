@@ -57,8 +57,8 @@ public class KnowledgeRest {
 					"Decision knowledge element could not be received due to a bad request (element id or project key was missing)."))
 					.build();
 		}
-		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getPersistenceManager(documentationLocation);
+		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(projectKey).getPersistenceManager(documentationLocation);
 		DecisionKnowledgeElement decisionKnowledgeElement = persistenceManager.getDecisionKnowledgeElement(id);
 		if (decisionKnowledgeElement != null) {
 			return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
@@ -77,8 +77,8 @@ public class KnowledgeRest {
 					"Linked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
 					.build();
 		}
-		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getPersistenceManager(documentationLocation);
+		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(projectKey).getPersistenceManager(documentationLocation);
 		List<DecisionKnowledgeElement> linkedDecisionKnowledgeElements = persistenceManager.getAdjacentElements(id);
 		return Response.ok(linkedDecisionKnowledgeElements).build();
 	}
@@ -93,8 +93,8 @@ public class KnowledgeRest {
 					"Unlinked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
 					.build();
 		}
-		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getPersistenceManager(documentationLocation);
+		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(projectKey).getPersistenceManager(documentationLocation);
 		List<DecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = persistenceManager.getUnlinkedElements(id);
 		return Response.ok(unlinkedDecisionKnowledgeElements).build();
 	}
@@ -252,10 +252,10 @@ public class KnowledgeRest {
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(idOfParent, projectKey,
-				documentationLocationOfParent);
-		DecisionKnowledgeElement childElement = new DecisionKnowledgeElementImpl(idOfChild, projectKey,
-				documentationLocationOfChild);
+		DecisionKnowledgeElement parentElement = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getPersistenceManager(documentationLocationOfParent).getDecisionKnowledgeElement(idOfParent);
+		DecisionKnowledgeElement childElement = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getPersistenceManager(documentationLocationOfChild).getDecisionKnowledgeElement(idOfChild);
 
 		Link link;
 		if (linkTypeName == null) {
@@ -283,6 +283,9 @@ public class KnowledgeRest {
 					.build();
 		}
 		link.getSourceElement().setProject(projectKey);
+		long linkId = KnowledgePersistenceManager.getLinkId(link);
+		link.setId(linkId);
+		
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		boolean isDeleted = KnowledgePersistenceManager.deleteLink(link, user);
 

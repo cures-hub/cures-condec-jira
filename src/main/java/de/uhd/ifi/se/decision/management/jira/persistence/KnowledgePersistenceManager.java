@@ -116,6 +116,7 @@ public interface KnowledgePersistenceManager {
 	 * @return internal database id of inserted link, zero if insertion failed.
 	 */
 	static long insertLink(Link link, ApplicationUser user) {
+		System.out.println("insertLink method");
 		String projectKey = link.getSourceElement().getProject().getProjectKey();
 
 		if (link.containsUnknownDocumentationLocation()) {
@@ -125,9 +126,11 @@ public interface KnowledgePersistenceManager {
 		long databaseId = 0;
 
 		if (link.isIssueLink()) {
-			databaseId = JiraIssuePersistenceManager.insertLink(link, user);
+			databaseId = JiraIssuePersistenceManager.insertLink(link, user);			
 			if (databaseId > 0) {
-				KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
+				link.setId(databaseId);
+				boolean created = KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
+				System.out.println("Link was created? " + created);
 			}
 			return databaseId;
 		}
@@ -138,8 +141,11 @@ public interface KnowledgePersistenceManager {
 		}
 		databaseId = GenericLinkManager.insertLink(link, user);
 		if (databaseId > 0) {
-			KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
+			link.setId(databaseId);
+			boolean created = KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
+			System.out.println("Link was created? " + created);
 		}
+		System.out.println("insertLink method end");
 		return databaseId;
 	}
 
@@ -209,19 +215,29 @@ public interface KnowledgePersistenceManager {
 		if (link.containsUnknownDocumentationLocation()) {
 			link.setDefaultDocumentationLocation(projectKey);
 		}
-		KnowledgeGraph.getOrCreate(projectKey).removeEdge(link);
-
+		
+		// why are the following nodes null?
+		System.out.println(link.getTarget());
+		System.out.println(link.getDestinationElement());
+		System.out.println(link.getSource());
+		System.out.println(link.getSourceElement());
+		boolean removed = KnowledgeGraph.getOrCreate(projectKey).removeEdge(link);
+		System.out.println("Link was removed? " + removed);
 		boolean isDeleted = false;
 		if (link.isIssueLink()) {
 			isDeleted = JiraIssuePersistenceManager.deleteLink(link, user);
 			if (!isDeleted) {
 				isDeleted = JiraIssuePersistenceManager.deleteLink(link.flip(), user);
+				removed = KnowledgeGraph.getOrCreate(projectKey).removeEdge(link.flip());
+				System.out.println("Link was flipped removed? " + removed);
 			}
 			return isDeleted;
 		}
 		isDeleted = GenericLinkManager.deleteLink(link);
 		if (!isDeleted) {
 			isDeleted = GenericLinkManager.deleteLink(link.flip());
+			removed = KnowledgeGraph.getOrCreate(projectKey).removeEdge(link.flip());
+			System.out.println("Link was flipped removed? " + removed);
 		}
 
 		if (isDeleted && ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
@@ -390,19 +406,9 @@ public interface KnowledgePersistenceManager {
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(element.getProject().getProjectKey());
 		graph.updateNode(element);
 	}
-
-	static void updateGraphLinks(Link link) {
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(link.getDestinationElement().getProject().getProjectKey());
-		graph.updateLink(link);
-	}
-
+	
 	static void removeGraphNode(DecisionKnowledgeElement element) {
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(element.getProject().getProjectKey());
 		graph.removeVertex(element);
-	}
-
-	static void removeGraphEdge(Link link) {
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(link.getDestinationElement().getProject().getProjectKey());
-		graph.removeEdge(link);
 	}
 }

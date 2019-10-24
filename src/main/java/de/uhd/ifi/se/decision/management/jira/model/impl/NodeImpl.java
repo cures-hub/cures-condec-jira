@@ -35,6 +35,11 @@ public class NodeImpl implements Node {
 
 	@Override
 	public int hashCode() {
-		return super.hashCode();
+		return toString().hashCode();
+	}
+	
+	@Override
+	public String toString() {
+		return id + "";
 	}
 }

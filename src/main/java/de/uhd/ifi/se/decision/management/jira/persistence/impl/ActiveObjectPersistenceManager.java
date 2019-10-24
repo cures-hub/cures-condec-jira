@@ -63,7 +63,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 			return false;
 		}
 		new WebhookConnector(projectKey).sendElementChanges(element);
-		KnowledgePersistenceManager.removeGraphNode(element);
+//		KnowledgePersistenceManager.removeGraphNode(element);
 		return deleteDecisionKnowledgeElement(element.getId(), user);
 	}
 
@@ -199,7 +199,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 		new WebhookConnector(projectKey).sendElementChanges(element);
 		element.setDocumentationLocation(DocumentationLocation.ACTIVEOBJECT);
 		KnowledgePersistenceManager.insertStatus(element);
-		KnowledgePersistenceManager.updateGraphNode(element);
+//		KnowledgePersistenceManager.updateGraphNode(element);
 		return element;
 	}
 
@@ -219,7 +219,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 				setParameters(element, databaseEntry);
 				databaseEntry.save();
 				new WebhookConnector(projectKey).sendElementChanges(element);
-				KnowledgePersistenceManager.updateGraphNode(element);
+//				KnowledgePersistenceManager.updateGraphNode(element);
 				return true;
 			}
 		}
@@ -236,7 +236,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 				setParameters(element, databaseEntry);
 				databaseEntry.save();
 				new WebhookConnector(projectKey).sendElementChanges(element);
-				KnowledgePersistenceManager.updateGraphNode(element);
+//				KnowledgePersistenceManager.updateGraphNode(element);
 				return true;
 			}
 		}
