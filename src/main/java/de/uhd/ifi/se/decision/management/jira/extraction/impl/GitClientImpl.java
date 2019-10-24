@@ -409,7 +409,7 @@ public class GitClientImpl implements GitClient {
 			 * @decision Throw exception!
 			 * @pro this is the best practice, just look at most libraries.
 			 */
-			return (List<RevCommit>) null;
+			return null;
 		}
 		return getFeatureBranchCommits(featureBranch);
 	}
@@ -542,7 +542,7 @@ public class GitClientImpl implements GitClient {
 	 */
 	@Override
 	public boolean checkoutFeatureBranch(Ref featureBranch) {
-		String branchNameComponents[] = featureBranch.getName().split("/");
+		String[] branchNameComponents = featureBranch.getName().split("/");
 		String branchShortName = branchNameComponents[branchNameComponents.length - 1];
 		File directory = new File(fsManager.prepareBranchDirectory(branchShortName));
 
@@ -668,7 +668,7 @@ public class GitClientImpl implements GitClient {
 		}
 
 		File directory;
-		String branchNameComponents[] = branch.getName().split("/");
+		String[] branchNameComponents = branch.getName().split("/");
 		String branchShortName = branchNameComponents[branchNameComponents.length - 1];
 		boolean canReleaseRepoDirectory = false;
 

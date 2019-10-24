@@ -8,7 +8,6 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.UserDetails;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import org.hsqldb.User;
 
 public class CommitMessageToCommentTranscriber {
     private String commitMessage;

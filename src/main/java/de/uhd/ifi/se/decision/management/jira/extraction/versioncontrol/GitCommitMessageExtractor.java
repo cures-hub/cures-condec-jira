@@ -1,23 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
 
-import com.atlassian.jira.issue.Issue;
-import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.DecisionKnowledgeClassifierImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
-import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
-import de.uhd.ifi.se.decision.management.jira.model.text.impl.TextSplitterImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Extracts decision knowledge elements from the message of a single git commit.
@@ -166,7 +159,7 @@ public class GitCommitMessageExtractor {
     private DecisionKnowledgeElement createElement(int start, String rationaleType, String rationaleText, int end) {
         return new DecisionKnowledgeElementImpl(0, getSummary(rationaleText), getDescription(rationaleText),
                 rationaleType.toUpperCase(), "" // unknown, not needed at the moment
-                , COMMIT_PLACEHOLDER + String.valueOf(start) + ":" + String.valueOf(end), DocumentationLocation.COMMIT);
+                , COMMIT_PLACEHOLDER + start + ":" + end, DocumentationLocation.COMMIT);
     }
 
     private DecisionKnowledgeElement createElement(int start, KnowledgeType rationaleType,
@@ -177,7 +170,7 @@ public class GitCommitMessageExtractor {
                 , getDescription(rationaleText)
                 , rationaleType
                 , "" // unknown, not needed at the moment
-                , COMMIT_PLACEHOLDER + String.valueOf(start) + ":" + String.valueOf(end)
+                , COMMIT_PLACEHOLDER + start + ":" + end
                 , DocumentationLocation.COMMIT);
     }
 
