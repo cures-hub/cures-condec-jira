@@ -3,27 +3,22 @@ package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-import org.junit.Before;
-import org.junit.Test;
-
 public class TestCommitMessageToCommentTranscriber extends TestSetUp {
 
     private CommitMessageToCommentTranscriber transcriber;
-    private ApplicationUser user;
     private Issue issue;
 
     @Before
     public void setUp() {
         init();
         issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
-        user = JiraUsers.SYS_ADMIN.getApplicationUser();
     }
 
     @Test

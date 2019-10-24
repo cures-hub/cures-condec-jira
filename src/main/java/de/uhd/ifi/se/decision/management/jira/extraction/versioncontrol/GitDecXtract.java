@@ -1,21 +1,19 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.revwalk.RevCommit;
+
+import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.xml.bind.DatatypeConverter;
-
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.revwalk.RevCommit;
-
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 /**
  * Extract decision knowledge elements stored in git repository.
@@ -27,7 +25,6 @@ public class GitDecXtract {
     public static final String RAT_KEY_NOEDIT = "-";
     private final GitClient gitClient;
     private final String projecKey;
-    private GitCommitMessageExtractor extractorFromMessage;
 
     public GitDecXtract(String projecKey) {
         this.projecKey = projecKey;
@@ -94,7 +91,7 @@ public class GitDecXtract {
     }
 
     public List<DecisionKnowledgeElement> getElementsFromMessage(RevCommit commit) {
-        extractorFromMessage = new GitCommitMessageExtractor(commit.getFullMessage());
+        GitCommitMessageExtractor extractorFromMessage = new GitCommitMessageExtractor(commit.getFullMessage());
         List<DecisionKnowledgeElement> elementsFromMessage = extractorFromMessage.getElements().stream()
                 .map(element -> { // need to update project and key attributes
                     element.setProject(projecKey);

@@ -50,7 +50,6 @@ import java.util.regex.Pattern;
 public class ViewRest {
     private static final Logger LOGGER = LoggerFactory.getLogger(ViewRest.class);
     private GitClient gitClient;
-    private GitDecXtract extractor;
 
     @Path("/elementsFromBranchesOfProject")
     @GET
@@ -68,16 +67,16 @@ public class ViewRest {
     @Path("/elementsFromBranchesOfJiraIssue")
     @GET
     public Response getFeatureBranchTree(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey) throws PermissionException {
-        issueKey = normalizeIssueKey(issueKey); // ex: issueKey=ConDec-498
-        Issue issue = getIssue(issueKey);
+        String normalizedIssueKey = normalizeIssueKey(issueKey); // ex: issueKey=ConDec-498
+        Issue issue = getIssue(normalizedIssueKey);
         if (issue == null) {
             return issueKeyIsInvalid();
         }
 
-        String regexFilter = issueKey.toUpperCase() + "\\.|" + issueKey.toUpperCase() + "$";
+        String regexFilter = normalizedIssueKey.toUpperCase() + "\\.|" + normalizedIssueKey.toUpperCase() + "$";
         // get feature branches of an issue
-        return getDiffViewerResponse(getProjectKey(issueKey), regexFilter,
-                ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey));
+        return getDiffViewerResponse(getProjectKey(normalizedIssueKey), regexFilter,
+                ComponentAccessor.getIssueManager().getIssueByCurrentKey(normalizedIssueKey));
     }
 
     private Response getDiffViewerResponse(String projectKey, String filter, Issue issue) throws PermissionException {
@@ -110,7 +109,7 @@ public class ViewRest {
             return Response.status(Status.INTERNAL_SERVER_ERROR).build();
         }
         Map<Ref, List<DecisionKnowledgeElement>> ratBranchList = new HashMap<>();
-        extractor = new GitDecXtract(projectKey);
+        GitDecXtract extractor = new GitDecXtract(projectKey);
         // TODO: move the loop elsewhere or maybe in GitDecXtract
         for (Ref branch : branches) {
             String branchName = branch.getName();
@@ -172,24 +171,24 @@ public class ViewRest {
         return Response.ok(treeViewer).build();
     }
 
-	@Path("/getEvolutionData")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getEvolutionData(@Context HttpServletRequest request, FilterSettings filterSettings) {
-		if (request == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "HttpServletRequest is null. Timeline could not be created."))
-					.build();
-		}
-		if (filterSettings == null || filterSettings.getProjectKey() == null
-				|| filterSettings.getProjectKey().equals("")) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not valid."))
-					.build();
-		}
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings);
-		VisTimeLine timeLine = visDataProvider.getTimeLine();
-		return Response.ok(timeLine).build();
+    @Path("/getEvolutionData")
+    @POST
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getEvolutionData(@Context HttpServletRequest request, FilterSettings filterSettings) {
+        if (request == null) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity(ImmutableMap.of("error", "HttpServletRequest is null. Timeline could not be created."))
+                    .build();
+        }
+        if (filterSettings == null || filterSettings.getProjectKey() == null
+                || filterSettings.getProjectKey().equals("")) {
+            return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not valid."))
+                    .build();
+        }
+        ApplicationUser user = AuthenticationManager.getUser(request);
+        VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings);
+        VisTimeLine timeLine = visDataProvider.getTimeLine();
+        return Response.ok(timeLine).build();
 
     }
 
@@ -235,56 +234,56 @@ public class ViewRest {
         return issue;
     }
 
-	@Path("/getVis")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getVis(@Context HttpServletRequest request, FilterSettings filterSettings,
-			@QueryParam("elementKey") String elementKey) {
-		if (checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()) {
-			return checkIfElementIsValid(elementKey);
-		}
-		if (filterSettings == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
-					.build();
-		}
-		if (request == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
-					.build();
-		}
-		String projectKey = filterSettings.getProjectKey();
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisDataProvider visDataProvider;
-		if (filterSettings.getNamesOfSelectedJiraIssueTypes().size() == 0
-				|| (filterSettings.getDocumentationLocations().size() == 1
-						&& filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN))) {
-			visDataProvider = new VisDataProvider(projectKey, elementKey, filterSettings.getSearchString(), user);
-		} else {
-			visDataProvider = new VisDataProvider(elementKey, user, filterSettings);
-		}
-		VisGraph visGraph = visDataProvider.getVisGraph();
-		return Response.ok(visGraph).build();
-	}
+    @Path("/getVis")
+    @POST
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getVis(@Context HttpServletRequest request, FilterSettings filterSettings,
+                           @QueryParam("elementKey") String elementKey) {
+        if (checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()) {
+            return checkIfElementIsValid(elementKey);
+        }
+        if (filterSettings == null) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
+                    .build();
+        }
+        if (request == null) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
+                    .build();
+        }
+        String projectKey = filterSettings.getProjectKey();
+        ApplicationUser user = AuthenticationManager.getUser(request);
+        VisDataProvider visDataProvider;
+        if (filterSettings.getNamesOfSelectedJiraIssueTypes().size() == 0
+                || (filterSettings.getDocumentationLocations().size() == 1
+                && filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN))) {
+            visDataProvider = new VisDataProvider(projectKey, elementKey, filterSettings.getSearchString(), user);
+        } else {
+            visDataProvider = new VisDataProvider(elementKey, user, filterSettings);
+        }
+        VisGraph visGraph = visDataProvider.getVisGraph();
+        return Response.ok(visGraph).build();
+    }
 
-	@Path("/getCompareVis")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getCompareVis(@Context HttpServletRequest request, FilterSettings filterSettings) {
-		if (request == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
-					.build();
-		}
-		if (filterSettings == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
-					.build();
-		}
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings);
-		return Response.ok(visDataProvider.getVisGraph()).build();
-	}
+    @Path("/getCompareVis")
+    @POST
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getCompareVis(@Context HttpServletRequest request, FilterSettings filterSettings) {
+        if (request == null) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
+                    .build();
+        }
+        if (filterSettings == null) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
+                    .build();
+        }
+        ApplicationUser user = AuthenticationManager.getUser(request);
+        VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings);
+        return Response.ok(visDataProvider.getVisGraph()).build();
+    }
 
     @Path("/getFilterSettings")
     @GET
@@ -301,36 +300,36 @@ public class ViewRest {
         return Response.ok(new FilterSettingsImpl(projectKey, searchTerm, user)).build();
     }
 
-	@Path("/getDecisionMatrix")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionMatrix(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		List<DecisionKnowledgeElement> decisions = getAllDecisions(projectKey);
-		Matrix matrix = new Matrix(projectKey, decisions);
-		return Response.ok(matrix).build();
-	}
+    @Path("/getDecisionMatrix")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getDecisionMatrix(@Context HttpServletRequest request,
+                                      @QueryParam("projectKey") String projectKey) {
+        Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+        if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+            return checkIfProjectKeyIsValidResponse;
+        }
+        List<DecisionKnowledgeElement> decisions = getAllDecisions(projectKey);
+        Matrix matrix = new Matrix(projectKey, decisions);
+        return Response.ok(matrix).build();
+    }
 
-	@Path("/getDecisionGraph")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionGraph(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		List<DecisionKnowledgeElement> decisions = getAllDecisions(projectKey);
-		VisGraph graph = new VisGraph(decisions, projectKey);
-		return Response.ok(graph).build();
-	}
+    @Path("/getDecisionGraph")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getDecisionGraph(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+        Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+        if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+            return checkIfProjectKeyIsValidResponse;
+        }
+        List<DecisionKnowledgeElement> decisions = getAllDecisions(projectKey);
+        VisGraph graph = new VisGraph(decisions, projectKey);
+        return Response.ok(graph).build();
+    }
 
-	private List<DecisionKnowledgeElement> getAllDecisions(String projectKey) {
-		return KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements(KnowledgeType.DECISION);
-	}
+    private List<DecisionKnowledgeElement> getAllDecisions(String projectKey) {
+        return KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements(KnowledgeType.DECISION);
+    }
 
     private String getProjectKey(String elementKey) {
         return elementKey.split("-")[0];
