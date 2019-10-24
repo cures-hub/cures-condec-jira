@@ -385,4 +385,24 @@ public interface KnowledgePersistenceManager {
 			StatusPersistenceManager.setStatusForElement(element, KnowledgeStatus.IDEA);
 		}
 	}
+
+	static void updateGraphNode(DecisionKnowledgeElement element) {
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(element.getProject().getProjectKey());
+		graph.updateNode(element);
+	}
+
+	static void updateGraphLinks(Link link) {
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(link.getDestinationElement().getProject().getProjectKey());
+		graph.updateLink(link);
+	}
+
+	static void removeGraphNode(DecisionKnowledgeElement element) {
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(element.getProject().getProjectKey());
+		graph.removeVertex(element);
+	}
+
+	static void removeGraphEdge(Link link) {
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(link.getDestinationElement().getProject().getProjectKey());
+		graph.removeEdge(link);
+	}
 }
