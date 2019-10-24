@@ -1,21 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 public class TestCommitMessageToCommentTranscriber extends TestSetUp {
 
     private CommitMessageToCommentTranscriber transcriber;
     private Issue issue;
 
-    @Before
+/*    @Before
     public void setUp() {
         init();
         issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
@@ -61,5 +54,5 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUp {
         }
         assertEquals("{issue}This is an issue!{issue}",
                 ComponentAccessor.getCommentManager().getComments(issue).get(0).getBody());
-    }
+    }*/
 }

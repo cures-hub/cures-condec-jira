@@ -26,7 +26,6 @@ import de.uhd.ifi.se.decision.management.jira.view.vis.VisDataProvider;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
 import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,11 +89,8 @@ public class ViewRest {
         for (Ref branch : branches) {
             Matcher branchMatcher = filterPattern.matcher(branch.getName());
             if (branchMatcher.find()) {
-                for (RevCommit commit : gitClient.getFeatureBranchCommits(GitDecXtract.generateBranchShortName(branch))) {
-                    transcriber = new CommitMessageToCommentTranscriber(commit.getFullMessage());
-                    transcriber.generateCommentString();
-                    transcriber.postComment(issue);
-                }
+                transcriber = new CommitMessageToCommentTranscriber(issue, branch);
+                transcriber.postComments();
             }
         }
         return resp;
