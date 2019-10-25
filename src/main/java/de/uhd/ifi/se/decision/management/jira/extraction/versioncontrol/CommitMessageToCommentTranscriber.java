@@ -15,6 +15,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class CommitMessageToCommentTranscriber {
     private Issue issue;
@@ -29,8 +30,8 @@ public class CommitMessageToCommentTranscriber {
         this.branch = branch;
         this.commits = new ArrayList<>();
         GitClient client =  ComponentGetter.getGitClient(this.issue.getProjectObject().getKey());
-        commits.addAll(client.getFeatureBranchCommits(this.branch));
-        commits.addAll(client.getCommits(this.issue));
+        Optional.ofNullable(client.getFeatureBranchCommits(this.branch)).ifPresent(commits::addAll);
+        Optional.ofNullable(client.getCommits(this.issue)).ifPresent(commits::addAll);
     }
 
     public String generateCommentString(RevCommit commit) {
