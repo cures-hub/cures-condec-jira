@@ -13,11 +13,13 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommitMessageToCommentTranscriber {
     private Issue issue;
     private Ref branch;
+    private  List<RevCommit> commits;
     //commit message als param
     private static String DEFAULT_COMMIT_COMMENTATOR_USR_NAME = "GIT-COMMIT-COMMENTATOR";
     private static UserDetails DEFAULT_COMMIT_COMMENTATOR_USR_DETAILS = new UserDetails(DEFAULT_COMMIT_COMMENTATOR_USR_NAME, DEFAULT_COMMIT_COMMENTATOR_USR_NAME);
@@ -25,6 +27,10 @@ public class CommitMessageToCommentTranscriber {
     public CommitMessageToCommentTranscriber(Issue issue, Ref branch) {
         this.issue = issue;
         this.branch = branch;
+        this.commits = new ArrayList<>();
+        GitClient client =  ComponentGetter.getGitClient(this.issue.getProjectObject().getKey());
+        commits.addAll(client.getFeatureBranchCommits(this.branch));
+        commits.addAll(client.getCommits(this.issue));
     }
 
     public String generateCommentStrings(RevCommit commit) {
@@ -48,8 +54,16 @@ public class CommitMessageToCommentTranscriber {
         if (commentString != null && !commentString.equals("")) {
             /*
              * @Issue: Should we make a user for commenting commit messages under an issue?
+             *
+             * @Alternative: Yes.
+             * @Pro: Its clear what comments were originally commit messages.
+             *
+             * @Alternative: No.
+             * @Con: It would  be confusing to users if they see that they posted something that they did no write.
              */
+
             for (Comment alreadyWrittenComment : ComponentAccessor.getCommentManager().getComments(this.issue)) {
+                // if the hash of a commit is present in a comment, do not post it again.
                 if (alreadyWrittenComment.getBody().contains(commit.getName())) {
                     return;
                 }
@@ -65,11 +79,7 @@ public class CommitMessageToCommentTranscriber {
         } catch (CreateException e) {
             defaultUser = ComponentAccessor.getUserManager().getUserByName(DEFAULT_COMMIT_COMMENTATOR_USR_NAME);
         }
-        List<RevCommit> commits;
-        GitClient client =  ComponentGetter.getGitClient(this.issue.getProjectObject().getKey());
-        commits = client.getCommits(this.issue);
-        commits.addAll(client.getFeatureBranchCommits(this.branch));
-        for (RevCommit commit : commits) {
+        for (RevCommit commit : this.commits) {
             this.postComment(defaultUser, commit);
         }
     }
