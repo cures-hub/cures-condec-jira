@@ -419,10 +419,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				isUpdated = true;
 			}
 		}
-		if (sentence.isValidated()) {
-			// OnlineClassificationTrainerImpl.getInstance().update(sentence);
-			(new OnlineClassificationTrainerImpl()).update(sentence);
-		}
 		return isUpdated;
 	}
 
