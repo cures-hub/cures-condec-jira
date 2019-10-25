@@ -26,12 +26,15 @@ public class CommitMessageToCommentTranscriber {
     private static UserDetails DEFAULT_COMMIT_COMMENTATOR_USR_DETAILS = new UserDetails(DEFAULT_COMMIT_COMMENTATOR_USR_NAME, DEFAULT_COMMIT_COMMENTATOR_USR_NAME);
 
     public CommitMessageToCommentTranscriber(Issue issue, Ref branch) {
+        this(issue, branch, ComponentGetter.getGitClient(issue.getProjectObject().getKey()));
+    }
+
+    public CommitMessageToCommentTranscriber(Issue issue, Ref branch, GitClient gitClient) {
         this.issue = issue;
         this.branch = branch;
         this.commits = new ArrayList<>();
-        GitClient client =  ComponentGetter.getGitClient(this.issue.getProjectObject().getKey());
-        Optional.ofNullable(client.getFeatureBranchCommits(this.branch)).ifPresent(commits::addAll);
-        Optional.ofNullable(client.getCommits(this.issue)).ifPresent(commits::addAll);
+        Optional.ofNullable(gitClient.getFeatureBranchCommits(this.branch)).ifPresent(commits::addAll);
+        Optional.ofNullable(gitClient.getCommits(this.issue)).ifPresent(commits::addAll);
     }
 
     public String generateCommentString(RevCommit commit) {

@@ -4,9 +4,12 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
@@ -24,15 +27,15 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
     private CommitMessageToCommentTranscriber transcriber;
     private Issue issue;
     private String testIssueKey;
-    private GitClient gitClient;
     private Ref branch;
+    private GitClient gitClient;
 
     private static String DEFAULT_EXPECTED_COMMENT_MESSAGE = "{issue}This is an issue!{issue}";
 
     private static String META_DATA_STRING =
             "\r\n--- Commit meta data --- \r\n" +
                     "Author: gitTest\r\n" +
-                    "Branch: refs/remotes/origin/transcriberBranch\r\n" +
+                    "Branch: refs/remotes/origin/TEST-4.transcriberBranch\r\n" +
                     "Hash: ";
 
 
@@ -41,9 +44,9 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
         init();
         this.testIssueKey = "TEST-4";
         this.issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(this.testIssueKey);
-        this.gitClient = new GitClientImpl(getExampleUri(), "TEST");
+        this.gitClient = new GitClientImpl(GIT_URI, super.getRepoBaseDirectory(), "TEST");//ComponentGetter.getGitClient(issue.getProjectObject().getKey());//
         this.branch = null;
-        Iterator<Ref> it = this.gitClient.getRemoteBranches().iterator();
+        Iterator<Ref> it = gitClient.getRemoteBranches().iterator();
         while (it.hasNext()) {
             Ref value = it.next();
             if (value.getName().endsWith("transcriberBranch")) {
@@ -52,12 +55,12 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
             }
         }
 
-        this.transcriber = new CommitMessageToCommentTranscriber(issue, branch);
+        this.transcriber = new CommitMessageToCommentTranscriber(issue, branch, gitClient);
     }
 
     @Test
     public void testEmptyMessage() {
-        RevCommit commit = this.gitClient.getFeatureBranchCommits(this.branch).get(0);
+        RevCommit commit = gitClient.getFeatureBranchCommits(this.branch).get(0);
         assertEquals("", transcriber.generateCommentString(commit));
     }
 
@@ -84,7 +87,7 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
     @Test
     public void testIssueMessageWithAdditionalText() {
         RevCommit commit = this.gitClient.getFeatureBranchCommits(this.branch).get(4);
-        assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + "But I love pizza!" + META_DATA_STRING + commit.getName(), transcriber.generateCommentString(commit));
+        assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + " But I love pizza!" + META_DATA_STRING + commit.getName(), transcriber.generateCommentString(commit));
     }
 
     @Test

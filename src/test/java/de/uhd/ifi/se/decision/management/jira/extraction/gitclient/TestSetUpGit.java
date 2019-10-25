@@ -227,12 +227,9 @@ public abstract class TestSetUpGit extends TestSetUp {
 	}
 
 	private static void setupBranchForTranscriber() {
-		String featureBranch = "transcriberBranch";
+		String featureBranch = "TEST-4.transcriberBranch";
 		Git git = gitClient.getGit();
 		String currentBranch = null;
-
-		ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
-		String pathToTestFilesDir = "extraction/versioncontrol/";
 
 		try {
 			currentBranch = git.getRepository().getBranch();
