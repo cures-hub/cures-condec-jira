@@ -33,24 +33,26 @@ public class CommitMessageToCommentTranscriber {
         commits.addAll(client.getCommits(this.issue));
     }
 
-    public String generateCommentStrings(RevCommit commit) {
+    public String generateCommentString(RevCommit commit) {
         String comment = commit.getFullMessage();
-
-        for (String tag : KnowledgeType.toList()) {
-            String replaceString = "{" + tag.toLowerCase() + "}";
-            comment = comment.replaceAll(GitDecXtract.generateRegexToFindAllTags(tag), replaceString);
+        if (comment != null && !comment.equals("")) {
+            for (String tag : KnowledgeType.toList()) {
+                String replaceString = "{" + tag.toLowerCase() + "}";
+                comment = comment.replaceAll(GitDecXtract.generateRegexToFindAllTags(tag), replaceString);
+            }
+            StringBuilder builder = new StringBuilder(comment);
+            builder.append("\r\n");
+            builder.append("--- Commit meta data --- \r\n");
+            builder.append("Author: " + commit.getAuthorIdent().getName() + "\r\n");
+            builder.append("Branch: " + this.branch.getName() + "\r\n");
+            builder.append("Hash: " + commit.getName());
+            return (builder.toString());
         }
-        StringBuilder builder = new StringBuilder(comment);
-        builder.append("\r\n");
-        builder.append("--- Commit meta data --- \r\n");
-        builder.append("Author: " + commit.getAuthorIdent().getName() + "\r\n");
-        builder.append("Branch: " + this.branch.getName() + "\r\n");
-        builder.append("Hash: " + commit.getName());
-        return (builder.toString());
+        return "";
     }
 
     public void postComment(ApplicationUser user, RevCommit commit) {
-        String commentString = this.generateCommentStrings(commit);
+        String commentString = this.generateCommentString(commit);
         if (commentString != null && !commentString.equals("")) {
             /*
              * @Issue: Should we make a user for commenting commit messages under an issue?
