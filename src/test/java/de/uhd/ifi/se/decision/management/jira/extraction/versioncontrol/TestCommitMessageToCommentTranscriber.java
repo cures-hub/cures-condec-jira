@@ -106,4 +106,6 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 
     }
 
+    //TODO: Test if duplicates are  NOT postet.
+
 }
