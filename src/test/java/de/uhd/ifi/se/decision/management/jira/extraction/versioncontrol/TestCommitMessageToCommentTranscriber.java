@@ -4,16 +4,12 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -26,7 +22,6 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 
     private CommitMessageToCommentTranscriber transcriber;
     private Issue issue;
-    private String testIssueKey;
     private Ref branch;
     private GitClient gitClient;
 
@@ -42,8 +37,8 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
     @Before
     public void setUp() {
         init();
-        this.testIssueKey = "TEST-4";
-        this.issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(this.testIssueKey);
+        String testIssueKey = "TEST-4";
+        this.issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(testIssueKey);
         this.gitClient = new GitClientImpl(GIT_URI, super.getRepoBaseDirectory(), "TEST");//ComponentGetter.getGitClient(issue.getProjectObject().getKey());//
         this.branch = null;
         Iterator<Ref> it = gitClient.getRemoteBranches().iterator();
@@ -73,7 +68,6 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 
     @Test
     public void testUppercaseIssueMessage() {
-        int i = 1;
         RevCommit commit = this.gitClient.getFeatureBranchCommits(this.branch).get(2);
         assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + META_DATA_STRING + commit.getName(), transcriber.generateCommentString(commit));
     }
