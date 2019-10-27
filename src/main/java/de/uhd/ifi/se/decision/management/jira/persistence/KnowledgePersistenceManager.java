@@ -115,39 +115,7 @@ public interface KnowledgePersistenceManager {
 	 *            authenticated JIRA {@link ApplicationUser}.
 	 * @return internal database id of inserted link, zero if insertion failed.
 	 */
-	static long insertLink(Link link, ApplicationUser user) {
-		System.out.println("insertLink method");
-		String projectKey = link.getSource().getProject().getProjectKey();
-
-		if (link.containsUnknownDocumentationLocation()) {
-			link.setDefaultDocumentationLocation(projectKey);
-		}
-
-		long databaseId = 0;
-
-		if (link.isIssueLink()) {
-			databaseId = JiraIssuePersistenceManager.insertLink(link, user);
-			if (databaseId > 0) {
-				link.setId(databaseId);
-				boolean created = KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
-				System.out.println("Link was created? " + created);
-			}
-			return databaseId;
-		}
-
-		if (ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
-			DecisionKnowledgeElement sourceElement = link.getSource();
-			new WebhookConnector(projectKey).sendElementChanges(sourceElement);
-		}
-		databaseId = GenericLinkManager.insertLink(link, user);
-		if (databaseId > 0) {
-			link.setId(databaseId);
-			boolean created = KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
-			System.out.println("Link was created? " + created);
-		}
-		System.out.println("insertLink method end");
-		return databaseId;
-	}
+	long insertLink(Link link, ApplicationUser user);
 
 	/**
 	 * Updates an existing link in database. The link can be between any kinds of
@@ -195,7 +163,7 @@ public interface KnowledgePersistenceManager {
 
 		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
 		KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
-		return insertLink(link, user);
+		return KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, user);
 	}
 
 	/**

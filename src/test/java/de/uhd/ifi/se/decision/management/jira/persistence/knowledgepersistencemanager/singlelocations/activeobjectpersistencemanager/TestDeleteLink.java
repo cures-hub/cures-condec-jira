@@ -26,7 +26,7 @@ public class TestDeleteLink extends ActiveObjectPersistenceManagerTestSetUp {
 	public static void setUpBeforeAll() {
 		initialisation();
 	}
-	
+
 	@Before
 	public void setUp() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
@@ -41,7 +41,7 @@ public class TestDeleteLink extends ActiveObjectPersistenceManagerTestSetUp {
 		DecisionKnowledgeElement linkedDecisionWithDatabaseId = aoStrategy
 				.insertDecisionKnowledgeElement(linkedDecisision, user);
 		Link link = new LinkImpl(linkedDecisionWithDatabaseId, elementWithDatabaseId);
-		KnowledgePersistenceManager.insertLink(link, user);
+		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(link, user);
 	}
 
 	@Test(expected = NullPointerException.class)

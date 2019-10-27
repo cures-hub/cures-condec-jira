@@ -2,12 +2,17 @@ package de.uhd.ifi.se.decision.management.jira.persistence.impl;
 
 import java.util.List;
 
+import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
  * Class that integates all available persistence managers for single
@@ -86,7 +91,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		elements.addAll(jiraIssueTextPersistenceManager.getDecisionKnowledgeElements(type));
 		return elements;
 	}
-	
+
 	@Override
 	public AbstractPersistenceManagerForSingleLocation getPersistenceManager(String documentationLocationIdentifier) {
 		if (documentationLocationIdentifier == null) {
@@ -113,5 +118,39 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		default:
 			return getDefaultPersistenceManager();
 		}
+	}
+
+	@Override
+	public long insertLink(Link link, ApplicationUser user) {
+		System.out.println("insertLink method");
+
+		if (link.containsUnknownDocumentationLocation()) {
+			link.setDefaultDocumentationLocation(projectKey);
+		}
+
+		long databaseId = 0;
+
+		if (link.isIssueLink()) {
+			databaseId = JiraIssuePersistenceManager.insertLink(link, user);
+			if (databaseId > 0) {
+				link.setId(databaseId);
+				boolean created = KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
+				System.out.println("Link was created? " + created);
+			}
+			return databaseId;
+		}
+
+		if (ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
+			DecisionKnowledgeElement sourceElement = link.getSource();
+			new WebhookConnector(projectKey).sendElementChanges(sourceElement);
+		}
+		databaseId = GenericLinkManager.insertLink(link, user);
+		if (databaseId > 0) {
+			link.setId(databaseId);
+			boolean created = KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
+			System.out.println("Link was created? " + created);
+		}
+		System.out.println("insertLink method end");
+		return databaseId;
 	}
 }

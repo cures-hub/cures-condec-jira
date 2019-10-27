@@ -143,10 +143,10 @@ public class KnowledgeRest {
 			}
 		}
 
+		String projectKey = element.getProject().getProjectKey();
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		AbstractPersistenceManagerForSingleLocation persistenceManagerForExistingElement = KnowledgePersistenceManager
-				.getOrCreate(element.getProject().getProjectKey())
-				.getPersistenceManager(documentationLocationOfExistingElement);
+				.getOrCreate(projectKey).getPersistenceManager(documentationLocationOfExistingElement);
 		DecisionKnowledgeElement existingElement = persistenceManagerForExistingElement
 				.getDecisionKnowledgeElement(idOfExistingElement);
 
@@ -168,7 +168,7 @@ public class KnowledgeRest {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
 		}
-		long linkId = KnowledgePersistenceManager.insertLink(link, user);
+		long linkId = KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, user);
 		if (linkId == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
@@ -264,7 +264,7 @@ public class KnowledgeRest {
 			LinkType linkType = LinkType.getLinkType(linkTypeName);
 			link = Link.instantiateDirectedLink(parentElement, childElement, linkType);
 		}
-		long linkId = KnowledgePersistenceManager.insertLink(link, user);
+		long linkId = KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, user);
 		if (linkId == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();

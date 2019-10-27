@@ -120,7 +120,6 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 
 	@Override
 	public boolean removeEdge(Link link) {
-		System.out.println(edgeSet().size());
 		Link removedLink = super.removeEdge(link.getSource(), link.getTarget());
 		if (removedLink == null) {
 			removedLink = super.removeEdge(link.getTarget(), link.getSource());
@@ -128,7 +127,6 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		if (removedLink == null) {
 			return false;
 		}
-		System.out.println(edgeSet().size());
 		return true;
 	}
 }
