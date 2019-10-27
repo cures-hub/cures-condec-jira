@@ -14,7 +14,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersistenceManager;
@@ -137,33 +136,8 @@ public interface KnowledgePersistenceManager {
 	 * @see DocumentationLocation
 	 * @see Link
 	 */
-	static long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType, long idOfParentElement,
-			String documentationLocationOfParentElement, ApplicationUser user) {
-
-		if (LinkType.linkTypesAreEqual(formerKnowledgeType, element.getType()) || idOfParentElement == 0) {
-			return -1;
-		}
-
-		String projectKey = element.getProject().getProjectKey();
-
-		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerKnowledgeType);
-		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
-
-		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
-		parentElement.setId(idOfParentElement);
-		parentElement.setDocumentationLocation(documentationLocationOfParentElement);
-		parentElement.setProject(projectKey);
-
-		Link formerLink = Link.instantiateDirectedLink(parentElement, element, formerLinkType);
-		if (!KnowledgePersistenceManager.getOrCreate(projectKey).deleteLink(formerLink, user)) {
-			return 0;
-		}
-		KnowledgeGraph.getOrCreate(projectKey).removeEdge(formerLink);
-
-		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
-		KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
-		return KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, user);
-	}
+	long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType, long idOfParentElement,
+			String documentationLocationOfParentElement, ApplicationUser user);
 
 	/**
 	 * Deletes an existing link in database. The link can be between any kinds of

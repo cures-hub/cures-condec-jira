@@ -9,6 +9,8 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -176,5 +178,32 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		}
 
 		return isDeleted;
+	}
+
+	@Override
+	public long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType, long idOfParentElement,
+			String documentationLocationOfParentElement, ApplicationUser user) {
+
+		if (LinkType.linkTypesAreEqual(formerKnowledgeType, element.getType()) || idOfParentElement == 0) {
+			return -1;
+		}
+
+		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerKnowledgeType);
+		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
+
+		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
+		parentElement.setId(idOfParentElement);
+		parentElement.setDocumentationLocation(documentationLocationOfParentElement);
+		parentElement.setProject(projectKey);
+
+		Link formerLink = Link.instantiateDirectedLink(parentElement, element, formerLinkType);
+		if (!this.deleteLink(formerLink, user)) {
+			return 0;
+		}
+		KnowledgeGraph.getOrCreate(projectKey).removeEdge(formerLink);
+
+		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
+		KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
+		return this.insertLink(link, user);
 	}
 }
