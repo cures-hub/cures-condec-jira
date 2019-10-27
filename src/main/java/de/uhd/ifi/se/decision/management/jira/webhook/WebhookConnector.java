@@ -72,8 +72,8 @@ public class WebhookConnector {
 			}
 		}
 
-		AbstractPersistenceManagerForSingleLocation strategy = KnowledgePersistenceManager.getOrCreate(projectKey).getDefaultPersistenceManager();
-		boolean isDeleted = strategy.deleteDecisionKnowledgeElement(elementToBeDeleted, user);
+		boolean isDeleted = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.deleteDecisionKnowledgeElement(elementToBeDeleted, user);
 		if (isDeleted) {
 			isDeleted = postKnowledgeTrees(rootElements);
 		}
@@ -92,7 +92,8 @@ public class WebhookConnector {
 	private List<DecisionKnowledgeElement> getWebhookRootElements(DecisionKnowledgeElement element) {
 		List<DecisionKnowledgeElement> webhookRootElements = new ArrayList<DecisionKnowledgeElement>();
 
-		AbstractPersistenceManagerForSingleLocation strategy = KnowledgePersistenceManager.getOrCreate(projectKey).getDefaultPersistenceManager();
+		AbstractPersistenceManagerForSingleLocation strategy = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getDefaultPersistenceManager();
 		List<DecisionKnowledgeElement> linkedElements = strategy.getAdjacentElements(element);
 		linkedElements.add(element);
 		for (DecisionKnowledgeElement linkedElement : linkedElements) {

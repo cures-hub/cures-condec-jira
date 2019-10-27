@@ -1,7 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
@@ -9,8 +13,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.KnowledgeStatusInDatabase;
 import net.java.ao.Query;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class StatusPersistenceManager {
 
@@ -105,6 +107,9 @@ public class StatusPersistenceManager {
 
 	private static boolean setTypeByChange(KnowledgeStatus status, DecisionKnowledgeElement element,
 			AbstractPersistenceManagerForSingleLocation manager) {
+		if (element == null) {
+			return false;
+		}
 		if (element.getType().equals(KnowledgeType.DECISION)) {
 			if (status.equals(KnowledgeStatus.REJECTED) || status.equals(KnowledgeStatus.IDEA)
 					|| status.equals(KnowledgeStatus.DISCARDED)) {

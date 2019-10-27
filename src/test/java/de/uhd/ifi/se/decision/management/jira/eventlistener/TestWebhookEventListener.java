@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,6 +23,8 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestWebhookEventListener extends TestSetUp {
@@ -75,19 +78,25 @@ public class TestWebhookEventListener extends TestSetUp {
 		IssueEvent event = new IssueEvent(issue, user, jiraComment, null, new MockGenericValue("test"),
 				new HashMap<String, String>(), EventType.ISSUE_DELETED_ID);
 		listener.onIssueEvent(event);
+		KnowledgeGraph.getOrCreate("TEST").addVertex(new DecisionKnowledgeElementImpl(issue));
 	}
 
 	@Test
 	public void testIssueLinkCreated() {
-		IssueLink link = new MockIssueLink(1, 2,1);
+		IssueLink link = new MockIssueLink(1, 2, 1);
 		IssueLinkCreatedEvent event = new IssueLinkCreatedEvent(link, null);
 		listener.onLinkCreatedIssueEvent(event);
 	}
 
 	@Test
 	public void testIssueLinkDeleted() {
-		IssueLink link = new MockIssueLink(1, 2,1 );
+		IssueLink link = new MockIssueLink(1, 2, 1);
 		IssueLinkDeletedEvent event = new IssueLinkDeletedEvent(link, null);
 		listener.onLinkDeletedIssueEvent(event);
+	}
+
+	@After
+	public void tearDown() {
+		KnowledgeGraph.instances.clear();
 	}
 }

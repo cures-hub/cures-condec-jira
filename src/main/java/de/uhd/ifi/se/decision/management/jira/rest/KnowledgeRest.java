@@ -224,11 +224,11 @@ public class KnowledgeRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
 		}
-		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getPersistenceManager(decisionKnowledgeElement);
+		String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		boolean isDeleted = persistenceManager.deleteDecisionKnowledgeElement(decisionKnowledgeElement.getId(), user);
+		boolean isDeleted = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.deleteDecisionKnowledgeElement(decisionKnowledgeElement, user);
 		if (isDeleted) {
 			return Response.status(Status.OK).entity(true).build();
 		}
