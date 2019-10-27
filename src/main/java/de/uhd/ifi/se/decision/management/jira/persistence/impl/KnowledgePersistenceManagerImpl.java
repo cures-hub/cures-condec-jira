@@ -122,8 +122,6 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 
 	@Override
 	public long insertLink(Link link, ApplicationUser user) {
-		System.out.println("insertLink method");
-
 		if (link.containsUnknownDocumentationLocation()) {
 			link.setDefaultDocumentationLocation(projectKey);
 		}
@@ -134,8 +132,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 			databaseId = JiraIssuePersistenceManager.insertLink(link, user);
 			if (databaseId > 0) {
 				link.setId(databaseId);
-				boolean created = KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
-				System.out.println("Link was created? " + created);
+				KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
 			}
 			return databaseId;
 		}
@@ -147,10 +144,37 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		databaseId = GenericLinkManager.insertLink(link, user);
 		if (databaseId > 0) {
 			link.setId(databaseId);
-			boolean created = KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
-			System.out.println("Link was created? " + created);
+			KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
 		}
-		System.out.println("insertLink method end");
 		return databaseId;
+	}
+
+	@Override
+	public boolean deleteLink(Link link, ApplicationUser user) {
+		if (link.containsUnknownDocumentationLocation()) {
+			link.setDefaultDocumentationLocation(projectKey);
+		}
+
+		KnowledgeGraph.getOrCreate(projectKey).removeEdge(link);
+
+		boolean isDeleted = false;
+		if (link.isIssueLink()) {
+			isDeleted = JiraIssuePersistenceManager.deleteLink(link, user);
+			if (!isDeleted) {
+				isDeleted = JiraIssuePersistenceManager.deleteLink(link.flip(), user);
+			}
+			return isDeleted;
+		}
+		isDeleted = GenericLinkManager.deleteLink(link);
+		if (!isDeleted) {
+			isDeleted = GenericLinkManager.deleteLink(link.flip());
+		}
+
+		if (isDeleted && ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
+			DecisionKnowledgeElement sourceElement = link.getSource();
+			new WebhookConnector(projectKey).sendElementChanges(sourceElement);
+		}
+
+		return isDeleted;
 	}
 }

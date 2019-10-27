@@ -47,20 +47,20 @@ public class TestDeleteLink extends ActiveObjectPersistenceManagerTestSetUp {
 	@Test(expected = NullPointerException.class)
 	@NonTransactional
 	public void testLinkNullUserNull() {
-		KnowledgePersistenceManager.deleteLink(null, null);
+		KnowledgePersistenceManager.getOrCreate("TEST").deleteLink(null, null);
 	}
 
 	@Test(expected = NullPointerException.class)
 	@NonTransactional
 	public void testLinkNullUserFilled() {
-		KnowledgePersistenceManager.deleteLink(null, user);
+		KnowledgePersistenceManager.getOrCreate("TEST").deleteLink(null, user);
 	}
 
 	@Test
 	@NonTransactional
 	public void testLinkFilledUserNull() {
 		List<Link> links = aoStrategy.getLinks(linkedDecisision);
-		boolean isDeleted = KnowledgePersistenceManager.deleteLink(links.get(0), user);
+		boolean isDeleted = KnowledgePersistenceManager.getOrCreate("TEST").deleteLink(links.get(0), user);
 		assertTrue(isDeleted);
 	}
 
@@ -68,7 +68,7 @@ public class TestDeleteLink extends ActiveObjectPersistenceManagerTestSetUp {
 	@NonTransactional
 	public void testLinkFilledUserFilledLinkNotInTable() {
 		Link emptyLink = new LinkImpl(linkedDecisision, linkedDecisision);
-		assertFalse(KnowledgePersistenceManager.deleteLink(emptyLink, user));
+		assertFalse(KnowledgePersistenceManager.getOrCreate("TEST").deleteLink(emptyLink, user));
 	}
 
 	@Test
@@ -78,7 +78,7 @@ public class TestDeleteLink extends ActiveObjectPersistenceManagerTestSetUp {
 		Link link = links.get(0);
 		long linkId = GenericLinkManager.isLinkAlreadyInDatabase(link);
 		assertTrue(linkId > 0);
-		boolean isDeleted = KnowledgePersistenceManager.deleteLink(link, user);
+		boolean isDeleted = KnowledgePersistenceManager.getOrCreate("TEST").deleteLink(link, user);
 		assertTrue(isDeleted);
 	}
 }

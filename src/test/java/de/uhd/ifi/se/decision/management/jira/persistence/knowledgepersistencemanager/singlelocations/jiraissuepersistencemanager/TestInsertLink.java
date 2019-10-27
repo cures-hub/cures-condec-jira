@@ -42,7 +42,7 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 		link.getSource().setProject("TEST");
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		long linkId = KnowledgePersistenceManager.getOrCreate("TEST").insertLink(link, user);
-		KnowledgePersistenceManager.deleteLink(link, user);
+		KnowledgePersistenceManager.getOrCreate("TEST").deleteLink(link, user);
 		assertEquals(1, linkId);
 	}
 
@@ -62,7 +62,7 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 		link.setType("Contains");
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		assertEquals(1, KnowledgePersistenceManager.getOrCreate("TEST").insertLink(link, user));
-		KnowledgePersistenceManager.deleteLink(link, user);
+		KnowledgePersistenceManager.getOrCreate("TEST").deleteLink(link, user);
 	}
 
 	@Test
@@ -71,6 +71,6 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 		link.setType("Contains");
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		assertEquals(1, KnowledgePersistenceManager.getOrCreate("TEST").insertLink(link, user));
-		KnowledgePersistenceManager.deleteLink(link, user);
+		KnowledgePersistenceManager.getOrCreate("TEST").deleteLink(link, user);
 	}
 }

@@ -23,7 +23,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersiste
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgePersistenceManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.StatusPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
  * Interface that integrates all available persistence managers for single
@@ -156,7 +155,7 @@ public interface KnowledgePersistenceManager {
 		parentElement.setProject(projectKey);
 
 		Link formerLink = Link.instantiateDirectedLink(parentElement, element, formerLinkType);
-		if (!deleteLink(formerLink, user)) {
+		if (!KnowledgePersistenceManager.getOrCreate(projectKey).deleteLink(formerLink, user)) {
 			return 0;
 		}
 		KnowledgeGraph.getOrCreate(projectKey).removeEdge(formerLink);
@@ -177,35 +176,7 @@ public interface KnowledgePersistenceManager {
 	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return true if deletion was successful.
 	 */
-	static boolean deleteLink(Link link, ApplicationUser user) {
-		String projectKey = link.getSource().getProject().getProjectKey();
-
-		if (link.containsUnknownDocumentationLocation()) {
-			link.setDefaultDocumentationLocation(projectKey);
-		}
-
-		KnowledgeGraph.getOrCreate(projectKey).removeEdge(link);
-
-		boolean isDeleted = false;
-		if (link.isIssueLink()) {
-			isDeleted = JiraIssuePersistenceManager.deleteLink(link, user);
-			if (!isDeleted) {
-				isDeleted = JiraIssuePersistenceManager.deleteLink(link.flip(), user);
-			}
-			return isDeleted;
-		}
-		isDeleted = GenericLinkManager.deleteLink(link);
-		if (!isDeleted) {
-			isDeleted = GenericLinkManager.deleteLink(link.flip());
-		}
-
-		if (isDeleted && ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
-			DecisionKnowledgeElement sourceElement = link.getSource();
-			new WebhookConnector(projectKey).sendElementChanges(sourceElement);
-		}
-
-		return isDeleted;
-	}
+	boolean deleteLink(Link link, ApplicationUser user);
 
 	/**
 	 * Returns the database id of a link object (either a Jira issue link or a

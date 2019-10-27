@@ -281,10 +281,9 @@ public class KnowledgeRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
 					.build();
 		}
-		link.getSource().setProject(projectKey);
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		boolean isDeleted = KnowledgePersistenceManager.deleteLink(link, user);
+		boolean isDeleted = KnowledgePersistenceManager.getOrCreate(projectKey).deleteLink(link, user);
 
 		if (isDeleted) {
 			return Response.status(Status.OK).build();
