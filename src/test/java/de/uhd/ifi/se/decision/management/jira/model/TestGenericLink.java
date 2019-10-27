@@ -53,11 +53,11 @@ public class TestGenericLink extends TestSetUp {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
 		PartOfJiraIssueText sentence = sentences.get(0);
 		Link link = new LinkImpl(sentence, element);
-		assertTrue(link.getDestinationElement().getId() == issue.getId());
-		assertTrue(link.getSourceElement().getId() == sentence.getId());
+		assertTrue(link.getTarget().getId() == issue.getId());
+		assertTrue(link.getSource().getId() == sentence.getId());
 
-		assertTrue(link.getDestinationElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUE);
-		assertTrue(link.getSourceElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT);
+		assertTrue(link.getTarget().getDocumentationLocation() == DocumentationLocation.JIRAISSUE);
+		assertTrue(link.getSource().getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT);
 	}
 
 	@Test
@@ -68,11 +68,11 @@ public class TestGenericLink extends TestSetUp {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
 		PartOfJiraIssueText sentence = sentences.get(0);
 		Link link = new LinkImpl(sentence, element, "contain");
-		assertTrue(link.getDestinationElement().getId() == issue.getId());
-		assertTrue(link.getSourceElement().getId() == sentence.getId());
+		assertTrue(link.getTarget().getId() == issue.getId());
+		assertTrue(link.getSource().getId() == sentence.getId());
 
-		assertTrue(link.getDestinationElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUE);
-		assertTrue(link.getSourceElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT);
+		assertTrue(link.getTarget().getDocumentationLocation() == DocumentationLocation.JIRAISSUE);
+		assertTrue(link.getSource().getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT);
 		assertTrue(link.getType().equals("contain"));
 	}
 
@@ -161,11 +161,11 @@ public class TestGenericLink extends TestSetUp {
 		PartOfJiraIssueText sentence = sentences.get(0);
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
 		Link link = new LinkImpl(sentence, element);
-		assertTrue(link.getDestinationElement().getId() == issue.getId());
-		assertTrue(link.getSourceElement().getId() == sentence.getId());
+		assertTrue(link.getTarget().getId() == issue.getId());
+		assertTrue(link.getSource().getId() == sentence.getId());
 
-		assertTrue(link.getDestinationElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUE);
-		assertTrue(link.getSourceElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT);
+		assertTrue(link.getTarget().getDocumentationLocation() == DocumentationLocation.JIRAISSUE);
+		assertTrue(link.getSource().getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT);
 
 		GenericLinkManager.insertLink(link, null);
 

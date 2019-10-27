@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,7 +15,9 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestKnowledgeGraph extends TestSetUp {
@@ -26,7 +27,8 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 4));
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(
+				ComponentAccessor.getIssueManager().getIssueObject((long) 4));
 		graph = new KnowledgeGraphImpl(element.getProject().getProjectKey());
 	}
 
@@ -42,11 +44,28 @@ public class TestKnowledgeGraph extends TestSetUp {
 		assertEquals(JiraIssueLinks.getTestIssueLinks().size(), graph.edgeSet().size());
 	}
 
+	@Test
+	@NonTransactional
+	public void testContainsEdge() {
+		Link link = new LinkImpl(2, 4, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
+		link.setId(2);
+		assertTrue(graph.containsEdge(link));
+	}
+
+	@Test
+	@NonTransactional
+	public void testRemoveEdge() {
+		Link link = new LinkImpl(2, 4, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
+		assertTrue(graph.removeEdge(link));
+		assertEquals(JiraIssueLinks.getTestIssueLinks().size() - 1, graph.edgeSet().size());
+		assertTrue(graph.addEdge(link));
+	}
 
 	@Test
 	@NonTransactional
 	public void testGraphWithIrrelevantComment() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("This is a test comment with some irrelevant text.");
+		List<PartOfJiraIssueText> comment = TestTextSplitter
+				.getSentencesForCommentText("This is a test comment with some irrelevant text.");
 		PartOfJiraIssueText sentence = comment.get(0);
 		String projectKey = sentence.getProject().getProjectKey();
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
@@ -56,7 +75,8 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGraphWithRelevantComment() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("{alternative} This would be a great solution option! {alternative}");
+		List<PartOfJiraIssueText> comment = TestTextSplitter
+				.getSentencesForCommentText("{alternative} This would be a great solution option! {alternative}");
 		PartOfJiraIssueText sentence = comment.get(0);
 		String projectKey = sentence.getProject().getProjectKey();
 		KnowledgeGraph graph = new KnowledgeGraphImpl(projectKey);

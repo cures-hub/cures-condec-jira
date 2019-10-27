@@ -31,7 +31,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -165,7 +164,7 @@ public class KnowledgeRest {
 			return Response.status(Status.OK).entity(elementWithId).build();
 		}
 		Link link = Link.instantiateDirectedLink(existingElement, elementWithId);
-		if (link.getSourceElement() == null || link.getTarget() == null) {
+		if (link.getSource() == null || link.getTarget() == null) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
 		}
@@ -282,10 +281,8 @@ public class KnowledgeRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
 					.build();
 		}
-		link.getSourceElement().setProject(projectKey);
-		long linkId = KnowledgePersistenceManager.getLinkId(link);
-		link.setId(linkId);
-		
+		link.getSource().setProject(projectKey);
+
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		boolean isDeleted = KnowledgePersistenceManager.deleteLink(link, user);
 

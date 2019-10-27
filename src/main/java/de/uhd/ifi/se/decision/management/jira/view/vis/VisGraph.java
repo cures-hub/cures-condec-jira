@@ -126,8 +126,8 @@ public class VisGraph {
 
 	private void computeEdges() {
 		for (Link link : this.graph.edgeSet()) {
-			if (this.elementsMatchingFilterCriteria.contains(link.getSourceElement())
-					&& this.elementsMatchingFilterCriteria.contains(link.getDestinationElement())) {
+			if (this.elementsMatchingFilterCriteria.contains(link.getSource())
+					&& this.elementsMatchingFilterCriteria.contains(link.getTarget())) {
 				if (!containsEdge(link)) {
 					this.edges.add(new VisEdge(link));
 				}

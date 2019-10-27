@@ -53,16 +53,16 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 					.getOrCreate(project.getProjectKey()).getPersistenceManager(node.getDocumentationLocation());
 			List<Link> links = manager.getLinks(node.getId());
 			for (Link link : links) {
-				Node destination = link.getDestinationElement();
-				Node source = link.getSourceElement();
+				Node destination = link.getTarget();
+				Node source = link.getSource();
 				if (destination == null || source == null) {
 					continue;
 				}
 				if (destination.equals(source)) {
 					continue;
 				}
-				if (!linkIds.contains(link.getId()) && this.containsVertex(link.getDestinationElement())
-						&& this.containsVertex(link.getSourceElement())) {
+				if (!linkIds.contains(link.getId()) && this.containsVertex(link.getTarget())
+						&& this.containsVertex(link.getSource())) {
 					this.addEdge(link);
 					linkIds.add(link.getId());
 				}
@@ -73,12 +73,12 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	@Override
 	public boolean addEdge(Link link) {
 		boolean isEdgeCreated = false;
-		DecisionKnowledgeElement source = link.getSourceElement();
+		DecisionKnowledgeElement source = link.getSource();
 		if (!containsVertex(source)) {
 			addVertex(source);
 			System.out.println("Source node was created in graph");
 		}
-		DecisionKnowledgeElement destination = link.getDestinationElement();
+		DecisionKnowledgeElement destination = link.getTarget();
 		if (!containsVertex(destination)) {
 			addVertex(destination);
 			System.out.println("Destination node was created in graph");
@@ -93,21 +93,42 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 
 	@Override
 	public void updateNode(Node node) {
-		if(!this.containsVertex(node)){
+		if (!this.containsVertex(node)) {
 			this.addVertex(node);
 		} else {
 			Iterator<Node> iter = this.vertexSet().iterator();
 			while (iter.hasNext()) {
 				Node iterNode = iter.next();
-				/*  the node need to be updated. To update the node we remove the old element and add the new.
-					the ids need to be the same. the vertex set has no get function because of this we iterate the set
+				/*
+				 * the node need to be updated. To update the node we remove the old element and
+				 * add the new. the ids need to be the same. the vertex set has no get function
+				 * because of this we iterate the set
 				 */
-				if(iterNode.getId() == node.getId()) {
+				if (iterNode.getId() == node.getId()) {
 					this.vertexSet().remove(iterNode);
 					this.vertexSet().add(node);
 					break;
 				}
 			}
 		}
+	}
+
+	@Override
+	public boolean containsEdge(Link link) {
+		return super.containsEdge(link.getSource(), link.getTarget());
+	}
+
+	@Override
+	public boolean removeEdge(Link link) {
+		System.out.println(edgeSet().size());
+		Link removedLink = super.removeEdge(link.getSource(), link.getTarget());
+		if (removedLink == null) {
+			removedLink = super.removeEdge(link.getTarget(), link.getSource());
+		}
+		if (removedLink == null) {
+			return false;
+		}
+		System.out.println(edgeSet().size());
+		return true;
 	}
 }

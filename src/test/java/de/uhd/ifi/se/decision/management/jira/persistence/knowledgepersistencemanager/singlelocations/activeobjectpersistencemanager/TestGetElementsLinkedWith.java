@@ -54,14 +54,14 @@ public class TestGetElementsLinkedWith extends ActiveObjectPersistenceManagerTes
 	@Test
 	@NonTransactional
 	public void testElementNotInTableInward() {
-		assertEquals(1, aoStrategy.getElementsLinkedWithInwardLinks(link.getDestinationElement()).size(), 0.0);
+		assertEquals(1, aoStrategy.getElementsLinkedWithInwardLinks(link.getTarget()).size(), 0.0);
 	}
 
 	@Test
 	@NonTransactional
 	public void testElementInTableInward() {
 		KnowledgePersistenceManager.insertLink(link, user);
-		assertEquals(0, aoStrategy.getElementsLinkedWithInwardLinks(link.getSourceElement()).size(), 0.0);
+		assertEquals(0, aoStrategy.getElementsLinkedWithInwardLinks(link.getSource()).size(), 0.0);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -73,13 +73,13 @@ public class TestGetElementsLinkedWith extends ActiveObjectPersistenceManagerTes
 	@Test
 	@NonTransactional
 	public void testElementNotInTableOutward() {
-		assertEquals(1, aoStrategy.getElementsLinkedWithOutwardLinks(link.getSourceElement()).size(), 0.0);
+		assertEquals(1, aoStrategy.getElementsLinkedWithOutwardLinks(link.getSource()).size(), 0.0);
 	}
 
 	@Test
 	@NonTransactional
 	public void testElementInTableOutward() {
 		KnowledgePersistenceManager.insertLink(link, user);
-		assertEquals(0, aoStrategy.getElementsLinkedWithOutwardLinks(link.getDestinationElement()).size(), 0.0);
+		assertEquals(0, aoStrategy.getElementsLinkedWithOutwardLinks(link.getTarget()).size(), 0.0);
 	}
 }

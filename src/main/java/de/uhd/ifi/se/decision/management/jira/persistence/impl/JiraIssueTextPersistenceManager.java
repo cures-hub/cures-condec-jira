@@ -232,7 +232,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		List<Link> inwardLink = getInwardLinks(element);
 		List<DecisionKnowledgeElement> inwardElement = new ArrayList<>();
 		for (Link link : inwardLink) {
-			inwardElement.add(link.getSourceElement());
+			inwardElement.add(link.getSource());
 		}
 		return inwardElement;
 	}
@@ -242,7 +242,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		List<Link> outwardLink = getOutwardLinks(element);
 		List<DecisionKnowledgeElement> outwardElements = new ArrayList<>();
 		for (Link link : outwardLink) {
-			outwardElements.add(link.getDestinationElement());
+			outwardElements.add(link.getTarget());
 		}
 		return outwardElements;
 	}

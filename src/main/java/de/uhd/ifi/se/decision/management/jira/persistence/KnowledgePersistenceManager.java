@@ -21,8 +21,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersi
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.StatusPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgePersistenceManagerImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.StatusPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
@@ -39,8 +39,8 @@ public interface KnowledgePersistenceManager {
 
 	/**
 	 * Map of persistence manager instances that are identified by the project key.
-	 * Use the {@link KnowledgePersistenceManager#getOrCreate()} method to either create or
-	 * retrieve an existing object
+	 * Use the {@link KnowledgePersistenceManager#getOrCreate()} method to either
+	 * create or retrieve an existing object
 	 * 
 	 * @issue How can we reuse existing objects instead of recreating them all the
 	 *        time?
@@ -117,7 +117,7 @@ public interface KnowledgePersistenceManager {
 	 */
 	static long insertLink(Link link, ApplicationUser user) {
 		System.out.println("insertLink method");
-		String projectKey = link.getSourceElement().getProject().getProjectKey();
+		String projectKey = link.getSource().getProject().getProjectKey();
 
 		if (link.containsUnknownDocumentationLocation()) {
 			link.setDefaultDocumentationLocation(projectKey);
@@ -126,7 +126,7 @@ public interface KnowledgePersistenceManager {
 		long databaseId = 0;
 
 		if (link.isIssueLink()) {
-			databaseId = JiraIssuePersistenceManager.insertLink(link, user);			
+			databaseId = JiraIssuePersistenceManager.insertLink(link, user);
 			if (databaseId > 0) {
 				link.setId(databaseId);
 				boolean created = KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
@@ -136,7 +136,7 @@ public interface KnowledgePersistenceManager {
 		}
 
 		if (ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
-			DecisionKnowledgeElement sourceElement = link.getSourceElement();
+			DecisionKnowledgeElement sourceElement = link.getSource();
 			new WebhookConnector(projectKey).sendElementChanges(sourceElement);
 		}
 		databaseId = GenericLinkManager.insertLink(link, user);
@@ -210,40 +210,32 @@ public interface KnowledgePersistenceManager {
 	 * @return true if deletion was successful.
 	 */
 	static boolean deleteLink(Link link, ApplicationUser user) {
-		String projectKey = link.getSourceElement().getProject().getProjectKey();
+		String projectKey = link.getSource().getProject().getProjectKey();
 
 		if (link.containsUnknownDocumentationLocation()) {
 			link.setDefaultDocumentationLocation(projectKey);
 		}
-		
-		// why are the following nodes null?
-		System.out.println(link.getTarget());
-		System.out.println(link.getDestinationElement());
-		System.out.println(link.getSource());
-		System.out.println(link.getSourceElement());
-		boolean removed = KnowledgeGraph.getOrCreate(projectKey).removeEdge(link);
-		System.out.println("Link was removed? " + removed);
+
+		KnowledgeGraph.getOrCreate(projectKey).removeEdge(link);
+
 		boolean isDeleted = false;
 		if (link.isIssueLink()) {
 			isDeleted = JiraIssuePersistenceManager.deleteLink(link, user);
 			if (!isDeleted) {
 				isDeleted = JiraIssuePersistenceManager.deleteLink(link.flip(), user);
-				removed = KnowledgeGraph.getOrCreate(projectKey).removeEdge(link.flip());
-				System.out.println("Link was flipped removed? " + removed);
 			}
 			return isDeleted;
 		}
 		isDeleted = GenericLinkManager.deleteLink(link);
 		if (!isDeleted) {
 			isDeleted = GenericLinkManager.deleteLink(link.flip());
-			removed = KnowledgeGraph.getOrCreate(projectKey).removeEdge(link.flip());
-			System.out.println("Link was flipped removed? " + removed);
 		}
 
 		if (isDeleted && ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
-			DecisionKnowledgeElement sourceElement = link.getSourceElement();
+			DecisionKnowledgeElement sourceElement = link.getSource();
 			new WebhookConnector(projectKey).sendElementChanges(sourceElement);
 		}
+
 		return isDeleted;
 	}
 
@@ -406,7 +398,7 @@ public interface KnowledgePersistenceManager {
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(element.getProject().getProjectKey());
 		graph.updateNode(element);
 	}
-	
+
 	static void removeGraphNode(DecisionKnowledgeElement element) {
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(element.getProject().getProjectKey());
 		graph.removeVertex(element);

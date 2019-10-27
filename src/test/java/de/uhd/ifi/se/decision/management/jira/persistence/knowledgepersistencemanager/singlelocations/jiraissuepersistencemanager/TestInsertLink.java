@@ -23,8 +23,8 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 	public void testLinkFilledUserNull() {
 		Link link = new LinkImpl(1, 2, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		link.setType("contains");
-		link.getDestinationElement().setProject("TEST");
-		link.getSourceElement().setProject("TEST");
+		link.getTarget().setProject("TEST");
+		link.getSource().setProject("TEST");
 		assertEquals(0, KnowledgePersistenceManager.insertLink(link, null));
 	}
 
@@ -38,8 +38,8 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 	public void testLinkFilledUserFilled() {
 		Link link = new LinkImpl(1, 2, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		link.setType("contains");
-		link.getDestinationElement().setProject("TEST");
-		link.getSourceElement().setProject("TEST");
+		link.getTarget().setProject("TEST");
+		link.getSource().setProject("TEST");
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		long linkId = KnowledgePersistenceManager.insertLink(link, user);
 		KnowledgePersistenceManager.deleteLink(link, user);
@@ -50,8 +50,8 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 	public void testCreateException() {
 		Link link = new LinkImpl(2, 3, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		link.setType("contains");
-		link.getDestinationElement().setProject("TEST");
-		link.getSourceElement().setProject("TEST");
+		link.getTarget().setProject("TEST");
+		link.getSource().setProject("TEST");
 		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
 		assertEquals(0, KnowledgePersistenceManager.insertLink(link, user));
 	}

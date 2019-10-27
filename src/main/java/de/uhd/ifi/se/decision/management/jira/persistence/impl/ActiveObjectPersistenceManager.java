@@ -128,7 +128,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 		for (Link link : inwardLinks) {
 			DecisionKnowledgeElementInDatabase[] entityList = ACTIVE_OBJECTS.find(
 					DecisionKnowledgeElementInDatabase.class,
-					Query.select().where("ID = ?", link.getSourceElement().getId()));
+					Query.select().where("ID = ?", link.getSource().getId()));
 			if (entityList.length == 1) {
 				sourceElements.add(new DecisionKnowledgeElementImpl(entityList[0]));
 			}
@@ -146,7 +146,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 		for (Link link : outwardLinks) {
 			DecisionKnowledgeElementInDatabase[] entityList = ACTIVE_OBJECTS.find(
 					DecisionKnowledgeElementInDatabase.class,
-					Query.select().where("ID = ?", link.getDestinationElement().getId()));
+					Query.select().where("ID = ?", link.getTarget().getId()));
 			if (entityList.length == 1) {
 				destinationElements.add(new DecisionKnowledgeElementImpl(entityList[0]));
 			}

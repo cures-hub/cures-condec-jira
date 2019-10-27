@@ -79,8 +79,8 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		Collection<IssueLinkType> issueLinkTypes = issueLinkTypeManager.getIssueLinkTypes();
 		for (IssueLinkType linkType : issueLinkTypes) {
 			long typeId = linkType.getId();
-			IssueLink issueLink = issueLinkManager.getIssueLink(link.getDestinationElement().getId(),
-					link.getSourceElement().getId(), typeId);
+			IssueLink issueLink = issueLinkManager.getIssueLink(link.getTarget().getId(),
+					link.getSource().getId(), typeId);
 			if (issueLink != null) {
 				issueLinkManager.removeIssueLink(issueLink, user);
 				return true;
@@ -146,10 +146,10 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		long linkTypeId = getLinkTypeId(link.getType());
 		try {
-			issueLinkManager.createIssueLink(link.getSourceElement().getId(), link.getDestinationElement().getId(),
+			issueLinkManager.createIssueLink(link.getSource().getId(), link.getTarget().getId(),
 					linkTypeId, (long) 0, user);
-			IssueLink issueLink = issueLinkManager.getIssueLink(link.getSourceElement().getId(),
-					link.getDestinationElement().getId(), linkTypeId);
+			IssueLink issueLink = issueLinkManager.getIssueLink(link.getSource().getId(),
+					link.getTarget().getId(), linkTypeId);
 			return issueLink.getId();
 		} catch (CreateException | NullPointerException e) {
 			LOGGER.error("Insertion of link into database failed. Message: " + e.getMessage());
@@ -171,8 +171,8 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		try {
 			long linkTypeId = getLinkTypeId(link.getType());
-			IssueLink issueLink = issueLinkManager.getIssueLink(link.getSourceElement().getId(),
-					link.getDestinationElement().getId(), linkTypeId);
+			IssueLink issueLink = issueLinkManager.getIssueLink(link.getSource().getId(),
+					link.getTarget().getId(), linkTypeId);
 			return issueLink.getId();
 		} catch (NullPointerException e) {
 			LOGGER.error("Id of link in database could not be retrieved. Message: " + e.getMessage());
@@ -212,8 +212,8 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 				return false;
 			}
 			ErrorCollection errorCollection = issueService.delete(user, result);
-			if(!errorCollection.hasAnyErrors()){
-//				KnowledgePersistenceManager.removeGraphNode(elementToDeletion);
+			if (!errorCollection.hasAnyErrors()) {
+				// KnowledgePersistenceManager.removeGraphNode(elementToDeletion);
 				return true;
 			}
 		}
@@ -231,7 +231,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public DecisionKnowledgeElementImpl getDecisionKnowledgeElement(String key) {
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue issue = issueManager.getIssueByCurrentKey(key);
 		return new DecisionKnowledgeElementImpl(issue);
@@ -330,7 +330,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		element.setId(issue.getId());
 		element.setKey(issue.getKey());
 		KnowledgePersistenceManager.insertStatus(element);
-//		KnowledgePersistenceManager.updateGraphNode(element);
+		// KnowledgePersistenceManager.updateGraphNode(element);
 		return element;
 	}
 
@@ -406,7 +406,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 			}
 			return false;
 		}
-//		KnowledgePersistenceManager.updateGraphNode(element);
+		// KnowledgePersistenceManager.updateGraphNode(element);
 		issueService.update(user, result);
 		return true;
 	}

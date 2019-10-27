@@ -8,9 +8,9 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 
 /**
- * Interface for links (=edges) between knowledge elements. The links are directed, i.e.,
- * they are arrows starting from a source element and ending in a destination
- * element.
+ * Interface for links (=edges) between knowledge elements. The links are
+ * directed, i.e., they are arrows starting from a source element and ending in
+ * a destination element.
  */
 @JsonDeserialize(as = LinkImpl.class)
 public interface Link {
@@ -48,12 +48,12 @@ public interface Link {
 	void setType(String type);
 
 	/**
-	 * Get the source element of this link.
+	 * Returns the source element of this link (=edge).
 	 *
 	 * @see DecisionKnowledgeElement
 	 * @return source element of this link.
 	 */
-	DecisionKnowledgeElement getSourceElement();
+	DecisionKnowledgeElement getSource();
 
 	/**
 	 * Set the source element of this link.
@@ -100,12 +100,12 @@ public interface Link {
 	void setIdOfSourceElement(long id);
 
 	/**
-	 * Get the destination element of this link.
+	 * Returns the target (=destination) element of this link (=edge).
 	 *
 	 * @see DecisionKnowledgeElement
 	 * @return destination element of this link.
 	 */
-	DecisionKnowledgeElement getDestinationElement();
+	DecisionKnowledgeElement getTarget();
 
 	/**
 	 * Set the destination element of this link.
@@ -250,8 +250,7 @@ public interface Link {
 	 * 
 	 * @return a link object.
 	 */
-	static Link instantiateDirectedLink(DecisionKnowledgeElement parentElement,
-			DecisionKnowledgeElement childElement) {
+	static Link instantiateDirectedLink(DecisionKnowledgeElement parentElement, DecisionKnowledgeElement childElement) {
 		KnowledgeType knowledgeTypeOfChildElement = childElement.getType();
 		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(knowledgeTypeOfChildElement);
 		return instantiateDirectedLink(parentElement, childElement, linkType);
@@ -290,22 +289,6 @@ public interface Link {
 	 *            of the source element of this link, e.g., "i" for JIRA issue.
 	 */
 	void setDocumentationLocationOfSourceElement(String documentationLocation);
-
-	/**
-	 * Retrieves the source element of this link (=edge).
-	 *
-	 * @see Node
-	 * @return source element of this link.
-	 */
-	Node getSource();
-
-	/**
-	 * Retrieves the target (=destination) element of this link (=edge).
-	 *
-	 * @see Node
-	 * @return destination element of this link.
-	 */
-	Node getTarget();
 
 	/**
 	 * Retrieves the weight of this link (=edge).

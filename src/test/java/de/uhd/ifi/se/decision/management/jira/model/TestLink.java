@@ -53,55 +53,55 @@ public class TestLink extends TestSetUp {
 
 	@Test
 	public void testGetIdOfSourceElement() {
-		assertEquals(1, link.getSourceElement().getId());
+		assertEquals(1, link.getSource().getId());
 	}
 
 	@Test
 	public void testGetIdOfDestinationElement() {
-		assertEquals(4, link.getDestinationElement().getId());
+		assertEquals(4, link.getTarget().getId());
 	}
 
 	@Test
 	public void testSetSourceElementById() {
 		link.setSourceElement(2, "i");
-		assertEquals(2, link.getSourceElement().getId(), 0.0);
+		assertEquals(2, link.getSource().getId(), 0.0);
 	}
 
 	@Test
 	public void testSetDestinationElementById() {
-		long oldId = link.getDestinationElement().getId();
+		long oldId = link.getTarget().getId();
 		link.setDestinationElement(5, "i");
-		assertEquals(5, link.getDestinationElement().getId(), 0.0);
+		assertEquals(5, link.getTarget().getId(), 0.0);
 		link.setDestinationElement(oldId, "i");
 	}
 
 	@Test
 	public void testGetSourceElement() {
-		assertEquals("TEST-1", link.getSourceElement().getKey());
+		assertEquals("TEST-1", link.getSource().getKey());
 	}
 
 	@Test
 	public void testSetSourceElement() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		DecisionKnowledgeElement oldElement = link.getSourceElement();
+		DecisionKnowledgeElement oldElement = link.getSource();
 		element.setKey("TestNew");
 		link.setSourceElement(element);
-		assertEquals(element.getKey(), link.getSourceElement().getKey());
+		assertEquals(element.getKey(), link.getSource().getKey());
 		link.setSourceElement(oldElement);
 	}
 
 	@Test
 	public void testGetDestinationElement() {
-		assertEquals("TEST-4", link.getDestinationElement().getKey());
+		assertEquals("TEST-4", link.getTarget().getKey());
 	}
 
 	@Test
 	public void testSetDestinationElement() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		DecisionKnowledgeElement oldElement = link.getDestinationElement();
+		DecisionKnowledgeElement oldElement = link.getTarget();
 		element.setKey("TestNew");
 		link.setDestinationElement(element);
-		assertEquals(element.getKey(), link.getDestinationElement().getKey());
+		assertEquals(element.getKey(), link.getTarget().getKey());
 		link.setDestinationElement(oldElement);
 	}
 
@@ -121,7 +121,7 @@ public class TestLink extends TestSetUp {
 		destinationElement.setId(15);
 		destinationElement.setKey("TestDestinationElement");
 		Link link = new LinkImpl(sourceElement, destinationElement);
-		assertEquals("TestSourceElement", link.getSourceElement().getKey());
+		assertEquals("TestSourceElement", link.getSource().getKey());
 	}
 
 	@Test
@@ -149,12 +149,12 @@ public class TestLink extends TestSetUp {
 
 	@Test
 	public void testGetSource() {
-		assertEquals(link.getSourceElement().getId(), link.getSource().getId());
+		assertEquals(link.getSource().getId(), link.getSource().getId());
 	}
 
 	@Test
 	public void testGetTarget() {
-		assertEquals(link.getDestinationElement().getId(), link.getTarget().getId());
+		assertEquals(link.getTarget().getId(), link.getTarget().getId());
 	}
 
 	@Test
@@ -179,13 +179,13 @@ public class TestLink extends TestSetUp {
 
 	@Test
 	public void testEqualsEquals() {
-		Link linkEquals = new LinkImpl(link.getSourceElement(), link.getDestinationElement());
+		Link linkEquals = new LinkImpl(link.getSource(), link.getTarget());
 		assertTrue(link.equals(linkEquals));
 	}
 
 	@Test
 	public void testLinkIdZeroElementSame() {
-		Link newLink = new LinkImpl(link.getSourceElement(), link.getDestinationElement());
+		Link newLink = new LinkImpl(link.getSource(), link.getTarget());
 		long linkId = newLink.getId();
 		newLink.setId(0);
 		assertEquals(linkId, newLink.getId());

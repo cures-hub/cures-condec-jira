@@ -69,6 +69,34 @@ public interface KnowledgeGraph extends Graph<Node, Link> {
 	boolean addEdge(Link link);
 
 	/**
+	 * Removes the specified edge from the graph if it is present. Returns
+	 * <tt>true</tt> if the graph contained the specified edge. (The graph will not
+	 * contain the specified edge once the call returns).
+	 *
+	 * @param link
+	 *            edge to be removed from this graph, if present.
+	 *
+	 * @return <code>true</code> if and only if the graph contained the specified
+	 *         edge.
+	 */
+	@Override
+	boolean removeEdge(Link link);
+
+	/**
+	 * Returns <tt>true</tt> if this graph contains the specified edge. More
+	 * formally, returns <tt>true</tt> if and only if this graph contains an edge
+	 * <code>e2</code> such that <code>e.equals(e2)</code>. If the specified edge is
+	 * <code>null</code> returns <code>false</code>.
+	 *
+	 * @param link
+	 *            edge whose presence in this graph is to be tested.
+	 *
+	 * @return <tt>true</tt> if this graph contains the specified edge.
+	 */
+	@Override
+	boolean containsEdge(Link link);
+
+	/**
 	 * Updates a node. If it is not in the graph it will be added.
 	 * 
 	 * @param node
