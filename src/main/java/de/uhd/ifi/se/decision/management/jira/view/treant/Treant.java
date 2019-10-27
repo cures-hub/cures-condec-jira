@@ -75,6 +75,7 @@ public class Treant {
 		if (element == null || element.getProject() == null) {
 			return new TreantNode();
 		}
+
 		Set<Link> linksToTraverse = graph.edgesOf(element);
 		boolean isCollapsed = isNodeCollapsed(linksToTraverse, currentDepth);
 		TreantNode node = createTreantNode(element, link, isCollapsed);

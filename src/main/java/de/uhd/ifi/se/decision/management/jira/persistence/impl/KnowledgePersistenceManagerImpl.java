@@ -214,4 +214,12 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		KnowledgeGraph.getOrCreate(projectKey).removeVertex(element);
 		return persistenceManager.deleteDecisionKnowledgeElement(element, user);
 	}
+
+	@Override
+	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
+		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
+				.getPersistenceManager(element);
+		KnowledgeGraph.getOrCreate(projectKey).updateNode(element);
+		return persistenceManager.updateDecisionKnowledgeElement(element, user);
+	}
 }

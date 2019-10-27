@@ -188,16 +188,17 @@ public class KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Element could not be updated due to a bad request.")).build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getPersistenceManager(element);
 
-		DecisionKnowledgeElement formerElement = persistenceManager.getDecisionKnowledgeElement(element.getId());
-		if (formerElement == null) {
+		DecisionKnowledgeElement formerElement = KnowledgePersistenceManager
+				.getDecisionKnowledgeElement(element.getId(), element.getDocumentationLocation());
+		if (formerElement == null || formerElement.getId() <= 0) {
 			return Response.status(Status.NOT_FOUND)
 					.entity(ImmutableMap.of("error", "Decision knowledge element could not be found in database."))
 					.build();
 		}
 
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(element.getProject().getProjectKey());
 		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(element, user);
 
 		if (!isUpdated) {
@@ -349,14 +350,15 @@ public class KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Setting element irrelevant failed due to a bad request."))
 					.build();
 		}
-		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getPersistenceManager(decisionKnowledgeElement);
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(decisionKnowledgeElement.getProject().getProjectKey());
+
 		if (decisionKnowledgeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 					.entity(ImmutableMap.of("error", "Only sentence elements can be set to irrelevant.")).build();
 		}
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager
-				.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) KnowledgePersistenceManager
+				.getDecisionKnowledgeElement(decisionKnowledgeElement.getId(), DocumentationLocation.JIRAISSUETEXT);
 		if (sentence == null) {
 			return Response.status(Status.NOT_FOUND)
 					.entity(ImmutableMap.of("error", "Element could not be found in database.")).build();

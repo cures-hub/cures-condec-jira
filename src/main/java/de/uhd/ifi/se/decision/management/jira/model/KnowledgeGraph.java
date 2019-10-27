@@ -101,5 +101,5 @@ public interface KnowledgeGraph extends Graph<Node, Link> {
 	 * 
 	 * @param node
 	 */
-	void updateNode(Node node);
+	boolean updateNode(DecisionKnowledgeElement node);
 }

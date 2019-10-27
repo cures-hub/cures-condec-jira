@@ -79,8 +79,8 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		Collection<IssueLinkType> issueLinkTypes = issueLinkTypeManager.getIssueLinkTypes();
 		for (IssueLinkType linkType : issueLinkTypes) {
 			long typeId = linkType.getId();
-			IssueLink issueLink = issueLinkManager.getIssueLink(link.getTarget().getId(),
-					link.getSource().getId(), typeId);
+			IssueLink issueLink = issueLinkManager.getIssueLink(link.getTarget().getId(), link.getSource().getId(),
+					typeId);
 			if (issueLink != null) {
 				issueLinkManager.removeIssueLink(issueLink, user);
 				return true;
@@ -146,10 +146,10 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		long linkTypeId = getLinkTypeId(link.getType());
 		try {
-			issueLinkManager.createIssueLink(link.getSource().getId(), link.getTarget().getId(),
-					linkTypeId, (long) 0, user);
-			IssueLink issueLink = issueLinkManager.getIssueLink(link.getSource().getId(),
-					link.getTarget().getId(), linkTypeId);
+			issueLinkManager.createIssueLink(link.getSource().getId(), link.getTarget().getId(), linkTypeId, (long) 0,
+					user);
+			IssueLink issueLink = issueLinkManager.getIssueLink(link.getSource().getId(), link.getTarget().getId(),
+					linkTypeId);
 			return issueLink.getId();
 		} catch (CreateException | NullPointerException e) {
 			LOGGER.error("Insertion of link into database failed. Message: " + e.getMessage());
@@ -171,8 +171,8 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		try {
 			long linkTypeId = getLinkTypeId(link.getType());
-			IssueLink issueLink = issueLinkManager.getIssueLink(link.getSource().getId(),
-					link.getTarget().getId(), linkTypeId);
+			IssueLink issueLink = issueLinkManager.getIssueLink(link.getSource().getId(), link.getTarget().getId(),
+					linkTypeId);
 			return issueLink.getId();
 		} catch (NullPointerException e) {
 			LOGGER.error("Id of link in database could not be retrieved. Message: " + e.getMessage());

@@ -202,7 +202,8 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 
 	@Override
 	public List<Link> getInwardLinks() {
-		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager.getPersistenceManager(this);
+		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
+				.getPersistenceManager(this);
 		return persistenceManager.getInwardLinks(this);
 	}
 
@@ -236,6 +237,7 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 				.getDocumentationLocationFromIdentifier(documentationLocation);
 	}
 
+	@Override
 	@XmlElement(name = "url")
 	public String getUrl() {
 		String key = this.getKey();
@@ -298,12 +300,11 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 	public boolean existsInDatabase() {
 		DecisionKnowledgeElement elementInDatabase = KnowledgePersistenceManager.getDecisionKnowledgeElement(id,
 				documentationLocation);
-		return elementInDatabase.getId() > 0;
+		return elementInDatabase != null && elementInDatabase.getId() > 0;
 	}
 
 	@Override
 	public String toString() {
 		return this.getDescription();
 	}
-
 }

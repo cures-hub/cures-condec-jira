@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,6 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -81,5 +83,21 @@ public class TestKnowledgeGraph extends TestSetUp {
 		String projectKey = sentence.getProject().getProjectKey();
 		KnowledgeGraph graph = new KnowledgeGraphImpl(projectKey);
 		assertTrue(graph.containsVertex(sentence));
+	}
+
+	@Test
+	@NonTransactional
+	public void testUpdateNode() {
+		DecisionKnowledgeElement node = (DecisionKnowledgeElement) graph.vertexSet().iterator().next();
+		assertEquals("WI: Implement feature", node.getSummary());
+		node.setSummary("Updated");
+		KnowledgePersistenceManager.getOrCreate("TEST").updateDecisionKnowledgeElement(node, null);
+		node = (DecisionKnowledgeElement) graph.vertexSet().iterator().next();
+		assertEquals("Updated", node.getSummary());
+	}
+
+	@After
+	public void tearDown() {
+		KnowledgeGraph.instances.clear();
 	}
 }

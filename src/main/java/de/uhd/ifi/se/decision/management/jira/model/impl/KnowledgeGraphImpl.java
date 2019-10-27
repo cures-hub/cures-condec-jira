@@ -1,9 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.model.impl;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 
 import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.slf4j.Logger;
@@ -92,25 +93,31 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	}
 
 	@Override
-	public void updateNode(Node node) {
-		if (!this.containsVertex(node)) {
-			this.addVertex(node);
-		} else {
-			Iterator<Node> iter = this.vertexSet().iterator();
-			while (iter.hasNext()) {
-				Node iterNode = iter.next();
-				/*
-				 * the node need to be updated. To update the node we remove the old element and
-				 * add the new. the ids need to be the same. the vertex set has no get function
-				 * because of this we iterate the set
-				 */
-				if (iterNode.getId() == node.getId()) {
-					this.vertexSet().remove(iterNode);
-					this.vertexSet().add(node);
-					break;
-				}
+	public boolean updateNode(DecisionKnowledgeElement node) {
+		DecisionKnowledgeElement oldNode = null;
+		for (Node currentNode : vertexSet()) {
+			if (node.getId() == currentNode.getId()) {
+				oldNode = (DecisionKnowledgeElement) currentNode;
 			}
 		}
+		if (oldNode == null) {
+			return false;
+		}
+		return replaceVertex(oldNode, node);
+	}
+
+	private boolean replaceVertex(DecisionKnowledgeElement vertex, DecisionKnowledgeElement replace) {
+		addVertex(replace);
+		for (Link edge : outgoingEdgesOf(vertex)) {
+			addEdge(replace, edge.getTarget(), edge);
+		}
+		for (Link edge : incomingEdgesOf(vertex)) {
+			addEdge(edge.getSource(), replace, edge);
+		}
+		for (Link edge : edgesOf(vertex)) {
+			removeEdge(edge);
+		}
+		return removeVertex(vertex);
 	}
 
 	@Override
@@ -124,9 +131,17 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		if (removedLink == null) {
 			removedLink = super.removeEdge(link.getTarget(), link.getSource());
 		}
-		if (removedLink == null) {
-			return false;
+		return removedLink != null;
+	}
+
+	@Override
+	public Set<Link> edgesOf(Node node) {
+		Set<Link> edges = new HashSet<Link>();
+		try {
+			edges = super.edgesOf(node);
+		} catch (IllegalArgumentException e) {
+			LOGGER.error("Edges for node could not be returned. " + e);
 		}
-		return true;
+		return edges;
 	}
 }

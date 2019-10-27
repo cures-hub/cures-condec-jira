@@ -103,17 +103,29 @@ public interface KnowledgePersistenceManager {
 	List<DecisionKnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type);
 
 	/**
-	 * Delete an existing decision knowledge element in database.
+	 * Deletes an existing decision knowledge element in database.
+	 *
+	 * @param element
+	 *            decision knowledge element with id in database and the
+	 *            {@link DocumentationLocation} set.
+	 * @param user
+	 *            authenticated JIRA {@link ApplicationUser}.
+	 * @return true if deleting was successful.
+	 * @see DecisionKnowledgeElement
+	 */
+	boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
+
+	/**
+	 * Update an existing decision knowledge element in database.
 	 *
 	 * @param element
 	 *            decision knowledge element with id in database.
 	 * @param user
-	 *            authenticated JIRA application user
-	 * @return true if deleting was successful.
+	 *            authenticated JIRA {@link ApplicationUser}.
+	 * @return true if updating was successful.
 	 * @see DecisionKnowledgeElement
-	 * @see ApplicationUser
 	 */
-	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
+	boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
 
 	/**
 	 * Inserts a new link into database. The link can be between any kinds of nodes
@@ -318,10 +330,5 @@ public interface KnowledgePersistenceManager {
 		if (element.getType().equals(KnowledgeType.ALTERNATIVE)) {
 			StatusPersistenceManager.setStatusForElement(element, KnowledgeStatus.IDEA);
 		}
-	}
-
-	static void updateGraphNode(DecisionKnowledgeElement element) {
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(element.getProject().getProjectKey());
-		graph.updateNode(element);
 	}
 }
