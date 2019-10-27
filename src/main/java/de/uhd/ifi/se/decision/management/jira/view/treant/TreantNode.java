@@ -87,12 +87,12 @@ public class TreantNode {
 		this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement, link.getType());
 		switch (link.getType()) {
 		case "support":
-			if (decisionKnowledgeElement.getId() == link.getSourceElement().getId()) {
+			if (decisionKnowledgeElement.getId() == link.getSource().getId()) {
 				this.htmlClass = "pro";
 			}
 			break;
 		case "attack":
-			if (decisionKnowledgeElement.getId() == link.getSourceElement().getId()) {
+			if (decisionKnowledgeElement.getId() == link.getSource().getId()) {
 				this.htmlClass = "con";
 			}
 			break;

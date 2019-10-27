@@ -14,16 +14,14 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.StatusPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgePersistenceManagerImpl;
-import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.StatusPersistenceManager;
 
 /**
  * Interface that integrates all available persistence managers for single
@@ -39,8 +37,8 @@ public interface KnowledgePersistenceManager {
 
 	/**
 	 * Map of persistence manager instances that are identified by the project key.
-	 * Use the {@link KnowledgePersistenceManager#getOrCreate()} method to either create or
-	 * retrieve an existing object
+	 * Use the {@link KnowledgePersistenceManager#getOrCreate()} method to either
+	 * create or retrieve an existing object
 	 * 
 	 * @issue How can we reuse existing objects instead of recreating them all the
 	 *        time?
@@ -105,6 +103,31 @@ public interface KnowledgePersistenceManager {
 	List<DecisionKnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type);
 
 	/**
+	 * Deletes an existing decision knowledge element in database.
+	 *
+	 * @param element
+	 *            decision knowledge element with id in database and the
+	 *            {@link DocumentationLocation} set.
+	 * @param user
+	 *            authenticated JIRA {@link ApplicationUser}.
+	 * @return true if deleting was successful.
+	 * @see DecisionKnowledgeElement
+	 */
+	boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
+
+	/**
+	 * Update an existing decision knowledge element in database.
+	 *
+	 * @param element
+	 *            decision knowledge element with id in database.
+	 * @param user
+	 *            authenticated JIRA {@link ApplicationUser}.
+	 * @return true if updating was successful.
+	 * @see DecisionKnowledgeElement
+	 */
+	boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
+
+	/**
 	 * Inserts a new link into database. The link can be between any kinds of nodes
 	 * in the {@link KnowledgeGraph}.
 	 *
@@ -115,33 +138,7 @@ public interface KnowledgePersistenceManager {
 	 *            authenticated JIRA {@link ApplicationUser}.
 	 * @return internal database id of inserted link, zero if insertion failed.
 	 */
-	static long insertLink(Link link, ApplicationUser user) {
-		String projectKey = link.getSourceElement().getProject().getProjectKey();
-
-		if (link.containsUnknownDocumentationLocation()) {
-			link.setDefaultDocumentationLocation(projectKey);
-		}
-
-		long databaseId = 0;
-
-		if (link.isIssueLink()) {
-			databaseId = JiraIssuePersistenceManager.insertLink(link, user);
-			if (databaseId > 0) {
-				KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
-			}
-			return databaseId;
-		}
-
-		if (ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
-			DecisionKnowledgeElement sourceElement = link.getSourceElement();
-			new WebhookConnector(projectKey).sendElementChanges(sourceElement);
-		}
-		databaseId = GenericLinkManager.insertLink(link, user);
-		if (databaseId > 0) {
-			KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
-		}
-		return databaseId;
-	}
+	long insertLink(Link link, ApplicationUser user);
 
 	/**
 	 * Updates an existing link in database. The link can be between any kinds of
@@ -164,33 +161,8 @@ public interface KnowledgePersistenceManager {
 	 * @see DocumentationLocation
 	 * @see Link
 	 */
-	static long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType, long idOfParentElement,
-			String documentationLocationOfParentElement, ApplicationUser user) {
-
-		if (LinkType.linkTypesAreEqual(formerKnowledgeType, element.getType()) || idOfParentElement == 0) {
-			return -1;
-		}
-
-		String projectKey = element.getProject().getProjectKey();
-
-		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerKnowledgeType);
-		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
-
-		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
-		parentElement.setId(idOfParentElement);
-		parentElement.setDocumentationLocation(documentationLocationOfParentElement);
-		parentElement.setProject(projectKey);
-
-		Link formerLink = Link.instantiateDirectedLink(parentElement, element, formerLinkType);
-		if (!deleteLink(formerLink, user)) {
-			return 0;
-		}
-		KnowledgeGraph.getOrCreate(projectKey).removeEdge(formerLink);
-
-		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
-		KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
-		return insertLink(link, user);
-	}
+	long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType, long idOfParentElement,
+			String documentationLocationOfParentElement, ApplicationUser user);
 
 	/**
 	 * Deletes an existing link in database. The link can be between any kinds of
@@ -203,33 +175,7 @@ public interface KnowledgePersistenceManager {
 	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return true if deletion was successful.
 	 */
-	static boolean deleteLink(Link link, ApplicationUser user) {
-		String projectKey = link.getSourceElement().getProject().getProjectKey();
-
-		if (link.containsUnknownDocumentationLocation()) {
-			link.setDefaultDocumentationLocation(projectKey);
-		}
-		KnowledgeGraph.getOrCreate(projectKey).removeEdge(link);
-
-		boolean isDeleted = false;
-		if (link.isIssueLink()) {
-			isDeleted = JiraIssuePersistenceManager.deleteLink(link, user);
-			if (!isDeleted) {
-				isDeleted = JiraIssuePersistenceManager.deleteLink(link.flip(), user);
-			}
-			return isDeleted;
-		}
-		isDeleted = GenericLinkManager.deleteLink(link);
-		if (!isDeleted) {
-			isDeleted = GenericLinkManager.deleteLink(link.flip());
-		}
-
-		if (isDeleted && ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
-			DecisionKnowledgeElement sourceElement = link.getSourceElement();
-			new WebhookConnector(projectKey).sendElementChanges(sourceElement);
-		}
-		return isDeleted;
-	}
+	boolean deleteLink(Link link, ApplicationUser user);
 
 	/**
 	 * Returns the database id of a link object (either a Jira issue link or a

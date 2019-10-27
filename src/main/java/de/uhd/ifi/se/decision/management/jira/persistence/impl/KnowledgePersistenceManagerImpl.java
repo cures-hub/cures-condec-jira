@@ -2,12 +2,19 @@ package de.uhd.ifi.se.decision.management.jira.persistence.impl;
 
 import java.util.List;
 
+import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
  * Class that integates all available persistence managers for single
@@ -86,7 +93,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		elements.addAll(jiraIssueTextPersistenceManager.getDecisionKnowledgeElements(type));
 		return elements;
 	}
-	
+
 	@Override
 	public AbstractPersistenceManagerForSingleLocation getPersistenceManager(String documentationLocationIdentifier) {
 		if (documentationLocationIdentifier == null) {
@@ -113,5 +120,106 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		default:
 			return getDefaultPersistenceManager();
 		}
+	}
+
+	@Override
+	public long insertLink(Link link, ApplicationUser user) {
+		if (link.containsUnknownDocumentationLocation()) {
+			link.setDefaultDocumentationLocation(projectKey);
+		}
+
+		long databaseId = 0;
+
+		if (link.isIssueLink()) {
+			databaseId = JiraIssuePersistenceManager.insertLink(link, user);
+			if (databaseId > 0) {
+				link.setId(databaseId);
+				KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
+			}
+			return databaseId;
+		}
+
+		if (ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
+			DecisionKnowledgeElement sourceElement = link.getSource();
+			new WebhookConnector(projectKey).sendElementChanges(sourceElement);
+		}
+		databaseId = GenericLinkManager.insertLink(link, user);
+		if (databaseId > 0) {
+			link.setId(databaseId);
+			KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
+		}
+		return databaseId;
+	}
+
+	@Override
+	public boolean deleteLink(Link link, ApplicationUser user) {
+		if (link.containsUnknownDocumentationLocation()) {
+			link.setDefaultDocumentationLocation(projectKey);
+		}
+
+		KnowledgeGraph.getOrCreate(projectKey).removeEdge(link);
+
+		boolean isDeleted = false;
+		if (link.isIssueLink()) {
+			isDeleted = JiraIssuePersistenceManager.deleteLink(link, user);
+			if (!isDeleted) {
+				isDeleted = JiraIssuePersistenceManager.deleteLink(link.flip(), user);
+			}
+			return isDeleted;
+		}
+		isDeleted = GenericLinkManager.deleteLink(link);
+		if (!isDeleted) {
+			isDeleted = GenericLinkManager.deleteLink(link.flip());
+		}
+
+		if (isDeleted && ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
+			DecisionKnowledgeElement sourceElement = link.getSource();
+			new WebhookConnector(projectKey).sendElementChanges(sourceElement);
+		}
+
+		return isDeleted;
+	}
+
+	@Override
+	public long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType, long idOfParentElement,
+			String documentationLocationOfParentElement, ApplicationUser user) {
+
+		if (LinkType.linkTypesAreEqual(formerKnowledgeType, element.getType()) || idOfParentElement == 0) {
+			return -1;
+		}
+
+		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerKnowledgeType);
+		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
+
+		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
+		parentElement.setId(idOfParentElement);
+		parentElement.setDocumentationLocation(documentationLocationOfParentElement);
+		parentElement.setProject(projectKey);
+
+		Link formerLink = Link.instantiateDirectedLink(parentElement, element, formerLinkType);
+		if (!this.deleteLink(formerLink, user)) {
+			return 0;
+		}
+		KnowledgeGraph.getOrCreate(projectKey).removeEdge(formerLink);
+
+		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
+		KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
+		return this.insertLink(link, user);
+	}
+
+	@Override
+	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
+		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
+				.getPersistenceManager(element);
+		KnowledgeGraph.getOrCreate(projectKey).removeVertex(element);
+		return persistenceManager.deleteDecisionKnowledgeElement(element, user);
+	}
+
+	@Override
+	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
+		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
+				.getPersistenceManager(element);
+		KnowledgeGraph.getOrCreate(projectKey).updateNode(element);
+		return persistenceManager.updateDecisionKnowledgeElement(element, user);
 	}
 }

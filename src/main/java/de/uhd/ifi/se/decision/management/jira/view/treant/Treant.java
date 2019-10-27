@@ -75,6 +75,7 @@ public class Treant {
 		if (element == null || element.getProject() == null) {
 			return new TreantNode();
 		}
+
 		Set<Link> linksToTraverse = graph.edgesOf(element);
 		boolean isCollapsed = isNodeCollapsed(linksToTraverse, currentDepth);
 		TreantNode node = createTreantNode(element, link, isCollapsed);
@@ -115,7 +116,7 @@ public class Treant {
 				continue;
 			}
 			DecisionKnowledgeElement oppositeElement = currentLink.getOppositeElement(rootElement);
-			if (oppositeElement.getType() == KnowledgeType.OTHER) {
+			if (oppositeElement == null || oppositeElement.getType() == KnowledgeType.OTHER) {
 				continue;
 			}
 			TreantNode newChildNode = createNodeStructure(oppositeElement, currentLink, currentDepth + 1);

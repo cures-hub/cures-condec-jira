@@ -25,7 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPers
 /**
  * Triggers the extraction of decision knowledge elements and their integration
  * in the knowledge graph when the user changes either a comment or the
- * description of a JIRA issue.
+ * description of a Jira issue.
  */
 public class JiraIssueTextExtractionEventListener {
 

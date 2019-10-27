@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,6 +16,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -119,6 +121,7 @@ public class TestWebhookConnector extends TestSetUp {
 	@NonTransactional
 	public void testDeleteRootElementInTreeWorks() {
 		assertTrue(webhookConnector.deleteElement(element, user));
+		KnowledgeGraph.getOrCreate("TEST").addVertex(element);
 	}
 
 	@Test
@@ -126,6 +129,7 @@ public class TestWebhookConnector extends TestSetUp {
 	public void testDeleteOtherElementInTreeWorks() {
 		element.setType("DESCRIPTION");
 		assertTrue(webhookConnector.deleteElement(element, user));
+		KnowledgeGraph.getOrCreate("TEST").addVertex(element);
 	}
 
 	@Test
@@ -133,5 +137,10 @@ public class TestWebhookConnector extends TestSetUp {
 	public void testSetGetUrl() {
 		webhookConnector.setUrl("https://ThisIsTheURL");
 		assertEquals("https://ThisIsTheURL", webhookConnector.getUrl());
+	}
+
+	@After
+	public void tearDown() {
+		KnowledgeGraph.instances.clear();
 	}
 }

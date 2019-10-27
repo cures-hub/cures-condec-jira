@@ -45,7 +45,7 @@ public class Matrix {
         Set<Link> links = graph.edgeSet();
         HashSet<MatrixEntry> entries = new HashSet<>();
         for (Link link : links) {
-            entries.add(new MatrixEntry(link.getSourceElement().getId(), link.getDestinationElement().getId(), link.getType()));
+            entries.add(new MatrixEntry(link.getSource().getId(), link.getTarget().getId(), link.getType()));
         }
         return entries;
     }

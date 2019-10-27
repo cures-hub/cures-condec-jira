@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,6 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
@@ -144,5 +146,10 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 		MutableComment mutableComment = (MutableComment) ComponentAccessor.getCommentManager()
 				.getCommentById(sentence.getCommentId());
 		assertEquals("{issue}some fancy new text{issue}", mutableComment.getBody());
+	}
+
+	@After
+	public void tearDown() {
+		KnowledgeGraph.instances.clear();
 	}
 }

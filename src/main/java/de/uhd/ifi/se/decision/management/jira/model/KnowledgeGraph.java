@@ -54,12 +54,8 @@ public interface KnowledgeGraph extends Graph<Node, Link> {
 	 * source vertex to the target vertex. More formally, adds the specified edge,
 	 * <code>e</code>, to this graph if this graph contains no edge <code>e2</code>
 	 * such that <code>e2.equals(e)</code>. If this graph already contains such an
-	 * edge, the call leaves this graph unchanged and returns <tt>false</tt>. Some
-	 * graphs do not allow edge-multiplicity. In such cases, if the graph already
-	 * contains an edge from the specified source to the specified target, than this
-	 * method does not change the graph and returns <code>
-	 * false</code>. If the edge was added to the graph, returns <code>
-	 * true</code>.
+	 * edge, the call leaves this graph unchanged and returns <tt>false</tt>. If the
+	 * edge was added to the graph, returns <code>true</code>.
 	 *
 	 * @param link
 	 *            edge to be added to this graph as a {@link Link} object.
@@ -71,4 +67,39 @@ public interface KnowledgeGraph extends Graph<Node, Link> {
 	 * @see #getEdgeSupplier()
 	 */
 	boolean addEdge(Link link);
+
+	/**
+	 * Removes the specified edge from the graph if it is present. Returns
+	 * <tt>true</tt> if the graph contained the specified edge. (The graph will not
+	 * contain the specified edge once the call returns).
+	 *
+	 * @param link
+	 *            edge to be removed from this graph, if present.
+	 *
+	 * @return <code>true</code> if and only if the graph contained the specified
+	 *         edge.
+	 */
+	@Override
+	boolean removeEdge(Link link);
+
+	/**
+	 * Returns <tt>true</tt> if this graph contains the specified edge. More
+	 * formally, returns <tt>true</tt> if and only if this graph contains an edge
+	 * <code>e2</code> such that <code>e.equals(e2)</code>. If the specified edge is
+	 * <code>null</code> returns <code>false</code>.
+	 *
+	 * @param link
+	 *            edge whose presence in this graph is to be tested.
+	 *
+	 * @return <tt>true</tt> if this graph contains the specified edge.
+	 */
+	@Override
+	boolean containsEdge(Link link);
+
+	/**
+	 * Updates a node. If it is not in the graph it will be added.
+	 * 
+	 * @param node
+	 */
+	boolean updateNode(DecisionKnowledgeElement node);
 }

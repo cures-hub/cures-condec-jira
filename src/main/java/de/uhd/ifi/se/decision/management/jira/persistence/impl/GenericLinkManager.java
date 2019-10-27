@@ -197,12 +197,12 @@ public class GenericLinkManager {
 		}
 
 		final LinkInDatabase linkInDatabase = ACTIVE_OBJECTS.create(LinkInDatabase.class);
-		DecisionKnowledgeElement sourceElement = link.getSourceElement();
+		DecisionKnowledgeElement sourceElement = link.getSource();
 		String documentationLocationOfSourceElement = sourceElement.getDocumentationLocation().getIdentifier();
 		linkInDatabase.setSourceDocumentationLocation(documentationLocationOfSourceElement);
 		linkInDatabase.setSourceId(sourceElement.getId());
 
-		DecisionKnowledgeElement destinationElement = link.getDestinationElement();
+		DecisionKnowledgeElement destinationElement = link.getTarget();
 		String documentationLocationOfDestinationElement = destinationElement.getDocumentationLocation()
 				.getIdentifier();
 		linkInDatabase.setDestinationId(destinationElement.getId());
