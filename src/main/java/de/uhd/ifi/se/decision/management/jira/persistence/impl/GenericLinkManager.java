@@ -89,6 +89,8 @@ public class GenericLinkManager {
 			if (link.getDestinationId() == elementId && link.getDestDocumentationLocation().equals(identifier)
 					|| link.getSourceId() == elementId && link.getSourceDocumentationLocation().equals(identifier)) {
 				LinkInDatabase.deleteLink(link);
+				Link linkObject = new LinkImpl(link);
+				KnowledgeGraph.getOrCreate(linkObject.getSource().getProject().getProjectKey()).removeEdge(linkObject);
 			}
 		}
 	}
@@ -211,6 +213,7 @@ public class GenericLinkManager {
 		linkInDatabase.setType(link.getType());
 		linkInDatabase.save();
 		ACTIVE_OBJECTS.find(LinkInDatabase.class);
+		KnowledgeGraph.getOrCreate(link.getSource().getProject().getProjectKey()).addEdge(link);
 		return linkInDatabase.getId();
 	}
 

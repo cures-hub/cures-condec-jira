@@ -303,7 +303,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUETEXT);
 		}
 		KnowledgePersistenceManager.insertStatus(sentences.get(0));
-		// KnowledgePersistenceManager.updateGraphNode(element);
+		KnowledgeGraph.getOrCreate(sentences.get(0).getProject().getProjectKey()).addVertex(sentences.get(0));
 		return sentences.get(0);
 	}
 
@@ -321,9 +321,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		databaseEntry.save();
 		LOGGER.debug("\naddNewSentenceintoAo:\nInsert Sentence " + databaseEntry.getId()
 				+ " into database from comment " + databaseEntry.getCommentId());
-
-		KnowledgePersistenceManager.insertStatus(changeEntryToNewDecision(databaseEntry));
-		// KnowledgePersistenceManager.updateGraphNode(sentence);
+		DecisionKnowledgeElement entryElement = changeEntryToNewDecision(databaseEntry);
+		KnowledgePersistenceManager.insertStatus(entryElement);
+		KnowledgeGraph.getOrCreate(sentence.getProject().getProjectKey()).addVertex(entryElement);
 		return databaseEntry.getId();
 	}
 
@@ -453,7 +453,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		}
 		Link link = Link.instantiateDirectedLink(lastElement, sentence);
 		GenericLinkManager.insertLink(link, null);
-		// KnowledgePersistenceManager.updateGraphLinks(link);
 		return true;
 	}
 
@@ -521,6 +520,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			if (!isExistent(databaseEntry)) {
 				PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
 				GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUETEXT);
+				DecisionKnowledgeElement element = new PartOfJiraIssueTextImpl(databaseEntry);
+				KnowledgeGraph.getOrCreate(element.getProject().getProjectKey()).removeVertex(element);
 			}
 		}
 	}
