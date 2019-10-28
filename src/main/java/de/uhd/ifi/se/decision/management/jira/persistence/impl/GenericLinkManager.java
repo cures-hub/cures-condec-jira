@@ -213,6 +213,7 @@ public class GenericLinkManager {
 		linkInDatabase.setType(link.getType());
 		linkInDatabase.save();
 		ACTIVE_OBJECTS.find(LinkInDatabase.class);
+		link = new LinkImpl(linkInDatabase);
 		KnowledgeGraph.getOrCreate(link.getSource().getProject().getProjectKey()).addEdge(link);
 		return linkInDatabase.getId();
 	}

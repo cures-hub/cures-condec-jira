@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,7 +41,7 @@ public class TestTreant extends TestSetUp {
 		this.nodeStructure = new TreantNode();
 		this.treant = new Treant("TEST", "TEST-30", 0);
 		this.treant.setChart(chart);
-		this.treant.setNodeStructure(nodeStructure);		
+		this.treant.setNodeStructure(nodeStructure);
 		persistenceStrategy = KnowledgePersistenceManager.getOrCreate("TEST").getDefaultPersistenceManager();
 	}
 
@@ -154,7 +155,7 @@ public class TestTreant extends TestSetUp {
 				.getDecisionKnowledgeElement(sentences.get(0).getJiraIssueId());
 		TreantNode nodeStructure = treant.createNodeStructure(element, null, 0);
 		assertEquals(TreantNode.class, nodeStructure.getClass());
-		assertEquals(1, nodeStructure.getChildren().size());
+		assertEquals(2, nodeStructure.getChildren().size());
 	}
 
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
