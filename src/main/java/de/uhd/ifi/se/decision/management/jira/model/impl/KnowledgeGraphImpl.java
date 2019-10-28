@@ -77,12 +77,10 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		DecisionKnowledgeElement source = link.getSource();
 		if (!containsVertex(source)) {
 			addVertex(source);
-			System.out.println("Source node was created in graph");
 		}
 		DecisionKnowledgeElement destination = link.getTarget();
 		if (!containsVertex(destination)) {
 			addVertex(destination);
-			System.out.println("Destination node was created in graph");
 		}
 		try {
 			isEdgeCreated = this.addEdge(source, destination, link);
@@ -94,30 +92,34 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 
 	@Override
 	public boolean updateNode(DecisionKnowledgeElement node) {
-		DecisionKnowledgeElement oldNode = null;
 		for (Node currentNode : vertexSet()) {
 			if (node.getId() == currentNode.getId()) {
-				oldNode = (DecisionKnowledgeElement) currentNode;
+				return replaceVertex((DecisionKnowledgeElement) currentNode, node);
 			}
 		}
-		if (oldNode == null) {
-			return false;
-		}
-		return replaceVertex(oldNode, node);
+		return false;
 	}
 
 	private boolean replaceVertex(DecisionKnowledgeElement vertex, DecisionKnowledgeElement replace) {
-		addVertex(replace);
-		for (Link edge : outgoingEdgesOf(vertex)) {
-			addEdge(replace, edge.getTarget(), edge);
+		Set<Link> links = this.edgesOf(vertex);
+		if(removeVertex(vertex)) {
+			addVertex(replace);
+		} else {
+			LOGGER.error("Change of the nodes was not possible. Update failed");
+			return false;
 		}
-		for (Link edge : incomingEdgesOf(vertex)) {
-			addEdge(edge.getSource(), replace, edge);
+		//Replace the old with the new vertex
+		for(Link link: links) {
+			removeEdge(link);
+			if(link.getTarget().getId() == vertex.getId()) {
+				link.setDestinationElement(replace);
+				addEdge(link);
+			} else {
+				link.setSourceElement(replace);
+				addEdge(link);
+			}
 		}
-		for (Link edge : edgesOf(vertex)) {
-			removeEdge(edge);
-		}
-		return removeVertex(vertex);
+		return true;
 	}
 
 	@Override

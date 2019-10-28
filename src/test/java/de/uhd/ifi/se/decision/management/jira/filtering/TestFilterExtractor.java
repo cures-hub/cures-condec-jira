@@ -145,7 +145,7 @@ public class TestFilterExtractor extends TestSetUp {
 	@NonTransactional
 	public void testGetGraphsMatchingQueryFilled() {
 		FilterExtractor extractor = new FilterExtractorImpl("TEST", user, "?jql=project=TEST");
-		assertEquals(5, extractor.getAllGraphs().size());
+		assertEquals(6, extractor.getAllGraphs().size());
 	}
 
 	@Test

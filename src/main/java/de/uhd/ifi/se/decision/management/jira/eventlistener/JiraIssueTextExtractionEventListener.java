@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import org.ofbiz.core.entity.GenericEntityException;
 import org.ofbiz.core.entity.GenericValue;
 import org.slf4j.Logger;
@@ -119,6 +120,7 @@ public class JiraIssueTextExtractionEventListener {
             JiraIssueTextPersistenceManager.getPartsOfComment(comment);
         }
         JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+
     }
 
     private void handleEditComment() {
