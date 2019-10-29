@@ -4,8 +4,6 @@ import static org.mockito.Mockito.mock;
 
 import de.uhd.ifi.se.decision.management.jira.classification.ClassificationTrainerARFF;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import org.junit.After;
 import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.external.ActiveObjects;

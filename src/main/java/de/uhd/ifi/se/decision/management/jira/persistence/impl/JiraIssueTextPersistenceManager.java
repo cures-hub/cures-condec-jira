@@ -430,6 +430,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				otherSentenceInComment.setStartPosition(otherSentenceInComment.getStartPosition() + lengthDifference);
 				otherSentenceInComment.setEndPosition(otherSentenceInComment.getEndPosition() + lengthDifference);
 				otherSentenceInComment.save();
+				KnowledgeGraph.getOrCreate(otherSentenceInComment.getProjectKey()).updateNode(new PartOfJiraIssueTextImpl(otherSentenceInComment));
 			}
 		}
 	}
@@ -809,7 +810,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		sentence.setRelevant(element.getType() != KnowledgeType.OTHER);
 
 		boolean isUpdated = updateInDatabase(sentence);
-		KnowledgeGraph.getOrCreate(sentence.getProject().getProjectKey()).updateNode(sentence);
+		if(sentence.isRelevant()) {
+			KnowledgeGraph.getOrCreate(sentence.getProject().getProjectKey()).updateNode(sentence);
+		}
 		return isUpdated;
 	}
 }

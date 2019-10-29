@@ -66,6 +66,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGraphWithIrrelevantComment() {
+		//TODO Example test for 2 separate graphs
 		List<PartOfJiraIssueText> comment = TestTextSplitter
 				.getSentencesForCommentText("This is a test comment with some irrelevant text.");
 		PartOfJiraIssueText sentence = comment.get(0);

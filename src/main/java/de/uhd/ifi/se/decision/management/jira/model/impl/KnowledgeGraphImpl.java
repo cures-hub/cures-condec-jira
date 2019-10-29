@@ -128,6 +128,17 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	}
 
 	@Override
+	public boolean containsVertex(Node node) {
+		for(Node setNode : vertexSet()) {
+			if(setNode.getId() == node.getId()
+					   && setNode.getDocumentationLocation() == node.getDocumentationLocation()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
 	public boolean removeEdge(Link link) {
 		Link removedLink = super.removeEdge(link.getSource(), link.getTarget());
 		if (removedLink == null) {
