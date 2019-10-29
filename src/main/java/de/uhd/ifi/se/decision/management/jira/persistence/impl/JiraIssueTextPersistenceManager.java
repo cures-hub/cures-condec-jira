@@ -62,6 +62,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				Query.select().where("ID = ?", id))) {
 			StatusPersistenceManager.deleteStatus(changeEntryToNewDecision(databaseEntry));
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.JIRAISSUETEXT);
+			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new PartOfJiraIssueTextImpl(databaseEntry));
 			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
 		}
 		return isDeleted;
@@ -413,7 +414,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				setParameters(sentence, databaseEntry);
 				databaseEntry.save();
 				isUpdated = true;
-				// KnowledgePersistenceManager.updateGraphNode(sentence);
+				KnowledgeGraph.getOrCreate(sentence.getProject().getProjectKey()).addVertex(sentence);
 			}
 		}
 		return isUpdated;
