@@ -325,7 +325,7 @@ public class ViewRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		List<DecisionKnowledgeElement> decisions = getDecisionData(projectKey);
+		List<DecisionKnowledgeElement> decisions = getAllDecisions(projectKey);
 		VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings, decisions);
 		VisGraph graph = visDataProvider.getVisGraph();
 		return Response.ok(graph).build();

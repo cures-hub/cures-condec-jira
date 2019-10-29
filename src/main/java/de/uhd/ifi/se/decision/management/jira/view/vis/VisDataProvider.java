@@ -40,7 +40,7 @@ public class VisDataProvider {
 		}
 		this.projectKey = filterSettings.getProjectKey();
 		this.user = user;
-		FilterExtractor filterExtractor = new FilterExtractor(this.user, filterSettings);
+		FilterExtractor filterExtractor = new FilterExtractorImpl(this.user, filterSettings);
 		List<DecisionKnowledgeElement> decisionKnowledgeElements = filterExtractor.getElementsLinkTypeFilterMatches(allDecisions);
 		graph = new VisGraph(decisionKnowledgeElements, projectKey);
 	}

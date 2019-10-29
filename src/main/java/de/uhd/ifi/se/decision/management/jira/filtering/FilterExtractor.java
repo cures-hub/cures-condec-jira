@@ -30,5 +30,7 @@ public interface FilterExtractor {
 
 	FilterSettings getFilterSettings();
 
+	List<DecisionKnowledgeElement> getElementsLinkTypeFilterMatches(List<DecisionKnowledgeElement> allDecisions);
+
 	ApplicationUser getUser();
 }
