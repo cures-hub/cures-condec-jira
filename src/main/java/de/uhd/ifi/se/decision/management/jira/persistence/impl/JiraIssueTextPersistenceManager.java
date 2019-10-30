@@ -310,7 +310,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUETEXT);
 		}
 		KnowledgePersistenceManager.insertStatus(sentences.get(0));
-		// KnowledgeGraph.getOrCreate(sentences.get(0).getProject().getProjectKey()).addVertex(sentences.get(0));
 		return sentences.get(0);
 	}
 
@@ -330,7 +329,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				+ " into database from comment " + databaseEntry.getCommentId());
 		DecisionKnowledgeElement entryElement = changeEntryToNewDecision(databaseEntry);
 		KnowledgePersistenceManager.insertStatus(entryElement);
-		// KnowledgeGraph.getOrCreate(sentence.getProject().getProjectKey()).addVertex(entryElement);
+		if (sentence.isRelevant()) {
+			KnowledgeGraph.getOrCreate(sentence.getProject().getProjectKey()).addVertex(entryElement);
+		}
 		return databaseEntry.getId();
 	}
 

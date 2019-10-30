@@ -109,7 +109,7 @@ public interface KnowledgePersistenceManager {
 	 *            decision knowledge element with id in database and the
 	 *            {@link DocumentationLocation} set.
 	 * @param user
-	 *            authenticated JIRA {@link ApplicationUser}.
+	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return true if deleting was successful.
 	 * @see DecisionKnowledgeElement
 	 */
@@ -121,11 +121,30 @@ public interface KnowledgePersistenceManager {
 	 * @param element
 	 *            decision knowledge element with id in database.
 	 * @param user
-	 *            authenticated JIRA {@link ApplicationUser}.
+	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return true if updating was successful.
 	 * @see DecisionKnowledgeElement
 	 */
 	boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
+
+	/**
+	 * Inserts a new decision knowledge element into database.
+	 *
+	 * @param element
+	 *            decision knowledge element with attributes such as a summary, the
+	 *            knowledge type, and an optional description.
+	 * @param parentElement
+	 *            (optional) decision knowledge element that is the parent of this
+	 *            element. The parent element is necessary for decision knowledge
+	 *            stored in JIRA issue description and comments.
+	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}.
+	 * @return decision knowledge element that is now filled with an internal
+	 *         database id and key. Returns null if insertion failed.
+	 * @see DecisionKnowledgeElement
+	 */
+	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
+			ApplicationUser user, DecisionKnowledgeElement parentElement);
 
 	/**
 	 * Inserts a new link into database. The link can be between any kinds of nodes
@@ -135,7 +154,7 @@ public interface KnowledgePersistenceManager {
 	 *            link (=edge) between a source and a destination decision knowledge
 	 *            element as a {@link Link} object.
 	 * @param user
-	 *            authenticated JIRA {@link ApplicationUser}.
+	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return internal database id of inserted link, zero if insertion failed.
 	 */
 	long insertLink(Link link, ApplicationUser user);

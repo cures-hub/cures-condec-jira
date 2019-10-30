@@ -110,9 +110,9 @@ public class KnowledgeRest {
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getPersistenceManager(element);
-		DecisionKnowledgeElement newElement = persistenceManager.insertDecisionKnowledgeElement(element, user);
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(element.getProject().getProjectKey());
+		DecisionKnowledgeElement newElement = persistenceManager.insertDecisionKnowledgeElement(element, user, null);
 
 		if (newElement == null) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -144,14 +144,15 @@ public class KnowledgeRest {
 		}
 
 		String projectKey = element.getProject().getProjectKey();
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		AbstractPersistenceManagerForSingleLocation persistenceManagerForExistingElement = KnowledgePersistenceManager
-				.getOrCreate(projectKey).getPersistenceManager(documentationLocationOfExistingElement);
+
+		AbstractPersistenceManagerForSingleLocation persistenceManagerForExistingElement = persistenceManager
+				.getPersistenceManager(documentationLocationOfExistingElement);
 		DecisionKnowledgeElement existingElement = persistenceManagerForExistingElement
 				.getDecisionKnowledgeElement(idOfExistingElement);
 
-		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getPersistenceManager(element);
 		DecisionKnowledgeElement elementWithId = persistenceManager.insertDecisionKnowledgeElement(element, user,
 				existingElement);
 
