@@ -85,12 +85,14 @@ public class GenericLinkManager {
 	public static void deleteLinksForElement(long elementId, DocumentationLocation documentationLocation) {
 		String identifier = documentationLocation.getIdentifier();
 		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class);
-		for (LinkInDatabase link : linksInDatabase) {
-			if (link.getDestinationId() == elementId && link.getDestDocumentationLocation().equals(identifier)
-					|| link.getSourceId() == elementId && link.getSourceDocumentationLocation().equals(identifier)) {
-				LinkInDatabase.deleteLink(link);
-				Link linkObject = new LinkImpl(link);
-				KnowledgeGraph.getOrCreate(linkObject.getSource().getProject().getProjectKey()).removeEdge(linkObject);
+		for (LinkInDatabase linkInDatabase : linksInDatabase) {
+			if (linkInDatabase.getDestinationId() == elementId
+					&& linkInDatabase.getDestDocumentationLocation().equals(identifier)
+					|| linkInDatabase.getSourceId() == elementId
+							&& linkInDatabase.getSourceDocumentationLocation().equals(identifier)) {
+				LinkInDatabase.deleteLink(linkInDatabase);
+				Link link = new LinkImpl(linkInDatabase);
+				KnowledgeGraph.getOrCreate(link.getSource().getProject().getProjectKey()).removeEdge(link);
 			}
 		}
 	}

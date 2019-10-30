@@ -74,6 +74,14 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return isDeleted;
 	}
 
+	private static DecisionKnowledgeElement changeEntryToNewDecision(PartOfJiraIssueTextInDatabase databaseEntry) {
+		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(databaseEntry);
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(sentence.getId(), sentence.getSummary(),
+				sentence.getDescription(), sentence.getType(), sentence.getProject().getProjectKey(), sentence.getKey(),
+				sentence.getDocumentationLocation());
+		return element;
+	}
+
 	public static boolean deletePartsOfComment(Comment comment) {
 		if (comment == null) {
 			LOGGER.error("Sentences in comment cannot be deleted since the comment is null.");
@@ -317,8 +325,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		DecisionKnowledgeElement existingElement = new JiraIssueTextPersistenceManager("")
 				.getDecisionKnowledgeElement(sentence);
 		if (existingElement != null) {
-			JiraIssueTextPersistenceManager.checkIfSentenceHasAValidLink(existingElement.getId(),
-					sentence.getJiraIssueId(), LinkType.getLinkTypeForKnowledgeType(existingElement.getType()));
+			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(sentence.getJiraIssueId(),
+					sentence.getProject().getProjectKey(), "i");
+			JiraIssueTextPersistenceManager.checkIfSentenceHasAValidLink(existingElement, parentElement,
+					LinkType.getLinkTypeForKnowledgeType(existingElement.getType()));
 			return existingElement.getId();
 		}
 
@@ -327,12 +337,14 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		databaseEntry.save();
 		LOGGER.debug("\naddNewSentenceintoAo:\nInsert Sentence " + databaseEntry.getId()
 				+ " into database from comment " + databaseEntry.getCommentId());
-		DecisionKnowledgeElement entryElement = changeEntryToNewDecision(databaseEntry);
-		KnowledgePersistenceManager.insertStatus(entryElement);
-		if (sentence.isRelevant()) {
-			KnowledgeGraph.getOrCreate(sentence.getProject().getProjectKey()).addVertex(entryElement);
+
+		long id = databaseEntry.getId();
+		if (id > 0 && sentence.isRelevant()) {
+			sentence.setId(id);
+			KnowledgePersistenceManager.insertStatus(sentence);
+			KnowledgeGraph.getOrCreate(sentence.getProject().getProjectKey()).addVertex(sentence);
 		}
-		return databaseEntry.getId();
+		return id;
 	}
 
 	private static void setParameters(PartOfJiraIssueText element, PartOfJiraIssueTextInDatabase databaseEntry) {
@@ -456,11 +468,11 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	public static boolean checkLastElementAndCreateLink(DecisionKnowledgeElement lastElement,
 			PartOfJiraIssueText sentence) {
-		if (lastElement == null) {
+		if (lastElement == null || !sentence.isRelevant()) {
 			return false;
 		}
 		Link link = Link.instantiateDirectedLink(lastElement, sentence);
-		GenericLinkManager.insertLink(link, null);
+		KnowledgePersistenceManager.getOrCreate(lastElement.getProject().getProjectKey()).insertLink(link, null);
 		return true;
 	}
 
@@ -480,8 +492,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			DecisionKnowledgeElement lastElement = searchForLast(sentence, KnowledgeType.ISSUE);
 			smartLinkCreated = JiraIssueTextPersistenceManager.checkLastElementAndCreateLink(lastElement, sentence);
 		}
-		if (!smartLinkCreated) {
-			checkIfSentenceHasAValidLink(sentence.getId(), sentence.getJiraIssueId(),
+		if (!smartLinkCreated && sentence.isRelevant()) {
+			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(sentence.getJiraIssueId(),
+					sentence.getProject().getProjectKey(), "i");
+			checkIfSentenceHasAValidLink(sentence, parentElement,
 					LinkType.getLinkTypeForKnowledgeType(sentence.getTypeAsString()));
 		}
 	}
@@ -489,7 +503,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	public static void createLinksForNonLinkedElementsForIssue(long issueId) {
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("JIRA_ISSUE_ID = ?", issueId))) {
-			checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getJiraIssueId(),
+			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(databaseEntry.getJiraIssueId(),
+					databaseEntry.getProjectKey(), "i");
+			checkIfSentenceHasAValidLink(new PartOfJiraIssueTextImpl(databaseEntry), parentElement,
 					LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()));
 		}
 	}
@@ -500,25 +516,21 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		}
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getJiraIssueId(),
+			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(databaseEntry.getJiraIssueId(),
+					projectKey, "i");
+
+			checkIfSentenceHasAValidLink(new PartOfJiraIssueTextImpl(databaseEntry), parentElement,
 					LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()));
 		}
 		return true;
 	}
 
-	public static void checkIfSentenceHasAValidLink(long sentenceId, long issueId, LinkType linkType) {
-		if (!AbstractPersistenceManagerForSingleLocation.isElementLinked(sentenceId,
+	public static void checkIfSentenceHasAValidLink(DecisionKnowledgeElement childElement,
+			DecisionKnowledgeElement parentElement, LinkType linkType) {
+		if (!AbstractPersistenceManagerForSingleLocation.isElementLinked(childElement.getId(),
 				DocumentationLocation.JIRAISSUETEXT)) {
-			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
-			parentElement.setId(issueId);
-			parentElement.setDocumentationLocation("i");
-
-			DecisionKnowledgeElement childElement = new DecisionKnowledgeElementImpl();
-			childElement.setId(sentenceId);
-			childElement.setDocumentationLocation("s");
-
 			Link link = Link.instantiateDirectedLink(parentElement, childElement, linkType);
-			GenericLinkManager.insertLink(link, null);
+			KnowledgePersistenceManager.getOrCreate(parentElement.getProject().getProjectKey()).insertLink(link, null);
 		}
 	}
 
@@ -570,9 +582,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 						DocumentationLocation.JIRAISSUETEXT);
 				for (Link link : links) {
 					if (link.getType().equalsIgnoreCase("contain")) {
-						GenericLinkManager.deleteLink(link);
+						KnowledgePersistenceManager.getOrCreate(projectKey).deleteLink(link, null);
 						link.setType(LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()).toString());
-						GenericLinkManager.insertLink(link, null);
+						KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, null);
 					}
 				}
 			}
@@ -606,9 +618,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 		// delete sentence in comment
 		int length = JiraIssueTextPersistenceManager.removeSentenceFromComment(element) * -1; // -1 because we
-		// decrease the
-		// total number of
-		// letters
+		// decrease the total number of letters
 		updateSentenceLengthForOtherSentencesInSameComment(element, length);
 
 		// delete ao sentence entry
@@ -757,14 +767,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			unvalidatedPartsOfText.add(validatedPartOfText);
 		}
 		return unvalidatedPartsOfText;
-	}
-
-	private static DecisionKnowledgeElement changeEntryToNewDecision(PartOfJiraIssueTextInDatabase databaseEntry) {
-		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(databaseEntry);
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(sentence.getId(), sentence.getSummary(),
-				sentence.getDescription(), sentence.getType(), sentence.getProject().getProjectKey(), sentence.getKey(),
-				sentence.getDocumentationLocation());
-		return element;
 	}
 
 	private static PartOfJiraIssueText createPartOfJiraIssueText(DecisionKnowledgeElement element) {
