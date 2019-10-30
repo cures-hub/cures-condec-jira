@@ -66,11 +66,13 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGraphWithIrrelevantComment() {
+		// TODO Example test for 2 separate graphs
 		List<PartOfJiraIssueText> comment = TestTextSplitter
 				.getSentencesForCommentText("This is a test comment with some irrelevant text.");
 		PartOfJiraIssueText sentence = comment.get(0);
+		assertEquals("This is a test comment with some irrelevant text.", sentence.getSummary());
 		String projectKey = sentence.getProject().getProjectKey();
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
+		graph = KnowledgeGraph.getOrCreate(projectKey);
 		assertFalse(graph.containsVertex(sentence));
 	}
 
@@ -81,7 +83,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 				.getSentencesForCommentText("{alternative} This would be a great solution option! {alternative}");
 		PartOfJiraIssueText sentence = comment.get(0);
 		String projectKey = sentence.getProject().getProjectKey();
-		KnowledgeGraph graph = new KnowledgeGraphImpl(projectKey);
+		graph = KnowledgeGraph.getOrCreate(projectKey);
 		assertTrue(graph.containsVertex(sentence));
 	}
 
@@ -91,9 +93,12 @@ public class TestKnowledgeGraph extends TestSetUp {
 		DecisionKnowledgeElement node = (DecisionKnowledgeElement) graph.vertexSet().iterator().next();
 		assertEquals("WI: Implement feature", node.getSummary());
 		node.setSummary("Updated");
+		assertEquals(2, graph.edgesOf(node).size());
+
 		KnowledgePersistenceManager.getOrCreate("TEST").updateDecisionKnowledgeElement(node, null);
 		node = (DecisionKnowledgeElement) graph.vertexSet().iterator().next();
 		assertEquals("Updated", node.getSummary());
+		assertEquals(2, graph.edgesOf(node).size());
 	}
 
 	@After

@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import org.ofbiz.core.entity.GenericEntityException;
 import org.ofbiz.core.entity.GenericValue;
 import org.slf4j.Logger;
@@ -102,6 +105,8 @@ public class JiraIssueTextExtractionEventListener {
 
     private void handleDeleteIssue() {
         JiraIssueTextPersistenceManager.cleanSentenceDatabase(projectKey);
+	    DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issueEvent.getIssue());
+	    KnowledgeGraph.getOrCreate(element.getProject().getProjectKey()).removeVertex(element);
         JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
     }
 
@@ -119,6 +124,7 @@ public class JiraIssueTextExtractionEventListener {
             JiraIssueTextPersistenceManager.getPartsOfComment(comment);
         }
         JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+
     }
 
     private void handleEditComment() {

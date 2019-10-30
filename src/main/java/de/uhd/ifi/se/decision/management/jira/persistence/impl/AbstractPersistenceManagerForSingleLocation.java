@@ -275,8 +275,8 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 *            stored in JIRA issue description and comments.
 	 * @param user
 	 *            authenticated JIRA application user
-	 * @return decision knowledge element that is now filled with internal database
-	 *         id and key, null if insertion failed.
+	 * @return decision knowledge element that is now filled with an internal
+	 *         database id and key. Returns null if insertion failed.
 	 * @see DecisionKnowledgeElement
 	 * @see ApplicationUser
 	 */
@@ -293,8 +293,8 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 *            knowledge type, and an optional description.
 	 * @param user
 	 *            authenticated JIRA application user
-	 * @return decision knowledge element that is now filled with internal database
-	 *         id and key, null if insertion failed.
+	 * @return decision knowledge element that is now filled with an internal
+	 *         database id and key. Returns null if insertion failed.
 	 * @see DecisionKnowledgeElement
 	 * @see ApplicationUser
 	 */
