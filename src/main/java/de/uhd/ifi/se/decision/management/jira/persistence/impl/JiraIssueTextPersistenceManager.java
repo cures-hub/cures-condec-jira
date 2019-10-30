@@ -508,10 +508,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		Link link = Link.instantiateDirectedLink(lastElement, sentence);
 		long linkId = KnowledgePersistenceManager.getOrCreate(lastElement.getProject().getProjectKey()).insertLink(link,
 				null);
-		if (linkId > 0) {
-			return true;
-		}
-		return false;
+		return linkId > 0;
 	}
 
 	public static void createLinksForNonLinkedElementsForIssue(long issueId) {
@@ -547,10 +544,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		Link link = Link.instantiateDirectedLink(parentElement, childElement, linkType);
 		long linkId = KnowledgePersistenceManager.getOrCreate(parentElement.getProject().getProjectKey())
 				.insertLink(link, null);
-		if (linkId > 0) {
-			return true;
-		}
-		return false;
+		return linkId > 0;
 	}
 
 	public static void cleanSentenceDatabase(String projectKey) {
