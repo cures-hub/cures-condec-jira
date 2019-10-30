@@ -20,11 +20,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-import net.java.ao.EntityManager;
-import net.java.ao.test.jdbc.DatabaseUpdater;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestTreant extends TestSetUp {
@@ -154,15 +150,6 @@ public class TestTreant extends TestSetUp {
 				.getDecisionKnowledgeElement(sentences.get(0).getJiraIssueId());
 		TreantNode nodeStructure = treant.createNodeStructure(element, null, 0);
 		assertEquals(TreantNode.class, nodeStructure.getClass());
-		assertEquals(2, nodeStructure.getChildren().size());
-	}
-
-	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
-		@SuppressWarnings("unchecked")
-		@Override
-		public void update(EntityManager entityManager) throws Exception {
-			entityManager.migrate(PartOfJiraIssueTextInDatabase.class);
-			entityManager.migrate(LinkInDatabase.class);
-		}
+		assertEquals(1, nodeStructure.getChildren().size());
 	}
 }

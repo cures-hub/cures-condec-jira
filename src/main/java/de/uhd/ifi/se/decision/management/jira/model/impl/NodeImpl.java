@@ -9,6 +9,7 @@ public class NodeImpl implements Node {
 	protected DocumentationLocation documentationLocation;
 	protected DecisionKnowledgeProject project;
 
+	@Override
 	public long getId() {
 		return id;
 	}
@@ -30,16 +31,16 @@ public class NodeImpl implements Node {
 			return false;
 		}
 		Node node = (Node) o;
-		return this.id == node.getId();
+		return this.id == node.getId() && this.documentationLocation == node.getDocumentationLocation();
 	}
 
 	@Override
 	public int hashCode() {
 		return toString().hashCode();
 	}
-	
+
 	@Override
 	public String toString() {
-		return id + "";
+		return documentationLocation.getIdentifier() + id;
 	}
 }

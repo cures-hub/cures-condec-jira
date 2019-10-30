@@ -24,7 +24,7 @@ public class TestFilterExtractor extends TestSetUp {
 
 	private ApplicationUser user;
 	private FilterSettings settings;
-	
+
 	@Before
 	public void setUp() {
 		init();
@@ -145,7 +145,7 @@ public class TestFilterExtractor extends TestSetUp {
 	@NonTransactional
 	public void testGetGraphsMatchingQueryFilled() {
 		FilterExtractor extractor = new FilterExtractorImpl("TEST", user, "?jql=project=TEST");
-		assertEquals(6, extractor.getAllGraphs().size());
+		assertEquals(5, extractor.getAllGraphs().size());
 	}
 
 	@Test
@@ -166,7 +166,7 @@ public class TestFilterExtractor extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetAllElementsMatchingCompareFilterSettingsFilledCreated() {
-		settings.setCreatedLatest((long) -1);
+		settings.setCreatedLatest(-1);
 		settings.setCreatedEarliest(System.currentTimeMillis() - 100000);
 		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
 		assertEquals(5, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
@@ -175,7 +175,7 @@ public class TestFilterExtractor extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetAllElementsMatchingCompareFilterSettingsFilledClosed() {
-		settings.setCreatedEarliest((long) -1);
+		settings.setCreatedEarliest(-1);
 		settings.setCreatedLatest(System.currentTimeMillis() + 1000);
 		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
 		assertEquals(5, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);

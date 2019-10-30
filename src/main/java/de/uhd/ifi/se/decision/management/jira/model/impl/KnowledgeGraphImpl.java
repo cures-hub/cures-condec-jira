@@ -102,16 +102,16 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 
 	private boolean replaceVertex(DecisionKnowledgeElement vertex, DecisionKnowledgeElement replace) {
 		Set<Link> links = this.edgesOf(vertex);
-		if(removeVertex(vertex)) {
+		if (removeVertex(vertex)) {
 			addVertex(replace);
 		} else {
 			LOGGER.error("Change of the nodes was not possible. Update failed");
 			return false;
 		}
-		//Replace the old with the new vertex
-		for(Link link: links) {
+		// Replace the old with the new vertex
+		for (Link link : links) {
 			removeEdge(link);
-			if(link.getTarget().getId() == vertex.getId()) {
+			if (link.getTarget().getId() == vertex.getId()) {
 				link.setDestinationElement(replace);
 				addEdge(link);
 			} else {
@@ -126,17 +126,17 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	public boolean containsEdge(Link link) {
 		return super.containsEdge(link.getSource(), link.getTarget());
 	}
-
-	@Override
-	public boolean containsVertex(Node node) {
-		for(Node setNode : vertexSet()) {
-			if(setNode.getId() == node.getId()
-					   && setNode.getDocumentationLocation() == node.getDocumentationLocation()) {
-				return true;
-			}
-		}
-		return false;
-	}
+	//
+	// @Override
+	// public boolean containsVertex(Node node) {
+	// for (Node setNode : vertexSet()) {
+	// if (setNode.getId() == node.getId()
+	// && setNode.getDocumentationLocation() == node.getDocumentationLocation()) {
+	// return true;
+	// }
+	// }
+	// return false;
+	// }
 
 	@Override
 	public boolean removeEdge(Link link) {

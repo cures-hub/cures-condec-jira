@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.persistence.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +20,13 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.JiraIssueTextExtractionEventListener;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -304,7 +310,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUETEXT);
 		}
 		KnowledgePersistenceManager.insertStatus(sentences.get(0));
-		KnowledgeGraph.getOrCreate(sentences.get(0).getProject().getProjectKey()).addVertex(sentences.get(0));
+		// KnowledgeGraph.getOrCreate(sentences.get(0).getProject().getProjectKey()).addVertex(sentences.get(0));
 		return sentences.get(0);
 	}
 
@@ -324,7 +330,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				+ " into database from comment " + databaseEntry.getCommentId());
 		DecisionKnowledgeElement entryElement = changeEntryToNewDecision(databaseEntry);
 		KnowledgePersistenceManager.insertStatus(entryElement);
-		KnowledgeGraph.getOrCreate(sentence.getProject().getProjectKey()).addVertex(entryElement);
+		// KnowledgeGraph.getOrCreate(sentence.getProject().getProjectKey()).addVertex(entryElement);
 		return databaseEntry.getId();
 	}
 
@@ -414,7 +420,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				setParameters(sentence, databaseEntry);
 				databaseEntry.save();
 				isUpdated = true;
-				KnowledgeGraph.getOrCreate(sentence.getProject().getProjectKey()).addVertex(sentence);
+				// KnowledgeGraph.getOrCreate(sentence.getProject().getProjectKey()).addVertex(sentence);
 			}
 		}
 		return isUpdated;
@@ -430,7 +436,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				otherSentenceInComment.setStartPosition(otherSentenceInComment.getStartPosition() + lengthDifference);
 				otherSentenceInComment.setEndPosition(otherSentenceInComment.getEndPosition() + lengthDifference);
 				otherSentenceInComment.save();
-				KnowledgeGraph.getOrCreate(otherSentenceInComment.getProjectKey()).updateNode(new PartOfJiraIssueTextImpl(otherSentenceInComment));
 			}
 		}
 	}
@@ -627,12 +632,13 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 		List<PartOfJiraIssueText> parts = new ArrayList<PartOfJiraIssueText>();
 
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
 		// Create AO entries
 		for (PartOfText partOfText : partsOfText) {
 			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(partOfText, comment);
 			long sentenceId = insertDecisionKnowledgeElement(sentence, null);
-			sentence = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
-					.getDecisionKnowledgeElement(sentenceId);
+			sentence = (PartOfJiraIssueText) persistenceManager.getDecisionKnowledgeElement(sentenceId);
 			createSmartLinkForSentence(sentence);
 			parts.add(sentence);
 		}
@@ -810,7 +816,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		sentence.setRelevant(element.getType() != KnowledgeType.OTHER);
 
 		boolean isUpdated = updateInDatabase(sentence);
-		if(sentence.isRelevant()) {
+		if (sentence.isRelevant()) {
 			KnowledgeGraph.getOrCreate(sentence.getProject().getProjectKey()).updateNode(sentence);
 		}
 		return isUpdated;
