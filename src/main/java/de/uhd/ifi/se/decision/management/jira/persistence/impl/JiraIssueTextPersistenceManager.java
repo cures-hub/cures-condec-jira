@@ -453,51 +453,65 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		}
 	}
 
-	public static DecisionKnowledgeElement compareForLaterElement(DecisionKnowledgeElement first,
+	public static boolean createSmartLinkForSentence(PartOfJiraIssueText sentence) {
+		if (sentence == null) {
+			return false;
+		}
+		if (AbstractPersistenceManagerForSingleLocation.isElementLinked(sentence)) {
+			return true;
+		}
+		boolean isLinkCreated = false;
+		KnowledgeType knowledgeType = sentence.getType();
+
+		if (knowledgeType == KnowledgeType.ARGUMENT || knowledgeType == KnowledgeType.PRO
+				|| knowledgeType == KnowledgeType.CON) {
+			DecisionKnowledgeElement lastElement = getMostRecentElement(
+					searchForLast(sentence, KnowledgeType.ALTERNATIVE),
+					searchForLast(sentence, KnowledgeType.DECISION));
+			isLinkCreated = createLink(lastElement, sentence);
+		}
+
+		if (knowledgeType == KnowledgeType.DECISION || knowledgeType == KnowledgeType.ALTERNATIVE) {
+			DecisionKnowledgeElement lastElement = searchForLast(sentence, KnowledgeType.ISSUE);
+			isLinkCreated = createLink(lastElement, sentence);
+		}
+
+		if (!isLinkCreated && sentence.isRelevant()) {
+			String projectKey = sentence.getProject().getProjectKey();
+			JiraIssuePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+					.getJiraIssueManager();
+			DecisionKnowledgeElement parentElement = persistenceManager
+					.getDecisionKnowledgeElement(sentence.getJiraIssueId());
+			isLinkCreated = createLink(parentElement, sentence);
+		}
+		return isLinkCreated;
+	}
+
+	public static DecisionKnowledgeElement getMostRecentElement(DecisionKnowledgeElement first,
 			DecisionKnowledgeElement second) {
 		if (first == null) {
 			return second;
-		} else if (second == null) {
-			return first;
-		} else if (first.getId() > second.getId()) {
-			return first;
-		} else {
-			return second;
 		}
+		if (second == null) {
+			return first;
+		}
+		if (first.getId() > second.getId()) {
+			return first;
+		}
+		return second;
 	}
 
-	public static boolean checkLastElementAndCreateLink(DecisionKnowledgeElement lastElement,
-			PartOfJiraIssueText sentence) {
+	public static boolean createLink(DecisionKnowledgeElement lastElement, PartOfJiraIssueText sentence) {
 		if (lastElement == null || !sentence.isRelevant()) {
 			return false;
 		}
 		Link link = Link.instantiateDirectedLink(lastElement, sentence);
-		KnowledgePersistenceManager.getOrCreate(lastElement.getProject().getProjectKey()).insertLink(link, null);
-		return true;
-	}
-
-	public static void createSmartLinkForSentence(PartOfJiraIssueText sentence) {
-		if (sentence == null || AbstractPersistenceManagerForSingleLocation.isElementLinked(sentence)) {
-			return;
+		long linkId = KnowledgePersistenceManager.getOrCreate(lastElement.getProject().getProjectKey()).insertLink(link,
+				null);
+		if (linkId > 0) {
+			return true;
 		}
-		boolean smartLinkCreated = false;
-		KnowledgeType knowledgeType = sentence.getType();
-		if (knowledgeType == KnowledgeType.ARGUMENT || knowledgeType == KnowledgeType.PRO
-				|| knowledgeType == KnowledgeType.CON) {
-			DecisionKnowledgeElement lastElement = JiraIssueTextPersistenceManager.compareForLaterElement(
-					searchForLast(sentence, KnowledgeType.ALTERNATIVE),
-					searchForLast(sentence, KnowledgeType.DECISION));
-			smartLinkCreated = JiraIssueTextPersistenceManager.checkLastElementAndCreateLink(lastElement, sentence);
-		} else if (knowledgeType == KnowledgeType.DECISION || knowledgeType == KnowledgeType.ALTERNATIVE) {
-			DecisionKnowledgeElement lastElement = searchForLast(sentence, KnowledgeType.ISSUE);
-			smartLinkCreated = JiraIssueTextPersistenceManager.checkLastElementAndCreateLink(lastElement, sentence);
-		}
-		if (!smartLinkCreated && sentence.isRelevant()) {
-			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(sentence.getJiraIssueId(),
-					sentence.getProject().getProjectKey(), "i");
-			checkIfSentenceHasAValidLink(sentence, parentElement,
-					LinkType.getLinkTypeForKnowledgeType(sentence.getTypeAsString()));
-		}
+		return false;
 	}
 
 	public static void createLinksForNonLinkedElementsForIssue(long issueId) {
@@ -525,13 +539,18 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return true;
 	}
 
-	public static void checkIfSentenceHasAValidLink(DecisionKnowledgeElement childElement,
+	public static boolean checkIfSentenceHasAValidLink(DecisionKnowledgeElement childElement,
 			DecisionKnowledgeElement parentElement, LinkType linkType) {
-		if (!AbstractPersistenceManagerForSingleLocation.isElementLinked(childElement.getId(),
-				DocumentationLocation.JIRAISSUETEXT)) {
-			Link link = Link.instantiateDirectedLink(parentElement, childElement, linkType);
-			KnowledgePersistenceManager.getOrCreate(parentElement.getProject().getProjectKey()).insertLink(link, null);
+		if (AbstractPersistenceManagerForSingleLocation.isElementLinked(childElement)) {
+			return true;
 		}
+		Link link = Link.instantiateDirectedLink(parentElement, childElement, linkType);
+		long linkId = KnowledgePersistenceManager.getOrCreate(parentElement.getProject().getProjectKey())
+				.insertLink(link, null);
+		if (linkId > 0) {
+			return true;
+		}
+		return false;
 	}
 
 	public static void cleanSentenceDatabase(String projectKey) {
