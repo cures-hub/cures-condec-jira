@@ -14,7 +14,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
@@ -321,7 +320,7 @@ public interface KnowledgePersistenceManager {
 	}
 
 	/**
-	 * Get a decision knowledge element in database by its id and its documentation
+	 * Gets a decision knowledge element in database by its id and its documentation
 	 * location.
 	 *
 	 * @param id
@@ -332,15 +331,7 @@ public interface KnowledgePersistenceManager {
 	 * @see DecisionKnowledgeElement
 	 * @see DocumentationLocation
 	 */
-	static DecisionKnowledgeElement getDecisionKnowledgeElement(long id, DocumentationLocation documentationLocation) {
-		AbstractPersistenceManagerForSingleLocation persistenceManager = getOrCreate("")
-				.getPersistenceManager(documentationLocation);
-		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(id);
-		if (element == null) {
-			return new DecisionKnowledgeElementImpl();
-		}
-		return element;
-	}
+	DecisionKnowledgeElement getDecisionKnowledgeElement(long id, DocumentationLocation documentationLocation);
 
 	static void insertStatus(DecisionKnowledgeElement element) {
 		if (element.getType().equals(KnowledgeType.DECISION)) {

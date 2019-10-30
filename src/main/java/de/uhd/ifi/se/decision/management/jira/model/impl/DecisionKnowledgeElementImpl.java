@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.model.impl;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -249,31 +248,6 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(id, summary);
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (object == null) {
-			return false;
-		}
-		if (object == this) {
-			return true;
-		}
-		if (!(object instanceof DecisionKnowledgeElement)) {
-			return false;
-		}
-		DecisionKnowledgeElement element = (DecisionKnowledgeElement) object;
-		return this.id == element.getId()
-				/*
-				 * At least compare also the key, otherwise comparison will not work for
-				 * elements with same/not initialized ID.
-				 */
-				&& element.getKey().equals(getKey());
-	}
-
-	@Override
 	public Date getCreated() {
 		if (created == null) {
 			return new Date();
@@ -298,8 +272,8 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 
 	@Override
 	public boolean existsInDatabase() {
-		DecisionKnowledgeElement elementInDatabase = KnowledgePersistenceManager.getDecisionKnowledgeElement(id,
-				documentationLocation);
+		DecisionKnowledgeElement elementInDatabase = KnowledgePersistenceManager
+				.getOrCreate(getProject().getProjectKey()).getDecisionKnowledgeElement(id, documentationLocation);
 		return elementInDatabase != null && elementInDatabase.getId() > 0;
 	}
 

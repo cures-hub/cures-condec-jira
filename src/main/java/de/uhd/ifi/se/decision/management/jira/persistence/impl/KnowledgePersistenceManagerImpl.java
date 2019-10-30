@@ -233,4 +233,14 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		KnowledgeGraph.getOrCreate(projectKey).addVertex(elementWithId);
 		return elementWithId;
 	}
+
+	@Override
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id, DocumentationLocation documentationLocation) {
+		AbstractPersistenceManagerForSingleLocation persistenceManager = getPersistenceManager(documentationLocation);
+		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(id);
+		if (element == null) {
+			return new DecisionKnowledgeElementImpl();
+		}
+		return element;
+	}
 }
