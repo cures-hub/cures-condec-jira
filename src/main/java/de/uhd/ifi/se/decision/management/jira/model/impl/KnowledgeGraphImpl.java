@@ -85,33 +85,29 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 
 	@Override
 	public boolean updateNode(DecisionKnowledgeElement node) {
-		System.out.println("Is vertex included? " + this.containsVertex(node));
+		DecisionKnowledgeElement oldNode = null;
 		for (Node currentNode : vertexSet()) {
-			if (node.getId() == currentNode.getId()) {
-				return replaceVertex((DecisionKnowledgeElement) currentNode, node);
+			if (node.equals(currentNode)) {
+				oldNode = (DecisionKnowledgeElement) currentNode;
 			}
 		}
-		return false;
+		if (oldNode == null) {
+			return false;
+		}
+		return replaceVertex(oldNode, node);
 	}
 
 	private boolean replaceVertex(DecisionKnowledgeElement vertex, DecisionKnowledgeElement replace) {
-		Set<Link> links = this.edgesOf(vertex);
-		if (removeVertex(vertex)) {
-			addVertex(replace);
-		} else {
-			LOGGER.error("Change of the nodes was not possible. Update failed");
-			return false;
+		Set<Link> newLinks = new HashSet<Link>();
+		for (Link edge : outgoingEdgesOf(vertex)) {
+			newLinks.add(new LinkImpl(replace, edge.getTarget()));
 		}
-		// Replace the old with the new vertex
-		for (Link link : links) {
-			removeEdge(link);
-			if (link.getTarget().getId() == vertex.getId()) {
-				link.setDestinationElement(replace);
-				addEdge(link);
-			} else {
-				link.setSourceElement(replace);
-				addEdge(link);
-			}
+		for (Link edge : incomingEdgesOf(vertex)) {
+			newLinks.add(new LinkImpl(edge.getSource(), replace));
+		}
+		removeVertex(vertex);
+		for (Link link : newLinks) {
+			addEdge(link);
 		}
 		return true;
 	}

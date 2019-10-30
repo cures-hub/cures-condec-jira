@@ -272,8 +272,8 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 
 	@Override
 	public boolean existsInDatabase() {
-		DecisionKnowledgeElement elementInDatabase = KnowledgePersistenceManager
-				.getOrCreate(getProject().getProjectKey()).getDecisionKnowledgeElement(id, documentationLocation);
+		DecisionKnowledgeElement elementInDatabase = KnowledgePersistenceManager.getOrCreate("")
+				.getDecisionKnowledgeElement(id, documentationLocation);
 		return elementInDatabase != null && elementInDatabase.getId() > 0;
 	}
 

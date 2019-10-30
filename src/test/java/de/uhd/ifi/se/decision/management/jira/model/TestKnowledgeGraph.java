@@ -93,9 +93,12 @@ public class TestKnowledgeGraph extends TestSetUp {
 		DecisionKnowledgeElement node = (DecisionKnowledgeElement) graph.vertexSet().iterator().next();
 		assertEquals("WI: Implement feature", node.getSummary());
 		node.setSummary("Updated");
+		assertEquals(2, graph.edgesOf(node).size());
+
 		KnowledgePersistenceManager.getOrCreate("TEST").updateDecisionKnowledgeElement(node, null);
 		node = (DecisionKnowledgeElement) graph.vertexSet().iterator().next();
 		assertEquals("Updated", node.getSummary());
+		assertEquals(2, graph.edgesOf(node).size());
 	}
 
 	@After
