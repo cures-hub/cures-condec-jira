@@ -104,6 +104,7 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	private boolean replaceVertex(DecisionKnowledgeElement vertex, DecisionKnowledgeElement replace) {
 		Set<Link> newLinks = new HashSet<Link>();
 		for (Link edge : outgoingEdgesOf(vertex)) {
+			// Link.instantiateDirectedLink(parentElement, childElement)
 			newLinks.add(new LinkImpl(replace, edge.getTarget()));
 		}
 		for (Link edge : incomingEdgesOf(vertex)) {
