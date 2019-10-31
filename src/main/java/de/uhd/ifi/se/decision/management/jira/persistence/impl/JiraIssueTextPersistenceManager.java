@@ -374,6 +374,17 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return updatePartOfJiraIssueText(createPartOfJiraIssueText(element), user);
 	}
 
+	private static PartOfJiraIssueText createPartOfJiraIssueText(DecisionKnowledgeElement element) {
+		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl();
+		sentence.setId(element.getId());
+		sentence.setType(element.getType());
+		sentence.setSummary(element.getSummary());
+		sentence.setDescription(element.getDescription());
+		sentence.setProject(element.getProject());
+		sentence.setValidated(true);
+		return sentence;
+	}
+
 	@Override
 	public boolean updateDecisionKnowledgeElementWithoutStatusChange(DecisionKnowledgeElement element,
 			ApplicationUser user) {
@@ -415,6 +426,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		}
 		// only the knowledge type has changed
 		if (element.getSummary() == null) {
+			element.setSummary(sentence.getSummary());
 			element.setDescription(sentence.getDescription());
 		}
 		if (sentence.getType().equals(KnowledgeType.DECISION) && element.getType().equals(KnowledgeType.ALTERNATIVE)) {
@@ -824,15 +836,4 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return unvalidatedPartsOfText;
 	}
 
-	private static PartOfJiraIssueText createPartOfJiraIssueText(DecisionKnowledgeElement element) {
-		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl();
-		sentence.setId(element.getId());
-		sentence.setType(element.getType());
-		sentence.setSummary(element.getSummary());
-		sentence.setDescription(element.getDescription());
-		sentence.setProject(element.getProject());
-		sentence.setValidated(true);
-
-		return sentence;
-	}
 }
