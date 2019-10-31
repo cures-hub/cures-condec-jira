@@ -426,6 +426,50 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return updateElementInDatabase(element, sentence, user);
 	}
 
+	private static boolean updateElementInDatabase(PartOfJiraIssueText element, PartOfJiraIssueText sentence,
+			ApplicationUser user) {
+		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getType());
+		String changedPartOfText = tag + element.getDescription() + tag;
+
+		String text = "";
+		MutableComment mutableComment = sentence.getComment();
+		if (mutableComment == null) {
+			text = sentence.getJiraIssueDescription();
+		} else {
+			text = mutableComment.getBody();
+		}
+
+		String firstPartOfText = text.substring(0, sentence.getStartPosition());
+		String lastPartOfText = text.substring(sentence.getEndPosition());
+
+		String newBody = firstPartOfText + changedPartOfText + lastPartOfText;
+
+		JiraIssueTextExtractionEventListener.editCommentLock = true;
+		if (mutableComment == null) {
+			MutableIssue jiraIssue = (MutableIssue) sentence.getJiraIssue();
+			jiraIssue.setDescription(newBody);
+			JiraIssuePersistenceManager.updateJiraIssue(jiraIssue, user);
+		} else {
+			mutableComment.setBody(newBody);
+			ComponentAccessor.getCommentManager().update(mutableComment, true);
+		}
+		JiraIssueTextExtractionEventListener.editCommentLock = false;
+
+		int lengthDifference = changedPartOfText.length() - sentence.getLength();
+		updateSentenceLengthForOtherSentencesInSameComment(sentence, lengthDifference);
+
+		sentence.setEndPosition(sentence.getStartPosition() + changedPartOfText.length());
+		sentence.setType(element.getType());
+		sentence.setValidated(element.isValidated());
+		sentence.setRelevant(element.getType() != KnowledgeType.OTHER);
+
+		boolean isUpdated = updateInDatabase(sentence);
+		// if (sentence.isRelevant()) {
+		// KnowledgeGraph.getOrCreate(sentence.getProject().getProjectKey()).updateNode(sentence);
+		// }
+		return isUpdated;
+	}
+
 	public static boolean updateInDatabase(PartOfJiraIssueText sentence) {
 		boolean isUpdated = false;
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class)) {
@@ -688,14 +732,13 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			if (i < numberOfTextPartsInComment) {
 				sentence.setId(knowledgeElementsInText.get(i).getId());
 				updateInDatabase(sentence);
-				KnowledgeGraph.getOrCreate(projectKey).updateNode(sentence);
 			} else {
 				long sentenceId = insertDecisionKnowledgeElement(sentence, null);
 				sentence = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
 						.getDecisionKnowledgeElement(sentenceId);
-				KnowledgeGraph.getOrCreate(projectKey).updateNode(sentence);
 			}
 			createSmartLinkForSentence(sentence);
+			// KnowledgeGraph.getOrCreate(projectKey).updateNode(sentence);
 			knowledgeElementsInText.set(i, sentence);
 		}
 		return knowledgeElementsInText;
@@ -714,17 +757,16 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				// Update AO entry
 				sentence.setId(parts.get(i).getId());
 				updateInDatabase(sentence);
-				KnowledgeGraph.getOrCreate(projectKey).updateNode(sentence);
 				parts.set(i, sentence);
 			} else {
 				// Create new AO entry
 				long sentenceId = insertDecisionKnowledgeElement(sentence, null);
 				sentence = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
 						.getDecisionKnowledgeElement(sentenceId);
-				KnowledgeGraph.getOrCreate(projectKey).updateNode(sentence);
 				parts.add(sentence);
 			}
 			createSmartLinkForSentence(sentence);
+			// KnowledgeGraph.getOrCreate(projectKey).updateNode(sentence);
 		}
 		return parts;
 	}
@@ -792,49 +834,5 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		sentence.setValidated(true);
 
 		return sentence;
-	}
-
-	private static boolean updateElementInDatabase(PartOfJiraIssueText element, PartOfJiraIssueText sentence,
-			ApplicationUser user) {
-		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getType());
-		String changedPartOfText = tag + element.getDescription() + tag;
-
-		String text = "";
-		MutableComment mutableComment = sentence.getComment();
-		if (mutableComment == null) {
-			text = sentence.getJiraIssueDescription();
-		} else {
-			text = mutableComment.getBody();
-		}
-
-		String firstPartOfText = text.substring(0, sentence.getStartPosition());
-		String lastPartOfText = text.substring(sentence.getEndPosition());
-
-		String newBody = firstPartOfText + changedPartOfText + lastPartOfText;
-
-		JiraIssueTextExtractionEventListener.editCommentLock = true;
-		if (mutableComment == null) {
-			MutableIssue jiraIssue = (MutableIssue) sentence.getJiraIssue();
-			jiraIssue.setDescription(newBody);
-			JiraIssuePersistenceManager.updateJiraIssue(jiraIssue, user);
-		} else {
-			mutableComment.setBody(newBody);
-			ComponentAccessor.getCommentManager().update(mutableComment, true);
-		}
-		JiraIssueTextExtractionEventListener.editCommentLock = false;
-
-		int lengthDifference = changedPartOfText.length() - sentence.getLength();
-		updateSentenceLengthForOtherSentencesInSameComment(sentence, lengthDifference);
-
-		sentence.setEndPosition(sentence.getStartPosition() + changedPartOfText.length());
-		sentence.setType(element.getType());
-		sentence.setValidated(element.isValidated());
-		sentence.setRelevant(element.getType() != KnowledgeType.OTHER);
-
-		boolean isUpdated = updateInDatabase(sentence);
-		if (sentence.isRelevant()) {
-			KnowledgeGraph.getOrCreate(sentence.getProject().getProjectKey()).updateNode(sentence);
-		}
-		return isUpdated;
 	}
 }

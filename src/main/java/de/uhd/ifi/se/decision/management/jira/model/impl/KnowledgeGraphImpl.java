@@ -89,6 +89,10 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		for (Node currentNode : vertexSet()) {
 			if (node.equals(currentNode)) {
 				oldNode = (DecisionKnowledgeElement) currentNode;
+				System.out.println(oldNode.getDocumentationLocation());
+				System.out.println(node.getDocumentationLocation());
+				System.out.println(oldNode.getId());
+				System.out.println(node.getId());
 			}
 		}
 		if (oldNode == null) {
