@@ -1,23 +1,19 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import net.java.ao.test.jdbc.NonTransactional;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
-import net.java.ao.test.jdbc.NonTransactional;
-import org.junit.Before;
-import org.junit.Test;
-
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import static org.junit.Assert.*;
 
 /**
  * TODO: TESTS WITH useOnlyValidatedData FLAG
@@ -146,11 +142,22 @@ public class TestClassificationTrainer extends TestSetUp {
 
     private File getTrimmedDefaultArffFile() {
         File fullDefaultFile = new File("src/main/resources/classifier/defaultTrainingData.arff");
-        File trimmedDefaultFile = new File("defaultTrainingData.arff");
+        File trimmedDefaultFile = new File("src/test/resources/classifier/defaultTrainingData.arff");
 
         int numberOfLines = 25;
 
         BufferedWriter writer = null;
+        try {
+            if (!trimmedDefaultFile.exists()){
+                trimmedDefaultFile.getParentFile().mkdirs();
+                trimmedDefaultFile.createNewFile();
+            }else{
+                return trimmedDefaultFile;
+            }
+        } catch (IOException e) {
+            System.err.println("Could not create new trimmed training file or directories for unit tests.");
+            e.printStackTrace();
+        }
         try {
             BufferedReader reader = new BufferedReader(new FileReader(fullDefaultFile));
             writer = new BufferedWriter(new FileWriter(trimmedDefaultFile));
@@ -165,6 +172,7 @@ public class TestClassificationTrainer extends TestSetUp {
             reader.close();
             return trimmedDefaultFile;
         } catch (IOException e) {
+            System.err.println("Could not add content to trimmed training file for unit tests.");
             e.printStackTrace();
         }
         return fullDefaultFile;
