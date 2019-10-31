@@ -251,11 +251,11 @@ public class RationaleFromCodeCommentExtractor {
 		// encode method
 		public static String encodeAttributes(int lineStart, int lineEnd
 				, int inCommentCursor) {
-			return String.valueOf(lineStart) +
+			return lineStart +
 					":" +
-					String.valueOf(lineEnd) +
+                    lineEnd +
 					":" +
-					String.valueOf(inCommentCursor);
+                    inCommentCursor;
 		}
 	}
 }

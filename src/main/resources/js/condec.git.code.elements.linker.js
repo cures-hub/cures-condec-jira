@@ -155,15 +155,20 @@ linkBranchCandidates
 
     function captureProblems() {
       /*  reset problems list */
-      problemsList = [];
-      for (var i = 0; i < linkCandidates.length; i++) {
-        if (linkCandidates[i].skip) {
-          continue;
+      try {
+        problemsList = [];
+        for (var i = 0; i < linkCandidates.length; i++) {
+          if (linkCandidates[i].skip) {
+            continue;
+          }
+          var problemsInElement = linkCandidates[i].getElementProblems();
+          if (problemsInElement.hasAnyProblems()) {
+            problemsList.push({elementId: i, problems: problemsInElement});
+          }
         }
-        var problemsInElement = linkCandidates[i].getElementProblems();
-        if (problemsInElement.hasAnyProblems()) {
-          problemsList.push({ elementId: i, problems: problemsInElement });
-        }
+      }
+      catch (e) {
+        console.error(e);
       }
     }
 
