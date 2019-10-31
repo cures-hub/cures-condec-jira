@@ -219,8 +219,12 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getPersistenceManager(element);
-		KnowledgeGraph.getOrCreate(projectKey).updateNode(element);
-		return persistenceManager.updateDecisionKnowledgeElement(element, user);
+		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(element, user);
+		if (isUpdated) {
+			DecisionKnowledgeElement updatedElement = persistenceManager.getDecisionKnowledgeElement(element.getId());
+			KnowledgeGraph.getOrCreate(projectKey).updateNode(updatedElement);
+		}
+		return isUpdated;
 	}
 
 	@Override
