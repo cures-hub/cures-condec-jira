@@ -89,10 +89,6 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 		for (Node currentNode : vertexSet()) {
 			if (node.equals(currentNode)) {
 				oldNode = (DecisionKnowledgeElement) currentNode;
-				System.out.println(oldNode.getDocumentationLocation());
-				System.out.println(node.getDocumentationLocation());
-				System.out.println(oldNode.getId());
-				System.out.println(node.getId());
 			}
 		}
 		if (oldNode == null) {
@@ -104,7 +100,6 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	private boolean replaceVertex(DecisionKnowledgeElement vertex, DecisionKnowledgeElement replace) {
 		Set<Link> newLinks = new HashSet<Link>();
 		for (Link edge : outgoingEdgesOf(vertex)) {
-			// Link.instantiateDirectedLink(parentElement, childElement)
 			newLinks.add(new LinkImpl(replace, edge.getTarget()));
 		}
 		for (Link edge : incomingEdgesOf(vertex)) {

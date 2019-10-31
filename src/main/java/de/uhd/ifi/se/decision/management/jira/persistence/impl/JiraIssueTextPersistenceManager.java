@@ -597,9 +597,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (AbstractPersistenceManagerForSingleLocation.isElementLinked(childElement)) {
 			return true;
 		}
+		String projectKey = parentElement.getProject().getProjectKey();
 		Link link = Link.instantiateDirectedLink(parentElement, childElement, linkType);
-		long linkId = KnowledgePersistenceManager.getOrCreate(parentElement.getProject().getProjectKey())
-				.insertLink(link, null);
+		long linkId = KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, null);
 		return linkId > 0;
 	}
 
@@ -750,7 +750,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 						.getDecisionKnowledgeElement(sentenceId);
 			}
 			createSmartLinkForSentence(sentence);
-			// KnowledgeGraph.getOrCreate(projectKey).updateNode(sentence);
 			knowledgeElementsInText.set(i, sentence);
 		}
 		return knowledgeElementsInText;
@@ -778,7 +777,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				parts.add(sentence);
 			}
 			createSmartLinkForSentence(sentence);
-			// KnowledgeGraph.getOrCreate(projectKey).updateNode(sentence);
 		}
 		return parts;
 	}
