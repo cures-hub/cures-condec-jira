@@ -239,6 +239,12 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	}
 
 	@Override
+	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
+			ApplicationUser user) {
+		return insertDecisionKnowledgeElement(element, user, null);
+	}
+
+	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id, DocumentationLocation documentationLocation) {
 		AbstractPersistenceManagerForSingleLocation persistenceManager = getPersistenceManager(documentationLocation);
 		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(id);

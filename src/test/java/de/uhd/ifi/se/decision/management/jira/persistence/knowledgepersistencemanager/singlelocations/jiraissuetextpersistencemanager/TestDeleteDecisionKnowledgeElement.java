@@ -3,11 +3,31 @@ package de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencem
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
 import org.junit.Test;
 
+import com.atlassian.jira.user.ApplicationUser;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestDeleteDecisionKnowledgeElement extends TestJiraIssueCommentPersistenceManagerSetUp {
+public class TestDeleteDecisionKnowledgeElement extends TestSetUp {
+
+	protected static JiraIssueTextPersistenceManager manager;
+	protected static ApplicationUser user;
+	protected static DecisionKnowledgeElement element;
+
+	@Before
+	public void setUp() {
+		init();
+		manager = new JiraIssueTextPersistenceManager("TEST");
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		element = JiraIssues.addElementToDataBase();
+	}
 
 	@Test
 	@NonTransactional

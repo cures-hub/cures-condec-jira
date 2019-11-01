@@ -321,12 +321,11 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return sentences.get(0);
 	}
 
-	public static long insertDecisionKnowledgeElement(PartOfJiraIssueText sentence, ApplicationUser user) {
-		DecisionKnowledgeElement existingElement = new JiraIssueTextPersistenceManager("")
-				.getDecisionKnowledgeElement(sentence);
+	public long insertDecisionKnowledgeElement(PartOfJiraIssueText sentence, ApplicationUser user) {
+		DecisionKnowledgeElement existingElement = getDecisionKnowledgeElement(sentence);
 		if (existingElement != null) {
 			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(sentence.getJiraIssueId(),
-					sentence.getProject().getProjectKey(), "i");
+					projectKey, "i");
 			JiraIssueTextPersistenceManager.checkIfSentenceHasAValidLink(existingElement, parentElement,
 					LinkType.getLinkTypeForKnowledgeType(existingElement.getType()));
 			return existingElement.getId();
@@ -342,7 +341,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (id > 0 && sentence.isRelevant()) {
 			sentence.setId(id);
 			KnowledgePersistenceManager.insertStatus(sentence);
-			KnowledgeGraph.getOrCreate(sentence.getProject().getProjectKey()).addVertex(sentence);
+			KnowledgeGraph.getOrCreate(projectKey).addVertex(sentence);
 		}
 		return id;
 	}
@@ -717,7 +716,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		// Create AO entries
 		for (PartOfText partOfText : partsOfText) {
 			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(partOfText, comment);
-			long sentenceId = insertDecisionKnowledgeElement(sentence, null);
+			long sentenceId = persistenceManager.insertDecisionKnowledgeElement(sentence, null);
 			sentence = (PartOfJiraIssueText) persistenceManager.getDecisionKnowledgeElement(sentenceId);
 			createSmartLinkForSentence(sentence);
 			parts.add(sentence);
@@ -738,6 +737,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		// links in the knowledge graph might be wrong.
 		int numberOfTextPartsInComment = knowledgeElementsInText.size();
 
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
+
 		// Update AO entries
 		for (int i = 0; i < partsOfText.size(); i++) {
 			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(partsOfText.get(i), comment);
@@ -745,9 +747,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				sentence.setId(knowledgeElementsInText.get(i).getId());
 				updateInDatabase(sentence);
 			} else {
-				long sentenceId = insertDecisionKnowledgeElement(sentence, null);
-				sentence = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
-						.getDecisionKnowledgeElement(sentenceId);
+				long sentenceId = persistenceManager.insertDecisionKnowledgeElement(sentence, null);
+				sentence = (PartOfJiraIssueText) persistenceManager.getDecisionKnowledgeElement(sentenceId);
 			}
 			createSmartLinkForSentence(sentence);
 			knowledgeElementsInText.set(i, sentence);
@@ -762,6 +763,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		List<DecisionKnowledgeElement> parts = getElementsForDescription(jiraIssue.getId());
 		int numberOfTextParts = parts.size();
 
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
+
 		for (int i = 0; i < partsOfText.size(); i++) {
 			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(partsOfText.get(i), jiraIssue);
 			if (i < numberOfTextParts) {
@@ -771,9 +775,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				parts.set(i, sentence);
 			} else {
 				// Create new AO entry
-				long sentenceId = insertDecisionKnowledgeElement(sentence, null);
-				sentence = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
-						.getDecisionKnowledgeElement(sentenceId);
+				long sentenceId = persistenceManager.insertDecisionKnowledgeElement(sentence, null);
+				sentence = (PartOfJiraIssueText) persistenceManager.getDecisionKnowledgeElement(sentenceId);
 				parts.add(sentence);
 			}
 			createSmartLinkForSentence(sentence);

@@ -18,7 +18,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -64,10 +64,10 @@ public class TestCreateLink extends TestSetUp {
 		List<PartOfJiraIssueText> comment = TestTextSplitter
 				.getSentencesForCommentText("{issue} testobject {issue} {decision} testobject {decision}");
 		PartOfJiraIssueText sentenceIssue = comment.get(0);
-		JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(sentenceIssue,
+		KnowledgePersistenceManager.getOrCreate("TEST").insertDecisionKnowledgeElement(sentenceIssue,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
 		PartOfJiraIssueText sentenceDecision = comment.get(1);
-		JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(sentenceDecision,
+		KnowledgePersistenceManager.getOrCreate("TEST").insertDecisionKnowledgeElement(sentenceDecision,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
 		assertEquals(Status.OK.getStatusCode(), knowledgeRest.createLink(request, "TEST", "Decision",
 				sentenceIssue.getId(), "s", sentenceDecision.getId(), "s", null).getStatus());
@@ -80,7 +80,7 @@ public class TestCreateLink extends TestSetUp {
 	public void testRequestFilledProjectKeyFilledChildElementFilledParentElementFilledDocumentationLocationDifferLinkTypeNull() {
 		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("{issue} testobject {issue}");
 		PartOfJiraIssueText sentence = comment.get(0);
-		JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(sentence,
+		KnowledgePersistenceManager.getOrCreate("TEST").insertDecisionKnowledgeElement(sentence,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.createLink(request, "TEST", "Decision", 4, "i", sentence.getId(), "s", null).getStatus());

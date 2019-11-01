@@ -18,7 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 public class JiraIssues {
 
@@ -62,6 +62,7 @@ public class JiraIssues {
 		// Pro-Argument for the decision
 		issue = createJiraIssue(5, jiraIssueTypes.get(4), project, "This is a great solution.", user);
 		jiraIssues.add(issue);
+
 		return jiraIssues;
 	}
 
@@ -83,7 +84,7 @@ public class JiraIssues {
 		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("{issue} testobject {issue}");
 		PartOfJiraIssueText sentence = comment.get(0);
 		sentence.setJiraIssueId(issue.getId());
-		JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(sentence,
+		KnowledgePersistenceManager.getOrCreate("TEST").insertDecisionKnowledgeElement(sentence,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
 
 		return sentence.getJiraIssue();
@@ -109,9 +110,9 @@ public class JiraIssues {
 		element.setProject("TEST");
 		element.setDescription("Old");
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
-		long id = JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(element, null);
+		long id = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager()
+				.insertDecisionKnowledgeElement(element, null);
 		element.setId(id);
 		return element;
 	}
-
 }
