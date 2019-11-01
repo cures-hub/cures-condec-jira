@@ -4,15 +4,20 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.issue.comments.Comment;
+import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.Project;
-
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 
 public class JiraIssues {
@@ -82,6 +87,31 @@ public class JiraIssues {
 				JiraUsers.SYS_ADMIN.getApplicationUser());
 
 		return sentence.getJiraIssue();
+	}
+
+	public static Comment addCommentsToIssue(Issue issue, String comment) {
+		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
+		// Get the current logged in user
+		ApplicationUser currentUser = JiraUsers.SYS_ADMIN.getApplicationUser();
+		// Get access to the Jira comment and component manager
+		CommentManager commentManager = ComponentAccessor.getCommentManager();
+		// Get the last comment entered in on the issue to a String
+		return commentManager.create(issue, currentUser, comment, true);
+	}
+
+	public static PartOfJiraIssueText addElementToDataBase() {
+		PartOfJiraIssueText element = new PartOfJiraIssueTextImpl();
+		element.setProject("TEST");
+		element.setJiraIssueId(1);
+		element.setId(1);
+		element.setKey("TEST-12231");
+		element.setType("Argument");
+		element.setProject("TEST");
+		element.setDescription("Old");
+		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
+		long id = JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(element, null);
+		element.setId(id);
+		return element;
 	}
 
 }
