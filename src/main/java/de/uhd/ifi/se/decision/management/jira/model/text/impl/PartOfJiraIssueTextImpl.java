@@ -11,6 +11,7 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -110,6 +111,14 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 		this.setDescription(text);
 		this.setPlainText(!containsExcludedTag(text));
 		stripTagsFromBody(text);
+	}
+
+	public PartOfJiraIssueTextImpl(DecisionKnowledgeElement element) {
+		this.setId(element.getId());
+		this.setType(element.getType());
+		this.setSummary(element.getSummary());
+		this.setDescription(element.getDescription());
+		this.setProject(element.getProject());
 	}
 
 	private boolean containsExcludedTag(String body) {
