@@ -66,20 +66,12 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		boolean isDeleted = false;
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("ID = ?", id))) {
-			StatusPersistenceManager.deleteStatus(changeEntryToNewDecision(databaseEntry));
+			StatusPersistenceManager.deleteStatus(new PartOfJiraIssueTextImpl(databaseEntry));
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.JIRAISSUETEXT);
 			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new PartOfJiraIssueTextImpl(databaseEntry));
 			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
 		}
 		return isDeleted;
-	}
-
-	private static DecisionKnowledgeElement changeEntryToNewDecision(PartOfJiraIssueTextInDatabase databaseEntry) {
-		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(databaseEntry);
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(sentence.getId(), sentence.getSummary(),
-				sentence.getDescription(), sentence.getType(), sentence.getProject().getProjectKey(), sentence.getKey(),
-				sentence.getDocumentationLocation());
-		return element;
 	}
 
 	public static boolean deletePartsOfComment(Comment comment) {
@@ -117,24 +109,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			sentence = new PartOfJiraIssueTextImpl(databaseEntry);
 		}
 		return sentence;
-	}
-
-	public DecisionKnowledgeElement getDecisionKnowledgeElement(PartOfJiraIssueText sentence) {
-		if (sentence == null) {
-			return null;
-		}
-		if (sentence.getId() > 0) {
-			return this.getDecisionKnowledgeElement(sentence.getId());
-		}
-
-		PartOfJiraIssueText sentenceInDatabase = null;
-		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ? AND END_POSITION = ? AND START_POSITION = ?",
-						sentence.getProject().getProjectKey(), sentence.getCommentId(), sentence.getEndPosition(),
-						sentence.getStartPosition()))) {
-			sentenceInDatabase = new PartOfJiraIssueTextImpl(databaseEntry);
-		}
-		return sentenceInDatabase;
 	}
 
 	public static DecisionKnowledgeElement searchForLast(PartOfJiraIssueText sentence, KnowledgeType typeToSearch) {
@@ -325,27 +299,52 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	@Override
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
 			ApplicationUser user) {
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) element;
-		DecisionKnowledgeElement existingElement = getDecisionKnowledgeElement(sentence);
+		DecisionKnowledgeElement existingElement = checkIfElementExistsInDatabase(element);
 		if (existingElement != null) {
-			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(sentence.getJiraIssueId(),
-					projectKey, "i");
-			JiraIssueTextPersistenceManager.checkIfSentenceHasAValidLink(existingElement, parentElement,
-					LinkType.getLinkTypeForKnowledgeType(existingElement.getType()));
 			return existingElement;
 		}
 
 		PartOfJiraIssueTextInDatabase databaseEntry = ACTIVE_OBJECTS.create(PartOfJiraIssueTextInDatabase.class);
-		setParameters(sentence, databaseEntry);
+
+		setParameters((PartOfJiraIssueText) element, databaseEntry);
 		databaseEntry.save();
 
-		long id = databaseEntry.getId();
-		sentence.setId(id);
-		if (id > 0 && sentence.isRelevant()) {
+		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(databaseEntry);
+		if (sentence.getId() > 0 && sentence.isRelevant()) {
 			KnowledgePersistenceManager.insertStatus(sentence);
 			KnowledgeGraph.getOrCreate(projectKey).addVertex(sentence);
 		}
-		return getDecisionKnowledgeElement(id);
+		return sentence;
+	}
+
+	private DecisionKnowledgeElement checkIfElementExistsInDatabase(DecisionKnowledgeElement element) {
+		DecisionKnowledgeElement existingElement = getDecisionKnowledgeElement((PartOfJiraIssueText) element);
+		if (existingElement != null) {
+			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(
+					((PartOfJiraIssueText) element).getJiraIssueId(), projectKey, "i");
+			JiraIssueTextPersistenceManager.checkIfSentenceHasAValidLink(existingElement, parentElement,
+					LinkType.getLinkTypeForKnowledgeType(existingElement.getType()));
+			return existingElement;
+		}
+		return null;
+	}
+
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(PartOfJiraIssueText sentence) {
+		if (sentence == null) {
+			return null;
+		}
+		if (sentence.getId() > 0) {
+			return this.getDecisionKnowledgeElement(sentence.getId());
+		}
+
+		PartOfJiraIssueText sentenceInDatabase = null;
+		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
+				Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ? AND END_POSITION = ? AND START_POSITION = ?",
+						sentence.getProject().getProjectKey(), sentence.getCommentId(), sentence.getEndPosition(),
+						sentence.getStartPosition()))) {
+			sentenceInDatabase = new PartOfJiraIssueTextImpl(databaseEntry);
+		}
+		return sentenceInDatabase;
 	}
 
 	/**
@@ -384,6 +383,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			try {
 				classificationTrainer.update(element);
 			} catch (Exception e) {
+				// TODO Replace System.err.println with LOGGER.error
 				System.err.println("Could not update Classifier.");
 				e.printStackTrace();
 			}
