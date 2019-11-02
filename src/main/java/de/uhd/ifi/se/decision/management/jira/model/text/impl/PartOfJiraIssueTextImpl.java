@@ -39,12 +39,11 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 
 	public PartOfJiraIssueTextImpl(PartOfText partOfText, Comment comment) {
 		this();
-		if (comment == null) {
-			return;
+		if (comment != null) {
+			this.setCommentId(comment.getId());
+			this.setJiraIssueId(comment.getIssue().getId());
+			this.setCreated(comment.getCreated());
 		}
-		this.setCommentId(comment.getId());
-		this.setJiraIssueId(comment.getIssue().getId());
-		this.setCreated(comment.getCreated());
 		this.setEndPosition(partOfText.getEndPosition());
 		this.setStartPosition(partOfText.getStartPosition());
 		this.setRelevant(partOfText.isRelevant());

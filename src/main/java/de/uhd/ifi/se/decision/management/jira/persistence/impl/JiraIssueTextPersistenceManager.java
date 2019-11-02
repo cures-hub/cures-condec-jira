@@ -305,7 +305,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 		PartOfJiraIssueTextInDatabase databaseEntry = ACTIVE_OBJECTS.create(PartOfJiraIssueTextInDatabase.class);
 
-		setParameters((PartOfJiraIssueTextImpl) element, databaseEntry);
+		setParameters((PartOfJiraIssueText) element, databaseEntry);
 		databaseEntry.save();
 
 		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(databaseEntry);
