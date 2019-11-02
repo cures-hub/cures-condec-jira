@@ -110,9 +110,8 @@ public class JiraIssues {
 		element.setProject("TEST");
 		element.setDescription("Old");
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
-		long id = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager()
+		element = (PartOfJiraIssueText) KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager()
 				.insertDecisionKnowledgeElement(element, null);
-		element.setId(id);
 		return element;
 	}
 }

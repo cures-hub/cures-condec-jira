@@ -34,7 +34,7 @@ public class TestUpdateInDatabase extends TestSetUp {
 	@NonTransactional
 	public void testUpdateSentenceElement() {
 		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("first Comment");
-		long id = manager.insertDecisionKnowledgeElement(comment.get(0), null);
+		long id = manager.insertDecisionKnowledgeElement(comment.get(0), null).getId();
 		PartOfJiraIssueText sentence = comment.get(0);
 		sentence.setType("ALTERNATIVE");
 		JiraIssueTextPersistenceManager.updateInDatabase(sentence);
@@ -47,7 +47,7 @@ public class TestUpdateInDatabase extends TestSetUp {
 	@NonTransactional
 	public void testUpdateKnowledgeType() {
 		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("first Comment");
-		long id = manager.insertDecisionKnowledgeElement(comment.get(0), null);
+		long id = manager.insertDecisionKnowledgeElement(comment.get(0), null).getId();
 		PartOfJiraIssueText sentence = comment.get(0);
 		sentence.setType(KnowledgeType.ALTERNATIVE);
 		JiraIssueTextPersistenceManager.updateInDatabase(sentence);
@@ -60,7 +60,7 @@ public class TestUpdateInDatabase extends TestSetUp {
 	@NonTransactional
 	public void testSetSentenceIrrlevant() {
 		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("first Comment");
-		long id = manager.insertDecisionKnowledgeElement(comment.get(0), null);
+		long id = manager.insertDecisionKnowledgeElement(comment.get(0), null).getId();
 		PartOfJiraIssueText element = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
 				.getDecisionKnowledgeElement(id);
 		element.setRelevant(true);

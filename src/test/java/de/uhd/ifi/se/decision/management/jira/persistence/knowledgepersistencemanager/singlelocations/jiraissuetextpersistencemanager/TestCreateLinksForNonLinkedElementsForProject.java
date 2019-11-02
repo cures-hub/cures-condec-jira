@@ -36,7 +36,9 @@ public class TestCreateLinksForNonLinkedElementsForProject extends TestSetUp {
 	public void testLinkAllUnlikedSentence() {
 		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText(
 				"some sentence in front.  {pro} testobject {pro} some sentence in the back.");
-		long id = manager.insertDecisionKnowledgeElement(comment.get(1), null);
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) manager.insertDecisionKnowledgeElement(comment.get(1),
+				null);
+		long id = sentence.getId();
 		assertEquals(1, GenericLinkManager.getLinksForElement(id, DocumentationLocation.JIRAISSUETEXT).size());
 		GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.JIRAISSUETEXT);
 		assertEquals(0, GenericLinkManager.getLinksForElement(id, DocumentationLocation.JIRAISSUETEXT).size());

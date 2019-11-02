@@ -71,8 +71,8 @@ public class TestInsertDecisionKnowledgeElement extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testElementFilledUserFilledParentFilled() {
-		assertNotNull(manager.insertDecisionKnowledgeElement(decisionKnowledgeElement,
-				JiraUsers.SYS_ADMIN.getApplicationUser(), element));
+		assertNotNull(manager.insertDecisionKnowledgeElement(element, JiraUsers.SYS_ADMIN.getApplicationUser(),
+				decisionKnowledgeElement));
 	}
 
 }

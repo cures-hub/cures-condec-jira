@@ -37,16 +37,16 @@ public class TestGetDecisionKnowledgeElement extends TestSetUp {
 	@NonTransactional
 	public void testElementExistingInAo() {
 		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("first Comment");
-		long id = manager.insertDecisionKnowledgeElement(comment.get(0), null);
-		assertNotNull(new JiraIssueTextPersistenceManager("").getDecisionKnowledgeElement(id));
+		long id = manager.insertDecisionKnowledgeElement(comment.get(0), null).getId();
+		assertNotNull(manager.getDecisionKnowledgeElement(id));
 	}
 
 	@Test
 	@NonTransactional
 	public void testElementInsertedTwice() {
 		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("first Comment");
-		long id = manager.insertDecisionKnowledgeElement(comment.get(0), null);
-		long id2 = manager.insertDecisionKnowledgeElement(comment.get(0), null);
+		long id = manager.insertDecisionKnowledgeElement(comment.get(0), null).getId();
+		long id2 = manager.insertDecisionKnowledgeElement(comment.get(0), null).getId();
 		assertNotNull(new JiraIssueTextPersistenceManager("").getDecisionKnowledgeElement(id));
 		assertTrue(id == id2);
 	}
@@ -76,7 +76,7 @@ public class TestGetDecisionKnowledgeElement extends TestSetUp {
 	public void testCleanSentenceDatabaseForProject() {
 		List<PartOfJiraIssueText> partsOfText = TestTextSplitter.getSentencesForCommentText(
 				"some sentence in front.  {pro} testobject {pro} some sentence in the back.");
-		long id = manager.insertDecisionKnowledgeElement(partsOfText.get(1), null);
+		long id = manager.insertDecisionKnowledgeElement(partsOfText.get(1), null).getId();
 
 		MutableComment comment = ComponentAccessor.getCommentManager()
 				.getMutableComment(partsOfText.get(1).getCommentId());
@@ -93,7 +93,7 @@ public class TestGetDecisionKnowledgeElement extends TestSetUp {
 	@NonTransactional
 	public void testSetRelevantIntoAO() {
 		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("first Comment");
-		long id = manager.insertDecisionKnowledgeElement(comment.get(0), null);
+		long id = manager.insertDecisionKnowledgeElement(comment.get(0), null).getId();
 
 		PartOfJiraIssueText element = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
 				.getDecisionKnowledgeElement(id);
@@ -114,7 +114,7 @@ public class TestGetDecisionKnowledgeElement extends TestSetUp {
 	@NonTransactional
 	public void testSetRelevantIntoAOForNonExistingElement() {
 		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("first Comment");
-		long id = manager.insertDecisionKnowledgeElement(comment.get(0), null);
+		long id = manager.insertDecisionKnowledgeElement(comment.get(0), null).getId();
 
 		PartOfJiraIssueText element = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
 				.getDecisionKnowledgeElement(id);

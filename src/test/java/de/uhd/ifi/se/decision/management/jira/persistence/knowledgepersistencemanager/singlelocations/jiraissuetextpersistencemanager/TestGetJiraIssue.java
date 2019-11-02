@@ -37,9 +37,10 @@ public class TestGetJiraIssue extends TestSetUp {
 	public void testGetJiraIssueKeyForPartOfText() {
 		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
-		long id = manager.insertDecisionKnowledgeElement(comment.get(1), null);
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) manager.insertDecisionKnowledgeElement(comment.get(1),
+				null);
 
-		assertEquals(3, id);
+		assertEquals(3, sentence.getId());
 
 		long jiraIssueId = comment.get(0).getJiraIssueId();
 
@@ -47,7 +48,7 @@ public class TestGetJiraIssue extends TestSetUp {
 				.getElementsForIssue(jiraIssueId, "TEST");
 		assertEquals(3, listWithObjects.size());
 
-		String jiraIssueKey = JiraIssueTextPersistenceManager.getJiraIssue(id).getKey();
+		String jiraIssueKey = JiraIssueTextPersistenceManager.getJiraIssue(sentence.getId()).getKey();
 
 		assertEquals("TEST-30", jiraIssueKey);
 	}
