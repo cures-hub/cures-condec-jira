@@ -69,7 +69,7 @@ public interface PartOfText extends DecisionKnowledgeElement {
 	 * updated, or checked by a human beeing.
 	 * 
 	 * @param isValidated
-	 *            true if the classification of the text within the JIRA issue
+	 *            true if the classification of the text within the Jira issue
 	 *            comment is validated.
 	 */
 	void setValidated(boolean isValidated);
@@ -78,7 +78,7 @@ public interface PartOfText extends DecisionKnowledgeElement {
 	 * Determine whether the classification of the part of the text is manually
 	 * performed, updated, or checked by a human beeing.
 	 * 
-	 * @return true if the classification of the text within the JIRA issue comment
+	 * @return true if the classification of the text within the Jira issue comment
 	 *         is validated.
 	 */
 	boolean isValidated();
@@ -102,27 +102,27 @@ public interface PartOfText extends DecisionKnowledgeElement {
 	boolean isTagged();
 
 	/**
-	 * Set the id of the JIRA issue that the decision knowledge element or
+	 * Set the id of the Jira issue that the decision knowledge element or
 	 * irrelevant text is part of.
 	 * 
 	 * @param id
-	 *            of the JIRA issue.
+	 *            of the Jira issue.
 	 */
 	void setJiraIssueId(long jiraIssueId);
 
 	/**
-	 * Get the id of the JIRA issue that the decision knowledge element or
+	 * Get the id of the Jira issue that the decision knowledge element or
 	 * irrelevant text is part of.
 	 * 
-	 * @return id of the JIRA issue.
+	 * @return id of the Jira issue.
 	 */
 	long getJiraIssueId();
 
 	/**
-	 * Get the JIRA issue that the decision knowledge element or irrelevant text is
+	 * Get the Jira issue that the decision knowledge element or irrelevant text is
 	 * part of.
 	 * 
-	 * @return JIRA issue.
+	 * @return Jira issue.
 	 */
 	Issue getJiraIssue();
 

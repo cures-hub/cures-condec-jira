@@ -82,7 +82,7 @@ public class CommonMetricCalculator {
 		for (Issue jiraIssue : jiraIssues) {
 			int numberOfElements = 0;
 			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
-					.getElementsForIssue(jiraIssue.getId(), projectKey);
+					.getElementsForJiraIssue(jiraIssue.getId(), projectKey);
 			for (DecisionKnowledgeElement element : elements) {
 				if (element.getType().equals(type)) {
 					numberOfElements++;

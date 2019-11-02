@@ -17,7 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestGetElementForIssue extends TestSetUp {
+public class TestGetElementsForJiraIssue extends TestSetUp {
 
 	protected static JiraIssueTextPersistenceManager manager;
 	protected static ApplicationUser user;
@@ -41,7 +41,7 @@ public class TestGetElementForIssue extends TestSetUp {
 		assertEquals(3, id);
 
 		List<DecisionKnowledgeElement> listWithObjects = JiraIssueTextPersistenceManager
-				.getElementsForIssue(comment.get(0).getJiraIssueId(), "TEST");
+				.getElementsForJiraIssue(comment.get(0).getJiraIssueId(), "TEST");
 		assertEquals(3, listWithObjects.size());
 	}
 }

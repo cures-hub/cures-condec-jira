@@ -118,7 +118,7 @@ public class FilterExtractorImpl implements FilterExtractor {
 			// Add all Matching Elements from Query as a DecisionKnowledgeElement
 			results.add(new DecisionKnowledgeElementImpl(currentIssue));
 			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
-					.getElementsForIssue(currentIssue.getId(), filterSettings.getProjectKey());
+					.getElementsForJiraIssue(currentIssue.getId(), filterSettings.getProjectKey());
 			for (DecisionKnowledgeElement currentElement : elements) {
 				if (results.contains(currentElement)) {
 					continue;

@@ -10,7 +10,6 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.MutableComment;
@@ -144,7 +143,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return decisionKnowledgeElements;
 	}
 
-	public static List<DecisionKnowledgeElement> getElementsForIssue(long issueId, String projectKey) {
+	public static List<DecisionKnowledgeElement> getElementsForJiraIssue(long issueId, String projectKey) {
 		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ?", projectKey, issueId))) {
@@ -268,8 +267,11 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	@Override
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
 			ApplicationUser user, DecisionKnowledgeElement parentElement) {
-		if (element == null || user == null || parentElement == null) {
+		if (element == null || user == null) {
 			return null;
+		}
+		if (parentElement == null) {
+			return insertDecisionKnowledgeElement(element, user);
 		}
 		Issue jiraIssue = getJiraIssue(parentElement);
 		if (jiraIssue == null) {
@@ -283,14 +285,19 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (element == null) {
 			return null;
 		}
-		long jiraIssueId;
 		if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
 			PartOfJiraIssueText sentence = (PartOfJiraIssueText) this.getDecisionKnowledgeElement(element.getId());
-			jiraIssueId = sentence.getJiraIssueId();
-		} else {
-			jiraIssueId = element.getId();
+			return sentence.getJiraIssue();
 		}
-		return ComponentAccessor.getIssueManager().getIssueObject(jiraIssueId);
+		return ComponentAccessor.getIssueManager().getIssueObject(element.getId());
+	}
+
+	public Issue getJiraIssue(long id) {
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) this.getDecisionKnowledgeElement(id);
+		if (sentence == null) {
+			return null;
+		}
+		return sentence.getJiraIssue();
 	}
 
 	private Comment createCommentInJiraIssue(DecisionKnowledgeElement element, Issue jiraIssue, ApplicationUser user) {
@@ -792,17 +799,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		ComponentAccessor.getCommentManager().update(mutableComment, true);
 		JiraIssueTextExtractionEventListener.editCommentLock = false;
 		return element.getEndPosition() - element.getStartPosition();
-	}
-
-	public static Issue getJiraIssue(long id) {
-		Issue jiraIssue = null;
-		IssueManager issueManager = ComponentAccessor.getIssueManager();
-
-		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("ID = ?", id))) {
-			jiraIssue = issueManager.getIssueObject(databaseEntry.getJiraIssueId());
-		}
-		return jiraIssue;
 	}
 
 	public List<DecisionKnowledgeElement> getUserValidatedPartsOfText(String projectKey) {

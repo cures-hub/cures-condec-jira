@@ -75,7 +75,7 @@ public class CommentMetricCalculator {
 
 		for (Issue jiraIssue : jiraIssues) {
 			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
-					.getElementsForIssue(jiraIssue.getId(), projectKey);
+					.getElementsForJiraIssue(jiraIssue.getId(), projectKey);
 			for (DecisionKnowledgeElement currentElement : elements) {
 				if (currentElement instanceof PartOfJiraIssueText
 						&& ((PartOfJiraIssueText) currentElement).isRelevant()) {

@@ -396,7 +396,7 @@ public class KnowledgeRest {
 		Issue jiraIssue = issueManager.getIssueObject(id);
 
 		if (jiraIssue == null) {
-			jiraIssue = JiraIssueTextPersistenceManager.getJiraIssue(id);
+			jiraIssue = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueTextManager().getJiraIssue(id);
 		}
 
 		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
