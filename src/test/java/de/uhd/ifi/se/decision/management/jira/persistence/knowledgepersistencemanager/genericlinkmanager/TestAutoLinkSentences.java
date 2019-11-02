@@ -10,7 +10,6 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -37,7 +36,7 @@ public class TestAutoLinkSentences extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForProAlternative() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter
+		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("{alternative}first sentence{alternative} {pro}second sentence{pro}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.get(1)).get(0);
 		assertEquals(sentenceLink.getOppositeElement(comment.get(0)).getId(), comment.get(1).getId());
@@ -46,7 +45,7 @@ public class TestAutoLinkSentences extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForConAlternative() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter
+		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("{alternative}first sentence{alternative} {con}second sentence{con}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.get(1)).get(0);
 		assertEquals(sentenceLink.getOppositeElement(comment.get(0)).getId(), comment.get(1).getId());
@@ -55,7 +54,7 @@ public class TestAutoLinkSentences extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForProDecision() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter
+		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("{decision}first sentence{decision} {pro}second sentence{pro}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.get(1)).get(0);
 		assertEquals(sentenceLink.getOppositeElement(comment.get(0)).getId(), comment.get(1).getId());
@@ -64,7 +63,7 @@ public class TestAutoLinkSentences extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForConDecision() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter
+		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("{decision}first sentence{decision} {con}second sentence{con}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.get(1)).get(0);
 		assertEquals(sentenceLink.getOppositeElement(comment.get(0)).getId(), comment.get(1).getId());
@@ -73,7 +72,7 @@ public class TestAutoLinkSentences extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForAlternativeIssue() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter
+		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("{issue}first sentence{issue} {alternative}second sentence{alternative}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.get(1)).get(0);
 		assertEquals(sentenceLink.getOppositeElement(comment.get(0)).getId(), comment.get(1).getId());
@@ -82,7 +81,7 @@ public class TestAutoLinkSentences extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForDecisionIssue() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter
+		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("{issue}first sentence{issue} {decision}second sentence{decision}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.get(1)).get(0);
 		assertEquals(sentenceLink.getOppositeElement(comment.get(0)).getId(), comment.get(1).getId());
@@ -91,7 +90,7 @@ public class TestAutoLinkSentences extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForBoringNonSmartLink() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter
+		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("{issue}first sentence{issue} {pro}second sentence{pro}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.get(1)).get(0);
 		assertEquals("i30 to s3", sentenceLink.toString());

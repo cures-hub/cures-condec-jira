@@ -10,9 +10,9 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -97,7 +97,7 @@ public class TestGetElementsForIssueWithType extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIdMoreSProjectKeyFilledTypeFilled() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText(
+		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		manager.insertDecisionKnowledgeElement(comment.get(1), null);
 

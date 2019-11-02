@@ -10,7 +10,6 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -36,7 +35,7 @@ public class TestGetDecisionKnowledgeElements extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetAllElementsFromAoByType() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter.getSentencesForCommentText(
+		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		assertEquals(KnowledgeType.ISSUE, sentences.get(1).getType());
 
@@ -48,7 +47,7 @@ public class TestGetDecisionKnowledgeElements extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetAllElementsFromAoByTypeAlternative() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter.getSentencesForCommentText(
+		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText(
 				"some sentence in front. {alternative} testobject {alternative} some sentence in the back.");
 		assertEquals(KnowledgeType.ALTERNATIVE, sentences.get(1).getType());
 
@@ -60,7 +59,7 @@ public class TestGetDecisionKnowledgeElements extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetAllElementsFromAoByArgumentType() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter.getSentencesForCommentText(
+		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText(
 				"some sentence in front. {con} testobject {con} some sentence in the back.");
 		assertEquals(KnowledgeType.OTHER, sentences.get(0).getType());
 		assertEquals(KnowledgeType.CON, sentences.get(1).getType());
@@ -76,7 +75,7 @@ public class TestGetDecisionKnowledgeElements extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetAllElementsFromAoByEmptyType() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter.getSentencesForCommentText(
+		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText(
 				"some sentence in front.  {pro} testobject {pro} some sentence in the back.");
 		assertEquals(KnowledgeType.OTHER, sentences.get(2).getType());
 

@@ -127,8 +127,11 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
-		long commentId = Long.parseLong(key.split(":")[1]);
-		return getDecisionKnowledgeElement(commentId);
+		if (key == null) {
+			return null;
+		}
+		long id = Long.parseLong(key.split(":")[1]);
+		return getDecisionKnowledgeElement(id);
 	}
 
 	@Override
@@ -383,8 +386,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			try {
 				classificationTrainer.update(element);
 			} catch (Exception e) {
-				// TODO Replace System.err.println with LOGGER.error
-				System.err.println("Could not update Classifier.");
+				LOGGER.error("Could not update Classifier. Message: " + e.getMessage());
 				e.printStackTrace();
 			}
 		}

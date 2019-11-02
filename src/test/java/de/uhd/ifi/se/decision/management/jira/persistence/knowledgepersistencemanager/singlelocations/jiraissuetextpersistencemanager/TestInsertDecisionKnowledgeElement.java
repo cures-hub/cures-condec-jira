@@ -2,6 +2,9 @@ package de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencem
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +33,16 @@ public class TestInsertDecisionKnowledgeElement extends TestSetUp {
 		decisionKnowledgeElement = new DecisionKnowledgeElementImpl(
 				ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-3"));
 		element = JiraIssues.addElementToDataBase();
+	}
+
+	@Test
+	@NonTransactional
+	public void testElementInsertedTwice() {
+		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("first Comment");
+		long id = manager.insertDecisionKnowledgeElement(comment.get(0), null).getId();
+		long id2 = manager.insertDecisionKnowledgeElement(comment.get(0), null).getId();
+		assertNotNull(new JiraIssueTextPersistenceManager("").getDecisionKnowledgeElement(id));
+		assertTrue(id == id2);
 	}
 
 	@Test

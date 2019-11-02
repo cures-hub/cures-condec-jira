@@ -14,11 +14,11 @@ import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 
 public class JiraIssues {
 
@@ -81,7 +81,7 @@ public class JiraIssues {
 	}
 
 	public static Issue addComment(Issue issue) {
-		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("{issue} testobject {issue}");
+		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("{issue} testobject {issue}");
 		PartOfJiraIssueText sentence = comment.get(0);
 		sentence.setJiraIssueId(issue.getId());
 		KnowledgePersistenceManager.getOrCreate("TEST").insertDecisionKnowledgeElement(sentence,
@@ -113,5 +113,14 @@ public class JiraIssues {
 		element = (PartOfJiraIssueText) KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager()
 				.insertDecisionKnowledgeElement(element, null);
 		return element;
+	}
+
+	public static List<PartOfJiraIssueText> getSentencesForCommentText(String text) {
+		Issue issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");
+		ApplicationUser currentUser = JiraUsers.SYS_ADMIN.getApplicationUser();
+		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
+		Comment comment = ComponentAccessor.getCommentManager().create(issue, currentUser, text, true);
+		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.getPartsOfComment(comment);
+		return sentences;
 	}
 }

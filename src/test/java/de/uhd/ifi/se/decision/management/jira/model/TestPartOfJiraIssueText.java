@@ -14,11 +14,11 @@ import org.junit.Test;
 import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfTextImpl;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestPartOfJiraIssueText extends TestSetUp {
@@ -80,7 +80,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetTextFromComment() {
-		List<PartOfJiraIssueText> partsOfText = TestTextSplitter.getSentencesForCommentText(
+		List<PartOfJiraIssueText> partsOfText = JiraIssues.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 
 		PartOfJiraIssueText partOfText = partsOfText.get(0);
@@ -114,7 +114,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsPlainText() {
-		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = JiraIssues
 				.getSentencesForCommentText("This is a text that is not classified.");
 		assertTrue(partsOfText.get(0).isPlainText());
 	}
@@ -122,7 +122,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsPlainTextCode() {
-		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = JiraIssues
 				.getSentencesForCommentText("{code:Java} int i = 0 {code}");
 		assertFalse(partsOfText.get(0).isPlainText());
 	}
@@ -130,7 +130,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsPlainTextAlternative() {
-		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = JiraIssues
 				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative}");
 		assertTrue(partsOfText.get(0).isPlainText());
 	}
@@ -138,7 +138,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsPlainTextIcon() {
-		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = JiraIssues
 				.getSentencesForCommentText("(y) this is a icon pro text.");
 		assertTrue(partsOfText.get(0).isPlainText());
 	}
@@ -146,7 +146,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsRelevantText() {
-		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = JiraIssues
 				.getSentencesForCommentText("This is a text that is not classified.");
 		assertFalse(partsOfText.get(0).isRelevant());
 	}
@@ -154,7 +154,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsRelevantCode() {
-		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = JiraIssues
 				.getSentencesForCommentText("{code:Java} int i = 0 {code}");
 		assertFalse(partsOfText.get(0).isRelevant());
 	}
@@ -162,7 +162,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsRelevantAlternative() {
-		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = JiraIssues
 				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative} ");
 		assertTrue(partsOfText.get(0).isRelevant());
 	}
@@ -170,7 +170,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsRelevantIcon() {
-		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = JiraIssues
 				.getSentencesForCommentText("(y) this is a icon pro text.");
 		assertTrue(partsOfText.get(0).isRelevant());
 	}
@@ -178,7 +178,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsValidatedText() {
-		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = JiraIssues
 				.getSentencesForCommentText("This is a text that is not classified.");
 		assertFalse(partsOfText.get(0).isValidated());
 	}
@@ -186,7 +186,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsValidatedCode() {
-		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = JiraIssues
 				.getSentencesForCommentText("{code:Java} int i = 0 {code}");
 		assertFalse(partsOfText.get(0).isValidated());
 	}
@@ -194,7 +194,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsValidatedAlternative() {
-		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = JiraIssues
 				.getSentencesForCommentText("{alternative} This is an alternative. {alternative} ");
 		assertTrue(partsOfText.get(0).isValidated());
 	}
@@ -202,7 +202,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsValidatedIssue() {
-		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = JiraIssues
 				.getSentencesForCommentText("{issue} This is an alternative. {issue} ");
 		assertTrue(partsOfText.get(0).isValidated());
 	}
@@ -210,7 +210,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsValidatedIcon() {
-		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = JiraIssues
 				.getSentencesForCommentText("(y) this is a icon pro text.");
 		assertTrue(partsOfText.get(0).isValidated());
 	}
@@ -218,7 +218,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetLength() {
-		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = JiraIssues
 				.getSentencesForCommentText("(y) this is a icon pro text.");
 		assertEquals(28, partsOfText.get(0).getLength());
 	}

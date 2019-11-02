@@ -11,10 +11,10 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -33,7 +33,7 @@ public class TestUpdateInDatabase extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testUpdateSentenceElement() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("first Comment");
+		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("first Comment");
 		long id = manager.insertDecisionKnowledgeElement(comment.get(0), null).getId();
 		PartOfJiraIssueText sentence = comment.get(0);
 		sentence.setType("ALTERNATIVE");
@@ -46,7 +46,7 @@ public class TestUpdateInDatabase extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testUpdateKnowledgeType() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("first Comment");
+		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("first Comment");
 		long id = manager.insertDecisionKnowledgeElement(comment.get(0), null).getId();
 		PartOfJiraIssueText sentence = comment.get(0);
 		sentence.setType(KnowledgeType.ALTERNATIVE);
@@ -59,7 +59,7 @@ public class TestUpdateInDatabase extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSetSentenceIrrlevant() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("first Comment");
+		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("first Comment");
 		long id = manager.insertDecisionKnowledgeElement(comment.get(0), null).getId();
 		PartOfJiraIssueText element = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
 				.getDecisionKnowledgeElement(id);

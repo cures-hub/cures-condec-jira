@@ -11,7 +11,6 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -20,6 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -144,7 +144,7 @@ public class TestTreant extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCreateNodeStructureWithSentenceInIssue() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter.getSentencesForCommentText("This is a testsentence");
+		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText("This is a testsentence");
 		sentences.get(0).setRelevant(true);
 		DecisionKnowledgeElement element = persistenceStrategy
 				.getDecisionKnowledgeElement(sentences.get(0).getJiraIssueId());

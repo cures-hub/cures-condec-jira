@@ -13,13 +13,13 @@ import org.junit.Test;
 import com.atlassian.jira.component.ComponentAccessor;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestKnowledgeGraph extends TestSetUp {
@@ -67,7 +67,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@NonTransactional
 	public void testGraphWithIrrelevantComment() {
 		// TODO Example test for 2 separate graphs
-		List<PartOfJiraIssueText> comment = TestTextSplitter
+		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("This is a test comment with some irrelevant text.");
 		PartOfJiraIssueText sentence = comment.get(0);
 		assertEquals("This is a test comment with some irrelevant text.", sentence.getSummary());
@@ -79,7 +79,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGraphWithRelevantComment() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter
+		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("{alternative} This would be a great solution option! {alternative}");
 		PartOfJiraIssueText sentence = comment.get(0);
 		String projectKey = sentence.getProject().getProjectKey();
