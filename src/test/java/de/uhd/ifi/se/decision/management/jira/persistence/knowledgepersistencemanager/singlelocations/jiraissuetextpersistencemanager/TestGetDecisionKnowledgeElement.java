@@ -50,13 +50,13 @@ public class TestGetDecisionKnowledgeElement extends TestSetUp {
 	public void testElementExistingInDatabaseButIdZero() {
 		// pretend that database id of the element is unknown
 		element.setId(0);
-		assertEquals("first Comment", manager.getDecisionKnowledgeElement(element).getSummary());
+		assertEquals("first Comment", manager.getDecisionKnowledgeElement((PartOfJiraIssueText) element).getSummary());
 	}
 
 	@Test
 	@NonTransactional
 	public void testElementNull() {
-		assertNull(manager.getDecisionKnowledgeElement((DecisionKnowledgeElement) null));
+		assertNull(manager.getDecisionKnowledgeElement((PartOfJiraIssueText) null));
 	}
 
 	@Test

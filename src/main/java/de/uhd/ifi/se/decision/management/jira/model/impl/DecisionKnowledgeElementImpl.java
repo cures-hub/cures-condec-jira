@@ -278,6 +278,14 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 	}
 
 	@Override
+	public Issue getJiraIssue() {
+		if (getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
+			return ComponentAccessor.getIssueManager().getIssueObject(id);
+		}
+		return null;
+	}
+
+	@Override
 	public String toString() {
 		return this.getDescription();
 	}

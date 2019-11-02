@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
+import com.atlassian.jira.issue.Issue;
+
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 
 /**
@@ -20,6 +22,7 @@ public interface DecisionKnowledgeElement extends Node {
 	 *
 	 * @return id of the decision knowledge element.
 	 */
+	@Override
 	long getId();
 
 	/**
@@ -192,6 +195,7 @@ public interface DecisionKnowledgeElement extends Node {
 	 * @see DocumentationLocation
 	 * @return documentation location of the decision knowledge element.
 	 */
+	@Override
 	DocumentationLocation getDocumentationLocation();
 
 	/**
@@ -268,4 +272,12 @@ public interface DecisionKnowledgeElement extends Node {
 	 * @return true if the element exists in database.
 	 */
 	boolean existsInDatabase();
+
+	/**
+	 * Get the Jira issue that the decision knowledge element or irrelevant text is
+	 * part of.
+	 * 
+	 * @return Jira issue.
+	 */
+	Issue getJiraIssue();
 }

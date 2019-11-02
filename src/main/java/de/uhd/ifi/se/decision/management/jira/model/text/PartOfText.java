@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.model.text;
 
-import com.atlassian.jira.issue.Issue;
-
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
@@ -117,14 +115,6 @@ public interface PartOfText extends DecisionKnowledgeElement {
 	 * @return id of the Jira issue.
 	 */
 	long getJiraIssueId();
-
-	/**
-	 * Get the Jira issue that the decision knowledge element or irrelevant text is
-	 * part of.
-	 * 
-	 * @return Jira issue.
-	 */
-	Issue getJiraIssue();
 
 	/**
 	 * Set whether the text of the decision knowledge element or irrelevant text is

@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model.text.impl;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +37,7 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 		this.documentationLocation = DocumentationLocation.JIRAISSUETEXT;
 	}
 
-	public PartOfJiraIssueTextImpl(Comment comment) {
+	public PartOfJiraIssueTextImpl(PartOfText partOfText, Comment comment) {
 		this();
 		if (comment == null) {
 			return;
@@ -43,16 +45,22 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 		this.setCommentId(comment.getId());
 		this.setJiraIssueId(comment.getIssue().getId());
 		this.setCreated(comment.getCreated());
-	}
-
-	public PartOfJiraIssueTextImpl(PartOfText partOfText, Comment comment) {
-		this(comment);
 		this.setEndPosition(partOfText.getEndPosition());
 		this.setStartPosition(partOfText.getStartPosition());
 		this.setRelevant(partOfText.isRelevant());
 		this.setValidated(partOfText.isValidated());
 		this.setType(partOfText.getType());
 		this.setProject(partOfText.getProject());
+	}
+
+	public PartOfJiraIssueTextImpl(Comment comment) {
+		this(getFirstPartOfTextInComment(comment), comment);
+	}
+
+	private static PartOfText getFirstPartOfTextInComment(Comment comment) {
+		String projectKey = comment.getIssue().getProjectObject().getKey();
+		List<PartOfText> partsOfText = new TextSplitterImpl().getPartsOfText(comment.getBody(), projectKey);
+		return partsOfText.get(0);
 	}
 
 	public PartOfJiraIssueTextImpl(PartOfText partOfText, Issue jiraIssue) {

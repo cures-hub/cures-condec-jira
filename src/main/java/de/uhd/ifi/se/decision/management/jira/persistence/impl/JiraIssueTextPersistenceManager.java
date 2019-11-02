@@ -273,27 +273,16 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (parentElement == null) {
 			return insertDecisionKnowledgeElement(element, user);
 		}
-		Issue jiraIssue = getJiraIssue(parentElement);
+		Issue jiraIssue = parentElement.getJiraIssue();
 		if (jiraIssue == null) {
 			return null;
 		}
-		createCommentInJiraIssue(element, jiraIssue, user);
-		return insertDecisionKnowledgeElement(element, user);
-	}
-
-	private Issue getJiraIssue(DecisionKnowledgeElement element) {
-		if (element == null) {
-			return null;
-		}
-		if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
-			PartOfJiraIssueText sentence = (PartOfJiraIssueText) this.getDecisionKnowledgeElement(element.getId());
-			return sentence.getJiraIssue();
-		}
-		return ComponentAccessor.getIssueManager().getIssueObject(element.getId());
+		Comment comment = createCommentInJiraIssue(element, jiraIssue, user);
+		return insertDecisionKnowledgeElement(new PartOfJiraIssueTextImpl(comment), user);
 	}
 
 	public Issue getJiraIssue(long id) {
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) this.getDecisionKnowledgeElement(id);
+		PartOfJiraIssueText sentence = (PartOfJiraIssueTextImpl) this.getDecisionKnowledgeElement(id);
 		if (sentence == null) {
 			return null;
 		}
@@ -316,7 +305,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 		PartOfJiraIssueTextInDatabase databaseEntry = ACTIVE_OBJECTS.create(PartOfJiraIssueTextInDatabase.class);
 
-		setParameters((PartOfJiraIssueText) element, databaseEntry);
+		setParameters((PartOfJiraIssueTextImpl) element, databaseEntry);
 		databaseEntry.save();
 
 		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(databaseEntry);
@@ -328,7 +317,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	private DecisionKnowledgeElement checkIfElementExistsInDatabase(DecisionKnowledgeElement element) {
-		DecisionKnowledgeElement existingElement = getDecisionKnowledgeElement(element);
+		if (element.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
+			return null;
+		}
+		DecisionKnowledgeElement existingElement = getDecisionKnowledgeElement((PartOfJiraIssueText) element);
 		if (existingElement != null) {
 			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(
 					((PartOfJiraIssueText) element).getJiraIssueId(), projectKey, "i");
@@ -339,15 +331,14 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return null;
 	}
 
-	public DecisionKnowledgeElement getDecisionKnowledgeElement(DecisionKnowledgeElement element) {
-		if (element == null) {
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(PartOfJiraIssueText sentence) {
+		if (sentence == null) {
 			return null;
 		}
-		if (element.getId() > 0) {
-			return this.getDecisionKnowledgeElement(element.getId());
+		if (sentence.getId() > 0) {
+			return this.getDecisionKnowledgeElement(sentence.getId());
 		}
 
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) element;
 		PartOfJiraIssueText sentenceInDatabase = null;
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ? AND END_POSITION = ? AND START_POSITION = ?",
