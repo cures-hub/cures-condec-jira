@@ -141,7 +141,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return decisionKnowledgeElements;
 	}
 
-	public static List<DecisionKnowledgeElement> getElementsForJiraIssue(long jiraIssueId, String projectKey) {
+	public List<DecisionKnowledgeElement> getElementsForJiraIssue(long jiraIssueId) {
 		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ?", projectKey, jiraIssueId))) {
@@ -463,11 +463,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		sentence.setValidated(element.isValidated());
 		sentence.setRelevant(element.getType() != KnowledgeType.OTHER);
 
-		boolean isUpdated = updateInDatabase(sentence);
-		// if (sentence.isRelevant()) {
-		// KnowledgeGraph.getOrCreate(sentence.getProject().getProjectKey()).updateNode(sentence);
-		// }
-		return isUpdated;
+		return updateInDatabase(sentence);
 	}
 
 	public static boolean updateInDatabase(PartOfJiraIssueText sentence) {

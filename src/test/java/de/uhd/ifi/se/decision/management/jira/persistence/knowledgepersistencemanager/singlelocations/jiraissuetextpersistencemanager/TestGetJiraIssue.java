@@ -43,8 +43,7 @@ public class TestGetJiraIssue extends TestSetUp {
 
 		long jiraIssueId = comment.get(0).getJiraIssueId();
 
-		List<DecisionKnowledgeElement> listWithObjects = JiraIssueTextPersistenceManager
-				.getElementsForJiraIssue(jiraIssueId, "TEST");
+		List<DecisionKnowledgeElement> listWithObjects = manager.getElementsForJiraIssue(jiraIssueId);
 		assertEquals(3, listWithObjects.size());
 
 		String jiraIssueKey = manager.getJiraIssue(sentence.getId()).getKey();

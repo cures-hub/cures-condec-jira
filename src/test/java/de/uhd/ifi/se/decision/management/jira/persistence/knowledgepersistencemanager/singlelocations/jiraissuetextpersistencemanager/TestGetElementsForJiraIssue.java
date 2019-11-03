@@ -40,8 +40,8 @@ public class TestGetElementsForJiraIssue extends TestSetUp {
 
 		assertEquals(3, id);
 
-		List<DecisionKnowledgeElement> listWithObjects = JiraIssueTextPersistenceManager
-				.getElementsForJiraIssue(comment.get(0).getJiraIssueId(), "TEST");
+		List<DecisionKnowledgeElement> listWithObjects = manager
+				.getElementsForJiraIssue(comment.get(0).getJiraIssueId());
 		assertEquals(3, listWithObjects.size());
 	}
 }
