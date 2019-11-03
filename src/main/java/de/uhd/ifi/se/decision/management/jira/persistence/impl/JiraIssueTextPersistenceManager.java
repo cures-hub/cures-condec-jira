@@ -83,7 +83,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 */
 	public boolean deleteElementsInComment(Comment comment) {
 		if (comment == null) {
-			LOGGER.error("Sentences in comment cannot be deleted since the comment is null.");
+			LOGGER.error("Decision knowledge elements in comment cannot be deleted since the comment is null.");
 			return false;
 		}
 		return deletePartsOfText(comment.getIssue().getId(), comment.getId());
@@ -100,7 +100,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 */
 	public boolean deleteElementsInDescription(Issue jiraIssue) {
 		if (jiraIssue == null) {
-			LOGGER.error("Sentences in description cannot be deleted since the Jira issue is null.");
+			LOGGER.error("Decision knowledge elements in description cannot be deleted since the Jira issue is null.");
 			return false;
 		}
 		return deletePartsOfText(jiraIssue.getId(), 0);
@@ -323,10 +323,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		}
 		DecisionKnowledgeElement existingElement = getDecisionKnowledgeElement(element);
 		if (existingElement != null) {
-			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(
-					((PartOfJiraIssueText) element).getJiraIssueId(), projectKey, "i");
-			JiraIssueTextPersistenceManager.checkIfSentenceHasAValidLink(existingElement, parentElement,
-					LinkType.getLinkTypeForKnowledgeType(existingElement.getType()));
+			ensureThatElementIsLinked(existingElement);
 			return existingElement;
 		}
 		return null;
@@ -530,7 +527,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (sentence == null) {
 			return false;
 		}
-		if (AbstractPersistenceManagerForSingleLocation.isElementLinked(sentence)) {
+		if (isElementLinked(sentence)) {
 			return true;
 		}
 		boolean isLinkCreated = false;
@@ -598,40 +595,49 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return linkId > 0;
 	}
 
-	public static void createLinksForNonLinkedElementsForIssue(long issueId) {
-		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("JIRA_ISSUE_ID = ?", issueId))) {
-			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(databaseEntry.getJiraIssueId(),
-					databaseEntry.getProjectKey(), "i");
-			checkIfSentenceHasAValidLink(new PartOfJiraIssueTextImpl(databaseEntry), parentElement,
-					LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()));
+	public boolean createLinksForNonLinkedElements(long jiraIssueId) {
+		boolean areElementsLinked = true;
+		for (DecisionKnowledgeElement element : getElementsInJiraIssue(jiraIssueId)) {
+
+			areElementsLinked = areElementsLinked && ensureThatElementIsLinked(element);
 		}
+		return areElementsLinked;
 	}
 
-	public static boolean createLinksForNonLinkedElementsForProject(String projectKey) {
-		if (projectKey == null || projectKey.equals("")) {
-			return false;
+	public boolean createLinksForNonLinkedElements() {
+		boolean areElementsLinked = true;
+		for (DecisionKnowledgeElement element : getDecisionKnowledgeElements()) {
+			areElementsLinked = areElementsLinked && ensureThatElementIsLinked(element);
 		}
-		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(databaseEntry.getJiraIssueId(),
-					projectKey, "i");
-
-			checkIfSentenceHasAValidLink(new PartOfJiraIssueTextImpl(databaseEntry), parentElement,
-					LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()));
-		}
-		return true;
+		return areElementsLinked;
 	}
 
-	public static boolean checkIfSentenceHasAValidLink(DecisionKnowledgeElement childElement,
-			DecisionKnowledgeElement parentElement, LinkType linkType) {
-		if (AbstractPersistenceManagerForSingleLocation.isElementLinked(childElement)) {
+	public boolean ensureThatElementIsLinked(DecisionKnowledgeElement element) {
+		if (isElementLinked(element)) {
 			return true;
 		}
-		String projectKey = parentElement.getProject().getProjectKey();
-		Link link = Link.instantiateDirectedLink(parentElement, childElement, linkType);
+		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(
+				((PartOfJiraIssueText) element).getJiraIssue());
+		Link link = Link.instantiateDirectedLink(parentElement, element);
 		long linkId = KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, null);
 		return linkId > 0;
+	}
+
+	/**
+	 * Determines whether an element is linked to at least one other decision
+	 * knowledge element.
+	 *
+	 * @param id
+	 *            id of a decision knowledge element in database. The id is
+	 *            different to the key.
+	 * @param documentationLocation
+	 *            of the element
+	 * @return list of linked elements.
+	 * @see DecisionKnowledgeElement
+	 */
+	public static boolean isElementLinked(DecisionKnowledgeElement element) {
+		List<Link> links = GenericLinkManager.getLinksForElement(element);
+		return links != null && links.size() > 0;
 	}
 
 	public static void cleanSentenceDatabase(String projectKey) {
@@ -724,7 +730,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		// delete ao sentence entry
 		KnowledgePersistenceManager.getOrCreate(projectKey).deleteDecisionKnowledgeElement(element, null);
 
-		createLinksForNonLinkedElementsForIssue(element.getJiraIssueId());
+		createLinksForNonLinkedElements(element.getJiraIssueId());
 
 		return issue;
 	}

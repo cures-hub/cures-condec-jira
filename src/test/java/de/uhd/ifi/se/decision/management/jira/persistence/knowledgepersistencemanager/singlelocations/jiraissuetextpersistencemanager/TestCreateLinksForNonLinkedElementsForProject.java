@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencemanager.singlelocations.jiraissuetextpersistencemanager;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class TestCreateLinksForNonLinkedElementsForProject extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testLinkAllUnlikedSentence() {
+	public void testLinkAllUnlinkedSentence() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText(
 				"some sentence in front.  {pro} testobject {pro} some sentence in the back.");
 		PartOfJiraIssueText sentence = (PartOfJiraIssueText) manager.insertDecisionKnowledgeElement(comment.get(1),
@@ -42,19 +41,7 @@ public class TestCreateLinksForNonLinkedElementsForProject extends TestSetUp {
 		assertEquals(1, GenericLinkManager.getLinksForElement(id, DocumentationLocation.JIRAISSUETEXT).size());
 		GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.JIRAISSUETEXT);
 		assertEquals(0, GenericLinkManager.getLinksForElement(id, DocumentationLocation.JIRAISSUETEXT).size());
-		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForProject("TEST");
+		manager.createLinksForNonLinkedElements();
 		assertEquals(1, GenericLinkManager.getLinksForElement(id, DocumentationLocation.JIRAISSUETEXT).size());
-	}
-
-	@Test
-	@NonTransactional
-	public void testProjectKeyNull() {
-		assertFalse(JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForProject(null));
-	}
-
-	@Test
-	@NonTransactional
-	public void testProjectKeyEmpty() {
-		assertFalse(JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForProject(""));
 	}
 }

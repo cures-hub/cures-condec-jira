@@ -109,12 +109,12 @@ public class JiraIssueTextExtractionEventListener {
 		JiraIssueTextPersistenceManager.cleanSentenceDatabase(projectKey);
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issueEvent.getIssue());
 		KnowledgeGraph.getOrCreate(element.getProject().getProjectKey()).removeVertex(element);
-		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+		// JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 
 	private void handleDeleteComment() {
 		JiraIssueTextPersistenceManager.cleanSentenceDatabase(projectKey);
-		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+		// JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 
 	private void handleNewComment() {
@@ -125,7 +125,7 @@ public class JiraIssueTextExtractionEventListener {
 			MutableComment comment = (MutableComment) issueEvent.getComment();
 			JiraIssueTextPersistenceManager.getPartsOfComment(comment);
 		}
-		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+		// JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 
 	}
 
@@ -149,7 +149,7 @@ public class JiraIssueTextExtractionEventListener {
 			MutableComment comment = (MutableComment) issueEvent.getComment();
 			JiraIssueTextPersistenceManager.updateComment(comment);
 		}
-		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue().getId());
 	}
 
 	private void handleUpdateDescription() {
@@ -171,7 +171,7 @@ public class JiraIssueTextExtractionEventListener {
 		} else {
 			JiraIssueTextPersistenceManager.updateDescription(issueEvent.getIssue());
 		}
-		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue().getId());
 	}
 
 	public Map<String, String> getChangedString(IssueEvent issueEvent) {

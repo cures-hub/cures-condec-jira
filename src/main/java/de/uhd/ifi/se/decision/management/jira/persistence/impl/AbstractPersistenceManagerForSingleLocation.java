@@ -349,27 +349,4 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	public DocumentationLocation getDocumentationLocation() {
 		return documentationLocation;
 	}
-
-	// TODO Move to DecisionKnowledgeElement class
-
-	/**
-	 * Determines whether an element is linked to at least one other decision
-	 * knowledge element.
-	 *
-	 * @param id
-	 *            id of a decision knowledge element in database. The id is
-	 *            different to the key.
-	 * @param documentationLocation
-	 *            of the element
-	 * @return list of linked elements.
-	 * @see DecisionKnowledgeElement
-	 */
-	public static boolean isElementLinked(long id, DocumentationLocation documentationLocation) {
-		List<Link> links = GenericLinkManager.getLinksForElement(id, documentationLocation);
-		return links != null && links.size() > 0;
-	}
-
-	public static boolean isElementLinked(DecisionKnowledgeElement element) {
-		return isElementLinked(element.getId(), element.getDocumentationLocation());
-	}
 }

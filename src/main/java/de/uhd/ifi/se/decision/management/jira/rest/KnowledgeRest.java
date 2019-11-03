@@ -374,7 +374,8 @@ public class KnowledgeRest {
 		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(sentence, null);
 		if (isUpdated) {
 			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUETEXT);
-			JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(sentence.getJiraIssueId());
+			persistenceManager.getJiraIssueTextManager()
+					.createLinksForNonLinkedElements(sentence.getJiraIssueId());
 			return Response.status(Status.OK).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
