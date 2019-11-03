@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencemanager.singlelocations.jiraissuetextpersistencemanager;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
@@ -11,13 +10,14 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestCreateJIRAIssueFromSentenceObject extends TestSetUp {
+public class TestGetElementsInDescription extends TestSetUp {
 
 	protected static JiraIssueTextPersistenceManager manager;
 	protected static ApplicationUser user;
@@ -31,40 +31,19 @@ public class TestCreateJIRAIssueFromSentenceObject extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testIdLessUserNull() {
-		assertNull(manager.createJIRAIssueFromSentenceObject(-1, null));
-	}
-
-	@Test
-	@NonTransactional
-	public void testIdZeroUserNull() {
-		assertNull(manager.createJIRAIssueFromSentenceObject(0, null));
-	}
-
-	@Test
-	@NonTransactional
-	public void testIdOkUserNull() {
-		assertNull(manager.createJIRAIssueFromSentenceObject(1, null));
-	}
-
-	@Test
-	@NonTransactional
-	public void testIdLessUserFilled() {
-		assertNull(manager.createJIRAIssueFromSentenceObject(-1, user));
-	}
-
-	@Test
-	@NonTransactional
-	public void testIdZeroUserFilled() {
-		assertNull(manager.createJIRAIssueFromSentenceObject(0, user));
-	}
-
-	@Test
-	@NonTransactional
-	public void testIdOkUserFilled() {
+	public void testGetElementsInDescription() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
-		manager.insertDecisionKnowledgeElement(comment.get(1), null);
-		assertNotNull(manager.createJIRAIssueFromSentenceObject(3, user));
+		PartOfJiraIssueText sentence = comment.get(1);
+		sentence.setId(4);
+		sentence.setCommentId(0);
+		manager.insertDecisionKnowledgeElement(sentence, user);
+
+		long jiraIssueId = comment.get(1).getJiraIssueId();
+		List<DecisionKnowledgeElement> listWithObjects = manager.getElementsInDescription(jiraIssueId);
+		assertEquals(1, listWithObjects.size());
+
+		manager.deleteElementsInDescription(sentence.getJiraIssue());
 	}
+
 }

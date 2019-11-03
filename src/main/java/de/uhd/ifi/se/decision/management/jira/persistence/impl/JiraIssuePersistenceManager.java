@@ -221,7 +221,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public DecisionKnowledgeElementImpl getDecisionKnowledgeElement(long id) {
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue issue = issueManager.getIssueObject(id);
 		if (issue == null) {
@@ -250,40 +250,6 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element) {
-		if (element == null) {
-			return new ArrayList<DecisionKnowledgeElement>();
-		}
-		List<DecisionKnowledgeElement> elementsLinkedWithInwardLinks = new ArrayList<DecisionKnowledgeElement>();
-		List<IssueLink> inwardIssueLinks = getInwardIssueLinks(element);
-		for (IssueLink issueLink : inwardIssueLinks) {
-			Issue inwardIssue = issueLink.getSourceObject();
-			if (inwardIssue != null) {
-				DecisionKnowledgeElement inwardElement = new DecisionKnowledgeElementImpl(inwardIssue);
-				elementsLinkedWithInwardLinks.add(inwardElement);
-			}
-		}
-		return elementsLinkedWithInwardLinks;
-	}
-
-	@Override
-	public List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement element) {
-		if (element == null) {
-			return new ArrayList<DecisionKnowledgeElement>();
-		}
-		List<DecisionKnowledgeElement> elementsLinkedWithOutwardLinks = new ArrayList<DecisionKnowledgeElement>();
-		List<IssueLink> outwardIssueLinks = getOutwardIssueLinks(element);
-		for (IssueLink issueLink : outwardIssueLinks) {
-			Issue outwardIssue = issueLink.getDestinationObject();
-			if (outwardIssue != null) {
-				DecisionKnowledgeElement outwardElement = new DecisionKnowledgeElementImpl(outwardIssue);
-				elementsLinkedWithOutwardLinks.add(outwardElement);
-			}
-		}
-		return elementsLinkedWithOutwardLinks;
-	}
-
-	@Override
 	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
 		List<IssueLink> inwardIssueLinks = getInwardIssueLinks(element);
 		List<Link> inwardLinks = new ArrayList<Link>();
@@ -301,7 +267,10 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		List<IssueLink> outwardIssueLinks = getOutwardIssueLinks(element);
 		List<Link> outwardLinks = new ArrayList<Link>();
 		for (IssueLink outwardIssueLink : outwardIssueLinks) {
-			outwardLinks.add(new LinkImpl(outwardIssueLink));
+			Link link = new LinkImpl(outwardIssueLink);
+			if (link.isValid()) {
+				outwardLinks.add(link);
+			}
 		}
 		return outwardLinks;
 	}

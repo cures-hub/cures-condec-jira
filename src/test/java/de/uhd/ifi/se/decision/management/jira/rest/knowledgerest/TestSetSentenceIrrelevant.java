@@ -17,12 +17,12 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestSetSentenceIrrelevant extends TestSetUp {
@@ -52,7 +52,7 @@ public class TestSetSentenceIrrelevant extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testRequestNullElementFilled() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("This is a test sentence.");
+		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERROR)).build()
 				.getEntity(), knowledgeRest.setSentenceIrrelevant(null, decisionKnowledgeElement).getEntity());
@@ -72,7 +72,7 @@ public class TestSetSentenceIrrelevant extends TestSetUp {
 	public void testRequestFilledElementFilled() {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
-		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("This is a test sentence.");
+		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		decisionKnowledgeElement.setType(KnowledgeType.ALTERNATIVE);
 		assertEquals(Status.OK.getStatusCode(),

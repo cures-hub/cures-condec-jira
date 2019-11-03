@@ -78,11 +78,14 @@ public class CommonMetricCalculator {
 		if (type == null) {
 			return new HashMap<String, Integer>();
 		}
+
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
+
 		Map<String, Integer> numberOfSentencesForJiraIssues = new HashMap<String, Integer>();
 		for (Issue jiraIssue : jiraIssues) {
 			int numberOfElements = 0;
-			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
-					.getElementsForIssue(jiraIssue.getId(), projectKey);
+			List<DecisionKnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(jiraIssue.getId());
 			for (DecisionKnowledgeElement element : elements) {
 				if (element.getType().equals(type)) {
 					numberOfElements++;

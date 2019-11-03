@@ -12,6 +12,7 @@ import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
+import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -278,7 +279,28 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 	}
 
 	@Override
+	public Issue getJiraIssue() {
+		if (getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
+			return ComponentAccessor.getIssueManager().getIssueObject(id);
+		}
+		return null;
+	}
+
+	@Override
 	public String toString() {
 		return this.getDescription();
+	}
+
+	@Override
+	public ApplicationUser getCreator() {
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(project.getProjectKey());
+		if (getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
+			return persistenceManager.getJiraIssueManager().getCreator(this);
+		}
+		if (getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
+			return persistenceManager.getJiraIssueTextManager().getCreator(this);
+		}
+		return null;
 	}
 }

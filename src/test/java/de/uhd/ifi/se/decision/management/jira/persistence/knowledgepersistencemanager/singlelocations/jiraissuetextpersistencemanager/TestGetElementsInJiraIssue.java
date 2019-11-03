@@ -1,7 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencemanager.singlelocations.jiraissuetextpersistencemanager;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,12 +11,13 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestDeleteDecisionKnowledgeElement extends TestSetUp {
+public class TestGetElementsInJiraIssue extends TestSetUp {
 
 	protected static JiraIssueTextPersistenceManager manager;
 	protected static ApplicationUser user;
@@ -31,38 +33,15 @@ public class TestDeleteDecisionKnowledgeElement extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testLessNull() {
-		assertFalse(manager.deleteDecisionKnowledgeElement(-1, null));
-	}
+	public void testGetElementsInJiraIssue() {
+		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText(
+				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
+		long id = manager.insertDecisionKnowledgeElement(comment.get(1), null).getId();
 
-	@Test
-	@NonTransactional
-	public void testZeroNull() {
-		assertFalse(manager.deleteDecisionKnowledgeElement(0, null));
-	}
+		assertEquals(3, id);
 
-	@Test
-	@NonTransactional
-	public void testMoreNull() {
-		assertFalse(manager.deleteDecisionKnowledgeElement(12, null));
+		List<DecisionKnowledgeElement> listWithObjects = manager
+				.getElementsInJiraIssue(comment.get(0).getJiraIssueId());
+		assertEquals(3, listWithObjects.size());
 	}
-
-	@Test
-	@NonTransactional
-	public void testLessFilled() {
-		assertFalse(manager.deleteDecisionKnowledgeElement(-1, user));
-	}
-
-	@Test
-	@NonTransactional
-	public void testZeroFilled() {
-		assertFalse(manager.deleteDecisionKnowledgeElement(0, user));
-	}
-
-	@Test
-	@NonTransactional
-	public void testMoreFilled() {
-		assertTrue(manager.deleteDecisionKnowledgeElement(1, user));
-	}
-
 }

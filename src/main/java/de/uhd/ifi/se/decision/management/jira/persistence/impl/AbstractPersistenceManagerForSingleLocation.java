@@ -121,7 +121,14 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @see Link
 	 * @see DecisionKnowledgeProject
 	 */
-	public abstract List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element);
+	public List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element) {
+		List<Link> inwardLinks = getInwardLinks(element);
+		List<DecisionKnowledgeElement> sourceElements = new ArrayList<DecisionKnowledgeElement>();
+		for (Link link : inwardLinks) {
+			sourceElements.add(link.getSource());
+		}
+		return sourceElements;
+	}
 
 	/**
 	 * Get all linked elements of the decision knowledge element for a project where
@@ -135,7 +142,14 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @see Link
 	 * @see DecisionKnowledgeProject
 	 */
-	public abstract List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement element);
+	public List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement element) {
+		List<Link> outwardLinks = getOutwardLinks(element);
+		List<DecisionKnowledgeElement> destinationElements = new ArrayList<DecisionKnowledgeElement>();
+		for (Link link : outwardLinks) {
+			destinationElements.add(link.getTarget());
+		}
+		return destinationElements;
+	}
 
 	/**
 	 * Get all links where the decision knowledge element is the destination
@@ -334,28 +348,5 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 
 	public DocumentationLocation getDocumentationLocation() {
 		return documentationLocation;
-	}
-
-	// TODO Move to DecisionKnowledgeElement class
-
-	/**
-	 * Determines whether an element is linked to at least one other decision
-	 * knowledge element.
-	 *
-	 * @param id
-	 *            id of a decision knowledge element in database. The id is
-	 *            different to the key.
-	 * @param documentationLocation
-	 *            of the element
-	 * @return list of linked elements.
-	 * @see DecisionKnowledgeElement
-	 */
-	public static boolean isElementLinked(long id, DocumentationLocation documentationLocation) {
-		List<Link> links = GenericLinkManager.getLinksForElement(id, documentationLocation);
-		return links != null && links.size() > 0;
-	}
-
-	public static boolean isElementLinked(DecisionKnowledgeElement element) {
-		return isElementLinked(element.getId(), element.getDocumentationLocation());
 	}
 }

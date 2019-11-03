@@ -113,7 +113,7 @@ public class StatusPersistenceManager {
 		if (element.getType().equals(KnowledgeType.DECISION)) {
 			if (status.equals(KnowledgeStatus.REJECTED) || status.equals(KnowledgeStatus.IDEA)
 					|| status.equals(KnowledgeStatus.DISCARDED)) {
-				ApplicationUser user = manager.getCreator(element);
+				ApplicationUser user = element.getCreator();
 				element.setType(KnowledgeType.ALTERNATIVE);
 				manager.updateDecisionKnowledgeElementWithoutStatusChange(element, user);
 			}

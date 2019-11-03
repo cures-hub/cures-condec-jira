@@ -11,6 +11,7 @@ import com.atlassian.renderer.v2.macro.MacroException;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 
 public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
@@ -22,12 +23,12 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 		if (!ConfigPersistenceManager.isKnowledgeExtractedFromIssues(getProjectKey(renderContext))) {
 			return body;
 		}
-		
-		KnowledgeType knowledgeType = getKnowledgeType();		
+
+		KnowledgeType knowledgeType = getKnowledgeType();
 		if (Boolean.TRUE.equals(renderContext.getParam(IssueRenderContext.WYSIWYG_PARAM))) {
 			return putTypeInBrackets(knowledgeType) + body + putTypeInBrackets(knowledgeType);
 		}
-		
+
 		String color = getColor();
 		return this.getCommentBody(body, renderContext, knowledgeType, color);
 	}
@@ -45,10 +46,9 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 		String icon = getIconHTML(knowledgeType);
 		String newBody = body.replaceFirst("<p>", "");
 		String elementId = getElementId(renderContext, newBody, knowledgeType);
-		return "<p " + elementId + "style='background-color:" + colorCode + "; padding: 3px;'>" + icon + " "
-				+ newBody;
+		return "<p " + elementId + "style='background-color:" + colorCode + "; padding: 3px;'>" + icon + " " + newBody;
 	}
-	
+
 	private String getIconHTML(KnowledgeType knowledgeType) {
 		return "<img src='" + knowledgeType.getIconUrl() + "'>";
 	}
@@ -64,17 +64,6 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	}
 
 	/**
-	 * Return key of current JIRA project.
-	 * 
-	 * @param renderContext
-	 *            context in which the macro is rendered.
-	 * @return key of current JIRA project.
-	 */
-	private String getProjectKey(RenderContext renderContext) {
-		return renderContext.getParams().get("jira.issue").toString().split("-")[0];
-	}
-
-	/**
 	 * Static function for other Macro Classes
 	 * 
 	 * @param renderContext
@@ -86,15 +75,40 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	protected String getElementId(RenderContext renderContext, String body, KnowledgeType type) {
 		long id = 0;
 		if (renderContext.getParams().get("jira.issue") instanceof IssueImpl) {
-			id = JiraIssueTextPersistenceManager.getIdOfSentenceForMacro(body.replace("<p>", "").replace("</p>", ""),
-					((IssueImpl) (renderContext.getParams().get("jira.issue"))).getId(), type.toString(),
-					getProjectKey(renderContext));
+			String projectKey = getProjectKey(renderContext);
+			JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+					.getJiraIssueTextManager();
+			String summary = body.replace("<p>", "").replace("</p>", "").trim().replaceAll("<[^>]*>", "");
+			long jiraIssueId = getJiraIssueId(renderContext);
+			id = persistenceManager.getIdOfElement(summary, jiraIssueId, type);
 		}
 		if (id == 0) {
 			// LOGGER.debug("No sentence object found for: " + body);
 			return "";
 		}
 		return "id=\"commentnode-" + id + "\"";
+	}
+
+	/**
+	 * Return key of current Jira project.
+	 * 
+	 * @param renderContext
+	 *            context in which the macro is rendered.
+	 * @return key of current Jira project.
+	 */
+	private String getProjectKey(RenderContext renderContext) {
+		return renderContext.getParams().get("jira.issue").toString().split("-")[0];
+	}
+
+	/**
+	 * Return id of current Jira issue.
+	 * 
+	 * @param renderContext
+	 *            context in which the macro is rendered.
+	 * @return id of current Jira issue.
+	 */
+	private long getJiraIssueId(RenderContext renderContext) {
+		return ((IssueImpl) (renderContext.getParams().get("jira.issue"))).getId();
 	}
 
 	protected String putTypeInBrackets(KnowledgeType type) {

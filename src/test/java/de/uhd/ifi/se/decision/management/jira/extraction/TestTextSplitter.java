@@ -8,15 +8,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.comments.Comment;
-import com.atlassian.jira.user.ApplicationUser;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestTextSplitter extends TestSetUp {
@@ -26,26 +20,17 @@ public class TestTextSplitter extends TestSetUp {
 		init();
 	}
 
-	public static List<PartOfJiraIssueText> getSentencesForCommentText(String text) {
-		Issue issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");
-		ApplicationUser currentUser = JiraUsers.SYS_ADMIN.getApplicationUser();
-		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
-		Comment comment = ComponentAccessor.getCommentManager().create(issue, currentUser, text, true);
-		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.getPartsOfComment(comment);
-		return sentences;
-	}
-
 	@Test
 	@NonTransactional
 	public void testCommentWithTwoSentences() {
-		List<PartOfJiraIssueText> sentences = getSentencesForCommentText("This is a test Sentence. With two sentences");
+		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText("This is a test Sentence. With two sentences");
 		assertEquals(2, sentences.size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testCommentWithOneQuote() {
-		List<PartOfJiraIssueText> sentences = getSentencesForCommentText(
+		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText(
 				"{quote} this is a quote {quote} and this is a test Sentence.");
 		assertEquals(2, sentences.size());
 	}
@@ -53,7 +38,7 @@ public class TestTextSplitter extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCommentWithOneQuoteAtTheBack() {
-		List<PartOfJiraIssueText> sentences = getSentencesForCommentText(
+		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText(
 				"and this is a test Sentence. {quote} this is a quote {quote} ");
 		assertEquals(2, sentences.size());
 	}
@@ -61,7 +46,7 @@ public class TestTextSplitter extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCommentWithTwoQuotes() {
-		List<PartOfJiraIssueText> sentences = getSentencesForCommentText("{quote} this is a quote {quote} "
+		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText("{quote} this is a quote {quote} "
 				+ "and this is a test Sentence. {quote} this is a second quote {quote} ");
 		assertEquals(3, sentences.size());
 	}
@@ -69,7 +54,7 @@ public class TestTextSplitter extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCommentWithTwoQuotesAndSentenceAfterwards() {
-		List<PartOfJiraIssueText> sentences = getSentencesForCommentText(
+		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText(
 				"{quote} this is a quote {quote} and this is a test Sentence. "
 						+ "{quote} this is a second quote {quote} and a Sentence at the back");
 		assertEquals(4, sentences.size());
@@ -78,7 +63,7 @@ public class TestTextSplitter extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCommentWithTwoQuotesBehindEachOther() {
-		List<PartOfJiraIssueText> sentences = getSentencesForCommentText("{quote} this is a quote {quote} "
+		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText("{quote} this is a quote {quote} "
 				+ "{quote} this is a second quote right after the first one {quote} and a Sentence at the back");
 		assertEquals(3, sentences.size());
 	}
@@ -86,7 +71,7 @@ public class TestTextSplitter extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithNoformats() {
-		List<PartOfJiraIssueText> sentences = getSentencesForCommentText("{noformat} this is a noformat {noformat} "
+		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText("{noformat} this is a noformat {noformat} "
 				+ "and this is a test Sentence. {noformat} this is a second noformat {noformat} ");
 		assertEquals(3, sentences.size());
 	}
@@ -94,7 +79,7 @@ public class TestTextSplitter extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithNoformatsAndQuotes() {
-		List<PartOfJiraIssueText> sentences = getSentencesForCommentText(
+		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText(
 				"{noformat} this is a noformat {noformat} and this is a test Sentence. "
 						+ "{quote} this is a also a quote {quote}{quote} this is a also a quote {quote} "
 						+ "{noformat} this is a noformat {noformat} and this is a test Sentence.");
@@ -104,7 +89,7 @@ public class TestTextSplitter extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSentenceOrder() {
-		List<PartOfJiraIssueText> sentences = getSentencesForCommentText(
+		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText(
 				"{noformat} this is a first noformat {noformat} and this is a second test Sentence. "
 						+ "{quote} this is a also a third quote {quote}{quote} this is a also a fourth quote {quote} "
 						+ "{noformat} this is a fifth noformat {noformat} and this is a sixth test Sentence.");
@@ -120,7 +105,7 @@ public class TestTextSplitter extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithUnknownTag() {
-		List<PartOfJiraIssueText> sentences = getSentencesForCommentText(
+		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText(
 				"{noformat} this is a noformat {noformat} {wuzl} and this is a test Sentence {wuzl}");
 		assertEquals(2, sentences.size());
 		assertTrue(sentences.get(0).getDescription().contains(" this is a noformat "));
@@ -129,7 +114,7 @@ public class TestTextSplitter extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithCodeTag() {
-		List<PartOfJiraIssueText> sentences = getSentencesForCommentText(
+		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText(
 				"{code:java} this is a first code {code} and this is a second test Sentence. "
 						+ "{quote} this is a also a third quote {quote}"
 						+ "{quote} this is a also a fourth quote {quote} "

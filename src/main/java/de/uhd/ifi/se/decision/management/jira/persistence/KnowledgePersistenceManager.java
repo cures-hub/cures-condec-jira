@@ -132,6 +132,21 @@ public interface KnowledgePersistenceManager {
 	 * @param element
 	 *            decision knowledge element with attributes such as a summary, the
 	 *            knowledge type, and an optional description.
+	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}.
+	 * @return decision knowledge element that is now filled with an internal
+	 *         database id and key. Returns null if insertion failed.
+	 * @see DecisionKnowledgeElement
+	 */
+	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
+			ApplicationUser user);
+
+	/**
+	 * Inserts a new decision knowledge element into database.
+	 *
+	 * @param element
+	 *            decision knowledge element with attributes such as a summary, the
+	 *            knowledge type, and an optional description.
 	 * @param parentElement
 	 *            (optional) decision knowledge element that is the parent of this
 	 *            element. The parent element is necessary for decision knowledge
