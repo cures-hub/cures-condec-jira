@@ -348,38 +348,14 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return sentenceInDatabase;
 	}
 
-	/**
-	 * Split a text into parts (substrings).
-	 *
-	 * @param comment
-	 *            JIRA issue comment.
-	 * @return list of sentence objects.
-	 * @see PartOfText
-	 */
-	public static List<PartOfJiraIssueText> getPartsOfComment(Comment comment) {
-		String projectKey = comment.getIssue().getProjectObject().getKey();
-		List<PartOfText> partsOfText = new TextSplitterImpl().getPartsOfText(comment.getBody(), projectKey);
-
-		List<PartOfJiraIssueText> parts = new ArrayList<PartOfJiraIssueText>();
-
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
-		// Create AO entries
-		for (PartOfText partOfText : partsOfText) {
-			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(partOfText, comment);
-			sentence = (PartOfJiraIssueText) persistenceManager.insertDecisionKnowledgeElement(sentence, null);
-			createSmartLinkForSentence(sentence);
-			parts.add(sentence);
-		}
-		return parts;
-	}
-
 	private static void setParameters(PartOfJiraIssueText element, PartOfJiraIssueTextInDatabase databaseEntry) {
 		databaseEntry.setProjectKey(element.getProject().getProjectKey());
 		databaseEntry.setCommentId(element.getCommentId());
 		databaseEntry.setType(element.getTypeAsString());
 		databaseEntry.setRelevant(element.isRelevant());
 		databaseEntry.setValidated(element.isValidated());
+		// TODO Is there a better place for this method? Please move try-catch block
+		// into classificationTrainer.update method for better readability.
 		if (element.isValidated()) {
 			try {
 				classificationTrainer.update(element);
@@ -523,7 +499,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		}
 	}
 
-	public static boolean createSmartLinkForSentence(PartOfJiraIssueText sentence) {
+	public static boolean createSmartLinkForElement(PartOfJiraIssueText sentence) {
 		if (sentence == null) {
 			return false;
 		}
@@ -585,28 +561,17 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return second;
 	}
 
-	public static boolean createLink(DecisionKnowledgeElement lastElement, PartOfJiraIssueText sentence) {
-		if (lastElement == null || !sentence.isRelevant()) {
-			return false;
-		}
-		Link link = Link.instantiateDirectedLink(lastElement, sentence);
-		long linkId = KnowledgePersistenceManager.getOrCreate(lastElement.getProject().getProjectKey()).insertLink(link,
-				null);
-		return linkId > 0;
-	}
-
 	public boolean createLinksForNonLinkedElements(long jiraIssueId) {
-		boolean areElementsLinked = true;
-		for (DecisionKnowledgeElement element : getElementsInJiraIssue(jiraIssueId)) {
-
-			areElementsLinked = areElementsLinked && ensureThatElementIsLinked(element);
-		}
-		return areElementsLinked;
+		return createLinksForNonLinkedElements(getElementsInJiraIssue(jiraIssueId));
 	}
 
 	public boolean createLinksForNonLinkedElements() {
+		return createLinksForNonLinkedElements(getDecisionKnowledgeElements());
+	}
+
+	public boolean createLinksForNonLinkedElements(List<DecisionKnowledgeElement> elements) {
 		boolean areElementsLinked = true;
-		for (DecisionKnowledgeElement element : getDecisionKnowledgeElements()) {
+		for (DecisionKnowledgeElement element : elements) {
 			areElementsLinked = areElementsLinked && ensureThatElementIsLinked(element);
 		}
 		return areElementsLinked;
@@ -620,6 +585,16 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				((PartOfJiraIssueText) element).getJiraIssue());
 		Link link = Link.instantiateDirectedLink(parentElement, element);
 		long linkId = KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, null);
+		return linkId > 0;
+	}
+
+	public static boolean createLink(DecisionKnowledgeElement lastElement, PartOfJiraIssueText sentence) {
+		if (lastElement == null || !sentence.isRelevant()) {
+			return false;
+		}
+		Link link = Link.instantiateDirectedLink(lastElement, sentence);
+		long linkId = KnowledgePersistenceManager.getOrCreate(lastElement.getProject().getProjectKey()).insertLink(link,
+				null);
 		return linkId > 0;
 	}
 
@@ -661,12 +636,11 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (sentence == null) {
 			return false;
 		}
-		if (sentence.getCommentId() == -1) {
-			// Part of JIRA issue description
+		if (sentence.getCommentId() <= 0) {
+			// documented in Jira issue description
 			return true;
 		}
-		Comment comment = ComponentAccessor.getCommentManager().getCommentById(sentence.getCommentId());
-		if (comment == null) {
+		if (sentence.getComment() == null) {
 			return false;
 		}
 		return !(sentence.getEndPosition() == 0 && sentence.getStartPosition() == 0);
@@ -761,7 +735,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			} else {
 				sentence = (PartOfJiraIssueText) persistenceManager.insertDecisionKnowledgeElement(sentence, null);
 			}
-			createSmartLinkForSentence(sentence);
+			createSmartLinkForElement(sentence);
 			knowledgeElementsInText.set(i, sentence);
 		}
 		return knowledgeElementsInText;
@@ -789,7 +763,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				sentence = (PartOfJiraIssueText) persistenceManager.insertDecisionKnowledgeElement(sentence, null);
 				parts.add(sentence);
 			}
-			createSmartLinkForSentence(sentence);
+			sentence = (PartOfJiraIssueText) persistenceManager.getDecisionKnowledgeElement(sentence);
+			createSmartLinkForElement(sentence);
+			KnowledgeGraph.getOrCreate(projectKey).updateNode(sentence);
 		}
 		return parts;
 	}
@@ -834,6 +810,32 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			unvalidatedPartsOfText.add(validatedPartOfText);
 		}
 		return unvalidatedPartsOfText;
+	}
+
+	/**
+	 * Split a text into parts (substrings).
+	 *
+	 * @param comment
+	 *            JIRA issue comment.
+	 * @return list of sentence objects.
+	 * @see PartOfText
+	 */
+	public static List<PartOfJiraIssueText> getPartsOfComment(Comment comment) {
+		String projectKey = comment.getIssue().getProjectObject().getKey();
+		List<PartOfText> partsOfText = new TextSplitterImpl().getPartsOfText(comment.getBody(), projectKey);
+
+		List<PartOfJiraIssueText> parts = new ArrayList<PartOfJiraIssueText>();
+
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
+		// Create AO entries
+		for (PartOfText partOfText : partsOfText) {
+			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(partOfText, comment);
+			sentence = (PartOfJiraIssueText) persistenceManager.insertDecisionKnowledgeElement(sentence, null);
+			createSmartLinkForElement(sentence);
+			parts.add(sentence);
+		}
+		return parts;
 	}
 
 }
