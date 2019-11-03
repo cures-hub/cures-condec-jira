@@ -1,22 +1,23 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencemanager.singlelocations.jiraissuetextpersistencemanager;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestDeleteCommentsSentences extends TestSetUp {
+public class TestDeleteElementsInDescription extends TestSetUp {
 
 	protected static JiraIssueTextPersistenceManager manager;
 	protected static ApplicationUser user;
@@ -30,15 +31,20 @@ public class TestDeleteCommentsSentences extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testCommentNull() {
-		assertFalse(JiraIssueTextPersistenceManager.deletePartsOfComment(null));
+	public void testJiraIssueNull() {
+		assertFalse(manager.deleteElementsInDescription(null));
 	}
 
 	@Test
 	@NonTransactional
-	public void testCommentFilledButNotInAODatabase() {
-		Issue issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");
-		Comment comment = JiraIssues.addCommentsToIssue(issue, "This is a comment for test purposes");
-		assertFalse(JiraIssueTextPersistenceManager.deletePartsOfComment(comment));
+	public void testCommentFilledAndElementsInDatabase() {
+		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText(
+				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
+		PartOfJiraIssueText sentence = comment.get(1);
+		sentence.setId(4);
+		sentence.setCommentId(0);
+		manager.insertDecisionKnowledgeElement(sentence, user);
+
+		assertTrue(manager.deleteElementsInDescription(sentence.getJiraIssue()));
 	}
 }

@@ -71,7 +71,17 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return isDeleted;
 	}
 
-	public static boolean deletePartsOfComment(Comment comment) {
+	/**
+	 * Deletes all decision knowledge elements and their links documented in a
+	 * certain comment of a Jira issue in database. Does not delete or change the
+	 * comment itself.
+	 *
+	 * @param comment
+	 *            of the Jira issue that the decision knowledge elements are
+	 *            documented in.
+	 * @return true if deletion was successfull.
+	 */
+	public boolean deleteElementsInComment(Comment comment) {
 		if (comment == null) {
 			LOGGER.error("Sentences in comment cannot be deleted since the comment is null.");
 			return false;
@@ -79,7 +89,16 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return deletePartsOfText(comment.getIssue().getId(), comment.getId());
 	}
 
-	public static boolean deletePartsOfDescription(Issue jiraIssue) {
+	/**
+	 * Deletes all decision knowledge elements and their links documented in the
+	 * description of a Jira issue. Does not delete the text or change the
+	 * description itself.
+	 *
+	 * @param jiraIssue
+	 *            that the decision knowledge elements are documented in.
+	 * @return true if deletion was successfull.
+	 */
+	public boolean deleteElementsInDescription(Issue jiraIssue) {
 		if (jiraIssue == null) {
 			LOGGER.error("Sentences in description cannot be deleted since the Jira issue is null.");
 			return false;
@@ -87,10 +106,11 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return deletePartsOfText(jiraIssue.getId(), 0);
 	}
 
-	private static boolean deletePartsOfText(long jiraIssueId, long commentId) {
+	private boolean deletePartsOfText(long jiraIssueId, long commentId) {
 		boolean isDeleted = false;
 		PartOfJiraIssueTextInDatabase[] commentSentences = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("JIRA_ISSUE_ID = ? AND COMMENT_ID = ?", jiraIssueId, commentId));
+				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ? AND COMMENT_ID = ?", projectKey,
+						jiraIssueId, commentId));
 		for (PartOfJiraIssueTextInDatabase databaseEntry : commentSentences) {
 			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUETEXT);
 			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
@@ -213,7 +233,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (summary == null || jiraIssueId <= 0 || type == null || summary.isBlank()) {
 			return 0;
 		}
-		List<DecisionKnowledgeElement> sentences = getElementsWithTypeForJiraIssue(jiraIssueId, type);
+		List<DecisionKnowledgeElement> sentences = getElementsWithTypeInJiraIssue(jiraIssueId, type);
 		for (DecisionKnowledgeElement sentence : sentences) {
 			if (sentence.getSummary().trim().equalsIgnoreCase(summary)) {
 				return sentence.getId();
@@ -235,7 +255,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @return list of all decision knowledge elements with a certain type
 	 *         documented in the description or comments of a Jira issue.
 	 */
-	public List<DecisionKnowledgeElement> getElementsWithTypeForJiraIssue(long jiraIssueId, KnowledgeType type) {
+	public List<DecisionKnowledgeElement> getElementsWithTypeInJiraIssue(long jiraIssueId, KnowledgeType type) {
 		List<DecisionKnowledgeElement> elements = getElementsInJiraIssue(jiraIssueId);
 		elements.removeIf(e -> (e.getType() != type));
 		return elements;

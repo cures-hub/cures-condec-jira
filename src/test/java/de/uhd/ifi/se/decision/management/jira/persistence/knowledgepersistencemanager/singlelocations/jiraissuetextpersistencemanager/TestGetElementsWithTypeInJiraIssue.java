@@ -17,7 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestGetElementsWithTypeForJiraIssue extends TestSetUp {
+public class TestGetElementsWithTypeInJiraIssue extends TestSetUp {
 
 	protected static JiraIssueTextPersistenceManager manager;
 	protected static ApplicationUser user;
@@ -32,67 +32,67 @@ public class TestGetElementsWithTypeForJiraIssue extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIdLessSProjectKeyNullTypeNull() {
-		assertEquals(0, manager.getElementsWithTypeForJiraIssue(-1, null).size());
+		assertEquals(0, manager.getElementsWithTypeInJiraIssue(-1, null).size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIdZeroSProjectKeyNullTypeNull() {
-		assertEquals(0, manager.getElementsWithTypeForJiraIssue(0, null).size());
+		assertEquals(0, manager.getElementsWithTypeInJiraIssue(0, null).size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIdMoreSProjectKeyNullTypeNull() {
-		assertEquals(0, manager.getElementsWithTypeForJiraIssue(1, null).size());
+		assertEquals(0, manager.getElementsWithTypeInJiraIssue(1, null).size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIdLessSProjectKeyFilledTypeNull() {
-		assertEquals(0, manager.getElementsWithTypeForJiraIssue(-1, null).size());
+		assertEquals(0, manager.getElementsWithTypeInJiraIssue(-1, null).size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIdZeroSProjectKeyFilledTypeNull() {
-		assertEquals(0, manager.getElementsWithTypeForJiraIssue(0, null).size());
+		assertEquals(0, manager.getElementsWithTypeInJiraIssue(0, null).size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIdMoreSProjectKeyFilledTypeNull() {
-		assertEquals(0, manager.getElementsWithTypeForJiraIssue(1, null).size());
+		assertEquals(0, manager.getElementsWithTypeInJiraIssue(1, null).size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIdLessSProjectKeyNullTypeFilled() {
-		assertEquals(0, manager.getElementsWithTypeForJiraIssue(-1, KnowledgeType.DECISION).size());
+		assertEquals(0, manager.getElementsWithTypeInJiraIssue(-1, KnowledgeType.DECISION).size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIdZeroSProjectKeyNullTypeFilled() {
-		assertEquals(0, manager.getElementsWithTypeForJiraIssue(0, KnowledgeType.DECISION).size());
+		assertEquals(0, manager.getElementsWithTypeInJiraIssue(0, KnowledgeType.DECISION).size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIdMoreSProjectKeyNullTypeFilled() {
-		assertEquals(0, manager.getElementsWithTypeForJiraIssue(1, KnowledgeType.DECISION).size());
+		assertEquals(0, manager.getElementsWithTypeInJiraIssue(1, KnowledgeType.DECISION).size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIdLessSProjectKeyFilledTypeFilled() {
-		assertEquals(0, manager.getElementsWithTypeForJiraIssue(-1, KnowledgeType.DECISION).size());
+		assertEquals(0, manager.getElementsWithTypeInJiraIssue(-1, KnowledgeType.DECISION).size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIdZeroSProjectKeyFilledTypeFilled() {
-		assertEquals(0, manager.getElementsWithTypeForJiraIssue(0, KnowledgeType.DECISION).size());
+		assertEquals(0, manager.getElementsWithTypeInJiraIssue(0, KnowledgeType.DECISION).size());
 	}
 
 	@Test
@@ -103,6 +103,6 @@ public class TestGetElementsWithTypeForJiraIssue extends TestSetUp {
 		manager.insertDecisionKnowledgeElement(comment.get(1), null);
 
 		assertEquals(1,
-				manager.getElementsWithTypeForJiraIssue(comment.get(0).getJiraIssueId(), KnowledgeType.ISSUE).size());
+				manager.getElementsWithTypeInJiraIssue(comment.get(0).getJiraIssueId(), KnowledgeType.ISSUE).size());
 	}
 }
