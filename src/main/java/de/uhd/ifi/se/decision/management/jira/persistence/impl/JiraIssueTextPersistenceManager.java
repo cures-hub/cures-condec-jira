@@ -108,10 +108,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	private boolean deletePartsOfText(long jiraIssueId, long commentId) {
 		boolean isDeleted = false;
-		PartOfJiraIssueTextInDatabase[] commentSentences = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
+		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ? AND COMMENT_ID = ?", projectKey,
 						jiraIssueId, commentId));
-		for (PartOfJiraIssueTextInDatabase databaseEntry : commentSentences) {
+		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
 			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUETEXT);
 			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
 		}
@@ -126,20 +126,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			sentence = new PartOfJiraIssueTextImpl(databaseEntry);
 		}
 		return sentence;
-	}
-
-	public static DecisionKnowledgeElement searchForLast(PartOfJiraIssueText sentence, KnowledgeType typeToSearch) {
-		PartOfJiraIssueText lastSentence = null;
-		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("JIRA_ISSUE_ID = ?", sentence.getJiraIssueId()).order("ID DESC"));
-
-		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
-			if (databaseEntry.getType().equals(typeToSearch.toString())) {
-				lastSentence = new PartOfJiraIssueTextImpl(databaseEntry);
-				break;
-			}
-		}
-		return lastSentence;
 	}
 
 	@Override
@@ -288,6 +274,14 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return insertDecisionKnowledgeElement(new PartOfJiraIssueTextImpl(comment), user);
 	}
 
+	/**
+	 * Returns the Jira issue that decision knowledge element is documented in
+	 * (either in a comment or the description of this Jira issue).
+	 * 
+	 * @param id
+	 *            of the decision knowledge element.
+	 * @return Jira issue as an {@link Issue} object.
+	 */
 	public Issue getJiraIssue(long id) {
 		PartOfJiraIssueText sentence = (PartOfJiraIssueTextImpl) this.getDecisionKnowledgeElement(id);
 		if (sentence == null) {
@@ -564,6 +558,20 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			isLinkCreated = createLink(parentElement, sentence);
 		}
 		return isLinkCreated;
+	}
+
+	public static DecisionKnowledgeElement searchForLast(PartOfJiraIssueText sentence, KnowledgeType typeToSearch) {
+		PartOfJiraIssueText lastSentence = null;
+		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
+				Query.select().where("JIRA_ISSUE_ID = ?", sentence.getJiraIssueId()).order("ID DESC"));
+
+		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
+			if (databaseEntry.getType().equals(typeToSearch.toString())) {
+				lastSentence = new PartOfJiraIssueTextImpl(databaseEntry);
+				break;
+			}
+		}
+		return lastSentence;
 	}
 
 	public static DecisionKnowledgeElement getMostRecentElement(DecisionKnowledgeElement first,
