@@ -17,37 +17,32 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestGetJiraIssue extends TestSetUp {
+public class TestGetElementsInDescription extends TestSetUp {
 
 	protected static JiraIssueTextPersistenceManager manager;
 	protected static ApplicationUser user;
-	protected static DecisionKnowledgeElement element;
 
 	@Before
 	public void setUp() {
 		init();
 		manager = new JiraIssueTextPersistenceManager("TEST");
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		element = JiraIssues.addElementToDataBase();
 	}
 
 	@Test
 	@NonTransactional
-	public void testGetJiraIssueKeyForPartOfText() {
+	public void testGetElementsInDescription() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) manager.insertDecisionKnowledgeElement(comment.get(1),
-				null);
+		PartOfJiraIssueText sentence = comment.get(1);
+		sentence.setId(4);
+		sentence.setCommentId(0);
+		manager.insertDecisionKnowledgeElement(sentence, user);
 
-		assertEquals(3, sentence.getId());
+		long jiraIssueId = comment.get(1).getJiraIssueId();
+		List<DecisionKnowledgeElement> listWithObjects = manager.getElementsInDescription(jiraIssueId);
+		assertEquals(1, listWithObjects.size());
 
-		long jiraIssueId = comment.get(0).getJiraIssueId();
-
-		List<DecisionKnowledgeElement> listWithObjects = manager.getElementsInJiraIssue(jiraIssueId);
-		assertEquals(3, listWithObjects.size());
-
-		String jiraIssueKey = manager.getJiraIssue(sentence.getId()).getKey();
-
-		assertEquals("TEST-30", jiraIssueKey);
+		JiraIssueTextPersistenceManager.deletePartsOfDescription(sentence.getJiraIssue());
 	}
 }

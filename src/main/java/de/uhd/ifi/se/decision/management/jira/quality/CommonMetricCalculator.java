@@ -85,7 +85,7 @@ public class CommonMetricCalculator {
 		Map<String, Integer> numberOfSentencesForJiraIssues = new HashMap<String, Integer>();
 		for (Issue jiraIssue : jiraIssues) {
 			int numberOfElements = 0;
-			List<DecisionKnowledgeElement> elements = persistenceManager.getElementsForJiraIssue(jiraIssue.getId());
+			List<DecisionKnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(jiraIssue.getId());
 			for (DecisionKnowledgeElement element : elements) {
 				if (element.getType().equals(type)) {
 					numberOfElements++;

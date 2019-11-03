@@ -141,7 +141,17 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return decisionKnowledgeElements;
 	}
 
-	public List<DecisionKnowledgeElement> getElementsForJiraIssue(long jiraIssueId) {
+	/**
+	 * Returns all decision knowledge elements documented in the description or
+	 * comments of a Jira issue.
+	 *
+	 * @param jiraIssueId
+	 *            id of the Jira issue that the decision knowledge elements are
+	 *            documented in.
+	 * @return list of all decision knowledge elements documented in the description
+	 *         or comments of a Jira issue.
+	 */
+	public List<DecisionKnowledgeElement> getElementsInJiraIssue(long jiraIssueId) {
 		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ?", projectKey, jiraIssueId))) {
@@ -150,21 +160,38 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return elements;
 	}
 
-	public static List<DecisionKnowledgeElement> getElementsForComment(long commentId) {
+	/**
+	 * Returns all decision knowledge elements documented in a certain comment of a
+	 * Jira issue.
+	 *
+	 * @param commentId
+	 *            id of the comment that the decision knowledge element(s) is/are
+	 *            documented in.
+	 * @return list of all decision knowledge elements documented in the a certain
+	 *         comment of a Jira issue.
+	 */
+	public List<DecisionKnowledgeElement> getElementsInComment(long commentId) {
 		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("COMMENT_ID = ?", commentId))) {
+				Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ?", projectKey, commentId))) {
 			elements.add(new PartOfJiraIssueTextImpl(databaseEntry));
 		}
 		return elements;
 	}
 
-	public static List<DecisionKnowledgeElement> getElementsForDescription(long jiraIssueId) {
-		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
-		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("COMMENT_ID = 0 AND JIRA_ISSUE_ID = ?", jiraIssueId))) {
-			elements.add(new PartOfJiraIssueTextImpl(databaseEntry));
-		}
+	/**
+	 * Returns all decision knowledge elements documented in the description of a
+	 * Jira issue. The comment id of such elements is zero.
+	 *
+	 * @param jiraIssueId
+	 *            id of the Jira issue that the decision knowledge elements are
+	 *            documented in.
+	 * @return list of all decision knowledge elements documented in the description
+	 *         of a Jira issue.
+	 */
+	public List<DecisionKnowledgeElement> getElementsInDescription(long jiraIssueId) {
+		List<DecisionKnowledgeElement> elements = getElementsInJiraIssue(jiraIssueId);
+		elements.removeIf(e -> (((PartOfJiraIssueText) e).getCommentId() != 0));
 		return elements;
 	}
 
@@ -462,6 +489,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		sentence.setType(element.getType());
 		sentence.setValidated(element.isValidated());
 		sentence.setRelevant(element.getType() != KnowledgeType.OTHER);
+		// sentence.setCommentId(element.getCommentId());
 
 		return updateInDatabase(sentence);
 	}
@@ -685,7 +713,11 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		String projectKey = comment.getIssue().getProjectObject().getKey();
 		List<PartOfText> partsOfText = new TextSplitterImpl().getPartsOfText(comment.getBody(), projectKey);
 
-		List<DecisionKnowledgeElement> knowledgeElementsInText = getElementsForComment(comment.getId());
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
+
+		List<DecisionKnowledgeElement> knowledgeElementsInText = persistenceManager
+				.getElementsInComment(comment.getId());
 
 		// @issue Elements used to be deleted and new ones were created afterwards.
 		// How to enable a "real" update?
@@ -693,9 +725,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		// @con If a new knowledge element is inserted at the beginning of the text, the
 		// links in the knowledge graph might be wrong.
 		int numberOfTextPartsInComment = knowledgeElementsInText.size();
-
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
 
 		// Update AO entries
 		for (int i = 0; i < partsOfText.size(); i++) {
@@ -716,11 +745,11 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		String projectKey = jiraIssue.getProjectObject().getKey();
 		List<PartOfText> partsOfText = new TextSplitterImpl().getPartsOfText(jiraIssue.getDescription(), projectKey);
 
-		List<DecisionKnowledgeElement> parts = getElementsForDescription(jiraIssue.getId());
-		int numberOfTextParts = parts.size();
-
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
+
+		List<DecisionKnowledgeElement> parts = persistenceManager.getElementsInDescription(jiraIssue.getId());
+		int numberOfTextParts = parts.size();
 
 		for (int i = 0; i < partsOfText.size(); i++) {
 			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(partsOfText.get(i), jiraIssue);

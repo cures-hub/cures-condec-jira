@@ -17,7 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestGetElementsForJiraIssue extends TestSetUp {
+public class TestGetElementsInJiraIssue extends TestSetUp {
 
 	protected static JiraIssueTextPersistenceManager manager;
 	protected static ApplicationUser user;
@@ -33,7 +33,7 @@ public class TestGetElementsForJiraIssue extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testGetElementsForIssue() {
+	public void testGetElementsInJiraIssue() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		long id = manager.insertDecisionKnowledgeElement(comment.get(1), null).getId();
@@ -41,7 +41,7 @@ public class TestGetElementsForJiraIssue extends TestSetUp {
 		assertEquals(3, id);
 
 		List<DecisionKnowledgeElement> listWithObjects = manager
-				.getElementsForJiraIssue(comment.get(0).getJiraIssueId());
+				.getElementsInJiraIssue(comment.get(0).getJiraIssueId());
 		assertEquals(3, listWithObjects.size());
 	}
 }
