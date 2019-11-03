@@ -27,13 +27,11 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.TextSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
 import net.java.ao.Query;
@@ -246,37 +244,12 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	@Override
 	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
-		List<Link> inwardLinks = new ArrayList<Link>();
-		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class,
-				Query.select().where("DESTINATION_ID = ? AND DEST_DOCUMENTATION_LOCATION = ?", element.getId(),
-						element.getDocumentationLocation().getIdentifier()));
-		for (LinkInDatabase link : links) {
-			Link inwardLink = new LinkImpl(link);
-			inwardLink.setDestinationElement(element);
-			AbstractPersistenceManagerForSingleLocation sourcePersistenceManager = KnowledgePersistenceManager
-					.getOrCreate(projectKey).getPersistenceManager(link.getSourceDocumentationLocation());
-			inwardLink.setSourceElement(sourcePersistenceManager.getDecisionKnowledgeElement(link.getSourceId()));
-			inwardLinks.add(inwardLink);
-		}
-		return inwardLinks;
+		return GenericLinkManager.getInwardLinks(element);
 	}
 
 	@Override
 	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
-		List<Link> outwardLinks = new ArrayList<Link>();
-		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class,
-				Query.select().where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", element.getId(),
-						element.getDocumentationLocation().getIdentifier()));
-		for (LinkInDatabase link : links) {
-			Link outwardLink = new LinkImpl(link);
-			outwardLink.setSourceElement(element);
-			AbstractPersistenceManagerForSingleLocation destinationPersistenceManager = KnowledgePersistenceManager
-					.getOrCreate(projectKey).getPersistenceManager(link.getDestDocumentationLocation());
-			outwardLink.setDestinationElement(
-					destinationPersistenceManager.getDecisionKnowledgeElement(link.getDestinationId()));
-			outwardLinks.add(outwardLink);
-		}
-		return outwardLinks;
+		return GenericLinkManager.getOutwardLinks(element);
 	}
 
 	@Override
@@ -738,9 +711,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 		List<DecisionKnowledgeElement> knowledgeElementsInText = getElementsForComment(comment.getId());
 
-		// @issue Currently elements are deleted and new ones are created afterwards.
+		// @issue Elements used to be deleted and new ones were created afterwards.
 		// How to enable a "real" update?
-		// @decision Overwrite parts of JIRA issue text in AO database if they exist!
+		// @decision Overwrite parts of Jira issue text in AO database if they exist!
 		// @con If a new knowledge element is inserted at the beginning of the text, the
 		// links in the knowledge graph might be wrong.
 		int numberOfTextPartsInComment = knowledgeElementsInText.size();

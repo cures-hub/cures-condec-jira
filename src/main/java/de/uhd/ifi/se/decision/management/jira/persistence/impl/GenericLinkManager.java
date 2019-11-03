@@ -177,6 +177,35 @@ public class GenericLinkManager {
 	}
 
 	/**
+	 * Returns all outgoing links (=edges) from a node in the
+	 * {@link KnowledgeGraph}, except of Jira issue links. If you want to get the
+	 * Jira {@link IssueLink}s only, use
+	 * {@link JiraIssuePersistenceManager#getOutwardLinks(DecisionKnowledgeElement)}.
+	 * 
+	 * @param element
+	 *            node in the {@link KnowledgeGraph}.
+	 * @return list of {@link} objects, does not contain Jira {@link IssueLink}s.
+	 *         (=edges) between all kinds of nodes in the {@link KnowledgeGraph},
+	 *         except of Jira issue links. If you want to get the Jira
+	 *         {@link IssueLink}s only, use
+	 *         {@link JiraIssuePersistenceManager#getLinks(DecisionKnowledgeElement)}.
+	 * 
+	 * @see DecisionKnowledgeElement
+	 */
+	public static List<Link> getInwardLinks(DecisionKnowledgeElement element) {
+		String identifier = element.getDocumentationLocation().getIdentifier();
+		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select()
+				.where("DESTINATION_ID = ? AND DEST_DOCUMENTATION_LOCATION = ?", element.getId(), identifier));
+
+		List<Link> links = new ArrayList<Link>();
+		for (LinkInDatabase linkInDatabase : linksInDatabase) {
+			Link link = new LinkImpl(linkInDatabase);
+			links.add(link);
+		}
+		return links;
+	}
+
+	/**
 	 * Inserts a new link (=egde) into database that is not a Jira issue links. The
 	 * link can be between any kinds of nodes in the {@link KnowledgeGraph}. If you
 	 * want to insert a Jira {@link IssueLink}, use the method
