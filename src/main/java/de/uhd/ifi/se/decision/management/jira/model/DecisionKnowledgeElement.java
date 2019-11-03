@@ -6,6 +6,7 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 
@@ -251,6 +252,13 @@ public interface DecisionKnowledgeElement extends Node {
 	 *            of creation.
 	 */
 	void setCreated(Date date);
+
+	/**
+	 * Returns the creator of an element as an application user object.
+	 *
+	 * @return creator of an element as an {@link ApplicationUser} object.
+	 */
+	ApplicationUser getCreator();
 
 	/**
 	 * Get the close date fo the decision knowledge element.

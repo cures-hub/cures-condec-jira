@@ -212,8 +212,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 */
 	public List<DecisionKnowledgeElement> getElementsWithTypeForJiraIssue(long jiraIssueId, KnowledgeType type) {
 		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
-		if (jiraIssueId <= 0 || projectKey == null || type == null) {
-			LOGGER.error("Id, ProjectKey, Type are Invalid");
+		if (jiraIssueId <= 0 || type == null) {
+			LOGGER.error("Jira issue id or knowledge type are invalid.");
 			return elements;
 		}
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
@@ -335,7 +335,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (element.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
 			return null;
 		}
-		DecisionKnowledgeElement existingElement = getDecisionKnowledgeElement((PartOfJiraIssueText) element);
+		DecisionKnowledgeElement existingElement = getDecisionKnowledgeElement(element);
 		if (existingElement != null) {
 			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(
 					((PartOfJiraIssueText) element).getJiraIssueId(), projectKey, "i");
@@ -346,14 +346,15 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return null;
 	}
 
-	public DecisionKnowledgeElement getDecisionKnowledgeElement(PartOfJiraIssueText sentence) {
-		if (sentence == null) {
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(DecisionKnowledgeElement element) {
+		if (element == null) {
 			return null;
 		}
-		if (sentence.getId() > 0) {
-			return this.getDecisionKnowledgeElement(sentence.getId());
+		if (element.getId() > 0) {
+			return this.getDecisionKnowledgeElement(element.getId());
 		}
 
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) element;
 		PartOfJiraIssueText sentenceInDatabase = null;
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ? AND END_POSITION = ? AND START_POSITION = ?",
@@ -436,18 +437,12 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	@Override
 	public ApplicationUser getCreator(DecisionKnowledgeElement element) {
-		if (element.getKey().contains(":")) {
-			long commentId = Long.parseLong(element.getKey().split(":")[1]);
-			PartOfJiraIssueText issueText = (PartOfJiraIssueText) getDecisionKnowledgeElement(commentId);
-			Comment comment = issueText.getComment();
-			if (comment == null) {
-				Issue issue = ((PartOfJiraIssueText) element).getJiraIssue();
-				return issue.getReporter();
-			}
-			return comment.getAuthorApplicationUser();
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) getDecisionKnowledgeElement(element.getId());
+		if (sentence == null) {
+			LOGGER.error("Element could not be found.");
+			return null;
 		}
-		LOGGER.error("Element is not a Sentence");
-		return element.getProject().getPersistenceStrategy().getCreator(element);
+		return sentence.getCreator();
 	}
 
 	public static boolean updatePartOfJiraIssueText(PartOfJiraIssueText element, ApplicationUser user) {

@@ -12,6 +12,7 @@ import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
+import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -203,5 +204,15 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 			return super.getSummary();
 		}
 		return issue.getDescription();
+	}
+
+	@Override
+	public ApplicationUser getCreator() {
+		Comment comment = this.getComment();
+		if (comment == null) {
+			Issue issue = this.getJiraIssue();
+			return issue.getReporter();
+		}
+		return comment.getAuthorApplicationUser();
 	}
 }

@@ -19,6 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfTextImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestPartOfJiraIssueText extends TestSetUp {
@@ -122,8 +123,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsPlainTextCode() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues
-				.getSentencesForCommentText("{code:Java} int i = 0 {code}");
+		List<PartOfJiraIssueText> partsOfText = JiraIssues.getSentencesForCommentText("{code:Java} int i = 0 {code}");
 		assertFalse(partsOfText.get(0).isPlainText());
 	}
 
@@ -138,8 +138,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsPlainTextIcon() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues
-				.getSentencesForCommentText("(y) this is a icon pro text.");
+		List<PartOfJiraIssueText> partsOfText = JiraIssues.getSentencesForCommentText("(y) this is a icon pro text.");
 		assertTrue(partsOfText.get(0).isPlainText());
 	}
 
@@ -154,8 +153,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsRelevantCode() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues
-				.getSentencesForCommentText("{code:Java} int i = 0 {code}");
+		List<PartOfJiraIssueText> partsOfText = JiraIssues.getSentencesForCommentText("{code:Java} int i = 0 {code}");
 		assertFalse(partsOfText.get(0).isRelevant());
 	}
 
@@ -170,8 +168,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsRelevantIcon() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues
-				.getSentencesForCommentText("(y) this is a icon pro text.");
+		List<PartOfJiraIssueText> partsOfText = JiraIssues.getSentencesForCommentText("(y) this is a icon pro text.");
 		assertTrue(partsOfText.get(0).isRelevant());
 	}
 
@@ -186,8 +183,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsValidatedCode() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues
-				.getSentencesForCommentText("{code:Java} int i = 0 {code}");
+		List<PartOfJiraIssueText> partsOfText = JiraIssues.getSentencesForCommentText("{code:Java} int i = 0 {code}");
 		assertFalse(partsOfText.get(0).isValidated());
 	}
 
@@ -210,16 +206,14 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsValidatedIcon() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues
-				.getSentencesForCommentText("(y) this is a icon pro text.");
+		List<PartOfJiraIssueText> partsOfText = JiraIssues.getSentencesForCommentText("(y) this is a icon pro text.");
 		assertTrue(partsOfText.get(0).isValidated());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetLength() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues
-				.getSentencesForCommentText("(y) this is a icon pro text.");
+		List<PartOfJiraIssueText> partsOfText = JiraIssues.getSentencesForCommentText("(y) this is a icon pro text.");
 		assertEquals(28, partsOfText.get(0).getLength());
 	}
 
@@ -235,12 +229,19 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testGetJiraIssueDescription() {
-		PartOfJiraIssueText partOfText = new PartOfJiraIssueTextImpl();
-		assertEquals("", partOfText.getJiraIssueDescription());
+	public void testGetCreatorOfComment() {
+		List<PartOfJiraIssueText> partsOfText = JiraIssues
+				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative} ");
+		assertEquals(JiraUsers.SYS_ADMIN.getApplicationUser(), partsOfText.get(0).getCreator());
+	}
 
-		partOfText.setJiraIssueId(1);
-
-		assertEquals("WI: Implement feature", partOfText.getJiraIssueDescription());
+	@Test
+	@NonTransactional
+	public void testGetCreatorOfDescription() {
+		List<PartOfJiraIssueText> partsOfText = JiraIssues
+				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative} ");
+		// this means that the element is documented in the description
+		partsOfText.get(0).setCommentId(0);
+		assertEquals(JiraUsers.SYS_ADMIN.getApplicationUser(), partsOfText.get(0).getCreator());
 	}
 }
