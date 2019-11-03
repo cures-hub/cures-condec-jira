@@ -37,7 +37,7 @@ public class JiraIssues {
 		if (project == null) {
 			return jiraIssues;
 		}
-		ApplicationUser user = JiraUsers.BLACK_HEAD.createApplicationUser();
+		ApplicationUser user = JiraUsers.SYS_ADMIN.createApplicationUser();
 
 		List<IssueType> jiraIssueTypes = JiraIssueTypes.getTestTypes();
 

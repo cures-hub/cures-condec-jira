@@ -143,10 +143,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return decisionKnowledgeElements;
 	}
 
-	public static List<DecisionKnowledgeElement> getElementsForJiraIssue(long issueId, String projectKey) {
+	public static List<DecisionKnowledgeElement> getElementsForJiraIssue(long jiraIssueId, String projectKey) {
 		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ?", projectKey, issueId))) {
+				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ?", projectKey, jiraIssueId))) {
 			elements.add(new PartOfJiraIssueTextImpl(databaseEntry));
 		}
 		return elements;
