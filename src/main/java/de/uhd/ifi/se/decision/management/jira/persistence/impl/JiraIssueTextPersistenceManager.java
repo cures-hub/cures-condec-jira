@@ -236,16 +236,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 *         documented in the description or comments of a Jira issue.
 	 */
 	public List<DecisionKnowledgeElement> getElementsWithTypeForJiraIssue(long jiraIssueId, KnowledgeType type) {
-		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
-		if (jiraIssueId <= 0 || type == null) {
-			LOGGER.error("Jira issue id or knowledge type are invalid.");
-			return elements;
-		}
-		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ? AND TYPE = ?", projectKey, jiraIssueId,
-						type.toString()))) {
-			elements.add(new PartOfJiraIssueTextImpl(databaseEntry));
-		}
+		List<DecisionKnowledgeElement> elements = getElementsInJiraIssue(jiraIssueId);
+		elements.removeIf(e -> (e.getType() != type));
 		return elements;
 	}
 
