@@ -121,7 +121,14 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @see Link
 	 * @see DecisionKnowledgeProject
 	 */
-	public abstract List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element);
+	public List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element) {
+		List<Link> inwardLinks = getInwardLinks(element);
+		List<DecisionKnowledgeElement> sourceElements = new ArrayList<DecisionKnowledgeElement>();
+		for (Link link : inwardLinks) {
+			sourceElements.add(link.getSource());
+		}
+		return sourceElements;
+	}
 
 	/**
 	 * Get all linked elements of the decision knowledge element for a project where
@@ -135,7 +142,14 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @see Link
 	 * @see DecisionKnowledgeProject
 	 */
-	public abstract List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement element);
+	public List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement element) {
+		List<Link> outwardLinks = getOutwardLinks(element);
+		List<DecisionKnowledgeElement> destinationElements = new ArrayList<DecisionKnowledgeElement>();
+		for (Link link : outwardLinks) {
+			destinationElements.add(link.getTarget());
+		}
+		return destinationElements;
+	}
 
 	/**
 	 * Get all links where the decision knowledge element is the destination

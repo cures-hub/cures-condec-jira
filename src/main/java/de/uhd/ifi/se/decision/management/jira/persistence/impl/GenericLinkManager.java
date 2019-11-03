@@ -177,9 +177,9 @@ public class GenericLinkManager {
 	}
 
 	/**
-	 * Returns all outgoing links (=edges) from a node in the
-	 * {@link KnowledgeGraph}, except of Jira issue links. If you want to get the
-	 * Jira {@link IssueLink}s only, use
+	 * Returns all ingoing links (=edges) to a node in the {@link KnowledgeGraph},
+	 * except of Jira issue links. If you want to get the Jira {@link IssueLink}s
+	 * only, use
 	 * {@link JiraIssuePersistenceManager#getOutwardLinks(DecisionKnowledgeElement)}.
 	 * 
 	 * @param element

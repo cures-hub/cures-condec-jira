@@ -223,26 +223,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element) {
-		List<Link> inwardLink = getInwardLinks(element);
-		List<DecisionKnowledgeElement> inwardElement = new ArrayList<>();
-		for (Link link : inwardLink) {
-			inwardElement.add(link.getSource());
-		}
-		return inwardElement;
-	}
-
-	@Override
-	public List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement element) {
-		List<Link> outwardLink = getOutwardLinks(element);
-		List<DecisionKnowledgeElement> outwardElements = new ArrayList<>();
-		for (Link link : outwardLink) {
-			outwardElements.add(link.getTarget());
-		}
-		return outwardElements;
-	}
-
-	@Override
 	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
 		return GenericLinkManager.getInwardLinks(element);
 	}
