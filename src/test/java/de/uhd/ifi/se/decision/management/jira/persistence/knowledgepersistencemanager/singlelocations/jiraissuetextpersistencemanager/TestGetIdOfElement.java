@@ -11,13 +11,14 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestGetIdOfSentenceForMacro extends TestSetUp {
+public class TestGetIdOfElement extends TestSetUp {
 
 	protected static JiraIssueTextPersistenceManager manager;
 	protected static ApplicationUser user;
@@ -34,105 +35,97 @@ public class TestGetIdOfSentenceForMacro extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testBodyNullIssueIdLessTypeNullKeyNull() {
-		assertEquals(0, JiraIssueTextPersistenceManager.getIdOfSentenceForMacro(null, -1, null, null));
+		assertEquals(0, manager.getIdOfElement(null, -1, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyFilledIssueIdLessTypeNullKeyNull() {
-		assertEquals(0, JiraIssueTextPersistenceManager.getIdOfSentenceForMacro("This is a comment for test purposes",
-				-1, null, null));
+		assertEquals(0, manager.getIdOfElement("This is a comment for test purposes", -1, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyNullIssueIdZeroTypeNullKeyNull() {
-		assertEquals(0, JiraIssueTextPersistenceManager.getIdOfSentenceForMacro(null, 0, null, null));
+		assertEquals(0, manager.getIdOfElement(null, 0, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyFilledIssueIdZeroTypeNullKeyNull() {
-		assertEquals(0, JiraIssueTextPersistenceManager.getIdOfSentenceForMacro("This is a comment for test purposes",
-				0, null, null));
+		assertEquals(0, manager.getIdOfElement("This is a comment for test purposes", 0, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyNullIssueIdLessTypeFilledKeyNull() {
-		assertEquals(0, JiraIssueTextPersistenceManager.getIdOfSentenceForMacro(null, -1, "ISSUE", null));
+		assertEquals(0, manager.getIdOfElement(null, -1, KnowledgeType.ISSUE));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyFilledIssueIdLessTypeFilledKeyNull() {
-		assertEquals(0, JiraIssueTextPersistenceManager.getIdOfSentenceForMacro("This is a comment for test purposes",
-				-1, "ISSUE", null));
+		assertEquals(0, manager.getIdOfElement("This is a comment for test purposes", -1, KnowledgeType.ISSUE));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyNullIssueIdZeroTypeFilledKeyNull() {
-		assertEquals(0, JiraIssueTextPersistenceManager.getIdOfSentenceForMacro(null, 0, "ISSUE", null));
+		assertEquals(0, manager.getIdOfElement(null, 0, KnowledgeType.ISSUE));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyFilledIssueIdZeroTypeFilledKeyNull() {
-		assertEquals(0, JiraIssueTextPersistenceManager.getIdOfSentenceForMacro("This is a comment for test purposes",
-				0, "ISSUE", null));
+		assertEquals(0, manager.getIdOfElement("This is a comment for test purposes", 0, KnowledgeType.ISSUE));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyNullIssueIdLessTypeNullKeyFilled() {
-		assertEquals(0, JiraIssueTextPersistenceManager.getIdOfSentenceForMacro(null, -1, null, "TEST"));
+		assertEquals(0, manager.getIdOfElement(null, -1, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyFilledIssueIdLessTypeNullKeyFilled() {
-		assertEquals(0, JiraIssueTextPersistenceManager.getIdOfSentenceForMacro("This is a comment for test purposes",
-				-1, null, "TEST"));
+		assertEquals(0, manager.getIdOfElement("This is a comment for test purposes", -1, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyNullIssueIdZeroTypeNullKeyFilled() {
-		assertEquals(0, JiraIssueTextPersistenceManager.getIdOfSentenceForMacro(null, 0, null, "TEST"));
+		assertEquals(0, manager.getIdOfElement(null, 0, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyFilledIssueIdZeroTypeNullKeyFilled() {
-		assertEquals(0, JiraIssueTextPersistenceManager.getIdOfSentenceForMacro("This is a comment for test purposes",
-				0, null, "TEST"));
+		assertEquals(0, manager.getIdOfElement("This is a comment for test purposes", 0, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyNullIssueIdLessTypeFilledKeyFilled() {
-		assertEquals(0, JiraIssueTextPersistenceManager.getIdOfSentenceForMacro(null, -1, "ISSUE", "TEST"));
+		assertEquals(0, manager.getIdOfElement(null, -1, KnowledgeType.ISSUE));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyFilledIssueIdLessTypeFilledKeyFilled() {
-		assertEquals(0, JiraIssueTextPersistenceManager.getIdOfSentenceForMacro("This is a comment for test purposes",
-				-1, "ISSUE", "TEST"));
+		assertEquals(0, manager.getIdOfElement("This is a comment for test purposes", -1, KnowledgeType.ISSUE));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyNullIssueIdZeroTypeFilledKeyFilled() {
-		assertEquals(0, JiraIssueTextPersistenceManager.getIdOfSentenceForMacro(null, 0, "ISSUE", "TEST"));
+		assertEquals(0, manager.getIdOfElement(null, 0, KnowledgeType.ISSUE));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyFilledIssueIdZeroTypeFilledKeyFilled() {
-		assertEquals(0, JiraIssueTextPersistenceManager.getIdOfSentenceForMacro("This is a comment for test purposes",
-				0, "ISSUE", "TEST"));
+		assertEquals(0, manager.getIdOfElement("This is a comment for test purposes", 0, KnowledgeType.ISSUE));
 	}
 
 	@Test
@@ -141,8 +134,8 @@ public class TestGetIdOfSentenceForMacro extends TestSetUp {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		manager.insertDecisionKnowledgeElement(comment.get(1), null);
-		assertEquals(0, JiraIssueTextPersistenceManager.getIdOfSentenceForMacro("Not the right Body",
-				comment.get(0).getJiraIssueId(), "Issue", "TEST"));
+		assertEquals(0, manager.getIdOfElement("Not the right Body", comment.get(0).getJiraIssueId(),
+				KnowledgeType.ISSUE));
 	}
 
 	@Test
@@ -151,7 +144,7 @@ public class TestGetIdOfSentenceForMacro extends TestSetUp {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		manager.insertDecisionKnowledgeElement(comment.get(1), null);
-		assertEquals(3, JiraIssueTextPersistenceManager.getIdOfSentenceForMacro("testobject",
-				comment.get(0).getJiraIssueId(), "Issue", "TEST"));
+		assertEquals(3,
+				manager.getIdOfElement("testobject", comment.get(0).getJiraIssueId(), KnowledgeType.ISSUE));
 	}
 }

@@ -171,17 +171,46 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	/**
-	 * Works more efficient than "getElementsForIssue" for Sentence ID searching in
-	 * Macros
+	 * Returns the id of the decision knowledge element documented in the
+	 * description or comments of a Jira issue with the summary and type.
+	 * 
+	 * @param summary
+	 *            of the decision knowledge element.
+	 * @param jiraIssueId
+	 *            id of the Jira issue that the decision knowledge element is
+	 *            documented in.
+	 * @param type
+	 *            {@link KnowledgeType} of the element.
+	 * @return id of the decision knowledge element documented in the description or
+	 *         comments of a Jira issue with the summary and type.
+	 */
+	public long getIdOfElement(String summary, long jiraIssueId, KnowledgeType type) {
+		if (summary == null || jiraIssueId <= 0 || type == null || summary.isBlank()) {
+			return 0;
+		}
+		List<DecisionKnowledgeElement> sentences = getElementsWithTypeForJiraIssue(jiraIssueId, type);
+		for (DecisionKnowledgeElement sentence : sentences) {
+			if (sentence.getSummary().trim().equalsIgnoreCase(summary)) {
+				return sentence.getId();
+			}
+		}
+		LOGGER.debug("Nothing found for: " + summary);
+		return 0;
+	}
+
+	/**
+	 * Returns all decision knowledge elements with a certain type documented in the
+	 * description or comments of a Jira issue.
 	 *
 	 * @param jiraIssueId
-	 * @param projectKey
+	 *            id of the Jira issue that the decision knowledge elements are
+	 *            documented in.
 	 * @param type
-	 * @return A list of all fitting Sentence objects
+	 *            {@link KnowledgeType} of the element.
+	 * @return list of all decision knowledge elements with a certain type
+	 *         documented in the description or comments of a Jira issue.
 	 */
-	public static List<DecisionKnowledgeElement> getElementsForJiraIssueWithType(long jiraIssueId, String projectKey,
-			String type) {
-
+	public List<DecisionKnowledgeElement> getElementsWithTypeForJiraIssue(long jiraIssueId, KnowledgeType type) {
 		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
 		if (jiraIssueId <= 0 || projectKey == null || type == null) {
 			LOGGER.error("Id, ProjectKey, Type are Invalid");
@@ -189,24 +218,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		}
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ? AND TYPE = ?", projectKey, jiraIssueId,
-						type))) {
+						type.toString()))) {
 			elements.add(new PartOfJiraIssueTextImpl(databaseEntry));
 		}
 		return elements;
-	}
-
-	public static long getIdOfSentenceForMacro(String body, long issueId, String typeString, String projectKey) {
-		if (body == null || issueId <= 0 || typeString == null || projectKey == null) {
-			return 0;
-		}
-		List<DecisionKnowledgeElement> sentences = getElementsForJiraIssueWithType(issueId, projectKey, typeString);
-		for (DecisionKnowledgeElement sentence : sentences) {
-			if (sentence.getDescription().trim().equals(body.trim().replaceAll("<[^>]*>", ""))) {
-				return sentence.getId();
-			}
-		}
-		LOGGER.debug("Nothing found for: " + body.replace("<br/>", "").trim());
-		return 0;
 	}
 
 	@Override
