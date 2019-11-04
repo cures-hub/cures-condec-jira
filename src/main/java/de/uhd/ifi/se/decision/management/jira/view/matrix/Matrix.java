@@ -9,16 +9,13 @@ import java.util.*;
 
 public class Matrix {
     @XmlElement
-    private Map<Long, String> headers;
+    private List<DecisionKnowledgeElement> headers;
 
     @XmlElement
     private Map<Long, List<String>> data;
 
     @XmlElement
     private List<String> headerArray;
-
-    @XmlElement
-    private List<Long> headerIndexArray;
 
     @XmlElement
     private List<List<String>> dataArray;
@@ -31,14 +28,14 @@ public class Matrix {
         this.setDataArray();
     }
 
-    public Map<Long, String> getHeaders() {
+    public List<DecisionKnowledgeElement> getHeaders() {
         return headers;
     }
 
     public void setHeaders(List<DecisionKnowledgeElement> allDecisions) {
-        this.headers = new TreeMap<>();
+        this.headers = new ArrayList<>();
         for (DecisionKnowledgeElement decision : allDecisions) {
-            this.headers.put(decision.getId(), decision.getSummary());
+            this.headers.add(decision);
         }
     }
 
@@ -53,11 +50,11 @@ public class Matrix {
         for (DecisionKnowledgeElement decision : allDecisions) {
             List<String> row = new ArrayList<>();
 
-            for (Map.Entry<Long, String> headerRowDecision : this.getHeaders().entrySet()) {
-                if (headerRowDecision.getValue().equals(decision.getSummary())) {
+            for (DecisionKnowledgeElement headerRowDecision : this.getHeaders()) {
+                if (headerRowDecision.getSummary().equals(decision.getSummary())) {
                     row.add("LightGray");
-                } else if (this.getEntriesForRow(allEntries, decision).get(headerRowDecision.getKey()) != null) {
-                    row.add(this.getEntriesForRow(allEntries, decision).get(headerRowDecision.getKey()));
+                } else if (this.getEntriesForRow(allEntries, decision).get(headerRowDecision.getId()) != null) {
+                    row.add(this.getEntriesForRow(allEntries, decision).get(headerRowDecision.getId()));
                 } else {
                     row.add("White");
                 }
@@ -70,16 +67,10 @@ public class Matrix {
         return headerArray;
     }
 
-    public List<Long> getHeaderIndexArray() {
-        return headerIndexArray;
-    }
-
     public void setHeaderArray() {
         this.headerArray = new ArrayList<>();
-        this.headerIndexArray = new ArrayList<>();
-        for (Map.Entry<Long, String> header : this.getHeaders().entrySet()) {
-            this.headerArray.add(header.getValue());
-            this.headerIndexArray.add(header.getKey());
+        for (DecisionKnowledgeElement header : this.getHeaders()) {
+            this.headerArray.add(header.getSummary());
         }
     }
 
