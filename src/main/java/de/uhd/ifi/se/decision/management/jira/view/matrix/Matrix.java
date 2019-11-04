@@ -48,10 +48,9 @@ public class Matrix {
 
     public void setData(String projectKey, List<DecisionKnowledgeElement> allDecisions) {
         this.data = new TreeMap<>();
-        var allEntries = this.getMatrixEntries(projectKey, allDecisions);
+        var allEntries = this.getMatrixEntries(projectKey);
 
         for (DecisionKnowledgeElement decision : allDecisions) {
-<<<<<<< HEAD
             List<String> row = new ArrayList<>();
 
             for (Map.Entry<Long, String> headerRowDecision : this.getHeaders().entrySet()) {
@@ -93,14 +92,13 @@ public class Matrix {
 
     private Map<Long, String> getEntriesForRow(HashSet<MatrixEntry> allEntries, DecisionKnowledgeElement decision) {
         Map<Long, String> entriesForRow = new TreeMap<>();
+		List<String> row = new ArrayList<>();
         for (MatrixEntry entry : allEntries) {
             if (entry.getIdOfSourceElement().equals(decision.getId())) {
                 entriesForRow.put(entry.getIdOfDestinationElement(), entry.getColor());
             }
-=======
-            List<String> row = new MatrixRow(this.getMatrixEntries(projectKey), this.getMatrixHeaderRow(), decision).getRow();
-            this.matrixData.put(decision.getId(), row);
->>>>>>> 8a18785be7cd6a21800294aae1aa14d2b22462ee
+
+            this.data.put(decision.getId(), row);
         }
         return entriesForRow;
     }
