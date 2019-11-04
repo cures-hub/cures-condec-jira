@@ -18,10 +18,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 import net.java.ao.Query;
 
@@ -37,7 +35,6 @@ import net.java.ao.Query;
 public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerForSingleLocation {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectPersistenceManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
-	private static final String PREFIX = DocumentationLocation.getIdentifier(DocumentationLocation.ACTIVEOBJECT);
 
 	private static void setParameters(DecisionKnowledgeElement element,
 			DecisionKnowledgeElementInDatabase databaseEntry) {
@@ -120,65 +117,13 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(
-			DecisionKnowledgeElement decisionKnowledgeElement) {
-		List<Link> inwardLinks = this.getInwardLinks(decisionKnowledgeElement);
-		List<DecisionKnowledgeElement> sourceElements = new ArrayList<DecisionKnowledgeElement>();
-		for (Link link : inwardLinks) {
-			DecisionKnowledgeElementInDatabase[] entityList = ACTIVE_OBJECTS.find(
-					DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", link.getSource().getId()));
-			if (entityList.length == 1) {
-				sourceElements.add(new DecisionKnowledgeElementImpl(entityList[0]));
-			}
-		}
-		return sourceElements;
-	}
-
-	@Override
-	public List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(
-			DecisionKnowledgeElement decisionKnowledgeElement) {
-		List<Link> outwardLinks = this.getOutwardLinks(decisionKnowledgeElement);
-		List<DecisionKnowledgeElement> destinationElements = new ArrayList<DecisionKnowledgeElement>();
-
-		ACTIVE_OBJECTS.find(LinkInDatabase.class);
-		for (Link link : outwardLinks) {
-			DecisionKnowledgeElementInDatabase[] entityList = ACTIVE_OBJECTS.find(
-					DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", link.getTarget().getId()));
-			if (entityList.length == 1) {
-				destinationElements.add(new DecisionKnowledgeElementImpl(entityList[0]));
-			}
-		}
-		return destinationElements;
-	}
-
-	@Override
 	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
-		List<Link> inwardLinks = new ArrayList<Link>();
-		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select()
-				.where("DESTINATION_ID = ? AND DEST_DOCUMENTATION_LOCATION = ?", element.getId(), PREFIX));
-		for (LinkInDatabase link : links) {
-			Link inwardLink = new LinkImpl(link);
-			inwardLink.setDestinationElement(element);
-			long elementId = link.getSourceId();
-			inwardLink.setSourceElement(this.getDecisionKnowledgeElement(elementId));
-			inwardLinks.add(inwardLink);
-		}
-		return inwardLinks;
+		return GenericLinkManager.getInwardLinks(element);
 	}
 
 	@Override
 	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
-		List<Link> outwardLinks = new ArrayList<Link>();
-		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class,
-				Query.select().where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", element.getId(), PREFIX));
-		for (LinkInDatabase link : links) {
-			Link outwardLink = new LinkImpl(link);
-			outwardLink.setSourceElement(element);
-			long elementId = link.getDestinationId();
-			outwardLink.setDestinationElement(this.getDecisionKnowledgeElement(elementId));
-			outwardLinks.add(outwardLink);
-		}
-		return outwardLinks;
+		return GenericLinkManager.getOutwardLinks(element);
 	}
 
 	@Override

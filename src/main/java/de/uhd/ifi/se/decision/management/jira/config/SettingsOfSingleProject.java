@@ -20,6 +20,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.ClassificationTrain
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
@@ -53,6 +54,8 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		if (request == null) {
 			return new ConcurrentHashMap<String, Object>();
 		}
+		KnowledgeGraph.instances.clear();
+
 		String projectKey = request.getParameter("projectKey");
 		DecisionKnowledgeProject decisionKnowledgeProject = new DecisionKnowledgeProjectImpl(projectKey);
 

@@ -20,6 +20,15 @@ public class PartOfTextImpl extends DecisionKnowledgeElementImpl implements Part
 	private boolean isPlainText;
 	private long jiraIssueId;
 
+	public PartOfTextImpl() {
+
+	}
+
+	public PartOfTextImpl(int startPosition, int endPosition) {
+		this.startPosition = startPosition;
+		this.endPosition = endPosition;
+	}
+
 	@Override
 	public boolean isRelevant() {
 		return this.isRelevant;

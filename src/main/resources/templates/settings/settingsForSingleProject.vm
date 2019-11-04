@@ -139,17 +139,16 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 	</div>
     <div class="field-group">
         <label for="trainClassifier-button">Train the Classifier</label>
-        <aui-select id="select-arff-file-train"
-                    name="arff-file"
-                    placeholder="Select an ARFF File">
+        <select id="select-arff-file-train" name="select-arff-file-train">
             #foreach ($arffFile in $arffFiles)
-            	#if ($arffFile.toString().contains($selectedArffFile))       		
-            		<aui-option selected>$arffFile</aui-option>
-            	#else
-            		<aui-option>$arffFile</aui-option>
-            	#end
+                <option value="$arffFile"
+                    #if ($arffFile.toString().contains($selectedArffFile))
+                        selected
+                    #end
+                >
+                    $arffFile</option>
             #end
-        </aui-select>
+        </select>
         <input type="button" class="aui-button" id="trainClassifier-button" value="Train Classifier"/>
         <div class="description">Trains the classifier on the selected Attribute-Relation File Format (ARFF) file.</div>
     </div>    

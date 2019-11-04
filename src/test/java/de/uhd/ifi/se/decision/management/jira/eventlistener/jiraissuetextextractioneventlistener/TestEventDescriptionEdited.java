@@ -53,7 +53,7 @@ public class TestEventDescriptionEdited extends TestSetUpEventListener {
 	@NonTransactional
 	public void testExcludedTag() {
 		DecisionKnowledgeElement element = getFirstKnowledgeElementInDescription("{code}public static class{code}");
-		assertTrue(element.getDescription().equals("{code}public static class{code}"));
+		assertEquals("{code}public static class{code}", element.getDescription());
 		assertTrue(element.getType() == KnowledgeType.OTHER);
 	}
 

@@ -13,13 +13,13 @@ import org.junit.Test;
 import com.atlassian.jira.component.ComponentAccessor;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestKnowledgeGraph extends TestSetUp {
@@ -66,22 +66,24 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGraphWithIrrelevantComment() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter
+		// TODO Example test for 2 separate graphs
+		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("This is a test comment with some irrelevant text.");
 		PartOfJiraIssueText sentence = comment.get(0);
+		assertEquals("This is a test comment with some irrelevant text.", sentence.getSummary());
 		String projectKey = sentence.getProject().getProjectKey();
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
+		graph = KnowledgeGraph.getOrCreate(projectKey);
 		assertFalse(graph.containsVertex(sentence));
 	}
 
 	@Test
 	@NonTransactional
 	public void testGraphWithRelevantComment() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter
+		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("{alternative} This would be a great solution option! {alternative}");
 		PartOfJiraIssueText sentence = comment.get(0);
 		String projectKey = sentence.getProject().getProjectKey();
-		KnowledgeGraph graph = new KnowledgeGraphImpl(projectKey);
+		graph = KnowledgeGraph.getOrCreate(projectKey);
 		assertTrue(graph.containsVertex(sentence));
 	}
 
@@ -91,9 +93,12 @@ public class TestKnowledgeGraph extends TestSetUp {
 		DecisionKnowledgeElement node = (DecisionKnowledgeElement) graph.vertexSet().iterator().next();
 		assertEquals("WI: Implement feature", node.getSummary());
 		node.setSummary("Updated");
+		assertEquals(2, graph.edgesOf(node).size());
+
 		KnowledgePersistenceManager.getOrCreate("TEST").updateDecisionKnowledgeElement(node, null);
 		node = (DecisionKnowledgeElement) graph.vertexSet().iterator().next();
 		assertEquals("Updated", node.getSummary());
+		assertEquals(2, graph.edgesOf(node).size());
 	}
 
 	@After

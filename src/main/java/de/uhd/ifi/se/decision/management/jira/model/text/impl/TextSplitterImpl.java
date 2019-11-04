@@ -40,16 +40,14 @@ public class TextSplitterImpl implements TextSplitter {
 			if (!startAndEndIndexRules(startPosition, endPosition, text)) {
 				continue;
 			}
-			PartOfText partOfText = new PartOfTextImpl();
-			partOfText.setEndPosition(endPosition);
-			partOfText.setStartPosition(startPosition);
+			PartOfText partOfText = new PartOfTextImpl(startPosition, endPosition);
 			partOfText.setProject(projectKey);
 			String body = text.substring(startPosition, endPosition).toLowerCase();
 			KnowledgeType type = getKnowledgeTypeFromTag(body, projectKey);
 			partOfText.setType(type);
 			if (type != KnowledgeType.OTHER) {
 				partOfText.setRelevant(true);
-				//TODO: Why is this set here?
+				// TODO: Why is this set here?
 				partOfText.setValidated(true);
 			}
 			parts.add(partOfText);
@@ -75,7 +73,7 @@ public class TextSplitterImpl implements TextSplitter {
 	}
 
 	private static ArrayList<String> searchForTagsRecursively(String partOfText, String openTag, String closeTag,
-															  ArrayList<String> slices) {
+			ArrayList<String> slices) {
 		if (isIncorrectlyTagged(partOfText, openTag, closeTag)) {
 			slices.add(partOfText);
 			return slices;

@@ -10,7 +10,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 
 public class VisTimeLine {
 
@@ -62,10 +61,7 @@ public class VisTimeLine {
 		if (elementList != null) {
 			Set<Long> usedApplicationUser = new HashSet<Long>();
 			for (DecisionKnowledgeElement element : elementList) {
-				AbstractPersistenceManagerForSingleLocation manager = KnowledgePersistenceManager
-						.getOrCreate(element.getProject().getProjectKey())
-						.getPersistenceManager(element.getDocumentationLocation());
-				ApplicationUser user = manager.getCreator(element);
+				ApplicationUser user = element.getCreator();
 				if (user == null) {
 					continue;
 				}

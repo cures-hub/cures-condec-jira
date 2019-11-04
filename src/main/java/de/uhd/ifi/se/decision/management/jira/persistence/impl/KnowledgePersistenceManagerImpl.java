@@ -219,7 +219,38 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getPersistenceManager(element);
-		KnowledgeGraph.getOrCreate(projectKey).updateNode(element);
-		return persistenceManager.updateDecisionKnowledgeElement(element, user);
+		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(element, user);
+		if (isUpdated) {
+			DecisionKnowledgeElement updatedElement = persistenceManager.getDecisionKnowledgeElement(element.getId());
+			KnowledgeGraph.getOrCreate(projectKey).updateNode(updatedElement);
+		}
+		return isUpdated;
+	}
+
+	@Override
+	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
+			ApplicationUser user, DecisionKnowledgeElement parentElement) {
+		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
+				.getPersistenceManager(element);
+		DecisionKnowledgeElement elementWithId = persistenceManager.insertDecisionKnowledgeElement(element, user,
+				parentElement);
+		KnowledgeGraph.getOrCreate(projectKey).addVertex(elementWithId);
+		return elementWithId;
+	}
+
+	@Override
+	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
+			ApplicationUser user) {
+		return insertDecisionKnowledgeElement(element, user, null);
+	}
+
+	@Override
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id, DocumentationLocation documentationLocation) {
+		AbstractPersistenceManagerForSingleLocation persistenceManager = getPersistenceManager(documentationLocation);
+		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(id);
+		if (element == null) {
+			return new DecisionKnowledgeElementImpl();
+		}
+		return element;
 	}
 }

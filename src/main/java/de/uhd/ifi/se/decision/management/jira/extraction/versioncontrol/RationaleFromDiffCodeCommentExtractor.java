@@ -161,12 +161,8 @@ public class RationaleFromDiffCodeCommentExtractor {
 			return true;
 		}
 		// edit overlaps rationale
-		if (editBegin <= rationaleStart && editEnd >= rationaleEnd) {
-			return true;
-		}
-
-		return false;
-	}
+        return editBegin <= rationaleStart && editEnd >= rationaleEnd;
+    }
 
 	/* fetches list of edits which affected the comment */
 	private List<Edit> getEditsOnComment(CodeComment comment, boolean newerFile) {

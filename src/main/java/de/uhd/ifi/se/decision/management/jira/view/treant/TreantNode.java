@@ -58,6 +58,9 @@ public class TreantNode {
 
 	public TreantNode(DecisionKnowledgeElement decisionKnowledgeElement, boolean isCollapsed, boolean isHyperlinked) {
 		this();
+		if (decisionKnowledgeElement == null || decisionKnowledgeElement.getSummary() == null) {
+			return;
+		}
 		this.nodeContent = ImmutableMap.of("title", decisionKnowledgeElement.getSummary(), "documentationLocation",
 				decisionKnowledgeElement.getDocumentationLocationAsString(), "desc", decisionKnowledgeElement.getKey());
 		this.htmlClass = decisionKnowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);

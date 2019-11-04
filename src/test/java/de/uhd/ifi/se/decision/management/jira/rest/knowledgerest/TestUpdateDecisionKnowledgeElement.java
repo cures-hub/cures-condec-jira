@@ -19,7 +19,6 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -30,6 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
@@ -56,7 +56,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledParentElementExistingParentDocumentationLocationJiraIssue() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("This is a test sentence.");
+		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement sentence = comment.get(0);
 
 		Link link = new LinkImpl(sentence, decisionKnowledgeElement);
@@ -83,7 +83,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 
 	@Test
 	public void testRequestNullElementFilledParentIdZeroParentDocumentationLocationNull() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("This is a test sentence.");
+		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		assertEquals(
 				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERROR)).build()
@@ -100,7 +100,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledParentIdZeroParentDocumentationLocationNull() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("This is a test sentence.");
+		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		decisionKnowledgeElement.setType(KnowledgeType.ALTERNATIVE);
 		assertEquals(Status.OK.getStatusCode(),
@@ -110,7 +110,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledWithCommentChangedParentIdZeroParentDocumentationLocationEmpty() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("This is a test sentence.");
+		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		assertEquals(decisionKnowledgeElement.getType(), KnowledgeType.OTHER);
 
@@ -129,7 +129,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledWithCommentChangedCheckValidTextWithManuallTaggedComment() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter
+		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("{issue}This is a test sentence.{Issue}");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 

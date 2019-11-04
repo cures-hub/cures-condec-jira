@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.model.impl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 
 import org.jgrapht.graph.DirectedWeightedMultigraph;
@@ -11,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
@@ -23,13 +21,13 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeGraphImpl.class);
 
 	private static final long serialVersionUID = 1L;
-	private DecisionKnowledgeProject project;
 	protected List<Long> linkIds;
+	private KnowledgePersistenceManager persistenceManager;
 
 	public KnowledgeGraphImpl(String projectKey) {
 		super(LinkImpl.class);
-		linkIds = new ArrayList<Long>();
-		this.project = new DecisionKnowledgeProjectImpl(projectKey);
+		this.linkIds = new ArrayList<Long>();
+		this.persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
 		createGraph();
 	}
 
@@ -39,19 +37,16 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	}
 
 	private void addNodes() {
-		List<DecisionKnowledgeElement> nodesList = KnowledgePersistenceManager.getOrCreate(project.getProjectKey())
-				.getDecisionKnowledgeElements();
-		ListIterator<DecisionKnowledgeElement> iterator = nodesList.listIterator();
-		while (iterator.hasNext()) {
-			Node node = iterator.next();
-			this.addVertex(node);
+		List<DecisionKnowledgeElement> elements = persistenceManager.getDecisionKnowledgeElements();
+		for (DecisionKnowledgeElement element : elements) {
+			addVertex(element);
 		}
 	}
 
 	private void addEdges() {
 		for (Node node : this.vertexSet()) {
-			AbstractPersistenceManagerForSingleLocation manager = KnowledgePersistenceManager
-					.getOrCreate(project.getProjectKey()).getPersistenceManager(node.getDocumentationLocation());
+			AbstractPersistenceManagerForSingleLocation manager = persistenceManager
+					.getPersistenceManager(node.getDocumentationLocation());
 			List<Link> links = manager.getLinks(node.getId());
 			for (Link link : links) {
 				Node destination = link.getTarget();
@@ -75,15 +70,11 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	public boolean addEdge(Link link) {
 		boolean isEdgeCreated = false;
 		DecisionKnowledgeElement source = link.getSource();
-		if (!containsVertex(source)) {
-			addVertex(source);
-			System.out.println("Source node was created in graph");
-		}
+		addVertex(source);
+
 		DecisionKnowledgeElement destination = link.getTarget();
-		if (!containsVertex(destination)) {
-			addVertex(destination);
-			System.out.println("Destination node was created in graph");
-		}
+		addVertex(destination);
+
 		try {
 			isEdgeCreated = this.addEdge(source, destination, link);
 		} catch (IllegalArgumentException e) {
@@ -96,7 +87,7 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	public boolean updateNode(DecisionKnowledgeElement node) {
 		DecisionKnowledgeElement oldNode = null;
 		for (Node currentNode : vertexSet()) {
-			if (node.getId() == currentNode.getId()) {
+			if (node.equals(currentNode)) {
 				oldNode = (DecisionKnowledgeElement) currentNode;
 			}
 		}
@@ -107,17 +98,18 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	}
 
 	private boolean replaceVertex(DecisionKnowledgeElement vertex, DecisionKnowledgeElement replace) {
-		addVertex(replace);
+		Set<Link> newLinks = new HashSet<Link>();
 		for (Link edge : outgoingEdgesOf(vertex)) {
-			addEdge(replace, edge.getTarget(), edge);
+			newLinks.add(new LinkImpl(replace, edge.getTarget()));
 		}
 		for (Link edge : incomingEdgesOf(vertex)) {
-			addEdge(edge.getSource(), replace, edge);
+			newLinks.add(new LinkImpl(edge.getSource(), replace));
 		}
-		for (Link edge : edgesOf(vertex)) {
-			removeEdge(edge);
+		removeVertex(vertex);
+		for (Link link : newLinks) {
+			addEdge(link);
 		}
-		return removeVertex(vertex);
+		return true;
 	}
 
 	@Override

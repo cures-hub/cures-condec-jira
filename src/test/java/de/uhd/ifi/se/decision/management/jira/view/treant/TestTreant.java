@@ -11,7 +11,6 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -20,11 +19,8 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-import net.java.ao.EntityManager;
-import net.java.ao.test.jdbc.DatabaseUpdater;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestTreant extends TestSetUp {
@@ -40,7 +36,7 @@ public class TestTreant extends TestSetUp {
 		this.nodeStructure = new TreantNode();
 		this.treant = new Treant("TEST", "TEST-30", 0);
 		this.treant.setChart(chart);
-		this.treant.setNodeStructure(nodeStructure);		
+		this.treant.setNodeStructure(nodeStructure);
 		persistenceStrategy = KnowledgePersistenceManager.getOrCreate("TEST").getDefaultPersistenceManager();
 	}
 
@@ -148,21 +144,12 @@ public class TestTreant extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCreateNodeStructureWithSentenceInIssue() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter.getSentencesForCommentText("This is a testsentence");
+		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText("This is a testsentence");
 		sentences.get(0).setRelevant(true);
 		DecisionKnowledgeElement element = persistenceStrategy
 				.getDecisionKnowledgeElement(sentences.get(0).getJiraIssueId());
 		TreantNode nodeStructure = treant.createNodeStructure(element, null, 0);
 		assertEquals(TreantNode.class, nodeStructure.getClass());
 		assertEquals(1, nodeStructure.getChildren().size());
-	}
-
-	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
-		@SuppressWarnings("unchecked")
-		@Override
-		public void update(EntityManager entityManager) throws Exception {
-			entityManager.migrate(PartOfJiraIssueTextInDatabase.class);
-			entityManager.migrate(LinkInDatabase.class);
-		}
 	}
 }

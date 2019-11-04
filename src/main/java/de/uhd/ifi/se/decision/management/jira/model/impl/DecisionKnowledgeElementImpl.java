@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.model.impl;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -13,6 +12,7 @@ import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
+import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -249,31 +249,6 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(id, summary);
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (object == null) {
-			return false;
-		}
-		if (object == this) {
-			return true;
-		}
-		if (!(object instanceof DecisionKnowledgeElement)) {
-			return false;
-		}
-		DecisionKnowledgeElement element = (DecisionKnowledgeElement) object;
-		return this.id == element.getId()
-				/*
-				 * At least compare also the key, otherwise comparison will not work for
-				 * elements with same/not initialized ID.
-				 */
-				&& element.getKey().equals(getKey());
-	}
-
-	@Override
 	public Date getCreated() {
 		if (created == null) {
 			return new Date();
@@ -298,13 +273,34 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 
 	@Override
 	public boolean existsInDatabase() {
-		DecisionKnowledgeElement elementInDatabase = KnowledgePersistenceManager.getDecisionKnowledgeElement(id,
-				documentationLocation);
+		DecisionKnowledgeElement elementInDatabase = KnowledgePersistenceManager.getOrCreate("")
+				.getDecisionKnowledgeElement(id, documentationLocation);
 		return elementInDatabase != null && elementInDatabase.getId() > 0;
+	}
+
+	@Override
+	public Issue getJiraIssue() {
+		if (getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
+			return ComponentAccessor.getIssueManager().getIssueObject(id);
+		}
+		return null;
 	}
 
 	@Override
 	public String toString() {
 		return this.getDescription();
+	}
+
+	@Override
+	public ApplicationUser getCreator() {
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(project.getProjectKey());
+		if (getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
+			return persistenceManager.getJiraIssueManager().getCreator(this);
+		}
+		if (getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
+			return persistenceManager.getJiraIssueTextManager().getCreator(this);
+		}
+		return null;
 	}
 }

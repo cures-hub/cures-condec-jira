@@ -1,36 +1,38 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencemanager.singlelocations.jiraissuetextpersistencemanager;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-import java.util.List;
-
+import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestGetJiraIssue extends TestJiraIssueCommentPersistenceManagerSetUp {
+public class TestGetJiraIssue extends TestSetUp {
+
+	protected static JiraIssueTextPersistenceManager manager;
+
+	@Before
+	public void setUp() {
+		init();
+		manager = new JiraIssueTextPersistenceManager("TEST");
+	}
 
 	@Test
 	@NonTransactional
-	public void testGetJiraIssueKeyForPartOfText() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText(
+	public void testGetJiraIssueValid() {
+		JiraIssues.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
-		long id = JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
-
-		assertEquals(3, id);
-
-		long jiraIssueId = comment.get(0).getJiraIssueId();
-
-		List<DecisionKnowledgeElement> listWithObjects = JiraIssueTextPersistenceManager
-				.getElementsForIssue(jiraIssueId, "TEST");
-		assertEquals(3, listWithObjects.size());
-
-		String jiraIssueKey = JiraIssueTextPersistenceManager.getJiraIssue(id).getKey();
-
+		String jiraIssueKey = manager.getJiraIssue(1).getKey();
 		assertEquals("TEST-30", jiraIssueKey);
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetJiraIssueUnknownId() {
+		assertNull(manager.getJiraIssue(1));
 	}
 }
