@@ -70,6 +70,10 @@ public class Matrix {
         return headerArray;
     }
 
+    public List<Long> getHeaderIndexArray() {
+        return headerIndexArray;
+    }
+
     public void setHeaderArray() {
         this.headerArray = new ArrayList<>();
         this.headerIndexArray = new ArrayList<>();

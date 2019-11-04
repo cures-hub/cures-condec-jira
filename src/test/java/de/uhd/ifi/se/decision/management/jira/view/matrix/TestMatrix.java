@@ -34,20 +34,32 @@ public class TestMatrix extends TestSetUp {
 	}
 
 	@Test
-	public void testGetMatrixHeaderRow() {
+	public void testGetHeaders() {
 		assertTrue(this.matrix.getHeaders().containsKey((long) 1));
 		assertTrue(this.matrix.getHeaders().containsValue("TESTfwf"));
 	}
 
 	@Test
-	public void testGetMatrixData() {
+	public void testGetHeaderArray() {
+		assertTrue(this.matrix.getHeaderArray().contains("TESTfwf"));
+	}
+
+	@Test
+	public void testGetHeaderIndexArray() {
+		assertTrue(this.matrix.getHeaderIndexArray().contains((long) 1));
+	}
+
+	@Test
+	public void testGetData() {
 		assertTrue(this.matrix.getData().containsKey((long) 1));
 		assertEquals(1, this.matrix.getData().size());
 	}
 
 	@Test
-	public void testGetMatrixDataEntries() {
+	public void testGetDataEntries() {
 		assertTrue(this.matrix.getData().get((long) 1).contains("LightGray"));
 	}
+
+
 
 }
