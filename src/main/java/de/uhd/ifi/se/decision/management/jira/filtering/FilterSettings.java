@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import com.atlassian.jira.issue.issuetype.IssueType;

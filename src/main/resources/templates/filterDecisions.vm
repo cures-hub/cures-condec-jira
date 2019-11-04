@@ -1,7 +1,7 @@
 <button aria-controls="linktype-dropdown" class="aui-button aui-style-default aui-dropdown2-trigger" aria-haspopup="true">
 	LinkTypes
 </button>
-<aui-dropdown-menu id="linktype-dropdown" style="overflow:auto;max-height:200px;"></aui-dropdown-menu>
+<aui-dropdown-menu id="linktype-dropdown"></aui-dropdown-menu>
 
 <button class="aui-button aui-button-primary" id="filterDecisionLinks-button">
 	<span class="aui-icon aui-icon-small aui-iconfont-search"></span> Filter
