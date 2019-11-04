@@ -42,7 +42,9 @@
                         // Common callback for all options
                         event = clickEvent;
                         index = selection[0].start.col;
-                        conDecContextMenu.createContextMenu(data.headers[index].id, data.headers[index].documentationLocation, event, null);
+                        id = data.headerIndexArray[index];
+                        console.log(data.headers[id]);
+                        conDecContextMenu.createContextMenu(id, data.headers[id].documentationLocation, event, null);
                     }, items: {
                         "Context Menu": {
                             name: "Open Context Menu"

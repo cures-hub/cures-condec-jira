@@ -9,13 +9,16 @@ import java.util.*;
 
 public class Matrix {
     @XmlElement
-    private List<DecisionKnowledgeElement> headers;
+    private Map<Long, DecisionKnowledgeElement> headers;
 
     @XmlElement
     private Map<Long, List<String>> data;
 
     @XmlElement
     private List<String> headerArray;
+
+	@XmlElement
+	private List<Long> headerIndexArray;
 
     @XmlElement
     private List<List<String>> dataArray;
@@ -28,14 +31,14 @@ public class Matrix {
         this.setDataArray();
     }
 
-    public List<DecisionKnowledgeElement> getHeaders() {
+    public Map<Long, DecisionKnowledgeElement> getHeaders() {
         return headers;
     }
 
     public void setHeaders(List<DecisionKnowledgeElement> allDecisions) {
-        this.headers = new ArrayList<>();
+        this.headers = new TreeMap<>();
         for (DecisionKnowledgeElement decision : allDecisions) {
-            this.headers.add(decision);
+            this.headers.put(decision.getId(), decision);
         }
     }
 
@@ -50,7 +53,7 @@ public class Matrix {
         for (DecisionKnowledgeElement decision : allDecisions) {
             List<String> row = new ArrayList<>();
 
-            for (DecisionKnowledgeElement headerRowDecision : this.getHeaders()) {
+            for (DecisionKnowledgeElement headerRowDecision : this.getHeaders().values()) {
                 if (headerRowDecision.getSummary().equals(decision.getSummary())) {
                     row.add("LightGray");
                 } else if (this.getEntriesForRow(allEntries, decision).get(headerRowDecision.getId()) != null) {
@@ -69,8 +72,10 @@ public class Matrix {
 
     public void setHeaderArray() {
         this.headerArray = new ArrayList<>();
-        for (DecisionKnowledgeElement header : this.getHeaders()) {
+        this.headerIndexArray = new ArrayList<>();
+        for (DecisionKnowledgeElement header : this.getHeaders().values()) {
             this.headerArray.add(header.getSummary());
+            this.headerIndexArray.add(header.getId());
         }
     }
 
