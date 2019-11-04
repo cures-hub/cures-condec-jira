@@ -19,6 +19,9 @@ public class Matrix {
     private List<String> headerArray;
 
     @XmlElement
+    private List<Long> headerIndexArray;
+
+    @XmlElement
     private List<List<String>> dataArray;
 
     public Matrix(String projectKey, List<DecisionKnowledgeElement> allDecisions) {
@@ -70,8 +73,10 @@ public class Matrix {
 
     public void setHeaderArray() {
         this.headerArray = new ArrayList<>();
+        this.headerIndexArray = new ArrayList<>();
         for (Map.Entry<Long, String> header : this.getHeaders().entrySet()) {
             this.headerArray.add(header.getValue());
+            this.headerIndexArray.add(header.getKey());
         }
     }
 

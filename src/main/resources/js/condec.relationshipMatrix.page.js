@@ -23,6 +23,7 @@
         conDecAPI.getDecisionMatrix(function (data) {
             console.log(data);
             const div = document.getElementById("matrix");
+            var event, index, id;
 
             var matrix = new Handsontable(div, {
                 data: data.dataArray,
@@ -30,18 +31,22 @@
                 rowHeaders: data.headerArray,
                 rowHeaderWidth: 150,
                 colHeaders: data.headerArray,
+                afterGetColHeader: function(i, TH) {
+                    TH.innerHTML = '<div class="head">' + TH.innerHTML + '</div>'
+                },
                 //manualColumnResize: true,
-                //colWidths: 50,
+                colWidths: 25,
                 selectionMode: "single",
                 dropdownMenu: {
                     callback: function (key, selection, clickEvent) {
                         // Common callback for all options
-                        console.log(key, selection, clickEvent);
-                        console.log(this.getSelectedLast());
-                    },
-                    items: {
-                        "test": {
-                            name: "xyz"
+                        event = clickEvent;
+                        index = selection[0].start.col;
+                        id = data.headerIndexArray[index];
+                        conDecContextMenu.createContextMenu(id, "", event, null);
+                    }, items: {
+                        "Context Menu": {
+                            name: "Open Context Menu"
                         }
                     }
                 },
