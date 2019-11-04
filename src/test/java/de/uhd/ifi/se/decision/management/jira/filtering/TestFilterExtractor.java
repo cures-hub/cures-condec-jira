@@ -3,21 +3,22 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterExtractorImpl;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TestFilterExtractor extends TestSetUp {
 
@@ -30,12 +31,12 @@ public class TestFilterExtractor extends TestSetUp {
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		settings = new FilterSettingsImpl();
 		List<String> doculoco = new ArrayList<>();
-		for(DocumentationLocation location : DocumentationLocation.getAllDocumentationLocations()) {
+		for (DocumentationLocation location : DocumentationLocation.getAllDocumentationLocations()) {
 			doculoco.add(location.getName());
 		}
 		settings.setDocumentationLocations(doculoco);
 		settings.setSearchString("TEST");
-		settings.setCreatedEarliest(System.currentTimeMillis()-10000);
+		settings.setCreatedEarliest(System.currentTimeMillis() - 10000);
 		settings.setCreatedLatest(System.currentTimeMillis());
 		settings.setProjectKey("TEST");
 		settings.setSelectedJiraIssueTypes(KnowledgeType.toList());
@@ -45,50 +46,50 @@ public class TestFilterExtractor extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testConstructorFilterStringNullNullNull() {
-		FilterExtractor extractor = new FilterExtractor(null, null, (String) null);
-		assertNull(extractor.getQueryHandler());
+		FilterExtractor extractor = new FilterExtractorImpl(null, null, (String) null);
+		assertNull(extractor.getFilterSettings());
 	}
 
 	@Test
 	@NonTransactional
 	public void testConstructorFilterStringFilledNullNull() {
-		FilterExtractor extractor = new FilterExtractor("TEST", null, (String) null);
-		assertNull(extractor.getQueryHandler());
+		FilterExtractor extractor = new FilterExtractorImpl("TEST", null, (String) null);
+		assertNull(extractor.getFilterSettings());
 	}
 
 	@Test
 	@NonTransactional
 	public void testConstructorFilterStringNullFilledNull() {
-		FilterExtractor extractor = new FilterExtractor(null, user, (String) null);
-		assertNull(extractor.getQueryHandler());
+		FilterExtractor extractor = new FilterExtractorImpl(null, user, (String) null);
+		assertNull(extractor.getFilterSettings());
 	}
 
 	@Test
 	@NonTransactional
 	public void testConstructorFilterStringNullNullEmpty() {
-		FilterExtractor extractor = new FilterExtractor(null, null, "");
-		assertNull(extractor.getQueryHandler());
+		FilterExtractor extractor = new FilterExtractorImpl(null, null, "");
+		assertNull(extractor.getFilterSettings());
 	}
 
 	@Test
 	@NonTransactional
 	public void testConstructorFilterStringNullNullFilledString() {
 		String filter = "allopenissues";
-		FilterExtractor extractor = new FilterExtractor(null, null, "\\?filter=(.)+" + filter);
-		assertNull(extractor.getQueryHandler());
+		FilterExtractor extractor = new FilterExtractorImpl(null, null, "\\?filter=(.)+" + filter);
+		assertNull(extractor.getFilterSettings());
 	}
 
 	@Test
 	@NonTransactional
 	public void testConstructorFilterStringNullNullFilledJQL() {
-		FilterExtractor extractor = new FilterExtractor(null, null, "\\?filter=allissues?jql=project=TEST");
-		assertNull(extractor.getQueryHandler());
+		FilterExtractor extractor = new FilterExtractorImpl(null, null, "\\?filter=allissues?jql=project=TEST");
+		assertNull(extractor.getFilterSettings());
 	}
 
 	@Test
 	@NonTransactional
 	public void testConstructorFilterStringFilledFilledEmpty() {
-		FilterExtractor extractor = new FilterExtractor("TEST", user, "");
+		FilterExtractor extractor = new FilterExtractorImpl("TEST", user, "");
 		// the empty query will be changed to "allissues", i.e. "type != null"
 		assertEquals(8, extractor.getAllElementsMatchingQuery().size());
 	}
@@ -96,58 +97,61 @@ public class TestFilterExtractor extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testConstructorFilterStringFilledFilledString() {
-		FilterExtractor extractor = new FilterExtractor("TEST", user, "?filter=allopenissues");
+		FilterExtractor extractor = new FilterExtractorImpl("TEST", user, "?filter=allopenissues");
 		assertEquals(8, extractor.getAllElementsMatchingQuery().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testConstructorFilterStringFilledFilledFilledJQL() {
-		FilterExtractor extractor = new FilterExtractor("TEST", user, "?jql=project=TEST");
+		FilterExtractor extractor = new FilterExtractorImpl("TEST", user, "?jql=project=TEST");
+		assertEquals("?jql=project=TEST", extractor.getFilterSettings().getSearchString());
 		assertEquals(8, extractor.getAllElementsMatchingQuery().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testConstructorFilterOwnNullProject() {
-		FilterExtractor extractor = new FilterExtractor(null, (FilterSettings) null);
-		assertNull(extractor.getQueryHandler());
+		FilterExtractor extractor = new FilterExtractorImpl(null, (FilterSettings) null);
+		assertNull(extractor.getFilterSettings());
 	}
 
 	@Test
 	@NonTransactional
 	public void testConstructorFilterOwnNullSearch() {
-		FilterExtractor extractor = new FilterExtractor(user, (FilterSettings) null);
-		assertNull(extractor.getQueryHandler());
+		FilterExtractor extractor = new FilterExtractorImpl(user, (FilterSettings) null);
+		assertNull(extractor.getFilterSettings());
 	}
 
 	@Test
 	@NonTransactional
 	public void testConstructorFilterOwnFilled() {
-		FilterExtractor extractor = new FilterExtractor(user, new FilterSettingsImpl("TEST", ""));
+		FilterExtractor extractor = new FilterExtractorImpl(user, new FilterSettingsImpl("TEST", ""));
 		// the empty query will be changed to "allissues", i.e. "type != null"
+		// no, it is changed to "type = null" currently!
 		assertEquals(8, extractor.getAllElementsMatchingQuery().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetGraphsMatchingQueryEmpty() {
-		FilterExtractor extractor = new FilterExtractor("Test", user, "");
+		FilterExtractor extractor = new FilterExtractorImpl("TEST", user, "");
 		// the empty query will be changed to "allissues", i.e. "type != null"
-		assertEquals(8, extractor.getAllGraphs().size());
+		// no, it is changed to "type = null" currently!
+		assertEquals(1, extractor.getAllGraphs().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetGraphsMatchingQueryFilled() {
-		FilterExtractor extractor = new FilterExtractor("Test", user, "?jql=project=TEST");
-		assertEquals(8, extractor.getAllGraphs().size());
+		FilterExtractor extractor = new FilterExtractorImpl("TEST", user, "?jql=project=TEST");
+		assertEquals(5, extractor.getAllGraphs().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetFilterSettings() {
-		FilterExtractor extractor = new FilterExtractor("Test", user, "?jql=project=TEST");
+		FilterExtractor extractor = new FilterExtractorImpl("Test", user, "?jql=project=TEST");
 		assertEquals("?jql=project=TEST", extractor.getFilterSettings().getSearchString());
 	}
 
@@ -155,35 +159,34 @@ public class TestFilterExtractor extends TestSetUp {
 	@NonTransactional
 	public void testGetAllElementsMatchingCompareFilterSettingsEmpty() {
 		FilterSettings newSettings = new FilterSettingsImpl();
-		FilterExtractor extractor = new FilterExtractor(user, newSettings);
+		FilterExtractor extractor = new FilterExtractorImpl(user, newSettings);
 		assertEquals(0, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
 	}
-
 
 	@Test
 	@NonTransactional
 	public void testGetAllElementsMatchingCompareFilterSettingsFilledCreated() {
-		settings.setCreatedLatest((long)-1);
-		settings.setCreatedEarliest(System.currentTimeMillis()-100000);
-		FilterExtractor extractor = new FilterExtractor(user, settings);
+		settings.setCreatedLatest(-1);
+		settings.setCreatedEarliest(System.currentTimeMillis() - 100000);
+		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
 		assertEquals(5, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetAllElementsMatchingCompareFilterSettingsFilledClosed() {
-		settings.setCreatedEarliest((long)-1);
-		settings.setCreatedLatest(System.currentTimeMillis()+1000);
-		FilterExtractor extractor = new FilterExtractor(user, settings);
+		settings.setCreatedEarliest(-1);
+		settings.setCreatedLatest(System.currentTimeMillis() + 1000);
+		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
 		assertEquals(5, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetAllElementsMatchingCompareFilterSettingsFilled() {
-		settings.setCreatedLatest(System.currentTimeMillis()+1000);
-		settings.setCreatedEarliest(System.currentTimeMillis()-100000);
-		FilterExtractor extractor = new FilterExtractor(user, settings);
+		settings.setCreatedLatest(System.currentTimeMillis() + 1000);
+		settings.setCreatedEarliest(System.currentTimeMillis() - 100000);
+		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
 		assertEquals(5, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
 	}
 }

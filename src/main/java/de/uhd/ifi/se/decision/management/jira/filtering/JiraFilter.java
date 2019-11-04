@@ -13,7 +13,7 @@ import com.atlassian.jira.issue.search.SearchRequestManager;
  * Type of preset filters in JIRA.
  */
 public enum JiraFilter {
-	
+
 	MYOPENISSUES(-1, "assignee = currentUser() AND resolution = Unresolved"), // My open issues
 	REPORTEDBYME(-2, "reporter = currentUser()"), // Reported by me
 	RECENTLYVIEWFINALQUERYED(-3, "issuekey IN issueHistory()"), // Viewed recently
@@ -71,14 +71,12 @@ public enum JiraFilter {
 		return jiraFilter.getJqlString();
 	}
 
-	public static String getQueryForFilterId(long filterId, String projectKey) {
+	public static String getQueryForFilterId(long filterId) {
 		if (!isPresetJiraFilter(filterId)) {
 			return getQueryForCustomFilter(filterId);
 		}
 		JiraFilter jiraFilter = valueOf(filterId);
-		String query = jiraFilter.getJqlString();
-		query = "project = " + projectKey + " AND " + query;
-		return query;
+		return jiraFilter.getJqlString();
 	}
 
 	private static boolean isPresetJiraFilter(long filterId) {
@@ -91,7 +89,7 @@ public enum JiraFilter {
 		return filter.getQuery().getQueryString();
 	}
 
-	public static String getQueryForFilter(String searchTerm, String projectKey) {
+	public static String getQueryForFilter(String searchTerm) {
 		long filterId = 0;
 		boolean filterIsNumberCoded = false;
 		try {
@@ -101,11 +99,11 @@ public enum JiraFilter {
 			LOGGER.error("Produce results from query failed. Message: " + e.getMessage());
 		}
 		if (filterIsNumberCoded) {
-			return JiraFilter.getQueryForFilterId(filterId, projectKey);
+			return JiraFilter.getQueryForFilterId(filterId);
 		}
 		return JiraFilter.getQueryForFilterName(searchTerm);
 	}
-	
+
 	public static boolean containsJiraFilter(String searchTerm) {
 		return searchTerm.indexOf("filter") == 1;
 	}

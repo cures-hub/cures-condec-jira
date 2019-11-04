@@ -35,15 +35,14 @@ public class TestJiraFilter extends TestSetUp {
 
 	@Test
 	public void testGetQueryForFilterId() {
-		String query = JiraFilter.getQueryForFilterId(-1, "TEST");
-		assertEquals("project = TEST AND " + JiraFilter.MYOPENISSUES.getJqlString(), query);
+		String query = JiraFilter.getQueryForFilterId(-1);
+		assertEquals(JiraFilter.MYOPENISSUES.getJqlString(), query);
 	}
 
 	@Test
 	public void testGetQueryForFilter() {
-		assertEquals(JiraFilter.ALLISSUES.getJqlString(), JiraFilter.getQueryForFilter("allissues", "TEST"));
-		assertEquals("project = TEST AND " + JiraFilter.ALLISSUES.getJqlString(),
-				JiraFilter.getQueryForFilter("-4", "TEST"));
+		assertEquals(JiraFilter.ALLISSUES.getJqlString(), JiraFilter.getQueryForFilter("allissues"));
+		assertEquals(JiraFilter.ALLISSUES.getJqlString(), JiraFilter.getQueryForFilter("-4"));
 	}
 
 	@Test

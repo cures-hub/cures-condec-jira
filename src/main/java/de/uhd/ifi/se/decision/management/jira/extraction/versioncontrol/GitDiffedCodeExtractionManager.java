@@ -133,7 +133,7 @@ public class GitDiffedCodeExtractionManager {
 									n.setType(d.getType());
 
 									String newKey = newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
-											+ String.valueOf(dEntry.getValue().sequence)
+											+ dEntry.getValue().sequence
 											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
 											+ editListEntry.getKey().toString()
 											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + d.getKey();
@@ -152,7 +152,7 @@ public class GitDiffedCodeExtractionManager {
 									n.setType(d.getType());
 
 									String newKey = newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
-											+ String.valueOf(dEntry.getValue().sequence)
+											+ dEntry.getValue().sequence
 											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + GitDecXtract.RAT_KEY_NOEDIT
 											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + d.getKey();
 

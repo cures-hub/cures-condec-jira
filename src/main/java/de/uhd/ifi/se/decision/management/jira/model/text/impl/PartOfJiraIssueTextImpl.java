@@ -1,6 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.model.text.impl;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -8,15 +12,15 @@ import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
+import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Model class for textual parts (substrings) of JIRA issue comments or the
@@ -34,24 +38,29 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 		this.documentationLocation = DocumentationLocation.JIRAISSUETEXT;
 	}
 
-	public PartOfJiraIssueTextImpl(Comment comment) {
-		this();
-		if (comment == null) {
-			return;
-		}
-		this.setCommentId(comment.getId());
-		this.setJiraIssueId(comment.getIssue().getId());
-		this.setCreated(comment.getCreated());
-	}
-
 	public PartOfJiraIssueTextImpl(PartOfText partOfText, Comment comment) {
-		this(comment);
+		this();
+		if (comment != null) {
+			this.setCommentId(comment.getId());
+			this.setJiraIssueId(comment.getIssue().getId());
+			this.setCreated(comment.getCreated());
+		}
 		this.setEndPosition(partOfText.getEndPosition());
 		this.setStartPosition(partOfText.getStartPosition());
 		this.setRelevant(partOfText.isRelevant());
 		this.setValidated(partOfText.isValidated());
 		this.setType(partOfText.getType());
 		this.setProject(partOfText.getProject());
+	}
+
+	public PartOfJiraIssueTextImpl(Comment comment) {
+		this(getFirstPartOfTextInComment(comment), comment);
+	}
+
+	private static PartOfText getFirstPartOfTextInComment(Comment comment) {
+		String projectKey = comment.getIssue().getProjectObject().getKey();
+		List<PartOfText> partsOfText = new TextSplitterImpl().getPartsOfText(comment.getBody(), projectKey);
+		return partsOfText.get(0);
 	}
 
 	public PartOfJiraIssueTextImpl(PartOfText partOfText, Issue jiraIssue) {
@@ -68,7 +77,7 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 	}
 
 	public PartOfJiraIssueTextImpl(long id, int endSubstringCount, int startSubstringCount, boolean isValidated,
-								   boolean isRelevant, String projectKey, long commentId, long issueId, String type) {
+			boolean isRelevant, String projectKey, long commentId, long issueId, String type) {
 		this();
 		this.setId(id);
 		this.setEndPosition(endSubstringCount);
@@ -88,7 +97,9 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 		Comment comment = this.getComment();
 		if (comment == null) {
 			text = getJiraIssueDescription();
-			this.setCreated(issue.getCreated());
+			if (issue != null) {
+				this.setCreated(issue.getCreated());
+			}
 		} else {
 			text = comment.getBody();
 			this.setCreated(comment.getCreated());
@@ -108,6 +119,14 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 		this.setDescription(text);
 		this.setPlainText(!containsExcludedTag(text));
 		stripTagsFromBody(text);
+	}
+
+	public PartOfJiraIssueTextImpl(DecisionKnowledgeElement element) {
+		this.setId(element.getId());
+		this.setType(element.getType());
+		this.setSummary(element.getSummary());
+		this.setDescription(element.getDescription());
+		this.setProject(element.getProject());
 	}
 
 	private boolean containsExcludedTag(String body) {
@@ -185,5 +204,15 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 			return super.getSummary();
 		}
 		return issue.getDescription();
+	}
+
+	@Override
+	public ApplicationUser getCreator() {
+		Comment comment = this.getComment();
+		if (comment == null) {
+			Issue issue = this.getJiraIssue();
+			return issue.getReporter();
+		}
+		return comment.getAuthorApplicationUser();
 	}
 }

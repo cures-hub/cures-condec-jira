@@ -1,9 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.view.matrix;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Graph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.*;
@@ -49,6 +48,7 @@ public class Matrix {
         var allEntries = this.getMatrixEntries(projectKey, allDecisions);
 
         for (DecisionKnowledgeElement decision : allDecisions) {
+<<<<<<< HEAD
             List<String> row = new ArrayList<>();
 
             for (Map.Entry<Long, String> headerRowDecision : this.getHeaders().entrySet()) {
@@ -92,16 +92,20 @@ public class Matrix {
             if (entry.getIdOfSourceElement().equals(decision.getId())) {
                 entriesForRow.put(entry.getIdOfDestinationElement(), entry.getColor());
             }
+=======
+            List<String> row = new MatrixRow(this.getMatrixEntries(projectKey), this.getMatrixHeaderRow(), decision).getRow();
+            this.matrixData.put(decision.getId(), row);
+>>>>>>> 8a18785be7cd6a21800294aae1aa14d2b22462ee
         }
         return entriesForRow;
     }
 
-    private HashSet<MatrixEntry> getMatrixEntries(String projectKey, List<DecisionKnowledgeElement> allDecisions) {
-        Graph graph = new GraphImpl(projectKey);
-        List<Link> links = graph.getAllLinks(allDecisions);
+    private HashSet<MatrixEntry> getMatrixEntries(String projectKey) {
+        KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
+        Set<Link> links = graph.edgeSet();
         HashSet<MatrixEntry> entries = new HashSet<>();
         for (Link link : links) {
-            entries.add(new MatrixEntry(link.getSourceElement().getId(), link.getDestinationElement().getId(), link.getType()));
+            entries.add(new MatrixEntry(link.getSource().getId(), link.getTarget().getId(), link.getType()));
         }
         return entries;
     }

@@ -27,7 +27,7 @@ public interface GitClient {
 	 * @pro The Git integration for JIRA plug-in clones its repos to a similar
 	 *      folder: JIRAHome/data/git-plugin.
 	 */
-	public static final String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
+    String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
 			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "git" + File.separator;
 
 	/**
@@ -183,7 +183,7 @@ public interface GitClient {
 	 *            JIRA issue. Its key is searched for in commit messages.
 	 * @return number of commits with the JIRA issue key in their commit message.
 	 */
-	public int getNumberOfCommits(Issue jiraIssue);
+	int getNumberOfCommits(Issue jiraIssue);
 
 	/**
 	 * Retrieves the JIRA issue key from a commit message.
@@ -210,7 +210,7 @@ public interface GitClient {
 	 * 
 	 * @return git object.
 	 */
-	public Git getGit();
+	Git getGit();
 
 	/**
 	 * Sets the git object.
@@ -218,5 +218,5 @@ public interface GitClient {
 	 * @param git
 	 *            object.
 	 */
-	public void setGit(Git git);
+	void setGit(Git git);
 }

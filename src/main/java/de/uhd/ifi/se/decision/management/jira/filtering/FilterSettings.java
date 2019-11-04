@@ -11,10 +11,10 @@ import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 
 /**
- * Interface for the filter settings. The filter settings cover the key of the
- * selected project, the time frame, documentation locations, JIRA issue types,
+ * Interface for the filter criteria. The filter settings cover the key of the
+ * selected project, the time frame, documentation locations, Jira issue types,
  * and decision knowledge types. The search string can contain a JQL, a filter
- * or a search string form the frontend.
+ * or a search string specified in the frontend of the plug-in.
  */
 @JsonDeserialize(as = FilterSettingsImpl.class)
 public interface FilterSettings {

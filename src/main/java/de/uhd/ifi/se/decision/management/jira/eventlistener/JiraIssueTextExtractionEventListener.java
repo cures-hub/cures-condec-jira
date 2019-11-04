@@ -16,22 +16,37 @@ import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.util.collect.MapBuilder;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationManagerForJiraIssueComments;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 
 /**
  * Triggers the extraction of decision knowledge elements and their integration
  * in the knowledge graph when the user changes either a comment or the
- * description of a JIRA issue.
+ * description of a Jira issue.
  */
 public class JiraIssueTextExtractionEventListener {
 
 	private String projectKey;
 	private IssueEvent issueEvent;
+	private ClassificationManagerForJiraIssueComments classificationManagerForJiraIssueComments;
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextExtractionEventListener.class);
+
+	public JiraIssueTextExtractionEventListener(
+			ClassificationManagerForJiraIssueComments classificationManagerForJiraIssueComments) {
+		this.classificationManagerForJiraIssueComments = classificationManagerForJiraIssueComments;
+	}
+
+	public JiraIssueTextExtractionEventListener() {
+		this.classificationManagerForJiraIssueComments = new ClassificationManagerForJiraIssueComments();
+
+	}
 
 	/**
 	 * Locks the edit comment event function if a REST service edits comments.
@@ -48,6 +63,11 @@ public class JiraIssueTextExtractionEventListener {
 		}
 
 		long eventTypeId = issueEvent.getEventTypeId();
+		// @issue How to implement multiple checks of the event ID?
+		// @decision Use ifs only!
+		// @pro switch-case not trivial to implement,
+		// because the switch can not be a long variable.
+		// casting from long to int is dangerous.
 		if (eventTypeId == EventType.ISSUE_COMMENTED_ID) {
 			handleNewComment();
 		}
@@ -87,23 +107,26 @@ public class JiraIssueTextExtractionEventListener {
 
 	private void handleDeleteIssue() {
 		JiraIssueTextPersistenceManager.cleanSentenceDatabase(projectKey);
-		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issueEvent.getIssue());
+		KnowledgeGraph.getOrCreate(element.getProject().getProjectKey()).removeVertex(element);
+		// JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 
 	private void handleDeleteComment() {
-		JiraIssueTextPersistenceManager.cleanSentenceDatabase(this.projectKey);
-		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+		JiraIssueTextPersistenceManager.cleanSentenceDatabase(projectKey);
+		// JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 
 	private void handleNewComment() {
 		parseIconsToTags();
-		if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
-			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
+		if (ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey)) {
+			this.classificationManagerForJiraIssueComments.classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
 		} else {
 			MutableComment comment = (MutableComment) issueEvent.getComment();
 			JiraIssueTextPersistenceManager.getPartsOfComment(comment);
 		}
-		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+		// JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+
 	}
 
 	private void handleEditComment() {
@@ -116,14 +139,17 @@ public class JiraIssueTextExtractionEventListener {
 
 		parseIconsToTags();
 
-		if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
-			JiraIssueTextPersistenceManager.deletePartsOfComment(issueEvent.getComment());
-			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
+
+		if (ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey)) {
+			persistenceManager.deleteElementsInComment(issueEvent.getComment());
+			this.classificationManagerForJiraIssueComments.classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
 		} else {
 			MutableComment comment = (MutableComment) issueEvent.getComment();
 			JiraIssueTextPersistenceManager.updateComment(comment);
 		}
-		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue().getId());
 	}
 
 	private void handleUpdateDescription() {
@@ -136,13 +162,16 @@ public class JiraIssueTextExtractionEventListener {
 
 		parseIconsToTags();
 
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
+
 		if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
-			JiraIssueTextPersistenceManager.deletePartsOfDescription(issueEvent.getIssue());
-			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
+			persistenceManager.deleteElementsInDescription(issueEvent.getIssue());
+			this.classificationManagerForJiraIssueComments.classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
 		} else {
 			JiraIssueTextPersistenceManager.updateDescription(issueEvent.getIssue());
 		}
-		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue().getId());
 	}
 
 	public Map<String, String> getChangedString(IssueEvent issueEvent) {

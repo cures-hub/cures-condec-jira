@@ -16,9 +16,11 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationTrainer;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.ClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassificationTrainer;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
@@ -52,13 +54,20 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		if (request == null) {
 			return new ConcurrentHashMap<String, Object>();
 		}
+		KnowledgeGraph.instances.clear();
+
 		String projectKey = request.getParameter("projectKey");
 		DecisionKnowledgeProject decisionKnowledgeProject = new DecisionKnowledgeProjectImpl(projectKey);
 
 		Set<String> issueTypes = getJiraIssueTypeNames(projectKey);
 
-		ClassificationTrainer.copyDefaultTrainingDataToFile(ClassificationTrainer.DEFAULT_TRAINING_DATA);
-		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
+		// TODO -- Start
+		// TODO: check if directory exists (last folder) and create it if not!
+		ClassificationTrainer.copyDefaultTrainingDataToFile();
+		Preprocessor.copyDefaultPreprocessingDataToFile();
+		// TODO -- End
+
+		ClassificationTrainer trainer = new OnlineClassificationTrainerImpl(projectKey);
 
 		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
 		velocityParameters.put("projectKey", projectKey);
@@ -67,15 +76,18 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("imageFolderUrl", ComponentGetter.getUrlOfImageFolder());
 		velocityParameters.put("requestUrl", request.getRequestURL());
 		velocityParameters.put("rootTypes", ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
-		velocityParameters.put("arffFiles", trainer.getArffFileNames());
+		velocityParameters.put("arffFiles", trainer.getTrainingFileNames());
 		velocityParameters.put("selectedArffFile", ConfigPersistenceManager.getArffFileForClassifier(projectKey));
-		velocityParameters.put("releaseNoteMapping_improvements",ConfigPersistenceManager.getReleaseNoteMapping(projectKey, ReleaseNoteCategory.IMPROVEMENTS));
-		velocityParameters.put("releaseNoteMapping_bug_fixes",ConfigPersistenceManager.getReleaseNoteMapping(projectKey, ReleaseNoteCategory.BUG_FIXES));
-		velocityParameters.put("releaseNoteMapping_new_features",ConfigPersistenceManager.getReleaseNoteMapping(projectKey, ReleaseNoteCategory.NEW_FEATURES));
+		velocityParameters.put("releaseNoteMapping_improvements",
+				ConfigPersistenceManager.getReleaseNoteMapping(projectKey, ReleaseNoteCategory.IMPROVEMENTS));
+		velocityParameters.put("releaseNoteMapping_bug_fixes",
+				ConfigPersistenceManager.getReleaseNoteMapping(projectKey, ReleaseNoteCategory.BUG_FIXES));
+		velocityParameters.put("releaseNoteMapping_new_features",
+				ConfigPersistenceManager.getReleaseNoteMapping(projectKey, ReleaseNoteCategory.NEW_FEATURES));
 
 		return velocityParameters;
 	}
-	
+
 	private Set<String> getJiraIssueTypeNames(String projectKey) {
 		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);

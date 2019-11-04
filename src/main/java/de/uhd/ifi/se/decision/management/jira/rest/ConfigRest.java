@@ -1,7 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -12,7 +16,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,19 +29,20 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 import com.google.common.collect.ImmutableMap;
+
+import de.uhd.ifi.se.decision.management.jira.classification.ClassificationTrainer;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
-import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationManagerForJiraIssueComments;
-import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationTrainer;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.ClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
-
-import java.util.*;
 
 /**
  * REST resource for plug-in configuration
@@ -50,7 +54,7 @@ public class ConfigRest {
 	@Path("/setActivated")
 	@POST
 	public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-								 @QueryParam("isActivated") String isActivatedString) {
+			@QueryParam("isActivated") String isActivatedString) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -90,7 +94,7 @@ public class ConfigRest {
 	@Path("/setIssueStrategy")
 	@POST
 	public Response setIssueStrategy(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-									 @QueryParam("isIssueStrategy") String isIssueStrategyString) {
+			@QueryParam("isIssueStrategy") String isIssueStrategyString) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -126,8 +130,8 @@ public class ConfigRest {
 	@Path("/setKnowledgeExtractedFromGit")
 	@POST
 	public Response setKnowledgeExtractedFromGit(@Context HttpServletRequest request,
-												 @QueryParam("projectKey") String projectKey,
-												 @QueryParam("isKnowledgeExtractedFromGit") String isKnowledgeExtractedFromGit) {
+			@QueryParam("projectKey") String projectKey,
+			@QueryParam("isKnowledgeExtractedFromGit") String isKnowledgeExtractedFromGit) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -149,7 +153,7 @@ public class ConfigRest {
 	@Path("/setGitUri")
 	@POST
 	public Response setGitUri(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-							  @QueryParam("gitUri") String gitUri) {
+			@QueryParam("gitUri") String gitUri) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -165,8 +169,8 @@ public class ConfigRest {
 	@Path("/setKnowledgeExtractedFromIssues")
 	@POST
 	public Response setKnowledgeExtractedFromIssues(@Context HttpServletRequest request,
-													@QueryParam("projectKey") String projectKey,
-													@QueryParam("isKnowledgeExtractedFromIssues") String isKnowledgeExtractedFromIssues) {
+			@QueryParam("projectKey") String projectKey,
+			@QueryParam("isKnowledgeExtractedFromIssues") String isKnowledgeExtractedFromIssues) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -180,7 +184,8 @@ public class ConfigRest {
 					Boolean.valueOf(isKnowledgeExtractedFromIssues));
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error("Failed to enable or disable the extraction of knowledge from JIRA issues. Message: " +  e.getMessage());
+			LOGGER.error("Failed to enable or disable the extraction of knowledge from JIRA issues. Message: "
+					+ e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -188,7 +193,7 @@ public class ConfigRest {
 	@Path("/isKnowledgeTypeEnabled")
 	@GET
 	public Response isKnowledgeTypeEnabled(@QueryParam("projectKey") final String projectKey,
-										   @QueryParam("knowledgeType") String knowledgeType) {
+			@QueryParam("knowledgeType") String knowledgeType) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -200,9 +205,9 @@ public class ConfigRest {
 	@Path("/setKnowledgeTypeEnabled")
 	@POST
 	public Response setKnowledgeTypeEnabled(@Context HttpServletRequest request,
-											@QueryParam("projectKey") String projectKey,
-											@QueryParam("isKnowledgeTypeEnabled") String isKnowledgeTypeEnabledString,
-											@QueryParam("knowledgeType") String knowledgeType) {
+			@QueryParam("projectKey") String projectKey,
+			@QueryParam("isKnowledgeTypeEnabled") String isKnowledgeTypeEnabledString,
+			@QueryParam("knowledgeType") String knowledgeType) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -263,8 +268,8 @@ public class ConfigRest {
 	@Path("/setWebhookEnabled")
 	@POST
 	public Response setWebhookEnabled(@Context HttpServletRequest request,
-									  @QueryParam("projectKey") final String projectKey,
-									  @QueryParam("isActivated") final String isActivatedString) {
+			@QueryParam("projectKey") final String projectKey,
+			@QueryParam("isActivated") final String isActivatedString) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -286,8 +291,8 @@ public class ConfigRest {
 	@Path("/setWebhookData")
 	@POST
 	public Response setWebhookData(@Context HttpServletRequest request,
-								   @QueryParam("projectKey") final String projectKey, @QueryParam("webhookUrl") final String webhookUrl,
-								   @QueryParam("webhookSecret") final String webhookSecret) {
+			@QueryParam("projectKey") final String projectKey, @QueryParam("webhookUrl") final String webhookUrl,
+			@QueryParam("webhookSecret") final String webhookSecret) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -308,8 +313,8 @@ public class ConfigRest {
 	@Path("/setWebhookType")
 	@POST
 	public Response setWebhookType(@Context HttpServletRequest request,
-								   @QueryParam("projectKey") final String projectKey, @QueryParam("webhookType") final String webhookType,
-								   @QueryParam("isWebhookTypeEnabled") final boolean isWebhookTypeEnabled) {
+			@QueryParam("projectKey") final String projectKey, @QueryParam("webhookType") final String webhookType,
+			@QueryParam("isWebhookTypeEnabled") final boolean isWebhookTypeEnabled) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -325,10 +330,8 @@ public class ConfigRest {
 	@Path("/setReleaseNoteMapping")
 	@POST
 	public Response setReleaseNoteMapping(@Context HttpServletRequest request,
-										  @QueryParam("projectKey") final String projectKey,
-										  @QueryParam("releaseNoteCategory") final ReleaseNoteCategory category,
-										  List<String> selectedIssueNames
-	) {
+			@QueryParam("projectKey") final String projectKey,
+			@QueryParam("releaseNoteCategory") final ReleaseNoteCategory category, List<String> selectedIssueNames) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -344,16 +347,15 @@ public class ConfigRest {
 	@Path("/getReleaseNoteMapping")
 	@GET
 	public Response getReleaseNoteMapping(@Context HttpServletRequest request,
-										  @QueryParam("projectKey") final String projectKey
-	) {
+			@QueryParam("projectKey") final String projectKey) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
 		try {
-			HashMap<ReleaseNoteCategory,List<String>> mapping=new HashMap<>();
+			HashMap<ReleaseNoteCategory, List<String>> mapping = new HashMap<>();
 			ReleaseNoteCategory.toOriginalList().forEach(category -> {
-				mapping.put(category,ConfigPersistenceManager.getReleaseNoteMapping(projectKey,category));
+				mapping.put(category, ConfigPersistenceManager.getReleaseNoteMapping(projectKey, category));
 			});
 			return Response.ok(mapping).build();
 		} catch (Exception e) {
@@ -364,11 +366,15 @@ public class ConfigRest {
 	@Path("/clearSentenceDatabase")
 	@POST
 	public Response clearSentenceDatabase(@Context HttpServletRequest request,
-										  @QueryParam("projectKey") final String projectKey) {
+			@QueryParam("projectKey") final String projectKey) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
+
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
+
 		try {
 			// Deletion is only useful during development, do not ship to enduser!!
 			// ActiveObjectsManager.clearSentenceDatabaseForProject(projectKey);
@@ -377,7 +383,7 @@ public class ConfigRest {
 			// If some links ar bad, delete those links
 			GenericLinkManager.clearInvalidLinks();
 			// If there are now some "lonely" sentences, link them to their issues.
-			JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForProject(projectKey);
+			persistenceManager.createLinksForNonLinkedElements();
 			//
 			JiraIssueTextPersistenceManager.migrateArgumentTypesInLinks(projectKey);
 			return Response.ok(Status.ACCEPTED).build();
@@ -390,7 +396,7 @@ public class ConfigRest {
 	@Path("/classifyWholeProject")
 	@POST
 	public Response classifyWholeProject(@Context HttpServletRequest request,
-										 @QueryParam("projectKey") final String projectKey) {
+			@QueryParam("projectKey") final String projectKey) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -423,7 +429,7 @@ public class ConfigRest {
 	@Path("/trainClassifier")
 	@POST
 	public Response trainClassifier(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-									@QueryParam("arffFileName") String arffFileName) {
+			@QueryParam("arffFileName") String arffFileName) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -433,25 +439,54 @@ public class ConfigRest {
 					"The classifier could not be trained since the ARFF file name is invalid.")).build();
 		}
 		ConfigPersistenceManager.setArffFileForClassifier(projectKey, arffFileName);
-		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey, arffFileName);
+		ClassificationTrainer trainer = new OnlineClassificationTrainerImpl(projectKey, arffFileName);
 		boolean isTrained = trainer.train();
 		if (isTrained) {
 			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
 		}
-		return Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error", "The classifier could not be trained due to an internal server error.")).build();
+		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(
+				ImmutableMap.of("error", "The classifier could not be trained due to an internal server error."))
+				.build();
+	}
+
+	@Path("/evaluateModel")
+	@POST
+	public Response evaluateModel(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+
+		OnlineClassificationTrainerImpl trainer = new OnlineClassificationTrainerImpl(projectKey);
+
+		try {
+			Map<String, Double> evaluationResults = trainer.evaluateClassifier();
+
+			StringBuilder prettyMapOutput = new StringBuilder();
+			prettyMapOutput.append("{" + System.lineSeparator());
+			for (Map.Entry<String, Double> e : evaluationResults.entrySet()) {
+				prettyMapOutput.append("\"" + e.getKey() + "\" : \"" + e.getValue() + "\"," + System.lineSeparator());
+			}
+			prettyMapOutput.append("}");
+
+			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("content", prettyMapOutput.toString())).build();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", e.getMessage()))
+					.build();
+		}
 	}
 
 	@Path("/saveArffFile")
 	@POST
 	public Response saveArffFile(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-								 @QueryParam("useOnlyValidatedData") boolean useOnlyValidatedData) {
+			@QueryParam("useOnlyValidatedData") boolean useOnlyValidatedData) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
-		File arffFile = trainer.saveArffFile(useOnlyValidatedData);
+		OnlineClassificationTrainerImpl trainer = new OnlineClassificationTrainerImpl(projectKey);
+		File arffFile = trainer.saveTrainingFile(useOnlyValidatedData);
 
 		if (arffFile != null) {
 			return Response.ok(Status.ACCEPTED).entity(
@@ -466,7 +501,7 @@ public class ConfigRest {
 	@Path("/setIconParsing")
 	@POST
 	public Response setIconParsing(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-								   @QueryParam("isActivatedString") String isActivatedString) {
+			@QueryParam("isActivatedString") String isActivatedString) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -487,8 +522,8 @@ public class ConfigRest {
 	@Path("/setUseClassifierForIssueComments")
 	@POST
 	public Response setUseClassifierForIssueComments(@Context HttpServletRequest request,
-													 @QueryParam("projectKey") String projectKey,
-													 @QueryParam("isClassifierUsedForIssues") String isActivatedString) {
+			@QueryParam("projectKey") String projectKey,
+			@QueryParam("isClassifierUsedForIssues") String isActivatedString) {
 		System.out.println(isActivatedString);
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
@@ -499,7 +534,7 @@ public class ConfigRest {
 		}
 		try {
 			boolean isActivated = Boolean.valueOf(isActivatedString);
-			ConfigPersistenceManager.setUseClassiferForIssueComments(projectKey, isActivated);
+			ConfigPersistenceManager.setUseClassifierForIssueComments(projectKey, isActivated);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error("Failed to enable or disable the classifier for JIRA issue text. Message: " + e.getMessage());

@@ -7,9 +7,9 @@ import java.util.Set;
 import javax.xml.bind.annotation.XmlElement;
 
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 public class VisTimeLine {
 
@@ -23,11 +23,7 @@ public class VisTimeLine {
 
 	public VisTimeLine(String projectKey) {
 		if (projectKey != null) {
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
-			elementList = strategy.getDecisionKnowledgeElements();
-			AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
-					projectKey);
-			elementList.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
+			elementList = KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
 		}
 		createDataSet();
 	}
@@ -47,7 +43,6 @@ public class VisTimeLine {
 		return elementList;
 	}
 
-
 	public void setElementList(List<DecisionKnowledgeElement> elementList) {
 		this.elementList = elementList;
 	}
@@ -63,14 +58,14 @@ public class VisTimeLine {
 	private void createDataSet() {
 		dataSet = new HashSet<>();
 		groupSet = new HashSet<>();
-		if(elementList != null) {
+		if (elementList != null) {
 			Set<Long> usedApplicationUser = new HashSet<Long>();
 			for (DecisionKnowledgeElement element : elementList) {
-				AbstractPersistenceManager manager =
-						AbstractPersistenceManager.getPersistenceManager(element.getProject().getProjectKey(),
-								element.getDocumentationLocation());
-				ApplicationUser user = manager.getCreator(element);
-				if(!usedApplicationUser.contains(user.getId())){
+				ApplicationUser user = element.getCreator();
+				if (user == null) {
+					continue;
+				}
+				if (!usedApplicationUser.contains(user.getId())) {
 					usedApplicationUser.add(user.getId());
 					groupSet.add(new VisTimeLineGroup(user));
 				}

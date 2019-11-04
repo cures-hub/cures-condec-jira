@@ -51,21 +51,30 @@ public class JiraQueryHandlerImpl implements JiraQueryHandler {
 		switch (queryType) {
 		case FILTER:
 			finalQuery = finalQuery.substring(8, finalQuery.length());
-			return JiraFilter.getQueryForFilter(finalQuery, projectKey);
+			finalQuery = JiraFilter.getQueryForFilter(finalQuery);
+			break;
 		case JQL:
 			finalQuery = finalQuery.substring(5, finalQuery.length());
-			return cleanDirtyJqlString(finalQuery);
+			finalQuery = cleanDirtyJqlString(finalQuery);
+			break;
 		default:
-			return "type = null";
+			finalQuery = "type = null";
+			break;
 		}
+		finalQuery = appendProjectKey(finalQuery);
+		return finalQuery;
 	}
 
-	private String cleanDirtyJqlString(String jql) {
-		return jql.replaceAll("%20", " ").replaceAll("%3D", "=").replaceAll("%2C", ",");
+	private String appendProjectKey(String query) {
+		if (query.contains("project") || projectKey == null || projectKey.isBlank()) {
+			return query;
+		}
+		return query + " AND project = " + projectKey;
 	}
 
 	/**
-	 * The searchTerm might start with "abc§" but should start with "?".
+	 * The searchTerm might start with "abc§" but should start with "?". This method
+	 * replaces "abc§" with "?".
 	 */
 	private String getRawQuery(String searchString) {
 		if (searchString == null || searchString.isEmpty()) {
@@ -77,6 +86,10 @@ public class JiraQueryHandlerImpl implements JiraQueryHandler {
 			croppedQuery = "?" + split[1];
 		}
 		return croppedQuery;
+	}
+
+	private String cleanDirtyJqlString(String jql) {
+		return jql.replaceAll("%20", " ").replaceAll("%3D", "=").replaceAll("%2C", ",");
 	}
 
 	@Override

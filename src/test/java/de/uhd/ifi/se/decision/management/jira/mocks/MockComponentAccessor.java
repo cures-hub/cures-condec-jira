@@ -46,7 +46,7 @@ public class MockComponentAccessor extends ComponentAccessor {
 		IssueManager issueManager = initIssueManager();
 
 		new MockComponentWorker().init().addMock(IssueManager.class, issueManager)
-				.addMock(IssueLinkManager.class, new MockIssueLinkManager())
+				.addMock(IssueLinkManager.class, initIssueLinkManager())
 				.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager())
 				.addMock(IssueService.class, new MockIssueService()).addMock(ProjectManager.class, projectManager)
 				.addMock(UserManager.class, userManager).addMock(ConstantsManager.class, constantsManager)
@@ -98,5 +98,10 @@ public class MockComponentAccessor extends ComponentAccessor {
 			issueManager.addIssue(jiraIssue);
 		}
 		return issueManager;
+	}
+
+	public IssueLinkManager initIssueLinkManager() {
+		MockIssueLinkManager issueLinkManager = new MockIssueLinkManager();
+		return issueLinkManager;
 	}
 }

@@ -1,11 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.tables;
 
+import java.sql.SQLException;
+
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
 import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
-
-import java.sql.SQLException;
 
 @Table("CondecStatus")
 public interface KnowledgeStatusInDatabase extends RawEntity<Integer> {

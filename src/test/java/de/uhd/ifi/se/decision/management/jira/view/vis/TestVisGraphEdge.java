@@ -38,9 +38,7 @@ public class TestVisGraphEdge extends TestSetUp {
 		to.setSummary("TESTfwf");
 		to.setDocumentationLocation("i");
 
-		link = new LinkImpl();
-		link.setSourceElement(from);
-		link.setDestinationElement(to);
+		link = new LinkImpl(from , to);
 		link.setType("test");
 		link.setId(1);
 	}
@@ -70,8 +68,8 @@ public class TestVisGraphEdge extends TestSetUp {
 	@NonTransactional
 	public void testFrom() {
 		edge = new VisEdge(link);
-		String expected = link.getSourceElement().getId() + "_"
-				+ link.getSourceElement().getDocumentationLocationAsString();
+		String expected = link.getSource().getId() + "_"
+				+ link.getSource().getDocumentationLocationAsString();
 		assertEquals(expected, edge.getFrom());
 	}
 
@@ -79,8 +77,8 @@ public class TestVisGraphEdge extends TestSetUp {
 	@NonTransactional
 	public void testTo() {
 		edge = new VisEdge(link);
-		String expected = link.getDestinationElement().getId() + "_"
-				+ link.getDestinationElement().getDocumentationLocationAsString();
+		String expected = link.getTarget().getId() + "_"
+				+ link.getTarget().getDocumentationLocationAsString();
 		assertEquals(expected, edge.getTo());
 	}
 }
