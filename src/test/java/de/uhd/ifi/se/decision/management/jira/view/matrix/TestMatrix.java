@@ -20,14 +20,11 @@ public class TestMatrix extends TestSetUp {
 		init();
 		List<DecisionKnowledgeElement> decisions = new ArrayList<>();
 
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		element.setId(1);
-		element.setKey("Test-1");
-		element.setType("Decision");
-		element.setProject("TEST");
-		element.setSummary("TESTfwf");
-		element.setDocumentationLocation("i");
-		decisions.add(element);
+		DecisionKnowledgeElement element_1 = new DecisionKnowledgeElementImpl((long) 1, "TESTfwf", "", "Decision", "TEST", "Test-1", "i");
+		decisions.add(element_1);
+
+		DecisionKnowledgeElement element_2 = new DecisionKnowledgeElementImpl((long) 2, "TESTfwfw", "", "Decision", "TEST", "Test-1", "i");
+		decisions.add(element_2);
 
 		matrix = new Matrix("Test", decisions);
 
@@ -52,12 +49,18 @@ public class TestMatrix extends TestSetUp {
 	@Test
 	public void testGetData() {
 		assertTrue(this.matrix.getData().containsKey((long) 1));
-		assertEquals(1, this.matrix.getData().size());
+		assertEquals(2, this.matrix.getData().size());
+	}
+
+	@Test
+	public void testGetDataArray() {
+		assertEquals(2, this.matrix.getDataArray().size());
 	}
 
 	@Test
 	public void testGetDataEntries() {
 		assertTrue(this.matrix.getData().get((long) 1).contains("LightGray"));
+		assertTrue(this.matrix.getData().get((long) 1).contains("White"));
 	}
 
 
