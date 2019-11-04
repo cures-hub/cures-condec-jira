@@ -247,9 +247,7 @@ public class FilterExtractorImpl implements FilterExtractor {
 			List<Link> links = element.getInwardLinks();
 			links.addAll(element.getOutwardLinks());
 			if (links.size() == 0) {
-				if (filterSettings.getNamesOfSelectedLinkTypes().size() == filterSettings.getAllLinkTypes().size()) {
-					filteredElements.add(element);
-				}
+				filteredElements.add(element);
 			} else {
 				for (Link link : links) {
 					if (filterSettings.getNamesOfSelectedLinkTypes().contains(link.getType())) {
