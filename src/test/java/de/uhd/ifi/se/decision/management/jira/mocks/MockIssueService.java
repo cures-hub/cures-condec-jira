@@ -24,6 +24,8 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 /**
  * @issue What is the difference between the IssueManager and the IssueService?
  *        Do we really need both?
+ * @decision we need both
+ * @pro the issueService only can create new thinks. the manger only manages existing elements and can't change them.
  */
 public class MockIssueService implements IssueService {
 
@@ -65,7 +67,7 @@ public class MockIssueService implements IssueService {
 
 	@Override
 	public IssueResult getIssue(ApplicationUser user, Long issueId) {
-		MutableIssue issue = JiraIssues.getTestJiraIssues().stream().filter(jiraIssue -> issueId == jiraIssue.getId())
+		MutableIssue issue = JiraIssues.getTestJiraIssues().stream().filter(jiraIssue -> issueId.longValue() == jiraIssue.getId())
 				.findFirst().orElse(new MockIssue(issueId));
 		IssueResult result = new IssueResult(issue);
 		if (user == null || JiraUsers.valueOf(user) == JiraUsers.BLACK_HEAD) {

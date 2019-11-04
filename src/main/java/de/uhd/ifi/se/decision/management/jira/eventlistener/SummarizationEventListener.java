@@ -14,8 +14,8 @@ import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
- * Triggers the code summarization when JIRA issues are closed. Then, the
- * summary is written into a new comment of the JIRA issue.
+ * Triggers the code summarization when Jira issues are closed. Then, the
+ * summary is written into a new comment of the Jira issue.
  */
 public class SummarizationEventListener {
 

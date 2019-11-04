@@ -130,7 +130,7 @@ public class TestSettingsOfAllProjects {
 
 	@Test
 	public void testGetTemplatePath() {
-		assertEquals("templates/settingsForAllProjects.vm", servlet.getTemplatePath());
+		assertEquals("templates/settings/settingsForAllProjects.vm", servlet.getTemplatePath());
 	}
 
 	@Test

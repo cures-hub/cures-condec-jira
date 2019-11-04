@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.model.impl;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -13,26 +12,25 @@ import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
+import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
 
 /**
  * Model class for decision knowledge elements
  */
-public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
+public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKnowledgeElement {
 
-	private long id;
 	private String summary;
 	private String description;
 	protected KnowledgeType type;
-	protected DocumentationLocation documentationLocation;
-	private DecisionKnowledgeProject project;
 	private String key;
 	private Date created;
 	private Date closed;
@@ -54,6 +52,13 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 		this.documentationLocation = documentationLocation;
 	}
 
+	public DecisionKnowledgeElementImpl(long id, String projectKey, String documentationLocation) {
+		this.id = id;
+		this.project = new DecisionKnowledgeProjectImpl(projectKey);
+		this.documentationLocation = DocumentationLocation
+				.getDocumentationLocationFromIdentifier(documentationLocation);
+	}
+
 	public DecisionKnowledgeElementImpl(long id, String summary, String description, String type, String projectKey,
 			String key, String documentationLocation) {
 		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key,
@@ -70,8 +75,12 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 			this.id = issue.getId();
 			this.summary = issue.getSummary();
 			this.description = issue.getDescription();
-			this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
-			this.project = new DecisionKnowledgeProjectImpl(issue.getProjectObject().getKey());
+			if (issue.getIssueType() != null) {
+				this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
+			}
+			if (issue.getProjectObject() != null) {
+				this.project = new DecisionKnowledgeProjectImpl(issue.getProjectObject().getKey());
+			}
 			this.key = issue.getKey();
 			this.documentationLocation = DocumentationLocation.JIRAISSUE;
 			this.created = issue.getCreated();
@@ -193,7 +202,8 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 
 	@Override
 	public List<Link> getInwardLinks() {
-		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(this);
+		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
+				.getPersistenceManager(this);
 		return persistenceManager.getInwardLinks(this);
 	}
 
@@ -227,6 +237,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 				.getDocumentationLocationFromIdentifier(documentationLocation);
 	}
 
+	@Override
 	@XmlElement(name = "url")
 	public String getUrl() {
 		String key = this.getKey();
@@ -238,31 +249,10 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(id, summary);
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (object == null) {
-			return false;
-		}
-		if (object == this) {
-			return true;
-		}
-		if (!(object instanceof DecisionKnowledgeElement)) {
-			return false;
-		}
-		DecisionKnowledgeElement element = (DecisionKnowledgeElement) object;
-		return this.id == element.getId()
-		/* At least compare also the key, otherwise comparison will not work for
-		elements with same/not initialized ID.
-		 */
-				&& element.getKey().equals(getKey());
-	}
-
-	@Override
 	public Date getCreated() {
+		if (created == null) {
+			return new Date();
+		}
 		return this.created;
 	}
 
@@ -283,14 +273,34 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 
 	@Override
 	public boolean existsInDatabase() {
-		DecisionKnowledgeElement elementInDatabase = AbstractPersistenceManager.getDecisionKnowledgeElement(id,
-				documentationLocation);
-		return elementInDatabase.getId() > 0;
+		DecisionKnowledgeElement elementInDatabase = KnowledgePersistenceManager.getOrCreate("")
+				.getDecisionKnowledgeElement(id, documentationLocation);
+		return elementInDatabase != null && elementInDatabase.getId() > 0;
 	}
-	
+
+	@Override
+	public Issue getJiraIssue() {
+		if (getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
+			return ComponentAccessor.getIssueManager().getIssueObject(id);
+		}
+		return null;
+	}
+
 	@Override
 	public String toString() {
 		return this.getDescription();
 	}
 
+	@Override
+	public ApplicationUser getCreator() {
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(project.getProjectKey());
+		if (getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
+			return persistenceManager.getJiraIssueManager().getCreator(this);
+		}
+		if (getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
+			return persistenceManager.getJiraIssueTextManager().getCreator(this);
+		}
+		return null;
+	}
 }

@@ -1,5 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.quality;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.jgrapht.traverse.BreadthFirstIterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -11,22 +21,22 @@ import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitExtractor;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
-import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.*;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 
 public class CommonMetricCalculator {
 
@@ -35,7 +45,6 @@ public class CommonMetricCalculator {
 	private JiraIssueTextPersistenceManager persistenceManager;
 	private String jiraIssueTypeId;
 	private List<Issue> jiraIssues;
-	private int absolutDepth;
 	private final String dataStringSeparator = " ";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CommonMetricCalculator.class);
@@ -43,7 +52,7 @@ public class CommonMetricCalculator {
 	public CommonMetricCalculator(long projectId, ApplicationUser user, String jiraIssueTypeId) {
 		this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
 		this.user = user;
-		this.persistenceManager = new JiraIssueTextPersistenceManager(projectKey);
+		this.persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueTextManager();
 		this.jiraIssueTypeId = jiraIssueTypeId;
 		this.jiraIssues = getJiraIssuesForProject(projectId);
 	}
@@ -69,11 +78,14 @@ public class CommonMetricCalculator {
 		if (type == null) {
 			return new HashMap<String, Integer>();
 		}
+
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
+
 		Map<String, Integer> numberOfSentencesForJiraIssues = new HashMap<String, Integer>();
 		for (Issue jiraIssue : jiraIssues) {
 			int numberOfElements = 0;
-			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
-					.getElementsForIssue(jiraIssue.getId(), projectKey);
+			List<DecisionKnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(jiraIssue.getId());
 			for (DecisionKnowledgeElement element : elements) {
 				if (element.getType().equals(type)) {
 					numberOfElements++;
@@ -87,15 +99,14 @@ public class CommonMetricCalculator {
 	public Map<String, Integer> getNumberOfCommitsForJiraIssues() {
 		Map<String, Integer> resultMap = new HashMap<String, Integer>();
 		try {
-			GitExtractor gitExtractor = ComponentGetter.getGitExtractor(projectKey);
-			if (gitExtractor!=null) {
+			GitClient gitClient = ComponentGetter.getGitClient(projectKey);
+			if (gitClient != null) {
 				for (Issue jiraIssue : jiraIssues) {
-					int numberOfCommits = gitExtractor.getListOfCommitsForJiraIssue(jiraIssue).size();
+					int numberOfCommits = gitClient.getNumberOfCommits(jiraIssue);
 					resultMap.put(jiraIssue.getKey(), numberOfCommits);
 				}
 			}
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			LOGGER.error(ex.getMessage());
 		}
 		return resultMap;
@@ -171,23 +182,24 @@ public class CommonMetricCalculator {
 					}
 				}
 			}
-			if (numberObservedLinks>1) {
-				data[0] += issueKey+dataStringSeparator;
+			if (numberObservedLinks > 1) {
+				data[0] += issueKey + dataStringSeparator;
 			} else {
-				data[1] += issueKey+dataStringSeparator;
+				data[1] += issueKey + dataStringSeparator;
 			}
 		}
 
 		Map<String, String> havingManyLinksMap = new HashMap<String, String>();
 		havingManyLinksMap.put(linkFrom.toString() + " has more than one " + linkTo.toString(), data[0].trim());
-		havingManyLinksMap.put(linkFrom.toString() + " does not have more than one " + linkTo.toString(), data[1].trim());
+		havingManyLinksMap.put(linkFrom.toString() + " does not have more than one " + linkTo.toString(),
+				data[1].trim());
 
 		return havingManyLinksMap;
 	}
 
 	/* TODO: add tests */
-	public Map<String, String> getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(
-			KnowledgeType linkFrom, KnowledgeType linkTo) {
+	public Map<String, String> getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType linkFrom,
+			KnowledgeType linkTo) {
 		if (linkFrom == null || linkTo == null || linkFrom.equals(linkTo)) {
 			return new HashMap<String, String>();
 		}
@@ -210,9 +222,9 @@ public class CommonMetricCalculator {
 				}
 			}
 			if (hastOtherElementLinked) {
-				data[0] += issue.getKey()+dataStringSeparator;
+				data[0] += issue.getKey() + dataStringSeparator;
 			} else {
-				data[1] += issue.getKey()+dataStringSeparator;
+				data[1] += issue.getKey() + dataStringSeparator;
 			}
 		}
 
@@ -223,8 +235,10 @@ public class CommonMetricCalculator {
 		return havingLinkMap;
 	}
 
-	/* TODO: check why is only tested, never used
-	 * using CON and PRO arguments calculations separately */
+	/*
+	 * TODO: check why is only tested, never used using CON and PRO arguments
+	 * calculations separately
+	 */
 	public Map<String, String> getAlternativesHavingArguments() {
 		String alternativesHaveArgument = "";
 		String alternativesHaveNoArgument = "";
@@ -245,9 +259,9 @@ public class CommonMetricCalculator {
 				}
 			}
 			if (hasArgument) {
-				alternativesHaveArgument+=currentAlternative.getKey()+dataStringSeparator;
+				alternativesHaveArgument += currentAlternative.getKey() + dataStringSeparator;
 			} else {
-				alternativesHaveNoArgument+=currentAlternative.getKey()+dataStringSeparator;
+				alternativesHaveNoArgument += currentAlternative.getKey() + dataStringSeparator;
 
 			}
 		}
@@ -266,13 +280,32 @@ public class CommonMetricCalculator {
 
 		List<DecisionKnowledgeElement> listOfDecKnowElements = persistenceManager.getDecisionKnowledgeElements(type);
 		Integer i = 0;
-		for (DecisionKnowledgeElement currentElement : listOfDecKnowElements ) {
-			int depth = graphRecursionBot(currentElement);
+		for (DecisionKnowledgeElement currentElement : listOfDecKnowElements) {
+			int depth = getLinkDistanceFromSingleNode(currentElement);
 			i++;
-			linkDistances.put(String.valueOf(i)+currentElement.getKey(),depth);
+			linkDistances.put(String.valueOf(i) + currentElement.getKey(), depth);
 		}
 
 		return linkDistances;
+	}
+
+	private int getLinkDistanceFromSingleNode(DecisionKnowledgeElement dke) {
+		int absolutDepth = 0;
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
+		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<>(graph, dke);
+		Node parentNode = iterator.next();
+		int currentDepth = 0;
+		while (iterator.hasNext()) {
+			Node iterNode = iterator.next();
+			++currentDepth;
+			if (iterator.getParent(iterNode).equals(parentNode)) {
+				currentDepth = 1;
+			}
+			if (absolutDepth < currentDepth) {
+				absolutDepth = currentDepth;
+			}
+		}
+		return absolutDepth;
 	}
 
 	public Map<String, String> getLinksToIssueTypeMap(KnowledgeType knowledgeType) {
@@ -285,7 +318,7 @@ public class CommonMetricCalculator {
 		for (Issue issue : jiraIssues) {
 			boolean linkExisting = false;
 			if (!checkEqualIssueTypeIssue(issue.getIssueType())) {
-				//skipped+=issue.getKey()+dataStringSeparator;
+				// skipped+=issue.getKey()+dataStringSeparator;
 				continue;
 			}
 			for (Link link : GenericLinkManager.getLinksForElement(issue.getId(), DocumentationLocation.JIRAISSUE)) {
@@ -298,9 +331,9 @@ public class CommonMetricCalculator {
 			}
 
 			if (linkExisting) {
-				withLink+=issue.getKey()+dataStringSeparator;
+				withLink += issue.getKey() + dataStringSeparator;
 			} else {
-				withoutLink+=issue.getKey()+dataStringSeparator;
+				withoutLink += issue.getKey() + dataStringSeparator;
 			}
 		}
 
@@ -308,7 +341,8 @@ public class CommonMetricCalculator {
 
 		result.put("Links from " + jiraIssueTypeName + " to " + knowledgeType.toString(), withLink);
 		result.put("No links from " + jiraIssueTypeName + " to " + knowledgeType.toString(), withoutLink);
-		//result.put("Skipped issues not of target type " + jiraIssueTypeName, skipped);
+		// result.put("Skipped issues not of target type " + jiraIssueTypeName,
+		// skipped);
 		return result;
 	}
 
@@ -320,37 +354,4 @@ public class CommonMetricCalculator {
 		String jiraIssueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(jiraIssueTypeId);
 		return issueType2.getName().equalsIgnoreCase(jiraIssueTypeName);
 	}
-
-	private int graphRecursionBot(DecisionKnowledgeElement dke) {
-		this.absolutDepth = 0;
-		Graph graph = new GraphImpl(projectKey, dke.getKey());
-		this.createNodeStructure(dke, null, 100, 1, graph);
-		return absolutDepth;
-	}
-
-	private Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth,
-			Graph graph) {
-		if (element == null || element.getProject() == null || element.getType() == KnowledgeType.OTHER) {
-			return new Node();
-		}
-		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getAdjacentElementsAndLinks(element);
-		Node node;
-		if (link != null) {
-			node = new Node(element, link, false, false);
-		} else {
-			node = new Node(element, false, false);
-		}
-		List<Node> nodes = new ArrayList<Node>();
-		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-			Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
-					currentDepth + 1, graph);
-			if (absolutDepth < currentDepth) {
-				absolutDepth = currentDepth;
-			}
-			nodes.add(newChildNode);
-		}
-		node.setChildren(nodes);
-		return node;
-	}
-
 }

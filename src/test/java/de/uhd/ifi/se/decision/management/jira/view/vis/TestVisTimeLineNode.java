@@ -27,7 +27,8 @@ public class TestVisTimeLineNode extends TestSetUp {
 	private String createDateString(Date created) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(created);
-		int year = calendar.get(Calendar.YEAR) + 1900;
+		calendar.add(Calendar.MONTH, 1);
+		int year = calendar.get(Calendar.YEAR);
 		int month = calendar.get(Calendar.MONTH);
 		int day = calendar.get(Calendar.DAY_OF_MONTH);
 		return year + "-" + month + "-" + day;
@@ -79,7 +80,8 @@ public class TestVisTimeLineNode extends TestSetUp {
 
 	@Test
 	public void testGetContent() {
-		assertEquals(element.getKey(), timeNode.getContent());
+		assertEquals("<img src=" +'"' + element.getType().getIconUrl()+ '"' + "> " + element.getSummary(),
+				timeNode.getContent());
 	}
 
 	@Test
@@ -112,5 +114,28 @@ public class TestVisTimeLineNode extends TestSetUp {
 		closedString = createDateString(date);
 		timeNode.setEnd(closedString);
 		assertEquals(closedString, timeNode.getEnd());
+	}
+
+	@Test
+	public void testGetClassName() {
+		assertEquals(element.getTypeAsString().toLowerCase(), timeNode.getClassName());
+	}
+
+	@Test
+	public void testSetClassName() {
+		timeNode.setClassName("Test Class name");
+		assertEquals("Test Class name", timeNode.getClassName());
+	}
+
+	@Test
+	public void testGetAndSetGroup() {
+		timeNode.setGroup((long) 19012);
+		assertEquals(19012, timeNode.getGroup(), 0.0);
+	}
+
+	@Test
+	public void testGetAndSetTitle() {
+		timeNode.setTitle("TestTitle");
+		assertEquals("TestTitle", timeNode.getTitle());
 	}
 }

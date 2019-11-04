@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.Edit;
 import org.slf4j.Logger;
@@ -16,58 +17,45 @@ import de.uhd.ifi.se.decision.management.jira.extraction.CodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.JavaCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 /**
- * purpose: extract decision knowledge elements from files modified by a
- * sequence of commits.
+ * Extracts decision knowledge elements from files modified by a sequence of
+ * commits.
  *
  * Decision knowledge can be documented in code using following syntax inside a
- * source code comment: """
+ * source code comment:
  *
- * @decKnowledgeTag: knowledge summary text
+ * <p>
+ * <b>@decKnowledgeTag: knowledge summary text</b>
+ * <p>
+ * where [decKnowledgeTag] belongs to set of {@link KnowledgeType}s, for example
+ * issue, alternative, decision, pro, and con. Empty two lines denote the end of
+ * the decision knowledge element. The observation of another tag ends the
+ * element, too. Comment end ends also the decision knowledge element.
  *
- *                   knowledge description text after empty line
- *
- *
- *                   """
- *
- *                   where [decKnowledgeTag] belongs to set of
- *                   {@link KnowledgeType}s, for example issue, alternative,
- *                   decision etc. and where empty two lines denote the end of
- *                   the decision knowledge element. The observation of another
- *                   tag ends the element too. Comment end ends also the
- *                   decision knowledge element.
- *
- *                   This class will: 1) fetch with gitClient necessary files
- *                   from code repository, 2) delegate comment extraction to
- *                   specialized classes and 3) extract evolution of knowledge
- *                   elements in files.
+ * This class will: 1) fetch with gitClient necessary files from code
+ * repository, 2) delegate comment extraction to specialized classes, and 3)
+ * extract evolution of knowledge elements in files.
  */
 public class GitDiffedCodeExtractionManager {
 	private static final String OLD_FILE_SYMBOL_PREPENDER = "~";
-	/*
-	 * @issue: Modified files may add, modify or delete rationale. For extraction of
-	 * rationale on modified files their contents from the base and changed versions
-	 * are required. How should both versions of affected files be accessed?
-	 *
-	 * @decision: Use two gitClientImpl instances each checked out at different
-	 * commit of the diff range!
-	 * 
-	 * @pro: no additional checkouts need to be performed by the gitClientImpl
-	 * 
-	 * @con: requires on more gitClientImpl object in the memory
-	 *
-	 * @alternative: Switch between commits using one gitClientImpl instance!
-	 * 
-	 * @con: frequent checkouts take time
-	 * 
-	 * @con: requires implementation of another special mode in the client
-	 *
+	/**
+	 * @issue Modified files may add, modify, or delete rationale. For extraction of
+	 *        rationale on modified files their contents from the base and changed
+	 *        versions are required. How should both versions of affected files be
+	 *        accessed?
+	 * @decision Use two gitClientImpl instances each checked out at different
+	 *           commit of the diff range!
+	 * @pro no additional checkouts need to be performed by the gitClientImpl
+	 * @con requires on more gitClientImpl object in the memory
+	 * @alternative Switch between commits using one gitClientImpl instance!
+	 * @con frequent checkouts take time
+	 * @con requires implementation of another special mode in the client
 	 */
-
 	private final GitClient gitClientCheckedOutAtDiffStart;
 	private final GitClient gitClientCheckedOutAtDiffEnd;
 	private final Diff diff;
@@ -96,7 +84,27 @@ public class GitDiffedCodeExtractionManager {
 
 	private List<DecisionKnowledgeElement> getNewOrOldDecisionKnowledgeElements(boolean getNew) {
 		List<DecisionKnowledgeElement> resultValues = new ArrayList<>();
+		/*
+			@issue: one rationale modified by more than one edit line.
+			Problem was found in refs/remotes/origin/CONDEC-534.branch.filtering.improvements.RC2
+			An old rationale located at(108:112:13) in file
+			..extraction/versioncontrol/GitRepositoryFSManager.java
+			was linked with two change entries
+			REPLACE(106-108,106-108) and REPLACE(109-114,109-120)
 
+			Such rationale would be touched twice in below streams, making its key unusable.
+
+			@alternative: streams will return reference rationale, but should somehow try not
+			to modify the rationale key more than once!
+			@con: it would not be possible to see that many edits changed rationale.
+			@alternative: streams will return new origin objects in case of detected repetition
+			new object will be created!
+			@con: more code needs to be changed.
+			@pro: information about change by more than one edit will be preserved.
+			@decision: streams will return new rationale objects and never use origin references!
+			@pro: information about change by more than one edit will be preserved.
+
+		 */
 		if (results.size() > 0) {
 			for (Map.Entry<DiffEntry, CodeExtractionResult> dEntry : results.entrySet()) {
 				String newPath;
@@ -117,20 +125,39 @@ public class GitDiffedCodeExtractionManager {
 								.entrySet()) {
 							if (editListEntry.getKey()!=null) {
 								resultValues.addAll(editListEntry.getValue().stream().map(d -> {
-									d.setKey(newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
-											+ String.valueOf(dEntry.getValue().sequence)
-											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + editListEntry.getKey().toString()
-											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + d.getKey());
-									return d;
+									DecisionKnowledgeElement n = new DecisionKnowledgeElementImpl();
+									n.setDocumentationLocation(d.getDocumentationLocation());
+									n.setDescription(d.getDescription());
+									n.setId(d.getId());
+									n.setSummary(d.getSummary());
+									n.setType(d.getType());
+
+									String newKey = newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
+											+ dEntry.getValue().sequence
+											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
+											+ editListEntry.getKey().toString()
+											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + d.getKey();
+
+									n.setKey(newKey);
+									return n;
 								}).collect(Collectors.toList()));
 							}
 							else {
 								resultValues.addAll(editListEntry.getValue().stream().map(d -> {
-									d.setKey(newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
-											+ String.valueOf(dEntry.getValue().sequence)
+									DecisionKnowledgeElement n = new DecisionKnowledgeElementImpl();
+									n.setDocumentationLocation(d.getDocumentationLocation());
+									n.setDescription(d.getDescription());
+									n.setId(d.getId());
+									n.setSummary(d.getSummary());
+									n.setType(d.getType());
+
+									String newKey = newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
+											+ dEntry.getValue().sequence
 											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + GitDecXtract.RAT_KEY_NOEDIT
-											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + d.getKey());
-									return d;
+											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + d.getKey();
+
+									n.setKey(newKey);
+									return n;
 								}).collect(Collectors.toList()));
 							}
 						}

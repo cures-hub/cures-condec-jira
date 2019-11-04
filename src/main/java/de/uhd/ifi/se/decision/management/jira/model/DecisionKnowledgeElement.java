@@ -5,13 +5,16 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 
 /**
  * Interface for decision knowledge elements
  */
 @JsonDeserialize(as = DecisionKnowledgeElementImpl.class)
-public interface DecisionKnowledgeElement {
+public interface DecisionKnowledgeElement extends Node {
 
 	/**
 	 * Get the id of the decision knowledge element. This id is the internal
@@ -20,6 +23,7 @@ public interface DecisionKnowledgeElement {
 	 *
 	 * @return id of the decision knowledge element.
 	 */
+	@Override
 	long getId();
 
 	/**
@@ -192,6 +196,7 @@ public interface DecisionKnowledgeElement {
 	 * @see DocumentationLocation
 	 * @return documentation location of the decision knowledge element.
 	 */
+	@Override
 	DocumentationLocation getDocumentationLocation();
 
 	/**
@@ -249,6 +254,13 @@ public interface DecisionKnowledgeElement {
 	void setCreated(Date date);
 
 	/**
+	 * Returns the creator of an element as an application user object.
+	 *
+	 * @return creator of an element as an {@link ApplicationUser} object.
+	 */
+	ApplicationUser getCreator();
+
+	/**
 	 * Get the close date fo the decision knowledge element.
 	 *
 	 * @return close date.
@@ -268,4 +280,12 @@ public interface DecisionKnowledgeElement {
 	 * @return true if the element exists in database.
 	 */
 	boolean existsInDatabase();
+
+	/**
+	 * Get the Jira issue that the decision knowledge element or irrelevant text is
+	 * part of.
+	 * 
+	 * @return Jira issue.
+	 */
+	Issue getJiraIssue();
 }

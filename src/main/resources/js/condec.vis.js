@@ -23,60 +23,20 @@
             nodes: nodes,
             edges: edges
         };
-        var options = conDecVis.getVisOptions();
+        var options = conDecVis.getVisOptions(data);
 
         var network = new vis.Network(container, data, options);
         network.setSize("100%", "500px");
 
-        network.on("oncontext",
-            function (params) {
-                console.log(params);
-                params.event.preventDefault();
-                var nodeIndices = network.body.nodeIndices;
-                var clickedNodeId;
-                console.log(network);
-                for (var i = 0; i < nodeIndices.length; i++) {
-                    var nodeId = nodeIndices[i];
-                    var boundingBox = network.getBoundingBox(nodeId);
-                    if (boundingBox.left <= params.pointer.canvas.x && params.pointer.canvas.x <= boundingBox.right
-                        && boundingBox.top <= params.pointer.canvas.y
-                        && params.pointer.canvas.y <= boundingBox.bottom) {
-                        clickedNodeId = nodeId;
-                    }
-                }
-                if (clickedNodeId !== undefined && clickedNodeId !== 'distanceCluster') {
-                    console.log("ContextMenu for ID: " + clickedNodeId.toString().slice(0, -2) + " and location: "
-                        + clickedNodeId.toString().substr(-1));
-                    conDecContextVis.createContextVis(clickedNodeId.toString().slice(0, -2),
-                        getDocumentationLocationFromId(clickedNodeId), params.event);
-                }
-            });
+        network.on("oncontext", function (params) {
+                conDecVis.addContextMenu(params, network);
+        });
 
-        network.on("hold",
-            function (params) {
-                var nodeIndices = network.body.nodeIndices;
-                var clickedNodeId;
-                for (var i = 0; i < nodeIndices.length; i++) {
-                    var nodeId = nodeIndices[i];
-                    var boundingBox = network.getBoundingBox(nodeId);
-                    if (boundingBox.left <= params.pointer.canvas.x && params.pointer.canvas.x <= boundingBox.right
-                        && boundingBox.top <= params.pointer.canvas.y
-                        && params.pointer.canvas.y <= boundingBox.bottom) {
-                        clickedNodeId = nodeId;
-                    }
-                }
-                if (clickedNodeId !== undefined && clickedNodeId !== 'distanceCluster') {
-                    params.event.preventDefault();
-                    conDecDialog.showEditDialog(clickedNodeId.toString().slice(0, -2),
-                        getDocumentationLocationFromId(clickedNodeId));
-                }
-            });
+        network.on("hold", function (params) {
+            conDecVis.holdFunction(params, network);
+        });
         network.on("selectNode", function (params) {
-            if (params.nodes.length === 1) {
-                if (network.isCluster(params.nodes[0]) === true) {
-                    network.openCluster(params.nodes[0]);
-                }
-            }
+            conDecVis.selectNode(params, network);
         });
         var clusterOptionsByData = {
             joinCondition: function (childOptions) {
@@ -94,6 +54,25 @@
         network.cluster(clusterOptionsByData);
         return network;
     }
+
+    ConDecVis.prototype.addContextMenu = function addContextMenu(params, network) {
+        params.event.preventDefault();
+        var nodeIndices = network.body.nodeIndices;
+        var clickedNodeId;
+        for (var i = 0; i < nodeIndices.length; i++) {
+            var nodeId = nodeIndices[i];
+            var boundingBox = network.getBoundingBox(nodeId);
+            if (boundingBox.left <= params.pointer.canvas.x && params.pointer.canvas.x <= boundingBox.right
+                && boundingBox.top <= params.pointer.canvas.y
+                && params.pointer.canvas.y <= boundingBox.bottom) {
+                clickedNodeId = nodeId;
+            }
+        }
+        if (clickedNodeId !== undefined && clickedNodeId !== 'distanceCluster') {
+            conDecContextMenu.createContextMenu(clickedNodeId.toString().slice(0, -2),
+                getDocumentationLocationFromId(clickedNodeId), params.event, "vis-container");
+        }
+    };
 
     /*
      * external references: condec.jira.issue.module
@@ -120,7 +99,7 @@
         });
     };
 
-    ConDecVis.prototype.getVisOptions = function getVisOptions() {
+    ConDecVis.prototype.getVisOptions = function getVisOptions(visData) {
         return {
             clickToUse: false,
             nodes: {
@@ -314,55 +293,13 @@
                 editEdge: false,
                 addNode: false,
                 addEdge: function (data, callback) {
-                    console.log('add edge', data);
-                    if (data.from !== data.to) {
-                        callback(data);
-
-                        conDecAPI.createLink(null, data.from.slice(0, -2), data.to.slice(0, -2), data.to.substr(-1),
-                            data.from.substr(-1), function () {
-                                conDecObservable.notify();
-                            });
-                    }
+                    conDecVis.addEdge(data, callback);
                 },
                 deleteNode: function (data, callback) {
-                    AJS.dialog2("#vis-delete-warning-dialog").show();
-                    AJS.$(document).on(
-                        "click",
-                        "#vis-delete-dialog-confirm",
-                        function (e) {
-                            e.preventDefault();
-                            console.log('delete node:', data.nodes[0].slice(0, -2));
-                            conDecAPI.deleteDecisionKnowledgeElement(data.nodes[0].slice(0, -2), data.nodes[0]
-                                .substr(-1), function () {
-                                conDecObservable.notify();
-                            });
-                            AJS.dialog2("#vis-delete-warning-dialog").hide();
-                        });
-                    AJS.dialog2("#vis-delete-warning-dialog").on("hide", function () {
-                        network.disableEditMode();
-                        network.enableEditMode();
-                    });
+                    conDecVis.deleteNode(data, callback);
                 },
                 deleteEdge: function (data, callback) {
-                    AJS.dialog2("#vis-delete-warning-dialog").show();
-                    AJS.$(document).on(
-                        "click",
-                        "#vis-delete-dialog-confirm",
-                        function (e) {
-                            e.preventDefault();
-                            edgeToBedeleted = edges.get(data.edges[0]);
-                            console.log('delete link:', edgeToBedeleted.from, "->", edgeToBedeleted.to);
-                            conDecAPI.deleteLink(edgeToBedeleted.to.slice(0, -2),
-                                edgeToBedeleted.from.slice(0, -2), edgeToBedeleted.to.substr(-1),
-                                edgeToBedeleted.from.substr(-1), function () {
-                                    conDecObservable.notify();
-                                });
-                            AJS.dialog2("#vis-delete-warning-dialog").hide();
-                        });
-                    AJS.dialog2("#vis-delete-warning-dialog").on("hide", function () {
-                        network.disableEditMode();
-                        network.enableEditMode();
-                    });
+                    conDecVis.deleteEdge(data, visData, callback);
                 }
 
             },
@@ -372,8 +309,75 @@
             interaction: {
                 tooltipDelay: 600
             }
-        };
-    }
+        }
+    };
+
+    ConDecVis.prototype.holdFunction = function  holdFunction(params, network) {
+        var nodeIndices = network.body.nodeIndices;
+        var clickedNodeId;
+        for (var i = 0; i < nodeIndices.length; i++) {
+            var nodeId = nodeIndices[i];
+            var boundingBox = network.getBoundingBox(nodeId);
+            if (boundingBox.left <= params.pointer.canvas.x && params.pointer.canvas.x <= boundingBox.right
+                && boundingBox.top <= params.pointer.canvas.y
+                && params.pointer.canvas.y <= boundingBox.bottom) {
+                clickedNodeId = nodeId;
+            }
+        }
+        if (clickedNodeId !== undefined && clickedNodeId !== 'distanceCluster') {
+            params.event.preventDefault();
+            conDecDialog.showEditDialog(clickedNodeId.toString().slice(0, -2),
+                getDocumentationLocationFromId(clickedNodeId));
+        }
+    };
+
+    ConDecVis.prototype.selectNode =  function selectNode(params, network) {
+        if (params.nodes.length === 1) {
+            if (network.isCluster(params.nodes[0]) === true) {
+                network.openCluster(params.nodes[0]);
+            }
+        }
+    };
+
+    ConDecVis.prototype.addNode = function addNode(data, callback) {
+        conDecDialog.showCreateDialog("", "", function() {
+            callback(data);
+        });
+    };
+
+    ConDecVis.prototype.deleteNode =  function deleteNode(data, callback) {
+        conDecDialog.showDeleteDialog(data.nodes[0].slice(0, -2), data.nodes[0]
+            .substr(-1), function() {
+            callback(data);
+        });
+    };
+
+    ConDecVis.prototype.addEdge =  function addEdge(data, callback) {
+        if (data.from !== data.to) {
+            conDecAPI.createLink(null, data.from.slice(0, -2), data.to.slice(0, -2), data.to.substr(-1),
+                data.from.substr(-1), function () {
+                    conDecObservable.notify();
+                    callback(data);
+                });
+        }
+    };
+
+    ConDecVis.prototype.addEdgeWithType =  function addEdge(data, callback) {
+        if (data.from !== data.to) {
+            conDecDialog.showDecisionLinkDialog(data.from.slice(0, -2), data.to.slice(0, -2), function() {
+                callback(data);
+            });
+
+        }
+    };
+
+    ConDecVis.prototype.deleteEdge =  function deleteEdge(data, visData, callback) {
+        var allEdges = new vis.DataSet(visData.edges);
+        var edgeToBeDeleted = allEdges.get(data.edges[0]);
+        conDecDialog.showDeleteDecisionLinkDialog(edgeToBeDeleted.from.slice(0, -2), edgeToBeDeleted.to.slice(0, -2), edgeToBeDeleted.from.substr(-1), edgeToBeDeleted.to.substr(-1), function() {
+            callback(data);
+        });
+    };
 
     function getDocumentationLocationFromId(nodeId) {
         return nodeId.toString().substr(-1);

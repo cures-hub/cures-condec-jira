@@ -8,9 +8,9 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 
 /**
- * Interface for links between knowledge elements. The links are directed, i.e.,
- * they are arrows starting from a source element and ending in a destination
- * element.
+ * Interface for links (=edges) between knowledge elements. The links are
+ * directed, i.e., they are arrows starting from a source element and ending in
+ * a destination element.
  */
 @JsonDeserialize(as = LinkImpl.class)
 public interface Link {
@@ -48,12 +48,12 @@ public interface Link {
 	void setType(String type);
 
 	/**
-	 * Get the source element of this link.
+	 * Returns the source element of this link (=edge).
 	 *
 	 * @see DecisionKnowledgeElement
 	 * @return source element of this link.
 	 */
-	DecisionKnowledgeElement getSourceElement();
+	DecisionKnowledgeElement getSource();
 
 	/**
 	 * Set the source element of this link.
@@ -100,12 +100,12 @@ public interface Link {
 	void setIdOfSourceElement(long id);
 
 	/**
-	 * Get the destination element of this link.
+	 * Returns the target (=destination) element of this link (=edge).
 	 *
 	 * @see DecisionKnowledgeElement
 	 * @return destination element of this link.
 	 */
-	DecisionKnowledgeElement getDestinationElement();
+	DecisionKnowledgeElement getTarget();
 
 	/**
 	 * Set the destination element of this link.
@@ -232,14 +232,7 @@ public interface Link {
 	 */
 	public static Link instantiateDirectedLink(DecisionKnowledgeElement parentElement,
 			DecisionKnowledgeElement childElement, LinkType linkType) {
-		switch (linkType) {
-		case ATTACK:
-			return new LinkImpl(childElement, parentElement, linkType);
-		case SUPPORT:
-			return new LinkImpl(childElement, parentElement, linkType);
-		default:
-			return new LinkImpl(parentElement, childElement, linkType);
-		}
+		return new LinkImpl(parentElement, childElement, linkType.getName());
 	}
 
 	/**
@@ -257,8 +250,7 @@ public interface Link {
 	 * 
 	 * @return a link object.
 	 */
-	public static Link instantiateDirectedLink(DecisionKnowledgeElement parentElement,
-			DecisionKnowledgeElement childElement) {
+	static Link instantiateDirectedLink(DecisionKnowledgeElement parentElement, DecisionKnowledgeElement childElement) {
 		KnowledgeType knowledgeTypeOfChildElement = childElement.getType();
 		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(knowledgeTypeOfChildElement);
 		return instantiateDirectedLink(parentElement, childElement, linkType);
@@ -266,14 +258,14 @@ public interface Link {
 
 	/**
 	 * Determine if both source and destination element of the link are documented
-	 * as JIRA issues.
+	 * as Jira issues.
 	 *
 	 * @see DecisionKnowledgeElement
 	 * 
 	 * @return true if both source and destination element of the link are
-	 *         documented as JIRA issues.
+	 *         documented as Jira issues.
 	 */
-	public boolean isIssueLink();
+	boolean isIssueLink();
 
 	/**
 	 * Determine if the source and/or destination element of the link have an
@@ -284,7 +276,7 @@ public interface Link {
 	 * @return true if the source and/or the destination element of the link have an
 	 *         unknown documentation location.
 	 */
-	public boolean containsUnknownDocumentationLocation();
+	boolean containsUnknownDocumentationLocation();
 
 	/**
 	 * Set the documentation location of the source element of this link. Retrieves
@@ -297,6 +289,13 @@ public interface Link {
 	 *            of the source element of this link, e.g., "i" for JIRA issue.
 	 */
 	void setDocumentationLocationOfSourceElement(String documentationLocation);
+
+	/**
+	 * Retrieves the weight of this link (=edge).
+	 *
+	 * @return weight of this link.
+	 */
+	double getWeight();
 
 	/**
 	 * Set the documentation location of the destination element of this link.
@@ -321,4 +320,6 @@ public interface Link {
 	 * @return true if objects have the same source and destination id.
 	 */
 	boolean equals(LinkInDatabase linkInDatabase);
+
+	void setDefaultDocumentationLocation(String projectKey);
 }

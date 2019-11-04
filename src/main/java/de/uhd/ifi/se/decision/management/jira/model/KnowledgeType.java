@@ -45,6 +45,12 @@ public enum KnowledgeType {
 				return knowledgeType;
 			}
 		}
+		if(type.contains("Pro")) {
+			return PRO;
+		}
+		if(type.contains("Con")) {
+			return CON;
+		}
 		return OTHER;
 	}
 

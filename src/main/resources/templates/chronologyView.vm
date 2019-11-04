@@ -1,0 +1,39 @@
+<form class="aui">
+    <label for="start-date-picker-time">$i18n.getText("condec.startdatepicker")<span
+            class="aui-icon icon-required"></span>
+    </label>
+    <input id="start-date-picker-time" type="date"/>
+    <label for="end-date-picker-time">$i18n.getText("condec.enddatepicker")<span
+            class="aui-icon icon-required"></span>
+    </label>
+    <input id="end-date-picker-time" type="date"/>
+    <button aria-controls="chronologie-dropdown" class="aui-button aui-style-default aui-dropdown2-trigger" aria-haspopup="true">
+    Issuetypes
+    </button>
+    <aui-dropdown-menu id="chronologie-dropdown" style="overflow:auto;max-height:200px;"></aui-dropdown-menu>
+
+    <button aria-controls="chronologie-status-dropdown" class="aui-button aui-style-default aui-dropdown2-trigger" aria-haspopup="true">
+        Knowledge Status
+    </button>
+    <aui-dropdown-menu id="chronologie-status-dropdown" style="overflow:auto;max-height:200px;"></aui-dropdown-menu>
+
+
+    <input class="text medium-long-field" id="time-search-input"
+           placeholder="$i18n.getText('condec.filter.label')"/>
+    <input type="button" id="filter-button-time" class="aui-button aui-button-primary" value="Filter"/>
+</form>
+<div class="aui-group">
+    <div id="evolution-timeline"></div>
+</div>
+<script>
+    $(document).ready(function() {
+        conDecAPI.checkIfProjectKeyIsValid();
+        if(window.conDecEvolutionPage.init(conDecAPI, conDecObservable)) {
+            conDecAPI.checkIfProjectKeyIsValid();
+            window.conDecEvolutionPage.buildTimeLine();
+        }
+        else {
+            console.error("ConDecEvolutionPage could not get its dependencies.");
+        }
+    });
+</script>

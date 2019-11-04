@@ -9,6 +9,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
@@ -60,7 +61,7 @@ public class GitRepositoryFSManager {
 			long time = date.getTime();
 			String tempDirString = baseProjectUriPath
 					+ File.separator
-					+ TEMP_DIR_PREFIX + String.valueOf(time);
+					+ TEMP_DIR_PREFIX + time;
 			File tempDir = new File(tempDirString);
 			boolean renameResult = false;
 			try {
@@ -167,7 +168,7 @@ public class GitRepositoryFSManager {
 		file.setWritable(true);
 		try {
 			// assumes branch names are valid file names
-			FileUtils.writeStringToFile(file, getShortHash(branchShortName), Charset.forName("UTF-8"));
+			FileUtils.writeStringToFile(file, getShortHash(branchShortName), StandardCharsets.UTF_8);
 		} catch (IOException ex) {
 			LOGGER.info(ex.getMessage());
 		}
@@ -227,7 +228,7 @@ public class GitRepositoryFSManager {
 	private String[] findTemporaryDirectoryNames() {
 		File file = new File(baseProjectUriPath);
 		String[] directories = file.list((current, name) ->
-				(name.toString().startsWith(TEMP_DIR_PREFIX)
+				(name.startsWith(TEMP_DIR_PREFIX)
 						&& new File(current, name).isDirectory()));
 		return directories;
 	}

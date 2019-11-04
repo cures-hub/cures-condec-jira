@@ -3,10 +3,13 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 
 /**
@@ -99,19 +102,19 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testSetWebhookDataNullFilled() {
-		project.setWebhookData(null, "TEST-Sec");
+		project.setWebhookData(null, "myhoneybee");
 		assertTrue(true);
 	}
 
 	@Test
 	public void testSetWebhookDataFilledNull() {
-		project.setWebhookData("TEST", null);
+		project.setWebhookData("http://true", null);
 		assertTrue(true);
 	}
 
 	@Test
 	public void testSetWebhookDataFilledFilled() {
-		project.setWebhookData("TEST", "TEST-Sec");
+		project.setWebhookData("http://true", "myhoneybee");
 		assertTrue(true);
 	}
 
@@ -122,6 +125,13 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetWebhookSecret() {
-		assertEquals("true", project.getWebhookSecret());
+		project.setWebhookData("http://true", "myhoneybee");
+		assertEquals("myhoneybee", project.getWebhookSecret());
+	}
+	
+	@AfterClass
+	public static void tearDown() {
+		// reset plugin settings to default settings
+		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}
 }

@@ -1,7 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
@@ -14,6 +16,7 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 
 /**
  * Class to store and receive configuration settings
@@ -121,7 +124,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static boolean isWebhookTypeEnabled(String projectKey, String webhookType) {
-		if (webhookType == null || webhookType.equals("")) {
+		if (webhookType == null || webhookType.isBlank()) {
 			return false;
 		}
 		String isWebhookTypeEnabled = getValue(projectKey, "webhookType" + "." + webhookType);
@@ -165,7 +168,7 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
-	public static void setUseClassiferForIssueComments(String projectKey, boolean isActivated) {
+	public static void setUseClassifierForIssueComments(String projectKey, boolean isActivated) {
 		setValue(projectKey, "setClassiferForIssueComments", Boolean.toString(isActivated));
 	}
 
@@ -208,4 +211,15 @@ public class ConfigPersistenceManager {
 	public static String getArffFileForClassifier(String projectKey) {
 		return getValue(projectKey, "arffFileName");
 	}
+
+	public static void setReleaseNoteMapping(String projectKey, ReleaseNoteCategory category, List<String> selectedIssueNames){
+		String joinedIssueNames = String.join(",", selectedIssueNames);
+		setValue(projectKey, "releaseNoteMapping" + "." + category, joinedIssueNames);
+	}
+
+	public static List<String> getReleaseNoteMapping(String projectKey, ReleaseNoteCategory category){
+		String joinedIssueNames = getValue(projectKey,"releaseNoteMapping"+"."+category);
+		return Arrays.asList(joinedIssueNames.split(","));
+	}
+
 }

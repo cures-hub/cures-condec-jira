@@ -20,7 +20,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjec
 public class SettingsOfAllProjects extends AbstractSettingsServlet {
 
 	private static final long serialVersionUID = 4640871992639394730L;
-	private static final String TEMPLATEPATH = "templates/settingsForAllProjects.vm";
+	private static final String TEMPLATEPATH = "templates/settings/settingsForAllProjects.vm";
 
 	@Inject
 	public SettingsOfAllProjects(TemplateRenderer renderer) {

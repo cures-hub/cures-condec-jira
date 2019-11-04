@@ -41,8 +41,8 @@ import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 public abstract class TestSetUpGit extends TestSetUp {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestSetUpGit.class);
-	public static String GIT_URI;
-	public static File DIRECTORY;
+	public static String GIT_URI = getExampleUri();
+	public static File DIRECTORY = getExampleDirectory();
 	protected static GitClient gitClient;
 	protected MockIssue mockJiraIssueForGitTests;
 	protected MockIssue mockJiraIssueForGitTestsTangled;
@@ -53,9 +53,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 		if (gitClient != null && gitClient.getDirectory() != null) {
 			return;
 		}
-
-		GIT_URI = getExampleUri();
-		DIRECTORY = getExampleDirectory();
 
 		ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
 		String pathToExtractionVCSTestFilesDir = "extraction/versioncontrol/";
@@ -110,6 +107,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 						+ "            }\n" + "        }\n" + "    };\n" + "\n" + "}\n",
 				"TEST-62 add class A");
 		setupBranchWithDecKnowledge();
+		setupBranchForTranscriber();
 		//
 		// TODO: investigate issue: Is this really needed? Why do we close the git client here?
 		// gitClient.close();
@@ -227,6 +225,29 @@ public abstract class TestSetUpGit extends TestSetUp {
 				"with CONDEC-505 feature branch");
 		returnToPreviousBranch(currentBranch, git);
 	}
+
+	private static void setupBranchForTranscriber() {
+		String featureBranch = "TEST-4.transcriberBranch";
+		Git git = gitClient.getGit();
+		String currentBranch = null;
+
+		try {
+			currentBranch = git.getRepository().getBranch();
+			git.branchCreate().setName(featureBranch).call();
+			git.checkout().setName(featureBranch).call();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		makeExampleCommit("readMe.featureBranch.txt", "", "");
+		makeExampleCommit("readMe.featureBranch.txt", "", "[issue]This is an issue![/issue]");
+		makeExampleCommit("readMe.featureBranch.txt", "", "[Issue]This is an issue![/Issue]");
+		makeExampleCommit("readMe.featureBranch.txt", "", "[issue]This is an issue![/Issue]");
+		makeExampleCommit("readMe.featureBranch.txt", "", "[issue]This is an issue![/Issue] But I love pizza!");
+
+
+		returnToPreviousBranch(currentBranch, git);
+	}
+
 
 	private static void returnToPreviousBranch(String branch, Git git) {
 		if (branch == null) {

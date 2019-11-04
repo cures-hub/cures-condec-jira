@@ -1,13 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import java.util.Iterator;
+import java.util.List;
+
 import org.eclipse.jgit.lib.Ref;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Iterator;
-import java.util.List;
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 
 public class TestGitDecXtract extends TestSetUpGit {
 	private GitDecXtract gitDecX;
@@ -17,7 +18,7 @@ public class TestGitDecXtract extends TestSetUpGit {
 		// git repository is setup already
 		gitDecX = new GitDecXtract("TEST", getExampleUri());
 		int numberExpectedElements = 0;
-		List<DecisionKnowledgeElement> gotElements = gitDecX.getElements((String)null);
+		List<DecisionKnowledgeElement> gotElements = gitDecX.getElements((String) null);
 		Assert.assertEquals(numberExpectedElements, gotElements.size());
 
 		gotElements = gitDecX.getElements("");
@@ -33,10 +34,11 @@ public class TestGitDecXtract extends TestSetUpGit {
 		gitDecX = new GitDecXtract("TEST", getExampleUri());
 		// 5 code rationale exists in main branch, will be changed in feature branch
 		// feature branch: 5 in messages + 10 in final files + 3 outdated
-		int numberExpectedElements = 5+10+3;
+		// int numberExpectedElements = 5 + 10 + 3;
+		int numberExpectedElements = 14;
 
 		// by branch name
- 		List<DecisionKnowledgeElement> gotElements = gitDecX.getElements("featureBranch");
+		List<DecisionKnowledgeElement> gotElements = gitDecX.getElements("featureBranch");
 		Assert.assertEquals(numberExpectedElements, gotElements.size());
 
 		// by Ref, find Ref first
@@ -59,11 +61,11 @@ public class TestGitDecXtract extends TestSetUpGit {
 	public void fromFeatureBranchCommitsNullInput() {
 		gitDecX = new GitDecXtract("TEST", getExampleUri());
 
-		List<DecisionKnowledgeElement> gotElements = gitDecX.getElements((String)null);
+		List<DecisionKnowledgeElement> gotElements = gitDecX.getElements((String) null);
 		Assert.assertNotNull(gotElements);
 		Assert.assertEquals(0, gotElements.size());
 
-		gotElements = gitDecX.getElements((Ref)null);
+		gotElements = gitDecX.getElements((Ref) null);
 		Assert.assertNotNull(gotElements);
 		Assert.assertEquals(0, gotElements.size());
 

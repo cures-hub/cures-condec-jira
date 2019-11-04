@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -16,7 +17,10 @@ import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 
 /**
- * Model class for the filter settings.
+ * Model class for the filter criteria. The filter settings cover the key of the
+ * selected project, the time frame, documentation locations, Jira issue types,
+ * and decision knowledge types. The search string can contain a JQL, a filter
+ * or a search string specified in the frontend of the plug-in.
  */
 public class FilterSettingsImpl implements FilterSettings {
 
@@ -24,6 +28,7 @@ public class FilterSettingsImpl implements FilterSettings {
 	private String searchString;
 	private List<DocumentationLocation> documentationLocations;
 	private List<String> namesOfSelectedJiraIssueTypes;
+	private List<KnowledgeStatus> issueStatus;
 
 	@XmlElement
 	private long startDate;
@@ -44,6 +49,7 @@ public class FilterSettingsImpl implements FilterSettings {
 		this.startDate = -1;
 		this.endDate = -1;
 		this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
+		this.issueStatus = KnowledgeStatus.getAllKnowledgeStatus();
 	}
 
 	public FilterSettingsImpl(String projectKey, String query, ApplicationUser user) {
@@ -151,6 +157,29 @@ public class FilterSettingsImpl implements FilterSettings {
 	}
 
 	@Override
+	@XmlElement(name = "selectedIssueStatus")
+	public List<KnowledgeStatus> getSelectedIssueStatus() {
+		if (issueStatus == null) {
+			issueStatus = KnowledgeStatus.getAllKnowledgeStatus();
+		}
+		return issueStatus;
+	}
+
+	@Override
+	@JsonProperty("selectedIssueStatus")
+	public void setSelectedJiraIssueStatus(List<String> status) {
+		if (issueStatus == null) {
+			issueStatus = new ArrayList<>();
+		}
+		if (status == null || status.size() == 0) {
+			return;
+		}
+		for (String stringStatus : status) {
+			issueStatus.add(KnowledgeStatus.getKnowledgeStatus(stringStatus));
+		}
+	}
+
+	@Override
 	@XmlElement(name = "allJiraIssueTypes")
 	public List<String> getAllJiraIssueTypes() {
 		List<String> allIssueTypes = new ArrayList<String>();
@@ -160,4 +189,11 @@ public class FilterSettingsImpl implements FilterSettings {
 		}
 		return allIssueTypes;
 	}
+
+	@Override
+	@XmlElement(name = "allIssueStatus")
+	public List<String> getAllJiraIssueStatus() {
+		return KnowledgeStatus.toList();
+	}
+
 }

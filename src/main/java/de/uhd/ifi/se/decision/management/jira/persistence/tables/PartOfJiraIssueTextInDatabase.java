@@ -9,7 +9,7 @@ import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
 
 /**
- * Interface for decision knowledge elements stored in JIRA issue comments or
+ * Interface for decision knowledge elements stored in Jira issue comments or
  * the description. Determines which table columns are used for object
  * relational mapping to the database.
  * 
@@ -55,10 +55,6 @@ public interface PartOfJiraIssueTextInDatabase extends RawEntity<Long> {
 	boolean isValidated();
 
 	void setValidated(boolean validated);
-
-	long getCreated();
-
-	void setCreated(long created);
 
 	static boolean deleteElement(PartOfJiraIssueTextInDatabase elementToDelete) {
 		try {

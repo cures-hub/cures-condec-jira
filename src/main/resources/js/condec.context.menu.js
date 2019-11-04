@@ -9,6 +9,8 @@
  Is required by
  * conDecTreant
  * conDecTreeViewer
+ * conDecVis
+ * conDecEvolutionPage
  */
 (function(global) {
 
@@ -27,10 +29,10 @@
 		/*
 		 * @issue This event gets launched many times at the same time! Check
 		 * what fires it. Probably more and more onclick event handlers get
-		 * added instead of just one.
+		 * added instead of just one. How can we set the event listener only once?
 		 * 
 		 * @decision On click and on blur event handlers are only set in the
-		 * constructor (see above).
+		 * constructor (see above)!
 		 */
 		if (isContextMenuOpen) {
 			console.log("contextmenu closed");
@@ -45,7 +47,7 @@
 	}
 
 	/*
-	 * external references: condec.treant, condec.tree.viewer
+	 * external references: condec.treant, condec.tree.viewer, condec.vis, condec.evolution.page
 	 */
 	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(id, documentationLocation, event,
 			container) {
@@ -58,31 +60,17 @@
 			return;
 		}
 
+		showOrHideContextMenuItems(id, documentationLocation, container);
 		setContextMenuItemsEventHandlers(id, documentationLocation);
 
 		var position = getPosition(event, container);
-		var posX = position["x"];
-		var posY = position["y"];
-
 		$(contextMenuNode).css({
-			left : posX,
-			top : posY
+			left : position["x"],
+			top : position["y"]
 		});
 
 		contextMenuNode.style.zIndex = 9998; // why this number?
-		contextMenuNode.setAttribute('aria-hidden', 'false');
-
-		if (documentationLocation === "s") {
-			document.getElementById("condec-context-menu-link-item").style.display = "none";
-			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "initial";
-			document.getElementById("condec-context-menu-sentence-convert-item").style.display = "initial";
-			document.getElementById("condec-context-menu-set-root-item").style.display = "none";
-		} else {
-			document.getElementById("condec-context-menu-link-item").style.display = "initial";
-			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "none";
-			document.getElementById("condec-context-menu-sentence-convert-item").style.display = "none";
-			document.getElementById("condec-context-menu-set-root-item").style.display = "initial";
-		}
+		contextMenuNode.setAttribute('aria-hidden', 'false');		
 	};
 
 	function setContextMenuItemsEventHandlers(id, documentationLocation) {
@@ -96,6 +84,10 @@
 
 		document.getElementById("condec-context-menu-change-type-item").onclick = function() {
 			conDecDialog.showChangeTypeDialog(id, documentationLocation);
+		};
+
+		document.getElementById("condec-context-menu-change-status-item").onclick = function() {
+			conDecDialog.showChangeStatusDialog(id, documentationLocation);
 		};
 
 		document.getElementById("condec-context-menu-issue-item").onclick = function() {
@@ -138,7 +130,7 @@
 		document.getElementById("condec-context-menu-delete-link-item").onclick = function() {
 			conDecDialog.showDeleteLinkDialog(id, documentationLocation);
 		};
-		
+
 		document.getElementById("condec-context-menu-summarized-code").onclick = function() {
 			conDecDialog.showSummarizedDialog(id, documentationLocation);
 		};
@@ -171,6 +163,7 @@
 				conDecObservable.notify();
 			});
 		};
+
 		document.getElementById("condec-context-menu-export").onclick = function() {
 			conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
 				conDecDialog.showExportDialog(decisionKnowledgeElement.key);
@@ -186,6 +179,14 @@
 				y : event.pageY
 			};
 		}
+
+		if (container.includes("vis")) {
+			return {
+				x : event.layerX + "px",
+				y : event.screenY + "px"
+			};
+		}
+
 		var xPosition = 0;
 		var yPosition = 0;
 
@@ -213,6 +214,37 @@
 			x : xPosition,
 			y : yPosition
 		};
+	}
+
+	function showOrHideContextMenuItems(id, documentationLocation, container) {
+		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
+			var typesForStatus = new Array("issue", "alternative", "decision");
+			if (!typesForStatus.includes(decisionKnowledgeElement.type.toLowerCase())) {
+				document.getElementById("condec-context-menu-change-status-item").style.display = "none";
+			} else {
+				document.getElementById("condec-context-menu-change-status-item").style.display = "initial";
+			}
+		});
+		
+		if (container.includes("vis")) {
+			document.getElementById("condec-context-menu-set-root-item").style.display = "none";
+			document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
+		} else {
+			document.getElementById("condec-context-menu-set-root-item").style.display = "initial";
+			document.getElementById("condec-context-menu-delete-link-item").style.display = "initial";
+		}
+		
+		if (documentationLocation === "s") {
+			document.getElementById("condec-context-menu-link-item").style.display = "none";
+			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "initial";
+			document.getElementById("condec-context-menu-sentence-convert-item").style.display = "initial";
+			document.getElementById("condec-context-menu-set-root-item").style.display = "none";
+		} else {
+			document.getElementById("condec-context-menu-link-item").style.display = "initial";
+			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "none";
+			document.getElementById("condec-context-menu-sentence-convert-item").style.display = "none";
+			document.getElementById("condec-context-menu-set-root-item").style.display = "initial";
+		}
 	}
 
 	// export ConDecContextMenu

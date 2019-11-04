@@ -46,7 +46,8 @@
 		<resource type="download" name="implication.png" location="/images/implication.png" />
 		<resource type="download" name="assumption.png" location="/images/assumption.png" />
 		<resource type="download" name="assessment.png" location="/images/assessment.png" />
-		<resource type="download" name="codesummarization.png" location="/images/codesummarization.png" />
+		<resource type="download" name="codesummarization.png"
+			location="/images/codesummarization.png" />
 		<!-- visGraph.js icons -->
 		<resource type="download" name="addNodeIcon.png" location="/images/addNodeIcon.png" />
 		<resource type="download" name="backIcon.png" location="/images/backIcon.png" />
@@ -57,8 +58,10 @@
 		<resource type="download" name="treant.css" location="/css/treant.css" />
 		<resource type="download" name="condec.css" location="/css/condec.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
+        <resource type="download" name="visTimeLine.css" location="/css/visTimeLine.css"/>
+		<resource type="download" name="matrix.css" location="/css/matrix.css"/>
 
-		<resource type="download" name="vis.css" location="/vis/dist/vis.css" />
+		<resource type="download" name="vis.css" location="/js/lib/vis/dist/vis.css" />
 		<resource type="download" name="gitdiffviewer.css" location="/css/gitdiffviewer.css" />		<!-- look and feel like JIRA -->
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
 		<dependency>com.atlassian.auiplugin:aui-flag</dependency>
@@ -74,6 +77,7 @@
 		<dependency>com.atlassian.auiplugin:aui-experimental-iconfont</dependency>
 		<dependency>com.atlassian.auiplugin:aui-tooltips</dependency>
 		<dependency>com.atlassian.auiplugin:tabs</dependency>
+		<dependency>com.atlassian.auiplugin:aui-expander</dependency>
 		<!-- JIRA dialogs -->
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-edit-issue</dependency>
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-create-issue</dependency>
@@ -86,15 +90,16 @@
 		</description>
 		<context>jira.view.issue</context>
 		<!-- jquery 1.9.1 for the plug-in (required by jstree) with Sizzle -->
-		<resource type="download" name="jqueryConDec.js" location="/js/jquery/jquery.js" />
+		<resource type="download" name="jqueryConDec.js" location="/js/lib/jquery/jquery.js" />
 		<!-- jstree -->
-		<resource type="download" name="jstree.js" location="/js/jstree/jstree.js" />
+		<resource type="download" name="jstree.js" location="/js/lib/jstree/jstree.js" />
 		<!-- treant -->
-		<resource type="download" name="Treant.js" location="/js/treant/treant.js" />
-		<resource type="download" name="raphael.js" location="/js/treant/raphael.js" />
-		<resource type="download" name="jquery.easing.js" location="/js/jquery/jquery.easing.js" />
-		<!--Vis-->
-		<resource type="download" name="vis.js" location="/vis/dist/vis.js" />
+		<resource type="download" name="Treant.js" location="/js/lib/treant/treant.js" />
+		<resource type="download" name="raphael.js" location="/js/lib/treant/raphael.js" />
+		<resource type="download" name="jquery.easing.js"
+			location="/js/lib/jquery/jquery.easing.js" />
+		<!--Vis -->
+		<resource type="download" name="vis.js" location="/js/lib/vis/dist/vis.js" />
 		<!-- ConDec java script files -->
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
 		<resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />
@@ -102,19 +107,20 @@
 		<resource type="download" name="condec.context.menu.js"
 			location="/js/condec.context.menu.js" />
 		<resource type="download" name="condec.gitdiffviewer.js"
-				  location="/js/condec.gitdiffviewer.js" />
+			location="/js/condec.gitdiffviewer.js" />
 		<resource type="download" name="condec.git.code.elements.linker.js"
-	  		location="/js/condec.git.code.elements.linker.js" />
-
-		<resource type="download" name="condec.context.vis.js"
-				  location="/js/condec.context.vis.js" />
+			location="/js/condec.git.code.elements.linker.js" />
 		<resource type="download" name="condec.treant.js" location="/js/condec.treant.js" />
 		<resource type="download" name="condec.tree.viewer.js"
 			location="/js/condec.tree.viewer.js" />
 		<resource type="download" name="condec.vis.js" location="/js/condec.vis.js" />
-		<resource type="download" name="condec.export.js"  location="/js/condec.export.js" />
+		<resource type="download" name="condec.export.js" location="/js/condec.export.js" />
 		<resource type="download" name="condec.evolution.page.js"
 			location="/js/condec.evolution.page.js" />
+		<resource type="download" name="condec.relationship.page.js"
+				  location="/js/condec.relationship.page.js" />
+		<resource type="download" name="condec.relationshipMatrix.page.js"
+				  location="/js/condec.relationshipMatrix.page.js" />
 	</web-resource>
 
 	<web-resource key="decision-knowledge-page-resources"
@@ -125,6 +131,32 @@
 		</description>
 		<resource type="download" name="condec.knowledge.page.js"
 			location="/js/condec.knowledge.page.js" />
+	</web-resource>
+
+	<web-resource key="release-note-page-resources"
+		name="ConDec Release Notes Page Resources">
+		<description>
+			Provides the JavaScript files for the separate release note page of this
+			plug-in.
+		</description>
+		<resource type="download" name="condec.release.note.page.js"
+			location="/js/condec.release.note.page.js" />
+		<!--Markdown editor -->
+		<resource type="download" name="condec.release.note.markdowneditor.editor.js"
+			location="/js/lib/markdowneditor/editor.js" />
+		<resource type="download" name="condec.release.note.markdowneditor.marked.js"
+			location="/js/lib/markdowneditor/marked.js" />
+		<resource type="download" name="condec.release.note.markdowneditor.editor.css"
+			location="/js/lib/markdowneditor/editor.css" />
+
+		<resource type="download" name="condec.release.note.markdowneditor.icomoon.eot"
+			location="/js/lib/markdowneditor/icomoon.eot" />
+		<resource type="download" name="condec.release.note.markdowneditor.icomoon.ttf"
+			location="/js/lib/markdowneditor/icomoon.ttf" />
+		<resource type="download" name="condec.release.note.markdowneditor.icomoon.woff"
+			location="/js/lib/markdowneditor/icomoon.woff" />
+		<resource type="download" name="condec.release.note.markdowneditor.icomoon_ie.eot"
+			location="/js/lib/markdowneditor/icomoon_ie.eot" />
 	</web-resource>
 
 	<web-resource key="jira-issue-module-resources"
@@ -144,8 +176,16 @@
 			comments such as the model files for Weka and Meka classifiers.
 		</description>
 		<context>jira.view.issue</context>
-		<resource type="download" name="lucene.arff" location="/classifier/lucene.arff" />
+		<resource type="download" name="defaultTrainingData.arff" location="/classifier/defaultTrainingData.arff" />
 		<resource type="download" name="condec.tab.panel.js" location="/js/condec.tab.panel.js" />
+
+		<!--Language models-->
+		<resource type="download" name="person.bin" location="/classifier/person.bin" />
+		<resource type="download" name="lemmatizer.dict" location="/classifier/lemmatizer.dict" />
+		<resource type="download" name="glove.6b.50d.csv" location="/classifier/glove.6b.50d.csv" />
+		<resource type="download" name="pos.bin" location="/classifier/pos.bin" />
+		<resource type="download" name="token.bin" location="/classifier/token.bin" />
+
 	</web-resource>
 
 	<web-resource key="report-resources" name="Resources for Decision Knowledge Report">
@@ -154,9 +194,9 @@
 			knowledge in the project.
 		</description>
 		<context>jira-report-plugin</context>
-		<resource type="download" name="echarts.js" location="/js/echart/echarts.js" />
-		<resource type="download" name="dataTool.js" location="/js/echart/dataTool.js" />
-		<resource type="download" name="condec.report.js" location="/js/condec.report.js" />
+		<resource type="download" name="echarts.js" location="/js/lib/echart/echarts.js" />
+		<resource type="download" name="dataTool.js" location="/js/lib/echart/dataTool.js" />
+		<resource type="download" name="condec.report.js" location="/js/dashboard/condec.report.js" />
 		<resource type="download" name="condec.report.css" location="/css/condec.report.css" />
 	</web-resource>
 
@@ -178,11 +218,34 @@
 		<resource name="view" type="velocity" location="templates/decisionKnowledgePage.vm" />
 	</web-panel>
 
+	<!-- Release-Note Page -->
+	<web-item name="Link to the Release Note Page in Side Bar" key="sidebar-link-release-note"
+		section="jira.project.sidebar.plugins.navigation" weight="1000">
+		<description>Provides the "Release Notes" link in the project's navigation sidebar.
+		</description>
+		<label key="condec.sidebar.link.label.release.note" />
+		<param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-queues" />
+		<link> /projects/$pathEncodedProjectKey?selectedItem=release-note-page</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<web-panel name="Decision Knowledge Page" key="release-note-page"
+		location="release-note-page" weight="1000">
+		<description>
+			Provides the plug-in page that developers use to manage release notes.
+		</description>
+		<resource name="view" type="velocity" location="templates/releaseNotePage.vm" />
+	</web-panel>
+
 	<!-- REST API -->
 	<rest name="Decision Knowledge REST" key="decision-knowledge-rest" path="/decisions"
 		version="1.0">
 		<description>
 			Provides REST resources to manage decision knowledge.
+		</description>
+	</rest>
+	<rest name="Release Note REST" key="release-note-rest" path="/release-note" version="1.0">
+		<description>
+			Provides REST resources to manage Release Notes.
 		</description>
 	</rest>
 
@@ -248,6 +311,12 @@
 		</entity>
 		<entity>
 			de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase
+		</entity>
+		<entity>
+			de.uhd.ifi.se.decision.management.jira.persistence.tables.KnowledgeStatusInDatabase
+		</entity>
+		<entity>
+			de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInDatabase
 		</entity>
 	</ao>
 
@@ -331,7 +400,7 @@
 		class="de.uhd.ifi.se.decision.management.jira.view.DecisionKnowledgeReport">
 		<label key="condec.report.label" />
 		<description key="condec.report.description" />
-		<resource name="view" type="velocity" location="/templates/decisionKnowledgeReport.vm" />
+		<resource name="view" type="velocity" location="/templates/dashboard/decisionKnowledgeReport.vm" />
 		<properties>
 			<property>
 				<key>selectedProjectId</key>
@@ -351,52 +420,51 @@
 	</report>
 
 	<!-- ConDec feature branch dashboard item -->
-	<!-- 	https://developer.atlassian.com/server/jira/platform/building-a-dashboard-item/
-			https://developer.atlassian.com/server/jira/platform/writing-a-dashboard-item-app/
-			Dashboard item will eventually replace gadgets:
-			https://developer.atlassian.com/server/jira/platform/dashboard-item-module/
-	-->
-	<web-resource key="dashboard-item-condec-resources" name="ConDec feature task branches Web Resources">
+	<!-- https://developer.atlassian.com/server/jira/platform/building-a-dashboard-item/ https://developer.atlassian.com/server/jira/platform/writing-a-dashboard-item-app/
+		Dashboard item will eventually replace gadgets: https://developer.atlassian.com/server/jira/platform/dashboard-item-module/ -->
+	<web-resource key="dashboard-item-condec-resources"
+		name="ConDec feature task branches Web Resources">
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
-		<resource type="velocity" location="/templates/featureBranchesDashboardItem.vm"
-				  name="Dashboard.Item.ConDec.Feature.Branches.Templates.Static"/>
+		<resource type="velocity" location="/templates/dashboard/featureBranchesDashboardItem.vm"
+			name="Dashboard.Item.ConDec.Feature.Branches.Templates.Static" />
 		<resource type="download" name="condec.git.branches.dashboard.js"
-				  location="js/condec.git.branches.dashboard.js" />
+			location="js/dashboard/condec.git.branches.dashboard.js" />
 		<resource type="download" name="condec.dashboard.git.code.elements.linker.js"
-				  location="/js/condec.git.code.elements.linker.js" />
+			location="/js/condec.git.code.elements.linker.js" />
 		<resource type="download" name="condec.dashboard.report.js"
-				  location="js/condec.report.js" />
+			location="js/dashboard/condec.report.js" />
 		<resource type="download" name="condec.dashboard.report.css"
-				  location="/css/condec.report.css" />
+			location="/css/condec.report.css" />
 		<resource type="download" name="condec.dashboard.echarts.js"
-				  location="/js/echart/echarts.js" />
+			location="/js/lib/echart/echarts.js" />
 		<resource type="download" name="condec.dashboard.dataTool.js"
-				  location="/js/echart/dataTool.js" />
+			location="/js/lib/echart/dataTool.js" />
 		<resource type="download" name="condec.dashboard.css"
-				  location="/css/condec.git.dashboard.css" />
+			location="/css/condec.git.dashboard.css" />
 
 		<context>atl.dashboard</context>
 		<context>condec-feature-branch-dashboard</context>
 	</web-resource>
 
-	<dashboard-item key="condec-feature-branch-dashboard-item" name="ConDec dashboard item for feature task branches">
+	<dashboard-item key="condec-feature-branch-dashboard-item"
+		name="ConDec dashboard item for feature task branches">
 		<definition>
-			<title key="condec.dashboard.featurebranch.title"/>
+			<title key="condec.dashboard.featurebranch.title" />
 			<categories>
 				<category>Jira</category>
 			</categories>
 			<author>
 				<name>ConDec team</name>
 			</author>
-			<thumbnail location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
+			<thumbnail
+				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
 		</definition>
-		<description key="condec.dashboard.featurebranch.description"/>
-		<!--<resource name="view" type="velocity"
-		location=":dashboard-item-condec-resources/Dashboard.Item.ConDec.Feature.Branches.Templates.Static" />-->
+		<description key="condec.dashboard.featurebranch.description" />
+		<!--<resource name="view" type="velocity" location=":dashboard-item-condec-resources/Dashboard.Item.ConDec.Feature.Branches.Templates.Static"
+			/> -->
 		<resource name="view" type="velocity"
-				  location="/templates/featureBranchesDashboardItem.vm" />
-		<context-provider class="de.uhd.ifi.se.decision.management.jira.view.FeatureBranchQualityDashboardItem"/>
-		<!--
-                -->
+			location="/templates/dashboard/featureBranchesDashboardItem.vm" />
+		<context-provider
+			class="de.uhd.ifi.se.decision.management.jira.view.FeatureBranchQualityDashboardItem" />
 	</dashboard-item>
 </atlassian-plugin>

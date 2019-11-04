@@ -8,11 +8,11 @@ public class TestLinkType {
 
     @Test
     public void testLinkTypeToString(){
-        assertEquals("contain", LinkType.CONTAIN.toString());
+        assertEquals("relate", LinkType.RELATE.toString());
     }
 
     @Test
     public void testLinkTypeToList(){
-        assertEquals(3, LinkType.toList().size(), 0.0);
+        assertEquals(10, LinkType.toList().size(), 0.0);
     }
 }

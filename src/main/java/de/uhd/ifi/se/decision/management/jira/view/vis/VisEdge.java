@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
 /**
  * Model class for vis.js Edge.
@@ -21,13 +22,17 @@ public class VisEdge {
 	@XmlElement
 	private String id;
 
+	@XmlElement
+	private String color;
+
 	public VisEdge(Link link) {
 		this.setLabel(link.getType());
 		this.setFrom(
-				link.getSourceElement().getId() + "_" + link.getSourceElement().getDocumentationLocationAsString());
-		this.setTo(link.getDestinationElement().getId() + "_"
-				+ link.getDestinationElement().getDocumentationLocationAsString());
+				link.getSource().getId() + "_" + link.getSource().getDocumentationLocationAsString());
+		this.setTo(link.getTarget().getId() + "_"
+				+ link.getTarget().getDocumentationLocationAsString());
 		this.setId(String.valueOf(link.getId()));
+		this.setColor(LinkType.getLinkTypeColor(link.getType()));
 	}
 
 	public String getFrom() {
@@ -60,5 +65,13 @@ public class VisEdge {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
 	}
 }

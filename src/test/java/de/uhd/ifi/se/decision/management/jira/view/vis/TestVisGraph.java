@@ -1,11 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.model.Graph;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,14 +15,12 @@ import com.atlassian.jira.component.ComponentAccessor;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
-import net.java.ao.EntityManager;
-import net.java.ao.test.jdbc.DatabaseUpdater;
-
-import static org.junit.Assert.*;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 
 public class TestVisGraph extends TestSetUp {
 	private VisGraph visGraph;
@@ -36,11 +36,11 @@ public class TestVisGraph extends TestSetUp {
 		visGraph = new VisGraph();
 		visGraph.setEdges(edges);
 		visGraph.setNodes(nodes);
-		visGraph.setGraph(new GraphImpl());
+		visGraph.setGraph(new KnowledgeGraphImpl("TEST"));
 		visGraph.setRootElementKey("");
 
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
-		element.setProject(new DecisionKnowledgeProjectImpl("Test"));
+		element.setProject(new DecisionKnowledgeProjectImpl("TEST"));
 	}
 
 	@Test
@@ -77,15 +77,15 @@ public class TestVisGraph extends TestSetUp {
 
 	@Test
 	public void testConstWithListNullProjectNull() {
-		VisGraph visGraph = new VisGraph((List) null, (String) null);
-		assertNull(visGraph.getEdges());
+		VisGraph visGraph = new VisGraph((List<DecisionKnowledgeElement>) null, (String) null);
+		assertEquals(0, visGraph.getEdges().size(), 0.0);
 	}
 
 	@Test
 	public void testConstWithListEmptyProjectNull() {
 		List<DecisionKnowledgeElement> elements = new ArrayList<>();
 		VisGraph visGraph = new VisGraph(elements, (String) null);
-		assertNull(visGraph.getEdges());
+		assertEquals(0, visGraph.getEdges().size(), 0.0);
 	}
 
 	@Test
@@ -93,12 +93,12 @@ public class TestVisGraph extends TestSetUp {
 		List<DecisionKnowledgeElement> elements = new ArrayList<>();
 		elements.add(element);
 		VisGraph visGraph = new VisGraph(elements, (String) null);
-		assertNull(visGraph.getEdges());
+		assertEquals(0, visGraph.getEdges().size(), 0.0);
 	}
 
 	@Test
 	public void testConstWithListNullProjectFilled() {
-		VisGraph visGraph = new VisGraph((List) null, "TEST");
+		VisGraph visGraph = new VisGraph((List<DecisionKnowledgeElement>) null, "TEST");
 		assertEquals(0, visGraph.getNodes().size(), 0.0);
 	}
 
@@ -114,7 +114,7 @@ public class TestVisGraph extends TestSetUp {
 		List<DecisionKnowledgeElement> elements = new ArrayList<>();
 		elements.add(element);
 		VisGraph visGraph = new VisGraph(elements, "TEST");
-		assertEquals(1, visGraph.getNodes().size(), 0.0);
+		assertEquals(4, visGraph.getNodes().size());
 	}
 
 	@Test
@@ -134,24 +134,24 @@ public class TestVisGraph extends TestSetUp {
 	}
 
 	@Test
-	public void testGetGraph(){
+	public void testGetGraph() {
 		assertNotNull(visGraph.getGraph());
 	}
 
 	@Test
 	public void testSetGraph() {
-		Graph newGraph = new GraphImpl();
+		KnowledgeGraph newGraph = KnowledgeGraph.getOrCreate("ConDec");
 		visGraph.setGraph(newGraph);
 		assertEquals(newGraph, visGraph.getGraph());
 	}
 
-	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
-		@SuppressWarnings("unchecked")
-		@Override
-		public void update(EntityManager entityManager) throws Exception {
-			entityManager.migrate(PartOfJiraIssueTextInDatabase.class);
-			entityManager.migrate(LinkInDatabase.class);
-		}
+	@Test
+	public void addNewNodeToGraph() {
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(42, "", "", KnowledgeType.DECISION, "TEST",
+				"TEST-42", DocumentationLocation.JIRAISSUE);
+		VisGraph visGraph = new VisGraph(element, new ArrayList<DecisionKnowledgeElement>());
+		KnowledgeGraph newGraph = KnowledgeGraph.getOrCreate("ConDec");
+		visGraph.setGraph(newGraph);
+		assertEquals(newGraph, visGraph.getGraph());
 	}
-
 }

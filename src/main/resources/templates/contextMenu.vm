@@ -7,7 +7,8 @@
     </aui-section>
     <aui-section>
         <aui-item-link id="condec-context-menu-change-type-item">$i18n.getText("condec.context.menu.change.type.item.label")</aui-item-link>              
-        <aui-item-link id="condec-context-menu-issue-item">$i18n.getText("condec.context.menu.issue.item.label")</aui-item-link>      
+        <aui-item-link id="condec-context-menu-change-status-item">$i18n.getText("condec.context.menu.change.status.item.label")</aui-item-link>
+        <aui-item-link id="condec-context-menu-issue-item">$i18n.getText("condec.context.menu.issue.item.label")</aui-item-link>
         <aui-item-link id="condec-context-menu-decision-item">$i18n.getText("condec.context.menu.decision.item.label")</aui-item-link>      
         <aui-item-link id="condec-context-menu-alternative-item">$i18n.getText("condec.context.menu.alternative.item.label")</aui-item-link>      
         <aui-item-link id="condec-context-menu-pro-item">$i18n.getText("condec.context.menu.pro.item.label")</aui-item-link>      

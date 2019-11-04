@@ -2,9 +2,9 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.Set;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.ActiveObjectPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 
 /**
  * Interface for a project and its configuration. The project is a JIRA project
@@ -27,7 +27,8 @@ public interface DecisionKnowledgeProject {
 	 * with settings for this plug-in, for example, whether the plug-in is activated
 	 * for the project.
 	 *
-	 * @param projectKey of the JIRA project.
+	 * @param projectKey
+	 *            of the JIRA project.
 	 */
 	void setProjectKey(String projectKey);
 
@@ -45,7 +46,8 @@ public interface DecisionKnowledgeProject {
 	 * with settings for this plug-in, for example, whether the plug-in is activated
 	 * for the project.
 	 *
-	 * @param projectName of the JIRA project.
+	 * @param projectName
+	 *            of the JIRA project.
 	 */
 	void setProjectName(String projectName);
 
@@ -59,7 +61,8 @@ public interface DecisionKnowledgeProject {
 	/**
 	 * Set whether the plug-in is activated for this project.
 	 *
-	 * @param isActivated true if the plug-in should be activated for this project.
+	 * @param isActivated
+	 *            true if the plug-in should be activated for this project.
 	 */
 	void setActivated(boolean isActivated);
 
@@ -68,7 +71,7 @@ public interface DecisionKnowledgeProject {
 	 * project. If you choose the issue strategy, you need to associate the project
 	 * with the decision knowledge issue type scheme.
 	 *
-	 * @see AbstractPersistenceManager
+	 * @see AbstractPersistenceManagerForSingleLocation
 	 * @see JiraIssuePersistenceManager
 	 * @see ActiveObjectPersistenceManager
 	 * @return true if decision knowledge is stored in JIRA issues for this project
@@ -82,42 +85,27 @@ public interface DecisionKnowledgeProject {
 	 * you choose the issue strategy, you need to associate the project with the
 	 * decision knowledge issue type scheme.
 	 *
-	 * @see AbstractPersistenceManager
+	 * @see AbstractPersistenceManagerForSingleLocation
 	 * @see JiraIssuePersistenceManager
 	 * @see ActiveObjectPersistenceManager
-	 * @param isIssueStrategy true if decision knowledge should be stored in JIRA
-	 *                        issues for this project (issue strategy). Otherwise
-	 *                        object relational mapping is used (active object
-	 *                        strategy).
+	 * @param isIssueStrategy
+	 *            true if decision knowledge should be stored in JIRA issues for
+	 *            this project (issue strategy). Otherwise object relational mapping
+	 *            is used (active object strategy).
 	 */
 	void setIssueStrategy(boolean isIssueStrategy);
 
 	/**
 	 * Get the persistence strategy for decision knowledge used in this project.
 	 *
-	 * @see AbstractPersistenceManager
+	 * @see AbstractPersistenceManagerForSingleLocation
 	 * @see JiraIssuePersistenceManager
 	 * @see ActiveObjectPersistenceManager
 	 * @return persistence strategy for decision knowledge used in this project,
 	 *         either issue strategy or active object strategy. The active object
 	 *         strategy is the default strategy.
 	 */
-	AbstractPersistenceManager getPersistenceStrategy();
-
-	/**
-	 * Get the persistence strategy for decision knowledge used in this project.
-	 *
-	 * @see AbstractPersistenceManager
-	 * @see JiraIssuePersistenceManager
-	 * @see ActiveObjectPersistenceManager
-	 * @param projectKey of the JIRA project.
-	 * @return persistence strategy for decision knowledge used in this project,
-	 *         either issue strategy or active object strategy. The active object
-	 *         strategy is the default strategy.
-	 */
-	static AbstractPersistenceManager getPersistenceStrategy(String projectKey) {
-		return AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
-	}
+	AbstractPersistenceManagerForSingleLocation getPersistenceStrategy();
 
 	/**
 	 * Get the types of decision knowledge that is used in this project.
@@ -137,17 +125,19 @@ public interface DecisionKnowledgeProject {
 	/**
 	 * Set whether decision knowledge is extracted from git commit messages.
 	 *
-	 * @param isKnowledgeExtractedFromGit true if decision knowledge should be
-	 *                                    extracted from git commit messages.
+	 * @param isKnowledgeExtractedFromGit
+	 *            true if decision knowledge should be extracted from git commit
+	 *            messages.
 	 */
 	void setKnowledgeExtractedFromGit(boolean isKnowledgeExtractedFromGit);
-	
-    /**
-     * Return the uniform resource identifier of the git repository for this project.
-     *
-     * @return git uri as a String (if it is set, otherwise an empty String).
-     */
-    String getGitUri();
+
+	/**
+	 * Return the uniform resource identifier of the git repository for this
+	 * project.
+	 *
+	 * @return git uri as a String (if it is set, otherwise an empty String).
+	 */
+	String getGitUri();
 
 	/**
 	 * Determine whether decision knowledge is extracted from issue comments.
@@ -159,15 +149,17 @@ public interface DecisionKnowledgeProject {
 	/**
 	 * Set whether decision knowledge is extracted from issue comments.
 	 *
-	 * @param isKnowledgeExtractedFromIssues true if decision knowledge should be
-	 *                                       extracted from issue comments.
+	 * @param isKnowledgeExtractedFromIssues
+	 *            true if decision knowledge should be extracted from issue
+	 *            comments.
 	 */
 	void setKnowledgeExtractedFromIssues(boolean isKnowledgeExtractedFromIssues);
 
 	/**
 	 * Set whether the webhook is enabled for this project.
 	 *
-	 * @param isWebhookEnabled true if the webhook is enabled for this project.
+	 * @param isWebhookEnabled
+	 *            true if the webhook is enabled for this project.
 	 */
 	void setWebhookEnabled(boolean isWebhookEnabled);
 
@@ -182,8 +174,10 @@ public interface DecisionKnowledgeProject {
 	 * Set the URL where the decision knowledge should be sent and the secret key
 	 * for the submission.
 	 *
-	 * @param webhookUrl    URL of the webhook
-	 * @param webhookSecret secret key
+	 * @param webhookUrl
+	 *            URL of the webhook
+	 * @param webhookSecret
+	 *            secret key
 	 */
 	void setWebhookData(String webhookUrl, String webhookSecret);
 

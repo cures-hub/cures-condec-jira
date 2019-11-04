@@ -2,12 +2,14 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 public class VisTimeLine {
 
@@ -16,13 +18,12 @@ public class VisTimeLine {
 	@XmlElement
 	private HashSet<VisTimeLineNode> dataSet;
 
+	@XmlElement
+	private HashSet<VisTimeLineGroup> groupSet;
+
 	public VisTimeLine(String projectKey) {
 		if (projectKey != null) {
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
-			elementList = strategy.getDecisionKnowledgeElements();
-			AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
-					projectKey);
-			elementList.addAll(jiraIssueCommentPersistenceManager.getDecisionKnowledgeElements());
+			elementList = KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
 		}
 		createDataSet();
 	}
@@ -46,11 +47,31 @@ public class VisTimeLine {
 		this.elementList = elementList;
 	}
 
+	public HashSet<VisTimeLineGroup> getGroupSet() {
+		return groupSet;
+	}
+
+	public void setGroupSet(HashSet<VisTimeLineGroup> groupSet) {
+		this.groupSet = groupSet;
+	}
+
 	private void createDataSet() {
 		dataSet = new HashSet<>();
-		if(elementList != null) {
+		groupSet = new HashSet<>();
+		if (elementList != null) {
+			Set<Long> usedApplicationUser = new HashSet<Long>();
 			for (DecisionKnowledgeElement element : elementList) {
-				dataSet.add(new VisTimeLineNode(element));
+				ApplicationUser user = element.getCreator();
+				if (user == null) {
+					continue;
+				}
+				if (!usedApplicationUser.contains(user.getId())) {
+					usedApplicationUser.add(user.getId());
+					groupSet.add(new VisTimeLineGroup(user));
+				}
+				VisTimeLineNode node = new VisTimeLineNode(element);
+				node.setGroup(user.getId());
+				dataSet.add(node);
 			}
 		}
 	}
