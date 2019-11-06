@@ -643,6 +643,37 @@
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
+	ConDecAPI.prototype.setPostFeatureBranchCommits = function (checked, projectKey) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setPostFeatureBranchCommits.json?projectKey="
+			+ projectKey + "&newSetting=" + checked, null, function(error,
+																										 response) {
+			if (error === null) {
+				showFlag("success", "Post Feature Branch Commits for this project has been set to " + checked
+					+ ".");
+			}
+		});
+	};
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setPostSquashedCommits = function (checked, projectKey) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setPostSquashedCommits.json?projectKey="
+			+ projectKey + "&newSetting=" + checked, null, function(error,
+																										 response) {
+			if (error === null) {
+				showFlag("success", "Post Squashed Commits for this project has been set to " + checked
+					+ ".");
+				return false;
+			} else {
+				return true;
+			}
+		});
+	};
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
 	ConDecAPI.prototype.setGitUri = function setGitUri(projectKey, gitUri) {
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setGitUri.json?projectKey=" + projectKey
 				+ "&gitUri=" + gitUri, null, function(error, response) {
