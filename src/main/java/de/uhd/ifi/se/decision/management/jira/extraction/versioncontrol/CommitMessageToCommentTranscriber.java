@@ -51,10 +51,10 @@ public class CommitMessageToCommentTranscriber {
 			}
 			StringBuilder builder = new StringBuilder(comment);
 			builder.append("\r\n");
-			builder.append("--- Commit meta data --- \r\n");
-			builder.append("Author: " + commit.getAuthorIdent().getName() + "\r\n");
-			builder.append("Branch: " + this.branch.getName() + "\r\n");
-			builder.append("Hash: " + commit.getName());
+			builder.append("> Commit meta data\r\n");
+			builder.append("> Author: " + commit.getAuthorIdent().getName() + "\r\n");
+			builder.append("> Branch: " + this.branch.getName() + "\r\n");
+			builder.append("> Hash: " + commit.getName());
 			return (builder.toString());
 		}
 		return "";
