@@ -21,7 +21,6 @@
 
     ConDecRelationshipMatrixPage.prototype.buildMatrix = function() {
         conDecAPI.getDecisionMatrix(function (data) {
-            console.log(data);
             const div = document.getElementById("matrix");
             var event, index, id;
 
@@ -29,12 +28,13 @@
                 data: data.dataArray,
                 renderer: customRenderer,
                 rowHeaders: data.headerArray,
+				renderAllRows: true,
                 rowHeaderWidth: 150,
                 colHeaders: data.headerArray,
                 afterGetColHeader: function(i, TH) {
                     TH.innerHTML = '<div class="head">' + TH.innerHTML + '</div>'
                 },
-                //manualColumnResize: true,
+				viewportColumnRenderingOffset: 500,
                 colWidths: 25,
                 selectionMode: "single",
                 dropdownMenu: {
@@ -43,7 +43,6 @@
                         event = clickEvent;
                         index = selection[0].start.col;
                         id = data.headerIndexArray[index];
-                        console.log(data.headers[id]);
                         conDecContextMenu.createContextMenu(id, data.headers[id].documentationLocation, event, null);
                     }, items: {
                         "Context Menu": {
