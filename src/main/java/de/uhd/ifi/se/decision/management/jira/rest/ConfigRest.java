@@ -143,7 +143,11 @@ public class ConfigRest {
 		try {
 			ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey,
 				Boolean.valueOf(isKnowledgeExtractedFromGit));
-			//TODO: deactivate other git extraction
+				//deactivate other git extraction
+			ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey,
+				false);
+			ConfigPersistenceManager.setPostSquashedCommits(projectKey,
+				false);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error("Failed to enable or disable the knowledge extraction from git. Message: " + e.getMessage());

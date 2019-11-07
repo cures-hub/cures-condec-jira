@@ -650,6 +650,9 @@
 			if (error === null) {
 				showFlag("success", "Post Feature Branch Commits for this project has been set to " + checked
 					+ ".");
+				return checked;
+			} else {
+				return !checked;
 			}
 		});
 	};
@@ -664,9 +667,9 @@
 			if (error === null) {
 				showFlag("success", "Post Squashed Commits for this project has been set to " + checked
 					+ ".");
-				return false;
+				return checked;
 			} else {
-				return true;
+				return !checked;
 			}
 		});
 	};

@@ -347,20 +347,23 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
     });
 				
 	var gitToggle = document.getElementById('isKnowledgeExtractedFromGit-toggle');
-	if ($project.isKnowledgeExtractedFromGit() == true) {
+    var isPostSquashedCommitsActivatedToggle = document.getElementById('isPostSquashedCommitsActivated-toggle');
+    var isPostFeatureBranchCommitsActivatedToggle = document.getElementById('isPostFeatureBranchCommitsActivated-toggle');
+
+    if ($project.isKnowledgeExtractedFromGit() == true) {
 		gitToggle.checked = true;
 	} else {
 		gitToggle.checked = false;
+		isPostSquashedCommitsActivatedToggle.disabled = true;
+        isPostFeatureBranchCommitsActivatedToggle.disabled = true;
 	};
 
-    var isPostSquashedCommitsActivatedToggle = document.getElementById('isPostSquashedCommitsActivated-toggle');
     if ($project.isPostSquashedCommitsActivated() == true) {
         isPostSquashedCommitsActivatedToggle.checked = true;
     } else {
         isPostSquashedCommitsActivatedToggle.checked = false;
     };
 
-    var isPostFeatureBranchCommitsActivatedToggle = document.getElementById('isPostFeatureBranchCommitsActivated-toggle');
     if ($project.isPostFeatureBranchCommitsActivated() == true) {
         isPostFeatureBranchCommitsActivatedToggle.checked = true;
     } else {
@@ -432,8 +435,15 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 	});
 
 	gitToggle.addEventListener('change', function(error) {
-        this.busy = true;
+        console.log("git toggle");
+	    this.busy = true;
         conDecAPI.setKnowledgeExtractedFromGit(this.checked, this.value);
+        isPostSquashedCommitsActivatedToggle.disabled = !this.checked;
+        isPostFeatureBranchCommitsActivatedToggle.disabled = !this.checked;
+        if(!this.checked){
+            isPostSquashedCommitsActivatedToggle.checked = false;
+            isPostFeatureBranchCommitsActivatedToggle.checked = false;
+        }
         this.busy = false;
     });
 
@@ -441,7 +451,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
     isPostSquashedCommitsActivatedToggle.addEventListener('change', function(error) {
         console.log("isPostSquashedCommitsActivatedToggle");
         this.busy = true;
-        conDecAPI.setPostSquashedCommits(this.checked, this.value);
+        var success = conDecAPI.setPostSquashedCommits(this.checked, this.value);
+        this.checked = success;
         this.busy = false;
     });
 
@@ -449,7 +460,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
     isPostFeatureBranchCommitsActivatedToggle.addEventListener('change', function(error) {
         console.log("isPostFeatureBranchCommitsActivatedToggle");
         this.busy = true;
-        conDecAPI.setPostFeatureBranchCommits(this.checked, this.value);
+        this.checked = conDecAPI.setPostFeatureBranchCommits(this.checked, this.value);
         this.busy = false;
     });
 
