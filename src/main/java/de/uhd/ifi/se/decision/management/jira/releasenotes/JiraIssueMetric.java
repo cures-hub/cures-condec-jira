@@ -1,41 +1,42 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Locale;
 
 public enum JiraIssueMetric {
 	COUNT_DECISION_KNOWLEDGE, PRIORITY, COUNT_COMMENTS, SIZE_SUMMARY, SIZE_DESCRIPTION, DAYS_COMPLETION, EXPERIENCE_RESOLVER, EXPERIENCE_REPORTER;
-
 
 	@Override
 	public String toString() {
 		return this.name().toLowerCase(Locale.ENGLISH);
 	}
 
-
 	public static JiraIssueMetric getJiraIssueMetric(String type) {
 		if (type == null) {
 			return JiraIssueMetric.COUNT_DECISION_KNOWLEDGE;
 		}
 		switch (type.toLowerCase(Locale.ENGLISH)) {
-			case "count_decision_knowledge":
-				return JiraIssueMetric.COUNT_DECISION_KNOWLEDGE;
-			case "priority":
-				return JiraIssueMetric.PRIORITY;
-			case "count_comments":
-				return JiraIssueMetric.COUNT_COMMENTS;
-			case "size_summary":
-				return JiraIssueMetric.SIZE_SUMMARY;
-			case "size_description":
-				return JiraIssueMetric.SIZE_DESCRIPTION;
-			case "days_completion":
-				return JiraIssueMetric.DAYS_COMPLETION;
-			case "experience_resolver":
-				return JiraIssueMetric.EXPERIENCE_RESOLVER;
-			case "experience_reporter":
-				return JiraIssueMetric.EXPERIENCE_REPORTER;
-			default:
-				return JiraIssueMetric.COUNT_DECISION_KNOWLEDGE;
+		case "count_decision_knowledge":
+			return JiraIssueMetric.COUNT_DECISION_KNOWLEDGE;
+		case "priority":
+			return JiraIssueMetric.PRIORITY;
+		case "count_comments":
+			return JiraIssueMetric.COUNT_COMMENTS;
+		case "size_summary":
+			return JiraIssueMetric.SIZE_SUMMARY;
+		case "size_description":
+			return JiraIssueMetric.SIZE_DESCRIPTION;
+		case "days_completion":
+			return JiraIssueMetric.DAYS_COMPLETION;
+		case "experience_resolver":
+			return JiraIssueMetric.EXPERIENCE_RESOLVER;
+		case "experience_reporter":
+			return JiraIssueMetric.EXPERIENCE_REPORTER;
+		default:
+			return JiraIssueMetric.COUNT_DECISION_KNOWLEDGE;
 		}
 	}
 
@@ -64,7 +65,7 @@ public enum JiraIssueMetric {
 	/**
 	 * Convert all metrics to strings.
 	 *
-	 * @return list of metrics  as Strings.
+	 * @return list of metrics as Strings.
 	 */
 	public static List<String> toList() {
 		List<String> criteriaTypes = new ArrayList<String>();
