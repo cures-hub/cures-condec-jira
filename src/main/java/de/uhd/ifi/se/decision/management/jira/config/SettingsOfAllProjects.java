@@ -43,11 +43,11 @@ public class SettingsOfAllProjects extends AbstractSettingsServlet {
 			return new ConcurrentHashMap<>();
 		}
 
-		//AutoCreateDummyProject createPr = new AutoCreateDummyProject();
+		// AutoCreateDummyProject createPr = new AutoCreateDummyProject();
 		Map<String, DecisionKnowledgeProject> configMap = getProjectsMap();
 		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
-		velocityParameters.put("requestUrl", request.getRequestURL());
-		velocityParameters.put("projectsMap", configMap);
+		velocityParameters.put("request", request);
+		velocityParameters.put("projects", configMap);
 
 		return velocityParameters;
 	}
