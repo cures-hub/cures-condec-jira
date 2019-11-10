@@ -70,11 +70,11 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		ClassificationTrainer trainer = new OnlineClassificationTrainerImpl(projectKey);
 
 		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
+		velocityParameters.put("request", request);
 		velocityParameters.put("projectKey", projectKey);
 		velocityParameters.put("project", decisionKnowledgeProject);
 		velocityParameters.put("issueTypes", issueTypes);
 		velocityParameters.put("imageFolderUrl", ComponentGetter.getUrlOfImageFolder());
-		velocityParameters.put("requestUrl", request.getRequestURL());
 		velocityParameters.put("rootTypes", ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
 		velocityParameters.put("arffFiles", trainer.getTrainingFileNames());
 		velocityParameters.put("selectedArffFile", ConfigPersistenceManager.getArffFileForClassifier(projectKey));

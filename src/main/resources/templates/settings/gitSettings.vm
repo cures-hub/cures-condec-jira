@@ -1,0 +1,41 @@
+<h2>Decision Knowledge Extraction from Git</h2>
+
+<div class="field-group">
+	<label for="isKnowledgeExtractedFromGit-toggle">Extract from Git?</label>
+	<aui-toggle id="isKnowledgeExtractedFromGit-toggle"
+		value="$projectKey" label="Extract from	Git?"></aui-toggle>
+	<div class="description">Enables or disables whether decision
+		knowledge is extracted from git for this project. 
+	</div>
+</div>
+
+<div class="field-group">
+    <label for="git-uri-input-field">Git Repository</label> 
+    <input id="git-uri-input-field" type="text" class="text long-field"
+        	value="$project.getGitUri()" placeholder="https://github.com/cures-hub/cures-condec-jira.git" /> 
+    <input type="button"
+    	id="git-uri-button" class="aui-button aui-button-primary" value="Save Address" />
+    <div class="description">Uniform resource identifier of the git repository that will be cloned.</div>
+</div>
+
+<script>				
+var gitToggle = document.getElementById("isKnowledgeExtractedFromGit-toggle");
+if ($project.isKnowledgeExtractedFromGit() == true) {
+	gitToggle.checked = true;
+} else {
+	gitToggle.checked = false;
+};
+
+var gitSubmitButton = document.getElementById("git-uri-button");
+gitSubmitButton.addEventListener("click", function() {
+	var gitUri = document.getElementById("git-uri-input-field").value;
+	conDecAPI.setGitUri("$projectKey", gitUri);
+	window.onbeforeunload = null;
+});
+
+gitToggle.addEventListener("change", function(error) {
+	this.busy = true;
+	conDecAPI.setKnowledgeExtractedFromGit(this.checked, this.value);
+	this.busy = false;
+});
+</script>

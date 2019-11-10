@@ -117,7 +117,7 @@ public class TestSettingsOfAllProjects {
 
 	@Test
 	public void testGetProjectMapNoProject() {
-		assertEquals(1, SettingsOfAllProjects.getProjectsMap().size());
+		assertEquals(1, SettingsOfAllProjects.getProjects().size());
 	}
 
 	@Test
@@ -125,7 +125,7 @@ public class TestSettingsOfAllProjects {
 		Project project = new MockProject(1, "TEST");
 		((MockProject) project).setKey("TEST");
 		((MockProjectManager) projectManager).addProject(project);
-		assertTrue(SettingsOfAllProjects.getProjectsMap().size() >= 0);
+		assertTrue(SettingsOfAllProjects.getProjects().size() >= 0);
 	}
 
 	@Test
