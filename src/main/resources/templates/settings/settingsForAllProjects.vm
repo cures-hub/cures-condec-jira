@@ -9,105 +9,57 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 </head>
 <body>
+
 <h1>Continuous Management of Decision Knowledge (ConDec) Settings</h1>
-Enable the ConDec plugin for your projects here. 
-Advanced configuration possibilities are available in the project setting page.
+<p>
+	Activate the ConDec plugin for your projects here. 
+	Advanced configuration possibilities are available on the setting page of the respective project.
+</p>
 	
-	<form class="aui">
-		<table class="aui aui-table-list aui-table-sortable">
-			<thead>
-			<tr>
-				<th id="projectName">Project Name</th>
-				<th id="isActivated">ConDec Activated?</th>
-				<th id="isIssue">Store Knowledge in Jira Issues?</th>
-				<th id="extractGit">Extract Knowledge From Git?</th>
-				<th id="extractCom">Extract Knowledge From Jira Issue Text?</th>
-			</tr>
-			</thead>
-			<tbody>
-			#foreach ($project in $projects)
-			<tr>
-				<td headers="projectName">
-					<aui-label for="$project.getProjectKey()-toggle">
-						<a href="$request.getRequestUrl()/../settings?projectKey=$project.getProjectKey()">$project.getProjectName()</a>
-					</aui-label>
-				</td>
-				<td headers="isActivated"><aui-toggle id="$project.getProjectKey()-isActivated-toggle"
-						label="$project.getProjectName()-Activated"
-						value="$project.getProjectKey()"></aui-toggle> <script>
-                        $(document).ready(function () {
-                            var toggle = document.getElementById('$project.getProjectKey()-isActivated-toggle');
-                            #if ($project.isActivated() == true)
-                                toggle.checked = true;
-                            #else
-                                toggle.checked = false;
-                            #end
+<form class="aui">
+
+<table class="aui aui-table-list aui-table-sortable">
+	<thead>
+		<tr>
+			<th>Project Key</th>
+			<th>Project Name</th>			
+			<th>ConDec Activated?</th>
+		</tr>
+	</thead>
+	<tbody>
+		#foreach ($project in $projects)
+		<tr>
+			<td>
+				<a href="$request.getRequestUrl()/../settings?projectKey=$project.getProjectKey()">$project.getProjectKey()</a>
+			</td>	
+			<td>
+				<a href="$request.getRequestUrl()/../settings?projectKey=$project.getProjectKey()">$project.getProjectName()</a>
+			</td>			
+			<td>
+				<aui-toggle id="$project.getProjectKey()-isActivated-toggle"
+					value="$project.getProjectKey()">
+				</aui-toggle> 
+				<script>
+                    $(document).ready(function () {
+                    	var toggle = document.getElementById('$project.getProjectKey()-isActivated-toggle');
+                    	#if ($project.isActivated() == true)
+                            toggle.checked = true;
+                        #else
+                            toggle.checked = false;
+                        #end
                             toggle.addEventListener('change', function (error) {
-                                this.busy = true;
-                                conDecAPI.setActivated(this.checked, this.value);
-                                this.busy = false;
-                            });
+                            this.busy = true;
+                            conDecAPI.setActivated(this.checked, this.value);
+                            this.busy = false;
                         });
-					</script></td>
-				<td headers="isIssue"><aui-toggle	id="$project.getProjectKey()-isIssueStrategy-toggle"
-						label="$project.getProjectName()-IssueStrategy"
-						value="$project.getProjectKey()"></aui-toggle> <script>
-                        $(document).ready(function () {
-                            var toggle = document.getElementById('$project.getProjectKey()-isIssueStrategy-toggle');
-                            #if ($project.isIssueStrategy() == true)
-                                toggle.checked = true;
-                            #else
-                                toggle.checked = false;
-                            #end
-                            toggle.addEventListener('change', function (e) {
-                                this.busy = true;
-                                conDecAPI.setIssueStrategy(this.checked, this.value);
-                                this.busy = false;
-                            });
-                        });
-					</script></td>
-				<td headers="extractGit"><aui-toggle
-						id="$project.getProjectKey()-isKnowledgeExtractedFromGit-toggle"
-						label="$project.getProjectName()-KnowledgeExtractedFromGit"
-						value="$project.getProjectKey()"></aui-toggle>
-					<script>
-                        $(document).ready(function () {
-                            var toggle = document.getElementById('$project.getProjectKey()-isKnowledgeExtractedFromGit-toggle');
-                            #if ($project.isKnowledgeExtractedFromGit() == true)
-                                toggle.checked = true;
-                            #else
-                                toggle.checked = false;
-                            #end
-                            toggle.addEventListener('change', function (error) {
-                                this.busy = true;
-                                conDecAPI.setKnowledgeExtractedFromGit(this.checked, this.value);
-                                this.busy = false;
-                            });
-                        });
-					</script></td>
-				<td headers="extractCom"><aui-toggle
-						id="$project.getProjectKey()-isKnowledgeExtractedFromIssues-toggle"
-						label="$project.getProjectName()-KnowledgeExtractedFromIssues"
-						value="$project.getProjectKey()"></aui-toggle>
-					<script>
-                        $(document).ready(function () {
-                            var toggle = document.getElementById('$project.getProjectKey()-isKnowledgeExtractedFromIssues-toggle');
-                            #if ($project.isKnowledgeExtractedFromIssues() == true)
-                                toggle.checked = true;
-                            #else
-                                toggle.checked = false;
-                            #end
-                            toggle.addEventListener('change', function (error) {
-                                this.busy = true;
-                                conDecAPI.setKnowledgeExtractedFromIssues(this.checked, this.value);
-                                this.busy = false;
-                            });
-                        });
-					</script></td>
-			</tr>
-			#end
-			</tbody>
-		</table>
-	</form>
+                    });
+				</script>
+			</td>			
+		</tr>
+		#end
+	</tbody>
+</table>
+	
+</form>
 </body>
 </html>
