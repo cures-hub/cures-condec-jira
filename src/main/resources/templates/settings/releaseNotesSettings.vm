@@ -44,4 +44,17 @@
         </select>
         <div class="description">Selects the issue types which should be considered as "improvements".</div>
         <input type="button" value="Set improvements mapping" onclick="getReleaseNotesMultipleSelectedValues('improvements')" class="aui-button aui-button-primary"/>
-    </div>
+</div>
+
+<script>				
+	function getReleaseNotesMultipleSelectedValues(type) {
+		var x = document.getElementById("select-issue-type-" + type);
+		var selectedItems = [];
+        for (var i = 0; i < x.options.length; i++) {
+                if (x.options[i].selected == true) {
+                    selectedItems.push(x.options[i].value)
+                }
+        }
+        conDecAPI.setReleaseNoteMapping(type.toUpperCase(), '$projectKey', selectedItems);
+	}
+</script>        

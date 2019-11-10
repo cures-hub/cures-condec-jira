@@ -17,3 +17,25 @@
     	id="git-uri-button" class="aui-button aui-button-primary" value="Save Address" />
     <div class="description">Uniform resource identifier of the git repository that will be cloned.</div>
 </div>
+
+<script>				
+var gitToggle = document.getElementById('isKnowledgeExtractedFromGit-toggle');
+if ($project.isKnowledgeExtractedFromGit() == true) {
+	gitToggle.checked = true;
+} else {
+	gitToggle.checked = false;
+};
+
+var gitSubmitButton = document.getElementById('git-uri-button');
+gitSubmitButton.addEventListener("click", function() {
+	var gitUri = document.getElementById('git-uri-input-field').value;
+	conDecAPI.setGitUri('$projectKey', gitUri);
+	window.onbeforeunload = null;
+});
+
+gitToggle.addEventListener('change', function(error) {
+	this.busy = true;
+	conDecAPI.setKnowledgeExtractedFromGit(this.checked, this.value);
+	this.busy = false;
+});
+</script>
