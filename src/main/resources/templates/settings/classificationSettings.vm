@@ -52,11 +52,10 @@
 			classifyAllIssuesInProjectButton.addEventListener("click", function() {
 				console.log("classifyAllIssuesInProject:clicked");
 
-				if (confirm('Are you sure you want to classify all issue comments? This might take some time if the project is big.')) {
+				if (confirm("Are you sure you want to classify all issue comments? This might take some time if the project is big.")) {
 					//AJS.progressBars.setIndeterminate("#progress-bar");
-	        		conDecAPI.classifyWholeProject('$projectKey');
+	        		conDecAPI.classifyWholeProject("$projectKey");
 					//AJS.progressBars.update("#progress-bar", isSucceeded);
-
 	        	}
 	    	});
 	</script>	
@@ -101,14 +100,14 @@
 </div>    
     
 <script>
-	var issueCommentsToggle = document.getElementById('isKnowledgeExtractedFromIssues-toggle');
+	var issueCommentsToggle = document.getElementById("isKnowledgeExtractedFromIssues-toggle");
 	if ($project.isKnowledgeExtractedFromIssues() == true) {
 		issueCommentsToggle.checked = true;
 	} else {
 		issueCommentsToggle.checked = false;
 	};
 	
-	var isClassifierUsedToggle = document.getElementById('isClassifierUsed-toggle');
+	var isClassifierUsedToggle = document.getElementById("isClassifierUsed-toggle");
 	if ($project.isClassifierUsedForIssueComments() == true) {
 		isClassifierUsedToggle.checked = true;
 	} else {
@@ -117,10 +116,10 @@
 	
 	var clearSentenceDatabaseButton = document.getElementById("validateSentenceDatabase");
 	clearSentenceDatabaseButton.addEventListener("click", function() {
-		conDecAPI.clearSentenceDatabase('$projectKey');
+		conDecAPI.clearSentenceDatabase("$projectKey");
 	});
 	
-	var sentenceIconToggle = document.getElementById('iconParsing-toggle');
+	var sentenceIconToggle = document.getElementById("iconParsing-toggle");
 	if ($project.isIconParsingEnabled() == true) {
 		sentenceIconToggle.checked = true;
 	} else {
@@ -129,41 +128,41 @@
 
 	var evaluateModelButton = document.getElementById("evaluateModel-button");
 	evaluateModelButton.addEventListener("click", function () {
-		conDecAPI.evaluateModel('$projectKey', saveToFile("evaluation_results.json"));
+		conDecAPI.evaluateModel("$projectKey", saveToFile("evaluation_results.json"));
 	});
 	
 	var saveArffFileButton = document.getElementById("saveArffFile-button");
     saveArffFileButton.addEventListener("click", function () {
-    	conDecAPI.saveArffFile('$projectKey', true, saveToFile("ClassifierTrainingData.arff"));
+    	conDecAPI.saveArffFile("$projectKey", true, saveToFile("ClassifierTrainingData.arff"));
     });
 
 	var saveAllArffFileButton = document.getElementById("saveAllArffFile-button");
 	saveAllArffFileButton.addEventListener("click", function () {
-		conDecAPI.saveArffFile('$projectKey', false, saveToFile("AllClassifierTrainingData.arff"));
+		conDecAPI.saveArffFile("$projectKey", false, saveToFile("AllClassifierTrainingData.arff"));
 	});
 
     var trainClassifier = document.getElementById("trainClassifier-button");
     trainClassifier.addEventListener("click", function() {
-        if (confirm('Are you sure you want to retrain the classifier?')) {
+        if (confirm("Are you sure you want to retrain the classifier?")) {
             var trainDataSelect = document.getElementById("select-arff-file-train");
-            var isNewTrained = conDecAPI.trainClassifier('$projectKey', trainDataSelect.value);
+            var isNewTrained = conDecAPI.trainClassifier("$projectKey", trainDataSelect.value);
             console.log(trainDataSelect.value);
         }
     });
 	
-	issueCommentsToggle.addEventListener('change', function(error) {
+	issueCommentsToggle.addEventListener("change", function(error) {
 		this.busy = true;
 		conDecAPI.setKnowledgeExtractedFromIssues(this.checked, this.value);
 		this.busy = false;
 	});
 	
-	isClassifierUsedToggle.addEventListener('change', function(error) {
+	isClassifierUsedToggle.addEventListener("change", function(error) {
 		this.busy = true;
 		conDecAPI.setUseClassifierForIssueComments(this.checked, this.value);
 		this.busy = false;
 	});
 	
-	sentenceIconToggle.addEventListener('change', function(error) {
+	sentenceIconToggle.addEventListener("change", function(error) {
 		this.busy = true;
 		conDecAPI.setIconParsing(this.value, this.checked);
 		this.busy = false;
@@ -171,10 +170,10 @@
 
     var saveToFile = function (name) {
     	return function(content){
-			var link = document.createElement('a');
-			link.style.display = 'none';
-			link.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
-			link.setAttribute('download', name);
+			var link = document.createElement("a");
+			link.style.display = "none";
+			link.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(content));
+			link.setAttribute("download", name);
 			document.body.appendChild(link);
 			link.click();
 			document.body.removeChild(link);

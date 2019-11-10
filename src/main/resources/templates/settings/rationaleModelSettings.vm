@@ -27,12 +27,12 @@
 	}
 
 	for (j in additionalKnowledgeTypes) {
-		conDecAPI.isKnowledgeTypeEnabled(typeToggles[j].value, '$projectKey', typeToggles[j], function(isTypeEnabled, toggle) {				
+		conDecAPI.isKnowledgeTypeEnabled(typeToggles[j].value, "$projectKey", typeToggles[j], function(isTypeEnabled, toggle) {				
 	    	toggle.checked = isTypeEnabled;
 		});
-	    typeToggles[j].addEventListener('change', function (error) {
+	    typeToggles[j].addEventListener("change", function (error) {
 	        this.busy = true;
-	        conDecAPI.setKnowledgeTypeEnabled(this.checked, this.value, '$projectKey');
+	        conDecAPI.setKnowledgeTypeEnabled(this.checked, this.value, "$projectKey");
 	        this.busy = false;
 	    });           
 	}

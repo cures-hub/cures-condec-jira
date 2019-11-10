@@ -42,21 +42,21 @@
 </div>
 		
 <script>					
-	var webhookToggle = document.getElementById('isWebhookEnabled-toggle');
+	var webhookToggle = document.getElementById("isWebhookEnabled-toggle");
 	if ($project.isWebhookEnabled() == true) {
 		webhookToggle.checked = true;
 	} else {
 		webhookToggle.checked = false;
 	};
 	
-	var webHookSubmit = document.getElementById('submitWebhook');
+	var webHookSubmit = document.getElementById("submitWebhook");
 	webHookSubmit.addEventListener("click", function() {
 		var urlInput = document.getElementById("webhook-url");
 		var secretInput = document.getElementById("webhook-secret");
-		conDecAPI.setWebhookData('$projectKey', urlInput.value, secretInput.value);
+		conDecAPI.setWebhookData("$projectKey", urlInput.value, secretInput.value);
 		window.onbeforeunload = null;
 
-	webhookToggle.addEventListener('change', function(error) {
+	webhookToggle.addEventListener("change", function(error) {
 		this.busy = true;
 		conDecAPI.setWebhookEnabled(this.checked, this.value);
 		this.busy = false;
@@ -67,10 +67,10 @@
         var x = document.getElementById("select-root-types");
         for (var i = 0; i < x.options.length; i++) {
             if(x.options[i].selected == true){
-                conDecAPI.setWebhookType(x.options[i].value, '$projectKey', "true");
+                conDecAPI.setWebhookType(x.options[i].value, "$projectKey", "true");
             }
             else {
-                conDecAPI.setWebhookType(x.options[i].value, '$projectKey', "false");
+                conDecAPI.setWebhookType(x.options[i].value, "$projectKey", "false");
             }
         }
     }

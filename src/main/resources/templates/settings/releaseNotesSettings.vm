@@ -55,6 +55,6 @@
         		selectedItems.push(x.options[i].value)
         	}
         }
-        conDecAPI.setReleaseNoteMapping(type.toUpperCase(), '$projectKey', selectedItems);
+        conDecAPI.setReleaseNoteMapping(type.toUpperCase(), "$projectKey", selectedItems);
 	}
 </script>        
