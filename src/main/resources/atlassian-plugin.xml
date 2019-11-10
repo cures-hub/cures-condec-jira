@@ -58,8 +58,8 @@
 		<resource type="download" name="treant.css" location="/css/treant.css" />
 		<resource type="download" name="condec.css" location="/css/condec.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
-        <resource type="download" name="visTimeLine.css" location="/css/visTimeLine.css"/>
-		<resource type="download" name="matrix.css" location="/css/matrix.css"/>
+		<resource type="download" name="visTimeLine.css" location="/css/visTimeLine.css" />
+		<resource type="download" name="matrix.css" location="/css/matrix.css" />
 
 		<resource type="download" name="vis.css" location="/js/lib/vis/dist/vis.css" />
 		<resource type="download" name="gitdiffviewer.css" location="/css/gitdiffviewer.css" />		<!-- look and feel like JIRA -->
@@ -119,9 +119,9 @@
 		<resource type="download" name="condec.evolution.page.js"
 			location="/js/condec.evolution.page.js" />
 		<resource type="download" name="condec.relationship.page.js"
-				  location="/js/condec.relationship.page.js" />
+			location="/js/condec.relationship.page.js" />
 		<resource type="download" name="condec.relationshipMatrix.page.js"
-				  location="/js/condec.relationshipMatrix.page.js" />
+			location="/js/condec.relationshipMatrix.page.js" />
 	</web-resource>
 
 	<web-resource key="decision-knowledge-page-resources"
@@ -177,10 +177,11 @@
 			comments such as the model files for Weka and Meka classifiers.
 		</description>
 		<context>jira.view.issue</context>
-		<resource type="download" name="defaultTrainingData.arff" location="/classifier/defaultTrainingData.arff" />
+		<resource type="download" name="defaultTrainingData.arff"
+			location="/classifier/defaultTrainingData.arff" />
 		<resource type="download" name="condec.tab.panel.js" location="/js/condec.tab.panel.js" />
 
-		<!--Language models-->
+		<!--Language models -->
 		<resource type="download" name="person.bin" location="/classifier/person.bin" />
 		<resource type="download" name="lemmatizer.dict" location="/classifier/lemmatizer.dict" />
 		<resource type="download" name="glove.6b.50d.csv" location="/classifier/glove.6b.50d.csv" />
@@ -197,7 +198,8 @@
 		<context>jira-report-plugin</context>
 		<resource type="download" name="echarts.js" location="/js/lib/echart/echarts.js" />
 		<resource type="download" name="dataTool.js" location="/js/lib/echart/dataTool.js" />
-		<resource type="download" name="condec.report.js" location="/js/dashboard/condec.report.js" />
+		<resource type="download" name="condec.report.js"
+			location="/js/dashboard/condec.report.js" />
 		<resource type="download" name="condec.report.css" location="/css/condec.report.css" />
 	</web-resource>
 
@@ -278,17 +280,56 @@
 		name="Web Section for ConDec Plug-in in Project Settings" location="atl.jira.proj.config">
 		<label key="condec.project.settings.section.label" />
 		<description>
-			Adds the "Decision Knowledge" label to the project settings menu.
+			Adds the "ConDec Decision Knowledge" label to the project settings menu.
 		</description>
 	</web-section>
 	<web-item key="condec-project-settings-menu-item"
 		name="Menu Item for ConDec Plug-in Project Settings"
 		section="atl.jira.proj.config/condec-project-settings-section" weight="15">
-		<description>Adds the "ConDec project settings" menu item that links to the project settings.
+		<description>Adds the "Basic settings" menu item that links to the project settings.
 		</description>
 		<label key="condec.project.settings.menu.item" />
-		ConDec project settings
-		<link linkId="condec-project-settings-menu-item">/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded</link>
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<web-item key="condec-project-settings-menu-item-rationale-model"
+		name="Menu Item for ConDec Plug-in Project Settings of Rationale Model"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="16">
+		<description>Adds the "Rationale model" menu item.</description>
+		<label key="condec.project.settings.menu.item.rationale.model" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=rationaleModel</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<web-item key="condec-project-settings-menu-item-classification"
+		name="Menu Item for ConDec Plug-in Project Settings of Classification"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="17">
+		<description>Adds the "Classification" menu item.</description>
+		<label key="condec.project.settings.menu.item.classification" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=classification</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<web-item key="condec-project-settings-menu-item-git"
+		name="Menu Item for ConDec Plug-in Project Settings of Git Connection"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="18">
+		<description>Adds the "Git Extraction" menu item.</description>
+		<label key="condec.project.settings.menu.item.git" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=git</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<web-item key="condec-project-settings-menu-item-webhook"
+		name="Menu Item for ConDec Plug-in Project Settings of Webhook"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="19">
+		<description>Adds the "Webhook" menu item.</description>
+		<label key="condec.project.settings.menu.item.webhook" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=webhook</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<web-item key="condec-project-settings-menu-item-release-notes"
+		name="Menu Item for ConDec Plug-in Project Settings of Release Notes"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="20">
+		<description>Adds the "Release Notes" menu item.</description>
+		<label key="condec.project.settings.menu.item.release.notes" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=releaseNotes</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
 	<servlet key="servlet-for-settings-of-single-project"
@@ -296,6 +337,10 @@
 		class="de.uhd.ifi.se.decision.management.jira.config.SettingsOfSingleProject">
 		<description>Provides the project settings page for the project administrators.</description>
 		<url-pattern>/condec/settings</url-pattern>
+		<init-param>
+            <param-name>category</param-name>
+            <param-value>basic</param-value>
+        </init-param>
 	</servlet>
 
 	<!-- Active Objects -->
@@ -401,7 +446,8 @@
 		class="de.uhd.ifi.se.decision.management.jira.view.DecisionKnowledgeReport">
 		<label key="condec.report.label" />
 		<description key="condec.report.description" />
-		<resource name="view" type="velocity" location="/templates/dashboard/decisionKnowledgeReport.vm" />
+		<resource name="view" type="velocity"
+			location="/templates/dashboard/decisionKnowledgeReport.vm" />
 		<properties>
 			<property>
 				<key>selectedProjectId</key>
@@ -421,7 +467,7 @@
 	</report>
 
 	<!-- ConDec feature branch dashboard item -->
-	<!-- https://developer.atlassian.com/server/jira/platform/building-a-dashboard-item/ https://developer.atlassian.com/server/jira/platform/writing-a-dashboard-item-app/
+	<!-- https://developer.atlassian.com/server/jira/platform/building-a-dashboard-item/ https://developer.atlassian.com/server/jira/platform/writing-a-dashboard-item-app/ 
 		Dashboard item will eventually replace gadgets: https://developer.atlassian.com/server/jira/platform/dashboard-item-module/ -->
 	<web-resource key="dashboard-item-condec-resources"
 		name="ConDec feature task branches Web Resources">
@@ -461,7 +507,7 @@
 				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
 		</definition>
 		<description key="condec.dashboard.featurebranch.description" />
-		<!--<resource name="view" type="velocity" location=":dashboard-item-condec-resources/Dashboard.Item.ConDec.Feature.Branches.Templates.Static"
+		<!--<resource name="view" type="velocity" location=":dashboard-item-condec-resources/Dashboard.Item.ConDec.Feature.Branches.Templates.Static" 
 			/> -->
 		<resource name="view" type="velocity"
 			location="/templates/dashboard/featureBranchesDashboardItem.vm" />

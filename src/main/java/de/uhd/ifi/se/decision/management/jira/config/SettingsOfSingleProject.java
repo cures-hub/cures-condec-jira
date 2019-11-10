@@ -70,6 +70,7 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		ClassificationTrainer trainer = new OnlineClassificationTrainerImpl(projectKey);
 
 		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
+		velocityParameters.put("request", request);
 		velocityParameters.put("projectKey", projectKey);
 		velocityParameters.put("project", decisionKnowledgeProject);
 		velocityParameters.put("issueTypes", issueTypes);

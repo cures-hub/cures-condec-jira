@@ -1,5 +1,5 @@
 <h2>Release-Notes</h2>
-		<h3>Default Jira-Issue-Type-Mapping</h3>
+<h3>Default Jira-Issue-Type-Mapping</h3>
     <div class="field-group">
         <label for="select-issue-type-new_features">New features</label>
         <select class="multi-select" size="8" multiple="multiple" id="select-issue-type-new_features" name="select-issue-type-new_features">
@@ -51,9 +51,9 @@
 		var x = document.getElementById("select-issue-type-" + type);
 		var selectedItems = [];
         for (var i = 0; i < x.options.length; i++) {
-                if (x.options[i].selected == true) {
-                    selectedItems.push(x.options[i].value)
-                }
+        	if (x.options[i].selected == true) {
+        		selectedItems.push(x.options[i].value)
+        	}
         }
         conDecAPI.setReleaseNoteMapping(type.toUpperCase(), '$projectKey', selectedItems);
 	}

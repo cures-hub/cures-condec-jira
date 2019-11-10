@@ -13,17 +13,21 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 <form class="aui">
 <h1>Continuous Management of Decision Knowledge (ConDec)</h1>
 
-#parse("templates/settings/basicSettings.vm")
+#set ($category = $request.getParameter("category"))
 
-#parse("templates/settings/rationaleModelSettings.vm")
-
-#parse("templates/settings/classificationSettings.vm")
-
-#parse("templates/settings/gitSettings.vm")
-
-#parse("templates/settings/webhookSettings.vm")
-
-#parse("templates/settings/releaseNotesSettings.vm")
+#if( $category == "rationaleModel" )
+	#parse("templates/settings/rationaleModelSettings.vm")
+#elseif( $category == "classification" )
+	#parse("templates/settings/classificationSettings.vm")
+#elseif( $category == "git" )
+	#parse("templates/settings/gitSettings.vm")
+#elseif( $category == "webhook" )
+	#parse("templates/settings/webhookSettings.vm")
+#elseif( $category == "releaseNotes" )
+	#parse("templates/settings/releaseNotesSettings.vm")
+#else
+	#parse("templates/settings/basicSettings.vm")
+#end
 
 </form>
 </body>
