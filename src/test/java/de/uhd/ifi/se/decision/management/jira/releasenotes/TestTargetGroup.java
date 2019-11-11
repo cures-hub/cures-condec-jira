@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 public class TestTargetGroup {
 
@@ -15,6 +15,5 @@ public class TestTargetGroup {
 	public void testGetTargetGroup() {
 		assertEquals(TargetGroup.DEVELOPER, TargetGroup.getTargetGroup("developer"));
 		assertEquals(TargetGroup.DEVELOPER, TargetGroup.getTargetGroup(null));
-
 	}
 }

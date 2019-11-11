@@ -19,7 +19,7 @@ public class TestReleaseNote {
 		note = new ReleaseNoteImpl(null, null, null, null, null);
 		id = 312;
 		title = "version 1.0 Great title";
-		projectKey = "test";
+		projectKey = "TEST";
 		content = "<h1>verision</h2>&/=)(09(=)(=)&%kjhkjhaksdjlklöajlaksdfalsdj";
 	}
 
