@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.Set;
 
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
@@ -121,6 +122,21 @@ public interface DecisionKnowledgeProject {
 	 * @return true if decision knowledge is extracted from git commit messages.
 	 */
 	boolean isKnowledgeExtractedFromGit();
+
+	/**
+	 * Determine whether comments extracted from git commit messages of squashed commits should be posted.
+	 *
+	 * @return true if they should be posted.
+	 */
+	boolean isPostSquashedCommitsActivated();
+
+	/**
+	 * Determine whether comments extracted from git commit messages of feature branch commits should be posted.
+	 *
+	 * @return true if they should be posted.
+	 */
+	boolean isPostFeatureBranchCommitsActivated();
+
 
 	/**
 	 * Set whether decision knowledge is extracted from git commit messages.

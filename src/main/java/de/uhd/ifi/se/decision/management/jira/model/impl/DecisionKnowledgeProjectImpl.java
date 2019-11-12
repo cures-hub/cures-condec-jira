@@ -93,6 +93,16 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	}
 
 	@Override
+	public boolean isPostSquashedCommitsActivated() {
+		return ConfigPersistenceManager.isPostSquashedCommitsActivated(projectKey);
+	}
+
+	@Override
+	public boolean isPostFeatureBranchCommitsActivated() {
+		return ConfigPersistenceManager.isPostFeatureBranchCommitsActivated(projectKey);
+	}
+
+	@Override
 	public void setKnowledgeExtractedFromGit(boolean isKnowledgeExtractedFromGit) {
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, isKnowledgeExtractedFromGit);
 	}
