@@ -23,18 +23,19 @@
         conDecAPI.getDecisionMatrix(function (data) {
             const div = document.getElementById("matrix");
             var event, index, id;
+			console.log(data);
 
             var matrix = new Handsontable(div, {
-                data: data.coloredRows,
-                renderer: customRenderer,
+            	data: data.coloredRows,
+				renderer: customRenderer,
                 rowHeaders: data.headerSummaries,
-				renderAllRows: true,
+				width: 1000,
+				height: 500,
                 rowHeaderWidth: 150,
                 colHeaders: data.headerSummaries,
                 afterGetColHeader: function(i, TH) {
                     TH.innerHTML = '<div class="head">' + TH.innerHTML + '</div>'
                 },
-				viewportColumnRenderingOffset: 500,
                 colWidths: 25,
                 selectionMode: "single",
                 dropdownMenu: {
@@ -65,10 +66,6 @@
         matrix.innerHTML = "";
         conDecRelationshipMatrixPage.buildMatrix();
     };
-
-    ConDecRelationshipMatrixPage.prototype.addContextMenu = function() {
-
-    }
 
     ConDecRelationshipMatrixPage.prototype.buildLegend = function buildLegend() {
         conDecAPI.getLinkTypes(function(linkTypes) {

@@ -32,8 +32,8 @@
 }
 
 #matrix {
-    width: fit-content;
-    height: fit-content;
+    width: 1000px;
+    height: 500px;
 }
 
 .handsontable .head .relative {
