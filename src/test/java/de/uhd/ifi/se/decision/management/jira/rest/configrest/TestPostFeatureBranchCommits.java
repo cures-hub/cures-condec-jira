@@ -32,4 +32,10 @@ public class TestPostFeatureBranchCommits extends TestConfigSuper {
 		configRest.setPostFeatureBranchCommits(request, "TEST", "ok");
 		assertEquals(false, ConfigPersistenceManager.isPostFeatureBranchCommitsActivated("TEST"));
 	}
+
+	@Test
+	public void testNullBooleanValue() {
+		assertNotEquals(Response.status(Response.Status.OK).build().getStatus(),
+			configRest.setPostFeatureBranchCommits(request, "TEST", null));
+	}
 }

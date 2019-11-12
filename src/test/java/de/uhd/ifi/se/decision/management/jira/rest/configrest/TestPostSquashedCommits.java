@@ -33,4 +33,10 @@ public class TestPostSquashedCommits extends TestConfigSuper {
 		configRest.setPostSquashedCommits(request, "TEST", "ok");
 		assertEquals(false, ConfigPersistenceManager.isPostSquashedCommitsActivated("TEST"));
 	}
+
+	@Test
+	public void testNullBooleanValue() {
+		assertNotEquals(Response.status(Response.Status.OK).build().getStatus(),
+			configRest.setPostSquashedCommits(request, "TEST", null));
+	}
 }
