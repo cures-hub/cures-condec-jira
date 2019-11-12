@@ -42,7 +42,7 @@
     <label for="classifyAllIssuesInProject">Suggest Tags for Whole Project?</label>
     <input type="button" class="aui-button" id="classifyAllIssuesInProject" value="Classify all Comments"/>
     <div class="description">Classifies decision knowledge for all issue comments for this project.</div>
-    <div id="progress-bar" class="aui-progress-indicator">
+    <div class="aui-progress-indicator">
         <span id="classify-whole-project-progress-bar"></span>
     </div>
 </div>
@@ -87,7 +87,7 @@
     </select>
     <input type="button" class="aui-button" id="trainClassifier-button" value="Train Classifier"/>
     <div class="description">Trains the classifier on the selected Attribute-Relation File Format (ARFF) file.</div>
-    <div id="progress-bar" class="aui-progress-indicator">
+    <div class="aui-progress-indicator">
         <span id="train-classifier-progress"></span>
     </div>
 </div>
