@@ -21,19 +21,23 @@ public class Matrix {
     public Matrix(String projectKey, List<DecisionKnowledgeElement> decisions) {
 		this.headerElements = decisions;
         this.coloredRows = this.getColoredRows(projectKey);
-        this.headerSummaries = this.getHeaderSummaries();
+
+		this.headerSummaries = new ArrayList<>();
+		for (DecisionKnowledgeElement decision : this.headerElements) {
+			this.headerSummaries.add(decision.getSummary());
+		}
     }
 
 	public List<DecisionKnowledgeElement> getHeaderElements() {
 		return headerElements;
 	}
 
+	public List<List<String>> getColoredRows() {
+		return this.coloredRows;
+	}
+
 	public List<String> getHeaderSummaries() {
-        List<String> summaries = new ArrayList<>();
-        for (DecisionKnowledgeElement decision : this.headerElements) {
-        	summaries.add(decision.getSummary());
-		}
-        return summaries;
+        return this.headerSummaries;
     }
 
     public List<List<String>> getColoredRows(String projectKey) {
