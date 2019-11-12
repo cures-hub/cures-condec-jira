@@ -27,34 +27,23 @@ public class TestMatrix extends TestSetUp {
 		decisions.add(element_2);
 
 		matrix = new Matrix("Test", decisions);
+	}
 
+
+	@Test
+	public void testGetHeaderElements() {
+		assertEquals(2, this.matrix.getHeaderElements().size());
 	}
 
 	@Test
-	public void testGetHeaders() {
-		assertEquals(2, this.matrix.getHeaders().size());
+	public void testGetHeaderSummaries() {
+		assertTrue(this.matrix.getHeaderSummaries().contains("TESTfwf"));
 	}
 
 	@Test
-	public void testGetHeaderArray() {
-		assertTrue(this.matrix.getHeaderArray().contains("TESTfwf"));
-	}
-
-	@Test
-	public void testGetData() {
-		assertTrue(this.matrix.getData().containsKey((long) 1));
-		assertEquals(2, this.matrix.getData().size());
-	}
-
-	@Test
-	public void testGetDataArray() {
-		assertEquals(2, this.matrix.getDataArray().size());
-	}
-
-	@Test
-	public void testGetDataEntries() {
-		assertTrue(this.matrix.getData().get((long) 1).contains("LightGray"));
-		assertTrue(this.matrix.getData().get((long) 1).contains("White"));
+	public void testGetColoredRows() {
+		assertTrue(this.matrix.getColoredRows("Test").get(1).contains("LightGray"));
+		assertTrue(this.matrix.getColoredRows("Test").get(1).contains("White"));
 	}
 
 

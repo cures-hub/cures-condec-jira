@@ -25,12 +25,12 @@
             var event, index, id;
 
             var matrix = new Handsontable(div, {
-                data: data.dataArray,
+                data: data.coloredRows,
                 renderer: customRenderer,
-                rowHeaders: data.headerArray,
+                rowHeaders: data.headerSummaries,
 				renderAllRows: true,
                 rowHeaderWidth: 150,
-                colHeaders: data.headerArray,
+                colHeaders: data.headerSummaries,
                 afterGetColHeader: function(i, TH) {
                     TH.innerHTML = '<div class="head">' + TH.innerHTML + '</div>'
                 },
@@ -39,11 +39,10 @@
                 selectionMode: "single",
                 dropdownMenu: {
                     callback: function (key, selection, clickEvent) {
-                        // Common callback for all options
                         event = clickEvent;
                         index = selection[0].start.col;
-                        id = data.headerIndexArray[index];
-                        conDecContextMenu.createContextMenu(id, data.headers[id].documentationLocation, event, null);
+                        id = data.headerElements[index].id;
+                        conDecContextMenu.createContextMenu(id, data.headerElements[index].documentationLocation, event, null);
                     }, items: {
                         "Context Menu": {
                             name: "Open Context Menu"
