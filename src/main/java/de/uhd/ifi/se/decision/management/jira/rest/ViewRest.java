@@ -307,13 +307,15 @@ public class ViewRest {
     @Produces({MediaType.APPLICATION_JSON})
     public Response getFilterSettings(@Context HttpServletRequest request, @QueryParam("searchTerm") String searchTerm,
                                       @QueryParam("elementKey") String elementKey) {
-        if (checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()) {
-            return checkIfElementIsValid(elementKey);
-        }
+        String projectKey;
+    	if (checkIfProjectKeyIsValid(elementKey).getStatus() == Status.OK.getStatusCode()) {
+        	projectKey = elementKey;
+		} else if (checkIfElementIsValid(elementKey).getStatus() == Status.OK.getStatusCode()) {
+            projectKey = getProjectKey(elementKey);
+        } else {
+			return checkIfElementIsValid(elementKey);
+		}
         ApplicationUser user = AuthenticationManager.getUser(request);
-        String projectKey = getProjectKey(elementKey);
-        // FilterDataProvider filterDataProvider = new FilterDataProvider(projectKey,
-        // searchTerm, user);
         return Response.ok(new FilterSettingsImpl(projectKey, searchTerm, user)).build();
     }
 

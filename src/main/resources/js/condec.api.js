@@ -29,6 +29,7 @@
 		this.extendedKnowledgeTypes = getExtendedKnowledgeTypes(this.knowledgeTypes);
         this.knowledgeStatus = ["Idea","Discarded", "Decided","Rejected", "Undefined"];
         this.issueStatus = ["Resolved", "Unresolved"];
+        this.linkTypes = getLinkTypes(projectKey);
 
         this.extendedStatus = getExtendedStatus();
 	};
@@ -521,9 +522,6 @@
 	 * external reference: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getFilterSettings = function getFilterSettings(key, searchTerm, callback) {
-		if (key = "projectKey") {
-			key = getProjectKey();
-		}
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getFilterSettings.json?key=" + key
 				+ "&searchTerm=" + searchTerm, function(error, filterSettings) {
 			if (error === null) {
@@ -589,11 +587,11 @@
 		});
 	};
 
-	ConDecAPI.prototype.getDecisionGraphFiltered = function getDecisionGraphFiltered(selectedLinkTypes, callback) {
+	ConDecAPI.prototype.getDecisionGraphFiltered = function getDecisionGraphFiltered(selectedLinkTypes, searchString, callback) {
 		var projectKey= getProjectKey();
 		var filterSettings = {
 			"projectKey" : projectKey,
-			"searchString" : "",
+			"searchString" : searchString,
 			"createdEarliest" : -1,
 			"createdLatest" : -1,
 			"documentationLocations" : [ "" ],
@@ -745,6 +743,18 @@
 				+ "/rest/decisions/latest/config/getKnowledgeTypes.json?projectKey=" + projectKey);
 		if (knowledgeTypes !== null) {
 			return knowledgeTypes;
+		}
+	}
+
+	function getLinkTypes(projectKey) {
+		var linkTypes = getResponseAsReturnValue(AJS.contextPath()
+			+ "/rest/decisions/latest/config/getLinkTypes.json?projectKey=" + projectKey) ;
+		if (linkTypes !== null) {
+			var linkTypeArray = [];
+			for (var link in linkTypes) {
+				linkTypeArray.push(link);
+			}
+			return linkTypeArray;
 		}
 	}
 

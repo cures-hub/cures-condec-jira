@@ -250,13 +250,30 @@ public class FilterExtractorImpl implements FilterExtractor {
 			links.addAll(element.getOutwardLinks());
 			if (links.size() == 0) {
 				if (filterSettings.getNamesOfSelectedLinkTypes().size() == filterSettings.getAllLinkTypes().size()) {
-					filteredElements.add(element);
+					if (filterSettings.getSearchString().equals("")
+						|| filterSettings.getSearchString().equals("?filter=-4")
+						|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
+						filteredElements.add(element);
+					} else {
+						if (checkIfElementMatchesStringFilter(element)) {
+							filteredElements.add(element);
+						}
+					}
 				}
 			} else {
 				for (Link link : links) {
 					if (filterSettings.getNamesOfSelectedLinkTypes().contains(link.getType())) {
-						filteredElements.add(element);
-						break;
+						if (filterSettings.getSearchString().equals("")
+							|| filterSettings.getSearchString().equals("?filter=-4")
+							|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
+							filteredElements.add(element);
+							break;
+						} else {
+							if (checkIfElementMatchesStringFilter(element)) {
+								filteredElements.add(element);
+								break;
+							}
+						}
 					}
 				}
 			}

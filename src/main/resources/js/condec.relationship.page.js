@@ -15,7 +15,6 @@
 			conDecObservable = _conDecObservable;
 			conDecVis = _conDecVis;
 
-			initDecisionLinkFilter();
 			addOnClickEventToDecisionLinkFilterButton();
 
 			conDecObservable.subscribe(this);
@@ -32,8 +31,8 @@
 		});
 	};
 
-	ConDecRelationshipPage.prototype.buildDecisionGraphFiltered = function(linkTypes) {
-		conDecAPI.getDecisionGraphFiltered(linkTypes, function (data) {
+	ConDecRelationshipPage.prototype.buildDecisionGraphFiltered = function(linkTypes, searchString) {
+		conDecAPI.getDecisionGraphFiltered(linkTypes, searchString, function (data) {
 			buildGraphNetwork(data);
 		});
 	};
@@ -42,43 +41,28 @@
 		conDecRelationshipPage.buildDecisionGraph();
 	}
 
-	function applyDecisionLinkFilter() {
-		var linkTypes = [];
-
-		for (var i = 0; i < AJS.$('#linktype-dropdown').children().size(); i++) {
-			if (typeof AJS.$('#linktype-dropdown').children().eq(i).attr('checked') !== typeof undefined
-				&& AJS.$('#linktype-dropdown').children().eq(i).attr('checked') !== false) {
-				linkTypes.push(AJS.$('#linktype-dropdown').children().eq(i).text());
-			}
-		}
-		conDecRelationshipPage.buildDecisionGraphFiltered(linkTypes);
-	}
-
 	function addOnClickEventToDecisionLinkFilterButton() {
+		var linkTypeDropdown = document.getElementById("linktype-dropdown");
+		var linkTypes = conDecAPI.linkTypes;
+		for (var index = 0; index < linkTypes.length; index++) {
+			linkTypeDropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + "checked" + ">"
+				+ linkTypes[index] + "</aui-item-checkbox>");
+		}
+
 		var filterButton = document.getElementById("filterDecisionLinks-button");
 
 		filterButton.addEventListener("click", function(event) {
-			event.preventDefault();
-			event.stopPropagation();
-			applyDecisionLinkFilter();
-		});
-	}
+			var linkTypes = [];
+			var searchString = document.getElementById("decision-search-input").value;
 
-	function initDecisionLinkFilter() {
-		var linkTypeDropdown = document.getElementById("linktype-dropdown");
-		conDecAPI.getFilterSettings("projectKey", "", function(filterData) {
-			var allLinkTypes = filterData.allLinkTypes;
-			var selectedLinkTypes = filterData.selectedLinkTypes;
-			linkTypeDropdown.innerHTML = "";
-
-			for (var index in allLinkTypes) {
-				var isSelected = "";
-				if (selectedLinkTypes.includes(allLinkTypes[index])) {
-					isSelected = "checked";
+			for (var i = 0; i < AJS.$('#linktype-dropdown').children().size(); i++) {
+				if (typeof AJS.$('#linktype-dropdown').children().eq(i).attr('checked') !== typeof undefined
+					&& AJS.$('#linktype-dropdown').children().eq(i).attr('checked') !== false) {
+					linkTypes.push(AJS.$('#linktype-dropdown').children().eq(i).text());
 				}
-				linkTypeDropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + isSelected + ">"
-					+ allLinkTypes[index] + "</aui-item-checkbox>");
 			}
+
+			conDecRelationshipPage.buildDecisionGraphFiltered(linkTypes, searchString);
 		});
 	}
 
