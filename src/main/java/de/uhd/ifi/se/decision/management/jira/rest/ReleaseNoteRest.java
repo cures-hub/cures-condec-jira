@@ -31,7 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCreator;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteImpl;
 
 /**
- * REST resource for Release Note
+ * REST resource for release notes
  */
 @Path("/release-note")
 public class ReleaseNoteRest {
@@ -74,11 +74,11 @@ public class ReleaseNoteRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response postProposedKeys(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			HashMap<String, HashMap<String, ArrayList<String>>> postObject) {
+			HashMap<String, HashMap<String, List<String>>> postObject) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		HashMap<String, ArrayList<String>> keysForContent = postObject.get("selectedKeys");
+		HashMap<String, List<String>> keysForContent = postObject.get("selectedKeys");
 		String title = postObject.get("title").get("id").get(0);
-		ArrayList<String> additionalConfiguration = postObject.get("additionalConfiguration").get("id");
+		List<String> additionalConfiguration = postObject.get("additionalConfiguration").get("id");
 		MarkdownCreator markdownCreator = new MarkdownCreator(user, projectKey, keysForContent, title,
 				additionalConfiguration);
 

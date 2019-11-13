@@ -73,14 +73,12 @@ public class TestReleaseNoteConfiguration {
 	public void testBugFixMapping() {
 		config.setBugFixMapping(bugFixMapping);
 		assertEquals(bugFixMapping, config.getBugFixMapping());
-
 	}
 
 	@Test
 	public void testFeatureMapping() {
 		config.setFeatureMapping(featureMapping);
 		assertEquals(featureMapping, config.getFeatureMapping());
-
 	}
 
 	@Test

@@ -6,10 +6,9 @@ import java.util.EnumMap;
 import java.util.List;
 
 /**
- * Private class to do the calculations of the ratings
+ * Private class to calculate the ratings for relevance.
  */
 class RatingCalculator {
-
 
 	/**
 	 * Scale a number from x to y
@@ -19,8 +18,9 @@ class RatingCalculator {
 	 * @param baseMax
 	 * @return double
 	 */
-	protected static double scaleFromSmallToLarge(final double valueIn, final double baseMin, final double baseMax, double limitMin, double limitMax) {
-		//check if baseMax===base min
+	protected static double scaleFromSmallToLarge(final double valueIn, final double baseMin, final double baseMax,
+			double limitMin, double limitMax) {
+		// check if baseMax===base min
 		if (baseMax - baseMin == 0) {
 			return limitMax;
 		}
@@ -32,14 +32,16 @@ class RatingCalculator {
 	 * @param proposals
 	 * @return
 	 */
-	protected static EnumMap<JiraIssueMetric, ArrayList<Integer>> getFlatListOfValues(ArrayList<ReleaseNoteIssueProposal> proposals) {
+	protected static EnumMap<JiraIssueMetric, ArrayList<Integer>> getFlatListOfValues(
+			ArrayList<ReleaseNoteIssueProposal> proposals) {
 
-		EnumMap<JiraIssueMetric, ArrayList<Integer>> countValues = new EnumMap<JiraIssueMetric, ArrayList<Integer>>(JiraIssueMetric.class);
+		EnumMap<JiraIssueMetric, ArrayList<Integer>> countValues = new EnumMap<JiraIssueMetric, ArrayList<Integer>>(
+				JiraIssueMetric.class);
 		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
 
 		proposals.forEach(dkElement -> {
 			EnumMap<JiraIssueMetric, Integer> existingCriteriaValues = dkElement.getMetrics();
-			//add values to
+			// add values to
 			criteriaEnumList.forEach(criteria -> {
 
 				Integer currentValue = existingCriteriaValues.get(criteria);
@@ -67,7 +69,10 @@ class RatingCalculator {
 	 * @param countValues
 	 * @param medianOfProposals
 	 */
-	protected static void getMinAndMaxValues(EnumMap<JiraIssueMetric, ArrayList<Integer>> minValues, EnumMap<JiraIssueMetric, ArrayList<Integer>> maxValues, EnumMap<JiraIssueMetric, ArrayList<Integer>> countValues, EnumMap<JiraIssueMetric, Integer> medianOfProposals) {
+	protected static void getMinAndMaxValues(EnumMap<JiraIssueMetric, ArrayList<Integer>> minValues,
+			EnumMap<JiraIssueMetric, ArrayList<Integer>> maxValues,
+			EnumMap<JiraIssueMetric, ArrayList<Integer>> countValues,
+			EnumMap<JiraIssueMetric, Integer> medianOfProposals) {
 		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
 		criteriaEnumList.forEach(criteria -> {
 			ArrayList<Integer> values = countValues.get(criteria);
@@ -75,12 +80,12 @@ class RatingCalculator {
 			ArrayList<Integer> firstInterval = new ArrayList<Integer>();
 			ArrayList<Integer> secondInterval = new ArrayList<Integer>();
 			if (values != null && values.size() > 0) {
-				//first interval
+				// first interval
 				values.forEach(value -> {
 					if (value <= medianOfProposals.get(criteria)) {
 						firstInterval.add(value);
 					} else {
-						//second interval
+						// second interval
 						secondInterval.add(value);
 					}
 				});
@@ -103,8 +108,8 @@ class RatingCalculator {
 		});
 	}
 
-
-	protected static EnumMap<JiraIssueMetric, Integer> getMedianOfProposals(ArrayList<ReleaseNoteIssueProposal> proposals) {
+	protected static EnumMap<JiraIssueMetric, Integer> getMedianOfProposals(
+			ArrayList<ReleaseNoteIssueProposal> proposals) {
 		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
 		EnumMap<JiraIssueMetric, Integer> medians = new EnumMap<JiraIssueMetric, Integer>(JiraIssueMetric.class);
 		criteriaEnumList.forEach(criteria -> {
@@ -112,16 +117,16 @@ class RatingCalculator {
 			proposals.forEach(proposal -> {
 				flatList.add(proposal.getMetrics().get(criteria));
 			});
-			//sort list
+			// sort list
 			Collections.sort(flatList);
-			//find median
+			// find median
 			double medianIndex = 0.0;
 			if (flatList.size() > 0) {
 				medianIndex = ((double) flatList.size()) / 2;
 			}
-			//use floor value
+			// use floor value
 			medianIndex = Math.floor(medianIndex);
-			//the median is the value at index medianIndex
+			// the median is the value at index medianIndex
 			medians.put(criteria, (flatList.get((int) medianIndex)));
 		});
 		return medians;

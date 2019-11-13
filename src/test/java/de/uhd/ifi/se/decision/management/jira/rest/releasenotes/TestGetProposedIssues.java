@@ -1,11 +1,25 @@
 package de.uhd.ifi.se.decision.management.jira.rest.releasenotes;
 
+import static org.junit.Assert.assertEquals;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.AdditionalConfigurationOptions;
@@ -13,16 +27,6 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteConfigurat
 import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteConfigurationImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.ReleaseNoteRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-import org.junit.Before;
-import org.junit.Test;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 public class TestGetProposedIssues extends TestSetUp {
 	protected HttpServletRequest request;
@@ -48,12 +52,26 @@ public class TestGetProposedIssues extends TestSetUp {
 		releaseNoteConfiguration.setBugFixMapping(issueKeyList);
 		releaseNoteConfiguration.setFeatureMapping(issueKeyList);
 		releaseNoteConfiguration.setImprovementMapping(issueKeyList);
-		releaseNoteConfiguration.setAdditionalConfiguration(AdditionalConfigurationOptions.toBooleanList(true));
+		releaseNoteConfiguration.setAdditionalConfiguration(toBooleanList(true));
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
 		issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");
 		addCommentsToIssue();
 		fillSentenceList();
+	}
+
+	/**
+	 * @param value
+	 * @return hashMap of AdditionalConfigurationOptions with integer and boolean
+	 *         value.
+	 */
+	public static EnumMap<AdditionalConfigurationOptions, Boolean> toBooleanList(Boolean value) {
+		EnumMap<AdditionalConfigurationOptions, Boolean> configurationTypes = new EnumMap<>(
+				AdditionalConfigurationOptions.class);
+		for (AdditionalConfigurationOptions criteriaType : AdditionalConfigurationOptions.values()) {
+			configurationTypes.put(criteriaType, value);
+		}
+		return configurationTypes;
 	}
 
 	private void addCommentsToIssue() {
@@ -73,7 +91,8 @@ public class TestGetProposedIssues extends TestSetUp {
 
 	@Test
 	public void testGetProposedIssues() {
-		assertEquals(Response.Status.OK.getStatusCode(), releaseNoteRest.getProposedIssues(request, projectKey, releaseNoteConfiguration).getStatus());
+		assertEquals(Response.Status.OK.getStatusCode(),
+				releaseNoteRest.getProposedIssues(request, projectKey, releaseNoteConfiguration).getStatus());
 	}
 
 }

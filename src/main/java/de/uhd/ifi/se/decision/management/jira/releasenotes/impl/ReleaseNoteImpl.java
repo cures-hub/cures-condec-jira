@@ -1,14 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes.impl;
 
+import javax.xml.bind.annotation.XmlElement;
+
+import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInDatabase;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
-import org.codehaus.jackson.annotate.JsonProperty;
-
-import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Model class for Release Notes
+ * Model class for release notes
  */
 public class ReleaseNoteImpl implements ReleaseNote {
 
@@ -33,10 +33,12 @@ public class ReleaseNoteImpl implements ReleaseNote {
 	}
 
 	public ReleaseNoteImpl(ReleaseNotesInDatabase dbEntry) {
-		this(dbEntry.getId(), dbEntry.getTitle(), dbEntry.getProjectKey(), dbEntry.getContent(), dbEntry.getStartDate(), dbEntry.getEndDate());
+		this(dbEntry.getId(), dbEntry.getTitle(), dbEntry.getProjectKey(), dbEntry.getContent(), dbEntry.getStartDate(),
+				dbEntry.getEndDate());
 	}
 
-	private ReleaseNoteImpl(long id, String title, String projectKey, String content, String startDate, String endDate) {
+	private ReleaseNoteImpl(long id, String title, String projectKey, String content, String startDate,
+			String endDate) {
 		this.id = id;
 		this.title = title;
 		this.projectKey = projectKey;
@@ -44,7 +46,6 @@ public class ReleaseNoteImpl implements ReleaseNote {
 		this.startDate = startDate;
 		this.endDate = endDate;
 	}
-
 
 	@Override
 	@XmlElement(name = "id")
