@@ -1,5 +1,26 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
+import org.eclipse.jgit.lib.Ref;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.issue.Issue;
@@ -286,13 +307,15 @@ public class ViewRest {
     @Produces({MediaType.APPLICATION_JSON})
     public Response getFilterSettings(@Context HttpServletRequest request, @QueryParam("searchTerm") String searchTerm,
                                       @QueryParam("elementKey") String elementKey) {
-        if (checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()) {
-            return checkIfElementIsValid(elementKey);
-        }
+        String projectKey;
+    	if (checkIfProjectKeyIsValid(elementKey).getStatus() == Status.OK.getStatusCode()) {
+        	projectKey = elementKey;
+		} else if (checkIfElementIsValid(elementKey).getStatus() == Status.OK.getStatusCode()) {
+            projectKey = getProjectKey(elementKey);
+        } else {
+			return checkIfElementIsValid(elementKey);
+		}
         ApplicationUser user = AuthenticationManager.getUser(request);
-        String projectKey = getProjectKey(elementKey);
-        // FilterDataProvider filterDataProvider = new FilterDataProvider(projectKey,
-        // searchTerm, user);
         return Response.ok(new FilterSettingsImpl(projectKey, searchTerm, user)).build();
     }
 
@@ -322,6 +345,22 @@ public class ViewRest {
         VisGraph graph = new VisGraph(decisions, projectKey);
         return Response.ok(graph).build();
     }
+
+    @Path("/getDecisionGraphFiltered")
+    @POST
+    @Produces({ MediaType.APPLICATION_JSON })
+    public Response getDecisionGraphFiltered(@Context HttpServletRequest request, FilterSettings filterSettings, @QueryParam("projectKey") String projectKey) {
+        Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+        if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+            return checkIfProjectKeyIsValidResponse;
+        }
+        ApplicationUser user = AuthenticationManager.getUser(request);
+        List<DecisionKnowledgeElement> decisions = getAllDecisions(projectKey);
+        VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings, decisions);
+        VisGraph graph = visDataProvider.getVisGraph();
+        return Response.ok(graph).build();
+    }
+
 
     private List<DecisionKnowledgeElement> getAllDecisions(String projectKey) {
         return KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements(KnowledgeType.DECISION);
@@ -369,5 +408,4 @@ public class ViewRest {
         LOGGER.error(msg);
         return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", msg)).build();
     }
-
 }

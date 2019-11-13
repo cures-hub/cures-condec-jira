@@ -29,6 +29,7 @@
 		this.extendedKnowledgeTypes = getExtendedKnowledgeTypes(this.knowledgeTypes);
         this.knowledgeStatus = ["Idea","Discarded", "Decided","Rejected", "Undefined"];
         this.issueStatus = ["Resolved", "Unresolved"];
+        this.linkTypes = getLinkTypes(projectKey);
 
         this.extendedStatus = getExtendedStatus();
 	};
@@ -585,6 +586,26 @@
 			}
 		});
 	};
+  
+  ConDecAPI.prototype.getDecisionGraphFiltered = function getDecisionGraphFiltered(selectedLinkTypes, searchString, callback) {
+		var projectKey= getProjectKey();
+		var filterSettings = {
+			"projectKey" : projectKey,
+			"searchString" : searchString,
+			"createdEarliest" : -1,
+			"createdLatest" : -1,
+			"documentationLocations" : [ "" ],
+			"selectedJiraIssueTypes" : ["Decision"],
+			"selectedIssueStatus": [ "" ],
+			"selectedLinkTypes": selectedLinkTypes
+		};
+
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getDecisionGraphFiltered.json?projectKey=" + projectKey, filterSettings, function(error, graph) {
+			if (error == null) {
+				callback(graph);
+			}
+		});
+	};
 
 	/*
 	 * external references: settingsForSingleProject.vm,
@@ -756,6 +777,18 @@
 				+ "/rest/decisions/latest/config/getKnowledgeTypes.json?projectKey=" + projectKey);
 		if (knowledgeTypes !== null) {
 			return knowledgeTypes;
+		}
+	}
+  
+	function getLinkTypes(projectKey) {
+		var linkTypes = getResponseAsReturnValue(AJS.contextPath()
+			+ "/rest/decisions/latest/config/getLinkTypes.json?projectKey=" + projectKey) ;
+		if (linkTypes !== null) {
+			var linkTypeArray = [];
+			for (var link in linkTypes) {
+				linkTypeArray.push(link);
+			}
+			return linkTypeArray;
 		}
 	}
 

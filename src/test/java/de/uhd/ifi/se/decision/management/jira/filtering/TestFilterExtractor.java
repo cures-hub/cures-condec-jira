@@ -6,6 +6,9 @@ import static org.junit.Assert.assertNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import net.sf.ehcache.transaction.Decision;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,9 +17,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterExtractorImpl;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -24,12 +24,17 @@ public class TestFilterExtractor extends TestSetUp {
 
 	private ApplicationUser user;
 	private FilterSettings settings;
+	private List<DecisionKnowledgeElement> allDecisions;
 
 	@Before
 	public void setUp() {
 		init();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		settings = new FilterSettingsImpl();
+		allDecisions = new ArrayList<>();
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(244,  "TEST", "", "Decision", "TEST",
+			"TEST-244", "i");
+		allDecisions.add(element);
 		List<String> doculoco = new ArrayList<>();
 		for (DocumentationLocation location : DocumentationLocation.getAllDocumentationLocations()) {
 			doculoco.add(location.getName());
@@ -41,6 +46,7 @@ public class TestFilterExtractor extends TestSetUp {
 		settings.setProjectKey("TEST");
 		settings.setSelectedJiraIssueTypes(KnowledgeType.toList());
 		settings.setSelectedJiraIssueStatus(KnowledgeStatus.toList());
+		settings.setSelectedLinkTypes(LinkType.toList());
 	}
 
 	@Test
@@ -188,5 +194,28 @@ public class TestFilterExtractor extends TestSetUp {
 		settings.setCreatedEarliest(System.currentTimeMillis() - 100000);
 		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
 		assertEquals(5, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetAllElementsLinkTypeFilterMatches() {
+		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
+		assertEquals(1, extractor.getElementsLinkTypeFilterMatches(allDecisions).size() );
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetAllElementsLinkTypeFilterMatchesEmptySearchString() {
+		settings.setSearchString("");
+		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
+		assertEquals(allDecisions.size(), extractor.getElementsLinkTypeFilterMatches(allDecisions).size() );
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetAllElementsLinkTypeFilterMatchesSearchStringFilled() {
+		settings.setSearchString("TEST123");
+		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
+		assertEquals(0, extractor.getElementsLinkTypeFilterMatches(allDecisions).size() );
 	}
 }

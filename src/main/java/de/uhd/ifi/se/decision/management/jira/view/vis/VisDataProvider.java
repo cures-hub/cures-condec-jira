@@ -34,6 +34,17 @@ public class VisDataProvider {
 		this.timeLine = new VisTimeLine(decisionKnowledgeElements);
 	}
 
+	public VisDataProvider(ApplicationUser user, FilterSettings filterSettings, List<DecisionKnowledgeElement> allDecisions) {
+		if (user == null || filterSettings == null || allDecisions == null) {
+			return;
+		}
+		this.projectKey = filterSettings.getProjectKey();
+		this.user = user;
+		FilterExtractor filterExtractor = new FilterExtractorImpl(this.user, filterSettings);
+		List<DecisionKnowledgeElement> decisionKnowledgeElements = filterExtractor.getElementsLinkTypeFilterMatches(allDecisions);
+		graph = new VisGraph(decisionKnowledgeElements, projectKey);
+	}
+
 	// JQL Filter and JIRA Filter
 	public VisDataProvider(String projectKey, String elementKey, String query, ApplicationUser user) {
 		this.projectKey = projectKey;
