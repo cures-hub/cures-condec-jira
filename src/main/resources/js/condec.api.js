@@ -521,8 +521,8 @@
 	/*
 	 * external reference: condec.jira.issue.module
 	 */
-	ConDecAPI.prototype.getFilterSettings = function getFilterSettings(key, searchTerm, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getFilterSettings.json?key=" + key
+	ConDecAPI.prototype.getFilterSettings = function getFilterSettings(elementKey, searchTerm, callback) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getFilterSettings.json?elementKey=" + elementKey
 				+ "&searchTerm=" + searchTerm, function(error, filterSettings) {
 			if (error === null) {
 				callback(filterSettings);
@@ -586,8 +586,8 @@
 			}
 		});
 	};
-
-	ConDecAPI.prototype.getDecisionGraphFiltered = function getDecisionGraphFiltered(selectedLinkTypes, searchString, callback) {
+  
+  ConDecAPI.prototype.getDecisionGraphFiltered = function getDecisionGraphFiltered(selectedLinkTypes, searchString, callback) {
 		var projectKey= getProjectKey();
 		var filterSettings = {
 			"projectKey" : projectKey,
@@ -657,6 +657,40 @@
 			if (error === null) {
 				showFlag("success", "Git connection for this project has been set to " + isKnowledgeExtractedFromGit
 						+ ".");
+			}
+		});
+	};
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setPostFeatureBranchCommits = function (checked, projectKey) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setPostFeatureBranchCommits.json?projectKey="
+			+ projectKey + "&newSetting=" + checked, null, function(error,
+																										 response) {
+			if (error === null) {
+				showFlag("success", "Post Feature Branch Commits for this project has been set to " + checked
+					+ ".");
+				return checked;
+			} else {
+				return !checked;
+			}
+		});
+	};
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setPostSquashedCommits = function (checked, projectKey) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setPostSquashedCommits.json?projectKey="
+			+ projectKey + "&newSetting=" + checked, null, function(error,
+																										 response) {
+			if (error === null) {
+				showFlag("success", "Post Squashed Commits for this project has been set to " + checked
+					+ ".");
+				return checked;
+			} else {
+				return !checked;
 			}
 		});
 	};
@@ -745,7 +779,7 @@
 			return knowledgeTypes;
 		}
 	}
-
+  
 	function getLinkTypes(projectKey) {
 		var linkTypes = getResponseAsReturnValue(AJS.contextPath()
 			+ "/rest/decisions/latest/config/getLinkTypes.json?projectKey=" + projectKey) ;

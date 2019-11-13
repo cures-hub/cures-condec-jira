@@ -1,17 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes.impl;
 
+import java.util.EnumMap;
+import java.util.List;
+
+import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.releasenotes.AdditionalConfigurationOptions;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.JiraIssueMetric;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.TargetGroup;
-import org.codehaus.jackson.annotate.JsonProperty;
-
-import java.util.EnumMap;
-import java.util.List;
 
 /**
- * Model class for Release Notes Configuration
+ * Model class for release notes configuration
  */
 public class ReleaseNoteConfigurationImpl implements ReleaseNoteConfiguration {
 	private String title;
@@ -32,7 +32,6 @@ public class ReleaseNoteConfigurationImpl implements ReleaseNoteConfiguration {
 		this.jiraIssueMetric = JiraIssueMetric.toDoubleEnumMap();
 	}
 
-
 	@Override
 	public String getTitle() {
 		return this.title;
@@ -40,7 +39,7 @@ public class ReleaseNoteConfigurationImpl implements ReleaseNoteConfiguration {
 
 	@Override
 	public void setTitle(String title) {
-		this.title=title;
+		this.title = title;
 	}
 
 	@Override
@@ -58,7 +57,6 @@ public class ReleaseNoteConfigurationImpl implements ReleaseNoteConfiguration {
 	public String getEndDate() {
 		return this.endDate;
 	}
-
 
 	@Override
 	@JsonProperty("endDate")
@@ -131,7 +129,6 @@ public class ReleaseNoteConfigurationImpl implements ReleaseNoteConfiguration {
 	public void setImprovementMapping(List<Integer> improvementMapping) {
 		this.improvementMapping = improvementMapping;
 	}
-
 
 	@Override
 	public EnumMap<AdditionalConfigurationOptions, Boolean> getAdditionalConfiguration() {

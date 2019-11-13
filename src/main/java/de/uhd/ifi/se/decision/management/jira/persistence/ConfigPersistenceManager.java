@@ -100,6 +100,14 @@ public class ConfigPersistenceManager {
 		return "true".equals(isKnowledgeExtractedFromGit);
 	}
 
+	public static boolean isPostSquashedCommitsActivated(String projectKey) {
+		return "true".equals(getValue(projectKey, "isPostSquashedCommitsActivated"));
+	}
+
+	public static boolean isPostFeatureBranchCommitsActivated(String projectKey) {
+		return "true".equals(getValue(projectKey, "isPostFeatureBranchCommitsActivated"));
+	}
+
 	public static boolean isKnowledgeExtractedFromIssues(String projectKey) {
 		String isKnowledgeExtractedFromIssues = getValue(projectKey, "isKnowledgeExtractedFromIssues");
 		return "true".equals(isKnowledgeExtractedFromIssues);
@@ -148,6 +156,15 @@ public class ConfigPersistenceManager {
 		if (isKnowledgeExtractedFromGit) {
 			new GitClientImpl(projectKey);
 		}
+	}
+
+
+	public static void setPostSquashedCommits(String projectKey, Boolean checked) {
+		setValue(projectKey, "isPostSquashedCommitsActivated", Boolean.toString(checked));
+	}
+
+	public static void setPostFeatureBranchCommits(String projectKey, Boolean checked) {
+		setValue(projectKey, "isPostFeatureBranchCommitsActivated", Boolean.toString(checked));
 	}
 
 	// TODO Testing
@@ -221,5 +238,7 @@ public class ConfigPersistenceManager {
 		String joinedIssueNames = getValue(projectKey,"releaseNoteMapping"+"."+category);
 		return Arrays.asList(joinedIssueNames.split(","));
 	}
+
+
 
 }
