@@ -35,7 +35,7 @@ public class VisDataProvider {
 	}
 
 	public VisDataProvider(ApplicationUser user, FilterSettings filterSettings, List<DecisionKnowledgeElement> allDecisions) {
-		if (user == null || filterSettings == null) {
+		if (user == null || filterSettings == null || allDecisions == null) {
 			return;
 		}
 		this.projectKey = filterSettings.getProjectKey();
