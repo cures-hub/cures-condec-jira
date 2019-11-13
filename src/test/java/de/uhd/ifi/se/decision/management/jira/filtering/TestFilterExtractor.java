@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import net.sf.ehcache.transaction.Decision;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +32,9 @@ public class TestFilterExtractor extends TestSetUp {
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		settings = new FilterSettingsImpl();
 		allDecisions = new ArrayList<>();
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(244,  "TEST", "", "Decision", "TEST",
+			"TEST-244", "i");
+		allDecisions.add(element);
 		List<String> doculoco = new ArrayList<>();
 		for (DocumentationLocation location : DocumentationLocation.getAllDocumentationLocations()) {
 			doculoco.add(location.getName());
@@ -195,6 +199,22 @@ public class TestFilterExtractor extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetAllElementsLinkTypeFilterMatches() {
+		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
+		assertEquals(1, extractor.getElementsLinkTypeFilterMatches(allDecisions).size() );
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetAllElementsLinkTypeFilterMatchesEmptySearchString() {
+		settings.setSearchString("");
+		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
+		assertEquals(allDecisions.size(), extractor.getElementsLinkTypeFilterMatches(allDecisions).size() );
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetAllElementsLinkTypeFilterMatchesSearchStringFilled() {
+		settings.setSearchString("TEST123");
 		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
 		assertEquals(0, extractor.getElementsLinkTypeFilterMatches(allDecisions).size() );
 	}
