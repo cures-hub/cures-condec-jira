@@ -111,7 +111,7 @@
 			physics: {
 				enabled: true,
 				barnesHut: {
-					avoidOverlap: 0.5
+					avoidOverlap: 0.2
 				}
 			}
 		};
