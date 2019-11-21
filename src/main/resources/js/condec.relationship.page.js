@@ -107,6 +107,12 @@
 					conDecVis.deleteEdge(data, dataset, callback);
 				},
 				editEdge: false
+			},
+			physics: {
+				enabled: true,
+				barnesHut: {
+					avoidOverlap: 0.2
+				}
 			}
 		};
 

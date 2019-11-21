@@ -355,7 +355,7 @@
     ConDecVis.prototype.addEdge =  function addEdge(data, callback) {
         if (data.from !== data.to) {
             conDecAPI.createLink(null, data.from.slice(0, -2), data.to.slice(0, -2), data.to.substr(-1),
-                data.from.substr(-1), function () {
+                data.from.substr(-1), null, function () {
                     conDecObservable.notify();
                     callback(data);
                 });
@@ -364,7 +364,7 @@
 
     ConDecVis.prototype.addEdgeWithType =  function addEdge(data, callback) {
         if (data.from !== data.to) {
-            conDecDialog.showDecisionLinkDialog(data.from.slice(0, -2), data.to.slice(0, -2), function() {
+            conDecDialog.showDecisionLinkDialog(data.from.slice(0, -2), data.to.slice(0, -2), data.from.substr(-1), data.to.substr(-1), function() {
                 callback(data);
             });
 
