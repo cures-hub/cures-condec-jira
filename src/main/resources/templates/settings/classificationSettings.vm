@@ -1,182 +1,204 @@
 <h2>Decision Knowledge Extraction from JIRA Issue Description and Comments</h2>
-	
+
 <div class="field-group">
-	<label for="isKnowledgeExtractedFromIssues-toggle">Extract from JIRA Issue Text?</label>
-	<aui-toggle id="isKnowledgeExtractedFromIssues-toggle"
-		value="$projectKey" label="Extract from	Issue Comments?"></aui-toggle>
-	<div class="description">Enables or disables whether decision
-		knowledge is extracted from JIRA issue description and comments for this project.
-	</div>
+    <label for="isKnowledgeExtractedFromIssues-toggle">Extract from JIRA Issue Text?</label>
+    <aui-toggle id="isKnowledgeExtractedFromIssues-toggle"
+                value="$projectKey" label="Extract from	Issue Comments?"></aui-toggle>
+    <div class="description">Enables or disables whether decision
+        knowledge is extracted from JIRA issue description and comments for this project.
+    </div>
 </div>
 
 <div class="field-group">
-	<label for="isClassifierUsed-toggle">Use Classifier to identify Decision Knowledge?</label>
-	<aui-toggle id="isClassifierUsed-toggle"
-		value="$projectKey" label="Use Classifier to Identify Decision Knowledge?"></aui-toggle>
-	<div class="description">Enables or disables whether text is automatically classified 
-		as decision knowledge within JIRA issue description and comments for this project.
-	</div>
+    <label for="isClassifierUsed-toggle">Use Classifier to identify Decision Knowledge?</label>
+    <aui-toggle id="isClassifierUsed-toggle"
+                value="$projectKey" label="Use Classifier to Identify Decision Knowledge?"></aui-toggle>
+    <div class="description">Enables or disables whether text is automatically classified
+        as decision knowledge within JIRA issue description and comments for this project.
+    </div>
 </div>
 
 <div class="field-group">
-	<label for="iconParsing-toggle">Use Icons as Tags?</label>
-	<aui-toggle id="iconParsing-toggle" value="$projectKey"
-		label="Use icon labels"></aui-toggle>
-	<div class="description">Enables or disables to use icons for tagging decision knowledge. 
-		<br/> WARNING: Use with caution. Sentences will not be labelled/classified 
-		correctly if a decision knowledge icon is used for other things 
-		than as a decision knowledge tag.
-	</div>
+    <label for="iconParsing-toggle">Use Icons as Tags?</label>
+    <aui-toggle id="iconParsing-toggle" value="$projectKey"
+                label="Use icon labels"></aui-toggle>
+    <div class="description">Enables or disables to use icons for tagging decision knowledge.
+        <br/> WARNING: Use with caution. Sentences will not be labelled/classified
+        correctly if a decision knowledge icon is used for other things
+        than as a decision knowledge tag.
+    </div>
 </div>
 
 <div class="field-group">
-	<label for="validateSentenceDatabase">Validate Manual Tags and Links?</label>
-	<input type="button" class="aui-button" id="validateSentenceDatabase" 
-		value="Validate Sentence Database" />
-	<div class="description">Validates all metadata (manual provided tags) 
-		of sentences in issue comments including all links from and to sentences.
-	</div>		
+    <label for="validateSentenceDatabase">Validate Manual Tags and Links?</label>
+    <input type="button" class="aui-button" id="validateSentenceDatabase"
+           value="Validate Sentence Database"/>
+    <div class="description">Validates all metadata (manual provided tags)
+        of sentences in issue comments including all links from and to sentences.
+    </div>
 </div>
 
 <div class="field-group">
-	<label for="classifyAllIssuesInProject">Suggest Tags for Whole Project?</label>
-	<input type="button" class="aui-button" id="classifyAllIssuesInProject" value="Classify all Comments" />
-	<div class="description">Classifies decision knowledge for all issue comments for this project.</div>
-	<div id="progress-bar" class="aui-progress-indicator">
-		<span class="aui-progress-indicator-value"></span>
-	</div>	
-	<script>
-			//AJS.progressBars.update("#progress-bar", 0.0);
-			var classifyAllIssuesInProjectButton = document.getElementById("classifyAllIssuesInProject");
-			console.log("classifyAllIssuesInProject");
-			classifyAllIssuesInProjectButton.addEventListener("click", function() {
-				console.log("classifyAllIssuesInProject:clicked");
-
-				if (confirm("Are you sure you want to classify all issue comments? This might take some time if the project is big.")) {
-					//AJS.progressBars.setIndeterminate("#progress-bar");
-	        		conDecAPI.classifyWholeProject("$projectKey");
-					//AJS.progressBars.update("#progress-bar", isSucceeded);
-	        	}
-	    	});
-	</script>	
+    <label for="classifyAllIssuesInProject">Suggest Tags for Whole Project?</label>
+    <input type="button" class="aui-button" id="classifyAllIssuesInProject" value="Classify all Comments"/>
+    <div class="description">Classifies decision knowledge for all issue comments for this project.</div>
+    <div class="aui-progress-indicator">
+        <span id="classify-whole-project-progress-bar"></span>
+    </div>
 </div>
 
 <div class="field-group">
-	<label for="evaluateModel-button">Evaluate model</label>
-	<input type="button" class="aui-button" id="evaluateModel-button" value="Evaluate model"/>
-	<div class="description">Evaluate the current model using the user-validated data in the database.</div>
+    <label for="evaluateModel-button">Evaluate model</label>
+    <input type="button" class="aui-button" id="evaluateModel-button" value="Evaluate model"/>
+    <div class="description">Evaluate the current model using the user-validated data in the database.</div>
 </div>
 
 <div class="field-group">
     <label for="saveArffFile-button">Create an ARFF File</label>
-   	<input type="button" class="aui-button" id="saveArffFile-button" value="Create ARFF File"/>
-	<div class="description">Creates an Attribute-Relation File Format (ARFF) file of <b>user-validated</b> text data for the current project that can be used to train the classifier.
-    	This file is saved in the JIRA home directory in data/condec-plugin/project-key. You can download it from there.
-    	If you want to train the classifier with this file you need to reload this page to access the file.</div>
+    <input type="button" class="aui-button" id="saveArffFile-button" value="Create ARFF File"/>
+    <div class="description">Creates an Attribute-Relation File Format (ARFF) file of <b>user-validated</b> text data
+        for the current project that can be used to train the classifier.
+        This file is saved in the JIRA home directory in data/condec-plugin/project-key. You can download it from there.
+        If you want to train the classifier with this file you need to reload this page to access the file.
+    </div>
 </div>
 
 <div class="field-group">
-	<label for="saveAllArffFile-button">Create an ARFF File</label>
-	<input type="button" class="aui-button" id="saveAllArffFile-button" value="Create complete ARFF File"/>
-	<div class="description">Creates an Attribute-Relation File Format (ARFF) file for the current project that can be used to train the classifier.
-		This file is saved in the JIRA home directory in data/condec-plugin/project-key. You can download it from there.
-		If you want to train the classifier with this file you need to reload this page to access the file.</div>
+    <label for="saveAllArffFile-button">Create an ARFF File</label>
+    <input type="button" class="aui-button" id="saveAllArffFile-button" value="Create complete ARFF File"/>
+    <div class="description">Creates an Attribute-Relation File Format (ARFF) file for the current project that can be
+        used to train the classifier.
+        This file is saved in the JIRA home directory in data/condec-plugin/project-key. You can download it from there.
+        If you want to train the classifier with this file you need to reload this page to access the file.
+    </div>
 </div>
 
 <div class="field-group">
-	<label for="trainClassifier-button">Train the Classifier</label>
-	<select id="select-arff-file-train" name="select-arff-file-train">
-            #foreach ($arffFile in $arffFiles)
-                <option value="$arffFile"
-                    #if ($arffFile.toString().contains($selectedArffFile))
-                        selected
-                    #end
-                >
-                    $arffFile</option>
-            #end
-	</select>
-	<input type="button" class="aui-button" id="trainClassifier-button" value="Train Classifier"/>
-	<div class="description">Trains the classifier on the selected Attribute-Relation File Format (ARFF) file.</div>
-</div>    
-    
+    <label for="trainClassifier-button">Train the Classifier</label>
+    <select id="select-arff-file-train" name="select-arff-file-train">
+        #foreach ($arffFile in $arffFiles)
+            <option value="$arffFile"
+                #if ($arffFile.toString().contains($selectedArffFile))
+                    selected
+                #end
+            >
+                $arffFile</option>
+        #end
+    </select>
+    <input type="button" class="aui-button" id="trainClassifier-button" value="Train Classifier"/>
+    <div class="description">Trains the classifier on the selected Attribute-Relation File Format (ARFF) file.</div>
+    <div class="aui-progress-indicator">
+        <span id="train-classifier-progress"></span>
+    </div>
+</div>
+
 <script>
-	var issueCommentsToggle = document.getElementById("isKnowledgeExtractedFromIssues-toggle");
-	if ($project.isKnowledgeExtractedFromIssues() == true) {
-		issueCommentsToggle.checked = true;
-	} else {
-		issueCommentsToggle.checked = false;
-	};
-	
-	var isClassifierUsedToggle = document.getElementById("isClassifierUsed-toggle");
-	if ($project.isClassifierUsedForIssueComments() == true) {
-		isClassifierUsedToggle.checked = true;
-	} else {
-		isClassifierUsedToggle.checked = false;
-	};
-	
-	var clearSentenceDatabaseButton = document.getElementById("validateSentenceDatabase");
-	clearSentenceDatabaseButton.addEventListener("click", function() {
-		conDecAPI.clearSentenceDatabase("$projectKey");
-	});
-	
-	var sentenceIconToggle = document.getElementById("iconParsing-toggle");
-	if ($project.isIconParsingEnabled() == true) {
-		sentenceIconToggle.checked = true;
-	} else {
-		sentenceIconToggle.checked = false;
-	};
+    var issueCommentsToggle = document.getElementById("isKnowledgeExtractedFromIssues-toggle");
+    if ($project.isKnowledgeExtractedFromIssues() == true
+    )
+    {
+        issueCommentsToggle.checked = true;
+    }
+    else
+    {
+        issueCommentsToggle.checked = false;
+    }
+    ;
 
-	var evaluateModelButton = document.getElementById("evaluateModel-button");
-	evaluateModelButton.addEventListener("click", function () {
-		conDecAPI.evaluateModel("$projectKey", saveToFile("evaluation_results.json"));
-	});
-	
-	var saveArffFileButton = document.getElementById("saveArffFile-button");
-    saveArffFileButton.addEventListener("click", function () {
-    	conDecAPI.saveArffFile("$projectKey", true, saveToFile("ClassifierTrainingData.arff"));
+    var isClassifierUsedToggle = document.getElementById("isClassifierUsed-toggle");
+    if ($project.isClassifierUsedForIssueComments() == true
+    )
+    {
+        isClassifierUsedToggle.checked = true;
+    }
+    else
+    {
+        isClassifierUsedToggle.checked = false;
+    }
+    ;
+
+    var clearSentenceDatabaseButton = document.getElementById("validateSentenceDatabase");
+    clearSentenceDatabaseButton.addEventListener("click", function () {
+        conDecAPI.clearSentenceDatabase("$projectKey");
     });
 
-	var saveAllArffFileButton = document.getElementById("saveAllArffFile-button");
-	saveAllArffFileButton.addEventListener("click", function () {
-		conDecAPI.saveArffFile("$projectKey", false, saveToFile("AllClassifierTrainingData.arff"));
-	});
+    var sentenceIconToggle = document.getElementById("iconParsing-toggle");
+    if ($project.isIconParsingEnabled() == true
+    )
+    {
+        sentenceIconToggle.checked = true;
+    }
+    else
+    {
+        sentenceIconToggle.checked = false;
+    }
+    ;
 
-    var trainClassifier = document.getElementById("trainClassifier-button");
-    trainClassifier.addEventListener("click", function() {
-        if (confirm("Are you sure you want to retrain the classifier?")) {
-            var trainDataSelect = document.getElementById("select-arff-file-train");
-            var isNewTrained = conDecAPI.trainClassifier("$projectKey", trainDataSelect.value);
-            console.log(trainDataSelect.value);
+    var evaluateModelButton = document.getElementById("evaluateModel-button");
+    evaluateModelButton.addEventListener("click", function () {
+        conDecAPI.evaluateModel("$projectKey", saveToFile("evaluation_results.json"));
+    });
+
+    var saveArffFileButton = document.getElementById("saveArffFile-button");
+    saveArffFileButton.addEventListener("click", function () {
+        conDecAPI.saveArffFile("$projectKey", true, saveToFile("ClassifierTrainingData.arff"));
+    });
+
+    var saveAllArffFileButton = document.getElementById("saveAllArffFile-button");
+    saveAllArffFileButton.addEventListener("click", function () {
+        conDecAPI.saveArffFile("$projectKey", false, saveToFile("AllClassifierTrainingData.arff"));
+    });
+
+    //AJS.progressBars.update("#progress-bar", 0.0);
+    var classifyAllIssuesInProjectButton = document.getElementById("classifyAllIssuesInProject");
+    classifyAllIssuesInProjectButton.addEventListener("click", function () {
+
+        if (confirm("Are you sure you want to classify all issue comments? This might take some time if the project is big.")) {
+            //AJS.progressBars.setIndeterminate("#progress-bar");
+            var animatedElement = document.getElementById("classify-whole-project-progress-bar");
+
+            conDecAPI.classifyWholeProject("$projectKey", animatedElement);
+            //AJS.progressBars.update("#progress-bar", isSucceeded);
         }
     });
-	
-	issueCommentsToggle.addEventListener("change", function(error) {
-		this.busy = true;
-		conDecAPI.setKnowledgeExtractedFromIssues(this.checked, this.value);
-		this.busy = false;
-	});
-	
-	isClassifierUsedToggle.addEventListener("change", function(error) {
-		this.busy = true;
-		conDecAPI.setUseClassifierForIssueComments(this.checked, this.value);
-		this.busy = false;
-	});
-	
-	sentenceIconToggle.addEventListener("change", function(error) {
-		this.busy = true;
-		conDecAPI.setIconParsing(this.value, this.checked);
-		this.busy = false;
-	});
+
+    var trainClassifier = document.getElementById("trainClassifier-button");
+    trainClassifier.addEventListener("click", function () {
+        if (confirm("Are you sure you want to retrain the classifier?")) {
+            var trainDataSelect = document.getElementById("select-arff-file-train");
+            var animatedElement = document.getElementById("train-classifier-progress");
+            conDecAPI.trainClassifier("$projectKey", trainDataSelect.value, animatedElement);
+
+        }
+    });
+
+    issueCommentsToggle.addEventListener("change", function (error) {
+        this.busy = true;
+        conDecAPI.setKnowledgeExtractedFromIssues(this.checked, this.value);
+        this.busy = false;
+    });
+
+    isClassifierUsedToggle.addEventListener("change", function (error) {
+        this.busy = true;
+        conDecAPI.setUseClassifierForIssueComments(this.checked, this.value);
+        this.busy = false;
+    });
+
+    sentenceIconToggle.addEventListener("change", function (error) {
+        this.busy = true;
+        conDecAPI.setIconParsing(this.value, this.checked);
+        this.busy = false;
+    });
 
     var saveToFile = function (name) {
-    	return function(content){
-			var link = document.createElement("a");
-			link.style.display = "none";
-			link.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(content));
-			link.setAttribute("download", name);
-			document.body.appendChild(link);
-			link.click();
-			document.body.removeChild(link);
-		}
-	}
+        return function (content) {
+            var link = document.createElement("a");
+            link.style.display = "none";
+            link.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(content));
+            link.setAttribute("download", name);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
 </script>
