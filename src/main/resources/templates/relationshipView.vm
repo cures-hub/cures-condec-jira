@@ -1,4 +1,9 @@
 <div class="aui-group">
+    <div class="aui-toolbar2" role="toolbar">
+        <div class="aui-toolbar-2-inner">
+            #parse("templates/filterDecisions.vm")
+        </div>
+    </div>
     <div id="graph-container"></div>
 </div>
 <style type="text/css">

@@ -243,6 +243,45 @@ public class FilterExtractorImpl implements FilterExtractor {
 	}
 
 	@Override
+	public List<DecisionKnowledgeElement> getElementsLinkTypeFilterMatches(List<DecisionKnowledgeElement> allDecisions) {
+		List<DecisionKnowledgeElement> filteredElements = new ArrayList<>();
+		for (DecisionKnowledgeElement element: allDecisions) {
+			List<Link> links = element.getInwardLinks();
+			links.addAll(element.getOutwardLinks());
+			if (links.size() == 0) {
+				if (filterSettings.getNamesOfSelectedLinkTypes().size() == filterSettings.getAllLinkTypes().size()) {
+					if (filterSettings.getSearchString().equals("")
+						|| filterSettings.getSearchString().equals("?filter=-4")
+						|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
+						filteredElements.add(element);
+					} else {
+						if (checkIfElementMatchesStringFilter(element)) {
+							filteredElements.add(element);
+						}
+					}
+				}
+			} else {
+				for (Link link : links) {
+					if (filterSettings.getNamesOfSelectedLinkTypes().contains(link.getType())) {
+						if (filterSettings.getSearchString().equals("")
+							|| filterSettings.getSearchString().equals("?filter=-4")
+							|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
+							filteredElements.add(element);
+							break;
+						} else {
+							if (checkIfElementMatchesStringFilter(element)) {
+								filteredElements.add(element);
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		return filteredElements;
+	}
+
+	@Override
 	public FilterSettings getFilterSettings() {
 		return this.filterSettings;
 	}

@@ -112,6 +112,22 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
+	public void testGetNamesOfSelectedLinkTypes() {
+		assertEquals(10, filterSettings.getNamesOfSelectedLinkTypes().size());
+		List<String> selectedLinkTypes = new ArrayList<>();
+		selectedLinkTypes.add("Forbids");
+		selectedLinkTypes.add("Relates");
+		filterSettings.setSelectedLinkTypes(selectedLinkTypes);
+		assertEquals(2, filterSettings.getNamesOfSelectedLinkTypes().size());
+	}
+
+	@Test
+	public void testSetSelectedLinkTypes() {
+		filterSettings.setSelectedJiraIssueTypes(null);
+		assertEquals(10, filterSettings.getNamesOfSelectedLinkTypes().size());
+	}
+
+	@Test
 	public void testGetAllJiraIssueStatus() {
 		assertEquals(7, filterSettings.getAllJiraIssueStatus().size());
 	}
