@@ -59,8 +59,7 @@ public class MockIssueLinkType implements IssueLinkType {
 
 	@Override
 	public String getName() {
-		name = "Test";
-		return name;
+		return "relate";
 	}
 
 	public void setName(String name) {
@@ -116,7 +115,8 @@ public class MockIssueLinkType implements IssueLinkType {
 			return false;
 		}
 		if (name == null) {
-            return other.name == null;
-		} else return name.equals(other.name);
-    }
+			return other.name == null;
+		} else
+			return name.equals(other.name);
+	}
 }

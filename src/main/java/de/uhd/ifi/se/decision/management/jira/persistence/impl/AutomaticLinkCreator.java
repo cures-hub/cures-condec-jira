@@ -19,16 +19,16 @@ public class AutomaticLinkCreator {
 
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
-	public static long createSmartLinkForElement(DecisionKnowledgeElement sentence) {
-		if (sentence == null) {
+	public static long createSmartLinkForElement(DecisionKnowledgeElement element) {
+		if (element == null) {
 			return 0;
 		}
-		long linkId = sentence.isLinked();
+		long linkId = element.isLinked();
 		if (linkId > 0) {
 			return linkId;
 		}
-		DecisionKnowledgeElement lastElement = getPotentialParentElement(sentence);
-		linkId = KnowledgePersistenceManager.getOrCreate(sentence.getProject()).insertLink(lastElement, sentence, null);
+		DecisionKnowledgeElement lastElement = getPotentialParentElement(element);
+		linkId = KnowledgePersistenceManager.getOrCreate(element.getProject()).insertLink(lastElement, element, null);
 		return linkId;
 	}
 

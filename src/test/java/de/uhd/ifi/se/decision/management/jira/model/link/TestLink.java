@@ -1,43 +1,35 @@
-package de.uhd.ifi.se.decision.management.jira.model;
+package de.uhd.ifi.se.decision.management.jira.model.link;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.atlassian.jira.issue.link.IssueLink;
-import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import de.uhd.ifi.se.decision.management.jira.testdata.Links;
 
 /**
  * Test class for links between decision knowledge elements
  */
 public class TestLink extends TestSetUp {
 
-	protected static ApplicationUser user;
-	protected Link link;
-
-	@BeforeClass
-	public static void setUpBeforeClass() {
-		init();
-		user = JiraUsers.SYS_ADMIN.getApplicationUser();
-	}
+	public Link link;
 
 	@Before
 	public void setUp() {
-		link = new LinkImpl(1, 4, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
-		link.setType(LinkType.RELATE.toString());
+		init();
+		link = Links.getTestLinks().get(0);
 	}
 
 	@Test
@@ -49,11 +41,12 @@ public class TestLink extends TestSetUp {
 	public void testSetType() {
 		link.setType(LinkType.RELATE.toString() + "New");
 		assertEquals(LinkType.RELATE.toString() + "New", link.getType());
+		link.setType(LinkType.RELATE);
 	}
 
 	@Test
 	public void testGetIdOfSourceElement() {
-		assertEquals(1, link.getSource().getId());
+		assertEquals(2, link.getSource().getId());
 	}
 
 	@Test
@@ -77,7 +70,7 @@ public class TestLink extends TestSetUp {
 
 	@Test
 	public void testGetSourceElement() {
-		assertEquals("TEST-1", link.getSource().getKey());
+		assertEquals("TEST-2", link.getSource().getKey());
 	}
 
 	@Test
@@ -160,27 +153,6 @@ public class TestLink extends TestSetUp {
 	@Test
 	public void testGetWeight() {
 		assertEquals(1.0, link.getWeight(), 0.0);
-	}
-
-	@Test
-	public void testEqualsNull() {
-		assertFalse(link.equals((Object) null));
-	}
-
-	@Test
-	public void testEqualsNotLink() {
-		assertFalse(link.equals(new DecisionKnowledgeElementImpl()));
-	}
-
-	@Test
-	public void testEqualsSelf() {
-		assertTrue(link.equals(link));
-	}
-
-	@Test
-	public void testEqualsEquals() {
-		Link linkEquals = new LinkImpl(link.getSource(), link.getTarget());
-		assertTrue(link.equals(linkEquals));
 	}
 
 	@Test
