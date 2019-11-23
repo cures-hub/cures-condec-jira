@@ -115,7 +115,7 @@
 	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElementAsChild(summary,
 																										description, type, documentationLocation, idOfExistingElement, documentationLocationOfExistingElement,
 																										callback) {
-		//console.log("conDecAPI createDecisionKnowledgeElement");
+		// console.log("conDecAPI createDecisionKnowledgeElement");
 		var newElement = {
 			"summary": summary,
 			"type": type,
@@ -413,7 +413,7 @@
 	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getSummarizedCode = function getSummarizedCode(id, documentationLocation, probability, callback) {
-		//console.log(probability);
+		// console.log(probability);
 		getText(AJS.contextPath() + "/rest/decisions/latest/decisions/getSummarizedCode?projectKey=" + projectKey
 			+ "&id=" + id + "&documentationLocation=" + documentationLocation + "&probability=" + probability,
 			function (error, summary) {
@@ -776,14 +776,12 @@
 	function getKnowledgeTypes(projectKey) {
 		var knowledgeTypes = getResponseAsReturnValue(AJS.contextPath()
 			+ "/rest/decisions/latest/config/getKnowledgeTypes.json?projectKey=" + projectKey);
-		if (knowledgeTypes !== null) {
-			return knowledgeTypes;
-		}
+		return knowledgeTypes;
 	}
   
 	function getLinkTypes(projectKey) {
 		var linkTypes = getResponseAsReturnValue(AJS.contextPath()
-			+ "/rest/decisions/latest/config/getLinkTypes.json?projectKey=" + projectKey) ;
+			+ "/rest/decisions/latest/config/getLinkTypes.json?projectKey=" + projectKey);
 		if (linkTypes !== null) {
 			var linkTypeArray = [];
 			for (var link in linkTypes) {
@@ -923,12 +921,12 @@
 
 
 	ConDecAPI.prototype.evaluateModel = function evaluateModel(projectKey, callback) {
-		//console.log("ConDecAPI.prototype.evaluateModel");
+		// console.log("ConDecAPI.prototype.evaluateModel");
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/evaluateModel.json?projectKey=" + projectKey, null,
 			function (error, response) {
 				if (error === null) {
 					showFlag("success", "The evaluation results file was successfully created.");
-					////console.log(response["content"]);
+					// //console.log(response["content"]);
 					callback(response["content"]);
 				}
 			});
@@ -942,7 +940,7 @@
 				if (error === null) {
 					showFlag("success", "The ARFF file was successfully created and saved in "
 						+ response["arffFile"] + ".");
-					//console.log(response["content"]);
+					// console.log(response["content"]);
 					callback(response["content"]);
 				}
 			});
@@ -1024,7 +1022,7 @@
 		return JSON.parse(xhr.response);
 	}
 
-	//@Deprecated
+	// @Deprecated
 	function _postWithResponseAsReturnValue(url) {
 		var xhr = new XMLHttpRequest();
 		xhr.open("POST", url, false);
@@ -1165,13 +1163,14 @@
 			issueKey = JIRA.Issue.getIssueKey();
 		}
 		if (issueKey === undefined || !issueKey) {
-			//console.log("conDecAPI could not getIssueKey using object JIRA!");
+			// console.log("conDecAPI could not getIssueKey using object
+			// JIRA!");
 			if (AJS && AJS.Meta && AJS.Meta.get) {
 				issueKey = AJS.Meta.get("issue-key");
 			}
 		}
 		if (issueKey === undefined || !issueKey) {
-			//console.log("conDecAPI could not getIssueKey using object AJS!");
+			// console.log("conDecAPI could not getIssueKey using object AJS!");
 			var chunks = document.location.pathname.split("/");
 			if (chunks.length > 0) {
 				var lastChunk = chunks[chunks.length - 1];
@@ -1180,7 +1179,7 @@
 				}
 			}
 		}
-		//console.log("conDecAPI getIssueKey: " + issueKey);
+		// console.log("conDecAPI getIssueKey: " + issueKey);
 		return issueKey;
 	}
 
@@ -1191,19 +1190,19 @@
 	ConDecAPI.prototype.getIssueKey = getIssueKey;
 
 	function getProjectKey() {
-		//console.log("conDecAPI getProjectKey");
+		// console.log("conDecAPI getProjectKey");
 		var projectKey;
 		try {
 			projectKey = JIRA.API.Projects.getCurrentProjectKey();
 		} catch (error) {
-			//console.log(error);
+			// console.log(error);
 		}
 		if (projectKey === undefined) {
 			try {
 				var issueKey = getIssueKey();
 				projectKey = issueKey.split("-")[0];
 			} catch (error) {
-				//console.log(error);
+				// console.log(error);
 			}
 		}
 		return projectKey;

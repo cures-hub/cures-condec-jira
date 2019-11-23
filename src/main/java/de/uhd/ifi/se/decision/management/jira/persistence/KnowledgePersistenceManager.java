@@ -62,7 +62,7 @@ public interface KnowledgePersistenceManager {
 	 */
 	static KnowledgePersistenceManager getOrCreate(String projectKey) {
 		if (projectKey == null) {
-			throw new IllegalArgumentException("The project key cannot be null.");
+			throw new IllegalArgumentException("The project key must not be null.");
 		}
 		if (instances.containsKey(projectKey)) {
 			return instances.get(projectKey);
@@ -74,7 +74,7 @@ public interface KnowledgePersistenceManager {
 
 	static KnowledgePersistenceManager getOrCreate(DecisionKnowledgeProject project) {
 		if (project == null) {
-			return null;
+			throw new IllegalArgumentException("The project must not be null.");
 		}
 		return getOrCreate(project.getProjectKey());
 	}
@@ -251,9 +251,6 @@ public interface KnowledgePersistenceManager {
 		long linkId = -1;
 		if (link.isIssueLink()) {
 			linkId = JiraIssuePersistenceManager.getLinkId(link);
-			if (linkId <= 0) {
-				JiraIssuePersistenceManager.getLinkId(link.flip());
-			}
 			return linkId;
 		}
 		linkId = GenericLinkManager.isLinkAlreadyInDatabase(link);

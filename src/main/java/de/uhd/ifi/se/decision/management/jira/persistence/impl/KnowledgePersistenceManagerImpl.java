@@ -61,10 +61,6 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 
 	@Override
 	public AbstractPersistenceManagerForSingleLocation getDefaultPersistenceManager() {
-		if (projectKey == null) {
-			throw new IllegalArgumentException("The project key cannot be null.");
-		}
-
 		boolean isIssueStrategy = ConfigPersistenceManager.isIssueStrategy(projectKey);
 		if (isIssueStrategy) {
 			return jiraIssuePersistenceManager;
