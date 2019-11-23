@@ -45,7 +45,7 @@ import net.java.ao.Query;
  */
 public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerForSingleLocation {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextPersistenceManager.class);
-	static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
+	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 	private static OnlineClassificationTrainerImpl classificationTrainer = new OnlineClassificationTrainerImpl();
 
 	public JiraIssueTextPersistenceManager(String projectKey) {

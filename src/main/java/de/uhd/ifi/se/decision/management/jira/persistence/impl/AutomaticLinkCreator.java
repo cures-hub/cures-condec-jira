@@ -3,6 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.persistence.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.atlassian.activeobjects.external.ActiveObjects;
+
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -12,7 +15,54 @@ import net.java.ao.Query;
 
 public class AutomaticLinkCreator {
 
-	public static DecisionKnowledgeElement getMostRecentElement(DecisionKnowledgeElement first,
+	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
+
+	public static DecisionKnowledgeElement getPotentialParentElement(DecisionKnowledgeElement element) {
+		if (element == null) {
+			return null;
+		}
+		List<DecisionKnowledgeElement> potentialParentElements = getPotentialParentElements(element);
+		if (potentialParentElements.isEmpty()) {
+			return null;
+		}
+		if (potentialParentElements.size() == 2) {
+			return getMostRecentElement(potentialParentElements.get(0), potentialParentElements.get(1));
+		}
+		return potentialParentElements.get(0);
+	}
+
+	private static List<DecisionKnowledgeElement> getPotentialParentElements(DecisionKnowledgeElement element) {
+		if (element == null) {
+			return new ArrayList<DecisionKnowledgeElement>();
+		}
+		List<DecisionKnowledgeElement> potentialParentElements = new ArrayList<DecisionKnowledgeElement>();
+		List<KnowledgeType> parentTypes = KnowledgeType.getParentTypes(element.getType());
+		for (KnowledgeType parentType : parentTypes) {
+			DecisionKnowledgeElement potentialParentElement = searchForLast(element, parentType);
+			if (potentialParentElement != null) {
+				potentialParentElements.add(potentialParentElement);
+			}
+		}
+		return potentialParentElements;
+	}
+
+	public static DecisionKnowledgeElement searchForLast(DecisionKnowledgeElement sentence,
+			KnowledgeType typeToSearch) {
+		PartOfJiraIssueText lastSentence = null;
+		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
+				Query.select().where("JIRA_ISSUE_ID = ?", ((PartOfJiraIssueText) sentence).getJiraIssueId())
+						.order("ID DESC"));
+
+		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
+			if (databaseEntry.getType().equalsIgnoreCase(typeToSearch.toString())) {
+				lastSentence = new PartOfJiraIssueTextImpl(databaseEntry);
+				break;
+			}
+		}
+		return lastSentence;
+	}
+
+	private static DecisionKnowledgeElement getMostRecentElement(DecisionKnowledgeElement first,
 			DecisionKnowledgeElement second) {
 		if (first == null) {
 			return second;
@@ -24,67 +74,6 @@ public class AutomaticLinkCreator {
 			return first;
 		}
 		return second;
-	}
-
-	public static List<KnowledgeType> getParentTypes(KnowledgeType knowledgeType) {
-		List<KnowledgeType> parentTypes = new ArrayList<KnowledgeType>();
-		if (knowledgeType == null) {
-			return parentTypes;
-		}
-
-		if (knowledgeType == KnowledgeType.ARGUMENT || knowledgeType == KnowledgeType.PRO
-				|| knowledgeType == KnowledgeType.CON) {
-			parentTypes.add(KnowledgeType.ALTERNATIVE);
-			parentTypes.add(KnowledgeType.DECISION);
-		} else if (knowledgeType == KnowledgeType.DECISION || knowledgeType == KnowledgeType.ALTERNATIVE) {
-			parentTypes.add(KnowledgeType.ISSUE);
-		}
-
-		return parentTypes;
-	}
-
-	public static List<DecisionKnowledgeElement> getPotentialParentElements(PartOfJiraIssueText sentence) {
-		if (sentence == null) {
-			return new ArrayList<DecisionKnowledgeElement>();
-		}
-		List<DecisionKnowledgeElement> potentialParentElements = new ArrayList<DecisionKnowledgeElement>();
-		List<KnowledgeType> parentTypes = getParentTypes(sentence.getType());
-		for (KnowledgeType parentType : parentTypes) {
-			DecisionKnowledgeElement potentialParentElement = searchForLast(sentence, parentType);
-			if (potentialParentElement != null) {
-				potentialParentElements.add(potentialParentElement);
-			}
-		}
-		return potentialParentElements;
-	}
-
-	public static DecisionKnowledgeElement getPotentialParentElement(PartOfJiraIssueText sentence) {
-		if (sentence == null) {
-			return null;
-		}
-		List<DecisionKnowledgeElement> potentialParentElements = getPotentialParentElements(sentence);
-		if (potentialParentElements.isEmpty()) {
-			return null;
-		}
-		if (potentialParentElements.size() == 2) {
-			return getMostRecentElement(potentialParentElements.get(0), potentialParentElements.get(1));
-		}
-		return potentialParentElements.get(0);
-	}
-
-	public static DecisionKnowledgeElement searchForLast(PartOfJiraIssueText sentence, KnowledgeType typeToSearch) {
-		PartOfJiraIssueText lastSentence = null;
-		PartOfJiraIssueTextInDatabase[] databaseEntries = JiraIssueTextPersistenceManager.ACTIVE_OBJECTS.find(
-				PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("JIRA_ISSUE_ID = ?", sentence.getJiraIssueId()).order("ID DESC"));
-
-		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
-			if (databaseEntry.getType().equalsIgnoreCase(typeToSearch.toString())) {
-				lastSentence = new PartOfJiraIssueTextImpl(databaseEntry);
-				break;
-			}
-		}
-		return lastSentence;
 	}
 
 }
