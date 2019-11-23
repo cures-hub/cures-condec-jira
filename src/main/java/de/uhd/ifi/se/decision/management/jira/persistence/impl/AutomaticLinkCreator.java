@@ -19,17 +19,17 @@ public class AutomaticLinkCreator {
 
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
-	public static boolean createSmartLinkForElement(PartOfJiraIssueText sentence) {
+	public static long createSmartLinkForElement(DecisionKnowledgeElement sentence) {
 		if (sentence == null) {
-			return false;
+			return 0;
 		}
-		if (JiraIssueTextPersistenceManager.isElementLinked(sentence)) {
-			return true;
+		long linkId = sentence.isLinked();
+		if (linkId > 0) {
+			return linkId;
 		}
 		DecisionKnowledgeElement lastElement = getPotentialParentElement(sentence);
-		long linkId = KnowledgePersistenceManager.getOrCreate(sentence.getProject()).insertLink(lastElement, sentence,
-				null);
-		return linkId > 0;
+		linkId = KnowledgePersistenceManager.getOrCreate(sentence.getProject()).insertLink(lastElement, sentence, null);
+		return linkId;
 	}
 
 	public static DecisionKnowledgeElement getPotentialParentElement(DecisionKnowledgeElement element) {

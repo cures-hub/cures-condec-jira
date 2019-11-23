@@ -511,31 +511,13 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	public boolean ensureThatElementIsLinked(DecisionKnowledgeElement element) {
-		if (isElementLinked(element)) {
+		if (element.isLinked() > 0) {
 			return true;
 		}
 		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(
 				((PartOfJiraIssueText) element).getJiraIssue());
-		Link link = Link.instantiateDirectedLink(parentElement, element);
-		long linkId = KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, null);
+		long linkId = KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(parentElement, element, null);
 		return linkId > 0;
-	}
-
-	/**
-	 * Determines whether an element is linked to at least one other decision
-	 * knowledge element.
-	 *
-	 * @param id
-	 *            id of a decision knowledge element in database. The id is
-	 *            different to the key.
-	 * @param documentationLocation
-	 *            of the element
-	 * @return list of linked elements.
-	 * @see DecisionKnowledgeElement
-	 */
-	public static boolean isElementLinked(DecisionKnowledgeElement element) {
-		List<Link> links = GenericLinkManager.getLinksForElement(element);
-		return links != null && links.size() > 0;
 	}
 
 	public static void cleanSentenceDatabase(String projectKey) {

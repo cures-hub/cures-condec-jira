@@ -373,10 +373,10 @@ public interface KnowledgePersistenceManager {
 	DecisionKnowledgeElement getDecisionKnowledgeElement(long id, DocumentationLocation documentationLocation);
 
 	static void insertStatus(DecisionKnowledgeElement element) {
-		if (element.getType().equals(KnowledgeType.DECISION)) {
+		if (element.getType() == KnowledgeType.DECISION) {
 			StatusPersistenceManager.setStatusForElement(element, KnowledgeStatus.DECIDED);
 		}
-		if (element.getType().equals(KnowledgeType.ALTERNATIVE)) {
+		if (element.getType() == KnowledgeType.ALTERNATIVE) {
 			StatusPersistenceManager.setStatusForElement(element, KnowledgeStatus.IDEA);
 		}
 	}
