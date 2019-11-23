@@ -20,7 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.classification.ClassificationTrain
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
@@ -51,10 +50,10 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 
 	@Override
 	protected Map<String, Object> getVelocityParameters(HttpServletRequest request) {
+		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
 		if (request == null) {
-			return new ConcurrentHashMap<String, Object>();
+			return velocityParameters;
 		}
-		KnowledgeGraph.instances.clear();
 
 		String projectKey = request.getParameter("projectKey");
 		DecisionKnowledgeProject decisionKnowledgeProject = new DecisionKnowledgeProjectImpl(projectKey);
@@ -69,7 +68,6 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 
 		ClassificationTrainer trainer = new OnlineClassificationTrainerImpl(projectKey);
 
-		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
 		velocityParameters.put("request", request);
 		velocityParameters.put("projectKey", projectKey);
 		velocityParameters.put("project", decisionKnowledgeProject);
