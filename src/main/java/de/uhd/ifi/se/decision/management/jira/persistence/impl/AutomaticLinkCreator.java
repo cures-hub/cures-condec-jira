@@ -8,6 +8,7 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
@@ -23,7 +24,7 @@ public class AutomaticLinkCreator {
 		}
 		List<DecisionKnowledgeElement> potentialParentElements = getPotentialParentElements(element);
 		if (potentialParentElements.isEmpty()) {
-			return null;
+			return new DecisionKnowledgeElementImpl(element.getJiraIssue());
 		}
 		if (potentialParentElements.size() == 2) {
 			return getMostRecentElement(potentialParentElements.get(0), potentialParentElements.get(1));

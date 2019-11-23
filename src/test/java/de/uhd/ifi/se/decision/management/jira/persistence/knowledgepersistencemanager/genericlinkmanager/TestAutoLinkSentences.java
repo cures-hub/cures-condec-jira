@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencemanager.genericlinkmanager;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
@@ -39,7 +40,9 @@ public class TestAutoLinkSentences extends TestSetUp {
 		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("{alternative}first sentence{alternative} {pro}second sentence{pro}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.get(1)).get(0);
-		assertEquals(sentenceLink.getOppositeElement(comment.get(0)).getId(), comment.get(1).getId());
+		DecisionKnowledgeElement oppositeElement = sentenceLink.getOppositeElement(comment.get(0));
+		assertNotNull(oppositeElement);
+		assertEquals(oppositeElement.getId(), comment.get(1).getId());
 	}
 
 	@Test

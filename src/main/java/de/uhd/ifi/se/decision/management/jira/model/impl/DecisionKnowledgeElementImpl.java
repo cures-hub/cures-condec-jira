@@ -19,6 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
@@ -280,8 +281,11 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 
 	@Override
 	public Issue getJiraIssue() {
-		if (getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
+		if (documentationLocation == DocumentationLocation.JIRAISSUE) {
 			return ComponentAccessor.getIssueManager().getIssueObject(id);
+		}
+		if (documentationLocation == DocumentationLocation.JIRAISSUETEXT) {
+			return ((PartOfJiraIssueText) this).getJiraIssue();
 		}
 		return null;
 	}

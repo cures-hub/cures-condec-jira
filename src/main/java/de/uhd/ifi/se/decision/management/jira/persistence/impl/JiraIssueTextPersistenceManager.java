@@ -504,15 +504,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		boolean isLinkCreated = false;
 		DecisionKnowledgeElement lastElement = AutomaticLinkCreator.getPotentialParentElement(sentence);
 		isLinkCreated = createLink(lastElement, sentence);
-
-		if (!isLinkCreated && sentence.isRelevant()) {
-			String projectKey = sentence.getProject().getProjectKey();
-			JiraIssuePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-					.getJiraIssueManager();
-			DecisionKnowledgeElement parentElement = persistenceManager
-					.getDecisionKnowledgeElement(sentence.getJiraIssueId());
-			isLinkCreated = createLink(parentElement, sentence);
-		}
 		return isLinkCreated;
 	}
 
