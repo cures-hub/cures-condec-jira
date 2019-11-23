@@ -1,30 +1,31 @@
 package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import static org.junit.Assert.assertEquals;
+
+import javax.ws.rs.core.Response.Status;
+
 import org.junit.Test;
 
-import javax.ws.rs.core.Response;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class TestPostFeatureBranchCommits extends TestConfigSuper {
+
 	@Test
 	public void testOk() {
-		assertEquals(Response.status(Response.Status.OK).build().getStatus(),
-			configRest.setPostFeatureBranchCommits(request, "TEST", "true").getStatus());
+		assertEquals(Status.OK.getStatusCode(),
+				configRest.setPostFeatureBranchCommits(request, "TEST", "true").getStatus());
 	}
 
 	@Test
 	public void testInvalidKey() {
-		assertNotEquals(Response.status(Response.Status.OK).build().getStatus(),
-			configRest.setPostFeatureBranchCommits(request, null, "true").getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				configRest.setPostFeatureBranchCommits(request, null, "true").getStatus());
 	}
 
 	@Test
 	public void testEmptyKey() {
-		assertNotEquals(Response.status(Response.Status.OK).build().getStatus(),
-			configRest.setPostFeatureBranchCommits(request, "", "true").getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				configRest.setPostFeatureBranchCommits(request, "", "true").getStatus());
 	}
 
 	@Test
@@ -35,7 +36,7 @@ public class TestPostFeatureBranchCommits extends TestConfigSuper {
 
 	@Test
 	public void testNullBooleanValue() {
-		assertNotEquals(Response.status(Response.Status.OK).build().getStatus(),
-			configRest.setPostFeatureBranchCommits(request, "TEST", null));
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				configRest.setPostFeatureBranchCommits(request, "TEST", null).getStatus());
 	}
 }
