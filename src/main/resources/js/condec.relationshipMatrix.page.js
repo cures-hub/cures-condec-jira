@@ -23,7 +23,6 @@
         conDecAPI.getDecisionMatrix(function (data) {
             const div = document.getElementById("matrix");
             var event, index, id;
-			console.log(data);
 
             var matrix = new Handsontable(div, {
             	data: data.coloredRows,
