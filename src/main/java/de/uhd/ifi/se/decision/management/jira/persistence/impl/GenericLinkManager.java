@@ -91,18 +91,10 @@ public class GenericLinkManager {
 			return false;
 		}
 		boolean isLinkDeleted = false;
-		String identifier = documentationLocation.getIdentifier();
-		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class);
-		for (LinkInDatabase linkInDatabase : linksInDatabase) {
-			if (linkInDatabase.getDestinationId() == elementId
-					&& linkInDatabase.getDestDocumentationLocation().equals(identifier)
-					|| linkInDatabase.getSourceId() == elementId
-							&& linkInDatabase.getSourceDocumentationLocation().equals(identifier)) {
-				LinkInDatabase.deleteLink(linkInDatabase);
-				isLinkDeleted = true;
-				Link link = new LinkImpl(linkInDatabase);
-				KnowledgeGraph.getOrCreate(link.getSource().getProject()).removeEdge(link);
-			}
+		List<Link> linksForElement = getLinksForElement(elementId, documentationLocation);
+		for (Link link : linksForElement) {
+			isLinkDeleted = deleteLink(link);
+			KnowledgeGraph.getOrCreate(link.getSource().getProject()).removeEdge(link);
 		}
 		return isLinkDeleted;
 	}
@@ -124,6 +116,9 @@ public class GenericLinkManager {
 	 * @see DecisionKnowledgeElement
 	 */
 	public static List<Link> getLinksForElement(DecisionKnowledgeElement element) {
+		if (element == null) {
+			return new ArrayList<Link>();
+		}
 		return getLinksForElement(element.getId(), element.getDocumentationLocation());
 	}
 
@@ -144,12 +139,14 @@ public class GenericLinkManager {
 	 * @see DecisionKnowledgeElement
 	 */
 	public static List<Link> getLinksForElement(long elementId, DocumentationLocation documentationLocation) {
+		List<Link> links = new ArrayList<Link>();
+		if (elementId <= 0 || documentationLocation == null) {
+			return links;
+		}
 		String identifier = documentationLocation.getIdentifier();
 		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select().where(
 				"DESTINATION_ID = ? AND DEST_DOCUMENTATION_LOCATION = ? OR SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?",
 				elementId, identifier, elementId, identifier));
-
-		List<Link> links = new ArrayList<Link>();
 		for (LinkInDatabase linkInDatabase : linksInDatabase) {
 			Link link = new LinkImpl(linkInDatabase);
 			links.add(link);

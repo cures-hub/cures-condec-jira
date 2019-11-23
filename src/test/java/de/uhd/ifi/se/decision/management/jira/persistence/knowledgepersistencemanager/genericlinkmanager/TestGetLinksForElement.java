@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencemanager.genericlinkmanager;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,8 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManage
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestDeleteLinksForElements extends TestSetUp {
-
+public class TestGetLinksForElement extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
@@ -26,7 +24,19 @@ public class TestDeleteLinksForElements extends TestSetUp {
 
 	@Test
 	public void testElementNull() {
-		assertFalse(GenericLinkManager.deleteLinksForElement(0, null));
+		assertEquals(0, GenericLinkManager.getLinksForElement(0, null).size());
+		assertEquals(0, GenericLinkManager.getLinksForElement(null).size());
+	}
+
+	@Test
+	@NonTransactional
+	public void testElementIdFilledDocumentationLocationFilled() {
+		DecisionKnowledgeElement element = JiraIssues.addElementToDataBase();
+		DecisionKnowledgeElement elementJiraIssue = new DecisionKnowledgeElementImpl(
+				JiraIssues.getTestJiraIssues().get(0));
+		Link link = new LinkImpl(elementJiraIssue, element);
+		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(link, null);
+		assertEquals(1, GenericLinkManager.getLinksForElement(1, DocumentationLocation.JIRAISSUE).size());
 	}
 
 	@Test
@@ -37,6 +47,6 @@ public class TestDeleteLinksForElements extends TestSetUp {
 				JiraIssues.getTestJiraIssues().get(0));
 		Link link = new LinkImpl(elementJiraIssue, element);
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(link, null);
-		assertTrue(GenericLinkManager.deleteLinksForElement(1, DocumentationLocation.JIRAISSUE));
+		assertEquals(1, GenericLinkManager.getLinksForElement(element).size());
 	}
 }
