@@ -152,6 +152,17 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	}
 
 	@Override
+	public long insertLink(DecisionKnowledgeElement parentElement, DecisionKnowledgeElement childElement,
+			ApplicationUser user) {
+		if (parentElement == null || childElement == null) {
+			return 0;
+		}
+		Link link = Link.instantiateDirectedLink(parentElement, childElement);
+		long linkId = insertLink(link, user);
+		return linkId;
+	}
+
+	@Override
 	public boolean deleteLink(Link link, ApplicationUser user) {
 		if (link.containsUnknownDocumentationLocation()) {
 			link.setDefaultDocumentationLocation(projectKey);

@@ -43,7 +43,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetEdges() {
-		assertEquals(JiraIssueLinks.getTestIssueLinks().size(), graph.edgeSet().size());
+		assertEquals(JiraIssueLinks.getTestJiraIssueLinks().size(), graph.edgeSet().size());
 	}
 
 	@Test
@@ -59,7 +59,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	public void testRemoveEdge() {
 		Link link = new LinkImpl(2, 4, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		assertTrue(graph.removeEdge(link));
-		assertEquals(JiraIssueLinks.getTestIssueLinks().size() - 1, graph.edgeSet().size());
+		assertEquals(JiraIssueLinks.getTestJiraIssueLinks().size() - 1, graph.edgeSet().size());
 		assertTrue(graph.addEdge(link));
 	}
 

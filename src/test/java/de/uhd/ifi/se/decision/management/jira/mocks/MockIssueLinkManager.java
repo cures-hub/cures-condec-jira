@@ -38,7 +38,7 @@ public class MockIssueLinkManager implements IssueLinkManager {
 		if(issueId == 0) {
 			return inwardIssueLinks;
 		}
-		for(IssueLink link: JiraIssueLinks.getTestIssueLinks()) {
+		for(IssueLink link: JiraIssueLinks.getTestJiraIssueLinks()) {
 			if(link.getDestinationId() == issueId) {
 				inwardIssueLinks.add(link);
 			}
@@ -48,7 +48,7 @@ public class MockIssueLinkManager implements IssueLinkManager {
 
 	@Override
 	public IssueLink getIssueLink(Long issueLinkId) {
-		for(IssueLink link: JiraIssueLinks.getTestIssueLinks()) {
+		for(IssueLink link: JiraIssueLinks.getTestJiraIssueLinks()) {
 			if(link.getId() == issueLinkId) {
 				return link;
 			}
@@ -58,7 +58,7 @@ public class MockIssueLinkManager implements IssueLinkManager {
 
 	@Override
 	public IssueLink getIssueLink(Long sourceIssueId, Long destinationIssueId, Long issueLinkTypeId) {
-		for(IssueLink link: JiraIssueLinks.getTestIssueLinks()) {
+		for(IssueLink link: JiraIssueLinks.getTestJiraIssueLinks()) {
 			if(link.getSourceId() == sourceIssueId && link.getDestinationId() == destinationIssueId &&
 					   link.getIssueLinkType().getId() == issueLinkTypeId) {
 				return link;
@@ -101,7 +101,7 @@ public class MockIssueLinkManager implements IssueLinkManager {
 		if(issueId == 0) {
 			return outwardIssueLinks;
 		}
-		for(IssueLink link: JiraIssueLinks.getTestIssueLinks()) {
+		for(IssueLink link: JiraIssueLinks.getTestJiraIssueLinks()) {
 			if(link.getDestinationId() == issueId) {
 				outwardIssueLinks.add(link);
 			}

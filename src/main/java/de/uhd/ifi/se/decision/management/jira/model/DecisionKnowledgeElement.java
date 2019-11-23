@@ -6,9 +6,11 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 
 /**
  * Interface for decision knowledge elements
@@ -288,4 +290,24 @@ public interface DecisionKnowledgeElement extends Node {
 	 * @return Jira issue.
 	 */
 	Issue getJiraIssue();
+
+	/**
+	 * Returns all links (=edges) of this element in the {@link KnowledgeGraph}.
+	 * 
+	 * @param element
+	 *            node in the {@link KnowledgeGraph}.
+	 * @return list of {@link} objects, does contain Jira {@link IssueLink}s and
+	 *         generic links.
+	 * 
+	 * @see GenericLinkManager
+	 */
+	List<Link> getLinks();
+
+	/**
+	 * Determines whether an element is linked to at least one other decision
+	 * knowledge element.
+	 * 
+	 * @return id of first link that is found.
+	 */
+	long isLinked();
 }

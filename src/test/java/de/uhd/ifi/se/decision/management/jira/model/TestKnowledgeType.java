@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
@@ -58,5 +59,17 @@ public class TestKnowledgeType {
 	@Test
 	public void testToList() {
 		assertEquals(ArrayList.class, KnowledgeType.toList().getClass());
+	}
+
+	@Test
+	public void testGetParentTypes() {
+		assertTrue(KnowledgeType.getParentTypes(null).isEmpty());
+
+		// parent types of arguments are either alternative or decision
+		assertEquals(KnowledgeType.ALTERNATIVE, KnowledgeType.getParentTypes(KnowledgeType.ARGUMENT).get(0));
+		assertEquals(KnowledgeType.DECISION, KnowledgeType.getParentTypes(KnowledgeType.ARGUMENT).get(1));
+
+		// parent type of decision and alternative is issue
+		assertEquals(KnowledgeType.ISSUE, KnowledgeType.getParentTypes(KnowledgeType.DECISION).get(0));
 	}
 }
