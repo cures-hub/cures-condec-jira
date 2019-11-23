@@ -14,68 +14,56 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
 public class TestDecisionKnowledgeElementJiraIssue extends TestSetUp {
-	private int id;
-	private String summary;
-	private String description;
-	private KnowledgeType type;
-	private String projectKey;
 	private DecisionKnowledgeElement decisionKnowledgeElement;
 
 	@Before
 	public void setUp() {
 		init();
-		this.id = 1;
-		this.summary = "WI: Implement feature";
-		this.description = "WI: Implement feature";
-		this.type = KnowledgeType.OTHER;
-		this.projectKey = "TEST";
-
 		Issue issue = JiraIssues.getTestJiraIssues().get(0);
-
 		decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);
 	}
 
 	@Test
 	public void testGetId() {
-		assertEquals(this.id, this.decisionKnowledgeElement.getId(), 0.0);
+		assertEquals(1, this.decisionKnowledgeElement.getId());
 	}
 
 	@Test
 	public void testGetName() {
-		assertEquals(this.summary, this.decisionKnowledgeElement.getSummary());
+		assertEquals("WI: Implement feature", this.decisionKnowledgeElement.getSummary());
 	}
 
 	@Test
 	public void testGetDescription() {
-		assertEquals(this.description, this.decisionKnowledgeElement.getDescription());
+		assertEquals("WI: Implement feature", this.decisionKnowledgeElement.getDescription());
 	}
 
 	@Test
 	public void testGetType() {
-		assertEquals(this.type, this.decisionKnowledgeElement.getType());
+		assertEquals(KnowledgeType.OTHER, this.decisionKnowledgeElement.getType());
 	}
 
 	@Test
 	public void testGetProjectKey() {
-		assertEquals(this.projectKey, this.decisionKnowledgeElement.getProject().getProjectKey());
+		assertEquals("TEST", this.decisionKnowledgeElement.getProject().getProjectKey());
 	}
 
 	@Test
 	public void testSetId() {
-		this.decisionKnowledgeElement.setId(this.id + 1);
-		assertEquals(this.id + 1, this.decisionKnowledgeElement.getId(), 0.0);
+		this.decisionKnowledgeElement.setId(2);
+		assertEquals(2, this.decisionKnowledgeElement.getId());
 	}
 
 	@Test
 	public void testSetName() {
-		this.decisionKnowledgeElement.setSummary(this.summary + "New");
-		assertEquals(this.summary + "New", this.decisionKnowledgeElement.getSummary());
+		this.decisionKnowledgeElement.setSummary("WI: Do something else");
+		assertEquals("WI: Do something else", this.decisionKnowledgeElement.getSummary());
 	}
 
 	@Test
 	public void testSetDescription() {
-		this.decisionKnowledgeElement.setDescription(this.description + "New");
-		assertEquals(this.description + "New", this.decisionKnowledgeElement.getDescription());
+		this.decisionKnowledgeElement.setDescription("WI: Do something else");
+		assertEquals("WI: Do something else", this.decisionKnowledgeElement.getDescription());
 	}
 
 	@Test
@@ -86,8 +74,8 @@ public class TestDecisionKnowledgeElementJiraIssue extends TestSetUp {
 
 	@Test
 	public void testSetProjectKey() {
-		this.decisionKnowledgeElement.setProject(this.projectKey + "New");
-		assertEquals(this.projectKey + "New", this.decisionKnowledgeElement.getProject().getProjectKey());
+		this.decisionKnowledgeElement.setProject("CONDEC");
+		assertEquals("CONDEC", this.decisionKnowledgeElement.getProject().getProjectKey());
 	}
 
 	@Test
