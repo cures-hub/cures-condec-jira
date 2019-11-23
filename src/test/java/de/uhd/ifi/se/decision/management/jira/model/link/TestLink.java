@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model.link;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 
@@ -142,12 +143,12 @@ public class TestLink extends TestSetUp {
 
 	@Test
 	public void testGetSource() {
-		assertEquals(link.getSource().getId(), link.getSource().getId());
+		assertEquals(2, link.getSource().getId());
 	}
 
 	@Test
 	public void testGetTarget() {
-		assertEquals(link.getTarget().getId(), link.getTarget().getId());
+		assertEquals(4, link.getTarget().getId());
 	}
 
 	@Test
@@ -161,5 +162,10 @@ public class TestLink extends TestSetUp {
 		long linkId = newLink.getId();
 		newLink.setId(0);
 		assertEquals(linkId, newLink.getId());
+	}
+
+	@Test
+	public void testContainsUnknownDocumentationLocation() {
+		assertFalse(link.containsUnknownDocumentationLocation());
 	}
 }
