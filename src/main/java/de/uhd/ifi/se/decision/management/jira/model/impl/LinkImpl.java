@@ -326,6 +326,6 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 
 	@Override
 	public int hashCode() {
-		return (getSource().hashCode() + getTarget().hashCode());
+		return getSource().hashCode() + getTarget().hashCode();
 	}
 }

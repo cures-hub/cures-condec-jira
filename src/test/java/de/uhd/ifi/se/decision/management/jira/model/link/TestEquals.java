@@ -23,24 +23,24 @@ public class TestEquals extends TestSetUp {
 	}
 
 	@Test
-	public void testEqualsNull() {
+	public void testNull() {
 		assertFalse(link.equals((Object) null));
 	}
 
 	@SuppressWarnings("unlikely-arg-type")
 	@Test
-	public void testEqualsNotLink() {
+	public void testNoLinkObject() {
 		assertFalse(link.equals(new DecisionKnowledgeElementImpl()));
 	}
 
 	@Test
-	public void testEqualsSelf() {
+	public void testSelf() {
 		assertTrue(link.equals(link));
 	}
 
 	@Test
-	public void testEqualsEquals() {
-		Link linkEquals = new LinkImpl(link.getSource(), link.getTarget());
-		assertTrue(link.equals(linkEquals));
+	public void testNewLinkWithSameEndings() {
+		Link newLink = new LinkImpl(link.getSource(), link.getTarget());
+		assertTrue(link.equals(newLink));
 	}
 }
