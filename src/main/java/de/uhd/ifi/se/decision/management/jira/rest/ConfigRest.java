@@ -632,7 +632,7 @@ public class ConfigRest {
 	}
 
 	private Response checkIfProjectKeyIsValid(String projectKey) {
-		if (projectKey == null || projectKey.equals("")) {
+		if (projectKey == null || projectKey.isBlank()) {
 			LOGGER.error("Project configuration could not be changed since the project key is invalid.");
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project key is invalid."))
 					.build();

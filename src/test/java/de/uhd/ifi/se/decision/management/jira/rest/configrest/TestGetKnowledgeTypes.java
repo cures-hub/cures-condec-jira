@@ -3,31 +3,45 @@ package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 import static org.junit.Assert.assertEquals;
 
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
+import org.junit.Before;
 import org.junit.Test;
 
-public class TestGetKnowledgeTypes extends TestConfigSuper {
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+
+public class TestGetKnowledgeTypes extends TestSetUp {
+
+	protected ConfigRest configRest;
+
+	@Before
+	public void setUp() {
+		init();
+		configRest = new ConfigRest();
+	}
+
 	@Test
 	public void testProjectKeyNull() {
-		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getStatus(),
-				configRest.getKnowledgeTypes(null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.getKnowledgeTypes(null).getStatus());
 	}
 
 	@Test
 	public void testProjectKeyEmpty() {
-		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getStatus(),
-				configRest.getKnowledgeTypes("").getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.getKnowledgeTypes("").getStatus());
 	}
 
 	@Test
 	public void testProjectKeyInvalid() {
-		assertEquals(Response.status(Response.Status.OK).build().getStatus(),
-				configRest.getKnowledgeTypes("InvalidKey").getStatus());
+		assertEquals(Response.Status.OK.getStatusCode(), configRest.getKnowledgeTypes("InvalidKey").getStatus());
 	}
 
 	@Test
 	public void testProjectKeyValid() {
-		assertEquals(Response.status(Response.Status.OK).build().getStatus(),
-				configRest.getKnowledgeTypes("TEST").getStatus());
+		Response response = configRest.getKnowledgeTypes("TEST");
+		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+		assertEquals("[Alternative, Assumption, Assessment, Argument, Pro, Con, Claim, "
+				+ "Context, Constraint, Decision, Goal, Issue, Implication, Problem, Rationale, Solution, Other, Question]",
+				response.getEntity().toString());
 	}
 }
