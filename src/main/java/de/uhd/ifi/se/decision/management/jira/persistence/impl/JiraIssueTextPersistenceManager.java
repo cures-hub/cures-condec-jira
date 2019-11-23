@@ -494,19 +494,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		}
 	}
 
-	public static boolean createSmartLinkForElement(PartOfJiraIssueText sentence) {
-		if (sentence == null) {
-			return false;
-		}
-		if (isElementLinked(sentence)) {
-			return true;
-		}
-		boolean isLinkCreated = false;
-		DecisionKnowledgeElement lastElement = AutomaticLinkCreator.getPotentialParentElement(sentence);
-		isLinkCreated = createLink(lastElement, sentence);
-		return isLinkCreated;
-	}
-
 	public boolean createLinksForNonLinkedElements(long jiraIssueId) {
 		return createLinksForNonLinkedElements(getElementsInJiraIssue(jiraIssueId));
 	}
@@ -531,16 +518,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				((PartOfJiraIssueText) element).getJiraIssue());
 		Link link = Link.instantiateDirectedLink(parentElement, element);
 		long linkId = KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, null);
-		return linkId > 0;
-	}
-
-	public static boolean createLink(DecisionKnowledgeElement lastElement, PartOfJiraIssueText sentence) {
-		if (lastElement == null || !sentence.isRelevant()) {
-			return false;
-		}
-		Link link = Link.instantiateDirectedLink(lastElement, sentence);
-		long linkId = KnowledgePersistenceManager.getOrCreate(lastElement.getProject().getProjectKey()).insertLink(link,
-				null);
 		return linkId > 0;
 	}
 
@@ -681,7 +658,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			} else {
 				sentence = (PartOfJiraIssueText) persistenceManager.insertDecisionKnowledgeElement(sentence, null);
 			}
-			createSmartLinkForElement(sentence);
+			if (sentence.isRelevant()) {
+				AutomaticLinkCreator.createSmartLinkForElement(sentence);
+			}
 			knowledgeElementsInText.set(i, sentence);
 		}
 		return knowledgeElementsInText;
@@ -710,7 +689,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				parts.add(sentence);
 			}
 			sentence = (PartOfJiraIssueText) persistenceManager.getDecisionKnowledgeElement(sentence);
-			createSmartLinkForElement(sentence);
+			if (sentence.isRelevant()) {
+				AutomaticLinkCreator.createSmartLinkForElement(sentence);
+			}
 			KnowledgeGraph.getOrCreate(projectKey).updateNode(sentence);
 		}
 		return parts;
@@ -778,7 +759,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		for (PartOfText partOfText : partsOfText) {
 			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(partOfText, comment);
 			sentence = (PartOfJiraIssueText) persistenceManager.insertDecisionKnowledgeElement(sentence, null);
-			createSmartLinkForElement(sentence);
+			if (sentence.isRelevant()) {
+				AutomaticLinkCreator.createSmartLinkForElement(sentence);
+			}
 			parts.add(sentence);
 		}
 		return parts;

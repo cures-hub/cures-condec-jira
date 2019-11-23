@@ -14,6 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
@@ -69,6 +70,13 @@ public interface KnowledgePersistenceManager {
 		KnowledgePersistenceManager persistenceInterface = new KnowledgePersistenceManagerImpl(projectKey);
 		instances.put(projectKey, persistenceInterface);
 		return instances.get(projectKey);
+	}
+
+	static KnowledgePersistenceManager getOrCreate(DecisionKnowledgeProject project) {
+		if (project == null) {
+			return null;
+		}
+		return getOrCreate(project.getProjectKey());
 	}
 
 	/**
@@ -172,6 +180,22 @@ public interface KnowledgePersistenceManager {
 	 * @return internal database id of inserted link, zero if insertion failed.
 	 */
 	long insertLink(Link link, ApplicationUser user);
+
+	/**
+	 * Inserts a new link into database.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see LinkType
+	 * @param childElement
+	 *            a decision knowledge element that is on one end of the link.
+	 * @param parentElement
+	 *            a decision knowledge element that is on one end of the link.
+	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}.
+	 * @return internal database id of inserted link, zero if insertion failed.
+	 */
+	long insertLink(DecisionKnowledgeElement parentElement, DecisionKnowledgeElement childElement,
+			ApplicationUser user);
 
 	/**
 	 * Updates an existing link in database. The link can be between any kinds of

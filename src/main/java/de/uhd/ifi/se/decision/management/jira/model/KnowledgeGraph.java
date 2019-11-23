@@ -50,6 +50,9 @@ public interface KnowledgeGraph extends Graph<Node, Link> {
 	}
 
 	static KnowledgeGraph getOrCreate(DecisionKnowledgeProject project) {
+		if (project == null) {
+			return null;
+		}
 		return getOrCreate(project.getProjectKey());
 	}
 

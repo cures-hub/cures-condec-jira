@@ -11,12 +11,26 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import net.java.ao.Query;
 
 public class AutomaticLinkCreator {
 
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
+
+	public static boolean createSmartLinkForElement(PartOfJiraIssueText sentence) {
+		if (sentence == null) {
+			return false;
+		}
+		if (JiraIssueTextPersistenceManager.isElementLinked(sentence)) {
+			return true;
+		}
+		DecisionKnowledgeElement lastElement = getPotentialParentElement(sentence);
+		long linkId = KnowledgePersistenceManager.getOrCreate(sentence.getProject()).insertLink(lastElement, sentence,
+				null);
+		return linkId > 0;
+	}
 
 	public static DecisionKnowledgeElement getPotentialParentElement(DecisionKnowledgeElement element) {
 		if (element == null) {
