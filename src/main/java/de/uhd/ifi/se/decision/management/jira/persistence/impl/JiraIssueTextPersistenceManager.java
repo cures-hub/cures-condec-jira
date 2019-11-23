@@ -45,7 +45,7 @@ import net.java.ao.Query;
  */
 public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerForSingleLocation {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextPersistenceManager.class);
-	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
+	static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 	private static OnlineClassificationTrainerImpl classificationTrainer = new OnlineClassificationTrainerImpl();
 
 	public JiraIssueTextPersistenceManager(String projectKey) {
@@ -354,14 +354,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		databaseEntry.setType(element.getTypeAsString());
 		databaseEntry.setRelevant(element.isRelevant());
 		databaseEntry.setValidated(element.isValidated());
-		// TODO Is there a better place for this method? Please move try-catch block
-		// into classificationTrainer.update method for better readability.
+		// TODO Is there a better place for this method?
 		if (element.isValidated()) {
-			try {
-				classificationTrainer.update(element);
-			} catch (Exception e) {
-				LOGGER.error("Could not update Classifier. Message: " + e.getMessage());
-			}
+			classificationTrainer.update(element);
 		}
 		databaseEntry.setStartPosition(element.getStartPosition());
 		databaseEntry.setEndPosition(element.getEndPosition());
@@ -507,20 +502,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			return true;
 		}
 		boolean isLinkCreated = false;
-		KnowledgeType knowledgeType = sentence.getType();
-
-		if (knowledgeType == KnowledgeType.ARGUMENT || knowledgeType == KnowledgeType.PRO
-				|| knowledgeType == KnowledgeType.CON) {
-			DecisionKnowledgeElement lastElement = getMostRecentElement(
-					searchForLast(sentence, KnowledgeType.ALTERNATIVE),
-					searchForLast(sentence, KnowledgeType.DECISION));
-			isLinkCreated = createLink(lastElement, sentence);
-		}
-
-		if (knowledgeType == KnowledgeType.DECISION || knowledgeType == KnowledgeType.ALTERNATIVE) {
-			DecisionKnowledgeElement lastElement = searchForLast(sentence, KnowledgeType.ISSUE);
-			isLinkCreated = createLink(lastElement, sentence);
-		}
+		DecisionKnowledgeElement lastElement = AutomaticLinkCreator.getPotentialParentElement(sentence);
+		isLinkCreated = createLink(lastElement, sentence);
 
 		if (!isLinkCreated && sentence.isRelevant()) {
 			String projectKey = sentence.getProject().getProjectKey();
@@ -531,34 +514,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			isLinkCreated = createLink(parentElement, sentence);
 		}
 		return isLinkCreated;
-	}
-
-	public static DecisionKnowledgeElement searchForLast(PartOfJiraIssueText sentence, KnowledgeType typeToSearch) {
-		PartOfJiraIssueText lastSentence = null;
-		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("JIRA_ISSUE_ID = ?", sentence.getJiraIssueId()).order("ID DESC"));
-
-		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
-			if (databaseEntry.getType().equals(typeToSearch.toString())) {
-				lastSentence = new PartOfJiraIssueTextImpl(databaseEntry);
-				break;
-			}
-		}
-		return lastSentence;
-	}
-
-	public static DecisionKnowledgeElement getMostRecentElement(DecisionKnowledgeElement first,
-			DecisionKnowledgeElement second) {
-		if (first == null) {
-			return second;
-		}
-		if (second == null) {
-			return first;
-		}
-		if (first.getId() > second.getId()) {
-			return first;
-		}
-		return second;
 	}
 
 	public boolean createLinksForNonLinkedElements(long jiraIssueId) {
