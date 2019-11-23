@@ -21,6 +21,7 @@
 
     ConDecRelationshipMatrixPage.prototype.buildMatrix = function() {
         conDecAPI.getDecisionMatrix(function (data) {
+            console.log(data);
             const div = document.getElementById("matrix");
             var event, index, id;
 
@@ -35,10 +36,12 @@
                 afterGetColHeader: function(i, TH) {
                     TH.innerHTML = '<div class="head">' + TH.innerHTML + '</div>'
                 },
+                //manualColumnResize: true,
                 colWidths: 25,
                 selectionMode: "single",
                 dropdownMenu: {
                     callback: function (key, selection, clickEvent) {
+                        // Common callback for all options
                         event = clickEvent;
                         index = selection[0].start.col;
                         id = data.headerElements[index].id;
