@@ -77,7 +77,7 @@ public class AutomaticLinkCreator {
 		return lastSentence;
 	}
 
-	private static DecisionKnowledgeElement getMostRecentElement(DecisionKnowledgeElement first,
+	public static DecisionKnowledgeElement getMostRecentElement(DecisionKnowledgeElement first,
 			DecisionKnowledgeElement second) {
 		if (first == null) {
 			return second;
@@ -85,10 +85,9 @@ public class AutomaticLinkCreator {
 		if (second == null) {
 			return first;
 		}
-		if (first.getId() > second.getId()) {
+		if (first.getCreated().compareTo(second.getCreated()) > 0) {
 			return first;
 		}
 		return second;
 	}
-
 }
