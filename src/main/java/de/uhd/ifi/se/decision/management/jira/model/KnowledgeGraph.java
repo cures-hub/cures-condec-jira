@@ -49,6 +49,10 @@ public interface KnowledgeGraph extends Graph<Node, Link> {
 		return knowledgeGraph;
 	}
 
+	static KnowledgeGraph getOrCreate(DecisionKnowledgeProject project) {
+		return getOrCreate(project.getProjectKey());
+	}
+
 	/**
 	 * Adds the specified edge ({@link Link} object) to this graph, going from the
 	 * source vertex to the target vertex. More formally, adds the specified edge,

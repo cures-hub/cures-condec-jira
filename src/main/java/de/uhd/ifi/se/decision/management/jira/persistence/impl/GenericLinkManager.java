@@ -59,6 +59,9 @@ public class GenericLinkManager {
 	 * @return true if deletion was successful, false otherwise.
 	 */
 	public static boolean deleteLink(Link link) {
+		if (link == null) {
+			return false;
+		}
 		boolean isDeleted = false;
 		for (LinkInDatabase linkInDatabase : ACTIVE_OBJECTS.find(LinkInDatabase.class)) {
 			if (link.equals(linkInDatabase)) {
@@ -79,10 +82,15 @@ public class GenericLinkManager {
 	 * @param elementId
 	 *            id of the node.
 	 * @param documentationLocation
-	 *            {@link DocumentationLocation} of the knowledge element. *
+	 *            {@link DocumentationLocation} of the knowledge element.
+	 * @return true if at least one link was deleted, false if no link was deleted.
 	 * @see DecisionKnowledgeElement
 	 */
-	public static void deleteLinksForElement(long elementId, DocumentationLocation documentationLocation) {
+	public static boolean deleteLinksForElement(long elementId, DocumentationLocation documentationLocation) {
+		if (elementId <= 0 || documentationLocation == null) {
+			return false;
+		}
+		boolean isLinkDeleted = false;
 		String identifier = documentationLocation.getIdentifier();
 		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class);
 		for (LinkInDatabase linkInDatabase : linksInDatabase) {
@@ -91,10 +99,12 @@ public class GenericLinkManager {
 					|| linkInDatabase.getSourceId() == elementId
 							&& linkInDatabase.getSourceDocumentationLocation().equals(identifier)) {
 				LinkInDatabase.deleteLink(linkInDatabase);
+				isLinkDeleted = true;
 				Link link = new LinkImpl(linkInDatabase);
-				KnowledgeGraph.getOrCreate(link.getSource().getProject().getProjectKey()).removeEdge(link);
+				KnowledgeGraph.getOrCreate(link.getSource().getProject()).removeEdge(link);
 			}
 		}
+		return isLinkDeleted;
 	}
 
 	/**

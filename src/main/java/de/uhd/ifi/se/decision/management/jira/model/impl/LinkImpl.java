@@ -25,7 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 public class LinkImpl extends DefaultWeightedEdge implements Link {
 
 	private long id;
-	private String type;
+	private String type; // TODO Use LinkType istead of String
 	private DecisionKnowledgeElement source;
 	private DecisionKnowledgeElement target;
 
@@ -102,13 +102,19 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 
 	@Override
 	public String getType() {
-		if (type == null || type.equals("")) {
+		if (type == null || type.isBlank()) {
 			return "Relates";
 		}
 		return type;
 	}
 
 	@Override
+	public void setType(LinkType type) {
+		this.type = type.toString();
+	}
+
+	@Override
+	@JsonProperty("type")
 	public void setType(String type) {
 		this.type = type;
 	}
