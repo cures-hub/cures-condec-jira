@@ -41,5 +41,6 @@ public class TestGetLinkId extends TestSetUp {
 	public void testGenericLinkInvalid() {
 		link.setDocumentationLocationOfDestinationElement("s");
 		assertEquals(-1, KnowledgePersistenceManager.getLinkId(link));
+		link.setDocumentationLocationOfDestinationElement("i");
 	}
 }
