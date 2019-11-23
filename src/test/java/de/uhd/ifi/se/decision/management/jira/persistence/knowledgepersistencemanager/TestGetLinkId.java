@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.Links;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestInsertLink extends TestSetUp {
+public class TestGetLinkId extends TestSetUp {
 
 	public Link link;
 	public ApplicationUser user;
@@ -30,13 +30,16 @@ public class TestInsertLink extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testLinkValidUserNull() {
-		assertEquals(0, knowledgePersistenceManager.insertLink(link, null));
+	public void testJiraIssueLinkValidUserValid() {
+		assertEquals(1, knowledgePersistenceManager.insertLink(link, user));
+		assertEquals(1, KnowledgePersistenceManager.getLinkId(link));
+		assertEquals(1, KnowledgePersistenceManager.getLinkId(link.flip()));
 	}
 
 	@Test
 	@NonTransactional
-	public void testLinkValidUserValid() {
-		assertEquals(1, knowledgePersistenceManager.insertLink(link, user));
+	public void testGenericLinkInvalid() {
+		link.setDocumentationLocationOfDestinationElement("s");
+		assertEquals(-1, KnowledgePersistenceManager.getLinkId(link));
 	}
 }

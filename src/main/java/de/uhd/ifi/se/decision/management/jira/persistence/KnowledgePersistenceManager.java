@@ -251,9 +251,6 @@ public interface KnowledgePersistenceManager {
 		long linkId = -1;
 		if (link.isIssueLink()) {
 			linkId = JiraIssuePersistenceManager.getLinkId(link);
-			if (linkId <= 0) {
-				JiraIssuePersistenceManager.getLinkId(link.flip());
-			}
 			return linkId;
 		}
 		linkId = GenericLinkManager.isLinkAlreadyInDatabase(link);
