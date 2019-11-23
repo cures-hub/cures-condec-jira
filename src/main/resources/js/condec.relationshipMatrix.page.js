@@ -21,7 +21,6 @@
 
     ConDecRelationshipMatrixPage.prototype.buildMatrix = function() {
         conDecAPI.getDecisionMatrix(function (data) {
-            console.log(data);
             const div = document.getElementById("matrix");
             var event, index, id;
 
