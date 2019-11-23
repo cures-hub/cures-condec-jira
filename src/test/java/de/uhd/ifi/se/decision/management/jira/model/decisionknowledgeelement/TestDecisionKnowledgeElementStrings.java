@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.model;
+package de.uhd.ifi.se.decision.management.jira.model.decisionknowledgeelement;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -8,6 +8,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 
 /**
@@ -123,5 +126,10 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 	@Test
 	public void testGetInwardLinks() {
 		assertNotNull(decisionKnowledgeElement.getInwardLinks());
+	}
+
+	@Test
+	public void isLinked() {
+		assertEquals(0, decisionKnowledgeElement.isLinked());
 	}
 }

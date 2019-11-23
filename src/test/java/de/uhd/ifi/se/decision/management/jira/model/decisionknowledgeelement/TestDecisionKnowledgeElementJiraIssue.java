@@ -1,22 +1,19 @@
-package de.uhd.ifi.se.decision.management.jira.model;
+package de.uhd.ifi.se.decision.management.jira.model.decisionknowledgeelement;
 
 import static org.junit.Assert.assertEquals;
-
-import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.issuetype.IssueType;
-import com.atlassian.jira.issue.issuetype.MockIssueType;
-import com.atlassian.jira.mock.issue.MockIssue;
-import com.atlassian.jira.project.MockProject;
-import com.atlassian.jira.project.Project;
 
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
-public class TestDecisionKnowledgeElementJiraIssue {
+public class TestDecisionKnowledgeElementJiraIssue extends TestSetUp {
 	private int id;
 	private String summary;
 	private String description;
@@ -26,21 +23,14 @@ public class TestDecisionKnowledgeElementJiraIssue {
 
 	@Before
 	public void setUp() {
-		this.id = 100;
-		this.summary = "Test";
-		this.description = "Test";
-		this.type = KnowledgeType.SOLUTION;
+		init();
+		this.id = 1;
+		this.summary = "WI: Implement feature";
+		this.description = "WI: Implement feature";
+		this.type = KnowledgeType.OTHER;
 		this.projectKey = "TEST";
 
-		IssueType issueType = new MockIssueType(2, type.toString().toLowerCase(Locale.ENGLISH));
-
-		Project project = new MockProject(1, projectKey);
-
-		Issue issue = new MockIssue(id, "TEST-1");
-		((MockIssue) issue).setProjectObject(project);
-		((MockIssue) issue).setSummary(summary);
-		((MockIssue) issue).setDescription(description);
-		((MockIssue) issue).setIssueType(issueType);
+		Issue issue = JiraIssues.getTestJiraIssues().get(0);
 
 		decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);
 	}
@@ -98,5 +88,10 @@ public class TestDecisionKnowledgeElementJiraIssue {
 	public void testSetProjectKey() {
 		this.decisionKnowledgeElement.setProject(this.projectKey + "New");
 		assertEquals(this.projectKey + "New", this.decisionKnowledgeElement.getProject().getProjectKey());
+	}
+
+	@Test
+	public void isLinked() {
+		assertEquals(9, decisionKnowledgeElement.isLinked());
 	}
 }

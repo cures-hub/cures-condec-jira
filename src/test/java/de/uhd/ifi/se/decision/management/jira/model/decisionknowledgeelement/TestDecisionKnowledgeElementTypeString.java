@@ -1,6 +1,9 @@
-package de.uhd.ifi.se.decision.management.jira.model;
+package de.uhd.ifi.se.decision.management.jira.model.decisionknowledgeelement;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import org.junit.Before;
 import org.junit.Test;
