@@ -214,7 +214,7 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getBothElements() throws NullPointerException {
+	public List<DecisionKnowledgeElement> getBothElements() {
 		List<DecisionKnowledgeElement> bothElements = new ArrayList<DecisionKnowledgeElement>();
 		bothElements.add(target);
 		bothElements.add(source);
