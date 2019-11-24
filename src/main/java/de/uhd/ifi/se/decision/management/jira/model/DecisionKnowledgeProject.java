@@ -123,6 +123,22 @@ public interface DecisionKnowledgeProject {
 	boolean isKnowledgeExtractedFromGit();
 
 	/**
+	 * Determine whether comments extracted from git commit messages of squashed
+	 * commits should be posted.
+	 *
+	 * @return true if they should be posted.
+	 */
+	boolean isPostSquashedCommitsActivated();
+
+	/**
+	 * Determine whether comments extracted from git commit messages of feature
+	 * branch commits should be posted.
+	 *
+	 * @return true if they should be posted.
+	 */
+	boolean isPostFeatureBranchCommitsActivated();
+
+	/**
 	 * Set whether decision knowledge is extracted from git commit messages.
 	 *
 	 * @param isKnowledgeExtractedFromGit

@@ -26,7 +26,7 @@ public class StatusPersistenceManager {
 		}
 		AbstractPersistenceManagerForSingleLocation manager = KnowledgePersistenceManager
 				.getOrCreate(decisionKnowledgeElement.getProject().getProjectKey())
-				.getPersistenceManager(decisionKnowledgeElement.getDocumentationLocation());
+				.getManagerForSingleLocation(decisionKnowledgeElement.getDocumentationLocation());
 		DecisionKnowledgeElement element = manager.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 		if (!setTypeByChange(status, element, manager)) {
 			return;
@@ -95,7 +95,7 @@ public class StatusPersistenceManager {
 	private static KnowledgeStatus getIssueKnowledgeStatus(DecisionKnowledgeElement element) {
 		AbstractPersistenceManagerForSingleLocation manager = KnowledgePersistenceManager
 				.getOrCreate(element.getProject().getProjectKey())
-				.getPersistenceManager(element.getDocumentationLocation());
+				.getManagerForSingleLocation(element.getDocumentationLocation());
 
 		for (DecisionKnowledgeElement linkedElement : manager.getElementsLinkedWithOutwardLinks(element)) {
 			if (linkedElement.getType().equals(KnowledgeType.DECISION)) {
@@ -113,7 +113,7 @@ public class StatusPersistenceManager {
 		if (element.getType().equals(KnowledgeType.DECISION)) {
 			if (status.equals(KnowledgeStatus.REJECTED) || status.equals(KnowledgeStatus.IDEA)
 					|| status.equals(KnowledgeStatus.DISCARDED)) {
-				ApplicationUser user = manager.getCreator(element);
+				ApplicationUser user = element.getCreator();
 				element.setType(KnowledgeType.ALTERNATIVE);
 				manager.updateDecisionKnowledgeElementWithoutStatusChange(element, user);
 			}

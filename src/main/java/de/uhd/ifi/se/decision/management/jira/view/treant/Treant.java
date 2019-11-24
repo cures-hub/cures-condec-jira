@@ -61,9 +61,9 @@ public class Treant {
 		// and use the documentation location of the element
 		if (elementKey.contains(":")) {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-					.getPersistenceManager(DocumentationLocation.JIRAISSUETEXT);
+					.getManagerForSingleLocation(DocumentationLocation.JIRAISSUETEXT);
 		} else {
-			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey).getDefaultPersistenceManager();
+			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey).getDefaultManagerForSingleLocation();
 		}
 		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
 		this.setChart(new Chart());

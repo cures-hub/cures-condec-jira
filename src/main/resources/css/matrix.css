@@ -52,6 +52,12 @@
     background-color: #e2e2e2;
 }
 
+#linktype-dropdown {
+    overflow:auto;
+    max-height:200px;
+}
+
+
 .rowHeader div {
     text-align: left;
     white-space: nowrap;

@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.model.impl;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -13,14 +12,17 @@ import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
+import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
 
 /**
@@ -203,7 +205,7 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 	@Override
 	public List<Link> getInwardLinks() {
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getPersistenceManager(this);
+				.getManagerForSingleLocation(this);
 		return persistenceManager.getInwardLinks(this);
 	}
 
@@ -249,31 +251,6 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(id, summary);
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (object == null) {
-			return false;
-		}
-		if (object == this) {
-			return true;
-		}
-		if (!(object instanceof DecisionKnowledgeElement)) {
-			return false;
-		}
-		DecisionKnowledgeElement element = (DecisionKnowledgeElement) object;
-		return this.id == element.getId()
-				/*
-				 * At least compare also the key, otherwise comparison will not work for
-				 * elements with same/not initialized ID.
-				 */
-				&& element.getKey().equals(getKey());
-	}
-
-	@Override
 	public Date getCreated() {
 		if (created == null) {
 			return new Date();
@@ -298,13 +275,56 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 
 	@Override
 	public boolean existsInDatabase() {
-		DecisionKnowledgeElement elementInDatabase = KnowledgePersistenceManager.getDecisionKnowledgeElement(id,
-				documentationLocation);
+		DecisionKnowledgeElement elementInDatabase = KnowledgePersistenceManager.getOrCreate("")
+				.getDecisionKnowledgeElement(id, documentationLocation);
 		return elementInDatabase != null && elementInDatabase.getId() > 0;
+	}
+
+	@Override
+	public Issue getJiraIssue() {
+		if (documentationLocation == DocumentationLocation.JIRAISSUE) {
+			return ComponentAccessor.getIssueManager().getIssueObject(id);
+		}
+		if (documentationLocation == DocumentationLocation.JIRAISSUETEXT) {
+			return ((PartOfJiraIssueText) this).getJiraIssue();
+		}
+		return null;
 	}
 
 	@Override
 	public String toString() {
 		return this.getDescription();
 	}
+
+	@Override
+	public ApplicationUser getCreator() {
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(project.getProjectKey());
+		if (getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
+			return persistenceManager.getJiraIssueManager().getCreator(this);
+		}
+		if (getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
+			return persistenceManager.getJiraIssueTextManager().getCreator(this);
+		}
+		return null;
+	}
+
+	@Override
+	public List<Link> getLinks() {
+		List<Link> links = GenericLinkManager.getLinksForElement(this);
+		if (documentationLocation == DocumentationLocation.JIRAISSUE) {
+			links.addAll(KnowledgePersistenceManager.getOrCreate(project).getJiraIssueManager().getLinks(this));
+		}
+		return links;
+	}
+
+	@Override
+	public long isLinked() {
+		List<Link> links = getLinks();
+		if (!links.isEmpty()) {
+			return links.get(0).getId();
+		}
+		return 0;
+	}
+
 }

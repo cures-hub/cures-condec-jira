@@ -5,7 +5,12 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.link.IssueLink;
+import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 
 /**
  * Interface for decision knowledge elements
@@ -20,6 +25,7 @@ public interface DecisionKnowledgeElement extends Node {
 	 *
 	 * @return id of the decision knowledge element.
 	 */
+	@Override
 	long getId();
 
 	/**
@@ -192,6 +198,7 @@ public interface DecisionKnowledgeElement extends Node {
 	 * @see DocumentationLocation
 	 * @return documentation location of the decision knowledge element.
 	 */
+	@Override
 	DocumentationLocation getDocumentationLocation();
 
 	/**
@@ -249,6 +256,13 @@ public interface DecisionKnowledgeElement extends Node {
 	void setCreated(Date date);
 
 	/**
+	 * Returns the creator of an element as an application user object.
+	 *
+	 * @return creator of an element as an {@link ApplicationUser} object.
+	 */
+	ApplicationUser getCreator();
+
+	/**
 	 * Get the close date fo the decision knowledge element.
 	 *
 	 * @return close date.
@@ -268,4 +282,32 @@ public interface DecisionKnowledgeElement extends Node {
 	 * @return true if the element exists in database.
 	 */
 	boolean existsInDatabase();
+
+	/**
+	 * Get the Jira issue that the decision knowledge element or irrelevant text is
+	 * part of.
+	 * 
+	 * @return Jira issue.
+	 */
+	Issue getJiraIssue();
+
+	/**
+	 * Returns all links (=edges) of this element in the {@link KnowledgeGraph}.
+	 * 
+	 * @param element
+	 *            node in the {@link KnowledgeGraph}.
+	 * @return list of {@link} objects, does contain Jira {@link IssueLink}s and
+	 *         generic links.
+	 * 
+	 * @see GenericLinkManager
+	 */
+	List<Link> getLinks();
+
+	/**
+	 * Determines whether an element is linked to at least one other decision
+	 * knowledge element.
+	 * 
+	 * @return id of first link that is found.
+	 */
+	long isLinked();
 }

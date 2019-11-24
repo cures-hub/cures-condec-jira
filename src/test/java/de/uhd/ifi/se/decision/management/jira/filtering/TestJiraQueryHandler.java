@@ -13,7 +13,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.JiraQueryHandlerImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -57,8 +56,6 @@ public class TestJiraQueryHandler extends TestSetUp {
 		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "?jql=project=TEST");
 		List<Issue> jiraIssues = jiraQueryHandler.getJiraIssuesFromQuery();
 		assertEquals(8, jiraIssues.size());
-		Issue jiraIssue = jiraIssues.get(0);
-		assertEquals(0, JiraIssueTextPersistenceManager.getElementsForIssue(jiraIssue.getId(), "TEST").size());
 	}
 
 	@Test
@@ -125,11 +122,13 @@ public class TestJiraQueryHandler extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetDatesInQueryFromTimeFactor() {
-		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "?jql=project = TEST AND created >= -1m AND created <= -1w");
+		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST",
+				"?jql=project = TEST AND created >= -1m AND created <= -1w");
 		assertTrue(jiraQueryHandler.getCreatedEarliest() > 100000000);
 		assertTrue(jiraQueryHandler.getCreatedLatest() > 100000000);
 
-		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "?jql=project = TEST AND created >= -1d AND created <= -1h");
+		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST",
+				"?jql=project = TEST AND created >= -1d AND created <= -1h");
 		assertTrue(jiraQueryHandler.getCreatedEarliest() > 100000000);
 		assertTrue(jiraQueryHandler.getCreatedLatest() > 100000000);
 	}

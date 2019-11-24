@@ -112,13 +112,15 @@ public class FilterExtractorImpl implements FilterExtractor {
 			return this.getAllElementsMatchingCompareFilter();
 		}
 
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(filterSettings.getProjectKey()).getJiraIssueTextManager();
+
 		List<DecisionKnowledgeElement> results = new ArrayList<DecisionKnowledgeElement>();
 		// Retrieve linked decision knowledge elements for every Jira issue
 		for (Issue currentIssue : jiraIssues) {
 			// Add all Matching Elements from Query as a DecisionKnowledgeElement
 			results.add(new DecisionKnowledgeElementImpl(currentIssue));
-			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
-					.getElementsForIssue(currentIssue.getId(), filterSettings.getProjectKey());
+			List<DecisionKnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(currentIssue.getId());
 			for (DecisionKnowledgeElement currentElement : elements) {
 				if (results.contains(currentElement)) {
 					continue;
@@ -148,8 +150,8 @@ public class FilterExtractorImpl implements FilterExtractor {
 		if (filterSettings == null || filterSettings.getProjectKey() == null) {
 			return new ArrayList<DecisionKnowledgeElement>();
 		}
-		List<DecisionKnowledgeElement> elements = KnowledgePersistenceManager.getOrCreate(filterSettings.getProjectKey())
-				.getDecisionKnowledgeElements();
+		List<DecisionKnowledgeElement> elements = KnowledgePersistenceManager
+				.getOrCreate(filterSettings.getProjectKey()).getDecisionKnowledgeElements();
 		return filterElements(elements);
 	}
 
@@ -231,6 +233,45 @@ public class FilterExtractorImpl implements FilterExtractor {
 						} else {
 							if (checkIfElementMatchesStringFilter(element)) {
 								filteredElements.add(element);
+							}
+						}
+					}
+				}
+			}
+		}
+		return filteredElements;
+	}
+
+	@Override
+	public List<DecisionKnowledgeElement> getElementsLinkTypeFilterMatches(List<DecisionKnowledgeElement> allDecisions) {
+		List<DecisionKnowledgeElement> filteredElements = new ArrayList<>();
+		for (DecisionKnowledgeElement element: allDecisions) {
+			List<Link> links = element.getInwardLinks();
+			links.addAll(element.getOutwardLinks());
+			if (links.size() == 0) {
+				if (filterSettings.getNamesOfSelectedLinkTypes().size() == filterSettings.getAllLinkTypes().size()) {
+					if (filterSettings.getSearchString().equals("")
+						|| filterSettings.getSearchString().equals("?filter=-4")
+						|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
+						filteredElements.add(element);
+					} else {
+						if (checkIfElementMatchesStringFilter(element)) {
+							filteredElements.add(element);
+						}
+					}
+				}
+			} else {
+				for (Link link : links) {
+					if (filterSettings.getNamesOfSelectedLinkTypes().contains(link.getType())) {
+						if (filterSettings.getSearchString().equals("")
+							|| filterSettings.getSearchString().equals("?filter=-4")
+							|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
+							filteredElements.add(element);
+							break;
+						} else {
+							if (checkIfElementMatchesStringFilter(element)) {
+								filteredElements.add(element);
+								break;
 							}
 						}
 					}

@@ -1,13 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
-import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteConfigurationImpl;
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
-
 import java.util.EnumMap;
 import java.util.List;
 
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+
+import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteConfigurationImpl;
+
 /**
- * Interface for release notes
+ * Interface for the configuration of release notes.
  */
 @JsonDeserialize(as = ReleaseNoteConfigurationImpl.class)
 public interface ReleaseNoteConfiguration {
@@ -19,14 +20,13 @@ public interface ReleaseNoteConfiguration {
 	 */
 	String getTitle();
 
-
 	/**
 	 * Set the title of the release note.
 	 *
-	 * @param title of the release note.
+	 * @param title
+	 *            of the release note.
 	 */
 	void setTitle(String title);
-
 
 	/**
 	 * Get the startDate of the release note.
@@ -35,14 +35,13 @@ public interface ReleaseNoteConfiguration {
 	 */
 	String getStartDate();
 
-
 	/**
 	 * Set the startDate of the release note.
 	 *
-	 * @param startDate of the release note.
+	 * @param startDate
+	 *            of the release note.
 	 */
 	void setStartDate(String startDate);
-
 
 	/**
 	 * Get the end Date of the release note.
@@ -51,11 +50,11 @@ public interface ReleaseNoteConfiguration {
 	 */
 	String getEndDate();
 
-
 	/**
 	 * Set the end date of the release note.
 	 *
-	 * @param endDate of the release note.
+	 * @param endDate
+	 *            of the release note.
 	 */
 	void setEndDate(String endDate);
 
@@ -67,12 +66,12 @@ public interface ReleaseNoteConfiguration {
 	String getSprintId();
 
 	/**
-	 * Set the sprint id  of the release note.
+	 * Set the sprint id of the release note.
 	 *
-	 * @param sprintId of the release note.
+	 * @param sprintId
+	 *            of the release note.
 	 */
 	void setSprintId(String sprintId);
-
 
 	/**
 	 * Get the targetGroup of the release note.
@@ -84,7 +83,8 @@ public interface ReleaseNoteConfiguration {
 	/**
 	 * Set the targetGroup of the release note.
 	 *
-	 * @param targetGroup of the release note.
+	 * @param targetGroup
+	 *            of the release note.
 	 */
 
 	void setTargetGroup(TargetGroup targetGroup);
@@ -99,7 +99,8 @@ public interface ReleaseNoteConfiguration {
 	/**
 	 * Set the issueMetricWeight of the release note.
 	 *
-	 * @param issueMetricWeight of the release note.
+	 * @param issueMetricWeight
+	 *            of the release note.
 	 */
 	void setJiraIssueMetricWeight(EnumMap<JiraIssueMetric, Double> issueMetricWeight);
 
@@ -113,7 +114,8 @@ public interface ReleaseNoteConfiguration {
 	/**
 	 * Set the list with mapped bug fix issues.
 	 *
-	 * @param bugFixMapping of the release note.
+	 * @param bugFixMapping
+	 *            of the release note.
 	 */
 	void setBugFixMapping(List<Integer> bugFixMapping);
 
@@ -127,7 +129,8 @@ public interface ReleaseNoteConfiguration {
 	/**
 	 * Set the list with mapped bug fix issues.
 	 *
-	 * @param featureMapping of the release note.
+	 * @param featureMapping
+	 *            of the release note.
 	 */
 	void setFeatureMapping(List<Integer> featureMapping);
 
@@ -141,20 +144,23 @@ public interface ReleaseNoteConfiguration {
 	/**
 	 * Set the list with mapped bug fix issues.
 	 *
-	 * @param improvementMapping of the release note.
+	 * @param improvementMapping
+	 *            of the release note.
 	 */
 	void setImprovementMapping(List<Integer> improvementMapping);
 
 	/**
 	 * Get the hash mpa with the additional configuration
+	 * 
 	 * @return EnumMap<AdditionalConfigurationOptions,Boolean>
 	 */
-	EnumMap<AdditionalConfigurationOptions,Boolean> getAdditionalConfiguration();
+	EnumMap<AdditionalConfigurationOptions, Boolean> getAdditionalConfiguration();
 
 	/**
 	 * Set the hash map with the additional configuration.
 	 *
-	 * @param additionalConfiguration of the release note.
+	 * @param additionalConfiguration
+	 *            of the release note.
 	 */
- 	void setAdditionalConfiguration(EnumMap<AdditionalConfigurationOptions,Boolean> additionalConfiguration);
+	void setAdditionalConfiguration(EnumMap<AdditionalConfigurationOptions, Boolean> additionalConfiguration);
 }

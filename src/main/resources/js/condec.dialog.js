@@ -144,7 +144,7 @@
 		AJS.dialog2(deleteLinkDialog).show();
 	};
 
-	ConDecDialog.prototype.showDecisionLinkDialog = function showDecisionLinkDialog(idOfParent, idOfChild) {
+	ConDecDialog.prototype.showDecisionLinkDialog = function showDecisionLinkDialog(idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild) {
 		console.log("conDecDialog showDecisionLinkDialog");
 
 		// HTML elements
@@ -185,7 +185,7 @@
 
 		// Set onclick listener on buttons
 		submitButton.onclick = function () {
-			conDecAPI.createLink(null, idOfParent, idOfChild, "i", "i", linkType, function () {
+			conDecAPI.createLink(null, idOfParent, idOfChild, documentationLocationOfParent,  documentationLocationOfChild, linkType, function () {
 				conDecObservable.notify();
 			});
 			AJS.dialog2(linkDialog).hide();

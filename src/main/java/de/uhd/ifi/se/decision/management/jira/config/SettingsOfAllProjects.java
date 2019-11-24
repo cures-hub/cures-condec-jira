@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,7 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 
 /**
- * Renders the administration page to change the plug-in configuration of all
+ * Renders the administration page to change the plug-in's activation of all
  * projects
  */
 public class SettingsOfAllProjects extends AbstractSettingsServlet {
@@ -43,23 +45,22 @@ public class SettingsOfAllProjects extends AbstractSettingsServlet {
 			return new ConcurrentHashMap<>();
 		}
 
-		//AutoCreateDummyProject createPr = new AutoCreateDummyProject();
-		Map<String, DecisionKnowledgeProject> configMap = getProjectsMap();
+		List<DecisionKnowledgeProject> configMap = getProjects();
 		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
-		velocityParameters.put("requestUrl", request.getRequestURL());
-		velocityParameters.put("projectsMap", configMap);
+		velocityParameters.put("request", request);
+		velocityParameters.put("projects", configMap);
 
 		return velocityParameters;
 	}
 
-	public static Map<String, DecisionKnowledgeProject> getProjectsMap() {
-		Map<String, DecisionKnowledgeProject> configMap = new ConcurrentHashMap<String, DecisionKnowledgeProject>();
+	public static List<DecisionKnowledgeProject> getProjects() {
+		List<DecisionKnowledgeProject> projects = new ArrayList<DecisionKnowledgeProject>();
 		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 			String projectKey = project.getKey();
 			String projectName = project.getName();
 			DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProjectImpl(projectKey, projectName);
-			configMap.put(projectKey, jiraProject);
+			projects.add(jiraProject);
 		}
-		return configMap;
+		return projects;
 	}
 }

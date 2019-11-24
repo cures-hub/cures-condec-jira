@@ -57,7 +57,7 @@ public class KnowledgeRest {
 					.build();
 		}
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(projectKey).getPersistenceManager(documentationLocation);
+				.getOrCreate(projectKey).getManagerForSingleLocation(documentationLocation);
 		DecisionKnowledgeElement decisionKnowledgeElement = persistenceManager.getDecisionKnowledgeElement(id);
 		if (decisionKnowledgeElement != null) {
 			return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
@@ -77,7 +77,7 @@ public class KnowledgeRest {
 					.build();
 		}
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(projectKey).getPersistenceManager(documentationLocation);
+				.getOrCreate(projectKey).getManagerForSingleLocation(documentationLocation);
 		List<DecisionKnowledgeElement> linkedDecisionKnowledgeElements = persistenceManager.getAdjacentElements(id);
 		return Response.ok(linkedDecisionKnowledgeElements).build();
 	}
@@ -93,7 +93,7 @@ public class KnowledgeRest {
 					.build();
 		}
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(projectKey).getPersistenceManager(documentationLocation);
+				.getOrCreate(projectKey).getManagerForSingleLocation(documentationLocation);
 		List<DecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = persistenceManager.getUnlinkedElements(id);
 		return Response.ok(unlinkedDecisionKnowledgeElements).build();
 	}
@@ -110,9 +110,9 @@ public class KnowledgeRest {
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getPersistenceManager(element);
-		DecisionKnowledgeElement newElement = persistenceManager.insertDecisionKnowledgeElement(element, user);
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(element.getProject().getProjectKey());
+		DecisionKnowledgeElement newElement = persistenceManager.insertDecisionKnowledgeElement(element, user, null);
 
 		if (newElement == null) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -144,14 +144,15 @@ public class KnowledgeRest {
 		}
 
 		String projectKey = element.getProject().getProjectKey();
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		AbstractPersistenceManagerForSingleLocation persistenceManagerForExistingElement = KnowledgePersistenceManager
-				.getOrCreate(projectKey).getPersistenceManager(documentationLocationOfExistingElement);
+
+		AbstractPersistenceManagerForSingleLocation persistenceManagerForExistingElement = persistenceManager
+				.getManagerForSingleLocation(documentationLocationOfExistingElement);
 		DecisionKnowledgeElement existingElement = persistenceManagerForExistingElement
 				.getDecisionKnowledgeElement(idOfExistingElement);
 
-		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getPersistenceManager(element);
 		DecisionKnowledgeElement elementWithId = persistenceManager.insertDecisionKnowledgeElement(element, user,
 				existingElement);
 
@@ -189,16 +190,17 @@ public class KnowledgeRest {
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		DecisionKnowledgeElement formerElement = KnowledgePersistenceManager
-				.getDecisionKnowledgeElement(element.getId(), element.getDocumentationLocation());
+		String projectKey = element.getProject().getProjectKey();
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+
+		DecisionKnowledgeElement formerElement = persistenceManager.getDecisionKnowledgeElement(element.getId(),
+				element.getDocumentationLocation());
 		if (formerElement == null || formerElement.getId() <= 0) {
 			return Response.status(Status.NOT_FOUND)
 					.entity(ImmutableMap.of("error", "Decision knowledge element could not be found in database."))
 					.build();
 		}
 
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(element.getProject().getProjectKey());
 		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(element, user);
 
 		if (!isUpdated) {
@@ -207,8 +209,10 @@ public class KnowledgeRest {
 					.build();
 		}
 
-		long linkId = KnowledgePersistenceManager.getOrCreate(element.getProject().getProjectKey()).updateLink(element,
-				formerElement.getType(), idOfParentElement, documentationLocationOfParentElement, user);
+		DecisionKnowledgeElement updatedElement = persistenceManager.getDecisionKnowledgeElement(element.getId(),
+				element.getDocumentationLocation());
+		long linkId = KnowledgePersistenceManager.getOrCreate(element.getProject().getProjectKey()).updateLink(
+				updatedElement, formerElement.getType(), idOfParentElement, documentationLocationOfParentElement, user);
 		if (linkId == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Link could not be updated.")).build();
@@ -253,9 +257,9 @@ public class KnowledgeRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
 		DecisionKnowledgeElement parentElement = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getPersistenceManager(documentationLocationOfParent).getDecisionKnowledgeElement(idOfParent);
+				.getManagerForSingleLocation(documentationLocationOfParent).getDecisionKnowledgeElement(idOfParent);
 		DecisionKnowledgeElement childElement = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getPersistenceManager(documentationLocationOfChild).getDecisionKnowledgeElement(idOfChild);
+				.getManagerForSingleLocation(documentationLocationOfChild).getDecisionKnowledgeElement(idOfChild);
 
 		Link link;
 		if (linkTypeName == null) {
@@ -350,14 +354,14 @@ public class KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Setting element irrelevant failed due to a bad request."))
 					.build();
 		}
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(decisionKnowledgeElement.getProject().getProjectKey());
+		String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
 
 		if (decisionKnowledgeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 					.entity(ImmutableMap.of("error", "Only sentence elements can be set to irrelevant.")).build();
 		}
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) KnowledgePersistenceManager
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager
 				.getDecisionKnowledgeElement(decisionKnowledgeElement.getId(), DocumentationLocation.JIRAISSUETEXT);
 		if (sentence == null) {
 			return Response.status(Status.NOT_FOUND)
@@ -370,7 +374,8 @@ public class KnowledgeRest {
 		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(sentence, null);
 		if (isUpdated) {
 			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUETEXT);
-			JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(sentence.getJiraIssueId());
+			persistenceManager.getJiraIssueTextManager()
+					.createLinksForNonLinkedElements(sentence.getJiraIssueId());
 			return Response.status(Status.OK).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -392,7 +397,7 @@ public class KnowledgeRest {
 		Issue jiraIssue = issueManager.getIssueObject(id);
 
 		if (jiraIssue == null) {
-			jiraIssue = JiraIssueTextPersistenceManager.getJiraIssue(id);
+			jiraIssue = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueTextManager().getJiraIssue(id);
 		}
 
 		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
@@ -438,7 +443,7 @@ public class KnowledgeRest {
 		}
 		AbstractPersistenceManagerForSingleLocation manager = KnowledgePersistenceManager
 				.getOrCreate(decisionKnowledgeElement.getProject().getProjectKey())
-				.getPersistenceManager(decisionKnowledgeElement.getDocumentationLocation().getIdentifier());
+				.getManagerForSingleLocation(decisionKnowledgeElement.getDocumentationLocation().getIdentifier());
 		DecisionKnowledgeElement element = manager.getDecisionKnowledgeElement(decisionKnowledgeElement.getKey());
 		KnowledgeStatus status = StatusPersistenceManager.getStatusForElement(element);
 		if (status == null) {

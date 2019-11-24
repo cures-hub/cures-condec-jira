@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model.text.impl;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +12,9 @@ import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
+import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -34,24 +38,29 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 		this.documentationLocation = DocumentationLocation.JIRAISSUETEXT;
 	}
 
-	public PartOfJiraIssueTextImpl(Comment comment) {
-		this();
-		if (comment == null) {
-			return;
-		}
-		this.setCommentId(comment.getId());
-		this.setJiraIssueId(comment.getIssue().getId());
-		this.setCreated(comment.getCreated());
-	}
-
 	public PartOfJiraIssueTextImpl(PartOfText partOfText, Comment comment) {
-		this(comment);
+		this();
+		if (comment != null) {
+			this.setCommentId(comment.getId());
+			this.setJiraIssueId(comment.getIssue().getId());
+			this.setCreated(comment.getCreated());
+		}
 		this.setEndPosition(partOfText.getEndPosition());
 		this.setStartPosition(partOfText.getStartPosition());
 		this.setRelevant(partOfText.isRelevant());
 		this.setValidated(partOfText.isValidated());
 		this.setType(partOfText.getType());
 		this.setProject(partOfText.getProject());
+	}
+
+	public PartOfJiraIssueTextImpl(Comment comment) {
+		this(getFirstPartOfTextInComment(comment), comment);
+	}
+
+	private static PartOfText getFirstPartOfTextInComment(Comment comment) {
+		String projectKey = comment.getIssue().getProjectObject().getKey();
+		List<PartOfText> partsOfText = new TextSplitterImpl().getPartsOfText(comment.getBody(), projectKey);
+		return partsOfText.get(0);
 	}
 
 	public PartOfJiraIssueTextImpl(PartOfText partOfText, Issue jiraIssue) {
@@ -110,6 +119,14 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 		this.setDescription(text);
 		this.setPlainText(!containsExcludedTag(text));
 		stripTagsFromBody(text);
+	}
+
+	public PartOfJiraIssueTextImpl(DecisionKnowledgeElement element) {
+		this.setId(element.getId());
+		this.setType(element.getType());
+		this.setSummary(element.getSummary());
+		this.setDescription(element.getDescription());
+		this.setProject(element.getProject());
 	}
 
 	private boolean containsExcludedTag(String body) {
@@ -187,5 +204,27 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 			return super.getSummary();
 		}
 		return issue.getDescription();
+	}
+
+	@Override
+	public ApplicationUser getCreator() {
+		Comment comment = this.getComment();
+		if (comment == null) {
+			Issue issue = this.getJiraIssue();
+			return issue.getReporter();
+		}
+		return comment.getAuthorApplicationUser();
+	}
+
+	@Override
+	public boolean isValid() {
+		if (this.getEndPosition() == 0 && this.getStartPosition() == 0) {
+			return false;
+		}
+		if (this.getCommentId() <= 0) {
+			// documented in Jira issue description
+			return true;
+		}
+		return this.getComment() != null;
 	}
 }

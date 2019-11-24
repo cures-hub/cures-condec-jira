@@ -1,0 +1,46 @@
+<h2>Basic Project Settings</h2>
+	
+<div class="field-group">
+	<label for="isActivated-toggle">ConDec Activated?</label>
+	<aui-toggle id="isActivated-toggle" value="$projectKey"	label="ConDec Activated?"></aui-toggle>
+	<div class="description">Enables or disables the plug-in for this project.</div>
+</div>
+
+<div class="field-group">
+	<label for="isIssueStrategy-toggle">Store in Issues?</label>
+	<aui-toggle id="isIssueStrategy-toggle" value="$projectKey"	label="Store in Jira Issues?"></aui-toggle>
+	<div class="description">Sets the persistence strategy for this
+		project (either issue strategy or active object strategy). If
+		enabled, decision knowledge is stored in Jira issues. If you choose
+		the issue strategy, you need to associate the project with the
+		decision knowledge issue type scheme.
+	</div>
+</div>
+	
+<script>
+	var activationToggle = document.getElementById("isActivated-toggle");
+	if ($project.isActivated() == true) {
+		activationToggle.checked = true;
+	} else {
+		activationToggle.checked = false;
+	};
+	
+	activationToggle.addEventListener("change", function(error) {
+		this.busy = true;
+		conDecAPI.setActivated(this.checked, this.value);
+		this.busy = false;
+	});
+	
+	var strategyToggle = document.getElementById("isIssueStrategy-toggle");
+	if ($project.isIssueStrategy() == true) {
+		strategyToggle.checked = true;
+	} else {
+		strategyToggle.checked = false;
+	};
+	
+	strategyToggle.addEventListener("change", function(error) {
+		this.busy = true;
+		conDecAPI.setIssueStrategy(this.checked, this.value);
+		this.busy = false;
+	});
+</script>

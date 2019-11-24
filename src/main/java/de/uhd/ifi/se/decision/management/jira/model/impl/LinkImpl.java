@@ -25,7 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 public class LinkImpl extends DefaultWeightedEdge implements Link {
 
 	private long id;
-	private String type;
+	private String type; // TODO Use LinkType istead of String
 	private DecisionKnowledgeElement source;
 	private DecisionKnowledgeElement target;
 
@@ -102,13 +102,19 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 
 	@Override
 	public String getType() {
-		if (type == null || type.equals("")) {
+		if (type == null || type.isBlank()) {
 			return "Relates";
 		}
 		return type;
 	}
 
 	@Override
+	public void setType(LinkType type) {
+		this.type = type.toString();
+	}
+
+	@Override
+	@JsonProperty("type")
 	public void setType(String type) {
 		this.type = type;
 	}
@@ -116,7 +122,8 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	@Override
 	public void setSourceElement(long id, DocumentationLocation documentationLocation) {
 		if (this.source == null) {
-			this.source = KnowledgePersistenceManager.getDecisionKnowledgeElement(id, documentationLocation);
+			this.source = KnowledgePersistenceManager.getOrCreate("").getDecisionKnowledgeElement(id,
+					documentationLocation);
 		}
 		this.source.setId(id);
 		this.source.setDocumentationLocation(documentationLocation);
@@ -143,7 +150,8 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	@Override
 	public void setDestinationElement(long id, DocumentationLocation documentationLocation) {
 		if (this.target == null) {
-			this.target = KnowledgePersistenceManager.getDecisionKnowledgeElement(id, documentationLocation);
+			this.target = KnowledgePersistenceManager.getOrCreate("").getDecisionKnowledgeElement(id,
+					documentationLocation);
 		}
 		this.target.setId(id);
 		this.target.setDocumentationLocation(documentationLocation);
@@ -206,7 +214,7 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getBothElements() throws NullPointerException {
+	public List<DecisionKnowledgeElement> getBothElements() {
 		List<DecisionKnowledgeElement> bothElements = new ArrayList<DecisionKnowledgeElement>();
 		bothElements.add(target);
 		bothElements.add(source);
@@ -246,7 +254,7 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 		DocumentationLocation documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
 		if (this.source.getDocumentationLocation() != documentationLocation) {
-			this.source = KnowledgePersistenceManager.getDecisionKnowledgeElement(this.source.getId(),
+			this.source = KnowledgePersistenceManager.getOrCreate("").getDecisionKnowledgeElement(this.source.getId(),
 					documentationLocation);
 		}
 		this.getSource().setDocumentationLocation(documentationLocation);
@@ -258,7 +266,7 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 		DocumentationLocation documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
 		if (this.target.getDocumentationLocation() != documentationLocation) {
-			this.target = KnowledgePersistenceManager.getDecisionKnowledgeElement(this.target.getId(),
+			this.target = KnowledgePersistenceManager.getOrCreate("").getDecisionKnowledgeElement(this.target.getId(),
 					documentationLocation);
 		}
 		this.getTarget().setDocumentationLocation(documentationLocation);
@@ -305,7 +313,7 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	@Override
 	public void setDefaultDocumentationLocation(String projectKey) {
 		AbstractPersistenceManagerForSingleLocation defaultPersistenceManager = KnowledgePersistenceManager
-				.getOrCreate(projectKey).getDefaultPersistenceManager();
+				.getOrCreate(projectKey).getDefaultManagerForSingleLocation();
 		String defaultDocumentationLocation = DocumentationLocation
 				.getIdentifier(defaultPersistenceManager.getDocumentationLocation());
 		if (this.getTarget().getDocumentationLocation() == DocumentationLocation.UNKNOWN) {
@@ -318,6 +326,6 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 
 	@Override
 	public int hashCode() {
-		return (getSource().hashCode() + getTarget().hashCode());
+		return getSource().hashCode() + getTarget().hashCode();
 	}
 }

@@ -70,7 +70,7 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	@Override
 	public AbstractPersistenceManagerForSingleLocation getPersistenceStrategy() {
 		if (this.persistenceStrategy == null) {
-			this.persistenceStrategy = KnowledgePersistenceManager.getOrCreate(projectKey).getDefaultPersistenceManager();
+			this.persistenceStrategy = KnowledgePersistenceManager.getOrCreate(projectKey).getDefaultManagerForSingleLocation();
 		}
 		return this.persistenceStrategy;
 	}
@@ -90,6 +90,16 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	@Override
 	public boolean isKnowledgeExtractedFromGit() {
 		return ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey);
+	}
+
+	@Override
+	public boolean isPostSquashedCommitsActivated() {
+		return ConfigPersistenceManager.isPostSquashedCommitsActivated(projectKey);
+	}
+
+	@Override
+	public boolean isPostFeatureBranchCommitsActivated() {
+		return ConfigPersistenceManager.isPostFeatureBranchCommitsActivated(projectKey);
 	}
 
 	@Override

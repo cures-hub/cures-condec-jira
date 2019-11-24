@@ -8,15 +8,15 @@ import java.util.Locale;
  * Type of links between decision knowledge elements
  */
 public enum LinkType {
-	SUPPORT("Supports", "supports", "is supported by", "contain_style", ""),
-	ATTACK("Attacks", "attacks", "is attacked by", "contain_style", ""),
-	FORBID("Forbids", "forbids", "is forbidden by", "contain-style", "#ff0000"),
-	CONSTRAINT("Constraints", "constraints", "is constrained by", "contain-style", "#0066b3"),
-	ENABLE("Enables", "enables", "is enabled by", "contain-style", "#80ff80"),
-	COMPRISE("Comprises", "comprises", "is comprised by", "contain-style", "#BA55D3"),
-	SUBSUME("Subsumes", "subsumes", "is subsumed by", "contain-style", "#00cc00"),
-	RELATE("Relates", "relates to", "is relates to", "contain-style", "#80c9ff"),
-	OVERRIDE("Overrides", "overrides", "is overridden by", "contain-style", "#FFFF00"),
+	SUPPORT("Supports", "supports", "is supported by", "contain_style", ""), //
+	ATTACK("Attacks", "attacks", "is attacked by", "contain_style", ""), //
+	FORBID("Forbids", "forbids", "is forbidden by", "contain-style", "#ff0000"), //
+	CONSTRAINT("Constraints", "constraints", "is constrained by", "contain-style", "#0066b3"), //
+	ENABLE("Enables", "enables", "is enabled by", "contain-style", "#80ff80"), //
+	COMPRISE("Comprises", "comprises", "is comprised by", "contain-style", "#BA55D3"), SUBSUME("Subsumes", "subsumes",
+			"is subsumed by", "contain-style", "#00cc00"), //
+	RELATE("Relates", "relates to", "is relates to", "contain-style", "#80c9ff"), //
+	OVERRIDE("Overrides", "overrides", "is overridden by", "contain-style", "#FFFF00"), //
 	REPLACE("Replaces", "replaces", "is replaced by", "contain-style", "#ff8000");
 
 	private String name;
@@ -25,6 +25,8 @@ public enum LinkType {
 	private String style;
 	private String color;
 
+	// TODO why does the constructur get the outwardLink and inwardLink? Please
+	// remove or add JavaDoc. Is the constructor public or private?
 	LinkType(String name, String outwardLink, String inwardLink, String style, String color) {
 		this.name = name;
 		this.outwardLink = outwardLink;
@@ -113,7 +115,7 @@ public enum LinkType {
 
 	public static LinkType getDefaultLinkType() {
 		return LinkType.RELATE;
-	};
+	}
 
 	public static LinkType getLinkTypeForKnowledgeType(String knowledgeTypeOfChildElement) {
 		KnowledgeType type = KnowledgeType.getKnowledgeType(knowledgeTypeOfChildElement);
@@ -136,7 +138,7 @@ public enum LinkType {
 	public static List<String> toList() {
 		List<String> linkTypes = new ArrayList<String>();
 		for (LinkType linkType : LinkType.values()) {
-			linkTypes.add(linkType.toString());
+			linkTypes.add(linkType.getName());
 		}
 		return linkTypes;
 	}
