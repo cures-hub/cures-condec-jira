@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestClearSentenceDatabase extends TestSetUp {
+public class TestCleanDatabases extends TestSetUp {
 
 	protected HttpServletRequest request;
 	protected ConfigRest configRest;
@@ -29,17 +29,17 @@ public class TestClearSentenceDatabase extends TestSetUp {
 
 	@Test
 	public void testRequestNullProjectKeyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.clearSentenceDatabase(null, null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.cleanDatabases(null, null).getStatus());
 	}
 
 	@Test
 	public void testRequestNullProjectKeyValid() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.clearSentenceDatabase(null, "TEST").getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.cleanDatabases(null, "TEST").getStatus());
 	}
 
 	@Test
 	public void testRequestExistsProjectKeyExists() {
-		assertEquals(Status.OK.getStatusCode(), configRest.clearSentenceDatabase(request, "TEST").getStatus());
+		assertEquals(Status.OK.getStatusCode(), configRest.cleanDatabases(request, "TEST").getStatus());
 	}
 
 	@Test
@@ -47,7 +47,7 @@ public class TestClearSentenceDatabase extends TestSetUp {
 		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.BLACK_HEAD.getApplicationUser());
 		assertEquals(Status.UNAUTHORIZED.getStatusCode(),
-				configRest.clearSentenceDatabase(request, "TEST").getStatus());
+				configRest.cleanDatabases(request, "TEST").getStatus());
 	}
 
 	@Test
@@ -55,6 +55,6 @@ public class TestClearSentenceDatabase extends TestSetUp {
 		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("user", null);
 		assertEquals(Status.UNAUTHORIZED.getStatusCode(),
-				configRest.clearSentenceDatabase(request, "TEST").getStatus());
+				configRest.cleanDatabases(request, "TEST").getStatus());
 	}
 }

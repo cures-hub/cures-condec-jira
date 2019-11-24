@@ -422,10 +422,9 @@ public class ConfigRest {
 		}
 	}
 
-	@Path("/clearSentenceDatabase")
+	@Path("/cleanDatabases")
 	@POST
-	public Response clearSentenceDatabase(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey) {
+	public Response cleanDatabases(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;

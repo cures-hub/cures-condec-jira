@@ -521,7 +521,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	public void deleteInvalidElements(ApplicationUser user) {
 		for (DecisionKnowledgeElement element : getDecisionKnowledgeElements()) {
-			if (((PartOfJiraIssueText) element).isValid()) {
+			if (!((PartOfJiraIssueText) element).isValid()) {
 				deleteDecisionKnowledgeElement(element, user);
 			}
 		}
