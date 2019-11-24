@@ -37,7 +37,7 @@ public class TestTreant extends TestSetUp {
 		this.treant = new Treant("TEST", "TEST-30", 0);
 		this.treant.setChart(chart);
 		this.treant.setNodeStructure(nodeStructure);
-		persistenceStrategy = KnowledgePersistenceManager.getOrCreate("TEST").getDefaultPersistenceManager();
+		persistenceStrategy = KnowledgePersistenceManager.getOrCreate("TEST").getDefaultManagerForSingleLocation();
 	}
 
 	@Test

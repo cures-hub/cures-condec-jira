@@ -70,7 +70,7 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	@Override
 	public AbstractPersistenceManagerForSingleLocation getPersistenceStrategy() {
 		if (this.persistenceStrategy == null) {
-			this.persistenceStrategy = KnowledgePersistenceManager.getOrCreate(projectKey).getDefaultPersistenceManager();
+			this.persistenceStrategy = KnowledgePersistenceManager.getOrCreate(projectKey).getDefaultManagerForSingleLocation();
 		}
 		return this.persistenceStrategy;
 	}

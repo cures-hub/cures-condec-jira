@@ -57,7 +57,7 @@ public class KnowledgeRest {
 					.build();
 		}
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(projectKey).getPersistenceManager(documentationLocation);
+				.getOrCreate(projectKey).getManagerForSingleLocation(documentationLocation);
 		DecisionKnowledgeElement decisionKnowledgeElement = persistenceManager.getDecisionKnowledgeElement(id);
 		if (decisionKnowledgeElement != null) {
 			return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
@@ -77,7 +77,7 @@ public class KnowledgeRest {
 					.build();
 		}
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(projectKey).getPersistenceManager(documentationLocation);
+				.getOrCreate(projectKey).getManagerForSingleLocation(documentationLocation);
 		List<DecisionKnowledgeElement> linkedDecisionKnowledgeElements = persistenceManager.getAdjacentElements(id);
 		return Response.ok(linkedDecisionKnowledgeElements).build();
 	}
@@ -93,7 +93,7 @@ public class KnowledgeRest {
 					.build();
 		}
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(projectKey).getPersistenceManager(documentationLocation);
+				.getOrCreate(projectKey).getManagerForSingleLocation(documentationLocation);
 		List<DecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = persistenceManager.getUnlinkedElements(id);
 		return Response.ok(unlinkedDecisionKnowledgeElements).build();
 	}
@@ -149,7 +149,7 @@ public class KnowledgeRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
 		AbstractPersistenceManagerForSingleLocation persistenceManagerForExistingElement = persistenceManager
-				.getPersistenceManager(documentationLocationOfExistingElement);
+				.getManagerForSingleLocation(documentationLocationOfExistingElement);
 		DecisionKnowledgeElement existingElement = persistenceManagerForExistingElement
 				.getDecisionKnowledgeElement(idOfExistingElement);
 
@@ -257,9 +257,9 @@ public class KnowledgeRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
 		DecisionKnowledgeElement parentElement = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getPersistenceManager(documentationLocationOfParent).getDecisionKnowledgeElement(idOfParent);
+				.getManagerForSingleLocation(documentationLocationOfParent).getDecisionKnowledgeElement(idOfParent);
 		DecisionKnowledgeElement childElement = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getPersistenceManager(documentationLocationOfChild).getDecisionKnowledgeElement(idOfChild);
+				.getManagerForSingleLocation(documentationLocationOfChild).getDecisionKnowledgeElement(idOfChild);
 
 		Link link;
 		if (linkTypeName == null) {
@@ -443,7 +443,7 @@ public class KnowledgeRest {
 		}
 		AbstractPersistenceManagerForSingleLocation manager = KnowledgePersistenceManager
 				.getOrCreate(decisionKnowledgeElement.getProject().getProjectKey())
-				.getPersistenceManager(decisionKnowledgeElement.getDocumentationLocation().getIdentifier());
+				.getManagerForSingleLocation(decisionKnowledgeElement.getDocumentationLocation().getIdentifier());
 		DecisionKnowledgeElement element = manager.getDecisionKnowledgeElement(decisionKnowledgeElement.getKey());
 		KnowledgeStatus status = StatusPersistenceManager.getStatusForElement(element);
 		if (status == null) {

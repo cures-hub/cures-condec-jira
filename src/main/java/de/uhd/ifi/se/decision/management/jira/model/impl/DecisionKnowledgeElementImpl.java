@@ -205,7 +205,7 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 	@Override
 	public List<Link> getInwardLinks() {
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getPersistenceManager(this);
+				.getManagerForSingleLocation(this);
 		return persistenceManager.getInwardLinks(this);
 	}
 

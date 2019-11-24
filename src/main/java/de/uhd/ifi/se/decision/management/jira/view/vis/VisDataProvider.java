@@ -52,7 +52,7 @@ public class VisDataProvider {
 		this.filterExtractor = new FilterExtractorImpl(projectKey, user, query);
 		decisionKnowledgeElements = filterExtractor.getAllElementsMatchingQuery();
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(projectKey).getDefaultPersistenceManager();
+				.getOrCreate(projectKey).getDefaultManagerForSingleLocation();
 		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
 		graph = new VisGraph(rootElement, decisionKnowledgeElements);
 	}
@@ -63,7 +63,7 @@ public class VisDataProvider {
 		this.user = user;
 		this.filterExtractor = new FilterExtractorImpl(user, filterSettings);
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(projectKey).getDefaultPersistenceManager();
+				.getOrCreate(projectKey).getDefaultManagerForSingleLocation();
 		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
 		decisionKnowledgeElements = filterExtractor.getAllElementsMatchingCompareFilter();
 		graph = new VisGraph(rootElement, decisionKnowledgeElements);

@@ -308,7 +308,7 @@ public interface KnowledgePersistenceManager {
 	 * @see JiraIssuePersistenceManager
 	 * @see ActiveObjectPersistenceManager
 	 */
-	AbstractPersistenceManagerForSingleLocation getDefaultPersistenceManager();
+	AbstractPersistenceManagerForSingleLocation getDefaultManagerForSingleLocation();
 
 	/**
 	 * Returns the persistence manager for a single documentation location.
@@ -320,7 +320,7 @@ public interface KnowledgePersistenceManager {
 	 *         cannot be found.
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
-	AbstractPersistenceManagerForSingleLocation getPersistenceManager(DocumentationLocation documentationLocation);
+	AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(DocumentationLocation documentationLocation);
 
 	/**
 	 * Gets the persistence manager for a single documentation location by the
@@ -334,7 +334,7 @@ public interface KnowledgePersistenceManager {
 	 *         cannot be found.
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
-	AbstractPersistenceManagerForSingleLocation getPersistenceManager(String documentationLocationIdentifier);
+	AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(String documentationLocationIdentifier);
 
 	/**
 	 * Get the persistence manager of a given decision knowledge elements.
@@ -347,12 +347,13 @@ public interface KnowledgePersistenceManager {
 	 *         the element cannot be found.
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
-	static AbstractPersistenceManagerForSingleLocation getPersistenceManager(DecisionKnowledgeElement element) {
+	static AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(
+			DecisionKnowledgeElement element) {
 		if (element == null) {
 			throw new IllegalArgumentException("The element cannot be null.");
 		}
 		String projectKey = element.getProject().getProjectKey();
-		return getOrCreate(projectKey).getPersistenceManager(element.getDocumentationLocation());
+		return getOrCreate(projectKey).getManagerForSingleLocation(element.getDocumentationLocation());
 	}
 
 	/**
