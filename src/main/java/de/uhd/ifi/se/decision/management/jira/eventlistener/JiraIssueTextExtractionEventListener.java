@@ -106,14 +106,18 @@ public class JiraIssueTextExtractionEventListener {
 	}
 
 	private void handleDeleteIssue() {
-		JiraIssueTextPersistenceManager.cleanSentenceDatabase(projectKey);
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
+		persistenceManager.deleteInvalidElements(issueEvent.getUser());
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issueEvent.getIssue());
 		KnowledgeGraph.getOrCreate(element.getProject().getProjectKey()).removeVertex(element);
 		// JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 
 	private void handleDeleteComment() {
-		JiraIssueTextPersistenceManager.cleanSentenceDatabase(projectKey);
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
+		persistenceManager.deleteInvalidElements(issueEvent.getUser());
 		// JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 

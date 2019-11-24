@@ -215,4 +215,16 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 		}
 		return comment.getAuthorApplicationUser();
 	}
+
+	@Override
+	public boolean isValid() {
+		if (this.getEndPosition() == 0 && this.getStartPosition() == 0) {
+			return false;
+		}
+		if (this.getCommentId() <= 0) {
+			// documented in Jira issue description
+			return true;
+		}
+		return this.getComment() != null;
+	}
 }

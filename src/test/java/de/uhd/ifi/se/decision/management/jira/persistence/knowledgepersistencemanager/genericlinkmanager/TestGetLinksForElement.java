@@ -17,6 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGetLinksForElement extends TestSetUp {
+
 	@Before
 	public void setUp() {
 		init();

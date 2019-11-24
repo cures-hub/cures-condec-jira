@@ -519,35 +519,12 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return linkId > 0;
 	}
 
-	public static void cleanSentenceDatabase(String projectKey) {
-		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			if (!isExistent(databaseEntry)) {
-				PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
-				GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUETEXT);
-				DecisionKnowledgeElement element = new PartOfJiraIssueTextImpl(databaseEntry);
-				KnowledgeGraph.getOrCreate(element.getProject().getProjectKey()).removeVertex(element);
+	public void deleteInvalidElements(ApplicationUser user) {
+		for (DecisionKnowledgeElement element : getDecisionKnowledgeElements()) {
+			if (((PartOfJiraIssueText) element).isValid()) {
+				deleteDecisionKnowledgeElement(element, user);
 			}
 		}
-	}
-
-	public static boolean isExistent(PartOfJiraIssueTextInDatabase databaseEntry) {
-		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(databaseEntry);
-		return isExistent(sentence);
-	}
-
-	public static boolean isExistent(PartOfJiraIssueText sentence) {
-		if (sentence == null) {
-			return false;
-		}
-		if (sentence.getCommentId() <= 0) {
-			// documented in Jira issue description
-			return true;
-		}
-		if (sentence.getComment() == null) {
-			return false;
-		}
-		return !(sentence.getEndPosition() == 0 && sentence.getStartPosition() == 0);
 	}
 
 	public Issue createJIRAIssueFromSentenceObject(long aoId, ApplicationUser user) {
