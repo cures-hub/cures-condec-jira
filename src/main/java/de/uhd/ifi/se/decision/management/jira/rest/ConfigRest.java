@@ -445,8 +445,6 @@ public class ConfigRest {
 			GenericLinkManager.deleteInvalidLinks();
 			// If there are now some "lonely" sentences, link them to their issues.
 			persistenceManager.createLinksForNonLinkedElements();
-			//
-			JiraIssueTextPersistenceManager.migrateArgumentTypesInLinks(projectKey);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error("Failed to clean the sentence database. Message: " + e.getMessage());

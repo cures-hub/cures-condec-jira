@@ -25,7 +25,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
@@ -549,32 +548,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			return false;
 		}
 		return !(sentence.getEndPosition() == 0 && sentence.getStartPosition() == 0);
-	}
-
-	/**
-	 * Migration function on button "Validate Sentence Database" Adds Link types to
-	 * "empty" links. Can be deleted in a future release
-	 */
-	public static boolean migrateArgumentTypesInLinks(String projectKey) {
-		if (projectKey == null || projectKey.equals("")) {
-			return false;
-		}
-		PartOfJiraIssueTextInDatabase[] sentencesInProject = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ?", projectKey));
-		for (PartOfJiraIssueTextInDatabase databaseEntry : sentencesInProject) {
-			if (databaseEntry.getType().length() == 3) {// Equals Argument
-				List<Link> links = GenericLinkManager.getLinksForElement(databaseEntry.getId(),
-						DocumentationLocation.JIRAISSUETEXT);
-				for (Link link : links) {
-					if (link.getType().equalsIgnoreCase("contain")) {
-						KnowledgePersistenceManager.getOrCreate(projectKey).deleteLink(link, null);
-						link.setType(LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()).toString());
-						KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, null);
-					}
-				}
-			}
-		}
-		return true;
 	}
 
 	public Issue createJIRAIssueFromSentenceObject(long aoId, ApplicationUser user) {
