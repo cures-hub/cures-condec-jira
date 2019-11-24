@@ -73,6 +73,8 @@ public class TestAutoLinkSentences extends TestSetUp {
 
 		Link sentenceLink = GenericLinkManager.getLinksForElement(argument).get(0);
 
+		// TODO Why is not the alternative linked? Should not the alternative be younger
+		// than the decision?
 		assertEquals(sentenceLink.getOppositeElement(decision), argument);
 	}
 

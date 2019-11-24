@@ -442,7 +442,7 @@ public class ConfigRest {
 			// If still something is wrong, delete an elements and its links
 			JiraIssueTextPersistenceManager.cleanSentenceDatabase(projectKey);
 			// If some links ar bad, delete those links
-			GenericLinkManager.clearInvalidLinks();
+			GenericLinkManager.deleteInvalidLinks();
 			// If there are now some "lonely" sentences, link them to their issues.
 			persistenceManager.createLinksForNonLinkedElements();
 			//
