@@ -250,7 +250,15 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	public void testIsValid() {
 		List<PartOfJiraIssueText> partsOfText = JiraIssues
 				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative} ");
+		PartOfJiraIssueText partOfText = partsOfText.get(0);
+
+		assertTrue(partOfText.isValid());
+
 		// this means that the element is documented in the description
-		assertTrue(partsOfText.get(0).isValid());
+		partOfText.setCommentId(0);
+		assertTrue(partOfText.isValid());
+
+		partOfText.setEndPosition(0);
+		assertFalse(partOfText.isValid());
 	}
 }

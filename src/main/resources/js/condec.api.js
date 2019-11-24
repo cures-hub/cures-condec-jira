@@ -862,7 +862,7 @@
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setReleaseNoteMapping.json?projectKey=" + projectKey + "&releaseNoteCategory=" + releaseNoteCategory, selectedIssueTypes, function (
 			error, response) {
 			if (error === null) {
-				showFlag("success", "The associated issuetypes for the category: " + releaseNoteCategory + " were changed for this project.");
+				showFlag("success", "The associated Jira issue types for the category: " + releaseNoteCategory + " were changed for this project.");
 			}
 		});
 	};
