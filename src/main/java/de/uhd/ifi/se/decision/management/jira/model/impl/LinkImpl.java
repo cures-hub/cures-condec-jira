@@ -313,7 +313,7 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	@Override
 	public void setDefaultDocumentationLocation(String projectKey) {
 		AbstractPersistenceManagerForSingleLocation defaultPersistenceManager = KnowledgePersistenceManager
-				.getOrCreate(projectKey).getDefaultPersistenceManager();
+				.getOrCreate(projectKey).getDefaultManagerForSingleLocation();
 		String defaultDocumentationLocation = DocumentationLocation
 				.getIdentifier(defaultPersistenceManager.getDocumentationLocation());
 		if (this.getTarget().getDocumentationLocation() == DocumentationLocation.UNKNOWN) {

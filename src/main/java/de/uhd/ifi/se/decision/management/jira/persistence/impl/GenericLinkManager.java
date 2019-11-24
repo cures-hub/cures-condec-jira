@@ -32,17 +32,7 @@ import net.java.ao.Query;
  */
 public class GenericLinkManager {
 
-	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
-
-	public static void clearInvalidLinks() {
-		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class);
-		for (LinkInDatabase databaseEntry : linksInDatabase) {
-			Link link = new LinkImpl(databaseEntry);
-			if (!link.isValid()) {
-				LinkInDatabase.deleteLink(databaseEntry);
-			}
-		}
-	}
+	public static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
 	/**
 	 * Deletes a link (=edge) between all kinds of nodes in the
@@ -95,6 +85,27 @@ public class GenericLinkManager {
 		for (Link link : linksForElement) {
 			isLinkDeleted = deleteLink(link);
 			KnowledgeGraph.getOrCreate(link.getSource().getProject()).removeEdge(link);
+		}
+		return isLinkDeleted;
+	}
+
+	/**
+	 * Deletes all links (=edges) that do not connect two existing nodes in the
+	 * {@link KnowledgeGraph}.
+	 * 
+	 * @return true if at least one link was deleted, false if no link was deleted.
+	 * @see Link#isValid()
+	 * @see LinkInDatabase
+	 */
+	public static boolean deleteInvalidLinks() {
+		boolean isLinkDeleted = false;
+		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class);
+		for (LinkInDatabase databaseEntry : linksInDatabase) {
+			Link link = new LinkImpl(databaseEntry);
+			if (!link.isValid()) {
+				isLinkDeleted = true;
+				LinkInDatabase.deleteLink(databaseEntry);
+			}
 		}
 		return isLinkDeleted;
 	}
@@ -270,5 +281,22 @@ public class GenericLinkManager {
 			}
 		}
 		return linkId;
+	}
+
+	/**
+	 * Returns the {@link LinkInDatabase} object of a {@link Link} object.
+	 * 
+	 * @param link
+	 *            {@link Link} object.
+	 * @return {@link LinkInDatabase} object.
+	 */
+	public static LinkInDatabase getLinkInDatabase(Link link) {
+		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class);
+		for (LinkInDatabase databaseEntry : linksInDatabase) {
+			if (link.equals(databaseEntry)) {
+				return databaseEntry;
+			}
+		}
+		return null;
 	}
 }

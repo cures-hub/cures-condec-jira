@@ -862,7 +862,7 @@
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setReleaseNoteMapping.json?projectKey=" + projectKey + "&releaseNoteCategory=" + releaseNoteCategory, selectedIssueTypes, function (
 			error, response) {
 			if (error === null) {
-				showFlag("success", "The associated issuetypes for the category: " + releaseNoteCategory + " were changed for this project.");
+				showFlag("success", "The associated Jira issue types for the category: " + releaseNoteCategory + " were changed for this project.");
 			}
 		});
 	};
@@ -870,11 +870,11 @@
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
-	ConDecAPI.prototype.clearSentenceDatabase = function clearSentenceDatabase(projectKey) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/clearSentenceDatabase.json?projectKey="
+	ConDecAPI.prototype.cleanDatabases = function cleanDatabases(projectKey) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/cleanDatabases.json?projectKey="
 			+ projectKey, null, function (error, response) {
 			if (error === null) {
-				showFlag("success", "The Sentence database has been cleared.");
+				showFlag("success", "The databases have been cleaned.");
 			}
 		});
 	};

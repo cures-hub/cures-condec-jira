@@ -27,93 +27,68 @@ public class TestSetActivated extends TestSetUp {
 	}
 
 	@Test
-	public void testSetActivatedRequestNullProjectKeyNullIsActivatedNull() {
+	public void testRequestNullProjectKeyNullIsActivatedNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setActivated(null, null, null).getStatus());
 	}
 
 	@Test
-	public void testSetActivatedRequestNullProjectKeyNullIsActivatedTrue() {
+	public void testRequestNullProjectKeyNullIsActivatedTrue() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setActivated(null, null, "true").getStatus());
 	}
 
 	@Test
-	public void testSetActivatedRequestNullProjectKeyNullIsActivatedFalse() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setActivated(null, null, "false").getStatus());
-	}
-
-	@Test
-	public void testSetActivatedRequestNullProjectKeyExistsIsActivatedNull() {
+	public void testRequestNullProjectKeyExistsIsActivatedNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setActivated(null, "TEST", null).getStatus());
 	}
 
 	@Test
-	public void testSetActivatedRequestNullProjectKeyExistsIsActivatedTrue() {
+	public void testRequestNullProjectKeyExistsIsActivatedTrue() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setActivated(null, "TEST", "true").getStatus());
 	}
 
 	@Test
-	public void testSetActivatedRequestNullProjectKeyExistsIsActivatedFalse() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setActivated(null, "TEST", "false").getStatus());
-	}
-
-	@Test
-	public void testSetActivatedRequestNullProjectKeyDoesNotExistIsActivatedNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setActivated(null, "NotTEST", null).getStatus());
-	}
-
-	@Test
-	public void testSetActivatedRequestNullProjectKeyDoesNotExistIsActivatedTrue() {
+	public void testRequestNullProjectKeyDoesNotExistIsActivatedTrue() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setActivated(null, "NotTEST", "true").getStatus());
 	}
 
 	@Test
-	public void testSetActivatedRequestNullProjectKeyDoesNotExistIsActivatedFalse() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setActivated(null, "NotTEST", "false").getStatus());
-	}
-
-	@Test
-	public void testSetActivatedRequestExistsProjectKeyNullIsActivatedNull() {
+	public void testRequestExistsProjectKeyNullIsActivatedNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setActivated(request, null, null).getStatus());
 	}
 
 	@Test
-	public void testSetActivatedRequestExistsProjectKeyNullIsActivatedTrue() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setActivated(request, null, "true").getStatus());
-	}
-
-	@Test
-	public void testSetActivatedRequestExistsProjectKeyNullIsActivatedFalse() {
+	public void testRequestExistsProjectKeyNullIsActivatedFalse() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setActivated(request, null, "false").getStatus());
 	}
 
 	@Test
-	public void testSetActivatedRequestExistsProjectKeyExistsIsActivatedNull() {
+	public void testRequestExistsProjectKeyExistsIsActivatedNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setActivated(request, "TEST", null).getStatus());
 	}
 
 	@Test
-	public void testSetActivatedRequestExistsProjectKeyExistsIsActivatedTrue() {
+	public void testRequestExistsProjectKeyExistsIsActivatedTrue() {
 		assertEquals(Status.OK.getStatusCode(), configRest.setActivated(request, "TEST", "true").getStatus());
 	}
 
 	@Test
-	public void testSetActivatedRequestExistsProjectKeyExistsIsActivatedFalse() {
+	public void testRequestExistsProjectKeyExistsIsActivatedFalse() {
 		assertEquals(Status.OK.getStatusCode(), configRest.setActivated(request, "TEST", "false").getStatus());
 	}
 
 	@Test
-	public void testSetActivatedUserNull() {
+	public void testUserNull() {
 		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("user", null);
 		assertEquals(Status.UNAUTHORIZED.getStatusCode(),
-				configRest.setActivated(request, "NotTEST", "false").getStatus());
+				configRest.setActivated(request, "TEST", "false").getStatus());
 	}
 
 	@Test
-	public void testSetActivatedUserUnauthorized() {
+	public void testUserUnauthorized() {
 		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.BLACK_HEAD.getApplicationUser());
 		assertEquals(Status.UNAUTHORIZED.getStatusCode(),
-				configRest.setActivated(request, "NotTEST", "false").getStatus());
+				configRest.setActivated(request, "TEST", "false").getStatus());
 	}
 }

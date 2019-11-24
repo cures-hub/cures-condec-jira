@@ -25,7 +25,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
@@ -520,61 +519,23 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return linkId > 0;
 	}
 
-	public static void cleanSentenceDatabase(String projectKey) {
-		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			if (!isExistent(databaseEntry)) {
-				PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
-				GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUETEXT);
-				DecisionKnowledgeElement element = new PartOfJiraIssueTextImpl(databaseEntry);
-				KnowledgeGraph.getOrCreate(element.getProject().getProjectKey()).removeVertex(element);
-			}
-		}
-	}
-
-	public static boolean isExistent(PartOfJiraIssueTextInDatabase databaseEntry) {
-		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(databaseEntry);
-		return isExistent(sentence);
-	}
-
-	public static boolean isExistent(PartOfJiraIssueText sentence) {
-		if (sentence == null) {
-			return false;
-		}
-		if (sentence.getCommentId() <= 0) {
-			// documented in Jira issue description
-			return true;
-		}
-		if (sentence.getComment() == null) {
-			return false;
-		}
-		return !(sentence.getEndPosition() == 0 && sentence.getStartPosition() == 0);
-	}
-
 	/**
-	 * Migration function on button "Validate Sentence Database" Adds Link types to
-	 * "empty" links. Can be deleted in a future release
+	 * Deletes elements in database that are broken (are neither stored in
+	 * description nor in a comment or have zero length).
+	 * 
+	 * @param user
+	 *            Jira {@link ApplicationUser}.
+	 * @return true if any element was deleted.
 	 */
-	public static boolean migrateArgumentTypesInLinks(String projectKey) {
-		if (projectKey == null || projectKey.equals("")) {
-			return false;
-		}
-		PartOfJiraIssueTextInDatabase[] sentencesInProject = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ?", projectKey));
-		for (PartOfJiraIssueTextInDatabase databaseEntry : sentencesInProject) {
-			if (databaseEntry.getType().length() == 3) {// Equals Argument
-				List<Link> links = GenericLinkManager.getLinksForElement(databaseEntry.getId(),
-						DocumentationLocation.JIRAISSUETEXT);
-				for (Link link : links) {
-					if (link.getType().equalsIgnoreCase("contain")) {
-						KnowledgePersistenceManager.getOrCreate(projectKey).deleteLink(link, null);
-						link.setType(LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()).toString());
-						KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, null);
-					}
-				}
+	public boolean deleteInvalidElements(ApplicationUser user) {
+		boolean isAnyElementDeleted = false;
+		for (DecisionKnowledgeElement element : getDecisionKnowledgeElements()) {
+			if (!((PartOfJiraIssueText) element).isValid()) {
+				deleteDecisionKnowledgeElement(element, user);
+				isAnyElementDeleted = true;
 			}
 		}
-		return true;
+		return isAnyElementDeleted;
 	}
 
 	public Issue createJIRAIssueFromSentenceObject(long aoId, ApplicationUser user) {
@@ -719,6 +680,35 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			unvalidatedPartsOfText.add(validatedPartOfText);
 		}
 		return unvalidatedPartsOfText;
+	}
+
+	/**
+	 * Returns the youngest decision knowledge element with a certain knowledge type
+	 * that is documented in the description or the comments of a certain Jira
+	 * issue.
+	 * 
+	 * @param jiraIssueId
+	 *            id of the Jira issue that the decision knowledge elements are
+	 *            documented in.
+	 * @param knowledgeType
+	 *            {@link KnowledgeType} of the parent element.
+	 * @return youngest decision knowledge element with a certain knowledge type
+	 *         that is documented in the description or the comments of a certain
+	 *         Jira issue.
+	 */
+	public static DecisionKnowledgeElement getYoungestElementForJiraIssue(long jiraIssueId,
+			KnowledgeType knowledgeType) {
+		PartOfJiraIssueText youngestElement = null;
+		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
+				Query.select().where("JIRA_ISSUE_ID = ?", jiraIssueId).order("ID DESC"));
+
+		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
+			if (databaseEntry.getType().equalsIgnoreCase(knowledgeType.toString())) {
+				youngestElement = new PartOfJiraIssueTextImpl(databaseEntry);
+				break;
+			}
+		}
+		return youngestElement;
 	}
 
 	/**

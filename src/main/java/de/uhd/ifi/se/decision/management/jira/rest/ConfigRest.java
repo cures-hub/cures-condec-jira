@@ -84,7 +84,7 @@ public class ConfigRest {
 
 	@Path("/isIssueStrategy")
 	@GET
-	public Response isIssueStrategy(@QueryParam("projectKey") final String projectKey) {
+	public Response isIssueStrategy(@QueryParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -253,7 +253,7 @@ public class ConfigRest {
 
 	@Path("/isKnowledgeTypeEnabled")
 	@GET
-	public Response isKnowledgeTypeEnabled(@QueryParam("projectKey") final String projectKey,
+	public Response isKnowledgeTypeEnabled(@QueryParam("projectKey") String projectKey,
 			@QueryParam("knowledgeType") String knowledgeType) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
@@ -297,7 +297,7 @@ public class ConfigRest {
 
 	@Path("/getKnowledgeTypes")
 	@GET
-	public Response getKnowledgeTypes(@QueryParam("projectKey") final String projectKey) {
+	public Response getKnowledgeTypes(@QueryParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -314,7 +314,7 @@ public class ConfigRest {
 
 	@Path("/getLinkTypes")
 	@GET
-	public Response getLinkTypes(@QueryParam("projectKey") final String projectKey) {
+	public Response getLinkTypes(@QueryParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -328,9 +328,8 @@ public class ConfigRest {
 
 	@Path("/setWebhookEnabled")
 	@POST
-	public Response setWebhookEnabled(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey,
-			@QueryParam("isActivated") final String isActivatedString) {
+	public Response setWebhookEnabled(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			@QueryParam("isActivated") String isActivatedString) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -351,9 +350,8 @@ public class ConfigRest {
 
 	@Path("/setWebhookData")
 	@POST
-	public Response setWebhookData(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey, @QueryParam("webhookUrl") final String webhookUrl,
-			@QueryParam("webhookSecret") final String webhookSecret) {
+	public Response setWebhookData(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			@QueryParam("webhookUrl") String webhookUrl, @QueryParam("webhookSecret") String webhookSecret) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -373,9 +371,9 @@ public class ConfigRest {
 
 	@Path("/setWebhookType")
 	@POST
-	public Response setWebhookType(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey, @QueryParam("webhookType") final String webhookType,
-			@QueryParam("isWebhookTypeEnabled") final boolean isWebhookTypeEnabled) {
+	public Response setWebhookType(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			@QueryParam("webhookType") String webhookType,
+			@QueryParam("isWebhookTypeEnabled") boolean isWebhookTypeEnabled) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -391,8 +389,8 @@ public class ConfigRest {
 	@Path("/setReleaseNoteMapping")
 	@POST
 	public Response setReleaseNoteMapping(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey,
-			@QueryParam("releaseNoteCategory") final ReleaseNoteCategory category, List<String> selectedIssueNames) {
+			@QueryParam("projectKey") String projectKey,
+			@QueryParam("releaseNoteCategory") ReleaseNoteCategory category, List<String> selectedIssueNames) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -408,7 +406,7 @@ public class ConfigRest {
 	@Path("/getReleaseNoteMapping")
 	@GET
 	public Response getReleaseNoteMapping(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey) {
+			@QueryParam("projectKey") String projectKey) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -424,10 +422,9 @@ public class ConfigRest {
 		}
 	}
 
-	@Path("/clearSentenceDatabase")
+	@Path("/cleanDatabases")
 	@POST
-	public Response clearSentenceDatabase(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey) {
+	public Response cleanDatabases(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -435,29 +432,18 @@ public class ConfigRest {
 
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
-
-		try {
-			// Deletion is only useful during development, do not ship to enduser!!
-			// ActiveObjectsManager.clearSentenceDatabaseForProject(projectKey);
-			// If still something is wrong, delete an elements and its links
-			JiraIssueTextPersistenceManager.cleanSentenceDatabase(projectKey);
-			// If some links ar bad, delete those links
-			GenericLinkManager.clearInvalidLinks();
-			// If there are now some "lonely" sentences, link them to their issues.
-			persistenceManager.createLinksForNonLinkedElements();
-			//
-			JiraIssueTextPersistenceManager.migrateArgumentTypesInLinks(projectKey);
-			return Response.ok(Status.ACCEPTED).build();
-		} catch (Exception e) {
-			LOGGER.error("Failed to clean the sentence database. Message: " + e.getMessage());
-			return Response.status(Status.CONFLICT).build();
-		}
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		persistenceManager.deleteInvalidElements(user);
+		GenericLinkManager.deleteInvalidLinks();
+		// If there are some "lonely" sentences, link them to their Jira issues.
+		persistenceManager.createLinksForNonLinkedElements();
+		return Response.ok(Status.ACCEPTED).build();
 	}
 
 	@Path("/classifyWholeProject")
 	@POST
 	public Response classifyWholeProject(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey) {
+			@QueryParam("projectKey") String projectKey) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencemanager.genericlinkmanager;
+package de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencemanager.automaticlinkcreator;
 
 import static org.junit.Assert.assertEquals;
 
@@ -51,7 +51,9 @@ public class TestGetMostRecentElement extends TestSetUp {
 	public void testMostRecentElementUnequalCreationDate() {
 		DecisionKnowledgeElement source = link.getSource();
 		DecisionKnowledgeElement target = link.getTarget();
-		source.setCreated(new Date());
-		assertEquals(source, AutomaticLinkCreator.getMostRecentElement(source, target));
+		Date oldCreationDate = target.getCreated();
+		target.setCreated(new Date());
+		assertEquals(target, AutomaticLinkCreator.getMostRecentElement(source, target));
+		target.setCreated(oldCreationDate);
 	}
 }

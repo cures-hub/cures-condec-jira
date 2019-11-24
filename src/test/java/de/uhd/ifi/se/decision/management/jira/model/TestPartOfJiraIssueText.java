@@ -244,4 +244,21 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 		partsOfText.get(0).setCommentId(0);
 		assertEquals(JiraUsers.SYS_ADMIN.getApplicationUser(), partsOfText.get(0).getCreator());
 	}
+
+	@Test
+	@NonTransactional
+	public void testIsValid() {
+		List<PartOfJiraIssueText> partsOfText = JiraIssues
+				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative} ");
+		PartOfJiraIssueText partOfText = partsOfText.get(0);
+
+		assertTrue(partOfText.isValid());
+
+		// this means that the element is documented in the description
+		partOfText.setCommentId(0);
+		assertTrue(partOfText.isValid());
+
+		partOfText.setEndPosition(0);
+		assertFalse(partOfText.isValid());
+	}
 }

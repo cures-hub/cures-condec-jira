@@ -27,38 +27,38 @@ public class TestAbstractPersistenceManagerForSingleLocation extends TestSetUp {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testProjectKeyNull() {
-		KnowledgePersistenceManager.getOrCreate((String) null).getDefaultPersistenceManager();
+		KnowledgePersistenceManager.getOrCreate((String) null).getDefaultManagerForSingleLocation();
 	}
 
 	@Test
 	public void testGetPersistenceStrategyProjectKeyNonExistent() {
 		assertTrue(KnowledgePersistenceManager.getOrCreate("TESTNOT")
-				.getDefaultPersistenceManager() instanceof JiraIssuePersistenceManager);
+				.getDefaultManagerForSingleLocation() instanceof JiraIssuePersistenceManager);
 	}
 
 	@Test
 	public void testGetPersistenceStrategyProjectKeyExistent() {
 		assertTrue(KnowledgePersistenceManager.getOrCreate("TEST")
-				.getDefaultPersistenceManager() instanceof JiraIssuePersistenceManager);
+				.getDefaultManagerForSingleLocation() instanceof JiraIssuePersistenceManager);
 	}
 
 	@Test
 	public void testGetPersistenceManagerElementExistentJiraIssue() {
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUE);
-		assertTrue(KnowledgePersistenceManager.getPersistenceManager(element) instanceof JiraIssuePersistenceManager);
+		assertTrue(KnowledgePersistenceManager.getManagerForSingleLocation(element) instanceof JiraIssuePersistenceManager);
 	}
 
 	@Test
 	public void testGetPersistenceManagerElementExistentActiveObject() {
 		element.setDocumentationLocation(DocumentationLocation.ACTIVEOBJECT);
 		assertTrue(
-				KnowledgePersistenceManager.getPersistenceManager(element) instanceof ActiveObjectPersistenceManager);
+				KnowledgePersistenceManager.getManagerForSingleLocation(element) instanceof ActiveObjectPersistenceManager);
 	}
 
 	@Test
 	public void testGetPersistenceManagerElementExistentJiraIssueComment() {
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 		assertTrue(
-				KnowledgePersistenceManager.getPersistenceManager(element) instanceof JiraIssueTextPersistenceManager);
+				KnowledgePersistenceManager.getManagerForSingleLocation(element) instanceof JiraIssueTextPersistenceManager);
 	}
 }
