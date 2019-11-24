@@ -53,6 +53,7 @@ import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 public class ConfigRestImpl implements ConfigRest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigRest.class);
 
+	@Override
 	@Path("/setActivated")
 	@POST
 	public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
@@ -83,6 +84,7 @@ public class ConfigRestImpl implements ConfigRest {
 		KnowledgePersistenceManager.instances.remove(projectKey);
 	}
 
+	@Override
 	@Path("/isIssueStrategy")
 	@GET
 	public Response isIssueStrategy(@QueryParam("projectKey") String projectKey) {
@@ -90,10 +92,11 @@ public class ConfigRestImpl implements ConfigRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		Boolean isIssueStrategy = ConfigPersistenceManager.isIssueStrategy(projectKey);
+		boolean isIssueStrategy = ConfigPersistenceManager.isIssueStrategy(projectKey);
 		return Response.ok(isIssueStrategy).build();
 	}
 
+	@Override
 	@Path("/setIssueStrategy")
 	@POST
 	public Response setIssueStrategy(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
@@ -130,6 +133,7 @@ public class ConfigRestImpl implements ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/setKnowledgeExtractedFromGit")
 	@POST
 	public Response setKnowledgeExtractedFromGit(@Context HttpServletRequest request,
@@ -212,6 +216,7 @@ public class ConfigRestImpl implements ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/setGitUri")
 	@POST
 	public Response setGitUri(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
@@ -228,6 +233,7 @@ public class ConfigRestImpl implements ConfigRest {
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
+	@Override
 	@Path("/setKnowledgeExtractedFromIssues")
 	@POST
 	public Response setKnowledgeExtractedFromIssues(@Context HttpServletRequest request,
@@ -252,6 +258,7 @@ public class ConfigRestImpl implements ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/isKnowledgeTypeEnabled")
 	@GET
 	public Response isKnowledgeTypeEnabled(@QueryParam("projectKey") String projectKey,
@@ -264,6 +271,7 @@ public class ConfigRestImpl implements ConfigRest {
 		return Response.ok(isKnowledgeTypeEnabled).build();
 	}
 
+	@Override
 	@Path("/setKnowledgeTypeEnabled")
 	@POST
 	public Response setKnowledgeTypeEnabled(@Context HttpServletRequest request,
@@ -296,6 +304,7 @@ public class ConfigRestImpl implements ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/getKnowledgeTypes")
 	@GET
 	public Response getKnowledgeTypes(@QueryParam("projectKey") String projectKey) {
@@ -313,6 +322,7 @@ public class ConfigRestImpl implements ConfigRest {
 		return Response.ok(knowledgeTypes).build();
 	}
 
+	@Override
 	@Path("/getLinkTypes")
 	@GET
 	public Response getLinkTypes(@QueryParam("projectKey") String projectKey) {
@@ -327,6 +337,7 @@ public class ConfigRestImpl implements ConfigRest {
 		return Response.ok(linkTypes).build();
 	}
 
+	@Override
 	@Path("/setWebhookEnabled")
 	@POST
 	public Response setWebhookEnabled(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
@@ -349,6 +360,7 @@ public class ConfigRestImpl implements ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/setWebhookData")
 	@POST
 	public Response setWebhookData(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
@@ -370,6 +382,7 @@ public class ConfigRestImpl implements ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/setWebhookType")
 	@POST
 	public Response setWebhookType(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
@@ -387,6 +400,7 @@ public class ConfigRestImpl implements ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/setReleaseNoteMapping")
 	@POST
 	public Response setReleaseNoteMapping(@Context HttpServletRequest request,
@@ -404,25 +418,22 @@ public class ConfigRestImpl implements ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/getReleaseNoteMapping")
 	@GET
-	public Response getReleaseNoteMapping(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
+	public Response getReleaseNoteMapping(@QueryParam("projectKey") String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
 		}
-		try {
-			HashMap<ReleaseNoteCategory, List<String>> mapping = new HashMap<>();
-			ReleaseNoteCategory.toOriginalList().forEach(category -> {
-				mapping.put(category, ConfigPersistenceManager.getReleaseNoteMapping(projectKey, category));
-			});
-			return Response.ok(mapping).build();
-		} catch (Exception e) {
-			return Response.status(Status.CONFLICT).build();
-		}
+		Map<ReleaseNoteCategory, List<String>> mapping = new HashMap<>();
+		ReleaseNoteCategory.toOriginalList().forEach(category -> {
+			mapping.put(category, ConfigPersistenceManager.getReleaseNoteMapping(projectKey, category));
+		});
+		return Response.ok(mapping).build();
 	}
 
+	@Override
 	@Path("/cleanDatabases")
 	@POST
 	public Response cleanDatabases(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
@@ -441,6 +452,7 @@ public class ConfigRestImpl implements ConfigRest {
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
+	@Override
 	@Path("/classifyWholeProject")
 	@POST
 	public Response classifyWholeProject(@Context HttpServletRequest request,
@@ -474,6 +486,7 @@ public class ConfigRestImpl implements ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/trainClassifier")
 	@POST
 	public Response trainClassifier(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
@@ -497,6 +510,7 @@ public class ConfigRestImpl implements ConfigRest {
 				.build();
 	}
 
+	@Override
 	@Path("/evaluateModel")
 	@POST
 	public Response evaluateModel(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
@@ -525,6 +539,7 @@ public class ConfigRestImpl implements ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/saveArffFile")
 	@POST
 	public Response saveArffFile(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
@@ -546,6 +561,7 @@ public class ConfigRestImpl implements ConfigRest {
 				.build();
 	}
 
+	@Override
 	@Path("/setIconParsing")
 	@POST
 	public Response setIconParsing(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
@@ -567,6 +583,7 @@ public class ConfigRestImpl implements ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/setUseClassifierForIssueComments")
 	@POST
 	public Response setUseClassifierForIssueComments(@Context HttpServletRequest request,

@@ -4,76 +4,40 @@ import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
-import com.sun.jersey.spi.inject.Errors;
-
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 
-@Api(value = "/Config")
-@RequestMapping(value = "/pet")
+/**
+ * REST resource for plug-in configuration
+ */
 public interface ConfigRest {
 
-	@ApiOperation(value = "Find pet by ID")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "SUCCESS", response = Response.class),
-			@ApiResponse(code = 500, message = "Project key is invalid.", response = Errors.ErrorMessage.class) })
-	@RequestMapping(value = "/{isIssueStrategy}", method = RequestMethod.GET)
-	Response isIssueStrategy(@PathVariable("projectKey") String projectKey);
+	Response isIssueStrategy(String projectKey);
 
-	@Path("/isKnowledgeTypeEnabled")
-	@GET
-	Response isKnowledgeTypeEnabled(@QueryParam("projectKey") final String projectKey,
-			@QueryParam("knowledgeType") String knowledgeType);
+	Response isKnowledgeTypeEnabled(String projectKey, String knowledgeType);
 
-	@Path("/getKnowledgeTypes")
-	@GET
-	Response getKnowledgeTypes(@QueryParam("projectKey") final String projectKey);
+	Response getKnowledgeTypes(String projectKey);
 
-	@Path("/getLinkTypes")
-	@GET
-	Response getLinkTypes(@QueryParam("projectKey") final String projectKey);
+	Response getLinkTypes(String projectKey);
 
-	@Path("/getReleaseNoteMapping")
-	@GET
-	Response getReleaseNoteMapping(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey);
+	Response getReleaseNoteMapping(String projectKey);
 
-	@Path("/setActivated")
-	@POST
-	Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivated") String isActivatedString);
+	Response setActivated(HttpServletRequest request, String projectKey, String isActivatedString);
 
-	@Path("/setIssueStrategy")
-	@POST
-	Response setIssueStrategy(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isIssueStrategy") String isIssueStrategyString);
+	Response setIssueStrategy(HttpServletRequest request, String projectKey, String isIssueStrategyString);
 
-	@Path("/setKnowledgeExtractedFromGit")
-	@POST
-	Response setKnowledgeExtractedFromGit(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isKnowledgeExtractedFromGit") String isKnowledgeExtractedFromGit);
+	Response setKnowledgeExtractedFromGit(HttpServletRequest request, String projectKey,
+			String isKnowledgeExtractedFromGit);
 
-	@Path("/setGitUri")
-	@POST
-	Response setGitUri(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("gitUri") String gitUri);
+	Response setGitUri(HttpServletRequest request, String projectKey, String gitUri);
 
 	@Path("/setKnowledgeExtractedFromIssues")
 	@POST
