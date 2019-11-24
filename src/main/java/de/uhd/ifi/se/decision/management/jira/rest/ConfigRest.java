@@ -4,9 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
@@ -39,73 +36,35 @@ public interface ConfigRest {
 
 	Response setGitUri(HttpServletRequest request, String projectKey, String gitUri);
 
-	@Path("/setKnowledgeExtractedFromIssues")
-	@POST
-	Response setKnowledgeExtractedFromIssues(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isKnowledgeExtractedFromIssues") String isKnowledgeExtractedFromIssues);
+	Response setKnowledgeExtractedFromIssues(HttpServletRequest request, String projectKey,
+			String isKnowledgeExtractedFromIssues);
 
-	@Path("/setKnowledgeTypeEnabled")
-	@POST
-	Response setKnowledgeTypeEnabled(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isKnowledgeTypeEnabled") String isKnowledgeTypeEnabledString,
-			@QueryParam("knowledgeType") String knowledgeType);
+	Response setKnowledgeTypeEnabled(@Context HttpServletRequest request, String projectKey,
+			String isKnowledgeTypeEnabledString, String knowledgeType);
 
-	@Path("/setWebhookEnabled")
-	@POST
-	Response setWebhookEnabled(@Context HttpServletRequest request, @QueryParam("projectKey") final String projectKey,
-			@QueryParam("isActivated") final String isActivatedString);
+	Response setWebhookEnabled(HttpServletRequest request, String projectKey, String isActivatedString);
 
-	@Path("/setWebhookData")
-	@POST
-	Response setWebhookData(@Context HttpServletRequest request, @QueryParam("projectKey") final String projectKey,
-			@QueryParam("webhookUrl") final String webhookUrl, @QueryParam("webhookSecret") final String webhookSecret);
+	Response setWebhookData(HttpServletRequest request, String projectKey, String webhookUrl, String webhookSecret);
 
-	@Path("/setWebhookType")
-	@POST
-	Response setWebhookType(@Context HttpServletRequest request, @QueryParam("projectKey") final String projectKey,
-			@QueryParam("webhookType") final String webhookType,
-			@QueryParam("isWebhookTypeEnabled") final boolean isWebhookTypeEnabled);
+	Response setWebhookType(HttpServletRequest request, String projectKey, String webhookType,
+			boolean isWebhookTypeEnabled);
 
-	@Path("/setReleaseNoteMapping")
-	@POST
-	Response setReleaseNoteMapping(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey,
-			@QueryParam("releaseNoteCategory") final ReleaseNoteCategory category, List<String> selectedIssueNames);
+	Response setReleaseNoteMapping(HttpServletRequest request, String projectKey, ReleaseNoteCategory category,
+			List<String> selectedIssueNames);
 
-	@Path("/cleanDatabases")
-	@POST
-	Response cleanDatabases(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey);
+	Response cleanDatabases(HttpServletRequest request, String projectKey);
 
-	@Path("/classifyWholeProject")
-	@POST
-	Response classifyWholeProject(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey);
+	Response classifyWholeProject(HttpServletRequest request, String projectKey);
 
-	@Path("/trainClassifier")
-	@POST
-	Response trainClassifier(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("arffFileName") String arffFileName);
+	Response trainClassifier(HttpServletRequest request, String projectKey, String arffFileName);
 
-	@Path("/evaluateModel")
-	@POST
-	Response evaluateModel(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey);
+	Response evaluateModel(HttpServletRequest request, String projectKey);
 
-	@Path("/saveArffFile")
-	@POST
-	Response saveArffFile(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("useOnlyValidatedData") boolean useOnlyValidatedData);
+	Response saveArffFile(HttpServletRequest request, String projectKey, boolean useOnlyValidatedData);
 
-	@Path("/setIconParsing")
-	@POST
-	Response setIconParsing(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivatedString") String isActivatedString);
+	Response setIconParsing(HttpServletRequest request, String projectKey, String isActivatedString);
 
-	@Path("/setUseClassifierForIssueComments")
-	@POST
-	Response setUseClassifierForIssueComments(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isClassifierUsedForIssues") String isActivatedString);
+	Response setUseClassifierForIssueComments(HttpServletRequest request, String projectKey, String isActivatedString);
 
 	static void manageDefaultIssueTypes(String projectKey, boolean isIssueStrategy) {
 		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaultTypes();
