@@ -32,7 +32,7 @@ import net.java.ao.Query;
  */
 public class GenericLinkManager {
 
-	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
+	public static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
 	/**
 	 * Deletes a link (=edge) between all kinds of nodes in the
@@ -281,5 +281,22 @@ public class GenericLinkManager {
 			}
 		}
 		return linkId;
+	}
+
+	/**
+	 * Returns the {@link LinkInDatabase} object of a {@link Link} object.
+	 * 
+	 * @param link
+	 *            {@link Link} object.
+	 * @return {@link LinkInDatabase} object.
+	 */
+	public static LinkInDatabase getLinkInDatabase(Link link) {
+		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class);
+		for (LinkInDatabase databaseEntry : linksInDatabase) {
+			if (link.equals(databaseEntry)) {
+				return databaseEntry;
+			}
+		}
+		return null;
 	}
 }
