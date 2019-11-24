@@ -722,6 +722,35 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	/**
+	 * Returns the youngest decision knowledge element with a certain knowledge type
+	 * that is documented in the description or the comments of a certain Jira
+	 * issue.
+	 * 
+	 * @param jiraIssueId
+	 *            id of the Jira issue that the decision knowledge elements are
+	 *            documented in.
+	 * @param knowledgeType
+	 *            {@link KnowledgeType} of the parent element.
+	 * @return youngest decision knowledge element with a certain knowledge type
+	 *         that is documented in the description or the comments of a certain
+	 *         Jira issue.
+	 */
+	public static DecisionKnowledgeElement getYoungestElementForJiraIssue(long jiraIssueId,
+			KnowledgeType knowledgeType) {
+		PartOfJiraIssueText youngestElement = null;
+		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
+				Query.select().where("JIRA_ISSUE_ID = ?", jiraIssueId).order("ID DESC"));
+
+		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
+			if (databaseEntry.getType().equalsIgnoreCase(knowledgeType.toString())) {
+				youngestElement = new PartOfJiraIssueTextImpl(databaseEntry);
+				break;
+			}
+		}
+		return youngestElement;
+	}
+
+	/**
 	 * Split a text into parts (substrings).
 	 *
 	 * @param comment

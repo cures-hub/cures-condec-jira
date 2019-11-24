@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencemanager.genericlinkmanager;
+package de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencemanager.automaticlinkcreator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
