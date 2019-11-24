@@ -2,42 +2,59 @@ package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.ws.rs.core.Response;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response.Status;
 
+import org.junit.Before;
 import org.junit.Test;
 
+import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestClearSentenceDatabase extends TestConfigSuper {
+public class TestClearSentenceDatabase extends TestSetUp {
 
-	@Test
-	public void testSetActivatedRequestNullProjectKeyNull() {
-		assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-				configRest.clearSentenceDatabase(null, null).getEntity());
+	protected HttpServletRequest request;
+	protected ConfigRest configRest;
+
+	@Before
+	public void setUp() {
+		init();
+		configRest = new ConfigRest();
+		request = new MockHttpServletRequest();
+		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
 
 	@Test
-	public void testSetActivatedRequestNullProjectKeyTrue() {
-		assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-				configRest.clearSentenceDatabase(null, "TEST").getEntity());
+	public void testRequestNullProjectKeyNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.clearSentenceDatabase(null, null).getStatus());
 	}
 
 	@Test
-	public void testSetActivatedRequestExistsProjectKeyExistsIsActivatedFalse() {
-		assertEquals(Response.ok().build().getClass(), configRest.setActivated(request, "TEST", "false").getClass());
+	public void testRequestNullProjectKeyValid() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.clearSentenceDatabase(null, "TEST").getStatus());
 	}
 
 	@Test
-	public void testSetActivatedUserUnauthorized() {
+	public void testRequestExistsProjectKeyExists() {
+		assertEquals(Status.OK.getStatusCode(), configRest.clearSentenceDatabase(request, "TEST").getStatus());
+	}
+
+	@Test
+	public void testUserUnauthorized() {
+		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.BLACK_HEAD.getApplicationUser());
-		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-				configRest.setActivated(request, "NotTEST", "false").getStatus());
+		assertEquals(Status.UNAUTHORIZED.getStatusCode(),
+				configRest.clearSentenceDatabase(request, "TEST").getStatus());
 	}
 
 	@Test
-	public void testSetActivatedUserNull() {
+	public void testUserNull() {
+		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("user", null);
-		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-				configRest.setActivated(request, "NotTEST", "false").getStatus());
+		assertEquals(Status.UNAUTHORIZED.getStatusCode(),
+				configRest.clearSentenceDatabase(request, "TEST").getStatus());
 	}
 }
