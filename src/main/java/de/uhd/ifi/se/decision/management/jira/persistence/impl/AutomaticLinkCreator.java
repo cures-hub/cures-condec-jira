@@ -59,9 +59,6 @@ public class AutomaticLinkCreator {
 	}
 
 	private static List<DecisionKnowledgeElement> getPotentialParentElements(DecisionKnowledgeElement element) {
-		if (element == null) {
-			return new ArrayList<DecisionKnowledgeElement>();
-		}
 		List<DecisionKnowledgeElement> potentialParentElements = new ArrayList<DecisionKnowledgeElement>();
 		List<KnowledgeType> parentTypes = KnowledgeType.getParentTypes(element.getType());
 		long jiraIssueId = ((PartOfJiraIssueText) element).getJiraIssueId();
