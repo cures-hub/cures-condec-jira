@@ -519,12 +519,23 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return linkId > 0;
 	}
 
-	public void deleteInvalidElements(ApplicationUser user) {
+	/**
+	 * Deletes elements in database that are broken (are neither stored in
+	 * description nor in a comment or have zero length).
+	 * 
+	 * @param user
+	 *            Jira {@link ApplicationUser}.
+	 * @return true if any element was deleted.
+	 */
+	public boolean deleteInvalidElements(ApplicationUser user) {
+		boolean isAnyElementDeleted = false;
 		for (DecisionKnowledgeElement element : getDecisionKnowledgeElements()) {
 			if (!((PartOfJiraIssueText) element).isValid()) {
 				deleteDecisionKnowledgeElement(element, user);
+				isAnyElementDeleted = true;
 			}
 		}
+		return isAnyElementDeleted;
 	}
 
 	public Issue createJIRAIssueFromSentenceObject(long aoId, ApplicationUser user) {
