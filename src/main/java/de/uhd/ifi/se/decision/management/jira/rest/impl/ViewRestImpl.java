@@ -146,16 +146,17 @@ public class ViewRestImpl implements ViewRest {
 	@Path("/getTreeViewer")
 	@GET
 	public Response getTreeViewer(@QueryParam("projectKey") String projectKey,
-			@QueryParam("rootElementType") String rootElementType) {
+			@QueryParam("rootElementType") String rootElementTypeString) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		if (rootElementType == null) {
-			rootElementType = "decision";
+		KnowledgeType rootType = KnowledgeType.getKnowledgeType(rootElementTypeString);
+		if (rootType == KnowledgeType.OTHER) {
+			rootType = KnowledgeType.DECISION;
 		}
 
-		TreeViewer treeViewer = new TreeViewer(projectKey, KnowledgeType.getKnowledgeType(rootElementType));
+		TreeViewer treeViewer = new TreeViewer(projectKey, rootType);
 		return Response.ok(treeViewer).build();
 	}
 

@@ -141,12 +141,10 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 					.build();
 		}
 
-		if (idOfExistingElement == 0) {
-			if (keyOfExistingElement != null && !keyOfExistingElement.isEmpty()) {
-				IssueManager issueManager = ComponentAccessor.getIssueManager();
-				Issue issue = issueManager.getIssueByCurrentKey(keyOfExistingElement);
-				idOfExistingElement = issue.getId();
-			}
+		if (idOfExistingElement == 0 && keyOfExistingElement != null && !keyOfExistingElement.isBlank()) {
+			IssueManager issueManager = ComponentAccessor.getIssueManager();
+			Issue issue = issueManager.getIssueByCurrentKey(keyOfExistingElement);
+			idOfExistingElement = issue.getId();
 		}
 
 		String projectKey = element.getProject().getProjectKey();
