@@ -109,15 +109,10 @@ public class ConfigRestImpl implements ConfigRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isIssueStrategy = null"))
 					.build();
 		}
-		try {
-			boolean isIssueStrategy = Boolean.valueOf(isIssueStrategyString);
-			ConfigPersistenceManager.setIssueStrategy(projectKey, isIssueStrategy);
-			ConfigRest.manageDefaultIssueTypes(projectKey, isIssueStrategy);
-			return Response.ok(Status.ACCEPTED).build();
-		} catch (Exception e) {
-			LOGGER.error("Failed to enable or disable the JIRA issue persistence strategy. Message: " + e.getMessage());
-			return Response.status(Status.CONFLICT).build();
-		}
+		boolean isIssueStrategy = Boolean.valueOf(isIssueStrategyString);
+		ConfigPersistenceManager.setIssueStrategy(projectKey, isIssueStrategy);
+		ConfigRest.manageDefaultIssueTypes(projectKey, isIssueStrategy);
+		return Response.ok(Status.ACCEPTED).build();
 	}
 
 	@Override
@@ -134,17 +129,11 @@ public class ConfigRestImpl implements ConfigRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "isKnowledgeExtractedFromGit = null")).build();
 		}
-		try {
-			ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey,
-					Boolean.valueOf(isKnowledgeExtractedFromGit));
-			// deactivate other git extraction
-			ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey, false);
-			ConfigPersistenceManager.setPostSquashedCommits(projectKey, false);
-			return Response.ok(Status.ACCEPTED).build();
-		} catch (Exception e) {
-			LOGGER.error("Failed to enable or disable the knowledge extraction from git. Message: " + e.getMessage());
-			return Response.status(Status.CONFLICT).build();
-		}
+		ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, Boolean.valueOf(isKnowledgeExtractedFromGit));
+		// deactivate other git extraction
+		ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey, false);
+		ConfigPersistenceManager.setPostSquashedCommits(projectKey, false);
+		return Response.ok(Status.ACCEPTED).build();
 	}
 
 	@Path("/setPostFeatureBranchCommits")
@@ -159,20 +148,12 @@ public class ConfigRestImpl implements ConfigRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "PostFeatureBranchCommits-checked = null")).build();
 		}
-
-		try {
-			if (Boolean.parseBoolean(ConfigPersistenceManager.getValue(projectKey, "isKnowledgeExtractedFromGit"))) {
-				ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey, Boolean.valueOf(checked));
-				return Response.ok(Status.ACCEPTED).build();
-			} else {
-				return Response.status(Status.CONFLICT)
-						.entity(ImmutableMap.of("error", "Git Extraction needs to be active!")).build();
-			}
-
-		} catch (Exception e) {
-			LOGGER.error(
-					"Failed to enable or disable the setting PostFeatureBranchCommits. Message: " + e.getMessage());
-			return Response.status(Status.CONFLICT).build();
+		if (Boolean.parseBoolean(ConfigPersistenceManager.getValue(projectKey, "isKnowledgeExtractedFromGit"))) {
+			ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey, Boolean.valueOf(checked));
+			return Response.ok(Status.ACCEPTED).build();
+		} else {
+			return Response.status(Status.CONFLICT)
+					.entity(ImmutableMap.of("error", "Git Extraction needs to be active!")).build();
 		}
 	}
 
@@ -188,18 +169,12 @@ public class ConfigRestImpl implements ConfigRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "setPostSquashedCommits-checked = null")).build();
 		}
-		try {
-			if (Boolean.parseBoolean(ConfigPersistenceManager.getValue(projectKey, "isKnowledgeExtractedFromGit"))) {
-				ConfigPersistenceManager.setPostSquashedCommits(projectKey, Boolean.valueOf(checked));
-				return Response.ok(Status.ACCEPTED).build();
-			} else {
-				return Response.status(Status.CONFLICT)
-						.entity(ImmutableMap.of("error", "Git Extraction needs to be active!")).build();
-			}
-
-		} catch (Exception e) {
-			LOGGER.error("Failed to enable or disable the setting PostSquashedCommits. Message: " + e.getMessage());
-			return Response.status(Status.CONFLICT).build();
+		if (Boolean.parseBoolean(ConfigPersistenceManager.getValue(projectKey, "isKnowledgeExtractedFromGit"))) {
+			ConfigPersistenceManager.setPostSquashedCommits(projectKey, Boolean.valueOf(checked));
+			return Response.ok(Status.ACCEPTED).build();
+		} else {
+			return Response.status(Status.CONFLICT)
+					.entity(ImmutableMap.of("error", "Git Extraction needs to be active!")).build();
 		}
 	}
 
@@ -234,15 +209,9 @@ public class ConfigRestImpl implements ConfigRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "isKnowledgeExtractedFromIssues = null")).build();
 		}
-		try {
-			ConfigPersistenceManager.setKnowledgeExtractedFromIssues(projectKey,
-					Boolean.valueOf(isKnowledgeExtractedFromIssues));
-			return Response.ok(Status.ACCEPTED).build();
-		} catch (Exception e) {
-			LOGGER.error("Failed to enable or disable the extraction of knowledge from JIRA issues. Message: "
-					+ e.getMessage());
-			return Response.status(Status.CONFLICT).build();
-		}
+		ConfigPersistenceManager.setKnowledgeExtractedFromIssues(projectKey,
+				Boolean.valueOf(isKnowledgeExtractedFromIssues));
+		return Response.ok(Status.ACCEPTED).build();
 	}
 
 	@Override
@@ -273,22 +242,17 @@ public class ConfigRestImpl implements ConfigRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isKnowledgeTypeEnabled = null"))
 					.build();
 		}
-		try {
-			boolean isKnowledgeTypeEnabled = Boolean.valueOf(isKnowledgeTypeEnabledString);
-			ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType, isKnowledgeTypeEnabled);
-			if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
-				if (isKnowledgeTypeEnabled) {
-					PluginInitializer.createIssueType(knowledgeType);
-					PluginInitializer.addIssueTypeToScheme(knowledgeType, projectKey);
-				} else {
-					PluginInitializer.removeIssueTypeFromScheme(knowledgeType, projectKey);
-				}
+		boolean isKnowledgeTypeEnabled = Boolean.valueOf(isKnowledgeTypeEnabledString);
+		ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType, isKnowledgeTypeEnabled);
+		if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
+			if (isKnowledgeTypeEnabled) {
+				PluginInitializer.createIssueType(knowledgeType);
+				PluginInitializer.addIssueTypeToScheme(knowledgeType, projectKey);
+			} else {
+				PluginInitializer.removeIssueTypeFromScheme(knowledgeType, projectKey);
 			}
-			return Response.ok(Status.ACCEPTED).build();
-		} catch (Exception e) {
-			LOGGER.error("Failed to enable the knowledge type: " + knowledgeType + " Message: " + e.getMessage());
-			return Response.status(Status.CONFLICT).build();
 		}
+		return Response.ok(Status.ACCEPTED).build();
 	}
 
 	@Override
@@ -337,14 +301,9 @@ public class ConfigRestImpl implements ConfigRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Webhook activation boolean = null")).build();
 		}
-		try {
-			boolean isActivated = Boolean.valueOf(isActivatedString);
-			ConfigPersistenceManager.setWebhookEnabled(projectKey, isActivated);
-			return Response.ok(Status.ACCEPTED).build();
-		} catch (Exception e) {
-			LOGGER.error("Failed to enable or disable the webhook. Message: " + e.getMessage());
-			return Response.status(Status.CONFLICT).build();
-		}
+		boolean isActivated = Boolean.valueOf(isActivatedString);
+		ConfigPersistenceManager.setWebhookEnabled(projectKey, isActivated);
+		return Response.ok(Status.ACCEPTED).build();
 	}
 
 	@Override
@@ -359,14 +318,9 @@ public class ConfigRestImpl implements ConfigRest {
 		if (webhookUrl == null || webhookSecret == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "webhook Data = null")).build();
 		}
-		try {
-			ConfigPersistenceManager.setWebhookUrl(projectKey, webhookUrl);
-			ConfigPersistenceManager.setWebhookSecret(projectKey, webhookSecret);
-			return Response.ok(Status.ACCEPTED).build();
-		} catch (Exception e) {
-			LOGGER.error("Failed to set the webhook data. Message: " + e.getMessage());
-			return Response.status(Status.CONFLICT).build();
-		}
+		ConfigPersistenceManager.setWebhookUrl(projectKey, webhookUrl);
+		ConfigPersistenceManager.setWebhookSecret(projectKey, webhookSecret);
+		return Response.ok(Status.ACCEPTED).build();
 	}
 
 	@Override
@@ -379,12 +333,8 @@ public class ConfigRestImpl implements ConfigRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		try {
-			ConfigPersistenceManager.setWebhookType(projectKey, webhookType, isWebhookTypeEnabled);
-			return Response.ok(Status.ACCEPTED).build();
-		} catch (Exception e) {
-			return Response.status(Status.CONFLICT).build();
-		}
+		ConfigPersistenceManager.setWebhookType(projectKey, webhookType, isWebhookTypeEnabled);
+		return Response.ok(Status.ACCEPTED).build();
 	}
 
 	@Override
@@ -397,12 +347,8 @@ public class ConfigRestImpl implements ConfigRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		try {
-			ConfigPersistenceManager.setReleaseNoteMapping(projectKey, category, selectedIssueNames);
-			return Response.ok(Status.ACCEPTED).build();
-		} catch (Exception e) {
-			return Response.status(Status.CONFLICT).build();
-		}
+		ConfigPersistenceManager.setReleaseNoteMapping(projectKey, category, selectedIssueNames);
+		return Response.ok(Status.ACCEPTED).build();
 	}
 
 	@Override
@@ -560,14 +506,9 @@ public class ConfigRestImpl implements ConfigRest {
 		if (isActivatedString == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
 		}
-		try {
-			boolean isActivated = Boolean.valueOf(isActivatedString);
-			ConfigPersistenceManager.setIconParsing(projectKey, isActivated);
-			return Response.ok(Status.ACCEPTED).build();
-		} catch (Exception e) {
-			LOGGER.error("Failed to enable or disable icon parsing. Message: " + e.getMessage());
-			return Response.status(Status.CONFLICT).build();
-		}
+		boolean isActivated = Boolean.valueOf(isActivatedString);
+		ConfigPersistenceManager.setIconParsing(projectKey, isActivated);
+		return Response.ok(Status.ACCEPTED).build();
 	}
 
 	@Override
@@ -584,14 +525,9 @@ public class ConfigRestImpl implements ConfigRest {
 		if (isActivatedString == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
 		}
-		try {
-			boolean isActivated = Boolean.valueOf(isActivatedString);
-			ConfigPersistenceManager.setUseClassifierForIssueComments(projectKey, isActivated);
-			return Response.ok(Status.ACCEPTED).build();
-		} catch (Exception e) {
-			LOGGER.error("Failed to enable or disable the classifier for JIRA issue text. Message: " + e.getMessage());
-			return Response.status(Status.CONFLICT).build();
-		}
+		boolean isActivated = Boolean.valueOf(isActivatedString);
+		ConfigPersistenceManager.setUseClassifierForIssueComments(projectKey, isActivated);
+		return Response.ok(Status.ACCEPTED).build();
 	}
 
 	private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {
