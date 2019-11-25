@@ -20,6 +20,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
+import de.uhd.ifi.se.decision.management.jira.rest.impl.KnowledgeRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestDeleteDecisionKnowledgeElement extends TestSetUp {
@@ -32,7 +33,7 @@ public class TestDeleteDecisionKnowledgeElement extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		knowledgeRest = new KnowledgeRest();
+		knowledgeRest = new KnowledgeRestImpl();
 		init();
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-3");

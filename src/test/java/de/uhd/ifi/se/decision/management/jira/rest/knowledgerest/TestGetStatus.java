@@ -9,6 +9,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
+import de.uhd.ifi.se.decision.management.jira.rest.impl.KnowledgeRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Before;
@@ -29,7 +30,7 @@ public class TestGetStatus extends TestSetUp {
 	@Before
 	public void setUp() {
 		super.init();
-		knowledgeRest = new KnowledgeRest();
+		knowledgeRest = new KnowledgeRestImpl();
 		request = new MockHttpServletRequest();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);

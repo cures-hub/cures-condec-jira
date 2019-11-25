@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
+import de.uhd.ifi.se.decision.management.jira.rest.impl.KnowledgeRestImpl;
 
 public class TestGetSummarizedCode extends TestSetUpGit {
 
@@ -16,7 +17,7 @@ public class TestGetSummarizedCode extends TestSetUpGit {
 
 	@Before
 	public void setUp() {
-		knowledgeRest = new KnowledgeRest();
+		knowledgeRest = new KnowledgeRestImpl();
 		super.setUp();
 	}
 
