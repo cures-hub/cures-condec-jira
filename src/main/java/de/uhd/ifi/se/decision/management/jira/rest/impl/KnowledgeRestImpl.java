@@ -290,7 +290,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 	@Path("/deleteLink")
 	@DELETE
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response deleteLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
+	public Response deleteLink(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			Link link) {
 		if (projectKey == null || request == null || link == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
@@ -311,8 +311,8 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 	@Path("/getElements")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getElements(@QueryParam("allTrees") boolean allTrees, @QueryParam("projectKey") String projectKey,
-			@QueryParam("query") String query, @Context HttpServletRequest request) {
+	public Response getElements(@Context HttpServletRequest request, @QueryParam("allTrees") boolean allTrees,
+			@QueryParam("projectKey") String projectKey, @QueryParam("query") String query) {
 		if (query == null || request == null || projectKey == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Getting elements failed due to a bad request.")).build();
@@ -387,8 +387,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(sentence, null);
 		if (isUpdated) {
 			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUETEXT);
-			persistenceManager.getJiraIssueTextManager()
-					.createLinksForNonLinkedElements(sentence.getJiraIssueId());
+			persistenceManager.getJiraIssueTextManager().createLinksForNonLinkedElements(sentence.getJiraIssueId());
 			return Response.status(Status.OK).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)

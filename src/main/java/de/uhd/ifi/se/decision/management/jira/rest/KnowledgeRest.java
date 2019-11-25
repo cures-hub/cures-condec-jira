@@ -33,9 +33,9 @@ public interface KnowledgeRest {
 			String documentationLocationOfParent, long idOfChild, String documentationLocationOfChild,
 			String linkTypeName);
 
-	Response deleteLink(String projectKey, HttpServletRequest request, Link link);
+	Response deleteLink(HttpServletRequest request, String projectKey, Link link);
 
-	Response getElements(boolean allTrees, String projectKey, String query, HttpServletRequest request);
+	Response getElements(HttpServletRequest request, boolean allTrees, String projectKey, String query);
 
 	Response createIssueFromSentence(HttpServletRequest request, DecisionKnowledgeElement decisionKnowledgeElement);
 
