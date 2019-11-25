@@ -112,24 +112,11 @@ public class ConfigRestImpl implements ConfigRest {
 		try {
 			boolean isIssueStrategy = Boolean.valueOf(isIssueStrategyString);
 			ConfigPersistenceManager.setIssueStrategy(projectKey, isIssueStrategy);
-			manageDefaultIssueTypes(projectKey, isIssueStrategy);
+			ConfigRest.manageDefaultIssueTypes(projectKey, isIssueStrategy);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error("Failed to enable or disable the JIRA issue persistence strategy. Message: " + e.getMessage());
 			return Response.status(Status.CONFLICT).build();
-		}
-	}
-
-	public static void manageDefaultIssueTypes(String projectKey, boolean isIssueStrategy) {
-		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaultTypes();
-		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
-			if (isIssueStrategy) {
-				ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), true);
-				PluginInitializer.createIssueType(knowledgeType.toString());
-				PluginInitializer.addIssueTypeToScheme(knowledgeType.toString(), projectKey);
-			} else {
-				PluginInitializer.removeIssueTypeFromScheme(knowledgeType.toString(), projectKey);
-			}
 		}
 	}
 
