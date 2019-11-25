@@ -3,50 +3,73 @@ package de.uhd.ifi.se.decision.management.jira.view.matrix;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.*;
 
 public class Matrix {
-    @XmlElement
-    private Map<Long, String> matrixHeaderRow;
+	@XmlElement
+	private List<DecisionKnowledgeElement> headerElements;
 
-    @XmlElement
-    private Map<Long, List<String>> matrixData;
+	@XmlElement
+	private List<String> headerSummaries;
 
-    public Matrix(String projectKey, List<DecisionKnowledgeElement> allDecisions) {
-        this.setMatrixHeaderRow(allDecisions);
-        this.setMatrixData(projectKey, allDecisions);
-    }
+	@XmlElement
+	private List<List<String>> coloredRows;
 
-    public Map<Long, String> getMatrixHeaderRow() {
-        return matrixHeaderRow;
-    }
+	public Matrix(String projectKey, List<DecisionKnowledgeElement> decisions) {
+		this.headerElements = decisions;
+		this.coloredRows = this.getColoredRows(projectKey);
 
-    public void setMatrixHeaderRow(List<DecisionKnowledgeElement> allDecisions) {
-        this.matrixHeaderRow = new TreeMap<>();
-        this.matrixHeaderRow.putAll(new MatrixRow(allDecisions).getHeaderRow());
-    }
+		this.headerSummaries = new ArrayList<>();
+		for (DecisionKnowledgeElement decision : this.headerElements) {
+			this.headerSummaries.add(decision.getSummary());
+		}
+	}
 
-    public Map<Long, List<String>> getMatrixData() {
-        return matrixData;
-    }
+	public List<DecisionKnowledgeElement> getHeaderElements() {
+		return headerElements;
+	}
 
-    public void setMatrixData(String projectKey, List<DecisionKnowledgeElement> allDecisions) {
-        this.matrixData = new TreeMap<>();
-        for (DecisionKnowledgeElement decision : allDecisions) {
-            List<String> row = new MatrixRow(this.getMatrixEntries(projectKey), this.getMatrixHeaderRow(), decision).getRow();
-            this.matrixData.put(decision.getId(), row);
-        }
-    }
+	public List<List<String>> getColoredRows() {
+		return this.coloredRows;
+	}
 
-    private HashSet<MatrixEntry> getMatrixEntries(String projectKey) {
-        KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
-        Set<Link> links = graph.edgeSet();
-        HashSet<MatrixEntry> entries = new HashSet<>();
-        for (Link link : links) {
-            entries.add(new MatrixEntry(link.getSource().getId(), link.getTarget().getId(), link.getType()));
-        }
-        return entries;
-    }
+	public List<String> getHeaderSummaries() {
+		return this.headerSummaries;
+	}
+
+	public List<List<String>> getColoredRows(String projectKey) {
+		List<List<String>> coloredRows = new ArrayList<>();
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
+		Set<Link> links = graph.edgeSet();
+
+		for (DecisionKnowledgeElement sourceDecision : this.headerElements) {
+			List<String> row = new ArrayList<>();
+			Map<Long, String> linksOfRow = this.getLinksForRow(links, sourceDecision);
+
+			for (DecisionKnowledgeElement targetDecision : this.headerElements) {
+				if (targetDecision.getId() == sourceDecision.getId()) {
+					row.add("LightGray");
+				} else if (linksOfRow.get(targetDecision.getId()) != null) {
+					row.add(linksOfRow.get(targetDecision.getId()));
+				} else {
+					row.add("White");
+				}
+			}
+			coloredRows.add(row);
+		}
+		return coloredRows;
+	}
+
+	private Map<Long, String> getLinksForRow(Set<Link> allEntries, DecisionKnowledgeElement decision) {
+		Map<Long, String> linksForRow = new TreeMap<>();
+		for (Link link : allEntries) {
+			if (link.getSource().getId() == decision.getId()) {
+				linksForRow.put(link.getTarget().getId(), LinkType.getLinkTypeColor(link.getType()));
+			}
+		}
+		return linksForRow;
+	}
 }

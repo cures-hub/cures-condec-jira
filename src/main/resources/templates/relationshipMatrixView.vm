@@ -1,12 +1,12 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
-<form class="aui">
-    <table class="aui" id="matrix" border="1"/>
-    </table>
-</form>
+<div class="container">
+    <table class="aui" id="matrix" border="1"></table>
+</div>
 
 <br>
 <br>
+
 
 <div class='my-legend'>
     <div class='legend-title'>Relationships</div>
@@ -15,6 +15,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
         </ul>
     </div>
 </div>
+
 <script>
     $(document).ready(function() {
         conDecAPI.checkIfProjectKeyIsValid();

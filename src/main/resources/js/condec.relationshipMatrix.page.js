@@ -21,19 +21,22 @@
 
     ConDecRelationshipMatrixPage.prototype.buildMatrix = function() {
         conDecAPI.getDecisionMatrix(function (data) {
-            console.log(data);
             const matrix = document.getElementById("matrix");
+            const thead = document.createElement("thead");
             const firstRowHeaderElement = document.createElement("th");
             firstRowHeaderElement.innerText = "";
-            matrix.appendChild(firstRowHeaderElement);
+			firstRowHeaderElement.classList.add("columnHeader");
+            thead.appendChild(firstRowHeaderElement);
 
-            for (let d in data.matrixHeaderRow) {
-                newTableHeaderElement(matrix, data.matrixHeaderRow[d], "columnHeader");
+            for (let d in data.headerSummaries) {
+                newTableHeaderElement(thead, data.headerSummaries[d], data.headerElements[d], "columnHeader");
             }
 
-            for (let d in data.matrixData){
-                const row = data.matrixData[d];
-                newTableRow(matrix, row);
+			matrix.appendChild(thead);
+
+            for (let d in data.coloredRows){
+            	const row = data.coloredRows[d];
+                newTableRow(matrix, row, data.headerElements[d]);
             }
         });
     };
@@ -44,8 +47,12 @@
         conDecRelationshipMatrixPage.buildMatrix();
     };
 
-    function newTableHeaderElement(matrix, text, styleClass) {
+    function newTableHeaderElement(matrix, text, headerData, styleClass) {
         const element = document.createElement("th");
+		element.addEventListener("contextmenu", function(e) {
+			e.preventDefault();
+			conDecContextMenu.createContextMenu(headerData.id, headerData.documentationLocation, e, null);
+		}, false);
         element.classList.add(styleClass);
         const div = document.createElement("div");
         div.innerText = text;
@@ -53,14 +60,11 @@
         matrix.appendChild(element);
     };
 
-    function newTableRow(matrix, row) {
+    function newTableRow(matrix, row, header) {
         matrix.appendChild(document.createElement("tr"));
+		newTableHeaderElement(matrix, header.summary, header, "rowHeader");
         for (let d in row) {
-            if (d == 0) {
-                newTableHeaderElement(matrix, row[d], "rowHeader");
-            } else {
-                new newTableElement(matrix, row[d]);
-            }
+        	new newTableElement(matrix, row[d]);
         }
     };
 
@@ -84,7 +88,6 @@
                 }
             }
         });
-
     };
 
     /*
