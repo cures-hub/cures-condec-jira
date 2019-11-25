@@ -6,6 +6,10 @@ import javax.ws.rs.core.Response;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
+/**
+ * REST resource: Enables creation, editing, and deletion of decision knowledge
+ * elements and their links
+ */
 public interface KnowledgeRest {
 
 	Response getDecisionKnowledgeElement(long id, String projectKey, String documentationLocation);

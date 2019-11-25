@@ -7,6 +7,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
+import de.uhd.ifi.se.decision.management.jira.rest.impl.ViewRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Before;
@@ -25,7 +26,7 @@ public class TestGetDecisionGraphAndMatrix extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		viewRest = new ViewRest();
+		viewRest = new ViewRestImpl();
 		init();
 		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
 		request = new MockHttpServletRequest();

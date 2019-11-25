@@ -6,6 +6,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
+import de.uhd.ifi.se.decision.management.jira.rest.impl.ViewRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +24,7 @@ public class TestGetCompareVis extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		viewRest = new ViewRest();
+		viewRest = new ViewRestImpl();
 		init();
 		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
 		request = new MockHttpServletRequest();
