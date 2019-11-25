@@ -18,6 +18,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
+import de.uhd.ifi.se.decision.management.jira.rest.impl.ViewRestImpl;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGetTreeViewer extends TestSetUp {
@@ -26,7 +27,7 @@ public class TestGetTreeViewer extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		viewRest = new ViewRest();
+		viewRest = new ViewRestImpl();
 		init();
 	}
 

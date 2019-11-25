@@ -17,6 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
+import de.uhd.ifi.se.decision.management.jira.rest.impl.ViewRestImpl;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -32,7 +33,7 @@ public class TestGetTreant extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		viewRest = new ViewRest();
+		viewRest = new ViewRestImpl();
 		init();
 		request = new MockHttpServletRequest();
 	}

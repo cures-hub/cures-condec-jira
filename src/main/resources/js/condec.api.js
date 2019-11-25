@@ -228,6 +228,7 @@
 			})
 		})
 	};
+	
 	ConDecAPI.prototype.getProjectWideSelectedIssueTypes = function getProjectWideSelectedIssueTypes() {
 		return new Promise(function (resolve, reject) {
 			var preSelectedIssueUrl = "/rest/decisions/latest/config/getReleaseNoteMapping.json?projectKey=" + projectKey;
@@ -243,7 +244,6 @@
 			})
 		})
 	};
-
 
 	/*
 	 * external references: condec.context.menu, condec.dialog

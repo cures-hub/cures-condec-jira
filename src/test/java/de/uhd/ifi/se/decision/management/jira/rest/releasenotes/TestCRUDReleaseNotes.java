@@ -16,12 +16,13 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteImpl;
-import de.uhd.ifi.se.decision.management.jira.rest.ReleaseNoteRest;
+import de.uhd.ifi.se.decision.management.jira.rest.ReleaseNotesRest;
+import de.uhd.ifi.se.decision.management.jira.rest.impl.ReleaseNotesRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestCRUDReleaseNotes extends TestSetUp {
 	protected HttpServletRequest request;
-	private ReleaseNoteRest releaseNoteRest;
+	private ReleaseNotesRest releaseNoteRest;
 	private String projectKey;
 	private String releaseNoteContent;
 	private ReleaseNote releaseNote;
@@ -29,7 +30,7 @@ public class TestCRUDReleaseNotes extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		releaseNoteRest = new ReleaseNoteRest();
+		releaseNoteRest = new ReleaseNotesRestImpl();
 		init();
 		request = new MockHttpServletRequest();
 		projectKey = "TEST";

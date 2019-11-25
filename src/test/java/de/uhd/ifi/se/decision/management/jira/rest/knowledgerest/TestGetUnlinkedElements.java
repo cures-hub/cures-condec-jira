@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
+import de.uhd.ifi.se.decision.management.jira.rest.impl.KnowledgeRestImpl;
 
 public class TestGetUnlinkedElements extends TestSetUp {
 	private KnowledgeRest knowledgeRest;
@@ -19,7 +20,7 @@ public class TestGetUnlinkedElements extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		knowledgeRest = new KnowledgeRest();
+		knowledgeRest = new KnowledgeRestImpl();
 		init();
 	}
 

@@ -6,6 +6,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
+import de.uhd.ifi.se.decision.management.jira.rest.impl.ViewRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import org.junit.Before;
@@ -27,7 +28,7 @@ public class TestElementsFromBranchesOfJiraProject extends TestSetUpGit {
 
 	@Before
 	public void setUp() {
-		viewRest = new ViewRest();
+		viewRest = new ViewRestImpl();
 		init();
 		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
 		request = new MockHttpServletRequest();

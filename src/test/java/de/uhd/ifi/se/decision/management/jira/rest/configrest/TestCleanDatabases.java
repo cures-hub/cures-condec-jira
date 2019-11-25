@@ -12,6 +12,7 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.rest.impl.ConfigRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestCleanDatabases extends TestSetUp {
@@ -22,7 +23,7 @@ public class TestCleanDatabases extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		configRest = new ConfigRest();
+		configRest = new ConfigRestImpl();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
@@ -46,15 +47,13 @@ public class TestCleanDatabases extends TestSetUp {
 	public void testUserUnauthorized() {
 		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.BLACK_HEAD.getApplicationUser());
-		assertEquals(Status.UNAUTHORIZED.getStatusCode(),
-				configRest.cleanDatabases(request, "TEST").getStatus());
+		assertEquals(Status.UNAUTHORIZED.getStatusCode(), configRest.cleanDatabases(request, "TEST").getStatus());
 	}
 
 	@Test
 	public void testUserNull() {
 		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("user", null);
-		assertEquals(Status.UNAUTHORIZED.getStatusCode(),
-				configRest.cleanDatabases(request, "TEST").getStatus());
+		assertEquals(Status.UNAUTHORIZED.getStatusCode(), configRest.cleanDatabases(request, "TEST").getStatus());
 	}
 }

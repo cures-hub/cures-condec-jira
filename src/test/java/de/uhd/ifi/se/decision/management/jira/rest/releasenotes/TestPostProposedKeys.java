@@ -18,19 +18,20 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.AdditionalConfigurationOptions;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
-import de.uhd.ifi.se.decision.management.jira.rest.ReleaseNoteRest;
+import de.uhd.ifi.se.decision.management.jira.rest.ReleaseNotesRest;
+import de.uhd.ifi.se.decision.management.jira.rest.impl.ReleaseNotesRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestPostProposedKeys extends TestSetUp {
 	protected HttpServletRequest request;
-	private ReleaseNoteRest releaseNoteRest;
+	private ReleaseNotesRest releaseNoteRest;
 	private String projectKey;
 	private HashMap<String, List<String>> keysForContent;
 	private HashMap<String, HashMap<String, List<String>>> postObject;
 
 	@Before
 	public void setUp() {
-		releaseNoteRest = new ReleaseNoteRest();
+		releaseNoteRest = new ReleaseNotesRestImpl();
 		init();
 		request = new MockHttpServletRequest();
 		projectKey = "TEST";

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest;
+package de.uhd.ifi.se.decision.management.jira.rest.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,13 +29,15 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteConfigurat
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteIssueProposal;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCreator;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteImpl;
+import de.uhd.ifi.se.decision.management.jira.rest.ReleaseNotesRest;
 
 /**
  * REST resource for release notes
  */
 @Path("/release-note")
-public class ReleaseNoteRest {
+public class ReleaseNotesRestImpl implements ReleaseNotesRest {
 
+	@Override
 	@Path("/getProposedIssues")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -70,6 +72,7 @@ public class ReleaseNoteRest {
 		return Response.ok(result).build();
 	}
 
+	@Override
 	@Path("/postProposedKeys")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -90,6 +93,7 @@ public class ReleaseNoteRest {
 		return Response.ok(result).build();
 	}
 
+	@Override
 	@Path("/createReleaseNote")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -107,6 +111,7 @@ public class ReleaseNoteRest {
 		return Response.ok(id).build();
 	}
 
+	@Override
 	@Path("/updateReleaseNote")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -119,6 +124,7 @@ public class ReleaseNoteRest {
 		return Response.ok(updated).build();
 	}
 
+	@Override
 	@Path("/getReleaseNote")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -128,6 +134,7 @@ public class ReleaseNoteRest {
 		return Response.ok(releaseNote).build();
 	}
 
+	@Override
 	@Path("/getAllReleaseNotes")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -137,6 +144,7 @@ public class ReleaseNoteRest {
 		return Response.ok(releaseNotes).build();
 	}
 
+	@Override
 	@Path("/deleteReleaseNote")
 	@DELETE
 	@Produces({ MediaType.APPLICATION_JSON })

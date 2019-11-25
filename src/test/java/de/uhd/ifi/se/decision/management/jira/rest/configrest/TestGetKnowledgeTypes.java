@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.rest.impl.ConfigRestImpl;
 
 public class TestGetKnowledgeTypes extends TestSetUp {
 
@@ -18,7 +19,7 @@ public class TestGetKnowledgeTypes extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		configRest = new ConfigRest();
+		configRest = new ConfigRestImpl();
 	}
 
 	@Test

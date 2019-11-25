@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.mocks;
 import java.util.Collection;
 import java.util.List;
 
-import com.atlassian.jira.issue.fields.config.MockFieldConfigScheme;
 import org.ofbiz.core.entity.GenericValue;
 
 import com.atlassian.jira.issue.Issue;
@@ -20,7 +19,7 @@ public class MockIssueTypeSchemeManager implements IssueTypeSchemeManager {
 	@Override
 	public void addOptionToDefault(String arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -32,7 +31,7 @@ public class MockIssueTypeSchemeManager implements IssueTypeSchemeManager {
 	@Override
 	public void deleteScheme(FieldConfigScheme arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -56,7 +55,7 @@ public class MockIssueTypeSchemeManager implements IssueTypeSchemeManager {
 	@Override
 	public FieldConfigScheme getConfigScheme(Project arg0) {
 		FieldConfigScheme configScheme = new MockFieldConfigScheme();
-		((MockFieldConfigScheme) configScheme).setId((long)1);
+		((MockFieldConfigScheme) configScheme).setId((long) 1);
 		((MockFieldConfigScheme) configScheme).setName("TestScheme");
 		return configScheme;
 	}
@@ -141,13 +140,13 @@ public class MockIssueTypeSchemeManager implements IssueTypeSchemeManager {
 	@Override
 	public void removeOptionFromAllSchemes(String arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setDefaultValue(FieldConfig arg0, String arg1) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
