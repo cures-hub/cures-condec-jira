@@ -42,6 +42,9 @@ public class TestGetElementsInJiraIssue extends TestSetUp {
 
 		List<DecisionKnowledgeElement> listWithObjects = manager
 				.getElementsInJiraIssue(comment.get(0).getJiraIssueId());
-		assertEquals(3, listWithObjects.size());
+
+		// This method does only return relevant decision knowledge elements, no
+		// irrelevant parts of text. Thus, one element is returned, not three.
+		assertEquals(1, listWithObjects.size());
 	}
 }

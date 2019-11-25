@@ -313,7 +313,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getElements(@Context HttpServletRequest request, @QueryParam("allTrees") boolean allTrees,
 			@QueryParam("projectKey") String projectKey, @QueryParam("query") String query) {
-		if (query == null || request == null || projectKey == null) {
+		if (request == null || projectKey == null || query == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Getting elements failed due to a bad request.")).build();
 		}

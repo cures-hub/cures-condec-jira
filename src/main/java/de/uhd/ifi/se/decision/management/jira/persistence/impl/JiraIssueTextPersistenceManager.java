@@ -154,12 +154,14 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 *            id of the Jira issue that the decision knowledge elements are
 	 *            documented in.
 	 * @return list of all decision knowledge elements documented in the description
-	 *         or comments of a Jira issue.
+	 *         or comments of a Jira issue. Does not return irrelevant parts of
+	 *         text.
 	 */
 	public List<DecisionKnowledgeElement> getElementsInJiraIssue(long jiraIssueId) {
 		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ?", projectKey, jiraIssueId))) {
+				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ? AND RELEVANT = TRUE", projectKey,
+						jiraIssueId))) {
 			elements.add(new PartOfJiraIssueTextImpl(databaseEntry));
 		}
 		return elements;
@@ -173,7 +175,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 *            id of the comment that the decision knowledge element(s) is/are
 	 *            documented in.
 	 * @return list of all decision knowledge elements documented in the a certain
-	 *         comment of a Jira issue.
+	 *         comment of a Jira issue. Does also return irrelevant parts of text.
 	 */
 	public List<DecisionKnowledgeElement> getElementsInComment(long commentId) {
 		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();

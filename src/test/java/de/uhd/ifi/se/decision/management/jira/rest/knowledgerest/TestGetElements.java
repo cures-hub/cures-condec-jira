@@ -4,13 +4,12 @@ import static org.junit.Assert.assertEquals;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
-import com.atlassian.jira.user.ApplicationUser;
-import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
@@ -22,22 +21,19 @@ public class TestGetElements extends TestSetUp {
 	private KnowledgeRest knowledgeRest;
 	private HttpServletRequest request;
 
-	private final static String BAD_REQUEST_ERROR = "Getting elements failed due to a bad request.";
-
 	@Before
 	public void setUp() {
 		super.init();
 		knowledgeRest = new KnowledgeRestImpl();
 		request = new MockHttpServletRequest();
-		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		request.setAttribute("user", user);
+		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
 
 	@Test
 	@NonTransactional
 	public void testNull() {
-		assertEquals(Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERROR))
-				.build().getEntity(), knowledgeRest.getElements(null, false, null, null).getEntity());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				knowledgeRest.getElements(null, false, null, null).getStatus());
 	}
 
 	@Test
@@ -54,7 +50,7 @@ public class TestGetElements extends TestSetUp {
 		// WI: Yet another work item, WI: Do an interesting task, This is a great
 		// solution.], [How can we implement the new get function?]]",
 		// response.getEntity().toString());
-		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+		assertEquals(Status.OK.getStatusCode(), response.getStatus());
 	}
 
 	@Test
@@ -68,6 +64,6 @@ public class TestGetElements extends TestSetUp {
 		// function?, We could do it like this!, We will do it like this!, This is a
 		// great solution.]",
 		// response.getEntity().toString());
-		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+		assertEquals(Status.OK.getStatusCode(), response.getStatus());
 	}
 }
