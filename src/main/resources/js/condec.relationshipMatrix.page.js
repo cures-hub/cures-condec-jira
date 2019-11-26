@@ -28,8 +28,8 @@
 			firstRowHeaderElement.classList.add("columnHeader");
             thead.appendChild(firstRowHeaderElement);
 
-            for (let d in data.headerSummaries) {
-                newTableHeaderElement(thead, data.headerSummaries[d], data.headerElements[d], "columnHeader");
+            for (let d in data.headerElements) {
+                newTableHeaderElement(thead, data.headerElements[d], "columnHeader");
             }
 
 			matrix.appendChild(thead);
@@ -47,7 +47,7 @@
         conDecRelationshipMatrixPage.buildMatrix();
     };
 
-    function newTableHeaderElement(matrix, text, headerData, styleClass) {
+    function newTableHeaderElement(matrix, headerData, styleClass) {
         const element = document.createElement("th");
 		element.addEventListener("contextmenu", function(e) {
 			e.preventDefault();
@@ -55,14 +55,14 @@
 		}, false);
         element.classList.add(styleClass);
         const div = document.createElement("div");
-        div.innerText = text;
+        div.innerText = headerData.summary;
         element.appendChild(div);
         matrix.appendChild(element);
     };
 
     function newTableRow(matrix, row, header) {
         matrix.appendChild(document.createElement("tr"));
-		newTableHeaderElement(matrix, header.summary, header, "rowHeader");
+		newTableHeaderElement(matrix, header, "rowHeader");
         for (let d in row) {
         	new newTableElement(matrix, row[d]);
         }

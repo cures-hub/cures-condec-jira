@@ -13,19 +13,11 @@ public class Matrix {
 	private List<DecisionKnowledgeElement> headerElements;
 
 	@XmlElement
-	private List<String> headerSummaries;
-
-	@XmlElement
 	private List<List<String>> coloredRows;
 
 	public Matrix(String projectKey, List<DecisionKnowledgeElement> decisions) {
 		this.headerElements = decisions;
 		this.coloredRows = this.getColoredRows(projectKey);
-
-		this.headerSummaries = new ArrayList<>();
-		for (DecisionKnowledgeElement decision : this.headerElements) {
-			this.headerSummaries.add(decision.getSummary());
-		}
 	}
 
 	public List<DecisionKnowledgeElement> getHeaderElements() {
@@ -34,10 +26,6 @@ public class Matrix {
 
 	public List<List<String>> getColoredRows() {
 		return this.coloredRows;
-	}
-
-	public List<String> getHeaderSummaries() {
-		return this.headerSummaries;
 	}
 
 	public List<List<String>> getColoredRows(String projectKey) {

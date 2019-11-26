@@ -36,11 +36,6 @@ public class TestMatrix extends TestSetUp {
 	}
 
 	@Test
-	public void testGetHeaderSummaries() {
-		assertTrue(this.matrix.getHeaderSummaries().contains("TESTfwf"));
-	}
-
-	@Test
 	public void testGetColoredRows() {
 		assertTrue(this.matrix.getColoredRows("Test").get(1).contains("LightGray"));
 		assertTrue(this.matrix.getColoredRows("Test").get(1).contains("White"));
