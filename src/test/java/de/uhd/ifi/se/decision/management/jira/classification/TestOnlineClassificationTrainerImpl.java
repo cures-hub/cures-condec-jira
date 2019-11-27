@@ -138,6 +138,8 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
         assertTrue(executionSuccessful);
     }
 
+    // TODO: evaluate without existing dec. know.
+
 
     @Test
     @NonTransactional
@@ -152,6 +154,8 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
 
         assertTrue(trainer.update(sentence));
     }
+
+    //TODO: tests with unvalidated data element
 
     @Test
     @NonTransactional
