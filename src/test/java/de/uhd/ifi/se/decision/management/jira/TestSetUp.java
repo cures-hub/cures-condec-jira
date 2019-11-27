@@ -10,7 +10,7 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 
-import de.uhd.ifi.se.decision.management.jira.classification.ClassificationTrainerARFF;
+import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainerARFF;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
@@ -84,7 +84,7 @@ public abstract class TestSetUp {
 	 */
 	public static void initClassifierPaths() {
 		PreprocessorImpl.DEFAULT_DIR = "src/main/resources/classifier/";
-		ClassificationTrainerARFF.DEFAULT_TRAINING_DATA = new File(
+		OnlineTrainerARFF.DEFAULT_TRAINING_DATA = new File(
 				"src/main/resources/classifier/defaultTrainingData.arff");
 	}
 }

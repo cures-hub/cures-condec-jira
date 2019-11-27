@@ -16,8 +16,8 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.classification.ClassificationTrainer;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
@@ -62,11 +62,11 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 
 		// TODO -- Start
 		// TODO: check if directory exists (last folder) and create it if not!
-		ClassificationTrainer.copyDefaultTrainingDataToFile();
+		OnlineTrainer.copyDefaultTrainingDataToFile();
 		Preprocessor.copyDefaultPreprocessingDataToFile();
 		// TODO -- End
 
-		ClassificationTrainer trainer = new OnlineClassificationTrainerImpl(projectKey);
+		OnlineTrainer trainer = new OnlineFileTrainerImpl(projectKey);
 
 		velocityParameters.put("request", request);
 		velocityParameters.put("projectKey", projectKey);

@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 /**
  * TODO: TESTS WITH useOnlyValidatedData FLAG
  */
-public class TestClassificationTrainer extends TestSetUp {
+public class TestOnlineTrainer extends TestSetUp {
 
 
     @Before
@@ -66,7 +66,7 @@ public class TestClassificationTrainer extends TestSetUp {
     @NonTransactional
     public void testClassificationTrainerSetTrainingData() {
         List<DecisionKnowledgeElement> trainingElements = getTrainingData();
-        ClassificationTrainer trainer = new OnlineClassificationTrainerImpl("TEST");
+        OnlineTrainer trainer = new OnlineFileTrainerImpl("TEST");
         trainer.setTrainingData(trainingElements);
         //assertNotNull(trainer.getInstances());
         assertTrue(trainer.train());
@@ -76,11 +76,11 @@ public class TestClassificationTrainer extends TestSetUp {
     @NonTransactional
     public void testClassificationTrainerFromArffFile() {
         List<DecisionKnowledgeElement> trainingElements = getTrainingData();
-        ClassificationTrainerARFF trainer = new OnlineClassificationTrainerImpl("TEST", trainingElements);
+        OnlineTrainerARFF trainer = new OnlineFileTrainerImpl("TEST", trainingElements);
         File file = trainer.saveTrainingFile(true);
         trainer.setTrainingFile(file);
         assertNotNull(trainer.getInstances());
-        trainer = new OnlineClassificationTrainerImpl("TEST", file.getName());
+        trainer = new OnlineFileTrainerImpl("TEST", file.getName());
         assertNotNull(trainer.getInstances());
         assertTrue(trainer.train());
         file.delete();
@@ -89,7 +89,7 @@ public class TestClassificationTrainer extends TestSetUp {
     @Test
     @NonTransactional
     public void testSaveArffFile() {
-        ClassificationTrainer trainer = new OnlineClassificationTrainerImpl("TEST");
+        OnlineTrainer trainer = new OnlineFileTrainerImpl("TEST");
         File file = trainer.saveTrainingFile(false);
         assertTrue(file.exists());
         file.delete();
@@ -105,7 +105,7 @@ public class TestClassificationTrainer extends TestSetUp {
     @Test
     @NonTransactional
     public void testDefaultArffFile() {
-        ClassificationTrainer trainer = new OnlineClassificationTrainerImpl();
+        OnlineTrainer trainer = new OnlineFileTrainerImpl();
         File luceneArffFile = getTrimmedDefaultArffFile();
         assertTrue(luceneArffFile.exists());
         trainer.setTrainingFile(luceneArffFile);
@@ -130,14 +130,14 @@ public class TestClassificationTrainer extends TestSetUp {
     @Test
     @NonTransactional
     public void testCopyDefaultTrainingDataToFile() {
-        assertTrue(ClassificationTrainer.copyDefaultTrainingDataToFile().exists());
+        assertTrue(OnlineTrainer.copyDefaultTrainingDataToFile().exists());
     }
 
     @Test
     @NonTransactional
     public void testTrainDefaultClassifier() {
         File trainingFile = getTrimmedDefaultArffFile();
-        assertTrue(ClassificationTrainer.trainClassifier(trainingFile));
+        assertTrue(OnlineTrainer.trainClassifier(trainingFile));
     }
 
     private File getTrimmedDefaultArffFile() {
@@ -183,7 +183,7 @@ public class TestClassificationTrainer extends TestSetUp {
     @Test
     @NonTransactional
     public void testGetArffFiles() {
-        ClassificationTrainerARFF trainer = new OnlineClassificationTrainerImpl();
+        OnlineTrainerARFF trainer = new OnlineFileTrainerImpl();
         assertEquals(ArrayList.class, trainer.getTrainingFileNames().getClass());
     }
 
