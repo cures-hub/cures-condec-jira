@@ -30,9 +30,9 @@ import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.classification.ClassificationTrainer;
+import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
@@ -433,7 +433,7 @@ public class ConfigRestImpl implements ConfigRest {
 					"The classifier could not be trained since the ARFF file name is invalid.")).build();
 		}
 		ConfigPersistenceManager.setArffFileForClassifier(projectKey, arffFileName);
-		ClassificationTrainer trainer = new OnlineClassificationTrainerImpl(projectKey, arffFileName);
+		OnlineTrainer trainer = new OnlineFileTrainerImpl(projectKey, arffFileName);
 		boolean isTrained = trainer.train();
 		if (isTrained) {
 			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
@@ -452,7 +452,7 @@ public class ConfigRestImpl implements ConfigRest {
 			return isValidDataResponse;
 		}
 
-		OnlineClassificationTrainerImpl trainer = new OnlineClassificationTrainerImpl(projectKey);
+		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl(projectKey);
 
 		try {
 			Map<String, Double> evaluationResults = trainer.evaluateClassifier();
@@ -481,7 +481,7 @@ public class ConfigRestImpl implements ConfigRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		OnlineClassificationTrainerImpl trainer = new OnlineClassificationTrainerImpl(projectKey);
+		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl(projectKey);
 		File arffFile = trainer.saveTrainingFile(useOnlyValidatedData);
 
 		if (arffFile != null) {

@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -21,15 +21,15 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-public class TestOnlineClassificationTrainerImpl extends TestSetUp {
+public class TestOnlineFileTrainerImpl extends TestSetUp {
 
-    private OnlineClassificationTrainerImpl trainer;
+    private OnlineFileTrainerImpl trainer;
     private static final List<String> TEST_SENTENCES = Arrays.asList("Pizza is preferred", "I have an issue");
 
     @Before
     public void setUp() {
         init();
-        trainer = new OnlineClassificationTrainerImpl("TEST");
+        trainer = new OnlineFileTrainerImpl("TEST");
         trainer.setTrainingData(getTrainingData());
     }
 
@@ -84,7 +84,7 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
         File file = trainer.saveTrainingFile(true);
         trainer.setTrainingFile(file);
         assertNotNull(trainer.getInstances());
-        trainer = new OnlineClassificationTrainerImpl("TEST", file.getName());
+        trainer = new OnlineFileTrainerImpl("TEST", file.getName());
         //assertNotNull(trainer.getInstances());
         assertTrue(trainer.train());
         file.delete();
@@ -116,7 +116,7 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
     @Test
     @NonTransactional
     public void testCopyDefaultTrainingDataToFile() {
-        assertTrue(ClassificationTrainer.copyDefaultTrainingDataToFile().exists());
+        assertTrue(FileTrainer.copyDefaultTrainingDataToFile().exists());
     }
 
     @Test

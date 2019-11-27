@@ -16,7 +16,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public abstract class ClassificationTrainerARFF implements ClassificationTrainer {
+@Deprecated
+public abstract class OnlineTrainerARFF implements OnlineTrainer {
     protected File directory;
     protected Instances instances;
     protected String projectKey;
@@ -24,7 +25,6 @@ public abstract class ClassificationTrainerARFF implements ClassificationTrainer
     public static File DEFAULT_TRAINING_DATA = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff");
 
 
-    @Override
     public List<File> getTrainingFiles() {
         List<File> arffFilesOnServer = new ArrayList<File>();
         for (File file : directory.listFiles()) {
@@ -35,7 +35,6 @@ public abstract class ClassificationTrainerARFF implements ClassificationTrainer
         return arffFilesOnServer;
     }
 
-    @Override
     public List<String> getTrainingFileNames() {
         List<File> arffFilesOnServer = getTrainingFiles();
         List<String> arffFileNames = new ArrayList<String>();
@@ -90,7 +89,6 @@ public abstract class ClassificationTrainerARFF implements ClassificationTrainer
     }
 
 
-    @Override
     public void setTrainingFile(File file) {
         this.instances = getInstancesFromArffFile(file);
     }
@@ -115,7 +113,6 @@ public abstract class ClassificationTrainerARFF implements ClassificationTrainer
         return instances;
     }
 
-    @Override
     public File saveTrainingFile(boolean useOnlyValidatedData) {
         File arffFile = null;
         try {
