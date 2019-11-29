@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.view;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.Project;
+import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.plugin.PluginParseException;
 import com.atlassian.plugin.web.ContextProvider;
 import com.google.common.collect.Maps;
@@ -23,7 +24,8 @@ public class RequirementsDashboardItem  implements ContextProvider {
 
     @Override
     public Map<String, Object> getContextMap(final Map<String, Object> context) {
-        final Map<String, Object> newContext = Maps.newHashMap(context);
+        
+    	final Map<String, Object> newContext = Maps.newHashMap(context);
 
         Map<String, Object> projectContext = attachProjectsMaps();
         newContext.putAll(projectContext);
@@ -48,5 +50,5 @@ public class RequirementsDashboardItem  implements ContextProvider {
         newContext.put("projectNamesMap", projectNameMap);
         return newContext;
     }
-}
 
+}
