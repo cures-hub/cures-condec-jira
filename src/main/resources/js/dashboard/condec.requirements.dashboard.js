@@ -1,5 +1,5 @@
 /*
- This module fills the box plots and pie charts used in the report page.
+ This module fills the box plots and pie charts used in the requirements dashboard page.
 
  Requires
  * echart
@@ -9,7 +9,7 @@
  * featureBranchesDashboardItem.vm
  */
 (function(global) {
-
+	
 	var detailsOverlayClickHandlersSet = false;
 
 	var baseUrl = "";

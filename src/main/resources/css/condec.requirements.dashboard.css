@@ -1,0 +1,50 @@
+/* TODO: move to css file(s) when code gets mature */
+/* helper style to mark chart div elements not initialized with data */
+.notsetyet {
+	border:2px solid red;
+}
+#decKnowElementsOverlay {
+	position:fixed;
+	z-index:1;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	background: #00000033;
+
+	cursor:pointer;
+}
+#decKnowElementsOverlay .box {
+	position:fixed;
+	width:800px;
+	height:320px;
+	top:calc(50% - 160px);
+	left:calc(50% - 400px);
+
+	background: white;
+	border-radius: 1rem;
+	border: 0.5rem solid #2f4554;
+	padding:1rem;
+
+	cursor:initial;
+}
+#extractedDecKnowElements {
+	margin: 1rem 0.5rem;
+	font-size: 1.0rem;
+}
+#extractedDecKnowElements p:hover {
+	color: blue;
+	border-color:blue;
+}
+#extractedDecKnowElements p{
+	margin: 0.1rem 0.4rem;
+	cursor:pointer;
+	display: inline-block;
+	border: 1px solid #2f4554;
+}
+.condec-dashboard-contents {
+    border: 1px solid grey;
+    border-radius:1em;
+    margin:1em;
+    padding:1em;
+}

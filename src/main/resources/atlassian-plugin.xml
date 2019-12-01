@@ -516,6 +516,17 @@
 	</dashboard-item>
 	
 	<!-- ConDec Requirements dashboard item -->
+	<web-resource key="requirements-dashboard-resources" name="Resources for Decision Knowledge Report">
+		<description>
+			Provides the resources needed for creating the requirements dashboard
+		</description>
+		<context>jira-requirements-dashboard-plugin</context>
+		<resource type="download" name="echarts.js" location="/js/lib/echart/echarts.js" />
+		<resource type="download" name="dataTool.js" location="/js/lib/echart/dataTool.js" />
+		<resource type="download" name="condec.requirements.dashboard.js"
+			location="/js/dashboard/condec.requirements.dashboard.js" />
+		<resource type="download" name="condec.requirements.dashboard.css" location="/css/condec.requirements.dashboard.css" />
+	</web-resource>
 	<dashboard-item key="condec-requirements-dashboard-item"
 		name="ConDec dashboard for Project Requirements">
 		<definition>
