@@ -1,5 +1,4 @@
-/* TODO: move to css file(s) when code gets mature */
-/* helper style to mark chart div elements not initialized with data */
+
 .notsetyet {
 	border:2px solid red;
 }
@@ -47,4 +46,8 @@
     border-radius:1em;
     margin:1em;
     padding:1em;
+}
+.config{
+	border: 1px solid grey;
+	text-align:center;
 }

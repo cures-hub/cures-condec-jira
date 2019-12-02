@@ -1,5 +1,20 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:requirements-dashboard-resources")
+
+<div class="config">
+   <form class="aui" id="configForm">
+       <div class="field-group">
+           <p>Select Project:</p>
+           <select name="project" id="project-input">
+           	#foreach($string in $projectNamesMap.keySet())
+           		<option value=$projectNamesMap.get($string)>$string</option>
+           	#end
+           </select>
+           <input class="button submit" type="submit" value="Select" id="select-button">
+       </div>
+   </form>
+</div>
+<div id="dynamic-content"/>
 <div class="condec-dashboard-contents">
 	<h1>
 		$i18n.getText("condec.jira.project"): $projectName
@@ -41,6 +56,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:requ
 		<div id="piechartInteger-KnowledgeTypeDistribution" class="notsetyet piechart"></div>
 	</div>
 </div>
+
 
 <script type="text/javascript">
 	// initialize charts

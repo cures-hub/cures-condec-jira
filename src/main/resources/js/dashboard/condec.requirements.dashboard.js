@@ -16,7 +16,7 @@
 
 	var issueKeyParser=/([^a-z]*)([a-z]+)-([0-9]+).*/gi
 
-	var isIssueData = true; /* otherwise git branch data */
+	var isIssueData = true; 
 
 	const CHART_RICH_PIE = "piechartRich";
 	const CHART_SIMPLE_PIE = "piechartInteger";
@@ -25,18 +25,12 @@
 
 	var ConDecReport = function ConDecReport() {
 	};
-
-	/* used by reports page decisionKnowledgeReport.vm */
+	
 	ConDecReport.prototype.initializeChart = function(divId, title, subtitle, dataMap) {
 		isIssueData = true;
 	    this.initializeChartForSources(divId, title, subtitle, dataMap);
 	}
 
-	/* used by branch dashboard item featureBranchesDashboardItem.vm */
-	ConDecReport.prototype.initializeChartForBranchSource = function(divId, title, subtitle, dataMap) {
-	    isIssueData = false;
-	    this.initializeChartForSources(divId, title, subtitle, dataMap);
-    }
 
 	/* TODO: Below function does not need to be exposed! */
 	ConDecReport.prototype.initializeChartForSources = function(divId, title, subtitle, dataMap) {

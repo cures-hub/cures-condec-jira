@@ -5,8 +5,6 @@ import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.UserProjectHistoryManager;
-import com.atlassian.jira.util.ParameterUtils;
-import com.atlassian.jira.web.action.ProjectActionSupport;
 import com.atlassian.plugin.PluginParseException;
 import com.atlassian.plugin.web.ContextProvider;
 import com.google.common.collect.Maps;
@@ -18,9 +16,14 @@ import de.uhd.ifi.se.decision.management.jira.quality.CommonMetricCalculator;
 import static com.atlassian.jira.security.Permissions.BROWSE;
 
 import java.security.SecureRandom;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+//TODO: Center Form
+//TODO: Change Style
+//TODO: Put Button Next to Select
+//TODO: Select Issue Type
 
 public class RequirementsDashboardItem  implements ContextProvider {
 
@@ -43,28 +46,36 @@ public class RequirementsDashboardItem  implements ContextProvider {
         String selectId = "condec-dashboard-item-project-selection"+uid;
         newContext.put("selectID", selectId);
         newContext.put("dashboardUID", uid);
-
-        Map<String, Object> values = createValues();
-        newContext.putAll(values);
-        return newContext;
+        if(com.atlassian.jira.web.ExecutingHttpRequest.get().getParameter("project")!=null) {
+        	String projectKey = (String) com.atlassian.jira.web.ExecutingHttpRequest.get().getParameter("project");
+            Map<String, Object> values = createValues(projectKey);
+            newContext.putAll(values);  
+            return newContext;  
+        }else {
+            ApplicationUser loggedUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
+            String projectKey = ComponentAccessor.getComponent(UserProjectHistoryManager.class).getCurrentProject(BROWSE, loggedUser).getKey();
+            Map<String, Object> values = createValues(projectKey);
+            newContext.putAll(values);
+            return newContext;           	
+        }    	
     }
 
     private Map<String, Object> attachProjectsMaps() {
         Map<String, Object> newContext = new HashMap<>();
-        Map<String, String> projectNameMap = new TreeMap<String, String>();
-        for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
-            String projectKey = project.getKey();
-            String projectName = project.getName();
-            projectNameMap.put(projectKey,projectName);
+        Map<String, String> projectNameMap = new TreeMap<String, String>();  
+        for (Project project : ComponentAccessor.getProjectManager().getProjects()) {     	
+                String projectKey = project.getKey();
+                String projectName = project.getName();
+                projectNameMap.put(projectName,projectKey);        		 
         }
         newContext.put("projectNamesMap", projectNameMap);
         return newContext;
     }
-	public Map<String, Object> createValues() {
+	public Map<String, Object> createValues(String projectKey) {
+		Long projectId = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey).getId();
 		ApplicationUser loggedUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
-		Long projectId = ComponentAccessor.getComponent(UserProjectHistoryManager.class).getCurrentProject(BROWSE, loggedUser).getId();
-		//String jiraIssueTypeId = "10100"; //Hardcoded Issue Type Task
-		String jiraIssueTypeId = "10000"; //Hardcoded Issue Type Work Item
+		String jiraIssueTypeId = "10200";
+		//String jiraIssueTypeId = "10000"; //Hardcoded Issue Type Work Item on Jira Uni server
 		
 		CommentMetricCalculator calculatorForSentences = new CommentMetricCalculator(projectId, loggedUser);
 		CommonMetricCalculator calculator = new CommonMetricCalculator(projectId, loggedUser,
