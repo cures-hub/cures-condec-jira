@@ -41,13 +41,31 @@
 	display: inline-block;
 	border: 1px solid #2f4554;
 }
-.condec-dashboard-contents {
+.condec-req-dashboard-no-project {
+    border:2px dashed blue;
+    border-radius:1em;
+    margin:1em;
+    padding:1em;
+    height:400px;
+    min-height:400px;
+}
+.dynamic-content {
     border: 1px solid grey;
     border-radius:1em;
     margin:1em;
     padding:1em;
 }
-.config{
+.configproject{
 	border: 1px solid grey;
+	border-radius:1em;
+	margin:1em;
+    padding:1em;
+	text-align:center;
+}
+.configissuetype{
+	border: 1px solid grey;
+	border-radius:1em;
+	margin:1em;
+    padding:1em;
 	text-align:center;
 }
