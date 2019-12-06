@@ -40,13 +40,16 @@ public class RequirementsDashboardItem  implements ContextProvider {
         String selectId = "condec-dashboard-item-project-selection"+uid;
         newContext.put("selectID", selectId);
         newContext.put("dashboardUID", uid);
-        HttpServletRequest req = com.atlassian.jira.web.ExecutingHttpRequest.get();
-        if(req.getParameterMap().isEmpty() || req.getParameter("selectPageId")!=null) {
+        HttpServletRequest req = getHttpReq();
+        if(req == null) {
+        	newContext.put("critError", "Critical Error in HttpRequest");
+        	return newContext;
+    	}else if(req.getParameterMap().isEmpty() || req.getParameter("selectPageId")!=null) {
         	String showDiv = "configproject";
         	newContext.put("showDiv",showDiv);
         	return newContext;
         }
-        if(req.getParameter("project")!=null && req.getParameter("issuetype")== null) {
+        else if(req.getParameter("project")!=null && req.getParameter("issuetype")== null) {
         	String showDiv = "configissuetype";
         	newContext.put("showDiv",showDiv);
         	String projectKey = (String) req.getParameter("project");
@@ -64,6 +67,10 @@ public class RequirementsDashboardItem  implements ContextProvider {
             return newContext;           	
         }    	
     }
+
+	private HttpServletRequest getHttpReq() {
+		return com.atlassian.jira.web.ExecutingHttpRequest.get();
+	}
 
     private Map<String,Object> attachIssueTypeMaps(String projectKey){
         Map<String, Object> newContext = new HashMap<>();
@@ -88,7 +95,7 @@ public class RequirementsDashboardItem  implements ContextProvider {
         newContext.put("projectNamesMap", projectNameMap);
         return newContext;
     }
-	public Map<String, Object> createValues(String projectKey, String jiraIssueTypeId) {
+	private Map<String, Object> createValues(String projectKey, String jiraIssueTypeId) {
 		Long projectId = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey).getId();
 		ApplicationUser loggedUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 		
