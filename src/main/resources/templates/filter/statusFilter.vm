@@ -1,4 +1,0 @@
-<button aria-controls="chronologie-status-dropdown" class="aui-button aui-style-default aui-dropdown2-trigger" aria-haspopup="true">
-	$i18n.getText("condec.label.knowledge.status")
-</button>
-<aui-dropdown-menu id="chronologie-status-dropdown" style="overflow:auto;max-height:200px;"></aui-dropdown-menu>

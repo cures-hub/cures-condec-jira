@@ -1,7 +1,13 @@
 <form class="aui">
-	#parse("templates/filter/timeFilter.vm")
-    #parse("templates/filter/knowledgeTypeFilter.vm")
-    #parse("templates/filter/statusFilter.vm")
+	#set ($datepickerStartId = "start-date-picker")
+	#set ($datepickerEndId = "end-date-picker")
+	#parse("templates/filter/creationDate.vm")
+	
+	#set ($knowledgeTypeDropdownId = "knowledge-type-dropdown-chronology")	
+    #parse("templates/filter/knowledgeType.vm")
+    
+    #set ($statusDropdownId = "status-dropdown-chronology")	
+    #parse("templates/filter/status.vm")
     <input class="text medium-long-field" id="time-search-input"
            placeholder="$i18n.getText('condec.filter.label')"/>
     <input type="button" id="filter-button-time" class="aui-button aui-button-primary" value="Filter"/>

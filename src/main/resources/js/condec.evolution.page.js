@@ -28,10 +28,10 @@
 
 	ConDecEvolutionPage.prototype.buildTimeLine = function buildTimeLine() {
 		console.log("ConDec build timeline");
-		var issueTypeDropdown = document.getElementById("chronologie-dropdown");
-		var issueStatusDropdown = document.getElementById("chronologie-status-dropdown");
-		initIssueTypeSelect(issueTypeDropdown);
-		initIssueStatusSelect(issueStatusDropdown);
+		var issueTypeDropdown = document.getElementById("knowledge-type-dropdown-chronology");
+		var issueStatusDropdown = document.getElementById("status-dropdown-chronology");
+		initDropdown(issueTypeDropdown, conDecAPI.knowledgeTypes);
+		initDropdown(issueStatusDropdown, completeKnowledgeStatus);
 		conDecAPI.getEvolutionData("", -1, -1, conDecAPI.knowledgeTypes, completeKnowledgeStatus, function(
 				evolutionData) {
 			var container = document.getElementById('evolution-timeline');
@@ -39,10 +39,10 @@
 			var item = new vis.DataSet(data);
 			var groups = evolutionData.groupSet;
 			var date = new Date();
-			document.getElementById("end-date-picker-time").value = date.toISOString().substr(0, 10);
+			document.getElementById("end-date-picker").value = date.toISOString().substr(0, 10);
 			var endTime = date.toDateString();
 			date.setDate(date.getDate() - 7);
-			document.getElementById("start-date-picker-time").value = date.toISOString().substr(0, 10);
+			document.getElementById("start-date-picker").value = date.toISOString().substr(0, 10);
 			var startTime = date.toDateString();
 			var options = {
 				locale : 'de',
@@ -63,10 +63,10 @@
 
 	ConDecEvolutionPage.prototype.buildCompare = function buildCompare() {
 		console.log("ConDec build compare view");
-		var issueTypeDropdown = document.getElementById("compare-dropdown");
-		var issueStatusDropdown = document.getElementById("compare-status-dropdown");
-		initIssueTypeSelect(issueTypeDropdown);
-		initIssueStatusSelect(issueStatusDropdown);
+		var issueTypeDropdown = document.getElementById("knowledge-type-dropdown-comparison");
+		var issueStatusDropdown = document.getElementById("status-dropdown-comparison");
+		initDropdown(issueTypeDropdown, conDecAPI.knowledgeTypes);
+		initDropdown(issueStatusDropdown, completeKnowledgeStatus);
 
 		var date = new Date();
 		var today = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDay();
@@ -138,14 +138,6 @@
 		}
 		return true;
 	}
-
-	function initIssueTypeSelect(issueTypeDropdown) {
-		initDropdown(issueTypeDropdown, conDecAPI.knowledgeTypes);
-	}
-
-	function initIssueStatusSelect(issueStatusDropdown) {
-		initDropdown(issueStatusDropdown, completeKnowledgeStatus);
-	}
 	
 	function initDropdown(dropdown, items) {
 		for (var index = 0; index < items.length; index++) {
@@ -165,8 +157,8 @@
 			var secondDateLeft = -1;
 			var firstDateRight = -1;
 			var secondDateRight = -1;
-			var knowledgeTypes = getSelectedItems(AJS.$('#compare-dropdown'));
-			var issueStatus = getSelectedItems(AJS.$('#compare-status-dropdown'));
+			var knowledgeTypes = getSelectedItems(AJS.$('#knowledge-type-dropdown-comparison'));
+			var issueStatus = getSelectedItems(AJS.$('#status-dropdown-comparison'));
 			if (!isNaN(document.getElementById("start-data-picker-compare-left").valueAsNumber)) {
 				firstDateLeft = document.getElementById("start-data-picker-compare-left").valueAsNumber;
 			}
@@ -208,8 +200,8 @@
 		filterButton.addEventListener("click", function(event) {
 			var firstDate = -1;
 			var secondDate = -1;
-			var knowledgeTypes = getSelectedItems(AJS.$('#chronologie-dropdown'));
-			var issueStatus = getSelectedItems(AJS.$('#chronologie-status-dropdown'));
+			var knowledgeTypes = getSelectedItems(AJS.$('#knowledge-type-dropdown-chronology'));
+			var issueStatus = getSelectedItems(AJS.$('#status-dropdown-chronology'));
 			if (!isNaN(document.getElementById("start-date-picker-time").valueAsNumber)) {
 				firstDate = document.getElementById("start-date-picker-time").valueAsNumber;
 			}

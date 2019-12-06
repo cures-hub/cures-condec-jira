@@ -1,4 +1,0 @@
-<label for="start-date-picker-time">$i18n.getText("condec.datepicker.start")</label> 
-<input id="start-date-picker-time" type="date" class="aui-date-picker"/>
-<label for="end-date-picker-time">$i18n.getText("condec.datepicker.end")</label> 
-<input id="end-date-picker-time" type="date" class="aui-date-picker"/>
