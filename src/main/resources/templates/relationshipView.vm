@@ -6,21 +6,14 @@
 
         		#set ($textInputId = "decision-search-input")
         		#parse("templates/filter/text.vm")
-
+        	
         		#set ($filterButtonId = "filterDecisionLinks-button")
         		#parse("templates/filter/filterButton.vm")
-            </form>
+        	</form>
         </div>
     </div>
-    <div id="graph-container"></div>
+    <div id="graph-container" class="graph"></div>
 </div>
-<style type="text/css">
-    #graph-container{
-        width: 1000px;
-        height: 500px;
-        border: 1px solid lightgray;
-    }
-</style>
 
 <script>
     $(document).ready(function() {

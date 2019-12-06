@@ -8,7 +8,8 @@
     #set ($textInputId = "compare-search-input")
     #parse("templates/filter/text.vm")
 
-    <input type="button" id="filter-button-compare" class="aui-button aui-button-primary" value="Filter"/>
+    #set ($filterButtonId = "filter-button-compare")
+    #parse("templates/filter/filterButton.vm")
 </form>
 <div class="aui-group">
     <div  class="aui-item">

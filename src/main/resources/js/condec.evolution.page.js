@@ -158,7 +158,9 @@
 			var firstDateRight = -1;
 			var secondDateRight = -1;
 			var knowledgeTypes = getSelectedItems(AJS.$('#knowledge-type-dropdown-comparison'));
+			console.log(knowledgeTypes);
 			var issueStatus = getSelectedItems(AJS.$('#status-dropdown-comparison'));
+			console.log(issueStatus);
 			if (!isNaN(document.getElementById("start-data-picker-compare-left").valueAsNumber)) {
 				firstDateLeft = document.getElementById("start-data-picker-compare-left").valueAsNumber;
 			}
@@ -202,11 +204,11 @@
 			var secondDate = -1;
 			var knowledgeTypes = getSelectedItems(AJS.$('#knowledge-type-dropdown-chronology'));
 			var issueStatus = getSelectedItems(AJS.$('#status-dropdown-chronology'));
-			if (!isNaN(document.getElementById("start-date-picker-time").valueAsNumber)) {
-				firstDate = document.getElementById("start-date-picker-time").valueAsNumber;
+			if (!isNaN(document.getElementById("start-date-picker").valueAsNumber)) {
+				firstDate = document.getElementById("start-date-picker").valueAsNumber;
 			}
-			if (!isNaN(document.getElementById("end-date-picker-time").valueAsNumber)) {
-				secondDate = document.getElementById("end-date-picker-time").valueAsNumber;
+			if (!isNaN(document.getElementById("end-date-picker").valueAsNumber)) {
+				secondDate = document.getElementById("end-date-picker").valueAsNumber;
 			}
 			var searchString = document.getElementById("time-search-input").value;
 			

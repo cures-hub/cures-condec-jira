@@ -201,9 +201,6 @@ public class FilterExtractorImpl implements FilterExtractor {
 	}
 
 	private boolean checkIfKnowledgeTypeMatches(DecisionKnowledgeElement element) {
-		if (element == null || element.getType() == null) {
-			return false;
-		}
 		String type = element.getType().replaceProAndConWithArgument().toString();
 		if (element.getType() == KnowledgeType.OTHER) {
 			type = element.getTypeAsString();
