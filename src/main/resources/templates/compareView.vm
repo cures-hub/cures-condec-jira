@@ -15,22 +15,22 @@
 </form>
 <div class="aui-group">
     <div  class="aui-item">
-        <label for="start-data-picker-compare-left">$i18n.getText("condec.startdatepicker")<span
+        <label for="start-data-picker-compare-left">$i18n.getText("condec.datepicker.start")<span
                 class="aui-icon icon-required"></span>
         </label>
         <input id="start-data-picker-compare-left" type="date"/>
-        <label for="end-data-picker-compare-left">$i18n.getText("condec.enddatepicker")<span
+        <label for="end-data-picker-compare-left">$i18n.getText("condec.datepicker.end")<span
                 class="aui-icon icon-required"></span>
         </label>
         <input id="end-data-picker-compare-left" type="date"/>
         <div id="left-network"></div>
     </div>
     <div class="aui-item">
-        <label for="start-data-picker-compare-right">$i18n.getText("condec.startdatepicker")<span
+        <label for="start-data-picker-compare-right">$i18n.getText("condec.datepicker.start")<span
                 class="aui-icon icon-required"></span>
         </label>
         <input id="start-data-picker-compare-right" type="date"/>
-        <label for="end-data-picker-compare-right">$i18n.getText("condec.enddatepicker")<span
+        <label for="end-data-picker-compare-right">$i18n.getText("condec.datepicker.end")<span
                 class="aui-icon icon-required"></span>
         </label>
         <input id="end-data-picker-compare-right" type="date"/>

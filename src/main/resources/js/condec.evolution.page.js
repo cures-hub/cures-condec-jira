@@ -30,9 +30,9 @@
 		console.log("ConDec build timeline");
 		var issueTypeDropdown = document.getElementById("chronologie-dropdown");
 		var issueStatusDropdown = document.getElementById("chronologie-status-dropdown");
-		initIssueTypeSelectCompare(issueTypeDropdown);
+		initIssueTypeSelect(issueTypeDropdown);
 		initIssueStatusSelect(issueStatusDropdown);
-		conDecAPI.getEvolutionData("", -1, -1, conDecAPI.extendedKnowledgeTypes, completeKnowledgeStatus, function(
+		conDecAPI.getEvolutionData("", -1, -1, conDecAPI.knowledgeTypes, completeKnowledgeStatus, function(
 				evolutionData) {
 			var container = document.getElementById('evolution-timeline');
 			var data = evolutionData.dataSet;
@@ -65,7 +65,7 @@
 		console.log("ConDec build compare view");
 		var issueTypeDropdown = document.getElementById("compare-dropdown");
 		var issueStatusDropdown = document.getElementById("compare-status-dropdown");
-		initIssueTypeSelectCompare(issueTypeDropdown);
+		initIssueTypeSelect(issueTypeDropdown);
 		initIssueStatusSelect(issueStatusDropdown);
 
 		var date = new Date();
@@ -76,7 +76,7 @@
 		date.setDate(date.getDate() - 7);
 		var startTime = date.getTime();
 		document.getElementById("start-data-picker-compare-left").value = date.toISOString().substr(0, 10);
-		conDecAPI.getCompareVis(startTime, endTime, "", conDecAPI.extendedKnowledgeTypes, completeKnowledgeStatus,
+		conDecAPI.getCompareVis(startTime, endTime, "", conDecAPI.knowledgeTypes, completeKnowledgeStatus,
 				function(visData) {
 					var containerLeft = document.getElementById('left-network');
 					var dataLeft = {
@@ -98,7 +98,7 @@
 		date.setDate(date.getDate() - 7);
 		startTime = date.getTime();
 		document.getElementById("start-data-picker-compare-right").value = date.toISOString().substr(0, 10);
-		conDecAPI.getCompareVis(startTime, endTime, "", conDecAPI.extendedKnowledgeTypes, completeKnowledgeStatus,
+		conDecAPI.getCompareVis(startTime, endTime, "", conDecAPI.knowledgeTypes, completeKnowledgeStatus,
 				function(visData) {
 					var containerRight = document.getElementById('right-network');
 					var dataRight = {
@@ -139,18 +139,18 @@
 		return true;
 	}
 
-	function initIssueTypeSelectCompare(issueTypeDropdown) {
-		var issueType = conDecAPI.extendedKnowledgeTypes;
-		for (var index = 0; index < issueType.length; index++) {
-			issueTypeDropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + "checked" + ">"
-					+ issueType[index] + "</aui-item-checkbox>");
-		}
+	function initIssueTypeSelect(issueTypeDropdown) {
+		initDropdown(issueTypeDropdown, conDecAPI.knowledgeTypes);
 	}
 
 	function initIssueStatusSelect(issueStatusDropdown) {
-		for (var index = 0; index < completeKnowledgeStatus.length; index++) {
-			issueStatusDropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + "checked" + ">"
-					+ completeKnowledgeStatus[index] + "</aui-item-checkbox>");
+		initDropdown(issueStatusDropdown, completeKnowledgeStatus);
+	}
+	
+	function initDropdown(dropdown, items) {
+		for (var index = 0; index < items.length; index++) {
+			dropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + "checked" + ">"
+					+ items[index] + "</aui-item-checkbox>");
 		}
 	}
 
@@ -165,8 +165,8 @@
 			var secondDateLeft = -1;
 			var firstDateRight = -1;
 			var secondDateRight = -1;
-			var issueTypes = [];
-			var issueStatus = [];
+			var knowledgeTypes = getSelectedItems(AJS.$('#compare-dropdown'));
+			var issueStatus = getSelectedItems(AJS.$('#compare-status-dropdown'));
 			if (!isNaN(document.getElementById("start-data-picker-compare-left").valueAsNumber)) {
 				firstDateLeft = document.getElementById("start-data-picker-compare-left").valueAsNumber;
 			}
@@ -181,19 +181,7 @@
 			}
 			var searchString = "";
 			searchString = document.getElementById("compare-search-input").value;
-			for (var i = 0; i < AJS.$('#compare-dropdown').children().size(); i++) {
-				if (typeof AJS.$('#compare-dropdown').children().eq(i).attr('checked') !== typeof undefined
-						&& AJS.$('#compare-dropdown').children().eq(i).attr('checked') !== false) {
-					issueTypes.push(AJS.$('#compare-dropdown').children().eq(i).text());
-				}
-			}
-			for (var j = 0; j < AJS.$('#compare-status-dropdown').children().size(); j++) {
-				if (typeof AJS.$('#compare-status-dropdown').children().eq(j).attr('checked') !== typeof undefined
-						&& AJS.$('#compare-status-dropdown').children().eq(j).attr('checked') !== false) {
-					issueStatus.push(AJS.$('#compare-status-dropdown').children().eq(j).text());
-				}
-			}
-			conDecAPI.getCompareVis(firstDateLeft, secondDateLeft, searchString, issueTypes, issueStatus, function(
+			conDecAPI.getCompareVis(firstDateLeft, secondDateLeft, searchString, knowledgeTypes, issueStatus, function(
 					visDataLeft) {
 				var dateLeft = {
 					nodes : visDataLeft.nodes,
@@ -201,7 +189,7 @@
 				};
 				networkLeft.setData(dateLeft);
 			});
-			conDecAPI.getCompareVis(firstDateRight, secondDateRight, searchString, issueTypes, issueStatus, function(
+			conDecAPI.getCompareVis(firstDateRight, secondDateRight, searchString, knowledgeTypes, issueStatus, function(
 					visDataRight) {
 				var dateRight = {
 					nodes : visDataRight.nodes,
@@ -220,8 +208,8 @@
 		filterButton.addEventListener("click", function(event) {
 			var firstDate = -1;
 			var secondDate = -1;
-			var issueTypes = [];
-			var issueStatus = [];
+			var knowledgeTypes = getSelectedItems(AJS.$('#chronologie-dropdown'));
+			var issueStatus = getSelectedItems(AJS.$('#chronologie-status-dropdown'));
 			if (!isNaN(document.getElementById("start-date-picker-time").valueAsNumber)) {
 				firstDate = document.getElementById("start-date-picker-time").valueAsNumber;
 			}
@@ -229,19 +217,8 @@
 				secondDate = document.getElementById("end-date-picker-time").valueAsNumber;
 			}
 			var searchString = document.getElementById("time-search-input").value;
-			for (var i = 0; i < AJS.$('#chronologie-dropdown').children().size(); i++) {
-				if (typeof AJS.$('#chronologie-dropdown').children().eq(i).attr('checked') !== typeof undefined
-						&& AJS.$('#chronologie-dropdown').children().eq(i).attr('checked') !== false) {
-					issueTypes.push(AJS.$('#chronologie-dropdown').children().eq(i).text());
-				}
-			}
-			for (var j = 0; j < AJS.$('#chronologie-status-dropdown').children().size(); j++) {
-				if (typeof AJS.$('#chronologie-status-dropdown').children().eq(j).attr('checked') !== typeof undefined
-						&& AJS.$('#chronologie-status-dropdown').children().eq(j).attr('checked') !== false) {
-					issueStatus.push(AJS.$('#chronologie-status-dropdown').children().eq(j).text());
-				}
-			}
-			conDecAPI.getEvolutionData(searchString, firstDate, secondDate, issueTypes, issueStatus, function(visData) {
+			
+			conDecAPI.getEvolutionData(searchString, firstDate, secondDate, knowledgeTypes, issueStatus, function(visData) {
 				var data = visData.dataSet;
 				var groups = visData.groupSet;
 				var item = new vis.DataSet(data);
@@ -250,6 +227,17 @@
 				timeline.redraw();
 			});
 		});
+	}
+	
+	function getSelectedItems(dropdown) {
+		var selectedItems = [];
+		for (var i = 0; i < dropdown.children().size(); i++) {
+			if (typeof dropdown.children().eq(i).attr('checked') !== typeof undefined
+					&& dropdown.children().eq(i).attr('checked') !== false) {
+				selectedItems.push(dropdown.children().eq(i).text());
+			}
+		}
+		return selectedItems;
 	}
 
 	function getOptions() {

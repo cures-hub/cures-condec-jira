@@ -17,6 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryType;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
@@ -199,21 +200,23 @@ public class FilterExtractorImpl implements FilterExtractor {
 		return false;
 	}
 
-	private boolean checkIfTypeMatches(DecisionKnowledgeElement element) {
-		if (element.getTypeAsString() != null) {
-			if (filterSettings.getNamesOfSelectedJiraIssueTypes().contains(element.getTypeAsString())) {
-				return true;
-			}
-			if (element.getTypeAsString().equals("Con") || element.getTypeAsString().equals("Pro")) {
-				return true;
-			}
+	private boolean checkIfKnowledgeTypeMatches(DecisionKnowledgeElement element) {
+		if (element == null || element.getType() == null) {
+			return false;
+		}
+		String type = element.getType().replaceProAndConWithArgument().toString();
+		if (element.getType() == KnowledgeType.OTHER) {
+			type = element.getTypeAsString();
+		}
+		if (filterSettings.getNamesOfSelectedJiraIssueTypes().contains(type)) {
+			return true;
 		}
 		return false;
 	}
 
 	private List<DecisionKnowledgeElement> filterElements(List<DecisionKnowledgeElement> elements) {
 		List<DecisionKnowledgeElement> filteredElements = new ArrayList<>();
-		if (elements == null || elements.size() == 0) {
+		if (elements == null || elements.isEmpty()) {
 			return filteredElements;
 		}
 		for (DecisionKnowledgeElement element : elements) {
@@ -222,10 +225,10 @@ public class FilterExtractorImpl implements FilterExtractor {
 					|| filterSettings.getDocumentationLocations().size() == 1 && filterSettings
 							.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN)) {
 				// Check if the Status is filtered
-				if (filterSettings.getSelectedIssueStatus()
+				if (filterSettings.getSelectedStatus()
 						.contains(StatusPersistenceManager.getStatusForElement(element))) {
 					// Check if the Type of the Element is correct
-					if (checkIfTypeMatches(element) && checkIfElementMatchesTimeFilter(element)) {
+					if (checkIfKnowledgeTypeMatches(element) && checkIfElementMatchesTimeFilter(element)) {
 						// Case no text filter
 						if (filterSettings.getSearchString().equals("")
 								|| filterSettings.getSearchString().equals("?filter=-4")
