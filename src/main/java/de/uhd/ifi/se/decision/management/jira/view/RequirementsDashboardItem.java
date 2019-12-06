@@ -41,18 +41,22 @@ public class RequirementsDashboardItem  implements ContextProvider {
         newContext.put("selectID", selectId);
         newContext.put("dashboardUID", uid);
         HttpServletRequest req = getHttpReq();
-        if(req == null) {
-        	newContext.put("critError", "Critical Error in HttpRequest");
-        	return newContext;
-    	}else if(req.getParameterMap().isEmpty() || req.getParameter("selectPageId")!=null) {
+    	if(context.containsKey("showProject") 
+    			|| (req != null && req.getParameterMap().isEmpty()) 
+    			|| (req != null && req.getParameter("selectPageId")!=null)) {
         	String showDiv = "configproject";
         	newContext.put("showDiv",showDiv);
         	return newContext;
-        }
-        else if(req.getParameter("project")!=null && req.getParameter("issuetype")== null) {
+        }else if(context.containsKey("showIssueType") 
+        		|| (req != null && req.getParameter("project")!=null && req.getParameter("issuetype")== null)) {
         	String showDiv = "configissuetype";
         	newContext.put("showDiv",showDiv);
-        	String projectKey = (String) req.getParameter("project");
+        	String projectKey = "";
+        	if(context.get("showIssueType") != null) {
+        		projectKey = (String) context.get("showIssueType");
+        	}else {
+        		projectKey = (String) req.getParameter("project");
+        	}
             newContext.put("projectKey", projectKey);
             Map<String,Object> issueTypeContext = attachIssueTypeMaps(projectKey);
             newContext.putAll(issueTypeContext);
@@ -60,8 +64,15 @@ public class RequirementsDashboardItem  implements ContextProvider {
         }else {
             String showDiv = "dynamic-content";
             newContext.put("showDiv",showDiv);
-            String projectKey = (String) req.getParameter("project");
-            String issueTypeId = (String) req.getParameter("issuetype");
+            String projectKey = "";
+            String issueTypeId = "";
+            if(context.containsKey("showContentProjectKey")) {
+            	projectKey = (String) context.get("showContentProjectKey");
+            	issueTypeId = (String) context.get("showContentIssueTypeId");
+            }else {
+            	projectKey = (String) req.getParameter("project");
+                issueTypeId = (String) req.getParameter("issuetype");            	
+            }
             Map<String, Object> values = createValues(projectKey, issueTypeId);
             newContext.putAll(values);
             return newContext;           	
