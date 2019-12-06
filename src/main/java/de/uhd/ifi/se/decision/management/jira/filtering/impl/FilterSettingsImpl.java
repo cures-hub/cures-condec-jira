@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -16,6 +14,8 @@ import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
 /**
  * Model class for the filter criteria. The filter settings cover the key of the
@@ -160,8 +160,8 @@ public class FilterSettingsImpl implements FilterSettings {
 	}
 
 	@Override
-	@XmlElement(name = "selectedIssueStatus")
-	public List<KnowledgeStatus> getSelectedIssueStatus() {
+	@XmlElement(name = "selectedStatus")
+	public List<KnowledgeStatus> getSelectedStatus() {
 		if (issueStatus == null) {
 			issueStatus = KnowledgeStatus.getAllKnowledgeStatus();
 		}
@@ -169,8 +169,8 @@ public class FilterSettingsImpl implements FilterSettings {
 	}
 
 	@Override
-	@JsonProperty("selectedIssueStatus")
-	public void setSelectedJiraIssueStatus(List<String> status) {
+	@JsonProperty("selectedStatus")
+	public void setSelectedStatus(List<String> status) {
 		if (issueStatus == null) {
 			issueStatus = new ArrayList<>();
 		}
@@ -197,7 +197,6 @@ public class FilterSettingsImpl implements FilterSettings {
 		namesOfSelectedLinkTypes = namesOfTypes;
 	}
 
-
 	@Override
 	@XmlElement(name = "allJiraIssueTypes")
 	public List<String> getAllJiraIssueTypes() {
@@ -211,7 +210,7 @@ public class FilterSettingsImpl implements FilterSettings {
 
 	@Override
 	@XmlElement(name = "allIssueStatus")
-	public List<String> getAllJiraIssueStatus() {
+	public List<String> getAllStatus() {
 		return KnowledgeStatus.toList();
 	}
 

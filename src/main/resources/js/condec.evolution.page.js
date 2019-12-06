@@ -28,21 +28,21 @@
 
 	ConDecEvolutionPage.prototype.buildTimeLine = function buildTimeLine() {
 		console.log("ConDec build timeline");
-		var issueTypeDropdown = document.getElementById("chronologie-dropdown");
-		var issueStatusDropdown = document.getElementById("chronologie-status-dropdown");
-		initIssueTypeSelectCompare(issueTypeDropdown);
-		initIssueStatusSelect(issueStatusDropdown);
-		conDecAPI.getEvolutionData("", -1, -1, conDecAPI.extendedKnowledgeTypes, completeKnowledgeStatus, function(
+		var issueTypeDropdown = document.getElementById("knowledge-type-dropdown-chronology");
+		var issueStatusDropdown = document.getElementById("status-dropdown-chronology");
+		initDropdown(issueTypeDropdown, conDecAPI.knowledgeTypes);
+		initDropdown(issueStatusDropdown, completeKnowledgeStatus);
+		conDecAPI.getEvolutionData("", -1, -1, conDecAPI.knowledgeTypes, completeKnowledgeStatus, function(
 				evolutionData) {
 			var container = document.getElementById('evolution-timeline');
 			var data = evolutionData.dataSet;
 			var item = new vis.DataSet(data);
 			var groups = evolutionData.groupSet;
 			var date = new Date();
-			document.getElementById("end-date-picker-time").value = date.toISOString().substr(0, 10);
+			document.getElementById("end-date-picker").value = date.toISOString().substr(0, 10);
 			var endTime = date.toDateString();
 			date.setDate(date.getDate() - 7);
-			document.getElementById("start-date-picker-time").value = date.toISOString().substr(0, 10);
+			document.getElementById("start-date-picker").value = date.toISOString().substr(0, 10);
 			var startTime = date.toDateString();
 			var options = {
 				locale : 'de',
@@ -63,10 +63,10 @@
 
 	ConDecEvolutionPage.prototype.buildCompare = function buildCompare() {
 		console.log("ConDec build compare view");
-		var issueTypeDropdown = document.getElementById("compare-dropdown");
-		var issueStatusDropdown = document.getElementById("compare-status-dropdown");
-		initIssueTypeSelectCompare(issueTypeDropdown);
-		initIssueStatusSelect(issueStatusDropdown);
+		var issueTypeDropdown = document.getElementById("knowledge-type-dropdown-comparison");
+		var issueStatusDropdown = document.getElementById("status-dropdown-comparison");
+		initDropdown(issueTypeDropdown, conDecAPI.knowledgeTypes);
+		initDropdown(issueStatusDropdown, completeKnowledgeStatus);
 
 		var date = new Date();
 		var today = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDay();
@@ -76,7 +76,7 @@
 		date.setDate(date.getDate() - 7);
 		var startTime = date.getTime();
 		document.getElementById("start-data-picker-compare-left").value = date.toISOString().substr(0, 10);
-		conDecAPI.getCompareVis(startTime, endTime, "", conDecAPI.extendedKnowledgeTypes, completeKnowledgeStatus,
+		conDecAPI.getCompareVis(startTime, endTime, "", conDecAPI.knowledgeTypes, completeKnowledgeStatus,
 				function(visData) {
 					var containerLeft = document.getElementById('left-network');
 					var dataLeft = {
@@ -98,7 +98,7 @@
 		date.setDate(date.getDate() - 7);
 		startTime = date.getTime();
 		document.getElementById("start-data-picker-compare-right").value = date.toISOString().substr(0, 10);
-		conDecAPI.getCompareVis(startTime, endTime, "", conDecAPI.extendedKnowledgeTypes, completeKnowledgeStatus,
+		conDecAPI.getCompareVis(startTime, endTime, "", conDecAPI.knowledgeTypes, completeKnowledgeStatus,
 				function(visData) {
 					var containerRight = document.getElementById('right-network');
 					var dataRight = {
@@ -138,19 +138,11 @@
 		}
 		return true;
 	}
-
-	function initIssueTypeSelectCompare(issueTypeDropdown) {
-		var issueType = conDecAPI.extendedKnowledgeTypes;
-		for (var index = 0; index < issueType.length; index++) {
-			issueTypeDropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + "checked" + ">"
-					+ issueType[index] + "</aui-item-checkbox>");
-		}
-	}
-
-	function initIssueStatusSelect(issueStatusDropdown) {
-		for (var index = 0; index < completeKnowledgeStatus.length; index++) {
-			issueStatusDropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + "checked" + ">"
-					+ completeKnowledgeStatus[index] + "</aui-item-checkbox>");
+	
+	function initDropdown(dropdown, items) {
+		for (var index = 0; index < items.length; index++) {
+			dropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + "checked" + ">"
+					+ items[index] + "</aui-item-checkbox>");
 		}
 	}
 
@@ -165,8 +157,10 @@
 			var secondDateLeft = -1;
 			var firstDateRight = -1;
 			var secondDateRight = -1;
-			var issueTypes = [];
-			var issueStatus = [];
+			var knowledgeTypes = getSelectedItems(AJS.$('#knowledge-type-dropdown-comparison'));
+			console.log(knowledgeTypes);
+			var issueStatus = getSelectedItems(AJS.$('#status-dropdown-comparison'));
+			console.log(issueStatus);
 			if (!isNaN(document.getElementById("start-data-picker-compare-left").valueAsNumber)) {
 				firstDateLeft = document.getElementById("start-data-picker-compare-left").valueAsNumber;
 			}
@@ -181,19 +175,7 @@
 			}
 			var searchString = "";
 			searchString = document.getElementById("compare-search-input").value;
-			for (var i = 0; i < AJS.$('#compare-dropdown').children().size(); i++) {
-				if (typeof AJS.$('#compare-dropdown').children().eq(i).attr('checked') !== typeof undefined
-						&& AJS.$('#compare-dropdown').children().eq(i).attr('checked') !== false) {
-					issueTypes.push(AJS.$('#compare-dropdown').children().eq(i).text());
-				}
-			}
-			for (var j = 0; j < AJS.$('#compare-status-dropdown').children().size(); j++) {
-				if (typeof AJS.$('#compare-status-dropdown').children().eq(j).attr('checked') !== typeof undefined
-						&& AJS.$('#compare-status-dropdown').children().eq(j).attr('checked') !== false) {
-					issueStatus.push(AJS.$('#compare-status-dropdown').children().eq(j).text());
-				}
-			}
-			conDecAPI.getCompareVis(firstDateLeft, secondDateLeft, searchString, issueTypes, issueStatus, function(
+			conDecAPI.getCompareVis(firstDateLeft, secondDateLeft, searchString, knowledgeTypes, issueStatus, function(
 					visDataLeft) {
 				var dateLeft = {
 					nodes : visDataLeft.nodes,
@@ -201,7 +183,7 @@
 				};
 				networkLeft.setData(dateLeft);
 			});
-			conDecAPI.getCompareVis(firstDateRight, secondDateRight, searchString, issueTypes, issueStatus, function(
+			conDecAPI.getCompareVis(firstDateRight, secondDateRight, searchString, knowledgeTypes, issueStatus, function(
 					visDataRight) {
 				var dateRight = {
 					nodes : visDataRight.nodes,
@@ -220,28 +202,17 @@
 		filterButton.addEventListener("click", function(event) {
 			var firstDate = -1;
 			var secondDate = -1;
-			var issueTypes = [];
-			var issueStatus = [];
-			if (!isNaN(document.getElementById("start-date-picker-time").valueAsNumber)) {
-				firstDate = document.getElementById("start-date-picker-time").valueAsNumber;
+			var knowledgeTypes = getSelectedItems(AJS.$('#knowledge-type-dropdown-chronology'));
+			var issueStatus = getSelectedItems(AJS.$('#status-dropdown-chronology'));
+			if (!isNaN(document.getElementById("start-date-picker").valueAsNumber)) {
+				firstDate = document.getElementById("start-date-picker").valueAsNumber;
 			}
-			if (!isNaN(document.getElementById("end-date-picker-time").valueAsNumber)) {
-				secondDate = document.getElementById("end-date-picker-time").valueAsNumber;
+			if (!isNaN(document.getElementById("end-date-picker").valueAsNumber)) {
+				secondDate = document.getElementById("end-date-picker").valueAsNumber;
 			}
 			var searchString = document.getElementById("time-search-input").value;
-			for (var i = 0; i < AJS.$('#chronologie-dropdown').children().size(); i++) {
-				if (typeof AJS.$('#chronologie-dropdown').children().eq(i).attr('checked') !== typeof undefined
-						&& AJS.$('#chronologie-dropdown').children().eq(i).attr('checked') !== false) {
-					issueTypes.push(AJS.$('#chronologie-dropdown').children().eq(i).text());
-				}
-			}
-			for (var j = 0; j < AJS.$('#chronologie-status-dropdown').children().size(); j++) {
-				if (typeof AJS.$('#chronologie-status-dropdown').children().eq(j).attr('checked') !== typeof undefined
-						&& AJS.$('#chronologie-status-dropdown').children().eq(j).attr('checked') !== false) {
-					issueStatus.push(AJS.$('#chronologie-status-dropdown').children().eq(j).text());
-				}
-			}
-			conDecAPI.getEvolutionData(searchString, firstDate, secondDate, issueTypes, issueStatus, function(visData) {
+			
+			conDecAPI.getEvolutionData(searchString, firstDate, secondDate, knowledgeTypes, issueStatus, function(visData) {
 				var data = visData.dataSet;
 				var groups = visData.groupSet;
 				var item = new vis.DataSet(data);
@@ -250,6 +221,17 @@
 				timeline.redraw();
 			});
 		});
+	}
+	
+	function getSelectedItems(dropdown) {
+		var selectedItems = [];
+		for (var i = 0; i < dropdown.children().size(); i++) {
+			if (typeof dropdown.children().eq(i).attr('checked') !== typeof undefined
+					&& dropdown.children().eq(i).attr('checked') !== false) {
+				selectedItems.push(dropdown.children().eq(i).text());
+			}
+		}
+		return selectedItems;
 	}
 
 	function getOptions() {

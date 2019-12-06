@@ -1,26 +1,19 @@
 <form class="aui">
-    <label for="start-date-picker-time">$i18n.getText("condec.startdatepicker")<span
-            class="aui-icon icon-required"></span>
-    </label>
-    <input id="start-date-picker-time" type="date"/>
-    <label for="end-date-picker-time">$i18n.getText("condec.enddatepicker")<span
-            class="aui-icon icon-required"></span>
-    </label>
-    <input id="end-date-picker-time" type="date"/>
-    <button aria-controls="chronologie-dropdown" class="aui-button aui-style-default aui-dropdown2-trigger" aria-haspopup="true">
-    Issuetypes
-    </button>
-    <aui-dropdown-menu id="chronologie-dropdown" style="overflow:auto;max-height:200px;"></aui-dropdown-menu>
-
-    <button aria-controls="chronologie-status-dropdown" class="aui-button aui-style-default aui-dropdown2-trigger" aria-haspopup="true">
-        Knowledge Status
-    </button>
-    <aui-dropdown-menu id="chronologie-status-dropdown" style="overflow:auto;max-height:200px;"></aui-dropdown-menu>
-
-
-    <input class="text medium-long-field" id="time-search-input"
-           placeholder="$i18n.getText('condec.filter.label')"/>
-    <input type="button" id="filter-button-time" class="aui-button aui-button-primary" value="Filter"/>
+	#set ($datepickerStartId = "start-date-picker")
+	#set ($datepickerEndId = "end-date-picker")
+	#parse("templates/filter/creationDate.vm")
+	
+	#set ($knowledgeTypeDropdownId = "knowledge-type-dropdown-chronology")	
+    #parse("templates/filter/knowledgeType.vm")
+    
+    #set ($statusDropdownId = "status-dropdown-chronology")	
+    #parse("templates/filter/status.vm")
+    
+    #set ($textInputId = "time-search-input")
+    #parse("templates/filter/text.vm")
+    
+    #set ($filterButtonId = "filter-button-time")
+    #parse("templates/filter/filterButton.vm")
 </form>
 <div class="aui-group">
     <div id="evolution-timeline"></div>

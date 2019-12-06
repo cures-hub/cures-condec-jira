@@ -1,39 +1,27 @@
 <form class="aui">
-    <button aria-controls="compare-dropdown" class="aui-button aui-style-default aui-dropdown2-trigger" aria-haspopup="true">
-        Issuetypes
-    </button>
-    <aui-dropdown-menu id="compare-dropdown" style="overflow:auto;max-height:200px;"></aui-dropdown-menu>
+	#set ($knowledgeTypeDropdownId = "knowledge-type-dropdown-comparison")
+	#parse("templates/filter/knowledgeType.vm")
 
-    <button aria-controls="compare-status-dropdown" class="aui-button aui-style-default aui-dropdown2-trigger" aria-haspopup="true">
-        Knowledge Status
-    </button>
-    <aui-dropdown-menu id="compare-status-dropdown" style="overflow:auto;max-height:200px;"></aui-dropdown-menu>
+	#set ($statusDropdownId = "status-dropdown-comparison")	
+    #parse("templates/filter/status.vm")
 
-    <input class="text medium-long-field" id="compare-search-input"
-           placeholder="$i18n.getText('condec.filter.label')"/>
-    <input type="button" id="filter-button-compare" class="aui-button aui-button-primary" value="Filter"/>
+    #set ($textInputId = "compare-search-input")
+    #parse("templates/filter/text.vm")
+
+    #set ($filterButtonId = "filter-button-compare")
+    #parse("templates/filter/filterButton.vm")
 </form>
 <div class="aui-group">
     <div  class="aui-item">
-        <label for="start-data-picker-compare-left">$i18n.getText("condec.startdatepicker")<span
-                class="aui-icon icon-required"></span>
-        </label>
-        <input id="start-data-picker-compare-left" type="date"/>
-        <label for="end-data-picker-compare-left">$i18n.getText("condec.enddatepicker")<span
-                class="aui-icon icon-required"></span>
-        </label>
-        <input id="end-data-picker-compare-left" type="date"/>
+    	#set ($datepickerStartId = "start-data-picker-compare-left")
+    	#set ($datepickerEndId = "end-data-picker-compare-left")
+    	#parse("templates/filter/creationDate.vm")
         <div id="left-network"></div>
     </div>
     <div class="aui-item">
-        <label for="start-data-picker-compare-right">$i18n.getText("condec.startdatepicker")<span
-                class="aui-icon icon-required"></span>
-        </label>
-        <input id="start-data-picker-compare-right" type="date"/>
-        <label for="end-data-picker-compare-right">$i18n.getText("condec.enddatepicker")<span
-                class="aui-icon icon-required"></span>
-        </label>
-        <input id="end-data-picker-compare-right" type="date"/>
+    	#set ($datepickerStartId = "start-data-picker-compare-right")
+    	#set ($datepickerEndId = "end-data-picker-compare-right")
+    	#parse("templates/filter/creationDate.vm")
         <div id="right-network"></div>
     </div>
 </div>

@@ -192,8 +192,8 @@ public class ViewRestImpl implements ViewRest {
 					.build();
 		}
 		if (filterSettings == null || filterSettings.getProjectKey() == null
-				|| filterSettings.getProjectKey().equals("")) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not valid."))
+				|| filterSettings.getProjectKey().isBlank()) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project key is not valid."))
 					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);

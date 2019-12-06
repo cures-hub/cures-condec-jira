@@ -48,7 +48,7 @@ public class TestFilterExtractor extends TestSetUp {
 		settings.setCreatedLatest(System.currentTimeMillis());
 		settings.setProjectKey("TEST");
 		settings.setSelectedJiraIssueTypes(KnowledgeType.toList());
-		settings.setSelectedJiraIssueStatus(KnowledgeStatus.toList());
+		settings.setSelectedStatus(KnowledgeStatus.toList());
 		settings.setSelectedLinkTypes(LinkType.toList());
 	}
 

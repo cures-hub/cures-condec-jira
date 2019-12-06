@@ -28,7 +28,7 @@
 		this.knowledgeTypes = getKnowledgeTypes(projectKey);
 		this.extendedKnowledgeTypes = getExtendedKnowledgeTypes(this.knowledgeTypes);
 
-        this.knowledgeStatus = ["Idea","Discarded", "Decided","Rejected", "Undefined"];
+        this.knowledgeStatus = ["Idea", "Discarded", "Decided", "Rejected", "Undefined"];
         this.issueStatus = ["Resolved", "Unresolved"];
         this.linkTypes = getLinkTypes(projectKey);
 
@@ -458,7 +458,7 @@
 			"createdLatest": -1,
 			"documentationLocations": [""],
 			"selectedJiraIssueTypes": [""],
-			"selectedIssueStatus": this.extendedStatus
+			"selectedStatus": this.extendedStatus
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
 			filterSettings, function (error, vis) {
@@ -480,7 +480,7 @@
 			"createdLatest": createdAfter,
 			"documentationLocations": documentationLocations,
 			"selectedJiraIssueTypes": selectedJiraIssueTypes,
-			"selectedIssueStatus": this.extendedStatus
+			"selectedStatus": this.extendedStatus
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
 			filterSettings, function (error, vis) {
@@ -501,7 +501,7 @@
 			"createdLatest": closed,
 			"documentationLocations": [""],
 			"selectedJiraIssueTypes": issueTypes,
-			"selectedIssueStatus": issueStatus
+			"selectedStatus": issueStatus
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getCompareVis.json", filterSettings, function (error,
 																												 vis) {
@@ -560,7 +560,7 @@
 			"createdLatest": closed,
 			"documentationLocations": [""],
 			"selectedJiraIssueTypes": issueTypes,
-			"selectedIssueStatus": issueStatus
+			"selectedStatus": issueStatus
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getEvolutionData.json", filterSettings, function (
 			error, evolutionData) {
@@ -597,7 +597,7 @@
 			"createdLatest" : -1,
 			"documentationLocations" : [ "" ],
 			"selectedJiraIssueTypes" : ["Decision"],
-			"selectedIssueStatus": [ "" ],
+			"selectedStatus": [ "" ],
 			"selectedLinkTypes": selectedLinkTypes
 		};
 

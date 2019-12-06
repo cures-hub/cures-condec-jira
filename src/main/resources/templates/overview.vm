@@ -7,13 +7,9 @@
            id="element-input-field" placeholder="$i18n.getText('condec.create.label')"/>
     <input type="button" id="create-element-button"
            class="aui-button aui-button-primary" value="$i18n.getText('condec.button.create')"/>
-    <label for="depth-of-tree-input">$i18n.getText("condec.depth.of.tree.label")<span
-            class="aui-icon icon-required"></span>
-    </label>
-    <input type="number" id="depth-of-tree-input" value="4" min="1"
-           class="text short-field" placeholder="Enter depth of tree...">
-    <label for="depth-of-tree-input" id="depth-of-tree-warning">Depth
-        must be positive</label>
+    
+	#set ($linkDistanceInputId = "depth-of-tree-input")	
+	#parse("templates/filter/linkDistance.vm")
 </form>
 <div class="aui-group">
     <div id="resizable" class="left">
