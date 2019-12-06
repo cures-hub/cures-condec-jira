@@ -1,7 +1,0 @@
-#parse("templates/filter/linkType.vm")
-
-#set ($textInputId = "decision-search-input")
-#parse("templates/filter/text.vm")
-
-#set ($filterButtonId = "filterDecisionLinks-button")
-#parse("templates/filter/filterButton.vm")

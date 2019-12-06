@@ -2,7 +2,13 @@
     <div class="aui-toolbar2" role="toolbar">
         <div class="aui-toolbar-2-inner">
         	<form class="aui">
-            	#parse("templates/filterDecisions.vm")
+        		#parse("templates/filter/linkType.vm")
+
+        		#set ($textInputId = "decision-search-input")
+        		#parse("templates/filter/text.vm")
+
+        		#set ($filterButtonId = "filterDecisionLinks-button")
+        		#parse("templates/filter/filterButton.vm")
             </form>
         </div>
     </div>
