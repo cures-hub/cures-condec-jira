@@ -76,7 +76,7 @@ public class TestOnlineTrainer extends TestSetUp {
     @NonTransactional
     public void testClassificationTrainerFromArffFile() {
         List<DecisionKnowledgeElement> trainingElements = getTrainingData();
-        OnlineTrainerARFF trainer = new OnlineFileTrainerImpl("TEST", trainingElements);
+		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl("TEST", trainingElements);
         File file = trainer.saveTrainingFile(true);
         trainer.setTrainingFile(file);
         assertNotNull(trainer.getInstances());
@@ -89,7 +89,7 @@ public class TestOnlineTrainer extends TestSetUp {
     @Test
     @NonTransactional
     public void testSaveArffFile() {
-        OnlineTrainer trainer = new OnlineFileTrainerImpl("TEST");
+        FileTrainer trainer = new OnlineFileTrainerImpl("TEST");
         File file = trainer.saveTrainingFile(false);
         assertTrue(file.exists());
         file.delete();
@@ -105,7 +105,7 @@ public class TestOnlineTrainer extends TestSetUp {
     @Test
     @NonTransactional
     public void testDefaultArffFile() {
-        OnlineTrainer trainer = new OnlineFileTrainerImpl();
+        FileTrainer trainer = new OnlineFileTrainerImpl();
         File luceneArffFile = getTrimmedDefaultArffFile();
         assertTrue(luceneArffFile.exists());
         trainer.setTrainingFile(luceneArffFile);
@@ -130,14 +130,14 @@ public class TestOnlineTrainer extends TestSetUp {
     @Test
     @NonTransactional
     public void testCopyDefaultTrainingDataToFile() {
-        assertTrue(OnlineTrainer.copyDefaultTrainingDataToFile().exists());
+        assertTrue(FileTrainer.copyDefaultTrainingDataToFile().exists());
     }
 
     @Test
     @NonTransactional
     public void testTrainDefaultClassifier() {
         File trainingFile = getTrimmedDefaultArffFile();
-        assertTrue(OnlineTrainer.trainClassifier(trainingFile));
+        assertTrue(FileTrainer.trainClassifier(trainingFile));
     }
 
     private File getTrimmedDefaultArffFile() {
@@ -183,7 +183,7 @@ public class TestOnlineTrainer extends TestSetUp {
     @Test
     @NonTransactional
     public void testGetArffFiles() {
-        OnlineTrainerARFF trainer = new OnlineFileTrainerImpl();
+        FileTrainer trainer = new OnlineFileTrainerImpl();
         assertEquals(ArrayList.class, trainer.getTrainingFileNames().getClass());
     }
 

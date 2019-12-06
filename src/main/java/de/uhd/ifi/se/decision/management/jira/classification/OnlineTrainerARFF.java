@@ -103,7 +103,7 @@ public abstract class OnlineTrainerARFF implements OnlineTrainer {
         return prefix + timestamp.getTime() + ".arff";
     }
 
-    public Instances loadMekaTrainingDataFromJiraIssueText(boolean useOnlyValidatedData) {
+    private Instances loadMekaTrainingDataFromJiraIssueText(boolean useOnlyValidatedData) {
         JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
         List<DecisionKnowledgeElement> partsOfText = manager.getUserValidatedPartsOfText(projectKey);
         if (!useOnlyValidatedData) {
@@ -162,7 +162,7 @@ public abstract class OnlineTrainerARFF implements OnlineTrainer {
      * alternative for the issue.' 0,0,0,0,1 'And I am the issue for the
      * decision and the alternative.'
      */
-    public Instances buildDatasetForMeka(List<DecisionKnowledgeElement> trainingElements) {
+    private Instances buildDatasetForMeka(List<DecisionKnowledgeElement> trainingElements) {
         ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
 
         // Declare Class value with {0,1} as possible values

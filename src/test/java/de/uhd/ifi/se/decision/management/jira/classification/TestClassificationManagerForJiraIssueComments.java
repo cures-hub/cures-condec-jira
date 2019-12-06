@@ -23,6 +23,8 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 
@@ -43,6 +45,13 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
         classificationManager = new ClassificationManagerForJiraIssueComments();
         classificationManager.getClassifierTrainer().setTrainingData(getTrainingData());
         classificationManager.getClassifierTrainer().train();
+        // counter to wait for training to finish
+
+		try {
+			TimeUnit.SECONDS.sleep(4);
+		}catch (InterruptedException e){
+			e.printStackTrace();
+		}
 
         issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");
 
@@ -116,7 +125,11 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
     @NonTransactional
     public void testFineGrainedClassificationWithValidData() {
         sentences.get(0).setRelevant(true);
-        sentences = classificationManager.classifySentencesFineGrained(sentences);
+		System.out.println("-----------------");
+        System.out.println(classificationManager.getClassifierTrainer().getClassifier().getFineGrainedClassifier().isCurrentlyTraining());
+		System.out.println("-----------------");
+
+		sentences = classificationManager.classifySentencesFineGrained(sentences);
 
         assertNotNull(sentences.get(0).isRelevant());
         assertTrue(sentences.get(0).isTagged());

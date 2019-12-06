@@ -78,49 +78,16 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	public boolean train() {
 		boolean isTrained = false;
 		try {
-				/*
-		}
-			Runnable trainBinary = () -> {
+			Runnable trainRunnable = () -> {
 				try {
+					//TODO: Try to make 2 separate threads.
 					trainBinaryClassifier();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			};
-			new Thread(trainBinary).start();
-
-			Runnable trainFineGrained = () -> {
-				try {
 					trainFineGrainedClassifier();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			};
-			new Thread(trainFineGrained).start();
-			*/
-			Map<String, List> trainingData = this.extractTrainingData(this.getInstances());
-			Map preprocessedSentences;
-			// if (!this.classifier.getBinaryClassifier().loadFromFile()) {
-			preprocessedSentences = this.classifier.preprocess(trainingData.get("sentences"),
-					trainingData.get("labelsIsRelevant"));
-
-			this.classifier.trainBinaryClassifier((List<List<Double>>) preprocessedSentences.get("features"),
-					(List<Integer>) preprocessedSentences.get("labels"));
-			this.classifier.getBinaryClassifier().saveToFile();
-
-			// }
-
-			// if (!this.classifier.getFineGrainedClassifier().loadFromFile()) {
-			preprocessedSentences = this.classifier.preprocess(trainingData.get("relevantSentences"),
-					trainingData.get("labelKnowledgeType"));
-
-			this.classifier.trainFineGrainedClassifier((List<List<Double>>) preprocessedSentences.get("features"),
-					(List<Integer>) preprocessedSentences.get("labels"));
-			this.classifier.getFineGrainedClassifier().saveToFile();
-
-			// }
-
-			// this.evaluateTraining();
+			new Thread(trainRunnable).start();
 
 			isTrained = true;
 		} catch (Exception e) {
@@ -129,7 +96,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		return isTrained;
 	}
 
-/*
+
 	private synchronized void trainBinaryClassifier() throws Exception {
 		Map<String, List> trainingData = this.extractTrainingData(this.getInstances());
 		Map preprocessedSentences;
@@ -153,7 +120,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 			(List<Integer>) preprocessedSentences.get("labels"));
 		this.classifier.getFineGrainedClassifier().saveToFile();
 	}
-*/
+
 	public boolean update(PartOfJiraIssueText sentence) {
 		try {
 			List<List<Double>> features = this.classifier.preprocess(sentence.getDescription());
@@ -319,7 +286,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	 * alternative for the issue.' 0,0,0,0,1 'And I am the issue for the
 	 * decision and the alternative.'
 	 */
-	public Instances buildDatasetForMeka(List<DecisionKnowledgeElement> trainingElements) {
+	private Instances buildDatasetForMeka(List<DecisionKnowledgeElement> trainingElements) {
 		ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
 
 		// Declare Class value with {0,1} as possible values

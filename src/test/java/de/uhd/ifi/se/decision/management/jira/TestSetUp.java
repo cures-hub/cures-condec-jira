@@ -4,6 +4,7 @@ import static org.mockito.Mockito.mock;
 
 import java.io.File;
 
+import de.uhd.ifi.se.decision.management.jira.classification.FileTrainer;
 import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
@@ -22,6 +23,8 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+
+import javax.management.ObjectName;
 
 /**
  * Mocks a JIRA server with JIRA's {@link ComponentAccessor}, the custom
@@ -84,7 +87,7 @@ public abstract class TestSetUp {
 	 */
 	public static void initClassifierPaths() {
 		PreprocessorImpl.DEFAULT_DIR = "src/main/resources/classifier/";
-		OnlineTrainerARFF.DEFAULT_TRAINING_DATA = new File(
-				"src/main/resources/classifier/defaultTrainingData.arff");
+		//FileTrainer.DEFAULT_TRAINING_DATA = new File(
+				//"src/main/resources/classifier/defaultTrainingData.arff");
 	}
 }

@@ -14,9 +14,9 @@ import java.util.List;
 
 public interface FileTrainer {
 
-	static final Logger LOGGER = LoggerFactory.getLogger(FileTrainer.class);
+	Logger LOGGER = LoggerFactory.getLogger(FileTrainer.class);
 
-	public static File DEFAULT_TRAINING_DATA = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff");
+	File DEFAULT_TRAINING_DATA = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff");
 
 	/**
 	 * Trains the Classifier with the Data from the Database that was set and

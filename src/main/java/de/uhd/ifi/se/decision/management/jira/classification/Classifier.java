@@ -19,6 +19,7 @@ public abstract class Classifier {
 	private Integer epochs;
 	private boolean modelIsTrained;
 	private Integer numClasses;
+	private Boolean currentlyTraining;
 
 
 	public Classifier(Integer numClasses) {
@@ -38,6 +39,7 @@ public abstract class Classifier {
 		this.epochs = epochs;
 		this.modelIsTrained = false;
 		this.numClasses = numClasses;
+		this.currentlyTraining = false;
 	}
 
 
@@ -47,14 +49,22 @@ public abstract class Classifier {
 	 * @param features
 	 * @param labels
 	 */
-	public void train(Double[][] features, Integer[] labels) {
-		//for (int i = 0; i < this.epochs; i++) {
-		this.model.learn(features, ArrayUtils.toPrimitive(labels));
-		//}
-		this.model.trainPlattScaling(features, ArrayUtils.toPrimitive(labels));
+	public void train(Double[][] features, Integer[] labels) throws AlreadyInTrainingException {
 
-		this.model.finish();
-		this.modelIsTrained = true;
+		if (!this.currentlyTraining) {
+			this.currentlyTraining = true;
+			for (int i = 0; i < this.epochs; i++) {
+				this.model.learn(features, ArrayUtils.toPrimitive(labels));
+			}
+			this.model.trainPlattScaling(features, ArrayUtils.toPrimitive(labels));
+
+			this.model.finish();
+			this.currentlyTraining = false;
+			this.modelIsTrained = true;
+		} else {
+			throw new AlreadyInTrainingException(this.toString() + " is already in training!");
+		}
+
 	}
 
 	/**
@@ -79,12 +89,9 @@ public abstract class Classifier {
 	 * @param label
 	 */
 	public void train(Double[] features, Integer label) {
-		//TODO: remove try catch
-		try {
-			this.model.learn(features, label);
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
+
+		this.model.learn(features, label);
+
 		this.modelIsTrained = true;
 	}
 
@@ -92,7 +99,7 @@ public abstract class Classifier {
 	 * @param feature
 	 * @return probabilities of the labels
 	 */
-	public double[] predictProbabilities(Double[] feature) throws Exception {
+	public double[] predictProbabilities(Double[] feature) throws InstantiationError {
 		if (this.modelIsTrained) {
 			double[] probabilities = new double[this.numClasses];
 			this.model.predict(feature, probabilities);
@@ -147,6 +154,10 @@ public abstract class Classifier {
 
 	public Integer getNumClasses() {
 		return numClasses;
+	}
+
+	public Boolean isCurrentlyTraining() {
+		return this.currentlyTraining;
 	}
 }
 
