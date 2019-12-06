@@ -1,5 +1,3 @@
-<label for="$linkDistanceInputId">
-	$i18n.getText("condec.link.distance.label")	<span class="aui-icon icon-required"></span>
-</label>
+<label for="$linkDistanceInputId">$i18n.getText("condec.link.distance.label")</label>
 <input type="number" id="$linkDistanceInputId" value="4" min="1" class="text short-field" placeholder="Enter distance">
 <label for="$linkDistanceInputId" id="depth-of-tree-warning">Link distance must be positive.</label>

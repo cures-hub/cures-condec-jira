@@ -1,7 +1,9 @@
 <div class="aui-group">
     <div class="aui-toolbar2" role="toolbar">
         <div class="aui-toolbar-2-inner">
-            #parse("templates/filterDecisions.vm")
+        	<form class="aui">
+            	#parse("templates/filterDecisions.vm")
+            </form>
         </div>
     </div>
     <div id="graph-container"></div>

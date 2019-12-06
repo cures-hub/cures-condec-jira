@@ -8,8 +8,9 @@
     
     #set ($statusDropdownId = "status-dropdown-chronology")	
     #parse("templates/filter/status.vm")
-    <input class="text medium-long-field" id="time-search-input"
-           placeholder="$i18n.getText('condec.filter.label')"/>
+    
+    #set ($textInputId = "time-search-input")
+    #parse("templates/filter/text.vm")
     <input type="button" id="filter-button-time" class="aui-button aui-button-primary" value="Filter"/>
 </form>
 <div class="aui-group">

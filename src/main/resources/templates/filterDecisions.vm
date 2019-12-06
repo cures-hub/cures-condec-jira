@@ -1,11 +1,7 @@
-<button aria-controls="linktype-dropdown" class="aui-button aui-style-default aui-dropdown2-trigger" aria-haspopup="true">
-	LinkTypes
-</button>
-<aui-dropdown-menu id="linktype-dropdown"></aui-dropdown-menu>
+#parse("templates/filter/linkType.vm")
 
-<input class="text medium-long-field" id="decision-search-input"
-       placeholder="$i18n.getText('condec.filter.label')"/>
+#set ($textInputId = "decision-search-input")
+#parse("templates/filter/text.vm")
 
-<button class="aui-button aui-button-primary" id="filterDecisionLinks-button">
-	<span class="aui-icon aui-icon-small aui-iconfont-search"></span> Filter
-</button>
+#set ($filterButtonId = "filterDecisionLinks-button")
+#parse("templates/filter/filterButton.vm")

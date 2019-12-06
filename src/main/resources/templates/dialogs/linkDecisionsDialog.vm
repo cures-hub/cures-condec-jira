@@ -8,7 +8,7 @@
 	<div id="linkDecisions-dialog-content" class="aui-dialog2-content">
 		<form class="aui">
 			<div class="field-group">
-				<label for="linkDecisions-form-select-element">$i18n.getText("condec.label.linkTypes"):</label>
+				<label for="linkDecisions-form-select-element">$i18n.getText("condec.label.link.type"):</label>
 				<select id="linkDecisions-form-select-element" class="select full-width-field"></select>
 			</div>
 		</form>

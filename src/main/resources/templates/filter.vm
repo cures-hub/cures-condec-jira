@@ -1,12 +1,10 @@
-<button aria-controls="issuetype-dropdown" class="aui-button aui-style-default aui-dropdown2-trigger" aria-haspopup="true">
-	Issuetypes
-</button>
-<aui-dropdown-menu id="issuetype-dropdown" style="overflow:auto;max-height:200px;"></aui-dropdown-menu>
+<form class="aui">
+#set ($knowledgeTypeDropdownId = "issuetype-dropdown")	
+#parse("templates/filter/knowledgeType.vm")
 
-<label>Created between</label>
-<input id="created-after-picker" type="date" style="vertical-align: middle; margin: 0px 5px;"/>
-<label>and</label>
-<input id="created-before-picker" type="date" style="vertical-align: middle; margin: 0px 5px;"/>
+#set ($datepickerStartId = "created-after-picker")
+#set ($datepickerEndId = "created-before-picker")
+#parse("templates/filter/creationDate.vm")
 
 #set ($documentationLocationDropdownId = "documentation-dropdown")	
 #parse("templates/filter/documentationLocation.vm")
@@ -14,6 +12,6 @@
 #set ($linkDistanceInputId = "node-distance-picker")	
 #parse("templates/filter/linkDistance.vm")
 
-<button class="aui-button aui-button-primary" id="filter-button">
-	<span class="aui-icon aui-icon-small aui-iconfont-search"></span> Filter
-</button>
+#set ($filterButtonId = "filter-button")
+#parse("templates/filter/filterButton.vm")
+</form>

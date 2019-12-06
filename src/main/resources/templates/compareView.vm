@@ -5,8 +5,9 @@
 	#set ($statusDropdownId = "status-dropdown-comparison")	
     #parse("templates/filter/status.vm")
 
-    <input class="text medium-long-field" id="compare-search-input"
-           placeholder="$i18n.getText('condec.filter.label')"/>
+    #set ($textInputId = "compare-search-input")
+    #parse("templates/filter/text.vm")
+
     <input type="button" id="filter-button-compare" class="aui-button aui-button-primary" value="Filter"/>
 </form>
 <div class="aui-group">
