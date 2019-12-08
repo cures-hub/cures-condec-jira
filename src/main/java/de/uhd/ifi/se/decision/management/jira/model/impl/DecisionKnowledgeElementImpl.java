@@ -17,6 +17,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -36,6 +37,7 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 	private String key;
 	private Date created;
 	private Date closed;
+	protected KnowledgeStatus status;
 
 	public DecisionKnowledgeElementImpl() {
 		this.description = "";
@@ -327,4 +329,28 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 		return 0;
 	}
 
+	@Override
+	public KnowledgeStatus getStatus() {
+		return status;
+	}
+
+	@Override
+	public void setStatus(KnowledgeStatus status) {
+		this.status = status;
+	}
+
+	@Override
+	@JsonProperty("status")
+	public void setStatus(String status) {
+		this.status = KnowledgeStatus.getKnowledgeStatus(status);
+	}
+
+	@Override
+	@XmlElement(name = "status")
+	public String getStatusAsString() {
+		if (status == null) {
+			return "";
+		}
+		return status.toString();
+	}
 }

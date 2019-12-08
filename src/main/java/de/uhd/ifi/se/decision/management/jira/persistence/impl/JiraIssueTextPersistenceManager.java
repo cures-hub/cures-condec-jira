@@ -123,6 +123,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("ID = ?", id))) {
 			sentence = new PartOfJiraIssueTextImpl(databaseEntry);
+			sentence.setStatus(StatusPersistenceManager.getStatusForElement(sentence));
 		}
 		return sentence;
 	}
@@ -141,7 +142,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			decisionKnowledgeElements.add(new PartOfJiraIssueTextImpl(databaseEntry));
+			PartOfJiraIssueText element = new PartOfJiraIssueTextImpl(databaseEntry);
+			element.setStatus(StatusPersistenceManager.getStatusForElement(element));
+			decisionKnowledgeElements.add(element);
 		}
 		return decisionKnowledgeElements;
 	}
@@ -162,7 +165,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ? AND RELEVANT = TRUE", projectKey,
 						jiraIssueId))) {
-			elements.add(new PartOfJiraIssueTextImpl(databaseEntry));
+			PartOfJiraIssueText element = new PartOfJiraIssueTextImpl(databaseEntry);
+			element.setStatus(StatusPersistenceManager.getStatusForElement(element));
+			elements.add(element);
 		}
 		return elements;
 	}
@@ -181,7 +186,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ?", projectKey, commentId))) {
-			elements.add(new PartOfJiraIssueTextImpl(databaseEntry));
+			PartOfJiraIssueText element = new PartOfJiraIssueTextImpl(databaseEntry);
+			element.setStatus(StatusPersistenceManager.getStatusForElement(element));
+			elements.add(element);
 		}
 		return elements;
 	}

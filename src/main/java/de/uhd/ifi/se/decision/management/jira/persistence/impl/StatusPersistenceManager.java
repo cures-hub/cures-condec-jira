@@ -24,6 +24,7 @@ public class StatusPersistenceManager {
 			LOGGER.error("Element or Status are null");
 			return;
 		}
+		decisionKnowledgeElement.setStatus(status);
 		AbstractPersistenceManagerForSingleLocation manager = KnowledgePersistenceManager
 				.getOrCreate(decisionKnowledgeElement.getProject().getProjectKey())
 				.getManagerForSingleLocation(decisionKnowledgeElement.getDocumentationLocation());
@@ -44,19 +45,18 @@ public class StatusPersistenceManager {
 			setParameters(knowledgeStatusInDatabase, element, status);
 			knowledgeStatusInDatabase.save();
 		}
-
 	}
 
 	public static KnowledgeStatus getStatusForElement(DecisionKnowledgeElement element) {
-		if (element.getType().equals(KnowledgeType.ISSUE) && !isStatusInDatabase(element)) {
+		if (element.getType() == KnowledgeType.ISSUE && !isStatusInDatabase(element)) {
 			return getIssueKnowledgeStatus(element);
 		}
-		if (element.getType().equals(KnowledgeType.DECISION) && !isStatusInDatabase(element)) {
+		if (element.getType() == KnowledgeType.DECISION && !isStatusInDatabase(element)) {
 			return KnowledgeStatus.DECIDED;
 		}
 		if (!isStatusInDatabase(element)) {
 			if (element.getType() == KnowledgeType.ALTERNATIVE) {
-				setStatusForElement(element, KnowledgeStatus.IDEA);
+				return KnowledgeStatus.IDEA;
 			} else {
 				return KnowledgeStatus.UNDEFINED;
 			}
@@ -94,14 +94,14 @@ public class StatusPersistenceManager {
 
 	private static KnowledgeStatus getIssueKnowledgeStatus(DecisionKnowledgeElement element) {
 		AbstractPersistenceManagerForSingleLocation manager = KnowledgePersistenceManager
-				.getOrCreate(element.getProject().getProjectKey())
-				.getManagerForSingleLocation(element.getDocumentationLocation());
+				.getOrCreate(element.getProject()).getManagerForSingleLocation(element.getDocumentationLocation());
 
-		for (DecisionKnowledgeElement linkedElement : manager.getElementsLinkedWithOutwardLinks(element)) {
-			if (linkedElement.getType().equals(KnowledgeType.DECISION)) {
-				return KnowledgeStatus.RESOLVED;
-			}
-		}
+		// for (DecisionKnowledgeElement linkedElement :
+		// manager.getElementsLinkedWithOutwardLinks(element)) {
+		// if (linkedElement.getType().equals(KnowledgeType.DECISION)) {
+		// return KnowledgeStatus.RESOLVED;
+		// }
+		// }
 		return KnowledgeStatus.UNRESOLVED;
 	}
 
@@ -127,6 +127,5 @@ public class StatusPersistenceManager {
 			manager.updateDecisionKnowledgeElementWithoutStatusChange(element, user);
 		}
 		return true;
-
 	}
 }

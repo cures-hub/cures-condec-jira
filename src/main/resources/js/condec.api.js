@@ -307,6 +307,7 @@
 			});
 	};
 
+	// TODO Remove this REST methods because the status is part of the knowledge element object
 	ConDecAPI.prototype.setStatus = function setStatus(id, documentationLocation, status, callback) {
 		var element = {
 			"id": id,
@@ -322,6 +323,7 @@
 			});
 	};
 
+	// TODO Remove this REST methods because the status is part of the knowledge element object
 	ConDecAPI.prototype.getStatus = function getStatus(decisionElement, callback) {
 		var element = {
 			"id": decisionElement.id,
