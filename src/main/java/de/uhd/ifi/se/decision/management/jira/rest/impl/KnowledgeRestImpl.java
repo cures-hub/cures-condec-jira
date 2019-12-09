@@ -422,20 +422,4 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 		}
 		return Response.ok(summary).build();
 	}
-
-	@Override
-	@Path("/setStatus")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response setStatus(@Context HttpServletRequest request, @QueryParam("status") String statusString,
-			DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (request == null || decisionKnowledgeElement == null || decisionKnowledgeElement.getId() <= 0
-				|| statusString == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Setting the element status failed due to a bad request."))
-					.build();
-		}
-		decisionKnowledgeElement.setStatus(statusString);
-		return updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "");
-	}
 }

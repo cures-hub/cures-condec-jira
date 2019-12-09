@@ -303,7 +303,7 @@
 				var summary = inputSummaryField.value;
 				var description = inputDescriptionField.value;
 				var type = selectTypeField.value;
-				conDecAPI.updateDecisionKnowledgeElement(id, summary, description, type, documentationLocation,
+				conDecAPI.updateDecisionKnowledgeElement(id, summary, description, type, documentationLocation, null,
 					function () {
 						conDecObservable.notify();
 					});
@@ -418,16 +418,16 @@
 		// Fill HTML elements
 		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function (decisionKnowledgeElement) {
 				fillSelectStatusFiled(selectStatusField, decisionKnowledgeElement.status, decisionKnowledgeElement);
+				
+				// Set onclick listener on buttons
+				submitButton.onclick = function () {
+					var status = selectStatusField.value;
+					conDecAPI.setStatus(id, documentationLocation, decisionKnowledgeElement.type, status, function () {
+						conDecObservable.notify();
+					});
+					AJS.dialog2(changeStatusDialog).hide();
+				};				
 		});
-
-		// Set onclick listener on buttons
-		submitButton.onclick = function () {
-			var status = selectStatusField.value;
-			conDecAPI.setStatus(id, documentationLocation, status, function () {
-				conDecObservable.notify();
-			});
-			AJS.dialog2(changeStatusDialog).hide();
-		};
 
 		cancelButton.onclick = function () {
 			AJS.dialog2(changeStatusDialog).hide();
