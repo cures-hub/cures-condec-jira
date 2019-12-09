@@ -36,14 +36,32 @@ public enum KnowledgeStatus {
 				+ this.name().substring(1).toLowerCase(Locale.ENGLISH);
 	}
 
+	public static KnowledgeStatus getDefaultStatus(KnowledgeType type) {
+		if (type == null) {
+			return UNDEFINED;
+		}
+		switch (type) {
+		case ISSUE:
+			return UNRESOLVED;
+		case DECISION:
+			return DECIDED;
+		case ALTERNATIVE:
+			return IDEA;
+		default:
+			return UNDEFINED;
+		}
+	}
+
+	public static KnowledgeType getNewKnowledgeTypeForStatus(DecisionKnowledgeElement element) {
+		return getNewKnowledgeTypeForStatus(element.getStatus(), element.getType());
+	}
+
 	public static KnowledgeType getNewKnowledgeTypeForStatus(KnowledgeStatus status, KnowledgeType formerType) {
 		if (status == null || formerType == null) {
 			return KnowledgeType.OTHER;
 		}
-		if (formerType == KnowledgeType.DECISION) {
-			if (status == IDEA || status == DISCARDED) {
-				return KnowledgeType.ALTERNATIVE;
-			}
+		if (formerType == KnowledgeType.DECISION && (status == IDEA || status == DISCARDED)) {
+			return KnowledgeType.ALTERNATIVE;
 		}
 		if (formerType == KnowledgeType.ALTERNATIVE && status == DECIDED) {
 			return KnowledgeType.DECISION;

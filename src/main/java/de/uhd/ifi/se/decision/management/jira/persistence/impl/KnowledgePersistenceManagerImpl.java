@@ -7,6 +7,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
@@ -85,13 +86,15 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 
 	@Override
 	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type) {
-		List<DecisionKnowledgeElement> elements = getDefaultManagerForSingleLocation().getDecisionKnowledgeElements(type);
+		List<DecisionKnowledgeElement> elements = getDefaultManagerForSingleLocation()
+				.getDecisionKnowledgeElements(type);
 		elements.addAll(jiraIssueTextPersistenceManager.getDecisionKnowledgeElements(type));
 		return elements;
 	}
 
 	@Override
-	public AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(String documentationLocationIdentifier) {
+	public AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(
+			String documentationLocationIdentifier) {
 		if (documentationLocationIdentifier == null) {
 			return getDefaultManagerForSingleLocation();
 		}
@@ -226,6 +229,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getManagerForSingleLocation(element);
+		element.setType(KnowledgeStatus.getNewKnowledgeTypeForStatus(element));
 		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(element, user);
 		if (isUpdated) {
 			DecisionKnowledgeElement updatedElement = persistenceManager.getDecisionKnowledgeElement(element.getId());
@@ -253,7 +257,8 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id, DocumentationLocation documentationLocation) {
-		AbstractPersistenceManagerForSingleLocation persistenceManager = getManagerForSingleLocation(documentationLocation);
+		AbstractPersistenceManagerForSingleLocation persistenceManager = getManagerForSingleLocation(
+				documentationLocation);
 		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(id);
 		if (element == null) {
 			return new DecisionKnowledgeElementImpl();

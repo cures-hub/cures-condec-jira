@@ -334,19 +334,8 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 
 	@Override
 	public KnowledgeStatus getStatus() {
-		if (status == null) {
-			return KnowledgeStatus.UNDEFINED;
-		}
-		if (status == KnowledgeStatus.UNDEFINED) {
-			if (getType() == KnowledgeType.ISSUE) {
-				return KnowledgeStatus.getStatusForIssue(this);
-			}
-			if (getType() == KnowledgeType.DECISION) {
-				return KnowledgeStatus.DECIDED;
-			}
-			if (getType() == KnowledgeType.ALTERNATIVE) {
-				return KnowledgeStatus.IDEA;
-			}
+		if (status == null || status == KnowledgeStatus.UNDEFINED) {
+			return KnowledgeStatus.getDefaultStatus(getType());
 		}
 		return status;
 	}
@@ -365,9 +354,6 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 	@Override
 	@XmlElement(name = "status")
 	public String getStatusAsString() {
-		if (status == null) {
-			return "";
-		}
-		return status.toString();
+		return getStatus().toString();
 	}
 }
