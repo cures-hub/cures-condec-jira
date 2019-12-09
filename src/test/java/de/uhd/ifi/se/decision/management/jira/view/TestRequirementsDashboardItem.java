@@ -16,6 +16,7 @@ import com.atlassian.jira.issue.issuetype.MockIssueType;
 import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
+import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
@@ -23,6 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
 
@@ -81,7 +83,7 @@ public class TestRequirementsDashboardItem {
 				.getSentencesForCommentText("More Comment with some text").get(0);
 		partOfJiraIssueText.setType(KnowledgeType.ALTERNATIVE);
 		new JiraIssueTextPersistenceManager("").updateDecisionKnowledgeElement(partOfJiraIssueText, null);
-
-		assertNotNull(this.dashboardItem.createValues("TEST","10100"));
+		ApplicationUser currentUser = JiraUsers.SYS_ADMIN.getApplicationUser();
+		assertNotNull(this.dashboardItem.createValues("TEST","10100",currentUser));
 	}
 }

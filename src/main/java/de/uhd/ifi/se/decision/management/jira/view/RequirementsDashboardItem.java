@@ -73,7 +73,8 @@ public class RequirementsDashboardItem  implements ContextProvider {
             	projectKey = (String) req.getParameter("project");
                 issueTypeId = (String) req.getParameter("issuetype");            	
             }
-            Map<String, Object> values = createValues(projectKey, issueTypeId);
+            ApplicationUser loggedUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
+            Map<String, Object> values = createValues(projectKey, issueTypeId, loggedUser);
             newContext.putAll(values);
             return newContext;           	
         }    	
@@ -107,9 +108,8 @@ public class RequirementsDashboardItem  implements ContextProvider {
         return newContext;
     }
     
-    public Map<String, Object> createValues(String projectKey, String jiraIssueTypeId) {
+    public Map<String, Object> createValues(String projectKey, String jiraIssueTypeId, ApplicationUser loggedUser) {
 		Long projectId = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey).getId();
-		ApplicationUser loggedUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 		
 		CommentMetricCalculator calculatorForSentences = new CommentMetricCalculator(projectId, loggedUser);
 		CommonMetricCalculator calculator = new CommonMetricCalculator(projectId, loggedUser,
