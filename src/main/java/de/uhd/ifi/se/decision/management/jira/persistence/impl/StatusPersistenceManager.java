@@ -29,37 +29,6 @@ public class StatusPersistenceManager {
 		}
 	}
 
-	public static KnowledgeStatus getStatusForElement(DecisionKnowledgeElement element) {
-		if (element == null || element.getStatus() == null) {
-			return KnowledgeStatus.UNDEFINED;
-		}
-		if (element.getStatus() == KnowledgeStatus.UNDEFINED) {
-			if (element.getType() == KnowledgeType.ISSUE) {
-				return getIssueKnowledgeStatus(element);
-			}
-			if (element.getType() == KnowledgeType.DECISION) {
-				return KnowledgeStatus.DECIDED;
-			}
-			if (element.getType() == KnowledgeType.ALTERNATIVE) {
-				return KnowledgeStatus.IDEA;
-			}
-		}
-		return element.getStatus();
-	}
-
-	private static KnowledgeStatus getIssueKnowledgeStatus(DecisionKnowledgeElement element) {
-		AbstractPersistenceManagerForSingleLocation manager = KnowledgePersistenceManager
-				.getOrCreate(element.getProject()).getManagerForSingleLocation(element.getDocumentationLocation());
-
-		// for (DecisionKnowledgeElement linkedElement :
-		// manager.getElementsLinkedWithOutwardLinks(element)) {
-		// if (linkedElement.getType().equals(KnowledgeType.DECISION)) {
-		// return KnowledgeStatus.RESOLVED;
-		// }
-		// }
-		return KnowledgeStatus.UNRESOLVED;
-	}
-
 	private static boolean setTypeByChange(KnowledgeStatus status, DecisionKnowledgeElement element,
 			AbstractPersistenceManagerForSingleLocation manager) {
 		if (element == null) {

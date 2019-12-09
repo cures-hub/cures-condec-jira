@@ -439,7 +439,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 		}
 		KnowledgeStatus status = KnowledgeStatus.getKnowledgeStatus(statusString);
 		StatusPersistenceManager.setStatusForElement(decisionKnowledgeElement, status);
-		if (status.equals(StatusPersistenceManager.getStatusForElement(decisionKnowledgeElement))) {
+		if (status == decisionKnowledgeElement.getStatus()) {
 			return Response.status(Status.OK).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -459,11 +459,10 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 				.getOrCreate(decisionKnowledgeElement.getProject().getProjectKey())
 				.getManagerForSingleLocation(decisionKnowledgeElement.getDocumentationLocation().getIdentifier());
 		DecisionKnowledgeElement element = manager.getDecisionKnowledgeElement(decisionKnowledgeElement.getKey());
-		KnowledgeStatus status = StatusPersistenceManager.getStatusForElement(element);
-		if (status == null) {
+		if (element == null) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Get element status failed.")).build();
 		}
-		return Response.ok(status).build();
+		return Response.ok(element.getStatusAsString()).build();
 	}
 }

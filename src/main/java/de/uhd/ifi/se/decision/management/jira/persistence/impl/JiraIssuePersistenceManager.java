@@ -226,18 +226,14 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		if (issue == null) {
 			return null;
 		}
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
-		element.setStatus(StatusPersistenceManager.getStatusForElement(element));
-		return element;
+		return new DecisionKnowledgeElementImpl(issue);
 	}
 
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue issue = issueManager.getIssueByCurrentKey(key);
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
-		element.setStatus(StatusPersistenceManager.getStatusForElement(element));
-		return element;
+		return new DecisionKnowledgeElementImpl(issue);
 	}
 
 	@Override
@@ -247,9 +243,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 			return decisionKnowledgeElements;
 		}
 		for (Issue issue : getIssueIdCollection()) {
-			DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
-			element.setStatus(StatusPersistenceManager.getStatusForElement(element));
-			decisionKnowledgeElements.add(element);
+			decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(issue));
 		}
 		return decisionKnowledgeElements;
 	}
