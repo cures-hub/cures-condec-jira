@@ -229,7 +229,6 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getManagerForSingleLocation(element);
-		element.setType(KnowledgeStatus.getNewKnowledgeTypeForStatus(element));
 		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(element, user);
 		if (isUpdated) {
 			DecisionKnowledgeElement updatedElement = persistenceManager.getDecisionKnowledgeElement(element.getId());

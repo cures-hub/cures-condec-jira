@@ -425,12 +425,15 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		int lengthDifference = changedPartOfText.length() - formerElement.getLength();
 		updateSentenceLengthForOtherSentencesInSameComment(formerElement, lengthDifference);
 
+		KnowledgeType newType = KnowledgeStatus.getNewKnowledgeTypeForStatus(formerElement, newElement);
+		KnowledgeStatus newStatus = KnowledgeStatus.getNewKnowledgeStatusForType(formerElement, newElement);
+
 		formerElement.setEndPosition(formerElement.getStartPosition() + changedPartOfText.length());
 		formerElement.setType(newElement.getType());
 		formerElement.setValidated(newElement.isValidated());
 		formerElement.setRelevant(newElement.getType() != KnowledgeType.OTHER);
-		System.out.println(newElement.getStatusAsString());
-		formerElement.setStatus(KnowledgeStatus.getNewKnowledgeStatusForType(formerElement, newElement));
+		formerElement.setStatus(newStatus);
+		formerElement.setType(newType);
 		// sentence.setCommentId(element.getCommentId());
 
 		return updateInDatabase(formerElement);
