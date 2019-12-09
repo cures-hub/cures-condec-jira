@@ -212,6 +212,9 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 					.build();
 		}
 
+		if (idOfParentElement == 0) {
+			return Response.status(Status.OK).build();
+		}
 		DecisionKnowledgeElement updatedElement = persistenceManager.getDecisionKnowledgeElement(element.getId(),
 				element.getDocumentationLocation());
 		long linkId = persistenceManager.updateLink(updatedElement, formerElement.getType(), idOfParentElement,
@@ -220,6 +223,10 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Link could not be updated.")).build();
 		}
+		DecisionKnowledgeElement parentElement = persistenceManager
+				.getManagerForSingleLocation(documentationLocationOfParentElement)
+				.getDecisionKnowledgeElement(idOfParentElement);
+		persistenceManager.updateIssueStatus(parentElement, updatedElement, user);
 		return Response.status(Status.OK).build();
 	}
 
