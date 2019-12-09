@@ -336,29 +336,6 @@
 		AJS.$(selectField).auiSelect2();
 	}
 
-	function fillSelectStatusFiled(selectField, elementStatus, element) {
-		if (selectField === null) {
-			return;
-		}
-		var knowledgeStatus = null;
-		if (element.type === "Issue") {
-			knowledgeStatus = conDecAPI.issueStatus;
-		} else {
-			knowledgeStatus = conDecAPI.knowledgeStatus;
-		}
-		selectField.innerHTML = "";
-		for (var index = 0; index < knowledgeStatus.length; index++) {
-			var isSelected = "";
-			console.log(elementStatus);
-			if (knowledgeStatus[index].toLocaleUpperCase() === elementStatus) {
-				isSelected = "selected";
-			}
-			selectField.insertAdjacentHTML("beforeend", "<option " + isSelected + " value='"
-				+ knowledgeStatus[index] + "'>" + knowledgeStatus[index] + "</option>");
-		}
-		AJS.$(selectField).auiSelect2();
-	}
-
 	function isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index) {
 		console.log("conDecDialog isKnowledgeTypeLocatedAtIndex");
 		return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase().split("-")[0];
@@ -417,7 +394,7 @@
 
 		// Fill HTML elements
 		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function (decisionKnowledgeElement) {
-				fillSelectStatusFiled(selectStatusField, decisionKnowledgeElement.status, decisionKnowledgeElement);
+				fillSelectStatusField(selectStatusField, decisionKnowledgeElement);
 				
 				// Set onclick listener on buttons
 				submitButton.onclick = function () {
@@ -436,6 +413,29 @@
 		// Show dialog
 		AJS.dialog2(changeStatusDialog).show();
 	};
+	
+	function fillSelectStatusField(selectField, element) {
+		if (selectField === null) {
+			return;
+		}
+		var knowledgeStatus = null;
+		if (element.type === "Issue") {
+			knowledgeStatus = conDecAPI.issueStatus;
+		} else {
+			knowledgeStatus = conDecAPI.optionStatus;
+		}
+		selectField.innerHTML = "";
+		for (var index = 0; index < knowledgeStatus.length; index++) {
+			var isSelected = "";
+			console.log(element.status);
+			if (knowledgeStatus[index].equalsIgnoreCase(element.status)) {
+				isSelected = "selected";
+			}
+			selectField.insertAdjacentHTML("beforeend", "<option " + isSelected + " value='"
+				+ knowledgeStatus[index] + "'>" + knowledgeStatus[index] + "</option>");
+		}
+		AJS.$(selectField).auiSelect2();
+	}
 
 	ConDecDialog.prototype.showSummarizedDialog = function showSummarizedDialog(id, documentationLocation) {
 		// HTML elements

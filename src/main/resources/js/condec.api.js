@@ -28,11 +28,11 @@
 		this.knowledgeTypes = getKnowledgeTypes(projectKey);
 		this.extendedKnowledgeTypes = getExtendedKnowledgeTypes(this.knowledgeTypes);
 
-        this.knowledgeStatus = ["Idea", "Discarded", "Decided", "Rejected", "Undefined"];
+        this.optionStatus = ["Idea", "Discarded", "Decided", "Rejected", "Undefined"];
         this.issueStatus = ["Resolved", "Unresolved"];
+		this.knowledgeStatus = this.optionStatus.concat(this.issueStatus);
+		
         this.linkTypes = getLinkTypes(projectKey);
-
-		this.extendedStatus = getExtendedStatus();
 	};
 
 	ConDecAPI.prototype.checkIfProjectKeyIsValid = function checkIfProjectKeyIsValid() {
@@ -793,10 +793,6 @@
 	}
 
 	/*
-	 * 
-	 */
-
-	/*
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setWebhookData = function setWebhookData(projectKey, webhookUrl, webhookSecret) {
@@ -1196,14 +1192,6 @@
 			title: type.charAt(0).toUpperCase() + type.slice(1) + " " + status,
 			body: message
 		});
-	}
-
-	function getExtendedStatus() {
-		var extendedStatus = this.knowledgeStatus;
-		for (var issueStat in this.issueStatus) {
-			extendedStatus.push(issueStat);
-		}
-		return extendedStatus
 	}
 
 	// export ConDecAPI
