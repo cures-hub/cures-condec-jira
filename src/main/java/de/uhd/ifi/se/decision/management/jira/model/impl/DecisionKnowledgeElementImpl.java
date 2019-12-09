@@ -339,7 +339,7 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 		}
 		if (status == KnowledgeStatus.UNDEFINED) {
 			if (getType() == KnowledgeType.ISSUE) {
-				return KnowledgeStatus.getIssueKnowledgeStatus(this);
+				return KnowledgeStatus.getStatusForIssue(this);
 			}
 			if (getType() == KnowledgeType.DECISION) {
 				return KnowledgeStatus.DECIDED;

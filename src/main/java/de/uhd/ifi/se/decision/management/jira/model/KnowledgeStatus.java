@@ -36,7 +36,22 @@ public enum KnowledgeStatus {
 				+ this.name().substring(1).toLowerCase(Locale.ENGLISH);
 	}
 
-	public static KnowledgeStatus getIssueKnowledgeStatus(DecisionKnowledgeElement element) {
+	public static KnowledgeType getNewKnowledgeTypeForStatus(KnowledgeStatus status, KnowledgeType formerType) {
+		if (status == null || formerType == null) {
+			return KnowledgeType.OTHER;
+		}
+		if (formerType == KnowledgeType.DECISION) {
+			if (status == IDEA || status == DISCARDED) {
+				return KnowledgeType.ALTERNATIVE;
+			}
+		}
+		if (formerType == KnowledgeType.ALTERNATIVE && status == DECIDED) {
+			return KnowledgeType.DECISION;
+		}
+		return formerType;
+	}
+
+	public static KnowledgeStatus getStatusForIssue(DecisionKnowledgeElement element) {
 		AbstractPersistenceManagerForSingleLocation manager = KnowledgePersistenceManager
 				.getOrCreate(element.getProject()).getManagerForSingleLocation(element.getDocumentationLocation());
 

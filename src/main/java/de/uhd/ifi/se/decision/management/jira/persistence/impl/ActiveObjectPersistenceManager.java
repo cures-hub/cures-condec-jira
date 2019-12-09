@@ -152,11 +152,11 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 			if (databaseEntry.getId() == element.getId()) {
 				if (KnowledgeType.getKnowledgeType(databaseEntry.getType()).equals(KnowledgeType.DECISION)
 						&& element.getType().equals(KnowledgeType.ALTERNATIVE)) {
-					StatusPersistenceManager.setStatusForElement(element, KnowledgeStatus.REJECTED);
+					element.setStatus(KnowledgeStatus.REJECTED);
 				}
 				if (KnowledgeType.getKnowledgeType(databaseEntry.getType()).equals(KnowledgeType.ALTERNATIVE)
 						&& element.getType().equals(KnowledgeType.DECISION)) {
-					StatusPersistenceManager.setStatusForElement(element, KnowledgeStatus.DECIDED);
+					element.setStatus(KnowledgeStatus.DECIDED);
 				}
 				setParameters(element, databaseEntry);
 				databaseEntry.save();

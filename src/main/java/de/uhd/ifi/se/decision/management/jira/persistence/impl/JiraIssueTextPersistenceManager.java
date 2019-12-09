@@ -420,10 +420,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			element.setDescription(sentence.getDescription());
 		}
 		if (sentence.getType().equals(KnowledgeType.DECISION) && element.getType().equals(KnowledgeType.ALTERNATIVE)) {
-			StatusPersistenceManager.setStatusForElement(sentence, KnowledgeStatus.REJECTED);
+			sentence.setStatus(KnowledgeStatus.REJECTED);
 		}
 		if (sentence.getType().equals(KnowledgeType.ALTERNATIVE) && element.getType().equals(KnowledgeType.DECISION)) {
-			StatusPersistenceManager.setStatusForElement(sentence, KnowledgeStatus.DECIDED);
+			sentence.setStatus(KnowledgeStatus.DECIDED);
 		}
 		return updateElementInDatabase(element, sentence, user);
 	}

@@ -27,7 +27,6 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterExtractorImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
@@ -37,7 +36,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.StatusPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 
 /**
@@ -437,12 +435,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Setting the element status failed due to a bad request."))
 					.build();
 		}
-		KnowledgeStatus status = KnowledgeStatus.getKnowledgeStatus(statusString);
-		StatusPersistenceManager.setStatusForElement(decisionKnowledgeElement, status);
-		if (status == decisionKnowledgeElement.getStatus()) {
-			return Response.status(Status.OK).build();
-		}
-		return Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error", "Setting element status failed.")).build();
+		decisionKnowledgeElement.setStatus(statusString);
+		return updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "");
 	}
 }

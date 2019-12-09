@@ -310,11 +310,11 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		DecisionKnowledgeElement knowledgeElementToBeUpdate = new DecisionKnowledgeElementImpl(issueToBeUpdated);
 		if (knowledgeElementToBeUpdate.getType().equals(KnowledgeType.DECISION)
 				&& element.getType().equals(KnowledgeType.ALTERNATIVE)) {
-			StatusPersistenceManager.setStatusForElement(knowledgeElementToBeUpdate, KnowledgeStatus.REJECTED);
+			knowledgeElementToBeUpdate.setStatus(KnowledgeStatus.REJECTED);
 		}
 		if (knowledgeElementToBeUpdate.getType().equals(KnowledgeType.ALTERNATIVE)
 				&& element.getType().equals(KnowledgeType.DECISION)) {
-			StatusPersistenceManager.setStatusForElement(knowledgeElementToBeUpdate, KnowledgeStatus.DECIDED);
+			knowledgeElementToBeUpdate.setStatus(KnowledgeStatus.DECIDED);
 		}
 		return dataUpdateElement(element, issueToBeUpdated, user, issueService);
 	}

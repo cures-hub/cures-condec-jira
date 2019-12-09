@@ -21,7 +21,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManage
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgePersistenceManagerImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.StatusPersistenceManager;
 
 /**
  * Interface that integrates all available persistence managers for single
@@ -320,7 +319,8 @@ public interface KnowledgePersistenceManager {
 	 *         cannot be found.
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
-	AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(DocumentationLocation documentationLocation);
+	AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(
+			DocumentationLocation documentationLocation);
 
 	/**
 	 * Gets the persistence manager for a single documentation location by the
@@ -347,8 +347,7 @@ public interface KnowledgePersistenceManager {
 	 *         the element cannot be found.
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
-	static AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(
-			DecisionKnowledgeElement element) {
+	static AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(DecisionKnowledgeElement element) {
 		if (element == null) {
 			throw new IllegalArgumentException("The element cannot be null.");
 		}
@@ -372,10 +371,10 @@ public interface KnowledgePersistenceManager {
 
 	static void insertStatus(DecisionKnowledgeElement element) {
 		if (element.getType() == KnowledgeType.DECISION) {
-			StatusPersistenceManager.setStatusForElement(element, KnowledgeStatus.DECIDED);
+			element.setStatus(KnowledgeStatus.DECIDED);
 		}
 		if (element.getType() == KnowledgeType.ALTERNATIVE) {
-			StatusPersistenceManager.setStatusForElement(element, KnowledgeStatus.IDEA);
+			element.setStatus(KnowledgeStatus.IDEA);
 		}
 	}
 }
