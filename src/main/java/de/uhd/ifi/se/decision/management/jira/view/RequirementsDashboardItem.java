@@ -106,7 +106,8 @@ public class RequirementsDashboardItem  implements ContextProvider {
         newContext.put("projectNamesMap", projectNameMap);
         return newContext;
     }
-	private Map<String, Object> createValues(String projectKey, String jiraIssueTypeId) {
+    
+    public Map<String, Object> createValues(String projectKey, String jiraIssueTypeId) {
 		Long projectId = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey).getId();
 		ApplicationUser loggedUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 		

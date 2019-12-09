@@ -19,6 +19,10 @@ import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
 
 
@@ -68,5 +72,16 @@ public class TestRequirementsDashboardItem {
 		assertTrue(ctxResult.containsKey("issueTypeNamesMap"));
 		Map<String, Object> issueTypeNamesMap = (Map<String, Object>) ctxResult.get("issueTypeNamesMap");
 		assertFalse(issueTypeNamesMap.isEmpty());
-	}	
+	}
+	
+	@Test(expected = Exception.class)
+	@NonTransactional
+	public void testCreationWithObjects() {
+		PartOfJiraIssueText partOfJiraIssueText = JiraIssues
+				.getSentencesForCommentText("More Comment with some text").get(0);
+		partOfJiraIssueText.setType(KnowledgeType.ALTERNATIVE);
+		new JiraIssueTextPersistenceManager("").updateDecisionKnowledgeElement(partOfJiraIssueText, null);
+
+		assertNotNull(this.dashboardItem.createValues("TEST","10100"));
+	}
 }
