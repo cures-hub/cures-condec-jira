@@ -62,7 +62,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		boolean isDeleted = false;
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("ID = ?", id))) {
-			StatusPersistenceManager.deleteStatus(new PartOfJiraIssueTextImpl(databaseEntry));
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.JIRAISSUETEXT);
 			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new PartOfJiraIssueTextImpl(databaseEntry));
 			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
@@ -369,6 +368,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		databaseEntry.setStartPosition(element.getStartPosition());
 		databaseEntry.setEndPosition(element.getEndPosition());
 		databaseEntry.setJiraIssueId(element.getJiraIssueId());
+		databaseEntry.setStatus(element.getStatusAsString());
 	}
 
 	@Override
@@ -430,7 +430,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			StatusPersistenceManager.setStatusForElement(sentence, KnowledgeStatus.REJECTED);
 		}
 		if (sentence.getType().equals(KnowledgeType.ALTERNATIVE) && element.getType().equals(KnowledgeType.DECISION)) {
-			StatusPersistenceManager.deleteStatus(element);
+			StatusPersistenceManager.setStatusForElement(sentence, KnowledgeStatus.DECIDED);
 		}
 		return updateElementInDatabase(element, sentence, user);
 	}

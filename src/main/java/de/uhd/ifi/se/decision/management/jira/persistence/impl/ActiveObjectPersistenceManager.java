@@ -47,6 +47,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 			databaseEntry.setDescription(description);
 		}
 		databaseEntry.setType(element.getType().replaceProAndConWithArgument().toString());
+		databaseEntry.setStatus(element.getStatusAsString());
 	}
 
 	public ActiveObjectPersistenceManager(String projectKey) {
@@ -68,7 +69,6 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 		boolean isDeleted = false;
 		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", id))) {
-			StatusPersistenceManager.deleteStatus(new DecisionKnowledgeElementImpl(databaseEntry));
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.ACTIVEOBJECT);
 			isDeleted = DecisionKnowledgeElementInDatabase.deleteElement(databaseEntry);
 		}
@@ -156,7 +156,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 				}
 				if (KnowledgeType.getKnowledgeType(databaseEntry.getType()).equals(KnowledgeType.ALTERNATIVE)
 						&& element.getType().equals(KnowledgeType.DECISION)) {
-					StatusPersistenceManager.deleteStatus(element);
+					StatusPersistenceManager.setStatusForElement(element, KnowledgeStatus.DECIDED);
 				}
 				setParameters(element, databaseEntry);
 				databaseEntry.save();
