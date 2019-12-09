@@ -52,10 +52,6 @@ public enum KnowledgeStatus {
 		}
 	}
 
-	public static KnowledgeType getNewKnowledgeTypeForStatus(DecisionKnowledgeElement element) {
-		return getNewKnowledgeTypeForStatus(element.getStatus(), element.getType());
-	}
-
 	public static KnowledgeStatus getNewKnowledgeStatusForType(DecisionKnowledgeElement formerElement,
 			DecisionKnowledgeElement newElement) {
 		return getNewKnowledgeStatusForType(formerElement.getType(), newElement.getType(), newElement.getStatus());
@@ -70,6 +66,10 @@ public enum KnowledgeStatus {
 			return DECIDED;
 		}
 		return newStatus;
+	}
+
+	public static KnowledgeType getNewKnowledgeTypeForStatus(DecisionKnowledgeElement element) {
+		return getNewKnowledgeTypeForStatus(element.getStatus(), element.getType());
 	}
 
 	public static KnowledgeType getNewKnowledgeTypeForStatus(KnowledgeStatus status, KnowledgeType formerType) {

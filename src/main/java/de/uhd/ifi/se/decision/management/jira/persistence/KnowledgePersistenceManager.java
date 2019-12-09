@@ -11,7 +11,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
@@ -368,13 +367,4 @@ public interface KnowledgePersistenceManager {
 	 * @see DocumentationLocation
 	 */
 	DecisionKnowledgeElement getDecisionKnowledgeElement(long id, DocumentationLocation documentationLocation);
-
-	static void insertStatus(DecisionKnowledgeElement element) {
-		if (element.getType() == KnowledgeType.DECISION) {
-			element.setStatus(KnowledgeStatus.DECIDED);
-		}
-		if (element.getType() == KnowledgeType.ALTERNATIVE) {
-			element.setStatus(KnowledgeStatus.IDEA);
-		}
-	}
 }

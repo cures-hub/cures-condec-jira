@@ -193,8 +193,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		String projectKey = element.getProject().getProjectKey();
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(element.getProject());
 
 		DecisionKnowledgeElement formerElement = persistenceManager.getDecisionKnowledgeElement(element.getId(),
 				element.getDocumentationLocation());

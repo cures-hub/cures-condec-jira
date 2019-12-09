@@ -241,6 +241,9 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	@Override
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
 			ApplicationUser user, DecisionKnowledgeElement parentElement) {
+		if (element.getStatus() == KnowledgeStatus.UNDEFINED) {
+			element.setStatus(KnowledgeStatus.getDefaultStatus(element.getType()));
+		}
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getManagerForSingleLocation(element);
 		DecisionKnowledgeElement elementWithId = persistenceManager.insertDecisionKnowledgeElement(element, user,

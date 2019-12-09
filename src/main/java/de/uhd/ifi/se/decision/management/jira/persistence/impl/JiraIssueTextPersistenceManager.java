@@ -311,7 +311,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(databaseEntry);
 		if (sentence.getId() > 0 && sentence.isRelevant()) {
-			KnowledgePersistenceManager.insertStatus(sentence);
 			KnowledgeGraph.getOrCreate(projectKey).addVertex(sentence);
 		}
 		return sentence;
@@ -354,7 +353,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		databaseEntry.setType(element.getTypeAsString());
 		databaseEntry.setRelevant(element.isRelevant());
 		databaseEntry.setValidated(element.isValidated());
-		// TODO Is there a better place for this method?
 		if (element.isValidated()) {
 			classificationTrainer.update(element);
 		}
@@ -374,59 +372,48 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return updatePartOfJiraIssueText(sentence, user);
 	}
 
-	@Override
-	public ApplicationUser getCreator(DecisionKnowledgeElement element) {
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) getDecisionKnowledgeElement(element.getId());
-		if (sentence == null) {
-			LOGGER.error("Element could not be found.");
-			return null;
-		}
-		return sentence.getCreator();
-	}
-
-	public static boolean updatePartOfJiraIssueText(PartOfJiraIssueText element, ApplicationUser user) {
-		if (element == null || element.getProject() == null) {
+	public static boolean updatePartOfJiraIssueText(PartOfJiraIssueText newElement, ApplicationUser user) {
+		if (newElement == null || newElement.getProject() == null) {
 			return false;
 		}
-
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(element.getProject().getProjectKey()).getJiraIssueTextManager();
 
 		// Get corresponding element from database
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager
-				.getDecisionKnowledgeElement(element.getId());
-		if (sentence == null) {
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(newElement.getProject()).getJiraIssueTextManager();
+		PartOfJiraIssueText formerElement = (PartOfJiraIssueText) persistenceManager
+				.getDecisionKnowledgeElement(newElement);
+		if (formerElement == null) {
 			return false;
 		}
-		// only the knowledge type has changed
-		if (element.getSummary() == null) {
-			element.setSummary(sentence.getSummary());
-			element.setDescription(sentence.getDescription());
+		// only the knowledge type or status has changed
+		if (newElement.getSummary() == null) {
+			newElement.setSummary(formerElement.getSummary());
+			newElement.setDescription(formerElement.getDescription());
 		}
-		return updateElementInDatabase(element, sentence, user);
+		return updateElementInDatabase(newElement, formerElement, user);
 	}
 
-	private static boolean updateElementInDatabase(PartOfJiraIssueText element, PartOfJiraIssueText sentence,
+	private static boolean updateElementInDatabase(PartOfJiraIssueText newElement, PartOfJiraIssueText formerElement,
 			ApplicationUser user) {
-		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getType());
-		String changedPartOfText = tag + element.getDescription() + tag;
+		String tag = AbstractKnowledgeClassificationMacro.getTag(newElement.getType());
+		String changedPartOfText = tag + newElement.getDescription() + tag;
 
 		String text = "";
-		MutableComment mutableComment = sentence.getComment();
+		MutableComment mutableComment = formerElement.getComment();
 		if (mutableComment == null) {
-			text = sentence.getJiraIssueDescription();
+			text = formerElement.getJiraIssueDescription();
 		} else {
 			text = mutableComment.getBody();
 		}
 
-		String firstPartOfText = text.substring(0, sentence.getStartPosition());
-		String lastPartOfText = text.substring(sentence.getEndPosition());
+		String firstPartOfText = text.substring(0, formerElement.getStartPosition());
+		String lastPartOfText = text.substring(formerElement.getEndPosition());
 
 		String newBody = firstPartOfText + changedPartOfText + lastPartOfText;
 
 		JiraIssueTextExtractionEventListener.editCommentLock = true;
 		if (mutableComment == null) {
-			MutableIssue jiraIssue = (MutableIssue) sentence.getJiraIssue();
+			MutableIssue jiraIssue = (MutableIssue) formerElement.getJiraIssue();
 			jiraIssue.setDescription(newBody);
 			JiraIssuePersistenceManager.updateJiraIssue(jiraIssue, user);
 		} else {
@@ -435,17 +422,18 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		}
 		JiraIssueTextExtractionEventListener.editCommentLock = false;
 
-		int lengthDifference = changedPartOfText.length() - sentence.getLength();
-		updateSentenceLengthForOtherSentencesInSameComment(sentence, lengthDifference);
+		int lengthDifference = changedPartOfText.length() - formerElement.getLength();
+		updateSentenceLengthForOtherSentencesInSameComment(formerElement, lengthDifference);
 
-		sentence.setEndPosition(sentence.getStartPosition() + changedPartOfText.length());
-		sentence.setType(element.getType());
-		sentence.setValidated(element.isValidated());
-		sentence.setRelevant(element.getType() != KnowledgeType.OTHER);
-		sentence.setStatus(KnowledgeStatus.getNewKnowledgeStatusForType(sentence, element));
+		formerElement.setEndPosition(formerElement.getStartPosition() + changedPartOfText.length());
+		formerElement.setType(newElement.getType());
+		formerElement.setValidated(newElement.isValidated());
+		formerElement.setRelevant(newElement.getType() != KnowledgeType.OTHER);
+		System.out.println(newElement.getStatusAsString());
+		formerElement.setStatus(KnowledgeStatus.getNewKnowledgeStatusForType(formerElement, newElement));
 		// sentence.setCommentId(element.getCommentId());
 
-		return updateInDatabase(sentence);
+		return updateInDatabase(formerElement);
 	}
 
 	public static boolean updateInDatabase(PartOfJiraIssueText sentence) {
@@ -472,6 +460,16 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				otherSentenceInComment.save();
 			}
 		}
+	}
+
+	@Override
+	public ApplicationUser getCreator(DecisionKnowledgeElement element) {
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) getDecisionKnowledgeElement(element.getId());
+		if (sentence == null) {
+			LOGGER.error("Element could not be found.");
+			return null;
+		}
+		return sentence.getCreator();
 	}
 
 	public boolean createLinksForNonLinkedElements(long jiraIssueId) {
