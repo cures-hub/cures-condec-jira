@@ -43,8 +43,7 @@ public interface KnowledgeRest {
 
 	Response getSummarizedCode(long id, String projectKey, String documentationLocation, int probability);
 
+	// TODO Remove and replace with updateElement method
 	Response setStatus(HttpServletRequest request, String stringStatus,
 			DecisionKnowledgeElement decisionKnowledgeElement);
-
-	Response getStatus(HttpServletRequest request, DecisionKnowledgeElement decisionKnowledgeElement);
 }

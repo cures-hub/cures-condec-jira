@@ -445,24 +445,4 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error", "Setting element status failed.")).build();
 	}
-
-	@Override
-	@Path("/getStatus")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getStatus(@Context HttpServletRequest request, DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (request == null || decisionKnowledgeElement == null || decisionKnowledgeElement.getId() <= 0) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Setting element status failed due to a bad request.")).build();
-		}
-		AbstractPersistenceManagerForSingleLocation manager = KnowledgePersistenceManager
-				.getOrCreate(decisionKnowledgeElement.getProject().getProjectKey())
-				.getManagerForSingleLocation(decisionKnowledgeElement.getDocumentationLocation().getIdentifier());
-		DecisionKnowledgeElement element = manager.getDecisionKnowledgeElement(decisionKnowledgeElement.getKey());
-		if (element == null) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Get element status failed.")).build();
-		}
-		return Response.ok(element.getStatusAsString()).build();
-	}
 }

@@ -417,9 +417,7 @@
 
 		// Fill HTML elements
 		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function (decisionKnowledgeElement) {
-			conDecAPI.getStatus(decisionKnowledgeElement, function (status) {
-				fillSelectStatusFiled(selectStatusField, status, decisionKnowledgeElement);
-			});
+				fillSelectStatusFiled(selectStatusField, decisionKnowledgeElement.status, decisionKnowledgeElement);
 		});
 
 		// Set onclick listener on buttons
@@ -640,7 +638,7 @@
 					reject(err);
 				});
 			}).then(function (values) {
-				//set issue types
+				// set issue types
 				var issueTypes = values.issueTypes;
 				var preSelectedIssueTypes = values.preSelectedIssueTypes;
 				manageIssueTypes(issueTypes, preSelectedIssueTypes);

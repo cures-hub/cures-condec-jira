@@ -323,22 +323,6 @@
 			});
 	};
 
-	// TODO Remove this REST methods because the status is part of the knowledge element object
-	ConDecAPI.prototype.getStatus = function getStatus(decisionElement, callback) {
-		var element = {
-			"id": decisionElement.id,
-			"key": decisionElement.key,
-			"documentationLocation": decisionElement.documentationLocation,
-			"projectKey": projectKey
-		};
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getStatus.json", element,
-			function (error, status) {
-				if (error === null) {
-					callback(status);
-				}
-			});
-	};
-
 	/*
 	 * external references: condec.jira.issue.module
 	 */

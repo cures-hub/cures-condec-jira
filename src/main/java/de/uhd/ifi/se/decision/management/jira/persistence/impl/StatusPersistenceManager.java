@@ -34,18 +34,17 @@ public class StatusPersistenceManager {
 		if (element == null) {
 			return false;
 		}
-		if (element.getType().equals(KnowledgeType.DECISION)) {
-			if (status.equals(KnowledgeStatus.REJECTED) || status.equals(KnowledgeStatus.IDEA)
-					|| status.equals(KnowledgeStatus.DISCARDED)) {
+		if (element.getType() == KnowledgeType.DECISION) {
+			if (status == KnowledgeStatus.IDEA || status == KnowledgeStatus.DISCARDED) {
 				ApplicationUser user = element.getCreator();
 				element.setType(KnowledgeType.ALTERNATIVE);
 				manager.updateDecisionKnowledgeElementWithoutStatusChange(element, user);
 			}
-			if (status.equals(KnowledgeStatus.DECIDED)) {
+			if (status == KnowledgeStatus.DECIDED) {
 				return false;
 			}
 		}
-		if (element.getType().equals(KnowledgeType.ALTERNATIVE) && status.equals(KnowledgeStatus.DECIDED)) {
+		if (element.getType() == KnowledgeType.ALTERNATIVE && status == KnowledgeStatus.DECIDED) {
 			ApplicationUser user = manager.getCreator(element);
 			element.setType(KnowledgeType.DECISION);
 			manager.updateDecisionKnowledgeElementWithoutStatusChange(element, user);
