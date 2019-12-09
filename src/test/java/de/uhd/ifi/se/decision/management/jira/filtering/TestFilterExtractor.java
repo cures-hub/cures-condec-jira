@@ -36,7 +36,7 @@ public class TestFilterExtractor extends TestSetUp {
 		settings = new FilterSettingsImpl();
 		allDecisions = new ArrayList<>();
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(244, "TEST", "", "Decision", "TEST",
-				"TEST-244", "i");
+				"TEST-244", "i", "decided");
 		allDecisions.add(element);
 		List<String> doculoco = new ArrayList<>();
 		for (DocumentationLocation location : DocumentationLocation.getAllDocumentationLocations()) {

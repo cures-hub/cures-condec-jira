@@ -46,7 +46,7 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 	}
 
 	public DecisionKnowledgeElementImpl(long id, String summary, String description, KnowledgeType type,
-			String projectKey, String key, DocumentationLocation documentationLocation) {
+			String projectKey, String key, DocumentationLocation documentationLocation, KnowledgeStatus status) {
 		this.id = id;
 		this.summary = summary;
 		this.description = description;
@@ -54,6 +54,7 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 		this.project = new DecisionKnowledgeProjectImpl(projectKey);
 		this.key = key;
 		this.documentationLocation = documentationLocation;
+		this.status = status;
 	}
 
 	public DecisionKnowledgeElementImpl(long id, String projectKey, String documentationLocation) {
@@ -64,14 +65,16 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 	}
 
 	public DecisionKnowledgeElementImpl(long id, String summary, String description, String type, String projectKey,
-			String key, String documentationLocation) {
+			String key, String documentationLocation, String status) {
 		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key,
-				DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation));
+				DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation),
+				KnowledgeStatus.getKnowledgeStatus(status));
 	}
 
 	public DecisionKnowledgeElementImpl(long id, String summary, String description, String type, String projectKey,
-			String key, DocumentationLocation documentationLocation) {
-		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key, documentationLocation);
+			String key, DocumentationLocation documentationLocation, String status) {
+		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key, documentationLocation,
+				KnowledgeStatus.getKnowledgeStatus(status));
 	}
 
 	public DecisionKnowledgeElementImpl(Issue issue) {
@@ -93,7 +96,7 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 
 	public DecisionKnowledgeElementImpl(DecisionKnowledgeElementInDatabase entity) {
 		this(entity.getId(), entity.getSummary(), entity.getDescription(), entity.getType(), entity.getProjectKey(),
-				entity.getKey(), DocumentationLocation.ACTIVEOBJECT);
+				entity.getKey(), DocumentationLocation.ACTIVEOBJECT, entity.getStatus());
 	}
 
 	@Override

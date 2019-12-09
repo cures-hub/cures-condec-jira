@@ -10,6 +10,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 
@@ -35,7 +36,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 		String key = "Test";
 
 		this.decisionKnowledgeElement = new DecisionKnowledgeElementImpl(id, summary, description, type, projectKey,
-				key, DocumentationLocation.ACTIVEOBJECT);
+				key, DocumentationLocation.ACTIVEOBJECT, KnowledgeStatus.UNDEFINED);
 	}
 
 	@Test
@@ -46,7 +47,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 	@Test
 	public void testGetTypeOther() {
 		DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(id, summary, description,
-				"Work-Item", projectKey, "TEST-1", DocumentationLocation.ACTIVEOBJECT);
+				"Work-Item", projectKey, "TEST-1", DocumentationLocation.ACTIVEOBJECT, "");
 		assertEquals(KnowledgeType.OTHER, decisionKnowledgeElement.getType());
 	}
 
