@@ -15,7 +15,6 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -150,31 +149,8 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeElementInDatabase.class)) {
 			if (databaseEntry.getId() == element.getId()) {
-				if (KnowledgeType.getKnowledgeType(databaseEntry.getType()).equals(KnowledgeType.DECISION)
-						&& element.getType().equals(KnowledgeType.ALTERNATIVE)) {
-					element.setStatus(KnowledgeStatus.REJECTED);
-				}
-				if (KnowledgeType.getKnowledgeType(databaseEntry.getType()).equals(KnowledgeType.ALTERNATIVE)
-						&& element.getType().equals(KnowledgeType.DECISION)) {
-					element.setStatus(KnowledgeStatus.DECIDED);
-				}
-				setParameters(element, databaseEntry);
-				databaseEntry.save();
-				new WebhookConnector(projectKey).sendElementChanges(element);
-				// KnowledgePersistenceManager.updateGraphNode(element);
-				return true;
-			}
-		}
-		LOGGER.error("Updating of decision knowledge element in database failed.");
-		return false;
-	}
-
-	@Override
-	public boolean updateDecisionKnowledgeElementWithoutStatusChange(DecisionKnowledgeElement element,
-			ApplicationUser user) {
-		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
-				.find(DecisionKnowledgeElementInDatabase.class)) {
-			if (databaseEntry.getId() == element.getId()) {
+				element.setStatus(KnowledgeStatus
+						.getNewKnowledgeStatusForType(new DecisionKnowledgeElementImpl(databaseEntry), element));
 				setParameters(element, databaseEntry);
 				databaseEntry.save();
 				new WebhookConnector(projectKey).sendElementChanges(element);

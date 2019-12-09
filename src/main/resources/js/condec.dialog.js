@@ -428,7 +428,7 @@
 		for (var index = 0; index < knowledgeStatus.length; index++) {
 			var isSelected = "";
 			console.log(element.status);
-			if (knowledgeStatus[index].equalsIgnoreCase(element.status)) {
+			if (element.status.toUpperCase() === knowledgeStatus[index].toUpperCase()) {
 				isSelected = "selected";
 			}
 			selectField.insertAdjacentHTML("beforeend", "<option " + isSelected + " value='"

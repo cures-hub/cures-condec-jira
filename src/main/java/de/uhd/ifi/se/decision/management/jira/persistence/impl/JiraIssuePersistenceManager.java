@@ -307,24 +307,8 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueResult issueResult = issueService.getIssue(user, element.getId());
 		MutableIssue issueToBeUpdated = issueResult.getIssue();
-		DecisionKnowledgeElement knowledgeElementToBeUpdate = new DecisionKnowledgeElementImpl(issueToBeUpdated);
-		if (knowledgeElementToBeUpdate.getType().equals(KnowledgeType.DECISION)
-				&& element.getType().equals(KnowledgeType.ALTERNATIVE)) {
-			knowledgeElementToBeUpdate.setStatus(KnowledgeStatus.REJECTED);
-		}
-		if (knowledgeElementToBeUpdate.getType().equals(KnowledgeType.ALTERNATIVE)
-				&& element.getType().equals(KnowledgeType.DECISION)) {
-			knowledgeElementToBeUpdate.setStatus(KnowledgeStatus.DECIDED);
-		}
-		return dataUpdateElement(element, issueToBeUpdated, user, issueService);
-	}
-
-	@Override
-	public boolean updateDecisionKnowledgeElementWithoutStatusChange(DecisionKnowledgeElement element,
-			ApplicationUser user) {
-		IssueService issueService = ComponentAccessor.getIssueService();
-		IssueResult issueResult = issueService.getIssue(user, element.getId());
-		MutableIssue issueToBeUpdated = issueResult.getIssue();
+		DecisionKnowledgeElement formerElement = new DecisionKnowledgeElementImpl(issueToBeUpdated);
+		element.setStatus(KnowledgeStatus.getNewKnowledgeStatusForType(formerElement, element));
 		return dataUpdateElement(element, issueToBeUpdated, user, issueService);
 	}
 

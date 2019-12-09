@@ -375,22 +375,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	@Override
-	public boolean updateDecisionKnowledgeElementWithoutStatusChange(DecisionKnowledgeElement element,
-			ApplicationUser user) {
-		if (element == null) {
-			return false;
-		}
-		PartOfJiraIssueText partOfJiraIssueText = new PartOfJiraIssueTextImpl(element);
-		partOfJiraIssueText.setValidated(true);
-		PartOfJiraIssueText partOfJiraIssueTextInDatabase = (PartOfJiraIssueText) getDecisionKnowledgeElement(
-				element.getId());
-		if (partOfJiraIssueTextInDatabase == null) {
-			return false;
-		}
-		return updateElementInDatabase(partOfJiraIssueText, partOfJiraIssueTextInDatabase, user);
-	}
-
-	@Override
 	public ApplicationUser getCreator(DecisionKnowledgeElement element) {
 		PartOfJiraIssueText sentence = (PartOfJiraIssueText) getDecisionKnowledgeElement(element.getId());
 		if (sentence == null) {
@@ -418,12 +402,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (element.getSummary() == null) {
 			element.setSummary(sentence.getSummary());
 			element.setDescription(sentence.getDescription());
-		}
-		if (sentence.getType().equals(KnowledgeType.DECISION) && element.getType().equals(KnowledgeType.ALTERNATIVE)) {
-			sentence.setStatus(KnowledgeStatus.REJECTED);
-		}
-		if (sentence.getType().equals(KnowledgeType.ALTERNATIVE) && element.getType().equals(KnowledgeType.DECISION)) {
-			sentence.setStatus(KnowledgeStatus.DECIDED);
 		}
 		return updateElementInDatabase(element, sentence, user);
 	}
@@ -464,6 +442,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		sentence.setType(element.getType());
 		sentence.setValidated(element.isValidated());
 		sentence.setRelevant(element.getType() != KnowledgeType.OTHER);
+		sentence.setStatus(KnowledgeStatus.getNewKnowledgeStatusForType(sentence, element));
 		// sentence.setCommentId(element.getCommentId());
 
 		return updateInDatabase(sentence);

@@ -56,6 +56,22 @@ public enum KnowledgeStatus {
 		return getNewKnowledgeTypeForStatus(element.getStatus(), element.getType());
 	}
 
+	public static KnowledgeStatus getNewKnowledgeStatusForType(DecisionKnowledgeElement formerElement,
+			DecisionKnowledgeElement newElement) {
+		return getNewKnowledgeStatusForType(formerElement.getType(), newElement.getType(), newElement.getStatus());
+	}
+
+	public static KnowledgeStatus getNewKnowledgeStatusForType(KnowledgeType formerType, KnowledgeType newType,
+			KnowledgeStatus newStatus) {
+		if (formerType == KnowledgeType.DECISION && newType == KnowledgeType.ALTERNATIVE) {
+			return REJECTED;
+		}
+		if (formerType == KnowledgeType.ALTERNATIVE && newType == KnowledgeType.DECISION) {
+			return DECIDED;
+		}
+		return newStatus;
+	}
+
 	public static KnowledgeType getNewKnowledgeTypeForStatus(KnowledgeStatus status, KnowledgeType formerType) {
 		if (status == null || formerType == null) {
 			return KnowledgeType.OTHER;
