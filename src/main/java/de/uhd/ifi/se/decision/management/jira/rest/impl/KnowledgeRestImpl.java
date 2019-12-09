@@ -155,29 +155,30 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 		DecisionKnowledgeElement existingElement = persistenceManagerForExistingElement
 				.getDecisionKnowledgeElement(idOfExistingElement);
 
-		DecisionKnowledgeElement elementWithId = persistenceManager.insertDecisionKnowledgeElement(element, user,
+		DecisionKnowledgeElement newElementWithId = persistenceManager.insertDecisionKnowledgeElement(element, user,
 				existingElement);
 
-		if (elementWithId == null) {
+		if (newElementWithId == null) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
 		}
 
 		if (idOfExistingElement == 0) {
-			return Response.status(Status.OK).entity(elementWithId).build();
+			return Response.status(Status.OK).entity(newElementWithId).build();
 		}
-		Link link = Link.instantiateDirectedLink(existingElement, elementWithId);
+		Link link = Link.instantiateDirectedLink(existingElement, newElementWithId);
 		if (link.getSource() == null || link.getTarget() == null) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
 		}
-		long linkId = KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, user);
+		persistenceManager.updateIssueStatus(existingElement, newElementWithId, user);
+		long linkId = persistenceManager.insertLink(link, user);
 		if (linkId == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
 		}
 
-		return Response.status(Status.OK).entity(elementWithId).build();
+		return Response.status(Status.OK).entity(newElementWithId).build();
 	}
 
 	@Override
@@ -213,8 +214,8 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 
 		DecisionKnowledgeElement updatedElement = persistenceManager.getDecisionKnowledgeElement(element.getId(),
 				element.getDocumentationLocation());
-		long linkId = KnowledgePersistenceManager.getOrCreate(element.getProject().getProjectKey()).updateLink(
-				updatedElement, formerElement.getType(), idOfParentElement, documentationLocationOfParentElement, user);
+		long linkId = persistenceManager.updateLink(updatedElement, formerElement.getType(), idOfParentElement,
+				documentationLocationOfParentElement, user);
 		if (linkId == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Link could not be updated.")).build();
@@ -264,6 +265,8 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 				.getManagerForSingleLocation(documentationLocationOfParent).getDecisionKnowledgeElement(idOfParent);
 		DecisionKnowledgeElement childElement = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getManagerForSingleLocation(documentationLocationOfChild).getDecisionKnowledgeElement(idOfChild);
+
+		KnowledgePersistenceManager.getOrCreate(projectKey).updateIssueStatus(parentElement, childElement, user);
 
 		Link link;
 		if (linkTypeName == null) {

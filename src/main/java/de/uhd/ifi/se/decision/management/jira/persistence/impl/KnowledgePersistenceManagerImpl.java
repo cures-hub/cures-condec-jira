@@ -151,6 +151,17 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	}
 
 	@Override
+	public boolean updateIssueStatus(DecisionKnowledgeElement existingElement, DecisionKnowledgeElement newElement,
+			ApplicationUser user) {
+		if (KnowledgeStatus.isIssueResolved(existingElement, newElement)) {
+			existingElement.setStatus(KnowledgeStatus.RESOLVED);
+			updateDecisionKnowledgeElement(existingElement, user);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
 	public long insertLink(DecisionKnowledgeElement parentElement, DecisionKnowledgeElement childElement,
 			ApplicationUser user) {
 		if (parentElement == null || childElement == null) {
@@ -214,6 +225,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 
 		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
 		KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
+
 		return this.insertLink(link, user);
 	}
 

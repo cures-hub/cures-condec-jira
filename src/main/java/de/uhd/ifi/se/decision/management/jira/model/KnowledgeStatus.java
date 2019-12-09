@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
-
 public enum KnowledgeStatus {
 	IDEA, DISCARDED, DECIDED, REJECTED, RESOLVED, UNRESOLVED, UNDEFINED;
 
@@ -68,9 +65,8 @@ public enum KnowledgeStatus {
 		return newStatus;
 	}
 
-	public static KnowledgeType getNewKnowledgeTypeForStatus(DecisionKnowledgeElement formerElement,
-			DecisionKnowledgeElement newElement) {
-		return getNewKnowledgeTypeForStatus(newElement.getStatus(), formerElement.getType());
+	public static KnowledgeType getNewKnowledgeTypeForStatus(DecisionKnowledgeElement newElement) {
+		return getNewKnowledgeTypeForStatus(newElement.getStatus(), newElement.getType());
 	}
 
 	public static KnowledgeType getNewKnowledgeTypeForStatus(KnowledgeStatus newStatus, KnowledgeType formerType) {
@@ -89,17 +85,9 @@ public enum KnowledgeStatus {
 		return formerType;
 	}
 
-	public static KnowledgeStatus getStatusForIssue(DecisionKnowledgeElement element) {
-		AbstractPersistenceManagerForSingleLocation manager = KnowledgePersistenceManager
-				.getOrCreate(element.getProject()).getManagerForSingleLocation(element.getDocumentationLocation());
-
-		// for (DecisionKnowledgeElement linkedElement :
-		// manager.getElementsLinkedWithOutwardLinks(element)) {
-		// if (linkedElement.getType().equals(KnowledgeType.DECISION)) {
-		// return KnowledgeStatus.RESOLVED;
-		// }
-		// }
-		return UNRESOLVED;
+	public static boolean isIssueResolved(DecisionKnowledgeElement formerElement, DecisionKnowledgeElement newElement) {
+		return formerElement.getType() == KnowledgeType.ISSUE && newElement.getType() == KnowledgeType.DECISION
+				&& newElement.getStatus() == KnowledgeStatus.DECIDED;
 	}
 
 	/**

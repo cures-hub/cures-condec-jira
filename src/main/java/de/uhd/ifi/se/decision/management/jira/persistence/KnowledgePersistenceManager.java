@@ -367,4 +367,7 @@ public interface KnowledgePersistenceManager {
 	 * @see DocumentationLocation
 	 */
 	DecisionKnowledgeElement getDecisionKnowledgeElement(long id, DocumentationLocation documentationLocation);
+
+	boolean updateIssueStatus(DecisionKnowledgeElement existingElement, DecisionKnowledgeElement newElement,
+			ApplicationUser user);
 }
