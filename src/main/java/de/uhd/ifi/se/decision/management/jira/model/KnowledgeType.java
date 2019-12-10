@@ -30,7 +30,7 @@ public enum KnowledgeType {
 	}
 
 	/**
-	 * Convert a string to a knowledge type.
+	 * Converts a string to a knowledge type.
 	 *
 	 * @param type
 	 *            as a String.
@@ -166,7 +166,7 @@ public enum KnowledgeType {
 	}
 
 	/**
-	 * Convert all knowledge types to a list of String.
+	 * Converts all knowledge types to a list of String.
 	 *
 	 * @return list of knowledge types as Strings starting with a capital letter.
 	 */

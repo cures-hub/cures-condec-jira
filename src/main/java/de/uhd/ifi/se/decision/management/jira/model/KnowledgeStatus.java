@@ -4,9 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Status of decision problems (=issues) and solution options (=decisions and
+ * alternatives). Issues can have the state "resolved" or "unresolved".
+ */
 public enum KnowledgeStatus {
 	IDEA, DISCARDED, DECIDED, REJECTED, RESOLVED, UNRESOLVED, UNDEFINED;
 
+	/**
+	 * Converts a string to a knowledge status.
+	 *
+	 * @param status
+	 *            as a String.
+	 * @return knowledge status.
+	 */
 	public static KnowledgeStatus getKnowledgeStatus(String status) {
 		if (status == null || status.isEmpty()) {
 			return UNDEFINED;
@@ -19,8 +30,13 @@ public enum KnowledgeStatus {
 		return UNDEFINED;
 	}
 
+	/**
+	 * Converts all knowledge status to a list of String.
+	 *
+	 * @return list of knowledge status as Strings in lower case.
+	 */
 	public static List<String> toList() {
-		List<String> knowledgeStatus = new ArrayList<>();
+		List<String> knowledgeStatus = new ArrayList<String>();
 		for (KnowledgeStatus status : KnowledgeStatus.values()) {
 			knowledgeStatus.add(status.toString());
 		}
@@ -29,10 +45,19 @@ public enum KnowledgeStatus {
 
 	@Override
 	public String toString() {
-		return this.name().substring(0, 1).toUpperCase(Locale.ENGLISH)
-				+ this.name().substring(1).toLowerCase(Locale.ENGLISH);
+		return this.name().toLowerCase(Locale.ENGLISH);
 	}
 
+	/**
+	 * Returns the default status that is set when a new decision knowledge element
+	 * is created. The default status for alternatives is "idea", for decision is
+	 * "decided", and for issues is "unresolved".
+	 * 
+	 * @param type
+	 *            {@link KnowledgeType} object.
+	 * @return default status that is set when a new decision knowledge element is
+	 *         created, e.g. "idea" for alternative.
+	 */
 	public static KnowledgeStatus getDefaultStatus(KnowledgeType type) {
 		if (type == null) {
 			return UNDEFINED;
@@ -49,6 +74,17 @@ public enum KnowledgeStatus {
 		}
 	}
 
+	/**
+	 * If the knowledge type changes, the status might change as well. For example,
+	 * when an alternative is picked as the decision, the status changes to
+	 * "decided".
+	 * 
+	 * @param formerElement
+	 *            {@link DecisionKnowledgeElement} before the change.
+	 * @param newElement
+	 *            {@link DecisionKnowledgeElement} after it was updated.
+	 * @return new status after the change of the {@link KnowledgeType}.
+	 */
 	public static KnowledgeStatus getNewKnowledgeStatusForType(DecisionKnowledgeElement formerElement,
 			DecisionKnowledgeElement newElement) {
 		return getNewKnowledgeStatusForType(formerElement.getType(), newElement.getType(), newElement.getStatus());
@@ -65,6 +101,16 @@ public enum KnowledgeStatus {
 		return newStatus;
 	}
 
+	/**
+	 * If the knowledge status changes, the knowledge type might change as well. For
+	 * example, when the status of an alternative is changed to "decided", the
+	 * alternative becomes a decision.
+	 * 
+	 * @param newElement
+	 *            {@link DecisionKnowledgeElement} after it was updated.
+	 * @return new {@link KnowledgeType} after the change of the
+	 *         {@link KnowledgeStatus}.
+	 */
 	public static KnowledgeType getNewKnowledgeTypeForStatus(DecisionKnowledgeElement newElement) {
 		return getNewKnowledgeTypeForStatus(newElement.getStatus(), newElement.getType());
 	}
@@ -72,9 +118,6 @@ public enum KnowledgeStatus {
 	public static KnowledgeType getNewKnowledgeTypeForStatus(KnowledgeStatus newStatus, KnowledgeType formerType) {
 		if (formerType == null) {
 			return KnowledgeType.OTHER;
-		}
-		if (newStatus == null) {
-			newStatus = getDefaultStatus(formerType);
 		}
 		if (formerType == KnowledgeType.DECISION && (newStatus == IDEA || newStatus == DISCARDED)) {
 			return KnowledgeType.ALTERNATIVE;
@@ -85,9 +128,9 @@ public enum KnowledgeStatus {
 		return formerType;
 	}
 
-	public static boolean isIssueResolved(DecisionKnowledgeElement formerElement, DecisionKnowledgeElement newElement) {
-		return formerElement.getType() == KnowledgeType.ISSUE && newElement.getType() == KnowledgeType.DECISION
-				&& newElement.getStatus() == KnowledgeStatus.DECIDED;
+	public static boolean isIssueResolved(DecisionKnowledgeElement parentElement, DecisionKnowledgeElement childElement) {
+		return parentElement.getType() == KnowledgeType.ISSUE && childElement.getType() == KnowledgeType.DECISION
+				&& childElement.getStatus() == KnowledgeStatus.DECIDED;
 	}
 
 	/**
