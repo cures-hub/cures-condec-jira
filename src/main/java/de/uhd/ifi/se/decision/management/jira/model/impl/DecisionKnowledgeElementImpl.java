@@ -91,6 +91,9 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 			this.key = issue.getKey();
 			this.documentationLocation = DocumentationLocation.JIRAISSUE;
 			this.created = issue.getCreated();
+			// TODO Manage status for decision knowledge elements stored as entire Jira
+			// issues
+			this.status = KnowledgeStatus.RESOLVED;
 		}
 	}
 

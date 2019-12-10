@@ -151,11 +151,11 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	}
 
 	@Override
-	public boolean updateIssueStatus(DecisionKnowledgeElement existingElement, DecisionKnowledgeElement newElement,
+	public boolean updateIssueStatus(DecisionKnowledgeElement parentElement, DecisionKnowledgeElement childElement,
 			ApplicationUser user) {
-		if (KnowledgeStatus.isIssueResolved(existingElement, newElement)) {
-			existingElement.setStatus(KnowledgeStatus.RESOLVED);
-			updateDecisionKnowledgeElement(existingElement, user);
+		if (KnowledgeStatus.isIssueResolved(parentElement, childElement)) {
+			parentElement.setStatus(KnowledgeStatus.RESOLVED);
+			updateDecisionKnowledgeElement(parentElement, user);
 			return true;
 		}
 		return false;

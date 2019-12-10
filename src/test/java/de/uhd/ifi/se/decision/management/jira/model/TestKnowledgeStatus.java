@@ -66,7 +66,6 @@ public class TestKnowledgeStatus {
 
 		assertEquals(KnowledgeType.ALTERNATIVE,
 				KnowledgeStatus.getNewKnowledgeTypeForStatus(KnowledgeStatus.IDEA, KnowledgeType.DECISION));
-
 	}
 
 }
