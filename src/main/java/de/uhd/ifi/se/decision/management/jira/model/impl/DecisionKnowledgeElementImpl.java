@@ -17,6 +17,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -36,6 +37,7 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 	private String key;
 	private Date created;
 	private Date closed;
+	protected KnowledgeStatus status;
 
 	public DecisionKnowledgeElementImpl() {
 		this.description = "";
@@ -44,7 +46,7 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 	}
 
 	public DecisionKnowledgeElementImpl(long id, String summary, String description, KnowledgeType type,
-			String projectKey, String key, DocumentationLocation documentationLocation) {
+			String projectKey, String key, DocumentationLocation documentationLocation, KnowledgeStatus status) {
 		this.id = id;
 		this.summary = summary;
 		this.description = description;
@@ -52,6 +54,7 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 		this.project = new DecisionKnowledgeProjectImpl(projectKey);
 		this.key = key;
 		this.documentationLocation = documentationLocation;
+		this.status = status;
 	}
 
 	public DecisionKnowledgeElementImpl(long id, String projectKey, String documentationLocation) {
@@ -62,14 +65,16 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 	}
 
 	public DecisionKnowledgeElementImpl(long id, String summary, String description, String type, String projectKey,
-			String key, String documentationLocation) {
+			String key, String documentationLocation, String status) {
 		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key,
-				DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation));
+				DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation),
+				KnowledgeStatus.getKnowledgeStatus(status));
 	}
 
 	public DecisionKnowledgeElementImpl(long id, String summary, String description, String type, String projectKey,
-			String key, DocumentationLocation documentationLocation) {
-		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key, documentationLocation);
+			String key, DocumentationLocation documentationLocation, String status) {
+		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key, documentationLocation,
+				KnowledgeStatus.getKnowledgeStatus(status));
 	}
 
 	public DecisionKnowledgeElementImpl(Issue issue) {
@@ -86,12 +91,15 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 			this.key = issue.getKey();
 			this.documentationLocation = DocumentationLocation.JIRAISSUE;
 			this.created = issue.getCreated();
+			// TODO Manage status for decision knowledge elements stored as entire Jira
+			// issues
+			this.status = KnowledgeStatus.RESOLVED;
 		}
 	}
 
 	public DecisionKnowledgeElementImpl(DecisionKnowledgeElementInDatabase entity) {
 		this(entity.getId(), entity.getSummary(), entity.getDescription(), entity.getType(), entity.getProjectKey(),
-				entity.getKey(), DocumentationLocation.ACTIVEOBJECT);
+				entity.getKey(), DocumentationLocation.ACTIVEOBJECT, entity.getStatus());
 	}
 
 	@Override
@@ -327,4 +335,28 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 		return 0;
 	}
 
+	@Override
+	public KnowledgeStatus getStatus() {
+		if (status == null || status == KnowledgeStatus.UNDEFINED) {
+			return KnowledgeStatus.getDefaultStatus(getType());
+		}
+		return status;
+	}
+
+	@Override
+	public void setStatus(KnowledgeStatus status) {
+		this.status = status;
+	}
+
+	@Override
+	@JsonProperty("status")
+	public void setStatus(String status) {
+		this.status = KnowledgeStatus.getKnowledgeStatus(status);
+	}
+
+	@Override
+	@XmlElement(name = "status")
+	public String getStatusAsString() {
+		return getStatus().toString();
+	}
 }

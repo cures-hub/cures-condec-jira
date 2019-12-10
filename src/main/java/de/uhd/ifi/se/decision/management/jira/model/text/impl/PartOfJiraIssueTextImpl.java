@@ -73,11 +73,12 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 	public PartOfJiraIssueTextImpl(PartOfJiraIssueTextInDatabase databaseEntry) {
 		this(databaseEntry.getId(), databaseEntry.getEndPosition(), databaseEntry.getStartPosition(),
 				databaseEntry.isValidated(), databaseEntry.isRelevant(), databaseEntry.getProjectKey(),
-				databaseEntry.getCommentId(), databaseEntry.getJiraIssueId(), databaseEntry.getType());
+				databaseEntry.getCommentId(), databaseEntry.getJiraIssueId(), databaseEntry.getType(),
+				databaseEntry.getStatus());
 	}
 
 	public PartOfJiraIssueTextImpl(long id, int endSubstringCount, int startSubstringCount, boolean isValidated,
-			boolean isRelevant, String projectKey, long commentId, long issueId, String type) {
+			boolean isRelevant, String projectKey, long commentId, long issueId, String type, String status) {
 		this();
 		this.setId(id);
 		this.setEndPosition(endSubstringCount);
@@ -89,6 +90,7 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 		this.setJiraIssueId(issueId);
 		this.setProject(new DecisionKnowledgeProjectImpl(projectKey));
 		this.setType(type);
+		this.setStatus(status);
 		Issue issue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
 		if (issue != null) {
 			this.setKey(issue.getKey() + ":" + this.getId());
@@ -127,6 +129,7 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 		this.setSummary(element.getSummary());
 		this.setDescription(element.getDescription());
 		this.setProject(element.getProject());
+		this.setStatus(element.getStatus());
 	}
 
 	private boolean containsExcludedTag(String body) {

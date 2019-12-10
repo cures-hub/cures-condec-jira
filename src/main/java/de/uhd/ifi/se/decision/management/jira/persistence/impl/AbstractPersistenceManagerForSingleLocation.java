@@ -339,13 +339,6 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 */
 	public abstract ApplicationUser getCreator(DecisionKnowledgeElement element);
 
-	// TODO
-	// @issue Is it necessary to distinguish between methods
-	// updateDecisionKnowledgeElement and
-	// updateDecisionKnowledgeElementWithoutStatusChange?
-	public abstract boolean updateDecisionKnowledgeElementWithoutStatusChange(DecisionKnowledgeElement element,
-			ApplicationUser user);
-
 	public DocumentationLocation getDocumentationLocation() {
 		return documentationLocation;
 	}

@@ -23,7 +23,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.StatusPersistenceManager;
 
 /**
  * Class for accessing the filtered knowledge graphs. The filter criteria are
@@ -221,20 +220,17 @@ public class FilterExtractorImpl implements FilterExtractor {
 			if (filterSettings.getDocumentationLocations().contains(element.getDocumentationLocation())
 					|| filterSettings.getDocumentationLocations().size() == 1 && filterSettings
 							.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN)) {
-				// Check if the Status is filtered
-				if (filterSettings.getSelectedStatus()
-						.contains(StatusPersistenceManager.getStatusForElement(element))) {
-					// Check if the Type of the Element is correct
-					if (checkIfKnowledgeTypeMatches(element) && checkIfElementMatchesTimeFilter(element)) {
-						// Case no text filter
-						if (filterSettings.getSearchString().equals("")
-								|| filterSettings.getSearchString().equals("?filter=-4")
-								|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
+				// Check if the Status is filtered, check if the Type of the Element is correct
+				if (filterSettings.getSelectedStatus().contains(element.getStatus())
+						&& checkIfKnowledgeTypeMatches(element) && checkIfElementMatchesTimeFilter(element)) {
+					// Case no text filter
+					if (filterSettings.getSearchString().equals("")
+							|| filterSettings.getSearchString().equals("?filter=-4")
+							|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
+						filteredElements.add(element);
+					} else {
+						if (checkIfElementMatchesStringFilter(element)) {
 							filteredElements.add(element);
-						} else {
-							if (checkIfElementMatchesStringFilter(element)) {
-								filteredElements.add(element);
-							}
 						}
 					}
 				}

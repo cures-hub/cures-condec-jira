@@ -303,7 +303,7 @@
 				var summary = inputSummaryField.value;
 				var description = inputDescriptionField.value;
 				var type = selectTypeField.value;
-				conDecAPI.updateDecisionKnowledgeElement(id, summary, description, type, documentationLocation,
+				conDecAPI.updateDecisionKnowledgeElement(id, summary, description, type, documentationLocation, null,
 					function () {
 						conDecObservable.notify();
 					});
@@ -332,29 +332,6 @@
 			}
 			selectField.insertAdjacentHTML("beforeend", "<option " + isSelected + " value='"
 				+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
-		}
-		AJS.$(selectField).auiSelect2();
-	}
-
-	function fillSelectStatusFiled(selectField, elementStatus, element) {
-		if (selectField === null) {
-			return;
-		}
-		var knowledgeStatus = null;
-		if (element.type === "Issue") {
-			knowledgeStatus = conDecAPI.issueStatus;
-		} else {
-			knowledgeStatus = conDecAPI.knowledgeStatus;
-		}
-		selectField.innerHTML = "";
-		for (var index = 0; index < knowledgeStatus.length; index++) {
-			var isSelected = "";
-			console.log(elementStatus);
-			if (knowledgeStatus[index].toLocaleUpperCase() === elementStatus) {
-				isSelected = "selected";
-			}
-			selectField.insertAdjacentHTML("beforeend", "<option " + isSelected + " value='"
-				+ knowledgeStatus[index] + "'>" + knowledgeStatus[index] + "</option>");
 		}
 		AJS.$(selectField).auiSelect2();
 	}
@@ -417,19 +394,17 @@
 
 		// Fill HTML elements
 		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function (decisionKnowledgeElement) {
-			conDecAPI.getStatus(decisionKnowledgeElement, function (status) {
-				fillSelectStatusFiled(selectStatusField, status, decisionKnowledgeElement);
-			});
+				fillSelectStatusField(selectStatusField, decisionKnowledgeElement);
+				
+				// Set onclick listener on buttons
+				submitButton.onclick = function () {
+					var status = selectStatusField.value;
+					conDecAPI.setStatus(id, documentationLocation, decisionKnowledgeElement.type, status, function () {
+						conDecObservable.notify();
+					});
+					AJS.dialog2(changeStatusDialog).hide();
+				};				
 		});
-
-		// Set onclick listener on buttons
-		submitButton.onclick = function () {
-			var status = selectStatusField.value;
-			conDecAPI.setStatus(id, documentationLocation, status, function () {
-				conDecObservable.notify();
-			});
-			AJS.dialog2(changeStatusDialog).hide();
-		};
 
 		cancelButton.onclick = function () {
 			AJS.dialog2(changeStatusDialog).hide();
@@ -438,6 +413,29 @@
 		// Show dialog
 		AJS.dialog2(changeStatusDialog).show();
 	};
+	
+	function fillSelectStatusField(selectField, element) {
+		if (selectField === null) {
+			return;
+		}
+		var knowledgeStatus = null;
+		if (element.type === "Issue") {
+			knowledgeStatus = conDecAPI.issueStatus;
+		} else {
+			knowledgeStatus = conDecAPI.optionStatus;
+		}
+		selectField.innerHTML = "";
+		for (var index = 0; index < knowledgeStatus.length; index++) {
+			var isSelected = "";
+			console.log(element.status);
+			if (element.status.toUpperCase() === knowledgeStatus[index].toUpperCase()) {
+				isSelected = "selected";
+			}
+			selectField.insertAdjacentHTML("beforeend", "<option " + isSelected + " value='"
+				+ knowledgeStatus[index] + "'>" + knowledgeStatus[index] + "</option>");
+		}
+		AJS.$(selectField).auiSelect2();
+	}
 
 	ConDecDialog.prototype.showSummarizedDialog = function showSummarizedDialog(id, documentationLocation) {
 		// HTML elements
@@ -640,7 +638,7 @@
 					reject(err);
 				});
 			}).then(function (values) {
-				//set issue types
+				// set issue types
 				var issueTypes = values.issueTypes;
 				var preSelectedIssueTypes = values.preSelectedIssueTypes;
 				manageIssueTypes(issueTypes, preSelectedIssueTypes);

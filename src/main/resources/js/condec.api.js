@@ -28,11 +28,11 @@
 		this.knowledgeTypes = getKnowledgeTypes(projectKey);
 		this.extendedKnowledgeTypes = getExtendedKnowledgeTypes(this.knowledgeTypes);
 
-        this.knowledgeStatus = ["Idea", "Discarded", "Decided", "Rejected", "Undefined"];
+        this.optionStatus = ["Idea", "Discarded", "Decided", "Rejected", "Undefined"];
         this.issueStatus = ["Resolved", "Unresolved"];
+		this.knowledgeStatus = this.optionStatus.concat(this.issueStatus);
+		
         this.linkTypes = getLinkTypes(projectKey);
-
-		this.extendedStatus = getExtendedStatus();
 	};
 
 	ConDecAPI.prototype.checkIfProjectKeyIsValid = function checkIfProjectKeyIsValid() {
@@ -139,14 +139,15 @@
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.updateDecisionKnowledgeElement = function updateDecisionKnowledgeElement(id, summary,
-																								 description, type, documentationLocation, callback) {
+																								 description, type, documentationLocation, status, callback) {
 		var element = {
 			"id": id,
 			"summary": summary,
 			"type": type,
 			"projectKey": projectKey,
 			"description": description,
-			"documentationLocation": documentationLocation
+			"documentationLocation": documentationLocation,
+			"status": status
 		};
 		var parentElement = conDecTreant.findParentElement(id);
 		postJSON(AJS.contextPath()
@@ -249,7 +250,7 @@
 	 * external references: condec.context.menu, condec.dialog
 	 */
 	ConDecAPI.prototype.changeKnowledgeType = function changeKnowledgeType(id, type, documentationLocation, callback) {
-		this.updateDecisionKnowledgeElement(id, null, null, type, documentationLocation, callback);
+		this.updateDecisionKnowledgeElement(id, null, null, type, documentationLocation, null, callback);
 	};
 
 	/*
@@ -307,34 +308,11 @@
 			});
 	};
 
-	ConDecAPI.prototype.setStatus = function setStatus(id, documentationLocation, status, callback) {
-		var element = {
-			"id": id,
-			"documentationLocation": documentationLocation,
-			"projectKey": projectKey
-		};
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/setStatus.json?status=" + status, element,
-			function (error) {
-				if (error === null) {
-					showFlag("success", "Decision knowledge element status has been updated.");
-					callback();
-				}
-			});
-	};
-
-	ConDecAPI.prototype.getStatus = function getStatus(decisionElement, callback) {
-		var element = {
-			"id": decisionElement.id,
-			"key": decisionElement.key,
-			"documentationLocation": decisionElement.documentationLocation,
-			"projectKey": projectKey
-		};
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getStatus.json", element,
-			function (error, status) {
-				if (error === null) {
-					callback(status);
-				}
-			});
+	/*
+	 * external references: condec.dialog
+	 */
+	ConDecAPI.prototype.setStatus = function setStatus(id, documentationLocation, type, status, callback) {
+		this.updateDecisionKnowledgeElement(id, null, null, type, documentationLocation, status, callback);
 	};
 
 	/*
@@ -815,10 +793,6 @@
 	}
 
 	/*
-	 * 
-	 */
-
-	/*
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setWebhookData = function setWebhookData(projectKey, webhookUrl, webhookSecret) {
@@ -1218,14 +1192,6 @@
 			title: type.charAt(0).toUpperCase() + type.slice(1) + " " + status,
 			body: message
 		});
-	}
-
-	function getExtendedStatus() {
-		var extendedStatus = this.knowledgeStatus;
-		for (var issueStat in this.issueStatus) {
-			extendedStatus.push(issueStat);
-		}
-		return extendedStatus
 	}
 
 	// export ConDecAPI

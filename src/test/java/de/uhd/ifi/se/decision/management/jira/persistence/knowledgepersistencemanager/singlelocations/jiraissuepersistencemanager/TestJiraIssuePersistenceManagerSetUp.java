@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencemanager.singlelocations.jiraissuepersistencemanager;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 
 import com.atlassian.jira.user.ApplicationUser;
 
@@ -20,8 +20,8 @@ public abstract class TestJiraIssuePersistenceManagerSetUp extends TestSetUp {
 	protected static ApplicationUser user;
 	protected static Link link;
 
-	@BeforeClass
-	public static void setUp() {
+	@Before
+	public void setUp() {
 		init();
 		issueStrategy = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueManager();
 		numberOfElements = issueStrategy.getDecisionKnowledgeElements().size();

@@ -62,7 +62,8 @@ public class TreantNode {
 			return;
 		}
 		this.nodeContent = ImmutableMap.of("title", decisionKnowledgeElement.getSummary(), "documentationLocation",
-				decisionKnowledgeElement.getDocumentationLocationAsString(), "desc", decisionKnowledgeElement.getKey());
+				decisionKnowledgeElement.getDocumentationLocationAsString(), "status",
+				decisionKnowledgeElement.getStatusAsString(), "desc", decisionKnowledgeElement.getKey());
 		this.htmlClass = decisionKnowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
 		this.htmlId = decisionKnowledgeElement.getId();
 		DecisionKnowledgeProject project = decisionKnowledgeElement.getProject();

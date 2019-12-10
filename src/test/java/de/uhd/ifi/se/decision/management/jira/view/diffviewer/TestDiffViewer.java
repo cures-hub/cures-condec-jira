@@ -1,9 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.view.diffviewer;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
@@ -11,10 +11,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 
 public class TestDiffViewer {
 	private DiffViewer viewer;
@@ -28,18 +29,15 @@ public class TestDiffViewer {
 	public void setUp() {
 		branch1 = createDummyRef("branch1");
 		branch2 = createDummyRef("branch2");
-		DecisionKnowledgeElement rat1_1 = new DecisionKnowledgeElementImpl(0
-				, "I am an issue", "", KnowledgeType.ISSUE, "TEST"
-				, "file.java 1 INSERT(0-0,0-10) 1:1 abcdef01", DocumentationLocation.COMMIT
-		);
-		DecisionKnowledgeElement rat2_1 = new DecisionKnowledgeElementImpl(0
-				, "I am an issue too", "", KnowledgeType.ISSUE, "TEST"
-				, "0123456789012345678901234567890123456789ef 1:1 abcdef23", DocumentationLocation.COMMIT
-		);
-		DecisionKnowledgeElement rat2_2 = new DecisionKnowledgeElementImpl(0
-				, "I am a decision", "", KnowledgeType.DECISION, "TEST"
-				, "0123456789012345678901234567890123456789ef 1:1 abcdef45", DocumentationLocation.COMMIT
-		);
+		DecisionKnowledgeElement rat1_1 = new DecisionKnowledgeElementImpl(0, "I am an issue", "", KnowledgeType.ISSUE,
+				"TEST", "file.java 1 INSERT(0-0,0-10) 1:1 abcdef01", DocumentationLocation.COMMIT,
+				KnowledgeStatus.UNRESOLVED);
+		DecisionKnowledgeElement rat2_1 = new DecisionKnowledgeElementImpl(0, "I am an issue too", "",
+				KnowledgeType.ISSUE, "TEST", "0123456789012345678901234567890123456789ef 1:1 abcdef23",
+				DocumentationLocation.COMMIT, KnowledgeStatus.UNRESOLVED);
+		DecisionKnowledgeElement rat2_2 = new DecisionKnowledgeElementImpl(0, "I am a decision", "",
+				KnowledgeType.DECISION, "TEST", "0123456789012345678901234567890123456789ef 1:1 abcdef45",
+				DocumentationLocation.COMMIT, KnowledgeStatus.UNRESOLVED);
 		rationaleInBranch1 = new ArrayList<>();
 		rationaleInBranch2 = new ArrayList<>();
 		rationaleInBranch1.add(rat1_1);
