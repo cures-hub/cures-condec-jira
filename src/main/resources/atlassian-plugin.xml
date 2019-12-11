@@ -190,19 +190,6 @@
 
 	</web-resource>
 
-	<web-resource key="report-resources" name="Resources for Decision Knowledge Report">
-		<description>
-			Provides the resources needed for creating reports about the documented decision
-			knowledge in the project.
-		</description>
-		<context>jira-report-plugin</context>
-		<resource type="download" name="echarts.js" location="/js/lib/echart/echarts.js" />
-		<resource type="download" name="dataTool.js" location="/js/lib/echart/dataTool.js" />
-		<resource type="download" name="condec.report.js"
-			location="/js/dashboard/condec.report.js" />
-		<resource type="download" name="condec.report.css" location="/css/condec.report.css" />
-	</web-resource>
-
 	<!-- Decision Knowledge Page -->
 	<web-item name="Link to the Decision Knowledge Page in Side Bar" key="sidebar-link"
 		section="jira.project.sidebar.plugins.navigation" weight="1000">
@@ -438,31 +425,6 @@
 			location="js/condec.text.editor.extension.js" />
 	</web-resource>
 
-	<!-- Decision Knowledge Report -->
-	<report name="Decision Knowledge Report" key="decision-knowledge-report"
-		class="de.uhd.ifi.se.decision.management.jira.view.DecisionKnowledgeReport">
-		<label key="condec.report.label" />
-		<description key="condec.report.description" />
-		<resource name="view" type="velocity"
-			location="/templates/dashboard/decisionKnowledgeReport.vm" />
-		<properties>
-			<property>
-				<key>selectedProjectId</key>
-				<name>condec.jira.project</name>
-				<description key="condec.report.project.description" />
-				<type>filterprojectpicker</type>
-				<i18n>true</i18n>
-			</property>
-			<property>
-				<key>issueType</key>
-				<name>JIRA Issue Type</name>
-				<description key="condec.report.issuetype.description" />
-				<type>select</type>
-				<values class="de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator" />
-			</property>
-		</properties>
-	</report>
-
 	<!-- ConDec feature branch dashboard item -->
 	<!-- https://developer.atlassian.com/server/jira/platform/building-a-dashboard-item/ https://developer.atlassian.com/server/jira/platform/writing-a-dashboard-item-app/ 
 		Dashboard item will eventually replace gadgets: https://developer.atlassian.com/server/jira/platform/dashboard-item-module/ -->
@@ -475,10 +437,6 @@
 			location="js/dashboard/condec.git.branches.dashboard.js" />
 		<resource type="download" name="condec.dashboard.git.code.elements.linker.js"
 			location="/js/condec.git.code.elements.linker.js" />
-		<resource type="download" name="condec.dashboard.report.js"
-			location="js/dashboard/condec.report.js" />
-		<resource type="download" name="condec.dashboard.report.css"
-			location="/css/condec.report.css" />
 		<resource type="download" name="condec.dashboard.echarts.js"
 			location="/js/lib/echart/echarts.js" />
 		<resource type="download" name="condec.dashboard.dataTool.js"
@@ -510,5 +468,37 @@
 			location="/templates/dashboard/featureBranchesDashboardItem.vm" />
 		<context-provider
 			class="de.uhd.ifi.se.decision.management.jira.view.FeatureBranchQualityDashboardItem" />
+	</dashboard-item>
+	
+	<!-- ConDec Requirements dashboard item -->
+	<web-resource key="requirements-dashboard-resources" name="Resources for Requirements Dashboard">
+		<description>
+			Provides the resources needed for creating the requirements dashboard
+		</description>
+		<context>jira-requirements-dashboard-plugin</context>
+		<resource type="download" name="echarts.js" location="/js/lib/echart/echarts.js" />
+		<resource type="download" name="dataTool.js" location="/js/lib/echart/dataTool.js" />
+		<resource type="download" name="condec.requirements.dashboard.js"
+			location="/js/dashboard/condec.requirements.dashboard.js" />
+		<resource type="download" name="condec.requirements.dashboard.css" location="/css/condec.requirements.dashboard.css" />
+	</web-resource>
+	<dashboard-item key="condec-requirements-dashboard-item"
+		name="ConDec dashboard for Project Requirements">
+		<definition>
+			<title key="condec.dashboard.requirements.title" />
+			<categories>
+				<category>Jira</category>
+			</categories>
+			<author>
+				<name>ConDec team</name>
+			</author>
+			<thumbnail
+				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
+		</definition>
+		<description key="condec.dashboard.requirements.description" />
+		<resource name="view" type="velocity"
+			location="/templates/dashboard/requirementsDashboardItem.vm" />
+		<context-provider
+			class="de.uhd.ifi.se.decision.management.jira.view.RequirementsDashboardItem" />
 	</dashboard-item>
 </atlassian-plugin>

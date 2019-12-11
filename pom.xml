@@ -50,6 +50,10 @@
             <id>desombre</id>
             <name>Philipp de Sombre</name>
         </developer>
+        <developer>
+            <id>manders</id>
+            <name>Michael Anders</name>
+        </developer>
     </developers>
     <packaging>atlassian-plugin</packaging>
     <dependencies>
