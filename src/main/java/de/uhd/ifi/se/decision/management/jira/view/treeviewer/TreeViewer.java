@@ -72,7 +72,7 @@ public class TreeViewer {
 		// PersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements(rootElementType)
 		// to get all elements for all documentation locations
 		AbstractPersistenceManagerForSingleLocation strategy = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getDefaultPersistenceManager();
+				.getDefaultManagerForSingleLocation();
 		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements(rootElementType);
 
 		Set<Data> dataSet = new HashSet<Data>();

@@ -15,10 +15,8 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 import net.java.ao.Query;
@@ -47,6 +45,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 			databaseEntry.setDescription(description);
 		}
 		databaseEntry.setType(element.getType().replaceProAndConWithArgument().toString());
+		databaseEntry.setStatus(element.getStatusAsString());
 	}
 
 	public ActiveObjectPersistenceManager(String projectKey) {
@@ -68,7 +67,6 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 		boolean isDeleted = false;
 		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", id))) {
-			StatusPersistenceManager.deleteStatus(new DecisionKnowledgeElementImpl(databaseEntry));
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.ACTIVEOBJECT);
 			isDeleted = DecisionKnowledgeElementInDatabase.deleteElement(databaseEntry);
 		}
@@ -140,7 +138,6 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 		element.setKey(databaseEntry.getKey());
 		new WebhookConnector(projectKey).sendElementChanges(element);
 		element.setDocumentationLocation(DocumentationLocation.ACTIVEOBJECT);
-		KnowledgePersistenceManager.insertStatus(element);
 		// KnowledgePersistenceManager.updateGraphNode(element);
 		return element;
 	}
@@ -150,31 +147,8 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManagerFo
 		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeElementInDatabase.class)) {
 			if (databaseEntry.getId() == element.getId()) {
-				if (KnowledgeType.getKnowledgeType(databaseEntry.getType()).equals(KnowledgeType.DECISION)
-						&& element.getType().equals(KnowledgeType.ALTERNATIVE)) {
-					StatusPersistenceManager.setStatusForElement(element, KnowledgeStatus.REJECTED);
-				}
-				if (KnowledgeType.getKnowledgeType(databaseEntry.getType()).equals(KnowledgeType.ALTERNATIVE)
-						&& element.getType().equals(KnowledgeType.DECISION)) {
-					StatusPersistenceManager.deleteStatus(element);
-				}
-				setParameters(element, databaseEntry);
-				databaseEntry.save();
-				new WebhookConnector(projectKey).sendElementChanges(element);
-				// KnowledgePersistenceManager.updateGraphNode(element);
-				return true;
-			}
-		}
-		LOGGER.error("Updating of decision knowledge element in database failed.");
-		return false;
-	}
-
-	@Override
-	public boolean updateDecisionKnowledgeElementWithoutStatusChange(DecisionKnowledgeElement element,
-			ApplicationUser user) {
-		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
-				.find(DecisionKnowledgeElementInDatabase.class)) {
-			if (databaseEntry.getId() == element.getId()) {
+				element.setStatus(KnowledgeStatus
+						.getNewKnowledgeStatusForType(new DecisionKnowledgeElementImpl(databaseEntry), element));
 				setParameters(element, databaseEntry);
 				databaseEntry.save();
 				new WebhookConnector(projectKey).sendElementChanges(element);

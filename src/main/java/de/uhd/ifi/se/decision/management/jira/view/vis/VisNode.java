@@ -1,12 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
-import com.google.common.collect.ImmutableMap;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.StatusPersistenceManager;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
-import java.util.Map;
+
+import com.google.common.collect.ImmutableMap;
+
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 
 /**
  * Model class for vis.js Node.
@@ -55,9 +56,9 @@ public class VisNode {
 		}
 		this.setTitle("<b>" + element.getTypeAsString().toUpperCase() + " <br> " + element.getKey() + ":</b> "
 				+ element.getSummary() + "<br> <i>" + element.getDescription() + "</i>");
-		KnowledgeStatus elementStatus= StatusPersistenceManager.getStatusForElement(element);
-		if(elementStatus.equals(KnowledgeStatus.DISCARDED) || elementStatus.equals(KnowledgeStatus.REJECTED) ||
-				   elementStatus.equals(KnowledgeStatus.UNRESOLVED)){
+		KnowledgeStatus status = element.getStatus();
+		if (status == KnowledgeStatus.DISCARDED || status == KnowledgeStatus.REJECTED
+				|| status == KnowledgeStatus.UNRESOLVED) {
 			this.font = ImmutableMap.of("color", "red");
 		} else {
 			this.font = ImmutableMap.of("color", "black");

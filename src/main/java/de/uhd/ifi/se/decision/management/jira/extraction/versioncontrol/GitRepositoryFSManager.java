@@ -1,22 +1,22 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
+import javax.xml.bind.DatatypeConverter;
+
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class GitRepositoryFSManager {
 	private static final String TEMP_DIR_PREFIX = "TEMP";
-	private static final long BRANCH_OUTDATED_AFTER = 60 * 60 * 1000; //ex. 1 day = 24 hours * 60 minutes * 60 seconds * 1000 miliseconds
+	private static final long BRANCH_OUTDATED_AFTER = 60 * 60 * 1000; // ex. 1 day = 24 hours * 60 minutes * 60 seconds
+																		// * 1000 miliseconds
 	private String baseProjectUriPath;
 	private String baseProjectUriDefaultPath;
 
@@ -40,16 +40,15 @@ public class GitRepositoryFSManager {
 	}
 
 	/**
-	 * Makes branch's folder available in the temporary pool.
-	 * It can significantly contribute to improving the speed
-	 * of check-outs of other branches as folder renaming
-	 * is not costly compared to copying.
+	 * Makes branch's folder available in the temporary pool. It can significantly
+	 * contribute to improving the speed of check-outs of other branches as folder
+	 * renaming is not costly compared to copying.
 	 *
-	 * This mehod stays public as the developer might intend
-	 * to release the folder and not wait for maintenance
-	 * strategy to trigger it.
+	 * This mehod stays public as the developer might intend to release the folder
+	 * and not wait for maintenance strategy to trigger it.
 	 *
-	 * @param branchShortName branch name
+	 * @param branchShortName
+	 *            branch name
 	 * @return null on failure, absolute path to new temporary directory
 	 */
 	public String releaseBranchDirectoryNameToTemp(String branchShortName) {
@@ -59,21 +58,17 @@ public class GitRepositoryFSManager {
 		} else {
 			Date date = new Date();
 			long time = date.getTime();
-			String tempDirString = baseProjectUriPath
-					+ File.separator
-					+ TEMP_DIR_PREFIX + time;
+			String tempDirString = baseProjectUriPath + File.separator + TEMP_DIR_PREFIX + time;
 			File tempDir = new File(tempDirString);
 			boolean renameResult = false;
 			try {
 				renameResult = oldDir.renameTo(tempDir);
 			} catch (Exception e) {
-				LOGGER.error("Could not rename " + oldDir
-						+ " to " + tempDirString + ". " + e.getMessage());
+				LOGGER.error("Could not rename " + oldDir + " to " + tempDirString + ". " + e.getMessage());
 				return null;
 			}
 			if (!renameResult) {
-				LOGGER.error("Could not rename " + oldDir
-						+ " to " + tempDirString + ". The reason is not known.");
+				LOGGER.error("Could not rename " + oldDir + " to " + tempDirString + ". The reason is not known.");
 				return null;
 			}
 			removeBranchPathMarker(branchShortName);
@@ -82,22 +77,19 @@ public class GitRepositoryFSManager {
 	}
 
 	/**
-	 * Provides filesystem directory for targeted branch.
-	 * Best case: branch already exists, costs no I/O operations.
-	 * Good case: temporary folder exists and can be renamed to branch's
-	 * target folder name.
-	 * Bad case: branch folder is copied in I/O heavy operation
-	 * from default branch.
+	 * Provides filesystem directory for targeted branch. Best case: branch already
+	 * exists, costs no I/O operations. Good case: temporary folder exists and can
+	 * be renamed to branch's target folder name. Bad case: branch folder is copied
+	 * in I/O heavy operation from default branch.
 	 *
-	 * @param branchShortName branch name
+	 * @param branchShortName
+	 *            branch name
 	 * @return null on failure, absolute path to branch's directory
 	 */
 	public String prepareBranchDirectory(String branchShortName) {
-		if (!useFromExistingBranchFolder(branchShortName)
-				&& !useFromTemporaryFolder(branchShortName)
+		if (!useFromExistingBranchFolder(branchShortName) && !useFromTemporaryFolder(branchShortName)
 				&& !useFromDefaultFolder(branchShortName)) {
-			LOGGER.warn("Neither branch, nor temporary," +
-					" nor default folder could be found under: "
+			LOGGER.warn("Neither branch, nor temporary," + " nor default folder could be found under: "
 					+ baseProjectUriPath);
 			return null;
 		}
@@ -107,14 +99,15 @@ public class GitRepositoryFSManager {
 
 	/**
 	 * @issue:file system does not allow all characters for folder and file name,
-	 * therefore md5 can be used to get unique strings for inputs like uris etc.
-	 * But md5 hashes can produce too long paths and corrupt the filesystem,
-	 * especially for java projects. How can this be overcome?
+	 *             therefore md5 can be used to get unique strings for inputs like
+	 *             uris etc. But md5 hashes can produce too long paths and corrupt
+	 *             the filesystem, especially for java projects. How can this be
+	 *             overcome?
 	 *
-	 * @alternative use full length of the hash! the project structure should
-	 * never be that big.
-	 * @con this would cause unnecessary refactoring activities for the project
-	 * in git repository.
+	 * @alternative use full length of the hash! the project structure should never
+	 *              be that big.
+	 * @con this would cause unnecessary refactoring activities for the project in
+	 *      git repository.
 	 *
 	 * @decision use the first 5 characters from the generated hash!
 	 * @pro it is common practice to shorten hashes.
@@ -132,17 +125,18 @@ public class GitRepositoryFSManager {
 		}
 	}
 
-
 	/*
-	 * Makes sure not too much disk space is wasted, if there
-	 * is no need for many folders.
+	 * Makes sure not too much disk space is wasted, if there is no need for many
+	 * folders.
 	 *
-	 * Still does not prevent disk space waste when many branches
-	 * need to be accessed in parallel.
+	 * Still does not prevent disk space waste when many branches need to be
+	 * accessed in parallel.
 	 */
 	private void maintainNotUsedBranchPaths() {
 
-		/* leave branches where they are until issues with repo checkouts are not fixed */
+		/*
+		 * leave branches where they are until issues with repo checkouts are not fixed
+		 */
 		boolean DEV_BUG_SKIP = true;
 		if (DEV_BUG_SKIP) {
 			return;
@@ -157,8 +151,8 @@ public class GitRepositoryFSManager {
 	}
 
 	/*
-	 * Writes files for each branch folder request, the creation date
-	 * of these files can be later used for branch folder clean-ups.
+	 * Writes files for each branch folder request, the creation date of these files
+	 * can be later used for branch folder clean-ups.
 	 */
 	private void rememberBranchPathRequest(String branchShortName) {
 		// ignore the last marker
@@ -174,8 +168,9 @@ public class GitRepositoryFSManager {
 		}
 	}
 
-	/* If the branch file marker does not exist, the maintenance
-	 * shall not try to recycle the branch folder
+	/*
+	 * If the branch file marker does not exist, the maintenance shall not try to
+	 * recycle the branch folder
 	 */
 	private void removeBranchPathMarker(String branchShortName) {
 		File file = new File(baseProjectUriPath, branchShortName);
@@ -195,8 +190,8 @@ public class GitRepositoryFSManager {
 				File newDir = new File(getCheckoutPath(branchShortName));
 				FileUtils.copyDirectory(defaultDir, newDir);
 			} catch (Exception e) {
-				LOGGER.error("Could not copy " + defaultDir
-						+ " to " + getCheckoutPath(branchShortName) + ".\n\t" + e.getMessage());
+				LOGGER.error("Could not copy " + defaultDir + " to " + getCheckoutPath(branchShortName) + ".\n\t"
+						+ e.getMessage());
 				return false;
 			}
 		}
@@ -218,8 +213,8 @@ public class GitRepositoryFSManager {
 			File newDir = new File(getCheckoutPath(branchShortName));
 			dir.renameTo(newDir);
 		} catch (Exception e) {
-			LOGGER.error("Could not rename " + tempDirs[0]
-					+ " to " + getCheckoutPath(branchShortName) + ". " + e.getMessage());
+			LOGGER.error("Could not rename " + tempDirs[0] + " to " + getCheckoutPath(branchShortName) + ". "
+					+ e.getMessage());
 			return false;
 		}
 		return true;
@@ -227,14 +222,14 @@ public class GitRepositoryFSManager {
 
 	private String[] findTemporaryDirectoryNames() {
 		File file = new File(baseProjectUriPath);
-		String[] directories = file.list((current, name) ->
-				(name.startsWith(TEMP_DIR_PREFIX)
-						&& new File(current, name).isDirectory()));
+		String[] directories = file
+				.list((current, name) -> (name.startsWith(TEMP_DIR_PREFIX) && new File(current, name).isDirectory()));
 		return directories;
 	}
 
-	/* Searches for files inside baseProjectUriPath
-	 * and looks at their creation dates
+	/*
+	 * Searches for files inside baseProjectUriPath and looks at their creation
+	 * dates
 	 */
 	private String[] findOutdatedBranchPaths() {
 		return findBranchPathFiles(true);
@@ -243,8 +238,7 @@ public class GitRepositoryFSManager {
 	private String[] findBranchPathFiles(boolean getOutdated) {
 		File file = new File(baseProjectUriPath);
 		Date date = new Date();
-		String[] branchFilteredTouchFiles = file.list((current, name) ->
-		{
+		String[] branchFilteredTouchFiles = file.list((current, name) -> {
 			long fileLifespan = date.getTime() - current.lastModified();
 			boolean lifeSpanCondition = fileLifespan > BRANCH_OUTDATED_AFTER;
 			if (!getOutdated) {

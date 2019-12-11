@@ -30,7 +30,7 @@ public enum KnowledgeType {
 	}
 
 	/**
-	 * Convert a string to a knowledge type.
+	 * Converts a string to a knowledge type.
 	 *
 	 * @param type
 	 *            as a String.
@@ -45,10 +45,10 @@ public enum KnowledgeType {
 				return knowledgeType;
 			}
 		}
-		if(type.contains("Pro")) {
+		if (type.contains("Pro")) {
 			return PRO;
 		}
-		if(type.contains("Con")) {
+		if (type.contains("Con")) {
 			return CON;
 		}
 		return OTHER;
@@ -78,6 +78,31 @@ public enum KnowledgeType {
 	}
 
 	/**
+	 * Get the parent knowledge type of a knowledge type for link creation in the
+	 * knowledge graph. For example, the parent type of argument is decision or
+	 * alternative. The parent type of decision or alternative is issue.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @param type
+	 *            of knowledge
+	 * @return parent knowledge type of the knowledge type for link creation in the
+	 *         knowledge graph.
+	 */
+	public static List<KnowledgeType> getParentTypes(KnowledgeType type) {
+		List<KnowledgeType> parentTypes = new ArrayList<KnowledgeType>();
+		if (type == null) {
+			return parentTypes;
+		}
+		if (type == ARGUMENT || type == PRO || type == CON) {
+			parentTypes.add(ALTERNATIVE);
+			parentTypes.add(DECISION);
+		} else if (type == DECISION || type == ALTERNATIVE) {
+			parentTypes.add(ISSUE);
+		}
+		return parentTypes;
+	}
+
+	/**
 	 * Get the super class of a knowledge type in the decision documentation model.
 	 * For example, the super type of argument is rationale and the super type of
 	 * issue is problem.
@@ -85,7 +110,8 @@ public enum KnowledgeType {
 	 * @see DecisionKnowledgeElement
 	 * @param type
 	 *            of knowledge
-	 * @return super knowledge type of the decision knowledge element.
+	 * @return super knowledge type of the knowledge type in the decision
+	 *         documentation model.
 	 */
 	public static KnowledgeType getSuperType(KnowledgeType type) {
 		if (type == null) {
@@ -140,7 +166,7 @@ public enum KnowledgeType {
 	}
 
 	/**
-	 * Convert all knowledge types to a list of String.
+	 * Converts all knowledge types to a list of String.
 	 *
 	 * @return list of knowledge types as Strings starting with a capital letter.
 	 */

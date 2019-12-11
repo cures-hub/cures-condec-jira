@@ -32,17 +32,7 @@ import net.java.ao.Query;
  */
 public class GenericLinkManager {
 
-	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
-
-	public static void clearInvalidLinks() {
-		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class);
-		for (LinkInDatabase databaseEntry : linksInDatabase) {
-			Link link = new LinkImpl(databaseEntry);
-			if (!link.isValid()) {
-				LinkInDatabase.deleteLink(databaseEntry);
-			}
-		}
-	}
+	public static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
 	/**
 	 * Deletes a link (=edge) between all kinds of nodes in the
@@ -59,6 +49,9 @@ public class GenericLinkManager {
 	 * @return true if deletion was successful, false otherwise.
 	 */
 	public static boolean deleteLink(Link link) {
+		if (link == null) {
+			return false;
+		}
 		boolean isDeleted = false;
 		for (LinkInDatabase linkInDatabase : ACTIVE_OBJECTS.find(LinkInDatabase.class)) {
 			if (link.equals(linkInDatabase)) {
@@ -79,22 +72,42 @@ public class GenericLinkManager {
 	 * @param elementId
 	 *            id of the node.
 	 * @param documentationLocation
-	 *            {@link DocumentationLocation} of the knowledge element. *
+	 *            {@link DocumentationLocation} of the knowledge element.
+	 * @return true if at least one link was deleted, false if no link was deleted.
 	 * @see DecisionKnowledgeElement
 	 */
-	public static void deleteLinksForElement(long elementId, DocumentationLocation documentationLocation) {
-		String identifier = documentationLocation.getIdentifier();
+	public static boolean deleteLinksForElement(long elementId, DocumentationLocation documentationLocation) {
+		if (elementId <= 0 || documentationLocation == null) {
+			return false;
+		}
+		boolean isLinkDeleted = false;
+		List<Link> linksForElement = getLinksForElement(elementId, documentationLocation);
+		for (Link link : linksForElement) {
+			isLinkDeleted = deleteLink(link);
+			KnowledgeGraph.getOrCreate(link.getSource().getProject()).removeEdge(link);
+		}
+		return isLinkDeleted;
+	}
+
+	/**
+	 * Deletes all links (=edges) that do not connect two existing nodes in the
+	 * {@link KnowledgeGraph}.
+	 * 
+	 * @return true if at least one link was deleted, false if no link was deleted.
+	 * @see Link#isValid()
+	 * @see LinkInDatabase
+	 */
+	public static boolean deleteInvalidLinks() {
+		boolean isLinkDeleted = false;
 		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class);
-		for (LinkInDatabase linkInDatabase : linksInDatabase) {
-			if (linkInDatabase.getDestinationId() == elementId
-					&& linkInDatabase.getDestDocumentationLocation().equals(identifier)
-					|| linkInDatabase.getSourceId() == elementId
-							&& linkInDatabase.getSourceDocumentationLocation().equals(identifier)) {
-				LinkInDatabase.deleteLink(linkInDatabase);
-				Link link = new LinkImpl(linkInDatabase);
-				KnowledgeGraph.getOrCreate(link.getSource().getProject().getProjectKey()).removeEdge(link);
+		for (LinkInDatabase databaseEntry : linksInDatabase) {
+			Link link = new LinkImpl(databaseEntry);
+			if (!link.isValid()) {
+				isLinkDeleted = true;
+				LinkInDatabase.deleteLink(databaseEntry);
 			}
 		}
+		return isLinkDeleted;
 	}
 
 	/**
@@ -114,6 +127,9 @@ public class GenericLinkManager {
 	 * @see DecisionKnowledgeElement
 	 */
 	public static List<Link> getLinksForElement(DecisionKnowledgeElement element) {
+		if (element == null) {
+			return new ArrayList<Link>();
+		}
 		return getLinksForElement(element.getId(), element.getDocumentationLocation());
 	}
 
@@ -134,12 +150,14 @@ public class GenericLinkManager {
 	 * @see DecisionKnowledgeElement
 	 */
 	public static List<Link> getLinksForElement(long elementId, DocumentationLocation documentationLocation) {
+		List<Link> links = new ArrayList<Link>();
+		if (elementId <= 0 || documentationLocation == null) {
+			return links;
+		}
 		String identifier = documentationLocation.getIdentifier();
 		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select().where(
 				"DESTINATION_ID = ? AND DEST_DOCUMENTATION_LOCATION = ? OR SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?",
 				elementId, identifier, elementId, identifier));
-
-		List<Link> links = new ArrayList<Link>();
 		for (LinkInDatabase linkInDatabase : linksInDatabase) {
 			Link link = new LinkImpl(linkInDatabase);
 			links.add(link);
@@ -263,5 +281,22 @@ public class GenericLinkManager {
 			}
 		}
 		return linkId;
+	}
+
+	/**
+	 * Returns the {@link LinkInDatabase} object of a {@link Link} object.
+	 * 
+	 * @param link
+	 *            {@link Link} object.
+	 * @return {@link LinkInDatabase} object.
+	 */
+	public static LinkInDatabase getLinkInDatabase(Link link) {
+		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class);
+		for (LinkInDatabase databaseEntry : linksInDatabase) {
+			if (link.equals(databaseEntry)) {
+				return databaseEntry;
+			}
+		}
+		return null;
 	}
 }

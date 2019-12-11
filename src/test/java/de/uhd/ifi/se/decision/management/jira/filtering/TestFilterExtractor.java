@@ -6,9 +6,6 @@ import static org.junit.Assert.assertNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.model.*;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import net.sf.ehcache.transaction.Decision;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,6 +14,12 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterExtractorImpl;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -32,8 +35,8 @@ public class TestFilterExtractor extends TestSetUp {
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		settings = new FilterSettingsImpl();
 		allDecisions = new ArrayList<>();
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(244,  "TEST", "", "Decision", "TEST",
-			"TEST-244", "i");
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(244, "TEST", "", "Decision", "TEST",
+				"TEST-244", "i", "decided");
 		allDecisions.add(element);
 		List<String> doculoco = new ArrayList<>();
 		for (DocumentationLocation location : DocumentationLocation.getAllDocumentationLocations()) {
@@ -45,7 +48,7 @@ public class TestFilterExtractor extends TestSetUp {
 		settings.setCreatedLatest(System.currentTimeMillis());
 		settings.setProjectKey("TEST");
 		settings.setSelectedJiraIssueTypes(KnowledgeType.toList());
-		settings.setSelectedJiraIssueStatus(KnowledgeStatus.toList());
+		settings.setSelectedStatus(KnowledgeStatus.toList());
 		settings.setSelectedLinkTypes(LinkType.toList());
 	}
 
@@ -200,7 +203,7 @@ public class TestFilterExtractor extends TestSetUp {
 	@NonTransactional
 	public void testGetAllElementsLinkTypeFilterMatches() {
 		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
-		assertEquals(1, extractor.getElementsLinkTypeFilterMatches(allDecisions).size() );
+		assertEquals(1, extractor.getElementsLinkTypeFilterMatches(allDecisions).size());
 	}
 
 	@Test
@@ -208,7 +211,7 @@ public class TestFilterExtractor extends TestSetUp {
 	public void testGetAllElementsLinkTypeFilterMatchesEmptySearchString() {
 		settings.setSearchString("");
 		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
-		assertEquals(allDecisions.size(), extractor.getElementsLinkTypeFilterMatches(allDecisions).size() );
+		assertEquals(allDecisions.size(), extractor.getElementsLinkTypeFilterMatches(allDecisions).size());
 	}
 
 	@Test
@@ -216,6 +219,6 @@ public class TestFilterExtractor extends TestSetUp {
 	public void testGetAllElementsLinkTypeFilterMatchesSearchStringFilled() {
 		settings.setSearchString("TEST123");
 		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
-		assertEquals(0, extractor.getElementsLinkTypeFilterMatches(allDecisions).size() );
+		assertEquals(0, extractor.getElementsLinkTypeFilterMatches(allDecisions).size());
 	}
 }

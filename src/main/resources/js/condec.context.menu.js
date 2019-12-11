@@ -226,7 +226,7 @@
 			}
 		});
 		
-		if (container.includes("vis")) {
+		if (container == null || container.includes("vis")) {
 			document.getElementById("condec-context-menu-set-root-item").style.display = "none";
 			document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
 		} else {

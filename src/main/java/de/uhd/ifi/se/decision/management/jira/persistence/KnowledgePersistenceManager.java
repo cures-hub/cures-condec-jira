@@ -11,16 +11,15 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgePersistenceManagerImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.StatusPersistenceManager;
 
 /**
  * Interface that integrates all available persistence managers for single
@@ -61,7 +60,7 @@ public interface KnowledgePersistenceManager {
 	 */
 	static KnowledgePersistenceManager getOrCreate(String projectKey) {
 		if (projectKey == null) {
-			throw new IllegalArgumentException("The project key cannot be null.");
+			throw new IllegalArgumentException("The project key must not be null.");
 		}
 		if (instances.containsKey(projectKey)) {
 			return instances.get(projectKey);
@@ -69,6 +68,13 @@ public interface KnowledgePersistenceManager {
 		KnowledgePersistenceManager persistenceInterface = new KnowledgePersistenceManagerImpl(projectKey);
 		instances.put(projectKey, persistenceInterface);
 		return instances.get(projectKey);
+	}
+
+	static KnowledgePersistenceManager getOrCreate(DecisionKnowledgeProject project) {
+		if (project == null) {
+			throw new IllegalArgumentException("The project must not be null.");
+		}
+		return getOrCreate(project.getProjectKey());
 	}
 
 	/**
@@ -174,6 +180,22 @@ public interface KnowledgePersistenceManager {
 	long insertLink(Link link, ApplicationUser user);
 
 	/**
+	 * Inserts a new link into database.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see LinkType
+	 * @param childElement
+	 *            a decision knowledge element that is on one end of the link.
+	 * @param parentElement
+	 *            a decision knowledge element that is on one end of the link.
+	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}.
+	 * @return internal database id of inserted link, zero if insertion failed.
+	 */
+	long insertLink(DecisionKnowledgeElement parentElement, DecisionKnowledgeElement childElement,
+			ApplicationUser user);
+
+	/**
 	 * Updates an existing link in database. The link can be between any kinds of
 	 * nodes in the {@link KnowledgeGraph}.
 	 *
@@ -227,9 +249,6 @@ public interface KnowledgePersistenceManager {
 		long linkId = -1;
 		if (link.isIssueLink()) {
 			linkId = JiraIssuePersistenceManager.getLinkId(link);
-			if (linkId <= 0) {
-				JiraIssuePersistenceManager.getLinkId(link.flip());
-			}
 			return linkId;
 		}
 		linkId = GenericLinkManager.isLinkAlreadyInDatabase(link);
@@ -287,7 +306,7 @@ public interface KnowledgePersistenceManager {
 	 * @see JiraIssuePersistenceManager
 	 * @see ActiveObjectPersistenceManager
 	 */
-	AbstractPersistenceManagerForSingleLocation getDefaultPersistenceManager();
+	AbstractPersistenceManagerForSingleLocation getDefaultManagerForSingleLocation();
 
 	/**
 	 * Returns the persistence manager for a single documentation location.
@@ -299,7 +318,8 @@ public interface KnowledgePersistenceManager {
 	 *         cannot be found.
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
-	AbstractPersistenceManagerForSingleLocation getPersistenceManager(DocumentationLocation documentationLocation);
+	AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(
+			DocumentationLocation documentationLocation);
 
 	/**
 	 * Gets the persistence manager for a single documentation location by the
@@ -313,7 +333,7 @@ public interface KnowledgePersistenceManager {
 	 *         cannot be found.
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
-	AbstractPersistenceManagerForSingleLocation getPersistenceManager(String documentationLocationIdentifier);
+	AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(String documentationLocationIdentifier);
 
 	/**
 	 * Get the persistence manager of a given decision knowledge elements.
@@ -326,12 +346,12 @@ public interface KnowledgePersistenceManager {
 	 *         the element cannot be found.
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
-	static AbstractPersistenceManagerForSingleLocation getPersistenceManager(DecisionKnowledgeElement element) {
+	static AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(DecisionKnowledgeElement element) {
 		if (element == null) {
 			throw new IllegalArgumentException("The element cannot be null.");
 		}
 		String projectKey = element.getProject().getProjectKey();
-		return getOrCreate(projectKey).getPersistenceManager(element.getDocumentationLocation());
+		return getOrCreate(projectKey).getManagerForSingleLocation(element.getDocumentationLocation());
 	}
 
 	/**
@@ -348,12 +368,6 @@ public interface KnowledgePersistenceManager {
 	 */
 	DecisionKnowledgeElement getDecisionKnowledgeElement(long id, DocumentationLocation documentationLocation);
 
-	static void insertStatus(DecisionKnowledgeElement element) {
-		if (element.getType().equals(KnowledgeType.DECISION)) {
-			StatusPersistenceManager.setStatusForElement(element, KnowledgeStatus.DECIDED);
-		}
-		if (element.getType().equals(KnowledgeType.ALTERNATIVE)) {
-			StatusPersistenceManager.setStatusForElement(element, KnowledgeStatus.IDEA);
-		}
-	}
+	boolean updateIssueStatus(DecisionKnowledgeElement existingElement, DecisionKnowledgeElement newElement,
+			ApplicationUser user);
 }

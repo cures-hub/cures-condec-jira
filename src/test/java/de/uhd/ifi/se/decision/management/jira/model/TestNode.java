@@ -1,11 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 
 public class TestNode {
 	private Node node;
@@ -35,6 +38,7 @@ public class TestNode {
 		assertTrue(this.node.equals(this.node));
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void testEqualsOtherObject() {
 		assertFalse(this.node.equals(new LinkImpl()));

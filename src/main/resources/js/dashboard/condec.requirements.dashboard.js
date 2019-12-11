@@ -33,10 +33,10 @@
     var dashboardNothingYetNode;
     var showDiv;
 	
-	var ConDecReport = function ConDecReport() {
+	var ConDecReqDash = function ConDecReqDash() {
 	};
 
-	ConDecReport.prototype.init = function init(_showDiv) {
+	ConDecReqDash.prototype.init = function init(_showDiv) {
 		showDiv = _showDiv;
         getHTMLNodes( "dynamic-content-general"
                 , "dynamic-content-completeness"
@@ -59,7 +59,7 @@
         
 	}
 	
-	ConDecReport.prototype.initializeChart = function(divId, title, subtitle, dataMap) {
+	ConDecReqDash.prototype.initializeChart = function(divId, title, subtitle, dataMap) {
 		isIssueData = true;
 	    this.initializeChartForSources(divId, title, subtitle, dataMap);
 	}
@@ -99,7 +99,7 @@
 
 
 	/* TODO: Below function does not need to be exposed! */
-	ConDecReport.prototype.initializeChartForSources = function(divId, title, subtitle, dataMap) {
+	ConDecReqDash.prototype.initializeChartForSources = function(divId, title, subtitle, dataMap) {
 		var domElement = document.getElementById(divId);
 		if (!domElement) {
 			console.warn("Could not find element with ID: "+divId);
@@ -133,7 +133,7 @@
 		domElement.classList.remove("notsetyet");
 	}
 
-	ConDecReport.prototype.initializeDivWithBoxPlotFromMap = function(boxplot, title, xAxis, dataMap) {
+	ConDecReqDash.prototype.initializeDivWithBoxPlotFromMap = function(boxplot, title, xAxis, dataMap) {
 		var values = [];
 		var keysAsArray = Array.from(dataMap.keys());
 		for (var i = keysAsArray.length - 1; i >= 0; i--) {
@@ -148,7 +148,7 @@
 	};
 
 	/* TODO: Function does not need to be exposed */
-	ConDecReport.prototype.initializeDivWithPieChartData = function(piechart, title, subtitle,
+	ConDecReqDash.prototype.initializeDivWithPieChartData = function(piechart, title, subtitle,
 			objectsMap, hasRichData) {
 		var data = [];
 		var source = [];
@@ -186,7 +186,7 @@
 		return piechart;
 	};
 
-	ConDecReport.prototype.navigateToElement = function(elementName) {
+	ConDecReqDash.prototype.navigateToElement = function(elementName) {
         var issueKey = elementName.replace(issueKeyParser,issueKeyBuilder);
         targetBaseUrl = baseUrl;
 	    if (!isIssueData) {
@@ -202,20 +202,20 @@
 		window.open(targetBaseUrl+'/browse/'+issueKey, '_blank');
 	}
 
-	ConDecReport.prototype.setClickedChart = function(domNode) {
+	ConDecReqDash.prototype.setClickedChart = function(domNode) {
 		node = domNode;
 	}
 
-	ConDecReport.prototype.setClickedData = function(idx,data) {
+	ConDecReqDash.prototype.setClickedData = function(idx,data) {
 		dataIndexClicked = idx;
 		dataClicked = data;
 	}
 
-	ConDecReport.prototype.setJiraBaseUrl = function(url) {
+	ConDecReqDash.prototype.setJiraBaseUrl = function(url) {
 		baseUrl = url;
 	}
 
-	ConDecReport.prototype.showClickedSource = function(chart,dataIndexClicked,dataClicked) {
+	ConDecReqDash.prototype.showClickedSource = function(chart,dataIndexClicked,dataClicked) {
 		if (chart.hasOwnProperty("groupedConDecData")) { // CHART_RICH_PIE case
 			// extract data keys (dec. knowledge elements)
 			return showDecKnowledgeElementsOverlay(chart.groupedConDecData[dataIndexClicked], isIssueData);
@@ -388,18 +388,18 @@
 		fillChildNodes(contents,flatList, isIssueData);
 	}
 
-	global.conDecReport = new ConDecReport();
+	global.ConDecReqDash = new ConDecReqDash();
 })(window);
 
 function echartDataClicked(param) {
 	if (typeof param.seriesIndex != 'undefined') {
-		conDecReport.showClickedSource(this,param.dataIndex,param.data)
+		ConDecReqDash.showClickedSource(this,param.dataIndex,param.data)
 	}
 }
 
 function clickDecKnowledgeElementsInOverlay(event) {
 	if (event.target.nodeName.toLowerCase() === "p") {
-		conDecReport.navigateToElement(event.target.innerText);
+		ConDecReqDash.navigateToElement(event.target.innerText);
 	}
 }
 

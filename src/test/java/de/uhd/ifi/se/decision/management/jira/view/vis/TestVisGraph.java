@@ -17,6 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
@@ -148,7 +149,7 @@ public class TestVisGraph extends TestSetUp {
 	@Test
 	public void addNewNodeToGraph() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(42, "", "", KnowledgeType.DECISION, "TEST",
-				"TEST-42", DocumentationLocation.JIRAISSUE);
+				"TEST-42", DocumentationLocation.JIRAISSUE, KnowledgeStatus.DECIDED);
 		VisGraph visGraph = new VisGraph(element, new ArrayList<DecisionKnowledgeElement>());
 		KnowledgeGraph newGraph = KnowledgeGraph.getOrCreate("ConDec");
 		visGraph.setGraph(newGraph);

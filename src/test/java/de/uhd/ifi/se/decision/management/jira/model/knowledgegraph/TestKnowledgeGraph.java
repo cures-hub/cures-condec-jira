@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.model;
+package de.uhd.ifi.se.decision.management.jira.model.knowledgegraph;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -10,10 +10,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.atlassian.jira.component.ComponentAccessor;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -29,9 +30,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(
-				ComponentAccessor.getIssueManager().getIssueObject((long) 4));
-		graph = new KnowledgeGraphImpl(element.getProject().getProjectKey());
+		graph = new KnowledgeGraphImpl("TEST");
 	}
 
 	@Test
@@ -43,7 +42,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetEdges() {
-		assertEquals(JiraIssueLinks.getTestIssueLinks().size(), graph.edgeSet().size());
+		assertEquals(JiraIssueLinks.getTestJiraIssueLinks().size(), graph.edgeSet().size());
 	}
 
 	@Test
@@ -59,7 +58,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	public void testRemoveEdge() {
 		Link link = new LinkImpl(2, 4, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		assertTrue(graph.removeEdge(link));
-		assertEquals(JiraIssueLinks.getTestIssueLinks().size() - 1, graph.edgeSet().size());
+		assertEquals(JiraIssueLinks.getTestJiraIssueLinks().size() - 1, graph.edgeSet().size());
 		assertTrue(graph.addEdge(link));
 	}
 

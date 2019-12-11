@@ -28,11 +28,11 @@
 		this.knowledgeTypes = getKnowledgeTypes(projectKey);
 		this.extendedKnowledgeTypes = getExtendedKnowledgeTypes(this.knowledgeTypes);
 
-        this.knowledgeStatus = ["Idea","Discarded", "Decided","Rejected", "Undefined"];
+        this.optionStatus = ["Idea", "Discarded", "Decided", "Rejected", "Undefined"];
         this.issueStatus = ["Resolved", "Unresolved"];
+		this.knowledgeStatus = this.optionStatus.concat(this.issueStatus);
+		
         this.linkTypes = getLinkTypes(projectKey);
-
-		this.extendedStatus = getExtendedStatus();
 	};
 
 	ConDecAPI.prototype.checkIfProjectKeyIsValid = function checkIfProjectKeyIsValid() {
@@ -115,7 +115,7 @@
 	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElementAsChild(summary,
 																										description, type, documentationLocation, idOfExistingElement, documentationLocationOfExistingElement,
 																										callback) {
-		//console.log("conDecAPI createDecisionKnowledgeElement");
+		// console.log("conDecAPI createDecisionKnowledgeElement");
 		var newElement = {
 			"summary": summary,
 			"type": type,
@@ -139,14 +139,15 @@
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.updateDecisionKnowledgeElement = function updateDecisionKnowledgeElement(id, summary,
-																								 description, type, documentationLocation, callback) {
+																								 description, type, documentationLocation, status, callback) {
 		var element = {
 			"id": id,
 			"summary": summary,
 			"type": type,
 			"projectKey": projectKey,
 			"description": description,
-			"documentationLocation": documentationLocation
+			"documentationLocation": documentationLocation,
+			"status": status
 		};
 		var parentElement = conDecTreant.findParentElement(id);
 		postJSON(AJS.contextPath()
@@ -228,6 +229,7 @@
 			})
 		})
 	};
+	
 	ConDecAPI.prototype.getProjectWideSelectedIssueTypes = function getProjectWideSelectedIssueTypes() {
 		return new Promise(function (resolve, reject) {
 			var preSelectedIssueUrl = "/rest/decisions/latest/config/getReleaseNoteMapping.json?projectKey=" + projectKey;
@@ -244,12 +246,11 @@
 		})
 	};
 
-
 	/*
 	 * external references: condec.context.menu, condec.dialog
 	 */
 	ConDecAPI.prototype.changeKnowledgeType = function changeKnowledgeType(id, type, documentationLocation, callback) {
-		this.updateDecisionKnowledgeElement(id, null, null, type, documentationLocation, callback);
+		this.updateDecisionKnowledgeElement(id, null, null, type, documentationLocation, null, callback);
 	};
 
 	/*
@@ -307,34 +308,11 @@
 			});
 	};
 
-	ConDecAPI.prototype.setStatus = function setStatus(id, documentationLocation, status, callback) {
-		var element = {
-			"id": id,
-			"documentationLocation": documentationLocation,
-			"projectKey": projectKey
-		};
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/setStatus.json?status=" + status, element,
-			function (error) {
-				if (error === null) {
-					showFlag("success", "Decision knowledge element status has been updated.");
-					callback();
-				}
-			});
-	};
-
-	ConDecAPI.prototype.getStatus = function getStatus(decisionElement, callback) {
-		var element = {
-			"id": decisionElement.id,
-			"key": decisionElement.key,
-			"documentationLocation": decisionElement.documentationLocation,
-			"projectKey": projectKey
-		};
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getStatus.json", element,
-			function (error, status) {
-				if (error === null) {
-					callback(status);
-				}
-			});
+	/*
+	 * external references: condec.dialog
+	 */
+	ConDecAPI.prototype.setStatus = function setStatus(id, documentationLocation, type, status, callback) {
+		this.updateDecisionKnowledgeElement(id, null, null, type, documentationLocation, status, callback);
 	};
 
 	/*
@@ -413,7 +391,7 @@
 	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getSummarizedCode = function getSummarizedCode(id, documentationLocation, probability, callback) {
-		//console.log(probability);
+		// console.log(probability);
 		getText(AJS.contextPath() + "/rest/decisions/latest/decisions/getSummarizedCode?projectKey=" + projectKey
 			+ "&id=" + id + "&documentationLocation=" + documentationLocation + "&probability=" + probability,
 			function (error, summary) {
@@ -458,7 +436,7 @@
 			"createdLatest": -1,
 			"documentationLocations": [""],
 			"selectedJiraIssueTypes": [""],
-			"selectedIssueStatus": this.extendedStatus
+			"selectedStatus": this.extendedStatus
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
 			filterSettings, function (error, vis) {
@@ -480,7 +458,7 @@
 			"createdLatest": createdAfter,
 			"documentationLocations": documentationLocations,
 			"selectedJiraIssueTypes": selectedJiraIssueTypes,
-			"selectedIssueStatus": this.extendedStatus
+			"selectedStatus": this.extendedStatus
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
 			filterSettings, function (error, vis) {
@@ -501,7 +479,7 @@
 			"createdLatest": closed,
 			"documentationLocations": [""],
 			"selectedJiraIssueTypes": issueTypes,
-			"selectedIssueStatus": issueStatus
+			"selectedStatus": issueStatus
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getCompareVis.json", filterSettings, function (error,
 																												 vis) {
@@ -560,7 +538,7 @@
 			"createdLatest": closed,
 			"documentationLocations": [""],
 			"selectedJiraIssueTypes": issueTypes,
-			"selectedIssueStatus": issueStatus
+			"selectedStatus": issueStatus
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getEvolutionData.json", filterSettings, function (
 			error, evolutionData) {
@@ -597,7 +575,7 @@
 			"createdLatest" : -1,
 			"documentationLocations" : [ "" ],
 			"selectedJiraIssueTypes" : ["Decision"],
-			"selectedIssueStatus": [ "" ],
+			"selectedStatus": [ "" ],
 			"selectedLinkTypes": selectedLinkTypes
 		};
 
@@ -776,14 +754,12 @@
 	function getKnowledgeTypes(projectKey) {
 		var knowledgeTypes = getResponseAsReturnValue(AJS.contextPath()
 			+ "/rest/decisions/latest/config/getKnowledgeTypes.json?projectKey=" + projectKey);
-		if (knowledgeTypes !== null) {
-			return knowledgeTypes;
-		}
+		return knowledgeTypes;
 	}
   
 	function getLinkTypes(projectKey) {
 		var linkTypes = getResponseAsReturnValue(AJS.contextPath()
-			+ "/rest/decisions/latest/config/getLinkTypes.json?projectKey=" + projectKey) ;
+			+ "/rest/decisions/latest/config/getLinkTypes.json?projectKey=" + projectKey);
 		if (linkTypes !== null) {
 			var linkTypeArray = [];
 			for (var link in linkTypes) {
@@ -815,10 +791,6 @@
 		extendedKnowledgeTypes.push("Con-argument");
 		return extendedKnowledgeTypes;
 	}
-
-	/*
-	 * 
-	 */
 
 	/*
 	 * external references: settingsForSingleProject.vm
@@ -864,7 +836,7 @@
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setReleaseNoteMapping.json?projectKey=" + projectKey + "&releaseNoteCategory=" + releaseNoteCategory, selectedIssueTypes, function (
 			error, response) {
 			if (error === null) {
-				showFlag("success", "The associated issuetypes for the category: " + releaseNoteCategory + " were changed for this project.");
+				showFlag("success", "The associated Jira issue types for the category: " + releaseNoteCategory + " were changed for this project.");
 			}
 		});
 	};
@@ -872,11 +844,11 @@
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
-	ConDecAPI.prototype.clearSentenceDatabase = function clearSentenceDatabase(projectKey) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/clearSentenceDatabase.json?projectKey="
+	ConDecAPI.prototype.cleanDatabases = function cleanDatabases(projectKey) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/cleanDatabases.json?projectKey="
 			+ projectKey, null, function (error, response) {
 			if (error === null) {
-				showFlag("success", "The Sentence database has been cleared.");
+				showFlag("success", "The databases have been cleaned.");
 			}
 		});
 	};
@@ -923,12 +895,12 @@
 
 
 	ConDecAPI.prototype.evaluateModel = function evaluateModel(projectKey, callback) {
-		//console.log("ConDecAPI.prototype.evaluateModel");
+		// console.log("ConDecAPI.prototype.evaluateModel");
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/evaluateModel.json?projectKey=" + projectKey, null,
 			function (error, response) {
 				if (error === null) {
 					showFlag("success", "The evaluation results file was successfully created.");
-					////console.log(response["content"]);
+					// //console.log(response["content"]);
 					callback(response["content"]);
 				}
 			});
@@ -942,7 +914,7 @@
 				if (error === null) {
 					showFlag("success", "The ARFF file was successfully created and saved in "
 						+ response["arffFile"] + ".");
-					//console.log(response["content"]);
+					// console.log(response["content"]);
 					callback(response["content"]);
 				}
 			});
@@ -1024,7 +996,7 @@
 		return JSON.parse(xhr.response);
 	}
 
-	//@Deprecated
+	// @Deprecated
 	function _postWithResponseAsReturnValue(url) {
 		var xhr = new XMLHttpRequest();
 		xhr.open("POST", url, false);
@@ -1165,13 +1137,14 @@
 			issueKey = JIRA.Issue.getIssueKey();
 		}
 		if (issueKey === undefined || !issueKey) {
-			//console.log("conDecAPI could not getIssueKey using object JIRA!");
+			// console.log("conDecAPI could not getIssueKey using object
+			// JIRA!");
 			if (AJS && AJS.Meta && AJS.Meta.get) {
 				issueKey = AJS.Meta.get("issue-key");
 			}
 		}
 		if (issueKey === undefined || !issueKey) {
-			//console.log("conDecAPI could not getIssueKey using object AJS!");
+			// console.log("conDecAPI could not getIssueKey using object AJS!");
 			var chunks = document.location.pathname.split("/");
 			if (chunks.length > 0) {
 				var lastChunk = chunks[chunks.length - 1];
@@ -1180,7 +1153,7 @@
 				}
 			}
 		}
-		//console.log("conDecAPI getIssueKey: " + issueKey);
+		// console.log("conDecAPI getIssueKey: " + issueKey);
 		return issueKey;
 	}
 
@@ -1191,19 +1164,19 @@
 	ConDecAPI.prototype.getIssueKey = getIssueKey;
 
 	function getProjectKey() {
-		//console.log("conDecAPI getProjectKey");
+		// console.log("conDecAPI getProjectKey");
 		var projectKey;
 		try {
 			projectKey = JIRA.API.Projects.getCurrentProjectKey();
 		} catch (error) {
-			//console.log(error);
+			// console.log(error);
 		}
 		if (projectKey === undefined) {
 			try {
 				var issueKey = getIssueKey();
 				projectKey = issueKey.split("-")[0];
 			} catch (error) {
-				//console.log(error);
+				// console.log(error);
 			}
 		}
 		return projectKey;
@@ -1219,14 +1192,6 @@
 			title: type.charAt(0).toUpperCase() + type.slice(1) + " " + status,
 			body: message
 		});
-	}
-
-	function getExtendedStatus() {
-		var extendedStatus = this.knowledgeStatus;
-		for (var issueStat in this.issueStatus) {
-			extendedStatus.push(issueStat);
-		}
-		return extendedStatus
 	}
 
 	// export ConDecAPI

@@ -91,7 +91,7 @@ public class WebhookConnector {
 		List<DecisionKnowledgeElement> webhookRootElements = new ArrayList<DecisionKnowledgeElement>();
 
 		AbstractPersistenceManagerForSingleLocation strategy = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getDefaultPersistenceManager();
+				.getDefaultManagerForSingleLocation();
 		List<DecisionKnowledgeElement> linkedElements = strategy.getAdjacentElements(element);
 		linkedElements.add(element);
 		for (DecisionKnowledgeElement linkedElement : linkedElements) {

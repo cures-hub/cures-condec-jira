@@ -25,7 +25,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
@@ -63,7 +62,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		boolean isDeleted = false;
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("ID = ?", id))) {
-			StatusPersistenceManager.deleteStatus(new PartOfJiraIssueTextImpl(databaseEntry));
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.JIRAISSUETEXT);
 			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new PartOfJiraIssueTextImpl(databaseEntry));
 			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
@@ -155,12 +153,14 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 *            id of the Jira issue that the decision knowledge elements are
 	 *            documented in.
 	 * @return list of all decision knowledge elements documented in the description
-	 *         or comments of a Jira issue.
+	 *         or comments of a Jira issue. Does not return irrelevant parts of
+	 *         text.
 	 */
 	public List<DecisionKnowledgeElement> getElementsInJiraIssue(long jiraIssueId) {
 		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ?", projectKey, jiraIssueId))) {
+				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ? AND RELEVANT = TRUE", projectKey,
+						jiraIssueId))) {
 			elements.add(new PartOfJiraIssueTextImpl(databaseEntry));
 		}
 		return elements;
@@ -174,7 +174,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 *            id of the comment that the decision knowledge element(s) is/are
 	 *            documented in.
 	 * @return list of all decision knowledge elements documented in the a certain
-	 *         comment of a Jira issue.
+	 *         comment of a Jira issue. Does also return irrelevant parts of text.
 	 */
 	public List<DecisionKnowledgeElement> getElementsInComment(long commentId) {
 		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
@@ -311,7 +311,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(databaseEntry);
 		if (sentence.getId() > 0 && sentence.isRelevant()) {
-			KnowledgePersistenceManager.insertStatus(sentence);
 			KnowledgeGraph.getOrCreate(projectKey).addVertex(sentence);
 		}
 		return sentence;
@@ -354,18 +353,13 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		databaseEntry.setType(element.getTypeAsString());
 		databaseEntry.setRelevant(element.isRelevant());
 		databaseEntry.setValidated(element.isValidated());
-		// TODO Is there a better place for this method? Please move try-catch block
-		// into classificationTrainer.update method for better readability.
 		if (element.isValidated()) {
-			try {
-				classificationTrainer.update(element);
-			} catch (Exception e) {
-				LOGGER.error("Could not update Classifier. Message: " + e.getMessage());
-			}
+			classificationTrainer.update(element);
 		}
 		databaseEntry.setStartPosition(element.getStartPosition());
 		databaseEntry.setEndPosition(element.getEndPosition());
 		databaseEntry.setJiraIssueId(element.getJiraIssueId());
+		databaseEntry.setStatus(element.getStatusAsString());
 	}
 
 	@Override
@@ -378,81 +372,48 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return updatePartOfJiraIssueText(sentence, user);
 	}
 
-	@Override
-	public boolean updateDecisionKnowledgeElementWithoutStatusChange(DecisionKnowledgeElement element,
-			ApplicationUser user) {
-		if (element == null) {
+	public static boolean updatePartOfJiraIssueText(PartOfJiraIssueText newElement, ApplicationUser user) {
+		if (newElement == null || newElement.getProject() == null) {
 			return false;
 		}
-		PartOfJiraIssueText partOfJiraIssueText = new PartOfJiraIssueTextImpl(element);
-		partOfJiraIssueText.setValidated(true);
-		PartOfJiraIssueText partOfJiraIssueTextInDatabase = (PartOfJiraIssueText) getDecisionKnowledgeElement(
-				element.getId());
-		if (partOfJiraIssueTextInDatabase == null) {
-			return false;
-		}
-		return updateElementInDatabase(partOfJiraIssueText, partOfJiraIssueTextInDatabase, user);
-	}
-
-	@Override
-	public ApplicationUser getCreator(DecisionKnowledgeElement element) {
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) getDecisionKnowledgeElement(element.getId());
-		if (sentence == null) {
-			LOGGER.error("Element could not be found.");
-			return null;
-		}
-		return sentence.getCreator();
-	}
-
-	public static boolean updatePartOfJiraIssueText(PartOfJiraIssueText element, ApplicationUser user) {
-		if (element == null || element.getProject() == null) {
-			return false;
-		}
-
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(element.getProject().getProjectKey()).getJiraIssueTextManager();
 
 		// Get corresponding element from database
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager
-				.getDecisionKnowledgeElement(element.getId());
-		if (sentence == null) {
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(newElement.getProject()).getJiraIssueTextManager();
+		PartOfJiraIssueText formerElement = (PartOfJiraIssueText) persistenceManager
+				.getDecisionKnowledgeElement(newElement);
+		if (formerElement == null) {
 			return false;
 		}
-		// only the knowledge type has changed
-		if (element.getSummary() == null) {
-			element.setSummary(sentence.getSummary());
-			element.setDescription(sentence.getDescription());
+		// only the knowledge type or status has changed
+		if (newElement.getSummary() == null) {
+			newElement.setSummary(formerElement.getSummary());
+			newElement.setDescription(formerElement.getDescription());
 		}
-		if (sentence.getType().equals(KnowledgeType.DECISION) && element.getType().equals(KnowledgeType.ALTERNATIVE)) {
-			StatusPersistenceManager.setStatusForElement(sentence, KnowledgeStatus.REJECTED);
-		}
-		if (sentence.getType().equals(KnowledgeType.ALTERNATIVE) && element.getType().equals(KnowledgeType.DECISION)) {
-			StatusPersistenceManager.deleteStatus(element);
-		}
-		return updateElementInDatabase(element, sentence, user);
+		return updateElementInDatabase(newElement, formerElement, user);
 	}
 
-	private static boolean updateElementInDatabase(PartOfJiraIssueText element, PartOfJiraIssueText sentence,
+	private static boolean updateElementInDatabase(PartOfJiraIssueText newElement, PartOfJiraIssueText formerElement,
 			ApplicationUser user) {
-		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getType());
-		String changedPartOfText = tag + element.getDescription() + tag;
+		String tag = AbstractKnowledgeClassificationMacro.getTag(newElement.getType());
+		String changedPartOfText = tag + newElement.getDescription() + tag;
 
 		String text = "";
-		MutableComment mutableComment = sentence.getComment();
+		MutableComment mutableComment = formerElement.getComment();
 		if (mutableComment == null) {
-			text = sentence.getJiraIssueDescription();
+			text = formerElement.getJiraIssueDescription();
 		} else {
 			text = mutableComment.getBody();
 		}
 
-		String firstPartOfText = text.substring(0, sentence.getStartPosition());
-		String lastPartOfText = text.substring(sentence.getEndPosition());
+		String firstPartOfText = text.substring(0, formerElement.getStartPosition());
+		String lastPartOfText = text.substring(formerElement.getEndPosition());
 
 		String newBody = firstPartOfText + changedPartOfText + lastPartOfText;
 
 		JiraIssueTextExtractionEventListener.editCommentLock = true;
 		if (mutableComment == null) {
-			MutableIssue jiraIssue = (MutableIssue) sentence.getJiraIssue();
+			MutableIssue jiraIssue = (MutableIssue) formerElement.getJiraIssue();
 			jiraIssue.setDescription(newBody);
 			JiraIssuePersistenceManager.updateJiraIssue(jiraIssue, user);
 		} else {
@@ -461,16 +422,21 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		}
 		JiraIssueTextExtractionEventListener.editCommentLock = false;
 
-		int lengthDifference = changedPartOfText.length() - sentence.getLength();
-		updateSentenceLengthForOtherSentencesInSameComment(sentence, lengthDifference);
+		int lengthDifference = changedPartOfText.length() - formerElement.getLength();
+		updateSentenceLengthForOtherSentencesInSameComment(formerElement, lengthDifference);
 
-		sentence.setEndPosition(sentence.getStartPosition() + changedPartOfText.length());
-		sentence.setType(element.getType());
-		sentence.setValidated(element.isValidated());
-		sentence.setRelevant(element.getType() != KnowledgeType.OTHER);
+		KnowledgeType newType = KnowledgeStatus.getNewKnowledgeTypeForStatus(newElement);
+		KnowledgeStatus newStatus = KnowledgeStatus.getNewKnowledgeStatusForType(formerElement, newElement);
+
+		formerElement.setEndPosition(formerElement.getStartPosition() + changedPartOfText.length());
+		formerElement.setType(newElement.getType());
+		formerElement.setValidated(newElement.isValidated());
+		formerElement.setRelevant(newElement.getType() != KnowledgeType.OTHER);
+		formerElement.setStatus(newStatus);
+		formerElement.setType(newType);
 		// sentence.setCommentId(element.getCommentId());
 
-		return updateInDatabase(sentence);
+		return updateInDatabase(formerElement);
 	}
 
 	public static boolean updateInDatabase(PartOfJiraIssueText sentence) {
@@ -499,66 +465,14 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		}
 	}
 
-	public static boolean createSmartLinkForElement(PartOfJiraIssueText sentence) {
+	@Override
+	public ApplicationUser getCreator(DecisionKnowledgeElement element) {
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) getDecisionKnowledgeElement(element.getId());
 		if (sentence == null) {
-			return false;
+			LOGGER.error("Element could not be found.");
+			return null;
 		}
-		if (isElementLinked(sentence)) {
-			return true;
-		}
-		boolean isLinkCreated = false;
-		KnowledgeType knowledgeType = sentence.getType();
-
-		if (knowledgeType == KnowledgeType.ARGUMENT || knowledgeType == KnowledgeType.PRO
-				|| knowledgeType == KnowledgeType.CON) {
-			DecisionKnowledgeElement lastElement = getMostRecentElement(
-					searchForLast(sentence, KnowledgeType.ALTERNATIVE),
-					searchForLast(sentence, KnowledgeType.DECISION));
-			isLinkCreated = createLink(lastElement, sentence);
-		}
-
-		if (knowledgeType == KnowledgeType.DECISION || knowledgeType == KnowledgeType.ALTERNATIVE) {
-			DecisionKnowledgeElement lastElement = searchForLast(sentence, KnowledgeType.ISSUE);
-			isLinkCreated = createLink(lastElement, sentence);
-		}
-
-		if (!isLinkCreated && sentence.isRelevant()) {
-			String projectKey = sentence.getProject().getProjectKey();
-			JiraIssuePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-					.getJiraIssueManager();
-			DecisionKnowledgeElement parentElement = persistenceManager
-					.getDecisionKnowledgeElement(sentence.getJiraIssueId());
-			isLinkCreated = createLink(parentElement, sentence);
-		}
-		return isLinkCreated;
-	}
-
-	public static DecisionKnowledgeElement searchForLast(PartOfJiraIssueText sentence, KnowledgeType typeToSearch) {
-		PartOfJiraIssueText lastSentence = null;
-		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("JIRA_ISSUE_ID = ?", sentence.getJiraIssueId()).order("ID DESC"));
-
-		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
-			if (databaseEntry.getType().equals(typeToSearch.toString())) {
-				lastSentence = new PartOfJiraIssueTextImpl(databaseEntry);
-				break;
-			}
-		}
-		return lastSentence;
-	}
-
-	public static DecisionKnowledgeElement getMostRecentElement(DecisionKnowledgeElement first,
-			DecisionKnowledgeElement second) {
-		if (first == null) {
-			return second;
-		}
-		if (second == null) {
-			return first;
-		}
-		if (first.getId() > second.getId()) {
-			return first;
-		}
-		return second;
+		return sentence.getCreator();
 	}
 
 	public boolean createLinksForNonLinkedElements(long jiraIssueId) {
@@ -578,98 +492,32 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	public boolean ensureThatElementIsLinked(DecisionKnowledgeElement element) {
-		if (isElementLinked(element)) {
+		if (element.isLinked() > 0) {
 			return true;
 		}
 		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(
 				((PartOfJiraIssueText) element).getJiraIssue());
-		Link link = Link.instantiateDirectedLink(parentElement, element);
-		long linkId = KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, null);
-		return linkId > 0;
-	}
-
-	public static boolean createLink(DecisionKnowledgeElement lastElement, PartOfJiraIssueText sentence) {
-		if (lastElement == null || !sentence.isRelevant()) {
-			return false;
-		}
-		Link link = Link.instantiateDirectedLink(lastElement, sentence);
-		long linkId = KnowledgePersistenceManager.getOrCreate(lastElement.getProject().getProjectKey()).insertLink(link,
-				null);
+		long linkId = KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(parentElement, element, null);
 		return linkId > 0;
 	}
 
 	/**
-	 * Determines whether an element is linked to at least one other decision
-	 * knowledge element.
-	 *
-	 * @param id
-	 *            id of a decision knowledge element in database. The id is
-	 *            different to the key.
-	 * @param documentationLocation
-	 *            of the element
-	 * @return list of linked elements.
-	 * @see DecisionKnowledgeElement
+	 * Deletes elements in database that are broken (are neither stored in
+	 * description nor in a comment or have zero length).
+	 * 
+	 * @param user
+	 *            Jira {@link ApplicationUser}.
+	 * @return true if any element was deleted.
 	 */
-	public static boolean isElementLinked(DecisionKnowledgeElement element) {
-		List<Link> links = GenericLinkManager.getLinksForElement(element);
-		return links != null && links.size() > 0;
-	}
-
-	public static void cleanSentenceDatabase(String projectKey) {
-		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			if (!isExistent(databaseEntry)) {
-				PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
-				GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUETEXT);
-				DecisionKnowledgeElement element = new PartOfJiraIssueTextImpl(databaseEntry);
-				KnowledgeGraph.getOrCreate(element.getProject().getProjectKey()).removeVertex(element);
+	public boolean deleteInvalidElements(ApplicationUser user) {
+		boolean isAnyElementDeleted = false;
+		for (DecisionKnowledgeElement element : getDecisionKnowledgeElements()) {
+			if (!((PartOfJiraIssueText) element).isValid()) {
+				deleteDecisionKnowledgeElement(element, user);
+				isAnyElementDeleted = true;
 			}
 		}
-	}
-
-	public static boolean isExistent(PartOfJiraIssueTextInDatabase databaseEntry) {
-		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(databaseEntry);
-		return isExistent(sentence);
-	}
-
-	public static boolean isExistent(PartOfJiraIssueText sentence) {
-		if (sentence == null) {
-			return false;
-		}
-		if (sentence.getCommentId() <= 0) {
-			// documented in Jira issue description
-			return true;
-		}
-		if (sentence.getComment() == null) {
-			return false;
-		}
-		return !(sentence.getEndPosition() == 0 && sentence.getStartPosition() == 0);
-	}
-
-	/**
-	 * Migration function on button "Validate Sentence Database" Adds Link types to
-	 * "empty" links. Can be deleted in a future release
-	 */
-	public static boolean migrateArgumentTypesInLinks(String projectKey) {
-		if (projectKey == null || projectKey.equals("")) {
-			return false;
-		}
-		PartOfJiraIssueTextInDatabase[] sentencesInProject = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ?", projectKey));
-		for (PartOfJiraIssueTextInDatabase databaseEntry : sentencesInProject) {
-			if (databaseEntry.getType().length() == 3) {// Equals Argument
-				List<Link> links = GenericLinkManager.getLinksForElement(databaseEntry.getId(),
-						DocumentationLocation.JIRAISSUETEXT);
-				for (Link link : links) {
-					if (link.getType().equalsIgnoreCase("contain")) {
-						KnowledgePersistenceManager.getOrCreate(projectKey).deleteLink(link, null);
-						link.setType(LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()).toString());
-						KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, null);
-					}
-				}
-			}
-		}
-		return true;
+		return isAnyElementDeleted;
 	}
 
 	public Issue createJIRAIssueFromSentenceObject(long aoId, ApplicationUser user) {
@@ -735,7 +583,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			} else {
 				sentence = (PartOfJiraIssueText) persistenceManager.insertDecisionKnowledgeElement(sentence, null);
 			}
-			createSmartLinkForElement(sentence);
+			if (sentence.isRelevant()) {
+				AutomaticLinkCreator.createSmartLinkForElement(sentence);
+			}
 			knowledgeElementsInText.set(i, sentence);
 		}
 		return knowledgeElementsInText;
@@ -764,7 +614,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				parts.add(sentence);
 			}
 			sentence = (PartOfJiraIssueText) persistenceManager.getDecisionKnowledgeElement(sentence);
-			createSmartLinkForElement(sentence);
+			if (sentence.isRelevant()) {
+				AutomaticLinkCreator.createSmartLinkForElement(sentence);
+			}
 			KnowledgeGraph.getOrCreate(projectKey).updateNode(sentence);
 		}
 		return parts;
@@ -813,6 +665,35 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	/**
+	 * Returns the youngest decision knowledge element with a certain knowledge type
+	 * that is documented in the description or the comments of a certain Jira
+	 * issue.
+	 * 
+	 * @param jiraIssueId
+	 *            id of the Jira issue that the decision knowledge elements are
+	 *            documented in.
+	 * @param knowledgeType
+	 *            {@link KnowledgeType} of the parent element.
+	 * @return youngest decision knowledge element with a certain knowledge type
+	 *         that is documented in the description or the comments of a certain
+	 *         Jira issue.
+	 */
+	public static DecisionKnowledgeElement getYoungestElementForJiraIssue(long jiraIssueId,
+			KnowledgeType knowledgeType) {
+		PartOfJiraIssueText youngestElement = null;
+		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
+				Query.select().where("JIRA_ISSUE_ID = ?", jiraIssueId).order("ID DESC"));
+
+		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
+			if (databaseEntry.getType().equalsIgnoreCase(knowledgeType.toString())) {
+				youngestElement = new PartOfJiraIssueTextImpl(databaseEntry);
+				break;
+			}
+		}
+		return youngestElement;
+	}
+
+	/**
 	 * Split a text into parts (substrings).
 	 *
 	 * @param comment
@@ -832,7 +713,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		for (PartOfText partOfText : partsOfText) {
 			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(partOfText, comment);
 			sentence = (PartOfJiraIssueText) persistenceManager.insertDecisionKnowledgeElement(sentence, null);
-			createSmartLinkForElement(sentence);
+			if (sentence.isRelevant()) {
+				AutomaticLinkCreator.createSmartLinkForElement(sentence);
+			}
 			parts.add(sentence);
 		}
 		return parts;

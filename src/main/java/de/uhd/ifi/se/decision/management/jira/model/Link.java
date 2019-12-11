@@ -45,6 +45,15 @@ public interface Link {
 	 * @param type
 	 *            of the link.
 	 */
+	void setType(LinkType type);
+
+	/**
+	 * Set the type of the link.
+	 *
+	 * @see LinkType
+	 * @param type
+	 *            of the link as a String, e.g. "relates".
+	 */
 	void setType(String type);
 
 	/**

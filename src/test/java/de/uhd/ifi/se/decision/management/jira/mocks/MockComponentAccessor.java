@@ -58,7 +58,7 @@ public class MockComponentAccessor extends ComponentAccessor {
 				.addMock(IssueTypeSchemeManager.class, new MockIssueTypeSchemeManager())
 				.addMock(FieldConfigScheme.class, mock(FieldConfigScheme.class))
 				.addMock(PluginSettingsFactory.class, new MockPluginSettingsFactory())
-				.addMock(OptionSetManager.class, mock(OptionSetManager.class))
+				.addMock(OptionSetManager.class, new MockOptionSetManager())
 				.addMock(CommentManager.class, new MockCommentManager())
 				.addMock(JiraHome.class, new MockJiraHomeForTesting())
 				.addMock(SearchService.class, new MockSearchService())

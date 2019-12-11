@@ -1,16 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.view.matrix;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 
 public class TestMatrix extends TestSetUp {
 	private Matrix matrix;
@@ -20,34 +21,26 @@ public class TestMatrix extends TestSetUp {
 		init();
 		List<DecisionKnowledgeElement> decisions = new ArrayList<>();
 
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		element.setId(1);
-		element.setKey("Test-1");
-		element.setType("Decision");
-		element.setProject("TEST");
-		element.setSummary("TESTfwf");
-		element.setDocumentationLocation("i");
-		decisions.add(element);
+		DecisionKnowledgeElement element_1 = new DecisionKnowledgeElementImpl(1, "TESTfwf", "", "Decision", "TEST",
+				"Test-1", "i", "");
+		decisions.add(element_1);
+
+		DecisionKnowledgeElement element_2 = new DecisionKnowledgeElementImpl(2, "TESTfwfw", "", "Decision", "TEST",
+				"Test-1", "i", "");
+		decisions.add(element_2);
 
 		matrix = new Matrix("Test", decisions);
-
 	}
 
 	@Test
-	public void testGetMatrixHeaderRow() {
-		assertTrue(this.matrix.getMatrixHeaderRow().containsKey((long) 1));
-		assertTrue(this.matrix.getMatrixHeaderRow().containsValue("TESTfwf"));
+	public void testGetHeaderElements() {
+		assertEquals(2, this.matrix.getHeaderElements().size());
 	}
 
 	@Test
-	public void testGetMatrixData() {
-		assertTrue(this.matrix.getMatrixData().containsKey((long) 1));
-		assertEquals(1, this.matrix.getMatrixData().size());
-	}
-
-	@Test
-	public void testGetMatrixDataEntries() {
-		assertTrue(this.matrix.getMatrixData().get((long) 1).contains("LightGray"));
+	public void testGetColoredRows() {
+		assertTrue(this.matrix.getColoredRows("Test").get(1).contains("LightGray"));
+		assertTrue(this.matrix.getColoredRows("Test").get(1).contains("White"));
 	}
 
 }

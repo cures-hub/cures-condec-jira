@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
+import de.uhd.ifi.se.decision.management.jira.rest.impl.KnowledgeRestImpl;
 
 public class TestGetDecisionKnowledgeElement extends TestSetUp {
 	private KnowledgeRest knowledgeRest;
@@ -20,7 +21,7 @@ public class TestGetDecisionKnowledgeElement extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		knowledgeRest = new KnowledgeRest();
+		knowledgeRest = new KnowledgeRestImpl();
 		super.init();
 	}
 

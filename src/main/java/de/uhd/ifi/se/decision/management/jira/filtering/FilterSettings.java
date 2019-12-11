@@ -2,13 +2,14 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import com.atlassian.jira.issue.issuetype.IssueType;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
 /**
  * Interface for the filter criteria. The filter settings cover the key of the
@@ -119,28 +120,32 @@ public interface FilterSettings {
 	void setSelectedJiraIssueTypes(List<String> types);
 
 	/**
-	 * Gets the selected issue Status types from the filter
-	 * @return list of issue Status as string
+	 * Gets the selected {@link KnowledgeStatus} types from the filter
+	 * 
+	 * @return list of {@link KnowledgeStatus} types as string
 	 */
-	List<KnowledgeStatus> getSelectedIssueStatus();
+	List<KnowledgeStatus> getSelectedStatus();
 
 	/**
 	 * Sets the issue status that a selected of a Filter
+	 * 
 	 * @param linkTypes
 	 */
 	void setSelectedLinkTypes(List<String> linkTypes);
 
 	/**
 	 * Gets the selected link types from the filter
+	 * 
 	 * @return list of link types as string
 	 */
 	List<String> getNamesOfSelectedLinkTypes();
 
 	/**
 	 * Sets the link types that a selected of a Filter
+	 * 
 	 * @param linkTypes
 	 */
-	void setSelectedJiraIssueStatus(List<String> linkTypes);
+	void setSelectedStatus(List<String> linkTypes);
 
 	/**
 	 * Returns the names of all JIRA issue types of the selected project.
@@ -150,14 +155,16 @@ public interface FilterSettings {
 	List<String> getAllJiraIssueTypes();
 
 	/**
-	 * Returns the names of all JIRA isue status
-	 * @return list of names of JIRA {@link de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus}s.
+	 * Returns the names of all {@link KnowledgeStatus}
+	 * 
+	 * @return list of names of JIRA {@link KnowledgeStatus}.
 	 */
-	List<String> getAllJiraIssueStatus();
+	List<String> getAllStatus();
 
 	/**
 	 * Returns the names of all link types
-	 * @return list of names of {@link de.uhd.ifi.se.decision.management.jira.model.LinkType}s.
+	 * 
+	 * @return list of names of {@link LinkType}s.
 	 */
 	List<String> getAllLinkTypes();
 

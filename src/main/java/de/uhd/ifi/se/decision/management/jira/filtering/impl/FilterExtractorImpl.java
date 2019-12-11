@@ -17,12 +17,12 @@ import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryType;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.StatusPersistenceManager;
 
 /**
  * Class for accessing the filtered knowledge graphs. The filter criteria are
@@ -117,10 +117,11 @@ public class FilterExtractorImpl implements FilterExtractor {
 
 		List<DecisionKnowledgeElement> results = new ArrayList<DecisionKnowledgeElement>();
 		// Retrieve linked decision knowledge elements for every Jira issue
-		for (Issue currentIssue : jiraIssues) {
+		for (Issue currentJiraIssue : jiraIssues) {
 			// Add all Matching Elements from Query as a DecisionKnowledgeElement
-			results.add(new DecisionKnowledgeElementImpl(currentIssue));
-			List<DecisionKnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(currentIssue.getId());
+			results.add(new DecisionKnowledgeElementImpl(currentJiraIssue));
+			List<DecisionKnowledgeElement> elements = persistenceManager
+					.getElementsInJiraIssue(currentJiraIssue.getId());
 			for (DecisionKnowledgeElement currentElement : elements) {
 				if (results.contains(currentElement)) {
 					continue;
@@ -198,21 +199,20 @@ public class FilterExtractorImpl implements FilterExtractor {
 		return false;
 	}
 
-	private boolean checkIfTypeMatches(DecisionKnowledgeElement element) {
-		if (element.getTypeAsString() != null) {
-			if (filterSettings.getNamesOfSelectedJiraIssueTypes().contains(element.getTypeAsString())) {
-				return true;
-			}
-			if (element.getTypeAsString().equals("Con") || element.getTypeAsString().equals("Pro")) {
-				return true;
-			}
+	private boolean checkIfKnowledgeTypeMatches(DecisionKnowledgeElement element) {
+		String type = element.getType().replaceProAndConWithArgument().toString();
+		if (element.getType() == KnowledgeType.OTHER) {
+			type = element.getTypeAsString();
+		}
+		if (filterSettings.getNamesOfSelectedJiraIssueTypes().contains(type)) {
+			return true;
 		}
 		return false;
 	}
 
 	private List<DecisionKnowledgeElement> filterElements(List<DecisionKnowledgeElement> elements) {
 		List<DecisionKnowledgeElement> filteredElements = new ArrayList<>();
-		if (elements == null || elements.size() == 0) {
+		if (elements == null || elements.isEmpty()) {
 			return filteredElements;
 		}
 		for (DecisionKnowledgeElement element : elements) {
@@ -220,20 +220,17 @@ public class FilterExtractorImpl implements FilterExtractor {
 			if (filterSettings.getDocumentationLocations().contains(element.getDocumentationLocation())
 					|| filterSettings.getDocumentationLocations().size() == 1 && filterSettings
 							.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN)) {
-				// Check if the Status is filtered
-				if (filterSettings.getSelectedIssueStatus()
-						.contains(StatusPersistenceManager.getStatusForElement(element))) {
-					// Check if the Type of the Element is correct
-					if (checkIfTypeMatches(element) && checkIfElementMatchesTimeFilter(element)) {
-						// Case no text filter
-						if (filterSettings.getSearchString().equals("")
-								|| filterSettings.getSearchString().equals("?filter=-4")
-								|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
+				// Check if the Status is filtered, check if the Type of the Element is correct
+				if (filterSettings.getSelectedStatus().contains(element.getStatus())
+						&& checkIfKnowledgeTypeMatches(element) && checkIfElementMatchesTimeFilter(element)) {
+					// Case no text filter
+					if (filterSettings.getSearchString().equals("")
+							|| filterSettings.getSearchString().equals("?filter=-4")
+							|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
+						filteredElements.add(element);
+					} else {
+						if (checkIfElementMatchesStringFilter(element)) {
 							filteredElements.add(element);
-						} else {
-							if (checkIfElementMatchesStringFilter(element)) {
-								filteredElements.add(element);
-							}
 						}
 					}
 				}
@@ -243,16 +240,17 @@ public class FilterExtractorImpl implements FilterExtractor {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getElementsLinkTypeFilterMatches(List<DecisionKnowledgeElement> allDecisions) {
+	public List<DecisionKnowledgeElement> getElementsLinkTypeFilterMatches(
+			List<DecisionKnowledgeElement> allDecisions) {
 		List<DecisionKnowledgeElement> filteredElements = new ArrayList<>();
-		for (DecisionKnowledgeElement element: allDecisions) {
+		for (DecisionKnowledgeElement element : allDecisions) {
 			List<Link> links = element.getInwardLinks();
 			links.addAll(element.getOutwardLinks());
 			if (links.size() == 0) {
 				if (filterSettings.getNamesOfSelectedLinkTypes().size() == filterSettings.getAllLinkTypes().size()) {
 					if (filterSettings.getSearchString().equals("")
-						|| filterSettings.getSearchString().equals("?filter=-4")
-						|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
+							|| filterSettings.getSearchString().equals("?filter=-4")
+							|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
 						filteredElements.add(element);
 					} else {
 						if (checkIfElementMatchesStringFilter(element)) {
@@ -264,8 +262,8 @@ public class FilterExtractorImpl implements FilterExtractor {
 				for (Link link : links) {
 					if (filterSettings.getNamesOfSelectedLinkTypes().contains(link.getType())) {
 						if (filterSettings.getSearchString().equals("")
-							|| filterSettings.getSearchString().equals("?filter=-4")
-							|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
+								|| filterSettings.getSearchString().equals("?filter=-4")
+								|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
 							filteredElements.add(element);
 							break;
 						} else {

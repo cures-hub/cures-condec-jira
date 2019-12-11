@@ -43,7 +43,14 @@ public interface LinkInDatabase extends RawEntity<Integer> {
 	String getDestDocumentationLocation();
 
 	void setDestDocumentationLocation(String documentationLocation);
-	
+
+	/**
+	 * Deletes the {@link LinkInDatabase} object, i.e., removes it from database.
+	 * 
+	 * @param linkToDelete
+	 *            {@link Link} object.
+	 * @return true if deletion was successful, false otherwise.
+	 */
 	static boolean deleteLink(LinkInDatabase linkToDelete) {
 		try {
 			linkToDelete.getEntityManager().delete(linkToDelete);

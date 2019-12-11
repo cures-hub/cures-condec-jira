@@ -2,44 +2,59 @@ package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.ws.rs.core.Response;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response.Status;
 
+import org.junit.Before;
 import org.junit.Test;
 
-public class TestSetIssueStrategy extends TestConfigSuper {
+import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.rest.impl.ConfigRestImpl;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+
+public class TestSetIssueStrategy extends TestSetUp {
+	protected HttpServletRequest request;
+	protected ConfigRest configRest;
+
+	@Before
+	public void setUp() {
+		init();
+		configRest = new ConfigRestImpl();
+		request = new MockHttpServletRequest();
+		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
+	}
 
 	@Test
 	public void testRequestNullProjectKeyNullIsIssueStrategyNull() {
-		assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-				configRest.setIssueStrategy(null, null, null).getEntity());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setIssueStrategy(null, null, null).getStatus());
 	}
 
 	@Test
 	public void testRequestNullProjectKeyNullIsIssueStrategyTrue() {
-		assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-				configRest.setIssueStrategy(null, null, "true").getEntity());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setIssueStrategy(null, null, "true").getStatus());
 	}
 
 	@Test
 	public void testRequestValidProjectKeyNullIsIssueStrategyNull() {
-		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-				configRest.setIssueStrategy(request, null, null).getEntity());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setIssueStrategy(request, null, null).getStatus());
 	}
 
 	@Test
 	public void testRequestValidProjectKeyExistsIsIssueStrategyNull() {
-		assertEquals(getBadRequestResponse(INVALID_STRATEGY).getEntity(),
-				configRest.setIssueStrategy(request, "TEST", null).getEntity());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				configRest.setIssueStrategy(request, "TEST", null).getStatus());
 	}
 
 	@Test
 	public void testRequestValidProjectKeyExistsIsIssueStrategyTrue() {
-		assertEquals(Response.ok().build().getClass(), configRest.setIssueStrategy(request, "TEST", "true").getClass());
+		assertEquals(Status.OK.getStatusCode(), configRest.setIssueStrategy(request, "TEST", "true").getStatus());
 	}
 
 	@Test
 	public void testRequestValidProjectKeyExistsIsIssueStrategyFalse() {
-		assertEquals(Response.ok().build().getClass(),
-				configRest.setIssueStrategy(request, "TEST", "false").getClass());
+		assertEquals(Status.OK.getStatusCode(), configRest.setIssueStrategy(request, "TEST", "false").getStatus());
 	}
 }

@@ -11,7 +11,7 @@ public class JiraIssueLinks {
 
 	private static List<IssueLink> jiraIssueLinks;
 
-	public static List<IssueLink> getTestIssueLinks() {
+	public static List<IssueLink> getTestJiraIssueLinks() {
 		if (jiraIssueLinks == null || jiraIssueLinks.isEmpty()) {
 			jiraIssueLinks = createIssueLinks();
 		}
