@@ -36,7 +36,7 @@
 		// Fill HTML elements
 		inputSummaryField.value = "";
 		inputDescriptionField.value = "";
-		fillSelectTypeField(selectTypeField, "Alternative");
+		fillSelectTypeField(selectTypeField, "Decision");
 		fillSelectLocationField(selectLocationField, documentationLocationOfParentElement);
 
 		// Set onclick listener on buttons

@@ -6,7 +6,7 @@
 
         		#set ($textInputId = "decision-search-input")
         		#parse("templates/filter/text.vm")
-        	
+
         		#set ($filterButtonId = "filterDecisionLinks-button")
         		#parse("templates/filter/filterButton.vm")
         	</form>
@@ -15,12 +15,24 @@
     <div id="graph-container" class="graph"></div>
 </div>
 
+<br>
+<br>
+
+<div class='my-legend'>
+    <div class='legend-title'>Relationships</div>
+    <div class='legend-scale'>
+        <ul class='legend-labels' id="legendList1">
+        </ul>
+    </div>
+</div>
+
 <script>
     $(document).ready(function() {
         conDecAPI.checkIfProjectKeyIsValid();
         if(window.conDecRelationshipPage.init(conDecAPI, conDecObservable, conDecVis)) {
             conDecAPI.checkIfProjectKeyIsValid();
             window.conDecRelationshipPage.buildDecisionGraph();
+            window.conDecRelationshipPage.buildLegend();
         }
         else {
             console.error("ConDecRelationshipPage could not get its dependencies.");
