@@ -45,9 +45,6 @@
 		<div id="boxplot-CommitsPerJiraIssue" class="notsetyet boxplot"></div>
 		<div id="boxplot-DecisionsPerJiraIssue" class="notsetyet boxplot"></div>
 		<div id="boxplot-IssuesPerJiraIssue" class="notsetyet boxplot"></div>
-		<div id="boxplot-LinkDistanceFromIssue" class="notsetyet boxplot"></div>
-		<div id="boxplot-LinkDistanceFromAlternative" class="notsetyet boxplot"></div>
-		<div id="boxplot-LinkDistanceFromDecision" class="notsetyet boxplot"></div>
 	</div>
 	
 	<div class="dynamic-content hidden" id="dynamic-content-completeness">

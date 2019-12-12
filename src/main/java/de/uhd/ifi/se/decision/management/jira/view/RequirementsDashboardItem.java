@@ -165,21 +165,6 @@ public class RequirementsDashboardItem  implements ContextProvider {
 		chartNamesAndPurpose.put(chartId, "\\#Issues per JIRA Issue");
 		chartNamesAndData.put(chartId,
 				calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE));
-
-		chartId = "boxplot-LinkDistanceFromIssue";
-		chartNamesAndPurpose.put(chartId, "Link Distance from Issue");
-		chartNamesAndData.put(chartId,
-				calculator.getLinkDistance(KnowledgeType.ISSUE));
-
-		chartId = "boxplot-LinkDistanceFromAlternative";
-		chartNamesAndPurpose.put(chartId, "Link Distance from Alternative");
-		chartNamesAndData.put(chartId,
-				calculator.getLinkDistance(KnowledgeType.ALTERNATIVE));
-
-		chartId = "boxplot-LinkDistanceFromDecision";
-		chartNamesAndPurpose.put(chartId, "Link Distance from Decision");
-		chartNamesAndData.put(chartId,
-				calculator.getLinkDistance(KnowledgeType.DECISION));
 	}
 
 	private void calculateInconsistencies(CommonMetricCalculator calculator, Map<String, String> chartNamesAndPurpose,
