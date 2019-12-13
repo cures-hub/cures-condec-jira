@@ -125,9 +125,6 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
     @NonTransactional
     public void testFineGrainedClassificationWithValidData() {
         sentences.get(0).setRelevant(true);
-		System.out.println("-----------------");
-        System.out.println(classificationManager.getClassifierTrainer().getClassifier().getFineGrainedClassifier().isCurrentlyTraining());
-		System.out.println("-----------------");
 
 		sentences = classificationManager.classifySentencesFineGrained(sentences);
 

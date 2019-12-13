@@ -1,10 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
-import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
-import de.uhd.ifi.se.decision.management.jira.classification.Classifier;
+import de.uhd.ifi.se.decision.management.jira.classification.AbstractClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-public class FineGrainedClassifierImpl extends Classifier {
+public class FineGrainedClassifierImpl extends AbstractClassifier {
 
     public static final String DEFAULT_MODEL_NAME = "fineGrainedClassifier.model";
 
@@ -27,12 +26,12 @@ public class FineGrainedClassifierImpl extends Classifier {
 
     @Override
     public void saveToFile() throws Exception {
-        super.saveToFile(Classifier.DEFAULT_PATH + FineGrainedClassifierImpl.DEFAULT_MODEL_NAME);
+        super.saveToFile(AbstractClassifier.DEFAULT_PATH + FineGrainedClassifierImpl.DEFAULT_MODEL_NAME);
     }
 
     @Override
     public boolean loadFromFile() {
-        return super.loadFromFile(Classifier.DEFAULT_PATH + FineGrainedClassifierImpl.DEFAULT_MODEL_NAME);
+        return super.loadFromFile(AbstractClassifier.DEFAULT_PATH + FineGrainedClassifierImpl.DEFAULT_MODEL_NAME);
     }
 
     public KnowledgeType mapIndexToKnowledgeType(int index) {
