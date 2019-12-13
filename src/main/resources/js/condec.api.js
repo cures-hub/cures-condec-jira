@@ -920,10 +920,12 @@
 	};
 
 
-	ConDecAPI.prototype.evaluateModel = function evaluateModel(projectKey, callback) {
+	ConDecAPI.prototype.evaluateModel = function evaluateModel(projectKey, animatedElement,callback) {
 		// console.log("ConDecAPI.prototype.evaluateModel");
+		animatedElement.classList.add("aui-progress-indicator-value");
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/evaluateModel.json?projectKey=" + projectKey, null,
 			function (error, response) {
+				animatedElement.classList.remove("aui-progress-indicator-value");
 				if (error === null) {
 					showFlag("success", "The evaluation results file was successfully created.");
 					// //console.log(response["content"]);
