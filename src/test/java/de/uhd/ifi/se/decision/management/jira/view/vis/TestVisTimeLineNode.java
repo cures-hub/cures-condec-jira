@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Calendar;
 import java.util.Date;
 
 import org.junit.Before;
@@ -24,16 +23,6 @@ public class TestVisTimeLineNode extends TestSetUp {
 	private String createdString;
 	private String closedString;
 
-	private String createDateString(Date created) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(created);
-		calendar.add(Calendar.MONTH, 1);
-		int year = calendar.get(Calendar.YEAR);
-		int month = calendar.get(Calendar.MONTH);
-		int day = calendar.get(Calendar.DAY_OF_MONTH);
-		return year + "-" + month + "-" + day;
-	}
-
 	@Before
 	public void setUp() {
 		init();
@@ -41,8 +30,8 @@ public class TestVisTimeLineNode extends TestSetUp {
 		element.setCreated(new Date(System.currentTimeMillis() - 1000));
 		element.setClosed(new Date(System.currentTimeMillis()));
 		timeNode = new VisTimeLineNode(element);
-		createdString = createDateString(element.getCreated());
-		closedString = createDateString(element.getClosed());
+		createdString = timeNode.createDateString(element.getCreated());
+		closedString = timeNode.createDateString(element.getClosed());
 	}
 
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
@@ -80,7 +69,7 @@ public class TestVisTimeLineNode extends TestSetUp {
 
 	@Test
 	public void testGetContent() {
-		assertEquals("<img src=" +'"' + element.getType().getIconUrl()+ '"' + "> " + element.getSummary(),
+		assertEquals("<img src=" + '"' + element.getType().getIconUrl() + '"' + "> " + element.getSummary(),
 				timeNode.getContent());
 	}
 
@@ -98,7 +87,7 @@ public class TestVisTimeLineNode extends TestSetUp {
 	@Test
 	public void testSetStart() {
 		Date date = new Date(System.currentTimeMillis() - 1000);
-		createdString = createDateString(date);
+		createdString = timeNode.createDateString(date);
 		timeNode.setStart(createdString);
 		assertEquals(createdString, timeNode.getStart());
 	}
@@ -111,7 +100,7 @@ public class TestVisTimeLineNode extends TestSetUp {
 	@Test
 	public void testSetEnd() {
 		Date date = new Date(System.currentTimeMillis() - 1000);
-		closedString = createDateString(date);
+		closedString = timeNode.createDateString(date);
 		timeNode.setEnd(closedString);
 		assertEquals(closedString, timeNode.getEnd());
 	}
@@ -129,7 +118,7 @@ public class TestVisTimeLineNode extends TestSetUp {
 
 	@Test
 	public void testGetAndSetGroup() {
-		timeNode.setGroup((long) 19012);
+		timeNode.setGroup(19012);
 		assertEquals(19012, timeNode.getGroup(), 0.0);
 	}
 
@@ -137,5 +126,11 @@ public class TestVisTimeLineNode extends TestSetUp {
 	public void testGetAndSetTitle() {
 		timeNode.setTitle("TestTitle");
 		assertEquals("TestTitle", timeNode.getTitle());
+	}
+
+	@Test
+	public void testCreateDateString() {
+		Date now = new Date();
+		assertEquals("2019-12-13", timeNode.createDateString(now));
 	}
 }

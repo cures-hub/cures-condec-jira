@@ -200,7 +200,6 @@ public class ViewRestImpl implements ViewRest {
 		VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings);
 		VisTimeLine timeLine = visDataProvider.getTimeLine();
 		return Response.ok(timeLine).build();
-
 	}
 
 	@Override

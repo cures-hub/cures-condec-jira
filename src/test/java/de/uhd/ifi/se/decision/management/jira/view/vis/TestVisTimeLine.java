@@ -4,7 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -48,24 +51,24 @@ public class TestVisTimeLine extends TestSetUp {
 	@Test
 	public void testConstEmpty() {
 		VisTimeLine timeLine = new VisTimeLine("");
-		assertEquals(0, timeLine.getElementList().size());
+		assertEquals(0, timeLine.getElements().size());
 	}
 
 	@Test
 	public void testConstFilled() {
 		VisTimeLine timeLine = new VisTimeLine("Test");
-		assertNotNull(timeLine.getElementList());
+		assertNotNull(timeLine.getElements());
 	}
 
 	@Test
 	public void testConstListNull() {
 		VisTimeLine timeLine = new VisTimeLine((List<DecisionKnowledgeElement>) null);
-		assertNull(timeLine.getElementList());
+		assertNull(timeLine.getElements());
 	}
 
 	@Test
 	public void testConstListFilled() {
-		assertEquals(1, visTimeLine.getElementList().size(), 0.0);
+		assertEquals(1, visTimeLine.getElements().size(), 0.0);
 	}
 
 	@Test
@@ -75,7 +78,7 @@ public class TestVisTimeLine extends TestSetUp {
 
 	@Test
 	public void testGetElementList() {
-		assertEquals(1, visTimeLine.getElementList().size(), 0.0);
+		assertEquals(1, visTimeLine.getElements().size(), 0.0);
 	}
 
 	@Test
@@ -92,18 +95,18 @@ public class TestVisTimeLine extends TestSetUp {
 		element2.setClosed(new Date(System.currentTimeMillis()));
 		elementList.add(element2);
 		visTimeLine.setElementList(elementList);
-		assertEquals(2, visTimeLine.getElementList().size(), 0.0);
+		assertEquals(2, visTimeLine.getElements().size(), 0.0);
 	}
 
 	@Test
-	public void testGetGroupSet(){
+	public void testGetGroupSet() {
 		assertEquals(1, visTimeLine.getGroupSet().size(), 0.0);
 	}
 
 	@Test
-	public void testSetGroupSet(){
+	public void testSetGroupSet() {
 		HashSet<VisTimeLineGroup> groups = new HashSet<>();
 		visTimeLine.setGroupSet(groups);
-		assertEquals(0, visTimeLine.getGroupSet().size(), 0.0);
+		assertEquals(0, visTimeLine.getGroupSet().size());
 	}
 }

@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
-import java.util.Calendar;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -32,6 +33,7 @@ public class VisTimeLineNode {
 	private String documentationLocation;
 
 	private String end;
+	private static final DateFormat DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
 	public VisTimeLineNode(DecisionKnowledgeElement element) {
 		if (element == null) {
@@ -47,26 +49,24 @@ public class VisTimeLineNode {
 		this.documentationLocation = element.getDocumentationLocation().getIdentifier();
 	}
 
-	private String createDateString(Date created) {
+	public VisTimeLineNode(DecisionKnowledgeElement element, long group) {
+		this(element);
+		this.group = group;
+	}
+
+	public String createDateString(Date created) {
 		if (created == null) {
 			return "";
 		}
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(created);
-		calendar.add(Calendar.MONTH, 1);
-		int year = calendar.get(Calendar.YEAR);
-		int month = calendar.get(Calendar.MONTH);
-		int day = calendar.get(Calendar.DAY_OF_MONTH);
-		return year + "-" + month + "-" + day;
+		return DATEFORMAT.format(created);
 	}
 
 	private String createContentString(DecisionKnowledgeElement element) {
 		String contentString = "<img src=" + '"' + element.getType().getIconUrl() + '"' + "> ";
 		KnowledgeStatus elementStatus = element.getStatus();
-		if (elementStatus.equals(KnowledgeStatus.DISCARDED) || elementStatus.equals(KnowledgeStatus.REJECTED)
-				|| elementStatus.equals(KnowledgeStatus.UNRESOLVED)) {
-			return contentString + "<p style=\"color:red\">" + element.getSummary() + "</p>";
-
+		if (elementStatus == KnowledgeStatus.DISCARDED || elementStatus == KnowledgeStatus.REJECTED
+				|| elementStatus == KnowledgeStatus.UNRESOLVED) {
+			return contentString + "<p style=\"color:red; display:inline-block\">" + element.getSummary() + "</p>";
 		}
 		return contentString + element.getSummary();
 	}

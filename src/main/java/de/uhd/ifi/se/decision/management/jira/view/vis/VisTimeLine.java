@@ -13,66 +13,77 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 
 public class VisTimeLine {
 
-	private List<DecisionKnowledgeElement> elementList;
+	private List<DecisionKnowledgeElement> elements;
+	private Set<Long> applicationUserIds;
 
-	@XmlElement
-	private HashSet<VisTimeLineNode> dataSet;
+	@XmlElement(name = "dataSet")
+	private Set<VisTimeLineNode> nodes;
 
-	@XmlElement
-	private HashSet<VisTimeLineGroup> groupSet;
+	@XmlElement(name = "groupSet")
+	private Set<VisTimeLineGroup> groups;
 
-	public VisTimeLine(String projectKey) {
-		if (projectKey != null) {
-			elementList = KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
-		}
-		createDataSet();
+	public VisTimeLine() {
+		this.nodes = new HashSet<VisTimeLineNode>();
+		this.groups = new HashSet<VisTimeLineGroup>();
+		this.applicationUserIds = new HashSet<Long>();
 	}
 
 	public VisTimeLine(List<DecisionKnowledgeElement> elements) {
-		if (elements != null) {
-			elementList = elements;
-			createDataSet();
+		this();
+		this.elements = elements;
+		addElementsToTimeLine(elements);
+	}
+
+	public VisTimeLine(String projectKey) {
+		this();
+		if (projectKey == null) {
+			return;
 		}
+		this.elements = KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
+		addElementsToTimeLine(elements);
 	}
 
-	public HashSet<VisTimeLineNode> getEvolutionData() {
-		return dataSet;
+	public Set<VisTimeLineNode> getEvolutionData() {
+		return nodes;
 	}
 
-	public List<DecisionKnowledgeElement> getElementList() {
-		return elementList;
+	public List<DecisionKnowledgeElement> getElements() {
+		return elements;
 	}
 
 	public void setElementList(List<DecisionKnowledgeElement> elementList) {
-		this.elementList = elementList;
+		this.elements = elementList;
 	}
 
-	public HashSet<VisTimeLineGroup> getGroupSet() {
-		return groupSet;
+	public Set<VisTimeLineGroup> getGroupSet() {
+		return groups;
 	}
 
 	public void setGroupSet(HashSet<VisTimeLineGroup> groupSet) {
-		this.groupSet = groupSet;
+		this.groups = groupSet;
 	}
 
-	private void createDataSet() {
-		dataSet = new HashSet<>();
-		groupSet = new HashSet<>();
-		if (elementList != null) {
-			Set<Long> usedApplicationUser = new HashSet<Long>();
-			for (DecisionKnowledgeElement element : elementList) {
-				ApplicationUser user = element.getCreator();
-				if (user == null) {
-					continue;
-				}
-				if (!usedApplicationUser.contains(user.getId())) {
-					usedApplicationUser.add(user.getId());
-					groupSet.add(new VisTimeLineGroup(user));
-				}
-				VisTimeLineNode node = new VisTimeLineNode(element);
-				node.setGroup(user.getId());
-				dataSet.add(node);
-			}
+	private void addElementsToTimeLine(List<DecisionKnowledgeElement> elements) {
+		if (elements == null) {
+			return;
 		}
+		for (DecisionKnowledgeElement element : elements) {
+			addElementToTimeLine(element);
+		}
+	}
+
+	private boolean addElementToTimeLine(DecisionKnowledgeElement element) {
+		ApplicationUser user = element.getCreator();
+		if (user == null) {
+			return false;
+		}
+		long userId = user.getId();
+		if (!applicationUserIds.contains(userId)) {
+			applicationUserIds.add(userId);
+			groups.add(new VisTimeLineGroup(user));
+		}
+		VisTimeLineNode node = new VisTimeLineNode(element, userId);
+		nodes.add(node);
+		return true;
 	}
 }
