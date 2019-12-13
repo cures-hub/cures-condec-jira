@@ -91,7 +91,7 @@
     <input type="button" class="aui-button" id="trainClassifier-button" value="Train Classifier"/>
     <div class="description">
         Trains the classifier on the selected Attribute-Relation File Format (ARFF) file. <br/>
-        <span class="aui-icon aui-icon-warning">WARNING: </span>Please note that this initial training is very resource expensive!
+        <span class="aui-icon aui-icon-small aui-icon-warning">WARNING: </span>Please note that this initial training is very resource expensive!
     </div>
     <div class="aui-progress-indicator">
         <span id="train-classifier-progress"></span>
