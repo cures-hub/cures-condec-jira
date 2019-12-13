@@ -521,12 +521,19 @@ public class ConfigRestImpl implements ConfigRest {
 		try {
 			Map<String, Double> evaluationResults = trainer.evaluateClassifier();
 
-			StringBuilder prettyMapOutput = new StringBuilder();
-			prettyMapOutput.append("{" + System.lineSeparator());
-			for (Map.Entry<String, Double> e : evaluationResults.entrySet()) {
-				prettyMapOutput.append("\"" + e.getKey() + "\" : \"" + e.getValue() + "\"," + System.lineSeparator());
+			if(evaluationResults.size() == 0){
+				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "No evaluation results were calculated!"))
+					.build();
 			}
-			prettyMapOutput.append("}");
+
+			String prefix = "";
+			StringBuilder prettyMapOutput = new StringBuilder();
+			prettyMapOutput.append("{");
+			for (Map.Entry<String, Double> e : evaluationResults.entrySet()) {
+				prettyMapOutput.append(prefix + System.lineSeparator() + "\"" + e.getKey() + "\" : \"" + e.getValue() + "\",");
+				prefix = ",";
+			}
+			prettyMapOutput.append(System.lineSeparator() +"}");
 
 			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("content", prettyMapOutput.toString())).build();
 		} catch (Exception e) {
