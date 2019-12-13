@@ -144,7 +144,7 @@ public class RequirementsDashboardItem  implements ContextProvider {
 
 		return velocityParams;
 	}
-
+    
 	private void calculateDistances(CommentMetricCalculator calculatorForSentences, CommonMetricCalculator calculator,
 			Map<String, String> chartNamesAndPurpose, Map<String, Object> chartNamesAndData) {
 		String chartId = "";
