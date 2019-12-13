@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
@@ -17,11 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
  */
 public interface ConfigRest {
 
-	Response classifyWholeProject(HttpServletRequest request, String projectKey);
-
 	Response cleanDatabases(HttpServletRequest request, String projectKey);
-
-	Response evaluateModel(HttpServletRequest request, String projectKey);
 
 	Response getKnowledgeTypes(String projectKey);
 
@@ -33,38 +30,58 @@ public interface ConfigRest {
 
 	Response isKnowledgeTypeEnabled(String projectKey, String knowledgeType);
 
-	Response saveArffFile(HttpServletRequest request, String projectKey, boolean useOnlyValidatedData);
-
 	Response setActivated(HttpServletRequest request, String projectKey, String isActivatedString);
-
-	Response setGitUri(HttpServletRequest request, String projectKey, String gitUri);
 
 	Response setIconParsing(HttpServletRequest request, String projectKey, String isActivatedString);
 
 	Response setIssueStrategy(HttpServletRequest request, String projectKey, String isIssueStrategyString);
 
-	Response setKnowledgeExtractedFromGit(HttpServletRequest request, String projectKey,
-			String isKnowledgeExtractedFromGit);
-
 	Response setKnowledgeExtractedFromIssues(HttpServletRequest request, String projectKey,
-			String isKnowledgeExtractedFromIssues);
+											 String isKnowledgeExtractedFromIssues);
 
 	Response setKnowledgeTypeEnabled(@Context HttpServletRequest request, String projectKey,
-			String isKnowledgeTypeEnabledString, String knowledgeType);
+									 String isKnowledgeTypeEnabledString, String knowledgeType);
 
 	Response setReleaseNoteMapping(HttpServletRequest request, String projectKey, ReleaseNoteCategory category,
-			List<String> selectedIssueNames);
-
-	Response setUseClassifierForIssueComments(HttpServletRequest request, String projectKey, String isActivatedString);
+								   List<String> selectedIssueNames);
 
 	Response setWebhookData(HttpServletRequest request, String projectKey, String webhookUrl, String webhookSecret);
 
 	Response setWebhookEnabled(HttpServletRequest request, String projectKey, String isActivatedString);
 
 	Response setWebhookType(HttpServletRequest request, String projectKey, String webhookType,
-			boolean isWebhookTypeEnabled);
+							boolean isWebhookTypeEnabled);
+
+	/* **************************************/
+	/*										*/
+	/*	Configuration for Git integration	*/
+	/*										*/
+	/* **************************************/
+
+	Response setGitUri(HttpServletRequest request, String projectKey, String gitUri);
+
+	Response setKnowledgeExtractedFromGit(HttpServletRequest request, String projectKey,
+										  String isKnowledgeExtractedFromGit);
+
+	Response setPostSquashedCommits(HttpServletRequest request, String projectKey, String checked);
+
+	Response setPostFeatureBranchCommits(HttpServletRequest request,
+										 String projectKey, String checked);
+
+	/* **************************************/
+	/*										*/
+	/*		Configuration for Classifier	*/
+	/*										*/
+	/* **************************************/
+	Response evaluateModel(HttpServletRequest request, String projectKey);
 
 	Response trainClassifier(HttpServletRequest request, String projectKey, String arffFileName);
+
+	Response classifyWholeProject(HttpServletRequest request, String projectKey);
+
+	Response setUseClassifierForIssueComments(HttpServletRequest request, String projectKey, String isActivatedString);
+
+	Response saveArffFile(HttpServletRequest request, String projectKey, boolean useOnlyValidatedData);
 
 	static void manageDefaultIssueTypes(String projectKey, boolean isIssueStrategy) {
 		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaultTypes();

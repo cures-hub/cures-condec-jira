@@ -78,17 +78,8 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	public boolean train() {
 		boolean isTrained = false;
 		try {
-			Runnable trainRunnable = () -> {
-				try {
-					//TODO: Try to make 2 separate threads.
-					trainBinaryClassifier();
-					trainFineGrainedClassifier();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			};
-			new Thread(trainRunnable).start();
-
+			trainBinaryClassifier();
+			trainFineGrainedClassifier();
 			isTrained = true;
 		} catch (Exception e) {
 			LOGGER.error("The classifier could not be trained. Message:" + e.getMessage());
@@ -367,7 +358,6 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		instance.setValue(4, 0);
 		return instance;
 	}
-
 
 
 	private Map<String, List> extractTrainingData(Instances trainingData) {
