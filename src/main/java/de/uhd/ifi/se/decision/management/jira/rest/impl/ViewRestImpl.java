@@ -78,7 +78,7 @@ public class ViewRestImpl implements ViewRest {
 	public Response getFeatureBranchTree(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey)
 			throws PermissionException {
 		String normalizedIssueKey = normalizeIssueKey(issueKey); // ex: issueKey=ConDec-498
-		Issue issue = getIssue(normalizedIssueKey);
+		Issue issue = getJiraIssue(normalizedIssueKey);
 		if (issue == null) {
 			return issueKeyIsInvalid();
 		}
@@ -232,15 +232,11 @@ public class ViewRestImpl implements ViewRest {
 		return Response.ok(treant).build();
 	}
 
-	private Issue getIssue(String issueKey) {
+	private Issue getJiraIssue(String issueKey) {
 		Issue issue = null;
-		if (issueKey == null || issueKey.trim().equals(""))
+		if (issueKey == null || issueKey.isBlank())
 			return null;
-		try {
-			issue = ComponentAccessor.getIssueManager().getIssueObject(issueKey);
-		} catch (Exception ex) {
-			LOGGER.error(ex.getMessage());
-		}
+		issue = ComponentAccessor.getIssueManager().getIssueObject(issueKey);
 		return issue;
 	}
 
@@ -293,8 +289,8 @@ public class ViewRestImpl implements ViewRest {
 					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings);
-		return Response.ok(visDataProvider.getVisGraph()).build();
+		VisGraph graph = new VisGraph(user, filterSettings);
+		return Response.ok(graph).build();
 	}
 
 	@Override

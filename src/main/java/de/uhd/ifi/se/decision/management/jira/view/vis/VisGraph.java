@@ -14,6 +14,11 @@ import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
+import com.atlassian.jira.user.ApplicationUser;
+
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterExtractorImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -41,21 +46,23 @@ public class VisGraph {
 	int cid = 0;
 
 	public VisGraph() {
-		nodes = new HashSet<VisNode>();
-		edges = new HashSet<VisEdge>();
+		this.nodes = new HashSet<VisNode>();
+		this.edges = new HashSet<VisEdge>();
+		this.rootElementKey = "";
 	}
 
-	public VisGraph(List<DecisionKnowledgeElement> elements, String projectKey) {
+	public VisGraph(String projectKey) {
 		this();
 		if (projectKey == null) {
 			return;
 		}
-		this.elementsMatchingFilterCriteria = elements;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
-		if (elements == null || elements.size() == 0) {
-			this.nodes = new HashSet<>();
-			this.edges = new HashSet<>();
-			this.rootElementKey = "";
+	}
+
+	public VisGraph(List<DecisionKnowledgeElement> elements, String projectKey) {
+		this(projectKey);
+		this.elementsMatchingFilterCriteria = elements;
+		if (elements == null || elements.isEmpty()) {
 			return;
 		}
 		for (DecisionKnowledgeElement element : elements) {
@@ -64,11 +71,26 @@ public class VisGraph {
 	}
 
 	public VisGraph(DecisionKnowledgeElement rootElement, List<DecisionKnowledgeElement> elements) {
-		this();
+		this(rootElement.getProject().getProjectKey());
 		this.elementsMatchingFilterCriteria = elements;
 		this.rootElementKey = (rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString());
-		this.graph = KnowledgeGraph.getOrCreate(rootElement.getProject().getProjectKey());
 		fillNodesAndEdges(rootElement);
+	}
+
+	public VisGraph(ApplicationUser user, FilterSettings filterSettings) {
+		this(filterSettings.getProjectKey());
+		if (user == null || filterSettings == null) {
+			return;
+		}
+		FilterExtractor filterExtractor = new FilterExtractorImpl(user, filterSettings);
+		List<DecisionKnowledgeElement> elements = filterExtractor.getAllElementsMatchingCompareFilter();
+		this.elementsMatchingFilterCriteria = elements;
+		if (elements == null || elements.isEmpty()) {
+			return;
+		}
+		for (DecisionKnowledgeElement element : elements) {
+			fillNodesAndEdges(element);
+		}
 	}
 
 	private void fillNodesAndEdges(DecisionKnowledgeElement element) {

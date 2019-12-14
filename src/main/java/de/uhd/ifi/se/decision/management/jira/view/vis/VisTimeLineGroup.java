@@ -32,19 +32,4 @@ public class VisTimeLineGroup {
 	public void setContent(String content) {
 		this.content = content;
 	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (object == null) {
-			return false;
-		}
-		if (object == this) {
-			return true;
-		}
-		if (!(object instanceof VisTimeLineGroup)) {
-			return false;
-		}
-		VisTimeLineGroup group = (VisTimeLineGroup) object;
-		return this.id == group.getId();
-	}
 }
