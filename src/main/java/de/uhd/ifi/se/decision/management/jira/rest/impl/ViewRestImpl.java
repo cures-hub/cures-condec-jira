@@ -328,23 +328,9 @@ public class ViewRestImpl implements ViewRest {
 
 	@Override
 	@Path("/getDecisionGraph")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionGraph(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		List<DecisionKnowledgeElement> decisions = getAllDecisions(projectKey);
-		VisGraph graph = new VisGraph(decisions, projectKey);
-		return Response.ok(graph).build();
-	}
-
-	@Override
-	@Path("/getDecisionGraphFiltered")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionGraphFiltered(@Context HttpServletRequest request, FilterSettings filterSettings,
+	public Response getDecisionGraph(@Context HttpServletRequest request, FilterSettings filterSettings,
 			@QueryParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {

@@ -242,13 +242,12 @@ public class FilterExtractorImpl implements FilterExtractor {
 	@Override
 	public List<DecisionKnowledgeElement> getElementsLinkTypeFilterMatches(
 			List<DecisionKnowledgeElement> allDecisions) {
-		List<DecisionKnowledgeElement> filteredElements = new ArrayList<>();
+		List<DecisionKnowledgeElement> filteredElements = new ArrayList<DecisionKnowledgeElement>();
 		for (DecisionKnowledgeElement element : allDecisions) {
-			List<Link> links = element.getInwardLinks();
-			links.addAll(element.getOutwardLinks());
-			if (links.size() == 0) {
+			List<Link> links = element.getLinks();
+			if (links.isEmpty()) {
 				if (filterSettings.getNamesOfSelectedLinkTypes().size() == filterSettings.getAllLinkTypes().size()) {
-					if (filterSettings.getSearchString().equals("")
+					if (filterSettings.getSearchString().isBlank()
 							|| filterSettings.getSearchString().equals("?filter=-4")
 							|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
 						filteredElements.add(element);
@@ -261,7 +260,7 @@ public class FilterExtractorImpl implements FilterExtractor {
 			} else {
 				for (Link link : links) {
 					if (filterSettings.getNamesOfSelectedLinkTypes().contains(link.getType())) {
-						if (filterSettings.getSearchString().equals("")
+						if (filterSettings.getSearchString().isBlank()
 								|| filterSettings.getSearchString().equals("?filter=-4")
 								|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
 							filteredElements.add(element);

@@ -33,7 +33,5 @@ public interface ViewRest {
 
 	Response getDecisionMatrix(HttpServletRequest request, String projectKey);
 
-	Response getDecisionGraph(HttpServletRequest request, String projectKey);
-
-	Response getDecisionGraphFiltered(HttpServletRequest request, FilterSettings filterSettings, String projectKey);
+	Response getDecisionGraph(HttpServletRequest request, FilterSettings filterSettings, String projectKey);
 }
