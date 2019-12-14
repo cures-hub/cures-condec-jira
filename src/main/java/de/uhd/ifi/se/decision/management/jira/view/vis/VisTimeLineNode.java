@@ -66,7 +66,7 @@ public class VisTimeLineNode {
 		KnowledgeStatus elementStatus = element.getStatus();
 		if (elementStatus == KnowledgeStatus.DISCARDED || elementStatus == KnowledgeStatus.REJECTED
 				|| elementStatus == KnowledgeStatus.UNRESOLVED) {
-			return contentString + "<p style=\"color:red; display:inline-block\">" + element.getSummary() + "</p>";
+			return contentString + "<p style=\"color:red; display:inline\">" + element.getSummary() + "</p>";
 		}
 		return contentString + element.getSummary();
 	}

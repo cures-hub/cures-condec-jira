@@ -127,10 +127,4 @@ public class TestVisTimeLineNode extends TestSetUp {
 		timeNode.setTitle("TestTitle");
 		assertEquals("TestTitle", timeNode.getTitle());
 	}
-
-	@Test
-	public void testCreateDateString() {
-		Date now = new Date();
-		assertEquals("2019-12-13", timeNode.createDateString(now));
-	}
 }

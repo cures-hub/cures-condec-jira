@@ -8,6 +8,9 @@ import javax.xml.bind.annotation.XmlElement;
 
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterExtractorImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
@@ -40,6 +43,16 @@ public class VisTimeLine {
 			return;
 		}
 		this.elements = KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
+		addElementsToTimeLine(elements);
+	}
+
+	public VisTimeLine(ApplicationUser user, FilterSettings filterSettings) {
+		this();
+		if (user == null || filterSettings == null) {
+			return;
+		}
+		FilterExtractor filterExtractor = new FilterExtractorImpl(user, filterSettings);
+		this.elements = filterExtractor.getAllElementsMatchingCompareFilter();
 		addElementsToTimeLine(elements);
 	}
 

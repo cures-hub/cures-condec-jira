@@ -32,8 +32,7 @@ public class VisGraph {
 
 	@JsonIgnore
 	private KnowledgeGraph graph;
-	@JsonIgnore
-	private boolean isHyperlinked;
+
 	@JsonIgnore
 	private List<DecisionKnowledgeElement> elementsMatchingFilterCriteria;
 	@JsonIgnore
@@ -42,8 +41,8 @@ public class VisGraph {
 	int cid = 0;
 
 	public VisGraph() {
-		nodes = new HashSet<>();
-		edges = new HashSet<>();
+		nodes = new HashSet<VisNode>();
+		edges = new HashSet<VisEdge>();
 	}
 
 	public VisGraph(List<DecisionKnowledgeElement> elements, String projectKey) {
@@ -53,7 +52,6 @@ public class VisGraph {
 		}
 		this.elementsMatchingFilterCriteria = elements;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
-		this.setHyperlinked(false);
 		if (elements == null || elements.size() == 0) {
 			this.nodes = new HashSet<>();
 			this.edges = new HashSet<>();
@@ -171,10 +169,6 @@ public class VisGraph {
 
 	}
 
-	public void setHyperlinked(boolean hyperlinked) {
-		isHyperlinked = hyperlinked;
-	}
-
 	public HashSet<VisNode> getNodes() {
 		return nodes;
 	}
@@ -185,10 +179,6 @@ public class VisGraph {
 
 	public KnowledgeGraph getGraph() {
 		return graph;
-	}
-
-	public boolean isHyperlinked() {
-		return isHyperlinked;
 	}
 
 	public String getRootElementKey() {

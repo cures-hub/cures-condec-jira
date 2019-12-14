@@ -197,8 +197,7 @@ public class ViewRestImpl implements ViewRest {
 					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings);
-		VisTimeLine timeLine = visDataProvider.getTimeLine();
+		VisTimeLine timeLine = new VisTimeLine(user, filterSettings);
 		return Response.ok(timeLine).build();
 	}
 

@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
@@ -32,8 +31,8 @@ public class TestVisGraph extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		nodes = new HashSet<>();
-		edges = new HashSet<>();
+		nodes = new HashSet<VisNode>();
+		edges = new HashSet<VisEdge>();
 		visGraph = new VisGraph();
 		visGraph.setEdges(edges);
 		visGraph.setNodes(nodes);
@@ -116,11 +115,6 @@ public class TestVisGraph extends TestSetUp {
 		elements.add(element);
 		VisGraph visGraph = new VisGraph(elements, "TEST");
 		assertEquals(4, visGraph.getNodes().size());
-	}
-
-	@Test
-	public void testisHyperLinked() {
-		assertFalse(visGraph.isHyperlinked());
 	}
 
 	@Test
