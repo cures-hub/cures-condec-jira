@@ -121,7 +121,7 @@ public class FilterExtractorImpl implements FilterExtractor {
 				if (results.contains(currentElement)) {
 					continue;
 				}
-				if (checkIfElementMatchesTimeFilter(currentElement)) {
+				if (isElementMatchingTimeFilter(currentElement)) {
 					results.add(currentElement);
 				}
 			}
@@ -151,8 +151,73 @@ public class FilterExtractorImpl implements FilterExtractor {
 		return filterElements(elements);
 	}
 
-	// Check if the element is created in time
-	private boolean checkIfElementMatchesTimeFilter(DecisionKnowledgeElement element) {
+	private List<DecisionKnowledgeElement> filterElements(List<DecisionKnowledgeElement> elements) {
+		List<DecisionKnowledgeElement> filteredElements = new ArrayList<DecisionKnowledgeElement>();
+		if (elements == null || elements.isEmpty()) {
+			return filteredElements;
+		}
+		for (DecisionKnowledgeElement element : elements) {
+			if (isElementMatchingFilterSettings(element)) {
+				filteredElements.add(element);
+			}
+		}
+		return filteredElements;
+	}
+
+	private boolean isElementMatchingFilterSettings(DecisionKnowledgeElement element) {
+		if (!isElementMatchingKnowledgeTypeFilter(element)) {
+			return false;
+		}
+		if (!isElementMatchingTimeFilter(element)) {
+			return false;
+		}
+		if (!isElementMatchingStatusFilter(element)) {
+			return false;
+		}
+		if (!isElementMatchingDocumentationLocationFilter(element)) {
+			return false;
+		}
+		// Case no text filter
+		if (filterSettings.getSearchString().equals("") || filterSettings.getSearchString().equals("?filter=-4")
+				|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
+			return true;
+		} else {
+			if (checkIfElementMatchesStringFilter(element)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks if the element is documented in one of the given
+	 * {@link DocumentationLocation}s in the {@link FilterSetting}s.
+	 * 
+	 * @param element
+	 *            {@link DecisionKnowledgeElement} object.
+	 * @return true if the element is documented in one of the given
+	 *         {@link DocumentationLocation}s.
+	 */
+	private boolean isElementMatchingDocumentationLocationFilter(DecisionKnowledgeElement element) {
+		return filterSettings.getDocumentationLocations().contains(element.getDocumentationLocation())
+				|| filterSettings.getDocumentationLocations().size() == 1
+						&& filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN);
+	}
+
+	private boolean isElementMatchingStatusFilter(DecisionKnowledgeElement element) {
+		return filterSettings.getSelectedStatus().contains(element.getStatus());
+	}
+
+	/**
+	 * Checks if the element is created in the given time frame in the
+	 * {@link FilterSetting}s. See {@link DecisionKnowledgeElement#getCreated()}.
+	 * 
+	 * @param element
+	 *            {@link DecisionKnowledgeElement} object.
+	 * @return true if the element is created in the given time frame.
+	 */
+	private boolean isElementMatchingTimeFilter(DecisionKnowledgeElement element) {
 		if ((filterSettings.getCreatedEarliest() == -1 && filterSettings.getCreatedLatest() == -1)) {
 			return true;
 		}
@@ -176,6 +241,9 @@ public class FilterExtractorImpl implements FilterExtractor {
 	// Check if Description, Summary, Key containing the search string
 	private boolean checkIfElementMatchesStringFilter(DecisionKnowledgeElement element) {
 		String searchString = filterSettings.getSearchString().toLowerCase();
+		if (searchString.isBlank()) {
+			return true;
+		}
 		if (element.getDescription() != null) {
 			if (element.getDescription().toLowerCase().contains(searchString)) {
 				return true;
@@ -194,7 +262,7 @@ public class FilterExtractorImpl implements FilterExtractor {
 		return false;
 	}
 
-	private boolean checkIfKnowledgeTypeMatches(DecisionKnowledgeElement element) {
+	private boolean isElementMatchingKnowledgeTypeFilter(DecisionKnowledgeElement element) {
 		String type = element.getType().replaceProAndConWithArgument().toString();
 		if (element.getType() == KnowledgeType.OTHER) {
 			type = element.getTypeAsString();
@@ -203,35 +271,6 @@ public class FilterExtractorImpl implements FilterExtractor {
 			return true;
 		}
 		return false;
-	}
-
-	private List<DecisionKnowledgeElement> filterElements(List<DecisionKnowledgeElement> elements) {
-		List<DecisionKnowledgeElement> filteredElements = new ArrayList<>();
-		if (elements == null || elements.isEmpty()) {
-			return filteredElements;
-		}
-		for (DecisionKnowledgeElement element : elements) {
-			// Check if the DocumentationLocation is correct
-			if (filterSettings.getDocumentationLocations().contains(element.getDocumentationLocation())
-					|| filterSettings.getDocumentationLocations().size() == 1 && filterSettings
-							.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN)) {
-				// Check if the Status is filtered, check if the Type of the Element is correct
-				if (filterSettings.getSelectedStatus().contains(element.getStatus())
-						&& checkIfKnowledgeTypeMatches(element) && checkIfElementMatchesTimeFilter(element)) {
-					// Case no text filter
-					if (filterSettings.getSearchString().equals("")
-							|| filterSettings.getSearchString().equals("?filter=-4")
-							|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
-						filteredElements.add(element);
-					} else {
-						if (checkIfElementMatchesStringFilter(element)) {
-							filteredElements.add(element);
-						}
-					}
-				}
-			}
-		}
-		return filteredElements;
 	}
 
 	@Override

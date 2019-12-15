@@ -8,7 +8,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -37,13 +36,9 @@ public class VisGraph {
 	@XmlElement
 	private String rootElementKey;
 
-	@JsonIgnore
 	private KnowledgeGraph graph;
-	@JsonIgnore
 	private List<DecisionKnowledgeElement> elementsMatchingFilterCriteria;
-	@JsonIgnore
 	int level = 50;
-	@JsonIgnore
 	int cid = 0;
 
 	public VisGraph() {

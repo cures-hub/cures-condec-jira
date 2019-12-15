@@ -135,7 +135,7 @@ public class FilterSettingsImpl implements FilterSettings {
 	@Override
 	@JsonProperty("documentationLocations")
 	public void setDocumentationLocations(List<String> namesOfDocumentationLocations) {
-		this.documentationLocations = new ArrayList<>();
+		this.documentationLocations = new ArrayList<DocumentationLocation>();
 		if (namesOfDocumentationLocations == null) {
 			return;
 		}
