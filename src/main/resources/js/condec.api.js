@@ -463,7 +463,7 @@
 			"searchString": searchString,
 			"createdEarliest": created,
 			"createdLatest": closed,
-			"documentationLocations": [""],
+			"documentationLocations": null,
 			"selectedJiraIssueTypes": knowledgeTypes,
 			"selectedStatus": status
 		};
@@ -522,7 +522,7 @@
 			"searchString": searchString,
 			"createdEarliest": created,
 			"createdLatest": closed,
-			"documentationLocations": [""],
+			"documentationLocations": null,
 			"selectedJiraIssueTypes": issueTypes,
 			"selectedStatus": issueStatus
 		};

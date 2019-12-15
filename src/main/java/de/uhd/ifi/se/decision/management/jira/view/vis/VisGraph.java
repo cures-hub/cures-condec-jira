@@ -15,8 +15,8 @@ import org.jgrapht.traverse.BreadthFirstIterator;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -38,8 +38,8 @@ public class VisGraph {
 
 	private KnowledgeGraph graph;
 	private List<DecisionKnowledgeElement> elementsMatchingFilterCriteria;
-	int level = 50;
-	int cid = 0;
+	private int level = 50;
+	private int cid = 0;
 
 	public VisGraph() {
 		this.nodes = new HashSet<VisNode>();
