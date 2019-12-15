@@ -37,7 +37,6 @@ public class VisGraph {
 
 	@JsonIgnore
 	private KnowledgeGraph graph;
-
 	@JsonIgnore
 	private List<DecisionKnowledgeElement> elementsMatchingFilterCriteria;
 	@JsonIgnore
@@ -59,6 +58,14 @@ public class VisGraph {
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 	}
 
+	public VisGraph(FilterSettings filterSettings) {
+		this();
+		if (filterSettings == null || filterSettings.getProjectKey() == null) {
+			return;
+		}
+		this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
+	}
+
 	public VisGraph(List<DecisionKnowledgeElement> elements, String projectKey) {
 		this(projectKey);
 		this.elementsMatchingFilterCriteria = elements;
@@ -78,8 +85,8 @@ public class VisGraph {
 	}
 
 	public VisGraph(ApplicationUser user, FilterSettings filterSettings) {
-		this(filterSettings.getProjectKey());
-		if (user == null || filterSettings == null) {
+		this(filterSettings);
+		if (user == null) {
 			return;
 		}
 		FilterExtractor filterExtractor = new FilterExtractorImpl(user, filterSettings);
@@ -88,6 +95,19 @@ public class VisGraph {
 		if (elements == null || elements.isEmpty()) {
 			return;
 		}
+		for (DecisionKnowledgeElement element : elements) {
+			fillNodesAndEdges(element);
+		}
+	}
+
+	public VisGraph(ApplicationUser user, FilterSettings filterSettings, List<DecisionKnowledgeElement> decisions) {
+		this(filterSettings);
+		if (user == null || decisions == null) {
+			return;
+		}
+		FilterExtractor filterExtractor = new FilterExtractorImpl(user, filterSettings);
+		List<DecisionKnowledgeElement> elements = filterExtractor.getElementsLinkTypeFilterMatches(decisions);
+		this.elementsMatchingFilterCriteria = elements;
 		for (DecisionKnowledgeElement element : elements) {
 			fillNodesAndEdges(element);
 		}

@@ -35,18 +35,20 @@ import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterExtractorImpl;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
-import de.uhd.ifi.se.decision.management.jira.view.vis.VisDataProvider;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
 
@@ -261,15 +263,26 @@ public class ViewRestImpl implements ViewRest {
 		}
 		String projectKey = filterSettings.getProjectKey();
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisDataProvider visDataProvider;
+		VisGraph visGraph;
 		if (filterSettings.getNamesOfSelectedJiraIssueTypes().size() == 0
 				|| (filterSettings.getDocumentationLocations().size() == 1
 						&& filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN))) {
-			visDataProvider = new VisDataProvider(projectKey, elementKey, filterSettings.getSearchString(), user);
+			FilterExtractor filterExtractor = new FilterExtractorImpl(projectKey, user,
+					filterSettings.getSearchString());
+			List<DecisionKnowledgeElement> decisionKnowledgeElements = filterExtractor.getAllElementsMatchingQuery();
+			AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
+					.getOrCreate(projectKey).getDefaultManagerForSingleLocation();
+			DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
+			visGraph = new VisGraph(rootElement, decisionKnowledgeElements);
 		} else {
-			visDataProvider = new VisDataProvider(elementKey, user, filterSettings);
+			FilterExtractor filterExtractor = new FilterExtractorImpl(user, filterSettings);
+			AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
+					.getOrCreate(projectKey).getDefaultManagerForSingleLocation();
+			DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
+			List<DecisionKnowledgeElement> decisionKnowledgeElements = filterExtractor
+					.getAllElementsMatchingCompareFilter();
+			visGraph = new VisGraph(rootElement, decisionKnowledgeElements);
 		}
-		VisGraph visGraph = visDataProvider.getVisGraph();
 		return Response.ok(visGraph).build();
 	}
 
@@ -338,8 +351,7 @@ public class ViewRestImpl implements ViewRest {
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		List<DecisionKnowledgeElement> decisions = getAllDecisions(projectKey);
-		VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings, decisions);
-		VisGraph graph = visDataProvider.getVisGraph();
+		VisGraph graph = new VisGraph(user, filterSettings, decisions);
 		return Response.ok(graph).build();
 	}
 
