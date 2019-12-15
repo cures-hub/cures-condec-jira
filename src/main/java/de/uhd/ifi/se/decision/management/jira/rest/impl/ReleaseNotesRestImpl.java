@@ -19,8 +19,8 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterExtractorImpl;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ReleaseNotesPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.MarkdownCreator;
@@ -47,7 +47,7 @@ public class ReleaseNotesRestImpl implements ReleaseNotesRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		String query = "?jql=project=" + projectKey + " && resolved >= " + releaseNoteConfiguration.getStartDate()
 				+ " && resolved <= " + releaseNoteConfiguration.getEndDate();
-		FilterExtractor extractor = new FilterExtractorImpl(projectKey, user, query);
+		FilteringManager extractor = new FilteringManagerImpl(projectKey, user, query);
 		List<DecisionKnowledgeElement> elementsMatchingQuery = new ArrayList<DecisionKnowledgeElement>();
 		elementsMatchingQuery = extractor.getAllElementsMatchingQuery();
 		if (elementsMatchingQuery.size() == 0) {

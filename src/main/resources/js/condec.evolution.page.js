@@ -55,7 +55,7 @@
 				properties.event.preventDefault();
 				var nodeId = properties.item;
 				var documentationLocation = timeline.itemsData._data[nodeId].documentationLocation;
-				conDecContextMenu.createContextMenu(nodeId, documentationLocation, properties.event, "vis");
+				conDecContextMenu.createContextMenu(nodeId, documentationLocation, properties.event, "evolution-timeline");
 			});
 		});
 		addOnClickEventToFilterTimeLineButton();

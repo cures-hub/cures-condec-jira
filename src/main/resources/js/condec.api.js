@@ -429,21 +429,7 @@
 	 * external references: condec.vis
 	 */
 	ConDecAPI.prototype.getVis = function getVis(elementKey, searchTerm, callback) {
-		var filterSettings = {
-			"projectKey": projectKey,
-			"searchString": searchTerm,
-			"createdEarliest": -1,
-			"createdLatest": -1,
-			"documentationLocations": [""],
-			"selectedJiraIssueTypes": [""],
-			"selectedStatus": this.extendedStatus
-		};
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
-			filterSettings, function (error, vis) {
-				if (error === null) {
-					callback(vis);
-				}
-			});
+		this.getVisFiltered(elementKey, null, null, -1, -1, null, callback);
 	};
 
 	/*
@@ -471,15 +457,15 @@
 	/*
 	 * external reference: condec.evolution.page.js
 	 */
-	ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed, searchString, issueTypes, issueStatus, callback) {
+	ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed, searchString, knowledgeTypes, status, callback) {
 		var filterSettings = {
 			"projectKey": projectKey,
 			"searchString": searchString,
 			"createdEarliest": created,
 			"createdLatest": closed,
-			"documentationLocations": [""],
-			"selectedJiraIssueTypes": issueTypes,
-			"selectedStatus": issueStatus
+			"documentationLocations": null,
+			"selectedJiraIssueTypes": knowledgeTypes,
+			"selectedStatus": status
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getCompareVis.json", filterSettings, function (error,
 																												 vis) {
@@ -536,7 +522,7 @@
 			"searchString": searchString,
 			"createdEarliest": created,
 			"createdLatest": closed,
-			"documentationLocations": [""],
+			"documentationLocations": null,
 			"selectedJiraIssueTypes": issueTypes,
 			"selectedStatus": issueStatus
 		};
@@ -548,8 +534,10 @@
 		});
 	};
 
+	/*
+	 * external references: condec.relationshipMatrix.page
+	 */
 	ConDecAPI.prototype.getDecisionMatrix = function getDecisionMatrix(callback) {
-		var projectKey = getProjectKey();
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getDecisionMatrix.json?projectKey=" + projectKey, function (error, matrix) {
 			if (error == null) {
 				callback(matrix);
@@ -557,29 +545,29 @@
 		});
 	};
 
+	/*
+	 * external references: condec.relationship.page
+	 */
 	ConDecAPI.prototype.getDecisionGraph = function getDecisionGraph(callback) {
-		var projectKey = getProjectKey();
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getDecisionGraph.json?projectKey=" + projectKey, function (error, graph) {
-			if (error == null) {
-				callback(graph);
-			}
-		});
+		this.getDecisionGraphFiltered(null, "", callback);
 	};
   
-  ConDecAPI.prototype.getDecisionGraphFiltered = function getDecisionGraphFiltered(selectedLinkTypes, searchString, callback) {
-		var projectKey= getProjectKey();
+	/*
+	 * external references: condec.relationship.page
+	 */
+	ConDecAPI.prototype.getDecisionGraphFiltered = function getDecisionGraphFiltered(selectedLinkTypes, searchString, callback) {
 		var filterSettings = {
 			"projectKey" : projectKey,
 			"searchString" : searchString,
 			"createdEarliest" : -1,
 			"createdLatest" : -1,
-			"documentationLocations" : [ "" ],
+			"documentationLocations" : null,
 			"selectedJiraIssueTypes" : ["Decision"],
-			"selectedStatus": [ "" ],
+			"selectedStatus": null,
 			"selectedLinkTypes": selectedLinkTypes
 		};
 
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getDecisionGraphFiltered.json?projectKey=" + projectKey, filterSettings, function(error, graph) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getDecisionGraph.json?projectKey=" + projectKey, filterSettings, function(error, graph) {
 			if (error == null) {
 				callback(graph);
 			}

@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
-import com.atlassian.jira.user.ApplicationUser;
-
 import javax.xml.bind.annotation.XmlElement;
+
+import com.atlassian.jira.user.ApplicationUser;
 
 public class VisTimeLineGroup {
 
