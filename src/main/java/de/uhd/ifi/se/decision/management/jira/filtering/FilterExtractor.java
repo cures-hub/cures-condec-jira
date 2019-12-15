@@ -26,11 +26,9 @@ public interface FilterExtractor {
 	// location so everything is collapsed
 	List<DecisionKnowledgeElement> getAllElementsMatchingQuery();
 
-	List<DecisionKnowledgeElement> getAllElementsMatchingCompareFilter();
+	List<DecisionKnowledgeElement> getAllElementsMatchingFilterSettings();
 
 	FilterSettings getFilterSettings();
-
-	List<DecisionKnowledgeElement> getElementsLinkTypeFilterMatches(List<DecisionKnowledgeElement> allDecisions);
 
 	ApplicationUser getUser();
 }

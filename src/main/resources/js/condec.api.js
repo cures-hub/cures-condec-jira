@@ -561,9 +561,9 @@
 			"searchString" : searchString,
 			"createdEarliest" : -1,
 			"createdLatest" : -1,
-			"documentationLocations" : [""],
+			"documentationLocations" : null,
 			"selectedJiraIssueTypes" : ["Decision"],
-			"selectedStatus": [""],
+			"selectedStatus": null,
 			"selectedLinkTypes": selectedLinkTypes
 		};
 

@@ -314,6 +314,11 @@ public class ViewRestImpl implements ViewRest {
 		return Response.ok(matrix).build();
 	}
 
+	// TODO Remove
+	private List<DecisionKnowledgeElement> getAllDecisions(String projectKey) {
+		return KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements(KnowledgeType.DECISION);
+	}
+
 	@Override
 	@Path("/getDecisionGraph")
 	@POST
@@ -325,14 +330,8 @@ public class ViewRestImpl implements ViewRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		List<DecisionKnowledgeElement> decisions = getAllDecisions(projectKey);
-		VisGraph graph = new VisGraph(user, filterSettings, decisions);
+		VisGraph graph = new VisGraph(user, filterSettings);
 		return Response.ok(graph).build();
-	}
-
-	// TODO Remove
-	private List<DecisionKnowledgeElement> getAllDecisions(String projectKey) {
-		return KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements(KnowledgeType.DECISION);
 	}
 
 	private String getProjectKey(String elementKey) {

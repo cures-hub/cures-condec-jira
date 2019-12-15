@@ -33,7 +33,6 @@ public class TestVisGraph extends TestSetUp {
 	private DecisionKnowledgeElement element;
 	private ApplicationUser user;
 	private FilterSettings filterSettings;
-	private List<DecisionKnowledgeElement> allDecisions;
 
 	@Before
 	public void setUp() {
@@ -51,7 +50,6 @@ public class TestVisGraph extends TestSetUp {
 
 		user = JiraUsers.BLACK_HEAD.getApplicationUser();
 		filterSettings = new FilterSettingsImpl("TEST", "");
-		allDecisions = new ArrayList<>();
 	}
 
 	@Test
@@ -177,17 +175,7 @@ public class TestVisGraph extends TestSetUp {
 	}
 
 	@Test
-	public void testConstUserFilterFilledElementsFilled() {
-		assertNotNull(new VisGraph(user, filterSettings, allDecisions));
-	}
-
-	@Test
-	public void testConstUserFilterFilledNoElements() {
-		assertNotNull(new VisGraph(user, filterSettings, null));
-	}
-
-	@Test
-	public void testConstUserFilledFilterFilled() {
+	public void testConstUserFilterFilled() {
 		assertNotNull(new VisGraph(user, filterSettings));
 	}
 }

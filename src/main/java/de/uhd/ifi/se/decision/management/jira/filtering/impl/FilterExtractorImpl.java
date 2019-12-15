@@ -59,7 +59,7 @@ public class FilterExtractorImpl implements FilterExtractor {
 
 		List<Issue> jiraIssues = getJiraIssuesFromQuery();
 		if (jiraIssues == null) {
-			allGraphs.add(this.getAllElementsMatchingCompareFilter());
+			allGraphs.add(this.getAllElementsMatchingFilterSettings());
 			return allGraphs;
 		}
 
@@ -104,7 +104,7 @@ public class FilterExtractorImpl implements FilterExtractor {
 	public List<DecisionKnowledgeElement> getAllElementsMatchingQuery() {
 		List<Issue> jiraIssues = getJiraIssuesFromQuery();
 		if (jiraIssues == null) {
-			return this.getAllElementsMatchingCompareFilter();
+			return this.getAllElementsMatchingFilterSettings();
 		}
 
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
@@ -142,7 +142,7 @@ public class FilterExtractorImpl implements FilterExtractor {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getAllElementsMatchingCompareFilter() {
+	public List<DecisionKnowledgeElement> getAllElementsMatchingFilterSettings() {
 		if (filterSettings == null || filterSettings.getProjectKey() == null) {
 			return new ArrayList<DecisionKnowledgeElement>();
 		}
@@ -177,17 +177,16 @@ public class FilterExtractorImpl implements FilterExtractor {
 		if (!isElementMatchingDocumentationLocationFilter(element)) {
 			return false;
 		}
-		// Case no text filter
-		if (filterSettings.getSearchString().equals("") || filterSettings.getSearchString().equals("?filter=-4")
-				|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
-			return true;
-		} else {
-			if (checkIfElementMatchesStringFilter(element)) {
-				return true;
-			}
+		if (!isElementMatchingJiraQueryFilter(element)) {
+			return false;
 		}
-
-		return false;
+		if (!isElementMatchingSubStringFilter(element)) {
+			return false;
+		}
+		if (!isElementMatchingLinkTypeFilter(element)) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -238,26 +237,52 @@ public class FilterExtractorImpl implements FilterExtractor {
 		return false;
 	}
 
-	// Check if Description, Summary, Key containing the search string
-	private boolean checkIfElementMatchesStringFilter(DecisionKnowledgeElement element) {
+	/**
+	 * Checks if the element's description, summary, or key contains the given
+	 * substring in the {@link FilterSetting}s.
+	 * 
+	 * @param element
+	 *            {@link DecisionKnowledgeElement} object.
+	 * @return true if the element's description, summary, or key contains the given
+	 *         substring.
+	 */
+	private boolean isElementMatchingJiraQueryFilter(DecisionKnowledgeElement element) {
+		String searchString = filterSettings.getSearchString().toLowerCase();
+		if (JiraQueryType.getJiraQueryType(searchString) == JiraQueryType.OTHER) {
+			// no JQL string or filter
+			return true;
+		}
+
+		if (filterSettings.getSearchString().equals("?filter=-4")
+				|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks if the element's description, summary, or key contains the given
+	 * substring in the {@link FilterSetting}s.
+	 * 
+	 * @param element
+	 *            {@link DecisionKnowledgeElement} object.
+	 * @return true if the element's description, summary, or key contains the given
+	 *         substring.
+	 */
+	private boolean isElementMatchingSubStringFilter(DecisionKnowledgeElement element) {
 		String searchString = filterSettings.getSearchString().toLowerCase();
 		if (searchString.isBlank()) {
 			return true;
 		}
-		if (element.getDescription() != null) {
-			if (element.getDescription().toLowerCase().contains(searchString)) {
-				return true;
-			}
+		if (element.getDescription() != null && element.getDescription().toLowerCase().contains(searchString)) {
+			return true;
 		}
-		if (element.getSummary() != null) {
-			if (element.getSummary().toLowerCase().contains(searchString)) {
-				return true;
-			}
+		if (element.getSummary() != null && element.getSummary().toLowerCase().contains(searchString)) {
+			return true;
 		}
-		if (element.getKey() != null) {
-			if (element.getKey().toLowerCase().contains(searchString)) {
-				return true;
-			}
+		if (element.getKey() != null && element.getKey().toLowerCase().contains(searchString)) {
+			return true;
 		}
 		return false;
 	}
@@ -273,43 +298,20 @@ public class FilterExtractorImpl implements FilterExtractor {
 		return false;
 	}
 
-	@Override
-	public List<DecisionKnowledgeElement> getElementsLinkTypeFilterMatches(
-			List<DecisionKnowledgeElement> allDecisions) {
-		List<DecisionKnowledgeElement> filteredElements = new ArrayList<DecisionKnowledgeElement>();
-		for (DecisionKnowledgeElement element : allDecisions) {
-			List<Link> links = element.getLinks();
-			if (links.isEmpty()) {
-				if (filterSettings.getNamesOfSelectedLinkTypes().size() == filterSettings.getAllLinkTypes().size()) {
-					if (filterSettings.getSearchString().isBlank()
-							|| filterSettings.getSearchString().equals("?filter=-4")
-							|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
-						filteredElements.add(element);
-					} else {
-						if (checkIfElementMatchesStringFilter(element)) {
-							filteredElements.add(element);
-						}
-					}
-				}
-			} else {
-				for (Link link : links) {
-					if (filterSettings.getNamesOfSelectedLinkTypes().contains(link.getType())) {
-						if (filterSettings.getSearchString().isBlank()
-								|| filterSettings.getSearchString().equals("?filter=-4")
-								|| filterSettings.getSearchString().equals("?filter=allopenissues")) {
-							filteredElements.add(element);
-							break;
-						} else {
-							if (checkIfElementMatchesStringFilter(element)) {
-								filteredElements.add(element);
-								break;
-							}
-						}
-					}
-				}
+	private boolean isElementMatchingLinkTypeFilter(DecisionKnowledgeElement element) {
+		if (filterSettings.getNamesOfSelectedLinkTypes().size() == filterSettings.getAllLinkTypes().size()) {
+			return true;
+		}
+		List<Link> links = element.getLinks();
+		if (links == null || links.isEmpty()) {
+			return true;
+		}
+		for (Link link : links) {
+			if (filterSettings.getNamesOfSelectedLinkTypes().contains(link.getType())) {
+				return true;
 			}
 		}
-		return filteredElements;
+		return false;
 	}
 
 	@Override

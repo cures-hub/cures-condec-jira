@@ -51,7 +51,7 @@ public class VisTimeLine {
 			return;
 		}
 		FilterExtractor filterExtractor = new FilterExtractorImpl(user, filterSettings);
-		List<DecisionKnowledgeElement> elements = filterExtractor.getAllElementsMatchingCompareFilter();
+		List<DecisionKnowledgeElement> elements = filterExtractor.getAllElementsMatchingFilterSettings();
 		addElements(elements);
 	}
 

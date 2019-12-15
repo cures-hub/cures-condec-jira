@@ -158,67 +158,56 @@ public class TestFilterExtractor extends TestSetUp {
 	}
 
 	@Test
-	@NonTransactional
 	public void testGetFilterSettings() {
 		FilterExtractor extractor = new FilterExtractorImpl("Test", user, "?jql=project=TEST");
 		assertEquals("?jql=project=TEST", extractor.getFilterSettings().getSearchString());
 	}
 
 	@Test
-	@NonTransactional
 	public void testGetAllElementsMatchingCompareFilterSettingsEmpty() {
 		FilterSettings newSettings = new FilterSettingsImpl();
 		FilterExtractor extractor = new FilterExtractorImpl(user, newSettings);
-		assertEquals(0, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
+		assertEquals(0, extractor.getAllElementsMatchingFilterSettings().size(), 0.0);
 	}
 
 	@Test
-	@NonTransactional
 	public void testGetAllElementsMatchingCompareFilterSettingsFilledCreated() {
 		settings.setCreatedLatest(-1);
 		settings.setCreatedEarliest(System.currentTimeMillis() - 100000);
 		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
-		assertEquals(5, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
+		assertEquals(5, extractor.getAllElementsMatchingFilterSettings().size());
 	}
 
 	@Test
-	@NonTransactional
 	public void testGetAllElementsMatchingCompareFilterSettingsFilledClosed() {
 		settings.setCreatedEarliest(-1);
 		settings.setCreatedLatest(System.currentTimeMillis() + 1000);
 		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
-		assertEquals(5, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
+		assertEquals(5, extractor.getAllElementsMatchingFilterSettings().size(), 0.0);
 	}
 
 	@Test
-	@NonTransactional
 	public void testGetAllElementsMatchingCompareFilterSettingsFilled() {
 		settings.setCreatedLatest(System.currentTimeMillis() + 1000);
 		settings.setCreatedEarliest(System.currentTimeMillis() - 100000);
 		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
-		assertEquals(5, extractor.getAllElementsMatchingCompareFilter().size(), 0.0);
+		assertEquals(5, extractor.getAllElementsMatchingFilterSettings().size());
 	}
 
 	@Test
-	@NonTransactional
 	public void testGetAllElementsLinkTypeFilterMatches() {
+		List<String> types = new ArrayList<String>();
+		types.add("Decision");
+		settings.setSelectedJiraIssueTypes(types);
 		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
-		assertEquals(1, extractor.getElementsLinkTypeFilterMatches(allDecisions).size());
+		assertEquals(allDecisions.size(), extractor.getAllElementsMatchingFilterSettings().size());
+		settings.setSelectedJiraIssueTypes(KnowledgeType.toList());
 	}
 
 	@Test
-	@NonTransactional
-	public void testGetAllElementsLinkTypeFilterMatchesEmptySearchString() {
-		settings.setSearchString("");
-		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
-		assertEquals(allDecisions.size(), extractor.getElementsLinkTypeFilterMatches(allDecisions).size());
-	}
-
-	@Test
-	@NonTransactional
 	public void testGetAllElementsLinkTypeFilterMatchesSearchStringFilled() {
 		settings.setSearchString("TEST123");
 		FilterExtractor extractor = new FilterExtractorImpl(user, settings);
-		assertEquals(0, extractor.getElementsLinkTypeFilterMatches(allDecisions).size());
+		assertEquals(0, extractor.getAllElementsMatchingFilterSettings().size());
 	}
 }

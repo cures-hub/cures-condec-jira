@@ -87,24 +87,11 @@ public class VisGraph {
 			return;
 		}
 		FilterExtractor filterExtractor = new FilterExtractorImpl(user, filterSettings);
-		List<DecisionKnowledgeElement> elements = filterExtractor.getAllElementsMatchingCompareFilter();
+		List<DecisionKnowledgeElement> elements = filterExtractor.getAllElementsMatchingFilterSettings();
 		this.elementsMatchingFilterCriteria = elements;
 		if (elements == null || elements.isEmpty()) {
 			return;
 		}
-		for (DecisionKnowledgeElement element : elements) {
-			fillNodesAndEdges(element);
-		}
-	}
-
-	public VisGraph(ApplicationUser user, FilterSettings filterSettings, List<DecisionKnowledgeElement> decisions) {
-		this(filterSettings);
-		if (user == null || decisions == null) {
-			return;
-		}
-		FilterExtractor filterExtractor = new FilterExtractorImpl(user, filterSettings);
-		List<DecisionKnowledgeElement> elements = filterExtractor.getElementsLinkTypeFilterMatches(decisions);
-		this.elementsMatchingFilterCriteria = elements;
 		for (DecisionKnowledgeElement element : elements) {
 			fillNodesAndEdges(element);
 		}

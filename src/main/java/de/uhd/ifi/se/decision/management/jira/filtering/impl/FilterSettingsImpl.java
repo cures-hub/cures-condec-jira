@@ -29,7 +29,7 @@ public class FilterSettingsImpl implements FilterSettings {
 	private String searchString;
 	private List<DocumentationLocation> documentationLocations;
 	private List<String> namesOfSelectedJiraIssueTypes;
-	private List<KnowledgeStatus> issueStatus;
+	private List<KnowledgeStatus> knowledgeStatus;
 	private List<String> namesOfSelectedLinkTypes;
 
 	@XmlElement
@@ -52,7 +52,7 @@ public class FilterSettingsImpl implements FilterSettings {
 		this.startDate = -1;
 		this.endDate = -1;
 		this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
-		this.issueStatus = KnowledgeStatus.getAllKnowledgeStatus();
+		this.knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
 	}
 
 	public FilterSettingsImpl(String projectKey, String query, ApplicationUser user) {
@@ -137,6 +137,7 @@ public class FilterSettingsImpl implements FilterSettings {
 	public void setDocumentationLocations(List<String> namesOfDocumentationLocations) {
 		this.documentationLocations = new ArrayList<DocumentationLocation>();
 		if (namesOfDocumentationLocations == null) {
+			this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
 			return;
 		}
 		for (String location : namesOfDocumentationLocations) {
@@ -162,23 +163,26 @@ public class FilterSettingsImpl implements FilterSettings {
 	@Override
 	@XmlElement(name = "selectedStatus")
 	public List<KnowledgeStatus> getSelectedStatus() {
-		if (issueStatus == null) {
-			issueStatus = KnowledgeStatus.getAllKnowledgeStatus();
+		if (knowledgeStatus == null) {
+			knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
 		}
-		return issueStatus;
+		return knowledgeStatus;
 	}
 
 	@Override
 	@JsonProperty("selectedStatus")
 	public void setSelectedStatus(List<String> status) {
-		if (issueStatus == null) {
-			issueStatus = new ArrayList<>();
+		if (knowledgeStatus == null) {
+			knowledgeStatus = new ArrayList<KnowledgeStatus>();
 		}
-		if (status == null || status.size() == 0) {
+		if (status == null) {
+			for (KnowledgeStatus eachStatus : KnowledgeStatus.values()) {
+				knowledgeStatus.add(eachStatus);
+			}
 			return;
 		}
 		for (String stringStatus : status) {
-			issueStatus.add(KnowledgeStatus.getKnowledgeStatus(stringStatus));
+			knowledgeStatus.add(KnowledgeStatus.getKnowledgeStatus(stringStatus));
 		}
 	}
 
