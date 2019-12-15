@@ -23,7 +23,7 @@ public interface ViewRest {
 
 	Response getEvolutionData(HttpServletRequest request, FilterSettings filterSettings);
 
-	Response getTreant(String elementKey, String depthOfTree, String searchTerm, HttpServletRequest request);
+	Response getTreant(HttpServletRequest request, String elementKey, String depthOfTree, String searchTerm);
 
 	Response getVis(HttpServletRequest request, FilterSettings filterSettings, String elementKey);
 

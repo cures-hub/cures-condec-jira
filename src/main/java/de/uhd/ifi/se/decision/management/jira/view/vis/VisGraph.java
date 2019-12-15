@@ -24,6 +24,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 
 @XmlRootElement(name = "vis")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -111,6 +113,17 @@ public class VisGraph {
 		for (DecisionKnowledgeElement element : elements) {
 			fillNodesAndEdges(element);
 		}
+	}
+
+	public VisGraph(ApplicationUser user, String elementKey, FilterSettings filterSettings) {
+		this(filterSettings);
+		FilterExtractor filterExtractor = new FilterExtractorImpl(user, filterSettings);
+		this.elementsMatchingFilterCriteria = filterExtractor.getAllElementsMatchingQuery();
+		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(filterSettings.getProjectKey()).getDefaultManagerForSingleLocation();
+		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
+		this.rootElementKey = (rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString());
+		fillNodesAndEdges(rootElement);
 	}
 
 	private void fillNodesAndEdges(DecisionKnowledgeElement element) {

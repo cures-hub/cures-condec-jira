@@ -36,22 +36,17 @@ public class FilterExtractorImpl implements FilterExtractor {
 	private ApplicationUser user;
 	private FilterSettings filterSettings;
 
-	public FilterExtractorImpl(String projectKey, ApplicationUser user, String query) {
-		if (projectKey == null || projectKey.isBlank() || query == null || user == null) {
-			LOGGER.error("FilterExtractor could not be created due to an invalid input.");
-			return;
-		}
-		this.filterSettings = new FilterSettingsImpl(projectKey, query);
-		this.user = user;
-	}
-
 	public FilterExtractorImpl(ApplicationUser user, FilterSettings filterSettings) {
-		if (filterSettings == null || user == null) {
+		if (filterSettings == null || filterSettings.getProjectKey() == null || user == null) {
 			LOGGER.error("FilterExtractor could not be created due to an invalid input.");
 			return;
 		}
 		this.user = user;
 		this.filterSettings = filterSettings;
+	}
+
+	public FilterExtractorImpl(String projectKey, ApplicationUser user, String query) {
+		this(user, new FilterSettingsImpl(projectKey, query));
 	}
 
 	/**

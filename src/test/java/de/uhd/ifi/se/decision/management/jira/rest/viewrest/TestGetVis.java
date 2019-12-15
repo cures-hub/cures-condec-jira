@@ -4,14 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
-import com.google.common.collect.ImmutableMap;
+import com.sun.jersey.api.client.ClientResponse.Status;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
@@ -20,18 +19,12 @@ import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.rest.impl.ViewRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGetVis extends TestSetUp {
 
 	private ViewRest viewRest;
 	private FilterSettings filterSettings;
 	protected HttpServletRequest request;
-
-	private static final String INVALID_PROJECTKEY = "Decision knowledge elements cannot be shown since project key is invalid.";
-	private static final String INVALID_ELEMENTS = "Visualization cannot be shown since element key is invalid.";
-	private static final String INVALID_FILTER_SETTINGS = "The filter settings are null. Vis graph could not be created.";
-	private static final String INVALID_REQUEST = "HttpServletRequest is null. Vis graph could not be created.";
 
 	@Before
 	public void setUp() {
@@ -45,45 +38,28 @@ public class TestGetVis extends TestSetUp {
 	}
 
 	@Test
-	@NonTransactional
 	public void testRequestNullFilterDataSettingsElementNull() {
-		assertEquals(
-				Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", INVALID_ELEMENTS)).build().getEntity(),
-				viewRest.getVis(null, null, null).getEntity());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getVis(null, null, null).getStatus());
 	}
 
 	@Test
-	@NonTransactional
 	public void testRequestNullFilerSettingsNullElementNotExisting() {
-		assertEquals(
-				Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", INVALID_PROJECTKEY)).build().getEntity(),
-				viewRest.getVis(null, null, "NotTEST").getEntity());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getVis(null, null, "NotTEST").getStatus());
 	}
 
 	@Test
-	@NonTransactional
 	public void testRequestNullFilterSettingsNullElementExisting() {
-		assertEquals(
-				Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", INVALID_FILTER_SETTINGS)).build().getEntity(),
-				viewRest.getVis(null, null, "TEST-14").getEntity());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getVis(null, null, "TEST-14").getStatus());
 	}
 
 	@Test
-	@NonTransactional
 	public void testRequestNullFilterSettingsFilledElementFilled() {
-		assertEquals(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error", INVALID_REQUEST)).build().getEntity(),
-				viewRest.getVis(null, filterSettings, "TEST-14").getEntity());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getVis(null, filterSettings, "TEST-14").getStatus());
 	}
 
 	@Test
-	@NonTransactional
 	public void testRequestFilledFilterSettingsFilledElementFilled() {
 		assertNotNull(AuthenticationManager.getUser(request));
-		assertEquals(Response.Status.OK.getStatusCode(),
-				viewRest.getVis(request, filterSettings, "TEST-14").getStatus());
+		assertEquals(Status.OK.getStatusCode(), viewRest.getVis(request, filterSettings, "TEST-14").getStatus());
 	}
 }
