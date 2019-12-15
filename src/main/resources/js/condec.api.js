@@ -429,7 +429,7 @@
 	 * external references: condec.vis
 	 */
 	ConDecAPI.prototype.getVis = function getVis(elementKey, searchTerm, callback) {
-		this.getVisFiltered(elementKey, searchTerm, null, -1, -1, null, callback);
+		this.getVisFiltered(elementKey, null, null, -1, -1, null, callback);
 	};
 
 	/*

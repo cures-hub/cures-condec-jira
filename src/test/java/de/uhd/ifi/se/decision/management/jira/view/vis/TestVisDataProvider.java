@@ -60,8 +60,4 @@ public class TestVisDataProvider extends TestSetUp {
 		assertNotNull(new VisGraph(user, filterSettings));
 	}
 
-	@Test
-	public void testGetVisTimeLine() {
-		assertNotNull(new VisTimeLine(user, filterSettings));
-	}
 }

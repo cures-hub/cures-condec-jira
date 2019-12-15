@@ -16,14 +16,13 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 
 public class VisTimeLine {
 
-	private List<DecisionKnowledgeElement> elements;
 	private Set<Long> applicationUserIds;
-
-	@XmlElement(name = "dataSet")
-	private Set<VisTimeLineNode> nodes;
 
 	@XmlElement(name = "groupSet")
 	private Set<VisTimeLineGroup> groups;
+
+	@XmlElement(name = "dataSet")
+	private Set<VisTimeLineNode> nodes;
 
 	public VisTimeLine() {
 		this.nodes = new HashSet<VisTimeLineNode>();
@@ -33,8 +32,7 @@ public class VisTimeLine {
 
 	public VisTimeLine(List<DecisionKnowledgeElement> elements) {
 		this();
-		this.elements = elements;
-		addElementsToTimeLine(elements);
+		addElements(elements);
 	}
 
 	public VisTimeLine(String projectKey) {
@@ -42,8 +40,9 @@ public class VisTimeLine {
 		if (projectKey == null) {
 			return;
 		}
-		this.elements = KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
-		addElementsToTimeLine(elements);
+		List<DecisionKnowledgeElement> elements = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getDecisionKnowledgeElements();
+		addElements(elements);
 	}
 
 	public VisTimeLine(ApplicationUser user, FilterSettings filterSettings) {
@@ -52,40 +51,20 @@ public class VisTimeLine {
 			return;
 		}
 		FilterExtractor filterExtractor = new FilterExtractorImpl(user, filterSettings);
-		this.elements = filterExtractor.getAllElementsMatchingCompareFilter();
-		addElementsToTimeLine(elements);
+		List<DecisionKnowledgeElement> elements = filterExtractor.getAllElementsMatchingCompareFilter();
+		addElements(elements);
 	}
 
-	public Set<VisTimeLineNode> getEvolutionData() {
-		return nodes;
-	}
-
-	public List<DecisionKnowledgeElement> getElements() {
-		return elements;
-	}
-
-	public void setElementList(List<DecisionKnowledgeElement> elementList) {
-		this.elements = elementList;
-	}
-
-	public Set<VisTimeLineGroup> getGroupSet() {
-		return groups;
-	}
-
-	public void setGroupSet(HashSet<VisTimeLineGroup> groupSet) {
-		this.groups = groupSet;
-	}
-
-	private void addElementsToTimeLine(List<DecisionKnowledgeElement> elements) {
+	public void addElements(List<DecisionKnowledgeElement> elements) {
 		if (elements == null) {
 			return;
 		}
 		for (DecisionKnowledgeElement element : elements) {
-			addElementToTimeLine(element);
+			addElement(element);
 		}
 	}
 
-	private boolean addElementToTimeLine(DecisionKnowledgeElement element) {
+	public boolean addElement(DecisionKnowledgeElement element) {
 		ApplicationUser user = element.getCreator();
 		if (user == null) {
 			return false;
@@ -98,5 +77,17 @@ public class VisTimeLine {
 		VisTimeLineNode node = new VisTimeLineNode(element, userId);
 		nodes.add(node);
 		return true;
+	}
+
+	public Set<VisTimeLineNode> getTimeLineNodes() {
+		return nodes;
+	}
+
+	public Set<VisTimeLineGroup> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(HashSet<VisTimeLineGroup> groups) {
+		this.groups = groups;
 	}
 }
