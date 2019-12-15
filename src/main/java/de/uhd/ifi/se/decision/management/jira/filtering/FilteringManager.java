@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
  * @see FilterSettings
  * @see KnowledgeGraph
  */
-public interface FilterExtractor {
+public interface FilteringManager {
 
 	/**
 	 * Returns a list of all trees that match the given filter criteria.

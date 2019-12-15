@@ -23,8 +23,8 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterExtractorImpl;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -325,7 +325,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		List<DecisionKnowledgeElement> queryResult = new ArrayList<DecisionKnowledgeElement>();
-		FilterExtractor extractor = new FilterExtractorImpl(projectKey, user, query);
+		FilteringManager extractor = new FilteringManagerImpl(projectKey, user, query);
 		if (allTrees) {
 			List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
 			elementsQueryLinked = extractor.getAllGraphs();

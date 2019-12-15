@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryType;
@@ -31,12 +31,12 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPers
  * @see FilterSettings
  * @see KnowledgeGraph
  */
-public class FilterExtractorImpl implements FilterExtractor {
-	private static final Logger LOGGER = LoggerFactory.getLogger(FilterExtractorImpl.class);
+public class FilteringManagerImpl implements FilteringManager {
+	private static final Logger LOGGER = LoggerFactory.getLogger(FilteringManagerImpl.class);
 	private ApplicationUser user;
 	private FilterSettings filterSettings;
 
-	public FilterExtractorImpl(ApplicationUser user, FilterSettings filterSettings) {
+	public FilteringManagerImpl(ApplicationUser user, FilterSettings filterSettings) {
 		if (filterSettings == null || filterSettings.getProjectKey() == null || user == null) {
 			LOGGER.error("FilterExtractor could not be created due to an invalid input.");
 			return;
@@ -45,7 +45,7 @@ public class FilterExtractorImpl implements FilterExtractor {
 		this.filterSettings = filterSettings;
 	}
 
-	public FilterExtractorImpl(String projectKey, ApplicationUser user, String query) {
+	public FilteringManagerImpl(String projectKey, ApplicationUser user, String query) {
 		this(user, new FilterSettingsImpl(projectKey, query));
 	}
 
@@ -199,9 +199,7 @@ public class FilterExtractorImpl implements FilterExtractor {
 	 *         {@link DocumentationLocation}s.
 	 */
 	private boolean isElementMatchingDocumentationLocationFilter(DecisionKnowledgeElement element) {
-		return filterSettings.getDocumentationLocations().contains(element.getDocumentationLocation())
-				|| filterSettings.getDocumentationLocations().size() == 1
-						&& filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN);
+		return filterSettings.getDocumentationLocations().contains(element.getDocumentationLocation());
 	}
 
 	private boolean isElementMatchingStatusFilter(DecisionKnowledgeElement element) {

@@ -15,9 +15,9 @@ import org.jgrapht.traverse.BreadthFirstIterator;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterExtractor;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterExtractorImpl;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -86,7 +86,7 @@ public class VisGraph {
 		if (user == null) {
 			return;
 		}
-		FilterExtractor filterExtractor = new FilterExtractorImpl(user, filterSettings);
+		FilteringManager filterExtractor = new FilteringManagerImpl(user, filterSettings);
 		List<DecisionKnowledgeElement> elements = filterExtractor.getAllElementsMatchingFilterSettings();
 		this.elementsMatchingFilterCriteria = elements;
 		if (elements == null || elements.isEmpty()) {
@@ -99,7 +99,7 @@ public class VisGraph {
 
 	public VisGraph(ApplicationUser user, String elementKey, FilterSettings filterSettings) {
 		this(filterSettings);
-		FilterExtractor filterExtractor = new FilterExtractorImpl(user, filterSettings);
+		FilteringManager filterExtractor = new FilteringManagerImpl(user, filterSettings);
 		this.elementsMatchingFilterCriteria = filterExtractor.getAllElementsMatchingQuery();
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(filterSettings.getProjectKey()).getDefaultManagerForSingleLocation();
