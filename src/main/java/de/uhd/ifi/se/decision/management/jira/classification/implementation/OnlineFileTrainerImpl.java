@@ -89,6 +89,8 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 
 	private synchronized void trainBinaryClassifier() throws Exception {
+		LOGGER.debug("Binary Classifier training started.");
+
 		Map<String, List> trainingData = this.extractTrainingData(this.getInstances());
 		Map preprocessedSentences;
 		// if (!this.classifier.getBinaryClassifier().loadFromFile()) {
@@ -97,10 +99,12 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 		this.classifier.trainBinaryClassifier((List<List<Double>>) preprocessedSentences.get("features"),
 			(List<Integer>) preprocessedSentences.get("labels"));
-		this.classifier.getBinaryClassifier().saveToFile();
+		LOGGER.debug("Binary Classifier trained.");
+		//this.classifier.getBinaryClassifier().saveToFile();
 	}
 
 	private synchronized void trainFineGrainedClassifier() throws Exception {
+		LOGGER.debug("Fine-grained Classifier training started.");
 
 		Map<String, List> trainingData = this.extractTrainingData(this.getInstances());
 		Map preprocessedSentences;
@@ -109,7 +113,9 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 		this.classifier.trainFineGrainedClassifier((List<List<Double>>) preprocessedSentences.get("features"),
 			(List<Integer>) preprocessedSentences.get("labels"));
-		this.classifier.getFineGrainedClassifier().saveToFile();
+		//this.classifier.getFineGrainedClassifier().saveToFile();
+		LOGGER.debug("Fine-grained Classifier trained.");
+
 	}
 
 	public boolean update(PartOfJiraIssueText sentence) {
@@ -423,6 +429,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 	public Map<String, Double> evaluateClassifier(List<ClassificationMeasure> measurements,
 												  List<DecisionKnowledgeElement> partOfJiraIssueTexts) throws Exception {
+		LOGGER.debug("Started evaluation!");
 		Map<String, Double> resultsMap = new HashMap<>();
 		List<DecisionKnowledgeElement> relevantPartOfJiraIssueTexts = partOfJiraIssueTexts.stream()
 			.filter(x -> !x.getType().equals(KnowledgeType.OTHER)).collect(toList());
@@ -450,6 +457,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 		// calculate measurements for each ClassificationMeasure in measurements
 		for (ClassificationMeasure measurement : measurements) {
+			LOGGER.debug("Evaluating: " + measurement.getClass().getSimpleName());
 			String binaryKey = measurement.getClass().getSimpleName() + "_binary";
 			Double binaryMeasurement = measurement.measure(ArrayUtils.toPrimitive(binaryTruths),
 				ArrayUtils.toPrimitive(binaryPredictions));
@@ -471,6 +479,8 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 		}
 		// return results
+		LOGGER.debug("Finished evaluation!");
+
 		return resultsMap;
 	}
 
