@@ -45,6 +45,7 @@
 		<div id="boxplot-CommitsPerJiraIssue" class="notsetyet boxplot"></div>
 		<div id="boxplot-DecisionsPerJiraIssue" class="notsetyet boxplot"></div>
 		<div id="boxplot-IssuesPerJiraIssue" class="notsetyet boxplot"></div>
+		<div id="piechartInteger-KnowledgeTypeDistribution" class="notsetyet piechart"></div>
 	</div>
 	
 	<div class="dynamic-content hidden" id="dynamic-content-completeness">
@@ -69,7 +70,6 @@
 		<div id="piechartRich-DecisionDocumentedForSelectedJiraIssue" class="notsetyet piechart"></div>
 		<div id="piechartRich-IssueDocumentedForSelectedJiraIssue" class="notsetyet piechart"></div>
 		<div id="piechartInteger-RelevantSentences" class="notsetyet piechart"></div>
-		<div id="piechartInteger-KnowledgeTypeDistribution" class="notsetyet piechart"></div>
 	</div>
 
 
