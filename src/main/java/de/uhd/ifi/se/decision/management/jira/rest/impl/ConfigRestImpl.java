@@ -530,7 +530,7 @@ public class ConfigRestImpl implements ConfigRest {
 			StringBuilder prettyMapOutput = new StringBuilder();
 			prettyMapOutput.append("{");
 			for (Map.Entry<String, Double> e : evaluationResults.entrySet()) {
-				prettyMapOutput.append(prefix + System.lineSeparator() + "\"" + e.getKey() + "\" : \"" + e.getValue() + "\",");
+				prettyMapOutput.append(prefix + System.lineSeparator() + "\"" + e.getKey() + "\" : \"" + e.getValue() + "\"");
 				prefix = ",";
 			}
 			prettyMapOutput.append(System.lineSeparator() +"}");
