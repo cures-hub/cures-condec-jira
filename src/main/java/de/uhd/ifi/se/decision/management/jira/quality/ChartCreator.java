@@ -27,6 +27,11 @@ public class ChartCreator {
 	this.chartNamesAndData.put(chartId, metricData);
     }
 
+    public void addChartWithIssueContent(String chartName, String chartId, Map<String, String> metricData) {
+	this.chartNamesAndPurpose.put(chartId, "\\" + chartName);
+	this.chartNamesAndData.put(chartId, metricData);
+    }
+
     public Map<String, Object> getVelocityParameters() {
 	velocityParams.put("chartNamesAndPurpose", chartNamesAndPurpose);
 	velocityParams.put("chartNamesAndData", chartNamesAndData);

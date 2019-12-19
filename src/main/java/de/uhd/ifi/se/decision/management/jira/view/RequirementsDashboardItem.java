@@ -18,7 +18,6 @@ import com.google.common.collect.Maps;
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.ChartCreator;
-import de.uhd.ifi.se.decision.management.jira.quality.CommentMetricCalculator;
 import de.uhd.ifi.se.decision.management.jira.quality.CommonMetricCalculator;
 import de.uhd.ifi.se.decision.management.jira.quality.MetricCalculator;
 
@@ -110,9 +109,9 @@ public class RequirementsDashboardItem implements ContextProvider {
 
     public Map<String, Object> createValues(String projectKey, String jiraIssueTypeId, ApplicationUser loggedUser) {
 	Long projectId = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey).getId();
-
+	String issueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(jiraIssueTypeId);
 	ChartCreator chartCreator = new ChartCreator(projectId);
-	MetricCalculator metricCalculator = new MetricCalculator(projectId, loggedUser);
+	MetricCalculator metricCalculator = new MetricCalculator(projectId, loggedUser, jiraIssueTypeId);
 
 	chartCreator.addChart("#Comments per JIRA Issue", "boxplot-CommentsPerJiraIssue",
 		metricCalculator.numberOfCommentsPerIssue());
@@ -125,51 +124,47 @@ public class RequirementsDashboardItem implements ContextProvider {
 		metricCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE, 1));
 	chartCreator.addChart("#Distribution of Knowledge Types", "piechartInteger-KnowledgeTypeDistribution",
 		metricCalculator.getDistributionOfKnowledgeTypes());
-
-	// calculateCompleteness(calculator, chartNamesAndPurpose, chartNamesAndData);
-
-	// calculateBasicStatistics(calculatorForSentences, calculator, issueTypeName,
-	// chartNamesAndPurpose,
-	// chartNamesAndData);
-
-	// calculateInconsistencies(calculator, chartNamesAndPurpose,
-	// chartNamesAndData);
-
+	chartCreator.addChart("#Requirements and Code Classes", "piechartInteger-ReqCodeSummary",
+		metricCalculator.getReqAndClassSummary());
+	chartCreator.addChart("#Elements from Decision Knowledge Sources", "piechartInteger-DecSources",
+		metricCalculator.getKnowledgeSourceCount());
+	chartCreator.addChartWithIssueContent("How many issues (=decision problems) are solved by a decision?",
+		"piechartRich-IssuesSolvedByDecision",
+		metricCalculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType.ISSUE,
+			KnowledgeType.DECISION));
+	chartCreator.addChartWithIssueContent("For how many decisions is the issue (=decision problem) documented?",
+		"piechartRich-DecisionsSolvingIssues",
+		metricCalculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType.DECISION,
+			KnowledgeType.ISSUE));
+	chartCreator.addChartWithIssueContent("How many alternatives have at least one pro argument documented?",
+		"piechartRich-ProArgumentDocumentedForAlternative",
+		metricCalculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType.ALTERNATIVE,
+			KnowledgeType.PRO));
+	chartCreator.addChartWithIssueContent("How many alternatives have at least one con argument documented?",
+		"piechartRich-ConArgumentDocumentedForAlternative",
+		metricCalculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType.ALTERNATIVE,
+			KnowledgeType.CON));
+	chartCreator.addChartWithIssueContent("How many alternatives have at least one con argument documented?",
+		"piechartRich-ConArgumentDocumentedForAlternative",
+		metricCalculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType.ALTERNATIVE,
+			KnowledgeType.CON));
+	chartCreator.addChartWithIssueContent("How many decisions have at least one pro argument documented?",
+		"piechartRich-ProArgumentDocumentedForDecision",
+		metricCalculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType.DECISION,
+			KnowledgeType.PRO));
+	chartCreator.addChartWithIssueContent("How many decisions have at least one con argument documented?",
+		"piechartRich-ConArgumentDocumentedForDecision",
+		metricCalculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType.DECISION,
+			KnowledgeType.CON));
+	chartCreator.addChart("Relevance of Comments in JIRA Issues", "piechartInteger-RelevantSentences",
+		metricCalculator.getNumberOfRelevantComments());
+	chartCreator.addChartWithIssueContent("For how many " + issueTypeName + " types is an issue documented?",
+		"piechartRich-DecisionDocumentedForSelectedJiraIssue",
+		metricCalculator.getLinksToIssueTypeMap(KnowledgeType.ISSUE));
+	chartCreator.addChartWithIssueContent("For how many " + issueTypeName + " types is a decision documented?",
+		"piechartRich-IssueDocumentedForSelectedJiraIssue",
+		metricCalculator.getLinksToIssueTypeMap(KnowledgeType.DECISION));
 	return chartCreator.getVelocityParameters();
-    }
-
-    private void calculateCompleteness(CommonMetricCalculator calculator, Map<String, String> chartNamesAndPurpose,
-	    Map<String, Object> chartNamesAndData) {
-	String chartId = "";
-	/* towards rationale completeness and inconsistencies */
-	chartId = "piechartRich-IssuesSolvedByDecision";
-	chartNamesAndPurpose.put(chartId, "How many issues (=decision problems) are solved by a decision?");
-	chartNamesAndData.put(chartId, calculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(
-		KnowledgeType.ISSUE, KnowledgeType.DECISION));
-	chartId = "piechartRich-DecisionsSolvingIssues";
-	chartNamesAndPurpose.put(chartId, "For how many decisions is the issue (=decision problem) documented?");
-	chartNamesAndData.put(chartId, calculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(
-		KnowledgeType.DECISION, KnowledgeType.ISSUE));
-
-	chartId = "piechartRich-ProArgumentDocumentedForAlternative";
-	chartNamesAndPurpose.put(chartId, "How many alternatives have at least one pro argument documented?");
-	chartNamesAndData.put(chartId, calculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(
-		KnowledgeType.ALTERNATIVE, KnowledgeType.PRO));
-
-	chartId = "piechartRich-ConArgumentDocumentedForAlternative";
-	chartNamesAndPurpose.put(chartId, "How many alternatives have at least one con argument documented?");
-	chartNamesAndData.put(chartId, calculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(
-		KnowledgeType.ALTERNATIVE, KnowledgeType.CON));
-
-	chartId = "piechartRich-ProArgumentDocumentedForDecision";
-	chartNamesAndPurpose.put(chartId, "How many decisions have at least one pro argument documented?");
-	chartNamesAndData.put(chartId, calculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(
-		KnowledgeType.DECISION, KnowledgeType.PRO));
-
-	chartId = "piechartRich-ConArgumentDocumentedForDecision";
-	chartNamesAndPurpose.put(chartId, "How many decisions have at least one con argument documented?");
-	chartNamesAndData.put(chartId, calculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(
-		KnowledgeType.DECISION, KnowledgeType.CON));
     }
 
     private void calculateInconsistencies(CommonMetricCalculator calculator, Map<String, String> chartNamesAndPurpose,
@@ -181,25 +176,6 @@ public class RequirementsDashboardItem implements ContextProvider {
 	chartNamesAndData.put(chartId,
 		calculator.getDecKnowlElementsOfATypeGroupedByHavingMoreThanOneElementsOfOtherType(KnowledgeType.ISSUE,
 			KnowledgeType.DECISION));
-    }
-
-    private void calculateBasicStatistics(CommentMetricCalculator calculatorForSentences,
-	    CommonMetricCalculator calculator, String issueTypeName, Map<String, String> chartNamesAndPurpose,
-	    Map<String, Object> chartNamesAndData) {
-	String chartId = "";
-	/* general statistics */
-	chartId = "piechartInteger-RelevantSentences";
-	chartNamesAndPurpose.put(chartId, "Relevance of Sentences in JIRA Issue Comments");
-	chartNamesAndData.put(chartId, calculatorForSentences.getNumberOfRelevantSentences());
-
-	/* selected issue type stats */
-	chartId = "piechartRich-DecisionDocumentedForSelectedJiraIssue";
-	chartNamesAndPurpose.put(chartId, "For how many " + issueTypeName + " types is the issue documented?");
-	chartNamesAndData.put(chartId, calculator.getLinksToIssueTypeMap(KnowledgeType.ISSUE));
-
-	chartId = "piechartRich-IssueDocumentedForSelectedJiraIssue";
-	chartNamesAndPurpose.put(chartId, "For how many " + issueTypeName + " types is the decision documented?");
-	chartNamesAndData.put(chartId, calculator.getLinksToIssueTypeMap(KnowledgeType.DECISION));
     }
 
 }

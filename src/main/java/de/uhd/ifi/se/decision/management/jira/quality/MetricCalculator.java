@@ -1,11 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.quality;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.comments.Comment;
+import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.search.SearchException;
 import com.atlassian.jira.issue.search.SearchResults;
@@ -22,20 +27,27 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 
 //TODO: Allow User to choose Branch
 //TODO: Allow User to choose which Elements make up Requirements
-//TODO: Number of Code-Classes
 //TODO: Which Metrics react to linkDistanceFilter
 //TODO: Put getLinkDistanceIssueMap into an extractor class
+//TODO: Metric for Decision Knowledge Elements how many from each source Code, Commit, Description, Comments
 public class MetricCalculator {
 
     private String projectKey;
@@ -43,15 +55,21 @@ public class MetricCalculator {
     private List<Issue> jiraIssues;
     private JiraIssueTextPersistenceManager persistenceManager;
     private List<DecisionKnowledgeElement> decisionKnowledgeCodeElements;
+    private List<DecisionKnowledgeElement> decisionKnowledgeCommitElements;
+    private final String dataStringSeparator = " ";
+    private String issueTypeId;
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(ChartCreator.class);
 
-    public MetricCalculator(Long projectId, ApplicationUser user) {
+    public MetricCalculator(Long projectId, ApplicationUser user, String issueTypeId) {
 	this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
 	this.user = user;
 	this.persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueTextManager();
 	this.jiraIssues = getJiraIssuesForProject(projectId);
-	this.decisionKnowledgeCodeElements = getDecisionKnowledgeElementsFromCode(projectKey);
+	Map<String, List<DecisionKnowledgeElement>> elementMap = getDecisionKnowledgeElementsFromCode(projectKey);
+	this.decisionKnowledgeCodeElements = elementMap.get("Code");
+	this.decisionKnowledgeCommitElements = elementMap.get("Commit");
+	this.issueTypeId = issueTypeId;
     }
 
     public Map<Integer, List<Issue>> getLinkDistanceIssueMap(Integer linkDistance, Issue jiraIssue) {
@@ -91,10 +109,11 @@ public class MetricCalculator {
 	return jiraIssues;
     }
 
-    private List<DecisionKnowledgeElement> getDecisionKnowledgeElementsFromCode(String projectKey) {
+    private Map<String, List<DecisionKnowledgeElement>> getDecisionKnowledgeElementsFromCode(String projectKey) {
+	// Extracts Decision Knowledge from Code Comments AND Commits
 	GitDecXtract gitExtract = new GitDecXtract(projectKey);
-	List<DecisionKnowledgeElement> elements = gitExtract.getElements("master");
-	return elements;
+	Map<String, List<DecisionKnowledgeElement>> elementsMap = gitExtract.getElementsSplitByCodeAndCommit("develop");
+	return elementsMap;
     }
 
     public Map<String, Integer> numberOfCommentsPerIssue() {
@@ -115,7 +134,7 @@ public class MetricCalculator {
     public Map<String, Integer> numberOfCommitsPerIssue() {
 	Map<String, Integer> resultMap = new HashMap<String, Integer>();
 	try {
-	    GitClient gitClient = ComponentGetter.getGitClient(projectKey);
+	    GitClient gitClient = new GitClientImpl(projectKey);
 	    if (gitClient != null) {
 		for (Issue jiraIssue : jiraIssues) {
 		    int numberOfCommits = gitClient.getNumberOfCommits(jiraIssue);
@@ -143,14 +162,27 @@ public class MetricCalculator {
 		    if (issue.getIssueType().getName().equals(type.toString())) {
 			numberOfElements++;
 		    }
-		    // Extract Code Decisions
-		    elements.addAll(decisionKnowledgeCodeElements);
 		    for (DecisionKnowledgeElement element : elements) {
 			if (element.getType().equals(type)) {
 			    numberOfElements++;
 			}
 		    }
-
+		    if (i <= linkDistance - 2) {
+			for (DecisionKnowledgeElement element : (Optional.ofNullable(decisionKnowledgeCodeElements)
+				.orElse(Collections.emptyList()))) {
+			    if (element.getType().equals(type)) {
+				numberOfElements++;
+			    }
+			}
+		    }
+		    if (i > 0 && i <= linkDistance - 1) {
+			for (DecisionKnowledgeElement element : (Optional.ofNullable(decisionKnowledgeCommitElements)
+				.orElse(Collections.emptyList()))) {
+			    if (element.getType().equals(type)) {
+				numberOfElements++;
+			    }
+			}
+		    }
 		}
 	    }
 	    numberOfSentencesPerIssue.put(jiraIssue.getKey(), numberOfElements);
@@ -162,7 +194,14 @@ public class MetricCalculator {
 	Map<String, Integer> distributionOfKnowledgeTypes = new HashMap<String, Integer>();
 	for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
 	    int numberOfElements = persistenceManager.getDecisionKnowledgeElements(type).size();
-	    for (DecisionKnowledgeElement element : decisionKnowledgeCodeElements) {
+	    for (DecisionKnowledgeElement element : (Optional.ofNullable(decisionKnowledgeCodeElements)
+		    .orElse(Collections.emptyList()))) {
+		if (element.getType().equals(type)) {
+		    numberOfElements++;
+		}
+	    }
+	    for (DecisionKnowledgeElement element : (Optional.ofNullable(decisionKnowledgeCommitElements)
+		    .orElse(Collections.emptyList()))) {
 		if (element.getType().equals(type)) {
 		    numberOfElements++;
 		}
@@ -180,19 +219,184 @@ public class MetricCalculator {
     public Map<String, Integer> getReqAndClassSummary() {
 	Map<String, Integer> summaryMap = new HashMap<String, Integer>();
 	int numberOfRequirements = 0;
-	for (Issue issue : jiraIssues) { // Temporary Solution until Settings are available
-	    if (issue.getIssueType().toString().equals("System Function")
-		    || issue.getIssueType().toString().equals("Nonfunctional Requirement")
-		    || issue.getIssueType().toString().equals("Persona")
-		    || issue.getIssueType().toString().equals("Usertask")
-		    || issue.getIssueType().toString().equals("Subtask")
-		    || issue.getIssueType().toString().equals("Workspace")) {
+	for (Issue issue : jiraIssues) {
+	    // Temporary Solution until Settings are available
+	    if (issue.getIssueType().getName().equals("System Function")
+		    || issue.getIssueType().getName().equals("Nonfunctional Requirement")
+		    || issue.getIssueType().getName().equals("Persona")
+		    || issue.getIssueType().getName().equals("Usertask")
+		    || issue.getIssueType().getName().equals("Subtask")
+		    || issue.getIssueType().getName().equals("Workspace")) { // Temporary Solution until Settings are
+									     // available
 		numberOfRequirements++;
 	    }
 	}
 	summaryMap.put("Requirements", numberOfRequirements);
-
+	GitCodeClassExtractor extract = new GitCodeClassExtractor("CONDEC");
+	summaryMap.put("Code Classes", extract.getNumberOfCodeClasses());
 	return summaryMap;
     }
 
+    public Map<String, Integer> getKnowledgeSourceCount() {
+	Map<String, Integer> sourceMap = new HashMap<String, Integer>();
+	if (decisionKnowledgeCodeElements != null) {
+	    sourceMap.put("Code", decisionKnowledgeCodeElements.size());
+	} else {
+	    sourceMap.put("Code", 0);
+	}
+	if (decisionKnowledgeCommitElements != null) {
+	    sourceMap.put("Commit", decisionKnowledgeCommitElements.size());
+	} else {
+	    sourceMap.put("Commit", 0);
+	}
+	sourceMap.put("Issue Content", persistenceManager.getDecisionKnowledgeElements().size());
+	int numberOfElements = 0;
+	for (Issue issue : jiraIssues) {
+	    if (KnowledgeType.getDefaultTypes().toString().contains(issue.getIssueType().getName())) {
+		numberOfElements++;
+	    }
+	}
+	sourceMap.put("Jira Issues", numberOfElements);
+	return sourceMap;
+    }
+
+    public Map<String, String> getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType linkFrom,
+	    KnowledgeType linkTo) {
+	if (linkFrom == null || linkTo == null || linkFrom.equals(linkTo)) {
+	    return new HashMap<String, String>();
+	}
+	String[] data = new String[2];
+	Arrays.fill(data, "");
+
+	List<DecisionKnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(linkFrom);
+
+	for (DecisionKnowledgeElement issue : listOfIssues) {
+	    List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
+		    DocumentationLocation.JIRAISSUETEXT);
+	    boolean hastOtherElementLinked = false;
+
+	    for (Link link : links) {
+		if (link.isValid()) {
+		    DecisionKnowledgeElement dke = link.getOppositeElement(issue.getId());
+		    if (dke instanceof PartOfJiraIssueText && dke.getType().equals(linkTo)) { // alt
+			hastOtherElementLinked = true;
+		    }
+		}
+	    }
+	    if (hastOtherElementLinked) {
+		data[0] += issue.getKey() + dataStringSeparator;
+	    } else {
+		data[1] += issue.getKey() + dataStringSeparator;
+	    }
+	}
+	IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
+	// Elements from Issues
+	for (Issue issue : jiraIssues) {
+	    if (issue.getIssueType().getName().equals(linkFrom.toString())) {
+		Collection<Issue> issueColl = issueLinkManager.getLinkCollection(issue, user).getAllIssues();
+		boolean hasDecision = false;
+		for (Issue linkedIssue : issueColl) {
+		    if (!hasDecision && linkedIssue.getIssueType().getName().equals(linkTo.toString())) {
+			hasDecision = true;
+			data[0] += issue.getKey() + dataStringSeparator;
+		    }
+		}
+		if (!hasDecision) {
+		    data[1] += issue.getKey() + dataStringSeparator;
+		}
+	    }
+	}
+	// TODO: Find a way to include Elements from Commit and Code as they are not
+	// linked between Issue and Decision and there is no way to link to them in the
+	// chart
+	Map<String, String> havingLinkMap = new HashMap<String, String>();
+	havingLinkMap.put(linkFrom.toString() + " has " + linkTo.toString(), data[0].trim());
+	havingLinkMap.put(linkFrom.toString() + " has no " + linkTo.toString(), data[1].trim());
+	return havingLinkMap;
+    }
+
+    public Map<String, Integer> getNumberOfRelevantComments() {
+	Map<String, Integer> numberOfRelevantSentences = new HashMap<String, Integer>();
+	int isRelevant = 0;
+	int isIrrelevant = 0;
+
+	JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+		.getJiraIssueTextManager();
+	for (Issue jiraIssue : jiraIssues) {
+	    List<Comment> comments = ComponentAccessor.getCommentManager().getComments(jiraIssue);
+	    List<DecisionKnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(jiraIssue.getId());
+	    for (Comment comment : comments) {
+		boolean relevant = false;
+		for (DecisionKnowledgeElement currentElement : elements) {
+		    if (comment.getBody().contains(currentElement.getDescription())) {
+			relevant = true;
+			isRelevant++;
+		    }
+		}
+		if (!relevant) {
+		    isIrrelevant++;
+		}
+	    }
+	    /*
+	     * for (DecisionKnowledgeElement currentElement : elements) {
+	     * 
+	     * if (currentElement instanceof PartOfJiraIssueText && ((PartOfJiraIssueText)
+	     * currentElement).isRelevant()) { isRelevant++; } else if (currentElement
+	     * instanceof PartOfJiraIssueText && !((PartOfJiraIssueText)
+	     * currentElement).isRelevant()) { isIrrelevant++; } }
+	     */
+
+	}
+	numberOfRelevantSentences.put("Relevant Sentences", isRelevant);
+	numberOfRelevantSentences.put("Irrelevant Sentences", isIrrelevant);
+
+	return numberOfRelevantSentences;
+    }
+
+    public Map<String, String> getLinksToIssueTypeMap(KnowledgeType knowledgeType) {
+	if (knowledgeType == null) {
+	    return null;
+	}
+	Map<String, String> result = new HashMap<String, String>();
+	String withLink = "";
+	String withoutLink = "";
+	for (Issue issue : jiraIssues) {
+	    boolean linkExisting = false;
+	    if (!checkEqualIssueTypeIssue(issue.getIssueType())) {
+		// skipped+=issue.getKey()+dataStringSeparator;
+		continue;
+	    }
+	    for (Link link : GenericLinkManager.getLinksForElement(issue.getId(), DocumentationLocation.JIRAISSUE)) {
+		if (link.isValid()) {
+		    DecisionKnowledgeElement dke = link.getOppositeElement(new DecisionKnowledgeElementImpl(issue));
+		    if (dke.getType().equals(knowledgeType)) {
+			linkExisting = true;
+		    }
+		}
+	    }
+
+	    if (linkExisting) {
+		withLink += issue.getKey() + dataStringSeparator;
+	    } else {
+		withoutLink += issue.getKey() + dataStringSeparator;
+	    }
+	}
+
+	String jiraIssueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(issueTypeId);
+
+	result.put("Links from " + jiraIssueTypeName + " to " + knowledgeType.toString(), withLink);
+	result.put("No links from " + jiraIssueTypeName + " to " + knowledgeType.toString(), withoutLink);
+	// result.put("Skipped issues not of target type " + jiraIssueTypeName,
+	// skipped);
+	return result;
+    }
+
+    private boolean checkEqualIssueTypeIssue(IssueType issueType2) {
+	if (issueType2 == null) {
+	    return false;
+	}
+
+	String jiraIssueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(issueTypeId);
+	return issueType2.getName().equalsIgnoreCase(jiraIssueTypeName);
+    }
 }
