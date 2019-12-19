@@ -149,9 +149,6 @@ public class MetricCalculator {
 
     public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType type,
 	    Integer linkDistance) {
-	if (type == null) {
-	    return new HashMap<String, Integer>();
-	}
 	Map<String, Integer> numberOfSentencesPerIssue = new HashMap<String, Integer>();
 	for (Issue jiraIssue : jiraIssues) {
 	    int numberOfElements = 0;
@@ -167,17 +164,15 @@ public class MetricCalculator {
 			    numberOfElements++;
 			}
 		    }
-		    if (i <= linkDistance - 2) {
-			for (DecisionKnowledgeElement element : (Optional.ofNullable(decisionKnowledgeCodeElements)
-				.orElse(Collections.emptyList()))) {
+		    if (i <= linkDistance - 2 && decisionKnowledgeCodeElements != null) {
+			for (DecisionKnowledgeElement element : decisionKnowledgeCodeElements) {
 			    if (element.getType().equals(type)) {
 				numberOfElements++;
 			    }
 			}
 		    }
-		    if (i > 0 && i <= linkDistance - 1) {
-			for (DecisionKnowledgeElement element : (Optional.ofNullable(decisionKnowledgeCommitElements)
-				.orElse(Collections.emptyList()))) {
+		    if (i > 0 && i <= (linkDistance - 1) && decisionKnowledgeCommitElements != null) {
+			for (DecisionKnowledgeElement element : decisionKnowledgeCommitElements) {
 			    if (element.getType().equals(type)) {
 				numberOfElements++;
 			    }
@@ -262,9 +257,6 @@ public class MetricCalculator {
 
     public Map<String, String> getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType linkFrom,
 	    KnowledgeType linkTo) {
-	if (linkFrom == null || linkTo == null || linkFrom.equals(linkTo)) {
-	    return new HashMap<String, String>();
-	}
 	String[] data = new String[2];
 	Arrays.fill(data, "");
 
@@ -276,16 +268,13 @@ public class MetricCalculator {
 	    boolean hastOtherElementLinked = false;
 
 	    for (Link link : links) {
-		if (link.isValid()) {
-		    DecisionKnowledgeElement dke = link.getOppositeElement(issue.getId());
-		    if (dke instanceof PartOfJiraIssueText && dke.getType().equals(linkTo)) { // alt
-			hastOtherElementLinked = true;
-		    }
+		if (link.isValid() && link.getOppositeElement(issue.getId()) instanceof PartOfJiraIssueText
+			&& link.getOppositeElement(issue.getId()).getType().equals(linkTo)) {
+		    hastOtherElementLinked = true;
+		    data[0] += issue.getKey() + dataStringSeparator;
 		}
 	    }
-	    if (hastOtherElementLinked) {
-		data[0] += issue.getKey() + dataStringSeparator;
-	    } else {
+	    if (!hastOtherElementLinked) {
 		data[1] += issue.getKey() + dataStringSeparator;
 	    }
 	}
