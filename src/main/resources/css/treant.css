@@ -98,6 +98,11 @@
 	display: inline;
 }
 
+.node-status {
+	visibility: hidden;
+	display: inline;
+}
+
 .node a {
 	font-size: 12px;
 }

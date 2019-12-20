@@ -20,7 +20,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 	<div class="tabs-pane" id="vis">
 		<div class="aui-toolbar2" role="toolbar">
 			<div class="aui-toolbar-2-inner">
-				#parse("templates/filter.vm")
+				#parse("templates/filter/filter.vm")
 			</div>
 		</div>
 		<div id="vis-container"></div>

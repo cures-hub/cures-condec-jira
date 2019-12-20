@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
@@ -12,27 +11,34 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestVisGraph extends TestSetUp {
 	private VisGraph visGraph;
 	private HashSet<VisNode> nodes;
 	private HashSet<VisEdge> edges;
 	private DecisionKnowledgeElement element;
+	private ApplicationUser user;
+	private FilterSettings filterSettings;
 
 	@Before
 	public void setUp() {
 		init();
-		nodes = new HashSet<>();
-		edges = new HashSet<>();
+		nodes = new HashSet<VisNode>();
+		edges = new HashSet<VisEdge>();
 		visGraph = new VisGraph();
 		visGraph.setEdges(edges);
 		visGraph.setNodes(nodes);
@@ -41,6 +47,9 @@ public class TestVisGraph extends TestSetUp {
 
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
 		element.setProject(new DecisionKnowledgeProjectImpl("TEST"));
+
+		user = JiraUsers.BLACK_HEAD.getApplicationUser();
+		filterSettings = new FilterSettingsImpl("TEST", "");
 	}
 
 	@Test
@@ -118,11 +127,6 @@ public class TestVisGraph extends TestSetUp {
 	}
 
 	@Test
-	public void testisHyperLinked() {
-		assertFalse(visGraph.isHyperlinked());
-	}
-
-	@Test
 	public void testGetRootElementKey() {
 		assertEquals("", visGraph.getRootElementKey());
 	}
@@ -148,10 +152,30 @@ public class TestVisGraph extends TestSetUp {
 	@Test
 	public void addNewNodeToGraph() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(42, "", "", KnowledgeType.DECISION, "TEST",
-				"TEST-42", DocumentationLocation.JIRAISSUE);
+				"TEST-42", DocumentationLocation.JIRAISSUE, KnowledgeStatus.DECIDED);
 		VisGraph visGraph = new VisGraph(element, new ArrayList<DecisionKnowledgeElement>());
 		KnowledgeGraph newGraph = KnowledgeGraph.getOrCreate("ConDec");
 		visGraph.setGraph(newGraph);
 		assertEquals(newGraph, visGraph.getGraph());
+	}
+
+	@Test
+	public void testConstUserNullFilterNull() {
+		assertNotNull(new VisGraph((ApplicationUser) null, (FilterSettings) null));
+	}
+
+	@Test
+	public void testConstUserFilledFilterNull() {
+		assertNotNull(new VisGraph(user, (FilterSettings) null));
+	}
+
+	@Test
+	public void testConstUserNullFilterFilled() {
+		assertNotNull(new VisGraph((ApplicationUser) null, filterSettings));
+	}
+
+	@Test
+	public void testConstUserFilterFilled() {
+		assertNotNull(new VisGraph(user, filterSettings));
 	}
 }

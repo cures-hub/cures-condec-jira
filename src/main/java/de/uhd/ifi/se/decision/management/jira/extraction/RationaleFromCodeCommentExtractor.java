@@ -1,20 +1,20 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+
 /**
- * purpose: extract decision knowledge elements from single comment.
- * Codes rationale source within the source file/comment.
+ * purpose: extract decision knowledge elements from single comment. Codes
+ * rationale source within the source file/comment.
  */
 public class RationaleFromCodeCommentExtractor {
 	private ArrayList<DecisionKnowledgeElement> elements;
@@ -26,11 +26,11 @@ public class RationaleFromCodeCommentExtractor {
 	private final Pattern NEWLINE_CHAR_PATTERN;
 
 	public RationaleFromCodeCommentExtractor(CodeComment comment) {
-		String tagSearch = String.join("|", decKnowTags.stream()
-				.map(tag -> "@" + tag + "\\:?") //at-char + ratType + colon or blank
+		String tagSearch = String.join("|", decKnowTags.stream().map(tag -> "@" + tag + "\\:?") // at-char + ratType +
+																								// colon or blank
 				.collect(Collectors.toList()));
 		TAGS_SEARCH_PATTERN = Pattern.compile(tagSearch, Pattern.CASE_INSENSITIVE);
-		TWO_EMPTY_LINES_PATTERN = Pattern.compile("\\s*\\n\\s*\\n\\s*\\n"); //with optional white spaces
+		TWO_EMPTY_LINES_PATTERN = Pattern.compile("\\s*\\n\\s*\\n\\s*\\n"); // with optional white spaces
 		SPACE_ATCHAR_LETTER_PATTERN = Pattern.compile("\\s@[a-z]");
 		NEWLINE_CHAR_PATTERN = Pattern.compile("\\n");
 		this.comment = comment;
@@ -72,8 +72,7 @@ public class RationaleFromCodeCommentExtractor {
 		Matcher tagMatcher = TAGS_SEARCH_PATTERN.matcher(comment.commentContent);
 		int cursorPosition = -1;
 
-		while (tagMatcher.find()
-				&& cursorPosition <= tagMatcher.start()) {
+		while (tagMatcher.find() && cursorPosition <= tagMatcher.start()) {
 			cursorPosition = extractElementAndMoveCursor(tagMatcher);
 		}
 		return elements;
@@ -96,52 +95,43 @@ public class RationaleFromCodeCommentExtractor {
 		return cursorPosition;
 	}
 
-	private DecisionKnowledgeElement addElement(int start
-			, String rationaleText, String rationaleType) {
-		return new DecisionKnowledgeElementImpl(0
-				, getSummary(rationaleText)
-				, getDescription(rationaleText)
-				, rationaleType.toUpperCase()
-				, "" // unknown, not needed at the moment
-				, calculateAndCodeRationalePositionInSourceFile(start, rationaleText)
-				, DocumentationLocation.COMMIT);
+	private DecisionKnowledgeElement addElement(int start, String rationaleText, String rationaleType) {
+		return new DecisionKnowledgeElementImpl(0, getSummary(rationaleText), getDescription(rationaleText),
+				rationaleType.toUpperCase(), "" // unknown, not needed at the moment
+				, calculateAndCodeRationalePositionInSourceFile(start, rationaleText), DocumentationLocation.COMMIT,
+				"");
 	}
 
-	private String calculateAndCodeRationalePositionInSourceFile(int start
-			, String rationaleText) {
+	private String calculateAndCodeRationalePositionInSourceFile(int start, String rationaleText) {
 		/**
-		 * @issue what information the dec. know. key encapsulate
-		 * regarding its position in a source code file and the rationale
-		 * itself?
+		 * @issue what information the dec. know. key encapsulate regarding its position
+		 *        in a source code file and the rationale itself?
 		 *
-		 * KEY :=
-		 * 		POSITION_TEXTHASH
+		 *        KEY := POSITION_TEXTHASH
 		 *
-		 * 		POSITION :=
-		 * 		 lineBegin,columnBegin:lineEnd,columnEnd
+		 *        POSITION := lineBegin,columnBegin:lineEnd,columnEnd
 		 * @alternative the key must include the start POINT and end POINT in source
-		 * code andthe hash of the rationale text!
+		 *              code andthe hash of the rationale text!
 		 * @pro with start point(line,column) and end point the order of rationale
-		 * within source file can be easily read.
+		 *      within source file can be easily read.
 		 * @pro with start point(line,column) and end point intersections with diff
-		 * entries can be calculated
+		 *      entries can be calculated
 		 * @con calculating start and end column is complicated
 		 * @con end column information is not useful for diff intersections nor
-		 * rationale order calculation.
+		 *      rationale order calculation.
 		 *
-		 * @decision the key must include the start LINE, end LINE in source
-		 * code, tje cursor position within comment and the hash of the rationale text!
+		 * @decision the key must include the start LINE, end LINE in source code, tje
+		 *           cursor position within comment and the hash of the rationale text!
 		 *
-		 * KEY :=
-		 * 		 POSITION_TEXTHASH
+		 *           KEY := POSITION_TEXTHASH
 		 *
-		 * 		POSITION :=
-		 * 		 lineBegin:lineEnd:cursorInComment
+		 *           POSITION := lineBegin:lineEnd:cursorInComment
 		 *
 		 * @pro start line, end line in source code and the cursor position within
-		 * comment is sufficient to get the order of rationale within the source code
-		 * @pro with start line, end line and cursor position intersections
-		 * with diff entries can be calculated
+		 *      comment is sufficient to get the order of rationale within the source
+		 *      code
+		 * @pro with start line, end line and cursor position intersections with diff
+		 *      entries can be calculated
 		 */
 
 		String fullCommentText = comment.commentContent;
@@ -163,11 +153,11 @@ public class RationaleFromCodeCommentExtractor {
 			absoluteFileEndLine++;
 		}
 
-		return RationaleCommitElementPositionCodingHelper.encodeAttributes(absoluteFileStartLine
-				, absoluteFileEndLine, start);
+		return RationaleCommitElementPositionCodingHelper.encodeAttributes(absoluteFileStartLine, absoluteFileEndLine,
+				start);
 	}
 
-	/* Either rationale is delimited by two new lines or @ gets observed*/
+	/* Either rationale is delimited by two new lines or @ gets observed */
 	private int getRationaleTextEndPosition(String rationaleText) {
 		int twoLinesPos = -1;
 		int spaceAtCharPos = -1;
@@ -202,7 +192,8 @@ public class RationaleFromCodeCommentExtractor {
 		}
 	}
 
-	// similar 3 below methods found in extraction/versioncontrol/GitCommitMessageExtractor.java
+	// similar 3 below methods found in
+	// extraction/versioncontrol/GitCommitMessageExtractor.java
 	// and possibly Jira text extractor. TODO: use one code portion
 	private String getDescription(String rationaleText) {
 		return rationaleText.substring(getSummaryEndPosition(rationaleText)).trim();
@@ -228,8 +219,7 @@ public class RationaleFromCodeCommentExtractor {
 			int returnValue = -1;
 			if (len > 2) {
 				try {
-					returnValue = Integer.valueOf(keyComponents[len
-							- (1 + attributePositionOffsetFromEnd)]);
+					returnValue = Integer.valueOf(keyComponents[len - (1 + attributePositionOffsetFromEnd)]);
 				} catch (NumberFormatException e) {
 				}
 			}
@@ -249,13 +239,8 @@ public class RationaleFromCodeCommentExtractor {
 		}
 
 		// encode method
-		public static String encodeAttributes(int lineStart, int lineEnd
-				, int inCommentCursor) {
-			return lineStart +
-					":" +
-                    lineEnd +
-					":" +
-                    inCommentCursor;
+		public static String encodeAttributes(int lineStart, int lineEnd, int inCommentCursor) {
+			return lineStart + ":" + lineEnd + ":" + inCommentCursor;
 		}
 	}
 }

@@ -22,7 +22,7 @@ import java.util.stream.IntStream;
 public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassifier {
 
 	private Preprocessor preprocessor;
-	private BinaryClassifierImplementation binaryClassifier;
+	private BinaryClassifierImpl binaryClassifier;
 	private FineGrainedClassifierImpl fineGrainedClassifier;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(DecisionKnowledgeClassifierImpl.class);
@@ -62,9 +62,9 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 	}
 
 	private void loadDefaultBinaryClassifier() {
-		this.binaryClassifier = new BinaryClassifierImplementation();
+		this.binaryClassifier = new BinaryClassifierImpl();
 		try {
-			this.binaryClassifier.loadFromFile();
+			//this.binaryClassifier.loadFromFile();
 		} catch (Exception e) {
 			System.err.println("Could not load a binary classifier from File.");
 		}
@@ -73,7 +73,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 	private void loadDefaultFineGrainedClassifier() {
 		this.fineGrainedClassifier = new FineGrainedClassifierImpl(5);
 		try {
-			this.fineGrainedClassifier.loadFromFile();
+			//this.fineGrainedClassifier.loadFromFile();
 		} catch (Exception e) {
 			System.err.println("Could not load a fine-grained classifier from File.");
 		}
@@ -209,7 +209,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 
 
 	@Override
-	public BinaryClassifierImplementation getBinaryClassifier() {
+	public BinaryClassifierImpl getBinaryClassifier() {
 		return this.binaryClassifier;
 	}
 
@@ -217,6 +217,11 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 	@Override
 	public FineGrainedClassifierImpl getFineGrainedClassifier() {
 		return this.fineGrainedClassifier;
+	}
+
+	public boolean isTraining(){
+		return (this.getFineGrainedClassifier().isCurrentlyTraining()
+			|| this.getBinaryClassifier().isCurrentlyTraining());
 	}
 
 }

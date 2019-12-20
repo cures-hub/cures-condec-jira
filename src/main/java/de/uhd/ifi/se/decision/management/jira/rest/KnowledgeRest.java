@@ -42,9 +42,4 @@ public interface KnowledgeRest {
 	Response setSentenceIrrelevant(HttpServletRequest request, DecisionKnowledgeElement decisionKnowledgeElement);
 
 	Response getSummarizedCode(long id, String projectKey, String documentationLocation, int probability);
-
-	Response setStatus(HttpServletRequest request, String stringStatus,
-			DecisionKnowledgeElement decisionKnowledgeElement);
-
-	Response getStatus(HttpServletRequest request, DecisionKnowledgeElement decisionKnowledgeElement);
 }

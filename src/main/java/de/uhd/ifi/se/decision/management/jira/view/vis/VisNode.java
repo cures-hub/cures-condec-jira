@@ -1,15 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
-import com.google.common.collect.ImmutableMap;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.StatusPersistenceManager;
-
-import javax.xml.bind.annotation.XmlElement;
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlElement;
+
+import com.google.common.collect.ImmutableMap;
+
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+
 /**
- * Model class for vis.js Node.
+ * Model class for a vis.js node.
  */
 public class VisNode {
 	@XmlElement
@@ -42,11 +43,9 @@ public class VisNode {
 		this.cid = cid;
 		if (collapsed) {
 			this.setGroup(element.getTypeAsString().toLowerCase());
-			String summary;
-			if (element.getSummary().length() > 100) {
-				summary = element.getSummary().substring(0, 99) + "...";
-			} else {
-				summary = element.getSummary();
+			String summary = element.getSummary();
+			if (summary.length() > 100) {
+				summary = summary.substring(0, 99) + "...";
 			}
 			this.setLabel(element.getTypeAsString().toUpperCase() + "\n" + summary);
 		} else {
@@ -55,9 +54,9 @@ public class VisNode {
 		}
 		this.setTitle("<b>" + element.getTypeAsString().toUpperCase() + " <br> " + element.getKey() + ":</b> "
 				+ element.getSummary() + "<br> <i>" + element.getDescription() + "</i>");
-		KnowledgeStatus elementStatus= StatusPersistenceManager.getStatusForElement(element);
-		if(elementStatus.equals(KnowledgeStatus.DISCARDED) || elementStatus.equals(KnowledgeStatus.REJECTED) ||
-				   elementStatus.equals(KnowledgeStatus.UNRESOLVED)){
+		KnowledgeStatus status = element.getStatus();
+		if (status == KnowledgeStatus.DISCARDED || status == KnowledgeStatus.REJECTED
+				|| status == KnowledgeStatus.UNRESOLVED) {
 			this.font = ImmutableMap.of("color", "red");
 		} else {
 			this.font = ImmutableMap.of("color", "black");

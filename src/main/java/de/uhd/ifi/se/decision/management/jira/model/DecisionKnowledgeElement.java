@@ -310,4 +310,42 @@ public interface DecisionKnowledgeElement extends Node {
 	 * @return id of first link that is found.
 	 */
 	long isLinked();
+
+	/**
+	 * Get the status of the decision knowledge element. For example, the status for
+	 * issues can be solved or unsolved.
+	 *
+	 * @see KnowledgeStatus
+	 * @return status of the decision knowledge element.
+	 */
+	KnowledgeStatus getStatus();
+
+	/**
+	 * Get the status of the decision knowledge element. For example, the status for
+	 * issues can be solved or unsolved.
+	 *
+	 * @see KnowledgeStatus
+	 * @return status of the decision knowledge element.
+	 */
+	String getStatusAsString();
+
+	/**
+	 * Set the status of the decision knowledge element. For example, the status for
+	 * issues can be solved or unsolved.
+	 *
+	 * @see KnowledgeStatus
+	 * @param status
+	 *            of the decision knowledge element.
+	 */
+	void setStatus(KnowledgeStatus status);
+
+	/**
+	 * Set the status of the decision knowledge element. For example, the status for
+	 * issues can be solved or unsolved.
+	 *
+	 * @see KnowledgeStatus
+	 * @param status
+	 *            of the decision knowledge element.
+	 */
+	void setStatus(String status);
 }

@@ -8,71 +8,86 @@ import javax.xml.bind.annotation.XmlElement;
 
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 public class VisTimeLine {
 
-	private List<DecisionKnowledgeElement> elementList;
+	private Set<Long> applicationUserIds;
 
-	@XmlElement
-	private HashSet<VisTimeLineNode> dataSet;
+	@XmlElement(name = "groupSet")
+	private Set<VisTimeLineGroup> groups;
 
-	@XmlElement
-	private HashSet<VisTimeLineGroup> groupSet;
+	@XmlElement(name = "dataSet")
+	private Set<VisTimeLineNode> nodes;
 
-	public VisTimeLine(String projectKey) {
-		if (projectKey != null) {
-			elementList = KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
-		}
-		createDataSet();
+	public VisTimeLine() {
+		this.nodes = new HashSet<VisTimeLineNode>();
+		this.groups = new HashSet<VisTimeLineGroup>();
+		this.applicationUserIds = new HashSet<Long>();
 	}
 
 	public VisTimeLine(List<DecisionKnowledgeElement> elements) {
-		if (elements != null) {
-			elementList = elements;
-			createDataSet();
+		this();
+		addElements(elements);
+	}
+
+	public VisTimeLine(String projectKey) {
+		this();
+		if (projectKey == null) {
+			return;
+		}
+		List<DecisionKnowledgeElement> elements = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getDecisionKnowledgeElements();
+		addElements(elements);
+	}
+
+	public VisTimeLine(ApplicationUser user, FilterSettings filterSettings) {
+		this();
+		if (user == null || filterSettings == null) {
+			return;
+		}
+		FilteringManager filterExtractor = new FilteringManagerImpl(user, filterSettings);
+		List<DecisionKnowledgeElement> elements = filterExtractor.getAllElementsMatchingFilterSettings();
+		addElements(elements);
+	}
+
+	public void addElements(List<DecisionKnowledgeElement> elements) {
+		if (elements == null) {
+			return;
+		}
+		for (DecisionKnowledgeElement element : elements) {
+			addElement(element);
 		}
 	}
 
-	public HashSet<VisTimeLineNode> getEvolutionData() {
-		return dataSet;
-	}
-
-	public List<DecisionKnowledgeElement> getElementList() {
-		return elementList;
-	}
-
-	public void setElementList(List<DecisionKnowledgeElement> elementList) {
-		this.elementList = elementList;
-	}
-
-	public HashSet<VisTimeLineGroup> getGroupSet() {
-		return groupSet;
-	}
-
-	public void setGroupSet(HashSet<VisTimeLineGroup> groupSet) {
-		this.groupSet = groupSet;
-	}
-
-	private void createDataSet() {
-		dataSet = new HashSet<>();
-		groupSet = new HashSet<>();
-		if (elementList != null) {
-			Set<Long> usedApplicationUser = new HashSet<Long>();
-			for (DecisionKnowledgeElement element : elementList) {
-				ApplicationUser user = element.getCreator();
-				if (user == null) {
-					continue;
-				}
-				if (!usedApplicationUser.contains(user.getId())) {
-					usedApplicationUser.add(user.getId());
-					groupSet.add(new VisTimeLineGroup(user));
-				}
-				VisTimeLineNode node = new VisTimeLineNode(element);
-				node.setGroup(user.getId());
-				dataSet.add(node);
-			}
+	public boolean addElement(DecisionKnowledgeElement element) {
+		ApplicationUser user = element.getCreator();
+		if (user == null) {
+			return false;
 		}
+		long userId = user.getId();
+		if (!applicationUserIds.contains(userId)) {
+			applicationUserIds.add(userId);
+			groups.add(new VisTimeLineGroup(user));
+		}
+		VisTimeLineNode node = new VisTimeLineNode(element, userId);
+		nodes.add(node);
+		return true;
+	}
+
+	public Set<VisTimeLineNode> getTimeLineNodes() {
+		return nodes;
+	}
+
+	public Set<VisTimeLineGroup> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(HashSet<VisTimeLineGroup> groups) {
+		this.groups = groups;
 	}
 }

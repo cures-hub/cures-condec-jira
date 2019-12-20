@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -16,6 +14,8 @@ import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
 /**
  * Model class for the filter criteria. The filter settings cover the key of the
@@ -29,7 +29,7 @@ public class FilterSettingsImpl implements FilterSettings {
 	private String searchString;
 	private List<DocumentationLocation> documentationLocations;
 	private List<String> namesOfSelectedJiraIssueTypes;
-	private List<KnowledgeStatus> issueStatus;
+	private List<KnowledgeStatus> knowledgeStatus;
 	private List<String> namesOfSelectedLinkTypes;
 
 	@XmlElement
@@ -52,7 +52,7 @@ public class FilterSettingsImpl implements FilterSettings {
 		this.startDate = -1;
 		this.endDate = -1;
 		this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
-		this.issueStatus = KnowledgeStatus.getAllKnowledgeStatus();
+		this.knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
 	}
 
 	public FilterSettingsImpl(String projectKey, String query, ApplicationUser user) {
@@ -119,6 +119,9 @@ public class FilterSettingsImpl implements FilterSettings {
 
 	@Override
 	public List<DocumentationLocation> getDocumentationLocations() {
+		if (documentationLocations == null) {
+			documentationLocations = DocumentationLocation.getAllDocumentationLocations();
+		}
 		return documentationLocations;
 	}
 
@@ -135,8 +138,9 @@ public class FilterSettingsImpl implements FilterSettings {
 	@Override
 	@JsonProperty("documentationLocations")
 	public void setDocumentationLocations(List<String> namesOfDocumentationLocations) {
-		this.documentationLocations = new ArrayList<>();
+		this.documentationLocations = new ArrayList<DocumentationLocation>();
 		if (namesOfDocumentationLocations == null) {
+			this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
 			return;
 		}
 		for (String location : namesOfDocumentationLocations) {
@@ -160,25 +164,26 @@ public class FilterSettingsImpl implements FilterSettings {
 	}
 
 	@Override
-	@XmlElement(name = "selectedIssueStatus")
-	public List<KnowledgeStatus> getSelectedIssueStatus() {
-		if (issueStatus == null) {
-			issueStatus = KnowledgeStatus.getAllKnowledgeStatus();
+	@XmlElement(name = "selectedStatus")
+	public List<KnowledgeStatus> getSelectedStatus() {
+		if (knowledgeStatus == null) {
+			knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
 		}
-		return issueStatus;
+		return knowledgeStatus;
 	}
 
 	@Override
-	@JsonProperty("selectedIssueStatus")
-	public void setSelectedJiraIssueStatus(List<String> status) {
-		if (issueStatus == null) {
-			issueStatus = new ArrayList<>();
-		}
-		if (status == null || status.size() == 0) {
+	@JsonProperty("selectedStatus")
+	public void setSelectedStatus(List<String> status) {
+		if (knowledgeStatus == null || status == null) {
+			knowledgeStatus = new ArrayList<KnowledgeStatus>();
+			for (KnowledgeStatus eachStatus : KnowledgeStatus.values()) {
+				knowledgeStatus.add(eachStatus);
+			}
 			return;
 		}
 		for (String stringStatus : status) {
-			issueStatus.add(KnowledgeStatus.getKnowledgeStatus(stringStatus));
+			knowledgeStatus.add(KnowledgeStatus.getKnowledgeStatus(stringStatus));
 		}
 	}
 
@@ -197,7 +202,6 @@ public class FilterSettingsImpl implements FilterSettings {
 		namesOfSelectedLinkTypes = namesOfTypes;
 	}
 
-
 	@Override
 	@XmlElement(name = "allJiraIssueTypes")
 	public List<String> getAllJiraIssueTypes() {
@@ -211,7 +215,7 @@ public class FilterSettingsImpl implements FilterSettings {
 
 	@Override
 	@XmlElement(name = "allIssueStatus")
-	public List<String> getAllJiraIssueStatus() {
+	public List<String> getAllStatus() {
 		return KnowledgeStatus.toList();
 	}
 

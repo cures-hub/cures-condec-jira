@@ -11,7 +11,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
@@ -21,7 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManage
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgePersistenceManagerImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.StatusPersistenceManager;
 
 /**
  * Interface that integrates all available persistence managers for single
@@ -320,7 +318,8 @@ public interface KnowledgePersistenceManager {
 	 *         cannot be found.
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
-	AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(DocumentationLocation documentationLocation);
+	AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(
+			DocumentationLocation documentationLocation);
 
 	/**
 	 * Gets the persistence manager for a single documentation location by the
@@ -347,8 +346,7 @@ public interface KnowledgePersistenceManager {
 	 *         the element cannot be found.
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
-	static AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(
-			DecisionKnowledgeElement element) {
+	static AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(DecisionKnowledgeElement element) {
 		if (element == null) {
 			throw new IllegalArgumentException("The element cannot be null.");
 		}
@@ -370,12 +368,6 @@ public interface KnowledgePersistenceManager {
 	 */
 	DecisionKnowledgeElement getDecisionKnowledgeElement(long id, DocumentationLocation documentationLocation);
 
-	static void insertStatus(DecisionKnowledgeElement element) {
-		if (element.getType() == KnowledgeType.DECISION) {
-			StatusPersistenceManager.setStatusForElement(element, KnowledgeStatus.DECIDED);
-		}
-		if (element.getType() == KnowledgeType.ALTERNATIVE) {
-			StatusPersistenceManager.setStatusForElement(element, KnowledgeStatus.IDEA);
-		}
-	}
+	boolean updateIssueStatus(DecisionKnowledgeElement existingElement, DecisionKnowledgeElement newElement,
+			ApplicationUser user);
 }

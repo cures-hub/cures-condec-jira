@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.implementation.Deci
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestDecisionKnowledgeClassifier extends TestSetUp {
+public class TestDecisionKnowledgeAbstractClassifier extends TestSetUp {
 
     private DecisionKnowledgeClassifierImpl decisionKnowledgeClassifier;
 

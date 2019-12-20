@@ -109,6 +109,8 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 
 	private synchronized void trainBinaryClassifier() throws Exception {
+		LOGGER.debug("Binary Classifier training started.");
+
 		Map<String, List> trainingData = this.extractTrainingData(this.getInstances());
 		Map preprocessedSentences;
 		// if (!this.classifier.getBinaryClassifier().loadFromFile()) {
@@ -121,6 +123,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	}
 
 	private synchronized void trainFineGrainedClassifier() throws Exception {
+		LOGGER.debug("Fine-grained Classifier training started.");
 
 		Map<String, List> trainingData = this.extractTrainingData(this.getInstances());
 		Map preprocessedSentences = this.classifier.preprocess(trainingData.get("relevantSentences"),
@@ -379,7 +382,6 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	}
 
 
-
 	private Map<String, List> extractTrainingData(Instances trainingData) {
 		Map extractedTrainingData = new HashMap();
 		List sentences = new ArrayList();
@@ -445,6 +447,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 	public Map<String, Double> evaluateClassifier(List<ClassificationMeasure> measurements,
 												  List<DecisionKnowledgeElement> partOfJiraIssueTexts) throws Exception {
+		LOGGER.debug("Started evaluation!");
 		Map<String, Double> resultsMap = new HashMap<>();
 		List<DecisionKnowledgeElement> relevantPartOfJiraIssueTexts =
 			partOfJiraIssueTexts
@@ -483,6 +486,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 		// calculate measurements for each ClassificationMeasure in measurements
 		for (ClassificationMeasure measurement : measurements) {
+			LOGGER.debug("Evaluating: " + measurement.getClass().getSimpleName());
 			String binaryKey = measurement.getClass().getSimpleName() + "_binary";
 			Double binaryMeasurement = measurement.measure(ArrayUtils.toPrimitive(binaryTruths),
 				ArrayUtils.toPrimitive(binaryPredictions));
@@ -504,6 +508,8 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 		}
 		// return results
+		LOGGER.debug("Finished evaluation!");
+
 		return resultsMap;
 	}
 

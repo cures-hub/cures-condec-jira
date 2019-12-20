@@ -8,17 +8,23 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
+import com.atlassian.jira.user.ApplicationUser;
+
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Node;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 
 @XmlRootElement(name = "vis")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -30,34 +36,37 @@ public class VisGraph {
 	@XmlElement
 	private String rootElementKey;
 
-	@JsonIgnore
 	private KnowledgeGraph graph;
-	@JsonIgnore
-	private boolean isHyperlinked;
-	@JsonIgnore
 	private List<DecisionKnowledgeElement> elementsMatchingFilterCriteria;
-	@JsonIgnore
-	int level = 50;
-	@JsonIgnore
-	int cid = 0;
+	private int level = 50;
+	private int cid = 0;
 
 	public VisGraph() {
-		nodes = new HashSet<>();
-		edges = new HashSet<>();
+		this.nodes = new HashSet<VisNode>();
+		this.edges = new HashSet<VisEdge>();
+		this.rootElementKey = "";
 	}
 
-	public VisGraph(List<DecisionKnowledgeElement> elements, String projectKey) {
+	public VisGraph(String projectKey) {
 		this();
 		if (projectKey == null) {
 			return;
 		}
-		this.elementsMatchingFilterCriteria = elements;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
-		this.setHyperlinked(false);
-		if (elements == null || elements.size() == 0) {
-			this.nodes = new HashSet<>();
-			this.edges = new HashSet<>();
-			this.rootElementKey = "";
+	}
+
+	public VisGraph(FilterSettings filterSettings) {
+		this();
+		if (filterSettings == null || filterSettings.getProjectKey() == null) {
+			return;
+		}
+		this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
+	}
+
+	public VisGraph(List<DecisionKnowledgeElement> elements, String projectKey) {
+		this(projectKey);
+		this.elementsMatchingFilterCriteria = elements;
+		if (elements == null || elements.isEmpty()) {
 			return;
 		}
 		for (DecisionKnowledgeElement element : elements) {
@@ -66,10 +75,36 @@ public class VisGraph {
 	}
 
 	public VisGraph(DecisionKnowledgeElement rootElement, List<DecisionKnowledgeElement> elements) {
-		this();
+		this(rootElement.getProject().getProjectKey());
 		this.elementsMatchingFilterCriteria = elements;
 		this.rootElementKey = (rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString());
-		this.graph = KnowledgeGraph.getOrCreate(rootElement.getProject().getProjectKey());
+		fillNodesAndEdges(rootElement);
+	}
+
+	public VisGraph(ApplicationUser user, FilterSettings filterSettings) {
+		this(filterSettings);
+		if (user == null) {
+			return;
+		}
+		FilteringManager filterExtractor = new FilteringManagerImpl(user, filterSettings);
+		List<DecisionKnowledgeElement> elements = filterExtractor.getAllElementsMatchingFilterSettings();
+		this.elementsMatchingFilterCriteria = elements;
+		if (elements == null || elements.isEmpty()) {
+			return;
+		}
+		for (DecisionKnowledgeElement element : elements) {
+			fillNodesAndEdges(element);
+		}
+	}
+
+	public VisGraph(ApplicationUser user, String elementKey, FilterSettings filterSettings) {
+		this(filterSettings);
+		FilteringManager filterExtractor = new FilteringManagerImpl(user, filterSettings);
+		this.elementsMatchingFilterCriteria = filterExtractor.getAllElementsMatchingQuery();
+		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(filterSettings.getProjectKey()).getDefaultManagerForSingleLocation();
+		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
+		this.rootElementKey = (rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString());
 		fillNodesAndEdges(rootElement);
 	}
 
@@ -171,10 +206,6 @@ public class VisGraph {
 
 	}
 
-	public void setHyperlinked(boolean hyperlinked) {
-		isHyperlinked = hyperlinked;
-	}
-
 	public HashSet<VisNode> getNodes() {
 		return nodes;
 	}
@@ -185,10 +216,6 @@ public class VisGraph {
 
 	public KnowledgeGraph getGraph() {
 		return graph;
-	}
-
-	public boolean isHyperlinked() {
-		return isHyperlinked;
 	}
 
 	public String getRootElementKey() {

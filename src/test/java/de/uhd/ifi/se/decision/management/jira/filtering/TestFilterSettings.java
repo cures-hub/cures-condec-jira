@@ -95,7 +95,7 @@ public class TestFilterSettings extends TestSetUp {
 		filterSettings.setDocumentationLocations(documentationLocations);
 		assertEquals(5, filterSettings.getDocumentationLocations().size());
 		filterSettings.setDocumentationLocations(null);
-		assertEquals(0, filterSettings.getDocumentationLocations().size());
+		assertEquals(5, filterSettings.getDocumentationLocations().size());
 	}
 
 	@Test
@@ -129,22 +129,22 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetAllJiraIssueStatus() {
-		assertEquals(7, filterSettings.getAllJiraIssueStatus().size());
+		assertEquals(7, filterSettings.getAllStatus().size());
 	}
-	
+
 	@Test
 	public void testGetSelectedStatus() {
-		assertEquals(7, filterSettings.getSelectedIssueStatus().size());
+		assertEquals(7, filterSettings.getSelectedStatus().size());
 	}
-	
+
 	@Test
 	public void testSetSelectedStatus() {
-		filterSettings.setSelectedJiraIssueStatus(null);
-		assertEquals(7, filterSettings.getSelectedIssueStatus().size());
-		
+		filterSettings.setSelectedStatus(null);
+		assertEquals(7, filterSettings.getSelectedStatus().size());
+
 		List<String> status = new ArrayList<String>();
 		status.add(KnowledgeStatus.UNRESOLVED.toString());
-		filterSettings.setSelectedJiraIssueStatus(status);
-		assertEquals(8, filterSettings.getSelectedIssueStatus().size());
+		filterSettings.setSelectedStatus(status);
+		assertEquals(8, filterSettings.getSelectedStatus().size());
 	}
 }

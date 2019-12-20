@@ -7,6 +7,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
@@ -85,13 +86,15 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 
 	@Override
 	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type) {
-		List<DecisionKnowledgeElement> elements = getDefaultManagerForSingleLocation().getDecisionKnowledgeElements(type);
+		List<DecisionKnowledgeElement> elements = getDefaultManagerForSingleLocation()
+				.getDecisionKnowledgeElements(type);
 		elements.addAll(jiraIssueTextPersistenceManager.getDecisionKnowledgeElements(type));
 		return elements;
 	}
 
 	@Override
-	public AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(String documentationLocationIdentifier) {
+	public AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(
+			String documentationLocationIdentifier) {
 		if (documentationLocationIdentifier == null) {
 			return getDefaultManagerForSingleLocation();
 		}
@@ -145,6 +148,17 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 			KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
 		}
 		return databaseId;
+	}
+
+	@Override
+	public boolean updateIssueStatus(DecisionKnowledgeElement parentElement, DecisionKnowledgeElement childElement,
+			ApplicationUser user) {
+		if (KnowledgeStatus.isIssueResolved(parentElement, childElement)) {
+			parentElement.setStatus(KnowledgeStatus.RESOLVED);
+			updateDecisionKnowledgeElement(parentElement, user);
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -211,6 +225,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 
 		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
 		KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
+
 		return this.insertLink(link, user);
 	}
 
@@ -237,6 +252,9 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	@Override
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
 			ApplicationUser user, DecisionKnowledgeElement parentElement) {
+		if (element.getStatus() == KnowledgeStatus.UNDEFINED) {
+			element.setStatus(KnowledgeStatus.getDefaultStatus(element.getType()));
+		}
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getManagerForSingleLocation(element);
 		DecisionKnowledgeElement elementWithId = persistenceManager.insertDecisionKnowledgeElement(element, user,
@@ -253,7 +271,8 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id, DocumentationLocation documentationLocation) {
-		AbstractPersistenceManagerForSingleLocation persistenceManager = getManagerForSingleLocation(documentationLocation);
+		AbstractPersistenceManagerForSingleLocation persistenceManager = getManagerForSingleLocation(
+				documentationLocation);
 		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(id);
 		if (element == null) {
 			return new DecisionKnowledgeElementImpl();

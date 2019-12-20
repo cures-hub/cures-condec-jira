@@ -1,0 +1,17 @@
+<form class="aui">
+#set ($knowledgeTypeDropdownId = "issuetype-dropdown")	
+#parse("templates/filter/knowledgeType.vm")
+
+#set ($datepickerStartId = "created-after-picker")
+#set ($datepickerEndId = "created-before-picker")
+#parse("templates/filter/creationDate.vm")
+
+#set ($documentationLocationDropdownId = "documentation-dropdown")	
+#parse("templates/filter/documentationLocation.vm")
+
+#set ($linkDistanceInputId = "node-distance-picker")	
+#parse("templates/filter/linkDistance.vm")
+
+#set ($filterButtonId = "filter-button")
+#parse("templates/filter/filterButton.vm")
+</form>
