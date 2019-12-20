@@ -50,7 +50,7 @@
 <div class="field-group">
     <label for="evaluateModel-button">Evaluate model</label>
     <input type="button" class="aui-button" id="evaluateModel-button" value="Evaluate model"/>
-    <div class="description">Evaluate the current model using the user-validated data in the database.</div>
+    <div class="description">Evaluate the current model using the user-validated data in the database. (If the evaluation fails the classifier might need to be trained!)</div>
     <div class="aui-progress-indicator">
         <span id="evaluate-classifier-progress"></span>
     </div>
