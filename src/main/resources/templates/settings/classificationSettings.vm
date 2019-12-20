@@ -51,6 +51,9 @@
     <label for="evaluateModel-button">Evaluate model</label>
     <input type="button" class="aui-button" id="evaluateModel-button" value="Evaluate model"/>
     <div class="description">Evaluate the current model using the user-validated data in the database.</div>
+    <div class="aui-progress-indicator">
+        <span id="evaluate-classifier-progress"></span>
+    </div>
 </div>
 
 <div class="field-group">
@@ -136,7 +139,8 @@
 
     var evaluateModelButton = document.getElementById("evaluateModel-button");
     evaluateModelButton.addEventListener("click", function () {
-        conDecAPI.evaluateModel("$projectKey", saveToFile("evaluation_results.json"));
+        var animatedElement = document.getElementById("evaluate-classifier-progress");
+        conDecAPI.evaluateModel("$projectKey", animatedElement, saveToFile("evaluation_results.json"));
     });
 
     var saveArffFileButton = document.getElementById("saveArffFile-button");
