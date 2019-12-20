@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
 
 import static java.lang.Math.round;
@@ -76,7 +77,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	@Override
 	// is called after setting training-file
 	public boolean train() {
-		boolean isTrained = false;
+		AtomicBoolean isTrained = new AtomicBoolean(true);
 		try {
 			ExecutorService taskExecutor = Executors.newFixedThreadPool(2);
 			taskExecutor.execute(() -> {
@@ -84,6 +85,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 					trainBinaryClassifier();
 				} catch (Exception e) {
 					e.printStackTrace();
+					isTrained.set(false);
 				}
 			});
 			taskExecutor.execute(() -> {
@@ -91,17 +93,19 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 					trainFineGrainedClassifier();
 				} catch (Exception e) {
 					e.printStackTrace();
+					isTrained.set(false);
 				}
 			});
 
 			taskExecutor.shutdown();
 			taskExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-			isTrained = true;
+
 		} catch (Exception e) {
 			LOGGER.error("The classifier could not be trained. Message:" + e.getMessage());
 			System.err.println("The classifier could not be trained. Message:" + e.getMessage());
+			isTrained.set(false);
 		}
-		return isTrained;
+		return isTrained.get();
 	}
 
 
