@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import de.uhd.ifi.se.decision.management.jira.classification.*;
@@ -78,20 +81,28 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	public boolean train() {
 		boolean isTrained = false;
 		try {
-			Runnable trainRunnable = () -> {
+			ExecutorService taskExecutor = Executors.newFixedThreadPool(2);
+			taskExecutor.execute(() -> {
 				try {
-					//TODO: Try to make 2 separate threads.
 					trainBinaryClassifier();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			taskExecutor.execute(() -> {
+				try {
 					trainFineGrainedClassifier();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			};
-			new Thread(trainRunnable).start();
+			});
 
+			taskExecutor.shutdown();
+			taskExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 			isTrained = true;
 		} catch (Exception e) {
 			LOGGER.error("The classifier could not be trained. Message:" + e.getMessage());
+			System.err.println("The classifier could not be trained. Message:" + e.getMessage());
 		}
 		return isTrained;
 	}
@@ -106,24 +117,23 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 		this.classifier.trainBinaryClassifier((List<List<Double>>) preprocessedSentences.get("features"),
 			(List<Integer>) preprocessedSentences.get("labels"));
-		this.classifier.getBinaryClassifier().saveToFile();
+		//this.classifier.getBinaryClassifier().saveToFile();
 	}
 
 	private synchronized void trainFineGrainedClassifier() throws Exception {
 
 		Map<String, List> trainingData = this.extractTrainingData(this.getInstances());
-		Map preprocessedSentences;
-		preprocessedSentences = this.classifier.preprocess(trainingData.get("relevantSentences"),
+		Map preprocessedSentences = this.classifier.preprocess(trainingData.get("relevantSentences"),
 			trainingData.get("labelKnowledgeType"));
 
 		this.classifier.trainFineGrainedClassifier((List<List<Double>>) preprocessedSentences.get("features"),
 			(List<Integer>) preprocessedSentences.get("labels"));
-		this.classifier.getFineGrainedClassifier().saveToFile();
+		//this.classifier.getFineGrainedClassifier().saveToFile();
 	}
 
 	public boolean update(PartOfJiraIssueText sentence) {
 		try {
-			List<List<Double>> features = this.classifier.preprocess(sentence.getDescription());
+			List<List<Double>> features = this.classifier.preprocess(sentence.getSummary());
 			// classifier needs numerical value
 			Integer labelIsRelevant = sentence.isRelevant() ? 1 : 0;
 
@@ -148,7 +158,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	@Override
 	public List<File> getTrainingFiles() {
 		List<File> arffFilesOnServer = new ArrayList<File>();
-		for (File file : directory.listFiles()) {
+		for (File file : Objects.requireNonNull(directory.listFiles())) {
 			if (file.getName().toLowerCase(Locale.ENGLISH).contains(".arff")) {
 				arffFilesOnServer.add(file);
 			}
@@ -410,7 +420,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	private List<String> extractStringsFromDke(List<DecisionKnowledgeElement> sentences) {
 		List<String> extractedStringsFromPoji = new ArrayList<String>();
 		for (DecisionKnowledgeElement sentence : sentences) {
-			extractedStringsFromPoji.add(sentence.getDescription());
+			extractedStringsFromPoji.add(sentence.getSummary());
 		}
 		return extractedStringsFromPoji;
 	}
@@ -425,17 +435,22 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		defaultMeasurements.add(new Recall());
 
 		// load validated Jira Issue texts
-		JiraIssueTextPersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey)
-			.getJiraIssueTextManager();
-		List<DecisionKnowledgeElement> partsOfText = manager.getUserValidatedPartsOfText(projectKey);
+		//JiraIssueTextPersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey)
+		//	.getJiraIssueTextManager();
+		List<DecisionKnowledgeElement> partsOfText =		KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
+//		manager.getUserValidatedPartsOfText(projectKey);
+//		KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
 		return evaluateClassifier(defaultMeasurements, partsOfText);
 	}
 
 	public Map<String, Double> evaluateClassifier(List<ClassificationMeasure> measurements,
 												  List<DecisionKnowledgeElement> partOfJiraIssueTexts) throws Exception {
 		Map<String, Double> resultsMap = new HashMap<>();
-		List<DecisionKnowledgeElement> relevantPartOfJiraIssueTexts = partOfJiraIssueTexts.stream()
-			.filter(x -> !x.getType().equals(KnowledgeType.OTHER)).collect(toList());
+		List<DecisionKnowledgeElement> relevantPartOfJiraIssueTexts =
+			partOfJiraIssueTexts
+				.stream()
+				.filter(x -> !x.getType().equals(KnowledgeType.OTHER))
+				.collect(toList());
 
 		// format data
 		List<String> sentences = this.extractStringsFromDke(partOfJiraIssueTexts);
@@ -451,12 +466,20 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 			.toArray(new Integer[relevantPartOfJiraIssueTexts.size()]);
 
 		// predict classes
+		long start = System.currentTimeMillis();
+
 		Integer[] binaryPredictions = this.classifier.makeBinaryPredictions(sentences).stream().map(x -> x ? 1 : 0)
 			.collect(toList()).toArray(new Integer[sentences.size()]);
+
+		//System.out.println("Time for binary prediction on " +  sentences.size() + " sentences took " + (end-start) + " ms.");
+
 
 		Integer[] fineGrainedPredictions = this.classifier.makeFineGrainedPredictions(relevantSentences).stream()
 			.map(x -> this.classifier.getFineGrainedClassifier().mapKnowledgeTypeToIndex(x)).collect(toList())
 			.toArray(new Integer[relevantSentences.size()]);
+		long end = System.currentTimeMillis();
+
+		System.out.println("Time for prediction on " +  sentences.size() + " sentences took " + (end-start) + " ms.");
 
 		// calculate measurements for each ClassificationMeasure in measurements
 		for (ClassificationMeasure measurement : measurements) {

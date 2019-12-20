@@ -127,7 +127,7 @@ public class PreprocessorImpl implements Preprocessor {
 
 
     @Override
-    public List preprocess(String sentence) {
+    public synchronized List preprocess(String sentence) {
         String cleaned_sentence = this.replaceUsingRegEx(sentence, Preprocessor.NUMBER_PATTERN, Preprocessor.NUMBER_TOKEN.toLowerCase());
         cleaned_sentence = this.replaceUsingRegEx(cleaned_sentence, Preprocessor.URL_PATTERN, Preprocessor.URL_TOKEN.toLowerCase());
         cleaned_sentence = this.replaceUsingRegEx(cleaned_sentence, Preprocessor.WHITESPACE_CHARACTERS_PATTERN, Preprocessor.WHITESPACE_CHARACTERS_TOKEN.toLowerCase());

@@ -7,11 +7,12 @@ import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Prepr
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.task.TaskExecutor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 /**
@@ -78,25 +79,44 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 		}
 	}
 
+	private void makeBinaryPrediction(String stringToBeClassified, List<Boolean> binaryPredictionResults, int finalI) {
+
+		List<List<Double>> features = preprocess(stringToBeClassified);
+		double[] predictionResult = new double[this.binaryClassifier.getNumClasses()];
+		//Make predictions for each nGram; then determine maximum probability of all added together.
+		for (List<Double> feature : features) {
+			double[] currentPredictionResult = binaryClassifier.predictProbabilities(feature.toArray(Double[]::new));
+			IntStream.range(0, predictionResult.length)
+				.forEach(j -> predictionResult[j] = predictionResult[j] + currentPredictionResult[j]);
+		}
+		boolean predictedIsRelevant = binaryClassifier.isRelevant(ArrayUtils.toObject(predictionResult));
+		binaryPredictionResults.set(finalI, predictedIsRelevant);
+		return;
+	}
+
 	@Override
 	public List<Boolean> makeBinaryPredictions(List<String> stringsToBeClassified) {
-		List<Boolean> binaryPredictionResults = new ArrayList<Boolean>();
+		//init list
+		List<Boolean> binaryPredictionResults = Arrays.asList(new Boolean[stringsToBeClassified.size()]);
+		ExecutorService taskExecutor;
+		taskExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		try {
 			// Classify string instances
-			for (String stringToBeClassified : stringsToBeClassified) {
-				List<List<Double>> features = preprocess(stringToBeClassified);
-				double[] predictionResult = new double[this.binaryClassifier.getNumClasses()];
-				//Make predictions for each nGram; then determine maximum probability of all added together.
-				for (List<Double> feature : features) {
-					double[] currentPredictionResult = binaryClassifier.predictProbabilities(feature.toArray(Double[]::new));
-					IntStream.range(0, predictionResult.length)
-						.forEach(i -> predictionResult[i] = predictionResult[i] + currentPredictionResult[i]);
-				}
-				boolean predictedIsRelevant = binaryClassifier.isRelevant(ArrayUtils.toObject(predictionResult));
 
-				binaryPredictionResults.add(predictedIsRelevant);
+			for (int i = 0; i < stringsToBeClassified.size(); i++) {
+				final int finalI = i;
+				taskExecutor.execute(() -> {
+					try {
+						makeBinaryPrediction(stringsToBeClassified.get(finalI), binaryPredictionResults, finalI);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				});
 			}
+			taskExecutor.shutdown();
+			taskExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+
 		} catch (Exception e) {
 			LOGGER.error("Binary classification failed. Message: " + e.getMessage());
 			return new ArrayList<Boolean>();
@@ -112,28 +132,45 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 
 	}
 
+	public void makeFineGrainedPrediction(String stringToBeClassified, List<KnowledgeType> fineGrainedPredictionResults, int i) {
+		List<List<Double>> features = preprocess(stringToBeClassified);
+		double[] predictionResult = new double[this.fineGrainedClassifier.getNumClasses()];
+		//Make predictions for each nGram; then determine maximum probability of all added together.
+		//ExecutorService taskExecutor = Executors.newFixedThreadPool(features.size());
+		for (List<Double> feature : features) {
+			double[] currentPredictionResult = fineGrainedClassifier.predictProbabilities(feature.toArray(Double[]::new));
+			IntStream.range(0, predictionResult.length)
+				.forEach(j -> predictionResult[j] = predictionResult[j] + currentPredictionResult[j]);
+		}
+		KnowledgeType predictedKnowledgeType = fineGrainedClassifier.mapIndexToKnowledgeType(
+			fineGrainedClassifier.maxAtInArray(ArrayUtils.toObject(predictionResult))
+		);
+		fineGrainedPredictionResults.set(i, predictedKnowledgeType);
+
+	}
+
+
 	@Override
 	public List<KnowledgeType> makeFineGrainedPredictions(List<String> stringsToBeClassified) {
-		List<KnowledgeType> fineGrainedPredictionResults = new ArrayList<KnowledgeType>();
+		List<KnowledgeType> fineGrainedPredictionResults = Arrays.asList(new KnowledgeType[stringsToBeClassified.size()]);
+		ExecutorService taskExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		try {
 
 			// Classify string instances
-			for (String stringToBeClassified : stringsToBeClassified) {
-				List<List<Double>> features = preprocess(stringToBeClassified);
-				double[] predictionResult = new double[this.fineGrainedClassifier.getNumClasses()];
-				//Make predictions for each nGram; then determine maximum probability of all added together.
-				for (List<Double> feature : features) {
-					double[] currentPredictionResult = fineGrainedClassifier.predictProbabilities(feature.toArray(Double[]::new));
-					IntStream.range(0, predictionResult.length)
-						.forEach(i -> predictionResult[i] = predictionResult[i] + currentPredictionResult[i]);
-				}
-				KnowledgeType predictedKnowledgeType = fineGrainedClassifier.mapIndexToKnowledgeType(
-					fineGrainedClassifier.maxAtInArray(ArrayUtils.toObject(predictionResult))
-				);
-				fineGrainedPredictionResults.add(predictedKnowledgeType);
+			for (int i = 0; i < stringsToBeClassified.size(); i++) {
 
+				final int finalI = i;
+				taskExecutor.execute(() -> {
+					try {
+						makeFineGrainedPrediction(stringsToBeClassified.get(finalI), fineGrainedPredictionResults, finalI);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				});
 			}
+			taskExecutor.shutdown();
+			taskExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 		} catch (Exception e) {
 			LOGGER.error("Fine grained classification failed. Message: " + e.getMessage());
 			return null;
