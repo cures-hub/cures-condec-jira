@@ -7,7 +7,6 @@ import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Prepr
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.task.TaskExecutor;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;

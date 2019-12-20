@@ -1,7 +1,23 @@
 package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
-import static java.lang.Math.round;
-import static java.util.stream.Collectors.toList;
+import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
+import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.EvaluableClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.FileTrainer;
+import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import smile.validation.*;
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.converters.ConverterUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,27 +29,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
-import de.uhd.ifi.se.decision.management.jira.classification.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
-
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
-import smile.validation.Accuracy;
-import smile.validation.ClassificationMeasure;
-import smile.validation.FMeasure;
-import smile.validation.Precision;
-import smile.validation.Recall;
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.converters.ConverterUtils;
+import static java.lang.Math.round;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Class responsible to train the supervised text classifier. For this purpose,

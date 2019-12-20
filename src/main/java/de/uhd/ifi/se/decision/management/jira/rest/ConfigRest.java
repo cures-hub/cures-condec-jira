@@ -1,17 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.List;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import java.util.List;
+import java.util.Set;
 
 /**
  * REST resource for plug-in configuration
