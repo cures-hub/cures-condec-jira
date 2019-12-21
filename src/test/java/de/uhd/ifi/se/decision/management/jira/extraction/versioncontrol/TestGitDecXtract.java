@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jgit.lib.Ref;
 import org.junit.Assert;
@@ -69,5 +70,32 @@ public class TestGitDecXtract extends TestSetUpGit {
 		Assert.assertNotNull(gotElements);
 		Assert.assertEquals(0, gotElements.size());
 
+	}
+
+	@Test
+	public void fromFeatureBranchCommitsCreateMap() {
+		// git repository is setup already
+		gitDecX = new GitDecXtract("TEST", getExampleUri());
+		int numberExpectedElements = 2;
+
+		// by branch name
+		Map<String, List<DecisionKnowledgeElement>> gotElements = gitDecX
+				.getElementsSplitByCodeAndCommit("featureBranch");
+		Assert.assertEquals(numberExpectedElements, gotElements.size());
+
+		// by Ref, find Ref first
+		List<Ref> featureBranches = gitClient.getRemoteBranches();
+		Ref featureBranch = null;
+		Iterator<Ref> it = featureBranches.iterator();
+		while (it.hasNext()) {
+			Ref value = it.next();
+			if (value.getName().endsWith("featureBranch")) {
+				featureBranch = value;
+				return;
+			}
+		}
+
+		gotElements = gitDecX.getElementsSplitByCodeAndCommit(featureBranch.getName());
+		Assert.assertEquals(numberExpectedElements, gotElements.size());
 	}
 }
