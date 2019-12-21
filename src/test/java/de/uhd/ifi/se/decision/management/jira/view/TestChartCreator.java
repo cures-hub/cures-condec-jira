@@ -12,8 +12,8 @@ import com.atlassian.jira.project.MockProject;
 
 public class TestChartCreator {
 
-	ChartCreator creator;
-	MockProject project;
+	private ChartCreator creator;
+	private MockProject project;
 
 	@Before
 	public void setUp() {
