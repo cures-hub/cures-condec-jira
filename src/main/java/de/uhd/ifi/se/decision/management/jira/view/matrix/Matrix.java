@@ -1,12 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.view.matrix;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
+import javax.xml.bind.annotation.XmlElement;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-
-import javax.xml.bind.annotation.XmlElement;
-import java.util.*;
 
 public class Matrix {
 	@XmlElement
@@ -34,7 +39,7 @@ public class Matrix {
 		Set<Link> links = graph.edgeSet();
 
 		for (DecisionKnowledgeElement sourceDecision : this.headerElements) {
-			List<String> row = new ArrayList<>();
+			List<String> row = new ArrayList<String>();
 			Map<Long, String> linksOfRow = this.getLinksForRow(links, sourceDecision);
 
 			for (DecisionKnowledgeElement targetDecision : this.headerElements) {
@@ -51,9 +56,9 @@ public class Matrix {
 		return coloredRows;
 	}
 
-	private Map<Long, String> getLinksForRow(Set<Link> allEntries, DecisionKnowledgeElement decision) {
-		Map<Long, String> linksForRow = new TreeMap<>();
-		for (Link link : allEntries) {
+	private Map<Long, String> getLinksForRow(Set<Link> links, DecisionKnowledgeElement decision) {
+		Map<Long, String> linksForRow = new TreeMap<Long, String>();
+		for (Link link : links) {
 			if (link.getSource().getId() == decision.getId()) {
 				linksForRow.put(link.getTarget().getId(), LinkType.getLinkTypeColor(link.getType()));
 			}

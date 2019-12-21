@@ -10,7 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 
 /**
- * Model class for vis.js Node.
+ * Model class for a vis.js node.
  */
 public class VisNode {
 	@XmlElement
@@ -43,11 +43,9 @@ public class VisNode {
 		this.cid = cid;
 		if (collapsed) {
 			this.setGroup(element.getTypeAsString().toLowerCase());
-			String summary;
-			if (element.getSummary().length() > 100) {
-				summary = element.getSummary().substring(0, 99) + "...";
-			} else {
-				summary = element.getSummary();
+			String summary = element.getSummary();
+			if (summary.length() > 100) {
+				summary = summary.substring(0, 99) + "...";
 			}
 			this.setLabel(element.getTypeAsString().toUpperCase() + "\n" + summary);
 		} else {

@@ -1,13 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
-import com.atlassian.jira.user.ApplicationUser;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestVisTimeLineGroup extends TestSetUp {
 	private VisTimeLineGroup visTimeLineGroup;
@@ -27,8 +28,8 @@ public class TestVisTimeLineGroup extends TestSetUp {
 
 	@Test
 	public void testSetId() {
-		visTimeLineGroup.setId((long)12132);
-		assertEquals(12132, visTimeLineGroup.getId(), 0.0);
+		visTimeLineGroup.setId(12132);
+		assertEquals(12132, visTimeLineGroup.getId());
 	}
 
 	@Test

@@ -38,7 +38,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXt
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
@@ -46,7 +45,6 @@ import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
-import de.uhd.ifi.se.decision.management.jira.view.vis.VisDataProvider;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
 
@@ -78,15 +76,23 @@ public class ViewRestImpl implements ViewRest {
 	public Response getFeatureBranchTree(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey)
 			throws PermissionException {
 		String normalizedIssueKey = normalizeIssueKey(issueKey); // ex: issueKey=ConDec-498
-		Issue issue = getIssue(normalizedIssueKey);
+		Issue issue = getJiraIssue(normalizedIssueKey);
 		if (issue == null) {
-			return issueKeyIsInvalid();
+			return jiraIssueKeyIsInvalid();
 		}
 
 		String regexFilter = normalizedIssueKey.toUpperCase() + "\\.|" + normalizedIssueKey.toUpperCase() + "$";
 		// get feature branches of an issue
 		return getDiffViewerResponse(getProjectKey(normalizedIssueKey), regexFilter,
 				ComponentAccessor.getIssueManager().getIssueByCurrentKey(normalizedIssueKey));
+	}
+
+	private Issue getJiraIssue(String issueKey) {
+		Issue issue = null;
+		if (issueKey == null || issueKey.isBlank())
+			return null;
+		issue = ComponentAccessor.getIssueManager().getIssueObject(issueKey);
+		return issue;
 	}
 
 	private Response getDiffViewerResponse(String projectKey, String filter, Issue issue) throws PermissionException {
@@ -197,19 +203,16 @@ public class ViewRestImpl implements ViewRest {
 					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings);
-		VisTimeLine timeLine = visDataProvider.getTimeLine();
+		VisTimeLine timeLine = new VisTimeLine(user, filterSettings);
 		return Response.ok(timeLine).build();
-
 	}
 
 	@Override
 	@Path("/getTreant")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getTreant(@QueryParam("elementKey") String elementKey,
-			@QueryParam("depthOfTree") String depthOfTree, @QueryParam("searchTerm") String searchTerm,
-			@Context HttpServletRequest request) {
+	public Response getTreant(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey,
+			@QueryParam("depthOfTree") String depthOfTree, @QueryParam("searchTerm") String searchTerm) {
 
 		if (elementKey == null) {
 			return Response.status(Status.BAD_REQUEST)
@@ -234,18 +237,6 @@ public class ViewRestImpl implements ViewRest {
 		return Response.ok(treant).build();
 	}
 
-	private Issue getIssue(String issueKey) {
-		Issue issue = null;
-		if (issueKey == null || issueKey.trim().equals(""))
-			return null;
-		try {
-			issue = ComponentAccessor.getIssueManager().getIssueObject(issueKey);
-		} catch (Exception ex) {
-			LOGGER.error(ex.getMessage());
-		}
-		return issue;
-	}
-
 	@Override
 	@Path("/getVis")
 	@POST
@@ -265,17 +256,8 @@ public class ViewRestImpl implements ViewRest {
 					.entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
 					.build();
 		}
-		String projectKey = filterSettings.getProjectKey();
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisDataProvider visDataProvider;
-		if (filterSettings.getNamesOfSelectedJiraIssueTypes().size() == 0
-				|| (filterSettings.getDocumentationLocations().size() == 1
-						&& filterSettings.getDocumentationLocations().get(0).equals(DocumentationLocation.UNKNOWN))) {
-			visDataProvider = new VisDataProvider(projectKey, elementKey, filterSettings.getSearchString(), user);
-		} else {
-			visDataProvider = new VisDataProvider(elementKey, user, filterSettings);
-		}
-		VisGraph visGraph = visDataProvider.getVisGraph();
+		VisGraph visGraph = new VisGraph(user, elementKey, filterSettings);
 		return Response.ok(visGraph).build();
 	}
 
@@ -295,8 +277,8 @@ public class ViewRestImpl implements ViewRest {
 					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings);
-		return Response.ok(visDataProvider.getVisGraph()).build();
+		VisGraph graph = new VisGraph(user, filterSettings);
+		return Response.ok(graph).build();
 	}
 
 	@Override
@@ -332,39 +314,24 @@ public class ViewRestImpl implements ViewRest {
 		return Response.ok(matrix).build();
 	}
 
-	@Override
-	@Path("/getDecisionGraph")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionGraph(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		List<DecisionKnowledgeElement> decisions = getAllDecisions(projectKey);
-		VisGraph graph = new VisGraph(decisions, projectKey);
-		return Response.ok(graph).build();
+	// TODO Remove
+	private List<DecisionKnowledgeElement> getAllDecisions(String projectKey) {
+		return KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements(KnowledgeType.DECISION);
 	}
 
 	@Override
-	@Path("/getDecisionGraphFiltered")
+	@Path("/getDecisionGraph")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionGraphFiltered(@Context HttpServletRequest request, FilterSettings filterSettings,
+	public Response getDecisionGraph(@Context HttpServletRequest request, FilterSettings filterSettings,
 			@QueryParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		List<DecisionKnowledgeElement> decisions = getAllDecisions(projectKey);
-		VisDataProvider visDataProvider = new VisDataProvider(user, filterSettings, decisions);
-		VisGraph graph = visDataProvider.getVisGraph();
+		VisGraph graph = new VisGraph(user, filterSettings);
 		return Response.ok(graph).build();
-	}
-
-	private List<DecisionKnowledgeElement> getAllDecisions(String projectKey) {
-		return KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements(KnowledgeType.DECISION);
 	}
 
 	private String getProjectKey(String elementKey) {
@@ -385,9 +352,7 @@ public class ViewRestImpl implements ViewRest {
 
 	private Response checkIfElementIsValid(String elementKey) {
 		if (elementKey == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Visualization cannot be shown since element key is invalid."))
-					.build();
+			return jiraIssueKeyIsInvalid();
 		}
 		String projectKey = getProjectKey(elementKey);
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
@@ -398,15 +363,14 @@ public class ViewRestImpl implements ViewRest {
 	}
 
 	private Response projectKeyIsInvalid() {
-		LOGGER.error("Decision knowledge elements cannot be shown since project key is invalid.");
-		return Response.status(Status.BAD_REQUEST).entity(
-				ImmutableMap.of("error", "Decision knowledge elements cannot be shown since project key is invalid."))
-				.build();
+		String message = "Decision knowledge elements cannot be shown since the project key is invalid.";
+		LOGGER.error(message);
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", message)).build();
 	}
 
-	private Response issueKeyIsInvalid() {
-		String msg = "Decision knowledge elements cannot be shown" + " since issue key is invalid.";
-		LOGGER.error(msg);
-		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", msg)).build();
+	private Response jiraIssueKeyIsInvalid() {
+		String messsage = "Decision knowledge elements cannot be shown" + " since the Jira issue key is invalid.";
+		LOGGER.error(messsage);
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", messsage)).build();
 	}
 }
