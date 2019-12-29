@@ -318,20 +318,8 @@
 	/*
 	 * external references: condec.export
 	 */
-	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getElements.json?allTrees=false&projectKey="
-			+ projectKey + "&query=" + query, function (error, elements) {
-			if (error === null) {
-				callback(elements);
-			}
-		});
-	};
-
-	/*
-	 * external references: condec.export
-	 */
-	ConDecAPI.prototype.getAllElementsByQueryAndLinked = function getAllElementsByQueryAndLinked(query, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getElements.json?allTrees=true&projectKey="
+	ConDecAPI.prototype.getElements = function getElements(query, callback) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getElements.json?projectKey="
 			+ projectKey + "&query=" + query, function (error, elements) {
 			if (error === null) {
 				callback(elements);

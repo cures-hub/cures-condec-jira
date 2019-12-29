@@ -6,51 +6,24 @@
 		</a>
 	</header>
 	<div id="export-dialog-content" class="aui-dialog2-content">
-    <div style="visible:none" id="exportQueryFallback"></div>
-    <form class="aui">
-        <fieldset class="group" id="exportDecisionKnowledgeFieldSetExportType">
-            <legend><span>Export format</span></legend>
-            <div class="radio">
-                <input class="radio-export-type" type="radio" checked="checked" onchange="changeRadioBoxFormat(this)"
-                       name="radiobuttons" id="exportAsJson">
-                <label for="exportAsJson">Json</label>
+		<form class="aui">
+			<div class="field-group">
+				<label for="form-radio-export-format">$i18n.getText("condec.label.export.format"):</label>
+				<div class="radio">
+					<input class="radio" type="radio" checked="checked" name="form-radio-export-format" id="exportAsDocument" value="document">
+					<label for="exportAsDocument">Word Document</label>
+				</div>
+				<div class="radio">
+					<input class="radio" type="radio" name="form-radio-export-format" id="exportAsJson" value="json">
+					<label for="exportAsJson">JSON</label>
+				</div>
             </div>
-            <div class="radio">
-                <input class="radio-export-type" type="radio" onchange="changeRadioBoxFormat(this)"
-                       name="radiobuttons" id="exportAsDocument">
-                <label for="exportAsDocument">Document</label>
-            </div>
-        </fieldset>
-    </form>
+       </form>
     </div>
 	<footer class="aui-dialog2-footer">
 		<div class="aui-dialog2-footer-actions">
+			<button id="export-dialog-submit-button" class="aui-button aui-button-primary">$i18n.getText("condec.button.ok")</button>
 			<button id="export-dialog-cancel-button" class="aui-button aui-button-link">$i18n.getText("condec.button.cancel")</button>
-			<button id="export-dialog-confirm-button" class="aui-button aui-button-primary"
-                    onclick="handleExportSubmit()" >$i18n.getText("condec.button.ok")</button>
-        </div>
+		</div>
 	</footer>
 </section>
-<script>
-    /*
-    *Create Event handlers here to make it more modular
-    **/
-    var selectedRadioButtonFormat="exportAsJson";
-    function handleExportSubmit(){
-
-        var hiddenDiv=document.getElementById("exportQueryFallback");
-        var treeElementKey=""
-        if(hiddenDiv){
-            //check for hidden data attribute
-            treeElementKey = hiddenDiv.getAttribute("data-tree-element-key");
-        }
-        console.log("elementTree", treeElementKey)
-
-        window.conDecExport.getSelectedRadioBoxForExport(selectedRadioButtonFormat, treeElementKey);
-    }
-
-    function changeRadioBoxFormat(element){
-        selectedRadioButtonFormat=element.id;
-    }
-
-</script>

@@ -1070,11 +1070,15 @@
 
 		// HTML elements
 		var exportDialog = document.getElementById("export-dialog");
-		var cancelButton = document.getElementById("delete-link-dialog-cancel-button");
+		var submitButton = document.getElementById("export-dialog-submit-button");
+		var cancelButton = document.getElementById("export-dialog-cancel-button");
 		
-		var hiddenDiv = document.getElementById("exportQueryFallback");
-		// set hidden attribute
-		hiddenDiv.setAttribute("data-tree-element-key", decisionElementKey);
+		// Set onclick listener on buttons
+		submitButton.onclick = function () {
+			var exportFormat = $('input[name=form-radio-export-format]:checked').val();
+			conDecExport.exportLinkedElements(exportFormat, decisionElementKey);
+			AJS.dialog2(exportDialog).hide();
+		};
 		
 		cancelButton.onclick = function () {
 			AJS.dialog2(exportDialog).hide();

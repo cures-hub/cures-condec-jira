@@ -1,36 +1,34 @@
 /*
- This module provides all functionality to export decision knowledge.
+ This module provides all functionality to export decision knowledge and related knowledge elements, 
+ such as requirements and work items.
 
  Requires
+ * conDecAPI
 
- Is referenced in HTML by
- * exportDialog.vm
+ Is required by
+ * conDecDialog
  */
 (function(global) {
 
 	var ConDecExport = function ConDecExport() {
 	};
-	/**
-	 * Only Public function
-	 * 
-	 * @param elementKey
-	 * @param exportFormat
-	 * @param exportType
+
+	/*
+	 * external references: condec.dialog
 	 */
-	ConDecExport.prototype.getSelectedRadioBoxForExport = function getSelectedRadioBoxForExport(exportFormat, elementKey) {
-		var expFormat = "";
-		if (exportFormat === "exportAsDocument") {
-			expFormat = "document";
+	ConDecExport.prototype.exportLinkedElements = function exportLinkedElements(exportType, elementKey) {
+		var query = getQueryFromUrl(elementKey);
+		var jiraIssueKey = conDecAPI.getIssueKey();
+		// handle Exception when no issueKey could be defined
+		if (!jiraIssueKey) {
+			jiraIssueKey = elementKey;
 		}
-		if (exportFormat === "exportAsJson") {
-			expFormat = "json";
-		}
-
-		exportLinkedElements(expFormat, elementKey);
-
-		// close dialog
-		AJS.dialog2('#export-dialog').hide();
-	};
+		conDecAPI.getElements(query, function(elements) {
+			if (elements && elements.length > 0 && elements[0] !== null) {
+				download(elements, "decisionKnowledge", exportType);
+			}
+		});
+	}
 
 	function getURLsSearch() {
 		// get jql from url
@@ -77,20 +75,6 @@
 		return myJql;
 	}
 
-	function exportLinkedElements(exportType, elementKey) {
-		var jql = getQueryFromUrl(elementKey);
-		var jiraIssueKey = conDecAPI.getIssueKey();
-		// handle Exception when no issueKey could be defined
-		if (!jiraIssueKey) {
-			jiraIssueKey = elementKey;
-		}
-		conDecAPI.getLinkedElementsByQuery(jql, function(elements) {
-			if (elements && elements.length > 0 && elements[0] !== null) {
-				download(elements, "decisionKnowledgeGraph", exportType);
-			}
-		});
-	}
-	
 	function download(elements, filename, exportType, multipleArrays) {
 		var dataString = "";
 		switch (exportType) {
