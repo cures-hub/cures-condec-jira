@@ -28,8 +28,8 @@
 		this.knowledgeTypes = getKnowledgeTypes(projectKey);
 		this.extendedKnowledgeTypes = getExtendedKnowledgeTypes(this.knowledgeTypes);
 
-        this.optionStatus = ["Idea", "Discarded", "Decided", "Rejected", "Undefined"];
-        this.issueStatus = ["Resolved", "Unresolved"];
+        this.optionStatus = ["idea", "discarded", "decided", "rejected", "undefined"];
+        this.issueStatus = ["resolved", "unresolved"];
 		this.knowledgeStatus = this.optionStatus.concat(this.issueStatus);
 		
         this.linkTypes = getLinkTypes(projectKey);
@@ -316,9 +316,9 @@
 	};
 
 	/*
-	 * external references: condec.jira.issue.module
+	 * external references: condec.export
 	 */
-	ConDecAPI.prototype.getElementsByQuery = function getElementsByQuery(query, callback) {
+	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getElements.json?allTrees=false&projectKey="
 			+ projectKey + "&query=" + query, function (error, elements) {
 			if (error === null) {
@@ -328,20 +328,7 @@
 	};
 
 	/*
-	 * external references: condec.jira.issue.module
-	 */
-	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, elementKey,
-																					 documentationLocation, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getElements.json?allTrees=false&projectKey="
-			+ projectKey + "&elementKey=" + elementKey + "&query=" + query, function (error, elements) {
-			if (error === null) {
-				callback(elements);
-			}
-		});
-	};
-
-	/*
-	 * external references: condec.jira.issue.module
+	 * external references: condec.export
 	 */
 	ConDecAPI.prototype.getAllElementsByQueryAndLinked = function getAllElementsByQueryAndLinked(query, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getElements.json?allTrees=true&projectKey="

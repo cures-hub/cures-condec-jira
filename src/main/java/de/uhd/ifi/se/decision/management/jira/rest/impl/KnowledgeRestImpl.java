@@ -324,15 +324,13 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 		}
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		List<DecisionKnowledgeElement> queryResult = new ArrayList<DecisionKnowledgeElement>();
-		FilteringManager extractor = new FilteringManagerImpl(projectKey, user, query);
+		FilteringManager filteringManager = new FilteringManagerImpl(projectKey, user, query);
 		if (allTrees) {
 			List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
-			elementsQueryLinked = extractor.getAllGraphs();
+			elementsQueryLinked = filteringManager.getAllGraphs();
 			return Response.ok(elementsQueryLinked).build();
-		} else {
-			queryResult = extractor.getAllElementsMatchingQuery();
 		}
+		List<DecisionKnowledgeElement> queryResult = filteringManager.getAllElementsMatchingQuery();
 		return Response.ok(queryResult).build();
 	}
 
