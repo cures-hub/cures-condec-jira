@@ -1059,10 +1059,10 @@
 				throwAlert("An error saving occurred",err.toString());
 			})
 		};
+		
 		cancelButton.onclick = function () {
 			AJS.dialog2(releaseNoteDialog).hide();
 		};
-
 	};
 
 	ConDecDialog.prototype.showExportDialog = function showExportDialog(decisionElementKey) {
@@ -1070,10 +1070,17 @@
 
 		// HTML elements
 		var exportDialog = document.getElementById("export-dialog");
+		var cancelButton = document.getElementById("delete-link-dialog-cancel-button");
+		
 		var hiddenDiv = document.getElementById("exportQueryFallback");
 		// set hidden attribute
 		hiddenDiv.setAttribute("data-tree-element-key", decisionElementKey);
-		// open dialog
+		
+		cancelButton.onclick = function () {
+			AJS.dialog2(exportDialog).hide();
+		};
+
+		// Show dialog
 		AJS.dialog2(exportDialog).show();
 	};
 

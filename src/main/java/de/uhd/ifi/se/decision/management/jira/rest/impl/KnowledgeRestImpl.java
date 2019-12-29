@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -316,8 +315,8 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 	@Path("/getElements")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getElements(@Context HttpServletRequest request, @QueryParam("allTrees") boolean allTrees,
-			@QueryParam("projectKey") String projectKey, @QueryParam("query") String query) {
+	public Response getElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			@QueryParam("query") String query) {
 		if (request == null || projectKey == null || query == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Getting elements failed due to a bad request.")).build();
@@ -325,11 +324,6 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		FilteringManager filteringManager = new FilteringManagerImpl(projectKey, user, query);
-		if (allTrees) {
-			List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
-			elementsQueryLinked = filteringManager.getAllGraphs();
-			return Response.ok(elementsQueryLinked).build();
-		}
 		List<DecisionKnowledgeElement> queryResult = filteringManager.getAllElementsMatchingQuery();
 		return Response.ok(queryResult).build();
 	}

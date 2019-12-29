@@ -111,13 +111,13 @@ public class TestFilteringManager extends TestSetUp {
 		FilteringManager extractor = new FilteringManagerImpl("TEST", user, "");
 		// the empty query will be changed to "allissues", i.e. "type != null"
 		// no, it is changed to "type = null" currently!
-		assertEquals(1, extractor.getAllGraphs().size());
+		assertEquals(8, extractor.getAllElementsMatchingQuery().size());
 	}
 
 	@Test
 	public void testGetGraphsMatchingQueryFilled() {
-		FilteringManager extractor = new FilteringManagerImpl("TEST", user, "?jql=project=TEST");
-		assertEquals(5, extractor.getAllGraphs().size());
+		FilteringManager extractor = new FilteringManagerImpl("TEST", user, "?jql=project=TEST AND issuetype = Issue");
+		assertEquals(8, extractor.getAllElementsMatchingQuery().size());
 	}
 
 	@Test

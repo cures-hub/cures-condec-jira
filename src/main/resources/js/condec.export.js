@@ -17,8 +17,7 @@
 	 * @param exportFormat
 	 * @param exportType
 	 */
-	ConDecExport.prototype.getSelectedRadioBoxForExport = function getSelectedRadioBoxForExport(exportType,
-			exportFormat, elementKey) {
+	ConDecExport.prototype.getSelectedRadioBoxForExport = function getSelectedRadioBoxForExport(exportFormat, elementKey) {
 		var expFormat = "";
 		if (exportFormat === "exportAsDocument") {
 			expFormat = "document";
@@ -26,12 +25,9 @@
 		if (exportFormat === "exportAsJson") {
 			expFormat = "json";
 		}
-		if (exportType === "exportLinked") {
-			exportLinkedElements(expFormat, elementKey);
-		}
-		if (exportType === "exportLinkedAndQuery") {
-			exportAllMatchedAndLinkedElements(expFormat, elementKey);
-		}
+
+		exportLinkedElements(expFormat, elementKey);
+
 		// close dialog
 		AJS.dialog2('#export-dialog').hide();
 	};
@@ -94,16 +90,7 @@
 			}
 		});
 	}
-
-	function exportAllMatchedAndLinkedElements(exportType, elementKey) {
-		var jql = getQueryFromUrl(elementKey);
-		conDecAPI.getAllElementsByQueryAndLinked(jql, function(elements) {
-			if (elements && elements.length > 0 && elements[0] !== null) {
-				download(elements, "decisionKnowledgeGraphWithLinked", exportType, true);
-			}
-		});
-	}
-
+	
 	function download(elements, filename, exportType, multipleArrays) {
 		var dataString = "";
 		switch (exportType) {

@@ -47,54 +47,6 @@ public class FilteringManagerImpl implements FilteringManager {
 		this(user, new FilterSettingsImpl(projectKey, query));
 	}
 
-	/**
-	 * Used for the export of decision knowledge
-	 */
-	@Override
-	public List<List<DecisionKnowledgeElement>> getAllGraphs() {
-		List<List<DecisionKnowledgeElement>> allGraphs = new ArrayList<List<DecisionKnowledgeElement>>();
-		List<DecisionKnowledgeElement> addedElements = new ArrayList<DecisionKnowledgeElement>();
-
-		List<Issue> jiraIssues = getJiraIssuesFromQuery();
-		if (jiraIssues == null) {
-			allGraphs.add(this.getAllElementsMatchingFilterSettings());
-			return allGraphs;
-		}
-
-		// Retrieve linked decision knowledge elements for every Jira issue
-		for (Issue currentIssue : jiraIssues) {
-			DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(currentIssue);
-			if (addedElements.contains(element)) {
-				continue;
-			}
-
-			addedElements.add(element);
-			List<DecisionKnowledgeElement> filteredElements = getElementsInGraph(element);
-			// add each element to the list
-			addedElements.addAll(filteredElements);
-			// add list to the big list
-			allGraphs.add(filteredElements);
-		}
-		return allGraphs;
-	}
-
-	private List<DecisionKnowledgeElement> getElementsInGraph(DecisionKnowledgeElement element) {
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
-		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
-		if (!graph.vertexSet().contains(element)) {
-			elements.add(element);
-			return elements;
-		}
-		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<Node, Link>(graph, element);
-		while (iterator.hasNext()) {
-			Node node = iterator.next();
-			if (node instanceof DecisionKnowledgeElement) {
-				elements.add((DecisionKnowledgeElement) node);
-			}
-		}
-		return elements;
-	}
-
 	@Override
 	public List<DecisionKnowledgeElement> getAllElementsMatchingQuery() {
 		List<Issue> jiraIssues = getJiraIssuesFromQuery();

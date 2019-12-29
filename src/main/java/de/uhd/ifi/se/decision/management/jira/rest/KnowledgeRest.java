@@ -35,7 +35,7 @@ public interface KnowledgeRest {
 
 	Response deleteLink(HttpServletRequest request, String projectKey, Link link);
 
-	Response getElements(HttpServletRequest request, boolean allTrees, String projectKey, String query);
+	Response getElements(HttpServletRequest request, String projectKey, String query);
 
 	Response createIssueFromSentence(HttpServletRequest request, DecisionKnowledgeElement decisionKnowledgeElement);
 

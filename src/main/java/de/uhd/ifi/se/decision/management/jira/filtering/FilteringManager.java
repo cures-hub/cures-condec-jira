@@ -20,11 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
  */
 public interface FilteringManager {
 
-	/**
-	 * Returns a list of all trees that match the given filter criteria.
-	 */
-	List<List<DecisionKnowledgeElement>> getAllGraphs();
-
 	// Problem Filtered Issues from sideFilter will be filterd again
 	// In the end there are only 2 Issues left that are not matching with the
 	// location so everything is collapsed

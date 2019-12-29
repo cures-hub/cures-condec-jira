@@ -32,14 +32,13 @@ public class TestGetElements extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				knowledgeRest.getElements(null, false, null, null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), knowledgeRest.getElements(null, null, null).getStatus());
 	}
 
 	@Test
 	@NonTransactional
-	public void testFilledAllTreesTrue() {
-		Response response = knowledgeRest.getElements(request, true, "TEST", "");
+	public void testFilled() {
+		Response response = knowledgeRest.getElements(request, "TEST", "");
 
 		// TODO Why are there no Jira issue keys?
 		// assertEquals(
@@ -49,20 +48,6 @@ public class TestGetElements extends TestSetUp {
 		// We could do it like this!, We will do it like this!, WI: Implement feature,
 		// WI: Yet another work item, WI: Do an interesting task, This is a great
 		// solution.], [How can we implement the new get function?]]",
-		// response.getEntity().toString());
-		assertEquals(Status.OK.getStatusCode(), response.getStatus());
-	}
-
-	@Test
-	@NonTransactional
-	public void testFilledAllTreesFalse() {
-		Response response = knowledgeRest.getElements(request, false, "TEST", "");
-
-		// assertEquals(
-		// "[WI: Implement feature, WI: Yet another work item, WI: Do an interesting
-		// task, How can we implement the feature?, How can we implement the new get
-		// function?, We could do it like this!, We will do it like this!, This is a
-		// great solution.]",
 		// response.getEntity().toString());
 		assertEquals(Status.OK.getStatusCode(), response.getStatus());
 	}
