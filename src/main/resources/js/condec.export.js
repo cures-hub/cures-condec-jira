@@ -16,83 +16,65 @@
 	/*
 	 * external references: condec.dialog
 	 */
-	ConDecExport.prototype.exportLinkedElements = function exportLinkedElements(exportType, elementKey) {
-		var query = getQueryFromUrl(elementKey);
-		var jiraIssueKey = conDecAPI.getIssueKey();
-		// handle Exception when no issueKey could be defined
-		if (!jiraIssueKey) {
-			jiraIssueKey = elementKey;
-		}
-		conDecAPI.getElements(query, function(elements) {
-			if (elements && elements.length > 0 && elements[0] !== null) {
-				download(elements, "decisionKnowledge", exportType);
-			}
+	ConDecExport.prototype.exportLinkedElements = function exportLinkedElements(exportFormat, id, documentationLocation) {
+		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(element) {
+			var query = getQueryFromUrl(element.key);
+			conDecAPI.getElements(query, function(elements) {
+				if (elements && elements.length > 0 && elements[0] !== null) {
+					download(elements, "decisionKnowledge", exportFormat);
+				}
+			});
 		});
 	}
 
-	function getURLsSearch() {
-		// get jql from url
+	/**
+	 * @returns query (jql or filter) string. If the query is empty or
+	 *          non-existent, it returns a jql for one Jira issue.
+	 */
+	function getQueryFromUrl(elementKey) {
+		var urlSearch = getUrlSearch();
+		if (urlSearch && (urlSearch.indexOf("?jql") > -1 || urlSearch.indexOf("?filter") > -1)) {
+			return urlSearch;
+		}
+
+		var pathWithoutBaseUrl = getUrlPath();
+		if (pathWithoutBaseUrl && pathWithoutBaseUrl.indexOf("/browse/") > -1) {
+			var issueKey = pathWithoutBaseUrl.split("/browse/")[1];
+			if (issueKey.indexOf("?")) {
+				issueKey = issueKey.split("?")[0];
+			}
+			return "?jql=issue=" + issueKey;
+		}
+		// it has to be at the decision knowledge page
+		if (elementKey) {
+			return "?jql=issue=" + elementKey;
+		}
+		return "";
+	}
+
+	function getUrlSearch() {
 		var search = global.location.search.toString();
 		search = search.toString().replace("&", "§");
-		// if search query does not exist check
 		return search;
 	}
 
-	/**
-	 * returns jql if empty or nonexistent create it returning jql for one issue
-	 * or elementKey
-	 * 
-	 * @returns {string}
-	 */
-	function getQueryFromUrl(elementKey) {
-		var userInputJql = getURLsSearch();
+	function getUrlPath() {
 		var baseUrl = AJS.params.baseURL;
-		var sPathName = document.location.href;
-		var sPathWithoutBaseUrl = sPathName.split(baseUrl)[1];
-
-		// check if jql is empty or non existent
-		var myJql = "";
-		if (userInputJql && userInputJql.indexOf("?jql=") > -1 && userInputJql.split("?jql=")[1]) {
-			myJql = userInputJql;
-		} else if (userInputJql && userInputJql.indexOf("?filter=") > -1 && userInputJql.split("?filter=")[1]) {
-			myJql = userInputJql;
-		} else if (sPathWithoutBaseUrl && sPathWithoutBaseUrl.indexOf("/browse/") > -1) {
-			// user on url of a single issue
-			var issueKey = sPathWithoutBaseUrl.split("/browse/")[1];
-			if (issueKey.indexOf("?jql=")) {
-				issueKey = issueKey.split("?jql=")[0];
-			}
-			if (issueKey.indexOf("?filter=")) {
-				issueKey = issueKey.split("?filter=")[0];
-			}
-			myJql = "?jql=issue=" + issueKey;
-		} else {
-			// it has to be at the Decision knowledge site
-			if (elementKey) {
-				myJql = "?jql=issue=" + elementKey;
-			}
-		}
-		return myJql;
+		var pathName = document.location.href;
+		return pathName.split(baseUrl)[1];
 	}
 
-	function download(elements, filename, exportType, multipleArrays) {
+	function download(elements, filename, exportType) {
 		var dataString = "";
 		switch (exportType) {
 		case "document":
 			filename += ".doc";
-			var htmlString = "";
-			if (multipleArrays) {
-				elements.map(function(aElement) {
-					htmlString += createHtmlStringForWordDocument(aElement) + "<hr>";
-				});
-			} else {
-				htmlString = createHtmlStringForWordDocument(elements);
-			}
+			var htmlString = createHtmlStringForWordDocument(elements);
 			dataString = "data:text/html," + encodeURIComponent(htmlString);
 			break;
 		case "json":
-			dataString = "data:text/plain;charset=utf-8," + encodeURIComponent(JSON.stringify(elements));
 			filename += ".json";
+			dataString = "data:text/plain;charset=utf-8," + encodeURIComponent(JSON.stringify(elements));
 			break;
 		}
 

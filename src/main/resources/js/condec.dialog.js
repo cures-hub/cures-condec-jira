@@ -1065,7 +1065,7 @@
 		};
 	};
 
-	ConDecDialog.prototype.showExportDialog = function showExportDialog(decisionElementKey) {
+	ConDecDialog.prototype.showExportDialog = function showExportDialog(id, documentationLocation) {
 		console.log("conDecDialog exportDialog");
 
 		// HTML elements
@@ -1076,7 +1076,7 @@
 		// Set onclick listener on buttons
 		submitButton.onclick = function () {
 			var exportFormat = $('input[name=form-radio-export-format]:checked').val();
-			conDecExport.exportLinkedElements(exportFormat, decisionElementKey);
+			conDecExport.exportLinkedElements(exportFormat, id, documentationLocation);
 			AJS.dialog2(exportDialog).hide();
 		};
 		

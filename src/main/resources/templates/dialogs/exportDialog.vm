@@ -10,12 +10,12 @@
 			<div class="field-group">
 				<label for="form-radio-export-format">$i18n.getText("condec.label.export.format"):</label>
 				<div class="radio">
-					<input class="radio" type="radio" checked="checked" name="form-radio-export-format" id="exportAsDocument" value="document">
-					<label for="exportAsDocument">Word Document</label>
+					<input class="radio" type="radio" checked="checked" name="form-radio-export-format" id="form-radio-export-format-document" value="document">
+					<label for="form-radio-export-format-document">Word Document</label>
 				</div>
 				<div class="radio">
-					<input class="radio" type="radio" name="form-radio-export-format" id="exportAsJson" value="json">
-					<label for="exportAsJson">JSON</label>
+					<input class="radio" type="radio" name="form-radio-export-format" id="form-radio-export-format-json" value="json">
+					<label for="form-radio-export-format-json">JSON</label>
 				</div>
             </div>
        </form>
