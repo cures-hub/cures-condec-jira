@@ -18,7 +18,12 @@
 	 */
 	ConDecExport.prototype.exportLinkedElements = function exportLinkedElements(exportFormat, id, documentationLocation) {
 		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(element) {
-			var query = getQueryFromUrl(element.key);
+			var query = "";
+			if (element) {
+				query = "?jql=issue=" + element.key.split(":")[0];
+			} else {
+				query = getQueryFromUrl();
+			}
 			conDecAPI.getElements(query, function(elements) {
 				if (elements && elements.length > 0 && elements[0] !== null) {
 					download(elements, "decisionKnowledge", exportFormat);
@@ -31,7 +36,7 @@
 	 * @returns query (jql or filter) string. If the query is empty or
 	 *          non-existent, it returns a jql for one Jira issue.
 	 */
-	function getQueryFromUrl(elementKey) {
+	function getQueryFromUrl() {
 		var urlSearch = getUrlSearch();
 		if (urlSearch && (urlSearch.indexOf("?jql") > -1 || urlSearch.indexOf("?filter") > -1)) {
 			return urlSearch;
@@ -39,16 +44,13 @@
 
 		var pathWithoutBaseUrl = getUrlPath();
 		if (pathWithoutBaseUrl && pathWithoutBaseUrl.indexOf("/browse/") > -1) {
-			var issueKey = pathWithoutBaseUrl.split("/browse/")[1];
-			if (issueKey.indexOf("?")) {
-				issueKey = issueKey.split("?")[0];
+			var jiraIssueKey = pathWithoutBaseUrl.split("/browse/")[1];
+			if (jiraIssueKey.indexOf("?")) {
+				jiraIssueKey = jiraIssueKey.split("?")[0];
 			}
-			return "?jql=issue=" + issueKey;
+			return "?jql=issue=" + jiraIssueKey;
 		}
-		// it has to be at the decision knowledge page
-		if (elementKey) {
-			return "?jql=issue=" + elementKey;
-		}
+		
 		return "";
 	}
 

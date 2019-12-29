@@ -187,8 +187,7 @@
 		exportMenuItem.addEventListener("click", function(event) {
 			event.preventDefault();
 			event.stopPropagation();
-			// @alternative conDecDialog.showExportDialog(JIRA.Issue.getIssueId(), "i");
-			AJS.dialog2("#export-dialog").show();
+			conDecDialog.showExportDialog(JIRA.Issue.getIssueId(), "i");
 		});
 	}
 
