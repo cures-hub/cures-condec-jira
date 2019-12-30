@@ -70,20 +70,20 @@ public class TestFilteringManager extends TestSetUp {
 	public void testConstructorFilterStringFilledFilledEmpty() {
 		FilteringManager extractor = new FilteringManagerImpl("TEST", user, "");
 		// the empty query will be changed to "allissues", i.e. "type != null"
-		assertEquals(8, extractor.getAllElementsMatchingQuery().size());
+		assertEquals(8, extractor.getAllElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	public void testConstructorFilterStringFilledFilledString() {
 		FilteringManager extractor = new FilteringManagerImpl("TEST", user, "?filter=allopenissues");
-		assertEquals(8, extractor.getAllElementsMatchingQuery().size());
+		assertEquals(8, extractor.getAllElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	public void testConstructorFilterStringFilledFilledFilledJQL() {
 		FilteringManager extractor = new FilteringManagerImpl("TEST", user, "?jql=project=TEST");
 		assertEquals("?jql=project=TEST", extractor.getFilterSettings().getSearchString());
-		assertEquals(8, extractor.getAllElementsMatchingQuery().size());
+		assertEquals(8, extractor.getAllElementsMatchingFilterSettings().size());
 	}
 
 	@Test
@@ -103,7 +103,7 @@ public class TestFilteringManager extends TestSetUp {
 		FilteringManager extractor = new FilteringManagerImpl(user, new FilterSettingsImpl("TEST", ""));
 		// the empty query will be changed to "allissues", i.e. "type != null"
 		// no, it is changed to "type = null" currently!
-		assertEquals(8, extractor.getAllElementsMatchingQuery().size());
+		assertEquals(8, extractor.getAllElementsMatchingFilterSettings().size());
 	}
 
 	@Test
@@ -111,13 +111,13 @@ public class TestFilteringManager extends TestSetUp {
 		FilteringManager extractor = new FilteringManagerImpl("TEST", user, "");
 		// the empty query will be changed to "allissues", i.e. "type != null"
 		// no, it is changed to "type = null" currently!
-		assertEquals(8, extractor.getAllElementsMatchingQuery().size());
+		assertEquals(8, extractor.getAllElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	public void testGetGraphsMatchingQueryFilled() {
 		FilteringManager extractor = new FilteringManagerImpl("TEST", user, "?jql=project=TEST AND issuetype = Issue");
-		assertEquals(8, extractor.getAllElementsMatchingQuery().size());
+		assertEquals(8, extractor.getAllElementsMatchingFilterSettings().size());
 	}
 
 	@Test

@@ -324,7 +324,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		FilteringManager filteringManager = new FilteringManagerImpl(projectKey, user, query);
-		List<DecisionKnowledgeElement> queryResult = filteringManager.getAllElementsMatchingQuery();
+		List<DecisionKnowledgeElement> queryResult = filteringManager.getAllElementsMatchingFilterSettings();
 		return Response.ok(queryResult).build();
 	}
 

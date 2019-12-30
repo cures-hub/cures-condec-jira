@@ -13,6 +13,7 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.CommonMetricCalculator;
@@ -27,6 +28,7 @@ public class TestGetDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherTypeCom
 
 	@Before
 	public void setUp() {
+		TestSetUpGit.setUpBeforeClass();
 		init();
 
 		decisionElement = JiraIssues.addElementToDataBase(18, "Decision");

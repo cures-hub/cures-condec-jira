@@ -48,12 +48,34 @@ public class FilteringManagerImpl implements FilteringManager {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getAllElementsMatchingQuery() {
-		List<Issue> jiraIssues = getJiraIssuesFromQuery();
-		if (jiraIssues == null) {
-			return this.getAllElementsMatchingFilterSettings();
+	public List<DecisionKnowledgeElement> getAllElementsMatchingFilterSettings() {
+		if (filterSettings == null || filterSettings.getProjectKey() == null) {
+			return new ArrayList<DecisionKnowledgeElement>();
 		}
+		String searchString = filterSettings.getSearchString().toLowerCase();
+		if (JiraQueryType.getJiraQueryType(searchString) == JiraQueryType.OTHER) {
+			List<DecisionKnowledgeElement> elements = KnowledgePersistenceManager
+					.getOrCreate(filterSettings.getProjectKey()).getDecisionKnowledgeElements();
+			return filterElements(elements);
+		}
+		return getAllElementsMatchingQuery();
+	}
+
+	private List<DecisionKnowledgeElement> getAllElementsMatchingQuery() {
+		List<Issue> jiraIssues = getJiraIssuesFromQuery();
 		return getElementsInJiraIssuesMatchingFilterSettings(jiraIssues);
+	}
+
+	private List<Issue> getJiraIssuesFromQuery() {
+		if (filterSettings == null) {
+			return null;
+		}
+		JiraQueryHandler queryHandler = new JiraQueryHandlerImpl(user, filterSettings.getProjectKey(),
+				filterSettings.getSearchString());
+		if (queryHandler == null || queryHandler.getQueryType() == JiraQueryType.OTHER) {
+			return null;
+		}
+		return queryHandler.getJiraIssuesFromQuery();
 	}
 
 	private List<DecisionKnowledgeElement> getElementsInJiraIssuesMatchingFilterSettings(List<Issue> jiraIssues) {
@@ -81,28 +103,6 @@ public class FilteringManagerImpl implements FilteringManager {
 			}
 		}
 		return elements;
-	}
-
-	private List<Issue> getJiraIssuesFromQuery() {
-		if (filterSettings == null) {
-			return null;
-		}
-		JiraQueryHandler queryHandler = new JiraQueryHandlerImpl(user, filterSettings.getProjectKey(),
-				filterSettings.getSearchString());
-		if (queryHandler == null || queryHandler.getQueryType() == JiraQueryType.OTHER) {
-			return null;
-		}
-		return queryHandler.getJiraIssuesFromQuery();
-	}
-
-	@Override
-	public List<DecisionKnowledgeElement> getAllElementsMatchingFilterSettings() {
-		if (filterSettings == null || filterSettings.getProjectKey() == null) {
-			return new ArrayList<DecisionKnowledgeElement>();
-		}
-		List<DecisionKnowledgeElement> elements = KnowledgePersistenceManager
-				.getOrCreate(filterSettings.getProjectKey()).getDecisionKnowledgeElements();
-		return filterElements(elements);
 	}
 
 	private List<DecisionKnowledgeElement> filterElements(List<DecisionKnowledgeElement> elements) {
@@ -136,9 +136,6 @@ public class FilteringManagerImpl implements FilteringManager {
 			System.out.println("Not matching location");
 			return false;
 		}
-		// if (!isElementMatchingJiraQueryFilter(element)) {
-		// return false;
-		// }
 		if (!isElementMatchingSubStringFilter(element)) {
 			System.out.println("Not matching substring");
 			return false;
@@ -167,18 +164,6 @@ public class FilteringManagerImpl implements FilteringManager {
 					&& element.getCreated().getTime() <= filterSettings.getCreatedLatest();
 		}
 		return isMatchingTimeFilter;
-	}
-
-	@Override
-	public boolean isElementMatchingJiraQueryFilter(DecisionKnowledgeElement element) {
-		String searchString = filterSettings.getSearchString().toLowerCase();
-		if (JiraQueryType.getJiraQueryType(searchString) == JiraQueryType.OTHER) {
-			// no JQL string or filter
-			return true;
-		}
-
-		return filterSettings.getSearchString().equals("?filter=-4")
-				|| filterSettings.getSearchString().equals("?filter=allopenissues");
 	}
 
 	@Override

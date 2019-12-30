@@ -49,7 +49,7 @@ public class ReleaseNotesRestImpl implements ReleaseNotesRest {
 				+ " && resolved <= " + releaseNoteConfiguration.getEndDate();
 		FilteringManager extractor = new FilteringManagerImpl(projectKey, user, query);
 		List<DecisionKnowledgeElement> elementsMatchingQuery = new ArrayList<DecisionKnowledgeElement>();
-		elementsMatchingQuery = extractor.getAllElementsMatchingQuery();
+		elementsMatchingQuery = extractor.getAllElementsMatchingFilterSettings();
 		if (elementsMatchingQuery.size() == 0) {
 			return Response.status(Response.Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "No resolved issues were found in this date range!")).build();

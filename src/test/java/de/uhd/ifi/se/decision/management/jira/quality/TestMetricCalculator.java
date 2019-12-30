@@ -17,20 +17,21 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestMetricCalculator extends TestSetUpGit {
+public class TestMetricCalculator extends TestSetUp {
 	protected MetricCalculator calculator;
 	private Issue issue;
 
-	@Override
 	@Before
 	public void setUp() {
-		super.setUp();
+		TestSetUpGit.setUpBeforeClass();
+		init();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 
 		calculator = new MetricCalculator((long) 1, user, "16");
