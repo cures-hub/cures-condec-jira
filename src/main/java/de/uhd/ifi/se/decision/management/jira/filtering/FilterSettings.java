@@ -22,17 +22,17 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 public interface FilterSettings {
 
 	/**
-	 * Returns the key of the JIRA project.
+	 * Returns the key of the Jira project.
 	 *
-	 * @return key of the JIRA project.
+	 * @return key of the Jira project.
 	 */
 	String getProjectKey();
 
 	/**
-	 * Sets the key of the JIRA project.
+	 * Sets the key of the Jira project.
 	 *
 	 * @param projectKey
-	 *            of the JIRA project.
+	 *            of the Jira project.
 	 */
 	void setProjectKey(String projectKey);
 
@@ -113,10 +113,10 @@ public interface FilterSettings {
 	List<String> getNamesOfSelectedJiraIssueTypes();
 
 	/**
-	 * Returns the names of the JIRA issue types to be shown in the knowledge graph
+	 * Returns the names of the Jira issue types to be shown in the knowledge graph
 	 * as a list.
 	 *
-	 * @return list of names of JIRA {@link IssueType}s.
+	 * @return list of names of Jira {@link IssueType}s.
 	 */
 	void setSelectedJiraIssueTypes(List<String> types);
 
@@ -149,16 +149,16 @@ public interface FilterSettings {
 	void setSelectedStatus(List<String> linkTypes);
 
 	/**
-	 * Returns the names of all JIRA issue types of the selected project.
+	 * Returns the names of all Jira issue types of the selected project.
 	 *
-	 * @return list of names of JIRA {@link IssueType}s.
+	 * @return list of names of Jira {@link IssueType}s.
 	 */
 	List<String> getAllJiraIssueTypes();
 
 	/**
 	 * Returns the names of all {@link KnowledgeStatus}
 	 * 
-	 * @return list of names of JIRA {@link KnowledgeStatus}.
+	 * @return list of names of Jira {@link KnowledgeStatus}.
 	 */
 	List<String> getAllStatus();
 

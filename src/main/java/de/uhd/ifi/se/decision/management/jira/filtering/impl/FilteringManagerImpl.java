@@ -121,23 +121,18 @@ public class FilteringManagerImpl implements FilteringManager {
 	@Override
 	public boolean isElementMatchingFilterSettings(DecisionKnowledgeElement element) {
 		if (!isElementMatchingKnowledgeTypeFilter(element)) {
-			System.out.println("Not matching type");
 			return false;
 		}
 		if (!isElementMatchingTimeFilter(element)) {
-			System.out.println("Not matching time");
 			return false;
 		}
 		if (!isElementMatchingStatusFilter(element)) {
-			System.out.println("Not matching status");
 			return false;
 		}
 		if (!isElementMatchingDocumentationLocationFilter(element)) {
-			System.out.println("Not matching location");
 			return false;
 		}
 		if (!isElementMatchingSubStringFilter(element)) {
-			System.out.println("Not matching substring");
 			return false;
 		}
 		return isElementMatchingLinkTypeFilter(element);

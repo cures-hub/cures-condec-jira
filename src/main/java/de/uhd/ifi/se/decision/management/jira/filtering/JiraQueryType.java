@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
 /**
- * Type of search string in JIRA. A search string can either contain a query in
- * JIRA Query Language (JQL), a preset filter (can also be set by the user), or
+ * Type of search string in Jira. A search string can either contain a query in
+ * Jira Query Language (JQL), a preset filter (can also be set by the user), or
  * could be of any other format.
  */
 public enum JiraQueryType {

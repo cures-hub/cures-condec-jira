@@ -31,7 +31,7 @@
 			conDecObservable = _conDecObservable;
 			conDecDialog = _conDecDialog;
 
-			//subscribe to event on table
+			// subscribe to event on table
 			document.getElementById("release-notes-table").addEventListener("updateReleaseNoteTable",function(event){
 				this.getReleaseNotes();
 			}.bind(this));

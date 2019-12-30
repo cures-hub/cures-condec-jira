@@ -47,9 +47,8 @@ public class ReleaseNotesRestImpl implements ReleaseNotesRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		String query = "?jql=project=" + projectKey + " && resolved >= " + releaseNoteConfiguration.getStartDate()
 				+ " && resolved <= " + releaseNoteConfiguration.getEndDate();
-		FilteringManager extractor = new FilteringManagerImpl(projectKey, user, query);
-		List<DecisionKnowledgeElement> elementsMatchingQuery = new ArrayList<DecisionKnowledgeElement>();
-		elementsMatchingQuery = extractor.getAllElementsMatchingFilterSettings();
+		FilteringManager filteringManager = new FilteringManagerImpl(projectKey, user, query);
+		List<DecisionKnowledgeElement> elementsMatchingQuery = filteringManager.getAllElementsMatchingFilterSettings();
 		if (elementsMatchingQuery.size() == 0) {
 			return Response.status(Response.Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "No resolved issues were found in this date range!")).build();
