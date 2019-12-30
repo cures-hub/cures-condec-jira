@@ -17,20 +17,21 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestMetricCalculator extends TestSetUp {
+public class TestMetricCalculator extends TestSetUpGit {
 	protected MetricCalculator calculator;
 	private Issue issue;
 
+	@Override
 	@Before
 	public void setUp() {
-		init();
-		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
+		super.setUp();
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 
 		calculator = new MetricCalculator((long) 1, user, "16");
 		JiraIssues.addElementToDataBase(17, "Issue");
@@ -38,15 +39,6 @@ public class TestMetricCalculator extends TestSetUp {
 		JiraIssues.addElementToDataBase(19, "Argument");
 		issue = new MockIssue();
 	}
-
-	// @AfterClass
-	// public static void removeFolder() {
-	// File repo = new File(System.getProperty("user.home") + File.separator +
-	// "repository");
-	// if (repo.exists()) {
-	// repo.delete();
-	// }
-	// }
 
 	@Test
 	@NonTransactional

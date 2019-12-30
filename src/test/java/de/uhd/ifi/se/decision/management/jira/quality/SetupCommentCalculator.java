@@ -26,13 +26,4 @@ public abstract class SetupCommentCalculator extends TestSetUp {
 		decisionElement = JiraIssues.addElementToDataBase(18, "Decision");
 		argumentElement = JiraIssues.addElementToDataBase(19, "Argument");
 	}
-
-	// @AfterClass
-	// public static void removeFolder() {
-	// File repo = new File(System.getProperty("user.home") + File.separator +
-	// "repository");
-	// if (repo.exists()) {
-	// repo.delete();
-	// }
-	// }
 }
