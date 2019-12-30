@@ -25,7 +25,7 @@
 				}
 			});
 		});
-	}
+	};
 
 	function getQuery(element) {
 		if (element) {

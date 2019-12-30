@@ -1,8 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.quality;
 
-import java.io.File;
-
-import org.junit.AfterClass;
 import org.junit.Before;
 
 import com.atlassian.jira.user.ApplicationUser;
@@ -30,11 +27,12 @@ public abstract class SetupCommentCalculator extends TestSetUp {
 		argumentElement = JiraIssues.addElementToDataBase(19, "Argument");
 	}
 
-	@AfterClass
-	public static void removeFolder() {
-		File repo = new File(System.getProperty("user.home") + File.separator + "repository");
-		if (repo.exists()) {
-			repo.delete();
-		}
-	}
+	// @AfterClass
+	// public static void removeFolder() {
+	// File repo = new File(System.getProperty("user.home") + File.separator +
+	// "repository");
+	// if (repo.exists()) {
+	// repo.delete();
+	// }
+	// }
 }
