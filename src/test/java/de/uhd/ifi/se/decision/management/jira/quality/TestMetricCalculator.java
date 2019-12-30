@@ -13,44 +13,29 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.atlassian.activeobjects.internal.ActiveObjectsSqlException;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestMetricCalculator {
+public class TestMetricCalculator extends TestSetUp {
 	protected MetricCalculator calculator;
-	private long id = 1;
-	private long jiraIssueId = 12;
-	private long elemIssueId = 1;
-	private String projectKey = "TEST";
 	private Issue issue;
-
-	protected String baseIssueKey = "TEST-100";
-	protected ApplicationUser user;
-	protected DecisionKnowledgeElement decisionElement;
-	protected DecisionKnowledgeElement argumentElement;
-	protected DecisionKnowledgeElement issueElement;
 
 	@Before
 	public void setUp() {
-		TestSetUp.init();
+		init();
 		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
 
 		calculator = new MetricCalculator((long) 1, user, "16");
-		// issueElement = addElementToDataBase(user, "Issue");
-		// decisionElement = addElementToDataBase(user, "Decision");
-		// argumentElement = addElementToDataBase(user, "Argument");
+		JiraIssues.addElementToDataBase(17, "Issue");
+		JiraIssues.addElementToDataBase(18, "Decision");
+		JiraIssues.addElementToDataBase(19, "Argument");
 		issue = new MockIssue();
 	}
 
@@ -62,23 +47,6 @@ public class TestMetricCalculator {
 	// repo.delete();
 	// }
 	// }
-
-	protected PartOfJiraIssueText addElementToDataBase(ApplicationUser user, String type) {
-		id++;
-		PartOfJiraIssueText element;
-		element = new PartOfJiraIssueTextImpl();
-		element.setProject(projectKey);
-		element.setJiraIssueId(jiraIssueId);
-		element.setId(id);
-		element.setKey(baseIssueKey + elemIssueId);
-		element.setType(type);
-		element.setProject("TEST");
-		element.setDescription("Old");
-		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
-		KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager()
-				.insertDecisionKnowledgeElement(element, user);
-		return element;
-	}
 
 	@Test
 	@NonTransactional
@@ -92,16 +60,16 @@ public class TestMetricCalculator {
 	public void testNumberOfCommentsPerIssue() {
 		Map<String, Integer> map = calculator.numberOfCommentsPerIssue();
 		// TODO this should be 1
-		assertEquals(0, map.size(), 0.0);
+		assertEquals(0, map.size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetNumberOfRelevantComments() {
-		assertEquals(2, calculator.getNumberOfRelevantComments().size(), 0.0);
+		assertEquals(2, calculator.getNumberOfRelevantComments().size());
 	}
 
-	@Test(expected = ActiveObjectsSqlException.class)
+	@Test
 	public void testGetDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType() {
 		Map<String, String> calculation = calculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(
 				KnowledgeType.ARGUMENT, KnowledgeType.DECISION);
@@ -122,9 +90,9 @@ public class TestMetricCalculator {
 		assertEquals("", calculation2.get("Decision has Argument"));
 	}
 
-	@Test(expected = ActiveObjectsSqlException.class)
+	@Test
 	public void testGetDistributionOfKnowledgeTypes() {
-		assertEquals(4, calculator.getDistributionOfKnowledgeTypes().size(), 0.0);
+		assertEquals(4, calculator.getDistributionOfKnowledgeTypes().size());
 	}
 
 	@Test
@@ -149,16 +117,16 @@ public class TestMetricCalculator {
 
 	@Test
 	public void testGetNumberOfDecisionKnowledgeElementsForJiraIssues() {
-		assertEquals(0, calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ARGUMENT, 2).size(),
-				0.0);
+		assertEquals(0, calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ARGUMENT, 2).size());
 	}
 
 	@Test
+	@Ignore
 	public void testGetReqAndClassSummary() {
 		assertEquals(2, calculator.getReqAndClassSummary().size());
 	}
 
-	@Test(expected = ActiveObjectsSqlException.class)
+	@Test
 	public void testGetKnowledgeSourceCount() {
 		assertEquals(4, calculator.getKnowledgeSourceCount().size());
 	}

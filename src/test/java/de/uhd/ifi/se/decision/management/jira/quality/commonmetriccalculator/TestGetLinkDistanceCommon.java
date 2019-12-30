@@ -11,14 +11,15 @@ public class TestGetLinkDistanceCommon extends SetupCommonCalculator {
 
 	@Test
 	public void testTypeNull() {
-		assertEquals(0, calculator.getLinkDistance(null).size(), 0.0);
+		assertEquals(0, calculator.getLinkDistance(null).size());
 	}
 
 	@Test
 	@Ignore
 	public void testTypeFilled() {
-		// TODO tests below evaluate differently on local machines (Windows) and Travis server!!!
-		assertEquals(1, calculator.getLinkDistance(KnowledgeType.DECISION).size(), 0.0);
-		assertEquals(2, calculator.getLinkDistance(KnowledgeType.ARGUMENT).size(), 0.0);
+		// TODO tests below evaluate differently on local machines (Windows) and Travis
+		// server!!!
+		assertEquals(1, calculator.getLinkDistance(KnowledgeType.DECISION).size());
+		assertEquals(2, calculator.getLinkDistance(KnowledgeType.ARGUMENT).size());
 	}
 }

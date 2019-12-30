@@ -14,8 +14,9 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 /**
  * Interface for the filter criteria. The filter settings cover the key of the
  * selected project, the time frame, documentation locations, Jira issue types,
- * and decision knowledge types. The search string can contain a JQL, a filter
- * or a search string specified in the frontend of the plug-in.
+ * and decision knowledge types. The search string can contain a query in Jira
+ * Query Language (JQL), a {@link JiraFilter} or a search string specified in
+ * the frontend of the plug-in.
  */
 @JsonDeserialize(as = FilterSettingsImpl.class)
 public interface FilterSettings {
