@@ -18,18 +18,20 @@
 	 */
 	ConDecExport.prototype.exportLinkedElements = function exportLinkedElements(exportFormat, id, documentationLocation) {
 		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(element) {
-			var query = "";
-			if (element) {
-				query = "?jql=issue=" + element.key.split(":")[0];
-			} else {
-				query = getQueryFromUrl();
-			}
+			var query = getQuery(element);
 			conDecAPI.getElements(query, function(elements) {
 				if (elements && elements.length > 0 && elements[0] !== null) {
 					download(elements, "decisionKnowledge", exportFormat);
 				}
 			});
 		});
+	}
+
+	function getQuery(element) {
+		if (element) {
+			return "?jql=issue=" + element.key.split(":")[0];
+		}
+		return getQueryFromUrl();
 	}
 
 	/**
@@ -50,7 +52,7 @@
 			}
 			return "?jql=issue=" + jiraIssueKey;
 		}
-		
+
 		return "";
 	}
 

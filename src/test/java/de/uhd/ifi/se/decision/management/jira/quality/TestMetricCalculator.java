@@ -5,12 +5,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -56,13 +54,14 @@ public class TestMetricCalculator {
 		issue = new MockIssue();
 	}
 
-	@AfterClass
-	public static void removeFolder() {
-		File repo = new File(System.getProperty("user.home") + File.separator + "repository");
-		if (repo.exists()) {
-			repo.delete();
-		}
-	}
+	// @AfterClass
+	// public static void removeFolder() {
+	// File repo = new File(System.getProperty("user.home") + File.separator +
+	// "repository");
+	// if (repo.exists()) {
+	// repo.delete();
+	// }
+	// }
 
 	protected PartOfJiraIssueText addElementToDataBase(ApplicationUser user, String type) {
 		id++;

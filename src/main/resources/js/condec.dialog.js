@@ -1066,7 +1066,7 @@
 	};
 
 	ConDecDialog.prototype.showExportDialog = function showExportDialog(id, documentationLocation) {
-		console.log("conDecDialog exportDialog");
+		console.log("conDecDialog showExportDialog");
 
 		// HTML elements
 		var exportDialog = document.getElementById("export-dialog");
