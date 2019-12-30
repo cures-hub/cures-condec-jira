@@ -14,20 +14,21 @@ import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteIssueProposalImpl;
 
 /**
  * Class to compute the metrics for the proposals and to compare the ratings.
  */
 public class ReleaseNotesCreator {
-	private ArrayList<ReleaseNoteIssueProposal> proposals;
-	private final List<DecisionKnowledgeElement> elementsMatchingQuery;
+	private List<ReleaseNoteIssueProposal> proposals;
+	private final List<Issue> elementsMatchingQuery;
 	private final ReleaseNoteConfiguration config;
 	private final ApplicationUser user;
 
-	public ReleaseNotesCreator(List<DecisionKnowledgeElement> elementsMatchingQuery,
-			ReleaseNoteConfiguration releaseNoteConfiguration, ApplicationUser user) {
-		this.elementsMatchingQuery = elementsMatchingQuery;
+	public ReleaseNotesCreator(List<Issue> jiraIssuesMatchingQuery, ReleaseNoteConfiguration releaseNoteConfiguration,
+			ApplicationUser user) {
+		this.elementsMatchingQuery = jiraIssuesMatchingQuery;
 		this.config = releaseNoteConfiguration;
 		this.user = user;
 	}
@@ -57,7 +58,7 @@ public class ReleaseNotesCreator {
 		HashMap<String, Integer> dkLinkedCount = new HashMap<String, Integer>();
 
 		for (int i = 0; i < elementsMatchingQuery.size(); i++) {
-			DecisionKnowledgeElement dkElement = elementsMatchingQuery.get(i);
+			DecisionKnowledgeElement dkElement = new DecisionKnowledgeElementImpl(elementsMatchingQuery.get(i));
 			// add key to used keys
 			usedKeys.add(dkElement.getKey());
 			// create Release note issue proposal with the element and the count of
