@@ -6,29 +6,29 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.query.Query;
 
 /**
- * Interface to handle queries in JIRA, either written in JIRA Query Language
+ * Interface to handle queries in Jira, either written in Jira Query Language
  * (JQL) or as a preset filter (can also be set by the user).
  */
 public interface JiraQueryHandler {
 
 	/**
-	 * Returns all JIRA issues that match the query.
+	 * Returns all Jira issues that match the query.
 	 * 
-	 * @return list of JIRA issues that match the query.
+	 * @return list of Jira issues that match the query.
 	 */
 	List<Issue> getJiraIssuesFromQuery();
 
 	/**
-	 * Returns the names of the JIRA issue types explicitly mentioned in the query,
+	 * Returns the names of the Jira issue types explicitly mentioned in the query,
 	 * e.g. "issuetype in (Decision, Issue)". Returns an empty list for the query
 	 * "type != null".
 	 * 
-	 * @return names of the JIRA issue types explicitly mentioned in the query.
+	 * @return names of the Jira issue types explicitly mentioned in the query.
 	 */
 	List<String> getNamesOfJiraIssueTypesInQuery();
 
 	/**
-	 * Returns the earliest creation date (start date) that JIRA issues are included
+	 * Returns the earliest creation date (start date) that Jira issues are included
 	 * as a long value or -1 if empty.
 	 * 
 	 * @return creation start date as a long value or -1 if empty.
@@ -36,7 +36,7 @@ public interface JiraQueryHandler {
 	long getCreatedEarliest();
 
 	/**
-	 * Returns the latest creation date (end date) that JIRA issues are included as
+	 * Returns the latest creation date (end date) that Jira issues are included as
 	 * a long value or -1 if empty.
 	 * 
 	 * @return creation end date as a long value or -1 if empty.
@@ -59,7 +59,7 @@ public interface JiraQueryHandler {
 	Query getQueryObject();
 
 	/**
-	 * Returns the query type. This can either be a query in JIRA Query Language
+	 * Returns the query type. This can either be a query in Jira Query Language
 	 * (JQL), a preset filter (can also be set by the user), or could be of any
 	 * other format.
 	 * 

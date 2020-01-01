@@ -101,17 +101,20 @@ public class JiraIssues {
 	}
 
 	public static PartOfJiraIssueText addElementToDataBase() {
+		return addElementToDataBase(12231, "Argument");
+	}
+
+	public static PartOfJiraIssueText addElementToDataBase(long id, String type) {
 		PartOfJiraIssueText element = new PartOfJiraIssueTextImpl();
 		element.setProject("TEST");
 		element.setJiraIssueId(1);
-		element.setId(1);
-		element.setKey("TEST-12231");
-		element.setType("Argument");
-		element.setProject("TEST");
+		element.setId(id);
+		element.setKey("TEST-" + id);
+		element.setType(type);
 		element.setDescription("Old");
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 		element = (PartOfJiraIssueText) KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager()
-				.insertDecisionKnowledgeElement(element, null);
+				.insertDecisionKnowledgeElement(element, JiraUsers.SYS_ADMIN.getApplicationUser());
 		return element;
 	}
 

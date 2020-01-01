@@ -26,7 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryType;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
 
 /**
- * Class to handle queries in JIRA, either written in JIRA Query Language (JQL)
+ * Class to handle queries in Jira, either written in Jira Query Language (JQL)
  * or as a preset filter (can also be set by the user).
  */
 public class JiraQueryHandlerImpl implements JiraQueryHandler {
@@ -181,7 +181,7 @@ public class JiraQueryHandlerImpl implements JiraQueryHandler {
 		try {
 			queryTime = Long.parseLong(queryTimeString);
 		} catch (NumberFormatException e) {
-			LOGGER.error("No valid time was given in the JIRA query.");
+			LOGGER.error("No valid time was given in the Jira query.");
 		}
 		long result = currentDate - (queryTime * factor);
 		return result;
@@ -221,7 +221,7 @@ public class JiraQueryHandlerImpl implements JiraQueryHandler {
 	public List<Issue> getJiraIssuesFromQuery() {
 		ParseResult parseResult = getParseResult();
 		if (!parseResult.isValid()) {
-			LOGGER.error("Getting JIRA issues from JQL query failed. " + parseResult.getErrors().toString());
+			LOGGER.error("Getting Jira issues from JQL query failed. " + parseResult.getErrors().toString());
 			return new ArrayList<Issue>();
 		}
 
@@ -231,7 +231,7 @@ public class JiraQueryHandlerImpl implements JiraQueryHandler {
 					PagerFilter.getUnlimitedFilter());
 			jiraIssues = JiraSearchServiceHelper.getJiraIssues(results);
 		} catch (SearchException e) {
-			LOGGER.error("Getting JIRA issues from JQL query failed. Message: " + e.getMessage());
+			LOGGER.error("Getting Jira issues from JQL query failed. Message: " + e.getMessage());
 		}
 		return jiraIssues;
 	}

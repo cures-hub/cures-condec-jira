@@ -100,10 +100,12 @@ public class ConfigPersistenceManager {
 		return "true".equals(isKnowledgeExtractedFromGit);
 	}
 
+	// TODO Testing
 	public static boolean isPostSquashedCommitsActivated(String projectKey) {
 		return "true".equals(getValue(projectKey, "isPostSquashedCommitsActivated"));
 	}
 
+	// TODO Testing
 	public static boolean isPostFeatureBranchCommitsActivated(String projectKey) {
 		return "true".equals(getValue(projectKey, "isPostFeatureBranchCommitsActivated"));
 	}
@@ -113,6 +115,7 @@ public class ConfigPersistenceManager {
 		return "true".equals(isKnowledgeExtractedFromIssues);
 	}
 
+	// TODO Testing
 	public static boolean isKnowledgeTypeEnabled(String projectKey, KnowledgeType knowledgeType) {
 		return isKnowledgeTypeEnabled(projectKey, knowledgeType.toString());
 	}
@@ -158,16 +161,16 @@ public class ConfigPersistenceManager {
 		}
 	}
 
-
+	// TODO Testing
 	public static void setPostSquashedCommits(String projectKey, Boolean checked) {
 		setValue(projectKey, "isPostSquashedCommitsActivated", Boolean.toString(checked));
 	}
 
+	// TODO Testing
 	public static void setPostFeatureBranchCommits(String projectKey, Boolean checked) {
 		setValue(projectKey, "isPostFeatureBranchCommitsActivated", Boolean.toString(checked));
 	}
 
-	// TODO Testing
 	public static void setGitUri(String projectKey, String gitUri) {
 		setValue(projectKey, "gitUri", gitUri);
 	}
@@ -185,6 +188,7 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
+	// TODO Testing
 	public static void setUseClassifierForIssueComments(String projectKey, boolean isActivated) {
 		setValue(projectKey, "setClassiferForIssueComments", Boolean.toString(isActivated));
 	}
@@ -229,16 +233,15 @@ public class ConfigPersistenceManager {
 		return getValue(projectKey, "arffFileName");
 	}
 
-	public static void setReleaseNoteMapping(String projectKey, ReleaseNoteCategory category, List<String> selectedIssueNames){
+	public static void setReleaseNoteMapping(String projectKey, ReleaseNoteCategory category,
+			List<String> selectedIssueNames) {
 		String joinedIssueNames = String.join(",", selectedIssueNames);
 		setValue(projectKey, "releaseNoteMapping" + "." + category, joinedIssueNames);
 	}
 
-	public static List<String> getReleaseNoteMapping(String projectKey, ReleaseNoteCategory category){
-		String joinedIssueNames = getValue(projectKey,"releaseNoteMapping"+"."+category);
+	public static List<String> getReleaseNoteMapping(String projectKey, ReleaseNoteCategory category) {
+		String joinedIssueNames = getValue(projectKey, "releaseNoteMapping" + "." + category);
 		return Arrays.asList(joinedIssueNames.split(","));
 	}
-
-
 
 }

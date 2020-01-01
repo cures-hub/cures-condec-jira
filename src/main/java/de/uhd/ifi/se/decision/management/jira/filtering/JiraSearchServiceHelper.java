@@ -20,7 +20,7 @@ import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 
 /**
- * Helper class to support both JIRA versions 7 and 8.
+ * Helper class to support both Jira versions 7 and 8.
  */
 public class JiraSearchServiceHelper {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraSearchServiceHelper.class);

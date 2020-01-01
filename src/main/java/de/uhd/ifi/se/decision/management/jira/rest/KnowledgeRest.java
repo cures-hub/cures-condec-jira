@@ -3,6 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
+import com.atlassian.jira.user.ApplicationUser;
+
+import de.uhd.ifi.se.decision.management.jira.filtering.JiraFilter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
@@ -35,7 +38,21 @@ public interface KnowledgeRest {
 
 	Response deleteLink(HttpServletRequest request, String projectKey, Link link);
 
-	Response getElements(HttpServletRequest request, boolean allTrees, String projectKey, String query);
+	/**
+	 * Returns a list of all elements that match the query. The query can either be
+	 * in Jira Query Language (JQL) or a predefinded {@link JiraFilter}.
+	 * 
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param query
+	 *            either in in Jira Query Language (JQL) or a predefinded
+	 *            {@link JiraFilter}.
+	 * @return list of all elements that match the query.
+	 */
+	Response getElements(HttpServletRequest request, String projectKey, String query);
 
 	Response createIssueFromSentence(HttpServletRequest request, DecisionKnowledgeElement decisionKnowledgeElement);
 

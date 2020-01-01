@@ -1,132 +1,84 @@
 /*
- This module provides all functionality to export decision knowledge.
+ This module provides all functionality to export decision knowledge and related knowledge elements, 
+ such as requirements and work items.
 
  Requires
+ * conDecAPI
 
- Is referenced in HTML by
- * exportDialog.vm
+ Is required by
+ * conDecDialog
  */
 (function(global) {
 
 	var ConDecExport = function ConDecExport() {
 	};
-	/**
-	 * Only Public function
-	 * 
-	 * @param elementKey
-	 * @param exportFormat
-	 * @param exportType
+
+	/*
+	 * external references: condec.dialog
 	 */
-	ConDecExport.prototype.getSelectedRadioBoxForExport = function getSelectedRadioBoxForExport(exportType,
-			exportFormat, elementKey) {
-		var expFormat = "";
-		if (exportFormat === "exportAsDocument") {
-			expFormat = "document";
-		}
-		if (exportFormat === "exportAsJson") {
-			expFormat = "json";
-		}
-		if (exportType === "exportLinked") {
-			exportLinkedElements(expFormat, elementKey);
-		}
-		if (exportType === "exportLinkedAndQuery") {
-			exportAllMatchedAndLinkedElements(expFormat, elementKey);
-		}
-		// close dialog
-		AJS.dialog2('#export-dialog').hide();
+	ConDecExport.prototype.exportLinkedElements = function exportLinkedElements(exportFormat, id, documentationLocation) {
+		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(element) {
+			var query = getQuery(element);
+			conDecAPI.getElements(query, function(elements) {
+				if (elements && elements.length > 0 && elements[0] !== null) {
+					download(elements, "decisionKnowledge", exportFormat);
+				}
+			});
+		});
 	};
 
-	function getURLsSearch() {
-		// get jql from url
+	function getQuery(element) {
+		if (element) {
+			return "?jql=issue=" + element.key.split(":")[0];
+		}
+		return getQueryFromUrl();
+	}
+
+	/**
+	 * @returns query (jql or filter) string. If the query is empty or
+	 *          non-existent, it returns a jql for one Jira issue.
+	 */
+	function getQueryFromUrl() {
+		var urlSearch = getUrlSearch();
+		if (urlSearch && (urlSearch.indexOf("?jql") > -1 || urlSearch.indexOf("?filter") > -1)) {
+			return urlSearch;
+		}
+
+		var pathWithoutBaseUrl = getUrlPath();
+		if (pathWithoutBaseUrl && pathWithoutBaseUrl.indexOf("/browse/") > -1) {
+			var jiraIssueKey = pathWithoutBaseUrl.split("/browse/")[1];
+			if (jiraIssueKey.indexOf("?")) {
+				jiraIssueKey = jiraIssueKey.split("?")[0];
+			}
+			return "?jql=issue=" + jiraIssueKey;
+		}
+
+		return "";
+	}
+
+	function getUrlSearch() {
 		var search = global.location.search.toString();
 		search = search.toString().replace("&", "§");
-		// if search query does not exist check
 		return search;
 	}
 
-	/**
-	 * returns jql if empty or nonexistent create it returning jql for one issue
-	 * or elementKey
-	 * 
-	 * @returns {string}
-	 */
-	function getQueryFromUrl(bAllIssues, elementKey) {
-
-		var userInputJql = getURLsSearch();
+	function getUrlPath() {
 		var baseUrl = AJS.params.baseURL;
-		var sPathName = document.location.href;
-		var sPathWithoutBaseUrl = sPathName.split(baseUrl)[1];
-
-		// check if jql is empty or non existent
-		var myJql = "";
-		if (userInputJql && userInputJql.indexOf("?jql=") > -1 && userInputJql.split("?jql=")[1]) {
-			myJql = userInputJql;
-		} else if (userInputJql && userInputJql.indexOf("?filter=") > -1 && userInputJql.split("?filter=")[1]) {
-			myJql = userInputJql;
-		} else if (sPathWithoutBaseUrl && sPathWithoutBaseUrl.indexOf("/browse/") > -1) {
-			// user on url of a single issue
-			if (bAllIssues) {
-				myJql = "?filter=allissues";
-			} else {
-				var issueKey = sPathWithoutBaseUrl.split("/browse/")[1];
-				if (issueKey.indexOf("?jql=")) {
-					issueKey = issueKey.split("?jql=")[0];
-				}
-				if (issueKey.indexOf("?filter=")) {
-					issueKey = issueKey.split("?filter=")[0];
-				}
-				myJql = "?jql=issue=" + issueKey;
-			}
-		} else {
-			// it has to be at the Decision knowledge site
-			if (elementKey) {
-				myJql = "?jql=issue=" + elementKey;
-			}
-		}
-		return myJql;
+		var pathName = document.location.href;
+		return pathName.split(baseUrl)[1];
 	}
 
-	function exportLinkedElements(exportType, elementKey) {
-		var jql = getQueryFromUrl(true, elementKey);
-		var jiraIssueKey = conDecAPI.getIssueKey();
-		// handle Exception when no issueKey could be defined
-		if (!jiraIssueKey) {
-			jiraIssueKey = elementKey;
-		}
-		conDecAPI.getLinkedElementsByQuery(jql, jiraIssueKey, "i", function(elements) {
-			if (elements && elements.length > 0 && elements[0] !== null) {
-				download(elements, "decisionKnowledgeGraph", exportType);
-			}
-		});
-	}
-
-	function exportAllMatchedAndLinkedElements(exportType, elementKey) {
-		var jql = getQueryFromUrl(false, elementKey);
-		conDecAPI.getAllElementsByQueryAndLinked(jql, function(elements) {
-			if (elements && elements.length > 0 && elements[0] !== null) {
-				download(elements, "decisionKnowledgeGraphWithLinked", exportType, true);
-			}
-		});
-	}
-
-	function download(elements, filename, exportType, multipleArrays) {
+	function download(elements, filename, exportType) {
 		var dataString = "";
 		switch (exportType) {
 		case "document":
 			filename += ".doc";
-			var htmlString = "";
-			if (multipleArrays) {
-				elements.map(function(aElement) {
-					htmlString += createHtmlStringForWordDocument(aElement) + "<hr>";
-				});
-			} else {
-				htmlString = createHtmlStringForWordDocument(elements);
-			}
+			var htmlString = createHtmlStringForWordDocument(elements);
 			dataString = "data:text/html," + encodeURIComponent(htmlString);
 			break;
 		case "json":
-			dataString = "data:text/plain;charset=utf-8," + encodeURIComponent(JSON.stringify(elements));
 			filename += ".json";
+			dataString = "data:text/plain;charset=utf-8," + encodeURIComponent(JSON.stringify(elements));
 			break;
 		}
 

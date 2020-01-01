@@ -8,13 +8,13 @@ import org.junit.Test;
 
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestGetNumberOfCommentsForJiraIssuesComment extends SetupCommentCalculator {
+public class TestGetNumberOfCommentsForJiraIssues extends SetupCommentCalculator {
 
 	@Test
 	@NonTransactional
 	public void testCase() {
 		Map<String, Integer> map = calculator.getNumberOfCommentsForJiraIssues();
 		// TODO this should be 1
-		assertEquals(0, map.size(), 0.0);
+		assertEquals(0, map.size());
 	}
 }

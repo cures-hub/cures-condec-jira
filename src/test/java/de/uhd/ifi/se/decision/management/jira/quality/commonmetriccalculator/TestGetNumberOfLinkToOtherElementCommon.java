@@ -10,26 +10,22 @@ public class TestGetNumberOfLinkToOtherElementCommon extends SetupCommonCalculat
 
 	@Test
 	public void testLinkFromNullLinkToNull() {
-		assertEquals(0, calculator.getNumberOfLinksToOtherElement(
-				null, null).size(), 0.0);
+		assertEquals(0, calculator.getNumberOfLinksToOtherElement(null, null).size());
 	}
 
 	@Test
 	public void testLinkFromFilledLinkToNull() {
-		assertEquals(0, calculator.getNumberOfLinksToOtherElement(
-				KnowledgeType.DECISION, null).size(), 0.0);
+		assertEquals(0, calculator.getNumberOfLinksToOtherElement(KnowledgeType.DECISION, null).size());
 	}
 
 	@Test
 	public void testLinkFromNullLinkToFilled() {
-		assertEquals(0, calculator.getNumberOfLinksToOtherElement(
-				null, KnowledgeType.ISSUE).size(), 0.0);
+		assertEquals(0, calculator.getNumberOfLinksToOtherElement(null, KnowledgeType.ISSUE).size());
 	}
 
 	@Test
 	public void testLinkFromFilledLinkToFilled() {
-		assertEquals(2, calculator.getNumberOfLinksToOtherElement(
-				KnowledgeType.ARGUMENT, KnowledgeType.DECISION).size(),
-				0.0);
+		assertEquals(2,
+				calculator.getNumberOfLinksToOtherElement(KnowledgeType.ARGUMENT, KnowledgeType.DECISION).size());
 	}
 }

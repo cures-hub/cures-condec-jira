@@ -100,7 +100,7 @@ public class VisGraph {
 	public VisGraph(ApplicationUser user, String elementKey, FilterSettings filterSettings) {
 		this(filterSettings);
 		FilteringManager filterExtractor = new FilteringManagerImpl(user, filterSettings);
-		this.elementsMatchingFilterCriteria = filterExtractor.getAllElementsMatchingQuery();
+		this.elementsMatchingFilterCriteria = filterExtractor.getAllElementsMatchingFilterSettings();
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(filterSettings.getProjectKey()).getDefaultManagerForSingleLocation();
 		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);

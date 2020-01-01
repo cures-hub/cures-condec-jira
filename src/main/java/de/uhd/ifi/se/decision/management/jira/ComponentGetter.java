@@ -21,8 +21,8 @@ import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 /**
- * Provides access to JIRA components. Automatically initialized. The
- * ComponentGetter is similar to the ComponentAccessor that comes with JIRA, but
+ * Provides access to Jira components. Automatically initialized. The
+ * ComponentGetter is similar to the ComponentAccessor that comes with Jira, but
  * is provided by the ConDec plugin. It enables to access the active objects
  * databases for object relational mapping. Further, it contains a different
  * user manager than that provided by the {@link ComponentAccessor} to handle
