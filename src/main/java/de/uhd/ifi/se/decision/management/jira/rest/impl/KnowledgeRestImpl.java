@@ -41,7 +41,7 @@ import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
  * REST resource: Enables creation, editing, and deletion of decision knowledge
  * elements and their links
  */
-@Path("/decisions")
+@Path("/knowledge")
 public class KnowledgeRestImpl implements KnowledgeRest {
 
 	@Override

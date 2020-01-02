@@ -7,6 +7,8 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraFilter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
@@ -23,6 +25,33 @@ public interface KnowledgeRest {
 
 	Response createUnlinkedDecisionKnowledgeElement(HttpServletRequest request, DecisionKnowledgeElement element);
 
+	/**
+	 * Creates a new {@link DecisionKnowledgeElement}. The decision knowledge
+	 * element can either be documented as a separate Jira issue (documentation
+	 * location "i") or in the description/a comment of an existing Jira issue
+	 * (documentation location "s").
+	 * 
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param element
+	 *            {@link DecisionKnowledgeElement} object with attributes, such as
+	 *            summary, description (optional), {@link DocumentationLocation},
+	 *            and {@link KnowledgeType}.
+	 * @param idOfExistingElement
+	 *            optional parameter. Identifier of a parent element that the new
+	 *            element should be linked with. Either the id or the key needs to
+	 *            be passed, not both.
+	 * @param documentationLocationOfExistingElement
+	 *            optional parameter. Documentation location of a parent element
+	 *            that the new element should be linked with.
+	 * @param keyOfExistingElement
+	 *            optional parameter. Key of a parent element that the new element
+	 *            should be linked with. Either the id or the key needs to be
+	 *            passed, not both.
+	 * @return new {@link DecisionKnowledgeElement} with its internal database id
+	 *         set.
+	 */
 	Response createDecisionKnowledgeElement(HttpServletRequest request, DecisionKnowledgeElement element,
 			long idOfExistingElement, String documentationLocationOfExistingElement, String keyOfExistingElement);
 

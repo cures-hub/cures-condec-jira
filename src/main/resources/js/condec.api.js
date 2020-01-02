@@ -24,6 +24,8 @@
 	var projectKey = null;
 
 	var ConDecAPI = function ConDecAPI() {
+		this.restPrefix = AJS.contextPath() + "/rest/condec/latest";
+		
 		projectKey = getProjectKey();
 		this.knowledgeTypes = getKnowledgeTypes(projectKey);
 		this.extendedKnowledgeTypes = getExtendedKnowledgeTypes(this.knowledgeTypes);
@@ -51,7 +53,7 @@
 	 */
 	ConDecAPI.prototype.getDecisionKnowledgeElement = function getDecisionKnowledgeElement(id, documentationLocation,
 																						   callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getDecisionKnowledgeElement.json?projectKey="
+		getJSON(this.restPrefix + "/knowledge/getDecisionKnowledgeElement.json?projectKey="
 			+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function (error,
 																									  decisionKnowledgeElement) {
 			if (error === null) {
@@ -64,7 +66,7 @@
 	 * external references: none
 	 */
 	ConDecAPI.prototype.getAdjacentElements = function getAdjacentElements(id, documentationLocation, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAdjacentElements.json?projectKey="
+		getJSON(this.restPrefix + "/knowledge/getAdjacentElements.json?projectKey="
 			+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function (error,
 																									  adjacentElements) {
 			if (error === null) {
@@ -77,7 +79,7 @@
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.getUnlinkedElements = function getUnlinkedElements(id, documentationLocation, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getUnlinkedElements.json?projectKey="
+		getJSON(this.restPrefix + "/knowledge/getUnlinkedElements.json?projectKey="
 			+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function (error,
 																									  unlinkedElements) {
 			if (error === null) {
@@ -100,8 +102,7 @@
 			"documentationLocation": documentationLocation,
 		};
 
-		postJSON(AJS.contextPath()
-			+ "/rest/decisions/latest/decisions/createUnlinkedDecisionKnowledgeElement.json?", newElement, function (error, newElement) {
+		postJSON(this.restPrefix + "/knowledge/createUnlinkedDecisionKnowledgeElement.json?", newElement, function (error, newElement) {
 			if (error === null) {
 				showFlag("success", type + " and link have been created.");
 				callback(newElement.id);
@@ -124,8 +125,7 @@
 			"documentationLocation": documentationLocation
 		};
 		console.log(newElement);
-		postJSON(AJS.contextPath()
-			+ "/rest/decisions/latest/decisions/createDecisionKnowledgeElement.json?idOfExistingElement="
+		postJSON(this.restPrefix + "/knowledge/createDecisionKnowledgeElement.json?idOfExistingElement="
 			+ idOfExistingElement + "&documentationLocationOfExistingElement="
 			+ documentationLocationOfExistingElement, newElement, function (error, newElement) {
 			if (error === null) {
@@ -150,8 +150,7 @@
 			"status": status
 		};
 		var parentElement = conDecTreant.findParentElement(id);
-		postJSON(AJS.contextPath()
-			+ "/rest/decisions/latest/decisions/updateDecisionKnowledgeElement.json?idOfParentElement="
+		postJSON(this.restPrefix + "/knowledge/updateDecisionKnowledgeElement.json?idOfParentElement="
 			+ parentElement["id"] + "&documentationLocationOfParentElement="
 			+ parentElement["documentationLocation"], element, function (error, response) {
 			if (error === null) {
@@ -166,12 +165,12 @@
 	ConDecAPI.prototype.getSprintsByProject = function getSprintsByProject() {
 		// first we need the boards then we can get the Sprints for each board
 		return new Promise(function (resolve, reject) {
-			var boardUrl = "/rest/agile/1.0/board?projectKeyOrId=" + projectKey;
+			var boardUrl = "/rest/agile/latest/board?projectKeyOrId=" + projectKey;
 			var boardPromise = getJSONReturnPromise(AJS.contextPath() + boardUrl);
 			boardPromise.then(function (boards) {
 				if (boards && boards.values && boards.values.length) {
 					var sprintPromises = boards.values.map(function (board) {
-						var sprintUrl = "/rest/agile/1.0/board/" + board.id + "/sprint";
+						var sprintUrl = "/rest/agile/latest/board/" + board.id + "/sprint";
 						return getJSONReturnPromise(AJS.contextPath() + sprintUrl);
 					});
 					Promise.all(sprintPromises)
@@ -216,7 +215,7 @@
 	ConDecAPI.prototype.getReleases = function getReleases() {
 		// first we need the boards then we can get the Sprints for each board
 		return new Promise(function (resolve, reject) {
-			var issueTypeUrl = "/rest/projects/1.0/project/" + projectKey + "/release/allversions";
+			var issueTypeUrl = "/rest/projects/latest/project/" + projectKey + "/release/allversions";
 			var issuePromise = getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
 			issuePromise.then(function (result) {
 				if (result && result.length) {
@@ -232,8 +231,8 @@
 	
 	ConDecAPI.prototype.getProjectWideSelectedIssueTypes = function getProjectWideSelectedIssueTypes() {
 		return new Promise(function (resolve, reject) {
-			var preSelectedIssueUrl = "/rest/decisions/latest/config/getReleaseNoteMapping.json?projectKey=" + projectKey;
-			var issuePromise = getJSONReturnPromise(AJS.contextPath() + preSelectedIssueUrl);
+			var preSelectedIssueUrl = AJS.contextPath() + "/rest/condec/latest/config/getReleaseNoteMapping.json?projectKey=" + projectKey;
+			var issuePromise = getJSONReturnPromise(preSelectedIssueUrl);
 			issuePromise.then(function (result) {
 				if (result) {
 					resolve(result);
@@ -263,7 +262,7 @@
 			"projectKey": projectKey,
 			"documentationLocation": documentationLocation
 		};
-		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteDecisionKnowledgeElement.json", element,
+		deleteJSON(this.restPrefix + "/knowledge/deleteDecisionKnowledgeElement.json", element,
 			function (error, isDeleted) {
 				if (error === null) {
 					showFlag("success", "Decision knowledge element has been deleted.");
@@ -277,7 +276,7 @@
 	 */
 	ConDecAPI.prototype.createLink = function createLink(knowledgeTypeOfChild, idOfParent, idOfChild,
 														 documentationLocationOfParent, documentationLocationOfChild, linkType, callback) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLink.json?projectKey=" + projectKey + "&knowledgeTypeOfChild=" + knowledgeTypeOfChild
+		postJSON(this.restPrefix + "/knowledge/createLink.json?projectKey=" + projectKey + "&knowledgeTypeOfChild=" + knowledgeTypeOfChild
 			+ "&idOfParent=" + idOfParent + "&documentationLocationOfParent=" + documentationLocationOfParent + "&idOfChild=" + idOfChild
 			+ "&documentationLocationOfChild=" + documentationLocationOfChild + "&linkTypeName=" + linkType, null, function (error, link) {
 			if (error === null) {
@@ -299,7 +298,7 @@
 			"documentationLocationOfSourceElement": documentationLocationOfSourceElement,
 			"documentationLocationOfDestinationElement": documentationLocationOfDestinationElement
 		};
-		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLink.json?projectKey=" + projectKey,
+		deleteJSON(this.restPrefix + "/knowledge/deleteLink.json?projectKey=" + projectKey,
 			link, function (error, link) {
 				if (error === null) {
 					showFlag("success", "Link has been deleted.");
@@ -319,7 +318,7 @@
 	 * external references: condec.export
 	 */
 	ConDecAPI.prototype.getElements = function getElements(query, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getElements.json?projectKey="
+		getJSON(this.restPrefix + "/knowledge/getElements.json?projectKey="
 			+ projectKey + "&query=" + query, function (error, elements) {
 			if (error === null) {
 				callback(elements);
@@ -336,7 +335,7 @@
 			"documentationLocation": "s",
 			"projectKey": projectKey
 		};
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/setSentenceIrrelevant.json", jsondata, function (
+		postJSON(this.restPrefix + "/knowledge/setSentenceIrrelevant.json", jsondata, function (
 			error) {
 			if (error === null) {
 				showFlag("success", "Decision knowledge element has been updated.");
@@ -353,7 +352,7 @@
 			"id": id,
 			"projectKey": projectKey
 		};
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createIssueFromSentence.json", jsondata,
+		postJSON(this.restPrefix + "/knowledge/createIssueFromSentence.json", jsondata,
 			function (error, id, type) {
 				if (error === null) {
 					showFlag("success", "JIRA Issue has been created");
@@ -367,7 +366,7 @@
 	 */
 	ConDecAPI.prototype.getSummarizedCode = function getSummarizedCode(id, documentationLocation, probability, callback) {
 		// console.log(probability);
-		getText(AJS.contextPath() + "/rest/decisions/latest/decisions/getSummarizedCode?projectKey=" + projectKey
+		getText(this.restPrefix + "/knowledge/getSummarizedCode?projectKey=" + projectKey
 			+ "&id=" + id + "&documentationLocation=" + documentationLocation + "&probability=" + probability,
 			function (error, summary) {
 				if (error === null) {
@@ -380,7 +379,7 @@
 	 * external references: condec.tree.viewer
 	 */
 	ConDecAPI.prototype.getTreeViewer = function getTreeViewer(rootElementType, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer.json?projectKey=" + projectKey
+		getJSON(this.restPrefix + "/view/getTreeViewer.json?projectKey=" + projectKey
 			+ "&rootElementType=" + rootElementType, function (error, core) {
 			if (error === null) {
 				callback(core);
@@ -392,7 +391,7 @@
 	 * external references: condec.treant
 	 */
 	ConDecAPI.prototype.getTreant = function getTreant(elementKey, depthOfTree, searchTerm, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?&elementKey=" + elementKey
+		getJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey
 			+ "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm, function (error, treant) {
 			if (error === null) {
 				callback(treant);
@@ -421,7 +420,7 @@
 			"selectedJiraIssueTypes": selectedJiraIssueTypes,
 			"selectedStatus": this.extendedStatus
 		};
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVis.json?elementKey=" + elementKey,
+		postJSON(this.restPrefix + "/view/getVis.json?elementKey=" + elementKey,
 			filterSettings, function (error, vis) {
 				if (error === null) {
 					callback(vis);
@@ -442,7 +441,7 @@
 			"selectedJiraIssueTypes": knowledgeTypes,
 			"selectedStatus": status
 		};
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getCompareVis.json", filterSettings, function (error,
+		postJSON(this.restPrefix + "/view/getCompareVis.json", filterSettings, function (error,
 																												 vis) {
 			if (error === null) {
 				vis.nodes.sort(function (a, b) {
@@ -462,7 +461,7 @@
 	 * external reference: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getFilterSettings = function getFilterSettings(elementKey, searchTerm, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getFilterSettings.json?elementKey=" + elementKey
+		getJSON(this.restPrefix + "/view/getFilterSettings.json?elementKey=" + elementKey
 			+ "&searchTerm=" + searchTerm, function (error, filterSettings) {
 			if (error === null) {
 				callback(filterSettings);
@@ -479,7 +478,7 @@
 		if (issueId === undefined) {
 			issueId = this.getIssueKey();
 		}
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer2.json?issueKey=" + issueId
+		getJSON(this.restPrefix + "/view/getTreeViewer2.json?issueKey=" + issueId
 			+ "&showRelevant=" + showRelevant.toString(), function (error, core) {
 			if (error === null) {
 				callback(core);
@@ -501,7 +500,7 @@
 			"selectedJiraIssueTypes": issueTypes,
 			"selectedStatus": issueStatus
 		};
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getEvolutionData.json", filterSettings, function (
+		postJSON(this.restPrefix + "/view/getEvolutionData.json", filterSettings, function (
 			error, evolutionData) {
 			if (error === null) {
 				callback(evolutionData);
@@ -513,7 +512,7 @@
 	 * external references: condec.relationshipMatrix.page
 	 */
 	ConDecAPI.prototype.getDecisionMatrix = function getDecisionMatrix(callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getDecisionMatrix.json?projectKey=" + projectKey, function (error, matrix) {
+		getJSON(this.restPrefix + "/view/getDecisionMatrix.json?projectKey=" + projectKey, function (error, matrix) {
 			if (error == null) {
 				callback(matrix);
 			}
@@ -542,7 +541,7 @@
 			"selectedLinkTypes": selectedLinkTypes
 		};
 
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/view/getDecisionGraph.json?projectKey=" + projectKey, filterSettings, function(error, graph) {
+		postJSON(this.restPrefix + "/view/getDecisionGraph.json?projectKey=" + projectKey, filterSettings, function(error, graph) {
 			if (error == null) {
 				callback(graph);
 			}
@@ -554,7 +553,7 @@
 	 * settingsForAllProjects.vm
 	 */
 	ConDecAPI.prototype.setActivated = function setActivated(isActivated, projectKey) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setActivated.json?projectKey=" + projectKey
+		postJSON(this.restPrefix + "/config/setActivated.json?projectKey=" + projectKey
 			+ "&isActivated=" + isActivated, null, function (error, response) {
 			if (error === null) {
 				showFlag("success", "Plug-in activation for the project has been set to " + isActivated + ".");
@@ -567,7 +566,7 @@
 	 * settingsForAllProjects.vm
 	 */
 	ConDecAPI.prototype.setIssueStrategy = function setIssueStrategy(isIssueStrategy, projectKey) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setIssueStrategy.json?projectKey=" + projectKey
+		postJSON(this.restPrefix + "/config/setIssueStrategy.json?projectKey=" + projectKey
 			+ "&isIssueStrategy=" + isIssueStrategy, null, function (error, response) {
 			if (error === null) {
 				showFlag("success", "Strategy has been selected.");
@@ -579,7 +578,7 @@
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.isIssueStrategy = function isIssueStrategy(callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isIssueStrategy.json?projectKey=" + projectKey,
+		getJSON(this.restPrefix + "/config/isIssueStrategy.json?projectKey=" + projectKey,
 			function (error, isIssueStrategyBoolean) {
 				if (error === null) {
 					callback(isIssueStrategyBoolean);
@@ -593,7 +592,7 @@
 	 */
 	ConDecAPI.prototype.setKnowledgeExtractedFromGit = function setKnowledgeExtractedFromGit(
 		isKnowledgeExtractedFromGit, projectKey) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setKnowledgeExtractedFromGit.json?projectKey="
+		postJSON(this.restPrefix + "/config/setKnowledgeExtractedFromGit.json?projectKey="
 			+ projectKey + "&isKnowledgeExtractedFromGit=" + isKnowledgeExtractedFromGit, null, function (error,
 																										  response) {
 			if (error === null) {
@@ -607,7 +606,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setPostFeatureBranchCommits = function (checked, projectKey) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setPostFeatureBranchCommits.json?projectKey="
+		postJSON(this.restPrefix + "/config/setPostFeatureBranchCommits.json?projectKey="
 			+ projectKey + "&newSetting=" + checked, null, function (error,
 																	 response) {
 			if (error === null) {
@@ -624,7 +623,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setPostSquashedCommits = function (checked, projectKey) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setPostSquashedCommits.json?projectKey="
+		postJSON(this.restPrefix + "/config/setPostSquashedCommits.json?projectKey="
 			+ projectKey + "&newSetting=" + checked, null, function (error,
 																	 response) {
 			if (error === null) {
@@ -641,7 +640,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setGitUri = function setGitUri(projectKey, gitUri) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setGitUri.json?projectKey=" + projectKey
+		postJSON(this.restPrefix + "/config/setGitUri.json?projectKey=" + projectKey
 			+ "&gitUri=" + gitUri, null, function (error, response) {
 			if (error === null) {
 				showFlag("success", "The git URI  " + gitUri + " for this project has been set.");
@@ -655,7 +654,7 @@
 	 */
 	ConDecAPI.prototype.setKnowledgeExtractedFromIssues = function setKnowledgeExtractedFromIssues(
 		isKnowledgeExtractedFromIssues, projectKey) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setKnowledgeExtractedFromIssues.json?projectKey="
+		postJSON(this.restPrefix + "/config/setKnowledgeExtractedFromIssues.json?projectKey="
 			+ projectKey + "&isKnowledgeExtractedFromIssues=" + isKnowledgeExtractedFromIssues, null, function (
 			error, response) {
 			if (error === null) {
@@ -670,7 +669,7 @@
 	 */
 	ConDecAPI.prototype.setUseClassifierForIssueComments = function setUseClassifierForIssueComments(
 		isClassifierUsedForIssues, projectKey) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setUseClassifierForIssueComments.json?projectKey="
+		postJSON(this.restPrefix + "/config/setUseClassifierForIssueComments.json?projectKey="
 			+ projectKey + "&isClassifierUsedForIssues=" + isClassifierUsedForIssues, null, function (error,
 																									  response) {
 			if (error === null) {
@@ -686,7 +685,7 @@
 	 */
 	ConDecAPI.prototype.setKnowledgeTypeEnabled = function setKnowledgeTypeEnabled(isKnowledgeTypeEnabled,
 																				   knowledgeType, projectKey) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setKnowledgeTypeEnabled.json?projectKey="
+		postJSON(this.restPrefix + "/config/setKnowledgeTypeEnabled.json?projectKey="
 			+ projectKey + "&knowledgeType=" + knowledgeType + "&isKnowledgeTypeEnabled=" + isKnowledgeTypeEnabled,
 			null, function (error, response) {
 				if (error === null) {
@@ -701,7 +700,7 @@
 	 */
 	ConDecAPI.prototype.isKnowledgeTypeEnabled = function isKnowledgeTypeEnabled(knowledgeType, projectKey, toggle,
 																				 callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isKnowledgeTypeEnabled.json?knowledgeType="
+		getJSON(this.restPrefix + "/config/isKnowledgeTypeEnabled.json?knowledgeType="
 			+ knowledgeType + "&projectKey=" + projectKey, function (error, isKnowledgeTypeEnabled) {
 			if (error === null) {
 				callback(isKnowledgeTypeEnabled, toggle);
@@ -715,14 +714,12 @@
 	 * "Implication", "Issue", "Problem", and "Solution".
 	 */
 	function getKnowledgeTypes(projectKey) {
-		var knowledgeTypes = getResponseAsReturnValue(AJS.contextPath()
-			+ "/rest/decisions/latest/config/getKnowledgeTypes.json?projectKey=" + projectKey);
+		var knowledgeTypes = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getKnowledgeTypes.json?projectKey=" + projectKey);
 		return knowledgeTypes;
 	}
   
 	function getLinkTypes(projectKey) {
-		var linkTypes = getResponseAsReturnValue(AJS.contextPath()
-			+ "/rest/decisions/latest/config/getLinkTypes.json?projectKey=" + projectKey);
+		var linkTypes = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getLinkTypes.json?projectKey=" + projectKey);
 		if (linkTypes !== null) {
 			var linkTypeArray = [];
 			for (var link in linkTypes) {
@@ -734,8 +731,7 @@
 
 	ConDecAPI.prototype.getLinkTypes = function getLinkTypes(callback) {
 		var projectKey = getProjectKey();
-		getJSON(AJS.contextPath()
-			+ "/rest/decisions/latest/config/getLinkTypes.json?projectKey=" + projectKey, function (error, linkTypes) {
+		getJSON(this.restPrefix + "/config/getLinkTypes.json?projectKey=" + projectKey, function (error, linkTypes) {
 			if (error === null) {
 				callback(linkTypes);
 			}
@@ -759,7 +755,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setWebhookData = function setWebhookData(projectKey, webhookUrl, webhookSecret) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookData.json?projectKey=" + projectKey
+		postJSON(this.restPrefix + "/config/setWebhookData.json?projectKey=" + projectKey
 			+ "&webhookUrl=" + webhookUrl + "&webhookSecret=" + webhookSecret, null, function (error, response) {
 			if (error === null) {
 				showFlag("success", "The webhook for this project has been set.");
@@ -771,7 +767,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setWebhookEnabled = function setWebhookEnabled(isActivated, projectKey) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookEnabled.json?projectKey=" + projectKey
+		postJSON(this.restPrefix + "/config/setWebhookEnabled.json?projectKey=" + projectKey
 			+ "&isActivated=" + isActivated, null, function (error, response) {
 			if (error === null) {
 				showFlag("success", "The webhook activation for this project has been changed.");
@@ -783,7 +779,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setWebhookType = function setWebhookType(webhookType, projectKey, isWebhookTypeEnabled) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookType.json?projectKey=" + projectKey
+		postJSON(this.restPrefix + "/config/setWebhookType.json?projectKey=" + projectKey
 			+ "&webhookType=" + webhookType + "&isWebhookTypeEnabled=" + isWebhookTypeEnabled, null, function (
 			error, response) {
 			if (error === null) {
@@ -796,7 +792,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setReleaseNoteMapping = function setReleaseNoteMapping(releaseNoteCategory, projectKey, selectedIssueTypes) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setReleaseNoteMapping.json?projectKey=" + projectKey + "&releaseNoteCategory=" + releaseNoteCategory, selectedIssueTypes, function (
+		postJSON(this.restPrefix + "/config/setReleaseNoteMapping.json?projectKey=" + projectKey + "&releaseNoteCategory=" + releaseNoteCategory, selectedIssueTypes, function (
 			error, response) {
 			if (error === null) {
 				showFlag("success", "The associated Jira issue types for the category: " + releaseNoteCategory + " were changed for this project.");
@@ -808,7 +804,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.cleanDatabases = function cleanDatabases(projectKey) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/cleanDatabases.json?projectKey="
+		postJSON(this.restPrefix + "/config/cleanDatabases.json?projectKey="
 			+ projectKey, null, function (error, response) {
 			if (error === null) {
 				showFlag("success", "The databases have been cleaned.");
@@ -821,8 +817,7 @@
 	 */
 	ConDecAPI.prototype.classifyWholeProject = function classifyWholeProject(projectKey, animatedElement) {
 		animatedElement.classList.add("aui-progress-indicator-value");
-		postJSON(AJS.contextPath()
-			+ "/rest/decisions/latest/config/classifyWholeProject.json?projectKey=" + projectKey,
+		postJSON(this.restPrefix + "/config/classifyWholeProject.json?projectKey=" + projectKey,
 			null,
 			function (error, response) {
 				animatedElement.classList.remove("aui-progress-indicator-value");
@@ -842,8 +837,7 @@
 	ConDecAPI.prototype.trainClassifier = function trainClassifier(projectKey, arffFileName, animatedElement) {
 		animatedElement.classList.add("aui-progress-indicator-value");
 
-		postJSON(AJS.contextPath()
-			+ "/rest/decisions/latest/config/trainClassifier.json?projectKey=" + projectKey + "&arffFileName="
+		postJSON(this.restPrefix + "/config/trainClassifier.json?projectKey=" + projectKey + "&arffFileName="
 			+ arffFileName,
 			null,
 			function (error, response) {
@@ -859,7 +853,7 @@
 
 	ConDecAPI.prototype.evaluateModel = function evaluateModel(projectKey, callback) {
 		// console.log("ConDecAPI.prototype.evaluateModel");
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/evaluateModel.json?projectKey=" + projectKey, null,
+		postJSON(this.restPrefix + "/config/evaluateModel.json?projectKey=" + projectKey, null,
 			function (error, response) {
 				if (error === null) {
 					showFlag("success", "The evaluation results file was successfully created.");
@@ -872,7 +866,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.saveArffFile = function saveArffFile(projectKey, useOnlyValidatedData, callback) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/saveArffFile.json?projectKey=" + projectKey + "&useOnlyValidatedData=" + useOnlyValidatedData, null,
+		postJSON(this.restPrefix + "/config/saveArffFile.json?projectKey=" + projectKey + "&useOnlyValidatedData=" + useOnlyValidatedData, null,
 			function (error, response) {
 				if (error === null) {
 					showFlag("success", "The ARFF file was successfully created and saved in "
@@ -887,7 +881,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setIconParsing = function setIconParsing(projectKey, isActivated) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setIconParsing.json?projectKey=" + projectKey
+		postJSON(this.restPrefix + "/config/setIconParsing.json?projectKey=" + projectKey
 			+ "&isActivatedString=" + isActivated, null, function (error, response) {
 			if (error === null) {
 				showFlag("success", "Using icons to tag issue comments has been set to " + isActivated + ".");
@@ -908,7 +902,7 @@
 	 */
 	ConDecAPI.prototype.getReleaseNotes = function getReleaseNotes(callback) {
 		var projectKey = getProjectKey();
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/release-note/getReleaseNotes.json?projectKey="
+		getJSON(this.restPrefix + "/release-note/getReleaseNotes.json?projectKey="
 			+ projectKey, function (error, elements) {
 			if (error === null) {
 				callback(elements);
@@ -919,35 +913,35 @@
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.getProposedIssues = function getReleaseNotes(releaseNoteConfiguration) {
-		return postJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/getProposedIssues.json?projectKey="
+		return postJSONReturnPromise(this.restPrefix + "/release-note/getProposedIssues.json?projectKey="
 			+ projectKey, releaseNoteConfiguration);
 	};
 
 	ConDecAPI.prototype.postProposedKeys = function postProposedKeys(proposedKeys) {
-		return postJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/postProposedKeys.json?projectKey="
+		return postJSONReturnPromise(this.restPrefix + "/release-note/postProposedKeys.json?projectKey="
 			+ projectKey, proposedKeys);
 	};
 	ConDecAPI.prototype.createReleaseNote = function createReleaseNote(content) {
-		return postJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/createReleaseNote.json?projectKey="
+		return postJSONReturnPromise(this.restPrefix + "/release-note/createReleaseNote.json?projectKey="
 			+ projectKey, content);
 	};
 	ConDecAPI.prototype.updateReleaseNote = function updateReleaseNote(releaseNote) {
-		return postJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/updateReleaseNote.json?projectKey="
+		return postJSONReturnPromise(this.restPrefix + "/release-note/updateReleaseNote.json?projectKey="
 			+ projectKey, releaseNote)
 	};
 	ConDecAPI.prototype.deleteReleaseNote = function deleteReleaseNote(id) {
-		return deleteJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/deleteReleaseNote.json?projectKey="
+		return deleteJSONReturnPromise(this.restPrefix + "/release-note/deleteReleaseNote.json?projectKey="
 			+ projectKey + "&id=" + id, null);
 	};
 
 
 	ConDecAPI.prototype.getReleaseNotesById = function getReleaseNotesById(id) {
-		return getJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/getReleaseNote.json?projectKey="
+		return getJSONReturnPromise(this.restPrefix + "/release-note/getReleaseNote.json?projectKey="
 			+ projectKey + "&id=" + id);
 
 	};
 	ConDecAPI.prototype.getAllReleaseNotes = function getAllReleaseNotes(query) {
-		return getJSONReturnPromise(AJS.contextPath() + "/rest/decisions/latest/release-note/getAllReleaseNotes.json?projectKey="
+		return getJSONReturnPromise(this.restPrefix + "/release-note/getAllReleaseNotes.json?projectKey="
 			+ projectKey + "&query=" + query);
 	};
 
