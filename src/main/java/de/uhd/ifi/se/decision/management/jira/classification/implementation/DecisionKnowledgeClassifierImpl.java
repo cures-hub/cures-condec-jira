@@ -71,11 +71,6 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 
 	private void loadDefaultFineGrainedClassifier() {
 		this.fineGrainedClassifier = new FineGrainedClassifierImpl(5);
-		try {
-			//this.fineGrainedClassifier.loadFromFile();
-		} catch (Exception e) {
-			System.err.println("Could not load a fine-grained classifier from File.");
-		}
 	}
 
 	private void makeBinaryPrediction(String stringToBeClassified, List<Boolean> binaryPredictionResults, int finalI) {
@@ -90,7 +85,6 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 		}
 		boolean predictedIsRelevant = binaryClassifier.isRelevant(ArrayUtils.toObject(predictionResult));
 		binaryPredictionResults.set(finalI, predictedIsRelevant);
-		return;
 	}
 
 	@Override
@@ -218,7 +212,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 		return this.fineGrainedClassifier;
 	}
 
-	public boolean isTraining(){
+	public boolean isTraining() {
 		return (this.getFineGrainedClassifier().isCurrentlyTraining()
 			|| this.getBinaryClassifier().isCurrentlyTraining());
 	}

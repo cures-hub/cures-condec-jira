@@ -44,8 +44,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	protected Instances instances;
 	protected String projectKey;
 
-	public static File DEFAULT_TRAINING_DATA = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff");
-
+	//public static File DEFAULT_TRAINING_DATA = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff");
 	// private static OnlineClassificationTrainerImpl instance;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(OnlineFileTrainerImpl.class);
@@ -398,7 +397,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 			sentences.add(currInstance.stringValue(currInstance.numAttributes() - 1));
 
 			Integer isRelevant = 0;
-			Integer fineGrainedLabel = -1;
+			//Integer fineGrainedLabel = -1;
 			// iterate over the binary attributes for each possible class
 			for (int j = 0; j < currInstance.numAttributes() - 1; j++) {
 				if (round(currInstance.value(j)) == 1) {
