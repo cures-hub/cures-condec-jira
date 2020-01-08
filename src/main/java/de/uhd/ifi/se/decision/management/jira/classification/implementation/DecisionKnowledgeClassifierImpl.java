@@ -62,11 +62,13 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 
 	private void loadDefaultBinaryClassifier() {
 		this.binaryClassifier = new BinaryClassifierImpl();
+		/*
 		try {
 			//this.binaryClassifier.loadFromFile();
 		} catch (Exception e) {
 			System.err.println("Could not load a binary classifier from File.");
 		}
+		 */
 	}
 
 	private void loadDefaultFineGrainedClassifier() {
