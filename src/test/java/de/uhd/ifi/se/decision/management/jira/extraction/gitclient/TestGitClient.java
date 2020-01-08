@@ -1,16 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import org.junit.Test;
 
 import java.io.File;
 
-import org.junit.Test;
-
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import static org.junit.Assert.*;
 
 public class TestGitClient extends TestSetUpGit {
 

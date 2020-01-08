@@ -1,10 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
-import java.util.List;
-
 import de.uhd.ifi.se.decision.management.jira.extraction.TangledChangeDetector;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+
+import java.util.List;
 
 /**
  * Class for the estimation whether a {@link Diff} of {@ChangedFile}s contains

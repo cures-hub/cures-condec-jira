@@ -1,10 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
-import static org.junit.Assert.assertEquals;
-
+import com.atlassian.jira.issue.Issue;
 import org.junit.Test;
 
-import com.atlassian.jira.issue.Issue;
+import static org.junit.Assert.assertEquals;
 
 public class TestGetNumberOfCommits extends TestSetUpGit {
 

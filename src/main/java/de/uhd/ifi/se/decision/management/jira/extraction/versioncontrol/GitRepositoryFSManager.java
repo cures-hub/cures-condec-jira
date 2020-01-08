@@ -1,17 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
-
-import javax.xml.bind.DatatypeConverter;
-
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GitRepositoryFSManager {
 	private static final String TEMP_DIR_PREFIX = "TEMP";

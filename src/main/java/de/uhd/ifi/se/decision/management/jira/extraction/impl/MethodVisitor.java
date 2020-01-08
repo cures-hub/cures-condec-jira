@@ -1,10 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * the MethodVisitor class creates ParsedMethodItems out of parsed content

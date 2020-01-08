@@ -1,14 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.tangledchangedetector;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import de.uhd.ifi.se.decision.management.jira.extraction.TangledChangeDetector;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.TangledChangeDetectorImpl;
@@ -16,6 +7,14 @@ import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.model.git.TestDiff;
 import de.uhd.ifi.se.decision.management.jira.model.git.impl.DiffImpl;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestTangledChangeDetector extends TestSetUpGit {
 

@@ -1,20 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
-import java.io.File;
-import java.util.List;
-import java.util.Locale;
-
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.util.JiraHome;
+import com.atlassian.jira.issue.Issue;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.util.JiraHome;
-import com.atlassian.jira.issue.Issue;
-
-import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import java.io.File;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Class to connect to commits and code in git.

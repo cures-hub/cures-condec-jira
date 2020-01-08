@@ -1,14 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-import java.util.Iterator;
-import java.util.List;
-
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import org.eclipse.jgit.lib.Ref;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import java.util.Iterator;
+import java.util.List;
 
 public class TestGitDecXtract extends TestSetUpGit {
 	private GitDecXtract gitDecX;

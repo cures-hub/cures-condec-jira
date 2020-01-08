@@ -1,16 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.DecisionKnowledgeClassifierImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.test.jdbc.NonTransactional;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class TestDecisionKnowledgeAbstractClassifier extends TestSetUp {
 

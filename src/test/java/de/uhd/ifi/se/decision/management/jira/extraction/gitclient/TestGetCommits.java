@@ -1,11 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
-import static org.junit.Assert.assertEquals;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.junit.Test;
 
 import java.util.List;
 
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 public class TestGetCommits extends TestSetUpGit {
 
