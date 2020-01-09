@@ -1,16 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira;
 
-import static org.mockito.Mockito.mock;
-
-import java.io.File;
-
-import de.uhd.ifi.se.decision.management.jira.classification.FileTrainer;
-import org.junit.runner.RunWith;
-
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
-
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
@@ -22,8 +14,9 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+import org.junit.runner.RunWith;
 
-import javax.management.ObjectName;
+import static org.mockito.Mockito.mock;
 
 /**
  * Mocks a JIRA server with JIRA's {@link ComponentAccessor}, the custom
@@ -82,11 +75,10 @@ public abstract class TestSetUp {
 
 	/**
 	 * Adapts the paths for the files used for preprocessing and classification.
-	 *
 	 */
 	public static void initClassifierPaths() {
 		PreprocessorImpl.DEFAULT_DIR = "src/main/resources/classifier/";
 		//FileTrainer.DEFAULT_TRAINING_DATA = new File(
-				//"src/main/resources/classifier/defaultTrainingData.arff");
+		//"src/main/resources/classifier/defaultTrainingData.arff");
 	}
 }
