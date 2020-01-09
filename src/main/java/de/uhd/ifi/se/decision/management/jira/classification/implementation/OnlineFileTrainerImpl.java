@@ -12,7 +12,11 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import smile.validation.*;
+import smile.validation.Accuracy;
+import smile.validation.FMeasure;
+import smile.validation.ClassificationMeasure;
+import smile.validation.Precision;
+import smile.validation.Recall;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
