@@ -19,9 +19,11 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 
 public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 
@@ -42,13 +44,6 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
         classificationManager = new ClassificationManagerForJiraIssueComments();
         classificationManager.getClassifierTrainer().setTrainingData(getTrainingData());
         classificationManager.getClassifierTrainer().train();
-        // counter to wait for training to finish
-
-		try {
-			TimeUnit.SECONDS.sleep(4);
-		}catch (InterruptedException e){
-			e.printStackTrace();
-		}
 
         issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");
 
