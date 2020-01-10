@@ -165,9 +165,7 @@
 		};
 
 		document.getElementById("condec-context-menu-export").onclick = function() {
-			conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
-				conDecDialog.showExportDialog(decisionKnowledgeElement.key);
-			});
+			conDecDialog.showExportDialog(id, documentationLocation);
 		};
 	}
 

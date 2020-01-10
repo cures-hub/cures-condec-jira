@@ -69,4 +69,31 @@ public class TestGitDecXtract extends TestSetUpGit {
 		Assert.assertEquals(0, gotElements.size());
 
 	}
+
+	@Test
+	public void fromFeatureBranchCommitsCreateMap() {
+		// git repository is setup already
+		gitDecX = new GitDecXtract("TEST", getExampleUri());
+		int numberExpectedElements = 2;
+
+		// by branch name
+		Map<String, List<DecisionKnowledgeElement>> gotElements = gitDecX
+				.getElementsSplitByCodeAndCommit("featureBranch");
+		Assert.assertEquals(numberExpectedElements, gotElements.size());
+
+		// by Ref, find Ref first
+		List<Ref> featureBranches = gitClient.getRemoteBranches();
+		Ref featureBranch = null;
+		Iterator<Ref> it = featureBranches.iterator();
+		while (it.hasNext()) {
+			Ref value = it.next();
+			if (value.getName().endsWith("featureBranch")) {
+				featureBranch = value;
+				return;
+			}
+		}
+
+		gotElements = gitDecX.getElementsSplitByCodeAndCommit(featureBranch.getName());
+		Assert.assertEquals(numberExpectedElements, gotElements.size());
+	}
 }

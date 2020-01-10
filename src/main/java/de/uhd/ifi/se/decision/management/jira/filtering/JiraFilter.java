@@ -10,7 +10,7 @@ import com.atlassian.jira.issue.search.SearchRequest;
 import com.atlassian.jira.issue.search.SearchRequestManager;
 
 /**
- * Type of preset filters in JIRA.
+ * Type of preset filters in Jira.
  */
 public enum JiraFilter {
 
@@ -35,18 +35,18 @@ public enum JiraFilter {
 	}
 
 	/**
-	 * Returns the JIRA query as a String.
+	 * Returns the Jira query as a String.
 	 *
-	 * @return JIRA query as a String.
+	 * @return Jira query as a String.
 	 */
 	public String getJqlString() {
 		return this.jqlString;
 	}
 
 	/**
-	 * Returns the number of the JIRA filter.
+	 * Returns the number of the Jira filter.
 	 *
-	 * @return number of the JIRA filter.
+	 * @return number of the Jira filter.
 	 */
 	public long getId() {
 		return this.id;

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality.commentmetriccalculator;
+package de.uhd.ifi.se.decision.management.jira.quality;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,6 +11,6 @@ public class TestGetNumberOfRelevantSentencesComment extends SetupCommentCalcula
 	@Test
 	@NonTransactional
 	public void testCase() {
-		assertEquals(2, calculator.getNumberOfRelevantSentences().size(), 0.0);
+		assertEquals(2, calculator.getNumberOfRelevantSentences().size());
 	}
 }

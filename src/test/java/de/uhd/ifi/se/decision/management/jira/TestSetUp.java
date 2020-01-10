@@ -19,7 +19,7 @@ import org.junit.runner.RunWith;
 import static org.mockito.Mockito.mock;
 
 /**
- * Mocks a JIRA server with JIRA's {@link ComponentAccessor}, the custom
+ * Mocks a Jira server with Jira's {@link ComponentAccessor}, the custom
  * {@link ComponentGetter} of the ConDec plug-in, and test data (e.g.,
  * {@link JiraUsers}, {@link JiraProjects}, {@link JiraIssueTypes}, and
  * {@link JiraIssues}).
@@ -35,7 +35,7 @@ public abstract class TestSetUp {
 	private static EntityManager entityManager;
 
 	/**
-	 * Inits JIRA's {@link ComponentAccessor} including test data (e.g.,
+	 * Inits Jira's {@link ComponentAccessor} including test data (e.g.,
 	 * {@link JiraUsers}, {@link JiraProjects}, {@link JiraIssueTypes}, and
 	 * {@link JiraIssues}) and the custom {@link ComponentGetter}.
 	 */
@@ -47,8 +47,8 @@ public abstract class TestSetUp {
 	}
 
 	/**
-	 * The ComponentAccessor is a class provided by JIRA. It provides methods to
-	 * access JIRA's internal classes such as the ProjectManager or a UserManager.
+	 * The ComponentAccessor is a class provided by Jira. It provides methods to
+	 * access Jira's internal classes such as the ProjectManager or a UserManager.
 	 *
 	 * @see ComponentAccessor
 	 * @see MockComponentAccessor

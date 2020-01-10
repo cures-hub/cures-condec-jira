@@ -8,6 +8,6 @@ public class TestGetDistributionOfKnowledgeTypesCommon extends SetupCommonCalcul
 
 	@Test
 	public void testCase() {
-		assertEquals(4, calculator.getDistributionOfKnowledgeTypes().size(), 0.0);
+		assertEquals(4, calculator.getDistributionOfKnowledgeTypes().size());
 	}
 }

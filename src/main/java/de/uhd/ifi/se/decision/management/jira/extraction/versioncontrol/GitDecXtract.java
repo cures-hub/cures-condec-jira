@@ -1,170 +1,196 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.xml.bind.DatatypeConverter;
+
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import javax.xml.bind.DatatypeConverter;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 /**
- * Extract decision knowledge elements stored in git repository.
- * Out-of-scope: linking decision knowledge elements among each other.
+ * Extract decision knowledge elements stored in git repository. Out-of-scope:
+ * linking decision knowledge elements among each other.
  */
 public class GitDecXtract {
 
-    public static final String RAT_KEY_COMPONENTS_SEPARATOR = " ";
-    public static final String RAT_KEY_NOEDIT = "-";
-    private final GitClient gitClient;
-    private final String projecKey;
+	public static final String RAT_KEY_COMPONENTS_SEPARATOR = " ";
+	public static final String RAT_KEY_NOEDIT = "-";
+	private final GitClient gitClient;
+	private final String projecKey;
 
-    public GitDecXtract(String projecKey) {
-        this.projecKey = projecKey;
-        gitClient = new GitClientImpl(projecKey);
-    }
+	public GitDecXtract(String projecKey) {
+		this.projecKey = projecKey;
+		gitClient = new GitClientImpl(projecKey);
+	}
 
-    public GitDecXtract(String projecKey, String uri) {
-        this.projecKey = projecKey;
-        gitClient = new GitClientImpl(uri, projecKey);
-    }
+	public GitDecXtract(String projecKey, String uri) {
+		this.projecKey = projecKey;
+		gitClient = new GitClientImpl(uri, projecKey);
+	}
 
-    /// TODO: can this be done better in JAVA?
-    /// Release git client.
-    public void close() {
-        gitClient.close();
-    }
+	/// TODO: can this be done better in JAVA?
+	/// Release git client.
+	public void close() {
+		gitClient.close();
+	}
 
-    // TODO: below method signature will further improve
-    public List<DecisionKnowledgeElement> getElements(String featureBranchShortName) {
-        List<DecisionKnowledgeElement> gatheredElements = new ArrayList<>();
-        List<RevCommit> featureCommits = gitClient.getFeatureBranchCommits(featureBranchShortName);
-        if (featureCommits == null || featureCommits.size() == 0) {
-            return gatheredElements;
-        } else {
-            for (RevCommit commit : featureCommits) {
-                gatheredElements.addAll(getElementsFromMessage(commit));
-            }
-            RevCommit baseCommit = featureCommits.get(0);
-            RevCommit lastFeatureBranchCommit = featureCommits.get(featureCommits.size() - 1);
-            gatheredElements.addAll(getElementsFromCode(baseCommit, lastFeatureBranchCommit, featureBranchShortName));
-        }
-        return gatheredElements;
-    }
+	// TODO: below method signature will further improve
+	public List<DecisionKnowledgeElement> getElements(String featureBranchShortName) {
+		List<DecisionKnowledgeElement> gatheredElements = new ArrayList<>();
+		List<RevCommit> featureCommits = gitClient.getFeatureBranchCommits(featureBranchShortName);
+		if (featureCommits == null || featureCommits.size() == 0) {
+			return gatheredElements;
+		} else {
+			for (RevCommit commit : featureCommits) {
+				gatheredElements.addAll(getElementsFromMessage(commit));
+			}
+			RevCommit baseCommit = featureCommits.get(0);
+			RevCommit lastFeatureBranchCommit = featureCommits.get(featureCommits.size() - 1);
+			gatheredElements.addAll(getElementsFromCode(baseCommit, lastFeatureBranchCommit, featureBranchShortName));
+		}
+		return gatheredElements;
+	}
 
-    private List<DecisionKnowledgeElement> getElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd,
-                                                               String featureBranchShortName) {
-        List<DecisionKnowledgeElement> elementsFromCode = new ArrayList<>();
+	public Map<String, List<DecisionKnowledgeElement>> getElementsSplitByCodeAndCommit(String featureBranchShortName) {
+		Map<String, List<DecisionKnowledgeElement>> resultMap = new HashMap<String, List<DecisionKnowledgeElement>>();
+		List<DecisionKnowledgeElement> gatheredCommitElements = new ArrayList<>();
+		List<DecisionKnowledgeElement> gatheredCodeElements = new ArrayList<>();
+		List<RevCommit> featureCommits = gitClient.getFeatureBranchCommits(featureBranchShortName);
+		if (featureCommits == null || featureCommits.size() == 0) {
+			return resultMap;
+		} else {
+			for (RevCommit commit : featureCommits) {
+				gatheredCommitElements.addAll(getElementsFromMessage(commit));
+			}
+			resultMap.put("Commit", gatheredCommitElements);
+			RevCommit baseCommit = featureCommits.get(0);
+			RevCommit lastFeatureBranchCommit = featureCommits.get(featureCommits.size() - 1);
+			gatheredCodeElements
+					.addAll(getElementsFromCode(baseCommit, lastFeatureBranchCommit, featureBranchShortName));
+			resultMap.put("Code", gatheredCodeElements);
+		}
+		return resultMap;
+	}
 
-        // git client which has access to correct version of files (revCommitEnd)
-        GitClient endAnchoredGitClient = new GitClientImpl((GitClientImpl) gitClient);
-        if (featureBranchShortName != null) {
-            endAnchoredGitClient.checkoutFeatureBranch(featureBranchShortName);
-        }
+	private List<DecisionKnowledgeElement> getElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd,
+			String featureBranchShortName) {
+		List<DecisionKnowledgeElement> elementsFromCode = new ArrayList<>();
 
-        GitClient startAnchoredGitClient = new GitClientImpl((GitClientImpl) gitClient);
-        if (featureBranchShortName != null) {
-            startAnchoredGitClient.checkoutCommit(revCommitStart.getParent(0));
-        }
+		// git client which has access to correct version of files (revCommitEnd)
+		GitClient endAnchoredGitClient = new GitClientImpl((GitClientImpl) gitClient);
+		if (featureBranchShortName != null) {
+			endAnchoredGitClient.checkoutFeatureBranch(featureBranchShortName);
+		}
 
-        Diff diff = gitClient.getDiff(revCommitStart, revCommitEnd);
-        GitDiffedCodeExtractionManager diffCodeManager = new GitDiffedCodeExtractionManager(diff, endAnchoredGitClient,
-                startAnchoredGitClient);
-        elementsFromCode = diffCodeManager.getNewDecisionKnowledgeElements();
-        elementsFromCode.addAll(diffCodeManager.getOldDecisionKnowledgeElements());
+		GitClient startAnchoredGitClient = new GitClientImpl((GitClientImpl) gitClient);
+		if (featureBranchShortName != null) {
+			startAnchoredGitClient.checkoutCommit(revCommitStart.getParent(0));
+		}
 
-        startAnchoredGitClient.close();
-        endAnchoredGitClient.close();
+		Diff diff = gitClient.getDiff(revCommitStart, revCommitEnd);
+		GitDiffedCodeExtractionManager diffCodeManager = new GitDiffedCodeExtractionManager(diff, endAnchoredGitClient,
+				startAnchoredGitClient);
+		elementsFromCode = diffCodeManager.getNewDecisionKnowledgeElements();
+		elementsFromCode.addAll(diffCodeManager.getOldDecisionKnowledgeElements());
 
-        return elementsFromCode.stream().map(element -> {
-            element.setProject(projecKey);
-            element.setKey(updateKeyForCodeExtractedElementWithInformationHash(element));
-            return element;
-        }).collect(Collectors.toList());
-    }
+		startAnchoredGitClient.close();
+		endAnchoredGitClient.close();
 
-    public List<DecisionKnowledgeElement> getElementsFromMessage(RevCommit commit) {
-        GitCommitMessageExtractor extractorFromMessage = new GitCommitMessageExtractor(commit.getFullMessage());
-        List<DecisionKnowledgeElement> elementsFromMessage = extractorFromMessage.getElements().stream()
-                .map(element -> { // need to update project and key attributes
-                    element.setProject(projecKey);
-                    element.setKey(updateKeyForMessageExtractedElement(element, commit.getId()));
-                    return element;
-                }).collect(Collectors.toList());
-        return elementsFromMessage;
-    }
+		return elementsFromCode.stream().map(element -> {
+			element.setProject(projecKey);
+			element.setKey(updateKeyForCodeExtractedElementWithInformationHash(element));
+			return element;
+		}).collect(Collectors.toList());
+	}
 
-    /*
-     * Appends rationale text hash to the DecisionKnowledgeElement key.
-     */
-    private String updateKeyForCodeExtractedElementWithInformationHash(DecisionKnowledgeElement elementWithoutTextHash) {
-        String key = elementWithoutTextHash.getKey();
-        String rationaleText = elementWithoutTextHash.getSummary() + elementWithoutTextHash.getDescription();
+	public List<DecisionKnowledgeElement> getElementsFromMessage(RevCommit commit) {
+		GitCommitMessageExtractor extractorFromMessage = new GitCommitMessageExtractor(commit.getFullMessage());
+		List<DecisionKnowledgeElement> elementsFromMessage = extractorFromMessage.getElements().stream()
+				.map(element -> { // need to update project and key attributes
+					element.setProject(projecKey);
+					element.setKey(updateKeyForMessageExtractedElement(element, commit.getId()));
+					return element;
+				}).collect(Collectors.toList());
+		return elementsFromMessage;
+	}
 
-        key += RAT_KEY_COMPONENTS_SEPARATOR + calculateRationaleTextHash(rationaleText);
+	/*
+	 * Appends rationale text hash to the DecisionKnowledgeElement key.
+	 */
+	private String updateKeyForCodeExtractedElementWithInformationHash(
+			DecisionKnowledgeElement elementWithoutTextHash) {
+		String key = elementWithoutTextHash.getKey();
+		String rationaleText = elementWithoutTextHash.getSummary() + elementWithoutTextHash.getDescription();
 
-        return key;
-    }
+		key += RAT_KEY_COMPONENTS_SEPARATOR + calculateRationaleTextHash(rationaleText);
 
-    /*
-     * Appends rationale text hash to the DecisionKnowledgeElement key. Replaces
-     * commit hash placeholder in the key with the actual commit hash.
-     */
-    private String updateKeyForMessageExtractedElement(DecisionKnowledgeElement elementWithoutCommitishAndHash,
-                                                       ObjectId id) {
-        String key = elementWithoutCommitishAndHash.getKey();
+		return key;
+	}
 
-        // 1st: append rationale text hash
-        String rationaleText = elementWithoutCommitishAndHash.getSummary()
-                + elementWithoutCommitishAndHash.getDescription();
-        key += RAT_KEY_COMPONENTS_SEPARATOR + calculateRationaleTextHash(rationaleText);
+	/*
+	 * Appends rationale text hash to the DecisionKnowledgeElement key. Replaces
+	 * commit hash placeholder in the key with the actual commit hash.
+	 */
+	private String updateKeyForMessageExtractedElement(DecisionKnowledgeElement elementWithoutCommitishAndHash,
+			ObjectId id) {
+		String key = elementWithoutCommitishAndHash.getKey();
 
-        // 2nd: replace placeholder with commit's hash (40 hex chars)
-        return key.replace(GitCommitMessageExtractor.COMMIT_PLACEHOLDER,
-                String.valueOf(id).split(" ")[1] + RAT_KEY_COMPONENTS_SEPARATOR);
-    }
+		// 1st: append rationale text hash
+		String rationaleText = elementWithoutCommitishAndHash.getSummary()
+				+ elementWithoutCommitishAndHash.getDescription();
+		key += RAT_KEY_COMPONENTS_SEPARATOR + calculateRationaleTextHash(rationaleText);
 
-    private String calculateRationaleTextHash(String rationaleText) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(rationaleText.getBytes());
-            byte[] digest = md.digest();
-            return DatatypeConverter.printHexBinary(digest).toUpperCase().substring(0, 8);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
+		// 2nd: replace placeholder with commit's hash (40 hex chars)
+		return key.replace(GitCommitMessageExtractor.COMMIT_PLACEHOLDER,
+				String.valueOf(id).split(" ")[1] + RAT_KEY_COMPONENTS_SEPARATOR);
+	}
 
-    public List<DecisionKnowledgeElement> getElements(Ref branch) {
-        if (branch == null) {
-            return getElements((String) null);
-        }
+	private String calculateRationaleTextHash(String rationaleText) {
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			md.update(rationaleText.getBytes());
+			byte[] digest = md.digest();
+			return DatatypeConverter.printHexBinary(digest).toUpperCase().substring(0, 8);
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			return "";
+		}
+	}
 
-        return getElements(generateBranchShortName(branch));
-    }
+	public List<DecisionKnowledgeElement> getElements(Ref branch) {
+		if (branch == null) {
+			return getElements((String) null);
+		}
 
-    public static String generateBranchShortName(Ref branch){
-        String[] branchNameComponents = branch.getName().split("/");
-        return branchNameComponents[branchNameComponents.length - 1];
-    }
+		return getElements(generateBranchShortName(branch));
+	}
 
-    public static String generateRegexToFindAllTags(String tag){
-        return generateRegexForOpenTag(tag) + "|" + generateRegexForCloseTag(tag);
-    }
+	public static String generateBranchShortName(Ref branch) {
+		String[] branchNameComponents = branch.getName().split("/");
+		return branchNameComponents[branchNameComponents.length - 1];
+	}
 
-    public static String generateRegexForOpenTag(String tag){
-        return "(?i)(\\[(" + tag + ")\\])";
-    }
+	public static String generateRegexToFindAllTags(String tag) {
+		return generateRegexForOpenTag(tag) + "|" + generateRegexForCloseTag(tag);
+	}
 
-    public static String generateRegexForCloseTag(String tag){
-        return "(?i)(\\[\\/(" + tag + ")\\])";
-    }
+	public static String generateRegexForOpenTag(String tag) {
+		return "(?i)(\\[(" + tag + ")\\])";
+	}
+
+	public static String generateRegexForCloseTag(String tag) {
+		return "(?i)(\\[\\/(" + tag + ")\\])";
+	}
 }

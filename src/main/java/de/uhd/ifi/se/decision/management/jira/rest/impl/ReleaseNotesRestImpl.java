@@ -15,13 +15,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.JiraQueryHandlerImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ReleaseNotesPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.MarkdownCreator;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
@@ -47,14 +47,13 @@ public class ReleaseNotesRestImpl implements ReleaseNotesRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		String query = "?jql=project=" + projectKey + " && resolved >= " + releaseNoteConfiguration.getStartDate()
 				+ " && resolved <= " + releaseNoteConfiguration.getEndDate();
-		FilteringManager extractor = new FilteringManagerImpl(projectKey, user, query);
-		List<DecisionKnowledgeElement> elementsMatchingQuery = new ArrayList<DecisionKnowledgeElement>();
-		elementsMatchingQuery = extractor.getAllElementsMatchingQuery();
-		if (elementsMatchingQuery.size() == 0) {
+		JiraQueryHandler queryHandler = new JiraQueryHandlerImpl(user, projectKey, query);
+		List<Issue> jiraIssuesMatchingQuery = queryHandler.getJiraIssuesFromQuery();
+		if (jiraIssuesMatchingQuery.size() == 0) {
 			return Response.status(Response.Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "No resolved issues were found in this date range!")).build();
 		}
-		ReleaseNotesCreator releaseNotesCreator = new ReleaseNotesCreator(elementsMatchingQuery,
+		ReleaseNotesCreator releaseNotesCreator = new ReleaseNotesCreator(jiraIssuesMatchingQuery,
 				releaseNoteConfiguration, user);
 		HashMap<String, ArrayList<ReleaseNoteIssueProposal>> mappedProposals = releaseNotesCreator.getMappedProposals();
 

@@ -1059,21 +1059,32 @@
 				throwAlert("An error saving occurred",err.toString());
 			})
 		};
+		
 		cancelButton.onclick = function () {
 			AJS.dialog2(releaseNoteDialog).hide();
 		};
-
 	};
 
-	ConDecDialog.prototype.showExportDialog = function showExportDialog(decisionElementKey) {
-		console.log("conDecDialog exportDialog");
+	ConDecDialog.prototype.showExportDialog = function showExportDialog(id, documentationLocation) {
+		console.log("conDecDialog showExportDialog");
 
 		// HTML elements
 		var exportDialog = document.getElementById("export-dialog");
-		var hiddenDiv = document.getElementById("exportQueryFallback");
-		// set hidden attribute
-		hiddenDiv.setAttribute("data-tree-element-key", decisionElementKey);
-		// open dialog
+		var submitButton = document.getElementById("export-dialog-submit-button");
+		var cancelButton = document.getElementById("export-dialog-cancel-button");
+		
+		// Set onclick listener on buttons
+		submitButton.onclick = function () {
+			var exportFormat = $('input[name=form-radio-export-format]:checked').val();
+			conDecExport.exportLinkedElements(exportFormat, id, documentationLocation);
+			AJS.dialog2(exportDialog).hide();
+		};
+		
+		cancelButton.onclick = function () {
+			AJS.dialog2(exportDialog).hide();
+		};
+
+		// Show dialog
 		AJS.dialog2(exportDialog).show();
 	};
 

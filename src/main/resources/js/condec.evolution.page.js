@@ -7,7 +7,6 @@
 	var networkRight = null;
 	var networkLeft = null;
 	var timeline = null;
-	var completeKnowledgeStatus = null;
 
 	var ConDecEvolutionPage = function ConDecEvolutionPage() {
 	};
@@ -18,8 +17,6 @@
 			conDecAPI = _conDecAPI;
 			conDecObservable = _conDecObservable;
 			conDecVis = _conDecVis;
-			completeKnowledgeStatus = _conDecAPI.knowledgeStatus;
-			completeKnowledgeStatus = completeKnowledgeStatus.concat(_conDecAPI.issueStatus);
 			//conDecObservable.subscribe(this);
 			return true;
 		}
@@ -31,8 +28,8 @@
 		var issueTypeDropdown = document.getElementById("knowledge-type-dropdown-chronology");
 		var issueStatusDropdown = document.getElementById("status-dropdown-chronology");
 		initDropdown(issueTypeDropdown, conDecAPI.knowledgeTypes);
-		initDropdown(issueStatusDropdown, completeKnowledgeStatus);
-		conDecAPI.getEvolutionData("", -1, -1, conDecAPI.knowledgeTypes, completeKnowledgeStatus, function(
+		initDropdown(issueStatusDropdown, conDecAPI.knowledgeStatus);
+		conDecAPI.getEvolutionData("", -1, -1, conDecAPI.knowledgeTypes, conDecAPI.knowledgeStatus, function(
 				evolutionData) {
 			var container = document.getElementById('evolution-timeline');
 			var data = evolutionData.dataSet;
@@ -66,7 +63,7 @@
 		var issueTypeDropdown = document.getElementById("knowledge-type-dropdown-comparison");
 		var issueStatusDropdown = document.getElementById("status-dropdown-comparison");
 		initDropdown(issueTypeDropdown, conDecAPI.knowledgeTypes);
-		initDropdown(issueStatusDropdown, completeKnowledgeStatus);
+		initDropdown(issueStatusDropdown, conDecAPI.knowledgeStatus);
 
 		var date = new Date();
 		var today = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDay();
@@ -76,7 +73,7 @@
 		date.setDate(date.getDate() - 7);
 		var startTime = date.getTime();
 		document.getElementById("start-data-picker-compare-left").value = date.toISOString().substr(0, 10);
-		conDecAPI.getCompareVis(startTime, endTime, "", conDecAPI.knowledgeTypes, completeKnowledgeStatus,
+		conDecAPI.getCompareVis(startTime, endTime, "", conDecAPI.knowledgeTypes, conDecAPI.knowledgeStatus,
 				function(visData) {
 					var containerLeft = document.getElementById('left-network');
 					var dataLeft = {
@@ -98,7 +95,7 @@
 		date.setDate(date.getDate() - 7);
 		startTime = date.getTime();
 		document.getElementById("start-data-picker-compare-right").value = date.toISOString().substr(0, 10);
-		conDecAPI.getCompareVis(startTime, endTime, "", conDecAPI.knowledgeTypes, completeKnowledgeStatus,
+		conDecAPI.getCompareVis(startTime, endTime, "", conDecAPI.knowledgeTypes, conDecAPI.knowledgeStatus,
 				function(visData) {
 					var containerRight = document.getElementById('right-network');
 					var dataRight = {

@@ -66,7 +66,8 @@ $(document).ready(function() {
 
         // set REST caching
         if (!localStorage.getItem("condec.restCacheTTL")) {
-        	localStorage.setItem("condec.restCacheTTL",5*60*1000) // 5 minute cache
+        	localStorage.setItem("condec.restCacheTTL",5*60*1000) // 5 minute
+																	// cache
         }
 
 		// is this a demonstration case?

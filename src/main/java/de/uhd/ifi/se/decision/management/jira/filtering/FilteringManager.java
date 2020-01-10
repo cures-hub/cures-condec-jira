@@ -12,8 +12,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
 /**
- * Interface for accessing the filtered knowledge graphs. The filter criteria
- * are specified in the {@link FilterSettings} class.
+ * Interface for accessing the filtered knowledge graph. The filter criteria are
+ * specified in the {@link FilterSettings} class.
  * 
  * @see FilterSettings
  * @see KnowledgeGraph
@@ -21,15 +21,11 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 public interface FilteringManager {
 
 	/**
-	 * Returns a list of all trees that match the given filter criteria.
+	 * Returns a list of all knowledge elements that match the
+	 * {@link FilterSetting}s.
+	 * 
+	 * @return list of all knowledge elements that match the {@link FilterSetting}s.
 	 */
-	List<List<DecisionKnowledgeElement>> getAllGraphs();
-
-	// Problem Filtered Issues from sideFilter will be filterd again
-	// In the end there are only 2 Issues left that are not matching with the
-	// location so everything is collapsed
-	List<DecisionKnowledgeElement> getAllElementsMatchingQuery();
-
 	List<DecisionKnowledgeElement> getAllElementsMatchingFilterSettings();
 
 	/**
@@ -52,17 +48,6 @@ public interface FilteringManager {
 	 *         substring.
 	 */
 	boolean isElementMatchingSubStringFilter(DecisionKnowledgeElement element);
-
-	/**
-	 * Checks if the element's description, summary, or key contains the given
-	 * substring in the {@link FilterSetting}s.
-	 * 
-	 * @param element
-	 *            {@link DecisionKnowledgeElement} object.
-	 * @return true if the element's description, summary, or key contains the given
-	 *         substring.
-	 */
-	boolean isElementMatchingJiraQueryFilter(DecisionKnowledgeElement element);
 
 	/**
 	 * Checks if the element's type equals one of the given {@link KnowledgeType}s

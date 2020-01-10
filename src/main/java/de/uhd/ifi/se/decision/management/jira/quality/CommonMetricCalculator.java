@@ -271,7 +271,7 @@ public class CommonMetricCalculator {
 
 		return havingArgument;
 	}
-
+	//TODO: Delete if no longer used by new Metrics
 	public Map<String, Integer> getLinkDistance(KnowledgeType type) {
 		if (type == null) {
 			return new HashMap<String, Integer>();
