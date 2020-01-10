@@ -29,14 +29,14 @@ public class TestOnlineTrainer extends TestSetUp {
         init();
     }
 
-    private DecisionKnowledgeElement createElement(KnowledgeType type, String summary) {
+    public static DecisionKnowledgeElement createElement(KnowledgeType type, String summary) {
         DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
         element.setType(type);
         element.setSummary(summary);
         return element;
     }
 
-    private List<DecisionKnowledgeElement> getTrainingData() {
+    public static List<DecisionKnowledgeElement> getTrainingData() {
         List<DecisionKnowledgeElement> trainingElements = new ArrayList<DecisionKnowledgeElement>();
         trainingElements.add(createElement(KnowledgeType.ISSUE, "Issue"));
         trainingElements.add(createElement(KnowledgeType.DECISION, "Decision"));
