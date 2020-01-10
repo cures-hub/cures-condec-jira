@@ -1,9 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineClassificationTrainerImpl;
-import de.uhd.ifi.se.decision.management.jira.model.*;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -16,58 +16,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static de.uhd.ifi.se.decision.management.jira.classification.TestOnlineTrainer.getTrainingData;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
-public class TestOnlineClassificationTrainerImpl extends TestSetUp {
+public class TestOnlineFileTrainerImpl extends TestSetUp {
 
-    private OnlineClassificationTrainerImpl trainer;
+    private OnlineFileTrainerImpl trainer;
     private static final List<String> TEST_SENTENCES = Arrays.asList("Pizza is preferred", "I have an issue");
 
     @Before
     public void setUp() {
         init();
-        trainer = new OnlineClassificationTrainerImpl("TEST");
+        trainer = new OnlineFileTrainerImpl("TEST");
         trainer.setTrainingData(getTrainingData());
-    }
-
-
-    private DecisionKnowledgeElement createElement(KnowledgeType type, String summary) {
-        DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-        element.setType(type);
-        element.setSummary(summary);
-        return element;
-    }
-
-    private List<DecisionKnowledgeElement> getTrainingData() {
-        List<DecisionKnowledgeElement> trainingElements = new ArrayList<DecisionKnowledgeElement>();
-        trainingElements.add(createElement(KnowledgeType.ISSUE, "I have an issue"));
-        trainingElements.add(createElement(KnowledgeType.DECISION, "Thats is a Decision"));
-        trainingElements.add(createElement(KnowledgeType.ALTERNATIVE, "This is an Alternative"));
-        trainingElements.add(createElement(KnowledgeType.PRO, "Pro"));
-        trainingElements.add(createElement(KnowledgeType.CON, "Con"));
-        trainingElements.add(createElement(KnowledgeType.OTHER, "Pizza is preferred"));
-        trainingElements.add(createElement(KnowledgeType.ISSUE, "How to do that"));
-        trainingElements.add(createElement(KnowledgeType.DECISION, "We decided on option A."));
-        trainingElements.add(createElement(KnowledgeType.ALTERNATIVE, "An option would be"));
-        trainingElements.add(createElement(KnowledgeType.PRO, "+1"));
-        trainingElements.add(createElement(KnowledgeType.CON, "-1"));
-        trainingElements.add(createElement(KnowledgeType.OTHER, "Lunch"));
-        trainingElements.add(createElement(KnowledgeType.ISSUE, "I don't know how we can"));
-        trainingElements.add(createElement(KnowledgeType.DECISION, "We will do"));
-        trainingElements.add(createElement(KnowledgeType.ALTERNATIVE, "A possible solution could be"));
-        trainingElements.add(createElement(KnowledgeType.PRO, "Very good."));
-        trainingElements.add(createElement(KnowledgeType.CON, "I don't agree"));
-        trainingElements.add(createElement(KnowledgeType.OTHER, "Party tonight"));
-        trainingElements.add(createElement(KnowledgeType.ISSUE, "The question is"));
-        trainingElements.add(createElement(KnowledgeType.DECISION, "I implemented the feature."));
-        trainingElements.add(createElement(KnowledgeType.ALTERNATIVE, "We could have done option A."));
-        trainingElements.add(createElement(KnowledgeType.PRO, "Great work guys!"));
-        trainingElements.add(createElement(KnowledgeType.CON, "No that is not ok"));
-        trainingElements.add(createElement(KnowledgeType.OTHER, "Hello"));
-        return trainingElements;
     }
 
     @Test
@@ -84,7 +47,7 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
         File file = trainer.saveTrainingFile(true);
         trainer.setTrainingFile(file);
         assertNotNull(trainer.getInstances());
-        trainer = new OnlineClassificationTrainerImpl("TEST", file.getName());
+        trainer = new OnlineFileTrainerImpl("TEST", file.getName());
         //assertNotNull(trainer.getInstances());
         assertTrue(trainer.train());
         file.delete();
@@ -116,7 +79,7 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
     @Test
     @NonTransactional
     public void testCopyDefaultTrainingDataToFile() {
-        assertTrue(ClassificationTrainer.copyDefaultTrainingDataToFile().exists());
+        assertTrue(FileTrainer.copyDefaultTrainingDataToFile().exists());
     }
 
     @Test
@@ -138,6 +101,8 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
         assertTrue(executionSuccessful);
     }
 
+    // TODO: evaluate without existing dec. know.
+
 
     @Test
     @NonTransactional
@@ -152,6 +117,8 @@ public class TestOnlineClassificationTrainerImpl extends TestSetUp {
 
         assertTrue(trainer.update(sentence));
     }
+
+    //TODO: tests with unvalidated data element
 
     @Test
     @NonTransactional

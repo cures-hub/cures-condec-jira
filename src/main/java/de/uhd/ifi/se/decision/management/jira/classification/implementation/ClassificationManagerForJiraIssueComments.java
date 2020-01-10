@@ -19,10 +19,10 @@ import java.util.List;
  */
 public class ClassificationManagerForJiraIssueComments {
 
-    private OnlineClassificationTrainerImpl classifierTrainer;
+    private OnlineFileTrainerImpl classifierTrainer;
 
     public ClassificationManagerForJiraIssueComments() {
-        this.classifierTrainer = new OnlineClassificationTrainerImpl();
+        this.classifierTrainer = new OnlineFileTrainerImpl();
     }
 
     public void classifyAllCommentsOfJiraIssue(Issue issue) {
@@ -165,7 +165,7 @@ public class ClassificationManagerForJiraIssueComments {
         return sentences;
     }
 
-    public OnlineClassificationTrainerImpl getClassifierTrainer() {
+    public OnlineFileTrainerImpl getClassifierTrainer() {
         return this.classifierTrainer;
     }
 }

@@ -1,9 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
+import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
+
 import java.io.File;
 import java.util.List;
-
-import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 
 /**
  * Interface to extract the decision knowledge elements from code comments.

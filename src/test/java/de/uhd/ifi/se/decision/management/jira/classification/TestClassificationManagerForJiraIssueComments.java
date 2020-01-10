@@ -1,9 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
@@ -23,6 +19,11 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 
 public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 
@@ -116,7 +117,8 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
     @NonTransactional
     public void testFineGrainedClassificationWithValidData() {
         sentences.get(0).setRelevant(true);
-        sentences = classificationManager.classifySentencesFineGrained(sentences);
+
+		sentences = classificationManager.classifySentencesFineGrained(sentences);
 
         assertNotNull(sentences.get(0).isRelevant());
         assertTrue(sentences.get(0).isTagged());

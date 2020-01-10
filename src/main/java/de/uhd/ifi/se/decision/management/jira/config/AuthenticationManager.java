@@ -1,13 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
-import java.util.Collection;
-import java.util.HashSet;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.security.roles.ProjectRole;
@@ -15,8 +7,13 @@ import com.atlassian.jira.security.roles.ProjectRoleManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.sal.api.user.UserProfile;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Provides methods to handle user authentication to the administration pages

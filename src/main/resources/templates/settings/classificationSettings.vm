@@ -50,7 +50,10 @@
 <div class="field-group">
     <label for="evaluateModel-button">Evaluate model</label>
     <input type="button" class="aui-button" id="evaluateModel-button" value="Evaluate model"/>
-    <div class="description">Evaluate the current model using the user-validated data in the database.</div>
+    <div class="description">Evaluate the current model using the user-validated data in the database. (If the evaluation fails the classifier might need to be trained!)</div>
+    <div class="aui-progress-indicator">
+        <span id="evaluate-classifier-progress"></span>
+    </div>
 </div>
 
 <div class="field-group">
@@ -86,7 +89,10 @@
         #end
     </select>
     <input type="button" class="aui-button" id="trainClassifier-button" value="Train Classifier"/>
-    <div class="description">Trains the classifier on the selected Attribute-Relation File Format (ARFF) file.</div>
+    <div class="description">
+        Trains the classifier on the selected Attribute-Relation File Format (ARFF) file. <br/>
+        <span class="aui-icon aui-icon-small aui-icon-warning">WARNING: </span>Please note that this initial training is very resource expensive!
+    </div>
     <div class="aui-progress-indicator">
         <span id="train-classifier-progress"></span>
     </div>
@@ -136,7 +142,8 @@
 
     var evaluateModelButton = document.getElementById("evaluateModel-button");
     evaluateModelButton.addEventListener("click", function () {
-        conDecAPI.evaluateModel("$projectKey", saveToFile("evaluation_results.json"));
+        var animatedElement = document.getElementById("evaluate-classifier-progress");
+        conDecAPI.evaluateModel("$projectKey", animatedElement, saveToFile("evaluation_results.json"));
     });
 
     var saveArffFileButton = document.getElementById("saveArffFile-button");

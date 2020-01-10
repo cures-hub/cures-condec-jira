@@ -2,7 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.util.JiraHome;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.BinaryClassifierImplementation;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.BinaryClassifierImpl;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.FineGrainedClassifierImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import org.slf4j.Logger;
@@ -83,7 +83,7 @@ public interface DecisionKnowledgeClassifier {
      */
     Map<String, List> preprocess(List<String> stringsToBePreprocessed, List labels);
 
-    BinaryClassifierImplementation getBinaryClassifier();
+    BinaryClassifierImpl getBinaryClassifier();
 
     FineGrainedClassifierImpl getFineGrainedClassifier();
 

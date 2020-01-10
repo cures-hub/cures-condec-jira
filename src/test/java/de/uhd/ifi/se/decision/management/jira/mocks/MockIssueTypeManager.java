@@ -1,13 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.mock.MockConstantsManager;
+import de.uhd.ifi.se.decision.management.jira.config.TestPluginInitializer;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class MockIssueTypeManager implements IssueTypeManager {
 
@@ -22,19 +23,7 @@ public class MockIssueTypeManager implements IssueTypeManager {
 	public void addingAllIssueTypes() {
 		ConstantsManager constManager = new MockConstantsManager();
 		try {
-			constManager.insertIssueType("Decision", (long) 20, "Test", "Test", (long) 12290);
-			constManager.insertIssueType("Alternative", (long) 20, "Test", "Test", (long) 12290);
-			constManager.insertIssueType("Argument", (long) 20, "Test", "Test", (long) 12290);
-			constManager.insertIssueType("Assessment", (long) 20, "Test", "Test", (long) 12290);
-			constManager.insertIssueType("Assumption", (long) 20, "Test", "Test", (long) 12290);
-			constManager.insertIssueType("Claim", (long) 20, "Test", "Test", (long) 12290);
-			constManager.insertIssueType("Constraint", (long) 20, "Test", "Test", (long) 12290);
-			constManager.insertIssueType("Context", (long) 20, "Test", "Test", (long) 12290);
-			constManager.insertIssueType("Goal", (long) 20, "Test", "Test", (long) 12290);
-			constManager.insertIssueType("Implication", (long) 20, "Test", "Test", (long) 12290);
-			constManager.insertIssueType("Issue", (long) 20, "Test", "Test", (long) 12290);
-			constManager.insertIssueType("Problem", (long) 20, "Test", "Test", (long) 12290);
-			constManager.insertIssueType("Solution", (long) 20, "Test", "Test", (long) 12290);
+			TestPluginInitializer.addAllIssueTypesToConstantsManager(constManager);
 		} catch (CreateException e) {
 			e.printStackTrace();
 		}
