@@ -52,6 +52,18 @@ public class ConfigRestImpl implements ConfigRest {
 	@POST
 	public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 								 @QueryParam("isActivated") String isActivatedString) {
+		Response response = this.checkRequest(request, projectKey, isActivatedString);
+		if (response != null) {
+			return response;
+		}
+		boolean isActivated = Boolean.valueOf(isActivatedString);
+		ConfigPersistenceManager.setActivated(projectKey, isActivated);
+		setDefaultKnowledgeTypesEnabled(projectKey, isActivated);
+		resetKnowledgeGraph(projectKey);
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
+	private Response checkRequest(HttpServletRequest request, String projectKey, String isActivatedString) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -59,11 +71,7 @@ public class ConfigRestImpl implements ConfigRest {
 		if (isActivatedString == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
 		}
-		boolean isActivated = Boolean.valueOf(isActivatedString);
-		ConfigPersistenceManager.setActivated(projectKey, isActivated);
-		setDefaultKnowledgeTypesEnabled(projectKey, isActivated);
-		resetKnowledgeGraph(projectKey);
-		return Response.ok(Status.ACCEPTED).build();
+		return null;
 	}
 
 	private static void setDefaultKnowledgeTypesEnabled(String projectKey, boolean isActivated) {
@@ -305,16 +313,15 @@ public class ConfigRestImpl implements ConfigRest {
 	@POST
 	public Response setIconParsing(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 								   @QueryParam("isActivatedString") String isActivatedString) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
+		Response response = this.checkRequest(request, projectKey, isActivatedString);
+		if (response == null) {
+			boolean isActivated = Boolean.valueOf(isActivatedString);
+			ConfigPersistenceManager.setIconParsing(projectKey, isActivated);
+			return Response.ok(Status.ACCEPTED).build();
+		} else {
+			return response;
 		}
-		if (isActivatedString == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
-		}
-		boolean isActivated = Boolean.valueOf(isActivatedString);
-		ConfigPersistenceManager.setIconParsing(projectKey, isActivated);
-		return Response.ok(Status.ACCEPTED).build();
+
 	}
 
 	private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {
@@ -452,13 +459,9 @@ public class ConfigRestImpl implements ConfigRest {
 	public Response setUseClassifierForIssueComments(@Context HttpServletRequest request,
 													 @QueryParam("projectKey") String projectKey,
 													 @QueryParam("isClassifierUsedForIssues") String isActivatedString) {
-		System.out.println(isActivatedString);
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		if (isActivatedString == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
+		Response response = this.checkRequest(request, projectKey, isActivatedString);
+		if (response != null) {
+			return response;
 		}
 		boolean isActivated = Boolean.valueOf(isActivatedString);
 		ConfigPersistenceManager.setUseClassifierForIssueComments(projectKey, isActivated);
@@ -469,31 +472,30 @@ public class ConfigRestImpl implements ConfigRest {
 	@Path("/trainClassifier")
 	@POST
 	public Response trainClassifier(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-								@QueryParam("arffFileName") String arffFileName){//, @Suspended final AsyncResponse asyncResponse) {
+									@QueryParam("arffFileName") String arffFileName) {//, @Suspended final AsyncResponse asyncResponse) {
 
-			Response returnResponse;
-			Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
-			if (isValidDataResponse.getStatus() != Response.Status.OK.getStatusCode()) {
-				returnResponse = isValidDataResponse;
-			} else if (arffFileName == null || arffFileName.isEmpty()) {
-				returnResponse = Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"The classifier could not be trained since the ARFF file name is invalid.")).build();
+		Response returnResponse;
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Response.Status.OK.getStatusCode()) {
+			returnResponse = isValidDataResponse;
+		} else if (arffFileName == null || arffFileName.isEmpty()) {
+			returnResponse = Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+				"The classifier could not be trained since the ARFF file name is invalid.")).build();
+		} else {
+			ConfigPersistenceManager.setArffFileForClassifier(projectKey, arffFileName);
+
+			OnlineTrainer trainer = new OnlineFileTrainerImpl(projectKey, arffFileName);
+			boolean isTrained = trainer.train();
+
+
+			if (isTrained) {
+				returnResponse = Response.ok(Response.Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
 			} else {
-				ConfigPersistenceManager.setArffFileForClassifier(projectKey, arffFileName);
-
-				OnlineTrainer trainer = new OnlineFileTrainerImpl(projectKey, arffFileName);
-				boolean isTrained = trainer.train();
-
-
-
-				if (isTrained) {
-					returnResponse = Response.ok(Response.Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
-				} else {
-					returnResponse = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-						ImmutableMap.of("error", "The classifier could not be trained due to an internal server error."))
-						.build();
-				}
+				returnResponse = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+					ImmutableMap.of("error", "The classifier could not be trained due to an internal server error."))
+					.build();
 			}
+		}
 
 		return returnResponse;
 	}
@@ -512,7 +514,7 @@ public class ConfigRestImpl implements ConfigRest {
 		try {
 			Map<String, Double> evaluationResults = trainer.evaluateClassifier();
 
-			if(evaluationResults.size() == 0){
+			if (evaluationResults.size() == 0) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "No evaluation results were calculated!"))
 					.build();
 			}
@@ -524,7 +526,7 @@ public class ConfigRestImpl implements ConfigRest {
 				prettyMapOutput.append(prefix + System.lineSeparator() + "\"" + e.getKey() + "\" : \"" + e.getValue() + "\"");
 				prefix = ",";
 			}
-			prettyMapOutput.append(System.lineSeparator() +"}");
+			prettyMapOutput.append(System.lineSeparator() + "}");
 
 			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("content", prettyMapOutput.toString())).build();
 		} catch (Exception e) {
