@@ -89,34 +89,10 @@
 	};
 
 	/*
-	 * external references:
-	 */
-	ConDecAPI.prototype.createUnlinkedDecisionKnowledgeElement = function createUnlinkedDecisionKnowledgeElementAsChild(summary,
-																														description, type, documentationLocation,
-																														callback) {
-		var newElement = {
-			"summary": summary,
-			"type": type,
-			"projectKey": projectKey,
-			"description": description,
-			"documentationLocation": documentationLocation,
-		};
-
-		postJSON(this.restPrefix + "/knowledge/createUnlinkedDecisionKnowledgeElement.json?", newElement, function (error, newElement) {
-			if (error === null) {
-				showFlag("success", type + " and link have been created.");
-				callback(newElement.id);
-			}
-		});
-	};
-
-	/*
 	 * external references: condec.knowledge.page, condec.dialog
 	 */
-	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElementAsChild(summary,
-																										description, type, documentationLocation, idOfExistingElement, documentationLocationOfExistingElement,
-																										callback) {
-		// console.log("conDecAPI createDecisionKnowledgeElement");
+	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElement(summary, description, 
+			type, documentationLocation, idOfExistingElement, documentationLocationOfExistingElement, callback) {
 		var newElement = {
 			"summary": summary,
 			"type": type,
@@ -134,12 +110,20 @@
 			}
 		});
 	};
+	
+	/*
+	 * external references:
+	 */
+	ConDecAPI.prototype.createUnlinkedDecisionKnowledgeElement = function createUnlinkedDecisionKnowledgeElement(summary,
+			description, type, documentationLocation, callback) {
+		this.createDecisionKnowledgeElement(summary, description, type, documentationLocation, 0, null, callback);
+	};
 
 	/*
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.updateDecisionKnowledgeElement = function updateDecisionKnowledgeElement(id, summary,
-																								 description, type, documentationLocation, status, callback) {
+			description, type, documentationLocation, status, callback) {
 		var element = {
 			"id": id,
 			"summary": summary,
@@ -848,7 +832,7 @@
 
 
 	ConDecAPI.prototype.evaluateModel = function evaluateModel(projectKey, animatedElement, callback) {
-		//console.log("ConDecAPI.prototype.evaluateModel");
+		// console.log("ConDecAPI.prototype.evaluateModel");
 		animatedElement.classList.add("aui-progress-indicator-value");
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/evaluateModel.json?projectKey=" + projectKey, null,
 

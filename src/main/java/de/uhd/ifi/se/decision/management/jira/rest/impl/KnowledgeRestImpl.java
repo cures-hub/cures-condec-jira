@@ -103,31 +103,6 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 	}
 
 	@Override
-	@Path("/createUnlinkedDecisionKnowledgeElement")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createUnlinkedDecisionKnowledgeElement(@Context HttpServletRequest request,
-			DecisionKnowledgeElement element) {
-		if (element == null || request == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"Creation of decision knowledge element failed due to a bad request (element or request is null)."))
-					.build();
-		}
-		ApplicationUser user = AuthenticationManager.getUser(request);
-
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(element.getProject().getProjectKey());
-		DecisionKnowledgeElement newElement = persistenceManager.insertDecisionKnowledgeElement(element, user, null);
-
-		if (newElement == null) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
-		}
-
-		return Response.status(Status.OK).entity(newElement).build();
-	}
-
-	@Override
 	@Path("/createDecisionKnowledgeElement")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })

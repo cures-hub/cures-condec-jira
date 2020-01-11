@@ -346,9 +346,14 @@
 			return;
 		}
 		selectField.innerHTML = "";
-		selectField.insertAdjacentHTML("beforeend", "<option value = ''>Independent knowledge element</option>"
-			+ "<option selected value = 's'>Jira issue comment</option></select></div>");
-
+		conDecAPI.isIssueStrategy(function(isEnabled) {
+			selectField.insertAdjacentHTML("beforeend", "<option selected value = 's'>Jira issue comment</option>" 
+					+ "<option selected value = 'a'>Independent</option>");
+			if (isEnabled) {
+				selectField.insertAdjacentHTML("beforeend", "<option value = 'i'>Jira issue</option>");
+			} 
+		});
+		
 		AJS.$(selectField).auiSelect2();
 	}
 

@@ -23,8 +23,6 @@ public interface KnowledgeRest {
 
 	Response getUnlinkedElements(long id, String projectKey, String documentationLocation);
 
-	Response createUnlinkedDecisionKnowledgeElement(HttpServletRequest request, DecisionKnowledgeElement element);
-
 	/**
 	 * Creates a new {@link DecisionKnowledgeElement}. The decision knowledge
 	 * element can either be documented as a separate Jira issue (documentation
