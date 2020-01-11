@@ -23,6 +23,8 @@
 	ConDecDialog.prototype.showCreateDialog = function showCreateDialog(idOfParentElement,
 																		documentationLocationOfParentElement) {
 		console.log("conDecDialog showCreateDialog");
+		console.log(idOfParentElement);
+		console.log(documentationLocationOfParentElement);
 
 		// HTML elements
 		var createDialog = document.getElementById("create-dialog");

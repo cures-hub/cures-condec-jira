@@ -22,7 +22,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 
 /**
@@ -192,23 +191,6 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 	@Override
 	public void setKey(String key) {
 		this.key = key;
-	}
-
-	@Override
-	public List<DecisionKnowledgeElement> getLinkedElements() {
-		return this.getProject().getPersistenceStrategy().getAdjacentElements(this);
-	}
-
-	@Override
-	public List<Link> getOutwardLinks() {
-		return this.getProject().getPersistenceStrategy().getOutwardLinks(this);
-	}
-
-	@Override
-	public List<Link> getInwardLinks() {
-		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getManagerForSingleLocation(this);
-		return persistenceManager.getInwardLinks(this);
 	}
 
 	@Override

@@ -56,33 +56,13 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 					.build();
 		}
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		DecisionKnowledgeElement decisionKnowledgeElement = persistenceManager
-				.getManagerForSingleLocation(documentationLocationIdentifier).getDecisionKnowledgeElement(id);
-		if (decisionKnowledgeElement == null) {
-			decisionKnowledgeElement = persistenceManager.getJiraIssueManager().getDecisionKnowledgeElement(id);
-		}
+		DecisionKnowledgeElement decisionKnowledgeElement = persistenceManager.getDecisionKnowledgeElement(id,
+				documentationLocationIdentifier);
 		if (decisionKnowledgeElement != null) {
 			return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
 		}
-		return Response.status(Status.INTERNAL_SERVER_ERROR)
+		return Response.status(Status.NOT_FOUND)
 				.entity(ImmutableMap.of("error", "Decision knowledge element was not found for the given id.")).build();
-	}
-
-	@Override
-	@Path("/getAdjacentElements")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getAdjacentElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
-			@QueryParam("documentationLocation") String documentationLocation) {
-		if (projectKey == null || id <= 0) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"Linked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
-					.build();
-		}
-		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(projectKey).getManagerForSingleLocation(documentationLocation);
-		List<DecisionKnowledgeElement> linkedDecisionKnowledgeElements = persistenceManager.getAdjacentElements(id);
-		return Response.ok(linkedDecisionKnowledgeElements).build();
 	}
 
 	@Override
@@ -96,6 +76,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 					"Unlinked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
 					.build();
 		}
+		// TODO Get elements from all documentation locations not just one
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(projectKey).getManagerForSingleLocation(documentationLocation);
 		List<DecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = persistenceManager.getUnlinkedElements(id);
@@ -127,11 +108,8 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		AbstractPersistenceManagerForSingleLocation persistenceManagerForExistingElement = persistenceManager
-				.getManagerForSingleLocation(documentationLocationOfExistingElement);
-		DecisionKnowledgeElement existingElement = persistenceManagerForExistingElement
-				.getDecisionKnowledgeElement(idOfExistingElement);
-
+		DecisionKnowledgeElement existingElement = persistenceManager.getDecisionKnowledgeElement(idOfExistingElement,
+				documentationLocationOfExistingElement);
 		DecisionKnowledgeElement newElementWithId = persistenceManager.insertDecisionKnowledgeElement(element, user,
 				existingElement);
 
@@ -140,7 +118,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
 		}
 
-		if (idOfExistingElement == 0) {
+		if (idOfExistingElement == 0 || existingElement == null) {
 			return Response.status(Status.OK).entity(newElementWithId).build();
 		}
 		Link link = Link.instantiateDirectedLink(existingElement, newElementWithId);
@@ -245,12 +223,18 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		DecisionKnowledgeElement parentElement = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getManagerForSingleLocation(documentationLocationOfParent).getDecisionKnowledgeElement(idOfParent);
-		DecisionKnowledgeElement childElement = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getManagerForSingleLocation(documentationLocationOfChild).getDecisionKnowledgeElement(idOfChild);
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
 
-		KnowledgePersistenceManager.getOrCreate(projectKey).updateIssueStatus(parentElement, childElement, user);
+		DecisionKnowledgeElement parentElement = persistenceManager.getDecisionKnowledgeElement(idOfParent,
+				documentationLocationOfParent);
+		DecisionKnowledgeElement childElement = persistenceManager.getDecisionKnowledgeElement(idOfChild,
+				documentationLocationOfChild);
+
+		if (parentElement == null || childElement == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+
+		persistenceManager.updateIssueStatus(parentElement, childElement, user);
 
 		Link link;
 		if (linkTypeName == null) {
@@ -260,7 +244,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 			LinkType linkType = LinkType.getLinkType(linkTypeName);
 			link = Link.instantiateDirectedLink(parentElement, childElement, linkType);
 		}
-		long linkId = KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, user);
+		long linkId = persistenceManager.insertLink(link, user);
 		if (linkId == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();

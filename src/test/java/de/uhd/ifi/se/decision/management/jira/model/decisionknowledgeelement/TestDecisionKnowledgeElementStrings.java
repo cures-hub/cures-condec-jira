@@ -127,16 +127,6 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 	}
 
 	@Test
-	public void testGetOutwardLinks() {
-		assertNotNull(decisionKnowledgeElement.getOutwardLinks());
-	}
-
-	@Test
-	public void testGetInwardLinks() {
-		assertNotNull(decisionKnowledgeElement.getInwardLinks());
-	}
-
-	@Test
 	public void testGetDocumentationLocationAsStringNull() {
 		this.decisionKnowledgeElement.setDocumentationLocation((DocumentationLocation) null);
 		assertEquals("", decisionKnowledgeElement.getDocumentationLocationAsString());

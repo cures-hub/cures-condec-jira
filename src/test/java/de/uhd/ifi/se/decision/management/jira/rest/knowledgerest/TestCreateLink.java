@@ -53,7 +53,7 @@ public class TestCreateLink extends TestSetUp {
 
 	@Test
 	public void testRequestFilledProjectKeyFilledChildElementFilledParentElementFilledDocumentationLocationUnknownLinkTypeNull() {
-		assertEquals(Status.OK.getStatusCode(),
+		assertEquals(Status.NOT_FOUND.getStatusCode(),
 				knowledgeRest.createLink(request, "TEST", "Decision", 4, "", 1, "", null).getStatus());
 	}
 

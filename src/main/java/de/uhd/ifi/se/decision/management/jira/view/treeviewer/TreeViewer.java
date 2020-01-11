@@ -68,12 +68,8 @@ public class TreeViewer {
 		if (rootElementType == KnowledgeType.OTHER) {
 			return;
 		}
-		// TODO Call
-		// PersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements(rootElementType)
-		// to get all elements for all documentation locations
-		AbstractPersistenceManagerForSingleLocation strategy = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getDefaultManagerForSingleLocation();
-		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements(rootElementType);
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		List<DecisionKnowledgeElement> elements = persistenceManager.getDecisionKnowledgeElements(rootElementType);
 
 		Set<Data> dataSet = new HashSet<Data>();
 		for (DecisionKnowledgeElement element : elements) {

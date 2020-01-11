@@ -63,19 +63,6 @@
 	};
 
 	/*
-	 * external references: none
-	 */
-	ConDecAPI.prototype.getAdjacentElements = function getAdjacentElements(id, documentationLocation, callback) {
-		getJSON(this.restPrefix + "/knowledge/getAdjacentElements.json?projectKey="
-			+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function (error,
-																									  adjacentElements) {
-			if (error === null) {
-				callback(adjacentElements);
-			}
-		});
-	};
-
-	/*
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.getUnlinkedElements = function getUnlinkedElements(id, documentationLocation, callback) {

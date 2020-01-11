@@ -44,8 +44,10 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 
 	@Override
 	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements() {
-		List<DecisionKnowledgeElement> elements = getDefaultManagerForSingleLocation().getDecisionKnowledgeElements();
-		elements.addAll(jiraIssueTextPersistenceManager.getDecisionKnowledgeElements());
+		List<DecisionKnowledgeElement> elements = jiraIssueTextPersistenceManager.getDecisionKnowledgeElements();
+		if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
+			elements.addAll(jiraIssuePersistenceManager.getDecisionKnowledgeElements());
+		}
 
 		// remove irrelevant sentences from graph
 		elements.removeIf(e -> (e instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) e).isRelevant()));
@@ -55,15 +57,6 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	@Override
 	public String getProjectKey() {
 		return projectKey;
-	}
-
-	@Override
-	public AbstractPersistenceManagerForSingleLocation getDefaultManagerForSingleLocation() {
-		boolean isIssueStrategy = ConfigPersistenceManager.isIssueStrategy(projectKey);
-		if (isIssueStrategy) {
-			return jiraIssuePersistenceManager;
-		}
-		return jiraIssueTextPersistenceManager;
 	}
 
 	@Override
@@ -78,9 +71,10 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 
 	@Override
 	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type) {
-		List<DecisionKnowledgeElement> elements = getDefaultManagerForSingleLocation()
-				.getDecisionKnowledgeElements(type);
-		elements.addAll(jiraIssueTextPersistenceManager.getDecisionKnowledgeElements(type));
+		List<DecisionKnowledgeElement> elements = jiraIssueTextPersistenceManager.getDecisionKnowledgeElements(type);
+		if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
+			elements.addAll(jiraIssuePersistenceManager.getDecisionKnowledgeElements(type));
+		}
 		return elements;
 	}
 
@@ -88,7 +82,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	public AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(
 			String documentationLocationIdentifier) {
 		if (documentationLocationIdentifier == null) {
-			return getDefaultManagerForSingleLocation();
+			return null;
 		}
 		DocumentationLocation documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
@@ -99,7 +93,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	public AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(
 			DocumentationLocation documentationLocation) {
 		if (documentationLocation == null) {
-			return getDefaultManagerForSingleLocation();
+			return null;
 		}
 		switch (documentationLocation) {
 		case JIRAISSUE:
@@ -107,14 +101,14 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		case JIRAISSUETEXT:
 			return jiraIssueTextPersistenceManager;
 		default:
-			return getDefaultManagerForSingleLocation();
+			return null;
 		}
 	}
 
 	@Override
 	public long insertLink(Link link, ApplicationUser user) {
 		if (link.containsUnknownDocumentationLocation()) {
-			link.setDefaultDocumentationLocation(projectKey);
+			return 0;
 		}
 
 		long databaseId = 0;
@@ -165,7 +159,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	@Override
 	public boolean deleteLink(Link link, ApplicationUser user) {
 		if (link.containsUnknownDocumentationLocation()) {
-			link.setDefaultDocumentationLocation(projectKey);
+			return false;
 		}
 
 		KnowledgeGraph.getOrCreate(projectKey).removeEdge(link);
@@ -264,10 +258,16 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id, DocumentationLocation documentationLocation) {
 		AbstractPersistenceManagerForSingleLocation persistenceManager = getManagerForSingleLocation(
 				documentationLocation);
-		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(id);
-		if (element == null) {
-			return new DecisionKnowledgeElementImpl();
+		if (persistenceManager == null) {
+			return null;
 		}
-		return element;
+		return persistenceManager.getDecisionKnowledgeElement(id);
+	}
+
+	@Override
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id, String documentationLocationIdentifier) {
+		DocumentationLocation documentationLocation = DocumentationLocation
+				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
+		return getDecisionKnowledgeElement(id, documentationLocation);
 	}
 }

@@ -163,34 +163,6 @@ public interface DecisionKnowledgeElement extends Node {
 	void setKey(String key);
 
 	/**
-	 * Get all linked elements of the decision knowledge element. It does not matter
-	 * whether this decision knowledge element is the source or the destination
-	 * element.
-	 *
-	 * @return list of linked elements.
-	 */
-	List<DecisionKnowledgeElement> getLinkedElements();
-
-	/**
-	 * Get all links where this decision knowledge element is the source element.
-	 *
-	 * @see Link
-	 * @return list of links where this decision knowledge element is the source
-	 *         element.
-	 */
-	List<Link> getOutwardLinks();
-
-	/**
-	 * Get all links where this decision knowledge element is the destination
-	 * element.
-	 *
-	 * @see Link
-	 * @return list of links where this decision knowledge element is the
-	 *         destination element.
-	 */
-	List<Link> getInwardLinks();
-
-	/**
 	 * Get the documentation location of the decision knowledge element. For
 	 * example, decision knowledge can be documented in commit messages or in the
 	 * comments to a JIRA issue.

@@ -24,23 +24,6 @@ public class TestAbstractPersistenceManagerForSingleLocation extends TestSetUp {
 		element.setProject("TEST");
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testProjectKeyNull() {
-		KnowledgePersistenceManager.getOrCreate((String) null).getDefaultManagerForSingleLocation();
-	}
-
-	@Test
-	public void testGetPersistenceStrategyProjectKeyNonExistent() {
-		assertTrue(KnowledgePersistenceManager.getOrCreate("TESTNOT")
-				.getDefaultManagerForSingleLocation() instanceof JiraIssuePersistenceManager);
-	}
-
-	@Test
-	public void testGetPersistenceStrategyProjectKeyExistent() {
-		assertTrue(KnowledgePersistenceManager.getOrCreate("TEST")
-				.getDefaultManagerForSingleLocation() instanceof JiraIssuePersistenceManager);
-	}
-
 	@Test
 	public void testGetPersistenceManagerElementExistentJiraIssue() {
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUE);

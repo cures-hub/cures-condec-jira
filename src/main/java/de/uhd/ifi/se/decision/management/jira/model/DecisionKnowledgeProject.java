@@ -93,17 +93,6 @@ public interface DecisionKnowledgeProject {
 	void setIssueStrategy(boolean isIssueStrategy);
 
 	/**
-	 * Get the persistence strategy for decision knowledge used in this project.
-	 *
-	 * @see AbstractPersistenceManagerForSingleLocation
-	 * @see JiraIssuePersistenceManager
-	 * @return persistence strategy for decision knowledge used in this project,
-	 *         either issue strategy or active object strategy. The active object
-	 *         strategy is the default strategy.
-	 */
-	AbstractPersistenceManagerForSingleLocation getPersistenceStrategy();
-
-	/**
 	 * Get the types of decision knowledge that is used in this project.
 	 *
 	 * @see KnowledgeType

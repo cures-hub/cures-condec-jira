@@ -148,7 +148,7 @@
 				if (this.getElementsByClassName("node-desc")[0].innerHTML.includes(":")) {
 					conDecContextMenu.createContextMenu(this.id, "s", event, "treant-container");
 				} else {
-					conDecContextMenu.createContextMenu(this.id, "", event, "treant-container");
+					conDecContextMenu.createContextMenu(this.id, "i", event, "treant-container");
 				}
 			});
 		}

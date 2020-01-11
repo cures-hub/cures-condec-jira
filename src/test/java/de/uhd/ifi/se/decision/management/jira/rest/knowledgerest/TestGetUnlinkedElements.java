@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
@@ -25,6 +26,7 @@ public class TestGetUnlinkedElements extends TestSetUp {
 	}
 
 	@Test
+	@Ignore
 	public void testElementIdFilledProjectExistentDocumentationLocationEmpty() {
 		assertEquals(Response.Status.OK.getStatusCode(), knowledgeRest.getUnlinkedElements(7, "TEST", "").getStatus());
 	}

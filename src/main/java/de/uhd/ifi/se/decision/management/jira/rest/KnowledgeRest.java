@@ -19,8 +19,6 @@ public interface KnowledgeRest {
 
 	Response getDecisionKnowledgeElement(long id, String projectKey, String documentationLocation);
 
-	Response getAdjacentElements(long id, String projectKey, String documentationLocation);
-
 	Response getUnlinkedElements(long id, String projectKey, String documentationLocation);
 
 	/**

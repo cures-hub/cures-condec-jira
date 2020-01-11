@@ -279,21 +279,6 @@ public interface KnowledgePersistenceManager {
 	JiraIssuePersistenceManager getJiraIssueManager();
 
 	/**
-	 * Returns the default persistence manager for autarkical decision knowledge
-	 * elements used in the project. These elements are directly stored in Jira and
-	 * independent from other Jira issues. These elements are real "first-class"
-	 * elements.
-	 *
-	 * @return persistence manager for real "first-class" decision knowledge
-	 *         elements used in the given project, either Jira issue manager or
-	 *         active object manager. The active object manager is the default
-	 *         manager if the user did not decide differently.
-	 * @see AbstractPersistenceManagerForSingleLocation
-	 * @see JiraIssuePersistenceManager
-	 */
-	AbstractPersistenceManagerForSingleLocation getDefaultManagerForSingleLocation();
-
-	/**
 	 * Returns the persistence manager for a single documentation location.
 	 *
 	 * @param documentationLocation
@@ -347,11 +332,25 @@ public interface KnowledgePersistenceManager {
 	 *            id of the decision knowledge element in database.
 	 * @param documentationLocation
 	 *            of the element.
-	 * @return decision knowledge element.
+	 * @return decision knowledge element or null if it is not found.
 	 * @see DecisionKnowledgeElement
 	 * @see DocumentationLocation
 	 */
 	DecisionKnowledgeElement getDecisionKnowledgeElement(long id, DocumentationLocation documentationLocation);
+
+	/**
+	 * Gets a decision knowledge element in database by its id and its documentation
+	 * location.
+	 *
+	 * @param id
+	 *            id of the decision knowledge element in database.
+	 * @param documentationLocation
+	 *            identifier of the {@link DocumentationLocation} of the element,
+	 *            e.g., "i" for Jira issue.
+	 * @return decision knowledge element or null if it is not found.
+	 * @see DecisionKnowledgeElement
+	 */
+	DecisionKnowledgeElement getDecisionKnowledgeElement(long id, String documentationLocation);
 
 	boolean updateIssueStatus(DecisionKnowledgeElement existingElement, DecisionKnowledgeElement newElement,
 			ApplicationUser user);

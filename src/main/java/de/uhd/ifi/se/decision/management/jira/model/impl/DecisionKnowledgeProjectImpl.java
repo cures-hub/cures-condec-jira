@@ -6,8 +6,6 @@ import java.util.Set;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 
 /**
  * Model class for a project and its configuration
@@ -16,7 +14,6 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 
 	private String projectKey;
 	private String projectName;
-	private AbstractPersistenceManagerForSingleLocation persistenceStrategy;
 
 	public DecisionKnowledgeProjectImpl(String projectKey) {
 		this.projectKey = projectKey;
@@ -65,15 +62,6 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	@Override
 	public void setIssueStrategy(boolean isIssueStrategy) {
 		ConfigPersistenceManager.setIssueStrategy(this.getProjectKey(), isIssueStrategy);
-	}
-
-	@Override
-	public AbstractPersistenceManagerForSingleLocation getPersistenceStrategy() {
-		if (this.persistenceStrategy == null) {
-			this.persistenceStrategy = KnowledgePersistenceManager.getOrCreate(projectKey)
-					.getDefaultManagerForSingleLocation();
-		}
-		return this.persistenceStrategy;
 	}
 
 	@Override
