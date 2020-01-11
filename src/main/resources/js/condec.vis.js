@@ -339,12 +339,6 @@
         }
     };
 
-    ConDecVis.prototype.addNode = function addNode(data, callback) {
-        conDecDialog.showCreateDialog("", "", function() {
-            callback(data);
-        });
-    };
-
     ConDecVis.prototype.deleteNode =  function deleteNode(data, callback) {
         conDecDialog.showDeleteDialog(data.nodes[0].slice(0, -2), data.nodes[0]
             .substr(-1), function() {

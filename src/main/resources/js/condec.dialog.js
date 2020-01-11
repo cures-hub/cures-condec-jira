@@ -45,16 +45,10 @@
 			var description = inputDescriptionField.value;
 			var type = selectTypeField.value;
 			var documentationLocation = selectLocationField.value;
-			if (idOfParentElement === "") {
-				conDecAPI.createUnlinkedDecisionKnowledgeElement(summary, description, type, documentationLocation, function(id) {
+			conDecAPI.createDecisionKnowledgeElement(summary, description, type, documentationLocation,
+				idOfParentElement, documentationLocationOfParentElement, function (id) {
 					conDecObservable.notify();
-				})
-			} else {
-				conDecAPI.createDecisionKnowledgeElement(summary, description, type, documentationLocation,
-					idOfParentElement, documentationLocationOfParentElement, function (id) {
-						conDecObservable.notify();
-					});
-			}
+			});
 			AJS.dialog2(createDialog).hide();
 		};
 
@@ -333,7 +327,6 @@
 			selectField.insertAdjacentHTML("beforeend", "<option " + isSelected + " value='"
 				+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
 		}
-		AJS.$(selectField).auiSelect2();
 	}
 
 	function isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index) {
@@ -347,14 +340,13 @@
 		}
 		selectField.innerHTML = "";
 		conDecAPI.isIssueStrategy(function(isEnabled) {
-			selectField.insertAdjacentHTML("beforeend", "<option selected value = 's'>Jira issue comment</option>" 
-					+ "<option selected value = 'a'>Independent</option>");
+			if (documentationLocationOfParentElement !== null) {
+				selectField.insertAdjacentHTML("beforeend", "<option selected value = 's'>Jira issue comment</option>");
+			}			
 			if (isEnabled) {
 				selectField.insertAdjacentHTML("beforeend", "<option value = 'i'>Jira issue</option>");
 			} 
 		});
-		
-		AJS.$(selectField).auiSelect2();
 	}
 
 	ConDecDialog.prototype.showChangeTypeDialog = function showChangeTypeDialog(id, documentationLocation) {

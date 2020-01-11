@@ -69,15 +69,22 @@
 
 		var createElementButton = document.getElementById("create-element-button");
 		var elementInputField = document.getElementById("element-input-field");
-		createElementButton.addEventListener("click", function() {
-			var summary = elementInputField.value;
-			var type = jQueryConDec("select[name='select-root-element-type']").val();
-			elementInputField.value = "";
-			conDecAPI.createDecisionKnowledgeElement(summary, "", type, "", 0, null, function(id) {
-				updateView(id, treant, treeViewer);
-			});
+		conDecAPI.isIssueStrategy(function(isEnabled) {
+			if (isEnabled) {
+				createElementButton.addEventListener("click", function() {
+					var summary = elementInputField.value;
+					var type = jQueryConDec("select[name='select-root-element-type']").val();
+					elementInputField.value = "";
+					conDecAPI.createDecisionKnowledgeElement(summary, "", type, "", 0, null, function(id) {
+						updateView(id, treant, treeViewer);
+					});
+				});
+			} else {
+				createElementButton.style.display = "none";
+				elementInputField.style.display = "none";
+			}
 		});
-
+		
 		var depthOfTreeInput = document.getElementById("depth-of-tree-input");
 		depthOfTreeInput.addEventListener("input", function() {
 			var depthOfTreeWarningLabel = document.getElementById("depth-of-tree-warning");

@@ -89,6 +89,10 @@
 	};
 
 	/*
+	 * Creates a new decision knowledge element. If the element should be
+	 * unlinked the idOfExistingElement must be 0 and the
+	 * documentationLocationOfExistingElement must be null 
+	 * 
 	 * external references: condec.knowledge.page, condec.dialog
 	 */
 	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElement(summary, description, 
@@ -109,14 +113,6 @@
 				callback(newElement.id);
 			}
 		});
-	};
-	
-	/*
-	 * external references:
-	 */
-	ConDecAPI.prototype.createUnlinkedDecisionKnowledgeElement = function createUnlinkedDecisionKnowledgeElement(summary,
-			description, type, documentationLocation, callback) {
-		this.createDecisionKnowledgeElement(summary, description, type, documentationLocation, 0, null, callback);
 	};
 
 	/*
