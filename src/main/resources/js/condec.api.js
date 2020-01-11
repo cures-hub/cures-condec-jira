@@ -587,7 +587,7 @@
 	};
 
 	/*
-	 * external references: condec.dialog
+	 * external references: condec.dialog, condec.context.menu
 	 */
 	ConDecAPI.prototype.isIssueStrategy = function isIssueStrategy(callback) {
 		getJSON(this.restPrefix + "/config/isIssueStrategy.json?projectKey=" + projectKey,

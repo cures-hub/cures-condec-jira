@@ -29,7 +29,8 @@
 		/*
 		 * @issue This event gets launched many times at the same time! Check
 		 * what fires it. Probably more and more onclick event handlers get
-		 * added instead of just one. How can we set the event listener only once?
+		 * added instead of just one. How can we set the event listener only
+		 * once?
 		 * 
 		 * @decision On click and on blur event handlers are only set in the
 		 * constructor (see above)!
@@ -47,10 +48,11 @@
 	}
 
 	/*
-	 * external references: condec.treant, condec.tree.viewer, condec.vis, condec.evolution.page
+	 * external references: condec.treant, condec.tree.viewer, condec.vis,
+	 * condec.evolution.page
 	 */
 	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(id, documentationLocation, event,
-			container) {
+	        container) {
 		console.log("contextmenu opened");
 		isContextMenuOpen = true;
 
@@ -65,12 +67,12 @@
 
 		var position = getPosition(event, container);
 		$(contextMenuNode).css({
-			left : position["x"],
-			top : position["y"]
+		    left : position["x"],
+		    top : position["y"]
 		});
 
 		contextMenuNode.style.zIndex = 9998; // why this number?
-		contextMenuNode.setAttribute('aria-hidden', 'false');		
+		contextMenuNode.setAttribute('aria-hidden', 'false');
 	};
 
 	function setContextMenuItemsEventHandlers(id, documentationLocation) {
@@ -173,15 +175,15 @@
 		var element = event.target;
 		if (container === null && event !== null) {
 			return {
-				x : event.pageX,
-				y : event.pageY
+			    x : event.pageX,
+			    y : event.pageY
 			};
 		}
 
 		if (container.includes("vis")) {
 			return {
-				x : event.layerX + "px",
-				y : event.screenY + "px"
+			    x : event.layerX + "px",
+			    y : event.screenY + "px"
 			};
 		}
 
@@ -209,8 +211,8 @@
 			element = element.offsetParent;
 		}
 		return {
-			x : xPosition,
-			y : yPosition
+		    x : xPosition,
+		    y : yPosition
 		};
 	}
 
@@ -223,7 +225,7 @@
 				document.getElementById("condec-context-menu-change-status-item").style.display = "initial";
 			}
 		});
-		
+
 		if (container == null || container.includes("vis")) {
 			document.getElementById("condec-context-menu-set-root-item").style.display = "none";
 			document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
@@ -231,11 +233,17 @@
 			document.getElementById("condec-context-menu-set-root-item").style.display = "initial";
 			document.getElementById("condec-context-menu-delete-link-item").style.display = "initial";
 		}
-		
+
 		if (documentationLocation === "s") {
 			document.getElementById("condec-context-menu-link-item").style.display = "none";
 			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "initial";
-			document.getElementById("condec-context-menu-sentence-convert-item").style.display = "initial";
+			conDecAPI.isIssueStrategy(function(isEnabled) {
+				if (isEnabled) {
+					document.getElementById("condec-context-menu-sentence-convert-item").style.display = "initial";
+				} else {
+					document.getElementById("condec-context-menu-sentence-convert-item").style.display = "none";
+				}
+			});
 			document.getElementById("condec-context-menu-set-root-item").style.display = "none";
 		} else {
 			document.getElementById("condec-context-menu-link-item").style.display = "initial";
