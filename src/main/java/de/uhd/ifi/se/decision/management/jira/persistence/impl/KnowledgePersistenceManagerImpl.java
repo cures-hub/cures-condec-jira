@@ -29,19 +29,16 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
  * @see AbstractPersistenceManagerForSingleLocation
  * @see JiraIssuePersistenceManager
  * @see JiraIssueTextPersistenceManager
- * @see ActiveObjectPersistenceManager
  */
 public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceManager {
 
 	private String projectKey;
 	private JiraIssuePersistenceManager jiraIssuePersistenceManager;
-	private ActiveObjectPersistenceManager activeObjectPersistenceManager;
 	private JiraIssueTextPersistenceManager jiraIssueTextPersistenceManager;
 
 	public KnowledgePersistenceManagerImpl(String projectKey) {
 		this.projectKey = projectKey;
 		this.jiraIssuePersistenceManager = new JiraIssuePersistenceManager(projectKey);
-		this.activeObjectPersistenceManager = new ActiveObjectPersistenceManager(projectKey);
 		this.jiraIssueTextPersistenceManager = new JiraIssueTextPersistenceManager(projectKey);
 	}
 
@@ -66,7 +63,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		if (isIssueStrategy) {
 			return jiraIssuePersistenceManager;
 		}
-		return activeObjectPersistenceManager;
+		return jiraIssueTextPersistenceManager;
 	}
 
 	@Override
@@ -77,11 +74,6 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	@Override
 	public JiraIssuePersistenceManager getJiraIssueManager() {
 		return jiraIssuePersistenceManager;
-	}
-
-	@Override
-	public ActiveObjectPersistenceManager getActiveObjectManager() {
-		return activeObjectPersistenceManager;
 	}
 
 	@Override
@@ -112,8 +104,6 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		switch (documentationLocation) {
 		case JIRAISSUE:
 			return jiraIssuePersistenceManager;
-		case ACTIVEOBJECT:
-			return activeObjectPersistenceManager;
 		case JIRAISSUETEXT:
 			return jiraIssueTextPersistenceManager;
 		default:

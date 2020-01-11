@@ -15,7 +15,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
@@ -29,7 +28,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgePersiste
  * @see AbstractPersistenceManagerForSingleLocation
  * @see JiraIssuePersistenceManager
  * @see JiraIssueTextPersistenceManager
- * @see ActiveObjectPersistenceManager
  */
 public interface KnowledgePersistenceManager {
 
@@ -281,18 +279,6 @@ public interface KnowledgePersistenceManager {
 	JiraIssuePersistenceManager getJiraIssueManager();
 
 	/**
-	 * Returns the persistence manager for a single documentation location that uses
-	 * object relational mapping with the help of the active object framework to
-	 * store decision knowledge.
-	 * 
-	 * @return persistence manager that uses entire Jira issues with specific types
-	 *         to store decision knowledge.
-	 * 
-	 * @see AbstractPersistenceManagerForSingleLocation
-	 */
-	ActiveObjectPersistenceManager getActiveObjectManager();
-
-	/**
 	 * Returns the default persistence manager for autarkical decision knowledge
 	 * elements used in the project. These elements are directly stored in Jira and
 	 * independent from other Jira issues. These elements are real "first-class"
@@ -304,7 +290,6 @@ public interface KnowledgePersistenceManager {
 	 *         manager if the user did not decide differently.
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 * @see JiraIssuePersistenceManager
-	 * @see ActiveObjectPersistenceManager
 	 */
 	AbstractPersistenceManagerForSingleLocation getDefaultManagerForSingleLocation();
 

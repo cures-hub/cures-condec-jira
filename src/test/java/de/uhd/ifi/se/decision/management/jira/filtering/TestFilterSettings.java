@@ -84,8 +84,8 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetDocumentationLocations() {
-		assertEquals(5, filterSettings.getDocumentationLocations().size());
-		assertEquals(5, filterSettings.getNamesOfDocumentationLocations().size());
+		assertEquals(4, filterSettings.getDocumentationLocations().size());
+		assertEquals(4, filterSettings.getNamesOfDocumentationLocations().size());
 	}
 
 	@Test
@@ -93,9 +93,9 @@ public class TestFilterSettings extends TestSetUp {
 		List<String> documentationLocations = DocumentationLocation.getAllDocumentationLocations().stream()
 				.map(DocumentationLocation::toString).collect(Collectors.toList());
 		filterSettings.setDocumentationLocations(documentationLocations);
-		assertEquals(5, filterSettings.getDocumentationLocations().size());
+		assertEquals(4, filterSettings.getDocumentationLocations().size());
 		filterSettings.setDocumentationLocations(null);
-		assertEquals(5, filterSettings.getDocumentationLocations().size());
+		assertEquals(4, filterSettings.getDocumentationLocations().size());
 	}
 
 	@Test

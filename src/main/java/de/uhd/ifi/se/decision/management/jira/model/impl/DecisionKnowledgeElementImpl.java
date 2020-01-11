@@ -24,7 +24,6 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
 
 /**
  * Model class for decision knowledge elements
@@ -95,11 +94,6 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 			// issues
 			this.status = KnowledgeStatus.RESOLVED;
 		}
-	}
-
-	public DecisionKnowledgeElementImpl(DecisionKnowledgeElementInDatabase entity) {
-		this(entity.getId(), entity.getSummary(), entity.getDescription(), entity.getType(), entity.getProjectKey(),
-				entity.getKey(), DocumentationLocation.ACTIVEOBJECT, entity.getStatus());
 	}
 
 	@Override

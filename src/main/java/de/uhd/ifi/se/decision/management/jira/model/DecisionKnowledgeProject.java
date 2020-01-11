@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 
 /**
@@ -73,7 +72,6 @@ public interface DecisionKnowledgeProject {
 	 *
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 * @see JiraIssuePersistenceManager
-	 * @see ActiveObjectPersistenceManager
 	 * @return true if decision knowledge is stored in JIRA issues for this project
 	 *         (issue strategy). Otherwise object relational mapping is used (active
 	 *         object strategy).
@@ -87,7 +85,6 @@ public interface DecisionKnowledgeProject {
 	 *
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 * @see JiraIssuePersistenceManager
-	 * @see ActiveObjectPersistenceManager
 	 * @param isIssueStrategy
 	 *            true if decision knowledge should be stored in JIRA issues for
 	 *            this project (issue strategy). Otherwise object relational mapping
@@ -100,7 +97,6 @@ public interface DecisionKnowledgeProject {
 	 *
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 * @see JiraIssuePersistenceManager
-	 * @see ActiveObjectPersistenceManager
 	 * @return persistence strategy for decision knowledge used in this project,
 	 *         either issue strategy or active object strategy. The active object
 	 *         strategy is the default strategy.

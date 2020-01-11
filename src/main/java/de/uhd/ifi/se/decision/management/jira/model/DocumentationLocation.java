@@ -10,7 +10,6 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
  */
 public enum DocumentationLocation {
 	JIRAISSUE("i", "JiraIssues"), // store as first-class entities with own Jira issue type
-	ACTIVEOBJECT("a", "ActiveObject"), // store as first-class entities but not as Jira issues
 	JIRAISSUETEXT("s", "JiraIssueText"), // store in the body of existing Jira issues, e.g. work items or requirements
 	COMMIT("c", "Commit"), // store in commit message
 	PULLREQUEST("p", "PullRequest"), // store in pull requests (currently not used)

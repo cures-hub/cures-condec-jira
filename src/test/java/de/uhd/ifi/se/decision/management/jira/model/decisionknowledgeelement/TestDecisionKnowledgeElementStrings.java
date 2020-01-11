@@ -36,7 +36,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 		String key = "Test";
 
 		this.decisionKnowledgeElement = new DecisionKnowledgeElementImpl(id, summary, description, type, projectKey,
-				key, DocumentationLocation.ACTIVEOBJECT, KnowledgeStatus.UNDEFINED);
+				key, DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
 	}
 
 	@Test
@@ -47,7 +47,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 	@Test
 	public void testGetTypeOther() {
 		DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(id, summary, description,
-				"Work-Item", projectKey, "TEST-1", DocumentationLocation.ACTIVEOBJECT, "");
+				"Work-Item", projectKey, "TEST-1", DocumentationLocation.JIRAISSUE, "");
 		assertEquals(KnowledgeType.OTHER, decisionKnowledgeElement.getType());
 	}
 
