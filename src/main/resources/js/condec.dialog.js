@@ -346,8 +346,8 @@
 			return;
 		}
 		selectField.innerHTML = "";
-		selectField.insertAdjacentHTML("beforeend", "<option selected value = 'i'>JIRA Issue</option>"
-			+ "<option value = 's'>JIRA Issue Comment</option></select></div>");
+		selectField.insertAdjacentHTML("beforeend", "<option value = ''>Independent knowledge element</option>"
+			+ "<option selected value = 's'>Jira issue comment</option></select></div>");
 
 		AJS.$(selectField).auiSelect2();
 	}

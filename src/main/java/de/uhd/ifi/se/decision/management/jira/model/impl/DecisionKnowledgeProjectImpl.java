@@ -70,7 +70,8 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	@Override
 	public AbstractPersistenceManagerForSingleLocation getPersistenceStrategy() {
 		if (this.persistenceStrategy == null) {
-			this.persistenceStrategy = KnowledgePersistenceManager.getOrCreate(projectKey).getDefaultManagerForSingleLocation();
+			this.persistenceStrategy = KnowledgePersistenceManager.getOrCreate(projectKey)
+					.getDefaultManagerForSingleLocation();
 		}
 		return this.persistenceStrategy;
 	}
@@ -110,16 +111,6 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	@Override
 	public String getGitUri() {
 		return ConfigPersistenceManager.getGitUri(projectKey);
-	}
-
-	@Override
-	public boolean isKnowledgeExtractedFromIssues() {
-		return ConfigPersistenceManager.isKnowledgeExtractedFromIssues(projectKey);
-	}
-
-	@Override
-	public void setKnowledgeExtractedFromIssues(boolean isKnowledgeExtractedFromIssues) {
-		ConfigPersistenceManager.setKnowledgeExtractedFromIssues(projectKey, isKnowledgeExtractedFromIssues);
 	}
 
 	@Override

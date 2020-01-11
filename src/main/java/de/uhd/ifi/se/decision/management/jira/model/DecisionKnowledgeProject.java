@@ -156,22 +156,6 @@ public interface DecisionKnowledgeProject {
 	String getGitUri();
 
 	/**
-	 * Determine whether decision knowledge is extracted from issue comments.
-	 *
-	 * @return true if decision knowledge is extracted from issue comments.
-	 */
-	boolean isKnowledgeExtractedFromIssues();
-
-	/**
-	 * Set whether decision knowledge is extracted from issue comments.
-	 *
-	 * @param isKnowledgeExtractedFromIssues
-	 *            true if decision knowledge should be extracted from issue
-	 *            comments.
-	 */
-	void setKnowledgeExtractedFromIssues(boolean isKnowledgeExtractedFromIssues);
-
-	/**
 	 * Set whether the webhook is enabled for this project.
 	 *
 	 * @param isWebhookEnabled

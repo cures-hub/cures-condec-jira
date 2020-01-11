@@ -110,11 +110,6 @@ public class ConfigPersistenceManager {
 		return "true".equals(getValue(projectKey, "isPostFeatureBranchCommitsActivated"));
 	}
 
-	public static boolean isKnowledgeExtractedFromIssues(String projectKey) {
-		String isKnowledgeExtractedFromIssues = getValue(projectKey, "isKnowledgeExtractedFromIssues");
-		return "true".equals(isKnowledgeExtractedFromIssues);
-	}
-
 	// TODO Testing
 	public static boolean isKnowledgeTypeEnabled(String projectKey, KnowledgeType knowledgeType) {
 		return isKnowledgeTypeEnabled(projectKey, knowledgeType.toString());
@@ -177,10 +172,6 @@ public class ConfigPersistenceManager {
 
 	public static String getGitUri(String projectKey) {
 		return getValue(projectKey, "gitUri");
-	}
-
-	public static void setKnowledgeExtractedFromIssues(String projectKey, boolean isKnowledgeExtractedFromIssues) {
-		setValue(projectKey, "isKnowledgeExtractedFromIssues", Boolean.toString(isKnowledgeExtractedFromIssues));
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,

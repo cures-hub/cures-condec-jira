@@ -89,12 +89,6 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	}
 
 	@Test
-	public void testSetIsKnowledgeExtractedFromIssues() {
-		project.setKnowledgeExtractedFromIssues(true);
-		assertTrue(project.isKnowledgeExtractedFromIssues());
-	}
-
-	@Test
 	public void testSetWebhookDataNullNull() {
 		project.setWebhookData(null, null);
 		assertTrue(true);
@@ -128,7 +122,7 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 		project.setWebhookData("http://true", "myhoneybee");
 		assertEquals("myhoneybee", project.getWebhookSecret());
 	}
-	
+
 	@AfterClass
 	public static void tearDown() {
 		// reset plugin settings to default settings

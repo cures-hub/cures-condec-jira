@@ -257,6 +257,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		}
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getManagerForSingleLocation(element);
+		System.out.println(persistenceManager.getClass().getName());
 		DecisionKnowledgeElement elementWithId = persistenceManager.insertDecisionKnowledgeElement(element, user,
 				parentElement);
 		KnowledgeGraph.getOrCreate(projectKey).addVertex(elementWithId);

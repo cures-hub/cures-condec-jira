@@ -63,7 +63,7 @@ public class Treant {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 					.getManagerForSingleLocation(DocumentationLocation.JIRAISSUETEXT);
 		} else {
-			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey).getDefaultManagerForSingleLocation();
+			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager();
 		}
 		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
 		this.setChart(new Chart());

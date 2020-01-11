@@ -49,15 +49,18 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionKnowledgeElement(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
-			@QueryParam("documentationLocation") String documentationLocation) {
+			@QueryParam("documentationLocation") String documentationLocationIdentifier) {
 		if (projectKey == null || id <= 0) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Decision knowledge element could not be received due to a bad request (element id or project key was missing)."))
 					.build();
 		}
-		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(projectKey).getManagerForSingleLocation(documentationLocation);
-		DecisionKnowledgeElement decisionKnowledgeElement = persistenceManager.getDecisionKnowledgeElement(id);
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		DecisionKnowledgeElement decisionKnowledgeElement = persistenceManager
+				.getManagerForSingleLocation(documentationLocationIdentifier).getDecisionKnowledgeElement(id);
+		if (decisionKnowledgeElement == null) {
+			decisionKnowledgeElement = persistenceManager.getJiraIssueManager().getDecisionKnowledgeElement(id);
+		}
 		if (decisionKnowledgeElement != null) {
 			return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
 		}
