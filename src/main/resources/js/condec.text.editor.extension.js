@@ -18,7 +18,7 @@ require([ "jquery", "jira/util/formatter", "jira/editor/registry" ], function($,
 
 		$otherDropdown.one("click", function(dropdownClickEvent) {
 
-			conDecAPI.isIssueStrategy(function(isEnabled) {
+			conDecAPI.isActivated(function(isEnabled) {
 				if (!isEnabled) {
 					return;
 				}

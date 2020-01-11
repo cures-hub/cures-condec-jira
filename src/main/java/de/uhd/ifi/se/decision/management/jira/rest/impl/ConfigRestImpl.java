@@ -94,6 +94,18 @@ public class ConfigRestImpl implements ConfigRest {
 	}
 
 	@Override
+	@Path("/isActivated")
+	@GET
+	public Response isActivated(@QueryParam("projectKey") String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		boolean isActivated = ConfigPersistenceManager.isActivated(projectKey);
+		return Response.ok(isActivated).build();
+	}
+
+	@Override
 	@Path("/isIssueStrategy")
 	@GET
 	public Response isIssueStrategy(@QueryParam("projectKey") String projectKey) {

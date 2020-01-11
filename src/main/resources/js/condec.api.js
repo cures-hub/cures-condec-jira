@@ -560,6 +560,18 @@
 			}
 		});
 	};
+	
+	/*
+	 * external references: condec.text.editor.extension
+	 */
+	ConDecAPI.prototype.isActivated = function isActivated(callback) {
+		getJSON(this.restPrefix + "/config/isActivated.json?projectKey=" + projectKey,
+			function (error, isActivatedBoolean) {
+				if (error === null) {
+					callback(isActivatedBoolean);
+				}
+			});
+	};
 
 	/*
 	 * external references: settingsForSingleProject.vm,

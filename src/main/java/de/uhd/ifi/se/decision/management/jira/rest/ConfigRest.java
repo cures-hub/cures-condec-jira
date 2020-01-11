@@ -25,6 +25,8 @@ public interface ConfigRest {
 
 	Response getReleaseNoteMapping(String projectKey);
 
+	Response isActivated(String projectKey);
+
 	Response isIssueStrategy(String projectKey);
 
 	Response isKnowledgeTypeEnabled(String projectKey, String knowledgeType);
