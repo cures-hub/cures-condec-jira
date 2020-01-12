@@ -87,8 +87,8 @@
 		AJS.dialog2(deleteDialog).show();
 	};
 
-	ConDecDialog.prototype.showDeleteDecisionLinkDialog = function showDeleteDecisionLinkDialog(idOfParent, idOfChild, 
-			documentationLocationOfParent, documentationLocationOfChild) {
+	ConDecDialog.prototype.showDeleteLinkDialog = function showDeleteLinkDialog(id, documentationLocation, 
+			idOfParent, documentationLocationOfParent) {
 		console.log("conDecDialog showDeleteLinkDialog");
 
 		// HTML elements
@@ -99,34 +99,12 @@
 
 		// Set onclick listener on buttons
 		submitButton.onclick = function () {
-			conDecAPI.deleteLink(idOfParent, idOfChild, documentationLocationOfParent,
-				documentationLocationOfChild, function () {
-					conDecObservable.notify();
-				});
-			AJS.dialog2(deleteLinkDialog).hide();
-		};
-
-		cancelButton.onclick = function () {
-			AJS.dialog2(deleteLinkDialog).hide();
-		};
-
-		// Show dialog
-		AJS.dialog2(deleteLinkDialog).show();
-	};
-
-	ConDecDialog.prototype.showDeleteLinkDialog = function showDeleteLinkDialog(id, documentationLocation) {
-		console.log("conDecDialog showDeleteLinkDialog");
-
-		// HTML elements
-		var deleteLinkDialog = document.getElementById("delete-link-dialog");
-		var content = document.getElementById("delete-link-dialog-content");
-		var submitButton = document.getElementById("delete-link-dialog-submit-button");
-		var cancelButton = document.getElementById("delete-link-dialog-cancel-button");
-
-		// Set onclick listener on buttons
-		submitButton.onclick = function () {
-			var parentElement = conDecTreant.findParentElement(id);
-			conDecAPI.deleteLink(parentElement["id"], id, parentElement["documentationLocation"],
+			if (idOfParent === null || idOfParent === 0) {
+				var parentElement = conDecTreant.findParentElement(id);
+				idOfParent = parentElement["id"];
+				documentationLocationOfParent = parentElement["documentationLocation"];
+			}
+			conDecAPI.deleteLink(idOfParent, id, documentationLocationOfParent,
 				documentationLocation, function () {
 					conDecObservable.notify();
 				});

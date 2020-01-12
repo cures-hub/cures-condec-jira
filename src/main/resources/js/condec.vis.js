@@ -367,7 +367,12 @@
     ConDecVis.prototype.deleteEdge = function deleteEdge(data, visData, callback) {
         var allEdges = new vis.DataSet(visData.edges);
         var edgeToBeDeleted = allEdges.get(data.edges[0]);
-        conDecDialog.showDeleteDecisionLinkDialog(edgeToBeDeleted.from.slice(0, -2), edgeToBeDeleted.to.slice(0, -2), edgeToBeDeleted.from.substr(-1), edgeToBeDeleted.to.substr(-1), function() {
+        var idOfChild = edgeToBeDeleted.to.slice(0, -2);
+        var idOfParent = edgeToBeDeleted.from.slice(0, -2);
+        var documentationLocationOfChild = edgeToBeDeleted.to.substr(-1);
+        var documentationLocationOfParent = edgeToBeDeleted.from.substr(-1);
+        conDecDialog.showDeleteLinkDialog(idOfChild, documentationLocationOfChild, 
+        		idOfParent, documentationLocationOfParent, function() {
             callback(data);
         });
     };
