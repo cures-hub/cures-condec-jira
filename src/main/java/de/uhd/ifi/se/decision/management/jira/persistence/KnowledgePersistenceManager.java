@@ -365,7 +365,8 @@ public interface KnowledgePersistenceManager {
 	 * @issue How can the sorting be implemented?
 	 *
 	 * @param element
-	 *            {@link DecisionKnowledgeElement} with id in database.
+	 *            {@link DecisionKnowledgeElement} with id in database. The id is
+	 *            different to the key.
 	 * @return list of unlinked elements, sorted by the likelihood that they should
 	 *         be linked.
 	 */

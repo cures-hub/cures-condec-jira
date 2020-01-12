@@ -238,43 +238,6 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	public abstract List<Link> getOutwardLinks(DecisionKnowledgeElement element);
 
 	/**
-	 * Get all unlinked elements of the decision knowledge element for a project.
-	 *
-	 * @param element
-	 *            decision knowledge element with id in database.
-	 * @return list of linked elements.
-	 * @see DecisionKnowledgeElement
-	 * @see DecisionKnowledgeProject
-	 */
-	public List<DecisionKnowledgeElement> getUnlinkedElements(DecisionKnowledgeElement element) {
-		List<DecisionKnowledgeElement> elements = this.getDecisionKnowledgeElements();
-		if (element == null) {
-			return elements;
-		}
-		elements.remove(element);
-
-		List<DecisionKnowledgeElement> linkedElements = this.getAdjacentElements(element);
-		elements.removeAll(linkedElements);
-
-		return elements;
-	}
-
-	/**
-	 * Get all unlinked elements of the decision knowledge element for a project.
-	 *
-	 * @param id
-	 *            id of a decision knowledge element in database. The id is
-	 *            different to the key.
-	 * @return list of linked elements.
-	 * @see DecisionKnowledgeElement
-	 * @see DecisionKnowledgeProject
-	 */
-	public List<DecisionKnowledgeElement> getUnlinkedElements(long id) {
-		DecisionKnowledgeElement element = this.getDecisionKnowledgeElement(id);
-		return this.getUnlinkedElements(element);
-	}
-
-	/**
 	 * Insert a new decision knowledge element into database.
 	 *
 	 * @param element

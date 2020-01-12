@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.atlassian.jira.user.ApplicationUser;
@@ -35,19 +36,29 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	private String projectKey;
 	private JiraIssuePersistenceManager jiraIssuePersistenceManager;
 	private JiraIssueTextPersistenceManager jiraIssueTextPersistenceManager;
+	private List<AbstractPersistenceManagerForSingleLocation> activePersistenceManagersForSingleLocations;
 
 	public KnowledgePersistenceManagerImpl(String projectKey) {
 		this.projectKey = projectKey;
 		this.jiraIssuePersistenceManager = new JiraIssuePersistenceManager(projectKey);
 		this.jiraIssueTextPersistenceManager = new JiraIssueTextPersistenceManager(projectKey);
+		this.activePersistenceManagersForSingleLocations = initActivePersistenceManagersForSinleLocations();
+	}
+
+	private List<AbstractPersistenceManagerForSingleLocation> initActivePersistenceManagersForSinleLocations() {
+		List<AbstractPersistenceManagerForSingleLocation> activePersistenceManagersForSinleLocations = new ArrayList<AbstractPersistenceManagerForSingleLocation>();
+		activePersistenceManagersForSinleLocations.add(jiraIssueTextPersistenceManager);
+		if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
+			activePersistenceManagersForSinleLocations.add(jiraIssuePersistenceManager);
+		}
+		return activePersistenceManagersForSinleLocations;
 	}
 
 	@Override
 	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements() {
-		List<DecisionKnowledgeElement> elements = jiraIssueTextPersistenceManager.getDecisionKnowledgeElements();
-		if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
-			elements.addAll(jiraIssuePersistenceManager.getDecisionKnowledgeElements());
-		}
+		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
+		activePersistenceManagersForSingleLocations
+				.forEach(manager -> elements.addAll(manager.getDecisionKnowledgeElements()));
 
 		// remove irrelevant sentences from graph
 		elements.removeIf(e -> (e instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) e).isRelevant()));
@@ -71,10 +82,9 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 
 	@Override
 	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type) {
-		List<DecisionKnowledgeElement> elements = jiraIssueTextPersistenceManager.getDecisionKnowledgeElements(type);
-		if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
-			elements.addAll(jiraIssuePersistenceManager.getDecisionKnowledgeElements(type));
-		}
+		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
+		activePersistenceManagersForSingleLocations
+				.forEach(manager -> elements.addAll(manager.getDecisionKnowledgeElements(type)));
 		return elements;
 	}
 
@@ -278,10 +288,10 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		}
 		elements.remove(element);
 
-		List<DecisionKnowledgeElement> linkedElements = jiraIssueTextPersistenceManager.getAdjacentElements(element);
-		if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
-			linkedElements.addAll(jiraIssuePersistenceManager.getAdjacentElements(element));
-		}
+		List<DecisionKnowledgeElement> linkedElements = new ArrayList<DecisionKnowledgeElement>();
+		activePersistenceManagersForSingleLocations
+				.forEach(manager -> linkedElements.addAll(manager.getAdjacentElements(element)));
+
 		elements.removeAll(linkedElements);
 
 		return elements;
