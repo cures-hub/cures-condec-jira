@@ -236,7 +236,7 @@ public class GenericLinkManager {
 	 *            element as a {@link Link} object. The link must not be a Jira
 	 *            {@link IssueLink}.
 	 * @param user
-	 *            authenticated JIRA {@link ApplicationUser}.
+	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return internal database id of inserted link, -1 if insertion failed.
 	 */
 	public static long insertLink(Link link, ApplicationUser user) {

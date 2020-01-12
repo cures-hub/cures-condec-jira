@@ -339,12 +339,6 @@
         }
     };
 
-    ConDecVis.prototype.addNode = function addNode(data, callback) {
-        conDecDialog.showCreateDialog("", "", function() {
-            callback(data);
-        });
-    };
-
     ConDecVis.prototype.deleteNode =  function deleteNode(data, callback) {
         conDecDialog.showDeleteDialog(data.nodes[0].slice(0, -2), data.nodes[0]
             .substr(-1), function() {
@@ -352,7 +346,7 @@
         });
     };
 
-    ConDecVis.prototype.addEdge =  function addEdge(data, callback) {
+    ConDecVis.prototype.addEdge = function addEdge(data, callback) {
         if (data.from !== data.to) {
             conDecAPI.createLink(null, data.from.slice(0, -2), data.to.slice(0, -2), data.to.substr(-1),
                 data.from.substr(-1), null, function () {
@@ -362,19 +356,23 @@
         }
     };
 
-    ConDecVis.prototype.addEdgeWithType =  function addEdge(data, callback) {
+    ConDecVis.prototype.addEdgeWithType = function addEdge(data, callback) {
         if (data.from !== data.to) {
             conDecDialog.showDecisionLinkDialog(data.from.slice(0, -2), data.to.slice(0, -2), data.from.substr(-1), data.to.substr(-1), function() {
                 callback(data);
             });
-
         }
     };
 
-    ConDecVis.prototype.deleteEdge =  function deleteEdge(data, visData, callback) {
+    ConDecVis.prototype.deleteEdge = function deleteEdge(data, visData, callback) {
         var allEdges = new vis.DataSet(visData.edges);
         var edgeToBeDeleted = allEdges.get(data.edges[0]);
-        conDecDialog.showDeleteDecisionLinkDialog(edgeToBeDeleted.from.slice(0, -2), edgeToBeDeleted.to.slice(0, -2), edgeToBeDeleted.from.substr(-1), edgeToBeDeleted.to.substr(-1), function() {
+        var idOfChild = edgeToBeDeleted.to.slice(0, -2);
+        var idOfParent = edgeToBeDeleted.from.slice(0, -2);
+        var documentationLocationOfChild = edgeToBeDeleted.to.substr(-1);
+        var documentationLocationOfParent = edgeToBeDeleted.from.substr(-1);
+        conDecDialog.showDeleteLinkDialog(idOfChild, documentationLocationOfChild, 
+        		idOfParent, documentationLocationOfParent, function() {
             callback(data);
         });
     };

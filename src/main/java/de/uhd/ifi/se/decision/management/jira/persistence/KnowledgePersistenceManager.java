@@ -15,7 +15,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.ActiveObjectPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
@@ -29,7 +28,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgePersiste
  * @see AbstractPersistenceManagerForSingleLocation
  * @see JiraIssuePersistenceManager
  * @see JiraIssueTextPersistenceManager
- * @see ActiveObjectPersistenceManager
  */
 public interface KnowledgePersistenceManager {
 
@@ -281,34 +279,6 @@ public interface KnowledgePersistenceManager {
 	JiraIssuePersistenceManager getJiraIssueManager();
 
 	/**
-	 * Returns the persistence manager for a single documentation location that uses
-	 * object relational mapping with the help of the active object framework to
-	 * store decision knowledge.
-	 * 
-	 * @return persistence manager that uses entire Jira issues with specific types
-	 *         to store decision knowledge.
-	 * 
-	 * @see AbstractPersistenceManagerForSingleLocation
-	 */
-	ActiveObjectPersistenceManager getActiveObjectManager();
-
-	/**
-	 * Returns the default persistence manager for autarkical decision knowledge
-	 * elements used in the project. These elements are directly stored in Jira and
-	 * independent from other Jira issues. These elements are real "first-class"
-	 * elements.
-	 *
-	 * @return persistence manager for real "first-class" decision knowledge
-	 *         elements used in the given project, either Jira issue manager or
-	 *         active object manager. The active object manager is the default
-	 *         manager if the user did not decide differently.
-	 * @see AbstractPersistenceManagerForSingleLocation
-	 * @see JiraIssuePersistenceManager
-	 * @see ActiveObjectPersistenceManager
-	 */
-	AbstractPersistenceManagerForSingleLocation getDefaultManagerForSingleLocation();
-
-	/**
 	 * Returns the persistence manager for a single documentation location.
 	 *
 	 * @param documentationLocation
@@ -362,12 +332,43 @@ public interface KnowledgePersistenceManager {
 	 *            id of the decision knowledge element in database.
 	 * @param documentationLocation
 	 *            of the element.
-	 * @return decision knowledge element.
+	 * @return decision knowledge element or null if it is not found.
 	 * @see DecisionKnowledgeElement
 	 * @see DocumentationLocation
 	 */
 	DecisionKnowledgeElement getDecisionKnowledgeElement(long id, DocumentationLocation documentationLocation);
 
+	/**
+	 * Gets a decision knowledge element in database by its id and its documentation
+	 * location.
+	 *
+	 * @param id
+	 *            id of the decision knowledge element in database.
+	 * @param documentationLocation
+	 *            identifier of the {@link DocumentationLocation} of the element,
+	 *            e.g., "i" for Jira issue.
+	 * @return decision knowledge element or null if it is not found.
+	 * @see DecisionKnowledgeElement
+	 */
+	DecisionKnowledgeElement getDecisionKnowledgeElement(long id, String documentationLocation);
+
 	boolean updateIssueStatus(DecisionKnowledgeElement existingElement, DecisionKnowledgeElement newElement,
 			ApplicationUser user);
+
+	/**
+	 * Returns all unlinked elements of the knowledge element for a project. Sorts
+	 * the elements according to their similarity and their likelihood that they
+	 * should be linked.
+	 * 
+	 * TODO Sorting according to the likelihood that they should be linked.
+	 * 
+	 * @issue How can the sorting be implemented?
+	 *
+	 * @param element
+	 *            {@link DecisionKnowledgeElement} with id in database. The id is
+	 *            different to the key.
+	 * @return list of unlinked elements, sorted by the likelihood that they should
+	 *         be linked.
+	 */
+	List<DecisionKnowledgeElement> getUnlinkedElements(DecisionKnowledgeElement element);
 }

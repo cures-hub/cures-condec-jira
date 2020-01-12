@@ -32,31 +32,31 @@ public class TestCreateJIRAIssueFromSentenceObject extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIdLessUserNull() {
-		assertNull(manager.createJIRAIssueFromSentenceObject(-1, null));
+		assertNull(manager.createJiraIssueFromSentenceObject(-1, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testIdZeroUserNull() {
-		assertNull(manager.createJIRAIssueFromSentenceObject(0, null));
+		assertNull(manager.createJiraIssueFromSentenceObject(0, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testIdOkUserNull() {
-		assertNull(manager.createJIRAIssueFromSentenceObject(1, null));
+		assertNull(manager.createJiraIssueFromSentenceObject(1, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testIdLessUserFilled() {
-		assertNull(manager.createJIRAIssueFromSentenceObject(-1, user));
+		assertNull(manager.createJiraIssueFromSentenceObject(-1, user));
 	}
 
 	@Test
 	@NonTransactional
 	public void testIdZeroUserFilled() {
-		assertNull(manager.createJIRAIssueFromSentenceObject(0, user));
+		assertNull(manager.createJiraIssueFromSentenceObject(0, user));
 	}
 
 	@Test
@@ -65,6 +65,6 @@ public class TestCreateJIRAIssueFromSentenceObject extends TestSetUp {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		manager.insertDecisionKnowledgeElement(comment.get(1), null);
-		assertNotNull(manager.createJIRAIssueFromSentenceObject(3, user));
+		assertNotNull(manager.createJiraIssueFromSentenceObject(3, user));
 	}
 }

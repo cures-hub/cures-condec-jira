@@ -42,7 +42,7 @@ public class TestGetFilterSettings extends TestSetUp {
 		assertEquals(Response.Status.OK.getStatusCode(), filterSettingsResponse.getStatus());
 
 		FilterSettings filterSettings = (FilterSettings) filterSettingsResponse.getEntity();
-		assertEquals(5, filterSettings.getNamesOfDocumentationLocations().size());
+		assertEquals(4, filterSettings.getNamesOfDocumentationLocations().size());
 		assertEquals(5, filterSettings.getAllJiraIssueTypes().size());
 		assertEquals(5, filterSettings.getNamesOfSelectedJiraIssueTypes().size());
 		assertEquals(-1, filterSettings.getCreatedEarliest());
@@ -51,12 +51,10 @@ public class TestGetFilterSettings extends TestSetUp {
 
 	@Test
 	public void testRequestFilledSearchTermJqlElementExistent() {
-		Response filterSettingsResponse = viewRest.getFilterSettings(request, "?jql=issuetype%20%3D%20Issue",
-				"TEST-1");
+		Response filterSettingsResponse = viewRest.getFilterSettings(request, "?jql=issuetype%20%3D%20Issue", "TEST-1");
 		assertEquals(Response.Status.OK.getStatusCode(), filterSettingsResponse.getStatus());
 
 		FilterSettingsImpl filterSettings = (FilterSettingsImpl) filterSettingsResponse.getEntity();
-		assertEquals(5, filterSettings.getNamesOfDocumentationLocations().size());
 		List<String> issueTypesMatchingFilter = filterSettings.getNamesOfSelectedJiraIssueTypes();
 		assertEquals("Issue", issueTypesMatchingFilter.get(0));
 		assertEquals(1, issueTypesMatchingFilter.size());
@@ -70,7 +68,6 @@ public class TestGetFilterSettings extends TestSetUp {
 		assertEquals(Response.Status.OK.getStatusCode(), filterSettingsResponse.getStatus());
 
 		FilterSettingsImpl filterSettings = (FilterSettingsImpl) filterSettingsResponse.getEntity();
-		assertEquals(5, filterSettings.getNamesOfDocumentationLocations().size());
 		assertEquals(-1, filterSettings.getCreatedEarliest());
 		assertEquals(-1, filterSettings.getCreatedLatest());
 	}

@@ -9,10 +9,9 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
  * Possible documentation locations of decision knowledge.
  */
 public enum DocumentationLocation {
-	JIRAISSUE("i", "JiraIssues"), // store as first-class entities with own JIRA issue type
-	ACTIVEOBJECT("a", "ActiveObject"), // store as first-class entities but not as JIRA issues
-	JIRAISSUETEXT("s", "JiraIssueText"), // store in the body of existing JIRA issues, e.g. work items or requirements
-	COMMIT("c", "Commit"), // store in commit message
+	JIRAISSUE("i", "JiraIssues"), // store as first-class entities with own Jira issue type
+	JIRAISSUETEXT("s", "JiraIssueText"), // store in the body of existing Jira issues, e.g. work items or requirements
+	COMMIT("c", "Commit"), // store in commit message (currently not used)
 	PULLREQUEST("p", "PullRequest"), // store in pull requests (currently not used)
 	UNKNOWN("", "Unknown");
 
@@ -28,16 +27,12 @@ public enum DocumentationLocation {
 	 * Converts an identifier to a documentation location objects.
 	 *
 	 * @param identifier
-	 *            of the documentation location as a String, e.g. "i" for JIRA
+	 *            of the documentation location as a String, e.g. "i" for Jira
 	 *            issue.
 	 */
 	public static DocumentationLocation getDocumentationLocationFromIdentifier(String identifier) {
-		if (identifier == null) {
+		if (identifier == null || identifier.isBlank()) {
 			return UNKNOWN;
-		}
-		// TODO: This should be the default persistence location.
-		if (identifier.isEmpty()) {
-			return JIRAISSUE;
 		}
 		for (DocumentationLocation location : values()) {
 			if (identifier.contains(location.identifier)) {
@@ -105,7 +100,7 @@ public enum DocumentationLocation {
 	public String toString() {
 		return this.getName();
 	}
-	
+
 	/**
 	 * Returns a list of all valid documentation locations.
 	 * 

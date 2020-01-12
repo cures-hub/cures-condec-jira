@@ -25,7 +25,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 
 /**
@@ -49,9 +48,9 @@ public class TreeViewer {
 	private List<String> ids;
 	private long index;
 
-	private List<Long> alreadyVisetedEdge;
+	private List<Long> alreadyVisitedEdges;
 
-	/** Effects (if true) that irrelevant sentences are added to Graph. */
+	/** If true irrelevant sentences are added to the tree */
 	public static boolean isCalledFromIssueTabPanel = false;
 
 	public TreeViewer() {
@@ -59,7 +58,7 @@ public class TreeViewer {
 		this.checkCallback = true;
 		this.themes = ImmutableMap.of("icons", true);
 
-		this.alreadyVisetedEdge = new ArrayList<>();
+		this.alreadyVisitedEdges = new ArrayList<Long>();
 		this.ids = new ArrayList<String>();
 	}
 
@@ -68,24 +67,18 @@ public class TreeViewer {
 		if (rootElementType == KnowledgeType.OTHER) {
 			return;
 		}
-		// TODO Call
-		// PersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements(rootElementType)
-		// to get all elements for all documentation locations
-		AbstractPersistenceManagerForSingleLocation strategy = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getDefaultManagerForSingleLocation();
-		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements(rootElementType);
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		List<DecisionKnowledgeElement> elements = persistenceManager.getDecisionKnowledgeElements(rootElementType);
 
 		Set<Data> dataSet = new HashSet<Data>();
 		for (DecisionKnowledgeElement element : elements) {
-			dataSet.add(this.getDataStructure(element));
+			dataSet.add(this.makeIdUnique(new Data(element)));
 		}
 
-		AbstractPersistenceManagerForSingleLocation jiraIssueCommentPersistenceManager = KnowledgePersistenceManager
-				.getOrCreate(projectKey).getJiraIssueTextManager();
-		for (DecisionKnowledgeElement sentenceElement : jiraIssueCommentPersistenceManager
-				.getDecisionKnowledgeElements(rootElementType)) {
-			dataSet.add(this.makeIdUnique(new Data(sentenceElement)));
-		}
+		// for (DecisionKnowledgeElement element : elements) {
+		// dataSet.add(this.getDataStructure(element));
+		// }
+
 		this.data = dataSet;
 	}
 
@@ -187,10 +180,10 @@ public class TreeViewer {
 			}
 			DecisionKnowledgeElement nodeElement = (DecisionKnowledgeElement) iterNode;
 			Link edge = this.graph.getEdge(parentNode, nodeElement);
-			if (this.alreadyVisetedEdge.contains(edge.getId())) {
+			if (this.alreadyVisitedEdges.contains(edge.getId())) {
 				continue;
 			}
-			this.alreadyVisetedEdge.add(edge.getId());
+			this.alreadyVisitedEdges.add(edge.getId());
 			Data dataChild = new Data(nodeElement, edge);
 			if (dataChild.getNode().getProject() == null || !dataChild.getNode().getProject().getProjectKey()
 					.equals(decisionKnowledgeElement.getProject().getProjectKey())) {

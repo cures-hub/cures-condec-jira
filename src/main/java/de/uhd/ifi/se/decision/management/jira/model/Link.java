@@ -329,6 +329,4 @@ public interface Link {
 	 * @return true if objects have the same source and destination id.
 	 */
 	boolean equals(LinkInDatabase linkInDatabase);
-
-	void setDefaultDocumentationLocation(String projectKey);
 }

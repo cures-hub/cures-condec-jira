@@ -27,7 +27,7 @@ public class TestTreant extends TestSetUp {
 	private Chart chart;
 	private TreantNode nodeStructure;
 	private Treant treant;
-	private AbstractPersistenceManagerForSingleLocation persistenceStrategy;
+	private AbstractPersistenceManagerForSingleLocation persistenceManager;
 
 	@Before
 	public void setUp() {
@@ -37,7 +37,7 @@ public class TestTreant extends TestSetUp {
 		this.treant = new Treant("TEST", "TEST-30", 0);
 		this.treant.setChart(chart);
 		this.treant.setNodeStructure(nodeStructure);
-		persistenceStrategy = KnowledgePersistenceManager.getOrCreate("TEST").getDefaultManagerForSingleLocation();
+		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueManager();
 	}
 
 	@Test
@@ -108,7 +108,7 @@ public class TestTreant extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCreateNodeStructureFilledNullZeroZero() {
-		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
+		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(14);
 		assertEquals(TreantNode.class, treant.createNodeStructure(element, null, 0).getClass());
 	}
 
@@ -125,18 +125,18 @@ public class TestTreant extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCreateNodeStructureFilledNullFilledFilled() {
-		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
+		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(14);
 		assertEquals(TreantNode.class, treant.createNodeStructure(element, null, 0).getClass());
 	}
 
 	@Test
 	@NonTransactional
 	public void testCreateNodeStructureFilledFilledFilledFilled() {
-		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
+		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(14);
 		Link link = new LinkImpl(1, 14, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		link.setType("support");
-		link.setDestinationElement(persistenceStrategy.getDecisionKnowledgeElement(14));
-		link.setSourceElement(persistenceStrategy.getDecisionKnowledgeElement(1));
+		link.setDestinationElement(persistenceManager.getDecisionKnowledgeElement(14));
+		link.setSourceElement(persistenceManager.getDecisionKnowledgeElement(1));
 		link.setId(23);
 		assertEquals(TreantNode.class, treant.createNodeStructure(element, link, 0).getClass());
 	}
@@ -146,7 +146,7 @@ public class TestTreant extends TestSetUp {
 	public void testCreateNodeStructureWithSentenceInIssue() {
 		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText("This is a testsentence");
 		sentences.get(0).setRelevant(true);
-		DecisionKnowledgeElement element = persistenceStrategy
+		DecisionKnowledgeElement element = persistenceManager
 				.getDecisionKnowledgeElement(sentences.get(0).getJiraIssueId());
 		TreantNode nodeStructure = treant.createNodeStructure(element, null, 0);
 		assertEquals(TreantNode.class, nodeStructure.getClass());

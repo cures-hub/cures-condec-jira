@@ -3,18 +3,41 @@
 <div class="field-group">
 	<label for="isActivated-toggle">ConDec Activated?</label>
 	<aui-toggle id="isActivated-toggle" value="$projectKey"	label="ConDec Activated?"></aui-toggle>
-	<div class="description">Enables or disables the plug-in for this project.</div>
+	<div class="description">Enables or disables the plug-in for this project. 
+		<br/>Disabling deletes the knowledge graph singleton object. 
+		The knowledge graph can be recreated by disabling and enabling this setting.
+		
+		<br/>The extraction of decision knowledge from the description and the comments of Jira issues is automatically enabled
+		when the plugin is enabled for the project. Use the macro syntax in the comments and the description of Jira issues 
+		to manually classify text as decision knowledge:
+		<ul>
+			<li>{issue} How to implement ...? {issue}</li>
+			<li>{decision} Use ... to implement ...! {decision}</li>
+			<li>{alternative} Use ... to implement ...! {alternative}</li>
+			<li>{pro} ... {pro}</li>
+			<li>{con} ... {con}</li>
+		</ul>
+		</div>
 </div>
 
 <div class="field-group">
-	<label for="isIssueStrategy-toggle">Store in Issues?</label>
+	<label for="isIssueStrategy-toggle">Store in Jira Issues?</label>
 	<aui-toggle id="isIssueStrategy-toggle" value="$projectKey"	label="Store in Jira Issues?"></aui-toggle>
 	<div class="description">Sets the persistence strategy for this
-		project (either issue strategy or active object strategy). If
-		enabled, decision knowledge is stored in Jira issues. If you choose
-		the issue strategy, you need to associate the project with the
-		decision knowledge issue type scheme.
+		project (either Jira issue strategy or active object strategy). If
+		enabled, decision knowledge can be stored in entire Jira issues. If you choose
+		the issue strategy, you need to make sure that the project is associated with the
+		decision knowledge issue type scheme (should be done automatically by the plug-in).
 	</div>
+</div>
+
+<div class="field-group">
+<label for="cleanDatabases">Clean Databases?</label>
+<input type="button" class="aui-button" id="cleanDatabases"
+       value="Clean Databases"/>
+<div class="description">Removes non-existing elements and invalid links (with non-existing source or target elements) 
+	from the databases and checks if all existing elements are linked.
+</div>
 </div>
 	
 <script>
@@ -23,7 +46,7 @@
 		activationToggle.checked = true;
 	} else {
 		activationToggle.checked = false;
-	};
+	}
 	
 	activationToggle.addEventListener("change", function(error) {
 		this.busy = true;
@@ -36,11 +59,16 @@
 		strategyToggle.checked = true;
 	} else {
 		strategyToggle.checked = false;
-	};
+	}
 	
 	strategyToggle.addEventListener("change", function(error) {
 		this.busy = true;
 		conDecAPI.setIssueStrategy(this.checked, this.value);
 		this.busy = false;
 	});
+	
+    var cleanDatabasesButton = document.getElementById("cleanDatabases");
+    cleanDatabasesButton.addEventListener("click", function () {
+        conDecAPI.cleanDatabases("$projectKey");
+    });
 </script>

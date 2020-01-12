@@ -63,19 +63,6 @@
 	};
 
 	/*
-	 * external references: none
-	 */
-	ConDecAPI.prototype.getAdjacentElements = function getAdjacentElements(id, documentationLocation, callback) {
-		getJSON(this.restPrefix + "/knowledge/getAdjacentElements.json?projectKey="
-			+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function (error,
-																									  adjacentElements) {
-			if (error === null) {
-				callback(adjacentElements);
-			}
-		});
-	};
-
-	/*
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.getUnlinkedElements = function getUnlinkedElements(id, documentationLocation, callback) {
@@ -89,34 +76,14 @@
 	};
 
 	/*
-	 * external references:
-	 */
-	ConDecAPI.prototype.createUnlinkedDecisionKnowledgeElement = function createUnlinkedDecisionKnowledgeElementAsChild(summary,
-																														description, type, documentationLocation,
-																														callback) {
-		var newElement = {
-			"summary": summary,
-			"type": type,
-			"projectKey": projectKey,
-			"description": description,
-			"documentationLocation": documentationLocation,
-		};
-
-		postJSON(this.restPrefix + "/knowledge/createUnlinkedDecisionKnowledgeElement.json?", newElement, function (error, newElement) {
-			if (error === null) {
-				showFlag("success", type + " and link have been created.");
-				callback(newElement.id);
-			}
-		});
-	};
-
-	/*
+	 * Creates a new decision knowledge element. If the element should be
+	 * unlinked the idOfExistingElement must be 0 and the
+	 * documentationLocationOfExistingElement must be null 
+	 * 
 	 * external references: condec.knowledge.page, condec.dialog
 	 */
-	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElementAsChild(summary,
-																										description, type, documentationLocation, idOfExistingElement, documentationLocationOfExistingElement,
-																										callback) {
-		// console.log("conDecAPI createDecisionKnowledgeElement");
+	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElement(summary, description, 
+			type, documentationLocation, idOfExistingElement, documentationLocationOfExistingElement, callback) {
 		var newElement = {
 			"summary": summary,
 			"type": type,
@@ -139,7 +106,7 @@
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.updateDecisionKnowledgeElement = function updateDecisionKnowledgeElement(id, summary,
-																								 description, type, documentationLocation, status, callback) {
+			description, type, documentationLocation, status, callback) {
 		var element = {
 			"id": id,
 			"summary": summary,
@@ -275,7 +242,7 @@
 	 * external references: condec.dialog, condec.treant, condec.tree.viewer
 	 */
 	ConDecAPI.prototype.createLink = function createLink(knowledgeTypeOfChild, idOfParent, idOfChild,
-														 documentationLocationOfParent, documentationLocationOfChild, linkType, callback) {
+			documentationLocationOfParent, documentationLocationOfChild, linkType, callback) {
 		postJSON(this.restPrefix + "/knowledge/createLink.json?projectKey=" + projectKey + "&knowledgeTypeOfChild=" + knowledgeTypeOfChild
 			+ "&idOfParent=" + idOfParent + "&documentationLocationOfParent=" + documentationLocationOfParent + "&idOfChild=" + idOfChild
 			+ "&documentationLocationOfChild=" + documentationLocationOfChild + "&linkTypeName=" + linkType, null, function (error, link) {
@@ -287,11 +254,10 @@
 	};
 
 	/*
-	 * external references: condec.context.menu, condec.dialog, condec.treant,
-	 * condec.tree.viewer
+	 * external references: condec.dialog, condec.treant, condec.tree.viewer
 	 */
 	ConDecAPI.prototype.deleteLink = function deleteLink(idOfDestinationElement, idOfSourceElement,
-														 documentationLocationOfDestinationElement, documentationLocationOfSourceElement, callback, showError) {
+			documentationLocationOfDestinationElement, documentationLocationOfSourceElement, callback) {
 		var link = {
 			"idOfSourceElement": idOfSourceElement,
 			"idOfDestinationElement": idOfDestinationElement,
@@ -560,6 +526,18 @@
 			}
 		});
 	};
+	
+	/*
+	 * external references: condec.text.editor.extension
+	 */
+	ConDecAPI.prototype.isActivated = function isActivated(callback) {
+		getJSON(this.restPrefix + "/config/isActivated.json?projectKey=" + projectKey,
+			function (error, isActivatedBoolean) {
+				if (error === null) {
+					callback(isActivatedBoolean);
+				}
+			});
+	};
 
 	/*
 	 * external references: settingsForSingleProject.vm,
@@ -575,7 +553,7 @@
 	};
 
 	/*
-	 * external references: condec.dialog
+	 * external references: condec.dialog, condec.context.menu
 	 */
 	ConDecAPI.prototype.isIssueStrategy = function isIssueStrategy(callback) {
 		getJSON(this.restPrefix + "/config/isIssueStrategy.json?projectKey=" + projectKey,
@@ -660,22 +638,6 @@
 			if (error === null) {
 				showFlag("success", "Extraction from issue comments for this project has been set to "
 					+ isKnowledgeExtractedFromIssues + ".");
-			}
-		});
-	};
-
-	/*
-	 * external references: settingsForSingleProject.vm
-	 */
-	ConDecAPI.prototype.setUseClassifierForIssueComments = function setUseClassifierForIssueComments(
-		isClassifierUsedForIssues, projectKey) {
-		postJSON(this.restPrefix + "/config/setUseClassifierForIssueComments.json?projectKey="
-			+ projectKey + "&isClassifierUsedForIssues=" + isClassifierUsedForIssues, null, function (error,
-																									  response) {
-			if (error === null) {
-				showFlag("success",
-					"Usage of classification for Decision Knowledge in JIRA Issue Comments has been set to "
-					+ isClassifierUsedForIssues + ".");
 			}
 		});
 	};
@@ -852,7 +814,7 @@
 
 
 	ConDecAPI.prototype.evaluateModel = function evaluateModel(projectKey, animatedElement, callback) {
-		//console.log("ConDecAPI.prototype.evaluateModel");
+		// console.log("ConDecAPI.prototype.evaluateModel");
 		animatedElement.classList.add("aui-progress-indicator-value");
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/evaluateModel.json?projectKey=" + projectKey, null,
 

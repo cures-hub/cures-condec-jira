@@ -7,6 +7,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraFilter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -19,11 +20,26 @@ public interface KnowledgeRest {
 
 	Response getDecisionKnowledgeElement(long id, String projectKey, String documentationLocation);
 
-	Response getAdjacentElements(long id, String projectKey, String documentationLocation);
-
+	/**
+	 * Returns all unlinked elements of the knowledge element for a project. Sorts
+	 * the elements according to their similarity and their likelihood that they
+	 * should be linked.
+	 * 
+	 * TODO Sorting according to the likelihood that they should be linked.
+	 * 
+	 * @issue How can the sorting be implemented?
+	 *
+	 * @param id
+	 *            of the {@link DecisionKnowledgeElement} in database.
+	 * @param documentationLocation
+	 *            of the {@link DecisionKnowledgeElement}, e.g. "i" for Jira issue,
+	 *            see {@link DocumentationLocation}.
+	 * @param projectKey
+	 *            of the Jira project, see {@link DecisionKnowledgeProject}.
+	 * @return list of unlinked elements, sorted by the likelihood that they should
+	 *         be linked.
+	 */
 	Response getUnlinkedElements(long id, String projectKey, String documentationLocation);
-
-	Response createUnlinkedDecisionKnowledgeElement(HttpServletRequest request, DecisionKnowledgeElement element);
 
 	/**
 	 * Creates a new {@link DecisionKnowledgeElement}. The decision knowledge

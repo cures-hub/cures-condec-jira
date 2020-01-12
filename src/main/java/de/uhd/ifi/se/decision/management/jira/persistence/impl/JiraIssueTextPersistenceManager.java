@@ -520,7 +520,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return isAnyElementDeleted;
 	}
 
-	public Issue createJIRAIssueFromSentenceObject(long aoId, ApplicationUser user) {
+	public Issue createJiraIssueFromSentenceObject(long aoId, ApplicationUser user) {
 		if (aoId <= 0 || user == null) {
 			LOGGER.error("Parameter are Invalid");
 			return null;
