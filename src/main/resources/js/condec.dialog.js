@@ -87,7 +87,8 @@
 		AJS.dialog2(deleteDialog).show();
 	};
 
-	ConDecDialog.prototype.showDeleteDecisionLinkDialog = function showDeleteDecisionLinkDialog(idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild) {
+	ConDecDialog.prototype.showDeleteDecisionLinkDialog = function showDeleteDecisionLinkDialog(idOfParent, idOfChild, 
+			documentationLocationOfParent, documentationLocationOfChild) {
 		console.log("conDecDialog showDeleteLinkDialog");
 
 		// HTML elements
@@ -214,7 +215,7 @@
 		radioCon.checked = false;
 
 		selectElementField.onchange = function () {
-			conDecAPI.getDecisionKnowledgeElement(this.value, "i", function (decisionKnowledgeElement) {
+			conDecAPI.getDecisionKnowledgeElement(this.value, documentationLocation, function (decisionKnowledgeElement) {
 				if (decisionKnowledgeElement && decisionKnowledgeElement.type === "Argument") {
 					argumentFieldGroup.style.display = "inherit";
 					radioPro.checked = true;
@@ -224,9 +225,11 @@
 
 		// Set onclick listener on buttons
 		submitButton.onclick = function () {
-			var childId = selectElementField.value;
-			var knowledgeTypeOfChild = $('input[name=form-radio-argument]:checked').val();
-			conDecAPI.createLink(knowledgeTypeOfChild, id, childId, "i", "i", null,function () {
+			var childId = selectElementField.value.split(":")[0];
+			var documentationLocationOfChild = selectElementField.value.split(":")[1];
+			var knowledgeTypeOfChild = $("input[name=form-radio-argument]:checked").val();
+			conDecAPI.createLink(knowledgeTypeOfChild, id, childId, documentationLocation, documentationLocationOfChild, 
+					null, function () {
 				conDecObservable.notify();
 			});
 			AJS.dialog2(linkDialog).hide();
@@ -249,7 +252,8 @@
 			var insertString = "";
 			var isSelected = "selected";
 			for (var index = 0; index < unlinkedElements.length; index++) {
-				insertString += "<option " + isSelected + " value='" + unlinkedElements[index].id + "'>"
+				insertString += "<option " + isSelected 
+					+ " value='" + unlinkedElements[index].id + ":" + unlinkedElements[index].documentationLocation + "'>"
 					+ unlinkedElements[index].type + ' / ' + unlinkedElements[index].summary + "</option>";
 				isSelected = "";
 			}

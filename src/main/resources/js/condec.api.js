@@ -242,7 +242,7 @@
 	 * external references: condec.dialog, condec.treant, condec.tree.viewer
 	 */
 	ConDecAPI.prototype.createLink = function createLink(knowledgeTypeOfChild, idOfParent, idOfChild,
-														 documentationLocationOfParent, documentationLocationOfChild, linkType, callback) {
+			documentationLocationOfParent, documentationLocationOfChild, linkType, callback) {
 		postJSON(this.restPrefix + "/knowledge/createLink.json?projectKey=" + projectKey + "&knowledgeTypeOfChild=" + knowledgeTypeOfChild
 			+ "&idOfParent=" + idOfParent + "&documentationLocationOfParent=" + documentationLocationOfParent + "&idOfChild=" + idOfChild
 			+ "&documentationLocationOfChild=" + documentationLocationOfChild + "&linkTypeName=" + linkType, null, function (error, link) {
@@ -254,11 +254,10 @@
 	};
 
 	/*
-	 * external references: condec.context.menu, condec.dialog, condec.treant,
-	 * condec.tree.viewer
+	 * external references: condec.dialog, condec.treant, condec.tree.viewer
 	 */
 	ConDecAPI.prototype.deleteLink = function deleteLink(idOfDestinationElement, idOfSourceElement,
-														 documentationLocationOfDestinationElement, documentationLocationOfSourceElement, callback, showError) {
+			documentationLocationOfDestinationElement, documentationLocationOfSourceElement, callback) {
 		var link = {
 			"idOfSourceElement": idOfSourceElement,
 			"idOfDestinationElement": idOfDestinationElement,

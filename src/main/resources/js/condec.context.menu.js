@@ -122,9 +122,6 @@
 			});
 		};
 
-		// only default documentation location
-		// TODO enable linking of existing elements for every documentation
-		// location
 		document.getElementById("condec-context-menu-link-item").onclick = function() {
 			conDecDialog.showLinkDialog(id, documentationLocation);
 		};
@@ -235,7 +232,6 @@
 		}
 
 		if (documentationLocation === "s") {
-			document.getElementById("condec-context-menu-link-item").style.display = "none";
 			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "initial";
 			conDecAPI.isIssueStrategy(function(isEnabled) {
 				if (isEnabled) {
@@ -246,7 +242,6 @@
 			});
 			document.getElementById("condec-context-menu-set-root-item").style.display = "none";
 		} else {
-			document.getElementById("condec-context-menu-link-item").style.display = "initial";
 			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "none";
 			document.getElementById("condec-context-menu-sentence-convert-item").style.display = "none";
 			document.getElementById("condec-context-menu-set-root-item").style.display = "initial";
