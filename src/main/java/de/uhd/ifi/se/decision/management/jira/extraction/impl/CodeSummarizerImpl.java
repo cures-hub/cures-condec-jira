@@ -1,18 +1,21 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
+import org.apache.commons.io.FilenameUtils;
+import org.eclipse.jgit.revwalk.RevCommit;
+
 import com.atlassian.jira.issue.Issue;
+
 import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.TangledChangeDetector;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import org.apache.commons.io.FilenameUtils;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 public class CodeSummarizerImpl implements CodeSummarizer {
 
 	private GitClient gitClient;
 	private int minProbabilityOfCorrectness;
+	private boolean formatForComments;
 
 	public CodeSummarizerImpl(String projectKey) {
 		this.gitClient = new GitClientImpl(projectKey);
@@ -70,10 +73,21 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		TangledChangeDetector tangledCommitDetection = new TangledChangeDetectorImpl();
 		tangledCommitDetection.estimateWhetherChangedFilesAreCorrectlyIncludedInDiff(diff);
 
-		return generateSummary(diff);
+		if (formatForComments) {
+			return generateSummaryForJiraIssueComment(diff);
+		}
+		return generateSummaryForHtmlDialog(diff);
 	}
 
-	private String generateSummary(Diff diff) {
+	private static String generateSummaryForJiraIssueComment(Diff diff) {
+		String summary = "The following classes were changed: ";
+		for (ChangedFile changedFile : diff.getChangedFiles()) {
+			summary += changedFile.getName() + "; ";
+		}
+		return summary;
+	}
+
+	private String generateSummaryForHtmlDialog(Diff diff) {
 		String rows = "";
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			if (changedFile.getProbabilityOfCorrectness() >= this.minProbabilityOfCorrectness) {
@@ -93,7 +107,8 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		return summarizedMethods;
 	}
 
-	// TODO The table should be built on the frontend, not here. Only the data should be transmitted.
+	// TODO The table should be built on the frontend, not here. Only the data
+	// should be transmitted.
 	private String generateTable(String rows) {
 		return "<table style=\"width:100%; border: 1px solid black; border-collapse: collapse;\">" + "<tr>\n"
 				+ "    <th style=\"width:40%; border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">Class Name</th>\n"
@@ -113,5 +128,10 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 				+ item2 + "</td>\n"
 				+ "<td style=\"width:20%; border: 1px solid black; border-collapse: collapse; padding: 15px; text-align: left;\">"
 				+ item3 + "% </td>\n";
+	}
+
+	@Override
+	public void setFormatForComments(boolean formatForComments) {
+		this.formatForComments = formatForComments;
 	}
 }
