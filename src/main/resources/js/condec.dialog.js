@@ -99,7 +99,7 @@
 
 		// Set onclick listener on buttons
 		submitButton.onclick = function () {
-			if (idOfParent === null || idOfParent === 0) {
+			if (idOfParent === null || idOfParent === undefined || idOfParent === 0) {
 				var parentElement = conDecTreant.findParentElement(id);
 				idOfParent = parentElement["id"];
 				documentationLocationOfParent = parentElement["documentationLocation"];

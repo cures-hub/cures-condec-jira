@@ -32,7 +32,6 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
@@ -76,10 +75,10 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 					"Unlinked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
 					.build();
 		}
-		// TODO Get elements from all documentation locations not just one
-		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(projectKey).getManagerForSingleLocation(documentationLocation);
-		List<DecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = persistenceManager.getUnlinkedElements(id);
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(id, documentationLocation);
+		List<DecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = persistenceManager
+				.getUnlinkedElements(element);
 		return Response.ok(unlinkedDecisionKnowledgeElements).build();
 	}
 
@@ -306,7 +305,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(decisionKnowledgeElement.getProject().getProjectKey()).getJiraIssueTextManager();
-		Issue issue = persistenceManager.createJIRAIssueFromSentenceObject(decisionKnowledgeElement.getId(), user);
+		Issue issue = persistenceManager.createJiraIssueFromSentenceObject(decisionKnowledgeElement.getId(), user);
 
 		if (issue != null) {
 			return Response.status(Status.OK).entity(issue).build();

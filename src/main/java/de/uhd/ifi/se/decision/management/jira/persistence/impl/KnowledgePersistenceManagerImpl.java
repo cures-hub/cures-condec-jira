@@ -241,7 +241,6 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		}
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getManagerForSingleLocation(element);
-		System.out.println(persistenceManager.getClass().getName());
 		DecisionKnowledgeElement elementWithId = persistenceManager.insertDecisionKnowledgeElement(element, user,
 				parentElement);
 		KnowledgeGraph.getOrCreate(projectKey).addVertex(elementWithId);
@@ -269,5 +268,22 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		DocumentationLocation documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
 		return getDecisionKnowledgeElement(id, documentationLocation);
+	}
+
+	@Override
+	public List<DecisionKnowledgeElement> getUnlinkedElements(DecisionKnowledgeElement element) {
+		List<DecisionKnowledgeElement> elements = this.getDecisionKnowledgeElements();
+		if (element == null) {
+			return elements;
+		}
+		elements.remove(element);
+
+		List<DecisionKnowledgeElement> linkedElements = jiraIssueTextPersistenceManager.getAdjacentElements(element);
+		if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
+			linkedElements.addAll(jiraIssuePersistenceManager.getAdjacentElements(element));
+		}
+		elements.removeAll(linkedElements);
+
+		return elements;
 	}
 }
