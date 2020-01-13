@@ -64,6 +64,12 @@
 	    this.initializeChartForSources(divId, title, subtitle, dataMap);
 	}
 	
+	/* used by branch dashboard item featureBranchesDashboardItem.vm */
+	ConDecReqDash.prototype.initializeChartForBranchSource = function(divId, title, subtitle, dataMap) {
+	    isIssueData = false;
+	    this.initializeChartForSources(divId, title, subtitle, dataMap);
+    }
+	
     function getHTMLNodes(contentName1,contentName2,contentName3,contentName4, projectName, issueTypeName, errorName, nothingYetName) {
         dashboardContentNodeGeneral   = document.getElementById(contentName1);
         dashboardContentNodeCompleteness   = document.getElementById(contentName2);
