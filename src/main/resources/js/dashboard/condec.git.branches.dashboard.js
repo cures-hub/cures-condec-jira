@@ -91,9 +91,7 @@ var ConDecDevBranches = [];
 		 */
         processing = projectKey;
         showDashboardSection(dashboardProcessingNode);
-        url = AJS.contextPath()
-          + "/rest/condec/latest/view/elementsFromBranchesOfProject.json?projectKey="
-          + projectKey;
+        url = conDecAPI.restPrefix + "/view/elementsFromBranchesOfProject.json?projectKey=" + projectKey;
         /* get cache or server data? */
         if (localStorage.getItem("condec.restCacheTTL")) {
           console.log("condec.restCacheTTL setting found");
