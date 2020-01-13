@@ -2,7 +2,7 @@
  This module fills the box plots and pie charts used in the feature task branch dashboard item.
 
  Requires
- * js/condec.report.js
+ * js/condec.requirements.dashboard.js
 
  Is referenced in HTML by
  * featureBranchesDashboardItem.vm
@@ -71,6 +71,7 @@ var ConDecDevBranches = [];
         dashboardProjectWithoutGit = document.getElementById(noGitName);
     }
     function showDashboardSection(node) {
+  
         var hiddenClass = "hidden";
         dashboardContentNode.classList.add(hiddenClass);
         dashboardDataErrorNode.classList.add(hiddenClass);
@@ -90,11 +91,7 @@ var ConDecDevBranches = [];
 		 */
         processing = projectKey;
         showDashboardSection(dashboardProcessingNode);
-
-        url = AJS.contextPath()
-          + "/rest/decisions/latest/view/elementsFromBranchesOfProject.json?projectKey="
-          + projectKey;
-
+        url = conDecAPI.restPrefix + "/view/elementsFromBranchesOfProject.json?projectKey=" + projectKey;
         /* get cache or server data? */
         if (localStorage.getItem("condec.restCacheTTL")) {
           console.log("condec.restCacheTTL setting found");
@@ -131,7 +128,6 @@ var ConDecDevBranches = [];
 																	 * caching
 																	 */
         }
-
         console.log("Starting  REST query.");
         AJS.$.ajax({
           url: url,
@@ -145,11 +141,10 @@ var ConDecDevBranches = [];
 
     ConDecBranchesDashboard.prototype.processDataBad = function processDataBad(data,uid) {
         showDashboardSection(dashboardDataErrorNode);
-        doneWithXhrRequest();
     };
 
     ConDecBranchesDashboard.prototype.processData = function processData(data,uid) {
-        processXhrResponseData(data);
+        processXhrResponseData(data);  
     };
 
     function processXhrResponseData(data) {
@@ -389,22 +384,22 @@ var ConDecDevBranches = [];
         var sortedBranchesPerIssue = sortByBranchNumberDescending(branchesPerIssue);
 
         /* render pie-charts */
-        conDecReport.initializeChartForBranchSource('piechartRich-QualityStatusForBranches'+dashboardUID,
+        ConDecReqDash.initializeChartForBranchSource('piechartRich-QualityStatusForBranches'+dashboardUID,
          '', 'How many branches document rationale well?',statusesForBranchesData); /* 'Quality status' */
-        conDecReport.initializeChartForBranchSource('piechartRich-ProblemTypesInBranches'+dashboardUID,
+        ConDecReqDash.initializeChartForBranchSource('piechartRich-ProblemTypesInBranches'+dashboardUID,
          '', 'Which documentation mistakes are most common?',sortedProblemTypesOccurrance); /*'Total quality problems' */
-        conDecReport.initializeChartForBranchSource('piechartRich-BranchesPerIssue'+dashboardUID,
+        ConDecReqDash.initializeChartForBranchSource('piechartRich-BranchesPerIssue'+dashboardUID,
          '', 'How many branches do Jira tasks have?',sortedBranchesPerIssue);
         /* render box-plots */
-        conDecReport.initializeChartForBranchSource('boxplot-IssuesPerBranch'+dashboardUID,
+        ConDecReqDash.initializeChartForBranchSource('boxplot-IssuesPerBranch'+dashboardUID,
          '', 'Issues number in branches',issuesInBranches);
-        conDecReport.initializeChartForBranchSource('boxplot-DecisionsPerBranch'+dashboardUID,
+        ConDecReqDash.initializeChartForBranchSource('boxplot-DecisionsPerBranch'+dashboardUID,
          '', 'Decisions number in branches',decisionsInBranches);
-        conDecReport.initializeChartForBranchSource('boxplot-AlternativesPerBranch'+dashboardUID,
+        ConDecReqDash.initializeChartForBranchSource('boxplot-AlternativesPerBranch'+dashboardUID,
          '', 'Alternatives number in branches',alternativesInBranches);
-        conDecReport.initializeChartForBranchSource('boxplot-ProsPerBranch'+dashboardUID,
+        ConDecReqDash.initializeChartForBranchSource('boxplot-ProsPerBranch'+dashboardUID,
          '', 'Pro arguments number in branches',prosInBranches);
-        conDecReport.initializeChartForBranchSource('boxplot-ConsPerBranch'+dashboardUID,
+        ConDecReqDash.initializeChartForBranchSource('boxplot-ConsPerBranch'+dashboardUID,
          '', 'Con arguments number in branches',consInBranches);
 
         /* remember in global scope for development/debugging */
