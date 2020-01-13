@@ -51,10 +51,9 @@ public class ClassificationManagerForJiraIssueComments {
         if (sentences == null) {
             return new ArrayList<PartOfJiraIssueText>();
         }
-        List<PartOfJiraIssueText> sentencesToBeClassified = getSentencesForFineGrainedClassification(sentences);
-        List<String> stringsToBeClassified = extractStringsFromPoji(sentencesToBeClassified);
+        List<String> stringsToBeClassified = extractStringsFromPoji(sentences);
         List<Boolean> classificationResult = classifierTrainer.getClassifier().makeBinaryPredictions(stringsToBeClassified);
-        updateSentencesWithBinaryClassificationResult(classificationResult, sentencesToBeClassified);
+        updateSentencesWithBinaryClassificationResult(classificationResult, sentences);
         return sentences;
     }
 
