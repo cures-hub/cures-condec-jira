@@ -92,7 +92,7 @@ var ConDecDevBranches = [];
         showDashboardSection(dashboardProcessingNode);
 
         url = AJS.contextPath()
-          + "/rest/decisions/latest/view/elementsFromBranchesOfProject.json?projectKey="
+          + "/rest/condec/latest/view/elementsFromBranchesOfProject.json?projectKey="
           + projectKey;
 
         /* get cache or server data? */
