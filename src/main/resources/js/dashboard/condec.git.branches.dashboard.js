@@ -2,7 +2,7 @@
  This module fills the box plots and pie charts used in the feature task branch dashboard item.
 
  Requires
- * js/condec.report.js
+ * js/condec.requirements.dashboard.js
 
  Is referenced in HTML by
  * featureBranchesDashboardItem.vm
@@ -143,7 +143,6 @@ var ConDecDevBranches = [];
 
     ConDecBranchesDashboard.prototype.processDataBad = function processDataBad(data,uid) {
         showDashboardSection(dashboardDataErrorNode);
-        doneWithXhrRequest();
     };
 
     ConDecBranchesDashboard.prototype.processData = function processData(data,uid) {
