@@ -51,13 +51,14 @@ public class ClassificationManagerForJiraIssueComments {
         if (sentences == null) {
             return new ArrayList<PartOfJiraIssueText>();
         }
-        List<String> stringsToBeClassified = extractStringsFromPoji(sentences);
+		List<PartOfJiraIssueText> sentencesRelevantForBinaryClf = getSentencesForBinaryClassification(sentences);
+        List<String> stringsToBeClassified = extractStringsFromPoji(sentencesRelevantForBinaryClf);
         List<Boolean> classificationResult = classifierTrainer.getClassifier().makeBinaryPredictions(stringsToBeClassified);
         updateSentencesWithBinaryClassificationResult(classificationResult, sentences);
         return sentences;
     }
 
-    /*
+
     private List<PartOfJiraIssueText> getSentencesForBinaryClassification(List<PartOfJiraIssueText> sentences) {
         List<PartOfJiraIssueText> stringsToBeClassified = new ArrayList<PartOfJiraIssueText>();
         for (PartOfJiraIssueText sentence : sentences) {
@@ -67,7 +68,7 @@ public class ClassificationManagerForJiraIssueComments {
         }
         return stringsToBeClassified;
     }
-    */
+
 
     /**
      * Determines whether a part of JIRA issue comment (substring) should be the
