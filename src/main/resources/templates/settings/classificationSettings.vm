@@ -142,68 +142,43 @@
 </div>
 
 <script>
-    var issueCommentsToggle = document.getElementById("isKnowledgeExtractedFromIssues-toggle");
-    if ($project.isKnowledgeExtractedFromIssues() == true
-    )
-    {
-        issueCommentsToggle.checked = true;
-    }
-    else
-    {
-        issueCommentsToggle.checked = false;
-    }
-    ;
+    //Init the variables
+    const issueCommentsToggle = document.getElementById("isKnowledgeExtractedFromIssues-toggle");
+    issueCommentsToggle.checked = $project.isKnowledgeExtractedFromIssues() ;
 
-    var currentClassifierStatusInfo = document.getElementById("classifierStatus-text");
-    var isClassifierUsedToggle = document.getElementById("isClassifierUsed-toggle");
-    if ($project.isClassifierUsedForIssueComments() == true
-    )
-    {
-        isClassifierUsedToggle.checked = true;
-        currentClassifierStatusInfo.style.display = "inherit";
-    }
-    else
-    {
-        isClassifierUsedToggle.checked = false;
-        currentClassifierStatusInfo.style.display = "none";
-    }
-    ;
+    const isClassifierUsedToggle = document.getElementById("isClassifierUsed-toggle");
+    isClassifierUsedToggle.checked = $project.isClassifierUsedForIssueComments();
 
-    var cleanDatabasesButton = document.getElementById("cleanDatabases");
+    const currentClassifierStatusInfo = document.getElementById("classifierStatus-text");
+    currentClassifierStatusInfo.style.display = isClassifierUsedToggle.checked ? "inherit" : "none";
+
+    const sentenceIconToggle = document.getElementById("iconParsing-toggle");
+    sentenceIconToggle.checked =$project.isIconParsingEnabled() ;
+
+    // add listeners
+    const cleanDatabasesButton = document.getElementById("cleanDatabases");
     cleanDatabasesButton.addEventListener("click", function () {
         conDecAPI.cleanDatabases("$projectKey");
     });
 
-    var sentenceIconToggle = document.getElementById("iconParsing-toggle");
-    if ($project.isIconParsingEnabled() == true
-    )
-    {
-        sentenceIconToggle.checked = true;
-    }
-    else
-    {
-        sentenceIconToggle.checked = false;
-    }
-    ;
-
-    var evaluateModelButton = document.getElementById("evaluateModel-button");
+    const evaluateModelButton = document.getElementById("evaluateModel-button");
     evaluateModelButton.addEventListener("click", function () {
         var animatedElement = document.getElementById("evaluate-classifier-progress");
         conDecAPI.evaluateModel("$projectKey", animatedElement, saveToFile("evaluation_results.json"));
     });
 
-    var saveArffFileButton = document.getElementById("saveArffFile-button");
+    const saveArffFileButton = document.getElementById("saveArffFile-button");
     saveArffFileButton.addEventListener("click", function () {
         conDecAPI.saveArffFile("$projectKey", true, saveToFile("ClassifierTrainingData.arff"));
     });
 
-    var saveAllArffFileButton = document.getElementById("saveAllArffFile-button");
+    const saveAllArffFileButton = document.getElementById("saveAllArffFile-button");
     saveAllArffFileButton.addEventListener("click", function () {
         conDecAPI.saveArffFile("$projectKey", false, saveToFile("AllClassifierTrainingData.arff"));
     });
 
     //AJS.progressBars.update("#progress-bar", 0.0);
-    var classifyAllIssuesInProjectButton = document.getElementById("classifyAllIssuesInProject");
+    const classifyAllIssuesInProjectButton = document.getElementById("classifyAllIssuesInProject");
     classifyAllIssuesInProjectButton.addEventListener("click", function () {
 
         if (confirm("Are you sure you want to classify all issue comments? This might take some time if the project is big.")) {
@@ -215,7 +190,7 @@
         }
     });
 
-    var trainClassifier = document.getElementById("trainClassifier-button");
+    const trainClassifier = document.getElementById("trainClassifier-button");
     trainClassifier.addEventListener("click", function () {
         if (confirm("Are you sure you want to retrain the classifier?")) {
             var trainDataSelect = document.getElementById("select-arff-file-train");
@@ -244,9 +219,10 @@
         this.busy = false;
     });
 
-    var saveToFile = function (name) {
+    // helper functions
+    const saveToFile = function (name) {
         return function (content) {
-            var link = document.createElement("a");
+            let link = document.createElement("a");
             link.style.display = "none";
             link.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(content));
             link.setAttribute("download", name);
