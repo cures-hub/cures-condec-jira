@@ -18,6 +18,45 @@
     </div>
 </div>
 
+<div class="field-group" id="classifierStatus-text">
+    <label>Current classifier status:</label>
+    <div class="description">
+        #if( $isClassifierTraining == "true" )
+            <div class="aui-message aui-message-warning">
+                <p class="title">
+                    <strong>The classifier is currently training!</strong>
+                </p>
+            </div>
+        #else
+            <div class="aui-message aui-message-info">
+                <p class="title">
+                    <strong>The classifier is currently not training!</strong>
+                </p>
+            </div>
+        #end
+        #if( $isClassifierTrained == "true" )
+            <div class="aui-message aui-message-info">
+                <p class="title">
+                    <strong>The classifier has already been trained!</strong>
+                </p>
+                <p>
+                    If you have enough annotated data from your own project you might want to consider retraining it on
+                    your project.
+                    Generate an ARFF file of validated decision knowledge and then select the file as the training file.
+                </p>
+            </div>
+        #else
+            <div class="aui-message aui-message-error">
+                <p class="title">
+                    <strong>The classifier is not yet trained!</strong>
+                <p>
+                    Start the training or wait for it to finish. Otherwise the classification will not work.
+                </p>
+            </div>
+        #end
+    </div>
+</div>
+
 <div class="field-group">
     <label for="iconParsing-toggle">Use Icons as Tags?</label>
     <aui-toggle id="iconParsing-toggle" value="$projectKey"
@@ -33,8 +72,9 @@
     <label for="cleanDatabases">Clean Databases?</label>
     <input type="button" class="aui-button" id="cleanDatabases"
            value="Clean Databases"/>
-    <div class="description">Removes non-existing elements and invalid links (with non-existing source or target elements) 
-    	from the databases and checks if all existing elements are linked.
+    <div class="description">Removes non-existing elements and invalid links (with non-existing source or target
+        elements)
+        from the databases and checks if all existing elements are linked.
     </div>
 </div>
 
@@ -50,7 +90,9 @@
 <div class="field-group">
     <label for="evaluateModel-button">Evaluate model</label>
     <input type="button" class="aui-button" id="evaluateModel-button" value="Evaluate model"/>
-    <div class="description">Evaluate the current model using the user-validated data in the database. (If the evaluation fails the classifier might need to be trained!)</div>
+    <div class="description">Evaluate the current model using the user-validated data in the database. (If the
+        evaluation fails the classifier might need to be trained!)
+    </div>
     <div class="aui-progress-indicator">
         <span id="evaluate-classifier-progress"></span>
     </div>
@@ -91,7 +133,8 @@
     <input type="button" class="aui-button" id="trainClassifier-button" value="Train Classifier"/>
     <div class="description">
         Trains the classifier on the selected Attribute-Relation File Format (ARFF) file. <br/>
-        <span class="aui-icon aui-icon-small aui-icon-warning">WARNING: </span>Please note that this initial training is very resource expensive!
+        <span class="aui-icon aui-icon-small aui-icon-warning">WARNING: </span>Please note that this initial training is
+        very resource expensive!
     </div>
     <div class="aui-progress-indicator">
         <span id="train-classifier-progress"></span>
@@ -111,15 +154,18 @@
     }
     ;
 
+    var currentClassifierStatusInfo = document.getElementById("classifierStatus-text");
     var isClassifierUsedToggle = document.getElementById("isClassifierUsed-toggle");
     if ($project.isClassifierUsedForIssueComments() == true
     )
     {
         isClassifierUsedToggle.checked = true;
+        currentClassifierStatusInfo.style.display = "inherit";
     }
     else
     {
         isClassifierUsedToggle.checked = false;
+        currentClassifierStatusInfo.style.display = "none";
     }
     ;
 
@@ -186,6 +232,7 @@
     });
 
     isClassifierUsedToggle.addEventListener("change", function (error) {
+        currentClassifierStatusInfo.style.display = this.checked ? "inherit" : "none";
         this.busy = true;
         conDecAPI.setUseClassifierForIssueComments(this.checked, this.value);
         this.busy = false;
