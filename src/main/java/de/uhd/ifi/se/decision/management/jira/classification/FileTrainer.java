@@ -5,11 +5,10 @@ import de.uhd.ifi.se.decision.management.jira.classification.implementation.Onli
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
 import java.util.List;
 
 public interface FileTrainer {
@@ -105,33 +104,84 @@ public interface FileTrainer {
 	 */
 	public static File copyDefaultTrainingDataToFile() {
 		File file = FileTrainer.DEFAULT_TRAINING_DATA;
-		File classfierDir = new File(DecisionKnowledgeClassifier.DEFAULT_DIR);
-		if (!classfierDir.exists()) {
+		File classifierDir = new File(DecisionKnowledgeClassifier.DEFAULT_DIR);
+		if (!classifierDir.exists()) {
 			//creates directory if it does not exist
-			classfierDir.mkdirs();
-		}
-
-		if (file.exists()) {
-			return file;
+			classifierDir.mkdirs();
 		}
 
 		String pathToTrainingFile = ComponentGetter.getUrlOfClassifierFolder() + "defaultTrainingData.arff";
 		try {
 
-			file.createNewFile();
-			InputStream inputStream = new URL(pathToTrainingFile).openStream();
-			FileOutputStream outputStream = new FileOutputStream(file);
+			InputStream newFileInputStream = new URL(pathToTrainingFile).openStream();
 
+
+
+			if (file.exists()) {
+				// get file hashes and compare them.
+				String oldFileHash = getMD5Checksum(new FileInputStream(file));
+				String newFileHash = getMD5Checksum(newFileInputStream);
+				if (oldFileHash.equals(newFileHash)) {
+					return file;
+				}
+			}
+
+			file.createNewFile();
+			FileOutputStream outputStream = new FileOutputStream(file);
 			int read;
 			byte[] bytes = new byte[1024];
 
-			while ((read = inputStream.read(bytes)) != -1) {
+			while ((read = newFileInputStream.read(bytes)) != -1) {
 				outputStream.write(bytes, 0, read);
 			}
+
 		} catch (IOException e) {
+			LOGGER.error("Failed to copy default training data to file. Message: " + e.getMessage());
+		} catch (Exception e) {
 			LOGGER.error("Failed to copy default training data to file. Message: " + e.getMessage());
 		}
 		return file;
+	}
+
+	/**
+	 * Creates a checksum for a given InputStream.
+	 * See: https://stackoverflow.com/questions/304268/getting-a-files-md5-checksum-in-java
+	 *
+	 * @param fileInputStream
+	 * @return byte array of MD5 hashes
+	 * @throws Exception
+	 */
+
+	static byte[] createChecksum(InputStream fileInputStream) throws Exception {
+		byte[] buffer = new byte[1024];
+		MessageDigest complete = MessageDigest.getInstance("MD5");
+		int numRead;
+		do {
+			numRead = fileInputStream.read(buffer);
+			if (numRead > 0) {
+				complete.update(buffer, 0, numRead);
+			}
+		} while (numRead != -1);
+		fileInputStream.close();
+		return complete.digest();
+	}
+
+	/**
+	 * Calculated the hexadecimal value of the MD5 hash of the file content for a given InputStream.
+	 * See: https://stackoverflow.com/questions/304268/getting-a-files-md5-checksum-in-java
+	 *
+	 * @param fileInputStream
+	 * @return MD5 checksum of an InputStream
+	 * @throws Exception
+	 */
+	public static String getMD5Checksum(InputStream fileInputStream) throws Exception {
+		byte[] b = createChecksum(fileInputStream);
+		StringBuilder result = new StringBuilder();
+
+		for (byte value : b) {
+			result.append(Integer.toString((value & 0xff) + 0x100, 16).substring(1));
+		}
+		return result.toString();
 	}
 
 }
