@@ -1,12 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
-import com.atlassian.jira.issue.Issue;
-import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import com.atlassian.jira.issue.Issue;
+
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+
 /**
- * Interface to create a summary of code changes linked to Jira issues (e.g. to work items).
+ * Interface to create a summary of code changes linked to Jira issues (e.g. to
+ * work items).
  */
 public interface CodeSummarizer {
 
@@ -39,4 +42,6 @@ public interface CodeSummarizer {
 	 * @return summary as a String.
 	 */
 	String createSummary(RevCommit commit);
+
+	void setFormatForComments(boolean formatForComments);
 }

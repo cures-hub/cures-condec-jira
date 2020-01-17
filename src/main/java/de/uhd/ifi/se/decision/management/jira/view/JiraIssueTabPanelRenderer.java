@@ -47,8 +47,7 @@ public class JiraIssueTabPanelRenderer extends AbstractIssueTabPanel implements 
 		}
 
 		String projectKey = issue.getProjectObject().getKey();
-		return ConfigPersistenceManager.isActivated(projectKey)
-				&& ConfigPersistenceManager.isKnowledgeExtractedFromIssues(projectKey);
+		return ConfigPersistenceManager.isActivated(projectKey);
 	}
 
 	private String getVelocityTemplate() {

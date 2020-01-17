@@ -26,14 +26,14 @@
 	ConDecRelationshipPage.prototype.buildDecisionGraph = function() {
 		console.log("ConDec build Decision Relationship Graph");
 
-		conDecAPI.getDecisionGraph(function (data) {
-			buildGraphNetwork(data);
+		conDecAPI.getDecisionGraph(function (knowledgeGraph) {
+			buildGraphNetwork(knowledgeGraph);
 		});
 	};
 
 	ConDecRelationshipPage.prototype.buildDecisionGraphFiltered = function(linkTypes, searchString) {
-		conDecAPI.getDecisionGraphFiltered(linkTypes, searchString, function (data) {
-			buildGraphNetwork(data);
+		conDecAPI.getDecisionGraphFiltered(linkTypes, searchString, function (knowledgeGraph) {
+			buildGraphNetwork(knowledgeGraph);
 		});
 	};
 
@@ -93,13 +93,10 @@
 			},
 			manipulation: {
 				enabled: true,
-				addNode: function(data, callback) {
-					conDecVis.addNode(data, callback);
-				},
+				addNode: false,
 				deleteNode: function(data, callback) {
 					conDecVis.deleteNode(data, callback);
 				},
-
 				addEdge: function (data, callback) {
 					conDecVis.addEdgeWithType(data, callback);
 				},

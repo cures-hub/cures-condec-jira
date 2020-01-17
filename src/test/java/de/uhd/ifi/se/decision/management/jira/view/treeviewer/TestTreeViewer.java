@@ -1,5 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,10 +32,8 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-import static org.junit.Assert.*;
-
 public class TestTreeViewer extends TestSetUp {
-	private AbstractPersistenceManagerForSingleLocation persistenceStrategy;
+	private AbstractPersistenceManagerForSingleLocation persistenceManager;
 
 	private boolean multiple;
 	private boolean checkCallback;
@@ -54,7 +56,7 @@ public class TestTreeViewer extends TestSetUp {
 		treeViewer.setCheckCallback(checkCallback);
 		treeViewer.setThemes(themes);
 		treeViewer.setData(data);
-		persistenceStrategy = KnowledgePersistenceManager.getOrCreate("TEST").getDefaultManagerForSingleLocation();
+		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueManager();
 	}
 
 	@Test
@@ -127,7 +129,7 @@ public class TestTreeViewer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetDataStructureFilled() {
-		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
+		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(14);
 		assertNotNull(element);
 		assertEquals(14, element.getId());
 		assertEquals("TEST-14", element.getKey());
@@ -144,7 +146,7 @@ public class TestTreeViewer extends TestSetUp {
 	@NonTransactional
 	public void testEmptyGraphGetDataStructure() {
 		TreeViewer tree = new TreeViewer();
-		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
+		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(14);
 		assertEquals("tv14", tree.getDataStructure(element).getId());
 	}
 
@@ -155,14 +157,14 @@ public class TestTreeViewer extends TestSetUp {
 				.getSentencesForCommentText("{alternative} This would be a great solution option! {alternative}");
 		PartOfJiraIssueText sentence = comment.get(0);
 		TreeViewer tree = new TreeViewer(sentence.getProject().getProjectKey());
-		assertNotNull(tree.getDataStructure((DecisionKnowledgeElement) sentence));
+		assertNotNull(tree.getDataStructure(sentence));
 	}
 
 	@Test
 	@NonTransactional
 	public void testTreeViewerCalledFromTabpanel() {
 		// 1) Check if Tree Element has no Children - Important!
-		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
+		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(14);
 		TreeViewer tv = new TreeViewer(element.getKey(), selectedKnowledgeTypes);
 		assertNotNull(tv);
 		assertEquals(0, tv.getDataStructure(element).getChildren().size());
@@ -179,7 +181,7 @@ public class TestTreeViewer extends TestSetUp {
 		// JiraIssueComment comment = new JiraIssueCommentImpl(comment1);
 		sentences.get(0).setRelevant(true);
 		sentences.get(0).setType(KnowledgeType.ALTERNATIVE);
-		element = persistenceStrategy.getDecisionKnowledgeElement(14);
+		element = persistenceManager.getDecisionKnowledgeElement(14);
 		tv = new TreeViewer(element.getKey(), selectedKnowledgeTypes);
 
 		// 4) Check if TreeViewer has one element

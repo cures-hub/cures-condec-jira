@@ -83,18 +83,6 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertTrue(ConfigPersistenceManager.isKnowledgeExtractedFromGit("TEST"));
 	}
 
-	// IsKnowledgeExtractedFromIssues
-	@Test
-	public void testIsKnowledgeExtractedIssuesKeyNull() {
-		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromIssues(null));
-	}
-
-	@Test
-	public void testIsKnowledgeExtractedIssuesKeyFilled() {
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", true);
-		assertTrue(ConfigPersistenceManager.isKnowledgeExtractedFromGit("TEST"));
-	}
-
 	// isKnowledgeTypeEnabled
 	@Test
 	public void testIsKnowledgeTypeEnabledKeyNullTypeFilled() {
@@ -105,30 +93,6 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	public void testIsKnowledgeTypeEnabledKeyFilledTypeFilled() {
 		ConfigPersistenceManager.setKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString(), true);
 		assertTrue(ConfigPersistenceManager.isKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString()));
-	}
-
-	// setKnowledgeExtractedFromIssues
-	@Test
-	public void testSetKnowledgeExtractedFromIssuesKeyNullIssueTrue() {
-		ConfigPersistenceManager.setKnowledgeExtractedFromIssues(null, true);
-		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromIssues(null));
-	}
-
-	@Test
-	public void testSetKnowledgeExtractedFromIssuesKeyNullIssueFalse() {
-		ConfigPersistenceManager.setKnowledgeExtractedFromIssues(null, false);
-		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromIssues(null));
-	}
-
-	@Test
-	public void testSetKnowledgeExtractedFromIssuesKeyFilledIssueTrue() {
-		ConfigPersistenceManager.setKnowledgeExtractedFromIssues("TEST", true);
-		assertTrue(ConfigPersistenceManager.isKnowledgeExtractedFromIssues("TEST"));
-	}
-
-	@Test
-	public void testSetKnowledgeExtractedFromIssuesKeyFilledIssueFalse() {
-		ConfigPersistenceManager.setKnowledgeExtractedFromIssues("TEST", false);
 	}
 
 	// setKnowledgeTypeEnabled

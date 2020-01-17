@@ -16,7 +16,7 @@ public class TestDocumentationLocation {
 				DocumentationLocation.getDocumentationLocationFromIdentifier("s "));
 		assertEquals(DocumentationLocation.JIRAISSUE,
 				DocumentationLocation.getDocumentationLocationFromIdentifier("i"));
-		assertEquals(DocumentationLocation.JIRAISSUE, DocumentationLocation.getDocumentationLocationFromIdentifier(""));
+		assertEquals(DocumentationLocation.UNKNOWN, DocumentationLocation.getDocumentationLocationFromIdentifier(""));
 		assertEquals(DocumentationLocation.UNKNOWN, DocumentationLocation.getDocumentationLocationFromIdentifier(null));
 		assertEquals(DocumentationLocation.UNKNOWN,
 				DocumentationLocation.getDocumentationLocationFromIdentifier("XXX"));
@@ -59,7 +59,7 @@ public class TestDocumentationLocation {
 	@Test
 	public void testGetAllDocumentationLocations() {
 		// excludes Unknown documentation location
-		assertEquals(5, DocumentationLocation.getAllDocumentationLocations().size());
+		assertEquals(4, DocumentationLocation.getAllDocumentationLocations().size());
 	}
 
 	@Test

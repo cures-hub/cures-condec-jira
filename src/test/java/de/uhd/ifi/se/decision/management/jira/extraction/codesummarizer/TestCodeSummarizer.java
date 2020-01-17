@@ -1,24 +1,26 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.codesummarizer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.junit.Before;
+import org.junit.Test;
+
 import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.model.git.impl.DiffImpl;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.List;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class TestCodeSummarizer extends TestSetUpGit {
 
 	private CodeSummarizer summarizer;
 
+	@Override
 	@Before
 	public void setUp() {
 		super.setUp();
@@ -43,14 +45,22 @@ public class TestCodeSummarizer extends TestSetUpGit {
 
 	@Test
 	public void testJiraIssueExisting() {
+		summarizer.setFormatForComments(false);
 		assertTrue(summarizer.createSummary(mockJiraIssueForGitTestsTangled, 0).startsWith("<table"));
+	}
+
+	@Test
+	public void testJiraIssueExistingUnformated() {
+		summarizer.setFormatForComments(true);
+		assertTrue(summarizer.createSummary(mockJiraIssueForGitTestsTangled, 0)
+				.startsWith("The following classes were changed:"));
 	}
 
 	@Test
 	public void testRevCommitNull() {
 		assertEquals("", summarizer.createSummary((RevCommit) null));
 	}
-	
+
 	@Test
 	public void testRevCommitExisting() {
 		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);

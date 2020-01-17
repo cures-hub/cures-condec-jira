@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencemanager;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,9 +34,9 @@ public class TestGetManagerForSingleLocation extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testDocumentationLocationUnkown() {
-		AbstractPersistenceManagerForSingleLocation defaultManager = knowledgePersistenceManager
+		AbstractPersistenceManagerForSingleLocation singleLocationPersistenceManager = knowledgePersistenceManager
 				.getManagerForSingleLocation(DocumentationLocation.UNKNOWN);
-		assertEquals(DocumentationLocation.JIRAISSUE, defaultManager.getDocumentationLocation());
+		assertNull(singleLocationPersistenceManager);
 	}
 
 	@Test(expected = IllegalArgumentException.class)

@@ -16,7 +16,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 
 /**
@@ -60,17 +59,17 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 		this.setDestinationElement(idOfDestinationElement, destDocumentationLocation);
 	}
 
-	public LinkImpl(IssueLink issueLink) {
+	public LinkImpl(IssueLink jiraIssueLink) {
 		super();
-		this.id = issueLink.getId();
-		this.type = issueLink.getIssueLinkType().getName();
-		Issue sourceIssue = issueLink.getSourceObject();
-		if (sourceIssue != null) {
-			this.source = new DecisionKnowledgeElementImpl(sourceIssue);
+		this.id = jiraIssueLink.getId();
+		this.type = jiraIssueLink.getIssueLinkType().getName();
+		Issue sourceJiraIssue = jiraIssueLink.getSourceObject();
+		if (sourceJiraIssue != null) {
+			this.source = new DecisionKnowledgeElementImpl(sourceJiraIssue);
 		}
-		Issue destinationIssue = issueLink.getDestinationObject();
-		if (destinationIssue != null) {
-			this.target = new DecisionKnowledgeElementImpl(destinationIssue);
+		Issue destinationJiraIssue = jiraIssueLink.getDestinationObject();
+		if (destinationJiraIssue != null) {
+			this.target = new DecisionKnowledgeElementImpl(destinationJiraIssue);
 		}
 	}
 
@@ -125,6 +124,9 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 			this.source = KnowledgePersistenceManager.getOrCreate("").getDecisionKnowledgeElement(id,
 					documentationLocation);
 		}
+		if (this.source == null) {
+			this.source = new DecisionKnowledgeElementImpl();
+		}
 		this.source.setId(id);
 		this.source.setDocumentationLocation(documentationLocation);
 	}
@@ -152,6 +154,9 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 		if (this.target == null) {
 			this.target = KnowledgePersistenceManager.getOrCreate("").getDecisionKnowledgeElement(id,
 					documentationLocation);
+		}
+		if (this.target == null) {
+			this.target = new DecisionKnowledgeElementImpl();
 		}
 		this.target.setId(id);
 		this.target.setDocumentationLocation(documentationLocation);
@@ -253,10 +258,6 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	public void setDocumentationLocationOfSourceElement(String documentationLocationIdentifier) {
 		DocumentationLocation documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
-		if (this.source.getDocumentationLocation() != documentationLocation) {
-			this.source = KnowledgePersistenceManager.getOrCreate("").getDecisionKnowledgeElement(this.source.getId(),
-					documentationLocation);
-		}
 		this.getSource().setDocumentationLocation(documentationLocation);
 	}
 
@@ -265,10 +266,6 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	public void setDocumentationLocationOfDestinationElement(String documentationLocationIdentifier) {
 		DocumentationLocation documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
-		if (this.target.getDocumentationLocation() != documentationLocation) {
-			this.target = KnowledgePersistenceManager.getOrCreate("").getDecisionKnowledgeElement(this.target.getId(),
-					documentationLocation);
-		}
 		this.getTarget().setDocumentationLocation(documentationLocation);
 	}
 
@@ -308,20 +305,6 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	public boolean equals(LinkInDatabase linkInDatabase) {
 		return this.source.getId() == linkInDatabase.getSourceId()
 				&& this.target.getId() == linkInDatabase.getDestinationId();
-	}
-
-	@Override
-	public void setDefaultDocumentationLocation(String projectKey) {
-		AbstractPersistenceManagerForSingleLocation defaultPersistenceManager = KnowledgePersistenceManager
-				.getOrCreate(projectKey).getDefaultManagerForSingleLocation();
-		String defaultDocumentationLocation = DocumentationLocation
-				.getIdentifier(defaultPersistenceManager.getDocumentationLocation());
-		if (this.getTarget().getDocumentationLocation() == DocumentationLocation.UNKNOWN) {
-			this.setDocumentationLocationOfDestinationElement(defaultDocumentationLocation);
-		}
-		if (this.getSource().getDocumentationLocation() == DocumentationLocation.UNKNOWN) {
-			this.setDocumentationLocationOfSourceElement(defaultDocumentationLocation);
-		}
 	}
 
 	@Override

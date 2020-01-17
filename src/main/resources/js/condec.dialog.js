@@ -23,6 +23,8 @@
 	ConDecDialog.prototype.showCreateDialog = function showCreateDialog(idOfParentElement,
 																		documentationLocationOfParentElement) {
 		console.log("conDecDialog showCreateDialog");
+		console.log(idOfParentElement);
+		console.log(documentationLocationOfParentElement);
 
 		// HTML elements
 		var createDialog = document.getElementById("create-dialog");
@@ -45,16 +47,10 @@
 			var description = inputDescriptionField.value;
 			var type = selectTypeField.value;
 			var documentationLocation = selectLocationField.value;
-			if (idOfParentElement === "") {
-				conDecAPI.createUnlinkedDecisionKnowledgeElement(summary, description, type, documentationLocation, function(id) {
+			conDecAPI.createDecisionKnowledgeElement(summary, description, type, documentationLocation,
+				idOfParentElement, documentationLocationOfParentElement, function (id) {
 					conDecObservable.notify();
-				})
-			} else {
-				conDecAPI.createDecisionKnowledgeElement(summary, description, type, documentationLocation,
-					idOfParentElement, documentationLocationOfParentElement, function (id) {
-						conDecObservable.notify();
-					});
-			}
+			});
 			AJS.dialog2(createDialog).hide();
 		};
 
@@ -91,7 +87,8 @@
 		AJS.dialog2(deleteDialog).show();
 	};
 
-	ConDecDialog.prototype.showDeleteDecisionLinkDialog = function showDeleteDecisionLinkDialog(idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild) {
+	ConDecDialog.prototype.showDeleteLinkDialog = function showDeleteLinkDialog(id, documentationLocation, 
+			idOfParent, documentationLocationOfParent) {
 		console.log("conDecDialog showDeleteLinkDialog");
 
 		// HTML elements
@@ -102,34 +99,12 @@
 
 		// Set onclick listener on buttons
 		submitButton.onclick = function () {
-			conDecAPI.deleteLink(idOfParent, idOfChild, documentationLocationOfParent,
-				documentationLocationOfChild, function () {
-					conDecObservable.notify();
-				});
-			AJS.dialog2(deleteLinkDialog).hide();
-		};
-
-		cancelButton.onclick = function () {
-			AJS.dialog2(deleteLinkDialog).hide();
-		};
-
-		// Show dialog
-		AJS.dialog2(deleteLinkDialog).show();
-	};
-
-	ConDecDialog.prototype.showDeleteLinkDialog = function showDeleteLinkDialog(id, documentationLocation) {
-		console.log("conDecDialog showDeleteLinkDialog");
-
-		// HTML elements
-		var deleteLinkDialog = document.getElementById("delete-link-dialog");
-		var content = document.getElementById("delete-link-dialog-content");
-		var submitButton = document.getElementById("delete-link-dialog-submit-button");
-		var cancelButton = document.getElementById("delete-link-dialog-cancel-button");
-
-		// Set onclick listener on buttons
-		submitButton.onclick = function () {
-			var parentElement = conDecTreant.findParentElement(id);
-			conDecAPI.deleteLink(parentElement["id"], id, parentElement["documentationLocation"],
+			if (idOfParent === null || idOfParent === undefined || idOfParent === 0) {
+				var parentElement = conDecTreant.findParentElement(id);
+				idOfParent = parentElement["id"];
+				documentationLocationOfParent = parentElement["documentationLocation"];
+			}
+			conDecAPI.deleteLink(idOfParent, id, documentationLocationOfParent,
 				documentationLocation, function () {
 					conDecObservable.notify();
 				});
@@ -218,7 +193,7 @@
 		radioCon.checked = false;
 
 		selectElementField.onchange = function () {
-			conDecAPI.getDecisionKnowledgeElement(this.value, "i", function (decisionKnowledgeElement) {
+			conDecAPI.getDecisionKnowledgeElement(this.value, documentationLocation, function (decisionKnowledgeElement) {
 				if (decisionKnowledgeElement && decisionKnowledgeElement.type === "Argument") {
 					argumentFieldGroup.style.display = "inherit";
 					radioPro.checked = true;
@@ -228,9 +203,11 @@
 
 		// Set onclick listener on buttons
 		submitButton.onclick = function () {
-			var childId = selectElementField.value;
-			var knowledgeTypeOfChild = $('input[name=form-radio-argument]:checked').val();
-			conDecAPI.createLink(knowledgeTypeOfChild, id, childId, "i", "i", null,function () {
+			var childId = selectElementField.value.split(":")[0];
+			var documentationLocationOfChild = selectElementField.value.split(":")[1];
+			var knowledgeTypeOfChild = $("input[name=form-radio-argument]:checked").val();
+			conDecAPI.createLink(knowledgeTypeOfChild, id, childId, documentationLocation, documentationLocationOfChild, 
+					null, function () {
 				conDecObservable.notify();
 			});
 			AJS.dialog2(linkDialog).hide();
@@ -253,7 +230,8 @@
 			var insertString = "";
 			var isSelected = "selected";
 			for (var index = 0; index < unlinkedElements.length; index++) {
-				insertString += "<option " + isSelected + " value='" + unlinkedElements[index].id + "'>"
+				insertString += "<option " + isSelected 
+					+ " value='" + unlinkedElements[index].id + ":" + unlinkedElements[index].documentationLocation + "'>"
 					+ unlinkedElements[index].type + ' / ' + unlinkedElements[index].summary + "</option>";
 				isSelected = "";
 			}
@@ -333,7 +311,6 @@
 			selectField.insertAdjacentHTML("beforeend", "<option " + isSelected + " value='"
 				+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
 		}
-		AJS.$(selectField).auiSelect2();
 	}
 
 	function isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index) {
@@ -346,10 +323,14 @@
 			return;
 		}
 		selectField.innerHTML = "";
-		selectField.insertAdjacentHTML("beforeend", "<option selected value = 'i'>JIRA Issue</option>"
-			+ "<option value = 's'>JIRA Issue Comment</option></select></div>");
-
-		AJS.$(selectField).auiSelect2();
+		conDecAPI.isIssueStrategy(function(isEnabled) {
+			if (documentationLocationOfParentElement !== null) {
+				selectField.insertAdjacentHTML("beforeend", "<option selected value = 's'>Jira issue comment</option>");
+			}			
+			if (isEnabled) {
+				selectField.insertAdjacentHTML("beforeend", "<option value = 'i'>Jira issue</option>");
+			} 
+		});
 	}
 
 	ConDecDialog.prototype.showChangeTypeDialog = function showChangeTypeDialog(id, documentationLocation) {

@@ -1,15 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import java.util.List;
-import java.util.Set;
+
+import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 
 /**
  * REST resource for plug-in configuration
@@ -24,6 +25,8 @@ public interface ConfigRest {
 
 	Response getReleaseNoteMapping(String projectKey);
 
+	Response isActivated(String projectKey);
+
 	Response isIssueStrategy(String projectKey);
 
 	Response isKnowledgeTypeEnabled(String projectKey, String knowledgeType);
@@ -34,41 +37,37 @@ public interface ConfigRest {
 
 	Response setIssueStrategy(HttpServletRequest request, String projectKey, String isIssueStrategyString);
 
-	Response setKnowledgeExtractedFromIssues(HttpServletRequest request, String projectKey,
-											 String isKnowledgeExtractedFromIssues);
-
 	Response setKnowledgeTypeEnabled(@Context HttpServletRequest request, String projectKey,
-									 String isKnowledgeTypeEnabledString, String knowledgeType);
+			String isKnowledgeTypeEnabledString, String knowledgeType);
 
 	Response setReleaseNoteMapping(HttpServletRequest request, String projectKey, ReleaseNoteCategory category,
-								   List<String> selectedIssueNames);
+			List<String> selectedIssueNames);
 
 	Response setWebhookData(HttpServletRequest request, String projectKey, String webhookUrl, String webhookSecret);
 
 	Response setWebhookEnabled(HttpServletRequest request, String projectKey, String isActivatedString);
 
 	Response setWebhookType(HttpServletRequest request, String projectKey, String webhookType,
-							boolean isWebhookTypeEnabled);
+			boolean isWebhookTypeEnabled);
 
 	/* **************************************/
 	/*										*/
-	/*	Configuration for Git integration	*/
+	/* Configuration for Git integration */
 	/*										*/
 	/* **************************************/
 
 	Response setGitUri(HttpServletRequest request, String projectKey, String gitUri);
 
 	Response setKnowledgeExtractedFromGit(HttpServletRequest request, String projectKey,
-										  String isKnowledgeExtractedFromGit);
+			String isKnowledgeExtractedFromGit);
 
 	Response setPostSquashedCommits(HttpServletRequest request, String projectKey, String checked);
 
-	Response setPostFeatureBranchCommits(HttpServletRequest request,
-										 String projectKey, String checked);
+	Response setPostFeatureBranchCommits(HttpServletRequest request, String projectKey, String checked);
 
 	/* **************************************/
 	/*										*/
-	/*		Configuration for Classifier	*/
+	/* Configuration for Classifier */
 	/*										*/
 	/* **************************************/
 	Response evaluateModel(HttpServletRequest request, String projectKey);

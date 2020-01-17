@@ -14,13 +14,10 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
  * Abstract class to create, edit, delete and retrieve decision knowledge
- * elements and their links. Concrete persistence strategies for first class
- * elements are either the JIRA issue strategy or the active object strategy.
- * For example, other methods are to persist knowledge in JIRA issue comments,
- * the description, and commit messages.
+ * elements and their links. Decision knowledge can be persisted in entire Jira
+ * issues, Jira issue comments, their description, and commit messages.
  *
  * @see JiraIssuePersistenceManager
- * @see ActiveObjectPersistenceManager
  * @see JiraIssueTextPersistenceManager
  */
 public abstract class AbstractPersistenceManagerForSingleLocation {
@@ -34,7 +31,7 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @param element
 	 *            decision knowledge element with id in database.
 	 * @param user
-	 *            authenticated JIRA application user
+	 *            authenticated Jira application user
 	 * @return true if deleting was successful.
 	 * @see DecisionKnowledgeElement
 	 * @see ApplicationUser
@@ -49,7 +46,7 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @param id
 	 *            id of the decision knowledge element in database.
 	 * @param user
-	 *            authenticated JIRA application user
+	 *            authenticated Jira application user
 	 * @return true if deleting was successful.
 	 * @see DecisionKnowledgeElement
 	 * @see ApplicationUser
@@ -241,43 +238,6 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	public abstract List<Link> getOutwardLinks(DecisionKnowledgeElement element);
 
 	/**
-	 * Get all unlinked elements of the decision knowledge element for a project.
-	 *
-	 * @param element
-	 *            decision knowledge element with id in database.
-	 * @return list of linked elements.
-	 * @see DecisionKnowledgeElement
-	 * @see DecisionKnowledgeProject
-	 */
-	public List<DecisionKnowledgeElement> getUnlinkedElements(DecisionKnowledgeElement element) {
-		List<DecisionKnowledgeElement> elements = this.getDecisionKnowledgeElements();
-		if (element == null) {
-			return elements;
-		}
-		elements.remove(element);
-
-		List<DecisionKnowledgeElement> linkedElements = this.getAdjacentElements(element);
-		elements.removeAll(linkedElements);
-
-		return elements;
-	}
-
-	/**
-	 * Get all unlinked elements of the decision knowledge element for a project.
-	 *
-	 * @param id
-	 *            id of a decision knowledge element in database. The id is
-	 *            different to the key.
-	 * @return list of linked elements.
-	 * @see DecisionKnowledgeElement
-	 * @see DecisionKnowledgeProject
-	 */
-	public List<DecisionKnowledgeElement> getUnlinkedElements(long id) {
-		DecisionKnowledgeElement element = this.getDecisionKnowledgeElement(id);
-		return this.getUnlinkedElements(element);
-	}
-
-	/**
 	 * Insert a new decision knowledge element into database.
 	 *
 	 * @param element
@@ -286,9 +246,9 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @param parentElement
 	 *            (optional) decision knowledge element that is the parent of this
 	 *            element. The parent element is necessary for decision knowledge
-	 *            stored in JIRA issue description and comments.
+	 *            stored in Jira issue description and comments.
 	 * @param user
-	 *            authenticated JIRA application user
+	 *            authenticated Jira application user
 	 * @return decision knowledge element that is now filled with an internal
 	 *         database id and key. Returns null if insertion failed.
 	 * @see DecisionKnowledgeElement
@@ -306,7 +266,7 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 *            decision knowledge element with attributes such as a summary, the
 	 *            knowledge type, and an optional description.
 	 * @param user
-	 *            authenticated JIRA application user
+	 *            authenticated Jira application user
 	 * @return decision knowledge element that is now filled with an internal
 	 *         database id and key. Returns null if insertion failed.
 	 * @see DecisionKnowledgeElement
@@ -323,7 +283,7 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @param element
 	 *            decision knowledge element with id in database.
 	 * @param user
-	 *            authenticated JIRA application user
+	 *            authenticated Jira application user
 	 * @return true if updating was successful.
 	 * @see DecisionKnowledgeElement
 	 * @see ApplicationUser

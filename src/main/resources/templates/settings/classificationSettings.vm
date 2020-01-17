@@ -1,20 +1,11 @@
-<h2>Decision Knowledge Extraction from JIRA Issue Description and Comments</h2>
-
-<div class="field-group">
-    <label for="isKnowledgeExtractedFromIssues-toggle">Extract from JIRA Issue Text?</label>
-    <aui-toggle id="isKnowledgeExtractedFromIssues-toggle"
-                value="$projectKey" label="Extract from	Issue Comments?"></aui-toggle>
-    <div class="description">Enables or disables whether decision
-        knowledge is extracted from JIRA issue description and comments for this project.
-    </div>
-</div>
+<h2>Text Classification in Jira Issue Description and Comments</h2>
 
 <div class="field-group">
     <label for="isClassifierUsed-toggle">Use Classifier to identify Decision Knowledge?</label>
     <aui-toggle id="isClassifierUsed-toggle"
                 value="$projectKey" label="Use Classifier to Identify Decision Knowledge?"></aui-toggle>
     <div class="description">Enables or disables whether text is automatically classified
-        as decision knowledge within JIRA issue description and comments for this project.
+        as decision knowledge within Jira issue description and comments for this project.
     </div>
 </div>
 
@@ -69,16 +60,6 @@
 </div>
 
 <div class="field-group">
-    <label for="cleanDatabases">Clean Databases?</label>
-    <input type="button" class="aui-button" id="cleanDatabases"
-           value="Clean Databases"/>
-    <div class="description">Removes non-existing elements and invalid links (with non-existing source or target
-        elements)
-        from the databases and checks if all existing elements are linked.
-    </div>
-</div>
-
-<div class="field-group">
     <label for="classifyAllIssuesInProject">Suggest Tags for Whole Project?</label>
     <input type="button" class="aui-button" id="classifyAllIssuesInProject" value="Classify all Comments"/>
     <div class="description">Classifies decision knowledge for all issue comments for this project.</div>
@@ -103,7 +84,7 @@
     <input type="button" class="aui-button" id="saveArffFile-button" value="Create ARFF File"/>
     <div class="description">Creates an Attribute-Relation File Format (ARFF) file of <b>user-validated</b> text data
         for the current project that can be used to train the classifier.
-        This file is saved in the JIRA home directory in data/condec-plugin/project-key. You can download it from there.
+        This file is saved in the Jira home directory in data/condec-plugin/project-key. You can download it from there.
         If you want to train the classifier with this file you need to reload this page to access the file.
     </div>
 </div>
@@ -113,14 +94,14 @@
     <input type="button" class="aui-button" id="saveAllArffFile-button" value="Create complete ARFF File"/>
     <div class="description">Creates an Attribute-Relation File Format (ARFF) file for the current project that can be
         used to train the classifier.
-        This file is saved in the JIRA home directory in data/condec-plugin/project-key. You can download it from there.
+        This file is saved in the Jira home directory in data/condec-plugin/project-key. You can download it from there.
         If you want to train the classifier with this file you need to reload this page to access the file.
     </div>
 </div>
 
 <div class="field-group">
     <label for="trainClassifier-button">Train the Classifier</label>
-    <select id="select-arff-file-train" name="select-arff-file-train">
+    <select id="select-arff-file-train" name="select-arff-file-train" class="select medium-field">
         #foreach ($arffFile in $arffFiles)
             <option value="$arffFile"
                 #if ($arffFile.toString().contains($selectedArffFile))
@@ -179,14 +160,11 @@
 
     //AJS.progressBars.update("#progress-bar", 0.0);
     const classifyAllIssuesInProjectButton = document.getElementById("classifyAllIssuesInProject");
+
     classifyAllIssuesInProjectButton.addEventListener("click", function () {
-
-        if (confirm("Are you sure you want to classify all issue comments? This might take some time if the project is big.")) {
-            //AJS.progressBars.setIndeterminate("#progress-bar");
-            var animatedElement = document.getElementById("classify-whole-project-progress-bar");
-
-            conDecAPI.classifyWholeProject("$projectKey", animatedElement);
-            //AJS.progressBars.update("#progress-bar", isSucceeded);
+        if (confirm("Are you sure you want to classify all Jira issue comments and descriptions? This might take a long time if the project is big.")) {
+        	var animatedElement = document.getElementById("classify-whole-project-progress-bar");
+            conDecAPI.classifyWholeProject("$projectKey", animatedElement);         
         }
     });
 
@@ -196,14 +174,7 @@
             var trainDataSelect = document.getElementById("select-arff-file-train");
             var animatedElement = document.getElementById("train-classifier-progress");
             conDecAPI.trainClassifier("$projectKey", trainDataSelect.value, animatedElement);
-
         }
-    });
-
-    issueCommentsToggle.addEventListener("change", function (error) {
-        this.busy = true;
-        conDecAPI.setKnowledgeExtractedFromIssues(this.checked, this.value);
-        this.busy = false;
     });
 
     isClassifierUsedToggle.addEventListener("change", function (error) {
