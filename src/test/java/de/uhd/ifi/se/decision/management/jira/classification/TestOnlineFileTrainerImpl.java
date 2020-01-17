@@ -9,6 +9,7 @@ import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTex
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.*;
@@ -76,6 +77,7 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
         trainer.setTrainingFile(file);
     }
 
+    @Ignore
     @Test
     @NonTransactional
     public void testCopyDefaultTrainingDataToFile() {
