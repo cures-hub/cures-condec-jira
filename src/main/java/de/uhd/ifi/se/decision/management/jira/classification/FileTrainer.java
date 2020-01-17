@@ -7,15 +7,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URL;
-import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.util.List;
 
 public interface FileTrainer {
 
 	Logger LOGGER = LoggerFactory.getLogger(FileTrainer.class);
-
-	File DEFAULT_TRAINING_DATA = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff");
 
 	/**
 	 * Trains the Classifier with the Data from the Database that was set and
@@ -78,7 +75,7 @@ public interface FileTrainer {
 	 * @return true if training succeeded.
 	 */
 	public static boolean trainDefaultClassifier() {
-		return trainClassifier(DEFAULT_TRAINING_DATA);
+		return trainClassifier(new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff"));
 	}
 
 	/**
@@ -103,7 +100,7 @@ public interface FileTrainer {
 	 * @return updated file with default training content.
 	 */
 	public static File copyDefaultTrainingDataToFile() {
-		File file = FileTrainer.DEFAULT_TRAINING_DATA;
+		File file = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff");
 		File classifierDir = new File(DecisionKnowledgeClassifier.DEFAULT_DIR);
 		if (!classifierDir.exists()) {
 			//creates directory if it does not exist
@@ -114,7 +111,6 @@ public interface FileTrainer {
 		try {
 
 			InputStream newFileInputStream = new URL(pathToTrainingFile).openStream();
-
 
 
 			if (file.exists()) {
@@ -134,6 +130,7 @@ public interface FileTrainer {
 			while ((read = newFileInputStream.read(bytes)) != -1) {
 				outputStream.write(bytes, 0, read);
 			}
+			outputStream.close();
 
 		} catch (IOException e) {
 			LOGGER.error("Failed to copy default training data to file. Message: " + e.getMessage());
