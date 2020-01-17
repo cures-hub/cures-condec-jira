@@ -854,8 +854,8 @@
 	ConDecAPI.prototype.evaluateModel = function evaluateModel(projectKey, animatedElement, callback) {
 		//console.log("ConDecAPI.prototype.evaluateModel");
 		animatedElement.classList.add("aui-progress-indicator-value");
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/evaluateModel.json?projectKey=" + projectKey, null,
-
+		postJSON(this.restPrefix + "/config/evaluateModel.json?projectKey=" + projectKey,
+			null,
 			function (error, response) {
 				animatedElement.classList.remove("aui-progress-indicator-value");
 				if (error === null) {
@@ -1048,7 +1048,7 @@
 			if (status === 200) {
 				callback(null, xhr.response);
 			} else {
-				showFlag("error", xhr.response.error, status);
+				showFlag("error", xhr.response.error || "Unknown Error!", status);
 				callback(status, xhr.response);
 			}
 		};
