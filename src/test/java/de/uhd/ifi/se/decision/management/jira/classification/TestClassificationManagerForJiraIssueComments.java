@@ -99,7 +99,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
     @NonTransactional
     public void testBinaryClassification() {
         sentences = classificationManager.classifySentencesBinary(sentences);
-        assertNotNull(sentences.get(0).isRelevant());
+        assertTrue(sentences.get(0).isRelevant());
         assertFalse(sentences.get(0).isValidated());
     }
 

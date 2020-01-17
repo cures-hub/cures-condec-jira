@@ -7,6 +7,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.*;
@@ -130,6 +131,7 @@ public class TestOnlineTrainer extends TestSetUp {
         // System.out.println(types);
     }
 
+    @Ignore
     @Test
     @NonTransactional
     public void testCopyDefaultTrainingDataToFile() {

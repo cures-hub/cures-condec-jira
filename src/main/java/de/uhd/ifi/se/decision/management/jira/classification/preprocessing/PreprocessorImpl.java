@@ -34,33 +34,37 @@ public class PreprocessorImpl implements Preprocessor {
     private Integer nGramN;
 
     public PreprocessorImpl() {
-        File lemmatizerFile = new File(PreprocessorImpl.DEFAULT_DIR + "lemmatizer.dict");
-        File tokenizerFile = new File(PreprocessorImpl.DEFAULT_DIR + "token.bin");
-        File posFile = new File(PreprocessorImpl.DEFAULT_DIR + "pos.bin");
         this.nGramN = 3;
-
-        try {
-            InputStream lemmatizerModelIn = new FileInputStream(lemmatizerFile);
-            this.lemmatizer = new DictionaryLemmatizer(lemmatizerModelIn);
-            //lemmatizerModel = new LemmatizerModel(modelIn);
-
-            InputStream tokenizerModelIn = new FileInputStream(tokenizerFile);
-            TokenizerModel tokenizerModel = new TokenizerModel(tokenizerModelIn);
-            this.tokenizer = new TokenizerME(tokenizerModel);
-
-            InputStream posModelIn = new FileInputStream(posFile);
-            POSModel posModel = new POSModel(posModelIn);
-            this.tagger = new POSTaggerME(posModel);
-
-            //modelIn = new FileInputStream(LANGUAGE_MODEL_PATH + "person.bin");
-            //TokenNameFinderModel model = new TokenNameFinderModel(modelIn);
-            //this.nameFinder = new NameFinderME(model);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         this.glove = PreTrainedGloveSingleton.getInstance();
 
+        initFiles();
+
     }
+
+    private void initFiles(){
+		File lemmatizerFile = new File(PreprocessorImpl.DEFAULT_DIR + "lemmatizer.dict");
+		File tokenizerFile = new File(PreprocessorImpl.DEFAULT_DIR + "token.bin");
+		File posFile = new File(PreprocessorImpl.DEFAULT_DIR + "pos.bin");
+		try {
+			InputStream lemmatizerModelIn = new FileInputStream(lemmatizerFile);
+			this.lemmatizer = new DictionaryLemmatizer(lemmatizerModelIn);
+			//lemmatizerModel = new LemmatizerModel(modelIn);
+
+			InputStream tokenizerModelIn = new FileInputStream(tokenizerFile);
+			TokenizerModel tokenizerModel = new TokenizerModel(tokenizerModelIn);
+			this.tokenizer = new TokenizerME(tokenizerModel);
+
+			InputStream posModelIn = new FileInputStream(posFile);
+			POSModel posModel = new POSModel(posModelIn);
+			this.tagger = new POSTaggerME(posModel);
+
+			//modelIn = new FileInputStream(LANGUAGE_MODEL_PATH + "person.bin");
+			//TokenNameFinderModel model = new TokenNameFinderModel(modelIn);
+			//this.nameFinder = new NameFinderME(model);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 
     @Override
@@ -128,16 +132,19 @@ public class PreprocessorImpl implements Preprocessor {
 
     @Override
     public synchronized List preprocess(String sentence) {
-        String cleaned_sentence = this.replaceUsingRegEx(sentence, Preprocessor.NUMBER_PATTERN, Preprocessor.NUMBER_TOKEN.toLowerCase());
-        cleaned_sentence = this.replaceUsingRegEx(cleaned_sentence, Preprocessor.URL_PATTERN, Preprocessor.URL_TOKEN.toLowerCase());
-        cleaned_sentence = this.replaceUsingRegEx(cleaned_sentence, Preprocessor.WHITESPACE_CHARACTERS_PATTERN, Preprocessor.WHITESPACE_CHARACTERS_TOKEN.toLowerCase());
-        //replace long words and possible methods!
-        cleaned_sentence = cleaned_sentence.toLowerCase();
-
-        List<String> tokens = this.tokenize(cleaned_sentence);
 
 
-        this.posTags = this.calculatePosTags(tokens);
+        try {
+
+			String cleaned_sentence = this.replaceUsingRegEx(sentence, Preprocessor.NUMBER_PATTERN, Preprocessor.NUMBER_TOKEN.toLowerCase());
+			cleaned_sentence = this.replaceUsingRegEx(cleaned_sentence, Preprocessor.URL_PATTERN, Preprocessor.URL_TOKEN.toLowerCase());
+			cleaned_sentence = this.replaceUsingRegEx(cleaned_sentence, Preprocessor.WHITESPACE_CHARACTERS_PATTERN, Preprocessor.WHITESPACE_CHARACTERS_TOKEN.toLowerCase());
+			//replace long words and possible methods!
+			cleaned_sentence = cleaned_sentence.toLowerCase();
+			List<String> tokens = this.tokenize(cleaned_sentence);
+
+
+			this.posTags = this.calculatePosTags(tokens);
 
         /* TODO: if time is sufficient
         Span[] spans = this.nameFinder.find((String[]) tokens.toArray());
@@ -148,11 +155,17 @@ public class PreprocessorImpl implements Preprocessor {
         this.nameFinder.clearAdaptiveData();
          */
 
-        tokens = this.lemmatize(tokens);
+			tokens = this.lemmatize(tokens);
 
-        List<List<Double>> numberTokens = this.convertToNumbers(tokens);
+			List<List<Double>> numberTokens = this.convertToNumbers(tokens);
 
-        return this.generateNGram(numberTokens, this.nGramN);
+			return this.generateNGram(numberTokens, this.nGramN);
+		}catch (Exception e){
+			System.out.println(e.getMessage());
+			initFiles();
+			throw e;
+		}
+
     }
 
     public void setPosTags(String[] posTags) {

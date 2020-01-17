@@ -12,11 +12,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import smile.validation.Accuracy;
-import smile.validation.FMeasure;
 import smile.validation.ClassificationMeasure;
-import smile.validation.Precision;
-import smile.validation.Recall;
+import smile.validation.FMeasure;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -436,14 +433,14 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		List<ClassificationMeasure> defaultMeasurements = new ArrayList<>();
 		defaultMeasurements.add(new FMeasure());
 		// TODO how to apply to more than binary classification
-		defaultMeasurements.add(new Precision());
-		defaultMeasurements.add(new Accuracy());
-		defaultMeasurements.add(new Recall());
+		//defaultMeasurements.add(new Precision());
+		//defaultMeasurements.add(new Accuracy());
+		//defaultMeasurements.add(new Recall());
 
 		// load validated Jira Issue texts
 		//JiraIssueTextPersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey)
 		//	.getJiraIssueTextManager();
-		List<DecisionKnowledgeElement> partsOfText =		KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
+		List<DecisionKnowledgeElement> partsOfText = KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
 //		manager.getUserValidatedPartsOfText(projectKey);
 //		KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
 		return evaluateClassifier(defaultMeasurements, partsOfText);
@@ -486,7 +483,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 			.toArray(new Integer[relevantSentences.size()]);
 		long end = System.currentTimeMillis();
 
-		System.out.println("Time for prediction on " +  sentences.size() + " sentences took " + (end-start) + " ms.");
+		System.out.println("Time for prediction on " + sentences.size() + " sentences took " + (end - start) + " ms.");
 
 		// calculate measurements for each ClassificationMeasure in measurements
 		for (ClassificationMeasure measurement : measurements) {
