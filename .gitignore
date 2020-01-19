@@ -18,3 +18,5 @@ config.properties
 
 
 /defaultTrainingData.arff
+
+src/test/resources/classifier/defaultTrainingData.arff
