@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jgrapht.Graphs;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,11 +32,11 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<KnowledgeElem
 	}
 
 	private void createGraph() {
-		addNodes();
+		addElements();
 		addEdges();
 	}
 
-	private void addNodes() {
+	private void addElements() {
 		List<KnowledgeElement> elements = persistenceManager.getDecisionKnowledgeElements();
 		for (KnowledgeElement element : elements) {
 			addVertex(element);
@@ -83,7 +84,7 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<KnowledgeElem
 	}
 
 	@Override
-	public boolean updateNode(KnowledgeElement node) {
+	public boolean updateElement(KnowledgeElement node) {
 		KnowledgeElement oldElement = null;
 		for (KnowledgeElement currentElement : vertexSet()) {
 			if (node.equals(currentElement)) {
@@ -138,20 +139,15 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<KnowledgeElem
 
 	@Override
 	public List<KnowledgeElement> getUnlinkedElements(KnowledgeElement element) {
-		List<KnowledgeElement> elements = new ArrayList<>();
+		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
 		elements.addAll(this.vertexSet());
 		if (element == null) {
 			return elements;
 		}
 		elements.remove(element);
-		//
-		// List<DecisionKnowledgeElement> linkedElements = new
-		// ArrayList<DecisionKnowledgeElement>();
-		// activePersistenceManagersForSingleLocations
-		// .forEach(manager ->
-		// linkedElements.addAll(manager.getAdjacentElements(element)));
-		//
-		// elements.removeAll(linkedElements);
+
+		List<KnowledgeElement> linkedElements = Graphs.neighborListOf(this, element);
+		elements.removeAll(linkedElements);
 
 		return elements;
 	}

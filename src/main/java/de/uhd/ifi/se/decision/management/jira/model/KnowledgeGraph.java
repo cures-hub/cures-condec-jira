@@ -12,8 +12,8 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 
 /**
  * Interface to create a knowledge graph for the entire project or a sub-graph
- * from a given start node with a certain distance (set in the constructor). The
- * knowledge covers decision knowledge, JIRA issues such as requirements and
+ * from a given start element with a certain distance (set in the constructor).
+ * The knowledge covers decision knowledge, Jira issues such as requirements and
  * work items, commits, files (e.g., Java classes), and methods. Extends the
  * JGraphT graph interface. The knowledge graph can be disconnected.
  * 
@@ -105,11 +105,12 @@ public interface KnowledgeGraph extends Graph<KnowledgeElement, Link> {
 	boolean containsEdge(Link link);
 
 	/**
-	 * Updates a node. If it is not in the graph it will be added.
+	 * Updates a knowledge element. If the element is not in the graph it will be
+	 * added.
 	 * 
-	 * @param node
+	 * @param element
 	 */
-	boolean updateNode(KnowledgeElement node);
+	boolean updateElement(KnowledgeElement element);
 
 	/**
 	 * Returns all unlinked elements of the knowledge element for a project. Sorts
@@ -121,8 +122,8 @@ public interface KnowledgeGraph extends Graph<KnowledgeElement, Link> {
 	 * @issue How can the sorting be implemented?
 	 *
 	 * @param element
-	 *            {@link KnowledgeElement} with id in database. The id is
-	 *            different to the key.
+	 *            {@link KnowledgeElement} with id in database. The id is different
+	 *            to the key.
 	 * @return set of unlinked elements, sorted by the likelihood that they should
 	 *         be linked.
 	 */

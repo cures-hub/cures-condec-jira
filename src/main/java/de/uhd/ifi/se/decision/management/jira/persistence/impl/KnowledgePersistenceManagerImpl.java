@@ -238,7 +238,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(element, user);
 		if (isUpdated) {
 			KnowledgeElement updatedElement = persistenceManager.getDecisionKnowledgeElement(element.getId());
-			KnowledgeGraph.getOrCreate(projectKey).updateNode(updatedElement);
+			KnowledgeGraph.getOrCreate(projectKey).updateElement(updatedElement);
 		}
 		return isUpdated;
 	}

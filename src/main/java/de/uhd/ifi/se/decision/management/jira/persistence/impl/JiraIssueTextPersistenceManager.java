@@ -617,7 +617,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			if (sentence.isRelevant()) {
 				AutomaticLinkCreator.createSmartLinkForElement(sentence);
 			}
-			KnowledgeGraph.getOrCreate(projectKey).updateNode(sentence);
+			KnowledgeGraph.getOrCreate(projectKey).updateElement(sentence);
 		}
 		return parts;
 	}

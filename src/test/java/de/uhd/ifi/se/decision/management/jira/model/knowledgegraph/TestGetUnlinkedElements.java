@@ -36,6 +36,6 @@ public class TestGetUnlinkedElements extends TestSetUp {
 	public void testElementValid() {
 		Issue issue = JiraIssues.getTestJiraIssues().get(0);
 		KnowledgeElement element = new KnowledgeElementImpl(issue);
-		assertEquals(7, graph.getUnlinkedElements(element).size());
+		assertEquals(5, graph.getUnlinkedElements(element).size());
 	}
 }
