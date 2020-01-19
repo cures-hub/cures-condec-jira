@@ -112,17 +112,23 @@ public interface FileTrainer {
 
 			InputStream newFileInputStream = new URL(pathToTrainingFile).openStream();
 
-
+			//If a training file already exists, we check if its content is equal to the current training file.
 			if (file.exists()) {
 				// get file hashes and compare them.
 				String oldFileHash = getMD5Checksum(new FileInputStream(file));
 				String newFileHash = getMD5Checksum(newFileInputStream);
 				if (oldFileHash.equals(newFileHash)) {
+					// files are equal
 					return file;
+				} else {
+					// different file content -> delete old file
+					file.delete();
 				}
 			}
 
 			file.createNewFile();
+
+
 			FileOutputStream outputStream = new FileOutputStream(file);
 			int read;
 			byte[] bytes = new byte[1024];
