@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AutomaticLinkCreator;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
@@ -15,7 +15,7 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGetPotentialParentElement extends TestSetUp {
 
-	public static DecisionKnowledgeElement element;
+	public static KnowledgeElement element;
 
 	@Before
 	public void setUp() {
@@ -33,7 +33,7 @@ public class TestGetPotentialParentElement extends TestSetUp {
 	@NonTransactional
 	public void testElementValid() {
 		element.setType(KnowledgeType.ARGUMENT);
-		DecisionKnowledgeElement parentElement = AutomaticLinkCreator.getPotentialParentElement(element);
+		KnowledgeElement parentElement = AutomaticLinkCreator.getPotentialParentElement(element);
 		assertEquals(1, parentElement.getId());
 	}
 }

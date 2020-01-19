@@ -33,11 +33,11 @@ import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
@@ -55,8 +55,8 @@ public class MetricCalculator {
 	private ApplicationUser user;
 	private List<Issue> jiraIssues;
 	private JiraIssueTextPersistenceManager persistenceManager;
-	private List<DecisionKnowledgeElement> decisionKnowledgeCodeElements;
-	private List<DecisionKnowledgeElement> decisionKnowledgeCommitElements;
+	private List<KnowledgeElement> decisionKnowledgeCodeElements;
+	private List<KnowledgeElement> decisionKnowledgeCommitElements;
 	private final String dataStringSeparator = " ";
 	private String issueTypeId;
 
@@ -67,7 +67,7 @@ public class MetricCalculator {
 		this.user = user;
 		this.persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueTextManager();
 		this.jiraIssues = getJiraIssuesForProject(projectId);
-		Map<String, List<DecisionKnowledgeElement>> elementMap = getDecisionKnowledgeElementsFromCode(projectKey);
+		Map<String, List<KnowledgeElement>> elementMap = getDecisionKnowledgeElementsFromCode(projectKey);
 		this.decisionKnowledgeCodeElements = elementMap.get("Code");
 		this.decisionKnowledgeCommitElements = elementMap.get("Commit");
 		this.issueTypeId = issueTypeId;
@@ -110,10 +110,10 @@ public class MetricCalculator {
 		return jiraIssues;
 	}
 
-	private Map<String, List<DecisionKnowledgeElement>> getDecisionKnowledgeElementsFromCode(String projectKey) {
+	private Map<String, List<KnowledgeElement>> getDecisionKnowledgeElementsFromCode(String projectKey) {
 		// Extracts Decision Knowledge from Code Comments AND Commits
 		GitDecXtract gitExtract = new GitDecXtract(projectKey);
-		Map<String, List<DecisionKnowledgeElement>> elementsMap = gitExtract.getElementsSplitByCodeAndCommit("develop");
+		Map<String, List<KnowledgeElement>> elementsMap = gitExtract.getElementsSplitByCodeAndCommit("develop");
 		return elementsMap;
 	}
 
@@ -156,24 +156,24 @@ public class MetricCalculator {
 			Map<Integer, List<Issue>> linkDistanceMap = getLinkDistanceIssueMap(linkDistance, jiraIssue);
 			for (int i = 0; i <= linkDistance; i++) {
 				for (Issue issue : linkDistanceMap.get(i)) {
-					List<DecisionKnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(issue.getId());
+					List<KnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(issue.getId());
 					if (issue.getIssueType().getName().equals(type.toString())) {
 						numberOfElements++;
 					}
-					for (DecisionKnowledgeElement element : elements) {
+					for (KnowledgeElement element : elements) {
 						if (element.getType().equals(type)) {
 							numberOfElements++;
 						}
 					}
 					if (i <= linkDistance - 2 && decisionKnowledgeCodeElements != null) {
-						for (DecisionKnowledgeElement element : decisionKnowledgeCodeElements) {
+						for (KnowledgeElement element : decisionKnowledgeCodeElements) {
 							if (element.getType().equals(type)) {
 								numberOfElements++;
 							}
 						}
 					}
 					if (i > 0 && i <= (linkDistance - 1) && decisionKnowledgeCommitElements != null) {
-						for (DecisionKnowledgeElement element : decisionKnowledgeCommitElements) {
+						for (KnowledgeElement element : decisionKnowledgeCommitElements) {
 							if (element.getType().equals(type)) {
 								numberOfElements++;
 							}
@@ -190,13 +190,13 @@ public class MetricCalculator {
 		Map<String, Integer> distributionOfKnowledgeTypes = new HashMap<String, Integer>();
 		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
 			int numberOfElements = persistenceManager.getDecisionKnowledgeElements(type).size();
-			for (DecisionKnowledgeElement element : (Optional.ofNullable(decisionKnowledgeCodeElements)
+			for (KnowledgeElement element : (Optional.ofNullable(decisionKnowledgeCodeElements)
 					.orElse(Collections.emptyList()))) {
 				if (element.getType().equals(type)) {
 					numberOfElements++;
 				}
 			}
-			for (DecisionKnowledgeElement element : (Optional.ofNullable(decisionKnowledgeCommitElements)
+			for (KnowledgeElement element : (Optional.ofNullable(decisionKnowledgeCommitElements)
 					.orElse(Collections.emptyList()))) {
 				if (element.getType().equals(type)) {
 					numberOfElements++;
@@ -261,9 +261,9 @@ public class MetricCalculator {
 		String[] data = new String[2];
 		Arrays.fill(data, "");
 
-		List<DecisionKnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(linkFrom);
+		List<KnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(linkFrom);
 
-		for (DecisionKnowledgeElement issue : listOfIssues) {
+		for (KnowledgeElement issue : listOfIssues) {
 			List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
 					DocumentationLocation.JIRAISSUETEXT);
 			boolean hastOtherElementLinked = false;
@@ -314,10 +314,10 @@ public class MetricCalculator {
 				.getJiraIssueTextManager();
 		for (Issue jiraIssue : jiraIssues) {
 			List<Comment> comments = ComponentAccessor.getCommentManager().getComments(jiraIssue);
-			List<DecisionKnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(jiraIssue.getId());
+			List<KnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(jiraIssue.getId());
 			for (Comment comment : comments) {
 				boolean relevant = false;
-				for (DecisionKnowledgeElement currentElement : elements) {
+				for (KnowledgeElement currentElement : elements) {
 					if (comment.getBody().contains(currentElement.getDescription())) {
 						relevant = true;
 						isRelevant++;
@@ -358,7 +358,7 @@ public class MetricCalculator {
 			}
 			for (Link link : GenericLinkManager.getLinksForElement(issue.getId(), DocumentationLocation.JIRAISSUE)) {
 				if (link.isValid()) {
-					DecisionKnowledgeElement dke = link.getOppositeElement(new DecisionKnowledgeElementImpl(issue));
+					KnowledgeElement dke = link.getOppositeElement(new KnowledgeElementImpl(issue));
 					if (dke.getType().equals(knowledgeType)) {
 						linkExisting = true;
 					}

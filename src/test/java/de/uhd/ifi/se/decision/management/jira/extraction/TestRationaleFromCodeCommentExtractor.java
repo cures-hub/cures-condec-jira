@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +15,7 @@ public class TestRationaleFromCodeCommentExtractor {
 	private CodeComment codeComment;
 	private int commitBeginLine = 10;
 	private int commitBeginColumn = 20;
-	private List<DecisionKnowledgeElement> elementsFound;
+	private List<KnowledgeElement> elementsFound;
 	private String expectedRationaleText;
 
 	@Before
@@ -33,7 +33,7 @@ public class TestRationaleFromCodeCommentExtractor {
 	public void emptyComment() {
 		codeComment.commentContent = "";
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
-		assertEquals(new ArrayList<DecisionKnowledgeElement>(), rationaleFromCodeCommentExtractor.getElements());
+		assertEquals(new ArrayList<KnowledgeElement>(), rationaleFromCodeCommentExtractor.getElements());
 	}
 
 	@Test
@@ -41,7 +41,7 @@ public class TestRationaleFromCodeCommentExtractor {
 		codeComment.commentContent = "Text without rationale";
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
-		assertEquals(new ArrayList<DecisionKnowledgeElement>(), elementsFound);
+		assertEquals(new ArrayList<KnowledgeElement>(), elementsFound);
 	}
 
 	@Test

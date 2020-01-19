@@ -16,12 +16,12 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -30,7 +30,7 @@ public class TestVisGraph extends TestSetUp {
 	private VisGraph visGraph;
 	private HashSet<VisNode> nodes;
 	private HashSet<VisEdge> edges;
-	private DecisionKnowledgeElement element;
+	private KnowledgeElement element;
 	private ApplicationUser user;
 	private FilterSettings filterSettings;
 
@@ -45,7 +45,7 @@ public class TestVisGraph extends TestSetUp {
 		visGraph.setGraph(new KnowledgeGraphImpl("TEST"));
 		visGraph.setRootElementKey("");
 
-		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
+		element = new KnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
 		element.setProject(new DecisionKnowledgeProjectImpl("TEST"));
 
 		user = JiraUsers.BLACK_HEAD.getApplicationUser();
@@ -78,7 +78,7 @@ public class TestVisGraph extends TestSetUp {
 
 	@Test
 	public void testWithoutFiltering() {
-		List<DecisionKnowledgeElement> elements = new ArrayList<>();
+		List<KnowledgeElement> elements = new ArrayList<>();
 		elements.add(element);
 		VisGraph newVisGraph = new VisGraph(element, elements);
 		assertNotNull(newVisGraph);
@@ -86,20 +86,20 @@ public class TestVisGraph extends TestSetUp {
 
 	@Test
 	public void testConstWithListNullProjectNull() {
-		VisGraph visGraph = new VisGraph((List<DecisionKnowledgeElement>) null, (String) null);
+		VisGraph visGraph = new VisGraph((List<KnowledgeElement>) null, (String) null);
 		assertEquals(0, visGraph.getEdges().size(), 0.0);
 	}
 
 	@Test
 	public void testConstWithListEmptyProjectNull() {
-		List<DecisionKnowledgeElement> elements = new ArrayList<>();
+		List<KnowledgeElement> elements = new ArrayList<>();
 		VisGraph visGraph = new VisGraph(elements, (String) null);
 		assertEquals(0, visGraph.getEdges().size(), 0.0);
 	}
 
 	@Test
 	public void testConstWithListFilledProjectNull() {
-		List<DecisionKnowledgeElement> elements = new ArrayList<>();
+		List<KnowledgeElement> elements = new ArrayList<>();
 		elements.add(element);
 		VisGraph visGraph = new VisGraph(elements, (String) null);
 		assertEquals(0, visGraph.getEdges().size(), 0.0);
@@ -107,20 +107,20 @@ public class TestVisGraph extends TestSetUp {
 
 	@Test
 	public void testConstWithListNullProjectFilled() {
-		VisGraph visGraph = new VisGraph((List<DecisionKnowledgeElement>) null, "TEST");
+		VisGraph visGraph = new VisGraph((List<KnowledgeElement>) null, "TEST");
 		assertEquals(0, visGraph.getNodes().size(), 0.0);
 	}
 
 	@Test
 	public void testConstWithListEmptyProjectFilled() {
-		List<DecisionKnowledgeElement> elements = new ArrayList<>();
+		List<KnowledgeElement> elements = new ArrayList<>();
 		VisGraph visGraph = new VisGraph(elements, "TEST");
 		assertEquals(0, visGraph.getNodes().size(), 0.0);
 	}
 
 	@Test
 	public void testConstWithListFilledProjectFilled() {
-		List<DecisionKnowledgeElement> elements = new ArrayList<>();
+		List<KnowledgeElement> elements = new ArrayList<>();
 		elements.add(element);
 		VisGraph visGraph = new VisGraph(elements, "TEST");
 		assertEquals(4, visGraph.getNodes().size());
@@ -151,9 +151,9 @@ public class TestVisGraph extends TestSetUp {
 
 	@Test
 	public void addNewNodeToGraph() {
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(42, "", "", KnowledgeType.DECISION, "TEST",
+		KnowledgeElement element = new KnowledgeElementImpl(42, "", "", KnowledgeType.DECISION, "TEST",
 				"TEST-42", DocumentationLocation.JIRAISSUE, KnowledgeStatus.DECIDED);
-		VisGraph visGraph = new VisGraph(element, new ArrayList<DecisionKnowledgeElement>());
+		VisGraph visGraph = new VisGraph(element, new ArrayList<KnowledgeElement>());
 		KnowledgeGraph newGraph = KnowledgeGraph.getOrCreate("ConDec");
 		visGraph.setGraph(newGraph);
 		assertEquals(newGraph, visGraph.getGraph());

@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 
 public class TestGetElementsLinkedWithOutwardLinks extends TestJiraIssuePersistenceManagerSetUp {
 
@@ -16,7 +16,7 @@ public class TestGetElementsLinkedWithOutwardLinks extends TestJiraIssuePersiste
 
 	@Test
 	public void testElementNonExistent() {
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+		KnowledgeElement element = new KnowledgeElementImpl();
 		assertEquals(0, issueStrategy.getElementsLinkedWithInwardLinks(element).size());
 	}
 }

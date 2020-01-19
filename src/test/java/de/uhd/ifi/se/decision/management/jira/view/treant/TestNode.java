@@ -15,9 +15,9 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 
 public class TestNode extends TestSetUp {
@@ -32,7 +32,7 @@ public class TestNode extends TestSetUp {
 	private boolean isHyperlinked;
 
 	private TreantNode node;
-	private DecisionKnowledgeElement element;
+	private KnowledgeElement element;
 
 	@Before
 	public void setUp() {
@@ -52,7 +52,7 @@ public class TestNode extends TestSetUp {
 		node.setLink(link);
 		node.setNodeContent(nodeContent);
 
-		element = new DecisionKnowledgeElementImpl();
+		element = new KnowledgeElementImpl();
 		element.setId(1);
 		element.setKey("Test-1");
 		element.setType("Argument");

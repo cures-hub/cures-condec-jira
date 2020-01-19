@@ -6,7 +6,7 @@ import javax.ws.rs.core.Response;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraFilter;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -30,9 +30,9 @@ public interface KnowledgeRest {
 	 * @issue How can the sorting be implemented?
 	 *
 	 * @param id
-	 *            of the {@link DecisionKnowledgeElement} in database.
+	 *            of the {@link KnowledgeElement} in database.
 	 * @param documentationLocation
-	 *            of the {@link DecisionKnowledgeElement}, e.g. "i" for Jira issue,
+	 *            of the {@link KnowledgeElement}, e.g. "i" for Jira issue,
 	 *            see {@link DocumentationLocation}.
 	 * @param projectKey
 	 *            of the Jira project, see {@link DecisionKnowledgeProject}.
@@ -42,7 +42,7 @@ public interface KnowledgeRest {
 	Response getUnlinkedElements(long id, String projectKey, String documentationLocation);
 
 	/**
-	 * Creates a new {@link DecisionKnowledgeElement}. The decision knowledge
+	 * Creates a new {@link KnowledgeElement}. The decision knowledge
 	 * element can either be documented as a separate Jira issue (documentation
 	 * location "i") or in the description/a comment of an existing Jira issue
 	 * (documentation location "s").
@@ -51,7 +51,7 @@ public interface KnowledgeRest {
 	 *            HttpServletRequest with an authorized Jira
 	 *            {@link ApplicationUser}.
 	 * @param element
-	 *            {@link DecisionKnowledgeElement} object with attributes, such as
+	 *            {@link KnowledgeElement} object with attributes, such as
 	 *            summary, description (optional), {@link DocumentationLocation},
 	 *            and {@link KnowledgeType}.
 	 * @param idOfExistingElement
@@ -65,17 +65,17 @@ public interface KnowledgeRest {
 	 *            optional parameter. Key of a parent element that the new element
 	 *            should be linked with. Either the id or the key needs to be
 	 *            passed, not both.
-	 * @return new {@link DecisionKnowledgeElement} with its internal database id
+	 * @return new {@link KnowledgeElement} with its internal database id
 	 *         set.
 	 */
-	Response createDecisionKnowledgeElement(HttpServletRequest request, DecisionKnowledgeElement element,
+	Response createDecisionKnowledgeElement(HttpServletRequest request, KnowledgeElement element,
 			long idOfExistingElement, String documentationLocationOfExistingElement, String keyOfExistingElement);
 
-	Response updateDecisionKnowledgeElement(HttpServletRequest request, DecisionKnowledgeElement element,
+	Response updateDecisionKnowledgeElement(HttpServletRequest request, KnowledgeElement element,
 			long idOfParentElement, String documentationLocationOfParentElement);
 
 	Response deleteDecisionKnowledgeElement(HttpServletRequest request,
-			DecisionKnowledgeElement decisionKnowledgeElement);
+			KnowledgeElement decisionKnowledgeElement);
 
 	Response createLink(HttpServletRequest request, String projectKey, String knowledgeTypeOfChild, long idOfParent,
 			String documentationLocationOfParent, long idOfChild, String documentationLocationOfChild,
@@ -99,9 +99,9 @@ public interface KnowledgeRest {
 	 */
 	Response getElements(HttpServletRequest request, String projectKey, String query);
 
-	Response createIssueFromSentence(HttpServletRequest request, DecisionKnowledgeElement decisionKnowledgeElement);
+	Response createIssueFromSentence(HttpServletRequest request, KnowledgeElement decisionKnowledgeElement);
 
-	Response setSentenceIrrelevant(HttpServletRequest request, DecisionKnowledgeElement decisionKnowledgeElement);
+	Response setSentenceIrrelevant(HttpServletRequest request, KnowledgeElement decisionKnowledgeElement);
 
 	Response getSummarizedCode(long id, String projectKey, String documentationLocation, int probability);
 }

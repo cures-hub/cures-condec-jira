@@ -5,14 +5,14 @@ import java.util.List;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -55,8 +55,8 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements() {
-		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
+	public List<KnowledgeElement> getDecisionKnowledgeElements() {
+		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
 		activePersistenceManagersForSingleLocations
 				.forEach(manager -> elements.addAll(manager.getDecisionKnowledgeElements()));
 
@@ -81,8 +81,8 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type) {
-		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
+	public List<KnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type) {
+		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
 		activePersistenceManagersForSingleLocations
 				.forEach(manager -> elements.addAll(manager.getDecisionKnowledgeElements(type)));
 		return elements;
@@ -133,7 +133,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		}
 
 		if (ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
-			DecisionKnowledgeElement sourceElement = link.getSource();
+			KnowledgeElement sourceElement = link.getSource();
 			new WebhookConnector(projectKey).sendElementChanges(sourceElement);
 		}
 		databaseId = GenericLinkManager.insertLink(link, user);
@@ -145,7 +145,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	}
 
 	@Override
-	public boolean updateIssueStatus(DecisionKnowledgeElement parentElement, DecisionKnowledgeElement childElement,
+	public boolean updateIssueStatus(KnowledgeElement parentElement, KnowledgeElement childElement,
 			ApplicationUser user) {
 		if (KnowledgeStatus.isIssueResolved(parentElement, childElement)) {
 			parentElement.setStatus(KnowledgeStatus.RESOLVED);
@@ -156,7 +156,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	}
 
 	@Override
-	public long insertLink(DecisionKnowledgeElement parentElement, DecisionKnowledgeElement childElement,
+	public long insertLink(KnowledgeElement parentElement, KnowledgeElement childElement,
 			ApplicationUser user) {
 		if (parentElement == null || childElement == null) {
 			return 0;
@@ -188,7 +188,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		}
 
 		if (isDeleted && ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
-			DecisionKnowledgeElement sourceElement = link.getSource();
+			KnowledgeElement sourceElement = link.getSource();
 			new WebhookConnector(projectKey).sendElementChanges(sourceElement);
 		}
 
@@ -196,7 +196,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	}
 
 	@Override
-	public long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType, long idOfParentElement,
+	public long updateLink(KnowledgeElement element, KnowledgeType formerKnowledgeType, long idOfParentElement,
 			String documentationLocationOfParentElement, ApplicationUser user) {
 
 		if (LinkType.linkTypesAreEqual(formerKnowledgeType, element.getType()) || idOfParentElement == 0) {
@@ -206,7 +206,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerKnowledgeType);
 		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
 
-		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
+		KnowledgeElement parentElement = new KnowledgeElementImpl();
 		parentElement.setId(idOfParentElement);
 		parentElement.setDocumentationLocation(documentationLocationOfParentElement);
 		parentElement.setProject(projectKey);
@@ -224,7 +224,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	}
 
 	@Override
-	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
+	public boolean deleteDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getManagerForSingleLocation(element);
 		KnowledgeGraph.getOrCreate(projectKey).removeVertex(element);
@@ -232,39 +232,39 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	}
 
 	@Override
-	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
+	public boolean updateDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getManagerForSingleLocation(element);
 		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(element, user);
 		if (isUpdated) {
-			DecisionKnowledgeElement updatedElement = persistenceManager.getDecisionKnowledgeElement(element.getId());
+			KnowledgeElement updatedElement = persistenceManager.getDecisionKnowledgeElement(element.getId());
 			KnowledgeGraph.getOrCreate(projectKey).updateNode(updatedElement);
 		}
 		return isUpdated;
 	}
 
 	@Override
-	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
-			ApplicationUser user, DecisionKnowledgeElement parentElement) {
+	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element,
+			ApplicationUser user, KnowledgeElement parentElement) {
 		if (element.getStatus() == KnowledgeStatus.UNDEFINED) {
 			element.setStatus(KnowledgeStatus.getDefaultStatus(element.getType()));
 		}
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getManagerForSingleLocation(element);
-		DecisionKnowledgeElement elementWithId = persistenceManager.insertDecisionKnowledgeElement(element, user,
+		KnowledgeElement elementWithId = persistenceManager.insertDecisionKnowledgeElement(element, user,
 				parentElement);
 		KnowledgeGraph.getOrCreate(projectKey).addVertex(elementWithId);
 		return elementWithId;
 	}
 
 	@Override
-	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
+	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element,
 			ApplicationUser user) {
 		return insertDecisionKnowledgeElement(element, user, null);
 	}
 
 	@Override
-	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id, DocumentationLocation documentationLocation) {
+	public KnowledgeElement getDecisionKnowledgeElement(long id, DocumentationLocation documentationLocation) {
 		AbstractPersistenceManagerForSingleLocation persistenceManager = getManagerForSingleLocation(
 				documentationLocation);
 		if (persistenceManager == null) {
@@ -274,7 +274,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	}
 
 	@Override
-	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id, String documentationLocationIdentifier) {
+	public KnowledgeElement getDecisionKnowledgeElement(long id, String documentationLocationIdentifier) {
 		DocumentationLocation documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
 		return getDecisionKnowledgeElement(id, documentationLocation);

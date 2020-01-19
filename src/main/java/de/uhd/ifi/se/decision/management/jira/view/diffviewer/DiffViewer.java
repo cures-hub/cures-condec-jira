@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.diffviewer;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import org.eclipse.jgit.lib.Ref;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -20,16 +20,16 @@ public class DiffViewer {
 	private List<BranchDiff> branches;
 
 
-	public DiffViewer(Map<Ref, List<DecisionKnowledgeElement>> ratBranchList) {
+	public DiffViewer(Map<Ref, List<KnowledgeElement>> ratBranchList) {
 		branches = new ArrayList<>();
 		if (ratBranchList == null) {
 			return;
 		}
 
-		Iterator<Map.Entry<Ref, List<DecisionKnowledgeElement>>> it = ratBranchList.entrySet().iterator();
+		Iterator<Map.Entry<Ref, List<KnowledgeElement>>> it = ratBranchList.entrySet().iterator();
 
 		while (it.hasNext()) {
-			Map.Entry<Ref, List<DecisionKnowledgeElement>> entry = it.next();
+			Map.Entry<Ref, List<KnowledgeElement>> entry = it.next();
 			branches.add(new BranchDiff(entry.getKey().getName(), entry.getValue()));
 		}
 	}

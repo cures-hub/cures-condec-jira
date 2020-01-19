@@ -6,7 +6,7 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 
 public class VisTimeLineNode {
@@ -35,7 +35,7 @@ public class VisTimeLineNode {
 	private String end;
 	private static final DateFormat DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
-	public VisTimeLineNode(DecisionKnowledgeElement element) {
+	public VisTimeLineNode(KnowledgeElement element) {
 		if (element == null) {
 			return;
 		}
@@ -49,7 +49,7 @@ public class VisTimeLineNode {
 		this.documentationLocation = element.getDocumentationLocation().getIdentifier();
 	}
 
-	public VisTimeLineNode(DecisionKnowledgeElement element, long group) {
+	public VisTimeLineNode(KnowledgeElement element, long group) {
 		this(element);
 		this.group = group;
 	}
@@ -61,7 +61,7 @@ public class VisTimeLineNode {
 		return DATEFORMAT.format(created);
 	}
 
-	private String createContentString(DecisionKnowledgeElement element) {
+	private String createContentString(KnowledgeElement element) {
 		String contentString = "<img src=" + '"' + element.getType().getIconUrl() + '"' + "> ";
 		KnowledgeStatus elementStatus = element.getStatus();
 		if (elementStatus == KnowledgeStatus.DISCARDED || elementStatus == KnowledgeStatus.REJECTED

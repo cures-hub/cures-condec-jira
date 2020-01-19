@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.RationaleFromCodeCommentExtractor;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
@@ -46,8 +46,8 @@ public class RationaleFromDiffCodeCommentExtractor {
 	 *             the comment from the newer file version instead of older?
 	 * @return: list of decision knowledge elements found in a comment.
 	 */
-	public Map<Edit, List<DecisionKnowledgeElement>> getRationaleFromComment(boolean newerFile,
-			Map<Edit, List<DecisionKnowledgeElement>> elementsInSingleComment) {
+	public Map<Edit, List<KnowledgeElement>> getRationaleFromComment(boolean newerFile,
+			Map<Edit, List<KnowledgeElement>> elementsInSingleComment) {
 
 		int cursor = fileCursor;
 		List<CodeComment> comments = commentsInFile;
@@ -84,14 +84,14 @@ public class RationaleFromDiffCodeCommentExtractor {
 
 			RationaleFromCodeCommentExtractor rationaleFromCodeComment = new RationaleFromCodeCommentExtractor(
 					currentComment);
-			List<DecisionKnowledgeElement> commentRationaleElements = rationaleFromCodeComment.getElements();
+			List<KnowledgeElement> commentRationaleElements = rationaleFromCodeComment.getElements();
 
 			// distinct rationale between changed and unchanged, only for newer version
 			List<Edit> commentEdits = getEditsOnComment(currentComment, newerFile);
 			// comment parts within diff
 			if (commentEdits.size() > 0) {
 				for (Edit edit : commentEdits) {
-					List<DecisionKnowledgeElement> rationaleWithinEdit = getRationaleIntersectingEdit(edit,
+					List<KnowledgeElement> rationaleWithinEdit = getRationaleIntersectingEdit(edit,
 							commentRationaleElements, newerFile);
 					if (elementsInSingleComment.containsKey(edit)) {
 						rationaleWithinEdit.addAll(elementsInSingleComment.get(edit));
@@ -118,10 +118,10 @@ public class RationaleFromDiffCodeCommentExtractor {
 		return elementsInSingleComment;
 	}
 
-	private List<DecisionKnowledgeElement> getRationaleIntersectingEdit(Edit edit,
-			List<DecisionKnowledgeElement> rationaleElements, boolean newerFile) {
-		List<DecisionKnowledgeElement> filteredRationaleElements = new ArrayList<>();
-		for (DecisionKnowledgeElement rationaleElement : rationaleElements) {
+	private List<KnowledgeElement> getRationaleIntersectingEdit(Edit edit,
+			List<KnowledgeElement> rationaleElements, boolean newerFile) {
+		List<KnowledgeElement> filteredRationaleElements = new ArrayList<>();
+		for (KnowledgeElement rationaleElement : rationaleElements) {
 			if (doesRationaleIntersectWithEdit(rationaleElement, edit, newerFile)) {
 				filteredRationaleElements.add(rationaleElement);
 			}
@@ -129,7 +129,7 @@ public class RationaleFromDiffCodeCommentExtractor {
 		return filteredRationaleElements;
 	}
 
-	private boolean doesRationaleIntersectWithEdit(DecisionKnowledgeElement rationaleElement, Edit edit,
+	private boolean doesRationaleIntersectWithEdit(KnowledgeElement rationaleElement, Edit edit,
 			boolean newerFile) {
 		int rationaleStart = RationaleFromCodeCommentExtractor.getRationaleStartLineInCode(rationaleElement);
 		int rationaleEnd = RationaleFromCodeCommentExtractor.getRationaleEndLineInCode(rationaleElement);

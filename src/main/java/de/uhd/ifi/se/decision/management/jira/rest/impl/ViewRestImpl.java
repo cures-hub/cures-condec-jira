@@ -37,7 +37,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMe
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
@@ -121,7 +121,7 @@ public class ViewRestImpl implements ViewRest {
 		if (branches.isEmpty()) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
-		Map<Ref, List<DecisionKnowledgeElement>> ratBranchList = new HashMap<>();
+		Map<Ref, List<KnowledgeElement>> ratBranchList = new HashMap<>();
 		GitDecXtract extractor = new GitDecXtract(projectKey);
 		// TODO: move the loop elsewhere or maybe in GitDecXtract
 		for (Ref branch : branches) {
@@ -309,13 +309,13 @@ public class ViewRestImpl implements ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		List<DecisionKnowledgeElement> decisions = getAllDecisions(projectKey);
+		List<KnowledgeElement> decisions = getAllDecisions(projectKey);
 		Matrix matrix = new Matrix(projectKey, decisions);
 		return Response.ok(matrix).build();
 	}
 
 	// TODO Remove
-	private List<DecisionKnowledgeElement> getAllDecisions(String projectKey) {
+	private List<KnowledgeElement> getAllDecisions(String projectKey) {
 		return KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements(KnowledgeType.DECISION);
 	}
 

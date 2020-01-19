@@ -7,26 +7,26 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
 public class TestGetAdjacentElements extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test
 	public void testDecisionKnowledgeElementNull() {
-		assertEquals(new ArrayList<DecisionKnowledgeElementImpl>(), issueStrategy.getAdjacentElements(null));
+		assertEquals(new ArrayList<KnowledgeElementImpl>(), issueStrategy.getAdjacentElements(null));
 	}
 
 	@Test
 	public void testDecisionKnowledgeElementEmpty() {
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+		KnowledgeElement element = new KnowledgeElementImpl();
 		assertEquals(0, issueStrategy.getAdjacentElements(element).size());
 	}
 
 	@Test
 	public void testDecisionKnowledgeElementValid() {
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(JiraIssues.getTestJiraIssues().get(1));
+		KnowledgeElement element = new KnowledgeElementImpl(JiraIssues.getTestJiraIssues().get(1));
 		assertNotNull(issueStrategy.getAdjacentElements(element));
 	}
 }

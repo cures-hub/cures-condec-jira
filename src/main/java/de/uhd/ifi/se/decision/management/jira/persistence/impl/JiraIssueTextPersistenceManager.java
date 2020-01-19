@@ -19,13 +19,13 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.JiraIssueTextExtractionEventListener;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
@@ -117,7 +117,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	@Override
-	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id) {
+	public KnowledgeElement getDecisionKnowledgeElement(long id) {
 		PartOfJiraIssueText sentence = null;
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("ID = ?", id))) {
@@ -127,7 +127,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	@Override
-	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
+	public KnowledgeElement getDecisionKnowledgeElement(String key) {
 		if (key == null) {
 			return null;
 		}
@@ -136,8 +136,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements() {
-		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
+	public List<KnowledgeElement> getDecisionKnowledgeElements() {
+		List<KnowledgeElement> decisionKnowledgeElements = new ArrayList<KnowledgeElement>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
 			decisionKnowledgeElements.add(new PartOfJiraIssueTextImpl(databaseEntry));
@@ -156,8 +156,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 *         or comments of a Jira issue. Does not return irrelevant parts of
 	 *         text.
 	 */
-	public List<DecisionKnowledgeElement> getElementsInJiraIssue(long jiraIssueId) {
-		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
+	public List<KnowledgeElement> getElementsInJiraIssue(long jiraIssueId) {
+		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ? AND RELEVANT = TRUE", projectKey,
 						jiraIssueId))) {
@@ -176,8 +176,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @return list of all decision knowledge elements documented in the a certain
 	 *         comment of a Jira issue. Does also return irrelevant parts of text.
 	 */
-	public List<DecisionKnowledgeElement> getElementsInComment(long commentId) {
-		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
+	public List<KnowledgeElement> getElementsInComment(long commentId) {
+		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ?", projectKey, commentId))) {
 			elements.add(new PartOfJiraIssueTextImpl(databaseEntry));
@@ -195,8 +195,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @return list of all decision knowledge elements documented in the description
 	 *         of a Jira issue.
 	 */
-	public List<DecisionKnowledgeElement> getElementsInDescription(long jiraIssueId) {
-		List<DecisionKnowledgeElement> elements = getElementsInJiraIssue(jiraIssueId);
+	public List<KnowledgeElement> getElementsInDescription(long jiraIssueId) {
+		List<KnowledgeElement> elements = getElementsInJiraIssue(jiraIssueId);
 		elements.removeIf(e -> (((PartOfJiraIssueText) e).getCommentId() != 0));
 		return elements;
 	}
@@ -219,8 +219,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (summary == null || jiraIssueId <= 0 || type == null || summary.isBlank()) {
 			return 0;
 		}
-		List<DecisionKnowledgeElement> sentences = getElementsWithTypeInJiraIssue(jiraIssueId, type);
-		for (DecisionKnowledgeElement sentence : sentences) {
+		List<KnowledgeElement> sentences = getElementsWithTypeInJiraIssue(jiraIssueId, type);
+		for (KnowledgeElement sentence : sentences) {
 			if (sentence.getSummary().trim().equalsIgnoreCase(summary)) {
 				return sentence.getId();
 			}
@@ -241,25 +241,25 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @return list of all decision knowledge elements with a certain type
 	 *         documented in the description or comments of a Jira issue.
 	 */
-	public List<DecisionKnowledgeElement> getElementsWithTypeInJiraIssue(long jiraIssueId, KnowledgeType type) {
-		List<DecisionKnowledgeElement> elements = getElementsInJiraIssue(jiraIssueId);
+	public List<KnowledgeElement> getElementsWithTypeInJiraIssue(long jiraIssueId, KnowledgeType type) {
+		List<KnowledgeElement> elements = getElementsInJiraIssue(jiraIssueId);
 		elements.removeIf(e -> (e.getType() != type));
 		return elements;
 	}
 
 	@Override
-	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
+	public List<Link> getInwardLinks(KnowledgeElement element) {
 		return GenericLinkManager.getInwardLinks(element);
 	}
 
 	@Override
-	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
+	public List<Link> getOutwardLinks(KnowledgeElement element) {
 		return GenericLinkManager.getOutwardLinks(element);
 	}
 
 	@Override
-	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
-			ApplicationUser user, DecisionKnowledgeElement parentElement) {
+	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element,
+			ApplicationUser user, KnowledgeElement parentElement) {
 		if (element == null || user == null) {
 			return null;
 		}
@@ -290,16 +290,16 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return sentence.getJiraIssue();
 	}
 
-	private Comment createCommentInJiraIssue(DecisionKnowledgeElement element, Issue jiraIssue, ApplicationUser user) {
+	private Comment createCommentInJiraIssue(KnowledgeElement element, Issue jiraIssue, ApplicationUser user) {
 		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getTypeAsString());
 		String text = tag + element.getSummary() + "\n" + element.getDescription() + tag;
 		return ComponentAccessor.getCommentManager().create(jiraIssue, user, text, false);
 	}
 
 	@Override
-	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
+	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element,
 			ApplicationUser user) {
-		DecisionKnowledgeElement existingElement = checkIfElementExistsInDatabase(element);
+		KnowledgeElement existingElement = checkIfElementExistsInDatabase(element);
 		if (existingElement != null) {
 			return existingElement;
 		}
@@ -316,11 +316,11 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return sentence;
 	}
 
-	private DecisionKnowledgeElement checkIfElementExistsInDatabase(DecisionKnowledgeElement element) {
+	private KnowledgeElement checkIfElementExistsInDatabase(KnowledgeElement element) {
 		if (element.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
 			return null;
 		}
-		DecisionKnowledgeElement existingElement = getDecisionKnowledgeElement(element);
+		KnowledgeElement existingElement = getDecisionKnowledgeElement(element);
 		if (existingElement != null) {
 			ensureThatElementIsLinked(existingElement);
 			return existingElement;
@@ -328,7 +328,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return null;
 	}
 
-	public DecisionKnowledgeElement getDecisionKnowledgeElement(DecisionKnowledgeElement element) {
+	public KnowledgeElement getDecisionKnowledgeElement(KnowledgeElement element) {
 		if (element == null) {
 			return null;
 		}
@@ -363,7 +363,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	@Override
-	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
+	public boolean updateDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		if (element == null) {
 			return false;
 		}
@@ -466,7 +466,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	@Override
-	public ApplicationUser getCreator(DecisionKnowledgeElement element) {
+	public ApplicationUser getCreator(KnowledgeElement element) {
 		PartOfJiraIssueText sentence = (PartOfJiraIssueText) getDecisionKnowledgeElement(element.getId());
 		if (sentence == null) {
 			LOGGER.error("Element could not be found.");
@@ -483,19 +483,19 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return createLinksForNonLinkedElements(getDecisionKnowledgeElements());
 	}
 
-	public boolean createLinksForNonLinkedElements(List<DecisionKnowledgeElement> elements) {
+	public boolean createLinksForNonLinkedElements(List<KnowledgeElement> elements) {
 		boolean areElementsLinked = true;
-		for (DecisionKnowledgeElement element : elements) {
+		for (KnowledgeElement element : elements) {
 			areElementsLinked = areElementsLinked && ensureThatElementIsLinked(element);
 		}
 		return areElementsLinked;
 	}
 
-	public boolean ensureThatElementIsLinked(DecisionKnowledgeElement element) {
+	public boolean ensureThatElementIsLinked(KnowledgeElement element) {
 		if (element.isLinked() > 0) {
 			return true;
 		}
-		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl(
+		KnowledgeElement parentElement = new KnowledgeElementImpl(
 				((PartOfJiraIssueText) element).getJiraIssue());
 		long linkId = KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(parentElement, element, null);
 		return linkId > 0;
@@ -511,7 +511,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 */
 	public boolean deleteInvalidElements(ApplicationUser user) {
 		boolean isAnyElementDeleted = false;
-		for (DecisionKnowledgeElement element : getDecisionKnowledgeElements()) {
+		for (KnowledgeElement element : getDecisionKnowledgeElements()) {
 			if (!((PartOfJiraIssueText) element).isValid()) {
 				deleteDecisionKnowledgeElement(element, user);
 				isAnyElementDeleted = true;
@@ -530,7 +530,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 		JiraIssuePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(this.projectKey)
 				.getJiraIssueManager();
-		DecisionKnowledgeElement decElement = persistenceManager.insertDecisionKnowledgeElement(element, user);
+		KnowledgeElement decElement = persistenceManager.insertDecisionKnowledgeElement(element, user);
 
 		MutableIssue issue = ComponentAccessor.getIssueService().getIssue(user, decElement.getId()).getIssue();
 
@@ -557,14 +557,14 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return issue;
 	}
 
-	public static List<DecisionKnowledgeElement> updateComment(Comment comment) {
+	public static List<KnowledgeElement> updateComment(Comment comment) {
 		String projectKey = comment.getIssue().getProjectObject().getKey();
 		List<PartOfText> partsOfText = new TextSplitterImpl().getPartsOfText(comment.getBody(), projectKey);
 
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
 
-		List<DecisionKnowledgeElement> knowledgeElementsInText = persistenceManager
+		List<KnowledgeElement> knowledgeElementsInText = persistenceManager
 				.getElementsInComment(comment.getId());
 
 		// @issue Elements used to be deleted and new ones were created afterwards.
@@ -591,14 +591,14 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return knowledgeElementsInText;
 	}
 
-	public static List<DecisionKnowledgeElement> updateDescription(Issue jiraIssue) {
+	public static List<KnowledgeElement> updateDescription(Issue jiraIssue) {
 		String projectKey = jiraIssue.getProjectObject().getKey();
 		List<PartOfText> partsOfText = new TextSplitterImpl().getPartsOfText(jiraIssue.getDescription(), projectKey);
 
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
 
-		List<DecisionKnowledgeElement> parts = persistenceManager.getElementsInDescription(jiraIssue.getId());
+		List<KnowledgeElement> parts = persistenceManager.getElementsInDescription(jiraIssue.getId());
 		int numberOfTextParts = parts.size();
 
 		for (int i = 0; i < partsOfText.size(); i++) {
@@ -634,8 +634,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return element.getEndPosition() - element.getStartPosition();
 	}
 
-	public List<DecisionKnowledgeElement> getUserValidatedPartsOfText(String projectKey) {
-		List<DecisionKnowledgeElement> validatedPartsOfText = new ArrayList<DecisionKnowledgeElement>();
+	public List<KnowledgeElement> getUserValidatedPartsOfText(String projectKey) {
+		List<KnowledgeElement> validatedPartsOfText = new ArrayList<KnowledgeElement>();
 		if (projectKey == null || projectKey.isEmpty()) {
 			return validatedPartsOfText;
 		}
@@ -649,8 +649,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return validatedPartsOfText;
 	}
 
-	public List<DecisionKnowledgeElement> getUnvalidatedPartsOfText(String projectKey) {
-		List<DecisionKnowledgeElement> unvalidatedPartsOfText = new ArrayList<DecisionKnowledgeElement>();
+	public List<KnowledgeElement> getUnvalidatedPartsOfText(String projectKey) {
+		List<KnowledgeElement> unvalidatedPartsOfText = new ArrayList<KnowledgeElement>();
 		if (projectKey == null || projectKey.isEmpty()) {
 			return unvalidatedPartsOfText;
 		}
@@ -678,7 +678,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 *         that is documented in the description or the comments of a certain
 	 *         Jira issue.
 	 */
-	public static DecisionKnowledgeElement getYoungestElementForJiraIssue(long jiraIssueId,
+	public static KnowledgeElement getYoungestElementForJiraIssue(long jiraIssueId,
 			KnowledgeType knowledgeType) {
 		PartOfJiraIssueText youngestElement = null;
 		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,

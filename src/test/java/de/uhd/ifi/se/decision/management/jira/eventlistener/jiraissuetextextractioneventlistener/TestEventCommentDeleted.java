@@ -9,7 +9,7 @@ import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.comments.Comment;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestEventCommentDeleted extends TestSetUpEventListener {
@@ -22,7 +22,7 @@ public class TestEventCommentDeleted extends TestSetUpEventListener {
 
 		boolean isCommentDeleted = !isCommentExistent(commentBody);
 
-		DecisionKnowledgeElement element = getFirstElementInComment(comment);
+		KnowledgeElement element = getFirstElementInComment(comment);
 		boolean isElementDeletedInDatabase = (element == null);
 
 		return isCommentDeleted && isElementDeletedInDatabase;

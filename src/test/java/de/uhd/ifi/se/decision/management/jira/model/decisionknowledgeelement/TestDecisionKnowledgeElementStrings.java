@@ -8,11 +8,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 
 /**
  * Test class for decision knowledge element getter and setter methods
@@ -23,7 +23,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 	private String description;
 	private KnowledgeType type;
 	private String projectKey;
-	private DecisionKnowledgeElement decisionKnowledgeElement;
+	private KnowledgeElement decisionKnowledgeElement;
 
 	@Before
 	public void setUp() {
@@ -35,7 +35,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 		this.projectKey = "Test";
 		String key = "Test";
 
-		this.decisionKnowledgeElement = new DecisionKnowledgeElementImpl(id, summary, description, type, projectKey,
+		this.decisionKnowledgeElement = new KnowledgeElementImpl(id, summary, description, type, projectKey,
 				key, DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
 	}
 
@@ -46,7 +46,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 
 	@Test
 	public void testGetTypeOther() {
-		DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(id, summary, description,
+		KnowledgeElement decisionKnowledgeElement = new KnowledgeElementImpl(id, summary, description,
 				"Work-Item", projectKey, "TEST-1", DocumentationLocation.JIRAISSUE, "");
 		assertEquals(KnowledgeType.OTHER, decisionKnowledgeElement.getType());
 	}
@@ -108,7 +108,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 
 	@Test
 	public void testGetKeyKeyNull() {
-		DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl();
+		KnowledgeElement decisionKnowledgeElement = new KnowledgeElementImpl();
 		decisionKnowledgeElement.setProject("TEST");
 		decisionKnowledgeElement.setId(10);
 		assertEquals("TEST-10", decisionKnowledgeElement.getKey());
@@ -121,7 +121,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 
 	@Test
 	public void testEqualsNotTheObject() {
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+		KnowledgeElement element = new KnowledgeElementImpl();
 		element.setId(123);
 		assertFalse(this.decisionKnowledgeElement.equals(element));
 	}

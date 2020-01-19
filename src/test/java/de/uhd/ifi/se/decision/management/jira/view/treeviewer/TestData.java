@@ -8,14 +8,14 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 
 public class TestData {
 	private String id;
 	private String text;
 	private List<Data> children;
-	private DecisionKnowledgeElement nodeInfo;
+	private KnowledgeElement nodeInfo;
 
 	private Data data;
 
@@ -24,7 +24,7 @@ public class TestData {
 		id = "Test";
 		text = "Test";
 		children = new ArrayList<>();
-		nodeInfo = new DecisionKnowledgeElementImpl();
+		nodeInfo = new KnowledgeElementImpl();
 		data = new Data();
 		data.setChildren(children);
 		data.setId(id);
@@ -73,7 +73,7 @@ public class TestData {
 
 	@Test
 	public void testSetNodeInfo() {
-		DecisionKnowledgeElementImpl newInfo = new DecisionKnowledgeElementImpl();
+		KnowledgeElementImpl newInfo = new KnowledgeElementImpl();
 		data.setNodeInfo(newInfo);
 		assertEquals(newInfo, data.getNode());
 	}

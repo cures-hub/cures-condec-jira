@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +30,7 @@ public interface OnlineTrainer {
 	 * @param trainingElements list of decision knowledge element with a knowledge type and a
 	 *                         summary.
 	 */
-	void setTrainingData(List<DecisionKnowledgeElement> trainingElements);
+	void setTrainingData(List<KnowledgeElement> trainingElements);
 
 
 	/**

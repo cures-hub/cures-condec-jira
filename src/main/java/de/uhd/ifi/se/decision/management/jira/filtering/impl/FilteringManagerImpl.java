@@ -14,11 +14,11 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryType;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 /**
@@ -47,20 +47,20 @@ public class FilteringManagerImpl implements FilteringManager {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getAllElementsMatchingFilterSettings() {
+	public List<KnowledgeElement> getAllElementsMatchingFilterSettings() {
 		if (filterSettings == null || filterSettings.getProjectKey() == null) {
-			return new ArrayList<DecisionKnowledgeElement>();
+			return new ArrayList<KnowledgeElement>();
 		}
 		String searchString = filterSettings.getSearchString().toLowerCase();
 		if (JiraQueryType.getJiraQueryType(searchString) == JiraQueryType.OTHER) {
-			List<DecisionKnowledgeElement> elements = KnowledgePersistenceManager
+			List<KnowledgeElement> elements = KnowledgePersistenceManager
 					.getOrCreate(filterSettings.getProjectKey()).getDecisionKnowledgeElements();
 			return filterElements(elements);
 		}
 		return getAllElementsMatchingQuery();
 	}
 
-	private List<DecisionKnowledgeElement> getAllElementsMatchingQuery() {
+	private List<KnowledgeElement> getAllElementsMatchingQuery() {
 		List<Issue> jiraIssues = getJiraIssuesFromQuery();
 		return getElementsInJiraIssuesMatchingFilterSettings(jiraIssues);
 	}
@@ -77,12 +77,12 @@ public class FilteringManagerImpl implements FilteringManager {
 		return queryHandler.getJiraIssuesFromQuery();
 	}
 
-	private List<DecisionKnowledgeElement> getElementsInJiraIssuesMatchingFilterSettings(List<Issue> jiraIssues) {
-		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
+	private List<KnowledgeElement> getElementsInJiraIssuesMatchingFilterSettings(List<Issue> jiraIssues) {
+		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
 
 		for (Issue jiraIssue : jiraIssues) {
-			DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(jiraIssue);
+			KnowledgeElement element = new KnowledgeElementImpl(jiraIssue);
 			if (elements.contains(element)) {
 				continue;
 			}
@@ -93,10 +93,10 @@ public class FilteringManagerImpl implements FilteringManager {
 				graph.addVertex(element);
 			}
 
-			BreadthFirstIterator<DecisionKnowledgeElement, Link> iterator = new BreadthFirstIterator<DecisionKnowledgeElement, Link>(
+			BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<KnowledgeElement, Link>(
 					graph, element);
 			while (iterator.hasNext()) {
-				DecisionKnowledgeElement node = iterator.next();
+				KnowledgeElement node = iterator.next();
 				if (!elements.contains(node) && isElementMatchingFilterSettings(node)) {
 					elements.add(node);
 				}
@@ -105,12 +105,12 @@ public class FilteringManagerImpl implements FilteringManager {
 		return elements;
 	}
 
-	private List<DecisionKnowledgeElement> filterElements(List<DecisionKnowledgeElement> elements) {
-		List<DecisionKnowledgeElement> filteredElements = new ArrayList<DecisionKnowledgeElement>();
+	private List<KnowledgeElement> filterElements(List<KnowledgeElement> elements) {
+		List<KnowledgeElement> filteredElements = new ArrayList<KnowledgeElement>();
 		if (elements == null || elements.isEmpty()) {
 			return filteredElements;
 		}
-		for (DecisionKnowledgeElement element : elements) {
+		for (KnowledgeElement element : elements) {
 			if (isElementMatchingFilterSettings(element)) {
 				filteredElements.add(element);
 			}
@@ -119,7 +119,7 @@ public class FilteringManagerImpl implements FilteringManager {
 	}
 
 	@Override
-	public boolean isElementMatchingFilterSettings(DecisionKnowledgeElement element) {
+	public boolean isElementMatchingFilterSettings(KnowledgeElement element) {
 		if (!isElementMatchingKnowledgeTypeFilter(element)) {
 			return false;
 		}
@@ -139,17 +139,17 @@ public class FilteringManagerImpl implements FilteringManager {
 	}
 
 	@Override
-	public boolean isElementMatchingDocumentationLocationFilter(DecisionKnowledgeElement element) {
+	public boolean isElementMatchingDocumentationLocationFilter(KnowledgeElement element) {
 		return filterSettings.getDocumentationLocations().contains(element.getDocumentationLocation());
 	}
 
 	@Override
-	public boolean isElementMatchingStatusFilter(DecisionKnowledgeElement element) {
+	public boolean isElementMatchingStatusFilter(KnowledgeElement element) {
 		return filterSettings.getSelectedStatus().contains(element.getStatus());
 	}
 
 	@Override
-	public boolean isElementMatchingTimeFilter(DecisionKnowledgeElement element) {
+	public boolean isElementMatchingTimeFilter(KnowledgeElement element) {
 		boolean isMatchingTimeFilter = true;
 		if (filterSettings.getCreatedEarliest() != -1) {
 			isMatchingTimeFilter = element.getCreated().getTime() >= filterSettings.getCreatedEarliest();
@@ -162,7 +162,7 @@ public class FilteringManagerImpl implements FilteringManager {
 	}
 
 	@Override
-	public boolean isElementMatchingSubStringFilter(DecisionKnowledgeElement element) {
+	public boolean isElementMatchingSubStringFilter(KnowledgeElement element) {
 		String searchString = filterSettings.getSearchString().toLowerCase();
 		if (JiraQueryType.getJiraQueryType(searchString) != JiraQueryType.OTHER) {
 			// JQL string or filter
@@ -181,7 +181,7 @@ public class FilteringManagerImpl implements FilteringManager {
 	}
 
 	@Override
-	public boolean isElementMatchingKnowledgeTypeFilter(DecisionKnowledgeElement element) {
+	public boolean isElementMatchingKnowledgeTypeFilter(KnowledgeElement element) {
 		String type = element.getType().replaceProAndConWithArgument().toString();
 		if (element.getType() == KnowledgeType.OTHER) {
 			type = element.getTypeAsString();
@@ -193,7 +193,7 @@ public class FilteringManagerImpl implements FilteringManager {
 	}
 
 	@Override
-	public boolean isElementMatchingLinkTypeFilter(DecisionKnowledgeElement element) {
+	public boolean isElementMatchingLinkTypeFilter(KnowledgeElement element) {
 		if (filterSettings.getNamesOfSelectedLinkTypes().size() == filterSettings.getAllLinkTypes().size()) {
 			return true;
 		}

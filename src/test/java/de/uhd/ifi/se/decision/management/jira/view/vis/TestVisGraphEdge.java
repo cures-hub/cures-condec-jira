@@ -7,9 +7,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -20,7 +20,7 @@ public class TestVisGraphEdge extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		DecisionKnowledgeElement from = new DecisionKnowledgeElementImpl();
+		KnowledgeElement from = new KnowledgeElementImpl();
 		from.setId(1);
 		from.setKey("Test-1");
 		from.setType("Argument");
@@ -29,7 +29,7 @@ public class TestVisGraphEdge extends TestSetUp {
 		from.setSummary("TESTfwf");
 		from.setDocumentationLocation("i");
 
-		DecisionKnowledgeElement to = new DecisionKnowledgeElementImpl();
+		KnowledgeElement to = new KnowledgeElementImpl();
 		to.setId(1);
 		to.setKey("Test-1");
 		to.setType("Argument");

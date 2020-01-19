@@ -17,7 +17,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.ConDecEventListener;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -62,10 +62,10 @@ public abstract class TestSetUpEventListener extends TestSetUp {
 		return false;
 	}
 
-	protected DecisionKnowledgeElement getFirstElementInComment(Comment comment) {
+	protected KnowledgeElement getFirstElementInComment(Comment comment) {
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
 				.getJiraIssueTextManager();
-		List<DecisionKnowledgeElement> elements = persistenceManager.getElementsInComment(comment.getId());
+		List<KnowledgeElement> elements = persistenceManager.getElementsInComment(comment.getId());
 		if (elements.size() > 0) {
 			return elements.get(0);
 		}

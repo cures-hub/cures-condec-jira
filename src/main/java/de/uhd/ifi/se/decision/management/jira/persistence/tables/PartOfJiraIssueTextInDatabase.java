@@ -2,7 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence.tables;
 
 import java.sql.SQLException;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
 import net.java.ao.schema.PrimaryKey;
@@ -13,7 +13,7 @@ import net.java.ao.schema.Table;
  * the description. Determines which table columns are used for object
  * relational mapping to the database.
  * 
- * @see DecisionKnowledgeElement
+ * @see KnowledgeElement
  */
 @Table("CondecInComment")
 public interface PartOfJiraIssueTextInDatabase extends RawEntity<Long> {

@@ -9,15 +9,13 @@ import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 
-public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<DecisionKnowledgeElement, Link>
-		implements KnowledgeGraph {
+public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<KnowledgeElement, Link> implements KnowledgeGraph {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeGraphImpl.class);
 
@@ -38,20 +36,20 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<DecisionKnowl
 	}
 
 	private void addNodes() {
-		List<DecisionKnowledgeElement> elements = persistenceManager.getDecisionKnowledgeElements();
-		for (DecisionKnowledgeElement element : elements) {
+		List<KnowledgeElement> elements = persistenceManager.getDecisionKnowledgeElements();
+		for (KnowledgeElement element : elements) {
 			addVertex(element);
 		}
 	}
 
 	private void addEdges() {
-		for (Node node : this.vertexSet()) {
+		for (KnowledgeElement element : this.vertexSet()) {
 			AbstractPersistenceManagerForSingleLocation manager = persistenceManager
-					.getManagerForSingleLocation(node.getDocumentationLocation());
-			List<Link> links = manager.getLinks(node.getId());
+					.getManagerForSingleLocation(element.getDocumentationLocation());
+			List<Link> links = manager.getLinks(element.getId());
 			for (Link link : links) {
-				Node destination = link.getTarget();
-				Node source = link.getSource();
+				KnowledgeElement destination = link.getTarget();
+				KnowledgeElement source = link.getSource();
 				if (destination == null || source == null) {
 					continue;
 				}
@@ -70,10 +68,10 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<DecisionKnowl
 	@Override
 	public boolean addEdge(Link link) {
 		boolean isEdgeCreated = false;
-		DecisionKnowledgeElement source = link.getSource();
+		KnowledgeElement source = link.getSource();
 		addVertex(source);
 
-		DecisionKnowledgeElement destination = link.getTarget();
+		KnowledgeElement destination = link.getTarget();
 		addVertex(destination);
 
 		try {
@@ -85,20 +83,20 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<DecisionKnowl
 	}
 
 	@Override
-	public boolean updateNode(DecisionKnowledgeElement node) {
-		DecisionKnowledgeElement oldNode = null;
-		for (Node currentNode : vertexSet()) {
-			if (node.equals(currentNode)) {
-				oldNode = (DecisionKnowledgeElement) currentNode;
+	public boolean updateNode(KnowledgeElement node) {
+		KnowledgeElement oldElement = null;
+		for (KnowledgeElement currentElement : vertexSet()) {
+			if (node.equals(currentElement)) {
+				oldElement = currentElement;
 			}
 		}
-		if (oldNode == null) {
+		if (oldElement == null) {
 			return false;
 		}
-		return replaceVertex(oldNode, node);
+		return replaceVertex(oldElement, node);
 	}
 
-	private boolean replaceVertex(DecisionKnowledgeElement vertex, DecisionKnowledgeElement replace) {
+	private boolean replaceVertex(KnowledgeElement vertex, KnowledgeElement replace) {
 		Set<Link> newLinks = new HashSet<Link>();
 		for (Link edge : outgoingEdgesOf(vertex)) {
 			newLinks.add(new LinkImpl(replace, edge.getTarget()));
@@ -128,7 +126,7 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<DecisionKnowl
 	}
 
 	@Override
-	public Set<Link> edgesOf(DecisionKnowledgeElement element) {
+	public Set<Link> edgesOf(KnowledgeElement element) {
 		Set<Link> edges = new HashSet<Link>();
 		try {
 			edges = super.edgesOf(element);
@@ -139,8 +137,8 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<DecisionKnowl
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getUnlinkedElements(DecisionKnowledgeElement element) {
-		List<DecisionKnowledgeElement> elements = new ArrayList<>();
+	public List<KnowledgeElement> getUnlinkedElements(KnowledgeElement element) {
+		List<KnowledgeElement> elements = new ArrayList<>();
 		elements.addAll(this.vertexSet());
 		if (element == null) {
 			return elements;

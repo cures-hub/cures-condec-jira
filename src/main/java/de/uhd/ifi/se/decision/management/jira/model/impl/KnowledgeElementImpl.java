@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.model.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -14,9 +15,9 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -25,26 +26,29 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 
 /**
- * Model class for decision knowledge elements
+ * Model class for knowledge elements
  */
-public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKnowledgeElement {
+public class KnowledgeElementImpl implements KnowledgeElement {
 
+	protected long id;
+	protected DecisionKnowledgeProject project;
 	private String summary;
 	private String description;
 	protected KnowledgeType type;
 	private String key;
 	private Date created;
 	private Date closed;
+	protected DocumentationLocation documentationLocation;
 	protected KnowledgeStatus status;
 
-	public DecisionKnowledgeElementImpl() {
+	public KnowledgeElementImpl() {
 		this.description = "";
 		this.summary = "";
 		this.type = KnowledgeType.OTHER;
 	}
 
-	public DecisionKnowledgeElementImpl(long id, String summary, String description, KnowledgeType type,
-			String projectKey, String key, DocumentationLocation documentationLocation, KnowledgeStatus status) {
+	public KnowledgeElementImpl(long id, String summary, String description, KnowledgeType type, String projectKey,
+			String key, DocumentationLocation documentationLocation, KnowledgeStatus status) {
 		this.id = id;
 		this.summary = summary;
 		this.description = description;
@@ -55,27 +59,27 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 		this.status = status;
 	}
 
-	public DecisionKnowledgeElementImpl(long id, String projectKey, String documentationLocation) {
+	public KnowledgeElementImpl(long id, String projectKey, String documentationLocation) {
 		this.id = id;
 		this.project = new DecisionKnowledgeProjectImpl(projectKey);
 		this.documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocation);
 	}
 
-	public DecisionKnowledgeElementImpl(long id, String summary, String description, String type, String projectKey,
-			String key, String documentationLocation, String status) {
+	public KnowledgeElementImpl(long id, String summary, String description, String type, String projectKey, String key,
+			String documentationLocation, String status) {
 		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key,
 				DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation),
 				KnowledgeStatus.getKnowledgeStatus(status));
 	}
 
-	public DecisionKnowledgeElementImpl(long id, String summary, String description, String type, String projectKey,
-			String key, DocumentationLocation documentationLocation, String status) {
+	public KnowledgeElementImpl(long id, String summary, String description, String type, String projectKey, String key,
+			DocumentationLocation documentationLocation, String status) {
 		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key, documentationLocation,
 				KnowledgeStatus.getKnowledgeStatus(status));
 	}
 
-	public DecisionKnowledgeElementImpl(Issue issue) {
+	public KnowledgeElementImpl(Issue issue) {
 		if (issue != null) {
 			this.id = issue.getId();
 			this.summary = issue.getSummary();
@@ -215,7 +219,7 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 	@Override
 	@JsonProperty("documentationLocation")
 	public void setDocumentationLocation(String documentationLocation) {
-		if (documentationLocation == null || documentationLocation.equals("")) {
+		if (documentationLocation == null || documentationLocation.isBlank()) {
 			// TODO Add here persistence strategy chosen in project
 			this.documentationLocation = DocumentationLocation.JIRAISSUE;
 		}
@@ -259,8 +263,8 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 
 	@Override
 	public boolean existsInDatabase() {
-		DecisionKnowledgeElement elementInDatabase = KnowledgePersistenceManager.getOrCreate("")
-				.getDecisionKnowledgeElement(id, documentationLocation);
+		KnowledgeElement elementInDatabase = KnowledgePersistenceManager.getOrCreate("").getDecisionKnowledgeElement(id,
+				documentationLocation);
 		return elementInDatabase != null && elementInDatabase.getId() > 0;
 	}
 
@@ -277,6 +281,7 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 
 	@Override
 	public String toString() {
+		// return getDocumentationLocation().getIdentifier() + id;
 		return this.getDescription();
 	}
 
@@ -334,5 +339,25 @@ public class DecisionKnowledgeElementImpl extends NodeImpl implements DecisionKn
 	@XmlElement(name = "status")
 	public String getStatusAsString() {
 		return getStatus().toString();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object == null) {
+			return false;
+		}
+		if (object == this) {
+			return true;
+		}
+		if (!(object instanceof KnowledgeElement)) {
+			return false;
+		}
+		KnowledgeElement element = (KnowledgeElement) object;
+		return this.id == element.getId() && this.getDocumentationLocation() == element.getDocumentationLocation();
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, getDocumentationLocation());
 	}
 }

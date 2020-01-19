@@ -80,13 +80,13 @@ public enum KnowledgeStatus {
 	 * "decided".
 	 * 
 	 * @param formerElement
-	 *            {@link DecisionKnowledgeElement} before the change.
+	 *            {@link KnowledgeElement} before the change.
 	 * @param newElement
-	 *            {@link DecisionKnowledgeElement} after it was updated.
+	 *            {@link KnowledgeElement} after it was updated.
 	 * @return new status after the change of the {@link KnowledgeType}.
 	 */
-	public static KnowledgeStatus getNewKnowledgeStatusForType(DecisionKnowledgeElement formerElement,
-			DecisionKnowledgeElement newElement) {
+	public static KnowledgeStatus getNewKnowledgeStatusForType(KnowledgeElement formerElement,
+			KnowledgeElement newElement) {
 		return getNewKnowledgeStatusForType(formerElement.getType(), newElement.getType(), newElement.getStatus());
 	}
 
@@ -107,11 +107,11 @@ public enum KnowledgeStatus {
 	 * alternative becomes a decision.
 	 * 
 	 * @param newElement
-	 *            {@link DecisionKnowledgeElement} after it was updated.
+	 *            {@link KnowledgeElement} after it was updated.
 	 * @return new {@link KnowledgeType} after the change of the
 	 *         {@link KnowledgeStatus}.
 	 */
-	public static KnowledgeType getNewKnowledgeTypeForStatus(DecisionKnowledgeElement newElement) {
+	public static KnowledgeType getNewKnowledgeTypeForStatus(KnowledgeElement newElement) {
 		return getNewKnowledgeTypeForStatus(newElement.getStatus(), newElement.getType());
 	}
 
@@ -128,7 +128,7 @@ public enum KnowledgeStatus {
 		return formerType;
 	}
 
-	public static boolean isIssueResolved(DecisionKnowledgeElement parentElement, DecisionKnowledgeElement childElement) {
+	public static boolean isIssueResolved(KnowledgeElement parentElement, KnowledgeElement childElement) {
 		return parentElement.getType() == KnowledgeType.ISSUE && childElement.getType() == KnowledgeType.DECISION
 				&& childElement.getStatus() == KnowledgeStatus.DECIDED;
 	}

@@ -12,8 +12,8 @@ import org.junit.Test;
 import com.atlassian.jira.component.ComponentAccessor;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
@@ -24,13 +24,13 @@ public class TestInsertDecisionKnowledgeElement extends TestSetUp {
 
 	protected JiraIssueTextPersistenceManager manager;
 	protected PartOfJiraIssueText element;
-	protected DecisionKnowledgeElement decisionKnowledgeElement;
+	protected KnowledgeElement decisionKnowledgeElement;
 
 	@Before
 	public void setUp() {
 		init();
 		manager = new JiraIssueTextPersistenceManager("TEST");
-		decisionKnowledgeElement = new DecisionKnowledgeElementImpl(
+		decisionKnowledgeElement = new KnowledgeElementImpl(
 				ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-3"));
 		element = JiraIssues.addElementToDataBase();
 	}

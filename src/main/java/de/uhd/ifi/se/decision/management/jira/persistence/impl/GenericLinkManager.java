@@ -9,7 +9,7 @@ import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -74,7 +74,7 @@ public class GenericLinkManager {
 	 * @param documentationLocation
 	 *            {@link DocumentationLocation} of the knowledge element.
 	 * @return true if at least one link was deleted, false if no link was deleted.
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 */
 	public static boolean deleteLinksForElement(long elementId, DocumentationLocation documentationLocation) {
 		if (elementId <= 0 || documentationLocation == null) {
@@ -114,7 +114,7 @@ public class GenericLinkManager {
 	 * Returns all links (=edges) between all kinds of nodes in the
 	 * {@link KnowledgeGraph}, except of Jira issue links. If you want to get the
 	 * Jira {@link IssueLink}s only, use
-	 * {@link JiraIssuePersistenceManager#getLinks(DecisionKnowledgeElement)}.
+	 * {@link JiraIssuePersistenceManager#getLinks(KnowledgeElement)}.
 	 * 
 	 * @param element
 	 *            node in the {@link KnowledgeGraph}.
@@ -122,11 +122,11 @@ public class GenericLinkManager {
 	 *         (=edges) between all kinds of nodes in the {@link KnowledgeGraph},
 	 *         except of Jira issue links. If you want to get the Jira
 	 *         {@link IssueLink}s only, use
-	 *         {@link JiraIssuePersistenceManager#getLinks(DecisionKnowledgeElement)}.
+	 *         {@link JiraIssuePersistenceManager#getLinks(KnowledgeElement)}.
 	 * 
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 */
-	public static List<Link> getLinksForElement(DecisionKnowledgeElement element) {
+	public static List<Link> getLinksForElement(KnowledgeElement element) {
 		if (element == null) {
 			return new ArrayList<Link>();
 		}
@@ -137,7 +137,7 @@ public class GenericLinkManager {
 	 * Returns all links (=edges) between all kinds of nodes in the
 	 * {@link KnowledgeGraph}, except of Jira issue links. If you want to get the
 	 * Jira {@link IssueLink}s only, use
-	 * {@link JiraIssuePersistenceManager#getLinks(DecisionKnowledgeElement)}.
+	 * {@link JiraIssuePersistenceManager#getLinks(KnowledgeElement)}.
 	 * 
 	 * @param elementId
 	 *            id of the node.
@@ -147,7 +147,7 @@ public class GenericLinkManager {
 	 *         (=edges) between all kinds of nodes in the {@link KnowledgeGraph},
 	 *         except of Jira issue links.
 	 * 
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 */
 	public static List<Link> getLinksForElement(long elementId, DocumentationLocation documentationLocation) {
 		List<Link> links = new ArrayList<Link>();
@@ -169,7 +169,7 @@ public class GenericLinkManager {
 	 * Returns all outgoing links (=edges) from a node in the
 	 * {@link KnowledgeGraph}, except of Jira issue links. If you want to get the
 	 * Jira {@link IssueLink}s only, use
-	 * {@link JiraIssuePersistenceManager#getOutwardLinks(DecisionKnowledgeElement)}.
+	 * {@link JiraIssuePersistenceManager#getOutwardLinks(KnowledgeElement)}.
 	 * 
 	 * @param element
 	 *            node in the {@link KnowledgeGraph}.
@@ -177,11 +177,11 @@ public class GenericLinkManager {
 	 *         (=edges) between all kinds of nodes in the {@link KnowledgeGraph},
 	 *         except of Jira issue links. If you want to get the Jira
 	 *         {@link IssueLink}s only, use
-	 *         {@link JiraIssuePersistenceManager#getLinks(DecisionKnowledgeElement)}.
+	 *         {@link JiraIssuePersistenceManager#getLinks(KnowledgeElement)}.
 	 * 
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 */
-	public static List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
+	public static List<Link> getOutwardLinks(KnowledgeElement element) {
 		String identifier = element.getDocumentationLocation().getIdentifier();
 		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select()
 				.where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", element.getId(), identifier));
@@ -198,7 +198,7 @@ public class GenericLinkManager {
 	 * Returns all ingoing links (=edges) to a node in the {@link KnowledgeGraph},
 	 * except of Jira issue links. If you want to get the Jira {@link IssueLink}s
 	 * only, use
-	 * {@link JiraIssuePersistenceManager#getOutwardLinks(DecisionKnowledgeElement)}.
+	 * {@link JiraIssuePersistenceManager#getOutwardLinks(KnowledgeElement)}.
 	 * 
 	 * @param element
 	 *            node in the {@link KnowledgeGraph}.
@@ -206,11 +206,11 @@ public class GenericLinkManager {
 	 *         (=edges) between all kinds of nodes in the {@link KnowledgeGraph},
 	 *         except of Jira issue links. If you want to get the Jira
 	 *         {@link IssueLink}s only, use
-	 *         {@link JiraIssuePersistenceManager#getLinks(DecisionKnowledgeElement)}.
+	 *         {@link JiraIssuePersistenceManager#getLinks(KnowledgeElement)}.
 	 * 
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 */
-	public static List<Link> getInwardLinks(DecisionKnowledgeElement element) {
+	public static List<Link> getInwardLinks(KnowledgeElement element) {
 		String identifier = element.getDocumentationLocation().getIdentifier();
 		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select()
 				.where("DESTINATION_ID = ? AND DEST_DOCUMENTATION_LOCATION = ?", element.getId(), identifier));
@@ -248,12 +248,12 @@ public class GenericLinkManager {
 		}
 
 		final LinkInDatabase linkInDatabase = ACTIVE_OBJECTS.create(LinkInDatabase.class);
-		DecisionKnowledgeElement sourceElement = link.getSource();
+		KnowledgeElement sourceElement = link.getSource();
 		String documentationLocationOfSourceElement = sourceElement.getDocumentationLocation().getIdentifier();
 		linkInDatabase.setSourceDocumentationLocation(documentationLocationOfSourceElement);
 		linkInDatabase.setSourceId(sourceElement.getId());
 
-		DecisionKnowledgeElement destinationElement = link.getTarget();
+		KnowledgeElement destinationElement = link.getTarget();
 		String documentationLocationOfDestinationElement = destinationElement.getDocumentationLocation()
 				.getIdentifier();
 		linkInDatabase.setDestinationId(destinationElement.getId());

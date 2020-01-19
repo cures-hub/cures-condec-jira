@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
@@ -48,22 +48,22 @@ public class WebhookConnector {
 				ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
 	}
 
-	public boolean sendElementChanges(DecisionKnowledgeElement changedElement) {
+	public boolean sendElementChanges(KnowledgeElement changedElement) {
 		boolean isSubmitted = false;
 		if (!checkIfDataIsValid(changedElement)) {
 			return isSubmitted;
 		}
-		List<DecisionKnowledgeElement> rootElements = getWebhookRootElements(changedElement);
+		List<KnowledgeElement> rootElements = getWebhookRootElements(changedElement);
 		isSubmitted = postKnowledgeTrees(rootElements);
 		return isSubmitted;
 	}
 
-	public boolean deleteElement(DecisionKnowledgeElement elementToBeDeleted, ApplicationUser user) {
+	public boolean deleteElement(KnowledgeElement elementToBeDeleted, ApplicationUser user) {
 		if (!checkIfDataIsValid(elementToBeDeleted)) {
 			return false;
 		}
 
-		List<DecisionKnowledgeElement> rootElements = getWebhookRootElements(elementToBeDeleted);
+		List<KnowledgeElement> rootElements = getWebhookRootElements(elementToBeDeleted);
 		String type = elementToBeDeleted.getTypeAsString();
 
 		for (String rootType : rootTypes) {
@@ -80,8 +80,8 @@ public class WebhookConnector {
 		return isDeleted;
 	}
 
-	private boolean postKnowledgeTrees(List<DecisionKnowledgeElement> rootElements) {
-		for (DecisionKnowledgeElement rootElement : rootElements) {
+	private boolean postKnowledgeTrees(List<KnowledgeElement> rootElements) {
+		for (KnowledgeElement rootElement : rootElements) {
 			if (!postKnowledgeTree(rootElement)) {
 				return false;
 			}
@@ -89,14 +89,14 @@ public class WebhookConnector {
 		return true;
 	}
 
-	private List<DecisionKnowledgeElement> getWebhookRootElements(DecisionKnowledgeElement element) {
-		List<DecisionKnowledgeElement> webhookRootElements = new ArrayList<DecisionKnowledgeElement>();
+	private List<KnowledgeElement> getWebhookRootElements(KnowledgeElement element) {
+		List<KnowledgeElement> webhookRootElements = new ArrayList<KnowledgeElement>();
 
 		AbstractPersistenceManagerForSingleLocation strategy = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueManager();
-		List<DecisionKnowledgeElement> linkedElements = strategy.getAdjacentElements(element);
+		List<KnowledgeElement> linkedElements = strategy.getAdjacentElements(element);
 		linkedElements.add(element);
-		for (DecisionKnowledgeElement linkedElement : linkedElements) {
+		for (KnowledgeElement linkedElement : linkedElements) {
 			if (elementIds.contains(linkedElement.getId())) {
 				continue;
 			}
@@ -112,7 +112,7 @@ public class WebhookConnector {
 		return webhookRootElements;
 	}
 
-	private boolean postKnowledgeTree(DecisionKnowledgeElement rootElement) {
+	private boolean postKnowledgeTree(KnowledgeElement rootElement) {
 		WebhookContentProvider provider = new WebhookContentProvider(projectKey, rootElement.getKey(), secret);
 		PostMethod postMethod = provider.createPostMethod();
 		try {
@@ -129,7 +129,7 @@ public class WebhookConnector {
 		return false;
 	}
 
-	private boolean checkIfDataIsValid(DecisionKnowledgeElement changedElement) {
+	private boolean checkIfDataIsValid(KnowledgeElement changedElement) {
 		if (url == null || url.equals("")) {
 			LOGGER.error("Could not trigger webhook data because the url is missing.");
 			return false;

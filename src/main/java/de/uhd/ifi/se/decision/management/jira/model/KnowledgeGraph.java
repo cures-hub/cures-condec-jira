@@ -21,7 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
  * @see Graph
  */
 @JsonDeserialize(as = KnowledgeGraphImpl.class)
-public interface KnowledgeGraph extends Graph<DecisionKnowledgeElement, Link> {
+public interface KnowledgeGraph extends Graph<KnowledgeElement, Link> {
 
 	/**
 	 * Instances of knowledge graphs that are identified by the project key.
@@ -109,7 +109,7 @@ public interface KnowledgeGraph extends Graph<DecisionKnowledgeElement, Link> {
 	 * 
 	 * @param node
 	 */
-	boolean updateNode(DecisionKnowledgeElement node);
+	boolean updateNode(KnowledgeElement node);
 
 	/**
 	 * Returns all unlinked elements of the knowledge element for a project. Sorts
@@ -121,10 +121,10 @@ public interface KnowledgeGraph extends Graph<DecisionKnowledgeElement, Link> {
 	 * @issue How can the sorting be implemented?
 	 *
 	 * @param element
-	 *            {@link DecisionKnowledgeElement} with id in database. The id is
+	 *            {@link KnowledgeElement} with id in database. The id is
 	 *            different to the key.
 	 * @return set of unlinked elements, sorted by the likelihood that they should
 	 *         be linked.
 	 */
-	List<DecisionKnowledgeElement> getUnlinkedElements(DecisionKnowledgeElement element);
+	List<KnowledgeElement> getUnlinkedElements(KnowledgeElement element);
 }

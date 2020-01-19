@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -33,10 +33,10 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @param user
 	 *            authenticated Jira application user
 	 * @return true if deleting was successful.
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @see ApplicationUser
 	 */
-	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
+	public boolean deleteDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		return this.deleteDecisionKnowledgeElement(element.getId(), user);
 	}
 
@@ -48,7 +48,7 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @param user
 	 *            authenticated Jira application user
 	 * @return true if deleting was successful.
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @see ApplicationUser
 	 */
 	public abstract boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user);
@@ -59,17 +59,17 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @param id
 	 *            id of the decision knowledge element in database.
 	 * @return decision knowledge element.
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 */
-	public abstract DecisionKnowledgeElement getDecisionKnowledgeElement(long id);
+	public abstract KnowledgeElement getDecisionKnowledgeElement(long id);
 
 	/**
 	 * Get a decision knowledge element in database by its key.
 	 *
 	 * @return decision knowledge element.
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 */
-	public abstract DecisionKnowledgeElement getDecisionKnowledgeElement(String key);
+	public abstract KnowledgeElement getDecisionKnowledgeElement(String key);
 
 	/**
 	 * Get all decision knowledge elements for a project of a certain documentation
@@ -77,10 +77,10 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 *
 	 * @return list of all decision knowledge elements for a project of a certain
 	 *         documentation location.
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @see DecisionKnowledgeProject
 	 */
-	public abstract List<DecisionKnowledgeElement> getDecisionKnowledgeElements();
+	public abstract List<KnowledgeElement> getDecisionKnowledgeElements();
 
 	/**
 	 * Get all decision knowledge elements for a project of a certain documentation
@@ -89,16 +89,16 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 *
 	 * @return list of all decision knowledge elements for a project with a certain
 	 *         knowledge type of a certain documentation location.
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @see DecisionKnowledgeProject
 	 * @see KnowledgeType
 	 */
-	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type) {
+	public List<KnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type) {
 		KnowledgeType simpleType = type.replaceProAndConWithArgument();
-		List<DecisionKnowledgeElement> elements = this.getDecisionKnowledgeElements();
-		Iterator<DecisionKnowledgeElement> iterator = elements.iterator();
+		List<KnowledgeElement> elements = this.getDecisionKnowledgeElements();
+		Iterator<KnowledgeElement> iterator = elements.iterator();
 		while (iterator.hasNext()) {
-			DecisionKnowledgeElement element = iterator.next();
+			KnowledgeElement element = iterator.next();
 			if (element.getType().replaceProAndConWithArgument() != simpleType) {
 				iterator.remove();
 			}
@@ -114,13 +114,13 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 *            decision knowledge element with id in database.
 	 * @return list of linked elements where this decision knowledge element is the
 	 *         destination element.
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @see Link
 	 * @see DecisionKnowledgeProject
 	 */
-	public List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element) {
+	public List<KnowledgeElement> getElementsLinkedWithInwardLinks(KnowledgeElement element) {
 		List<Link> inwardLinks = getInwardLinks(element);
-		List<DecisionKnowledgeElement> sourceElements = new ArrayList<DecisionKnowledgeElement>();
+		List<KnowledgeElement> sourceElements = new ArrayList<KnowledgeElement>();
 		for (Link link : inwardLinks) {
 			sourceElements.add(link.getSource());
 		}
@@ -135,13 +135,13 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 *            decision knowledge element with id in database.
 	 * @return list of linked elements where this decision knowledge element is the
 	 *         source element.
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @see Link
 	 * @see DecisionKnowledgeProject
 	 */
-	public List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement element) {
+	public List<KnowledgeElement> getElementsLinkedWithOutwardLinks(KnowledgeElement element) {
 		List<Link> outwardLinks = getOutwardLinks(element);
-		List<DecisionKnowledgeElement> destinationElements = new ArrayList<DecisionKnowledgeElement>();
+		List<KnowledgeElement> destinationElements = new ArrayList<KnowledgeElement>();
 		for (Link link : outwardLinks) {
 			destinationElements.add(link.getTarget());
 		}
@@ -158,7 +158,7 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 *         destination element.
 	 * @see Link
 	 */
-	public abstract List<Link> getInwardLinks(DecisionKnowledgeElement element);
+	public abstract List<Link> getInwardLinks(KnowledgeElement element);
 
 	/**
 	 * Get all adjacent elements of the decision knowledge element for a project. It
@@ -168,11 +168,11 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @param element
 	 *            decision knowledge element with id in database.
 	 * @return list of adjacent elements.
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @see DecisionKnowledgeProject
 	 */
-	public List<DecisionKnowledgeElement> getAdjacentElements(DecisionKnowledgeElement element) {
-		List<DecisionKnowledgeElement> linkedElements = new ArrayList<DecisionKnowledgeElement>();
+	public List<KnowledgeElement> getAdjacentElements(KnowledgeElement element) {
+		List<KnowledgeElement> linkedElements = new ArrayList<KnowledgeElement>();
 		linkedElements.addAll(this.getElementsLinkedWithOutwardLinks(element));
 		linkedElements.addAll(this.getElementsLinkedWithInwardLinks(element));
 		return linkedElements;
@@ -187,11 +187,11 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 *            id of a decision knowledge element in database. The id is
 	 *            different to the key.
 	 * @return list of adjacent elements.
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @see DecisionKnowledgeProject
 	 */
-	public List<DecisionKnowledgeElement> getAdjacentElements(long id) {
-		DecisionKnowledgeElement element = this.getDecisionKnowledgeElement(id);
+	public List<KnowledgeElement> getAdjacentElements(long id) {
+		KnowledgeElement element = this.getDecisionKnowledgeElement(id);
 		return this.getAdjacentElements(element);
 	}
 
@@ -205,7 +205,7 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 *         the source or the destination element.
 	 * @see Link
 	 */
-	public List<Link> getLinks(DecisionKnowledgeElement element) {
+	public List<Link> getLinks(KnowledgeElement element) {
 		List<Link> links = new ArrayList<Link>();
 		links.addAll(this.getInwardLinks(element));
 		links.addAll(this.getOutwardLinks(element));
@@ -222,7 +222,7 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 *         the source or the destination element.
 	 */
 	public List<Link> getLinks(long id) {
-		DecisionKnowledgeElement element = this.getDecisionKnowledgeElement(id);
+		KnowledgeElement element = this.getDecisionKnowledgeElement(id);
 		return this.getLinks(element);
 	}
 
@@ -235,7 +235,7 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @return list of links where the given decision knowledge element is the
 	 *         source element.
 	 */
-	public abstract List<Link> getOutwardLinks(DecisionKnowledgeElement element);
+	public abstract List<Link> getOutwardLinks(KnowledgeElement element);
 
 	/**
 	 * Insert a new decision knowledge element into database.
@@ -251,11 +251,11 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 *            authenticated Jira application user
 	 * @return decision knowledge element that is now filled with an internal
 	 *         database id and key. Returns null if insertion failed.
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @see ApplicationUser
 	 */
-	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
-			ApplicationUser user, DecisionKnowledgeElement parentElement) {
+	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element,
+			ApplicationUser user, KnowledgeElement parentElement) {
 		return insertDecisionKnowledgeElement(element, user);
 	}
 
@@ -269,10 +269,10 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 *            authenticated Jira application user
 	 * @return decision knowledge element that is now filled with an internal
 	 *         database id and key. Returns null if insertion failed.
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @see ApplicationUser
 	 */
-	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
+	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element,
 			ApplicationUser user) {
 		return null;
 	}
@@ -285,10 +285,10 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @param user
 	 *            authenticated Jira application user
 	 * @return true if updating was successful.
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @see ApplicationUser
 	 */
-	public abstract boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
+	public abstract boolean updateDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user);
 
 	/**
 	 * Returns the creator of an element as an application user object.
@@ -297,7 +297,7 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 *            decision knowledge element with id in database.
 	 * @return creator of an element as an {@link ApplicationUser} object.
 	 */
-	public abstract ApplicationUser getCreator(DecisionKnowledgeElement element);
+	public abstract ApplicationUser getCreator(KnowledgeElement element);
 
 	public DocumentationLocation getDocumentationLocation() {
 		return documentationLocation;

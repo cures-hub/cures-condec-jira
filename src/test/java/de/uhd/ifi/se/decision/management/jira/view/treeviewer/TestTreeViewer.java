@@ -21,9 +21,9 @@ import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
@@ -122,14 +122,14 @@ public class TestTreeViewer extends TestSetUp {
 	@Test(expected = NullPointerException.class)
 	@NonTransactional
 	public void testGetDataStructureEmpty() {
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+		KnowledgeElement element = new KnowledgeElementImpl();
 		System.out.println(treeViewer.getDataStructure(element));
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetDataStructureFilled() {
-		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(14);
+		KnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(14);
 		assertNotNull(element);
 		assertEquals(14, element.getId());
 		assertEquals("TEST-14", element.getKey());
@@ -146,7 +146,7 @@ public class TestTreeViewer extends TestSetUp {
 	@NonTransactional
 	public void testEmptyGraphGetDataStructure() {
 		TreeViewer tree = new TreeViewer();
-		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(14);
+		KnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(14);
 		assertEquals("tv14", tree.getDataStructure(element).getId());
 	}
 
@@ -164,7 +164,7 @@ public class TestTreeViewer extends TestSetUp {
 	@NonTransactional
 	public void testTreeViewerCalledFromTabpanel() {
 		// 1) Check if Tree Element has no Children - Important!
-		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(14);
+		KnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(14);
 		TreeViewer tv = new TreeViewer(element.getKey(), selectedKnowledgeTypes);
 		assertNotNull(tv);
 		assertEquals(0, tv.getDataStructure(element).getChildren().size());

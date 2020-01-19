@@ -14,7 +14,7 @@ import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -123,7 +123,7 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 		stripTagsFromBody(text);
 	}
 
-	public PartOfJiraIssueTextImpl(DecisionKnowledgeElement element) {
+	public PartOfJiraIssueTextImpl(KnowledgeElement element) {
 		this.setId(element.getId());
 		this.setType(element.getType());
 		this.setSummary(element.getSummary());

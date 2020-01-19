@@ -7,9 +7,9 @@ import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -31,8 +31,8 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
     private ClassificationManagerForJiraIssueComments classificationManager;
     private Issue issue;
 
-    private DecisionKnowledgeElement createElement(KnowledgeType type, String summary) {
-        DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+    private KnowledgeElement createElement(KnowledgeType type, String summary) {
+        KnowledgeElement element = new KnowledgeElementImpl();
         element.setType(type);
         element.setSummary(summary);
         return element;
@@ -51,8 +51,8 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
         fillSentenceList();
     }
 
-    private List<DecisionKnowledgeElement> getTrainingData() {
-        List<DecisionKnowledgeElement> trainingElements = new ArrayList<DecisionKnowledgeElement>();
+    private List<KnowledgeElement> getTrainingData() {
+        List<KnowledgeElement> trainingElements = new ArrayList<KnowledgeElement>();
         trainingElements.add(createElement(KnowledgeType.ISSUE, "I have an issue"));
         trainingElements.add(createElement(KnowledgeType.DECISION, "Thats is a Decision"));
         trainingElements.add(createElement(KnowledgeType.ALTERNATIVE, "This is an Alternative"));
