@@ -64,7 +64,7 @@ public enum DocumentationLocation {
 		return name;
 	}
 
-	public static String getIdentifier(DecisionKnowledgeElement element) {
+	public static String getIdentifier(KnowledgeElement element) {
 		if (element == null || element.getDocumentationLocation() == null) {
 			return UNKNOWN.identifier;
 		}

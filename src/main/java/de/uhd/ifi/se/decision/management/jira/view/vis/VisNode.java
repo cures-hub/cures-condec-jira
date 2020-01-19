@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 
 /**
@@ -37,7 +37,7 @@ public class VisNode {
 	public VisNode() {
 	}
 
-	public VisNode(DecisionKnowledgeElement element, boolean collapsed, int level, int cid) {
+	public VisNode(KnowledgeElement element, boolean collapsed, int level, int cid) {
 		this.setId(element.getId() + "_" + element.getDocumentationLocationAsString());
 		this.level = level;
 		this.cid = cid;
@@ -63,7 +63,7 @@ public class VisNode {
 		}
 	}
 
-	public VisNode(DecisionKnowledgeElement element, String type, boolean collapsed, int level, int cid) {
+	public VisNode(KnowledgeElement element, String type, boolean collapsed, int level, int cid) {
 		this(element, collapsed, level, cid);
 		if (collapsed) {
 			this.setGroup(type);

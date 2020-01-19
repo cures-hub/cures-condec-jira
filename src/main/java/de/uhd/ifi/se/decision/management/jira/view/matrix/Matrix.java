@@ -8,24 +8,24 @@ import java.util.TreeMap;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
 public class Matrix {
 	@XmlElement
-	private List<DecisionKnowledgeElement> headerElements;
+	private List<KnowledgeElement> headerElements;
 
 	@XmlElement
 	private List<List<String>> coloredRows;
 
-	public Matrix(String projectKey, List<DecisionKnowledgeElement> decisions) {
+	public Matrix(String projectKey, List<KnowledgeElement> decisions) {
 		this.headerElements = decisions;
 		this.coloredRows = this.getColoredRows(projectKey);
 	}
 
-	public List<DecisionKnowledgeElement> getHeaderElements() {
+	public List<KnowledgeElement> getHeaderElements() {
 		return headerElements;
 	}
 
@@ -38,11 +38,11 @@ public class Matrix {
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
 		Set<Link> links = graph.edgeSet();
 
-		for (DecisionKnowledgeElement sourceDecision : this.headerElements) {
+		for (KnowledgeElement sourceDecision : this.headerElements) {
 			List<String> row = new ArrayList<String>();
 			Map<Long, String> linksOfRow = this.getLinksForRow(links, sourceDecision);
 
-			for (DecisionKnowledgeElement targetDecision : this.headerElements) {
+			for (KnowledgeElement targetDecision : this.headerElements) {
 				if (targetDecision.getId() == sourceDecision.getId()) {
 					row.add("LightGray");
 				} else if (linksOfRow.get(targetDecision.getId()) != null) {
@@ -56,7 +56,7 @@ public class Matrix {
 		return coloredRows;
 	}
 
-	private Map<Long, String> getLinksForRow(Set<Link> links, DecisionKnowledgeElement decision) {
+	private Map<Long, String> getLinksForRow(Set<Link> links, KnowledgeElement decision) {
 		Map<Long, String> linksForRow = new TreeMap<Long, String>();
 		for (Link link : links) {
 			if (link.getSource().getId() == decision.getId()) {

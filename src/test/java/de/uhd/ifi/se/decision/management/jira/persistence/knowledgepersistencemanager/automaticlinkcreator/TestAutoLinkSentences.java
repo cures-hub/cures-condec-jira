@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -19,7 +19,7 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestAutoLinkSentences extends TestSetUp {
 
-	protected static DecisionKnowledgeElement element;
+	protected static KnowledgeElement element;
 
 	@Before
 	public void setUp() {
@@ -33,7 +33,7 @@ public class TestAutoLinkSentences extends TestSetUp {
 		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("{alternative}first sentence{alternative} {pro}second sentence{pro}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.get(1)).get(0);
-		DecisionKnowledgeElement oppositeElement = sentenceLink.getOppositeElement(comment.get(0));
+		KnowledgeElement oppositeElement = sentenceLink.getOppositeElement(comment.get(0));
 		assertNotNull(oppositeElement);
 		assertEquals(oppositeElement.getId(), comment.get(1).getId());
 	}
@@ -62,13 +62,13 @@ public class TestAutoLinkSentences extends TestSetUp {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText(
 				"{decision}first sentence{decision} {alternative}second sentence{alternative} {pro}third sentence{pro}");
 
-		DecisionKnowledgeElement decision = comment.get(0);
+		KnowledgeElement decision = comment.get(0);
 		assertEquals(KnowledgeType.DECISION, decision.getType());
 
-		DecisionKnowledgeElement alternative = comment.get(1);
+		KnowledgeElement alternative = comment.get(1);
 		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
 
-		DecisionKnowledgeElement argument = comment.get(2);
+		KnowledgeElement argument = comment.get(2);
 		assertEquals(KnowledgeType.PRO, argument.getType());
 
 		Link sentenceLink = GenericLinkManager.getLinksForElement(argument).get(0);

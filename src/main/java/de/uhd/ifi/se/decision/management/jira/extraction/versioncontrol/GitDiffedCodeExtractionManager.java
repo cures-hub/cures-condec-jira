@@ -3,12 +3,12 @@ package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 import de.uhd.ifi.se.decision.management.jira.extraction.CodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.JavaCodeCommentParser;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.Edit;
 import org.slf4j.Logger;
@@ -73,16 +73,16 @@ public class GitDiffedCodeExtractionManager {
 		processEntries();
 	}
 
-	public List<DecisionKnowledgeElement> getNewDecisionKnowledgeElements() {
+	public List<KnowledgeElement> getNewDecisionKnowledgeElements() {
 		return getNewOrOldDecisionKnowledgeElements(true);
 	}
 
-	public List<DecisionKnowledgeElement> getOldDecisionKnowledgeElements() {
+	public List<KnowledgeElement> getOldDecisionKnowledgeElements() {
 		return getNewOrOldDecisionKnowledgeElements(false);
 	}
 
-	private List<DecisionKnowledgeElement> getNewOrOldDecisionKnowledgeElements(boolean getNew) {
-		List<DecisionKnowledgeElement> resultValues = new ArrayList<>();
+	private List<KnowledgeElement> getNewOrOldDecisionKnowledgeElements(boolean getNew) {
+		List<KnowledgeElement> resultValues = new ArrayList<>();
 		/*
 			@issue: one rationale modified by more than one edit line.
 			Problem was found in refs/remotes/origin/CONDEC-534.branch.filtering.improvements.RC2
@@ -113,18 +113,18 @@ public class GitDiffedCodeExtractionManager {
 					newPath = OLD_FILE_SYMBOL_PREPENDER + dEntry.getKey().getOldPath();
 				}
 				if (dEntry.getValue() != null) {
-					Map<Edit, List<DecisionKnowledgeElement>> codeExtractionResult;
+					Map<Edit, List<KnowledgeElement>> codeExtractionResult;
 					if (getNew) {
 						codeExtractionResult = dEntry.getValue().diffedElementsInNewerVersion;
 					} else {
 						codeExtractionResult = dEntry.getValue().diffedElementsInOlderVersion;
 					}
 					if (codeExtractionResult.size() > 0) {
-						for (Map.Entry<Edit, List<DecisionKnowledgeElement>> editListEntry : codeExtractionResult
+						for (Map.Entry<Edit, List<KnowledgeElement>> editListEntry : codeExtractionResult
 								.entrySet()) {
 							if (editListEntry.getKey()!=null) {
 								resultValues.addAll(editListEntry.getValue().stream().map(d -> {
-									DecisionKnowledgeElement n = new DecisionKnowledgeElementImpl();
+									KnowledgeElement n = new KnowledgeElementImpl();
 									n.setDocumentationLocation(d.getDocumentationLocation());
 									n.setDescription(d.getDescription());
 									n.setId(d.getId());
@@ -143,7 +143,7 @@ public class GitDiffedCodeExtractionManager {
 							}
 							else {
 								resultValues.addAll(editListEntry.getValue().stream().map(d -> {
-									DecisionKnowledgeElement n = new DecisionKnowledgeElementImpl();
+									KnowledgeElement n = new KnowledgeElementImpl();
 									n.setDocumentationLocation(d.getDocumentationLocation());
 									n.setDescription(d.getDescription());
 									n.setId(d.getId());
@@ -216,7 +216,7 @@ public class GitDiffedCodeExtractionManager {
 		String fileBRelativePath = adjustOSsPathSeparator(changedFile.getDiffEntry().getNewPath());
 		List<CodeComment> commentsInFile = getCommentsFromFile(fileBRelativePath, fromNewerFile);
 
-		Map<Edit, List<DecisionKnowledgeElement>> elementsByEdit = getRationaleFromComments(fromNewerFile,
+		Map<Edit, List<KnowledgeElement>> elementsByEdit = getRationaleFromComments(fromNewerFile,
 				commentsInFile, changedFile);
 
 		returnCodeExtractionResult.diffedElementsInNewerVersion = elementsByEdit;
@@ -232,7 +232,7 @@ public class GitDiffedCodeExtractionManager {
 		String fileARelativePath = adjustOSsPathSeparator(changedFile.getDiffEntry().getNewPath());
 		List<CodeComment> commentsInFile = getCommentsFromFile(fileARelativePath, fromNewerFile);
 
-		Map<Edit, List<DecisionKnowledgeElement>> elementsByEdit = getRationaleFromComments(fromNewerFile,
+		Map<Edit, List<KnowledgeElement>> elementsByEdit = getRationaleFromComments(fromNewerFile,
 				commentsInFile, changedFile);
 
 		returnCodeExtractionResult.diffedElementsInOlderVersion = elementsByEdit;
@@ -249,10 +249,10 @@ public class GitDiffedCodeExtractionManager {
 		String fileBRelativePath = adjustOSsPathSeparator(changedFile.getDiffEntry().getNewPath());
 		List<CodeComment> commentsInFileB = getCommentsFromFile(fileBRelativePath, true);
 
-		Map<Edit, List<DecisionKnowledgeElement>> elementsByEditNew = getRationaleFromComments(true, commentsInFileB,
+		Map<Edit, List<KnowledgeElement>> elementsByEditNew = getRationaleFromComments(true, commentsInFileB,
 				changedFile);
 
-		Map<Edit, List<DecisionKnowledgeElement>> elementsByEditOld = getRationaleFromComments(false, commentsInFileA,
+		Map<Edit, List<KnowledgeElement>> elementsByEditOld = getRationaleFromComments(false, commentsInFileA,
 				changedFile);
 
 		returnCodeExtractionResult.diffedElementsInNewerVersion = elementsByEditNew;
@@ -261,10 +261,10 @@ public class GitDiffedCodeExtractionManager {
 		return returnCodeExtractionResult;
 	}
 
-	private Map<Edit, List<DecisionKnowledgeElement>> getRationaleFromComments(boolean newerFile,
+	private Map<Edit, List<KnowledgeElement>> getRationaleFromComments(boolean newerFile,
 			List<CodeComment> commentsInFile, ChangedFile changedFile) {
 
-		Map<Edit, List<DecisionKnowledgeElement>> returnMap = new HashMap<>();
+		Map<Edit, List<KnowledgeElement>> returnMap = new HashMap<>();
 
 		RationaleFromDiffCodeCommentExtractor rationaleFromDiffCodeCommentExtractor = new RationaleFromDiffCodeCommentExtractor(
 				commentsInFile, changedFile.getEditList());
@@ -332,10 +332,10 @@ public class GitDiffedCodeExtractionManager {
 	private class CodeExtractionResult {
 		public int sequence = -1;
 		/* list of elements modified/created with diff in a file */
-		public Map<Edit, List<DecisionKnowledgeElement>> diffedElementsInNewerVersion = new HashMap<>();
+		public Map<Edit, List<KnowledgeElement>> diffedElementsInNewerVersion = new HashMap<>();
 		/* list of all elements present in file after diff */
-		public Map<DiffEntry, List<DecisionKnowledgeElement>> allElementsInNewerVersion = new HashMap<>();
+		public Map<DiffEntry, List<KnowledgeElement>> allElementsInNewerVersion = new HashMap<>();
 		/* list of old elements somehow affected by the diff in a file */
-		public Map<Edit, List<DecisionKnowledgeElement>> diffedElementsInOlderVersion = new HashMap<>();
+		public Map<Edit, List<KnowledgeElement>> diffedElementsInOlderVersion = new HashMap<>();
 	}
 }

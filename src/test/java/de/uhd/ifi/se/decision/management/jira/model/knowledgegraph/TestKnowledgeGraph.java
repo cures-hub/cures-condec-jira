@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -89,13 +89,13 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testUpdateNode() {
-		DecisionKnowledgeElement node = (DecisionKnowledgeElement) graph.vertexSet().iterator().next();
+		KnowledgeElement node = (KnowledgeElement) graph.vertexSet().iterator().next();
 		assertEquals("WI: Implement feature", node.getSummary());
 		node.setSummary("Updated");
 		assertEquals(2, graph.edgesOf(node).size());
 
 		KnowledgePersistenceManager.getOrCreate("TEST").updateDecisionKnowledgeElement(node, null);
-		node = (DecisionKnowledgeElement) graph.vertexSet().iterator().next();
+		node = (KnowledgeElement) graph.vertexSet().iterator().next();
 		assertEquals("Updated", node.getSummary());
 		assertEquals(2, graph.edgesOf(node).size());
 	}

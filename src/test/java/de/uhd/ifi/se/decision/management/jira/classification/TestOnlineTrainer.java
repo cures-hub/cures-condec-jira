@@ -2,9 +2,9 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -30,15 +30,15 @@ public class TestOnlineTrainer extends TestSetUp {
         init();
     }
 
-    public static DecisionKnowledgeElement createElement(KnowledgeType type, String summary) {
-        DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+    public static KnowledgeElement createElement(KnowledgeType type, String summary) {
+        KnowledgeElement element = new KnowledgeElementImpl();
         element.setType(type);
         element.setSummary(summary);
         return element;
     }
 
-    public static List<DecisionKnowledgeElement> getTrainingData() {
-        List<DecisionKnowledgeElement> trainingElements = new ArrayList<DecisionKnowledgeElement>();
+    public static List<KnowledgeElement> getTrainingData() {
+        List<KnowledgeElement> trainingElements = new ArrayList<KnowledgeElement>();
         trainingElements.add(createElement(KnowledgeType.ISSUE, "Issue"));
         trainingElements.add(createElement(KnowledgeType.DECISION, "Decision"));
         trainingElements.add(createElement(KnowledgeType.ALTERNATIVE, "Alternative"));
@@ -69,7 +69,7 @@ public class TestOnlineTrainer extends TestSetUp {
     @Test
     @NonTransactional
     public void testClassificationTrainerSetTrainingData() {
-        List<DecisionKnowledgeElement> trainingElements = getTrainingData();
+        List<KnowledgeElement> trainingElements = getTrainingData();
         OnlineTrainer trainer = new OnlineFileTrainerImpl("TEST");
         trainer.setTrainingData(trainingElements);
         //assertNotNull(trainer.getInstances());
@@ -79,7 +79,7 @@ public class TestOnlineTrainer extends TestSetUp {
     @Test
     @NonTransactional
     public void testClassificationTrainerFromArffFile() {
-        List<DecisionKnowledgeElement> trainingElements = getTrainingData();
+        List<KnowledgeElement> trainingElements = getTrainingData();
 		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl("TEST", trainingElements);
         File file = trainer.saveTrainingFile(true);
         trainer.setTrainingFile(file);

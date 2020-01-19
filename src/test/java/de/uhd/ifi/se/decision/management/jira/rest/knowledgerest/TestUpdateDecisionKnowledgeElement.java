@@ -19,11 +19,11 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
@@ -35,7 +35,7 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 	private KnowledgeRest knowledgeRest;
-	private DecisionKnowledgeElement decisionKnowledgeElement;
+	private KnowledgeElement decisionKnowledgeElement;
 	private HttpServletRequest request;
 
 	private final static String BAD_REQUEST_ERROR = "Element could not be updated due to a bad request.";
@@ -46,7 +46,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 		init();
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
-		decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);
+		decisionKnowledgeElement = new KnowledgeElementImpl(issue);
 		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 
 		request = new MockHttpServletRequest();
@@ -58,7 +58,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 	@NonTransactional
 	public void testRequestFilledElementFilledParentElementExistingParentDocumentationLocationJiraIssue() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("This is a test sentence.");
-		DecisionKnowledgeElement sentence = comment.get(0);
+		KnowledgeElement sentence = comment.get(0);
 
 		Link link = new LinkImpl(sentence, decisionKnowledgeElement);
 		GenericLinkManager.insertLink(link, null);
@@ -69,7 +69,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 
 	@Test
 	public void testRequestFilledElementEmptyParentIdZeroParentDocumentationLocationEmpty() {
-		DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl();
+		KnowledgeElement decisionKnowledgeElement = new KnowledgeElementImpl();
 		decisionKnowledgeElement.setProject("TEST");
 
 		assertEquals(Status.NOT_FOUND.getStatusCode(),
@@ -85,7 +85,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 	@Test
 	public void testRequestNullElementFilledParentIdZeroParentDocumentationLocationNull() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("This is a test sentence.");
-		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
+		KnowledgeElement decisionKnowledgeElement = comment.get(0);
 		assertEquals(
 				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERROR)).build()
 						.getEntity(),
@@ -102,7 +102,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 	@NonTransactional
 	public void testRequestFilledElementFilledParentIdZeroParentDocumentationLocationNull() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("This is a test sentence.");
-		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
+		KnowledgeElement decisionKnowledgeElement = comment.get(0);
 		decisionKnowledgeElement.setType(KnowledgeType.ALTERNATIVE);
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, null).getStatus());
@@ -112,7 +112,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 	@NonTransactional
 	public void testRequestFilledElementFilledWithCommentChangedParentIdZeroParentDocumentationLocationEmpty() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("This is a test sentence.");
-		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
+		KnowledgeElement decisionKnowledgeElement = comment.get(0);
 		assertEquals(decisionKnowledgeElement.getType(), KnowledgeType.OTHER);
 
 		String newText = "some fancy new text";
@@ -132,7 +132,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 	public void testRequestFilledElementFilledWithCommentChangedCheckValidTextWithManuallTaggedComment() {
 		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("{issue}This is a test sentence.{Issue}");
-		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
+		KnowledgeElement decisionKnowledgeElement = comment.get(0);
 
 		String newText = "some fancy new text";
 		decisionKnowledgeElement.setDescription(newText);

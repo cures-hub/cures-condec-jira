@@ -14,7 +14,7 @@ import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.comments.Comment;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -37,7 +37,7 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 	@Ignore
 	public void testNoCommentContained() {
 		Comment comment = createCommentAndTestWhetherExistent("");
-		DecisionKnowledgeElement element = getFirstElementInComment(comment);
+		KnowledgeElement element = getFirstElementInComment(comment);
 		//This assert statement is correct when the test is executed using atlas.
 		assertNull(element);
 		//assertEquals("",element.getDescription());
@@ -47,7 +47,7 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 	@NonTransactional
 	public void testRationaleTag() {
 		Comment comment = createCommentAndTestWhetherExistent("{issue}This is a very severe issue.{issue}");
-		DecisionKnowledgeElement element = getFirstElementInComment(comment);
+		KnowledgeElement element = getFirstElementInComment(comment);
 		assertEquals("This is a very severe issue.", element.getDescription());
 		assertEquals(KnowledgeType.ISSUE, element.getType());
 	}
@@ -56,7 +56,7 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 	@NonTransactional
 	public void testExcludedTag() {
 		Comment comment = createCommentAndTestWhetherExistent("{code}public static class{code}");
-		DecisionKnowledgeElement element = getFirstElementInComment(comment);
+		KnowledgeElement element = getFirstElementInComment(comment);
 		assertEquals("{code}public static class{code}", element.getDescription());
 		assertEquals(KnowledgeType.OTHER, element.getType());
 	}
@@ -70,7 +70,7 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 		ao.deleteWithSQL(PartOfJiraIssueTextInDatabase.class, "ID = 1");
 		Comment comment = createCommentAndTestWhetherExistent("(!)This is a very severe issue.",
 				"{issue}This is a very severe issue.{issue}");
-		DecisionKnowledgeElement element = getFirstElementInComment(comment);
+		KnowledgeElement element = getFirstElementInComment(comment);
 		assertEquals("This is a very severe issue.", element.getDescription());
 		assertEquals(KnowledgeType.ISSUE, element.getType());
 	}

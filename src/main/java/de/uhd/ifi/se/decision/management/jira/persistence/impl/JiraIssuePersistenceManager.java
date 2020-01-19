@@ -31,13 +31,13 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ErrorCollection;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 
 /**
@@ -90,7 +90,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		return false;
 	}
 
-	public static List<IssueLink> getInwardIssueLinks(DecisionKnowledgeElement element) {
+	public static List<IssueLink> getInwardIssueLinks(KnowledgeElement element) {
 		if (element == null) {
 			return new ArrayList<IssueLink>();
 		}
@@ -120,7 +120,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		return typeId;
 	}
 
-	public static List<IssueLink> getOutwardIssueLinks(DecisionKnowledgeElement element) {
+	public static List<IssueLink> getOutwardIssueLinks(KnowledgeElement element) {
 		if (element == null) {
 			return new ArrayList<IssueLink>();
 		}
@@ -179,7 +179,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		return 0;
 	}
 
-	private static void setParameters(DecisionKnowledgeElement element, IssueInputParameters issueInputParameters) {
+	private static void setParameters(KnowledgeElement element, IssueInputParameters issueInputParameters) {
 		String summary = element.getSummary();
 		if (summary != null) {
 			if (summary.length() > 255) {
@@ -219,36 +219,36 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id) {
+	public KnowledgeElement getDecisionKnowledgeElement(long id) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue issue = issueManager.getIssueObject(id);
 		if (issue == null) {
 			return null;
 		}
-		return new DecisionKnowledgeElementImpl(issue);
+		return new KnowledgeElementImpl(issue);
 	}
 
 	@Override
-	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
+	public KnowledgeElement getDecisionKnowledgeElement(String key) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue issue = issueManager.getIssueByCurrentKey(key);
-		return new DecisionKnowledgeElementImpl(issue);
+		return new KnowledgeElementImpl(issue);
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements() {
-		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
+	public List<KnowledgeElement> getDecisionKnowledgeElements() {
+		List<KnowledgeElement> decisionKnowledgeElements = new ArrayList<KnowledgeElement>();
 		if (this.projectKey == null) {
 			return decisionKnowledgeElements;
 		}
 		for (Issue issue : getIssueIdCollection()) {
-			decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(issue));
+			decisionKnowledgeElements.add(new KnowledgeElementImpl(issue));
 		}
 		return decisionKnowledgeElements;
 	}
 
 	@Override
-	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
+	public List<Link> getInwardLinks(KnowledgeElement element) {
 		List<IssueLink> inwardIssueLinks = getInwardIssueLinks(element);
 		List<Link> inwardLinks = new ArrayList<Link>();
 		for (IssueLink inwardIssueLink : inwardIssueLinks) {
@@ -261,7 +261,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
+	public List<Link> getOutwardLinks(KnowledgeElement element) {
 		List<IssueLink> outwardIssueLinks = getOutwardIssueLinks(element);
 		List<Link> outwardLinks = new ArrayList<Link>();
 		for (IssueLink outwardIssueLink : outwardIssueLinks) {
@@ -274,7 +274,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
+	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element,
 			ApplicationUser user) {
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
 		setParameters(element, issueInputParameters);
@@ -301,17 +301,17 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
+	public boolean updateDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueResult issueResult = issueService.getIssue(user, element.getId());
 		MutableIssue issueToBeUpdated = issueResult.getIssue();
-		DecisionKnowledgeElement formerElement = new DecisionKnowledgeElementImpl(issueToBeUpdated);
+		KnowledgeElement formerElement = new KnowledgeElementImpl(issueToBeUpdated);
 		element.setStatus(KnowledgeStatus.getNewKnowledgeStatusForType(formerElement, element));
 		return dataUpdateElement(element, issueToBeUpdated, user, issueService);
 	}
 
 	@Override
-	public ApplicationUser getCreator(DecisionKnowledgeElement element) {
+	public ApplicationUser getCreator(KnowledgeElement element) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue issue = issueManager.getIssueByCurrentKey(element.getKey());
 		if (issue == null) {
@@ -343,7 +343,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		return issueList;
 	}
 
-	private boolean dataUpdateElement(DecisionKnowledgeElement element, MutableIssue issueToBeUpdated,
+	private boolean dataUpdateElement(KnowledgeElement element, MutableIssue issueToBeUpdated,
 			ApplicationUser user, IssueService issueService) {
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
 		setParameters(element, issueInputParameters);

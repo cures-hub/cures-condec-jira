@@ -14,7 +14,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.CommonMetricCalculator;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
@@ -23,8 +23,8 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 public class TestGetDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherTypeCommon extends TestSetUp {
 
 	protected CommonMetricCalculator calculator;
-	private DecisionKnowledgeElement decisionElement;
-	private DecisionKnowledgeElement argumentElement;
+	private KnowledgeElement decisionElement;
+	private KnowledgeElement argumentElement;
 
 	@Before
 	public void setUp() {

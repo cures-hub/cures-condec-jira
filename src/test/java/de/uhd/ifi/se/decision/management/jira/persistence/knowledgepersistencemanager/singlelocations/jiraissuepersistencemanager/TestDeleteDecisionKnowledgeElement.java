@@ -7,9 +7,9 @@ import org.junit.Test;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestDeleteDecisionKnowledgeElement extends TestJiraIssuePersistenceManagerSetUp {
@@ -21,13 +21,13 @@ public class TestDeleteDecisionKnowledgeElement extends TestJiraIssuePersistence
 
 	@Test
 	public void testElementNonExistentUserNull() {
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+		KnowledgeElement element = new KnowledgeElementImpl();
 		assertFalse(issueStrategy.deleteDecisionKnowledgeElement(element, null));
 	}
 
 	@Test
 	public void testElementExistentUserExistent() {
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+		KnowledgeElement element = new KnowledgeElementImpl();
 		element.setId(1);
 		element.setProject("TEST");
 		element.setType(KnowledgeType.SOLUTION);
@@ -36,7 +36,7 @@ public class TestDeleteDecisionKnowledgeElement extends TestJiraIssuePersistence
 
 	@Test
 	public void testElementExistentUserNotAuthorized() {
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+		KnowledgeElement element = new KnowledgeElementImpl();
 		element.setId(1);
 		element.setProject("TEST");
 		element.setType(KnowledgeType.SOLUTION);

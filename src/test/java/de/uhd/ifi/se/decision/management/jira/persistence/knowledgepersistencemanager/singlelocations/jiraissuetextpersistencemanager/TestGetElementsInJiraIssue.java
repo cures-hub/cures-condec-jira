@@ -10,7 +10,7 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
@@ -21,7 +21,7 @@ public class TestGetElementsInJiraIssue extends TestSetUp {
 
 	protected static JiraIssueTextPersistenceManager manager;
 	protected static ApplicationUser user;
-	protected static DecisionKnowledgeElement element;
+	protected static KnowledgeElement element;
 
 	@Before
 	public void setUp() {
@@ -40,7 +40,7 @@ public class TestGetElementsInJiraIssue extends TestSetUp {
 
 		assertEquals(3, id);
 
-		List<DecisionKnowledgeElement> listWithObjects = manager
+		List<KnowledgeElement> listWithObjects = manager
 				.getElementsInJiraIssue(comment.get(0).getJiraIssueId());
 
 		// This method does only return relevant decision knowledge elements, no

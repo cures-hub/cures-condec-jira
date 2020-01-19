@@ -26,13 +26,12 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.Node;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
@@ -85,8 +84,8 @@ public class CommonMetricCalculator {
 		Map<String, Integer> numberOfSentencesForJiraIssues = new HashMap<String, Integer>();
 		for (Issue jiraIssue : jiraIssues) {
 			int numberOfElements = 0;
-			List<DecisionKnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(jiraIssue.getId());
-			for (DecisionKnowledgeElement element : elements) {
+			List<KnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(jiraIssue.getId());
+			for (KnowledgeElement element : elements) {
 				if (element.getType().equals(type)) {
 					numberOfElements++;
 				}
@@ -129,16 +128,16 @@ public class CommonMetricCalculator {
 		Integer[] statistics = new Integer[4];
 		Arrays.fill(statistics, 0);
 
-		List<DecisionKnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(linkFrom);
+		List<KnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(linkFrom);
 
-		for (DecisionKnowledgeElement issue : listOfIssues) {
+		for (KnowledgeElement issue : listOfIssues) {
 			List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
 					DocumentationLocation.JIRAISSUETEXT);
 			boolean hastOtherElementLinked = false;
 
 			for (Link link : links) {
 				if (link.isValid()) {
-					DecisionKnowledgeElement dke = link.getOppositeElement(issue.getId());
+					KnowledgeElement dke = link.getOppositeElement(issue.getId());
 					if (dke instanceof PartOfJiraIssueText && dke.getType().equals(linkTo)) { // alt
 						hastOtherElementLinked = true;
 					}
@@ -166,9 +165,9 @@ public class CommonMetricCalculator {
 		String[] data = new String[2];
 		Arrays.fill(data, "");
 
-		List<DecisionKnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(linkFrom);
+		List<KnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(linkFrom);
 
-		for (DecisionKnowledgeElement issue : listOfIssues) {
+		for (KnowledgeElement issue : listOfIssues) {
 			String issueKey = issue.getKey();
 			List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
 					DocumentationLocation.JIRAISSUETEXT);
@@ -176,7 +175,7 @@ public class CommonMetricCalculator {
 
 			for (Link link : links) {
 				if (link.isValid()) {
-					DecisionKnowledgeElement dke = link.getOppositeElement(issue.getId());
+					KnowledgeElement dke = link.getOppositeElement(issue.getId());
 					if (dke instanceof PartOfJiraIssueText && dke.getType().equals(linkTo)) { // alt
 						numberObservedLinks++;
 					}
@@ -206,16 +205,16 @@ public class CommonMetricCalculator {
 		String[] data = new String[2];
 		Arrays.fill(data, "");
 
-		List<DecisionKnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(linkFrom);
+		List<KnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(linkFrom);
 
-		for (DecisionKnowledgeElement issue : listOfIssues) {
+		for (KnowledgeElement issue : listOfIssues) {
 			List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
 					DocumentationLocation.JIRAISSUETEXT);
 			boolean hastOtherElementLinked = false;
 
 			for (Link link : links) {
 				if (link.isValid()) {
-					DecisionKnowledgeElement dke = link.getOppositeElement(issue.getId());
+					KnowledgeElement dke = link.getOppositeElement(issue.getId());
 					if (dke instanceof PartOfJiraIssueText && dke.getType().equals(linkTo)) { // alt
 						hastOtherElementLinked = true;
 					}
@@ -243,16 +242,16 @@ public class CommonMetricCalculator {
 		String alternativesHaveArgument = "";
 		String alternativesHaveNoArgument = "";
 
-		List<DecisionKnowledgeElement> alternatives = this.persistenceManager
+		List<KnowledgeElement> alternatives = this.persistenceManager
 				.getDecisionKnowledgeElements(KnowledgeType.ALTERNATIVE);
 
-		for (DecisionKnowledgeElement currentAlternative : alternatives) {
+		for (KnowledgeElement currentAlternative : alternatives) {
 			List<Link> links = GenericLinkManager.getLinksForElement(currentAlternative.getId(),
 					DocumentationLocation.JIRAISSUETEXT);
 			boolean hasArgument = false;
 			for (Link link : links) {
 				if (link.isValid()) {
-					DecisionKnowledgeElement dke = link.getOppositeElement(currentAlternative.getId());
+					KnowledgeElement dke = link.getOppositeElement(currentAlternative.getId());
 					if (dke instanceof PartOfJiraIssueText && dke.getType().equals(KnowledgeType.ARGUMENT)) {
 						hasArgument = true;
 					}
@@ -271,16 +270,17 @@ public class CommonMetricCalculator {
 
 		return havingArgument;
 	}
-	//TODO: Delete if no longer used by new Metrics
+
+	// TODO: Delete if no longer used by new Metrics
 	public Map<String, Integer> getLinkDistance(KnowledgeType type) {
 		if (type == null) {
 			return new HashMap<String, Integer>();
 		}
 		Map<String, Integer> linkDistances = new HashMap<String, Integer>();
 
-		List<DecisionKnowledgeElement> listOfDecKnowElements = persistenceManager.getDecisionKnowledgeElements(type);
+		List<KnowledgeElement> listOfDecKnowElements = persistenceManager.getDecisionKnowledgeElements(type);
 		Integer i = 0;
-		for (DecisionKnowledgeElement currentElement : listOfDecKnowElements) {
+		for (KnowledgeElement currentElement : listOfDecKnowElements) {
 			int depth = getLinkDistanceFromSingleNode(currentElement);
 			i++;
 			linkDistances.put(String.valueOf(i) + currentElement.getKey(), depth);
@@ -289,14 +289,14 @@ public class CommonMetricCalculator {
 		return linkDistances;
 	}
 
-	private int getLinkDistanceFromSingleNode(DecisionKnowledgeElement dke) {
+	private int getLinkDistanceFromSingleNode(KnowledgeElement dke) {
 		int absolutDepth = 0;
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
-		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<>(graph, dke);
-		Node parentNode = iterator.next();
+		BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<>(graph, dke);
+		KnowledgeElement parentNode = iterator.next();
 		int currentDepth = 0;
 		while (iterator.hasNext()) {
-			Node iterNode = iterator.next();
+			KnowledgeElement iterNode = iterator.next();
 			++currentDepth;
 			if (iterator.getParent(iterNode).equals(parentNode)) {
 				currentDepth = 1;
@@ -323,7 +323,7 @@ public class CommonMetricCalculator {
 			}
 			for (Link link : GenericLinkManager.getLinksForElement(issue.getId(), DocumentationLocation.JIRAISSUE)) {
 				if (link.isValid()) {
-					DecisionKnowledgeElement dke = link.getOppositeElement(new DecisionKnowledgeElementImpl(issue));
+					KnowledgeElement dke = link.getOppositeElement(new KnowledgeElementImpl(issue));
 					if (dke.getType().equals(knowledgeType)) {
 						linkExisting = true;
 					}

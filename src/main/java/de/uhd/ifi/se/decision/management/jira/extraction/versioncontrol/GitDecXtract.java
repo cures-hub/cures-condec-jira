@@ -16,7 +16,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 /**
@@ -47,8 +47,8 @@ public class GitDecXtract {
 	}
 
 	// TODO: below method signature will further improve
-	public List<DecisionKnowledgeElement> getElements(String featureBranchShortName) {
-		List<DecisionKnowledgeElement> gatheredElements = new ArrayList<>();
+	public List<KnowledgeElement> getElements(String featureBranchShortName) {
+		List<KnowledgeElement> gatheredElements = new ArrayList<>();
 		List<RevCommit> featureCommits = gitClient.getFeatureBranchCommits(featureBranchShortName);
 		if (featureCommits == null || featureCommits.size() == 0) {
 			return gatheredElements;
@@ -63,10 +63,10 @@ public class GitDecXtract {
 		return gatheredElements;
 	}
 
-	public Map<String, List<DecisionKnowledgeElement>> getElementsSplitByCodeAndCommit(String featureBranchShortName) {
-		Map<String, List<DecisionKnowledgeElement>> resultMap = new HashMap<String, List<DecisionKnowledgeElement>>();
-		List<DecisionKnowledgeElement> gatheredCommitElements = new ArrayList<>();
-		List<DecisionKnowledgeElement> gatheredCodeElements = new ArrayList<>();
+	public Map<String, List<KnowledgeElement>> getElementsSplitByCodeAndCommit(String featureBranchShortName) {
+		Map<String, List<KnowledgeElement>> resultMap = new HashMap<String, List<KnowledgeElement>>();
+		List<KnowledgeElement> gatheredCommitElements = new ArrayList<>();
+		List<KnowledgeElement> gatheredCodeElements = new ArrayList<>();
 		List<RevCommit> featureCommits = gitClient.getFeatureBranchCommits(featureBranchShortName);
 		if (featureCommits == null || featureCommits.size() == 0) {
 			return resultMap;
@@ -84,9 +84,9 @@ public class GitDecXtract {
 		return resultMap;
 	}
 
-	private List<DecisionKnowledgeElement> getElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd,
+	private List<KnowledgeElement> getElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd,
 			String featureBranchShortName) {
-		List<DecisionKnowledgeElement> elementsFromCode = new ArrayList<>();
+		List<KnowledgeElement> elementsFromCode = new ArrayList<>();
 
 		// git client which has access to correct version of files (revCommitEnd)
 		GitClient endAnchoredGitClient = new GitClientImpl((GitClientImpl) gitClient);
@@ -115,9 +115,9 @@ public class GitDecXtract {
 		}).collect(Collectors.toList());
 	}
 
-	public List<DecisionKnowledgeElement> getElementsFromMessage(RevCommit commit) {
+	public List<KnowledgeElement> getElementsFromMessage(RevCommit commit) {
 		GitCommitMessageExtractor extractorFromMessage = new GitCommitMessageExtractor(commit.getFullMessage());
-		List<DecisionKnowledgeElement> elementsFromMessage = extractorFromMessage.getElements().stream()
+		List<KnowledgeElement> elementsFromMessage = extractorFromMessage.getElements().stream()
 				.map(element -> { // need to update project and key attributes
 					element.setProject(projecKey);
 					element.setKey(updateKeyForMessageExtractedElement(element, commit.getId()));
@@ -130,7 +130,7 @@ public class GitDecXtract {
 	 * Appends rationale text hash to the DecisionKnowledgeElement key.
 	 */
 	private String updateKeyForCodeExtractedElementWithInformationHash(
-			DecisionKnowledgeElement elementWithoutTextHash) {
+			KnowledgeElement elementWithoutTextHash) {
 		String key = elementWithoutTextHash.getKey();
 		String rationaleText = elementWithoutTextHash.getSummary() + elementWithoutTextHash.getDescription();
 
@@ -143,7 +143,7 @@ public class GitDecXtract {
 	 * Appends rationale text hash to the DecisionKnowledgeElement key. Replaces
 	 * commit hash placeholder in the key with the actual commit hash.
 	 */
-	private String updateKeyForMessageExtractedElement(DecisionKnowledgeElement elementWithoutCommitishAndHash,
+	private String updateKeyForMessageExtractedElement(KnowledgeElement elementWithoutCommitishAndHash,
 			ObjectId id) {
 		String key = elementWithoutCommitishAndHash.getKey();
 
@@ -169,7 +169,7 @@ public class GitDecXtract {
 		}
 	}
 
-	public List<DecisionKnowledgeElement> getElements(Ref branch) {
+	public List<KnowledgeElement> getElements(Ref branch) {
 		if (branch == null) {
 			return getElements((String) null);
 		}

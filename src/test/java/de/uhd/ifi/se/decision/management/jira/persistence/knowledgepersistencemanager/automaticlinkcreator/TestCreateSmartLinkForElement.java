@@ -6,14 +6,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AutomaticLinkCreator;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestCreateSmartLinkForElement extends TestSetUp {
 
-	public static DecisionKnowledgeElement element;
+	public static KnowledgeElement element;
 
 	@Before
 	public void setUp() {

@@ -16,7 +16,7 @@ import com.atlassian.jira.issue.search.SearchException;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.JiraIssueMetric;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteIssueProposal;
 
@@ -26,7 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteIssuePropo
  */
 public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 
-	private DecisionKnowledgeElement decisionKnowledgeElement;
+	private KnowledgeElement decisionKnowledgeElement;
 
 	private EnumMap<JiraIssueMetric, Integer> jiraIssueMetrics;
 	private double rating;
@@ -37,7 +37,7 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 	 * @param decisionKnowledgeElement
 	 * @param countDecisionKnowledge
 	 */
-	public ReleaseNoteIssueProposalImpl(DecisionKnowledgeElement decisionKnowledgeElement, int countDecisionKnowledge) {
+	public ReleaseNoteIssueProposalImpl(KnowledgeElement decisionKnowledgeElement, int countDecisionKnowledge) {
 		this.decisionKnowledgeElement = decisionKnowledgeElement;
 		// set default values
 		this.jiraIssueMetrics = JiraIssueMetric.toIntegerEnumMap();
@@ -50,7 +50,7 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 	 */
 	@Override
 	@XmlElement(name = "decisionKnowledgeElement")
-	public DecisionKnowledgeElement getDecisionKnowledgeElement() {
+	public KnowledgeElement getDecisionKnowledgeElement() {
 		return this.decisionKnowledgeElement;
 	}
 
@@ -60,7 +60,7 @@ public class ReleaseNoteIssueProposalImpl implements ReleaseNoteIssueProposal {
 	 */
 	@Override
 	@JsonProperty("decisionKnowledgeElement")
-	public void setDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement) {
+	public void setDecisionKnowledgeElement(KnowledgeElement decisionKnowledgeElement) {
 		this.decisionKnowledgeElement = decisionKnowledgeElement;
 	}
 

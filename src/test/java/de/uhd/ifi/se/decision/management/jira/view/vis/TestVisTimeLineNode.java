@@ -10,15 +10,15 @@ import org.junit.Test;
 import com.atlassian.jira.component.ComponentAccessor;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 
 public class TestVisTimeLineNode extends TestSetUp {
-	private DecisionKnowledgeElement element;
+	private KnowledgeElement element;
 	private VisTimeLineNode timeNode;
 	private String createdString;
 	private String closedString;
@@ -26,7 +26,7 @@ public class TestVisTimeLineNode extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
+		element = new KnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
 		element.setCreated(new Date(System.currentTimeMillis() - 1000));
 		element.setClosed(new Date(System.currentTimeMillis()));
 		timeNode = new VisTimeLineNode(element);

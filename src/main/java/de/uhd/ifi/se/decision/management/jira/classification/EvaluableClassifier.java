@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import smile.validation.ClassificationMeasure;
 
 import java.util.List;
@@ -25,5 +25,5 @@ public interface EvaluableClassifier {
 	 * @throws Exception
 	 */
 	Map<String, Double> evaluateClassifier(List<ClassificationMeasure> measurements,
-										   List<DecisionKnowledgeElement> partOfJiraIssueTexts) throws Exception;
+										   List<KnowledgeElement> partOfJiraIssueTexts) throws Exception;
 }

@@ -1,13 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.model.text;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
  * Interface for textual parts (substrings) of natural language text. These
  * parts can either be relevant decision knowledge elements or irrelevant text.
  */
-public interface PartOfText extends DecisionKnowledgeElement {
+public interface PartOfText extends KnowledgeElement {
 
 	/**
 	 * Set the start position (number of characters) of the decision knowledge

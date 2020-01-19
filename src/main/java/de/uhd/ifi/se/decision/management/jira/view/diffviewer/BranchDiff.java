@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.diffviewer;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.*;
@@ -16,11 +16,11 @@ public class BranchDiff {
 	@XmlElement
 	private List<RationaleData> elements;
 
-	public BranchDiff(String branchName, List<DecisionKnowledgeElement> decisionKnowledgeElements) {
+	public BranchDiff(String branchName, List<KnowledgeElement> decisionKnowledgeElements) {
 		this.branchName = branchName;
 		this.elements = new ArrayList<>();
 		if (decisionKnowledgeElements != null) {
-			for (DecisionKnowledgeElement rationale : decisionKnowledgeElements) {
+			for (KnowledgeElement rationale : decisionKnowledgeElements) {
 				elements.add(new RationaleData(rationale));
 			}
 		}
@@ -45,7 +45,7 @@ public class BranchDiff {
 		@XmlElement
 		private String type;
 
-		public RationaleData(DecisionKnowledgeElement rationale) {
+		public RationaleData(KnowledgeElement rationale) {
 			summary = rationale.getSummary();
 			description = rationale.getDescription();
 			key = new KeyData(rationale.getKey());

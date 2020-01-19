@@ -59,24 +59,24 @@ public interface Link {
 	/**
 	 * Returns the source element of this link (=edge).
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @return source element of this link.
 	 */
-	DecisionKnowledgeElement getSource();
+	KnowledgeElement getSource();
 
 	/**
 	 * Set the source element of this link.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @param decisionKnowledgeElement
 	 *            that is the source element of this link.
 	 */
-	void setSourceElement(DecisionKnowledgeElement decisionKnowledgeElement);
+	void setSourceElement(KnowledgeElement decisionKnowledgeElement);
 
 	/**
 	 * Set the source element of this link by its id and documentation location.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @see DocumentationLocation
 	 * @param id
 	 *            of the source element of this link.
@@ -88,7 +88,7 @@ public interface Link {
 	/**
 	 * Set the source element of this link by its id and documentation location.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @see DocumentationLocation
 	 * @param id
 	 *            of the source element of this link.
@@ -102,7 +102,7 @@ public interface Link {
 	 * Set the id of the source element of this link. Instantiates a new decision
 	 * knowledge element if the source element is null.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @param id
 	 *            of the destination element of this link.
 	 */
@@ -111,25 +111,25 @@ public interface Link {
 	/**
 	 * Returns the target (=destination) element of this link (=edge).
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @return destination element of this link.
 	 */
-	DecisionKnowledgeElement getTarget();
+	KnowledgeElement getTarget();
 
 	/**
 	 * Set the destination element of this link.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @param decisionKnowledgeElement
 	 *            that is the destination element of this link.
 	 */
-	void setDestinationElement(DecisionKnowledgeElement decisionKnowledgeElement);
+	void setDestinationElement(KnowledgeElement decisionKnowledgeElement);
 
 	/**
 	 * Set the destination element of this link by its id and documentation
 	 * location.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @see DocumentationLocation
 	 * @param id
 	 *            of the destination element of this link.
@@ -142,7 +142,7 @@ public interface Link {
 	 * Set the destination element of this link by its id and documentation
 	 * location.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @see DocumentationLocation
 	 * @param id
 	 *            of the destination element of this link.
@@ -156,7 +156,7 @@ public interface Link {
 	 * Set the id of the destination element of this link. Instantiates a new
 	 * decision knowledge element if the destination element is null.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @param id
 	 *            of the destination element of this link.
 	 */
@@ -165,33 +165,33 @@ public interface Link {
 	/**
 	 * Get the opposite element of this link.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @param elementId
 	 *            of a decision knowledge element on one side of this link.
 	 * 
 	 * @return opposite element of this link.
 	 */
-	DecisionKnowledgeElement getOppositeElement(long elementId);
+	KnowledgeElement getOppositeElement(long elementId);
 
 	/**
 	 * Get the opposite element of this link.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @param element
 	 *            a decision knowledge element on one side of this link.
 	 * 
 	 * @return opposite element of this link.
 	 */
-	DecisionKnowledgeElement getOppositeElement(DecisionKnowledgeElement element);
+	KnowledgeElement getOppositeElement(KnowledgeElement element);
 
 	/**
 	 * Get both elements that are linked (both sides of the link) as a list.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * 
 	 * @return list of linked elements.
 	 */
-	List<DecisionKnowledgeElement> getBothElements();
+	List<KnowledgeElement> getBothElements();
 
 	/**
 	 * Determine whether the link is an intra (false) or an inter (true) project
@@ -207,7 +207,7 @@ public interface Link {
 	/**
 	 * Determine whether the link connects two existing decision knowledge elements.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * 
 	 * @return true if the link connects two existing decision knowledge elements.
 	 */
@@ -216,7 +216,7 @@ public interface Link {
 	/**
 	 * Get the a new link with swapped source and destination elements.
 	 * 
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * 
 	 * @return new link with swapped source and destination elements.
 	 */
@@ -228,7 +228,7 @@ public interface Link {
 	 * element. In case the child element is NOT a pro- or con-argument, the link
 	 * points from the parent towards the child element.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @see LinkType
 	 * @param childElement
 	 *            a decision knowledge element that is on one end of the link.
@@ -239,8 +239,8 @@ public interface Link {
 	 * 
 	 * @return a link object.
 	 */
-	public static Link instantiateDirectedLink(DecisionKnowledgeElement parentElement,
-			DecisionKnowledgeElement childElement, LinkType linkType) {
+	public static Link instantiateDirectedLink(KnowledgeElement parentElement,
+			KnowledgeElement childElement, LinkType linkType) {
 		return new LinkImpl(parentElement, childElement, linkType.getName());
 	}
 
@@ -250,7 +250,7 @@ public interface Link {
 	 * element. In case the child element is NOT a pro- or con-argument, the link
 	 * points from the parent towards the child element.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @see LinkType
 	 * @param childElement
 	 *            a decision knowledge element that is on one end of the link.
@@ -259,7 +259,7 @@ public interface Link {
 	 * 
 	 * @return a link object.
 	 */
-	static Link instantiateDirectedLink(DecisionKnowledgeElement parentElement, DecisionKnowledgeElement childElement) {
+	static Link instantiateDirectedLink(KnowledgeElement parentElement, KnowledgeElement childElement) {
 		KnowledgeType knowledgeTypeOfChildElement = childElement.getType();
 		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(knowledgeTypeOfChildElement);
 		return instantiateDirectedLink(parentElement, childElement, linkType);
@@ -269,7 +269,7 @@ public interface Link {
 	 * Determine if both source and destination element of the link are documented
 	 * as Jira issues.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * 
 	 * @return true if both source and destination element of the link are
 	 *         documented as Jira issues.
@@ -280,7 +280,7 @@ public interface Link {
 	 * Determine if the source and/or destination element of the link have an
 	 * unknown documentation location.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * 
 	 * @return true if the source and/or the destination element of the link have an
 	 *         unknown documentation location.
@@ -292,7 +292,7 @@ public interface Link {
 	 * a new decision knowledge element from database if the source element
 	 * currently has a different documentation location.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @see DocumentationLocation
 	 * @param documentationLocation
 	 *            of the source element of this link, e.g., "i" for JIRA issue.
@@ -311,7 +311,7 @@ public interface Link {
 	 * Retrieves a new decision knowledge element from database if the destination
 	 * element currently has a different documentation location.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @see DocumentationLocation
 	 * @param documentationLocation
 	 *            of the destination element of this link, e.g., "i" for JIRA issue.

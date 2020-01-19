@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -65,13 +65,13 @@ public class Treant {
 		} else {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager();
 		}
-		DecisionKnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
+		KnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, null, 1));
 		this.setHyperlinked(isHyperlinked);
 	}
 
-	public TreantNode createNodeStructure(DecisionKnowledgeElement element, Link link, int currentDepth) {
+	public TreantNode createNodeStructure(KnowledgeElement element, Link link, int currentDepth) {
 		if (element == null || element.getProject() == null) {
 			return new TreantNode();
 		}
@@ -98,7 +98,7 @@ public class Treant {
 		return isCollapsed;
 	}
 
-	private TreantNode createTreantNode(DecisionKnowledgeElement element, Link link, boolean isCollapsed) {
+	private TreantNode createTreantNode(KnowledgeElement element, Link link, boolean isCollapsed) {
 		TreantNode node;
 		if (link != null) {
 			node = new TreantNode(element, link, isCollapsed, isHyperlinked);
@@ -108,14 +108,14 @@ public class Treant {
 		return node;
 	}
 
-	private List<TreantNode> getChildren(DecisionKnowledgeElement rootElement, Set<Link> linksToTraverse,
+	private List<TreantNode> getChildren(KnowledgeElement rootElement, Set<Link> linksToTraverse,
 			int currentDepth) {
 		List<TreantNode> nodes = new ArrayList<TreantNode>();
 		for (Link currentLink : linksToTraverse) {
 			if (!traversedLinks.add(currentLink)) {
 				continue;
 			}
-			DecisionKnowledgeElement oppositeElement = currentLink.getOppositeElement(rootElement);
+			KnowledgeElement oppositeElement = currentLink.getOppositeElement(rootElement);
 			if (oppositeElement == null || oppositeElement.getType() == KnowledgeType.OTHER) {
 				continue;
 			}
