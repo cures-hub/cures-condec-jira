@@ -99,7 +99,7 @@ public interface FileTrainer {
 	 *
 	 * @return updated file with default training content.
 	 */
-	public static File copyDefaultTrainingDataToFile() {
+	static File copyDefaultTrainingDataToFile() {
 		File file = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff");
 		File classifierDir = new File(DecisionKnowledgeClassifier.DEFAULT_DIR);
 		if (!classifierDir.exists()) {
@@ -149,7 +149,7 @@ public interface FileTrainer {
 	 * @throws Exception
 	 */
 
-	static byte[] createChecksum(InputStream fileInputStream) throws Exception {
+	private static byte[] createChecksum(InputStream fileInputStream) throws Exception {
 		byte[] buffer = new byte[1024];
 		MessageDigest complete = MessageDigest.getInstance("MD5");
 		int numRead;
@@ -171,7 +171,7 @@ public interface FileTrainer {
 	 * @return MD5 checksum of an InputStream
 	 * @throws Exception
 	 */
-	public static String getMD5Checksum(InputStream fileInputStream) throws Exception {
+	static String getMD5Checksum(InputStream fileInputStream) throws Exception {
 		byte[] b = createChecksum(fileInputStream);
 		StringBuilder result = new StringBuilder();
 
