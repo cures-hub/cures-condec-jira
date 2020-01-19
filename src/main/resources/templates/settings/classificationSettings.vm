@@ -124,9 +124,6 @@
 
 <script>
     //Init the variables
-    const issueCommentsToggle = document.getElementById("isKnowledgeExtractedFromIssues-toggle");
-    issueCommentsToggle.checked = $project.isKnowledgeExtractedFromIssues() ;
-
     const isClassifierUsedToggle = document.getElementById("isClassifierUsed-toggle");
     isClassifierUsedToggle.checked = $project.isClassifierUsedForIssueComments();
 
@@ -134,14 +131,9 @@
     currentClassifierStatusInfo.style.display = isClassifierUsedToggle.checked ? "inherit" : "none";
 
     const sentenceIconToggle = document.getElementById("iconParsing-toggle");
-    sentenceIconToggle.checked =$project.isIconParsingEnabled() ;
+    sentenceIconToggle.checked = $project.isIconParsingEnabled() ;
 
     // add listeners
-    const cleanDatabasesButton = document.getElementById("cleanDatabases");
-    cleanDatabasesButton.addEventListener("click", function () {
-        conDecAPI.cleanDatabases("$projectKey");
-    });
-
     const evaluateModelButton = document.getElementById("evaluateModel-button");
     evaluateModelButton.addEventListener("click", function () {
         var animatedElement = document.getElementById("evaluate-classifier-progress");
@@ -160,7 +152,6 @@
 
     //AJS.progressBars.update("#progress-bar", 0.0);
     const classifyAllIssuesInProjectButton = document.getElementById("classifyAllIssuesInProject");
-
     classifyAllIssuesInProjectButton.addEventListener("click", function () {
         if (confirm("Are you sure you want to classify all Jira issue comments and descriptions? This might take a long time if the project is big.")) {
         	var animatedElement = document.getElementById("classify-whole-project-progress-bar");
