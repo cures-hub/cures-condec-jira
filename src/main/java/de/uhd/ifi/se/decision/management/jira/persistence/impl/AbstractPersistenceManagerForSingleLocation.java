@@ -6,9 +6,9 @@ import java.util.List;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
@@ -161,41 +161,6 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	public abstract List<Link> getInwardLinks(KnowledgeElement element);
 
 	/**
-	 * Get all adjacent elements of the decision knowledge element for a project. It
-	 * does not matter whether this decision knowledge element is the source or the
-	 * destination element.
-	 *
-	 * @param element
-	 *            decision knowledge element with id in database.
-	 * @return list of adjacent elements.
-	 * @see KnowledgeElement
-	 * @see DecisionKnowledgeProject
-	 */
-	public List<KnowledgeElement> getAdjacentElements(KnowledgeElement element) {
-		List<KnowledgeElement> linkedElements = new ArrayList<KnowledgeElement>();
-		linkedElements.addAll(this.getElementsLinkedWithOutwardLinks(element));
-		linkedElements.addAll(this.getElementsLinkedWithInwardLinks(element));
-		return linkedElements;
-	}
-
-	/**
-	 * Get all adjacent elements of the decision knowledge element for a project. It
-	 * does not matter whether this decision knowledge element is the source or the
-	 * destination element.
-	 *
-	 * @param id
-	 *            id of a decision knowledge element in database. The id is
-	 *            different to the key.
-	 * @return list of adjacent elements.
-	 * @see KnowledgeElement
-	 * @see DecisionKnowledgeProject
-	 */
-	public List<KnowledgeElement> getAdjacentElements(long id) {
-		KnowledgeElement element = this.getDecisionKnowledgeElement(id);
-		return this.getAdjacentElements(element);
-	}
-
-	/**
 	 * Get all links where the decision knowledge element is either the source or
 	 * the destination element.
 	 *
@@ -254,8 +219,8 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @see KnowledgeElement
 	 * @see ApplicationUser
 	 */
-	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element,
-			ApplicationUser user, KnowledgeElement parentElement) {
+	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user,
+			KnowledgeElement parentElement) {
 		return insertDecisionKnowledgeElement(element, user);
 	}
 
@@ -272,8 +237,7 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @see KnowledgeElement
 	 * @see ApplicationUser
 	 */
-	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element,
-			ApplicationUser user) {
+	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		return null;
 	}
 

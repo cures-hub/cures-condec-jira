@@ -8,15 +8,16 @@ import java.util.List;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpsURL;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.jgrapht.Graphs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 
 /**
  * Webhook class that posts changed decision knowledge to a given URL.
@@ -91,10 +92,8 @@ public class WebhookConnector {
 
 	private List<KnowledgeElement> getWebhookRootElements(KnowledgeElement element) {
 		List<KnowledgeElement> webhookRootElements = new ArrayList<KnowledgeElement>();
-
-		AbstractPersistenceManagerForSingleLocation strategy = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueManager();
-		List<KnowledgeElement> linkedElements = strategy.getAdjacentElements(element);
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
+		List<KnowledgeElement> linkedElements = Graphs.neighborListOf(graph, element);
 		linkedElements.add(element);
 		for (KnowledgeElement linkedElement : linkedElements) {
 			if (elementIds.contains(linkedElement.getId())) {
