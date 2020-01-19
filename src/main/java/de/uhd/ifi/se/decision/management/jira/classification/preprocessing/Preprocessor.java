@@ -119,7 +119,7 @@ public interface Preprocessor {
      * @param sentence to be preprocessed
      * @return N-Gram numerical representation of sentence
      */
-    List preprocess(String sentence);
+    List preprocess(String sentence) throws Exception;
 
 
     /**

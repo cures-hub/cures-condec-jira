@@ -75,7 +75,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 		this.fineGrainedClassifier = new FineGrainedClassifierImpl(5);
 	}
 
-	private void makeBinaryPrediction(String stringToBeClassified, List<Boolean> binaryPredictionResults, int finalI) {
+	private void makeBinaryPrediction(String stringToBeClassified, List<Boolean> binaryPredictionResults, int finalI) throws Exception {
 
 		List<List<Double>> features = preprocess(stringToBeClassified);
 		double[] predictionResult = new double[this.binaryClassifier.getNumClasses()];
@@ -127,7 +127,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 
 	}
 
-	public void makeFineGrainedPrediction(String stringToBeClassified, List<KnowledgeType> fineGrainedPredictionResults, int i) {
+	public void makeFineGrainedPrediction(String stringToBeClassified, List<KnowledgeType> fineGrainedPredictionResults, int i) throws Exception {
 		List<List<Double>> features = preprocess(stringToBeClassified);
 		double[] predictionResult = new double[this.fineGrainedClassifier.getNumClasses()];
 		//Make predictions for each nGram; then determine maximum probability of all added together.
@@ -181,12 +181,12 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 
 
 	@Override
-	public List<List<Double>> preprocess(String stringsToBePreprocessed) {
+	public List<List<Double>> preprocess(String stringsToBePreprocessed) throws Exception {
 		return this.preprocessor.preprocess(stringsToBePreprocessed);
 	}
 
 	@Override
-	public Map<String, List> preprocess(List<String> stringsToBePreprocessed, List labels) {
+	public Map<String, List> preprocess(List<String> stringsToBePreprocessed, List labels) throws Exception {
 		List preprocessedSentences = new ArrayList();
 		List updatedLabels = new ArrayList();
 		Map preprocessedFeaturesWithLabels = new HashMap();

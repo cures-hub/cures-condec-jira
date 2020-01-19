@@ -8,18 +8,18 @@
 @attribute sentence string
 
 @data
-0,0,0,0,0,'I put it on master branch and also linked it in the Marketplace.\r\n\r\n'
+0,0,0,0,0,'I put it on master branch and also linked it in the Marketplace.  '
 0,0,0,0,0,'The privacy statement looks good to me. '
 0,0,0,0,0,'I published the version 2.1.8 in the Atlassian Marketplace. '
 0,0,0,0,1,'How does an end user license agreement should look like?'
 0,0,0,0,0,'Is this all we need for Atlassian?'
 0,1,0,0,0,'We can upload new versions that are visible directly. There are no additional reviews.'
 0,0,0,0,0,'I think it is good like this. '
-0,0,0,0,1,' How can new comments automatically be linked to other decision knowledge?'
+0,0,0,0,1,'How can new comments automatically be linked to other decision knowledge?'
 0,0,0,0,0,'i moved the diagram to Confluence: https://confluence-se.ifi.uni-heidelberg.de/display/DDJ/User+Interface'
-0,0,0,0,1,'Creating AO entries currently only works if the automatic classification is enabled. This should also work when a developers manually labels a comment.'
-0,0,0,0,1,'The problem is that calling the JIRA.trigger method in the JIRA issue module update method leads to doubled/redundant HTML elements.'
 0,1,0,0,0,'Cleanest implementation\nThe amount of source code for this feature/fix will be minimal and straight forward.'
 0,0,0,0,0,'Thanks for adding SSL to the CURES server. '
-0,1,0,0,0,'Id of dialog is unique, otherwise there are two dialogs with the same id and the correct dialog cannot be found.\n'
 0,0,0,0,0,'Could you please give more details what you did with letsencrypt here and also in the work_log file in the home folder of the jiraknecht user on the CURES server?'
+0,0,0,0,0,'{color:#ff0000}*Note*{color}: Before attempting anything that changes the base url for Jira you should create a local user with admin privileges on all applications that get their user directory from Jira.  '
+0,0,0,0,0,'You won\'t be able to login otherwise.  '
+0,0,1,0,0,'Not possible in JIRA\n'
