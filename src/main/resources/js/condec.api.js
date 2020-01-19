@@ -627,22 +627,6 @@
 	};
 
 	/*
-	 * external references: settingsForSingleProject.vm,
-	 * settingsForAllProjects.vm
-	 */
-	ConDecAPI.prototype.setKnowledgeExtractedFromIssues = function setKnowledgeExtractedFromIssues(
-		isKnowledgeExtractedFromIssues, projectKey) {
-		postJSON(this.restPrefix + "/config/setKnowledgeExtractedFromIssues.json?projectKey="
-			+ projectKey + "&isKnowledgeExtractedFromIssues=" + isKnowledgeExtractedFromIssues, null, function (
-			error, response) {
-			if (error === null) {
-				showFlag("success", "Extraction from issue comments for this project has been set to "
-					+ isKnowledgeExtractedFromIssues + ".");
-			}
-		});
-	};
-
-	/*
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setKnowledgeTypeEnabled = function setKnowledgeTypeEnabled(isKnowledgeTypeEnabled,
@@ -770,6 +754,22 @@
 			+ projectKey, null, function (error, response) {
 			if (error === null) {
 				showFlag("success", "The databases have been cleaned.");
+			}
+		});
+	};
+	
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setUseClassifierForIssueComments = function setUseClassifierForIssueComments(
+		isClassifierUsedForIssues, projectKey) {
+		postJSON(this.restPrefix + "/config/setUseClassifierForIssueComments.json?projectKey="
+			+ projectKey + "&isClassifierUsedForIssues=" + isClassifierUsedForIssues, null, function (error,
+																									  response) {
+			if (error === null) {
+				showFlag("success",
+					"Usage of classification for Decision Knowledge in JIRA Issue Comments has been set to "
+					+ isClassifierUsedForIssues + ".");
 			}
 		});
 	};
