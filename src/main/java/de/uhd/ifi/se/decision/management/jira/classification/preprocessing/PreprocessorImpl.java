@@ -131,7 +131,7 @@ public class PreprocessorImpl implements Preprocessor {
 
 
     @Override
-    public synchronized List preprocess(String sentence) {
+    public synchronized List preprocess(String sentence) throws Exception {
 
 
         try {
@@ -163,7 +163,7 @@ public class PreprocessorImpl implements Preprocessor {
 		}catch (Exception e){
 			System.out.println(e.getMessage());
 			initFiles();
-			throw e;
+			throw new Exception(e);
 		}
 
     }

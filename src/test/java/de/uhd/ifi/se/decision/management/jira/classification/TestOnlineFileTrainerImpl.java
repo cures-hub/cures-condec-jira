@@ -148,7 +148,7 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
 
     private File getTrimmedDefaultArffFile() {
         File fullDefaultFile = new File("src/main/resources/classifier/defaultTrainingData.arff");
-        File trimmedDefaultFile = new File("defaultTrainingData.arff");
+        File trimmedDefaultFile = new File("src/test/resources/classifier/defaultTrainingData.arff");
 
         int numberOfLines = 25;
 
