@@ -700,6 +700,23 @@
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
+	ConDecAPI.prototype.setUseClassifierForIssueComments = function setUseClassifierForIssueComments(
+		isClassifierUsedForIssues, projectKey) {
+		postJSON(this.restPrefix + "/config/setUseClassifierForIssueComments.json?projectKey="
+			+ projectKey + "&isClassifierUsedForIssues=" + isClassifierUsedForIssues, null, function (error,
+																									  response) {
+			if (error === null) {
+				showFlag("success",
+					"Usage of classification for Decision Knowledge in JIRA Issue Comments has been set to "
+					+ isClassifierUsedForIssues + ".");
+			}
+		});
+	};
+
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
 	ConDecAPI.prototype.setWebhookData = function setWebhookData(projectKey, webhookUrl, webhookSecret) {
 		postJSON(this.restPrefix + "/config/setWebhookData.json?projectKey=" + projectKey
 			+ "&webhookUrl=" + webhookUrl + "&webhookSecret=" + webhookSecret, null, function (error, response) {
