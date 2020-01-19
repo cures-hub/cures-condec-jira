@@ -279,21 +279,4 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
 		return getDecisionKnowledgeElement(id, documentationLocation);
 	}
-
-	@Override
-	public List<DecisionKnowledgeElement> getUnlinkedElements(DecisionKnowledgeElement element) {
-		List<DecisionKnowledgeElement> elements = this.getDecisionKnowledgeElements();
-		if (element == null) {
-			return elements;
-		}
-		elements.remove(element);
-
-		List<DecisionKnowledgeElement> linkedElements = new ArrayList<DecisionKnowledgeElement>();
-		activePersistenceManagersForSingleLocations
-				.forEach(manager -> linkedElements.addAll(manager.getAdjacentElements(element)));
-
-		elements.removeAll(linkedElements);
-
-		return elements;
-	}
 }

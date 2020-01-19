@@ -13,7 +13,11 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 
 /**
- * Interface for decision knowledge elements
+ * Interface for decision knowledge elements, i.e., nodes of the knowledge
+ * graph.
+ * 
+ * @see KnowledgeGraph
+ * @see Link
  */
 @JsonDeserialize(as = DecisionKnowledgeElementImpl.class)
 public interface DecisionKnowledgeElement extends Node {

@@ -120,9 +120,10 @@ public class VisGraph {
 		computeEdges();
 	}
 
-	private Node checkDepth(BreadthFirstIterator<Node, Link> iterator, Node iterNode, Node parentNode) {
+	private DecisionKnowledgeElement checkDepth(BreadthFirstIterator<DecisionKnowledgeElement, Link> iterator,
+			DecisionKnowledgeElement iterNode, DecisionKnowledgeElement parentNode) {
 		// Check Depth
-		Node parentNodeTmp = iterator.getParent(iterNode);
+		DecisionKnowledgeElement parentNodeTmp = iterator.getParent(iterNode);
 		// New Parent Node means next level
 		if (parentNodeTmp != null && parentNode != null && parentNodeTmp.getId() != parentNode.getId()) {
 			level++;
@@ -132,20 +133,20 @@ public class VisGraph {
 	}
 
 	private void computeNodes(DecisionKnowledgeElement element) {
-		Node rootNode = findRootKnowledgeElement(element);
-		BreadthFirstIterator<Node, Link> iterator;
+		DecisionKnowledgeElement rootNode = findRootKnowledgeElement(element);
+		BreadthFirstIterator<DecisionKnowledgeElement, Link> iterator;
 		try {
 			iterator = new BreadthFirstIterator<>(graph, rootNode);
 		} catch (IllegalArgumentException e) {
 			graph.addVertex(rootNode);
 			iterator = new BreadthFirstIterator<>(graph, rootNode);
 		}
-		Node parentNode = null;
+		DecisionKnowledgeElement parentNode = null;
 		while (iterator.hasNext()) {
-			Node iterNode = iterator.next();
+			DecisionKnowledgeElement iterNode = iterator.next();
 			DecisionKnowledgeElement nodeElement = null;
 			if (iterNode instanceof DecisionKnowledgeElement) {
-				nodeElement = (DecisionKnowledgeElement) iterNode;
+				nodeElement = iterNode;
 			}
 			if (!containsNode(nodeElement)) {
 				parentNode = checkDepth(iterator, iterNode, parentNode);
@@ -170,11 +171,12 @@ public class VisGraph {
 		}
 	}
 
-	private Node findRootKnowledgeElement(DecisionKnowledgeElement element) {
-		BreadthFirstIterator<Node, Link> allNodeIterator = new BreadthFirstIterator<>(graph);
-		DijkstraShortestPath<Node, Link> dijkstraAlg = new DijkstraShortestPath<>(graph);
-		ShortestPathAlgorithm.SingleSourcePaths<Node, Link> paths = dijkstraAlg.getPaths(allNodeIterator.next());
-		GraphPath<Node, Link> path = paths.getPath(element);
+	private DecisionKnowledgeElement findRootKnowledgeElement(DecisionKnowledgeElement element) {
+		BreadthFirstIterator<DecisionKnowledgeElement, Link> allNodeIterator = new BreadthFirstIterator<>(graph);
+		DijkstraShortestPath<DecisionKnowledgeElement, Link> dijkstraAlg = new DijkstraShortestPath<>(graph);
+		ShortestPathAlgorithm.SingleSourcePaths<DecisionKnowledgeElement, Link> paths = dijkstraAlg
+				.getPaths(allNodeIterator.next());
+		GraphPath<DecisionKnowledgeElement, Link> path = paths.getPath(element);
 		if (path == null) {
 			return element;
 		}

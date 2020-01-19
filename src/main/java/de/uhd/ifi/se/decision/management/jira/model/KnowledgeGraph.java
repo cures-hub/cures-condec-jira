@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
@@ -20,7 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
  * @see Graph
  */
 @JsonDeserialize(as = KnowledgeGraphImpl.class)
-public interface KnowledgeGraph extends Graph<Node, Link> {
+public interface KnowledgeGraph extends Graph<DecisionKnowledgeElement, Link> {
 
 	/**
 	 * Instances of knowledge graphs that are identified by the project key.
@@ -109,4 +110,21 @@ public interface KnowledgeGraph extends Graph<Node, Link> {
 	 * @param node
 	 */
 	boolean updateNode(DecisionKnowledgeElement node);
+
+	/**
+	 * Returns all unlinked elements of the knowledge element for a project. Sorts
+	 * the elements according to their similarity and their likelihood that they
+	 * should be linked.
+	 * 
+	 * TODO Sorting according to the likelihood that they should be linked.
+	 * 
+	 * @issue How can the sorting be implemented?
+	 *
+	 * @param element
+	 *            {@link DecisionKnowledgeElement} with id in database. The id is
+	 *            different to the key.
+	 * @return set of unlinked elements, sorted by the likelihood that they should
+	 *         be linked.
+	 */
+	List<DecisionKnowledgeElement> getUnlinkedElements(DecisionKnowledgeElement element);
 }

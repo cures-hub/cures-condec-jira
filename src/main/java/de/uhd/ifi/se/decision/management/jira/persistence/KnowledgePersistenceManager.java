@@ -354,21 +354,4 @@ public interface KnowledgePersistenceManager {
 
 	boolean updateIssueStatus(DecisionKnowledgeElement existingElement, DecisionKnowledgeElement newElement,
 			ApplicationUser user);
-
-	/**
-	 * Returns all unlinked elements of the knowledge element for a project. Sorts
-	 * the elements according to their similarity and their likelihood that they
-	 * should be linked.
-	 * 
-	 * TODO Sorting according to the likelihood that they should be linked.
-	 * 
-	 * @issue How can the sorting be implemented?
-	 *
-	 * @param element
-	 *            {@link DecisionKnowledgeElement} with id in database. The id is
-	 *            different to the key.
-	 * @return list of unlinked elements, sorted by the likelihood that they should
-	 *         be linked.
-	 */
-	List<DecisionKnowledgeElement> getUnlinkedElements(DecisionKnowledgeElement element);
 }

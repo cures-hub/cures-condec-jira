@@ -16,7 +16,8 @@ import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 
-public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> implements KnowledgeGraph {
+public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<DecisionKnowledgeElement, Link>
+		implements KnowledgeGraph {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeGraphImpl.class);
 
@@ -127,13 +128,34 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<Node, Link> i
 	}
 
 	@Override
-	public Set<Link> edgesOf(Node node) {
+	public Set<Link> edgesOf(DecisionKnowledgeElement element) {
 		Set<Link> edges = new HashSet<Link>();
 		try {
-			edges = super.edgesOf(node);
+			edges = super.edgesOf(element);
 		} catch (IllegalArgumentException e) {
 			LOGGER.error("Edges for node could not be returned. " + e);
 		}
 		return edges;
 	}
+
+	@Override
+	public List<DecisionKnowledgeElement> getUnlinkedElements(DecisionKnowledgeElement element) {
+		List<DecisionKnowledgeElement> elements = new ArrayList<>();
+		elements.addAll(this.vertexSet());
+		if (element == null) {
+			return elements;
+		}
+		elements.remove(element);
+		//
+		// List<DecisionKnowledgeElement> linkedElements = new
+		// ArrayList<DecisionKnowledgeElement>();
+		// activePersistenceManagersForSingleLocations
+		// .forEach(manager ->
+		// linkedElements.addAll(manager.getAdjacentElements(element)));
+		//
+		// elements.removeAll(linkedElements);
+
+		return elements;
+	}
+
 }

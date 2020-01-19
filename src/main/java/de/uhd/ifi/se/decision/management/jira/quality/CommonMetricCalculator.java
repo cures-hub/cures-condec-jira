@@ -31,7 +31,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -271,7 +270,8 @@ public class CommonMetricCalculator {
 
 		return havingArgument;
 	}
-	//TODO: Delete if no longer used by new Metrics
+
+	// TODO: Delete if no longer used by new Metrics
 	public Map<String, Integer> getLinkDistance(KnowledgeType type) {
 		if (type == null) {
 			return new HashMap<String, Integer>();
@@ -292,11 +292,11 @@ public class CommonMetricCalculator {
 	private int getLinkDistanceFromSingleNode(DecisionKnowledgeElement dke) {
 		int absolutDepth = 0;
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
-		BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<>(graph, dke);
-		Node parentNode = iterator.next();
+		BreadthFirstIterator<DecisionKnowledgeElement, Link> iterator = new BreadthFirstIterator<>(graph, dke);
+		DecisionKnowledgeElement parentNode = iterator.next();
 		int currentDepth = 0;
 		while (iterator.hasNext()) {
-			Node iterNode = iterator.next();
+			DecisionKnowledgeElement iterNode = iterator.next();
 			++currentDepth;
 			if (iterator.getParent(iterNode).equals(parentNode)) {
 				currentDepth = 1;

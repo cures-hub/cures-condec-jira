@@ -21,7 +21,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -162,7 +161,7 @@ public class TreeViewer {
 
 	protected List<Data> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Data> children = new ArrayList<Data>();
-		BreadthFirstIterator<Node, Link> iterator;
+		BreadthFirstIterator<DecisionKnowledgeElement, Link> iterator;
 		try {
 			iterator = new BreadthFirstIterator<>(graph, decisionKnowledgeElement);
 		} catch (IllegalArgumentException e) {
@@ -170,15 +169,15 @@ public class TreeViewer {
 			iterator = new BreadthFirstIterator<>(graph, decisionKnowledgeElement);
 		}
 		while (iterator.hasNext()) {
-			Node iterNode = iterator.next();
-			Node parentNode = iterator.getParent(iterNode);
+			DecisionKnowledgeElement iterNode = iterator.next();
+			DecisionKnowledgeElement parentNode = iterator.getParent(iterNode);
 			if (parentNode == null || parentNode.getId() != decisionKnowledgeElement.getId()) {
 				continue;
 			}
 			if (!(iterNode instanceof DecisionKnowledgeElement)) {
 				continue;
 			}
-			DecisionKnowledgeElement nodeElement = (DecisionKnowledgeElement) iterNode;
+			DecisionKnowledgeElement nodeElement = iterNode;
 			Link edge = this.graph.getEdge(parentNode, nodeElement);
 			if (this.alreadyVisitedEdges.contains(edge.getId())) {
 				continue;

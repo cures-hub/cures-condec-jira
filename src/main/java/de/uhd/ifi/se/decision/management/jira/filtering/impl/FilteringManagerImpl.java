@@ -18,7 +18,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.Node;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
@@ -94,9 +93,10 @@ public class FilteringManagerImpl implements FilteringManager {
 				graph.addVertex(element);
 			}
 
-			BreadthFirstIterator<Node, Link> iterator = new BreadthFirstIterator<Node, Link>(graph, element);
+			BreadthFirstIterator<DecisionKnowledgeElement, Link> iterator = new BreadthFirstIterator<DecisionKnowledgeElement, Link>(
+					graph, element);
 			while (iterator.hasNext()) {
-				DecisionKnowledgeElement node = (DecisionKnowledgeElement) iterator.next();
+				DecisionKnowledgeElement node = iterator.next();
 				if (!elements.contains(node) && isElementMatchingFilterSettings(node)) {
 					elements.add(node);
 				}
