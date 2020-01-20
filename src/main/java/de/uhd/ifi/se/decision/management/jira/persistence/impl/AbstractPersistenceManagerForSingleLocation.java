@@ -81,48 +81,6 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	public abstract List<KnowledgeElement> getDecisionKnowledgeElements();
 
 	/**
-	 * Get all linked elements of the decision knowledge element for a project where
-	 * this decision knowledge element is the destination element.
-	 *
-	 * @param element
-	 *            decision knowledge element with id in database.
-	 * @return list of linked elements where this decision knowledge element is the
-	 *         destination element.
-	 * @see KnowledgeElement
-	 * @see Link
-	 * @see DecisionKnowledgeProject
-	 */
-	public List<KnowledgeElement> getElementsLinkedWithInwardLinks(KnowledgeElement element) {
-		List<Link> inwardLinks = getInwardLinks(element);
-		List<KnowledgeElement> sourceElements = new ArrayList<KnowledgeElement>();
-		for (Link link : inwardLinks) {
-			sourceElements.add(link.getSource());
-		}
-		return sourceElements;
-	}
-
-	/**
-	 * Get all linked elements of the decision knowledge element for a project where
-	 * this decision knowledge element is the source element.
-	 *
-	 * @param element
-	 *            decision knowledge element with id in database.
-	 * @return list of linked elements where this decision knowledge element is the
-	 *         source element.
-	 * @see KnowledgeElement
-	 * @see Link
-	 * @see DecisionKnowledgeProject
-	 */
-	public List<KnowledgeElement> getElementsLinkedWithOutwardLinks(KnowledgeElement element) {
-		List<Link> outwardLinks = getOutwardLinks(element);
-		List<KnowledgeElement> destinationElements = new ArrayList<KnowledgeElement>();
-		for (Link link : outwardLinks) {
-			destinationElements.add(link.getTarget());
-		}
-		return destinationElements;
-	}
-
-	/**
 	 * Get all links where the decision knowledge element is the destination
 	 * element.
 	 *
