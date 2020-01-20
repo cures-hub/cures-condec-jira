@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -81,14 +81,6 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	}
 
 	@Override
-	public List<KnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type) {
-		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
-		activePersistenceManagersForSingleLocations
-				.forEach(manager -> elements.addAll(manager.getDecisionKnowledgeElements(type)));
-		return elements;
-	}
-
-	@Override
 	public AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(
 			String documentationLocationIdentifier) {
 		if (documentationLocationIdentifier == null) {
@@ -156,8 +148,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	}
 
 	@Override
-	public long insertLink(KnowledgeElement parentElement, KnowledgeElement childElement,
-			ApplicationUser user) {
+	public long insertLink(KnowledgeElement parentElement, KnowledgeElement childElement, ApplicationUser user) {
 		if (parentElement == null || childElement == null) {
 			return 0;
 		}
@@ -244,8 +235,8 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	}
 
 	@Override
-	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element,
-			ApplicationUser user, KnowledgeElement parentElement) {
+	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user,
+			KnowledgeElement parentElement) {
 		if (element.getStatus() == KnowledgeStatus.UNDEFINED) {
 			element.setStatus(KnowledgeStatus.getDefaultStatus(element.getType()));
 		}
@@ -258,8 +249,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	}
 
 	@Override
-	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element,
-			ApplicationUser user) {
+	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		return insertDecisionKnowledgeElement(element, user, null);
 	}
 

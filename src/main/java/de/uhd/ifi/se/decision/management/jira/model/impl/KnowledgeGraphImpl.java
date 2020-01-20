@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.model.impl;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
@@ -149,6 +151,21 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<KnowledgeElem
 		List<KnowledgeElement> linkedElements = Graphs.neighborListOf(this, element);
 		elements.removeAll(linkedElements);
 
+		return elements;
+	}
+
+	@Override
+	public List<KnowledgeElement> getElements(KnowledgeType type) {
+		KnowledgeType simpleType = type.replaceProAndConWithArgument();
+		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
+		elements.addAll(this.vertexSet());
+		Iterator<KnowledgeElement> iterator = elements.iterator();
+		while (iterator.hasNext()) {
+			KnowledgeElement element = iterator.next();
+			if (element.getType().replaceProAndConWithArgument() != simpleType) {
+				iterator.remove();
+			}
+		}
 		return elements;
 	}
 

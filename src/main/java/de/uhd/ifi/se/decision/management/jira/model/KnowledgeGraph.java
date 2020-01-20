@@ -128,4 +128,15 @@ public interface KnowledgeGraph extends Graph<KnowledgeElement, Link> {
 	 *         be linked.
 	 */
 	List<KnowledgeElement> getUnlinkedElements(KnowledgeElement element);
+
+	/**
+	 * Returns all knowledge elements for a project with a certain knowledge type.
+	 *
+	 * @return list of all decision knowledge elements for a project with a certain
+	 *         knowledge type.
+	 * @see KnowledgeElement
+	 * @see DecisionKnowledgeProject
+	 * @see KnowledgeType
+	 */
+	List<KnowledgeElement> getElements(KnowledgeType type);
 }
