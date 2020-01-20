@@ -9,7 +9,9 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import static junit.framework.TestCase.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 public class TestFileTrainer {
 
@@ -36,7 +38,7 @@ public class TestFileTrainer {
 
 	}catch (Exception e){
 		e.printStackTrace();
-		fail();
+		fail(e.getMessage());
 	}
 	}
 

@@ -13,12 +13,11 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
 
-/**
- * TODO: TESTS WITH useOnlyValidatedData FLAG
- */
 public class TestOnlineTrainer extends TestSetUp {
 
 
