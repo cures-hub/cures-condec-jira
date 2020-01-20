@@ -16,7 +16,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 
 public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<KnowledgeElement, Link> implements KnowledgeGraph {
 
@@ -47,9 +46,7 @@ public class KnowledgeGraphImpl extends DirectedWeightedMultigraph<KnowledgeElem
 
 	private void addEdges() {
 		for (KnowledgeElement element : this.vertexSet()) {
-			AbstractPersistenceManagerForSingleLocation manager = persistenceManager
-					.getManagerForSingleLocation(element.getDocumentationLocation());
-			List<Link> links = manager.getLinks(element.getId());
+			List<Link> links = persistenceManager.getLinks(element);
 			for (Link link : links) {
 				KnowledgeElement destination = link.getTarget();
 				KnowledgeElement source = link.getSource();

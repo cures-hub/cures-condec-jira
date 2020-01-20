@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.atlassian.jira.user.ApplicationUser;
@@ -91,37 +90,6 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @see Link
 	 */
 	public abstract List<Link> getInwardLinks(KnowledgeElement element);
-
-	/**
-	 * Get all links where the decision knowledge element is either the source or
-	 * the destination element.
-	 *
-	 * @param element
-	 *            decision knowledge element with id in database.
-	 * @return list of links where the given decision knowledge element is either
-	 *         the source or the destination element.
-	 * @see Link
-	 */
-	public List<Link> getLinks(KnowledgeElement element) {
-		List<Link> links = new ArrayList<Link>();
-		links.addAll(this.getInwardLinks(element));
-		links.addAll(this.getOutwardLinks(element));
-		return links;
-	}
-
-	/**
-	 * Get all links where the id of the node or decision knowledge element is
-	 * either the source or the destination element.
-	 *
-	 * @param id
-	 *            of the node or the DecisionKnowledgeElement
-	 * @return list of links where the given decision knowledge element is either
-	 *         the source or the destination element.
-	 */
-	public List<Link> getLinks(long id) {
-		KnowledgeElement element = this.getDecisionKnowledgeElement(id);
-		return this.getLinks(element);
-	}
 
 	/**
 	 * Get all links where the decision knowledge element is the source element.

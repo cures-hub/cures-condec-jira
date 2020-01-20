@@ -338,5 +338,17 @@ public interface KnowledgePersistenceManager {
 	 */
 	KnowledgeElement getDecisionKnowledgeElement(long id, String documentationLocation);
 
+	/**
+	 * Gets all links where the knowledge element is either the source or the
+	 * destination element.
+	 *
+	 * @param element
+	 *            knowledge element with id in database.
+	 * @return list of links where the given knowledge element is either the source
+	 *         or the destination element.
+	 * @see Link
+	 */
+	public List<Link> getLinks(KnowledgeElement element);
+
 	boolean updateIssueStatus(KnowledgeElement existingElement, KnowledgeElement newElement, ApplicationUser user);
 }

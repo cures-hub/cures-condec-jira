@@ -61,7 +61,8 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 				.forEach(manager -> elements.addAll(manager.getDecisionKnowledgeElements()));
 
 		// remove irrelevant sentences from graph
-		elements.removeIf(e -> (e instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) e).isRelevant()));
+		elements.removeIf(
+				element -> (element instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) element).isRelevant()));
 		return elements;
 	}
 
@@ -268,5 +269,13 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		DocumentationLocation documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
 		return getDecisionKnowledgeElement(id, documentationLocation);
+	}
+
+	@Override
+	public List<Link> getLinks(KnowledgeElement element) {
+		List<Link> links = new ArrayList<Link>();
+		activePersistenceManagersForSingleLocations.forEach(manager -> links.addAll(manager.getInwardLinks(element)));
+		activePersistenceManagersForSingleLocations.forEach(manager -> links.addAll(manager.getOutwardLinks(element)));
+		return links;
 	}
 }
