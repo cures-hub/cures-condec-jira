@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,8 +24,8 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestVisGraph extends TestSetUp {
 	private VisGraph visGraph;
-	private HashSet<VisNode> nodes;
-	private HashSet<VisEdge> edges;
+	private Set<VisNode> nodes;
+	private Set<VisEdge> edges;
 	private KnowledgeElement element;
 	private ApplicationUser user;
 	private FilterSettings filterSettings;

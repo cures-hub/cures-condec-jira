@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -24,9 +25,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 @XmlAccessorType(XmlAccessType.FIELD)
 public class VisGraph {
 	@XmlElement
-	private HashSet<VisNode> nodes;
+	private Set<VisNode> nodes;
 	@XmlElement
-	private HashSet<VisEdge> edges;
+	private Set<VisEdge> edges;
 	@XmlElement
 	private String rootElementKey;
 
@@ -130,11 +131,11 @@ public class VisGraph {
 		return elements.contains(element);
 	}
 
-	public void setNodes(HashSet<VisNode> nodes) {
+	public void setNodes(Set<VisNode> nodes) {
 		this.nodes = nodes;
 	}
 
-	public void setEdges(HashSet<VisEdge> edges) {
+	public void setEdges(Set<VisEdge> edges) {
 		this.edges = edges;
 	}
 
@@ -143,11 +144,11 @@ public class VisGraph {
 
 	}
 
-	public HashSet<VisNode> getNodes() {
+	public Set<VisNode> getNodes() {
 		return nodes;
 	}
 
-	public HashSet<VisEdge> getEdges() {
+	public Set<VisEdge> getEdges() {
 		return edges;
 	}
 
