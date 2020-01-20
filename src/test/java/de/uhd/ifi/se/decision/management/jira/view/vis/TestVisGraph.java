@@ -113,4 +113,9 @@ public class TestVisGraph extends TestSetUp {
 	public void testConstUserFilterFilled() {
 		assertNotNull(new VisGraph(user, filterSettings));
 	}
+
+	@Test
+	public void testConstUserFilterFilledRootElementGiven() {
+		assertNotNull(new VisGraph(user, filterSettings, "TEST-1"));
+	}
 }

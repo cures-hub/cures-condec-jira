@@ -78,19 +78,17 @@ public class VisGraph {
 	}
 
 	private void fillNodesAndEdges(KnowledgeElement element) {
-		if (element == null || element.getProject() == null) {
-			return;
-		}
 		computeNodes(element);
 		computeEdges();
 	}
 
 	private void computeNodes(KnowledgeElement startElement) {
-		BreadthFirstIterator<KnowledgeElement, Link> iterator;
 		if (!graph.containsVertex(startElement)) {
 			graph.addVertex(startElement);
 		}
-		iterator = new BreadthFirstIterator<KnowledgeElement, Link>(graph, startElement);
+
+		BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<KnowledgeElement, Link>(graph,
+				startElement);
 		KnowledgeElement parentNode = null;
 		while (iterator.hasNext()) {
 			KnowledgeElement iterNode = iterator.next();

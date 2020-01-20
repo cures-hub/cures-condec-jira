@@ -31,7 +31,7 @@ public class TestGetVis extends TestSetUp {
 		viewRest = new ViewRestImpl();
 		init();
 		request = new MockHttpServletRequest();
-		String jql = "project%20%3D%20CONDEC%20AND%20assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20updated%20DESC";
+		String jql = "?jql=issuetype%20%3D%20Issue";
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		filterSettings = new FilterSettingsImpl("TEST", jql, user);
 		request.setAttribute("user", user);
@@ -60,6 +60,6 @@ public class TestGetVis extends TestSetUp {
 	@Test
 	public void testRequestFilledFilterSettingsFilledElementFilled() {
 		assertNotNull(AuthenticationManager.getUser(request));
-		assertEquals(Status.OK.getStatusCode(), viewRest.getVis(request, filterSettings, "TEST-14").getStatus());
+		assertEquals(Status.OK.getStatusCode(), viewRest.getVis(request, filterSettings, "TEST-1").getStatus());
 	}
 }
