@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import net.java.ao.test.jdbc.NonTransactional;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -18,6 +19,7 @@ public class TestFileTrainer {
 	public static final String TEST_ARFF_FILE_PATH = "src/test/resources/classifier/defaultTrainingData.arff";
 
 	@Test
+	@Ignore
 	@NonTransactional
 	public void testCopyDefaultTrainingDataToFile() {
 		assertTrue(FileTrainer.copyDefaultTrainingDataToFile().exists());
