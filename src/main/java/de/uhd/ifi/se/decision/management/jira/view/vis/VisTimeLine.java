@@ -8,11 +8,10 @@ import javax.xml.bind.annotation.XmlElement;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 public class VisTimeLine {
 
@@ -35,23 +34,13 @@ public class VisTimeLine {
 		addElements(elements);
 	}
 
-	public VisTimeLine(String projectKey) {
-		this();
-		if (projectKey == null) {
-			return;
-		}
-		List<KnowledgeElement> elements = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getDecisionKnowledgeElements();
-		addElements(elements);
-	}
-
 	public VisTimeLine(ApplicationUser user, FilterSettings filterSettings) {
 		this();
 		if (user == null || filterSettings == null) {
 			return;
 		}
-		FilteringManager filterExtractor = new FilteringManagerImpl(user, filterSettings);
-		List<KnowledgeElement> elements = filterExtractor.getAllElementsMatchingFilterSettings();
+		FilteringManager filteringManager = new FilteringManagerImpl(user, filterSettings);
+		List<KnowledgeElement> elements = filteringManager.getAllElementsMatchingFilterSettings();
 		addElements(elements);
 	}
 

@@ -31,6 +31,7 @@ public class TestGetDecisionGraphAndMatrix extends TestSetUp {
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", user);
 		settings = new FilterSettingsImpl();
+		settings.setProjectKey("TEST");
 	}
 
 	@Test

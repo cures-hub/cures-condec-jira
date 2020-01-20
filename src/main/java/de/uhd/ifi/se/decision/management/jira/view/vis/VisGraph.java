@@ -84,8 +84,8 @@ public class VisGraph {
 		if (user == null) {
 			return;
 		}
-		FilteringManager filterExtractor = new FilteringManagerImpl(user, filterSettings);
-		List<KnowledgeElement> elements = filterExtractor.getAllElementsMatchingFilterSettings();
+		FilteringManager filteringManager = new FilteringManagerImpl(user, filterSettings);
+		List<KnowledgeElement> elements = filteringManager.getAllElementsMatchingFilterSettings();
 		this.elementsMatchingFilterCriteria = elements;
 		if (elements == null || elements.isEmpty()) {
 			return;
