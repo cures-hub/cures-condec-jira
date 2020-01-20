@@ -6,13 +6,11 @@ import smile.classification.SVM;
 import smile.math.kernel.MercerKernel;
 import weka.core.SerializationHelper;
 
-import java.io.File;
 import java.util.List;
 
 public abstract class AbstractClassifier implements Classifier{
 
-	public static final String DEFAULT_PATH = DecisionKnowledgeClassifier.DEFAULT_DIR +
-		File.separator;
+	public static final String DEFAULT_PATH = DecisionKnowledgeClassifier.DEFAULT_DIR;
 
 
 	protected SVM<Double[]> model;

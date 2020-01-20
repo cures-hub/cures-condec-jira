@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import net.java.ao.test.jdbc.NonTransactional;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -10,16 +9,13 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import static junit.framework.TestCase.assertTrue;
-import static junit.framework.TestCase.fail;
-import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.*;
 
 public class TestFileTrainer {
 
 	public static final String TEST_ARFF_FILE_PATH = "src/test/resources/classifier/defaultTrainingData.arff";
 
 	@Test
-	@Ignore
 	@NonTransactional
 	public void testCopyDefaultTrainingDataToFile() {
 		assertTrue(FileTrainer.copyDefaultTrainingDataToFile().exists());

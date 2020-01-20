@@ -100,57 +100,50 @@ public interface FileTrainer {
 	 * @return updated file with default training content.
 	 */
 	static File copyDefaultTrainingDataToFile() {
-		File file = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff");
-		File classifierDir = new File(DecisionKnowledgeClassifier.DEFAULT_DIR);
+
+		return copyDataToFile(
+			DecisionKnowledgeClassifier.DEFAULT_DIR,
+			"defaultTrainingData.arff",
+			ComponentGetter.getUrlOfClassifierFolder());
+	}
+
+	static File copyDataToFile(String path, String filename, String url) {
+		File classifierDir = new File(path);
 		if (!classifierDir.exists()) {
 			//creates directory if it does not exist
 			classifierDir.mkdirs();
 		}
-
+		String downloadUrlOfFile = url + filename;
+		File file = new File(path + filename);
 		try {
-			InputStream newFileInputStream;
-			String baseDownloadUrl = ComponentGetter.getUrlOfClassifierFolder();
-			if (baseDownloadUrl.contains("null")) {
-				newFileInputStream = new FileInputStream(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff");
-			} else {
-				newFileInputStream = new URL(baseDownloadUrl + "defaultTrainingData.arff").openStream();
-			}
+			InputStream inputStream = new URL(downloadUrlOfFile).openStream();
 
-			//If a training file already exists, we check if its content is equal to the current training file.
-			if (file.exists()) {
-				// get file hashes and compare them.
-				String oldFileHash = getMD5Checksum(new FileInputStream(file));
-				String newFileHash = getMD5Checksum(newFileInputStream);
-				if (oldFileHash.equals(newFileHash)) {
-					// files are equal
-					return file;
-				} else {
-					// different file content -> delete old file
-					file.delete();
+			if (!file.exists() || !getMD5Checksum(inputStream).equals(getMD5Checksum(new FileInputStream(file)))) {
+
+				file.createNewFile();
+
+				FileOutputStream outputStream = new FileOutputStream(file);
+
+				int read;
+				byte[] bytes = new byte[1024];
+
+				while ((read = inputStream.read(bytes)) != -1) {
+					outputStream.write(bytes, 0, read);
 				}
+				//System.out.println("Copied default preprocessing data to file. Message: " + file.getName());
 			}
-
-			file.createNewFile();
-
-
-			FileOutputStream outputStream = new FileOutputStream(file);
-			int read;
-			byte[] bytes = new byte[1024];
-
-			while ((read = newFileInputStream.read(bytes)) != -1) {
-				outputStream.write(bytes, 0, read);
-			}
-			outputStream.close();
-
 		} catch (IOException e) {
-			LOGGER.info("Default training file: " + file.getName() + ".");
-			LOGGER.error("Failed to copy default training data to file. Message: " + e.getMessage());
+			e.printStackTrace();
+			System.out.println("Path: " + path + ", filename: " + filename + ", url: " + url);
+			System.err.println("Failed to copy data to file. Message: " + e.getMessage());
+
 		} catch (Exception e) {
-			LOGGER.info("Default training file: " + file.getName() + ".");
-			LOGGER.error("Failed to copy default training data to file. Message: " + e.getMessage());
+			e.printStackTrace();
 		}
+
 		return file;
-	}
+}
+
 
 	/**
 	 * Creates a checksum for a given InputStream.
