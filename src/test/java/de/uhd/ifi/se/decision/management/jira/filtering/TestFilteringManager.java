@@ -82,7 +82,7 @@ public class TestFilteringManager extends TestSetUp {
 		assertEquals("TEST", filteringManager.getFilterSettings().getSearchString());
 	}
 
-	@Test
+	@Test(expected = NullPointerException.class)
 	public void testFilterSettingsEmpty() {
 		FilteringManager filteringManager = new FilteringManagerImpl(user, new FilterSettingsImpl());
 		assertEquals(0, filteringManager.getAllElementsMatchingFilterSettings().size());

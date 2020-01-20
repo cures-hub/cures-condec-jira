@@ -507,7 +507,7 @@
 			"selectedLinkTypes": selectedLinkTypes
 		};
 
-		postJSON(this.restPrefix + "/view/getDecisionGraph.json?projectKey=" + projectKey, filterSettings, function(error, graph) {
+		postJSON(this.restPrefix + "/view/getDecisionGraph.json?", filterSettings, function(error, graph) {
 			if (error == null) {
 				callback(graph);
 			}

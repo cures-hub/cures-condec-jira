@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.filtering.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.jgrapht.traverse.BreadthFirstIterator;
 import org.slf4j.Logger;
@@ -19,7 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 /**
  * Class for accessing the filtered knowledge graph. The filter criteria are
@@ -53,8 +53,7 @@ public class FilteringManagerImpl implements FilteringManager {
 		}
 		String searchString = filterSettings.getSearchString().toLowerCase();
 		if (JiraQueryType.getJiraQueryType(searchString) == JiraQueryType.OTHER) {
-			List<KnowledgeElement> elements = KnowledgePersistenceManager.getOrCreate(filterSettings.getProjectKey())
-					.getDecisionKnowledgeElements();
+			Set<KnowledgeElement> elements = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey()).vertexSet();
 			return filterElements(elements);
 		}
 		return getAllElementsMatchingQuery();
@@ -105,7 +104,7 @@ public class FilteringManagerImpl implements FilteringManager {
 		return elements;
 	}
 
-	private List<KnowledgeElement> filterElements(List<KnowledgeElement> elements) {
+	private List<KnowledgeElement> filterElements(Set<KnowledgeElement> elements) {
 		List<KnowledgeElement> filteredElements = new ArrayList<KnowledgeElement>();
 		if (elements == null || elements.isEmpty()) {
 			return filteredElements;

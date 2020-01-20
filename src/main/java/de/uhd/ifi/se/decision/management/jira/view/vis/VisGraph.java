@@ -2,15 +2,13 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.jgrapht.GraphPath;
-import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
 import com.atlassian.jira.user.ApplicationUser;
@@ -20,7 +18,6 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
@@ -28,14 +25,15 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 @XmlAccessorType(XmlAccessType.FIELD)
 public class VisGraph {
 	@XmlElement
-	private HashSet<VisNode> nodes;
+	private Set<VisNode> nodes;
 	@XmlElement
-	private HashSet<VisEdge> edges;
+	private Set<VisEdge> edges;
 	@XmlElement
 	private String rootElementKey;
 
 	private KnowledgeGraph graph;
-	private List<KnowledgeElement> elementsMatchingFilterCriteria;
+	// TODO Remove this attribute because we already have the nodes attribute
+	private List<KnowledgeElement> elements;
 	private int level = 50;
 	private int cid = 0;
 
@@ -43,14 +41,6 @@ public class VisGraph {
 		this.nodes = new HashSet<VisNode>();
 		this.edges = new HashSet<VisEdge>();
 		this.rootElementKey = "";
-	}
-
-	public VisGraph(String projectKey) {
-		this();
-		if (projectKey == null) {
-			return;
-		}
-		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 	}
 
 	public VisGraph(FilterSettings filterSettings) {
@@ -61,61 +51,58 @@ public class VisGraph {
 		this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
 	}
 
-	public VisGraph(List<KnowledgeElement> elements, String projectKey) {
-		this(projectKey);
-		this.elementsMatchingFilterCriteria = elements;
-		if (elements == null || elements.isEmpty()) {
-			return;
-		}
-		for (KnowledgeElement element : elements) {
-			fillNodesAndEdges(element);
-		}
-	}
-
-	public VisGraph(KnowledgeElement rootElement, List<KnowledgeElement> elements) {
-		this(rootElement.getProject().getProjectKey());
-		this.elementsMatchingFilterCriteria = elements;
-		this.rootElementKey = (rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString());
-		fillNodesAndEdges(rootElement);
-	}
-
 	public VisGraph(ApplicationUser user, FilterSettings filterSettings) {
+		this(user, filterSettings, null);
+	}
+
+	public VisGraph(ApplicationUser user, FilterSettings filterSettings, String rootElementKey) {
 		this(filterSettings);
 		if (user == null) {
 			return;
 		}
-		FilteringManager filterExtractor = new FilteringManagerImpl(user, filterSettings);
-		List<KnowledgeElement> elements = filterExtractor.getAllElementsMatchingFilterSettings();
-		this.elementsMatchingFilterCriteria = elements;
+		FilteringManager filteringManager = new FilteringManagerImpl(user, filterSettings);
+		List<KnowledgeElement> elements = filteringManager.getAllElementsMatchingFilterSettings();
+		this.elements = elements;
 		if (elements == null || elements.isEmpty()) {
 			return;
 		}
-		for (KnowledgeElement element : elements) {
-			fillNodesAndEdges(element);
+		if (rootElementKey == null) {
+			fillNodesAndEdges(elements.get(0));
+			return;
 		}
-	}
-
-	public VisGraph(ApplicationUser user, String elementKey, FilterSettings filterSettings) {
-		this(filterSettings);
-		FilteringManager filterExtractor = new FilteringManagerImpl(user, filterSettings);
-		this.elementsMatchingFilterCriteria = filterExtractor.getAllElementsMatchingFilterSettings();
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(filterSettings.getProjectKey());
-		KnowledgeElement rootElement = persistenceManager.getJiraIssueManager().getDecisionKnowledgeElement(elementKey);
-		this.rootElementKey = (rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString());
+		KnowledgeElement rootElement = persistenceManager.getJiraIssueManager()
+				.getDecisionKnowledgeElement(rootElementKey);
+		this.rootElementKey = rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString();
 		fillNodesAndEdges(rootElement);
 	}
 
 	private void fillNodesAndEdges(KnowledgeElement element) {
-		if (element == null || element.getProject() == null) {
-			return;
-		}
-
-		if (graph == null) {
-			graph = KnowledgeGraph.getOrCreate(element.getProject().getProjectKey());
-		}
 		computeNodes(element);
 		computeEdges();
+	}
+
+	private void computeNodes(KnowledgeElement startElement) {
+		if (!graph.containsVertex(startElement)) {
+			graph.addVertex(startElement);
+		}
+
+		BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<KnowledgeElement, Link>(graph,
+				startElement);
+		KnowledgeElement parentNode = null;
+		while (iterator.hasNext()) {
+			KnowledgeElement iterNode = iterator.next();
+			if (!containsNode(iterNode)) {
+				parentNode = checkDepth(iterator, iterNode, parentNode);
+				this.nodes.add(new VisNode(iterNode, isCollapsed(iterNode), level, cid));
+				if (parentNode == null) {
+					parentNode = iterNode;
+					level++;
+				}
+				cid++;
+			}
+		}
 	}
 
 	private KnowledgeElement checkDepth(BreadthFirstIterator<KnowledgeElement, Link> iterator,
@@ -130,38 +117,9 @@ public class VisGraph {
 		return parentNode;
 	}
 
-	private void computeNodes(KnowledgeElement element) {
-		KnowledgeElement rootNode = findRootKnowledgeElement(element);
-		BreadthFirstIterator<KnowledgeElement, Link> iterator;
-		try {
-			iterator = new BreadthFirstIterator<>(graph, rootNode);
-		} catch (IllegalArgumentException e) {
-			graph.addVertex(rootNode);
-			iterator = new BreadthFirstIterator<>(graph, rootNode);
-		}
-		KnowledgeElement parentNode = null;
-		while (iterator.hasNext()) {
-			KnowledgeElement iterNode = iterator.next();
-			KnowledgeElement nodeElement = null;
-			if (iterNode instanceof KnowledgeElement) {
-				nodeElement = iterNode;
-			}
-			if (!containsNode(nodeElement)) {
-				parentNode = checkDepth(iterator, iterNode, parentNode);
-				this.nodes.add(new VisNode(nodeElement, isCollapsed(nodeElement), level, cid));
-				if (parentNode == null) {
-					parentNode = iterNode;
-					level++;
-				}
-				cid++;
-			}
-		}
-	}
-
 	private void computeEdges() {
 		for (Link link : this.graph.edgeSet()) {
-			if (this.elementsMatchingFilterCriteria.contains(link.getSource())
-					&& this.elementsMatchingFilterCriteria.contains(link.getTarget())) {
+			if (this.elements.contains(link.getSource()) && this.elements.contains(link.getTarget())) {
 				if (!containsEdge(link)) {
 					this.edges.add(new VisEdge(link));
 				}
@@ -169,35 +127,15 @@ public class VisGraph {
 		}
 	}
 
-	private KnowledgeElement findRootKnowledgeElement(KnowledgeElement element) {
-		BreadthFirstIterator<KnowledgeElement, Link> allNodeIterator = new BreadthFirstIterator<>(graph);
-		DijkstraShortestPath<KnowledgeElement, Link> dijkstraAlg = new DijkstraShortestPath<>(graph);
-		ShortestPathAlgorithm.SingleSourcePaths<KnowledgeElement, Link> paths = dijkstraAlg
-				.getPaths(allNodeIterator.next());
-		GraphPath<KnowledgeElement, Link> path = paths.getPath(element);
-		if (path == null) {
-			return element;
-		}
-		for (KnowledgeElement node : path.getVertexList()) {
-			if (node instanceof KnowledgeElement) {
-				KnowledgeElement nodeElement = node;
-				if (KnowledgeType.getDefaultTypes().contains(nodeElement.getType())) {
-					return nodeElement;
-				}
-			}
-		}
-		return element;
-	}
-
 	private boolean isCollapsed(KnowledgeElement element) {
-		return elementsMatchingFilterCriteria.contains(element);
+		return elements.contains(element);
 	}
 
-	public void setNodes(HashSet<VisNode> nodes) {
+	public void setNodes(Set<VisNode> nodes) {
 		this.nodes = nodes;
 	}
 
-	public void setEdges(HashSet<VisEdge> edges) {
+	public void setEdges(Set<VisEdge> edges) {
 		this.edges = edges;
 	}
 
@@ -206,11 +144,11 @@ public class VisGraph {
 
 	}
 
-	public HashSet<VisNode> getNodes() {
+	public Set<VisNode> getNodes() {
 		return nodes;
 	}
 
-	public HashSet<VisEdge> getEdges() {
+	public Set<VisEdge> getEdges() {
 		return edges;
 	}
 

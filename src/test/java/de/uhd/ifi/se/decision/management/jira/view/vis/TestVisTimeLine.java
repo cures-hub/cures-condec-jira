@@ -33,21 +33,6 @@ public class TestVisTimeLine extends TestSetUp {
 	}
 
 	@Test
-	public void testConstructorProjectKeyEmptyOrNull() {
-		VisTimeLine timeLine = new VisTimeLine("");
-		assertEquals(0, timeLine.getTimeLineNodes().size());
-
-		timeLine = new VisTimeLine((String) null);
-		assertEquals(0, timeLine.getTimeLineNodes().size());
-	}
-
-	@Test
-	public void testConstructorProjectKeyValid() {
-		VisTimeLine timeLine = new VisTimeLine("TEST");
-		assertEquals(8, timeLine.getTimeLineNodes().size());
-	}
-
-	@Test
 	public void testConstructorElementsNull() {
 		VisTimeLine timeLine = new VisTimeLine((List<KnowledgeElement>) null);
 		assertEquals(0, timeLine.getTimeLineNodes().size());
