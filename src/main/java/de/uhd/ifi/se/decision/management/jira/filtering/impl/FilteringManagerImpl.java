@@ -53,8 +53,8 @@ public class FilteringManagerImpl implements FilteringManager {
 		}
 		String searchString = filterSettings.getSearchString().toLowerCase();
 		if (JiraQueryType.getJiraQueryType(searchString) == JiraQueryType.OTHER) {
-			List<KnowledgeElement> elements = KnowledgePersistenceManager
-					.getOrCreate(filterSettings.getProjectKey()).getDecisionKnowledgeElements();
+			List<KnowledgeElement> elements = KnowledgePersistenceManager.getOrCreate(filterSettings.getProjectKey())
+					.getDecisionKnowledgeElements();
 			return filterElements(elements);
 		}
 		return getAllElementsMatchingQuery();
@@ -156,7 +156,7 @@ public class FilteringManagerImpl implements FilteringManager {
 		}
 		if (filterSettings.getCreatedLatest() != -1) {
 			isMatchingTimeFilter = isMatchingTimeFilter
-					&& element.getCreated().getTime() <= filterSettings.getCreatedLatest();
+					&& element.getCreated().getTime() <= filterSettings.getCreatedLatest() + 86400000;
 		}
 		return isMatchingTimeFilter;
 	}

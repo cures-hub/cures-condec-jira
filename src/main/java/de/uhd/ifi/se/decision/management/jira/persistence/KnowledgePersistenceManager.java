@@ -217,6 +217,18 @@ public interface KnowledgePersistenceManager {
 	boolean deleteLink(Link link, ApplicationUser user);
 
 	/**
+	 * Gets all links where the knowledge element is either the source or the
+	 * destination element.
+	 *
+	 * @param element
+	 *            knowledge element with id in database.
+	 * @return list of links where the given knowledge element is either the source
+	 *         or the destination element.
+	 * @see Link
+	 */
+	public List<Link> getLinks(KnowledgeElement element);
+
+	/**
 	 * Returns the database id of a link object (either a Jira issue link or a
 	 * generic link). Returns a value <= 0 if the link is not existing in one of
 	 * these databases.
@@ -337,18 +349,6 @@ public interface KnowledgePersistenceManager {
 	 * @see KnowledgeElement
 	 */
 	KnowledgeElement getDecisionKnowledgeElement(long id, String documentationLocation);
-
-	/**
-	 * Gets all links where the knowledge element is either the source or the
-	 * destination element.
-	 *
-	 * @param element
-	 *            knowledge element with id in database.
-	 * @return list of links where the given knowledge element is either the source
-	 *         or the destination element.
-	 * @see Link
-	 */
-	public List<Link> getLinks(KnowledgeElement element);
 
 	boolean updateIssueStatus(KnowledgeElement existingElement, KnowledgeElement newElement, ApplicationUser user);
 }
