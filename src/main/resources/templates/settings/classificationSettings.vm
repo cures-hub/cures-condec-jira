@@ -124,12 +124,6 @@
 
 <script>
     //Init the variables
-<<<<<<< HEAD
-=======
-    //const issueCommentsToggle = document.getElementById("isKnowledgeExtractedFromIssues-toggle");
-    //issueCommentsToggle.checked = $project.isKnowledgeExtractedFromIssues() ;
-
->>>>>>> CONDEC-672Improve.classifier.performance
     const isClassifierUsedToggle = document.getElementById("isClassifierUsed-toggle");
     isClassifierUsedToggle.checked = $project.isClassifierUsedForIssueComments();
 
@@ -140,14 +134,6 @@
     sentenceIconToggle.checked = $project.isIconParsingEnabled() ;
 
     // add listeners
-<<<<<<< HEAD
-=======
-    //const cleanDatabasesButton = document.getElementById("cleanDatabases");
-    //cleanDatabasesButton.addEventListener("click", function () {
-    //    conDecAPI.cleanDatabases("$projectKey");
-    //});
-
->>>>>>> CONDEC-672Improve.classifier.performance
     const evaluateModelButton = document.getElementById("evaluateModel-button");
     evaluateModelButton.addEventListener("click", function () {
         var animatedElement = document.getElementById("evaluate-classifier-progress");
