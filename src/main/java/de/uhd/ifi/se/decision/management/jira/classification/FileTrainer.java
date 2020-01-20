@@ -107,10 +107,14 @@ public interface FileTrainer {
 			classifierDir.mkdirs();
 		}
 
-		String pathToTrainingFile = ComponentGetter.getUrlOfClassifierFolder() + "defaultTrainingData.arff";
 		try {
-
-			InputStream newFileInputStream = new URL(pathToTrainingFile).openStream();
+			InputStream newFileInputStream;
+			String baseDownloadUrl = ComponentGetter.getUrlOfClassifierFolder();
+			if (baseDownloadUrl.contains("null")) {
+				newFileInputStream = new FileInputStream(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff");
+			} else {
+				newFileInputStream = new URL(baseDownloadUrl + "defaultTrainingData.arff").openStream();
+			}
 
 			//If a training file already exists, we check if its content is equal to the current training file.
 			if (file.exists()) {
@@ -139,8 +143,10 @@ public interface FileTrainer {
 			outputStream.close();
 
 		} catch (IOException e) {
+			LOGGER.info("Default training file: " + file.getName() + ".");
 			LOGGER.error("Failed to copy default training data to file. Message: " + e.getMessage());
 		} catch (Exception e) {
+			LOGGER.info("Default training file: " + file.getName() + ".");
 			LOGGER.error("Failed to copy default training data to file. Message: " + e.getMessage());
 		}
 		return file;
