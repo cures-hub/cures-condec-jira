@@ -26,8 +26,8 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -41,7 +41,7 @@ public class CommonMetricCalculator {
 
 	private String projectKey;
 	private ApplicationUser user;
-	private JiraIssueTextPersistenceManager persistenceManager;
+	private KnowledgeGraph graph;
 	private String jiraIssueTypeId;
 	private List<Issue> jiraIssues;
 	private final String dataStringSeparator = " ";
@@ -51,7 +51,7 @@ public class CommonMetricCalculator {
 	public CommonMetricCalculator(long projectId, ApplicationUser user, String jiraIssueTypeId) {
 		this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
 		this.user = user;
-		this.persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueTextManager();
+		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 		this.jiraIssueTypeId = jiraIssueTypeId;
 		this.jiraIssues = getJiraIssuesForProject(projectId);
 	}
@@ -114,8 +114,7 @@ public class CommonMetricCalculator {
 	public Map<String, Integer> getDistributionOfKnowledgeTypes() {
 		Map<String, Integer> distributionOfKnowledgeTypes = new HashMap<String, Integer>();
 		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
-			distributionOfKnowledgeTypes.put(type.toString(),
-					persistenceManager.getDecisionKnowledgeElements(type).size());
+			distributionOfKnowledgeTypes.put(type.toString(), graph.getElements(type).size());
 		}
 		return distributionOfKnowledgeTypes;
 	}
@@ -128,7 +127,7 @@ public class CommonMetricCalculator {
 		Integer[] statistics = new Integer[4];
 		Arrays.fill(statistics, 0);
 
-		List<KnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(linkFrom);
+		List<KnowledgeElement> listOfIssues = this.graph.getElements(linkFrom);
 
 		for (KnowledgeElement issue : listOfIssues) {
 			List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
@@ -165,7 +164,7 @@ public class CommonMetricCalculator {
 		String[] data = new String[2];
 		Arrays.fill(data, "");
 
-		List<KnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(linkFrom);
+		List<KnowledgeElement> listOfIssues = this.graph.getElements(linkFrom);
 
 		for (KnowledgeElement issue : listOfIssues) {
 			String issueKey = issue.getKey();
@@ -205,7 +204,7 @@ public class CommonMetricCalculator {
 		String[] data = new String[2];
 		Arrays.fill(data, "");
 
-		List<KnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(linkFrom);
+		List<KnowledgeElement> listOfIssues = this.graph.getElements(linkFrom);
 
 		for (KnowledgeElement issue : listOfIssues) {
 			List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
@@ -242,8 +241,7 @@ public class CommonMetricCalculator {
 		String alternativesHaveArgument = "";
 		String alternativesHaveNoArgument = "";
 
-		List<KnowledgeElement> alternatives = this.persistenceManager
-				.getDecisionKnowledgeElements(KnowledgeType.ALTERNATIVE);
+		List<KnowledgeElement> alternatives = this.graph.getElements(KnowledgeType.ALTERNATIVE);
 
 		for (KnowledgeElement currentAlternative : alternatives) {
 			List<Link> links = GenericLinkManager.getLinksForElement(currentAlternative.getId(),
@@ -278,7 +276,7 @@ public class CommonMetricCalculator {
 		}
 		Map<String, Integer> linkDistances = new HashMap<String, Integer>();
 
-		List<KnowledgeElement> listOfDecKnowElements = persistenceManager.getDecisionKnowledgeElements(type);
+		List<KnowledgeElement> listOfDecKnowElements = graph.getElements(type);
 		Integer i = 0;
 		for (KnowledgeElement currentElement : listOfDecKnowElements) {
 			int depth = getLinkDistanceFromSingleNode(currentElement);

@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.impl;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.atlassian.jira.user.ApplicationUser;
@@ -9,7 +8,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
@@ -81,30 +79,6 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @see DecisionKnowledgeProject
 	 */
 	public abstract List<KnowledgeElement> getDecisionKnowledgeElements();
-
-	/**
-	 * Get all decision knowledge elements for a project of a certain documentation
-	 * location, e.g. all elements in Jira issue descriptions and comments, and with
-	 * a certain knowledge type.
-	 *
-	 * @return list of all decision knowledge elements for a project with a certain
-	 *         knowledge type of a certain documentation location.
-	 * @see KnowledgeElement
-	 * @see DecisionKnowledgeProject
-	 * @see KnowledgeType
-	 */
-	public List<KnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type) {
-		KnowledgeType simpleType = type.replaceProAndConWithArgument();
-		List<KnowledgeElement> elements = this.getDecisionKnowledgeElements();
-		Iterator<KnowledgeElement> iterator = elements.iterator();
-		while (iterator.hasNext()) {
-			KnowledgeElement element = iterator.next();
-			if (element.getType().replaceProAndConWithArgument() != simpleType) {
-				iterator.remove();
-			}
-		}
-		return elements;
-	}
 
 	/**
 	 * Get all linked elements of the decision knowledge element for a project where
