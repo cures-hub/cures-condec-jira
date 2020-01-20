@@ -3,9 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,12 +15,9 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -77,56 +72,6 @@ public class TestVisGraph extends TestSetUp {
 	}
 
 	@Test
-	public void testWithoutFiltering() {
-		List<KnowledgeElement> elements = new ArrayList<>();
-		elements.add(element);
-		VisGraph newVisGraph = new VisGraph(element, elements);
-		assertNotNull(newVisGraph);
-	}
-
-	@Test
-	public void testConstWithListNullProjectNull() {
-		VisGraph visGraph = new VisGraph((List<KnowledgeElement>) null, (String) null);
-		assertEquals(0, visGraph.getEdges().size(), 0.0);
-	}
-
-	@Test
-	public void testConstWithListEmptyProjectNull() {
-		List<KnowledgeElement> elements = new ArrayList<>();
-		VisGraph visGraph = new VisGraph(elements, (String) null);
-		assertEquals(0, visGraph.getEdges().size(), 0.0);
-	}
-
-	@Test
-	public void testConstWithListFilledProjectNull() {
-		List<KnowledgeElement> elements = new ArrayList<>();
-		elements.add(element);
-		VisGraph visGraph = new VisGraph(elements, (String) null);
-		assertEquals(0, visGraph.getEdges().size(), 0.0);
-	}
-
-	@Test
-	public void testConstWithListNullProjectFilled() {
-		VisGraph visGraph = new VisGraph((List<KnowledgeElement>) null, "TEST");
-		assertEquals(0, visGraph.getNodes().size(), 0.0);
-	}
-
-	@Test
-	public void testConstWithListEmptyProjectFilled() {
-		List<KnowledgeElement> elements = new ArrayList<>();
-		VisGraph visGraph = new VisGraph(elements, "TEST");
-		assertEquals(0, visGraph.getNodes().size(), 0.0);
-	}
-
-	@Test
-	public void testConstWithListFilledProjectFilled() {
-		List<KnowledgeElement> elements = new ArrayList<>();
-		elements.add(element);
-		VisGraph visGraph = new VisGraph(elements, "TEST");
-		assertEquals(4, visGraph.getNodes().size());
-	}
-
-	@Test
 	public void testGetRootElementKey() {
 		assertEquals("", visGraph.getRootElementKey());
 	}
@@ -144,16 +89,6 @@ public class TestVisGraph extends TestSetUp {
 
 	@Test
 	public void testSetGraph() {
-		KnowledgeGraph newGraph = KnowledgeGraph.getOrCreate("ConDec");
-		visGraph.setGraph(newGraph);
-		assertEquals(newGraph, visGraph.getGraph());
-	}
-
-	@Test
-	public void addNewNodeToGraph() {
-		KnowledgeElement element = new KnowledgeElementImpl(42, "", "", KnowledgeType.DECISION, "TEST",
-				"TEST-42", DocumentationLocation.JIRAISSUE, KnowledgeStatus.DECIDED);
-		VisGraph visGraph = new VisGraph(element, new ArrayList<KnowledgeElement>());
 		KnowledgeGraph newGraph = KnowledgeGraph.getOrCreate("ConDec");
 		visGraph.setGraph(newGraph);
 		assertEquals(newGraph, visGraph.getGraph());

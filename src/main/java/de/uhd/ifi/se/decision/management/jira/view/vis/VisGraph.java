@@ -42,14 +42,6 @@ public class VisGraph {
 		this.rootElementKey = "";
 	}
 
-	public VisGraph(String projectKey) {
-		this();
-		if (projectKey == null) {
-			return;
-		}
-		this.graph = KnowledgeGraph.getOrCreate(projectKey);
-	}
-
 	public VisGraph(FilterSettings filterSettings) {
 		this();
 		if (filterSettings == null || filterSettings.getProjectKey() == null) {
@@ -58,23 +50,11 @@ public class VisGraph {
 		this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
 	}
 
-	public VisGraph(List<KnowledgeElement> elements, String projectKey) {
-		this(projectKey);
-		this.elements = elements;
-		if (elements == null || elements.isEmpty()) {
-			return;
-		}
-		fillNodesAndEdges(elements.get(0));
-	}
-
-	public VisGraph(KnowledgeElement rootElement, List<KnowledgeElement> elements) {
-		this(rootElement.getProject().getProjectKey());
-		this.elements = elements;
-		this.rootElementKey = (rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString());
-		fillNodesAndEdges(rootElement);
-	}
-
 	public VisGraph(ApplicationUser user, FilterSettings filterSettings) {
+		this(user, filterSettings, null);
+	}
+
+	public VisGraph(ApplicationUser user, FilterSettings filterSettings, String rootElementKey) {
 		this(filterSettings);
 		if (user == null) {
 			return;
@@ -85,17 +65,15 @@ public class VisGraph {
 		if (elements == null || elements.isEmpty()) {
 			return;
 		}
-		fillNodesAndEdges(elements.get(0));
-	}
-
-	public VisGraph(ApplicationUser user, String elementKey, FilterSettings filterSettings) {
-		this(filterSettings);
-		FilteringManager filterExtractor = new FilteringManagerImpl(user, filterSettings);
-		this.elements = filterExtractor.getAllElementsMatchingFilterSettings();
+		if (rootElementKey == null) {
+			fillNodesAndEdges(elements.get(0));
+			return;
+		}
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(filterSettings.getProjectKey());
-		KnowledgeElement rootElement = persistenceManager.getJiraIssueManager().getDecisionKnowledgeElement(elementKey);
-		this.rootElementKey = (rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString());
+		KnowledgeElement rootElement = persistenceManager.getJiraIssueManager()
+				.getDecisionKnowledgeElement(rootElementKey);
+		this.rootElementKey = rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString();
 		fillNodesAndEdges(rootElement);
 	}
 
@@ -103,34 +81,16 @@ public class VisGraph {
 		if (element == null || element.getProject() == null) {
 			return;
 		}
-
-		if (graph == null) {
-			graph = KnowledgeGraph.getOrCreate(element.getProject().getProjectKey());
-		}
 		computeNodes(element);
 		computeEdges();
 	}
 
-	private KnowledgeElement checkDepth(BreadthFirstIterator<KnowledgeElement, Link> iterator,
-			KnowledgeElement iterNode, KnowledgeElement parentNode) {
-		// Check Depth
-		KnowledgeElement parentNodeTmp = iterator.getParent(iterNode);
-		// New Parent Node means next level
-		if (parentNodeTmp != null && parentNode != null && parentNodeTmp.getId() != parentNode.getId()) {
-			level++;
-			return parentNodeTmp;
-		}
-		return parentNode;
-	}
-
 	private void computeNodes(KnowledgeElement startElement) {
 		BreadthFirstIterator<KnowledgeElement, Link> iterator;
-		try {
-			iterator = new BreadthFirstIterator<>(graph, startElement);
-		} catch (IllegalArgumentException e) {
+		if (!graph.containsVertex(startElement)) {
 			graph.addVertex(startElement);
-			iterator = new BreadthFirstIterator<>(graph, startElement);
 		}
+		iterator = new BreadthFirstIterator<KnowledgeElement, Link>(graph, startElement);
 		KnowledgeElement parentNode = null;
 		while (iterator.hasNext()) {
 			KnowledgeElement iterNode = iterator.next();
@@ -144,6 +104,18 @@ public class VisGraph {
 				cid++;
 			}
 		}
+	}
+
+	private KnowledgeElement checkDepth(BreadthFirstIterator<KnowledgeElement, Link> iterator,
+			KnowledgeElement iterNode, KnowledgeElement parentNode) {
+		// Check Depth
+		KnowledgeElement parentNodeTmp = iterator.getParent(iterNode);
+		// New Parent Node means next level
+		if (parentNodeTmp != null && parentNode != null && parentNodeTmp.getId() != parentNode.getId()) {
+			level++;
+			return parentNodeTmp;
+		}
+		return parentNode;
 	}
 
 	private void computeEdges() {

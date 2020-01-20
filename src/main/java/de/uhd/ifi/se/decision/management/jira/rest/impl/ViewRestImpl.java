@@ -242,9 +242,9 @@ public class ViewRestImpl implements ViewRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getVis(@Context HttpServletRequest request, FilterSettings filterSettings,
-			@QueryParam("elementKey") String elementKey) {
-		if (checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()) {
-			return checkIfElementIsValid(elementKey);
+			@QueryParam("elementKey") String rootElementKey) {
+		if (checkIfElementIsValid(rootElementKey).getStatus() != Status.OK.getStatusCode()) {
+			return checkIfElementIsValid(rootElementKey);
 		}
 		if (filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
@@ -257,7 +257,7 @@ public class ViewRestImpl implements ViewRest {
 					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisGraph visGraph = new VisGraph(user, elementKey, filterSettings);
+		VisGraph visGraph = new VisGraph(user, filterSettings, rootElementKey);
 		return Response.ok(visGraph).build();
 	}
 
