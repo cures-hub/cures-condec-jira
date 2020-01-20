@@ -35,36 +35,25 @@ public class TestGetDecisionGraphAndMatrix extends TestSetUp {
 	}
 
 	@Test
-	public void testDecisionGraphProjectKeyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionGraph(request, null, null).getStatus());
+	public void testDecisionGraphFilterSettingsNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionGraph(request, null).getStatus());
 	}
 
 	@Test
-	public void testDecisionGraphProjectKeyNonExistent() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				viewRest.getDecisionGraph(request, null, "NotTEST").getStatus());
-	}
-
-	@Test
-	public void testDecisionGraphProjectKeyExistent() {
-		assertEquals(200, viewRest.getDecisionGraph(request, settings, "TEST").getStatus());
+	public void testDecisionGraphFilterSettingsValid() {
+		assertEquals(200, viewRest.getDecisionGraph(request, settings).getStatus());
 	}
 
 	@Test
 	public void testDecisionGraphFilteredProjectKeyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				viewRest.getDecisionGraph(request, settings, null).getStatus());
+		settings.setProjectKey(null);
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionGraph(request, settings).getStatus());
 	}
 
 	@Test
 	public void testDecisionGraphFilteredProjectKeyNonExistent() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				viewRest.getDecisionGraph(request, settings, "NotTEST").getStatus());
-	}
-
-	@Test
-	public void testDecisionGraphFilteredProjectKeyExistent() {
-		assertEquals(200, viewRest.getDecisionGraph(request, settings, "TEST").getStatus());
+		settings.setProjectKey("NotTEST");
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionGraph(request, settings).getStatus());
 	}
 
 	@Test

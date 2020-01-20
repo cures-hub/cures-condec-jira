@@ -323,9 +323,13 @@ public class ViewRestImpl implements ViewRest {
 	@Path("/getDecisionGraph")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionGraph(@Context HttpServletRequest request, FilterSettings filterSettings,
-			@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+	public Response getDecisionGraph(@Context HttpServletRequest request, FilterSettings filterSettings) {
+		if (filterSettings == null) {
+			return Response.status(Status.BAD_REQUEST).entity(
+					ImmutableMap.of("error", "The filter settings are null. Knowledge graph could not be accessed."))
+					.build();
+		}
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(filterSettings.getProjectKey());
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
