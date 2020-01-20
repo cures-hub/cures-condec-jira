@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.impl;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.atlassian.jira.user.ApplicationUser;
@@ -9,7 +7,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
@@ -83,72 +80,6 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	public abstract List<KnowledgeElement> getDecisionKnowledgeElements();
 
 	/**
-	 * Get all decision knowledge elements for a project of a certain documentation
-	 * location, e.g. all elements in Jira issue descriptions and comments, and with
-	 * a certain knowledge type.
-	 *
-	 * @return list of all decision knowledge elements for a project with a certain
-	 *         knowledge type of a certain documentation location.
-	 * @see KnowledgeElement
-	 * @see DecisionKnowledgeProject
-	 * @see KnowledgeType
-	 */
-	public List<KnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type) {
-		KnowledgeType simpleType = type.replaceProAndConWithArgument();
-		List<KnowledgeElement> elements = this.getDecisionKnowledgeElements();
-		Iterator<KnowledgeElement> iterator = elements.iterator();
-		while (iterator.hasNext()) {
-			KnowledgeElement element = iterator.next();
-			if (element.getType().replaceProAndConWithArgument() != simpleType) {
-				iterator.remove();
-			}
-		}
-		return elements;
-	}
-
-	/**
-	 * Get all linked elements of the decision knowledge element for a project where
-	 * this decision knowledge element is the destination element.
-	 *
-	 * @param element
-	 *            decision knowledge element with id in database.
-	 * @return list of linked elements where this decision knowledge element is the
-	 *         destination element.
-	 * @see KnowledgeElement
-	 * @see Link
-	 * @see DecisionKnowledgeProject
-	 */
-	public List<KnowledgeElement> getElementsLinkedWithInwardLinks(KnowledgeElement element) {
-		List<Link> inwardLinks = getInwardLinks(element);
-		List<KnowledgeElement> sourceElements = new ArrayList<KnowledgeElement>();
-		for (Link link : inwardLinks) {
-			sourceElements.add(link.getSource());
-		}
-		return sourceElements;
-	}
-
-	/**
-	 * Get all linked elements of the decision knowledge element for a project where
-	 * this decision knowledge element is the source element.
-	 *
-	 * @param element
-	 *            decision knowledge element with id in database.
-	 * @return list of linked elements where this decision knowledge element is the
-	 *         source element.
-	 * @see KnowledgeElement
-	 * @see Link
-	 * @see DecisionKnowledgeProject
-	 */
-	public List<KnowledgeElement> getElementsLinkedWithOutwardLinks(KnowledgeElement element) {
-		List<Link> outwardLinks = getOutwardLinks(element);
-		List<KnowledgeElement> destinationElements = new ArrayList<KnowledgeElement>();
-		for (Link link : outwardLinks) {
-			destinationElements.add(link.getTarget());
-		}
-		return destinationElements;
-	}
-
-	/**
 	 * Get all links where the decision knowledge element is the destination
 	 * element.
 	 *
@@ -159,37 +90,6 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @see Link
 	 */
 	public abstract List<Link> getInwardLinks(KnowledgeElement element);
-
-	/**
-	 * Get all links where the decision knowledge element is either the source or
-	 * the destination element.
-	 *
-	 * @param element
-	 *            decision knowledge element with id in database.
-	 * @return list of links where the given decision knowledge element is either
-	 *         the source or the destination element.
-	 * @see Link
-	 */
-	public List<Link> getLinks(KnowledgeElement element) {
-		List<Link> links = new ArrayList<Link>();
-		links.addAll(this.getInwardLinks(element));
-		links.addAll(this.getOutwardLinks(element));
-		return links;
-	}
-
-	/**
-	 * Get all links where the id of the node or decision knowledge element is
-	 * either the source or the destination element.
-	 *
-	 * @param id
-	 *            of the node or the DecisionKnowledgeElement
-	 * @return list of links where the given decision knowledge element is either
-	 *         the source or the destination element.
-	 */
-	public List<Link> getLinks(long id) {
-		KnowledgeElement element = this.getDecisionKnowledgeElement(id);
-		return this.getLinks(element);
-	}
 
 	/**
 	 * Get all links where the decision knowledge element is the source element.

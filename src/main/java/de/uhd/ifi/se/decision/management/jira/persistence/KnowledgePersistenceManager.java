@@ -7,9 +7,9 @@ import java.util.Map;
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -94,18 +94,6 @@ public interface KnowledgePersistenceManager {
 	List<KnowledgeElement> getDecisionKnowledgeElements();
 
 	/**
-	 * Returns all decision knowledge elements for a project with a certain
-	 * knowledge type.
-	 *
-	 * @return list of all decision knowledge elements for a project with a certain
-	 *         knowledge type.
-	 * @see KnowledgeElement
-	 * @see DecisionKnowledgeProject
-	 * @see KnowledgeType
-	 */
-	List<KnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type);
-
-	/**
 	 * Deletes an existing decision knowledge element in database.
 	 *
 	 * @param element
@@ -142,8 +130,7 @@ public interface KnowledgePersistenceManager {
 	 *         database id and key. Returns null if insertion failed.
 	 * @see KnowledgeElement
 	 */
-	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element,
-			ApplicationUser user);
+	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user);
 
 	/**
 	 * Inserts a new decision knowledge element into database.
@@ -161,8 +148,8 @@ public interface KnowledgePersistenceManager {
 	 *         database id and key. Returns null if insertion failed.
 	 * @see KnowledgeElement
 	 */
-	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element,
-			ApplicationUser user, KnowledgeElement parentElement);
+	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user,
+			KnowledgeElement parentElement);
 
 	/**
 	 * Inserts a new link into database. The link can be between any kinds of nodes
@@ -190,8 +177,7 @@ public interface KnowledgePersistenceManager {
 	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return internal database id of inserted link, zero if insertion failed.
 	 */
-	long insertLink(KnowledgeElement parentElement, KnowledgeElement childElement,
-			ApplicationUser user);
+	long insertLink(KnowledgeElement parentElement, KnowledgeElement childElement, ApplicationUser user);
 
 	/**
 	 * Updates an existing link in database. The link can be between any kinds of
@@ -229,6 +215,18 @@ public interface KnowledgePersistenceManager {
 	 * @return true if deletion was successful.
 	 */
 	boolean deleteLink(Link link, ApplicationUser user);
+
+	/**
+	 * Gets all links where the knowledge element is either the source or the
+	 * destination element.
+	 *
+	 * @param element
+	 *            knowledge element with id in database.
+	 * @return list of links where the given knowledge element is either the source
+	 *         or the destination element.
+	 * @see Link
+	 */
+	public List<Link> getLinks(KnowledgeElement element);
 
 	/**
 	 * Returns the database id of a link object (either a Jira issue link or a
@@ -352,6 +350,5 @@ public interface KnowledgePersistenceManager {
 	 */
 	KnowledgeElement getDecisionKnowledgeElement(long id, String documentationLocation);
 
-	boolean updateIssueStatus(KnowledgeElement existingElement, KnowledgeElement newElement,
-			ApplicationUser user);
+	boolean updateIssueStatus(KnowledgeElement existingElement, KnowledgeElement newElement, ApplicationUser user);
 }

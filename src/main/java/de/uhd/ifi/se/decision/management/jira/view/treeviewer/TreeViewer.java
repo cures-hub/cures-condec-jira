@@ -16,14 +16,13 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 
 /**
@@ -66,17 +65,13 @@ public class TreeViewer {
 		if (rootElementType == KnowledgeType.OTHER) {
 			return;
 		}
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		List<KnowledgeElement> elements = persistenceManager.getDecisionKnowledgeElements(rootElementType);
+		graph = KnowledgeGraph.getOrCreate(projectKey);
+		List<KnowledgeElement> elements = graph.getElements(rootElementType);
 
 		Set<Data> dataSet = new HashSet<Data>();
 		for (KnowledgeElement element : elements) {
 			dataSet.add(this.makeIdUnique(new Data(element)));
 		}
-
-		// for (DecisionKnowledgeElement element : elements) {
-		// dataSet.add(this.getDataStructure(element));
-		// }
 
 		this.data = dataSet;
 	}
@@ -105,6 +100,7 @@ public class TreeViewer {
 		if (issue == null) {
 			return;
 		}
+		graph = KnowledgeGraph.getOrCreate(issue.getProjectObject().getKey());
 		Data issueNode = this.getDataStructure(new KnowledgeElementImpl(issue));
 		// Match irrelevant sentences back to list
 		if (showKnowledgeTypes[4]) {
@@ -151,7 +147,9 @@ public class TreeViewer {
 		if (decisionKnowledgeElement == null) {
 			return new Data();
 		}
-		this.graph = KnowledgeGraph.getOrCreate(decisionKnowledgeElement.getProject().getProjectKey());
+		if (graph == null) {
+			graph = KnowledgeGraph.getOrCreate(decisionKnowledgeElement.getKey());
+		}
 		Data data = new Data(decisionKnowledgeElement);
 		data = this.makeIdUnique(data);
 		List<Data> children = this.getChildren(decisionKnowledgeElement);

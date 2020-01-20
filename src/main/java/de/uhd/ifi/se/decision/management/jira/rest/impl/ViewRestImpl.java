@@ -38,8 +38,8 @@ import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXt
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
@@ -316,7 +316,7 @@ public class ViewRestImpl implements ViewRest {
 
 	// TODO Remove
 	private List<KnowledgeElement> getAllDecisions(String projectKey) {
-		return KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements(KnowledgeType.DECISION);
+		return KnowledgeGraph.getOrCreate(projectKey).getElements(KnowledgeType.DECISION);
 	}
 
 	@Override

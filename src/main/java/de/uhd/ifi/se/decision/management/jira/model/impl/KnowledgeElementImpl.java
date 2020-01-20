@@ -18,6 +18,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -302,7 +303,7 @@ public class KnowledgeElementImpl implements KnowledgeElement {
 	public List<Link> getLinks() {
 		List<Link> links = GenericLinkManager.getLinksForElement(this);
 		if (documentationLocation == DocumentationLocation.JIRAISSUE) {
-			links.addAll(KnowledgePersistenceManager.getOrCreate(project).getJiraIssueManager().getLinks(this));
+			links.addAll(KnowledgeGraph.getOrCreate(project).edgesOf(this));
 		}
 		return links;
 	}
