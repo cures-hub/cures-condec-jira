@@ -120,6 +120,8 @@ public interface FileTrainer {
 
 			if (!file.exists() || !getMD5Checksum(inputStream).equals(getMD5Checksum(new FileInputStream(file)))) {
 
+				inputStream = new URL(downloadUrlOfFile).openStream();
+
 				file.createNewFile();
 
 				FileOutputStream outputStream = new FileOutputStream(file);
