@@ -24,7 +24,7 @@ public class TestFileTrainer {
 	}
 
 	@Test
-	public void test(){
+	public void testFileContentHash(){
 	try{
 		File file = new File(TEST_ARFF_FILE_PATH);
 		FileInputStream fileStream = new FileInputStream(file);
