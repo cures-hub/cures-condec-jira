@@ -34,87 +34,71 @@ public class VisNode {
 	@XmlElement
 	private int cid;
 
-	public VisNode() {
-	}
-
-	public VisNode(KnowledgeElement element, boolean collapsed, int level, int cid) {
-		this.setId(element.getId() + "_" + element.getDocumentationLocationAsString());
+	public VisNode(KnowledgeElement element, boolean isCollapsed, int level, int cid) {
+		// TODO Add two attributes for id and docuLocu or even provide the whole
+		// knowledge element
+		this.id = element.getId() + "_" + element.getDocumentationLocationAsString();
 		this.level = level;
 		this.cid = cid;
-		if (collapsed) {
-			this.setGroup(element.getTypeAsString().toLowerCase());
-			String summary = element.getSummary();
-			if (summary.length() > 100) {
-				summary = summary.substring(0, 99) + "...";
-			}
-			this.setLabel(element.getTypeAsString().toUpperCase() + "\n" + summary);
-		} else {
-			this.setGroup("collapsed");
-			this.setLabel("");
+		this.label = determineLabel(element, isCollapsed);
+		this.group = determineGroup(element, isCollapsed);
+		this.title = "<b>" + element.getTypeAsString().toUpperCase() + " <br> " + element.getKey() + ":</b> "
+				+ element.getSummary() + "<br> <i>" + element.getDescription() + "</i>";
+		this.font = determineFont(element);
+	}
+
+	private String determineLabel(KnowledgeElement element, boolean isCollapsed) {
+		if (isCollapsed) {
+			return "";
 		}
-		this.setTitle("<b>" + element.getTypeAsString().toUpperCase() + " <br> " + element.getKey() + ":</b> "
-				+ element.getSummary() + "<br> <i>" + element.getDescription() + "</i>");
+		String summary = element.getSummary();
+		if (summary.length() > 99) {
+			summary = summary.substring(0, 99) + "...";
+		}
+		return element.getTypeAsString().toUpperCase() + "\n" + summary;
+	}
+
+	private String determineGroup(KnowledgeElement element, boolean isCollapsed) {
+		if (isCollapsed) {
+			return "collapsed";
+		}
+		return element.getTypeAsString().toLowerCase();
+	}
+
+	private Map<String, String> determineFont(KnowledgeElement element) {
 		KnowledgeStatus status = element.getStatus();
 		if (status == KnowledgeStatus.DISCARDED || status == KnowledgeStatus.REJECTED
 				|| status == KnowledgeStatus.UNRESOLVED) {
-			this.font = ImmutableMap.of("color", "red");
-		} else {
-			this.font = ImmutableMap.of("color", "black");
+			return ImmutableMap.of("color", "red");
 		}
-	}
-
-	public VisNode(KnowledgeElement element, String type, boolean collapsed, int level, int cid) {
-		this(element, collapsed, level, cid);
-		if (collapsed) {
-			this.setGroup(type);
-		}
+		return ImmutableMap.of("color", "black");
 	}
 
 	public String getId() {
 		return id;
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public String getLabel() {
 		return label;
-	}
-
-	public void setLabel(String label) {
-		this.label = label;
 	}
 
 	public String getTitle() {
 		return title;
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
 	public String getGroup() {
 		return group;
-	}
-
-	public void setGroup(String group) {
-		this.group = group;
 	}
 
 	public int getLevel() {
 		return level;
 	}
 
-	public void setLevel(int level) {
-		this.level = level;
-	}
-
 	public int getCid() {
 		return cid;
 	}
 
-	public void setCid(int cid) {
-		this.cid = cid;
+	public Map<String, String> getFont() {
+		return font;
 	}
 }

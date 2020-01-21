@@ -128,7 +128,7 @@ public class VisGraph {
 	}
 
 	private boolean isCollapsed(KnowledgeElement element) {
-		return elements.contains(element);
+		return !elements.contains(element);
 	}
 
 	public void setNodes(Set<VisNode> nodes) {
