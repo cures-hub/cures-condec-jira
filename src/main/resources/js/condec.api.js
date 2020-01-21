@@ -507,7 +507,7 @@
 			"selectedLinkTypes": selectedLinkTypes
 		};
 
-		postJSON(this.restPrefix + "/view/getDecisionGraph.json?projectKey=" + projectKey, filterSettings, function(error, graph) {
+		postJSON(this.restPrefix + "/view/getDecisionGraph.json?", filterSettings, function(error, graph) {
 			if (error == null) {
 				callback(graph);
 			}
@@ -622,22 +622,6 @@
 			+ "&gitUri=" + gitUri, null, function (error, response) {
 			if (error === null) {
 				showFlag("success", "The git URI  " + gitUri + " for this project has been set.");
-			}
-		});
-	};
-
-	/*
-	 * external references: settingsForSingleProject.vm,
-	 * settingsForAllProjects.vm
-	 */
-	ConDecAPI.prototype.setKnowledgeExtractedFromIssues = function setKnowledgeExtractedFromIssues(
-		isKnowledgeExtractedFromIssues, projectKey) {
-		postJSON(this.restPrefix + "/config/setKnowledgeExtractedFromIssues.json?projectKey="
-			+ projectKey + "&isKnowledgeExtractedFromIssues=" + isKnowledgeExtractedFromIssues, null, function (
-			error, response) {
-			if (error === null) {
-				showFlag("success", "Extraction from issue comments for this project has been set to "
-					+ isKnowledgeExtractedFromIssues + ".");
 			}
 		});
 	};
@@ -773,6 +757,22 @@
 			}
 		});
 	};
+	
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setUseClassifierForIssueComments = function setUseClassifierForIssueComments(
+		isClassifierUsedForIssues, projectKey) {
+		postJSON(this.restPrefix + "/config/setUseClassifierForIssueComments.json?projectKey="
+			+ projectKey + "&isClassifierUsedForIssues=" + isClassifierUsedForIssues, null, function (error,
+																									  response) {
+			if (error === null) {
+				showFlag("success",
+					"Usage of classification for Decision Knowledge in JIRA Issue Comments has been set to "
+					+ isClassifierUsedForIssues + ".");
+			}
+		});
+	};
 
 	/*
 	 * external references: settingsForSingleProject.vm
@@ -816,8 +816,8 @@
 	ConDecAPI.prototype.evaluateModel = function evaluateModel(projectKey, animatedElement, callback) {
 		// console.log("ConDecAPI.prototype.evaluateModel");
 		animatedElement.classList.add("aui-progress-indicator-value");
-		postJSON(this.restPrefix + "/config/evaluateModel.json?projectKey=" + projectKey, null,
-
+		postJSON(this.restPrefix + "/config/evaluateModel.json?projectKey=" + projectKey,
+			null,
 			function (error, response) {
 				animatedElement.classList.remove("aui-progress-indicator-value");
 				if (error === null) {
@@ -1010,7 +1010,7 @@
 			if (status === 200) {
 				callback(null, xhr.response);
 			} else {
-				showFlag("error", xhr.response.error, status);
+				showFlag("error", xhr.response.error || "Unknown Error!", status);
 				callback(status, xhr.response);
 			}
 		};

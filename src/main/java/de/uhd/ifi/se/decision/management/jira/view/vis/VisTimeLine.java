@@ -8,11 +8,10 @@ import javax.xml.bind.annotation.XmlElement;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 public class VisTimeLine {
 
@@ -30,18 +29,8 @@ public class VisTimeLine {
 		this.applicationUserIds = new HashSet<Long>();
 	}
 
-	public VisTimeLine(List<DecisionKnowledgeElement> elements) {
+	public VisTimeLine(List<KnowledgeElement> elements) {
 		this();
-		addElements(elements);
-	}
-
-	public VisTimeLine(String projectKey) {
-		this();
-		if (projectKey == null) {
-			return;
-		}
-		List<DecisionKnowledgeElement> elements = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getDecisionKnowledgeElements();
 		addElements(elements);
 	}
 
@@ -50,21 +39,21 @@ public class VisTimeLine {
 		if (user == null || filterSettings == null) {
 			return;
 		}
-		FilteringManager filterExtractor = new FilteringManagerImpl(user, filterSettings);
-		List<DecisionKnowledgeElement> elements = filterExtractor.getAllElementsMatchingFilterSettings();
+		FilteringManager filteringManager = new FilteringManagerImpl(user, filterSettings);
+		List<KnowledgeElement> elements = filteringManager.getAllElementsMatchingFilterSettings();
 		addElements(elements);
 	}
 
-	public void addElements(List<DecisionKnowledgeElement> elements) {
+	public void addElements(List<KnowledgeElement> elements) {
 		if (elements == null) {
 			return;
 		}
-		for (DecisionKnowledgeElement element : elements) {
+		for (KnowledgeElement element : elements) {
 			addElement(element);
 		}
 	}
 
-	public boolean addElement(DecisionKnowledgeElement element) {
+	public boolean addElement(KnowledgeElement element) {
 		ApplicationUser user = element.getCreator();
 		if (user == null) {
 			return false;

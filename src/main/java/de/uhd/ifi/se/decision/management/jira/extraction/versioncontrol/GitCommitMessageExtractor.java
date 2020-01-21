@@ -1,9 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ public class GitCommitMessageExtractor {
 	public static final String COMMIT_PLACEHOLDER = "commitish";
 	private final Pattern START_TAGS_SEARCH_PATTERN;
 	private final Pattern END_TAGS_SEARCH_PATTERN;
-	private List<DecisionKnowledgeElement> extractedElements;
+	private List<KnowledgeElement> extractedElements;
 	private String parseError;
 	private List<String> parseWarnings;
 	private String fullMessage;
@@ -133,7 +133,7 @@ public class GitCommitMessageExtractor {
 
 			cursorPosition += textEnd + getEndingTagForStartTag(rationaleTypeStartTag).length();
 			// Create new DecisionKnowledgeElement of extracted string
-			DecisionKnowledgeElement element = createElement(textStart, rationaleType, rationaleText, textEnd);
+			KnowledgeElement element = createElement(textStart, rationaleType, rationaleText, textEnd);
 			// add it to the extracted elements
 			extractedElements.add(element);
 		} else {
@@ -147,8 +147,8 @@ public class GitCommitMessageExtractor {
 		return rationaleTypeStartTag.substring(1, rationaleTypeStartTag.length() - 1);
 	}
 
-	private DecisionKnowledgeElement createElement(int start, String rationaleType, String rationaleText, int end) {
-		return new DecisionKnowledgeElementImpl(0, getSummary(rationaleText), getDescription(rationaleText),
+	private KnowledgeElement createElement(int start, String rationaleType, String rationaleText, int end) {
+		return new KnowledgeElementImpl(0, getSummary(rationaleText), getDescription(rationaleText),
 				rationaleType.toUpperCase(), "" // unknown, not needed at the moment
 				, COMMIT_PLACEHOLDER + start + ":" + end, DocumentationLocation.COMMIT, "");
 	}
@@ -200,7 +200,7 @@ public class GitCommitMessageExtractor {
 		return parseWarnings;
 	}
 
-	public List<DecisionKnowledgeElement> getElements() {
+	public List<KnowledgeElement> getElements() {
 		return extractedElements;
 	}
 

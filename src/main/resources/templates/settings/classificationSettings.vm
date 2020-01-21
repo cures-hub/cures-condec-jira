@@ -9,6 +9,45 @@
     </div>
 </div>
 
+<div class="field-group" id="classifierStatus-text">
+    <label>Current classifier status:</label>
+    <div class="description">
+        #if( $isClassifierTraining == "true" )
+            <div class="aui-message aui-message-warning">
+                <p class="title">
+                    <strong>The classifier is currently training!</strong>
+                </p>
+            </div>
+        #else
+            <div class="aui-message aui-message-info">
+                <p class="title">
+                    <strong>The classifier is currently not training!</strong>
+                </p>
+            </div>
+        #end
+        #if( $isClassifierTrained == "true" )
+            <div class="aui-message aui-message-info">
+                <p class="title">
+                    <strong>The classifier has already been trained!</strong>
+                </p>
+                <p>
+                    If you have enough annotated data from your own project you might want to consider retraining it on
+                    your project.
+                    Generate an ARFF file of validated decision knowledge and then select the file as the training file.
+                </p>
+            </div>
+        #else
+            <div class="aui-message aui-message-error">
+                <p class="title">
+                    <strong>The classifier is not yet trained!</strong>
+                <p>
+                    Start the training or wait for it to finish. Otherwise the classification will not work.
+                </p>
+            </div>
+        #end
+    </div>
+</div>
+
 <div class="field-group">
     <label for="iconParsing-toggle">Use Icons as Tags?</label>
     <aui-toggle id="iconParsing-toggle" value="$projectKey"
@@ -32,7 +71,9 @@
 <div class="field-group">
     <label for="evaluateModel-button">Evaluate model</label>
     <input type="button" class="aui-button" id="evaluateModel-button" value="Evaluate model"/>
-    <div class="description">Evaluate the current model using the user-validated data in the database. (If the evaluation fails the classifier might need to be trained!)</div>
+    <div class="description">Evaluate the current model using the user-validated data in the database. (If the
+        evaluation fails the classifier might need to be trained!)
+    </div>
     <div class="aui-progress-indicator">
         <span id="evaluate-classifier-progress"></span>
     </div>
@@ -73,7 +114,8 @@
     <input type="button" class="aui-button" id="trainClassifier-button" value="Train Classifier"/>
     <div class="description">
         Trains the classifier on the selected Attribute-Relation File Format (ARFF) file. <br/>
-        <br/>WARNING: Please note that this initial training is very resource expensive!
+        <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span>Please note that this initial training is
+        very resource expensive!
     </div>
     <div class="aui-progress-indicator">
         <span id="train-classifier-progress"></span>
@@ -81,37 +123,35 @@
 </div>
 
 <script>
-    var isClassifierUsedToggle = document.getElementById("isClassifierUsed-toggle");
-    if ($project.isClassifierUsedForIssueComments() == true) {
-        isClassifierUsedToggle.checked = true;
-    } else {
-        isClassifierUsedToggle.checked = false;
-    }
+    //Init the variables
+    const isClassifierUsedToggle = document.getElementById("isClassifierUsed-toggle");
+    isClassifierUsedToggle.checked = $project.isClassifierUsedForIssueComments();
 
-    var sentenceIconToggle = document.getElementById("iconParsing-toggle");
-    if ($project.isIconParsingEnabled() == true) {
-        sentenceIconToggle.checked = true;
-    } else {
-        sentenceIconToggle.checked = false;
-    }
+    const currentClassifierStatusInfo = document.getElementById("classifierStatus-text");
+    currentClassifierStatusInfo.style.display = isClassifierUsedToggle.checked ? "inherit" : "none";
 
-    var evaluateModelButton = document.getElementById("evaluateModel-button");
+    const sentenceIconToggle = document.getElementById("iconParsing-toggle");
+    sentenceIconToggle.checked = $project.isIconParsingEnabled() ;
+
+    // add listeners
+    const evaluateModelButton = document.getElementById("evaluateModel-button");
     evaluateModelButton.addEventListener("click", function () {
         var animatedElement = document.getElementById("evaluate-classifier-progress");
         conDecAPI.evaluateModel("$projectKey", animatedElement, saveToFile("evaluation_results.json"));
     });
 
-    var saveArffFileButton = document.getElementById("saveArffFile-button");
+    const saveArffFileButton = document.getElementById("saveArffFile-button");
     saveArffFileButton.addEventListener("click", function () {
         conDecAPI.saveArffFile("$projectKey", true, saveToFile("ClassifierTrainingData.arff"));
     });
 
-    var saveAllArffFileButton = document.getElementById("saveAllArffFile-button");
+    const saveAllArffFileButton = document.getElementById("saveAllArffFile-button");
     saveAllArffFileButton.addEventListener("click", function () {
         conDecAPI.saveArffFile("$projectKey", false, saveToFile("AllClassifierTrainingData.arff"));
     });
 
-    var classifyAllIssuesInProjectButton = document.getElementById("classifyAllIssuesInProject");
+    //AJS.progressBars.update("#progress-bar", 0.0);
+    const classifyAllIssuesInProjectButton = document.getElementById("classifyAllIssuesInProject");
     classifyAllIssuesInProjectButton.addEventListener("click", function () {
         if (confirm("Are you sure you want to classify all Jira issue comments and descriptions? This might take a long time if the project is big.")) {
         	var animatedElement = document.getElementById("classify-whole-project-progress-bar");
@@ -119,7 +159,7 @@
         }
     });
 
-    var trainClassifier = document.getElementById("trainClassifier-button");
+    const trainClassifier = document.getElementById("trainClassifier-button");
     trainClassifier.addEventListener("click", function () {
         if (confirm("Are you sure you want to retrain the classifier?")) {
             var trainDataSelect = document.getElementById("select-arff-file-train");
@@ -129,6 +169,7 @@
     });
 
     isClassifierUsedToggle.addEventListener("change", function (error) {
+        currentClassifierStatusInfo.style.display = this.checked ? "inherit" : "none";
         this.busy = true;
         conDecAPI.setUseClassifierForIssueComments(this.checked, this.value);
         this.busy = false;
@@ -140,9 +181,10 @@
         this.busy = false;
     });
 
-    var saveToFile = function (name) {
+    // helper functions
+    const saveToFile = function (name) {
         return function (content) {
-            var link = document.createElement("a");
+            let link = document.createElement("a");
             link.style.display = "none";
             link.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(content));
             link.setAttribute("download", name);

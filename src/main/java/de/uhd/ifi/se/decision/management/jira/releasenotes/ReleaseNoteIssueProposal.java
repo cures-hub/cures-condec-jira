@@ -8,7 +8,7 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteIssueProposalImpl;
 
 /**
@@ -19,11 +19,11 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteIssue
 public interface ReleaseNoteIssueProposal {
 
 	/**
-	 * Get the {@link DecisionKnowledgeElement}.
+	 * Get the {@link KnowledgeElement}.
 	 *
 	 * @return DecisionKnowledgeElement of the ReleaseNoteIssueProposal.
 	 */
-	DecisionKnowledgeElement getDecisionKnowledgeElement();
+	KnowledgeElement getDecisionKnowledgeElement();
 
 	/**
 	 * Set the DecisionKnowledgeElement.
@@ -31,7 +31,7 @@ public interface ReleaseNoteIssueProposal {
 	 * @param decisionKnowledgeElement
 	 *            of the ReleaseNoteIssueProposal.
 	 */
-	void setDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement);
+	void setDecisionKnowledgeElement(KnowledgeElement decisionKnowledgeElement);
 
 	/**
 	 * Get rating of the ReleaseNoteIssueProposal.

@@ -5,16 +5,16 @@ import org.junit.Before;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public abstract class SetupCommentCalculator extends TestSetUp {
 	protected CommentMetricCalculator calculator;
 	protected ApplicationUser user;
-	protected DecisionKnowledgeElement decisionElement;
-	protected DecisionKnowledgeElement argumentElement;
-	protected DecisionKnowledgeElement issueElement;
+	protected KnowledgeElement decisionElement;
+	protected KnowledgeElement argumentElement;
+	protected KnowledgeElement issueElement;
 
 	@Before
 	public void setUp() {

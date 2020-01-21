@@ -7,19 +7,19 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 
 public class TestVisGraphNode extends TestSetUp {
 
-	private DecisionKnowledgeElement element;
+	private KnowledgeElement element;
 	private VisNode node;
 
 	@Before
 	public void setUp() {
 		node = new VisNode();
 
-		element = new DecisionKnowledgeElementImpl();
+		element = new KnowledgeElementImpl();
 		element.setId(1);
 		element.setKey("Test-1");
 		element.setType("Argument");

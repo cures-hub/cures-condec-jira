@@ -5,18 +5,15 @@ import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeCl
 import de.uhd.ifi.se.decision.management.jira.classification.EvaluableClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.FileTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import smile.validation.Accuracy;
-import smile.validation.FMeasure;
 import smile.validation.ClassificationMeasure;
-import smile.validation.Precision;
-import smile.validation.Recall;
+import smile.validation.FMeasure;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -72,7 +69,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		this.instances = getInstancesFromArffFile(fileName);
 	}
 
-	public OnlineFileTrainerImpl(String projectKey, List<DecisionKnowledgeElement> trainingElements) {
+	public OnlineFileTrainerImpl(String projectKey, List<KnowledgeElement> trainingElements) {
 		this(projectKey);
 		this.setTrainingData(trainingElements);
 	}
@@ -245,7 +242,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 	public Instances loadMekaTrainingDataFromJiraIssueText(boolean useOnlyValidatedData) {
 		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
-		List<DecisionKnowledgeElement> partsOfText = manager.getUserValidatedPartsOfText(projectKey);
+		List<KnowledgeElement> partsOfText = manager.getUserValidatedPartsOfText(projectKey);
 		if (!useOnlyValidatedData) {
 			partsOfText.addAll(manager.getUnvalidatedPartsOfText(projectKey));
 		}
@@ -277,7 +274,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	}
 
 	@Override
-	public void setTrainingData(List<DecisionKnowledgeElement> trainingElements) {
+	public void setTrainingData(List<KnowledgeElement> trainingElements) {
 		this.instances = buildDatasetForMeka(trainingElements);
 	}
 
@@ -303,7 +300,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	 * alternative for the issue.' 0,0,0,0,1 'And I am the issue for the
 	 * decision and the alternative.'
 	 */
-	private Instances buildDatasetForMeka(List<DecisionKnowledgeElement> trainingElements) {
+	private Instances buildDatasetForMeka(List<KnowledgeElement> trainingElements) {
 		ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
 
 		// Declare Class value with {0,1} as possible values
@@ -321,7 +318,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 		Instances instances = new Instances("sentences -C 5 ", wekaAttributes, 1000000);
 
-		for (DecisionKnowledgeElement trainingElement : trainingElements) {
+		for (KnowledgeElement trainingElement : trainingElements) {
 			instances.add(createTrainingInstance(trainingElement, attribute));
 		}
 		instances.setClassIndex(instances.numAttributes() - 1);
@@ -350,7 +347,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	 * @param attribute text attribute.
 	 * @return training instance for the supervised text classifier.
 	 */
-	private DenseInstance createTrainingInstance(DecisionKnowledgeElement element, Attribute attribute) {
+	private DenseInstance createTrainingInstance(KnowledgeElement element, Attribute attribute) {
 		DenseInstance instance = initInstance();
 		switch (element.getType()) {
 			case ALTERNATIVE:
@@ -423,9 +420,9 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		return extractedTrainingData;
 	}
 
-	private List<String> extractStringsFromDke(List<DecisionKnowledgeElement> sentences) {
+	private List<String> extractStringsFromDke(List<KnowledgeElement> sentences) {
 		List<String> extractedStringsFromPoji = new ArrayList<String>();
-		for (DecisionKnowledgeElement sentence : sentences) {
+		for (KnowledgeElement sentence : sentences) {
 			extractedStringsFromPoji.add(sentence.getSummary());
 		}
 		return extractedStringsFromPoji;
@@ -436,24 +433,24 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		List<ClassificationMeasure> defaultMeasurements = new ArrayList<>();
 		defaultMeasurements.add(new FMeasure());
 		// TODO how to apply to more than binary classification
-		defaultMeasurements.add(new Precision());
-		defaultMeasurements.add(new Accuracy());
-		defaultMeasurements.add(new Recall());
+		//defaultMeasurements.add(new Precision());
+		//defaultMeasurements.add(new Accuracy());
+		//defaultMeasurements.add(new Recall());
 
 		// load validated Jira Issue texts
 		//JiraIssueTextPersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey)
 		//	.getJiraIssueTextManager();
-		List<DecisionKnowledgeElement> partsOfText =		KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
+		List<KnowledgeElement> partsOfText = KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
 //		manager.getUserValidatedPartsOfText(projectKey);
 //		KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
 		return evaluateClassifier(defaultMeasurements, partsOfText);
 	}
 
 	public Map<String, Double> evaluateClassifier(List<ClassificationMeasure> measurements,
-												  List<DecisionKnowledgeElement> partOfJiraIssueTexts) throws Exception {
+												  List<KnowledgeElement> partOfJiraIssueTexts) throws Exception {
 		LOGGER.debug("Started evaluation!");
 		Map<String, Double> resultsMap = new HashMap<>();
-		List<DecisionKnowledgeElement> relevantPartOfJiraIssueTexts =
+		List<KnowledgeElement> relevantPartOfJiraIssueTexts =
 			partOfJiraIssueTexts
 				.stream()
 				.filter(x -> !x.getType().equals(KnowledgeType.OTHER))
@@ -486,7 +483,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 			.toArray(new Integer[relevantSentences.size()]);
 		long end = System.currentTimeMillis();
 
-		System.out.println("Time for prediction on " +  sentences.size() + " sentences took " + (end-start) + " ms.");
+		System.out.println("Time for prediction on " + sentences.size() + " sentences took " + (end - start) + " ms.");
 
 		// calculate measurements for each ClassificationMeasure in measurements
 		for (ClassificationMeasure measurement : measurements) {

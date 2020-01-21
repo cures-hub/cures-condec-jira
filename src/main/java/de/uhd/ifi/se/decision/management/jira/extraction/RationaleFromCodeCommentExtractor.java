@@ -1,10 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * rationale source within the source file/comment.
  */
 public class RationaleFromCodeCommentExtractor {
-	private ArrayList<DecisionKnowledgeElement> elements;
+	private ArrayList<KnowledgeElement> elements;
 	private final static List<String> decKnowTags = KnowledgeType.toList();
 	private CodeComment comment;
 	private final Pattern TAGS_SEARCH_PATTERN;
@@ -37,7 +37,7 @@ public class RationaleFromCodeCommentExtractor {
 		this.elements = new ArrayList<>();
 	}
 
-	public static int getRationaleStartLineInCode(DecisionKnowledgeElement element) {
+	public static int getRationaleStartLineInCode(KnowledgeElement element) {
 		if (!canProcesElement(element)) {
 			return -1;
 		} else {
@@ -45,7 +45,7 @@ public class RationaleFromCodeCommentExtractor {
 		}
 	}
 
-	public static int getRationaleEndLineInCode(DecisionKnowledgeElement element) {
+	public static int getRationaleEndLineInCode(KnowledgeElement element) {
 		if (!canProcesElement(element)) {
 			return -1;
 		} else {
@@ -53,7 +53,7 @@ public class RationaleFromCodeCommentExtractor {
 		}
 	}
 
-	public static int getRationaleCursorInCodeComment(DecisionKnowledgeElement element) {
+	public static int getRationaleCursorInCodeComment(KnowledgeElement element) {
 		if (!canProcesElement(element)) {
 			return -1;
 		} else {
@@ -61,11 +61,11 @@ public class RationaleFromCodeCommentExtractor {
 		}
 	}
 
-	public static boolean canProcesElement(DecisionKnowledgeElement element) {
+	public static boolean canProcesElement(KnowledgeElement element) {
 		return element.getDocumentationLocation() == DocumentationLocation.COMMIT;
 	}
 
-	public ArrayList<DecisionKnowledgeElement> getElements() {
+	public ArrayList<KnowledgeElement> getElements() {
 		if (comment.commentContent == null || comment.commentContent.trim().equals("")) {
 			return elements;
 		}
@@ -95,8 +95,8 @@ public class RationaleFromCodeCommentExtractor {
 		return cursorPosition;
 	}
 
-	private DecisionKnowledgeElement addElement(int start, String rationaleText, String rationaleType) {
-		return new DecisionKnowledgeElementImpl(0, getSummary(rationaleText), getDescription(rationaleText),
+	private KnowledgeElement addElement(int start, String rationaleText, String rationaleType) {
+		return new KnowledgeElementImpl(0, getSummary(rationaleText), getDescription(rationaleText),
 				rationaleType.toUpperCase(), "" // unknown, not needed at the moment
 				, calculateAndCodeRationalePositionInSourceFile(start, rationaleText), DocumentationLocation.COMMIT,
 				"");

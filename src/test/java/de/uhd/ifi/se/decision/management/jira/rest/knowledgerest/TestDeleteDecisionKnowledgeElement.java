@@ -15,10 +15,10 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import de.uhd.ifi.se.decision.management.jira.rest.impl.KnowledgeRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -28,7 +28,7 @@ public class TestDeleteDecisionKnowledgeElement extends TestSetUp {
 	private final static String DELETION_ERROR = "Deletion of decision knowledge element failed.";
 
 	private KnowledgeRest knowledgeRest;
-	private DecisionKnowledgeElement decisionKnowledgeElement;
+	private KnowledgeElement decisionKnowledgeElement;
 	private HttpServletRequest request;
 
 	@Before
@@ -37,7 +37,7 @@ public class TestDeleteDecisionKnowledgeElement extends TestSetUp {
 		init();
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-3");
-		decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);
+		decisionKnowledgeElement = new KnowledgeElementImpl(issue);
 		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 
 		request = new MockHttpServletRequest();

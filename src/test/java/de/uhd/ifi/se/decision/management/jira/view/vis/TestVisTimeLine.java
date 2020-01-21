@@ -15,8 +15,8 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -26,30 +26,15 @@ public class TestVisTimeLine extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(JiraIssues.getTestJiraIssues().get(0));
+		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
+		KnowledgeElement element = new KnowledgeElementImpl(JiraIssues.getTestJiraIssues().get(0));
 		elements.add(element);
 		visTimeLine = new VisTimeLine(elements);
 	}
 
 	@Test
-	public void testConstructorProjectKeyEmptyOrNull() {
-		VisTimeLine timeLine = new VisTimeLine("");
-		assertEquals(0, timeLine.getTimeLineNodes().size());
-
-		timeLine = new VisTimeLine((String) null);
-		assertEquals(0, timeLine.getTimeLineNodes().size());
-	}
-
-	@Test
-	public void testConstructorProjectKeyValid() {
-		VisTimeLine timeLine = new VisTimeLine("TEST");
-		assertEquals(8, timeLine.getTimeLineNodes().size());
-	}
-
-	@Test
 	public void testConstructorElementsNull() {
-		VisTimeLine timeLine = new VisTimeLine((List<DecisionKnowledgeElement>) null);
+		VisTimeLine timeLine = new VisTimeLine((List<KnowledgeElement>) null);
 		assertEquals(0, timeLine.getTimeLineNodes().size());
 	}
 
@@ -60,7 +45,7 @@ public class TestVisTimeLine extends TestSetUp {
 
 	@Test
 	public void testAddElement() {
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(JiraIssues.getTestJiraIssues().get(1));
+		KnowledgeElement element = new KnowledgeElementImpl(JiraIssues.getTestJiraIssues().get(1));
 		visTimeLine.addElement(element);
 		assertEquals(2, visTimeLine.getTimeLineNodes().size());
 	}

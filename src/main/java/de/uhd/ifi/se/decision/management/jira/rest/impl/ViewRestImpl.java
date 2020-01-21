@@ -37,9 +37,9 @@ import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMe
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
@@ -121,7 +121,7 @@ public class ViewRestImpl implements ViewRest {
 		if (branches.isEmpty()) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
-		Map<Ref, List<DecisionKnowledgeElement>> ratBranchList = new HashMap<>();
+		Map<Ref, List<KnowledgeElement>> ratBranchList = new HashMap<>();
 		GitDecXtract extractor = new GitDecXtract(projectKey);
 		// TODO: move the loop elsewhere or maybe in GitDecXtract
 		for (Ref branch : branches) {
@@ -242,9 +242,9 @@ public class ViewRestImpl implements ViewRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getVis(@Context HttpServletRequest request, FilterSettings filterSettings,
-			@QueryParam("elementKey") String elementKey) {
-		if (checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()) {
-			return checkIfElementIsValid(elementKey);
+			@QueryParam("elementKey") String rootElementKey) {
+		if (checkIfElementIsValid(rootElementKey).getStatus() != Status.OK.getStatusCode()) {
+			return checkIfElementIsValid(rootElementKey);
 		}
 		if (filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
@@ -257,7 +257,7 @@ public class ViewRestImpl implements ViewRest {
 					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisGraph visGraph = new VisGraph(user, elementKey, filterSettings);
+		VisGraph visGraph = new VisGraph(user, filterSettings, rootElementKey);
 		return Response.ok(visGraph).build();
 	}
 
@@ -309,23 +309,27 @@ public class ViewRestImpl implements ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		List<DecisionKnowledgeElement> decisions = getAllDecisions(projectKey);
+		List<KnowledgeElement> decisions = getAllDecisions(projectKey);
 		Matrix matrix = new Matrix(projectKey, decisions);
 		return Response.ok(matrix).build();
 	}
 
 	// TODO Remove
-	private List<DecisionKnowledgeElement> getAllDecisions(String projectKey) {
-		return KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements(KnowledgeType.DECISION);
+	private List<KnowledgeElement> getAllDecisions(String projectKey) {
+		return KnowledgeGraph.getOrCreate(projectKey).getElements(KnowledgeType.DECISION);
 	}
 
 	@Override
 	@Path("/getDecisionGraph")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionGraph(@Context HttpServletRequest request, FilterSettings filterSettings,
-			@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+	public Response getDecisionGraph(@Context HttpServletRequest request, FilterSettings filterSettings) {
+		if (filterSettings == null) {
+			return Response.status(Status.BAD_REQUEST).entity(
+					ImmutableMap.of("error", "The filter settings are null. Knowledge graph could not be accessed."))
+					.build();
+		}
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(filterSettings.getProjectKey());
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}

@@ -14,8 +14,8 @@ import com.atlassian.jira.event.issue.link.IssueLinkCreatedEvent;
 import com.atlassian.jira.event.issue.link.IssueLinkDeletedEvent;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 
 /**
  * This class is responsible for all the event listeners used in this plug-in.
@@ -79,7 +79,7 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 
 	@EventListener
 	public void onLinkCreatedIssueEvent(IssueLinkCreatedEvent linkCreatedEvent) {
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(
+		KnowledgeElement element = new KnowledgeElementImpl(
 				linkCreatedEvent.getIssueLink().getSourceObject());
 		webhookEventListener.onLinkEvent(element);
 		LOGGER.info("ConDec event listener on link create issue event was triggered.");
@@ -87,7 +87,7 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 
 	@EventListener
 	public void onLinkDeletedIssueEvent(IssueLinkDeletedEvent linkDeletedEvent) {
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(
+		KnowledgeElement element = new KnowledgeElementImpl(
 				linkDeletedEvent.getIssueLink().getSourceObject());
 		webhookEventListener.onLinkEvent(element);
 		LOGGER.info("ConDec event listener on link deleted issue event was triggered.");

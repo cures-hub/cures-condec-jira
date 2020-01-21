@@ -3,10 +3,10 @@ package de.uhd.ifi.se.decision.management.jira.persistence.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
@@ -31,7 +31,7 @@ public class AutomaticLinkCreator {
 	 *            certain Jira issue.
 	 * @return link id.
 	 */
-	public static long createSmartLinkForElement(DecisionKnowledgeElement element) {
+	public static long createSmartLinkForElement(KnowledgeElement element) {
 		if (element == null) {
 			return 0;
 		}
@@ -39,18 +39,18 @@ public class AutomaticLinkCreator {
 		if (linkId > 0) {
 			return linkId;
 		}
-		DecisionKnowledgeElement lastElement = getPotentialParentElement(element);
+		KnowledgeElement lastElement = getPotentialParentElement(element);
 		linkId = KnowledgePersistenceManager.getOrCreate(element.getProject()).insertLink(lastElement, element, null);
 		return linkId;
 	}
 
-	public static DecisionKnowledgeElement getPotentialParentElement(DecisionKnowledgeElement element) {
+	public static KnowledgeElement getPotentialParentElement(KnowledgeElement element) {
 		if (element == null) {
 			return null;
 		}
-		List<DecisionKnowledgeElement> potentialParentElements = getPotentialParentElements(element);
+		List<KnowledgeElement> potentialParentElements = getPotentialParentElements(element);
 		if (potentialParentElements.isEmpty()) {
-			return new DecisionKnowledgeElementImpl(element.getJiraIssue());
+			return new KnowledgeElementImpl(element.getJiraIssue());
 		}
 		if (potentialParentElements.size() == 2) {
 			return getMostRecentElement(potentialParentElements.get(0), potentialParentElements.get(1));
@@ -58,12 +58,12 @@ public class AutomaticLinkCreator {
 		return potentialParentElements.get(0);
 	}
 
-	private static List<DecisionKnowledgeElement> getPotentialParentElements(DecisionKnowledgeElement element) {
-		List<DecisionKnowledgeElement> potentialParentElements = new ArrayList<DecisionKnowledgeElement>();
+	private static List<KnowledgeElement> getPotentialParentElements(KnowledgeElement element) {
+		List<KnowledgeElement> potentialParentElements = new ArrayList<KnowledgeElement>();
 		List<KnowledgeType> parentTypes = KnowledgeType.getParentTypes(element.getType());
 		long jiraIssueId = ((PartOfJiraIssueText) element).getJiraIssueId();
 		for (KnowledgeType parentType : parentTypes) {
-			DecisionKnowledgeElement potentialParentElement = JiraIssueTextPersistenceManager
+			KnowledgeElement potentialParentElement = JiraIssueTextPersistenceManager
 					.getYoungestElementForJiraIssue(jiraIssueId, parentType);
 			if (potentialParentElement != null) {
 				potentialParentElements.add(potentialParentElement);
@@ -72,8 +72,8 @@ public class AutomaticLinkCreator {
 		return potentialParentElements;
 	}
 
-	public static DecisionKnowledgeElement getMostRecentElement(DecisionKnowledgeElement first,
-			DecisionKnowledgeElement second) {
+	public static KnowledgeElement getMostRecentElement(KnowledgeElement first,
+			KnowledgeElement second) {
 		if (first == null) {
 			return second;
 		}

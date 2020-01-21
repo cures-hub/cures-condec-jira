@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
@@ -26,39 +26,39 @@ public interface FilteringManager {
 	 * 
 	 * @return list of all knowledge elements that match the {@link FilterSetting}s.
 	 */
-	List<DecisionKnowledgeElement> getAllElementsMatchingFilterSettings();
+	List<KnowledgeElement> getAllElementsMatchingFilterSettings();
 
 	/**
 	 * Checks if the element matches the specified filter criteria in the
 	 * {@link FilterSetting}s object.
 	 * 
 	 * @param element
-	 *            {@link DecisionKnowledgeElement} object.
+	 *            {@link KnowledgeElement} object.
 	 * @return true if the element matches the specified filter criteria.
 	 */
-	boolean isElementMatchingFilterSettings(DecisionKnowledgeElement element);
+	boolean isElementMatchingFilterSettings(KnowledgeElement element);
 
 	/**
 	 * Checks if the element's description, summary, or key contains the given
 	 * substring in the {@link FilterSetting}s.
 	 * 
 	 * @param element
-	 *            {@link DecisionKnowledgeElement} object.
+	 *            {@link KnowledgeElement} object.
 	 * @return true if the element's description, summary, or key contains the given
 	 *         substring.
 	 */
-	boolean isElementMatchingSubStringFilter(DecisionKnowledgeElement element);
+	boolean isElementMatchingSubStringFilter(KnowledgeElement element);
 
 	/**
 	 * Checks if the element's type equals one of the given {@link KnowledgeType}s
 	 * in the {@link FilterSetting}s.
 	 * 
 	 * @param element
-	 *            {@link DecisionKnowledgeElement} object.
+	 *            {@link KnowledgeElement} object.
 	 * @return true if the element's type equals one of the given
 	 *         {@link KnowledgeType}s.
 	 */
-	boolean isElementMatchingKnowledgeTypeFilter(DecisionKnowledgeElement element);
+	boolean isElementMatchingKnowledgeTypeFilter(KnowledgeElement element);
 
 	/**
 	 * Checks if one of the element's outgoing and ingoing edges/links has a link
@@ -66,43 +66,43 @@ public interface FilteringManager {
 	 * {@link FilterSetting}s.
 	 * 
 	 * @param element
-	 *            {@link DecisionKnowledgeElement} object.
+	 *            {@link KnowledgeElement} object.
 	 * @return true if one of the element's outgoing and ingoing edges/links has a
 	 *         link type that equals one of the given {@link LinkType}s.
 	 */
-	boolean isElementMatchingLinkTypeFilter(DecisionKnowledgeElement element);
+	boolean isElementMatchingLinkTypeFilter(KnowledgeElement element);
 
 	/**
 	 * Checks if the element is created in the given time frame in the
-	 * {@link FilterSetting}s. See {@link DecisionKnowledgeElement#getCreated()}.
+	 * {@link FilterSetting}s. See {@link KnowledgeElement#getCreated()}.
 	 * 
 	 * @param element
-	 *            {@link DecisionKnowledgeElement} object.
+	 *            {@link KnowledgeElement} object.
 	 * @return true if the element is created in the given time frame.
 	 */
-	boolean isElementMatchingTimeFilter(DecisionKnowledgeElement element);
+	boolean isElementMatchingTimeFilter(KnowledgeElement element);
 
 	/**
 	 * Checks if the element's status equals one of the given
 	 * {@link KnowledgeStatus} in the {@link FilterSetting}s.
 	 * 
 	 * @param element
-	 *            {@link DecisionKnowledgeElement} object.
+	 *            {@link KnowledgeElement} object.
 	 * @return true if the element's status equals one of the given
 	 *         {@link KnowledgeStatus}.
 	 */
-	boolean isElementMatchingStatusFilter(DecisionKnowledgeElement element);
+	boolean isElementMatchingStatusFilter(KnowledgeElement element);
 
 	/**
 	 * Checks if the element is documented in one of the given
 	 * {@link DocumentationLocation}s in the {@link FilterSetting}s.
 	 * 
 	 * @param element
-	 *            {@link DecisionKnowledgeElement} object.
+	 *            {@link KnowledgeElement} object.
 	 * @return true if the element is documented in one of the given
 	 *         {@link DocumentationLocation}s.
 	 */
-	boolean isElementMatchingDocumentationLocationFilter(DecisionKnowledgeElement element);
+	boolean isElementMatchingDocumentationLocationFilter(KnowledgeElement element);
 
 	/**
 	 * Returns the filter settings (=criteria) that the filtering manager uses.

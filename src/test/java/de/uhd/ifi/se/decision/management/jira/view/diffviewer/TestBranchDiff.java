@@ -9,24 +9,24 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 
 public class TestBranchDiff {
 
 	private BranchDiff branchDiff;
 
-	private List<DecisionKnowledgeElement> rationaleInBranch;
-	private DecisionKnowledgeElement rat1 = new DecisionKnowledgeElementImpl(0, "I am an issue", "",
+	private List<KnowledgeElement> rationaleInBranch;
+	private KnowledgeElement rat1 = new KnowledgeElementImpl(0, "I am an issue", "",
 			KnowledgeType.ISSUE, "TEST", "file.java 1 INSERT(0-0,0-10) 1:2:3 abcdef01", DocumentationLocation.COMMIT,
 			KnowledgeStatus.UNRESOLVED);
-	private DecisionKnowledgeElement rat2 = new DecisionKnowledgeElementImpl(0, "I am an issue too", "",
+	private KnowledgeElement rat2 = new KnowledgeElementImpl(0, "I am an issue too", "",
 			KnowledgeType.ISSUE, "TEST", "012345678901234567890123456789012345678a 1:1 abcdef23",
 			DocumentationLocation.COMMIT, KnowledgeStatus.UNRESOLVED);
-	private DecisionKnowledgeElement rat3 = new DecisionKnowledgeElementImpl(0, "I am an old issue", "",
+	private KnowledgeElement rat3 = new KnowledgeElementImpl(0, "I am an old issue", "",
 			KnowledgeType.ISSUE, "TEST", "~file.java 1 REPLACE(1-4,1-2) 1:2:3 abcdef45", DocumentationLocation.COMMIT,
 			KnowledgeStatus.UNRESOLVED);
 

@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -28,7 +28,7 @@ public class Data {
 	private List<Data> children;
 
 	@XmlElement(name = "data")
-	private DecisionKnowledgeElement nodeInfo;
+	private KnowledgeElement nodeInfo;
 
 	@XmlElement
 	private String icon;
@@ -42,7 +42,7 @@ public class Data {
 	public Data() {
 	}
 
-	public Data(DecisionKnowledgeElement decisionKnowledgeElement) {
+	public Data(KnowledgeElement decisionKnowledgeElement) {
 		this.id = "tv" + String.valueOf(decisionKnowledgeElement.getId());
 		this.text = decisionKnowledgeElement.getSummary();
 		this.icon = KnowledgeType.getIconUrl(decisionKnowledgeElement);
@@ -57,7 +57,7 @@ public class Data {
 		}
 	}
 
-	public Data(DecisionKnowledgeElement decisionKnowledgeElement, Link link) {
+	public Data(KnowledgeElement decisionKnowledgeElement, Link link) {
 		this(decisionKnowledgeElement);
 		this.icon = KnowledgeType.getIconUrl(decisionKnowledgeElement, link.getType());
 	}
@@ -89,11 +89,11 @@ public class Data {
 		this.children = children;
 	}
 
-	public DecisionKnowledgeElement getNode() {
+	public KnowledgeElement getNode() {
 		return nodeInfo;
 	}
 
-	public void setNodeInfo(DecisionKnowledgeElement nodeInfo) {
+	public void setNodeInfo(KnowledgeElement nodeInfo) {
 		this.nodeInfo = nodeInfo;
 	}
 

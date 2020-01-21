@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
@@ -25,7 +25,7 @@ public class WebhookEventListener {
 			return;
 		}
 		long eventTypeId = issueEvent.getEventTypeId();
-		DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issueEvent.getIssue());
+		KnowledgeElement decisionKnowledgeElement = new KnowledgeElementImpl(issueEvent.getIssue());
 		if (eventTypeId == EventType.ISSUE_CREATED_ID || eventTypeId == EventType.ISSUE_UPDATED_ID) {
 			WebhookConnector connector = new WebhookConnector(projectKey);
 			connector.sendElementChanges(decisionKnowledgeElement);
@@ -36,7 +36,7 @@ public class WebhookEventListener {
 		}
 	}
 
-	public void onLinkEvent(DecisionKnowledgeElement decisionKnowledgeElement) {
+	public void onLinkEvent(KnowledgeElement decisionKnowledgeElement) {
 		if (!ConfigPersistenceManager.isWebhookEnabled(decisionKnowledgeElement.getProject().getProjectKey())) {
 			return;
 		}

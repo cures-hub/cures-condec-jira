@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
@@ -30,7 +30,7 @@ public class TestGetElementsInComment extends TestSetUp {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		long commentId = comment.get(0).getCommentId();
-		List<DecisionKnowledgeElement> listWithObjects = manager.getElementsInComment(commentId);
+		List<KnowledgeElement> listWithObjects = manager.getElementsInComment(commentId);
 		assertEquals(3, listWithObjects.size());
 	}
 

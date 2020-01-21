@@ -11,7 +11,7 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
@@ -22,7 +22,7 @@ public class TestGetDecisionKnowledgeElement extends TestSetUp {
 
 	protected JiraIssueTextPersistenceManager manager;
 	protected ApplicationUser user;
-	protected DecisionKnowledgeElement element;
+	protected KnowledgeElement element;
 
 	@Before
 	public void setUp() {

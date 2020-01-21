@@ -449,6 +449,7 @@
 		<resource type="download" name="dataTool.js" location="/js/lib/echart/dataTool.js" />
 		<resource type="download" name="condec.dashboard.css"
 			location="/css/condec.git.dashboard.css" />
+		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
 
 		<context>atl.dashboard</context>
 	</web-resource>

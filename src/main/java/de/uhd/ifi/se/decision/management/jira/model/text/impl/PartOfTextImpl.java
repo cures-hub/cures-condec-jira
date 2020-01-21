@@ -4,14 +4,14 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 
 /**
  * Model class for textual parts (substrings) of natural language text. These
  * parts can either be relevant decision knowledge elements or irrelevant text.
  */
-public class PartOfTextImpl extends DecisionKnowledgeElementImpl implements PartOfText {
+public class PartOfTextImpl extends KnowledgeElementImpl implements PartOfText {
 
 	private int startPosition;
 	private int endPosition;

@@ -153,6 +153,10 @@ public abstract class AbstractClassifier implements Classifier{
 	 */
 	public abstract boolean loadFromFile();
 
+	public boolean isModelTrained(){
+		return this.modelIsTrained;
+	}
+
 	public Integer getNumClasses() {
 		return numClasses;
 	}

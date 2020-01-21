@@ -24,8 +24,9 @@ import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
@@ -55,7 +56,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 					.build();
 		}
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		DecisionKnowledgeElement decisionKnowledgeElement = persistenceManager.getDecisionKnowledgeElement(id,
+		KnowledgeElement decisionKnowledgeElement = persistenceManager.getDecisionKnowledgeElement(id,
 				documentationLocationIdentifier);
 		if (decisionKnowledgeElement != null) {
 			return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
@@ -76,8 +77,8 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 					.build();
 		}
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(id, documentationLocation);
-		List<DecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = persistenceManager
+		KnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(id, documentationLocation);
+		List<KnowledgeElement> unlinkedDecisionKnowledgeElements = KnowledgeGraph.getOrCreate(projectKey)
 				.getUnlinkedElements(element);
 		return Response.ok(unlinkedDecisionKnowledgeElements).build();
 	}
@@ -87,7 +88,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createDecisionKnowledgeElement(@Context HttpServletRequest request,
-			DecisionKnowledgeElement element, @QueryParam("idOfExistingElement") long idOfExistingElement,
+			KnowledgeElement element, @QueryParam("idOfExistingElement") long idOfExistingElement,
 			@QueryParam("documentationLocationOfExistingElement") String documentationLocationOfExistingElement,
 			@QueryParam("keyOfExistingElement") String keyOfExistingElement) {
 		if (element == null || request == null) {
@@ -107,9 +108,9 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		DecisionKnowledgeElement existingElement = persistenceManager.getDecisionKnowledgeElement(idOfExistingElement,
+		KnowledgeElement existingElement = persistenceManager.getDecisionKnowledgeElement(idOfExistingElement,
 				documentationLocationOfExistingElement);
-		DecisionKnowledgeElement newElementWithId = persistenceManager.insertDecisionKnowledgeElement(element, user,
+		KnowledgeElement newElementWithId = persistenceManager.insertDecisionKnowledgeElement(element, user,
 				existingElement);
 
 		if (newElementWithId == null) {
@@ -140,7 +141,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response updateDecisionKnowledgeElement(@Context HttpServletRequest request,
-			DecisionKnowledgeElement element, @QueryParam("idOfParentElement") long idOfParentElement,
+			KnowledgeElement element, @QueryParam("idOfParentElement") long idOfParentElement,
 			@QueryParam("documentationLocationOfParentElement") String documentationLocationOfParentElement) {
 		if (request == null || element == null) {
 			return Response.status(Status.BAD_REQUEST)
@@ -150,7 +151,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(element.getProject());
 
-		DecisionKnowledgeElement formerElement = persistenceManager.getDecisionKnowledgeElement(element.getId(),
+		KnowledgeElement formerElement = persistenceManager.getDecisionKnowledgeElement(element.getId(),
 				element.getDocumentationLocation());
 		if (formerElement == null || formerElement.getId() <= 0) {
 			return Response.status(Status.NOT_FOUND)
@@ -169,7 +170,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 		if (idOfParentElement == 0) {
 			return Response.status(Status.OK).build();
 		}
-		DecisionKnowledgeElement updatedElement = persistenceManager.getDecisionKnowledgeElement(element.getId(),
+		KnowledgeElement updatedElement = persistenceManager.getDecisionKnowledgeElement(element.getId(),
 				element.getDocumentationLocation());
 		long linkId = persistenceManager.updateLink(updatedElement, formerElement.getType(), idOfParentElement,
 				documentationLocationOfParentElement, user);
@@ -177,7 +178,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Link could not be updated.")).build();
 		}
-		DecisionKnowledgeElement parentElement = persistenceManager
+		KnowledgeElement parentElement = persistenceManager
 				.getManagerForSingleLocation(documentationLocationOfParentElement)
 				.getDecisionKnowledgeElement(idOfParentElement);
 		persistenceManager.updateIssueStatus(parentElement, updatedElement, user);
@@ -189,7 +190,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 	@DELETE
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response deleteDecisionKnowledgeElement(@Context HttpServletRequest request,
-			DecisionKnowledgeElement decisionKnowledgeElement) {
+			KnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement == null || request == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
@@ -224,9 +225,9 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
 
-		DecisionKnowledgeElement parentElement = persistenceManager.getDecisionKnowledgeElement(idOfParent,
+		KnowledgeElement parentElement = persistenceManager.getDecisionKnowledgeElement(idOfParent,
 				documentationLocationOfParent);
-		DecisionKnowledgeElement childElement = persistenceManager.getDecisionKnowledgeElement(idOfChild,
+		KnowledgeElement childElement = persistenceManager.getDecisionKnowledgeElement(idOfChild,
 				documentationLocationOfChild);
 
 		if (parentElement == null || childElement == null) {
@@ -285,7 +286,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		FilteringManager filteringManager = new FilteringManagerImpl(projectKey, user, query);
-		List<DecisionKnowledgeElement> elementsMatchingQuery = filteringManager.getAllElementsMatchingFilterSettings();
+		List<KnowledgeElement> elementsMatchingQuery = filteringManager.getAllElementsMatchingFilterSettings();
 		return Response.ok(elementsMatchingQuery).build();
 	}
 
@@ -294,7 +295,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createIssueFromSentence(@Context HttpServletRequest request,
-			DecisionKnowledgeElement decisionKnowledgeElement) {
+			KnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement == null || request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "The documentation location could not be changed due to a bad request."))
@@ -319,7 +320,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response setSentenceIrrelevant(@Context HttpServletRequest request,
-			DecisionKnowledgeElement decisionKnowledgeElement) {
+			KnowledgeElement decisionKnowledgeElement) {
 		if (request == null || decisionKnowledgeElement == null || decisionKnowledgeElement.getId() <= 0) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Setting element irrelevant failed due to a bad request."))

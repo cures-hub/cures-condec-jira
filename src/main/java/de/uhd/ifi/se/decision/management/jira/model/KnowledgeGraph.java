@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
@@ -11,8 +12,8 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 
 /**
  * Interface to create a knowledge graph for the entire project or a sub-graph
- * from a given start node with a certain distance (set in the constructor). The
- * knowledge covers decision knowledge, JIRA issues such as requirements and
+ * from a given start element with a certain distance (set in the constructor).
+ * The knowledge covers decision knowledge, Jira issues such as requirements and
  * work items, commits, files (e.g., Java classes), and methods. Extends the
  * JGraphT graph interface. The knowledge graph can be disconnected.
  * 
@@ -20,7 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
  * @see Graph
  */
 @JsonDeserialize(as = KnowledgeGraphImpl.class)
-public interface KnowledgeGraph extends Graph<Node, Link> {
+public interface KnowledgeGraph extends Graph<KnowledgeElement, Link> {
 
 	/**
 	 * Instances of knowledge graphs that are identified by the project key.
@@ -104,9 +105,38 @@ public interface KnowledgeGraph extends Graph<Node, Link> {
 	boolean containsEdge(Link link);
 
 	/**
-	 * Updates a node. If it is not in the graph it will be added.
+	 * Updates a knowledge element. If the element is not in the graph it will be
+	 * added.
 	 * 
-	 * @param node
+	 * @param element
 	 */
-	boolean updateNode(DecisionKnowledgeElement node);
+	boolean updateElement(KnowledgeElement element);
+
+	/**
+	 * Returns all unlinked elements of the knowledge element for a project. Sorts
+	 * the elements according to their similarity and their likelihood that they
+	 * should be linked.
+	 * 
+	 * TODO Sorting according to the likelihood that they should be linked.
+	 * 
+	 * @issue How can the sorting be implemented?
+	 *
+	 * @param element
+	 *            {@link KnowledgeElement} with id in database. The id is different
+	 *            to the key.
+	 * @return set of unlinked elements, sorted by the likelihood that they should
+	 *         be linked.
+	 */
+	List<KnowledgeElement> getUnlinkedElements(KnowledgeElement element);
+
+	/**
+	 * Returns all knowledge elements for a project with a certain knowledge type.
+	 *
+	 * @return list of all decision knowledge elements for a project with a certain
+	 *         knowledge type.
+	 * @see KnowledgeElement
+	 * @see DecisionKnowledgeProject
+	 * @see KnowledgeType
+	 */
+	List<KnowledgeElement> getElements(KnowledgeType type);
 }

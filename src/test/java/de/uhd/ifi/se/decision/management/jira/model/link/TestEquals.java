@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.Links;
 
@@ -30,7 +30,7 @@ public class TestEquals extends TestSetUp {
 	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void testNoLinkObject() {
-		assertFalse(link.equals(new DecisionKnowledgeElementImpl()));
+		assertFalse(link.equals(new KnowledgeElementImpl()));
 	}
 
 	@Test

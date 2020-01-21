@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import org.eclipse.jgit.lib.Ref;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,7 +18,7 @@ public class TestGitDecXtract extends TestSetUpGit {
 		// git repository is setup already
 		gitDecX = new GitDecXtract("TEST", getExampleUri());
 		int numberExpectedElements = 0;
-		List<DecisionKnowledgeElement> gotElements = gitDecX.getElements((String) null);
+		List<KnowledgeElement> gotElements = gitDecX.getElements((String) null);
 		Assert.assertEquals(numberExpectedElements, gotElements.size());
 
 		gotElements = gitDecX.getElements("");
@@ -38,7 +38,7 @@ public class TestGitDecXtract extends TestSetUpGit {
 		int numberExpectedElements = 14;
 
 		// by branch name
-		List<DecisionKnowledgeElement> gotElements = gitDecX.getElements("featureBranch");
+		List<KnowledgeElement> gotElements = gitDecX.getElements("featureBranch");
 		Assert.assertEquals(numberExpectedElements, gotElements.size());
 
 		// by Ref, find Ref first
@@ -61,7 +61,7 @@ public class TestGitDecXtract extends TestSetUpGit {
 	public void fromFeatureBranchCommitsNullInput() {
 		gitDecX = new GitDecXtract("TEST", getExampleUri());
 
-		List<DecisionKnowledgeElement> gotElements = gitDecX.getElements((String) null);
+		List<KnowledgeElement> gotElements = gitDecX.getElements((String) null);
 		Assert.assertNotNull(gotElements);
 		Assert.assertEquals(0, gotElements.size());
 
@@ -78,7 +78,7 @@ public class TestGitDecXtract extends TestSetUpGit {
 		int numberExpectedElements = 2;
 
 		// by branch name
-		Map<String, List<DecisionKnowledgeElement>> gotElements = gitDecX
+		Map<String, List<KnowledgeElement>> gotElements = gitDecX
 				.getElementsSplitByCodeAndCommit("featureBranch");
 		Assert.assertEquals(numberExpectedElements, gotElements.size());
 

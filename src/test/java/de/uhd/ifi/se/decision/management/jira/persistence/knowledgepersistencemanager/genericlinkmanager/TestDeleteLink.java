@@ -7,9 +7,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
@@ -31,8 +31,8 @@ public class TestDeleteLink extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testLinkFilled() {
-		DecisionKnowledgeElement element = JiraIssues.addElementToDataBase();
-		DecisionKnowledgeElement elementJiraIssue = new DecisionKnowledgeElementImpl(
+		KnowledgeElement element = JiraIssues.addElementToDataBase();
+		KnowledgeElement elementJiraIssue = new KnowledgeElementImpl(
 				JiraIssues.getTestJiraIssues().get(0));
 		Link link = new LinkImpl(elementJiraIssue, element);
 		long linkId = KnowledgePersistenceManager.getOrCreate("TEST").insertLink(link, null);

@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLink;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
@@ -25,8 +25,8 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 
 	private long id;
 	private String type; // TODO Use LinkType istead of String
-	private DecisionKnowledgeElement source;
-	private DecisionKnowledgeElement target;
+	private KnowledgeElement source;
+	private KnowledgeElement target;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(LinkImpl.class);
 	private static final long serialVersionUID = 1L;
@@ -35,19 +35,19 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 		super();
 	}
 
-	public LinkImpl(DecisionKnowledgeElement sourceElement, DecisionKnowledgeElement destinationElement) {
+	public LinkImpl(KnowledgeElement sourceElement, KnowledgeElement destinationElement) {
 		this();
 		this.source = sourceElement;
 		this.target = destinationElement;
 	}
 
-	public LinkImpl(DecisionKnowledgeElement sourceElement, DecisionKnowledgeElement destinationElement,
+	public LinkImpl(KnowledgeElement sourceElement, KnowledgeElement destinationElement,
 			String linkType) {
 		this(sourceElement, destinationElement);
 		this.type = linkType;
 	}
 
-	public LinkImpl(DecisionKnowledgeElement sourceElement, DecisionKnowledgeElement destinationElement,
+	public LinkImpl(KnowledgeElement sourceElement, KnowledgeElement destinationElement,
 			LinkType linkType) {
 		this(sourceElement, destinationElement, linkType.toString());
 	}
@@ -65,11 +65,11 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 		this.type = jiraIssueLink.getIssueLinkType().getName();
 		Issue sourceJiraIssue = jiraIssueLink.getSourceObject();
 		if (sourceJiraIssue != null) {
-			this.source = new DecisionKnowledgeElementImpl(sourceJiraIssue);
+			this.source = new KnowledgeElementImpl(sourceJiraIssue);
 		}
 		Issue destinationJiraIssue = jiraIssueLink.getDestinationObject();
 		if (destinationJiraIssue != null) {
-			this.target = new DecisionKnowledgeElementImpl(destinationJiraIssue);
+			this.target = new KnowledgeElementImpl(destinationJiraIssue);
 		}
 	}
 
@@ -125,7 +125,7 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 					documentationLocation);
 		}
 		if (this.source == null) {
-			this.source = new DecisionKnowledgeElementImpl();
+			this.source = new KnowledgeElementImpl();
 		}
 		this.source.setId(id);
 		this.source.setDocumentationLocation(documentationLocation);
@@ -137,15 +137,15 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	}
 
 	@Override
-	public DecisionKnowledgeElement getSource() {
+	public KnowledgeElement getSource() {
 		if (source == null) {
-			source = (DecisionKnowledgeElement) super.getSource();
+			source = (KnowledgeElement) super.getSource();
 		}
 		return source;
 	}
 
 	@Override
-	public void setSourceElement(DecisionKnowledgeElement sourceElement) {
+	public void setSourceElement(KnowledgeElement sourceElement) {
 		this.source = sourceElement;
 	}
 
@@ -156,7 +156,7 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 					documentationLocation);
 		}
 		if (this.target == null) {
-			this.target = new DecisionKnowledgeElementImpl();
+			this.target = new KnowledgeElementImpl();
 		}
 		this.target.setId(id);
 		this.target.setDocumentationLocation(documentationLocation);
@@ -169,15 +169,15 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	}
 
 	@Override
-	public DecisionKnowledgeElement getTarget() {
+	public KnowledgeElement getTarget() {
 		if (target == null) {
-			target = (DecisionKnowledgeElement) super.getTarget();
+			target = (KnowledgeElement) super.getTarget();
 		}
 		return target;
 	}
 
 	@Override
-	public void setDestinationElement(DecisionKnowledgeElement destinationElement) {
+	public void setDestinationElement(KnowledgeElement destinationElement) {
 		this.target = destinationElement;
 	}
 
@@ -185,7 +185,7 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	@JsonProperty("idOfSourceElement")
 	public void setIdOfSourceElement(long id) {
 		if (this.source == null) {
-			this.source = new DecisionKnowledgeElementImpl();
+			this.source = new KnowledgeElementImpl();
 		}
 		this.source.setId(id);
 	}
@@ -194,13 +194,13 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	@JsonProperty("idOfDestinationElement")
 	public void setIdOfDestinationElement(long id) {
 		if (this.target == null) {
-			this.target = new DecisionKnowledgeElementImpl();
+			this.target = new KnowledgeElementImpl();
 		}
 		this.target.setId(id);
 	}
 
 	@Override
-	public DecisionKnowledgeElement getOppositeElement(long elementId) {
+	public KnowledgeElement getOppositeElement(long elementId) {
 		if (!this.isValid()) {
 			return null;
 		}
@@ -214,13 +214,13 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	}
 
 	@Override
-	public DecisionKnowledgeElement getOppositeElement(DecisionKnowledgeElement element) {
+	public KnowledgeElement getOppositeElement(KnowledgeElement element) {
 		return getOppositeElement(element.getId());
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getBothElements() {
-		List<DecisionKnowledgeElement> bothElements = new ArrayList<DecisionKnowledgeElement>();
+	public List<KnowledgeElement> getBothElements() {
+		List<KnowledgeElement> bothElements = new ArrayList<KnowledgeElement>();
 		bothElements.add(target);
 		bothElements.add(source);
 		return bothElements;

@@ -10,7 +10,7 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
@@ -22,7 +22,7 @@ public class TestGetDecisionKnowledgeElements extends TestSetUp {
 
 	protected static JiraIssueTextPersistenceManager manager;
 	protected static ApplicationUser user;
-	protected static DecisionKnowledgeElement element;
+	protected static KnowledgeElement element;
 
 	@Before
 	public void setUp() {
@@ -39,9 +39,10 @@ public class TestGetDecisionKnowledgeElements extends TestSetUp {
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		assertEquals(KnowledgeType.ISSUE, sentences.get(1).getType());
 
-		List<DecisionKnowledgeElement> listWithObjects = new JiraIssueTextPersistenceManager("TEST")
-				.getDecisionKnowledgeElements(KnowledgeType.ISSUE);
-		assertEquals(1, listWithObjects.size());
+		List<KnowledgeElement> listWithObjects = new JiraIssueTextPersistenceManager("TEST")
+				.getDecisionKnowledgeElements();
+		// TODO Why 4, not 3?
+		assertEquals(4, listWithObjects.size());
 	}
 
 	@Test
@@ -51,9 +52,9 @@ public class TestGetDecisionKnowledgeElements extends TestSetUp {
 				"some sentence in front. {alternative} testobject {alternative} some sentence in the back.");
 		assertEquals(KnowledgeType.ALTERNATIVE, sentences.get(1).getType());
 
-		List<DecisionKnowledgeElement> listWithObjects = new JiraIssueTextPersistenceManager("TEST")
-				.getDecisionKnowledgeElements(KnowledgeType.ALTERNATIVE);
-		assertEquals(1, listWithObjects.size());
+		List<KnowledgeElement> listWithObjects = new JiraIssueTextPersistenceManager("TEST")
+				.getDecisionKnowledgeElements();
+		assertEquals(4, listWithObjects.size());
 	}
 
 	@Test
@@ -66,10 +67,9 @@ public class TestGetDecisionKnowledgeElements extends TestSetUp {
 		assertEquals(KnowledgeType.OTHER, sentences.get(2).getType());
 		assertEquals(3, sentences.size());
 
-		List<DecisionKnowledgeElement> listWithObjects = new JiraIssueTextPersistenceManager("TEST")
-				.getDecisionKnowledgeElements(KnowledgeType.CON);
-		// TODO Why 2 not 1?
-		assertEquals(2, listWithObjects.size());
+		List<KnowledgeElement> listWithObjects = new JiraIssueTextPersistenceManager("TEST")
+				.getDecisionKnowledgeElements();
+		assertEquals(4, listWithObjects.size());
 	}
 
 	@Test
@@ -79,8 +79,8 @@ public class TestGetDecisionKnowledgeElements extends TestSetUp {
 				"some sentence in front.  {pro} testobject {pro} some sentence in the back.");
 		assertEquals(KnowledgeType.OTHER, sentences.get(2).getType());
 
-		List<DecisionKnowledgeElement> listWithObjects = new JiraIssueTextPersistenceManager("TEST")
-				.getDecisionKnowledgeElements(KnowledgeType.OTHER);
-		assertEquals(2, listWithObjects.size());
+		List<KnowledgeElement> listWithObjects = new JiraIssueTextPersistenceManager("TEST")
+				.getDecisionKnowledgeElements();
+		assertEquals(4, listWithObjects.size());
 	}
 }

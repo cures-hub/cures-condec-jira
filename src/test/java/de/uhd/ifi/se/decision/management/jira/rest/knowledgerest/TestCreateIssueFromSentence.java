@@ -4,10 +4,10 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import de.uhd.ifi.se.decision.management.jira.rest.impl.KnowledgeRestImpl;
@@ -28,7 +28,7 @@ public class TestCreateIssueFromSentence extends TestSetUp {
 
 	private KnowledgeRest knowledgeRest;
 	private HttpServletRequest request;
-	private DecisionKnowledgeElement decisionKnowledgeElement;
+	private KnowledgeElement decisionKnowledgeElement;
 	private final static String BAD_REQUEST_ERROR = "The documentation location could not be changed due to a bad request.";
 
 	@Before
@@ -39,7 +39,7 @@ public class TestCreateIssueFromSentence extends TestSetUp {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
 
-		decisionKnowledgeElement = new DecisionKnowledgeElementImpl();
+		decisionKnowledgeElement = new KnowledgeElementImpl();
 		decisionKnowledgeElement.setProject("TEST");
 		decisionKnowledgeElement.setSummary("Test summary");
 		decisionKnowledgeElement.setType(KnowledgeType.ISSUE);
@@ -79,7 +79,7 @@ public class TestCreateIssueFromSentence extends TestSetUp {
 	@NonTransactional
 	public void testFilledFilledOk() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("This is a test sentence.");
-		DecisionKnowledgeElement decisionKnowledgeElementSentence = comment.get(0);
+		KnowledgeElement decisionKnowledgeElementSentence = comment.get(0);
 		decisionKnowledgeElementSentence.setType(KnowledgeType.ALTERNATIVE);
 		assertEquals(Response.Status.OK.getStatusCode(), knowledgeRest.createIssueFromSentence(request,
 				decisionKnowledgeElementSentence).getStatus());

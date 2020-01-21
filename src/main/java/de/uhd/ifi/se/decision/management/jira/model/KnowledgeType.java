@@ -82,7 +82,7 @@ public enum KnowledgeType {
 	 * knowledge graph. For example, the parent type of argument is decision or
 	 * alternative. The parent type of decision or alternative is issue.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @param type
 	 *            of knowledge
 	 * @return parent knowledge type of the knowledge type for link creation in the
@@ -107,7 +107,7 @@ public enum KnowledgeType {
 	 * For example, the super type of argument is rationale and the super type of
 	 * issue is problem.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @param type
 	 *            of knowledge
 	 * @return super knowledge type of the knowledge type in the decision
@@ -146,7 +146,7 @@ public enum KnowledgeType {
 	 * For example, the super type of argument is rationale and the super type of
 	 * issue is problem.
 	 *
-	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeElement
 	 * @return super knowledge type of the decision knowledge element.
 	 */
 	public KnowledgeType getSuperType() {
@@ -206,7 +206,7 @@ public enum KnowledgeType {
 		}
 	}
 
-	public static String getIconUrl(DecisionKnowledgeElement element) {
+	public static String getIconUrl(KnowledgeElement element) {
 		if (element == null) {
 			return "";
 		}
@@ -224,7 +224,7 @@ public enum KnowledgeType {
 		return element.getType().getIconUrl();
 	}
 
-	public static String getIconUrl(DecisionKnowledgeElement element, String linkType) {
+	public static String getIconUrl(KnowledgeElement element, String linkType) {
 		if (linkType == null) {
 			return getIconUrl(element);
 		}

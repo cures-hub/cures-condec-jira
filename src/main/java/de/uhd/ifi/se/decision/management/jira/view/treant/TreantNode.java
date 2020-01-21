@@ -12,7 +12,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -56,7 +56,7 @@ public class TreantNode {
 		this.connectors = ImmutableMap.of("style", ImmutableMap.of("stroke", "#000000"));
 	}
 
-	public TreantNode(DecisionKnowledgeElement decisionKnowledgeElement, boolean isCollapsed, boolean isHyperlinked) {
+	public TreantNode(KnowledgeElement decisionKnowledgeElement, boolean isCollapsed, boolean isHyperlinked) {
 		this();
 		if (decisionKnowledgeElement == null || decisionKnowledgeElement.getSummary() == null) {
 			return;
@@ -81,11 +81,11 @@ public class TreantNode {
 		this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement);
 	}
 
-	public static String getIcon(DecisionKnowledgeElement element) {
+	public static String getIcon(KnowledgeElement element) {
 		return ComponentGetter.getUrlOfImageFolder() + element.getType().toString() + ".png";
 	}
 
-	public TreantNode(DecisionKnowledgeElement decisionKnowledgeElement, Link link, boolean isCollapsed,
+	public TreantNode(KnowledgeElement decisionKnowledgeElement, Link link, boolean isCollapsed,
 			boolean isHyperlinked) {
 		this(decisionKnowledgeElement, isCollapsed, isHyperlinked);
 		this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement, link.getType());
