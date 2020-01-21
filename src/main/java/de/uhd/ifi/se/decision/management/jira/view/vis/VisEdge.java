@@ -27,10 +27,8 @@ public class VisEdge {
 
 	public VisEdge(Link link) {
 		this.setLabel(link.getType());
-		this.setFrom(
-				link.getSource().getId() + "_" + link.getSource().getDocumentationLocationAsString());
-		this.setTo(link.getTarget().getId() + "_"
-				+ link.getTarget().getDocumentationLocationAsString());
+		this.setFrom(link.getSource().getId() + "_" + link.getSource().getDocumentationLocationAsString());
+		this.setTo(link.getTarget().getId() + "_" + link.getTarget().getDocumentationLocationAsString());
 		this.setId(String.valueOf(link.getId()));
 		this.setColor(LinkType.getLinkTypeColor(link.getType()));
 	}

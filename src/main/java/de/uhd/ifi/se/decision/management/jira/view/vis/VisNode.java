@@ -13,6 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
  * Model class for a vis.js node.
  */
 public class VisNode {
+
 	@XmlElement
 	private String id;
 
