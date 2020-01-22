@@ -791,6 +791,22 @@
 	};
 
 	/*
+	 * external references: classificationSettings.vm
+	 */
+	ConDecAPI.prototype.testClassifierWithText = function testClassifierWithText(
+		text, projectKey, resultDomElement) {
+		postJSON(this.restPrefix + "/config/testClassifierWithText?projectKey="
+			+ projectKey + "&text=" + text, null, function (error, response) {
+			if (error === null) {
+				resultDomElement.innerText = response.content;
+			}else{
+				resultDomElement.innerText = "Error! Please check if the classifier is trained.";
+			}
+		});
+	};
+
+
+	/*
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.classifyWholeProject = function classifyWholeProject(projectKey, animatedElement) {
