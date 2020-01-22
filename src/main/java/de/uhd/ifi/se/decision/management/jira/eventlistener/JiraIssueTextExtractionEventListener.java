@@ -77,7 +77,7 @@ public class JiraIssueTextExtractionEventListener {
 		if (eventTypeId == EventType.ISSUE_DELETED_ID) {
 			handleDeleteIssue();
 		}
-		if (eventTypeId == EventType.ISSUE_UPDATED_ID) {
+		if (eventTypeId == EventType.ISSUE_UPDATED_ID || eventTypeId == EventType.ISSUE_CREATED_ID ) {
 			handleUpdateDescription();
 		}
 	}
