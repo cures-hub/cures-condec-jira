@@ -283,7 +283,8 @@
 		section="atl.jira.proj.config/condec-project-settings-section" weight="16">
 		<description>Adds the "Rationale model" menu item.</description>
 		<label key="condec.project.settings.menu.item.rationale.model" />
-		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=rationaleModel</link>
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=rationaleModel
+		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
 	<web-item key="condec-project-settings-menu-item-classification"
@@ -291,7 +292,8 @@
 		section="atl.jira.proj.config/condec-project-settings-section" weight="17">
 		<description>Adds the "Classification" menu item.</description>
 		<label key="condec.project.settings.menu.item.classification" />
-		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=classification</link>
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=classification
+		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
 	<web-item key="condec-project-settings-menu-item-git"
@@ -315,7 +317,8 @@
 		section="atl.jira.proj.config/condec-project-settings-section" weight="20">
 		<description>Adds the "Release Notes" menu item.</description>
 		<label key="condec.project.settings.menu.item.release.notes" />
-		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=releaseNotes</link>
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=releaseNotes
+		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
 	<servlet key="servlet-for-settings-of-single-project"
@@ -324,9 +327,9 @@
 		<description>Provides the project settings page for the project administrators.</description>
 		<url-pattern>/condec/settings</url-pattern>
 		<init-param>
-            <param-name>category</param-name>
-            <param-value>basic</param-value>
-        </init-param>
+			<param-name>category</param-name>
+			<param-value>basic</param-value>
+		</init-param>
 	</servlet>
 
 	<!-- Active Objects -->
@@ -380,32 +383,39 @@
 
 	<macro key="issue" name="ConDec Editor Macro for Issues"
 		class="de.uhd.ifi.se.decision.management.jira.view.macros.IssueMacro">
-		<description>Highlights issue knowledge elements in the description and comments of Jira issue.</description>
+		<description>Highlights issue knowledge elements in the description and comments of Jira issue.
+		</description>
 	</macro>
 
 	<macro key="decision" name="ConDec Editor Macro for Decisions"
 		class="de.uhd.ifi.se.decision.management.jira.view.macros.DecisionMacro">
-		<description>Highlights decision knowledge elements in the description and comments of Jira issue.</description>
+		<description>Highlights decision knowledge elements in the description and comments of Jira issue.
+		</description>
 	</macro>
 
 	<macro key="alternative" name="ConDec Editor Macro for Alternatives"
 		class="de.uhd.ifi.se.decision.management.jira.view.macros.AlternativeMacro">
-		<description>Highlights alternative knowledge elements in the description and comments of Jira issue.</description>
+		<description>Highlights alternative knowledge elements in the description and comments of Jira
+			issue.
+		</description>
 	</macro>
 
 	<macro key="pro" name="ConDec Editor Macro for Pro-arguments"
 		class="de.uhd.ifi.se.decision.management.jira.view.macros.ProMacro">
-		<description>Highlights pro knowledge elements in the description and comments of Jira issue.</description>
+		<description>Highlights pro knowledge elements in the description and comments of Jira issue.
+		</description>
 	</macro>
 
 	<macro key="con" name="ConDec Editor Macro for Con-arguments"
 		class="de.uhd.ifi.se.decision.management.jira.view.macros.ConMacro">
-		<description>Highlights con knowledge elements in the description and comments of Jira issue.</description>
+		<description>Highlights con knowledge elements in the description and comments of Jira issue.
+		</description>
 	</macro>
 
 	<macro key="codesummarization" name="ConDec Editor Macro for Code Summarization"
 		class="de.uhd.ifi.se.decision.management.jira.view.macros.CodeSummarizationMacro">
-		<description>Highlights code summarization in the description and comments of Jira issue.</description>
+		<description>Highlights code summarization in the description and comments of Jira issue.
+		</description>
 	</macro>
 
 	<web-resource key="toolbar" name="JIRA Editor Reference Plugin Toolbar Init">
@@ -421,36 +431,30 @@
 			location="js/condec.text.editor.extension.js" />
 	</web-resource>
 
-	<!-- ConDec feature branch dashboard item -->
-	<!-- https://developer.atlassian.com/server/jira/platform/building-a-dashboard-item/ https://developer.atlassian.com/server/jira/platform/writing-a-dashboard-item-app/ 
-		Dashboard item will eventually replace gadgets: https://developer.atlassian.com/server/jira/platform/dashboard-item-module/ -->
+
+
 	<web-resource key="dashboard-item-condec-resources"
-		name="ConDec feature task branches Web Resources">
-		<dependency>com.atlassian.auiplugin:ajs</dependency>
-		<resource type="velocity" location="/templates/dashboard/featureBranchesDashboardItem.vm"
-			name="Dashboard.Item.ConDec.Feature.Branches.Templates.Static" />
+		name="ConDec Dashboard Web Resources">
+		<resource type="download" name="condec.dashboard.css"
+			location="/css/condec.dashboard.css" />
 		<resource type="download" name="condec.git.branches.dashboard.js"
 			location="js/dashboard/condec.git.branches.dashboard.js" />
 		<resource type="download" name="condec.requirements.dashboard.js"
 			location="js/dashboard/condec.requirements.dashboard.js" />
-		<resource type="download" name="condec.requirements.dashboard.css"
-			location="/css/condec.requirements.dashboard.css" />
-		<resource type="download" name="condec.dashboard.git.code.elements.linker.js"
+		<resource type="download" name="condec.git.code.elements.linker.js"
 			location="/js/condec.git.code.elements.linker.js" />
-		<resource type="download" name="condec.dashboard.echarts.js"
-			location="/js/lib/echart/echarts.js" />
-		<resource type="download" name="condec.dashboard.dataTool.js"
-			location="/js/lib/echart/dataTool.js" />
-		<resource type="download" name="condec.dashboard.css"
-			location="/css/condec.git.dashboard.css" />
+		<resource type="download" name="echarts.js" location="/js/lib/echart/echarts.js" />
+		<resource type="download" name="dataTool.js" location="/js/lib/echart/dataTool.js" />
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
 
 		<context>atl.dashboard</context>
-		<context>condec-feature-branch-dashboard</context>
 	</web-resource>
 
+	<!-- ConDec feature branch dashboard item -->
+	<!-- https://developer.atlassian.com/server/jira/platform/building-a-dashboard-item/ https://developer.atlassian.com/server/jira/platform/writing-a-dashboard-item-app/ 
+		Dashboard item will eventually replace gadgets: https://developer.atlassian.com/server/jira/platform/dashboard-item-module/ -->
 	<dashboard-item key="condec-feature-branch-dashboard-item"
-		name="ConDec dashboard item for feature task branches">
+		name="ConDec Dashboard for Feature Task Branches">
 		<definition>
 			<title key="condec.dashboard.featurebranch.title" />
 			<categories>
@@ -463,30 +467,14 @@
 				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
 		</definition>
 		<description key="condec.dashboard.featurebranch.description" />
-		<!--<resource name="view" type="velocity" location=":dashboard-item-condec-resources/Dashboard.Item.ConDec.Feature.Branches.Templates.Static" 
-			/> -->
 		<resource name="view" type="velocity"
 			location="/templates/dashboard/featureBranchesDashboardItem.vm" />
 		<context-provider
 			class="de.uhd.ifi.se.decision.management.jira.view.FeatureBranchQualityDashboardItem" />
 	</dashboard-item>
-	
-	<!-- ConDec Requirements dashboard item -->
-	<web-resource key="requirements-dashboard-resources" name="Resources for Requirements Dashboard">
-		<description>
-			Provides the resources needed for creating the requirements dashboard
-		</description>
-		<context>jira-requirements-dashboard-plugin</context>
-		<resource type="download" name="echarts.js" location="/js/lib/echart/echarts.js" />
-		<resource type="download" name="dataTool.js" location="/js/lib/echart/dataTool.js" />
-		<resource type="download" name="condec.requirements.dashboard.js"
-			location="/js/dashboard/condec.requirements.dashboard.js" />
-		<resource type="download" name="condec.git.branches.dashboard.js"
-			location="js/dashboard/condec.git.branches.dashboard.js" />
-		<resource type="download" name="condec.requirements.dashboard.css" location="/css/condec.requirements.dashboard.css" />
-	</web-resource>
+
 	<dashboard-item key="condec-requirements-dashboard-item"
-		name="ConDec dashboard for Project Requirements">
+		name="ConDec Dashboard for Project Requirements">
 		<definition>
 			<title key="condec.dashboard.requirements.title" />
 			<categories>
