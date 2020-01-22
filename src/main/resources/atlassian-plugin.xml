@@ -435,10 +435,8 @@
 
 	<web-resource key="dashboard-item-condec-resources"
 		name="ConDec Dashboard Web Resources">
-		<resource type="download" name="condec.requirements.dashboard.css"
-			location="/css/condec.requirements.dashboard.css" />
-
-		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
+		<resource type="download" name="condec.dashboard.css"
+			location="/css/condec.dashboard.css" />
 		<resource type="download" name="condec.git.branches.dashboard.js"
 			location="js/dashboard/condec.git.branches.dashboard.js" />
 		<resource type="download" name="condec.requirements.dashboard.js"
@@ -447,8 +445,6 @@
 			location="/js/condec.git.code.elements.linker.js" />
 		<resource type="download" name="echarts.js" location="/js/lib/echart/echarts.js" />
 		<resource type="download" name="dataTool.js" location="/js/lib/echart/dataTool.js" />
-		<resource type="download" name="condec.dashboard.css"
-			location="/css/condec.git.dashboard.css" />
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
 
 		<context>atl.dashboard</context>
