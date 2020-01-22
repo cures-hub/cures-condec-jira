@@ -1,24 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest.impl;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -29,7 +10,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 import com.google.common.collect.ImmutableMap;
-
 import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
@@ -45,6 +25,19 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManage
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.File;
+import java.util.*;
 
 /**
  * REST resource for plug-in configuration
@@ -58,7 +51,7 @@ public class ConfigRestImpl implements ConfigRest {
 	@Path("/setActivated")
 	@POST
 	public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivated") String isActivatedString) {
+								 @QueryParam("isActivated") String isActivatedString) {
 		Response response = this.checkRequest(request, projectKey, isActivatedString);
 		if (response != null) {
 			return response;
@@ -121,14 +114,14 @@ public class ConfigRestImpl implements ConfigRest {
 	@Path("/setIssueStrategy")
 	@POST
 	public Response setIssueStrategy(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isIssueStrategy") String isIssueStrategyString) {
+									 @QueryParam("isIssueStrategy") String isIssueStrategyString) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
 		if (isIssueStrategyString == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isIssueStrategy = null"))
-					.build();
+				.build();
 		}
 		boolean isIssueStrategy = Boolean.valueOf(isIssueStrategyString);
 		ConfigPersistenceManager.setIssueStrategy(projectKey, isIssueStrategy);
@@ -140,7 +133,7 @@ public class ConfigRestImpl implements ConfigRest {
 	@Path("/isKnowledgeTypeEnabled")
 	@GET
 	public Response isKnowledgeTypeEnabled(@QueryParam("projectKey") String projectKey,
-			@QueryParam("knowledgeType") String knowledgeType) {
+										   @QueryParam("knowledgeType") String knowledgeType) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -153,16 +146,16 @@ public class ConfigRestImpl implements ConfigRest {
 	@Path("/setKnowledgeTypeEnabled")
 	@POST
 	public Response setKnowledgeTypeEnabled(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isKnowledgeTypeEnabled") String isKnowledgeTypeEnabledString,
-			@QueryParam("knowledgeType") String knowledgeType) {
+											@QueryParam("projectKey") String projectKey,
+											@QueryParam("isKnowledgeTypeEnabled") String isKnowledgeTypeEnabledString,
+											@QueryParam("knowledgeType") String knowledgeType) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
 		if (isKnowledgeTypeEnabledString == null || knowledgeType == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isKnowledgeTypeEnabled = null"))
-					.build();
+				.build();
 		}
 		boolean isKnowledgeTypeEnabled = Boolean.valueOf(isKnowledgeTypeEnabledString);
 		ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType, isKnowledgeTypeEnabled);
@@ -214,14 +207,14 @@ public class ConfigRestImpl implements ConfigRest {
 	@Path("/setWebhookEnabled")
 	@POST
 	public Response setWebhookEnabled(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivated") String isActivatedString) {
+									  @QueryParam("isActivated") String isActivatedString) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
 		if (isActivatedString == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Webhook activation boolean = null")).build();
+				.entity(ImmutableMap.of("error", "Webhook activation boolean = null")).build();
 		}
 		boolean isActivated = Boolean.valueOf(isActivatedString);
 		ConfigPersistenceManager.setWebhookEnabled(projectKey, isActivated);
@@ -232,7 +225,7 @@ public class ConfigRestImpl implements ConfigRest {
 	@Path("/setWebhookData")
 	@POST
 	public Response setWebhookData(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("webhookUrl") String webhookUrl, @QueryParam("webhookSecret") String webhookSecret) {
+								   @QueryParam("webhookUrl") String webhookUrl, @QueryParam("webhookSecret") String webhookSecret) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -249,8 +242,8 @@ public class ConfigRestImpl implements ConfigRest {
 	@Path("/setWebhookType")
 	@POST
 	public Response setWebhookType(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("webhookType") String webhookType,
-			@QueryParam("isWebhookTypeEnabled") boolean isWebhookTypeEnabled) {
+								   @QueryParam("webhookType") String webhookType,
+								   @QueryParam("isWebhookTypeEnabled") boolean isWebhookTypeEnabled) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -263,8 +256,8 @@ public class ConfigRestImpl implements ConfigRest {
 	@Path("/setReleaseNoteMapping")
 	@POST
 	public Response setReleaseNoteMapping(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("releaseNoteCategory") ReleaseNoteCategory category, List<String> selectedIssueNames) {
+										  @QueryParam("projectKey") String projectKey,
+										  @QueryParam("releaseNoteCategory") ReleaseNoteCategory category, List<String> selectedIssueNames) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -298,7 +291,7 @@ public class ConfigRestImpl implements ConfigRest {
 		}
 
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
+			.getJiraIssueTextManager();
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		persistenceManager.deleteInvalidElements(user);
 		GenericLinkManager.deleteInvalidLinks();
@@ -311,7 +304,7 @@ public class ConfigRestImpl implements ConfigRest {
 	@Path("/setIconParsing")
 	@POST
 	public Response setIconParsing(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivatedString") String isActivatedString) {
+								   @QueryParam("isActivatedString") String isActivatedString) {
 		Response response = this.checkRequest(request, projectKey, isActivatedString);
 		if (response == null) {
 			boolean isActivated = Boolean.valueOf(isActivatedString);
@@ -355,7 +348,7 @@ public class ConfigRestImpl implements ConfigRest {
 		if (projectKey == null || projectKey.isBlank()) {
 			LOGGER.error("Project configuration could not be changed since the project key is invalid.");
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project key is invalid."))
-					.build();
+				.build();
 		}
 		return Response.status(Status.OK).build();
 	}
@@ -370,15 +363,15 @@ public class ConfigRestImpl implements ConfigRest {
 	@Path("/setKnowledgeExtractedFromGit")
 	@POST
 	public Response setKnowledgeExtractedFromGit(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isKnowledgeExtractedFromGit") String isKnowledgeExtractedFromGit) {
+												 @QueryParam("projectKey") String projectKey,
+												 @QueryParam("isKnowledgeExtractedFromGit") String isKnowledgeExtractedFromGit) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
 		if (isKnowledgeExtractedFromGit == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "isKnowledgeExtractedFromGit = null")).build();
+				.entity(ImmutableMap.of("error", "isKnowledgeExtractedFromGit = null")).build();
 		}
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, Boolean.valueOf(isKnowledgeExtractedFromGit));
 		// deactivate other git extraction
@@ -391,21 +384,21 @@ public class ConfigRestImpl implements ConfigRest {
 	@Path("/setPostFeatureBranchCommits")
 	@POST
 	public Response setPostFeatureBranchCommits(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("newSetting") String checked) {
+												@QueryParam("projectKey") String projectKey, @QueryParam("newSetting") String checked) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
 		if (checked == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "PostFeatureBranchCommits-checked = null")).build();
+				.entity(ImmutableMap.of("error", "PostFeatureBranchCommits-checked = null")).build();
 		}
 		if (Boolean.parseBoolean(ConfigPersistenceManager.getValue(projectKey, "isKnowledgeExtractedFromGit"))) {
 			ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey, Boolean.valueOf(checked));
 			return Response.ok(Status.ACCEPTED).build();
 		} else {
 			return Response.status(Status.CONFLICT)
-					.entity(ImmutableMap.of("error", "Git Extraction needs to be active!")).build();
+				.entity(ImmutableMap.of("error", "Git Extraction needs to be active!")).build();
 		}
 	}
 
@@ -413,21 +406,21 @@ public class ConfigRestImpl implements ConfigRest {
 	@Path("/setPostSquashedCommits")
 	@POST
 	public Response setPostSquashedCommits(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("newSetting") String checked) {
+										   @QueryParam("projectKey") String projectKey, @QueryParam("newSetting") String checked) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
 		if (checked == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "setPostSquashedCommits-checked = null")).build();
+				.entity(ImmutableMap.of("error", "setPostSquashedCommits-checked = null")).build();
 		}
 		if (Boolean.parseBoolean(ConfigPersistenceManager.getValue(projectKey, "isKnowledgeExtractedFromGit"))) {
 			ConfigPersistenceManager.setPostSquashedCommits(projectKey, Boolean.valueOf(checked));
 			return Response.ok(Status.ACCEPTED).build();
 		} else {
 			return Response.status(Status.CONFLICT)
-					.entity(ImmutableMap.of("error", "Git Extraction needs to be active!")).build();
+				.entity(ImmutableMap.of("error", "Git Extraction needs to be active!")).build();
 		}
 	}
 
@@ -435,14 +428,14 @@ public class ConfigRestImpl implements ConfigRest {
 	@Path("/setGitUri")
 	@POST
 	public Response setGitUri(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("gitUri") String gitUri) {
+							  @QueryParam("gitUri") String gitUri) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
 		if (gitUri == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Git URI could not be set because it is null.")).build();
+				.entity(ImmutableMap.of("error", "Git URI could not be set because it is null.")).build();
 		}
 		ConfigPersistenceManager.setGitUri(projectKey, gitUri);
 		return Response.ok(Status.ACCEPTED).build();
@@ -458,8 +451,8 @@ public class ConfigRestImpl implements ConfigRest {
 	@Path("/setUseClassifierForIssueComments")
 	@POST
 	public Response setUseClassifierForIssueComments(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isClassifierUsedForIssues") String isActivatedString) {
+													 @QueryParam("projectKey") String projectKey,
+													 @QueryParam("isClassifierUsedForIssues") String isActivatedString) {
 		Response response = this.checkRequest(request, projectKey, isActivatedString);
 		if (response != null) {
 			return response;
@@ -473,7 +466,7 @@ public class ConfigRestImpl implements ConfigRest {
 	@Path("/trainClassifier")
 	@POST
 	public Response trainClassifier(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("arffFileName") String arffFileName) {// , @Suspended final AsyncResponse asyncResponse) {
+									@QueryParam("arffFileName") String arffFileName) {// , @Suspended final AsyncResponse asyncResponse) {
 
 		Response returnResponse;
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
@@ -481,7 +474,7 @@ public class ConfigRestImpl implements ConfigRest {
 			returnResponse = isValidDataResponse;
 		} else if (arffFileName == null || arffFileName.isEmpty()) {
 			returnResponse = Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"The classifier could not be trained since the ARFF file name is invalid.")).build();
+				"The classifier could not be trained since the ARFF file name is invalid.")).build();
 		} else {
 			ConfigPersistenceManager.setArffFileForClassifier(projectKey, arffFileName);
 
@@ -490,10 +483,10 @@ public class ConfigRestImpl implements ConfigRest {
 
 			if (isTrained) {
 				returnResponse = Response.ok(Response.Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true))
-						.build();
+					.build();
 			} else {
 				returnResponse = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error",
-						"The classifier could not be trained due to an internal server error.")).build();
+					"The classifier could not be trained due to an internal server error.")).build();
 			}
 		}
 
@@ -516,7 +509,7 @@ public class ConfigRestImpl implements ConfigRest {
 
 			if (evaluationResults.size() == 0) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", "No evaluation results were calculated!")).build();
+					.entity(ImmutableMap.of("error", "No evaluation results were calculated!")).build();
 			}
 
 			String prefix = "";
@@ -524,7 +517,7 @@ public class ConfigRestImpl implements ConfigRest {
 			prettyMapOutput.append("{");
 			for (Map.Entry<String, Double> e : evaluationResults.entrySet()) {
 				prettyMapOutput
-						.append(prefix + System.lineSeparator() + "\"" + e.getKey() + "\" : \"" + e.getValue() + "\"");
+					.append(prefix + System.lineSeparator() + "\"" + e.getKey() + "\" : \"" + e.getValue() + "\"");
 				prefix = ",";
 			}
 			prettyMapOutput.append(System.lineSeparator() + "}");
@@ -533,7 +526,39 @@ public class ConfigRestImpl implements ConfigRest {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", e.getMessage()))
-					.build();
+				.build();
+		}
+	}
+
+	@Override
+	@Path("/testClassifierWithText")
+	@POST
+	public Response testClassifierWithText(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("text") String text) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+
+
+		try {
+			OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl(projectKey);
+
+			StringBuilder builder = new StringBuilder();
+			List<String> textList = Collections.singletonList(text);
+
+			Boolean relevant = trainer.getClassifier().makeBinaryPredictions(textList).get(0);
+			builder.append(relevant ? "Relevant" : "Irrelevant");
+
+			if(relevant){
+				builder.append(": ");
+				KnowledgeType type = trainer.getClassifier().makeFineGrainedPredictions(textList).get(0);
+				builder.append(type.toString());
+			}
+			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("content", builder.toString())).build();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", e.getMessage()))
+				.build();
 		}
 	}
 
@@ -541,7 +566,7 @@ public class ConfigRestImpl implements ConfigRest {
 	@Path("/saveArffFile")
 	@POST
 	public Response saveArffFile(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("useOnlyValidatedData") boolean useOnlyValidatedData) {
+								 @QueryParam("useOnlyValidatedData") boolean useOnlyValidatedData) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -551,19 +576,19 @@ public class ConfigRestImpl implements ConfigRest {
 
 		if (arffFile != null) {
 			return Response.ok(Status.ACCEPTED).entity(
-					ImmutableMap.of("arffFile", arffFile.toString(), "content", trainer.getInstances().toString()))
-					.build();
+				ImmutableMap.of("arffFile", arffFile.toString(), "content", trainer.getInstances().toString()))
+				.build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error", "ARFF file could not be created because of an internal server error."))
-				.build();
+			.entity(ImmutableMap.of("error", "ARFF file could not be created because of an internal server error."))
+			.build();
 	}
 
 	@Override
 	@Path("/classifyWholeProject")
 	@POST
 	public Response classifyWholeProject(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey) {
+										 @QueryParam("projectKey") String projectKey) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -571,7 +596,7 @@ public class ConfigRestImpl implements ConfigRest {
 
 		if (!ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey)) {
 			return Response.status(Status.FORBIDDEN)
-					.entity(ImmutableMap.of("error", "Automatic classification is disabled for this project.")).build();
+				.entity(ImmutableMap.of("error", "Automatic classification is disabled for this project.")).build();
 		}
 		try {
 			ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
