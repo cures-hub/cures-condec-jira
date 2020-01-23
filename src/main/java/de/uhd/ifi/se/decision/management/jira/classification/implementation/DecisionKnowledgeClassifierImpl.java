@@ -12,7 +12,6 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
 
 /**
  * Class to identify decision knowledge in natural language texts using a binary
@@ -82,8 +81,14 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 		//Make predictions for each nGram; then determine maximum probability of all added together.
 		for (List<Double> feature : features) {
 			double[] currentPredictionResult = binaryClassifier.predictProbabilities(feature.toArray(Double[]::new));
+			if (this.max(currentPredictionResult) > this.max(predictionResult)) {
+				predictionResult = currentPredictionResult;
+			}
+			/*
 			IntStream.range(0, predictionResult.length)
 				.forEach(j -> predictionResult[j] = predictionResult[j] + currentPredictionResult[j]);
+
+			 */
 		}
 		boolean predictedIsRelevant = binaryClassifier.isRelevant(ArrayUtils.toObject(predictionResult));
 		binaryPredictionResults.set(finalI, predictedIsRelevant);
@@ -134,14 +139,24 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 		//ExecutorService taskExecutor = Executors.newFixedThreadPool(features.size());
 		for (List<Double> feature : features) {
 			double[] currentPredictionResult = fineGrainedClassifier.predictProbabilities(feature.toArray(Double[]::new));
+			if( this.max(currentPredictionResult) > this.max(predictionResult)){
+				predictionResult = currentPredictionResult;
+			}
+			/*
 			IntStream.range(0, predictionResult.length)
 				.forEach(j -> predictionResult[j] = predictionResult[j] + currentPredictionResult[j]);
+
+			 */
 		}
 		KnowledgeType predictedKnowledgeType = fineGrainedClassifier.mapIndexToKnowledgeType(
 			fineGrainedClassifier.maxAtInArray(ArrayUtils.toObject(predictionResult))
 		);
 		fineGrainedPredictionResults.set(i, predictedKnowledgeType);
 
+	}
+
+	private Double max(double[] array){
+		return Collections.max(Arrays.asList(ArrayUtils.toObject(array)));
 	}
 
 
