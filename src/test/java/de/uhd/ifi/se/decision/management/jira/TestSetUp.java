@@ -1,8 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira;
 
+import static org.mockito.Mockito.mock;
+
+import org.junit.runner.RunWith;
+
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
+
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
@@ -11,18 +16,16 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueTypes;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-import org.junit.runner.RunWith;
-
-import static org.mockito.Mockito.mock;
 
 /**
  * Mocks a Jira server with Jira's {@link ComponentAccessor}, the custom
- * {@link ComponentGetter} of the ConDec plug-in, and test data (e.g.,
- * {@link JiraUsers}, {@link JiraProjects}, {@link JiraIssueTypes}, and
- * {@link JiraIssues}).
+ * {@link ComponentGetter} of the ConDec plugin, and test data (e.g.,
+ * {@link KnowledgeElements}, {@link Links}, {@link JiraUsers},
+ * {@link JiraProjects}, {@link JiraIssueTypes}, and {@link JiraIssues}).
  * <p>
  * The following annotations are used to mock the active objects databases
  * before every test execution. Test classes need to extend this TestSetUp class
@@ -78,7 +81,7 @@ public abstract class TestSetUp {
 	 */
 	public static void initClassifierPaths() {
 		PreprocessorImpl.DEFAULT_DIR = "src/main/resources/classifier/";
-		//FileTrainer.DEFAULT_TRAINING_DATA = new File(
-		//"src/main/resources/classifier/defaultTrainingData.arff");
+		// FileTrainer.DEFAULT_TRAINING_DATA = new File(
+		// "src/main/resources/classifier/defaultTrainingData.arff");
 	}
 }

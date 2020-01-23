@@ -29,7 +29,7 @@ public class TestVisGraphEdge extends TestSetUp {
 
 	@Test
 	public void testId() {
-		assertEquals(String.valueOf(link.getId()), edge.getId());
+		assertEquals(link.getId(), edge.getId());
 	}
 
 	@Test
