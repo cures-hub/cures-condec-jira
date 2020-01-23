@@ -21,7 +21,7 @@ public abstract class AbstractClassifier implements Classifier{
 
 
 	public AbstractClassifier(Integer numClasses) {
-		this(0.5, 1, numClasses);
+		this(0.5, 3, numClasses);
 	}
 
 	public AbstractClassifier(Double c, Integer epochs, Integer numClasses) {
@@ -32,7 +32,7 @@ public abstract class AbstractClassifier implements Classifier{
 		if (numClasses <= 2) {
 			this.model = new SVM<Double[]>(kernel, c, numClasses);
 		} else {
-			this.model = new SVM<Double[]>(kernel, c, numClasses, SVM.Multiclass.ONE_VS_ONE);
+			this.model = new SVM<Double[]>(kernel, c, numClasses, SVM.Multiclass.ONE_VS_ALL);
 		}
 		this.epochs = epochs;
 		this.modelIsTrained = false;
@@ -54,9 +54,10 @@ public abstract class AbstractClassifier implements Classifier{
 			for (int i = 0; i < this.epochs; i++) {
 				this.model.learn(features, ArrayUtils.toPrimitive(labels));
 			}
+			this.model.finish();
+
 			this.model.trainPlattScaling(features, ArrayUtils.toPrimitive(labels));
 
-			this.model.finish();
 			this.currentlyTraining = false;
 			this.modelIsTrained = true;
 		} else {
