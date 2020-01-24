@@ -12,6 +12,8 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.model.git.impl.ChangedFileImpl;
 
 public class GitCodeClassExtractor {
 
@@ -37,9 +39,13 @@ public class GitCodeClassExtractor {
 			treeWalk.enterSubtree();
 		    } else {
 			File file = new File(treeWalk.getPathString());
-			if (file.getName().endsWith(".java")) {
+			ChangedFile chfile = new ChangedFileImpl(file);
+			if (chfile.isJavaClass()) {
 			    codeClassList.add(file);
-			}
+			} /*
+			   * //Only needed if ChangedFile.isJavaClass() doesnt work if
+			   * (file.getName().endsWith(".java")) { codeClassList.add(file); }
+			   */
 		    }
 		}
 	    } catch (IOException e) {
