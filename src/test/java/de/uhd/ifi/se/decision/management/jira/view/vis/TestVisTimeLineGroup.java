@@ -11,13 +11,14 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestVisTimeLineGroup extends TestSetUp {
+
 	private VisTimeLineGroup visTimeLineGroup;
 	private ApplicationUser user;
 
 	@Before
 	public void setUp() {
 		init();
-		user = JiraUsers.BLACK_HEAD.getApplicationUser();
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		visTimeLineGroup = new VisTimeLineGroup(user);
 	}
 
