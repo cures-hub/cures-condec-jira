@@ -34,7 +34,7 @@ public class MockSearchService implements SearchService {
 			throws SearchException {
 		List<Issue> jiraIssues = new ArrayList<Issue>();
 		if (query == null || query.getQueryString() == null
-				|| query.getQueryString().equals("?jql=project=UNKNOWNPROJECT")) {
+				|| query.getQueryString().equals("project=UNKNOWNPROJECT")) {
 			return new SearchResults<Issue>(jiraIssues, 0, 0, 0);
 		}
 		jiraIssues.addAll(JiraIssues.getTestJiraIssues());

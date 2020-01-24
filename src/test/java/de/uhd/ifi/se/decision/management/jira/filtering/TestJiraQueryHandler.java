@@ -14,7 +14,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.JiraQueryHandlerImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestJiraQueryHandler extends TestSetUp {
 
@@ -28,7 +27,6 @@ public class TestJiraQueryHandler extends TestSetUp {
 	}
 
 	@Test
-	@NonTransactional
 	public void testConstructorQueryNull() {
 		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", null);
 		assertEquals(JiraQueryType.OTHER, jiraQueryHandler.getQueryType());
@@ -36,7 +34,6 @@ public class TestJiraQueryHandler extends TestSetUp {
 	}
 
 	@Test
-	@NonTransactional
 	public void testConstructorQueryEmpty() {
 		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "");
 		assertEquals(JiraQueryType.OTHER, jiraQueryHandler.getQueryType());
@@ -44,14 +41,12 @@ public class TestJiraQueryHandler extends TestSetUp {
 	}
 
 	@Test
-	@NonTransactional
 	public void testGetJiraIssuesFromEmptyQuery() {
 		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "");
 		assertTrue(jiraQueryHandler.getJiraIssuesFromQuery().size() > 0);
 	}
 
 	@Test
-	@NonTransactional
 	public void testGetJiraIssuesFromFilledQuery() {
 		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "?jql=project=TEST");
 		List<Issue> jiraIssues = jiraQueryHandler.getJiraIssuesFromQuery();
@@ -59,14 +54,12 @@ public class TestJiraQueryHandler extends TestSetUp {
 	}
 
 	@Test
-	@NonTransactional
 	public void testGetJiraIssuesFromFilledQueryNonExistingProject() {
 		jiraQueryHandler = new JiraQueryHandlerImpl(user, "", "?jql=project=UNKNOWNPROJECT");
 		assertEquals(0, jiraQueryHandler.getJiraIssuesFromQuery().size());
 	}
 
 	@Test
-	@NonTransactional
 	public void testGetNamesOfJiraIssueTypesInQueryOneType() {
 		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST",
 				"?jql=project=TEST AND issuetype = Issue AND resolution = Unresolved");
@@ -79,7 +72,6 @@ public class TestJiraQueryHandler extends TestSetUp {
 	}
 
 	@Test
-	@NonTransactional
 	public void testGetNamesOfJiraIssueTypesInQueryZeroTypes() {
 		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "?jql=project=TEST");
 		List<String> types = jiraQueryHandler.getNamesOfJiraIssueTypesInQuery();
@@ -87,7 +79,6 @@ public class TestJiraQueryHandler extends TestSetUp {
 	}
 
 	@Test
-	@NonTransactional
 	public void testGetNamesOfJiraIssueTypesInQueryThreeTypes() {
 		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST",
 				"abc§jql=project=TEST AND issuetype in (Decision, Issue, Alternative) AND resolution = Unresolved");
@@ -101,7 +92,6 @@ public class TestJiraQueryHandler extends TestSetUp {
 	}
 
 	@Test
-	@NonTransactional
 	public void testGetDatesNoDatesInQuery() {
 		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "");
 		assertEquals(-1, jiraQueryHandler.getCreatedEarliest());
@@ -109,7 +99,6 @@ public class TestJiraQueryHandler extends TestSetUp {
 	}
 
 	@Test
-	@NonTransactional
 	public void testGetDatesInQuery() {
 		assertTrue("1970-01-01".matches("\\d\\d\\d\\d-\\d\\d-\\d\\d(.)*"));
 		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST",
@@ -122,7 +111,6 @@ public class TestJiraQueryHandler extends TestSetUp {
 	}
 
 	@Test
-	@NonTransactional
 	public void testGetDatesInQueryFromTimeFactor() {
 		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST",
 				"?jql=project = TEST AND created >= -1m AND created <= -1w");
@@ -136,10 +124,9 @@ public class TestJiraQueryHandler extends TestSetUp {
 	}
 
 	@Test
-	@NonTransactional
 	public void testGetQueryObject() {
 		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "?jql=project=TEST");
-		assertEquals("?jql=project=TEST", jiraQueryHandler.getQueryObject().getQueryString());
+		assertEquals("project=TEST", jiraQueryHandler.getQueryObject().getQueryString());
 	}
 
 }
