@@ -65,7 +65,7 @@ public class VisGraph {
 		if (elements == null || elements.isEmpty()) {
 			return;
 		}
-		if (rootElementKey == null) {
+		if (rootElementKey == null || rootElementKey.isBlank()) {
 			addNodesAndEdges(null, elements);
 			return;
 		}
@@ -78,11 +78,13 @@ public class VisGraph {
 	}
 
 	private void addNodesAndEdges(KnowledgeElement startElement, Set<KnowledgeElement> elements) {
+		AsSubgraph<KnowledgeElement, Link> subgraph = new AsSubgraph<KnowledgeElement, Link>(graph, elements);
+
 		if (startElement != null && !graph.containsVertex(startElement)) {
 			graph.addVertex(startElement);
+			subgraph.addVertex(startElement);
 		}
 
-		AsSubgraph<KnowledgeElement, Link> subgraph = new AsSubgraph<KnowledgeElement, Link>(graph, elements);
 		BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<KnowledgeElement, Link>(
 				subgraph, startElement);
 
@@ -121,10 +123,6 @@ public class VisGraph {
 		this.edges = edges;
 	}
 
-	public void setGraph(KnowledgeGraph graph) {
-		this.graph = graph;
-	}
-
 	public Set<VisNode> getNodes() {
 		return nodes;
 	}
@@ -139,9 +137,5 @@ public class VisGraph {
 
 	public String getRootElementKey() {
 		return rootElementKey;
-	}
-
-	public void setRootElementKey(String rootElementKey) {
-		this.rootElementKey = rootElementKey;
 	}
 }
