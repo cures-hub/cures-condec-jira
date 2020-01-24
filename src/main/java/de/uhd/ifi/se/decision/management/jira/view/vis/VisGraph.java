@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -9,6 +8,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.jgrapht.graph.AsSubgraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
 import com.atlassian.jira.user.ApplicationUser;
@@ -61,12 +61,12 @@ public class VisGraph {
 			return;
 		}
 		FilteringManager filteringManager = new FilteringManagerImpl(user, filterSettings);
-		List<KnowledgeElement> elements = filteringManager.getAllElementsMatchingFilterSettings();
+		Set<KnowledgeElement> elements = new HashSet<>(filteringManager.getAllElementsMatchingFilterSettings());
 		if (elements == null || elements.isEmpty()) {
 			return;
 		}
 		if (rootElementKey == null) {
-			addNodesAndEdges(elements.get(0), elements);
+			addNodesAndEdges(null, elements);
 			return;
 		}
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
@@ -77,52 +77,31 @@ public class VisGraph {
 		addNodesAndEdges(rootElement, elements);
 	}
 
-	private void addNodesAndEdges(KnowledgeElement element, List<KnowledgeElement> elements) {
-		addNodes(element, elements);
-		addEdges(elements);
-	}
-
-	private void addNodes(KnowledgeElement startElement, List<KnowledgeElement> elements) {
-		if (!graph.containsVertex(startElement)) {
+	private void addNodesAndEdges(KnowledgeElement startElement, Set<KnowledgeElement> elements) {
+		if (startElement != null && !graph.containsVertex(startElement)) {
 			graph.addVertex(startElement);
 		}
 
-		BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<KnowledgeElement, Link>(graph,
-				startElement);
+		AsSubgraph<KnowledgeElement, Link> subgraph = new AsSubgraph<KnowledgeElement, Link>(graph, elements);
+		BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<KnowledgeElement, Link>(
+				subgraph, startElement);
+
 		while (iterator.hasNext()) {
 			KnowledgeElement element = iterator.next();
-			if (containsNode(element)) {
-				continue;
-			}
 			nodes.add(new VisNode(element, isCollapsed(element, elements), 50 + iterator.getDepth(element), cid));
 			cid++;
-		}
-	}
 
-	private boolean containsNode(KnowledgeElement element) {
-		for (VisNode visNode : nodes) {
-			if (visNode.getId().equals(element.getId() + "_" + element.getDocumentationLocation().getIdentifier())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean isCollapsed(KnowledgeElement element, List<KnowledgeElement> elements) {
-		return !elements.contains(element);
-	}
-
-	private void addEdges(List<KnowledgeElement> elements) {
-		for (KnowledgeElement element : elements) {
-			for (Link link : graph.edgesOf(element)) {
-				if (elements.contains(link.getSource()) && elements.contains(link.getTarget())) {
-					if (containsEdge(link)) {
-						continue;
-					}
-					edges.add(new VisEdge(link));
+			for (Link link : subgraph.edgesOf(element)) {
+				if (containsEdge(link)) {
+					continue;
 				}
+				edges.add(new VisEdge(link));
 			}
 		}
+	}
+
+	private boolean isCollapsed(KnowledgeElement element, Set<KnowledgeElement> elements) {
+		return !elements.contains(element);
 	}
 
 	private boolean containsEdge(Link link) {
