@@ -42,16 +42,12 @@ public class TestFilteringManager extends TestSetUp {
 	@Test
 	public void testConstructorValidQueryEmpty() {
 		FilteringManager filteringManager = new FilteringManagerImpl("TEST", user, "");
-		// the empty query will be changed to "allissues", i.e. "type != null"
-		// no, it is changed to "type = null" currently!
 		assertEquals(8, filteringManager.getAllElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	public void testConstructorWithFilterSettingsValidQueryEmpty() {
 		FilteringManager extractor = new FilteringManagerImpl(user, new FilterSettingsImpl("TEST", ""));
-		// the empty query will be changed to "allissues", i.e. "type != null"
-		// no, it is changed to "type = null" currently!
 		assertEquals(8, extractor.getAllElementsMatchingFilterSettings().size());
 	}
 
@@ -62,16 +58,11 @@ public class TestFilteringManager extends TestSetUp {
 	}
 
 	@Test
+	// TODO
 	public void testConstructorValidQueryJQL() {
 		FilteringManager filteringManager = new FilteringManagerImpl("TEST", user, "?jql=project=TEST");
 		assertEquals("?jql=project=TEST", filteringManager.getFilterSettings().getSearchString());
 		assertEquals(8, filteringManager.getAllElementsMatchingFilterSettings().size());
-	}
-
-	@Test
-	public void testGetFilterSettings() {
-		FilteringManager filteringManager = new FilteringManagerImpl("TEST", user, "?jql=project=TEST");
-		assertEquals("?jql=project=TEST", filteringManager.getFilterSettings().getSearchString());
 	}
 
 	@Test
