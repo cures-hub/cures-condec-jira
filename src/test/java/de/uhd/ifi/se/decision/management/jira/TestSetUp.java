@@ -43,10 +43,10 @@ public abstract class TestSetUp {
 	 * {@link JiraIssues}) and the custom {@link ComponentGetter}.
 	 */
 	public static void init() {
+		initTestData();
 		initComponentAccessor();
 		initComponentGetter();
 		initClassifierPaths();
-		KnowledgeGraph.instances.clear();
 	}
 
 	/**
@@ -74,6 +74,15 @@ public abstract class TestSetUp {
 			activeObjects = new TestActiveObjects(entityManager);
 		}
 		new ComponentGetter(new de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager(), activeObjects);
+	}
+
+	/**
+	 * Resets the test data.
+	 */
+	public static void initTestData() {
+		// KnowledgeElements.elements.clear();
+		// JiraIssues.jiraIssues.clear();
+		KnowledgeGraph.instances.clear();
 	}
 
 	/**

@@ -73,6 +73,8 @@ public class VisGraph {
 				.getOrCreate(filterSettings.getProjectKey());
 		KnowledgeElement rootElement = persistenceManager.getJiraIssueManager()
 				.getDecisionKnowledgeElement(rootElementKey);
+
+		// TODO This is not a key but id_documentationLocation
 		this.rootElementKey = rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString();
 		addNodesAndEdges(rootElement, elements);
 	}
@@ -80,7 +82,7 @@ public class VisGraph {
 	private void addNodesAndEdges(KnowledgeElement startElement, Set<KnowledgeElement> elements) {
 		AsSubgraph<KnowledgeElement, Link> subgraph = new AsSubgraph<KnowledgeElement, Link>(graph, elements);
 
-		if (startElement != null && !graph.containsVertex(startElement)) {
+		if (startElement != null) {
 			graph.addVertex(startElement);
 			subgraph.addVertex(startElement);
 		}

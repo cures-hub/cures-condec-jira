@@ -81,5 +81,6 @@ public class TestVisGraphNode extends TestSetUp {
 		element.setStatus(KnowledgeStatus.DISCARDED);
 		VisNode node = new VisNode(element, false, 1, 12);
 		assertEquals("red", node.getFont().values().iterator().next());
+		element.setStatus(KnowledgeStatus.UNDEFINED);
 	}
 }
