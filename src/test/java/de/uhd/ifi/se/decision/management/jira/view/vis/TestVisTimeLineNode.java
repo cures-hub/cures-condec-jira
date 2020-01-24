@@ -7,40 +7,20 @@ import java.util.Date;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.atlassian.jira.component.ComponentAccessor;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
-import net.java.ao.EntityManager;
-import net.java.ao.test.jdbc.DatabaseUpdater;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestVisTimeLineNode extends TestSetUp {
+
 	private KnowledgeElement element;
 	private VisTimeLineNode timeNode;
-	private String createdString;
-	private String closedString;
 
 	@Before
 	public void setUp() {
 		init();
-		element = new KnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
-		element.setCreated(new Date(System.currentTimeMillis() - 1000));
-		element.setClosed(new Date(System.currentTimeMillis()));
+		element = KnowledgeElements.getTestKnowledgeElement();
 		timeNode = new VisTimeLineNode(element);
-		createdString = timeNode.createDateString(element.getCreated());
-		closedString = timeNode.createDateString(element.getClosed());
-	}
-
-	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
-		@SuppressWarnings("unchecked")
-		@Override
-		public void update(EntityManager entityManager) throws Exception {
-			entityManager.migrate(PartOfJiraIssueTextInDatabase.class);
-			entityManager.migrate(LinkInDatabase.class);
-		}
 	}
 
 	@Test
@@ -80,27 +60,17 @@ public class TestVisTimeLineNode extends TestSetUp {
 	}
 
 	@Test
-	public void testGetStart() {
-		assertEquals(createdString, timeNode.getStart());
-	}
-
-	@Test
-	public void testSetStart() {
+	public void testSetGetStart() {
 		Date date = new Date(System.currentTimeMillis() - 1000);
-		createdString = timeNode.createDateString(date);
+		String createdString = timeNode.createDateString(date);
 		timeNode.setStart(createdString);
 		assertEquals(createdString, timeNode.getStart());
 	}
 
 	@Test
-	public void testGetEnd() {
-		assertEquals(closedString, timeNode.getEnd());
-	}
-
-	@Test
-	public void testSetEnd() {
+	public void testSetGetEnd() {
 		Date date = new Date(System.currentTimeMillis() - 1000);
-		closedString = timeNode.createDateString(date);
+		String closedString = timeNode.createDateString(date);
 		timeNode.setEnd(closedString);
 		assertEquals(closedString, timeNode.getEnd());
 	}
