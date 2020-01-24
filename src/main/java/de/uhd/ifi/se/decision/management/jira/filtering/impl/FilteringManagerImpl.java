@@ -35,7 +35,7 @@ public class FilteringManagerImpl implements FilteringManager {
 
 	public FilteringManagerImpl(ApplicationUser user, FilterSettings filterSettings) {
 		if (filterSettings == null || filterSettings.getProjectKey() == null || user == null) {
-			LOGGER.error("FilterExtractor could not be created due to an invalid input.");
+			LOGGER.error("FilteringManager could not be created due to an invalid input.");
 			return;
 		}
 		this.user = user;
@@ -43,7 +43,7 @@ public class FilteringManagerImpl implements FilteringManager {
 	}
 
 	public FilteringManagerImpl(String projectKey, ApplicationUser user, String query) {
-		this(user, new FilterSettingsImpl(projectKey, query));
+		this(user, new FilterSettingsImpl(projectKey, query, user));
 	}
 
 	@Override
