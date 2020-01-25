@@ -31,6 +31,7 @@ public class TestFilteringManager extends TestSetUp {
 		FilteringManager filteringManager = new FilteringManagerImpl(null, null, (String) null);
 		assertNull(filteringManager.getFilterSettings());
 		assertEquals(0, filteringManager.getAllElementsMatchingFilterSettings().size());
+		assertNull(filteringManager.getSubgraphMatchingFilterSettings());
 	}
 
 	@Test
@@ -88,6 +89,7 @@ public class TestFilteringManager extends TestSetUp {
 
 		FilteringManager filteringManager = new FilteringManagerImpl(user, settings);
 		assertEquals(1, filteringManager.getAllElementsMatchingFilterSettings().size());
+		assertEquals(1, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
 	}
 
 	@Test
@@ -95,5 +97,19 @@ public class TestFilteringManager extends TestSetUp {
 		FilterSettings settings = new FilterSettingsImpl("TEST", "Implement feature");
 		FilteringManager filteringManager = new FilteringManagerImpl(user, settings);
 		assertEquals(1, filteringManager.getAllElementsMatchingFilterSettings().size());
+		assertEquals(1, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
+	}
+
+	@Test
+	public void testGetSubgraph() {
+		List<String> linkTypes = new ArrayList<String>();
+		linkTypes.add("support");
+		FilterSettings settings = new FilterSettingsImpl("TEST", "TEST");
+		settings.setSelectedLinkTypes(linkTypes);
+
+		FilteringManager filteringManager = new FilteringManagerImpl(user, settings);
+		assertEquals(8, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
+		// Currently, the mock links all have the "relate" type.
+		assertEquals(0, filteringManager.getSubgraphMatchingFilterSettings().edgeSet().size());
 	}
 }

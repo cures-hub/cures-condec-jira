@@ -145,6 +145,6 @@ public class TestFilterSettings extends TestSetUp {
 		List<String> status = new ArrayList<String>();
 		status.add(KnowledgeStatus.UNRESOLVED.toString());
 		filterSettings.setSelectedStatus(status);
-		assertEquals(8, filterSettings.getSelectedStatus().size());
+		assertEquals(1, filterSettings.getSelectedStatus().size());
 	}
 }
