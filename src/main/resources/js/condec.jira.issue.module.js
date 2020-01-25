@@ -18,6 +18,7 @@
 	var conDecContextMenu = null;
 	var treant = null;
 	var vis = null;
+	var conDecFiltering = null;
 
 	var issueKey = "";
 	var search = "";
@@ -27,7 +28,7 @@
 	};
 
 	ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog,
-			_conDecContextMenu, _treant, _vis) {
+			_conDecContextMenu, _conDecFiltering, _treant, _vis) {
 
 		console.log("ConDecJiraIssueModule init");
 
@@ -39,6 +40,7 @@
 			conDecObservable = _conDecObservable;
 			conDecDialog = _conDecDialog;
 			conDecContextMenu = _conDecContextMenu;
+			conDecFiltering = _conDecFiltering;
 			treant = _treant;
 			vis = _vis;
 
@@ -101,11 +103,11 @@
 	}
 
 	function applyFilters() {
-		var issueTypes = getSelectedItems("issuetype-dropdown");
+		var issueTypes = conDecFiltering.getSelectedItems("issuetype-dropdown");
 		var createdAfter = -1;
 		var createdBefore = -1;
-		var documentationLocations = getSelectedItems("documentation-dropdown");
-		var linkTypes = getSelectedItems("linktype-dropdown");
+		var documentationLocations = conDecFiltering.getSelectedItems("documentation-dropdown");
+		var linkTypes = conDecFiltering.getSelectedItems("linktype-dropdown");
 		
 		var nodeDistance = 4;
 		if (!isNaN(document.getElementById("created-after-picker").valueAsNumber)) {
@@ -121,26 +123,12 @@
 		vis.buildVisFiltered(issueKey, search, nodeDistance, issueTypes, createdAfter, createdBefore, linkTypes,
 				documentationLocations);
 	}
-	
-	function getSelectedItems(dropdownId) {
-		var dropdown = AJS.$("#" + dropdownId);
-		var selectedItems = [];
-		for (var i = 0; i < dropdown.children().size(); i++) {
-			if (typeof dropdown.children().eq(i).attr("checked") !== typeof undefined
-					&& dropdown.children().eq(i).attr("checked") !== false) {
-				selectedItems.push(dropdown.children().eq(i).text());
-			}
-		}
-		return selectedItems;
-	}
 
 	function initFilter(issueKey, search) {
 		console.log("ConDecJiraIssueModule initFilter");
 		var issueTypeDropdown = document.getElementById("issuetype-dropdown");
 		var firstDatePicker = document.getElementById("created-after-picker");
 		var secondDatePicker = document.getElementById("created-before-picker");
-		var documentationDropdown = document.getElementById("documentation-dropdown");
-		var linkTypeDropdown = document.getElementById("linktype-dropdown");
 		
 		conDecAPI.getFilterSettings(issueKey, search, function(filterData) {
 			var allIssueTypes = filterData.allJiraIssueTypes;
@@ -156,7 +144,7 @@
 				issueTypeDropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + isSelected + ">"
 						+ allIssueTypes[index] + "</aui-item-checkbox>");
 			}
-			initDropdown(documentationDropdown, documentationLocation);
+			conDecFiltering.initDropdown("documentation-dropdown", documentationLocation);
 			if (filterData.startDate >= 0) {
 				firstDatePicker.valueAsDate = new Date(filterData.startDate + 1000);
 			}
@@ -165,15 +153,8 @@
 			}
 			
 			var linkTypes = conDecAPI.linkTypes;
-			initDropdown(linkTypeDropdown, linkTypes);
+			conDecFiltering.initDropdown("linktype-dropdown", linkTypes);
 		});
-	}
-	
-	function initDropdown(dropdown, items) {
-		for (var index = 0; index < items.length; index++) {
-			dropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + "checked" + ">"
-					+ items[index] + "</aui-item-checkbox>");
-		}
 	}
 
 	function getURLsSearch() {

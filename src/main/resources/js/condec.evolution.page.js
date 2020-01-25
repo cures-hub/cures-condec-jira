@@ -25,10 +25,8 @@
 
 	ConDecEvolutionPage.prototype.buildTimeLine = function buildTimeLine() {
 		console.log("ConDec build timeline");
-		var issueTypeDropdown = document.getElementById("knowledge-type-dropdown-chronology");
-		var issueStatusDropdown = document.getElementById("status-dropdown-chronology");
-		initDropdown(issueTypeDropdown, conDecAPI.knowledgeTypes);
-		initDropdown(issueStatusDropdown, conDecAPI.knowledgeStatus);
+		conDecFiltering.initDropdown("knowledge-type-dropdown-chronology", conDecAPI.knowledgeTypes);
+		conDecFiltering.initDropdown("status-dropdown-chronology", conDecAPI.knowledgeStatus);
 		conDecAPI.getEvolutionData("", -1, -1, conDecAPI.knowledgeTypes, conDecAPI.knowledgeStatus, function(
 				evolutionData) {
 			var container = document.getElementById('evolution-timeline');
@@ -60,10 +58,8 @@
 
 	ConDecEvolutionPage.prototype.buildCompare = function buildCompare() {
 		console.log("ConDec build compare view");
-		var issueTypeDropdown = document.getElementById("knowledge-type-dropdown-comparison");
-		var issueStatusDropdown = document.getElementById("status-dropdown-comparison");
-		initDropdown(issueTypeDropdown, conDecAPI.knowledgeTypes);
-		initDropdown(issueStatusDropdown, conDecAPI.knowledgeStatus);
+		conDecFiltering.initDropdown("knowledge-type-dropdown-comparison", conDecAPI.knowledgeTypes);
+		conDecFiltering.initDropdown("status-dropdown-comparison", conDecAPI.knowledgeStatus);
 
 		var date = new Date();
 		var today = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDay();
@@ -135,13 +131,6 @@
 		}
 		return true;
 	}
-	
-	function initDropdown(dropdown, items) {
-		for (var index = 0; index < items.length; index++) {
-			dropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + "checked" + ">"
-					+ items[index] + "</aui-item-checkbox>");
-		}
-	}
 
 	// Compute filter and select new elements
 	function addOnClickEventToFilterCompareButton() {
@@ -154,9 +143,9 @@
 			var secondDateLeft = -1;
 			var firstDateRight = -1;
 			var secondDateRight = -1;
-			var knowledgeTypes = getSelectedItems(AJS.$('#knowledge-type-dropdown-comparison'));
+			var knowledgeTypes = conDecFiltering.getSelectedItems("knowledge-type-dropdown-comparison");
 			console.log(knowledgeTypes);
-			var issueStatus = getSelectedItems(AJS.$('#status-dropdown-comparison'));
+			var issueStatus = conDecFiltering.getSelectedItems("status-dropdown-comparison");
 			console.log(issueStatus);
 			if (!isNaN(document.getElementById("start-data-picker-compare-left").valueAsNumber)) {
 				firstDateLeft = document.getElementById("start-data-picker-compare-left").valueAsNumber;
@@ -199,8 +188,8 @@
 		filterButton.addEventListener("click", function(event) {
 			var firstDate = -1;
 			var secondDate = -1;
-			var knowledgeTypes = getSelectedItems(AJS.$('#knowledge-type-dropdown-chronology'));
-			var issueStatus = getSelectedItems(AJS.$('#status-dropdown-chronology'));
+			var knowledgeTypes = conDecFiltering.getSelectedItems("knowledge-type-dropdown-chronology");
+			var issueStatus = conDecFiltering.getSelectedItems("status-dropdown-chronology");
 			if (!isNaN(document.getElementById("start-date-picker").valueAsNumber)) {
 				firstDate = document.getElementById("start-date-picker").valueAsNumber;
 			}
@@ -218,17 +207,6 @@
 				timeline.redraw();
 			});
 		});
-	}
-	
-	function getSelectedItems(dropdown) {
-		var selectedItems = [];
-		for (var i = 0; i < dropdown.children().size(); i++) {
-			if (typeof dropdown.children().eq(i).attr('checked') !== typeof undefined
-					&& dropdown.children().eq(i).attr('checked') !== false) {
-				selectedItems.push(dropdown.children().eq(i).text());
-			}
-		}
-		return selectedItems;
 	}
 
 	function getOptions() {
