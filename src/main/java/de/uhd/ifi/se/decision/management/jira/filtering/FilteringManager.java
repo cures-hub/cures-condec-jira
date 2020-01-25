@@ -12,7 +12,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
 /**
  * Interface for accessing the filtered knowledge graph. The filter criteria are
@@ -71,18 +70,6 @@ public interface FilteringManager {
 	 *         {@link KnowledgeType}s.
 	 */
 	boolean isElementMatchingKnowledgeTypeFilter(KnowledgeElement element);
-
-	/**
-	 * Checks if one of the element's outgoing and ingoing edges/links has a link
-	 * type that equals one of the given {@link LinkType}s in the
-	 * {@link FilterSetting}s.
-	 * 
-	 * @param element
-	 *            {@link KnowledgeElement} object.
-	 * @return true if one of the element's outgoing and ingoing edges/links has a
-	 *         link type that equals one of the given {@link LinkType}s.
-	 */
-	boolean isElementMatchingLinkTypeFilter(KnowledgeElement element);
 
 	/**
 	 * Checks if the element is created in the given time frame in the

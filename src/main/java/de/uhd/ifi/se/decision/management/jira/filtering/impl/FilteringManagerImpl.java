@@ -214,23 +214,6 @@ public class FilteringManagerImpl implements FilteringManager {
 	}
 
 	@Override
-	public boolean isElementMatchingLinkTypeFilter(KnowledgeElement element) {
-		if (filterSettings.getNamesOfSelectedLinkTypes().size() == filterSettings.getAllLinkTypes().size()) {
-			return true;
-		}
-		Set<Link> links = graph.edgesOf(element);
-		if (links == null || links.isEmpty()) {
-			return true;
-		}
-		for (Link link : links) {
-			if (filterSettings.getNamesOfSelectedLinkTypes().contains(link.getType())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Override
 	public FilterSettings getFilterSettings() {
 		return this.filterSettings;
 	}
