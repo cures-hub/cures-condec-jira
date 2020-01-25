@@ -79,7 +79,7 @@ public class TestVisGraph extends TestSetUp {
 	}
 
 	@Test
-	public void testConstructorUserNullFilterSettingsFilledRootElementNotExisting() {
-		assertNotNull(new VisGraph(user, filterSettings, "TEST-100"));
+	public void testConstructorUserNullFilterSettingsFilledRootElementExisting() {
+		assertNotNull(new VisGraph(user, filterSettings, "TEST-1"));
 	}
 }

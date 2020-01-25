@@ -65,6 +65,9 @@ public class FilteringManagerImpl implements FilteringManager {
 
 	@Override
 	public AsSubgraph<KnowledgeElement, Link> getSubgraphMatchingFilterSettings() {
+		if (graph == null) {
+			return null;
+		}
 		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>(getAllElementsMatchingFilterSettings());
 		AsSubgraph<KnowledgeElement, Link> subgraph = new AsSubgraph<KnowledgeElement, Link>(graph, elements);
 		if (filterSettings.getNamesOfSelectedLinkTypes().size() < filterSettings.getAllLinkTypes().size()) {
