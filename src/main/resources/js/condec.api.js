@@ -369,14 +369,14 @@
 	 * external references: condec.vis
 	 */
 	ConDecAPI.prototype.getVis = function getVis(elementKey, searchTerm, callback) {
-		this.getVisFiltered(elementKey, null, null, -1, -1, null, callback);
+		this.getVisFiltered(elementKey, null, null, -1, -1, null, null, callback);
 	};
 
 	/*
 	 * external references: condec.vis
 	 */
 	ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, selectedJiraIssueTypes,
-																 createdAfter, createdBefore, documentationLocations, callback) {
+																 createdAfter, createdBefore, linkTypes, documentationLocations, callback) {
 		var filterSettings = {
 			"projectKey": projectKey,
 			"searchString": searchTerm,
@@ -384,7 +384,8 @@
 			"createdLatest": createdAfter,
 			"documentationLocations": documentationLocations,
 			"selectedJiraIssueTypes": selectedJiraIssueTypes,
-			"selectedStatus": this.extendedStatus
+			"selectedStatus": this.extendedStatus,
+			"selectedLinkTypes" : linkTypes
 		};
 		postJSON(this.restPrefix + "/view/getVis.json?elementKey=" + elementKey,
 			filterSettings, function (error, vis) {

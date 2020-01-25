@@ -2,14 +2,16 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import java.util.List;
 
+import org.jgrapht.graph.AsSubgraph;
+
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
  * Interface for accessing the filtered knowledge graph. The filter criteria are
@@ -27,6 +29,15 @@ public interface FilteringManager {
 	 * @return list of all knowledge elements that match the {@link FilterSetting}s.
 	 */
 	List<KnowledgeElement> getAllElementsMatchingFilterSettings();
+
+	/**
+	 * Returns the subgraph of the {@link KnowledgeGraph} that matches the
+	 * {@link FilterSetting}s.
+	 * 
+	 * @return subgraph of the {@link KnowledgeGraph} that matches the
+	 *         {@link FilterSetting}s.
+	 */
+	AsSubgraph<KnowledgeElement, Link> getSubgraphMatchingFilterSettings();
 
 	/**
 	 * Checks if the element matches the specified filter criteria in the
@@ -59,18 +70,6 @@ public interface FilteringManager {
 	 *         {@link KnowledgeType}s.
 	 */
 	boolean isElementMatchingKnowledgeTypeFilter(KnowledgeElement element);
-
-	/**
-	 * Checks if one of the element's outgoing and ingoing edges/links has a link
-	 * type that equals one of the given {@link LinkType}s in the
-	 * {@link FilterSetting}s.
-	 * 
-	 * @param element
-	 *            {@link KnowledgeElement} object.
-	 * @return true if one of the element's outgoing and ingoing edges/links has a
-	 *         link type that equals one of the given {@link LinkType}s.
-	 */
-	boolean isElementMatchingLinkTypeFilter(KnowledgeElement element);
 
 	/**
 	 * Checks if the element is created in the given time frame in the

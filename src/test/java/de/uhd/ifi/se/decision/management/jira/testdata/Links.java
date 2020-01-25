@@ -11,6 +11,10 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 
 public class Links {
 
+	public static Link getTestLink() {
+		return getTestLinks().get(0);
+	}
+
 	public static List<Link> getTestLinks() {
 		return createLinks(JiraProjects.TEST.createJiraProject(1));
 	}

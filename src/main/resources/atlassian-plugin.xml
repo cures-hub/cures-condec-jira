@@ -107,6 +107,8 @@
 		<resource type="download" name="condec.dialog.js" location="/js/condec.dialog.js" />
 		<resource type="download" name="condec.context.menu.js"
 			location="/js/condec.context.menu.js" />
+		<resource type="download" name="condec.filtering.js"
+			location="/js/condec.filtering.js" />
 		<resource type="download" name="condec.gitdiffviewer.js"
 			location="/js/condec.gitdiffviewer.js" />
 		<resource type="download" name="condec.git.code.elements.linker.js"

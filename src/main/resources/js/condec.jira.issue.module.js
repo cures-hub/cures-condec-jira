@@ -18,6 +18,7 @@
 	var conDecContextMenu = null;
 	var treant = null;
 	var vis = null;
+	var conDecFiltering = null;
 
 	var issueKey = "";
 	var search = "";
@@ -27,7 +28,7 @@
 	};
 
 	ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog,
-			_conDecContextMenu, _treant, _vis) {
+			_conDecContextMenu, _conDecFiltering, _treant, _vis) {
 
 		console.log("ConDecJiraIssueModule init");
 
@@ -39,6 +40,7 @@
 			conDecObservable = _conDecObservable;
 			conDecDialog = _conDecDialog;
 			conDecContextMenu = _conDecContextMenu;
+			conDecFiltering = _conDecFiltering;
 			treant = _treant;
 			vis = _vis;
 
@@ -101,10 +103,12 @@
 	}
 
 	function applyFilters() {
-		var issueTypes = [];
+		var issueTypes = conDecFiltering.getSelectedItems("issuetype-dropdown");
 		var createdAfter = -1;
 		var createdBefore = -1;
-		var documentationLocation = [];
+		var documentationLocations = conDecFiltering.getSelectedItems("documentation-dropdown");
+		var linkTypes = conDecFiltering.getSelectedItems("linktype-dropdown");
+		
 		var nodeDistance = 4;
 		if (!isNaN(document.getElementById("created-after-picker").valueAsNumber)) {
 			createdAfter = document.getElementById("created-after-picker").valueAsNumber;
@@ -112,24 +116,12 @@
 		if (!isNaN(document.getElementById("created-before-picker").valueAsNumber)) {
 			createdBefore = document.getElementById("created-before-picker").valueAsNumber;
 		}
-		for (var i = 0; i < AJS.$('#issuetype-dropdown').children().size(); i++) {
-			if (typeof AJS.$('#issuetype-dropdown').children().eq(i).attr('checked') !== typeof undefined
-					&& AJS.$('#issuetype-dropdown').children().eq(i).attr('checked') !== false) {
-				issueTypes.push(AJS.$('#issuetype-dropdown').children().eq(i).text());
-			}
-		}
-		for (var j = 0; j < AJS.$('#documentation-dropdown').children().size(); j++) {
-			if (typeof AJS.$('#documentation-dropdown').children().eq(j).attr('checked') !== typeof undefined
-					&& AJS.$('#documentation-dropdown').children().eq(j).attr('checked') !== false) {
-				documentationLocation.push(AJS.$('#documentation-dropdown').children().eq(j).text());
-			}
-		}
 		var nodeDistanceInput = document.getElementById("node-distance-picker");
 		if (nodeDistanceInput !== null) {
 			nodeDistance = nodeDistanceInput.value;
 		}
-		vis.buildVisFiltered(issueKey, search, nodeDistance, issueTypes, createdAfter, createdBefore,
-				documentationLocation);
+		vis.buildVisFiltered(issueKey, search, nodeDistance, issueTypes, createdAfter, createdBefore, linkTypes,
+				documentationLocations);
 	}
 
 	function initFilter(issueKey, search) {
@@ -137,7 +129,7 @@
 		var issueTypeDropdown = document.getElementById("issuetype-dropdown");
 		var firstDatePicker = document.getElementById("created-after-picker");
 		var secondDatePicker = document.getElementById("created-before-picker");
-		var documentationDropdown = document.getElementById("documentation-dropdown");
+		
 		conDecAPI.getFilterSettings(issueKey, search, function(filterData) {
 			var allIssueTypes = filterData.allJiraIssueTypes;
 			var selectedIssueTypes = filterData.selectedJiraIssueTypes;
@@ -152,17 +144,16 @@
 				issueTypeDropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + isSelected + ">"
 						+ allIssueTypes[index] + "</aui-item-checkbox>");
 			}
-			for (var count = 0; count < documentationLocation.length; count++) {
-
-				documentationDropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive checked>"
-						+ documentationLocation[count] + "</aui-item-checkbox>");
-			}
+			conDecFiltering.initDropdown("documentation-dropdown", documentationLocation);
 			if (filterData.startDate >= 0) {
 				firstDatePicker.valueAsDate = new Date(filterData.startDate + 1000);
 			}
 			if (filterData.endDate >= 0) {
 				secondDatePicker.valueAsDate = new Date(filterData.endDate + 1000);
 			}
+			
+			var linkTypes = conDecAPI.linkTypes;
+			conDecFiltering.initDropdown("linktype-dropdown", linkTypes);
 		});
 	}
 

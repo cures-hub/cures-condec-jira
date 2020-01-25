@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -24,8 +25,8 @@ import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -87,8 +88,8 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 	@Path("/createDecisionKnowledgeElement")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createDecisionKnowledgeElement(@Context HttpServletRequest request,
-			KnowledgeElement element, @QueryParam("idOfExistingElement") long idOfExistingElement,
+	public Response createDecisionKnowledgeElement(@Context HttpServletRequest request, KnowledgeElement element,
+			@QueryParam("idOfExistingElement") long idOfExistingElement,
 			@QueryParam("documentationLocationOfExistingElement") String documentationLocationOfExistingElement,
 			@QueryParam("keyOfExistingElement") String keyOfExistingElement) {
 		if (element == null || request == null) {
@@ -140,8 +141,8 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 	@Path("/updateDecisionKnowledgeElement")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response updateDecisionKnowledgeElement(@Context HttpServletRequest request,
-			KnowledgeElement element, @QueryParam("idOfParentElement") long idOfParentElement,
+	public Response updateDecisionKnowledgeElement(@Context HttpServletRequest request, KnowledgeElement element,
+			@QueryParam("idOfParentElement") long idOfParentElement,
 			@QueryParam("documentationLocationOfParentElement") String documentationLocationOfParentElement) {
 		if (request == null || element == null) {
 			return Response.status(Status.BAD_REQUEST)
@@ -278,10 +279,12 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("query") String query) {
-		if (request == null || projectKey == null || query == null) {
+			@DefaultValue("") @QueryParam("query") String query) {
+		if (request == null || projectKey == null || projectKey.isBlank() || query == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Getting elements failed due to a bad request.")).build();
+					.entity(ImmutableMap.of("error",
+							"Getting elements failed due to a bad request. You need to provide a project key."))
+					.build();
 		}
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
