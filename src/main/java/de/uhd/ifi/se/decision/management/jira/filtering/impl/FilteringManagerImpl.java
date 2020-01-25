@@ -34,6 +34,7 @@ public class FilteringManagerImpl implements FilteringManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilteringManagerImpl.class);
 	private ApplicationUser user;
 	private FilterSettings filterSettings;
+	private KnowledgeGraph graph;
 
 	public FilteringManagerImpl(ApplicationUser user, FilterSettings filterSettings) {
 		if (filterSettings == null || filterSettings.getProjectKey() == null || user == null) {
@@ -42,6 +43,7 @@ public class FilteringManagerImpl implements FilteringManager {
 		}
 		this.user = user;
 		this.filterSettings = filterSettings;
+		this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
 	}
 
 	public FilteringManagerImpl(String projectKey, ApplicationUser user, String query) {
@@ -55,7 +57,7 @@ public class FilteringManagerImpl implements FilteringManager {
 		}
 		String searchString = filterSettings.getSearchString().toLowerCase();
 		if (JiraQueryType.getJiraQueryType(searchString) == JiraQueryType.OTHER) {
-			Set<KnowledgeElement> elements = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey()).vertexSet();
+			Set<KnowledgeElement> elements = graph.vertexSet();
 			return filterElements(elements);
 		}
 		return getAllElementsMatchingQuery();
@@ -63,10 +65,23 @@ public class FilteringManagerImpl implements FilteringManager {
 
 	@Override
 	public AsSubgraph<KnowledgeElement, Link> getSubgraphMatchingFilterSettings() {
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
-		Set<KnowledgeElement> elements = new HashSet<>(getAllElementsMatchingFilterSettings());
+		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>(getAllElementsMatchingFilterSettings());
 		AsSubgraph<KnowledgeElement, Link> subgraph = new AsSubgraph<KnowledgeElement, Link>(graph, elements);
+		if (filterSettings.getNamesOfSelectedLinkTypes().size() < filterSettings.getAllLinkTypes().size()) {
+			Set<Link> linksNotMatchingFilterSettings = getLinksNotMatchingFilterSettings(subgraph.edgeSet());
+			subgraph.removeAllEdges(linksNotMatchingFilterSettings);
+		}
 		return subgraph;
+	}
+
+	private Set<Link> getLinksNotMatchingFilterSettings(Set<Link> links) {
+		Set<Link> linksNotMatchingFilterSettings = new HashSet<Link>();
+		for (Link link : links) {
+			if (!filterSettings.getNamesOfSelectedLinkTypes().contains(link.getType())) {
+				linksNotMatchingFilterSettings.add(link);
+			}
+		}
+		return linksNotMatchingFilterSettings;
 	}
 
 	private List<KnowledgeElement> getAllElementsMatchingQuery() {
@@ -141,10 +156,7 @@ public class FilteringManagerImpl implements FilteringManager {
 		if (!isElementMatchingDocumentationLocationFilter(element)) {
 			return false;
 		}
-		if (!isElementMatchingSubStringFilter(element)) {
-			return false;
-		}
-		return isElementMatchingLinkTypeFilter(element);
+		return isElementMatchingSubStringFilter(element);
 	}
 
 	@Override
@@ -206,7 +218,7 @@ public class FilteringManagerImpl implements FilteringManager {
 		if (filterSettings.getNamesOfSelectedLinkTypes().size() == filterSettings.getAllLinkTypes().size()) {
 			return true;
 		}
-		List<Link> links = element.getLinks();
+		Set<Link> links = graph.edgesOf(element);
 		if (links == null || links.isEmpty()) {
 			return true;
 		}
