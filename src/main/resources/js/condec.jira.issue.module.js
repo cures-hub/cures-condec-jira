@@ -104,7 +104,7 @@
 		var issueTypes = getSelectedItems("issuetype-dropdown");
 		var createdAfter = -1;
 		var createdBefore = -1;
-		var documentationLocation = getSelectedItems("documentation-dropdown");
+		var documentationLocations = getSelectedItems("documentation-dropdown");
 		var linkTypes = getSelectedItems("linktype-dropdown");
 		
 		var nodeDistance = 4;
@@ -119,20 +119,18 @@
 			nodeDistance = nodeDistanceInput.value;
 		}
 		vis.buildVisFiltered(issueKey, search, nodeDistance, issueTypes, createdAfter, createdBefore, linkTypes,
-				documentationLocation);
+				documentationLocations);
 	}
 	
 	function getSelectedItems(dropdownId) {
 		var dropdown = AJS.$("#" + dropdownId);
 		var selectedItems = [];
-		console.log(dropdown.children().size());
 		for (var i = 0; i < dropdown.children().size(); i++) {
 			if (typeof dropdown.children().eq(i).attr("checked") !== typeof undefined
 					&& dropdown.children().eq(i).attr("checked") !== false) {
 				selectedItems.push(dropdown.children().eq(i).text());
 			}
 		}
-		console.log(selectedItems);
 		return selectedItems;
 	}
 
@@ -158,11 +156,7 @@
 				issueTypeDropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + isSelected + ">"
 						+ allIssueTypes[index] + "</aui-item-checkbox>");
 			}
-			for (var count = 0; count < documentationLocation.length; count++) {
-
-				documentationDropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive checked>"
-						+ documentationLocation[count] + "</aui-item-checkbox>");
-			}
+			initDropdown(documentationDropdown, documentationLocation);
 			if (filterData.startDate >= 0) {
 				firstDatePicker.valueAsDate = new Date(filterData.startDate + 1000);
 			}
@@ -171,11 +165,15 @@
 			}
 			
 			var linkTypes = conDecAPI.linkTypes;
-			for (var index = 0; index < linkTypes.length; index++) {
-				linkTypeDropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + "checked" + ">"
-					+ linkTypes[index] + "</aui-item-checkbox>");
-			}
+			initDropdown(linkTypeDropdown, linkTypes);
 		});
+	}
+	
+	function initDropdown(dropdown, items) {
+		for (var index = 0; index < items.length; index++) {
+			dropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + "checked" + ">"
+					+ items[index] + "</aui-item-checkbox>");
+		}
 	}
 
 	function getURLsSearch() {
