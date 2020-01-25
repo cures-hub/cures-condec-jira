@@ -1,9 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.filtering.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jgrapht.graph.AsSubgraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +59,14 @@ public class FilteringManagerImpl implements FilteringManager {
 			return filterElements(elements);
 		}
 		return getAllElementsMatchingQuery();
+	}
+
+	@Override
+	public AsSubgraph<KnowledgeElement, Link> getSubgraphMatchingFilterSettings() {
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
+		Set<KnowledgeElement> elements = new HashSet<>(getAllElementsMatchingFilterSettings());
+		AsSubgraph<KnowledgeElement, Link> subgraph = new AsSubgraph<KnowledgeElement, Link>(graph, elements);
+		return subgraph;
 	}
 
 	private List<KnowledgeElement> getAllElementsMatchingQuery() {

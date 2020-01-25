@@ -2,13 +2,16 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import java.util.List;
 
+import org.jgrapht.graph.AsSubgraph;
+
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
 /**
@@ -27,6 +30,15 @@ public interface FilteringManager {
 	 * @return list of all knowledge elements that match the {@link FilterSetting}s.
 	 */
 	List<KnowledgeElement> getAllElementsMatchingFilterSettings();
+
+	/**
+	 * Returns the subgraph of the {@link KnowledgeGraph} that matches the
+	 * {@link FilterSetting}s.
+	 * 
+	 * @return subgraph of the {@link KnowledgeGraph} that matches the
+	 *         {@link FilterSetting}s.
+	 */
+	AsSubgraph<KnowledgeElement, Link> getSubgraphMatchingFilterSettings();
 
 	/**
 	 * Checks if the element matches the specified filter criteria in the

@@ -61,12 +61,12 @@ public class VisGraph {
 			return;
 		}
 		FilteringManager filteringManager = new FilteringManagerImpl(user, filterSettings);
-		Set<KnowledgeElement> elements = new HashSet<>(filteringManager.getAllElementsMatchingFilterSettings());
-		if (elements == null || elements.isEmpty()) {
+		AsSubgraph<KnowledgeElement, Link> subgraph = filteringManager.getSubgraphMatchingFilterSettings();
+		if (subgraph == null || subgraph.vertexSet().isEmpty()) {
 			return;
 		}
 		if (rootElementKey == null || rootElementKey.isBlank()) {
-			addNodesAndEdges(null, elements);
+			addNodesAndEdges(null, subgraph);
 			return;
 		}
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
@@ -76,12 +76,10 @@ public class VisGraph {
 
 		// TODO This is not a key but id_documentationLocation
 		this.rootElementKey = rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString();
-		addNodesAndEdges(rootElement, elements);
+		addNodesAndEdges(rootElement, subgraph);
 	}
 
-	private void addNodesAndEdges(KnowledgeElement startElement, Set<KnowledgeElement> elements) {
-		AsSubgraph<KnowledgeElement, Link> subgraph = new AsSubgraph<KnowledgeElement, Link>(graph, elements);
-
+	private void addNodesAndEdges(KnowledgeElement startElement, AsSubgraph<KnowledgeElement, Link> subgraph) {
 		if (startElement != null) {
 			graph.addVertex(startElement);
 			subgraph.addVertex(startElement);
@@ -92,7 +90,7 @@ public class VisGraph {
 
 		while (iterator.hasNext()) {
 			KnowledgeElement element = iterator.next();
-			nodes.add(new VisNode(element, isCollapsed(element, elements), 50 + iterator.getDepth(element), cid));
+			nodes.add(new VisNode(element, false, 50 + iterator.getDepth(element), cid));
 			cid++;
 
 			for (Link link : subgraph.edgesOf(element)) {
@@ -104,9 +102,10 @@ public class VisGraph {
 		}
 	}
 
-	private boolean isCollapsed(KnowledgeElement element, Set<KnowledgeElement> elements) {
-		return !elements.contains(element);
-	}
+	// private boolean isCollapsed(KnowledgeElement element, Set<KnowledgeElement>
+	// elements) {
+	// return !elements.contains(element);
+	// }
 
 	private boolean containsEdge(Link link) {
 		for (VisEdge visEdge : edges) {
