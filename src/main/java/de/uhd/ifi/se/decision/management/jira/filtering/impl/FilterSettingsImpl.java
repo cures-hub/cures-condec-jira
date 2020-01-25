@@ -175,8 +175,8 @@ public class FilterSettingsImpl implements FilterSettings {
 	@Override
 	@JsonProperty("selectedStatus")
 	public void setSelectedStatus(List<String> status) {
-		if (knowledgeStatus == null || status == null) {
-			knowledgeStatus = new ArrayList<KnowledgeStatus>();
+		knowledgeStatus = new ArrayList<KnowledgeStatus>();
+		if (status == null) {
 			for (KnowledgeStatus eachStatus : KnowledgeStatus.values()) {
 				knowledgeStatus.add(eachStatus);
 			}
