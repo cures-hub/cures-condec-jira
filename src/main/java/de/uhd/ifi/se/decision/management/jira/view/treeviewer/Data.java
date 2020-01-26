@@ -28,7 +28,7 @@ public class Data {
 	private List<Data> children;
 
 	@XmlElement(name = "data")
-	private KnowledgeElement nodeInfo;
+	private KnowledgeElement element;
 
 	@XmlElement
 	private String icon;
@@ -46,7 +46,7 @@ public class Data {
 		this.id = "tv" + String.valueOf(decisionKnowledgeElement.getId());
 		this.text = decisionKnowledgeElement.getSummary();
 		this.icon = KnowledgeType.getIconUrl(decisionKnowledgeElement);
-		this.nodeInfo = decisionKnowledgeElement;
+		this.element = decisionKnowledgeElement;
 		if (decisionKnowledgeElement.getDescription() != null && !decisionKnowledgeElement.getDescription().equals("")
 				&& !decisionKnowledgeElement.getDescription().equals("undefined")) {
 			this.a_attr = ImmutableMap.of("title", decisionKnowledgeElement.getDescription());
@@ -74,10 +74,6 @@ public class Data {
 		return text;
 	}
 
-	public void setText(String text) {
-		this.text = text;
-	}
-
 	public List<Data> getChildren() {
 		if (children == null) {
 			return new ArrayList<Data>();
@@ -89,19 +85,11 @@ public class Data {
 		this.children = children;
 	}
 
-	public KnowledgeElement getNode() {
-		return nodeInfo;
-	}
-
-	public void setNodeInfo(KnowledgeElement nodeInfo) {
-		this.nodeInfo = nodeInfo;
+	public KnowledgeElement getElement() {
+		return element;
 	}
 
 	public String getIcon() {
 		return icon;
-	}
-
-	public void setIcon(String icon) {
-		this.icon = icon;
 	}
 }

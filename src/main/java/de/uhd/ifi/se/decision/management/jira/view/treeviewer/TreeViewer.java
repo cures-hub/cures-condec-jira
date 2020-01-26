@@ -126,7 +126,7 @@ public class TreeViewer {
 
 	private void removeChildrenWithType(Iterator<Data> node, KnowledgeType knowledgeType, Boolean showKnowledgeType) {
 		Data currentNode = node.next();
-		if (!showKnowledgeType && currentNode.getNode().getType().equals(knowledgeType)) {
+		if (!showKnowledgeType && currentNode.getElement().getType().equals(knowledgeType)) {
 			node.remove();
 			return;
 		} else {
@@ -182,7 +182,7 @@ public class TreeViewer {
 			}
 			this.alreadyVisitedEdges.add(edge.getId());
 			Data dataChild = new Data(nodeElement, edge);
-			if (dataChild.getNode().getProject() == null || !dataChild.getNode().getProject().getProjectKey()
+			if (dataChild.getElement().getProject() == null || !dataChild.getElement().getProject().getProjectKey()
 					.equals(decisionKnowledgeElement.getProject().getProjectKey())) {
 				continue;
 			}
