@@ -47,7 +47,7 @@ public class Data {
 		this.text = decisionKnowledgeElement.getSummary();
 		this.icon = KnowledgeType.getIconUrl(decisionKnowledgeElement);
 		this.element = decisionKnowledgeElement;
-		if (decisionKnowledgeElement.getDescription() != null && !decisionKnowledgeElement.getDescription().equals("")
+		if (decisionKnowledgeElement.getDescription() != null && !decisionKnowledgeElement.getDescription().isBlank()
 				&& !decisionKnowledgeElement.getDescription().equals("undefined")) {
 			this.a_attr = ImmutableMap.of("title", decisionKnowledgeElement.getDescription());
 		}

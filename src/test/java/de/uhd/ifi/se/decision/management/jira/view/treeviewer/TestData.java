@@ -10,7 +10,9 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+import de.uhd.ifi.se.decision.management.jira.testdata.Links;
 
 public class TestData extends TestSetUp {
 
@@ -22,6 +24,13 @@ public class TestData extends TestSetUp {
 		init();
 		element = KnowledgeElements.getTestKnowledgeElement();
 		data = new Data(element);
+	}
+
+	@Test
+	public void testConstructorWithElementAndLink() {
+		Link link = Links.getTestLink();
+		Data data = new Data(element, link);
+		assertEquals("tv1", data.getId());
 	}
 
 	@Test
