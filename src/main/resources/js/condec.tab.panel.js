@@ -36,7 +36,7 @@
 	};
 
 	ConDecIssueTab.prototype.fetchAndRender = function() {
-		buildTreeViewer([ "Issue", "Decision", "Alternative", "Argument" ]);
+		buildTreeViewer(null);
 	};
 
 	/* triggered by onchange event in tabPanel.vm */

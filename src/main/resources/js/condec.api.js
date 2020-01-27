@@ -443,9 +443,8 @@
 		var filterSettings = {
 				"projectKey": projectKey,
 				"selectedJiraIssueTypes": selectedKnowledgeTypes
-			};
-		postJSON(this.restPrefix + "/view/getTreeViewerForSingleElement.json?jiraIssueKey=" + jiraIssueKey
-			+ "&showRelevant=" + [].toString(), filterSettings, function (error, core) {
+		};
+		postJSON(this.restPrefix + "/view/getTreeViewerForSingleElement.json?jiraIssueKey=" + jiraIssueKey, filterSettings, function (error, core) {
 			if (error === null) {
 				callback(core);
 			}

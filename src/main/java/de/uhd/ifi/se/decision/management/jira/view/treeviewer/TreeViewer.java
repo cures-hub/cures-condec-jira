@@ -94,9 +94,9 @@ public class TreeViewer {
 	 *
 	 * @param jiraIssueKey
 	 *            the issue id
-	 * @param showKnowledgeTypes
-	 *            the show relevant (deprecated) currently used to distinguish
-	 *            between Constructors
+	 * @param filterSettings
+	 *            {@link FilterSettings} object. The filter settings cover the
+	 *            decision knowledge types to be shown.
 	 */
 	public TreeViewer(String jiraIssueKey, FilterSettings filterSettings) {
 		this();
