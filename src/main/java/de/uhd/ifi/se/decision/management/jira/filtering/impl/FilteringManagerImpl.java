@@ -36,8 +36,12 @@ public class FilteringManagerImpl implements FilteringManager {
 	private FilterSettings filterSettings;
 	private KnowledgeGraph graph;
 
+	public FilteringManagerImpl(FilterSettings filterSettings) {
+		this(null, filterSettings);
+	}
+
 	public FilteringManagerImpl(ApplicationUser user, FilterSettings filterSettings) {
-		if (filterSettings == null || filterSettings.getProjectKey() == null || user == null) {
+		if (filterSettings == null || filterSettings.getProjectKey() == null) {
 			LOGGER.error("FilteringManager could not be created due to an invalid input.");
 			return;
 		}

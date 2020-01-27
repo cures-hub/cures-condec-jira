@@ -6,13 +6,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ofbiz.core.entity.GenericEntityException;
-
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.mock.MockProjectManager;
-import com.atlassian.jira.project.MockProject;
-import com.atlassian.jira.project.Project;
-import com.atlassian.jira.project.ProjectManager;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
@@ -37,7 +30,8 @@ public class TestGetTreeViewer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testProjectKeyNonExistentKnowledgeTypeNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreeViewer("NotTEST", null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				viewRest.getTreeViewer("NotExistingProjectKey", null).getStatus());
 	}
 
 	@Test
@@ -54,14 +48,5 @@ public class TestGetTreeViewer extends TestSetUp {
 	@Test
 	public void testProjectKeyExistentKnowledgeTypeFilled() {
 		assertEquals(200, viewRest.getTreeViewer("TEST", "Issue").getStatus());
-	}
-
-	@Test
-	public void testProjectKeyExistentWithNoElements() throws GenericEntityException {
-		ProjectManager projectManager = ComponentAccessor.getProjectManager();
-		Project project = new MockProject(2, "TESTNO");
-		((MockProject) project).setKey("TESTNO");
-		((MockProjectManager) projectManager).addProject(project);
-		assertEquals(200, viewRest.getTreeViewer("TESTNO", null).getStatus());
 	}
 }

@@ -21,6 +21,8 @@ import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
@@ -40,7 +42,7 @@ public class TestTreeViewer extends TestSetUp {
 	private Map<String, Boolean> themes;
 	private Set<Data> data;
 	private TreeViewer treeViewer;
-	private Boolean[] selectedKnowledgeTypes = { true, true, true, true, true };
+	private FilterSettings filterSettings;
 
 	@Before
 	public void setUp() {
@@ -51,12 +53,13 @@ public class TestTreeViewer extends TestSetUp {
 		themes.put("Test", false);
 		data = new HashSet<Data>();
 		data.add(new Data());
-		treeViewer = new TreeViewer("TEST");
+		treeViewer = new TreeViewer("TEST", KnowledgeType.DECISION);
 		treeViewer.setMultiple(multiple);
 		treeViewer.setCheckCallback(checkCallback);
 		treeViewer.setThemes(themes);
 		treeViewer.setData(data);
 		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueManager();
+		filterSettings = new FilterSettingsImpl("TEST", "");
 	}
 
 	@Test
@@ -156,7 +159,7 @@ public class TestTreeViewer extends TestSetUp {
 		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("{alternative} This would be a great solution option! {alternative}");
 		PartOfJiraIssueText sentence = comment.get(0);
-		TreeViewer tree = new TreeViewer(sentence.getProject().getProjectKey());
+		TreeViewer tree = new TreeViewer(sentence.getProject().getProjectKey(), KnowledgeType.DECISION);
 		assertNotNull(tree.getDataStructure(sentence));
 	}
 
@@ -165,7 +168,7 @@ public class TestTreeViewer extends TestSetUp {
 	public void testTreeViewerCalledFromTabpanel() {
 		// 1) Check if Tree Element has no Children - Important!
 		KnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(14);
-		TreeViewer tv = new TreeViewer(element.getKey(), selectedKnowledgeTypes);
+		TreeViewer tv = new TreeViewer(element.getKey(), filterSettings);
 		assertNotNull(tv);
 		assertEquals(0, tv.getDataStructure(element).getChildren().size());
 
@@ -182,7 +185,7 @@ public class TestTreeViewer extends TestSetUp {
 		sentences.get(0).setRelevant(true);
 		sentences.get(0).setType(KnowledgeType.ALTERNATIVE);
 		element = persistenceManager.getDecisionKnowledgeElement(14);
-		tv = new TreeViewer(element.getKey(), selectedKnowledgeTypes);
+		tv = new TreeViewer(element.getKey(), filterSettings);
 
 		// 4) Check if TreeViewer has one element
 		assertNotNull(tv);
@@ -194,7 +197,7 @@ public class TestTreeViewer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testTreeViewerCalledFromTabpanelNullData() {
-		TreeViewer tv = new TreeViewer(null, selectedKnowledgeTypes);
+		TreeViewer tv = new TreeViewer(null, filterSettings);
 		assertNotNull(tv);
 		assertEquals(tv.getData(), null);
 	}
@@ -202,7 +205,7 @@ public class TestTreeViewer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testTreeViewerCalledFromTabpanelEmptyData() {
-		TreeViewer tv = new TreeViewer("", selectedKnowledgeTypes);
+		TreeViewer tv = new TreeViewer("", filterSettings);
 		assertNotNull(tv);
 	}
 

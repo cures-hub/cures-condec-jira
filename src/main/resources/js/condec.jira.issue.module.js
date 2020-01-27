@@ -18,7 +18,6 @@
 	var conDecContextMenu = null;
 	var treant = null;
 	var vis = null;
-	var conDecFiltering = null;
 
 	var issueKey = "";
 	var search = "";
@@ -28,7 +27,7 @@
 	};
 
 	ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog,
-			_conDecContextMenu, _conDecFiltering, _treant, _vis) {
+			_conDecContextMenu, _treant, _vis) {
 
 		console.log("ConDecJiraIssueModule init");
 
@@ -40,7 +39,6 @@
 			conDecObservable = _conDecObservable;
 			conDecDialog = _conDecDialog;
 			conDecContextMenu = _conDecContextMenu;
-			conDecFiltering = _conDecFiltering;
 			treant = _treant;
 			vis = _vis;
 
