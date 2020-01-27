@@ -78,7 +78,7 @@
 	/*
 	 * Creates a new decision knowledge element. If the element should be
 	 * unlinked the idOfExistingElement must be 0 and the
-	 * documentationLocationOfExistingElement must be null 
+	 * documentationLocationOfExistingElement must be null
 	 * 
 	 * external references: condec.knowledge.page, condec.dialog
 	 */
@@ -439,14 +439,12 @@
 	/*
 	 * external references: condec.tab.panel
 	 */
-	ConDecAPI.prototype.getTreeViewerWithoutRootElement = function getTreeViewerWithoutRootElement(showRelevant,
-																								   callback) {
-		var issueId = AJS.$("meta[name='ajs-issue-key']").attr("content");
-		if (issueId === undefined) {
-			issueId = this.getIssueKey();
-		}
-		getJSON(this.restPrefix + "/view/getTreeViewer2.json?issueKey=" + issueId
-			+ "&showRelevant=" + showRelevant.toString(), function (error, core) {
+	ConDecAPI.prototype.getTreeViewerForSingleElement = function getTreeViewerForSingleElement(jiraIssueKey, selectedKnowledgeTypes, callback) {
+		var filterSettings = {
+				"projectKey": projectKey,
+				"selectedJiraIssueTypes": selectedKnowledgeTypes
+		};
+		postJSON(this.restPrefix + "/view/getTreeViewerForSingleElement.json?jiraIssueKey=" + jiraIssueKey, filterSettings, function (error, core) {
 			if (error === null) {
 				callback(core);
 			}
