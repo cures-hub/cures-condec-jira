@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest.impl;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -168,23 +167,21 @@ public class ViewRestImpl implements ViewRest {
 
 	@Override
 	@Path("/getTreeViewerForSingleElement")
-	@GET
+	@POST
 	// TODO Replace showRelevant with FilterSettings
-	public Response getTreeViewerForSingleElement(@QueryParam("jiraIssueKey") String jiraIssueKey,
-			@QueryParam("showRelevant") String showRelevant) {
+	public Response getTreeViewerForSingleElement(@Context HttpServletRequest request,
+			@QueryParam("jiraIssueKey") String jiraIssueKey, FilterSettings filterSettings) {
 		if (jiraIssueKey == null || !jiraIssueKey.contains("-")) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Jira issue key is not valid."))
 					.build();
 		}
-		Boolean[] booleanArray = Arrays.stream(showRelevant.split(",")).map(Boolean::parseBoolean)
-				.toArray(Boolean[]::new);
 		String projectKey = jiraIssueKey.substring(0, jiraIssueKey.indexOf("-"));
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
 
-		TreeViewer treeViewer = new TreeViewer(jiraIssueKey, booleanArray);
+		TreeViewer treeViewer = new TreeViewer(jiraIssueKey, filterSettings);
 		return Response.ok(treeViewer).build();
 	}
 

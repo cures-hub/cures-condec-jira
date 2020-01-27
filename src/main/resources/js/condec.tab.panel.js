@@ -50,21 +50,21 @@
 	function toggleSelectedDecisionElements() {
 		console.log("conDecIssueTab toggleSelectedDecisionElements");
 
-		var decisionElements = [ "Issue", "Decision", "Alternative", "Argument", "Relevant" ];
-		var checked = [];
+		var allKnowledgeTypes = [ "Issue", "Decision", "Alternative", "Argument", "Relevant" ];
+		var selectedKnowledgeTypes = [];
 
-		for (var i = 0; i < decisionElements.length; i++) {
-			var check = document.getElementById(decisionElements[i]).checked;
-			checked.push(check);
+		for (var i = 0; i < allKnowledgeTypes.length; i++) {
+			var check = document.getElementById(allKnowledgeTypes[i]).checked;
+			selectedKnowledgeTypes.push(allKnowledgeTypes[i]);
 		}
-		return checked;
+		return selectedKnowledgeTypes;
 	}
 
-	function buildTreeViewer(knowledgeTypeSelection) {
+	function buildTreeViewer(selectedKnowledgeTypes) {
 		console.log("conDecIssueTab buildTreeViewer");
 
 		var jiraIssueKey = conDecAPI.getIssueKey();
-		conDecAPI.getTreeViewerForSingleElement(jiraIssueKey, knowledgeTypeSelection, function(core) {
+		conDecAPI.getTreeViewerForSingleElement(jiraIssueKey, selectedKnowledgeTypes, function(core) {
 			console.log("conDecTabPanel getTreeViewerWithoutRootElement callback");
 
 			jQueryConDec("#jstree").jstree({

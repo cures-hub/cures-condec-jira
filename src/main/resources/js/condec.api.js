@@ -439,9 +439,13 @@
 	/*
 	 * external references: condec.tab.panel
 	 */
-	ConDecAPI.prototype.getTreeViewerForSingleElement = function getTreeViewerForSingleElement(jiraIssueKey, showRelevant, callback) {
-		getJSON(this.restPrefix + "/view/getTreeViewerForSingleElement.json?jiraIssueKey=" + jiraIssueKey
-			+ "&showRelevant=" + showRelevant.toString(), function (error, core) {
+	ConDecAPI.prototype.getTreeViewerForSingleElement = function getTreeViewerForSingleElement(jiraIssueKey, selectedKnowledgeTypes, callback) {
+		var filterSettings = {
+				"projectKey": projectKey,
+				"selectedJiraIssueTypes": selectedKnowledgeTypes
+			};
+		postJSON(this.restPrefix + "/view/getTreeViewerForSingleElement.json?jiraIssueKey=" + jiraIssueKey
+			+ "&showRelevant=" + [].toString(), filterSettings, function (error, core) {
 			if (error === null) {
 				callback(core);
 			}

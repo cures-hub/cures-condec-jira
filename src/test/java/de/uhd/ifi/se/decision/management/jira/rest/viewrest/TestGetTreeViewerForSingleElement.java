@@ -25,6 +25,6 @@ public class TestGetTreeViewerForSingleElement extends TestSetUp {
 	@NonTransactional
 	public void testJiraIssueKeyNullFilterSettingsNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				viewRest.getTreeViewerForSingleElement(null, null).getStatus());
+				viewRest.getTreeViewerForSingleElement(null, null, null).getStatus());
 	}
 }

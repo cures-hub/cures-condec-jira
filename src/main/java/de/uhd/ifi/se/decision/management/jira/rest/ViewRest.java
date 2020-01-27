@@ -33,7 +33,8 @@ public interface ViewRest {
 	 * Returns a jstree tree viewer for a single knowledge element as the root
 	 * element. The tree viewer comprises only one tree.
 	 */
-	Response getTreeViewerForSingleElement(String issueKey, String showRelevant);
+	Response getTreeViewerForSingleElement(HttpServletRequest request, String jiraIssueKey,
+			FilterSettings filterSettings);
 
 	Response getEvolutionData(HttpServletRequest request, FilterSettings filterSettings);
 

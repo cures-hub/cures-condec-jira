@@ -15,6 +15,7 @@ import org.jgrapht.traverse.BreadthFirstIterator;
 import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -93,9 +94,7 @@ public class TreeViewer {
 	 *            the show relevant (deprecated) currently used to distinguish
 	 *            between Constructors
 	 */
-	// TODO Use FilteringManager and FilterSettings instead of Boolean[]
-	// showKnowledgeTypes
-	public TreeViewer(String jiraIssueKey, Boolean[] showKnowledgeTypes) {
+	public TreeViewer(String jiraIssueKey, FilterSettings filterSettings) {
 		this();
 		Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(jiraIssueKey);
 		if (jiraIssue == null) {
@@ -106,26 +105,23 @@ public class TreeViewer {
 
 		Data issueNode = this.getDataStructure(rootElement);
 		// Match irrelevant sentences back to list
-		if (showKnowledgeTypes[4]) {
-			for (Link link : GenericLinkManager.getLinksForElement(jiraIssue.getId(),
-					DocumentationLocation.JIRAISSUE)) {
-				KnowledgeElement opposite = link.getOppositeElement(jiraIssue.getId());
-				if (opposite instanceof PartOfJiraIssueText && isSentenceShown(opposite)) {
-					issueNode.getChildren().add(new Data(opposite));
-				}
+		for (Link link : GenericLinkManager.getLinksForElement(jiraIssue.getId(), DocumentationLocation.JIRAISSUE)) {
+			KnowledgeElement opposite = link.getOppositeElement(jiraIssue.getId());
+			if (opposite instanceof PartOfJiraIssueText && isSentenceShown(opposite)) {
+				issueNode.getChildren().add(new Data(opposite));
 			}
 		}
 		KnowledgeType[] knowledgeType = { KnowledgeType.ISSUE, KnowledgeType.DECISION, KnowledgeType.ALTERNATIVE,
 				KnowledgeType.ARGUMENT };
 		this.data = new HashSet<Data>(Arrays.asList(issueNode));
-		for (int i = 0; i <= 3; i++) {
-			for (Data node : this.data) {
-				Iterator<Data> it = node.getChildren().iterator();
-				while (it.hasNext()) {
-					removeChildrenWithType(it, knowledgeType[i], showKnowledgeTypes[i]);
-				}
-			}
-		}
+		// for (int i = 0; i <= 3; i++) {
+		// for (Data node : this.data) {
+		// Iterator<Data> it = node.getChildren().iterator();
+		// while (it.hasNext()) {
+		// removeChildrenWithType(it, knowledgeType[i], showKnowledgeTypes[i]);
+		// }
+		// }
+		// }
 	}
 
 	private void removeChildrenWithType(Iterator<Data> node, KnowledgeType knowledgeType, Boolean showKnowledgeType) {
