@@ -51,7 +51,7 @@ public class TestTreeViewer extends TestSetUp {
 		themes.put("Test", false);
 		data = new HashSet<Data>();
 		data.add(new Data());
-		treeViewer = new TreeViewer("TEST");
+		treeViewer = new TreeViewer("TEST", KnowledgeType.DECISION);
 		treeViewer.setMultiple(multiple);
 		treeViewer.setCheckCallback(checkCallback);
 		treeViewer.setThemes(themes);
@@ -156,7 +156,7 @@ public class TestTreeViewer extends TestSetUp {
 		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("{alternative} This would be a great solution option! {alternative}");
 		PartOfJiraIssueText sentence = comment.get(0);
-		TreeViewer tree = new TreeViewer(sentence.getProject().getProjectKey());
+		TreeViewer tree = new TreeViewer(sentence.getProject().getProjectKey(), KnowledgeType.DECISION);
 		assertNotNull(tree.getDataStructure(sentence));
 	}
 

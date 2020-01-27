@@ -167,23 +167,24 @@ public class ViewRestImpl implements ViewRest {
 	}
 
 	@Override
-	@Path("/getTreeViewer2")
+	@Path("/getTreeViewerForSingleElement")
 	@GET
-	public Response getTreeViewer2(@QueryParam("issueKey") String issueKey,
+	// TODO Replace showRelevant with FilterSettings
+	public Response getTreeViewerForSingleElement(@QueryParam("jiraIssueKey") String jiraIssueKey,
 			@QueryParam("showRelevant") String showRelevant) {
-		if (!issueKey.contains("-")) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Issue Key is not valid."))
+		if (jiraIssueKey == null || !jiraIssueKey.contains("-")) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Jira issue key is not valid."))
 					.build();
 		}
 		Boolean[] booleanArray = Arrays.stream(showRelevant.split(",")).map(Boolean::parseBoolean)
 				.toArray(Boolean[]::new);
-		String projectKey = issueKey.substring(0, issueKey.indexOf("-"));
+		String projectKey = jiraIssueKey.substring(0, jiraIssueKey.indexOf("-"));
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
 
-		TreeViewer treeViewer = new TreeViewer(issueKey, booleanArray);
+		TreeViewer treeViewer = new TreeViewer(jiraIssueKey, booleanArray);
 		return Response.ok(treeViewer).build();
 	}
 

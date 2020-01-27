@@ -1,7 +1,7 @@
 /*
  This tab panel view does:
- * toggle sentence types
- * show a tree of relevant decision knowledge
+ * show a tree of decision knowledge and other knowledge (requirements, tasks, bug reports, ...)
+ * enable to filter the tree of knowledge
 
  Requires
  * conDecAPI
@@ -22,9 +22,8 @@
 	};
 
 	ConDecIssueTab.prototype.init = function init(_conDecAPI, _conDecObservable, _treeViewer, _contextMenu) {
-		console.log("conDecTabPanel init");
+		console.log("conDecIssueTab init");
 
-		// TODO add simple type checks
 		conDecAPI = _conDecAPI;
 		conDecObservable = _conDecObservable;
 		treeViewer = _treeViewer;
@@ -39,10 +38,17 @@
 	ConDecIssueTab.prototype.fetchAndRender = function() {
 		buildTreeViewer([ true, true, true, true, true ]);
 	};
+	
+	ConDecIssueTab.prototype.updateView = function updateView() {
+		console.log("conDecIssueTab updateView");
+		treeViewer.resetTreeViewer();
+		var knowledgeTypeSelection = toggleSelectedDecisionElements();
+		buildTreeViewer(knowledgeTypeSelection);
+	};
 
 	/* triggered by onchange event in tabPanel.vm */
 	function toggleSelectedDecisionElements() {
-		console.log("view.condec.tab.panel toggleSelectedDecisionElements");
+		console.log("conDecIssueTab toggleSelectedDecisionElements");
 
 		var decisionElements = [ "Issue", "Decision", "Alternative", "Argument", "Relevant" ];
 		var checked = [];
@@ -54,22 +60,11 @@
 		return checked;
 	}
 
-	ConDecIssueTab.prototype.updateView = function updateView() {
-		console.log("view.condec.tab.panel updateView");
-		treeViewer.resetTreeViewer();
-		var checked = toggleSelectedDecisionElements();
-		buildTreeViewer(checked);
-	};
-
-	/*
-	 called by
-	 * conDecTabPanel:callDialog
-	 * view.context.menu.js
-	 */
 	function buildTreeViewer(knowledgeTypeSelection) {
-		console.log("conDecTabPanel buildTreeViewer");
+		console.log("conDecIssueTab buildTreeViewer");
 
-		conDecAPI.getTreeViewerWithoutRootElement(knowledgeTypeSelection, function(core) {
+		var jiraIssueKey = conDecAPI.getIssueKey();
+		conDecAPI.getTreeViewerForSingleElement(jiraIssueKey, knowledgeTypeSelection, function(core) {
 			console.log("conDecTabPanel getTreeViewerWithoutRootElement callback");
 
 			jQueryConDec("#jstree").jstree({
@@ -102,12 +97,6 @@
 			return -1;
 		}
 	}
-
-	// Expose methods:
-	// for tabPanel.vm
-	ConDecIssueTab.prototype.toggleSelectedDecisionElements = toggleSelectedDecisionElements;
-	// for view.context.menu.js
-	ConDecIssueTab.prototype.buildTreeViewer = buildTreeViewer;
 
 	// export ConDecIssueTab
 	global.conDecIssueTab = new ConDecIssueTab();

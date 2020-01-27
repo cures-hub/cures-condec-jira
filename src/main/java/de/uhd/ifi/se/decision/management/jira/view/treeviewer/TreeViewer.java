@@ -59,8 +59,8 @@ public class TreeViewer {
 	}
 
 	/**
-	 * Constructor for a jstree tree viewer for all elements with a specific
-	 * {@link KnowledgeType}. The tree viewer comprises a list of many trees.
+	 * Constructor for a jstree tree viewer for a list of trees where all root
+	 * elements have a specific {@link KnowledgeType}.
 	 *
 	 * @param projectKey
 	 *            of a Jira project.
@@ -83,10 +83,6 @@ public class TreeViewer {
 		this.data = dataSet;
 	}
 
-	public TreeViewer(String projectKey) {
-		this(projectKey, KnowledgeType.DECISION);
-	}
-
 	/**
 	 * Constructor for a jstree tree viewer for a single knowledge element as the
 	 * root element. The tree viewer comprises only one tree.
@@ -97,7 +93,8 @@ public class TreeViewer {
 	 *            the show relevant (deprecated) currently used to distinguish
 	 *            between Constructors
 	 */
-	// TODO Use FilteringManager instead of Boolean[] showKnowledgeTypes
+	// TODO Use FilteringManager and FilterSettings instead of Boolean[]
+	// showKnowledgeTypes
 	public TreeViewer(String jiraIssueKey, Boolean[] showKnowledgeTypes) {
 		this();
 		Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(jiraIssueKey);
