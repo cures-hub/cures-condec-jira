@@ -56,14 +56,6 @@
 		<div id="piechartRich-ProArgumentDocumentedForDecision" class="notsetyet piechart"></div>
 	</div>
 
-	<div class="dynamic-content hidden" id="dynamic-content-inconsistencies">
-		<h3>Inconsistencies in Decision Making</h3>
-		<!--
-		<div id="piechartRich-IssuesSolvedByManyDecisions" class="notsetyet piechart"></div>
-		<div id="piechartRich-DecisionsMadeWithFewerProArguments" class="notsetyet piechart"></div>
-		<div id="piechartRich-AlternativesRejectedWithFewerConArguments" class="notsetyet piechart"></div> -->
-	</div>
-
 	<div class="dynamic-content hidden" id="dynamic-content-basics">
 		<h3>Knowledge Statistics</h3>
 		<div id="piechartRich-DecisionDocumentedForSelectedJiraIssue" class="notsetyet piechart"></div>
