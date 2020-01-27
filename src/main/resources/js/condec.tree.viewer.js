@@ -39,13 +39,13 @@
 			if (event.target.parentNode.classList.contains("sentence")) {
 				conDecContextMenu.createContextMenu(id, "s", event, container);
 			} else {
-				conDecContextMenu.createContextMenu(id, "", event, container);
+				conDecContextMenu.createContextMenu(id, "i", event, container);
 			}
 		});
 	}
 
 	/**
-	 * called by view.context.menu.js view.condec.tab.panel.js locally
+	 * called by condec.tab.panel.js and locally
 	 */
 	ConDecTreeViewer.prototype.resetTreeViewer = function resetTreeViewer() {
 		console.log("conDecTreeViewer resetTreeViewer");
@@ -54,6 +54,7 @@
 			treeViewer.destroy();
 		}
 	}
+	
 	/**
 	 * local usage only
 	 */
@@ -64,6 +65,7 @@
 		}
 		return jQueryConDec("#jstree").jstree(true).get_node(nodeId);
 	}
+	
 	/**
 	 * called by view.decision.knowledge.js
 	 */
