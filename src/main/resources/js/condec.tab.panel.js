@@ -36,26 +36,28 @@
 	};
 
 	ConDecIssueTab.prototype.fetchAndRender = function() {
-		buildTreeViewer([ true, true, true, true, true ]);
-	};
-	
-	ConDecIssueTab.prototype.updateView = function updateView() {
-		console.log("conDecIssueTab updateView");
-		treeViewer.resetTreeViewer();
-		var knowledgeTypeSelection = toggleSelectedDecisionElements();
-		buildTreeViewer(knowledgeTypeSelection);
+		buildTreeViewer([ "Issue", "Decision", "Alternative", "Argument" ]);
 	};
 
 	/* triggered by onchange event in tabPanel.vm */
-	function toggleSelectedDecisionElements() {
-		console.log("conDecIssueTab toggleSelectedDecisionElements");
+	ConDecIssueTab.prototype.updateView = function updateView() {
+		console.log("conDecIssueTab updateView");
+		treeViewer.resetTreeViewer();
+		var selectedKnowledgeTypes = getSelectedKnowledgeTypes();
+		buildTreeViewer(selectedKnowledgeTypes);
+	};
 
-		var allKnowledgeTypes = [ "Issue", "Decision", "Alternative", "Argument", "Relevant" ];
+	function getSelectedKnowledgeTypes() {
+		console.log("conDecIssueTab getSelectedKnowledgeTypes");
+
+		var allKnowledgeTypes = [ "Issue", "Decision", "Alternative", "Argument" ];
 		var selectedKnowledgeTypes = [];
 
 		for (var i = 0; i < allKnowledgeTypes.length; i++) {
-			var check = document.getElementById(allKnowledgeTypes[i]).checked;
-			selectedKnowledgeTypes.push(allKnowledgeTypes[i]);
+			var isTypeSelected = document.getElementById(allKnowledgeTypes[i]).checked;
+			if (isTypeSelected) {
+				selectedKnowledgeTypes.push(allKnowledgeTypes[i]);
+			}
 		}
 		return selectedKnowledgeTypes;
 	}

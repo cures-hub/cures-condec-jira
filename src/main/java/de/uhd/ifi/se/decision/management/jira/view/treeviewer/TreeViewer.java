@@ -16,6 +16,8 @@ import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
+import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -49,6 +51,8 @@ public class TreeViewer {
 	private long index;
 
 	private List<Long> alreadyVisitedEdges;
+
+	private FilteringManager filteringManager;
 
 	public TreeViewer() {
 		this.multiple = false;
@@ -103,37 +107,35 @@ public class TreeViewer {
 		KnowledgeElement rootElement = new KnowledgeElementImpl(jiraIssue);
 		graph = KnowledgeGraph.getOrCreate(rootElement.getProject().getProjectKey());
 
-		Data issueNode = this.getDataStructure(rootElement);
+		Data rootNode = this.getDataStructure(rootElement);
+
 		// Match irrelevant sentences back to list
 		for (Link link : GenericLinkManager.getLinksForElement(jiraIssue.getId(), DocumentationLocation.JIRAISSUE)) {
 			KnowledgeElement opposite = link.getOppositeElement(jiraIssue.getId());
 			if (opposite instanceof PartOfJiraIssueText && isSentenceShown(opposite)) {
-				issueNode.getChildren().add(new Data(opposite));
+				rootNode.getChildren().add(new Data(opposite));
 			}
 		}
-		KnowledgeType[] knowledgeType = { KnowledgeType.ISSUE, KnowledgeType.DECISION, KnowledgeType.ALTERNATIVE,
-				KnowledgeType.ARGUMENT };
-		this.data = new HashSet<Data>(Arrays.asList(issueNode));
-		// for (int i = 0; i <= 3; i++) {
-		// for (Data node : this.data) {
-		// Iterator<Data> it = node.getChildren().iterator();
-		// while (it.hasNext()) {
-		// removeChildrenWithType(it, knowledgeType[i], showKnowledgeTypes[i]);
-		// }
-		// }
-		// }
+
+		filteringManager = new FilteringManagerImpl(filterSettings);
+		data = new HashSet<Data>(Arrays.asList(rootNode));
+		for (Data node : this.data) {
+			Iterator<Data> iterator = node.getChildren().iterator();
+			while (iterator.hasNext()) {
+				removeChildrenWithType(iterator);
+			}
+		}
 	}
 
-	private void removeChildrenWithType(Iterator<Data> node, KnowledgeType knowledgeType, Boolean showKnowledgeType) {
-		Data currentNode = node.next();
-		if (!showKnowledgeType && currentNode.getElement().getType().equals(knowledgeType)) {
-			node.remove();
+	private void removeChildrenWithType(Iterator<Data> iterator) {
+		Data currentNode = iterator.next();
+		if (!filteringManager.isElementMatchingKnowledgeTypeFilter(currentNode.getElement())) {
+			iterator.remove();
 			return;
 		} else {
 			Iterator<Data> it = currentNode.getChildren().iterator();
 			while (it.hasNext()) {
-				removeChildrenWithType(it, knowledgeType, showKnowledgeType);
-
+				removeChildrenWithType(it);
 			}
 		}
 	}

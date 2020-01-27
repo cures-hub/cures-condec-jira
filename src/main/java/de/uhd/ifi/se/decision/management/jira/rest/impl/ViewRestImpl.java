@@ -168,14 +168,17 @@ public class ViewRestImpl implements ViewRest {
 	@Override
 	@Path("/getTreeViewerForSingleElement")
 	@POST
-	// TODO Replace showRelevant with FilterSettings
 	public Response getTreeViewerForSingleElement(@Context HttpServletRequest request,
 			@QueryParam("jiraIssueKey") String jiraIssueKey, FilterSettings filterSettings) {
+		if (request == null || filterSettings == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Invalid parameters given. Tree viewer not be created.")).build();
+		}
 		if (jiraIssueKey == null || !jiraIssueKey.contains("-")) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Jira issue key is not valid."))
 					.build();
 		}
-		String projectKey = jiraIssueKey.substring(0, jiraIssueKey.indexOf("-"));
+		String projectKey = filterSettings.getProjectKey();
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -264,14 +267,9 @@ public class ViewRestImpl implements ViewRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getCompareVis(@Context HttpServletRequest request, FilterSettings filterSettings) {
-		if (request == null) {
+		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
-					.build();
-		}
-		if (filterSettings == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
+					.entity(ImmutableMap.of("error", "Invalid parameters given. Vis graph could not be created."))
 					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
@@ -345,7 +343,7 @@ public class ViewRestImpl implements ViewRest {
 			return projectKeyIsInvalid();
 		}
 		ProjectManager projectManager = ComponentAccessor.getProjectManager();
-		Project project = projectManager.getProjectObjByKey(projectKey);
+		Project project = projectManager.getProjectByCurrentKey(projectKey);
 		if (project == null) {
 			return projectKeyIsInvalid();
 		}
@@ -371,8 +369,8 @@ public class ViewRestImpl implements ViewRest {
 	}
 
 	private Response jiraIssueKeyIsInvalid() {
-		String messsage = "Decision knowledge elements cannot be shown" + " since the Jira issue key is invalid.";
-		LOGGER.error(messsage);
-		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", messsage)).build();
+		String message = "Decision knowledge elements cannot be shown" + " since the Jira issue key is invalid.";
+		LOGGER.error(message);
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", message)).build();
 	}
 }

@@ -24,7 +24,7 @@ public class TestGetVis extends TestSetUp {
 
 	private ViewRest viewRest;
 	private FilterSettings filterSettings;
-	protected HttpServletRequest request;
+	private HttpServletRequest request;
 
 	@Before
 	public void setUp() {
