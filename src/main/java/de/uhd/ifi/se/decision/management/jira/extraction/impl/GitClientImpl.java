@@ -61,7 +61,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 public class GitClientImpl implements GitClient {
 
 	private static final long REPO_OUTDATED_AFTER = 15 * 60 * 1000; // ex. 15 minutes = 15 minutes * 60 seconds * 1000
-																	// miliseconds
+	// miliseconds
 	private Git git;
 	private String remoteUri;
 	private String projectKey;
@@ -370,8 +370,11 @@ public class GitClientImpl implements GitClient {
 		List<RevCommit> branchUniqueCommits = new ArrayList<RevCommit>();
 		List<RevCommit> branchCommits = getCommits(featureBranch);
 		RevCommit lastCommonAncestor = null;
+		if (defaultBranchCommits == null) {
+			defaultBranchCommits = getCommitsFromDefaultBranch();
+		}
 		for (RevCommit commit : branchCommits) {
-			if (defaultBranchCommits.contains(commit)) {
+			if (defaultBranchCommits != null && commit != null && defaultBranchCommits.contains(commit)) {
 				LOGGER.info("Found last common commit " + commit.toString());
 				lastCommonAncestor = commit;
 				break;
