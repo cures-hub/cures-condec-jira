@@ -73,12 +73,15 @@
 			console.log("conDecTabPanel getTreeViewerWithoutRootElement callback");
 
 			jQueryConDec("#jstree").jstree({
-				"core" : core,
-				"plugins" : [ "dnd", "wholerow", "search", "sort", "state" ],
-				"search" : {
-					"show_only_matches" : true
-				},
-				"sort" : sortfunction
+			    "core" : core,
+			    "plugins" : [ "dnd", "wholerow", "search", "sort", "state" ],
+			    "search" : {
+				    "show_only_matches" : true
+			    },
+			    "sort" : sortfunction
+			});
+			jQueryConDec("#jstree").on("loaded.jstree", function() {
+				jQueryConDec("#jstree").jstree("open_all");
 			});
 			$("#jstree-search-input").keyup(function() {
 				var searchString = $(this).val();

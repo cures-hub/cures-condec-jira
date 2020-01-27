@@ -31,8 +31,8 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ErrorCollection;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -230,9 +230,16 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 
 	@Override
 	public KnowledgeElement getDecisionKnowledgeElement(String key) {
-		IssueManager issueManager = ComponentAccessor.getIssueManager();
-		Issue issue = issueManager.getIssueByCurrentKey(key);
+		Issue issue = getJiraIssue(key);
 		return new KnowledgeElementImpl(issue);
+	}
+
+	public static Issue getJiraIssue(String key) {
+		if (key == null || key.isBlank()) {
+			return null;
+		}
+		IssueManager issueManager = ComponentAccessor.getIssueManager();
+		return issueManager.getIssueByCurrentKey(key);
 	}
 
 	@Override
@@ -274,8 +281,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element,
-			ApplicationUser user) {
+	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
 		setParameters(element, issueInputParameters);
 		issueInputParameters.setReporterId(user.getName());
@@ -343,8 +349,8 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		return issueList;
 	}
 
-	private boolean dataUpdateElement(KnowledgeElement element, MutableIssue issueToBeUpdated,
-			ApplicationUser user, IssueService issueService) {
+	private boolean dataUpdateElement(KnowledgeElement element, MutableIssue issueToBeUpdated, ApplicationUser user,
+			IssueService issueService) {
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
 		setParameters(element, issueInputParameters);
 		IssueService.UpdateValidationResult result = issueService.validateUpdate(user, issueToBeUpdated.getId(),

@@ -12,7 +12,6 @@ import javax.xml.bind.annotation.XmlElement;
 
 import org.jgrapht.traverse.BreadthFirstIterator;
 
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
 
@@ -24,9 +23,11 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 
 /**
- * Creates tree viewer content
+ * Creates tree viewer content. The tree viewer is rendered with the jstree
+ * library.
  */
 public class TreeViewer {
 
@@ -48,9 +49,6 @@ public class TreeViewer {
 
 	private List<Long> alreadyVisitedEdges;
 
-	/** If true irrelevant sentences are added to the tree */
-	public static boolean isCalledFromIssueTabPanel = false;
-
 	public TreeViewer() {
 		this.multiple = false;
 		this.checkCallback = true;
@@ -60,6 +58,15 @@ public class TreeViewer {
 		this.ids = new ArrayList<String>();
 	}
 
+	/**
+	 * Constructor for a jstree tree viewer for all elements with a specific
+	 * {@link KnowledgeType}. The tree viewer comprises a list of many trees.
+	 *
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param rootElementType
+	 *            {@link KnowledgeType} of the root elements.
+	 */
 	public TreeViewer(String projectKey, KnowledgeType rootElementType) {
 		this();
 		if (rootElementType == KnowledgeType.OTHER) {
@@ -81,31 +88,31 @@ public class TreeViewer {
 	}
 
 	/**
-	 * Constructor for DecXtract TreeViewer in IssueTabPanel.
+	 * Constructor for a jstree tree viewer for a single knowledge element as the
+	 * root element. The tree viewer comprises only one tree.
 	 *
-	 * @param issueKey
+	 * @param jiraIssueKey
 	 *            the issue id
 	 * @param showKnowledgeTypes
 	 *            the show relevant (deprecated) currently used to distinguish
 	 *            between Constructors
 	 */
-	public TreeViewer(String issueKey, Boolean[] showKnowledgeTypes) {
+	// TODO Use FilteringManager instead of Boolean[] showKnowledgeTypes
+	public TreeViewer(String jiraIssueKey, Boolean[] showKnowledgeTypes) {
 		this();
-		// TODO Replace isCalledFromIssueTabPanel by a more clear variable or remove it.
-		TreeViewer.isCalledFromIssueTabPanel = true;
-		if (issueKey == null) {
+		Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(jiraIssueKey);
+		if (jiraIssue == null) {
 			return;
 		}
-		Issue issue = ComponentAccessor.getIssueManager().getIssueObject(issueKey);
-		if (issue == null) {
-			return;
-		}
-		graph = KnowledgeGraph.getOrCreate(issue.getProjectObject().getKey());
-		Data issueNode = this.getDataStructure(new KnowledgeElementImpl(issue));
+		KnowledgeElement rootElement = new KnowledgeElementImpl(jiraIssue);
+		graph = KnowledgeGraph.getOrCreate(rootElement.getProject().getProjectKey());
+
+		Data issueNode = this.getDataStructure(rootElement);
 		// Match irrelevant sentences back to list
 		if (showKnowledgeTypes[4]) {
-			for (Link link : GenericLinkManager.getLinksForElement(issue.getId(), DocumentationLocation.JIRAISSUE)) {
-				KnowledgeElement opposite = link.getOppositeElement(issue.getId());
+			for (Link link : GenericLinkManager.getLinksForElement(jiraIssue.getId(),
+					DocumentationLocation.JIRAISSUE)) {
+				KnowledgeElement opposite = link.getOppositeElement(jiraIssue.getId());
 				if (opposite instanceof PartOfJiraIssueText && isSentenceShown(opposite)) {
 					issueNode.getChildren().add(new Data(opposite));
 				}
