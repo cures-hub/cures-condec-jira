@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest.impl;
 
-<<<<<<< HEAD
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +21,6 @@ import org.eclipse.jgit.lib.Ref;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-=======
->>>>>>> CONDEC-672Improve.classifier.performance
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.issue.Issue;
@@ -31,6 +28,7 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
+
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
@@ -48,22 +46,6 @@ import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
-import org.eclipse.jgit.lib.Ref;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * REST resource for view
@@ -126,7 +108,6 @@ public class ViewRestImpl implements ViewRest {
 			if (branchMatcher.find() || branch.getName().contains("develop") || branch.getName().contains("master")) {
 				transcriber.postComments(branch);
 			}
-
 		}
 		return resp;
 	}
@@ -185,33 +166,19 @@ public class ViewRestImpl implements ViewRest {
 	}
 
 	@Override
-<<<<<<< HEAD
 	@Path("/getTreeViewerForSingleElement")
 	@POST
 	public Response getTreeViewerForSingleElement(@Context HttpServletRequest request,
-			@QueryParam("jiraIssueKey") String jiraIssueKey, FilterSettings filterSettings) {
+												  @QueryParam("jiraIssueKey") String jiraIssueKey, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Invalid parameters given. Tree viewer not be created.")).build();
+				.entity(ImmutableMap.of("error", "Invalid parameters given. Tree viewer not be created.")).build();
 		}
 		if (jiraIssueKey == null || !jiraIssueKey.contains("-")) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Jira issue key is not valid."))
-					.build();
-		}
-		String projectKey = filterSettings.getProjectKey();
-=======
-	@Path("/getTreeViewer2")
-	@GET
-	public Response getTreeViewer2(@QueryParam("issueKey") String issueKey,
-								   @QueryParam("showRelevant") String showRelevant) {
-		if (!issueKey.contains("-")) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Issue Key is not valid."))
 				.build();
 		}
-		Boolean[] booleanArray = Arrays.stream(showRelevant.split(",")).map(Boolean::parseBoolean)
-			.toArray(Boolean[]::new);
-		String projectKey = issueKey.substring(0, issueKey.indexOf("-"));
->>>>>>> CONDEC-672Improve.classifier.performance
+		String projectKey = filterSettings.getProjectKey();
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -224,7 +191,7 @@ public class ViewRestImpl implements ViewRest {
 	@Override
 	@Path("/getEvolutionData")
 	@POST
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getEvolutionData(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST)
@@ -244,7 +211,7 @@ public class ViewRestImpl implements ViewRest {
 	@Override
 	@Path("/getTreant")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getTreant(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey,
 							  @QueryParam("depthOfTree") String depthOfTree, @QueryParam("searchTerm") String searchTerm) {
 
@@ -274,17 +241,11 @@ public class ViewRestImpl implements ViewRest {
 	@Override
 	@Path("/getVis")
 	@POST
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getVis(@Context HttpServletRequest request, FilterSettings filterSettings,
-<<<<<<< HEAD
-			@QueryParam("elementKey") String rootElementKey) {
+						   @QueryParam("elementKey") String rootElementKey) {
 		if (checkIfElementIsValid(rootElementKey).getStatus() != Status.OK.getStatusCode()) {
 			return checkIfElementIsValid(rootElementKey);
-=======
-						   @QueryParam("elementKey") String elementKey) {
-		if (checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()) {
-			return checkIfElementIsValid(elementKey);
->>>>>>> CONDEC-672Improve.classifier.performance
 		}
 		if (filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
@@ -304,24 +265,12 @@ public class ViewRestImpl implements ViewRest {
 	@Override
 	@Path("/getCompareVis")
 	@POST
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getCompareVis(@Context HttpServletRequest request, FilterSettings filterSettings) {
-<<<<<<< HEAD
 		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Invalid parameters given. Vis graph could not be created."))
-					.build();
-=======
-		if (request == null) {
-			return Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
+				.entity(ImmutableMap.of("error", "Invalid parameters given. Vis graph could not be created."))
 				.build();
-		}
-		if (filterSettings == null) {
-			return Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
-				.build();
->>>>>>> CONDEC-672Improve.classifier.performance
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisGraph graph = new VisGraph(user, filterSettings);
@@ -331,7 +280,7 @@ public class ViewRestImpl implements ViewRest {
 	@Override
 	@Path("/getFilterSettings")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getFilterSettings(@Context HttpServletRequest request, @QueryParam("searchTerm") String searchTerm,
 									  @QueryParam("elementKey") String elementKey) {
 		String projectKey;
@@ -349,7 +298,7 @@ public class ViewRestImpl implements ViewRest {
 	@Override
 	@Path("/getDecisionMatrix")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionMatrix(@Context HttpServletRequest request,
 									  @QueryParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
@@ -369,21 +318,14 @@ public class ViewRestImpl implements ViewRest {
 	@Override
 	@Path("/getDecisionGraph")
 	@POST
-<<<<<<< HEAD
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionGraph(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
-					ImmutableMap.of("error", "The filter settings are null. Knowledge graph could not be accessed."))
-					.build();
+				ImmutableMap.of("error", "The filter settings are null. Knowledge graph could not be accessed."))
+				.build();
 		}
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(filterSettings.getProjectKey());
-=======
-	@Produces({MediaType.APPLICATION_JSON})
-	public Response getDecisionGraph(@Context HttpServletRequest request, FilterSettings filterSettings,
-									 @QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
->>>>>>> CONDEC-672Improve.classifier.performance
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
@@ -391,6 +333,8 @@ public class ViewRestImpl implements ViewRest {
 		VisGraph graph = new VisGraph(user, filterSettings);
 		return Response.ok(graph).build();
 	}
+
+
 
 	private String getProjectKey(String elementKey) {
 		return elementKey.split("-")[0];
