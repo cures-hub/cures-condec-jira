@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest.impl;
 
+<<<<<<< HEAD
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,8 @@ import org.eclipse.jgit.lib.Ref;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+=======
+>>>>>>> CONDEC-672Improve.classifier.performance
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.issue.Issue;
@@ -182,6 +185,7 @@ public class ViewRestImpl implements ViewRest {
 	}
 
 	@Override
+<<<<<<< HEAD
 	@Path("/getTreeViewerForSingleElement")
 	@POST
 	public Response getTreeViewerForSingleElement(@Context HttpServletRequest request,
@@ -195,6 +199,19 @@ public class ViewRestImpl implements ViewRest {
 					.build();
 		}
 		String projectKey = filterSettings.getProjectKey();
+=======
+	@Path("/getTreeViewer2")
+	@GET
+	public Response getTreeViewer2(@QueryParam("issueKey") String issueKey,
+								   @QueryParam("showRelevant") String showRelevant) {
+		if (!issueKey.contains("-")) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Issue Key is not valid."))
+				.build();
+		}
+		Boolean[] booleanArray = Arrays.stream(showRelevant.split(",")).map(Boolean::parseBoolean)
+			.toArray(Boolean[]::new);
+		String projectKey = issueKey.substring(0, issueKey.indexOf("-"));
+>>>>>>> CONDEC-672Improve.classifier.performance
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -259,9 +276,15 @@ public class ViewRestImpl implements ViewRest {
 	@POST
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response getVis(@Context HttpServletRequest request, FilterSettings filterSettings,
+<<<<<<< HEAD
 			@QueryParam("elementKey") String rootElementKey) {
 		if (checkIfElementIsValid(rootElementKey).getStatus() != Status.OK.getStatusCode()) {
 			return checkIfElementIsValid(rootElementKey);
+=======
+						   @QueryParam("elementKey") String elementKey) {
+		if (checkIfElementIsValid(elementKey).getStatus() != Status.OK.getStatusCode()) {
+			return checkIfElementIsValid(elementKey);
+>>>>>>> CONDEC-672Improve.classifier.performance
 		}
 		if (filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
@@ -283,10 +306,22 @@ public class ViewRestImpl implements ViewRest {
 	@POST
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response getCompareVis(@Context HttpServletRequest request, FilterSettings filterSettings) {
+<<<<<<< HEAD
 		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Invalid parameters given. Vis graph could not be created."))
 					.build();
+=======
+		if (request == null) {
+			return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
+				.build();
+		}
+		if (filterSettings == null) {
+			return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
+				.build();
+>>>>>>> CONDEC-672Improve.classifier.performance
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisGraph graph = new VisGraph(user, filterSettings);
@@ -334,6 +369,7 @@ public class ViewRestImpl implements ViewRest {
 	@Override
 	@Path("/getDecisionGraph")
 	@POST
+<<<<<<< HEAD
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionGraph(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (filterSettings == null) {
@@ -342,6 +378,12 @@ public class ViewRestImpl implements ViewRest {
 					.build();
 		}
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(filterSettings.getProjectKey());
+=======
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getDecisionGraph(@Context HttpServletRequest request, FilterSettings filterSettings,
+									 @QueryParam("projectKey") String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+>>>>>>> CONDEC-672Improve.classifier.performance
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
