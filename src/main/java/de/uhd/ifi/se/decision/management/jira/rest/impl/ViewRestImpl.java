@@ -73,7 +73,7 @@ public class ViewRestImpl implements ViewRest {
 	@Path("/elementsFromBranchesOfJiraIssue")
 	@GET
 	public Response getFeatureBranchTree(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey)
-			throws PermissionException {
+		throws PermissionException {
 		String normalizedIssueKey = normalizeIssueKey(issueKey); // ex: issueKey=ConDec-498
 		Issue issue = getJiraIssue(normalizedIssueKey);
 		if (issue == null) {
@@ -83,7 +83,7 @@ public class ViewRestImpl implements ViewRest {
 		String regexFilter = normalizedIssueKey.toUpperCase() + "\\.|" + normalizedIssueKey.toUpperCase() + "$";
 		// get feature branches of an issue
 		return getDiffViewerResponse(getProjectKey(normalizedIssueKey), regexFilter,
-				ComponentAccessor.getIssueManager().getIssueByCurrentKey(normalizedIssueKey));
+			ComponentAccessor.getIssueManager().getIssueByCurrentKey(normalizedIssueKey));
 	}
 
 	private Issue getJiraIssue(String issueKey) {
@@ -97,16 +97,16 @@ public class ViewRestImpl implements ViewRest {
 	private Response getDiffViewerResponse(String projectKey, String filter, Issue issue) throws PermissionException {
 		Response resp = this.getDiffViewerResponse(projectKey, filter);
 		Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
-		CommitMessageToCommentTranscriber transcriber;
+		CommitMessageToCommentTranscriber transcriber = new CommitMessageToCommentTranscriber(issue);
 		// get current branch name
 		// iterate over commits to get all messages and post each one as a comment
 		// make sure to not post duplicates
 		List<Ref> branches = gitClient.getRemoteBranches();
 		for (Ref branch : branches) {
 			Matcher branchMatcher = filterPattern.matcher(branch.getName());
-			if (branchMatcher.find()) {
-				transcriber = new CommitMessageToCommentTranscriber(issue, branch);
-				transcriber.postComments();
+			//TODO: make default branch names configurable!
+			if (branchMatcher.find() || branch.getName().contains("develop") || branch.getName().contains("master")) {
+				transcriber.postComments(branch);
 			}
 		}
 		return resp;
@@ -151,7 +151,7 @@ public class ViewRestImpl implements ViewRest {
 	@Path("/getTreeViewer")
 	@GET
 	public Response getTreeViewer(@QueryParam("projectKey") String projectKey,
-			@QueryParam("rootElementType") String rootElementTypeString) {
+								  @QueryParam("rootElementType") String rootElementTypeString) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -169,14 +169,14 @@ public class ViewRestImpl implements ViewRest {
 	@Path("/getTreeViewerForSingleElement")
 	@POST
 	public Response getTreeViewerForSingleElement(@Context HttpServletRequest request,
-			@QueryParam("jiraIssueKey") String jiraIssueKey, FilterSettings filterSettings) {
+												  @QueryParam("jiraIssueKey") String jiraIssueKey, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Invalid parameters given. Tree viewer not be created.")).build();
+				.entity(ImmutableMap.of("error", "Invalid parameters given. Tree viewer not be created.")).build();
 		}
 		if (jiraIssueKey == null || !jiraIssueKey.contains("-")) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Jira issue key is not valid."))
-					.build();
+				.build();
 		}
 		String projectKey = filterSettings.getProjectKey();
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
@@ -195,13 +195,13 @@ public class ViewRestImpl implements ViewRest {
 	public Response getEvolutionData(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "HttpServletRequest is null. Timeline could not be created."))
-					.build();
+				.entity(ImmutableMap.of("error", "HttpServletRequest is null. Timeline could not be created."))
+				.build();
 		}
 		if (filterSettings == null || filterSettings.getProjectKey() == null
-				|| filterSettings.getProjectKey().isBlank()) {
+			|| filterSettings.getProjectKey().isBlank()) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project key is not valid."))
-					.build();
+				.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisTimeLine timeLine = new VisTimeLine(user, filterSettings);
@@ -213,11 +213,11 @@ public class ViewRestImpl implements ViewRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getTreant(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey,
-			@QueryParam("depthOfTree") String depthOfTree, @QueryParam("searchTerm") String searchTerm) {
+							  @QueryParam("depthOfTree") String depthOfTree, @QueryParam("searchTerm") String searchTerm) {
 
 		if (elementKey == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build();
+				.entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build();
 		}
 		String projectKey = getProjectKey(elementKey);
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
@@ -229,9 +229,9 @@ public class ViewRestImpl implements ViewRest {
 			depth = Integer.parseInt(depthOfTree);
 		} catch (NumberFormatException e) {
 			LOGGER.error(
-					"Depth of tree could not be parsed, the default value of 4 is used. Message: " + e.getMessage());
+				"Depth of tree could not be parsed, the default value of 4 is used. Message: " + e.getMessage());
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Treant cannot be shown since depth of Tree is NaN")).build();
+				.entity(ImmutableMap.of("error", "Treant cannot be shown since depth of Tree is NaN")).build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		Treant treant = new Treant(projectKey, elementKey, depth, searchTerm, user);
@@ -243,19 +243,19 @@ public class ViewRestImpl implements ViewRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getVis(@Context HttpServletRequest request, FilterSettings filterSettings,
-			@QueryParam("elementKey") String rootElementKey) {
+						   @QueryParam("elementKey") String rootElementKey) {
 		if (checkIfElementIsValid(rootElementKey).getStatus() != Status.OK.getStatusCode()) {
 			return checkIfElementIsValid(rootElementKey);
 		}
 		if (filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
-					.build();
+				.entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
+				.build();
 		}
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
-					.build();
+				.entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
+				.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisGraph visGraph = new VisGraph(user, filterSettings, rootElementKey);
@@ -269,8 +269,8 @@ public class ViewRestImpl implements ViewRest {
 	public Response getCompareVis(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Invalid parameters given. Vis graph could not be created."))
-					.build();
+				.entity(ImmutableMap.of("error", "Invalid parameters given. Vis graph could not be created."))
+				.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisGraph graph = new VisGraph(user, filterSettings);
@@ -282,7 +282,7 @@ public class ViewRestImpl implements ViewRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getFilterSettings(@Context HttpServletRequest request, @QueryParam("searchTerm") String searchTerm,
-			@QueryParam("elementKey") String elementKey) {
+									  @QueryParam("elementKey") String elementKey) {
 		String projectKey;
 		if (checkIfProjectKeyIsValid(elementKey).getStatus() == Status.OK.getStatusCode()) {
 			projectKey = elementKey;
@@ -300,7 +300,7 @@ public class ViewRestImpl implements ViewRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionMatrix(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey) {
+									  @QueryParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -322,8 +322,8 @@ public class ViewRestImpl implements ViewRest {
 	public Response getDecisionGraph(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
-					ImmutableMap.of("error", "The filter settings are null. Knowledge graph could not be accessed."))
-					.build();
+				ImmutableMap.of("error", "The filter settings are null. Knowledge graph could not be accessed."))
+				.build();
 		}
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(filterSettings.getProjectKey());
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
@@ -333,6 +333,8 @@ public class ViewRestImpl implements ViewRest {
 		VisGraph graph = new VisGraph(user, filterSettings);
 		return Response.ok(graph).build();
 	}
+
+
 
 	private String getProjectKey(String elementKey) {
 		return elementKey.split("-")[0];

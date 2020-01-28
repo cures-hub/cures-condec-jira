@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class CommitMessageToCommentTranscriber {
+	private final GitClient gitClient;
 	private Issue issue;
-	private Ref branch;
 	private List<RevCommit> featureBranchCommits;
 	private List<RevCommit> squashedCommits;
 
@@ -28,21 +28,18 @@ public class CommitMessageToCommentTranscriber {
 	private static String DEFAULT_COMMIT_COMMENTATOR_USR_NAME = "GIT-COMMIT-COMMENTATOR";
 	private static UserDetails DEFAULT_COMMIT_COMMENTATOR_USR_DETAILS = new UserDetails(DEFAULT_COMMIT_COMMENTATOR_USR_NAME, DEFAULT_COMMIT_COMMENTATOR_USR_NAME);
 
-	public CommitMessageToCommentTranscriber(Issue issue, Ref branch) {
-		this(issue, branch, ComponentGetter.getGitClient(issue.getProjectObject().getKey()));
+	public CommitMessageToCommentTranscriber(Issue issue) {
+		this(issue, ComponentGetter.getGitClient(issue.getProjectObject().getKey()));
 	}
 
-	public CommitMessageToCommentTranscriber(Issue issue, Ref branch, GitClient gitClient) {
+	public CommitMessageToCommentTranscriber(Issue issue, GitClient gitClient) {
 		this.issue = issue;
-		this.branch = branch;
 		this.featureBranchCommits = new ArrayList<>();
-		Optional.ofNullable(gitClient.getFeatureBranchCommits(this.branch)).ifPresent(featureBranchCommits::addAll);
-
+		this.gitClient = gitClient;
 		this.squashedCommits = new ArrayList<>();
-		Optional.ofNullable(gitClient.getCommits(this.issue)).ifPresent(squashedCommits::addAll);
 	}
 
-	public String generateCommentString(RevCommit commit) {
+	public String generateCommentString(RevCommit commit, Ref featureBranch) {
 		String comment = commit.getFullMessage();
 		if (comment != null && !comment.equals("")) {
 			for (String tag : KnowledgeType.toList()) {
@@ -53,15 +50,15 @@ public class CommitMessageToCommentTranscriber {
 			builder.append("\r\n");
 			builder.append("> Commit meta data\r\n");
 			builder.append("> Author: " + commit.getAuthorIdent().getName() + "\r\n");
-			builder.append("> Branch: " + this.branch.getName() + "\r\n");
+			builder.append("> Branch: " + featureBranch.getName() + "\r\n");
 			builder.append("> Hash: " + commit.getName());
 			return (builder.toString());
 		}
 		return "";
 	}
 
-	public void postComment(ApplicationUser user, RevCommit commit) {
-		String commentString = this.generateCommentString(commit);
+	public void postComment(ApplicationUser user, RevCommit commit, Ref featureBranch) {
+		String commentString = this.generateCommentString(commit, featureBranch);
 		if (commentString != null && !commentString.equals("")) {
 			/*
 			 * @Issue: Should we make a user for commenting commit messages under an issue?
@@ -83,26 +80,42 @@ public class CommitMessageToCommentTranscriber {
 		}
 	}
 
-	public void postComments() throws PermissionException {
+	public void postComments(Ref branch) throws PermissionException {
+		ApplicationUser defaultUser = getUser();
+		String projectKey = this.issue.getProjectObject().getKey();
+		if (gitClient == null) {
+			return;
+		}
+		if (branch.getName().contains("develop") || branch.getName().contains("master")) {
+			if (Boolean.parseBoolean(ConfigPersistenceManager.getValue(projectKey, "isPostSquashedCommitsActivated"))) {
+
+				Optional.ofNullable(gitClient.getCommits(this.issue)).ifPresent(squashedCommits::addAll);
+
+				for (RevCommit commit : this.squashedCommits) {
+					this.postComment(defaultUser, commit, branch);
+				}
+			}
+		} else {
+			if (Boolean.parseBoolean(ConfigPersistenceManager.getValue(projectKey, "isPostFeatureBranchCommitsActivated"))) {
+
+				Optional.ofNullable(gitClient.getFeatureBranchCommits(branch)).ifPresent(featureBranchCommits::addAll);
+				for (RevCommit commit : this.featureBranchCommits) {
+					this.postComment(defaultUser, commit, branch);
+				}
+			}
+		}
+
+
+	}
+
+	private ApplicationUser getUser() throws PermissionException {
 		ApplicationUser defaultUser;
 		try {
 			defaultUser = ComponentAccessor.getUserManager().createUser(DEFAULT_COMMIT_COMMENTATOR_USR_DETAILS);
 		} catch (CreateException e) {
 			defaultUser = ComponentAccessor.getUserManager().getUserByName(DEFAULT_COMMIT_COMMENTATOR_USR_NAME);
 		}
-		String projectKey = this.issue.getProjectObject().getKey();
-		if (Boolean.parseBoolean(ConfigPersistenceManager.getValue(projectKey, "isPostFeatureBranchCommitsActivated"))) {
-			for (RevCommit commit : this.featureBranchCommits) {
-				this.postComment(defaultUser, commit);
-			}
-		}
-
-		if (Boolean.parseBoolean(ConfigPersistenceManager.getValue(projectKey, "isPostSquashedCommitsActivated"))) {
-			for (RevCommit commit : this.squashedCommits) {
-				this.postComment(defaultUser, commit);
-			}
-		}
+		return defaultUser;
 	}
-
 
 }

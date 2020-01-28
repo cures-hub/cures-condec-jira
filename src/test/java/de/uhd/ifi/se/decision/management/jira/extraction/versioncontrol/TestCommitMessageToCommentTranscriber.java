@@ -50,44 +50,44 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
             }
         }
 
-        this.transcriber = new CommitMessageToCommentTranscriber(issue, branch, gitClient);
+        this.transcriber = new CommitMessageToCommentTranscriber(issue, gitClient);
     }
 
     @Test
     public void testEmptyMessage() {
         RevCommit commit = gitClient.getFeatureBranchCommits(this.branch).get(0);
-        assertEquals("", transcriber.generateCommentString(commit));
+        assertEquals("", transcriber.generateCommentString(commit, branch));
     }
 
 
     @Test
     public void testLowercaseIssueMessage() {
         RevCommit commit = this.gitClient.getFeatureBranchCommits(this.branch).get(1);
-        assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + META_DATA_STRING + commit.getName(), transcriber.generateCommentString(commit));
+        assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + META_DATA_STRING + commit.getName(), transcriber.generateCommentString(commit, branch));
     }
 
     @Test
     public void testUppercaseIssueMessage() {
         RevCommit commit = this.gitClient.getFeatureBranchCommits(this.branch).get(2);
-        assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + META_DATA_STRING + commit.getName(), transcriber.generateCommentString(commit));
+        assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + META_DATA_STRING + commit.getName(), transcriber.generateCommentString(commit, branch));
     }
 
     @Test
     public void testMixedcaseIssueMessage() {
         RevCommit commit = this.gitClient.getFeatureBranchCommits(this.branch).get(3);
-        assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + META_DATA_STRING + commit.getName(), transcriber.generateCommentString(commit));
+        assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + META_DATA_STRING + commit.getName(), transcriber.generateCommentString(commit, branch));
     }
 
     @Test
     public void testIssueMessageWithAdditionalText() {
         RevCommit commit = this.gitClient.getFeatureBranchCommits(this.branch).get(4);
-        assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + " But I love pizza!" + META_DATA_STRING + commit.getName(), transcriber.generateCommentString(commit));
+        assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + " But I love pizza!" + META_DATA_STRING + commit.getName(), transcriber.generateCommentString(commit, branch));
     }
 
     @Test
     public void testPostComment() {
         try {
-            transcriber.postComments();
+            transcriber.postComments(branch);
         } catch (PermissionException e) {
             assertNull(e);
         }
