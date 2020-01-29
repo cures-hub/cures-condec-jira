@@ -78,7 +78,7 @@
 	/*
 	 * Creates a new decision knowledge element. If the element should be
 	 * unlinked the idOfExistingElement must be 0 and the
-	 * documentationLocationOfExistingElement must be null 
+	 * documentationLocationOfExistingElement must be null
 	 * 
 	 * external references: condec.knowledge.page, condec.dialog
 	 */
@@ -369,14 +369,14 @@
 	 * external references: condec.vis
 	 */
 	ConDecAPI.prototype.getVis = function getVis(elementKey, searchTerm, callback) {
-		this.getVisFiltered(elementKey, null, null, -1, -1, null, callback);
+		this.getVisFiltered(elementKey, null, null, -1, -1, null, null, callback);
 	};
 
 	/*
 	 * external references: condec.vis
 	 */
 	ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, selectedJiraIssueTypes,
-																 createdAfter, createdBefore, documentationLocations, callback) {
+																 createdAfter, createdBefore, linkTypes, documentationLocations, callback) {
 		var filterSettings = {
 			"projectKey": projectKey,
 			"searchString": searchTerm,
@@ -384,7 +384,8 @@
 			"createdLatest": createdAfter,
 			"documentationLocations": documentationLocations,
 			"selectedJiraIssueTypes": selectedJiraIssueTypes,
-			"selectedStatus": this.extendedStatus
+			"selectedStatus": this.extendedStatus,
+			"selectedLinkTypes" : linkTypes
 		};
 		postJSON(this.restPrefix + "/view/getVis.json?elementKey=" + elementKey,
 			filterSettings, function (error, vis) {
@@ -438,14 +439,12 @@
 	/*
 	 * external references: condec.tab.panel
 	 */
-	ConDecAPI.prototype.getTreeViewerWithoutRootElement = function getTreeViewerWithoutRootElement(showRelevant,
-																								   callback) {
-		var issueId = AJS.$("meta[name='ajs-issue-key']").attr("content");
-		if (issueId === undefined) {
-			issueId = this.getIssueKey();
-		}
-		getJSON(this.restPrefix + "/view/getTreeViewer2.json?issueKey=" + issueId
-			+ "&showRelevant=" + showRelevant.toString(), function (error, core) {
+	ConDecAPI.prototype.getTreeViewerForSingleElement = function getTreeViewerForSingleElement(jiraIssueKey, selectedKnowledgeTypes, callback) {
+		var filterSettings = {
+				"projectKey": projectKey,
+				"selectedJiraIssueTypes": selectedKnowledgeTypes
+		};
+		postJSON(this.restPrefix + "/view/getTreeViewerForSingleElement.json?jiraIssueKey=" + jiraIssueKey, filterSettings, function (error, core) {
 			if (error === null) {
 				callback(core);
 			}
@@ -700,6 +699,23 @@
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
+	ConDecAPI.prototype.setUseClassifierForIssueComments = function setUseClassifierForIssueComments(
+		isClassifierUsedForIssues, projectKey) {
+		postJSON(this.restPrefix + "/config/setUseClassifierForIssueComments.json?projectKey="
+			+ projectKey + "&isClassifierUsedForIssues=" + isClassifierUsedForIssues, null, function (error,
+																									  response) {
+			if (error === null) {
+				showFlag("success",
+					"Usage of classification for Decision Knowledge in JIRA Issue Comments has been set to "
+					+ isClassifierUsedForIssues + ".");
+			}
+		});
+	};
+
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
 	ConDecAPI.prototype.setWebhookData = function setWebhookData(projectKey, webhookUrl, webhookSecret) {
 		postJSON(this.restPrefix + "/config/setWebhookData.json?projectKey=" + projectKey
 			+ "&webhookUrl=" + webhookUrl + "&webhookSecret=" + webhookSecret, null, function (error, response) {
@@ -773,6 +789,22 @@
 			}
 		});
 	};
+
+	/*
+	 * external references: classificationSettings.vm
+	 */
+	ConDecAPI.prototype.testClassifierWithText = function testClassifierWithText(
+		text, projectKey, resultDomElement) {
+		postJSON(this.restPrefix + "/config/testClassifierWithText?projectKey="
+			+ projectKey + "&text=" + text, null, function (error, response) {
+			if (error === null) {
+				resultDomElement.innerText = response.content;
+			}else{
+				resultDomElement.innerText = "Error! Please check if the classifier is trained.";
+			}
+		});
+	};
+
 
 	/*
 	 * external references: settingsForSingleProject.vm

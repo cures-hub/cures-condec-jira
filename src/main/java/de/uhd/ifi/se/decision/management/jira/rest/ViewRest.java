@@ -6,6 +6,7 @@ import javax.ws.rs.core.Response;
 import com.atlassian.jira.exception.PermissionException;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
  * REST resource for view
@@ -17,9 +18,23 @@ public interface ViewRest {
 	// FIXME: Unit test
 	Response getFeatureBranchTree(HttpServletRequest request, String issueKey) throws PermissionException;
 
+	/**
+	 * Returns a jstree tree viewer for a list of trees where all root elements have
+	 * a specific {@link KnowledgeType}.
+	 *
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param rootElementType
+	 *            {@link KnowledgeType} of the root elements.
+	 */
 	Response getTreeViewer(String projectKey, String rootElementType);
 
-	Response getTreeViewer2(String issueKey, String showRelevant);
+	/**
+	 * Returns a jstree tree viewer for a single knowledge element as the root
+	 * element. The tree viewer comprises only one tree.
+	 */
+	Response getTreeViewerForSingleElement(HttpServletRequest request, String jiraIssueKey,
+			FilterSettings filterSettings);
 
 	Response getEvolutionData(HttpServletRequest request, FilterSettings filterSettings);
 

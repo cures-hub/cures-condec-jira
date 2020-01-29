@@ -9,7 +9,6 @@ import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTex
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.*;
@@ -77,13 +76,6 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
         trainer.setTrainingFile(file);
     }
 
-    @Ignore
-    @Test
-    @NonTransactional
-    public void testCopyDefaultTrainingDataToFile() {
-        assertTrue(FileTrainer.copyDefaultTrainingDataToFile().exists());
-    }
-
     @Test
     @NonTransactional
     public void testGetArffFiles() {
@@ -148,7 +140,7 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
 
     private File getTrimmedDefaultArffFile() {
         File fullDefaultFile = new File("src/main/resources/classifier/defaultTrainingData.arff");
-        File trimmedDefaultFile = new File("defaultTrainingData.arff");
+        File trimmedDefaultFile = new File(TestFileTrainer.TEST_ARFF_FILE_PATH);
 
         int numberOfLines = 25;
 

@@ -6,6 +6,8 @@
 #set ($datepickerEndId = "created-before-picker")
 #parse("templates/filter/creationDate.vm")
 
+#parse("templates/filter/linkType.vm")
+
 #set ($documentationLocationDropdownId = "documentation-dropdown")	
 #parse("templates/filter/documentationLocation.vm")
 

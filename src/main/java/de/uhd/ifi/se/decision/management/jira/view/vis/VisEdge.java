@@ -20,18 +20,16 @@ public class VisEdge {
 	private String label;
 
 	@XmlElement
-	private String id;
+	private long id;
 
 	@XmlElement
 	private String color;
 
 	public VisEdge(Link link) {
 		this.setLabel(link.getType());
-		this.setFrom(
-				link.getSource().getId() + "_" + link.getSource().getDocumentationLocationAsString());
-		this.setTo(link.getTarget().getId() + "_"
-				+ link.getTarget().getDocumentationLocationAsString());
-		this.setId(String.valueOf(link.getId()));
+		this.setFrom(link.getSource().getId() + "_" + link.getSource().getDocumentationLocationAsString());
+		this.setTo(link.getTarget().getId() + "_" + link.getTarget().getDocumentationLocationAsString());
+		this.setId(link.getId());
 		this.setColor(LinkType.getLinkTypeColor(link.getType()));
 	}
 
@@ -59,11 +57,11 @@ public class VisEdge {
 		this.label = label;
 	}
 
-	public String getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

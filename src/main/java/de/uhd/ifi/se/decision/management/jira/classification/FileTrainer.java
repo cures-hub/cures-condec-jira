@@ -99,46 +99,53 @@ public interface FileTrainer {
 	 *
 	 * @return updated file with default training content.
 	 */
-	public static File copyDefaultTrainingDataToFile() {
-		File file = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff");
-		File classifierDir = new File(DecisionKnowledgeClassifier.DEFAULT_DIR);
+	static File copyDefaultTrainingDataToFile() {
+
+		return copyDataToFile(
+			DecisionKnowledgeClassifier.DEFAULT_DIR,
+			"defaultTrainingData.arff",
+			ComponentGetter.getUrlOfClassifierFolder());
+	}
+
+	static File copyDataToFile(String path, String filename, String url) {
+		File classifierDir = new File(path);
 		if (!classifierDir.exists()) {
 			//creates directory if it does not exist
 			classifierDir.mkdirs();
 		}
-
-		String pathToTrainingFile = ComponentGetter.getUrlOfClassifierFolder() + "defaultTrainingData.arff";
+		String downloadUrlOfFile = url + filename;
+		File file = new File(path + filename);
 		try {
+			InputStream inputStream = new URL(downloadUrlOfFile).openStream();
 
-			InputStream newFileInputStream = new URL(pathToTrainingFile).openStream();
+			if (!file.exists() || !getMD5Checksum(inputStream).equals(getMD5Checksum(new FileInputStream(file)))) {
 
+				inputStream = new URL(downloadUrlOfFile).openStream();
 
-			if (file.exists()) {
-				// get file hashes and compare them.
-				String oldFileHash = getMD5Checksum(new FileInputStream(file));
-				String newFileHash = getMD5Checksum(newFileInputStream);
-				if (oldFileHash.equals(newFileHash)) {
-					return file;
+				file.createNewFile();
+
+				FileOutputStream outputStream = new FileOutputStream(file);
+
+				int read;
+				byte[] bytes = new byte[1024];
+
+				while ((read = inputStream.read(bytes)) != -1) {
+					outputStream.write(bytes, 0, read);
 				}
+				//System.out.println("Copied default preprocessing data to file. Message: " + file.getName());
 			}
-
-			file.createNewFile();
-			FileOutputStream outputStream = new FileOutputStream(file);
-			int read;
-			byte[] bytes = new byte[1024];
-
-			while ((read = newFileInputStream.read(bytes)) != -1) {
-				outputStream.write(bytes, 0, read);
-			}
-			outputStream.close();
-
 		} catch (IOException e) {
-			LOGGER.error("Failed to copy default training data to file. Message: " + e.getMessage());
+			e.printStackTrace();
+			System.out.println("Path: " + path + ", filename: " + filename + ", url: " + url);
+			System.err.println("Failed to copy data to file. Message: " + e.getMessage());
+
 		} catch (Exception e) {
-			LOGGER.error("Failed to copy default training data to file. Message: " + e.getMessage());
+			e.printStackTrace();
 		}
+
 		return file;
-	}
+}
+
 
 	/**
 	 * Creates a checksum for a given InputStream.
@@ -149,7 +156,7 @@ public interface FileTrainer {
 	 * @throws Exception
 	 */
 
-	static byte[] createChecksum(InputStream fileInputStream) throws Exception {
+	private static byte[] createChecksum(InputStream fileInputStream) throws Exception {
 		byte[] buffer = new byte[1024];
 		MessageDigest complete = MessageDigest.getInstance("MD5");
 		int numRead;
@@ -171,7 +178,7 @@ public interface FileTrainer {
 	 * @return MD5 checksum of an InputStream
 	 * @throws Exception
 	 */
-	public static String getMD5Checksum(InputStream fileInputStream) throws Exception {
+	static String getMD5Checksum(InputStream fileInputStream) throws Exception {
 		byte[] b = createChecksum(fileInputStream);
 		StringBuilder result = new StringBuilder();
 

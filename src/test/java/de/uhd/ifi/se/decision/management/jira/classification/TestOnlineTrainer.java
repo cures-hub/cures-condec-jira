@@ -7,21 +7,17 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
 
-/**
- * TODO: TESTS WITH useOnlyValidatedData FLAG
- */
 public class TestOnlineTrainer extends TestSetUp {
 
 
@@ -129,13 +125,6 @@ public class TestOnlineTrainer extends TestSetUp {
         // List<KnowledgeType> types =
         // classifier.makeFineGrainedPredictions(stringsToBeClassified);
         // System.out.println(types);
-    }
-
-    @Ignore
-    @Test
-    @NonTransactional
-    public void testCopyDefaultTrainingDataToFile() {
-        assertTrue(FileTrainer.copyDefaultTrainingDataToFile().exists());
     }
 
     @Test

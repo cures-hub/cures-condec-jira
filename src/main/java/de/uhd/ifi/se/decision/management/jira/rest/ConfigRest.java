@@ -1,16 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.List;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import java.util.List;
+import java.util.Set;
 
 /**
  * REST resource for plug-in configuration
@@ -38,17 +37,17 @@ public interface ConfigRest {
 	Response setIssueStrategy(HttpServletRequest request, String projectKey, String isIssueStrategyString);
 
 	Response setKnowledgeTypeEnabled(@Context HttpServletRequest request, String projectKey,
-			String isKnowledgeTypeEnabledString, String knowledgeType);
+									 String isKnowledgeTypeEnabledString, String knowledgeType);
 
 	Response setReleaseNoteMapping(HttpServletRequest request, String projectKey, ReleaseNoteCategory category,
-			List<String> selectedIssueNames);
+								   List<String> selectedIssueNames);
 
 	Response setWebhookData(HttpServletRequest request, String projectKey, String webhookUrl, String webhookSecret);
 
 	Response setWebhookEnabled(HttpServletRequest request, String projectKey, String isActivatedString);
 
 	Response setWebhookType(HttpServletRequest request, String projectKey, String webhookType,
-			boolean isWebhookTypeEnabled);
+							boolean isWebhookTypeEnabled);
 
 	/* **************************************/
 	/*										*/
@@ -59,7 +58,7 @@ public interface ConfigRest {
 	Response setGitUri(HttpServletRequest request, String projectKey, String gitUri);
 
 	Response setKnowledgeExtractedFromGit(HttpServletRequest request, String projectKey,
-			String isKnowledgeExtractedFromGit);
+										  String isKnowledgeExtractedFromGit);
 
 	Response setPostSquashedCommits(HttpServletRequest request, String projectKey, String checked);
 
@@ -77,6 +76,8 @@ public interface ConfigRest {
 	Response classifyWholeProject(HttpServletRequest request, String projectKey);
 
 	Response setUseClassifierForIssueComments(HttpServletRequest request, String projectKey, String isActivatedString);
+
+	Response testClassifierWithText(HttpServletRequest request, String projectKey, String text);
 
 	Response saveArffFile(HttpServletRequest request, String projectKey, boolean useOnlyValidatedData);
 

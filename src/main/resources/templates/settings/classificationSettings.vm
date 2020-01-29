@@ -114,11 +114,30 @@
     <input type="button" class="aui-button" id="trainClassifier-button" value="Train Classifier"/>
     <div class="description">
         Trains the classifier on the selected Attribute-Relation File Format (ARFF) file. <br/>
-        <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span>Please note that this initial training is
+        <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span>Please note that this initial
+        training is
         very resource expensive!
     </div>
     <div class="aui-progress-indicator">
         <span id="train-classifier-progress"></span>
+    </div>
+</div>
+
+<div class="field-group">
+    <label for="testClassifierWithText-input">Test the Classifier</label>
+
+    <textarea class="textarea" name="testText-input"
+              id="testClassifierWithText-input" placeholder="Your text to be classified here..."></textarea>
+
+
+
+
+</div>
+<div class="buttons-container">
+    <div class="buttons">
+        <input type="button" class="aui-button" id="testClassifierWithText-button" value="Test classifier"/>
+
+        <span class="cancel" id="testClassifierWithText-result">The result will be displayed here.</span>
     </div>
 </div>
 
@@ -127,6 +146,10 @@
     const isClassifierUsedToggle = document.getElementById("isClassifierUsed-toggle");
     isClassifierUsedToggle.checked = $project.isClassifierUsedForIssueComments();
 
+    const testClassifierWithTextBtn = document.getElementById("testClassifierWithText-button");
+    const testClassifierWithTextInput = document.getElementById("testClassifierWithText-input");
+    const testClassifierWithTextResult = document.getElementById("testClassifierWithText-result");
+
     const currentClassifierStatusInfo = document.getElementById("classifierStatus-text");
     currentClassifierStatusInfo.style.display = isClassifierUsedToggle.checked ? "inherit" : "none";
 
@@ -134,6 +157,9 @@
     sentenceIconToggle.checked = $project.isIconParsingEnabled() ;
 
     // add listeners
+    testClassifierWithTextBtn.addEventListener('click', () =>{
+       conDecAPI.testClassifierWithText(testClassifierWithTextInput.value,"$projectKey", testClassifierWithTextResult)
+    });
     const evaluateModelButton = document.getElementById("evaluateModel-button");
     evaluateModelButton.addEventListener("click", function () {
         var animatedElement = document.getElementById("evaluate-classifier-progress");
@@ -154,8 +180,8 @@
     const classifyAllIssuesInProjectButton = document.getElementById("classifyAllIssuesInProject");
     classifyAllIssuesInProjectButton.addEventListener("click", function () {
         if (confirm("Are you sure you want to classify all Jira issue comments and descriptions? This might take a long time if the project is big.")) {
-        	var animatedElement = document.getElementById("classify-whole-project-progress-bar");
-            conDecAPI.classifyWholeProject("$projectKey", animatedElement);         
+            var animatedElement = document.getElementById("classify-whole-project-progress-bar");
+            conDecAPI.classifyWholeProject("$projectKey", animatedElement);
         }
     });
 

@@ -1,7 +1,7 @@
 /*
  This tab panel view does:
- * toggle sentence types
- * show a tree of relevant decision knowledge
+ * show a tree of decision knowledge and other knowledge (requirements, tasks, bug reports, ...)
+ * enable to filter the tree of knowledge
 
  Requires
  * conDecAPI
@@ -22,9 +22,8 @@
 	};
 
 	ConDecIssueTab.prototype.init = function init(_conDecAPI, _conDecObservable, _treeViewer, _contextMenu) {
-		console.log("conDecTabPanel init");
+		console.log("conDecIssueTab init");
 
-		// TODO add simple type checks
 		conDecAPI = _conDecAPI;
 		conDecObservable = _conDecObservable;
 		treeViewer = _treeViewer;
@@ -37,48 +36,49 @@
 	};
 
 	ConDecIssueTab.prototype.fetchAndRender = function() {
-		buildTreeViewer([ true, true, true, true, true ]);
+		buildTreeViewer(null);
 	};
 
 	/* triggered by onchange event in tabPanel.vm */
-	function toggleSelectedDecisionElements() {
-		console.log("view.condec.tab.panel toggleSelectedDecisionElements");
-
-		var decisionElements = [ "Issue", "Decision", "Alternative", "Argument", "Relevant" ];
-		var checked = [];
-
-		for (var i = 0; i < decisionElements.length; i++) {
-			var check = document.getElementById(decisionElements[i]).checked;
-			checked.push(check);
-		}
-		return checked;
-	}
-
 	ConDecIssueTab.prototype.updateView = function updateView() {
-		console.log("view.condec.tab.panel updateView");
+		console.log("conDecIssueTab updateView");
 		treeViewer.resetTreeViewer();
-		var checked = toggleSelectedDecisionElements();
-		buildTreeViewer(checked);
+		var selectedKnowledgeTypes = getSelectedKnowledgeTypes();
+		buildTreeViewer(selectedKnowledgeTypes);
 	};
 
-	/*
-	 called by
-	 * conDecTabPanel:callDialog
-	 * view.context.menu.js
-	 */
-	function buildTreeViewer(knowledgeTypeSelection) {
-		console.log("conDecTabPanel buildTreeViewer");
+	function getSelectedKnowledgeTypes() {
+		console.log("conDecIssueTab getSelectedKnowledgeTypes");
 
-		conDecAPI.getTreeViewerWithoutRootElement(knowledgeTypeSelection, function(core) {
+		var allKnowledgeTypes = [ "Issue", "Decision", "Alternative", "Argument" ];
+		var selectedKnowledgeTypes = [];
+
+		for (var i = 0; i < allKnowledgeTypes.length; i++) {
+			var isTypeSelected = document.getElementById(allKnowledgeTypes[i]).checked;
+			if (isTypeSelected) {
+				selectedKnowledgeTypes.push(allKnowledgeTypes[i]);
+			}
+		}
+		return selectedKnowledgeTypes;
+	}
+
+	function buildTreeViewer(selectedKnowledgeTypes) {
+		console.log("conDecIssueTab buildTreeViewer");
+
+		var jiraIssueKey = conDecAPI.getIssueKey();
+		conDecAPI.getTreeViewerForSingleElement(jiraIssueKey, selectedKnowledgeTypes, function(core) {
 			console.log("conDecTabPanel getTreeViewerWithoutRootElement callback");
 
 			jQueryConDec("#jstree").jstree({
-				"core" : core,
-				"plugins" : [ "dnd", "wholerow", "search", "sort", "state" ],
-				"search" : {
-					"show_only_matches" : true
-				},
-				"sort" : sortfunction
+			    "core" : core,
+			    "plugins" : [ "dnd", "wholerow", "search", "sort", "state" ],
+			    "search" : {
+				    "show_only_matches" : true
+			    },
+			    "sort" : sortfunction
+			});
+			jQueryConDec("#jstree").on("loaded.jstree", function() {
+				jQueryConDec("#jstree").jstree("open_all");
 			});
 			$("#jstree-search-input").keyup(function() {
 				var searchString = $(this).val();
@@ -99,12 +99,6 @@
 			return -1;
 		}
 	}
-
-	// Expose methods:
-	// for tabPanel.vm
-	ConDecIssueTab.prototype.toggleSelectedDecisionElements = toggleSelectedDecisionElements;
-	// for view.context.menu.js
-	ConDecIssueTab.prototype.buildTreeViewer = buildTreeViewer;
 
 	// export ConDecIssueTab
 	global.conDecIssueTab = new ConDecIssueTab();

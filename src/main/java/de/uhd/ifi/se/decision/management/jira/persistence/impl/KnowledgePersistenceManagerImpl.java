@@ -48,9 +48,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	private List<AbstractPersistenceManagerForSingleLocation> initActivePersistenceManagersForSinleLocations() {
 		List<AbstractPersistenceManagerForSingleLocation> activePersistenceManagersForSinleLocations = new ArrayList<AbstractPersistenceManagerForSingleLocation>();
 		activePersistenceManagersForSinleLocations.add(jiraIssueTextPersistenceManager);
-		if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
-			activePersistenceManagersForSinleLocations.add(jiraIssuePersistenceManager);
-		}
+		activePersistenceManagersForSinleLocations.add(jiraIssuePersistenceManager);
 		return activePersistenceManagersForSinleLocations;
 	}
 

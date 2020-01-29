@@ -8,60 +8,55 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+import de.uhd.ifi.se.decision.management.jira.testdata.Links;
 
-public class TestData {
-	private String id;
-	private String text;
-	private List<Data> children;
-	private KnowledgeElement nodeInfo;
+public class TestData extends TestSetUp {
 
+	private KnowledgeElement element;
 	private Data data;
 
 	@Before
 	public void setUp() {
-		id = "Test";
-		text = "Test";
-		children = new ArrayList<>();
-		nodeInfo = new KnowledgeElementImpl();
-		data = new Data();
-		data.setChildren(children);
-		data.setId(id);
-		data.setNodeInfo(nodeInfo);
-		data.setText(text);
+		init();
+		element = KnowledgeElements.getTestKnowledgeElement();
+		data = new Data(element);
+	}
+
+	@Test
+	public void testConstructorWithElementAndLink() {
+		Link link = Links.getTestLink();
+		Data data = new Data(element, link);
+		assertEquals("tv1", data.getId());
 	}
 
 	@Test
 	public void testGetId() {
-		assertEquals(data.getId(), id);
+		assertEquals("tv1", data.getId());
 	}
 
 	@Test
 	public void testGetText() {
-		assertEquals(data.getText(), text);
+		assertEquals("WI: Implement feature", data.getText());
 	}
 
 	@Test
 	public void testGetChildren() {
-		assertEquals(data.getChildren(), children);
+		assertEquals(new ArrayList<>(), data.getChildren());
 	}
 
 	@Test
-	public void testGetNodeInfo() {
-		assertEquals(data.getNode(), nodeInfo);
+	public void testGetElement() {
+		assertEquals(element, data.getElement());
 	}
 
 	@Test
 	public void testSetId() {
-		data.setId(id + "New");
-		assertEquals(data.getId(), id + "New");
-	}
-
-	@Test
-	public void testSetText() {
-		data.setText(text + "New");
-		assertEquals(data.getText(), text + "New");
+		data.setId("New");
+		assertEquals("New", data.getId());
 	}
 
 	@Test
@@ -72,9 +67,7 @@ public class TestData {
 	}
 
 	@Test
-	public void testSetNodeInfo() {
-		KnowledgeElementImpl newInfo = new KnowledgeElementImpl();
-		data.setNodeInfo(newInfo);
-		assertEquals(newInfo, data.getNode());
+	public void testGetIcon() {
+		assertEquals(null, data.getIcon());
 	}
 }

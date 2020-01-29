@@ -68,7 +68,7 @@ public interface DecisionKnowledgeClassifier {
 	 * @param stringsToBePreprocessed sentence
 	 * @return preprocessed sentences
 	 */
-	List<List<Double>> preprocess(String stringsToBePreprocessed);
+	List<List<Double>> preprocess(String stringsToBePreprocessed) throws Exception;
 
 	/**
 	 * Preprocesses sentences in such a way, that the classifiers can use them
@@ -81,7 +81,7 @@ public interface DecisionKnowledgeClassifier {
 	 * @param labels                  labels of the sentences
 	 * @return
 	 */
-	Map<String, List> preprocess(List<String> stringsToBePreprocessed, List labels);
+	Map<String, List> preprocess(List<String> stringsToBePreprocessed, List labels) throws Exception;
 
 	BinaryClassifierImpl getBinaryClassifier();
 

@@ -22,7 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPers
 
 public class JiraIssues {
 
-	private static List<MutableIssue> jiraIssues;
+	public static List<MutableIssue> jiraIssues = new ArrayList<MutableIssue>();
 
 	public static List<MutableIssue> getTestJiraIssues() {
 		if (jiraIssues == null || jiraIssues.isEmpty()) {

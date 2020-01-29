@@ -4,72 +4,53 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.HashSet;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestVisGraph extends TestSetUp {
 	private VisGraph visGraph;
-	private Set<VisNode> nodes;
-	private Set<VisEdge> edges;
-	private KnowledgeElement element;
 	private ApplicationUser user;
 	private FilterSettings filterSettings;
 
 	@Before
 	public void setUp() {
 		init();
-		nodes = new HashSet<VisNode>();
-		edges = new HashSet<VisEdge>();
-		visGraph = new VisGraph();
-		visGraph.setEdges(edges);
-		visGraph.setNodes(nodes);
-		visGraph.setGraph(new KnowledgeGraphImpl("TEST"));
-		visGraph.setRootElementKey("");
-
-		element = new KnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
-		element.setProject(new DecisionKnowledgeProjectImpl("TEST"));
-
-		user = JiraUsers.BLACK_HEAD.getApplicationUser();
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		filterSettings = new FilterSettingsImpl("TEST", "");
+		visGraph = new VisGraph(user, filterSettings);
 	}
 
 	@Test
 	public void testGetNodes() {
-		assertEquals(this.visGraph.getNodes(), this.nodes);
+		assertEquals(8, visGraph.getNodes().size());
 	}
 
 	@Test
 	public void testGetEdges() {
-		assertEquals(this.visGraph.getEdges(), this.edges);
+		assertEquals(9, visGraph.getEdges().size());
 	}
 
 	@Test
 	public void testSetNodes() {
-		HashSet<VisNode> newNodes = new HashSet<>();
-		this.visGraph.setNodes(newNodes);
-		assertEquals(this.visGraph.getNodes(), newNodes);
+		HashSet<VisNode> newNodes = new HashSet<VisNode>();
+		visGraph.setNodes(newNodes);
+		assertEquals(visGraph.getNodes(), newNodes);
 	}
 
 	@Test
 	public void testSetEdges() {
-		HashSet<VisEdge> newEdges = new HashSet<>();
-		this.visGraph.setEdges(newEdges);
-		assertEquals(this.visGraph.getEdges(), newEdges);
+		HashSet<VisEdge> newEdges = new HashSet<VisEdge>();
+		visGraph.setEdges(newEdges);
+		assertEquals(visGraph.getEdges(), newEdges);
 	}
 
 	@Test
@@ -78,45 +59,27 @@ public class TestVisGraph extends TestSetUp {
 	}
 
 	@Test
-	public void testSetRootElementKey() {
-		visGraph.setRootElementKey("TestKey");
-		assertEquals("TestKey", visGraph.getRootElementKey());
-	}
-
-	@Test
 	public void testGetGraph() {
-		assertNotNull(visGraph.getGraph());
+		assertEquals(KnowledgeGraph.getOrCreate("TEST"), visGraph.getGraph());
 	}
 
 	@Test
-	public void testSetGraph() {
-		KnowledgeGraph newGraph = KnowledgeGraph.getOrCreate("ConDec");
-		visGraph.setGraph(newGraph);
-		assertEquals(newGraph, visGraph.getGraph());
-	}
-
-	@Test
-	public void testConstUserNullFilterNull() {
+	public void testConstructorUserNullFilterSettingsNull() {
 		assertNotNull(new VisGraph((ApplicationUser) null, (FilterSettings) null));
 	}
 
 	@Test
-	public void testConstUserFilledFilterNull() {
+	public void testConstructorUserFilledFilterSettingsNull() {
 		assertNotNull(new VisGraph(user, (FilterSettings) null));
 	}
 
 	@Test
-	public void testConstUserNullFilterFilled() {
+	public void testConstructorUserNullFilterSettingsFilled() {
 		assertNotNull(new VisGraph((ApplicationUser) null, filterSettings));
 	}
 
 	@Test
-	public void testConstUserFilterFilled() {
-		assertNotNull(new VisGraph(user, filterSettings));
-	}
-
-	@Test
-	public void testConstUserFilterFilledRootElementGiven() {
+	public void testConstructorUserNullFilterSettingsFilledRootElementExisting() {
 		assertNotNull(new VisGraph(user, filterSettings, "TEST-1"));
 	}
 }

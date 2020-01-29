@@ -50,15 +50,14 @@ public class JiraQueryHandlerImpl implements JiraQueryHandler {
 		String finalQuery = getRawQuery(query);
 		switch (queryType) {
 		case FILTER:
-			finalQuery = finalQuery.substring(8, finalQuery.length());
-			finalQuery = JiraFilter.getQueryForFilter(finalQuery);
+			finalQuery = finalQuery.substring(8);
+			finalQuery = "?jql=" + JiraFilter.getQueryForFilter(finalQuery);
 			break;
 		case JQL:
-			finalQuery = finalQuery.substring(5, finalQuery.length());
 			finalQuery = cleanDirtyJqlString(finalQuery);
 			break;
 		default:
-			finalQuery = "type = null";
+			finalQuery = "?jql=resolution = Unresolved";
 			break;
 		}
 		finalQuery = appendProjectKey(finalQuery);
@@ -78,7 +77,7 @@ public class JiraQueryHandlerImpl implements JiraQueryHandler {
 	 */
 	private String getRawQuery(String searchString) {
 		if (searchString == null || searchString.isEmpty()) {
-			return "?jql = type = null";
+			return "?jql = resolution = Unresolved";
 		}
 		String croppedQuery = searchString;
 		String[] split = searchString.split("§");
@@ -237,6 +236,6 @@ public class JiraQueryHandlerImpl implements JiraQueryHandler {
 	}
 
 	private ParseResult getParseResult() {
-		return searchService.parseQuery(this.user, query);
+		return searchService.parseQuery(this.user, query.substring(5));
 	}
 }

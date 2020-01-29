@@ -10,10 +10,7 @@ import opennlp.tools.tokenize.Tokenizer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -131,7 +128,7 @@ public class PreprocessorImpl implements Preprocessor {
 
 
     @Override
-    public synchronized List preprocess(String sentence) {
+    public synchronized List preprocess(String sentence) throws Exception {
 
 
         try {
@@ -163,7 +160,7 @@ public class PreprocessorImpl implements Preprocessor {
 		}catch (Exception e){
 			System.out.println(e.getMessage());
 			initFiles();
-			throw e;
+			throw new FileNotFoundException(e.getMessage());
 		}
 
     }

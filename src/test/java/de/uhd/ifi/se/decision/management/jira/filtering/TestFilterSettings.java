@@ -49,13 +49,13 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetSearchString() {
-		assertEquals("project = CONDEC", filterSettings.getSearchString());
+		assertEquals("?jql=project = CONDEC", filterSettings.getSearchString());
 	}
 
 	@Test
 	public void testSetSearchString() {
 		filterSettings.setSearchString(filterSettings.getSearchString() + "TEST ENDING");
-		assertEquals("project = CONDEC" + "TEST ENDING", filterSettings.getSearchString());
+		assertEquals("?jql=project = CONDEC" + "TEST ENDING", filterSettings.getSearchString());
 		filterSettings.setSearchString(null);
 		assertEquals("", filterSettings.getSearchString());
 	}
@@ -145,6 +145,6 @@ public class TestFilterSettings extends TestSetUp {
 		List<String> status = new ArrayList<String>();
 		status.add(KnowledgeStatus.UNRESOLVED.toString());
 		filterSettings.setSelectedStatus(status);
-		assertEquals(8, filterSettings.getSelectedStatus().size());
+		assertEquals(1, filterSettings.getSelectedStatus().size());
 	}
 }
