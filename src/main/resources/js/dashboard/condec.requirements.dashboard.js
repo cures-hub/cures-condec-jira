@@ -25,7 +25,6 @@
 
     var dashboardContentNodeGeneral;
     var dashboardContentNodeCompleteness;
-    var dashboardContentNodeInconsistencies;
     var dashboardContentNodeBasics;
     var dashboardProjectNode;
     var dashboardIssueTypeNode;
@@ -40,7 +39,6 @@
 		showDiv = _showDiv;
         getHTMLNodes( "dynamic-content-general"
                 , "dynamic-content-completeness"
-                , "dynamic-content-inconsistencies"
                 , "dynamic-content-basics"
                 , "configproject"
                 , "configissuetype"
@@ -70,10 +68,9 @@
 	    this.initializeChartForSources(divId, title, subtitle, dataMap);
     }
 	
-    function getHTMLNodes(contentName1,contentName2,contentName3,contentName4, projectName, issueTypeName, errorName, nothingYetName) {
+    function getHTMLNodes(contentName1,contentName2,contentName4, projectName, issueTypeName, errorName, nothingYetName) {
         dashboardContentNodeGeneral   = document.getElementById(contentName1);
         dashboardContentNodeCompleteness   = document.getElementById(contentName2);
-        dashboardContentNodeInconsistencies   = document.getElementById(contentName3);
         dashboardContentNodeBasics   = document.getElementById(contentName4);
         dashboardProjectNode = document.getElementById(projectName);
         dashboardIssueTypeNode = document.getElementById(issueTypeName);
@@ -85,7 +82,6 @@
         var hiddenClass = "hidden";
         dashboardContentNodeGeneral.classList.add(hiddenClass);
         dashboardContentNodeCompleteness.classList.add(hiddenClass);
-        dashboardContentNodeInconsistencies.classList.add(hiddenClass);
         dashboardContentNodeBasics.classList.add(hiddenClass);
         dashboardProjectNode.classList.add(hiddenClass);
         dashboardIssueTypeNode.classList.add(hiddenClass);
@@ -98,11 +94,9 @@
         var hiddenClass = "hidden";
         dashboardContentNodeGeneral.classList.remove(hiddenClass);
         dashboardContentNodeCompleteness.classList.remove(hiddenClass);
-        dashboardContentNodeInconsistencies.classList.remove(hiddenClass);
         dashboardContentNodeBasics.classList.remove(hiddenClass);
         dashboardNothingYetNode.classList.add(hiddenClass);
     }
-
 
 	/* TODO: Below function does not need to be exposed! */
 	ConDecReqDash.prototype.initializeChartForSources = function(divId, title, subtitle, dataMap) {
