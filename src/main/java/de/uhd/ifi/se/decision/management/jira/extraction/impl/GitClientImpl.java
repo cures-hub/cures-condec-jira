@@ -382,7 +382,6 @@ public class GitClientImpl implements GitClient {
 	} else if (branchUniqueCommits.size() > 0) {
 	    branchUniqueCommits = Lists.reverse(branchUniqueCommits);
 	} else {
-	    System.out.println("I am here");
 	    branchUniqueCommits = branchCommits;
 	}
 

@@ -17,6 +17,7 @@ import com.google.common.collect.Maps;
 
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.MetricCalculator;
 
 public class RequirementsDashboardItem implements ContextProvider {
@@ -97,9 +98,11 @@ public class RequirementsDashboardItem implements ContextProvider {
 	Map<String, Object> newContext = new HashMap<>();
 	Map<String, String> projectNameMap = new TreeMap<String, String>();
 	for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
-	    String projectKey = project.getKey();
-	    String projectName = project.getName();
-	    projectNameMap.put(projectName, projectKey);
+	    if (ConfigPersistenceManager.isActivated(project.getKey())) {
+		String projectKey = project.getKey();
+		String projectName = project.getName();
+		projectNameMap.put(projectName, projectKey);
+	    }
 	}
 	newContext.put("projectNamesMap", projectNameMap);
 	return newContext;
@@ -114,8 +117,10 @@ public class RequirementsDashboardItem implements ContextProvider {
 
 	chartCreator.addChart("#Comments per JIRA Issue", "boxplot-CommentsPerJiraIssue",
 		metricCalculator.numberOfCommentsPerIssue());
-	chartCreator.addChart("#Commits per JIRA Issue", "boxplot-CommitsPerJiraIssue",
-		metricCalculator.numberOfCommitsPerIssue());
+	/*
+	 * chartCreator.addChart("#Commits per JIRA Issue",
+	 * "boxplot-CommitsPerJiraIssue", metricCalculator.numberOfCommitsPerIssue());
+	 */
 	// TODO:LinkDistance filter
 	chartCreator.addChart("#Decisions per JIRA Issue", "boxplot-DecisionsPerJiraIssue",
 		metricCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.DECISION, 2));

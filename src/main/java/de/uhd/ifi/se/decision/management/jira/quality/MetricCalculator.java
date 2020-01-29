@@ -69,7 +69,7 @@ public class MetricCalculator {
 	this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
 	this.user = user;
 	this.graph = KnowledgeGraph.getOrCreate(projectKey);
-	this.jiraIssues = getJiraIssuesForProject(projectId);
+	this.jiraIssues = getJiraIssuesForProject(projectId, user);
 	this.gitClient = new GitClientImpl(projectKey);
 	Map<String, List<KnowledgeElement>> elementMap = getDecisionKnowledgeElementsFromCode(projectKey);
 	if (elementMap != null) {
@@ -104,7 +104,7 @@ public class MetricCalculator {
 	return linkDistanceMap;
     }
 
-    private List<Issue> getJiraIssuesForProject(long projectId) {
+    public static List<Issue> getJiraIssuesForProject(long projectId, ApplicationUser user) {
 	List<Issue> jiraIssues = new ArrayList<Issue>();
 	JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
 	Query query = jqlClauseBuilder.project(projectId).buildQuery();
@@ -125,9 +125,8 @@ public class MetricCalculator {
 	String branchName;
 	try {
 	    branchName = gitClient.getRepository().getFullBranch();
-	    System.out.println(branchName);
 	    Ref branch = gitClient.getRepository().findRef(branchName);
-	    String branchNameShort = gitExtract.generateBranchShortName(branch);
+	    String branchNameShort = GitDecXtract.generateBranchShortName(branch);
 	    Map<String, List<KnowledgeElement>> elementsMap = gitExtract
 		    .getElementsSplitByCodeAndCommit(branchNameShort);
 	    return elementsMap;
@@ -152,20 +151,16 @@ public class MetricCalculator {
 	return numberMap;
     }
 
-    public Map<String, Integer> numberOfCommitsPerIssue() {
-	Map<String, Integer> resultMap = new HashMap<String, Integer>();
-	try {
-	    if (this.gitClient != null) {
-		for (Issue jiraIssue : jiraIssues) {
-		    int numberOfCommits = this.gitClient.getNumberOfCommits(jiraIssue);
-		    resultMap.put(jiraIssue.getKey(), numberOfCommits);
-		}
-	    }
-	} catch (Exception ex) {
-	    LOGGER.error(ex.getMessage());
-	}
-	return resultMap;
-    }
+    /*
+     * public Map<String, Integer> numberOfCommitsPerIssue() { Map<String, Integer>
+     * resultMap = new HashMap<String, Integer>(); if (resultMap.size() == 0) {
+     * return null; } try { if (this.gitClient != null) { for (Issue jiraIssue :
+     * jiraIssues) { int numberOfCommits =
+     * this.gitClient.getNumberOfCommits(jiraIssue);
+     * resultMap.put(jiraIssue.getKey(), numberOfCommits); } } } catch (Exception
+     * ex) { LOGGER.error(ex.getMessage()); } System.out.println("5"); return
+     * resultMap; }
+     */
 
     public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType type,
 	    Integer linkDistance) {
@@ -181,6 +176,9 @@ public class MetricCalculator {
 			numberOfElements++;
 		    }
 		    for (KnowledgeElement element : elements) {
+			if (issue.getKey().equals("CONDEC-18")) {
+			    System.out.println(element.getSummary());
+			}
 			if (element.getType().equals(type)) {
 			    numberOfElements++;
 			}
@@ -266,13 +264,16 @@ public class MetricCalculator {
 	}
 	int numberIssues = 0;
 	int numberIssueContent = 0;
-	for (Issue issue : jiraIssues) {
-	    if (KnowledgeType.getDefaultTypes().toString().contains(issue.getIssueType().getName())) {
+	List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
+	for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
+	    elements.addAll(graph.getElements(type));
+	}
+	for (KnowledgeElement element : elements) {
+	    if (element.getDocumentationLocation().getIdentifier().equals("i")) {
 		numberIssues++;
-	    } else {
-		List<KnowledgeElement> elements = KnowledgePersistenceManager.getOrCreate(projectKey)
-			.getJiraIssueTextManager().getElementsInJiraIssue(issue.getId());
-		numberIssueContent = numberIssueContent + elements.size();
+	    }
+	    if (element.getDocumentationLocation().getIdentifier().equals("s")) {
+		numberIssueContent++;
 	    }
 	}
 	sourceMap.put("Issue Content", numberIssueContent);
@@ -364,7 +365,6 @@ public class MetricCalculator {
 	}
 	numberOfRelevantSentences.put("Relevant Sentences", isRelevant);
 	numberOfRelevantSentences.put("Irrelevant Sentences", isIrrelevant);
-
 	return numberOfRelevantSentences;
     }
 
