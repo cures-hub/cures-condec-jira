@@ -624,6 +624,18 @@
 			}
 		});
 	};
+	
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setGitUris = function setGitUris(projectKey, gitUris) {
+		postJSON(this.restPrefix + "/config/setGitUris.json?projectKey=" + projectKey
+			+ "&gitUris=" + gitUris, null, function (error, response) {
+			if (error === null) {
+				showFlag("success", "The git URIs for this project have been set.");
+			}
+		});
+	};
 
 	/*
 	 * external references: settingsForSingleProject.vm
