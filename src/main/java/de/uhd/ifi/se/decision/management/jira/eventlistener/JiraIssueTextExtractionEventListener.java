@@ -37,7 +37,7 @@ public class JiraIssueTextExtractionEventListener {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextExtractionEventListener.class);
 
 	public JiraIssueTextExtractionEventListener(
-			ClassificationManagerForJiraIssueComments classificationManagerForJiraIssueComments) {
+		ClassificationManagerForJiraIssueComments classificationManagerForJiraIssueComments) {
 		this.classificationManagerForJiraIssueComments = classificationManagerForJiraIssueComments;
 	}
 
@@ -77,7 +77,7 @@ public class JiraIssueTextExtractionEventListener {
 		if (eventTypeId == EventType.ISSUE_DELETED_ID) {
 			handleDeleteIssue();
 		}
-		if (eventTypeId == EventType.ISSUE_UPDATED_ID || eventTypeId == EventType.ISSUE_CREATED_ID ) {
+		if (eventTypeId == EventType.ISSUE_UPDATED_ID || eventTypeId == EventType.ISSUE_CREATED_ID) {
 			handleUpdateDescription();
 		}
 	}
@@ -104,7 +104,7 @@ public class JiraIssueTextExtractionEventListener {
 
 	private void handleDeleteIssue() {
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
+			.getJiraIssueTextManager();
 		persistenceManager.deleteInvalidElements(issueEvent.getUser());
 		KnowledgeElement element = new KnowledgeElementImpl(issueEvent.getIssue());
 		KnowledgeGraph.getOrCreate(element.getProject().getProjectKey()).removeVertex(element);
@@ -113,7 +113,7 @@ public class JiraIssueTextExtractionEventListener {
 
 	private void handleDeleteComment() {
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
+			.getJiraIssueTextManager();
 		persistenceManager.deleteInvalidElements(issueEvent.getUser());
 		// JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
@@ -141,7 +141,7 @@ public class JiraIssueTextExtractionEventListener {
 		parseIconsToTags();
 
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
+			.getJiraIssueTextManager();
 
 		if (ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey)) {
 			persistenceManager.deleteElementsInComment(issueEvent.getComment());
@@ -164,14 +164,14 @@ public class JiraIssueTextExtractionEventListener {
 		parseIconsToTags();
 
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
+			.getJiraIssueTextManager();
 
 		if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
 			persistenceManager.deleteElementsInDescription(issueEvent.getIssue());
-			this.classificationManagerForJiraIssueComments.classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
-		} else {
-			JiraIssueTextPersistenceManager.updateDescription(issueEvent.getIssue());
+			this.classificationManagerForJiraIssueComments.classifyDescription(this.issueEvent);
 		}
+		JiraIssueTextPersistenceManager.updateDescription(issueEvent.getIssue());
+
 		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue().getId());
 	}
 
@@ -186,7 +186,7 @@ public class JiraIssueTextExtractionEventListener {
 
 		try {
 			List<GenericValue> changes = changeLog.internalDelegator.findByAnd("ChangeItem",
-					MapBuilder.build("group", changeId));
+				MapBuilder.build("group", changeId));
 			for (GenericValue changeItem : changes) {
 				String oldValue = changeItem.getString("oldstring");
 				String newValue = changeItem.getString("newstring");

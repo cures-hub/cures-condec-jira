@@ -1,16 +1,23 @@
 package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.event.issue.IssueEvent;
+import com.atlassian.jira.event.type.EventDispatchOption;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
+import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.impl.TextSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class to classify the text in JIRA issue comments as either irrelevant in
@@ -31,6 +38,29 @@ public class ClassificationManagerForJiraIssueComments {
 			return;
 		}
 		this.classifyComments(getComments(issue));
+	}
+
+	public void classifyDescription(IssueEvent issueEvent) {
+		if (issueEvent != null) {
+			MutableIssue issue = (MutableIssue) issueEvent.getIssue();
+			TextSplitter splitter = new TextSplitterImpl();
+			List<PartOfJiraIssueText> partsOfDescription = splitter
+				.getPartsOfText(issue.getDescription(), issue.getProjectObject().getKey())
+				.stream()
+				//The PartOfJiraIssueTextImpl constructor with signature (PartOfText, Issue) creates a Part of Description by setting the ID to 0
+				.map(part -> new PartOfJiraIssueTextImpl(part, issue))
+				.collect(Collectors.toList());
+
+			classifySentencesBinary(partsOfDescription);
+			classifySentencesFineGrained(partsOfDescription);
+			String s = "";
+			for (PartOfJiraIssueText p : partsOfDescription) {
+				s += p.getText() + "[" + p.isRelevant() + ": " + p.getTypeAsString() + "]";
+			}
+			issue.setDescription(s);
+			ComponentAccessor.getIssueManager().updateIssue(issueEvent.getUser(), issue, EventDispatchOption.DO_NOT_DISPATCH, false);
+			//JiraIssueTextPersistenceManager.updateDescription(issue);
+		}
 	}
 
 	public void classifyComments(List<Comment> comments) {
@@ -163,7 +193,7 @@ public class ClassificationManagerForJiraIssueComments {
 		for (PartOfJiraIssueText sentence : sentences) {
 			if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 				sentence.setType(classificationResult.get(i));
-				sentence.setSummary(null);
+				//sentence.setSummary(null);
 				sentence.setValidated(false);
 				persistenceManager.updateDecisionKnowledgeElement(sentence, null);
 				i++;
@@ -177,6 +207,6 @@ public class ClassificationManagerForJiraIssueComments {
 	}
 
 	public void classifyComments(Comment comment) {
-		this.classifyComments(Arrays.asList(new Comment[]{comment}));
+		this.classifyComments(Collections.singletonList(comment));
 	}
 }

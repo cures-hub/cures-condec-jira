@@ -1,11 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.model.text.impl;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
@@ -13,14 +7,18 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.user.ApplicationUser;
-
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * Model class for textual parts (substrings) of JIRA issue comments or the
@@ -59,15 +57,17 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 
 	private static PartOfText getFirstPartOfTextInComment(Comment comment) {
 		String projectKey = comment.getIssue().getProjectObject().getKey();
-		List<PartOfText> partsOfText = new TextSplitterImpl().getPartsOfText(comment.getBody(), projectKey);
+		List<PartOfJiraIssueText> partsOfText = new TextSplitterImpl().getPartsOfText(comment.getBody(), projectKey);
 		return partsOfText.get(0);
 	}
 
 	public PartOfJiraIssueTextImpl(PartOfText partOfText, Issue jiraIssue) {
 		this(partOfText, (Comment) null);
 		this.setCommentId(0);
+		this.setDescription(partOfText.getText());
 		this.setJiraIssueId(jiraIssue.getId());
 		this.setCreated(jiraIssue.getCreated());
+		this.setPlainText(!containsExcludedTag(partOfText.getText()));
 	}
 
 	public PartOfJiraIssueTextImpl(PartOfJiraIssueTextInDatabase databaseEntry) {
