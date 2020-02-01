@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.TextSplitterImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ public class ClassificationManagerForJiraIssueComments {
 		if (issueEvent != null) {
 			MutableIssue issue = (MutableIssue) issueEvent.getIssue();
 			TextSplitter splitter = new TextSplitterImpl();
+			//Convert Description-String to a  List of PartOfJiraIssueText
 			List<PartOfJiraIssueText> partsOfDescription = splitter
 				.getPartsOfText(issue.getDescription(), issue.getProjectObject().getKey())
 				.stream()
@@ -51,15 +53,23 @@ public class ClassificationManagerForJiraIssueComments {
 				.map(part -> new PartOfJiraIssueTextImpl(part, issue))
 				.collect(Collectors.toList());
 
+			for (PartOfJiraIssueText p : partsOfDescription){
+				KnowledgePersistenceManager.getOrCreate(issueEvent.getProject().getKey()).getJiraIssueTextManager().insertDecisionKnowledgeElement(p, p.getCreator());
+			}
+
 			classifySentencesBinary(partsOfDescription);
 			classifySentencesFineGrained(partsOfDescription);
-			String s = "";
+			StringBuilder s = new StringBuilder();
 			for (PartOfJiraIssueText p : partsOfDescription) {
-				s += p.getText() + "[" + p.isRelevant() + ": " + p.getTypeAsString() + "]";
+				String macro = "";
+				if (p.isRelevant()) {
+					macro = "{" + p.getTypeAsString().toLowerCase() + "}";
+				}
+				s.append(macro).append(p.getText()).append(macro);
 			}
-			issue.setDescription(s);
+			issue.setDescription(s.toString());
 			ComponentAccessor.getIssueManager().updateIssue(issueEvent.getUser(), issue, EventDispatchOption.DO_NOT_DISPATCH, false);
-			//JiraIssueTextPersistenceManager.updateDescription(issue);
+			JiraIssueTextPersistenceManager.updateDescription(issue);
 		}
 	}
 
