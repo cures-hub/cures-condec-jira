@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.List;
 import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
@@ -129,14 +130,6 @@ public interface DecisionKnowledgeProject {
     void setKnowledgeExtractedFromGit(boolean isKnowledgeExtractedFromGit);
 
     /**
-     * Return the uniform resource identifier of the git repository for this
-     * project.
-     *
-     * @return git uri as a String (if it is set, otherwise an empty String).
-     */
-    String getGitUri();
-
-    /**
      * Set whether the webhook is enabled for this project.
      *
      * @param isWebhookEnabled true if the webhook is enabled for this project.
@@ -197,5 +190,12 @@ public interface DecisionKnowledgeProject {
      */
     boolean isClassifierUsedForIssueComments();
 
-    String getGitUris();
+    /**
+     * Return the uniform resource identifiers of the git repositories for this
+     * project.
+     *
+     * @return git uris as a List<String> (if it is set, otherwise an empty List).
+     */
+
+    List<String> getGitUris();
 }

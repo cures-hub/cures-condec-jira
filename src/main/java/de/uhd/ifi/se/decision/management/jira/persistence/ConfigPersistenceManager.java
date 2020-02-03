@@ -166,20 +166,14 @@ public class ConfigPersistenceManager {
 	setValue(projectKey, "isPostFeatureBranchCommitsActivated", Boolean.toString(checked));
     }
 
-    public static void setGitUri(String projectKey, String gitUri) {
-	setValue(projectKey, "gitUri", gitUri);
-    }
-
-    public static String getGitUri(String projectKey) {
-	return getValue(projectKey, "gitUri");
-    }
-
     public static void setGitUris(String projectKey, String gitUris) {
 	setValue(projectKey, "gitUris", gitUris);
     }
 
-    public static String getGitUris(String projectKey) {
-	return getValue(projectKey, "gitUris");
+    public static List<String> getGitUris(String projectKey) {
+	String value = getValue(projectKey, "gitUris");
+	List<String> uris = Arrays.asList(value.split(";;"));
+	return uris;
     }
 
     public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,

@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,18 +123,39 @@ public class MetricCalculator {
     private Map<String, List<KnowledgeElement>> getDecisionKnowledgeElementsFromCode(String projectKey) {
 	// Extracts Decision Knowledge from Code Comments AND Commits
 	GitDecXtract gitExtract = new GitDecXtract(projectKey);
-	String branchName;
-	try {
-	    branchName = gitClient.getRepository().getFullBranch();
-	    Ref branch = gitClient.getRepository().findRef(branchName);
-	    String branchNameShort = GitDecXtract.generateBranchShortName(branch);
-	    Map<String, List<KnowledgeElement>> elementsMap = gitExtract
-		    .getElementsSplitByCodeAndCommit(branchNameShort);
-	    return elementsMap;
-	} catch (IOException e) {
-	    e.printStackTrace();
+
+	Map<String, List<KnowledgeElement>> resultMap = new HashMap<String, List<KnowledgeElement>>();
+	List<KnowledgeElement> allGatheredCommitElements = new ArrayList<>();
+	List<KnowledgeElement> allGatheredCodeElements = new ArrayList<>();
+	for (String repoUri : gitClient.getRemoteUris()) {
+	    List<KnowledgeElement> gatheredCommitElements = new ArrayList<>();
+	    List<KnowledgeElement> gatheredCodeElements = new ArrayList<>();
+	    try {
+		String branchName = gitClient.getRepository(repoUri).getFullBranch();
+		Ref branch = gitClient.getRepository(repoUri).findRef(branchName);
+		String branchNameShort = GitDecXtract.generateBranchShortName(branch);
+		List<RevCommit> featureCommits = gitClient.getFeatureBranchCommits(branchNameShort, repoUri);
+		if (featureCommits == null || featureCommits.size() == 0) {
+		    return resultMap;
+		} else {
+		    for (RevCommit commit : featureCommits) {
+			gatheredCommitElements.addAll(gitExtract.getElementsFromMessage(commit));
+		    }
+		    allGatheredCommitElements.addAll(gatheredCommitElements);
+		    RevCommit baseCommit = featureCommits.get(0);
+		    RevCommit lastFeatureBranchCommit = featureCommits.get(featureCommits.size() - 1);
+		    gatheredCodeElements.addAll(gitExtract.getElementsFromCode(baseCommit, lastFeatureBranchCommit,
+			    branchNameShort, repoUri));
+		    allGatheredCodeElements.addAll(gatheredCodeElements);
+		}
+	    } catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
 	}
-	return null;
+	resultMap.put("Commit", allGatheredCommitElements);
+	resultMap.put("Code", allGatheredCodeElements);
+	return resultMap;
     }
 
     public Map<String, Integer> numberOfCommentsPerIssue() {

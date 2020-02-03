@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model.impl;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -97,12 +98,7 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
     }
 
     @Override
-    public String getGitUri() {
-	return ConfigPersistenceManager.getGitUri(projectKey);
-    }
-
-    @Override
-    public String getGitUris() {
+    public List<String> getGitUris() {
 	return ConfigPersistenceManager.getGitUris(projectKey);
     }
 

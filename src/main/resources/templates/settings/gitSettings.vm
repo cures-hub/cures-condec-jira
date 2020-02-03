@@ -42,7 +42,7 @@
 	<label for="git-uri-input-field">Git Repositories</label>
 	<div class="description">Uniform resource identifier of the git repository that will be cloned (Example: https://github.com/cures-hub/cures-condec-jira.git).</div>
 	<div class="container1">
-	    #foreach($string in $project.getGitUris().split(";;"))
+	    #foreach($string in $project.getGitUris())
 	    	<div><input type="text" class="text long-field" value="$string"></div>    
 	    #end
 	    <button class="add_form_field" >Add New Repository &nbsp; 
@@ -95,7 +95,6 @@ $(document).ready(function() {
 
 <script>
     var gitToggle = document.getElementById("isKnowledgeExtractedFromGit-toggle");
-    //var gitSubmitButton = document.getElementById("git-uri-button");
     var isPostSquashedCommitsActivatedToggle = document.getElementById('isPostSquashedCommitsActivated-toggle');
     var isPostFeatureBranchCommitsActivatedToggle = document.getElementById('isPostFeatureBranchCommitsActivated-toggle');
 
@@ -137,12 +136,6 @@ $(document).ready(function() {
         this.busy = false;
     });
 
-	/*
-    gitSubmitButton.addEventListener("click", function () {
-        var gitUri = document.getElementById("git-uri-input-field").value;
-        conDecAPI.setGitUri("$projectKey", gitUri);
-        window.onbeforeunload = null;
-    });*/
 
     gitToggle.addEventListener("change", function (error) {
         this.busy = true;
