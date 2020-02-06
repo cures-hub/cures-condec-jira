@@ -56,7 +56,7 @@ public interface ConfigRest {
     /*										*/
     /* **************************************/
 
-    Response setGitUris(HttpServletRequest request, String projectKey, String gitUris);
+    Response setGitUris(HttpServletRequest request, String projectKey, String gitUris, String defaultBranches);
 
     Response setKnowledgeExtractedFromGit(HttpServletRequest request, String projectKey,
 	    String isKnowledgeExtractedFromGit);

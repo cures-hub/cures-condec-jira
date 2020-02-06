@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction;
 import java.io.File;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Ref;
@@ -199,6 +200,16 @@ public interface GitClient {
     int getNumberOfCommits(Issue jiraIssue, String repoUri);
 
     /**
+     * Return the remote Uri identifier of the Repository containing the given
+     * Branch.
+     * 
+     * @param featureBranch
+     * @return String of Remote Repository Uri or Null if branch not contained in
+     *         any Repo.
+     */
+    String getRepoUriFromBranch(Ref featureBranch);
+
+    /**
      * Retrieves the JIRA issue key from a commit message.
      * 
      * @param commitMessage a commit message that should contain a JIRA issue key.
@@ -245,4 +256,11 @@ public interface GitClient {
      * @param git object.
      */
     void setGit(Git git, String repoUri);
+
+    /**
+     * Return Map of DefaultBranchFolderNames with RepoUri as key
+     * 
+     * @return DefaultBranchFolderNames parameter.
+     */
+    Map<String, String> getDefaultBranchFolderNames();
 }

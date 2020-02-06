@@ -83,24 +83,38 @@ public class GitClientImpl implements GitClient {
 	initMaps();
 	List<String> uris = ConfigPersistenceManager.getGitUris(projectKey);
 	if (directories.size() == uris.size()) {
+	    boolean success = true;
 	    for (int i = 0; i < directories.size(); i++) {
-		this.repoInitSuccess = initRepository(uris.get(i), directories.get(i));
+		success = initRepository(uris.get(i), directories.get(i));
+		if (!success) {
+		    this.repoInitSuccess = false;
+		}
 	    }
 	}
     }
 
     public GitClientImpl(List<String> uris, String defaultDirectory, String projectKey) {
 	initMaps();
-	for (int i = 0; i < uris.size(); i++) { // TODO: Add setting to set defaultbranchfoldername for each repo
-	    defaultBranchFolderNames.put(uris.get(i), "develop");
+	Map<String, String> defaultBranches = ConfigPersistenceManager.getDefaultBranches(projectKey);
+	for (int i = 0; i < uris.size(); i++) {
+	    if (defaultBranches.get(uris.get(i)) != null) {
+		defaultBranchFolderNames.put(uris.get(i), defaultBranches.get(uris.get(i)));
+	    } else {
+		defaultBranchFolderNames.put(uris.get(i), "develop");
+	    }
 	}
 	this.repoInitSuccess = pullOrCloneRepositories(projectKey, defaultDirectory, uris, defaultBranchFolderNames);
     }
 
     public GitClientImpl(List<String> uris, String projectKey) {
 	initMaps();
-	for (int i = 0; i < uris.size(); i++) { // TODO: Add setting to set defaultbranchfoldername for each repo
-	    defaultBranchFolderNames.put(uris.get(i), "develop");
+	Map<String, String> defaultBranches = ConfigPersistenceManager.getDefaultBranches(projectKey);
+	for (int i = 0; i < uris.size(); i++) {
+	    if (defaultBranches.get(uris.get(i)) != null) {
+		defaultBranchFolderNames.put(uris.get(i), defaultBranches.get(uris.get(i)));
+	    } else {
+		defaultBranchFolderNames.put(uris.get(i), "develop");
+	    }
 	}
 	this.repoInitSuccess = pullOrCloneRepositories(projectKey, DEFAULT_DIR, uris, defaultBranchFolderNames);
     }
@@ -115,8 +129,13 @@ public class GitClientImpl implements GitClient {
     public GitClientImpl(String projectKey) {
 	initMaps();
 	List<String> uris = ConfigPersistenceManager.getGitUris(projectKey);
-	for (int i = 0; i < uris.size(); i++) { // TODO: Add setting to set defaultbranchfoldername for each repo
-	    defaultBranchFolderNames.put(uris.get(i), "develop");
+	Map<String, String> defaultBranches = ConfigPersistenceManager.getDefaultBranches(projectKey);
+	for (int i = 0; i < uris.size(); i++) {
+	    if (defaultBranches.get(uris.get(i)) != null) {
+		defaultBranchFolderNames.put(uris.get(i), defaultBranches.get(uris.get(i)));
+	    } else {
+		defaultBranchFolderNames.put(uris.get(i), "develop");
+	    }
 	}
 	this.repoInitSuccess = pullOrCloneRepositories(projectKey, DEFAULT_DIR, uris, defaultBranchFolderNames);
     }
@@ -390,11 +409,11 @@ public class GitClientImpl implements GitClient {
 	return getDiff(revCommit, revCommit, repoUri);
     }
 
-    private String getRepoUriFromBranch(Ref featureBranch) {
+    public String getRepoUriFromBranch(Ref featureBranch) {
 	for (String uri : remoteUris) {
 	    Git git = gits.get(uri);
 	    try {
-		if (git.getRepository().getRefDatabase().getRefs().contains(featureBranch)) {
+		if (git.getRepository().exactRef(featureBranch.getName()) != null) {
 		    return uri;
 		}
 	    } catch (IOException e) {
@@ -418,19 +437,19 @@ public class GitClientImpl implements GitClient {
 	List<RevCommit> branchUniqueCommits = new ArrayList<RevCommit>();
 	List<RevCommit> branchCommits = getCommits(featureBranch);
 	RevCommit lastCommonAncestor = null;
-	if (defaultBranchCommits.containsKey(featureBranch) && defaultBranchCommits.get(featureBranch) == null) {
-	    defaultBranchCommits.put(featureBranch, getCommitsFromDefaultBranch(repoUri));
+	if (!defaultBranchCommits.containsKey(defaultBranches.get(repoUri))
+		|| defaultBranchCommits.get(defaultBranches.get(repoUri)) == null) {
+	    defaultBranchCommits.put(defaultBranches.get(repoUri), getCommitsFromDefaultBranch(repoUri));
 	}
 	for (RevCommit commit : branchCommits) {
-	    if (defaultBranchCommits.get(featureBranch) != null && commit != null
-		    && defaultBranchCommits.get(featureBranch).contains(commit)) {
+	    if (defaultBranchCommits.get(defaultBranches.get(repoUri)) != null && commit != null
+		    && defaultBranchCommits.get(defaultBranches.get(repoUri)).contains(commit)) {
 		LOGGER.info("Found last common commit " + commit.toString());
 		lastCommonAncestor = commit;
 		break;
 	    }
 	    branchUniqueCommits.add(commit);
 	}
-
 	if (lastCommonAncestor == null) {
 	    branchUniqueCommits = null;
 	} else if (branchUniqueCommits.size() > 0) {
@@ -681,9 +700,7 @@ public class GitClientImpl implements GitClient {
 	for (Ref ref : refs) {
 	    if (ref.getName().contains(jiraIssueKey)) {
 		return ref;
-	    } else if (ref.getName().equalsIgnoreCase("refs/heads/develop")) {
-		branch = ref;
-	    } else if (ref.getName().equalsIgnoreCase("refs/heads/master")) {
+	    } else if (ref.getName().equalsIgnoreCase("refs/heads/" + defaultBranchFolderNames.get(repoUri))) {
 		branch = ref;
 	    }
 	}
@@ -719,6 +736,7 @@ public class GitClientImpl implements GitClient {
 	for (String uri : remoteUris) {
 	    try {
 		List<Ref> refs = gits.get(uri).branchList().setListMode(listMode).call();
+		allRefs.addAll(refs);
 	    } catch (GitAPIException | NullPointerException e) {
 		LOGGER.error("Git could not get references. Message: " + e.getMessage());
 	    }

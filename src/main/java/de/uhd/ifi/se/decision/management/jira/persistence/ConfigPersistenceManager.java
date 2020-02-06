@@ -3,7 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
@@ -174,6 +176,32 @@ public class ConfigPersistenceManager {
 	String value = getValue(projectKey, "gitUris");
 	List<String> uris = Arrays.asList(value.split(";;"));
 	return uris;
+    }
+
+    public static void setDefaultBranches(String projectKey, String defaultBranches) {
+	setValue(projectKey, "defaultBranches", defaultBranches);
+    }
+
+    public static Map<String, String> getDefaultBranches(String projectKey) {
+	Map<String, String> defaultBranches = new HashMap<String, String>();
+	String value = getValue(projectKey, "gitUris");
+	List<String> uris = Arrays.asList(value.split(";;"));
+	value = getValue(projectKey, "defaultBranches");
+	if (value.equals(null) || value.equals("")) {
+	    for (String uri : uris) {
+		defaultBranches.put(uri, "develop");
+	    }
+	    return defaultBranches;
+	}
+	List<String> branches = Arrays.asList(value.split(";;"));
+	for (int i = 0; i < uris.size(); i++) {
+	    if (branches.get(i) == null) {
+		defaultBranches.put(uris.get(i), "develop");
+	    } else {
+		defaultBranches.put(uris.get(i), branches.get(i));
+	    }
+	}
+	return defaultBranches;
     }
 
     public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,

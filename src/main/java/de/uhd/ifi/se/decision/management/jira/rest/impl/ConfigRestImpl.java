@@ -436,19 +436,21 @@ public class ConfigRestImpl implements ConfigRest {
     @Path("/setGitUris")
     @POST
     public Response setGitUris(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-	    @QueryParam("gitUris") String gitUris) {
+	    @QueryParam("gitUris") String gitUris, @QueryParam("defaultBranches") String defaultBranches) {
 	Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 	if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 	    return isValidDataResponse;
 	}
-	if (gitUris == null) {
+	if (gitUris == null || defaultBranches == null) {
 	    return Response.status(Status.BAD_REQUEST)
 		    .entity(ImmutableMap.of("error", "Git URI could not be set because it is null.")).build();
 	}
 	// List<String> gitUriList = Arrays.asList(gitUris.split(";;"));
 	ConfigPersistenceManager.setGitUris(projectKey, gitUris);
+	ConfigPersistenceManager.setDefaultBranches(projectKey, defaultBranches);
 	return Response.ok(Status.ACCEPTED).build();
     }
+
     /* **************************************/
     /*										*/
     /* Configuration for Classifier */

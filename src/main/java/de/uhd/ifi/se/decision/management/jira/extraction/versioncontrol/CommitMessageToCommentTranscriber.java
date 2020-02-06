@@ -87,26 +87,30 @@ public class CommitMessageToCommentTranscriber {
     }
 
     public void postComments(Ref branch) throws PermissionException {
+	System.out.println("Called");
 	ApplicationUser defaultUser = getUser();
 	String projectKey = this.issue.getProjectObject().getKey();
 	if (gitClient == null) {
 	    return;
 	}
-	if (branch.getName().contains("develop") || branch.getName().contains("master")) {
+	String repoUri = gitClient.getRepoUriFromBranch(branch);
+	if (branch.getName().contains(gitClient.getDefaultBranchFolderNames().get(repoUri))) {
 	    if (Boolean.parseBoolean(ConfigPersistenceManager.getValue(projectKey, "isPostSquashedCommitsActivated"))) {
-
+		System.out.println("Hello");
 		Optional.ofNullable(gitClient.getAllRelatedCommits(this.issue)).ifPresent(squashedCommits::addAll);
 
 		for (RevCommit commit : this.squashedCommits) {
+		    System.out.println("Darkness");
 		    this.postComment(defaultUser, commit, branch);
 		}
 	    }
 	} else {
 	    if (Boolean.parseBoolean(
 		    ConfigPersistenceManager.getValue(projectKey, "isPostFeatureBranchCommitsActivated"))) {
-
+		System.out.println("My");
 		Optional.ofNullable(gitClient.getFeatureBranchCommits(branch)).ifPresent(featureBranchCommits::addAll);
 		for (RevCommit commit : this.featureBranchCommits) {
+		    System.out.println("old");
 		    this.postComment(defaultUser, commit, branch);
 		}
 	    }

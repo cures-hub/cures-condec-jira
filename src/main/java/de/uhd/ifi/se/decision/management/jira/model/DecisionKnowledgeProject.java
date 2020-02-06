@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
@@ -198,4 +199,12 @@ public interface DecisionKnowledgeProject {
      */
 
     List<String> getGitUris();
+
+    /**
+     * Return the a map with uniform resource identifiers of the git repositories
+     * for this project as keys and name of default branch as Value.
+     *
+     * @return default branches as Map<String,String>.
+     */
+    Map<String, String> getDefaultBranches();
 }

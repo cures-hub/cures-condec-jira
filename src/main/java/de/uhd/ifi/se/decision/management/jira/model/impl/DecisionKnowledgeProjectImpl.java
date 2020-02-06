@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.model.impl;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -103,6 +104,11 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
     }
 
     @Override
+    public Map<String, String> getDefaultBranches() {
+	return ConfigPersistenceManager.getDefaultBranches(projectKey);
+    }
+
+    @Override
     public void setWebhookEnabled(boolean isWebhookEnabled) {
 	ConfigPersistenceManager.setWebhookEnabled(projectKey, isWebhookEnabled);
     }
@@ -145,4 +151,5 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
     public boolean isClassifierUsedForIssueComments() {
 	return ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey);
     }
+
 }

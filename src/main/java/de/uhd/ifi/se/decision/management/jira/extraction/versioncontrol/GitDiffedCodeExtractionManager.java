@@ -59,7 +59,7 @@ public class GitDiffedCodeExtractionManager {
     private final GitClient gitClientCheckedOutAtDiffStart;
     private final GitClient gitClientCheckedOutAtDiffEnd;
     private final Diff diff;
-
+    private final String repoUri;
     private static final Logger LOGGER = LoggerFactory.getLogger(GitDiffedCodeExtractionManager.class);
 
     // may include null values for keys!
@@ -67,10 +67,11 @@ public class GitDiffedCodeExtractionManager {
     // CodeExtractionResult as an attribute to the ChangedFile class
     private Map<DiffEntry, CodeExtractionResult> results = new HashMap<>();
 
-    public GitDiffedCodeExtractionManager(Diff diff, GitClient gitAtDiffEnd, GitClient gitAtDiffStart) {
+    public GitDiffedCodeExtractionManager(Diff diff, GitClient gitAtDiffEnd, GitClient gitAtDiffStart, String repoUri) {
 	gitClientCheckedOutAtDiffStart = gitAtDiffStart;
 	gitClientCheckedOutAtDiffEnd = gitAtDiffEnd;
 	this.diff = diff;
+	this.repoUri = repoUri;
 	processEntries();
     }
 
@@ -306,9 +307,9 @@ public class GitDiffedCodeExtractionManager {
 		+ File.separator + inspectedFileRelativePath;
 
 	if (fromNewerFile) {
-	    return new File(gitClientCheckedOutAtDiffEnd.getDirectory(), filePathRelativeOutOfGitFolder);
+	    return new File(gitClientCheckedOutAtDiffEnd.getDirectory(repoUri), filePathRelativeOutOfGitFolder);
 	} else {
-	    return new File(gitClientCheckedOutAtDiffStart.getDirectory(), filePathRelativeOutOfGitFolder);
+	    return new File(gitClientCheckedOutAtDiffStart.getDirectory(repoUri), filePathRelativeOutOfGitFolder);
 	}
     }
 

@@ -104,8 +104,9 @@ public class ViewRestImpl implements ViewRest {
 	List<Ref> branches = gitClient.getRemoteBranches();
 	for (Ref branch : branches) {
 	    Matcher branchMatcher = filterPattern.matcher(branch.getName());
-	    // TODO: make default branch names configurable!
-	    if (branchMatcher.find() || branch.getName().contains("develop") || branch.getName().contains("master")) {
+	    String repoUri = gitClient.getRepoUriFromBranch(branch);
+	    if (branchMatcher.find()
+		    || branch.getName().contains(gitClient.getDefaultBranchFolderNames().get(repoUri))) {
 		transcriber.postComments(branch);
 	    }
 	}
