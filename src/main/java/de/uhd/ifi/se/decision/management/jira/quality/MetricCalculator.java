@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.quality;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -128,29 +127,26 @@ public class MetricCalculator {
 	List<KnowledgeElement> allGatheredCommitElements = new ArrayList<>();
 	List<KnowledgeElement> allGatheredCodeElements = new ArrayList<>();
 	for (String repoUri : gitClient.getRemoteUris()) {
+	    List<Ref> branches = gitClient.getRemoteBranches(repoUri);
+	    Ref lastBranch = branches.get(0);
+	    Ref defaultBranch = gitClient.getDefaultBranch(repoUri);
 	    List<KnowledgeElement> gatheredCommitElements = new ArrayList<>();
 	    List<KnowledgeElement> gatheredCodeElements = new ArrayList<>();
-	    try {
-		String branchName = gitClient.getRepository(repoUri).getFullBranch();
-		Ref branch = gitClient.getRepository(repoUri).findRef(branchName);
-		String branchNameShort = GitDecXtract.generateBranchShortName(branch);
-		List<RevCommit> featureCommits = gitClient.getFeatureBranchCommits(branchNameShort, repoUri);
-		if (featureCommits == null || featureCommits.size() == 0) {
-		    return resultMap;
-		} else {
-		    for (RevCommit commit : featureCommits) {
-			gatheredCommitElements.addAll(gitExtract.getElementsFromMessage(commit));
-		    }
-		    allGatheredCommitElements.addAll(gatheredCommitElements);
-		    RevCommit baseCommit = featureCommits.get(0);
-		    RevCommit lastFeatureBranchCommit = featureCommits.get(featureCommits.size() - 1);
-		    gatheredCodeElements.addAll(gitExtract.getElementsFromCode(baseCommit, lastFeatureBranchCommit,
-			    branchNameShort, repoUri));
-		    allGatheredCodeElements.addAll(gatheredCodeElements);
+	    List<RevCommit> defaultfeatureCommits = gitClient.getFeatureBranchCommits(defaultBranch);
+	    List<RevCommit> lastfeatureCommits = gitClient.getFeatureBranchCommits(lastBranch);
+	    if (defaultfeatureCommits == null || defaultfeatureCommits.size() == 0 || lastfeatureCommits == null
+		    || lastfeatureCommits.size() == 0) {
+		return resultMap;
+	    } else {
+		for (RevCommit commit : defaultfeatureCommits) {
+		    gatheredCommitElements.addAll(gitExtract.getElementsFromMessage(commit));
 		}
-	    } catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+		allGatheredCommitElements.addAll(gatheredCommitElements);
+		RevCommit baseCommit = lastfeatureCommits.get(0);
+		RevCommit lastFeatureBranchCommit = lastfeatureCommits.get(lastfeatureCommits.size() - 1);
+		gatheredCodeElements
+			.addAll(gitExtract.getElementsFromCode(baseCommit, lastFeatureBranchCommit, lastBranch));
+		allGatheredCodeElements.addAll(gatheredCodeElements);
 	    }
 	}
 	resultMap.put("Commit", allGatheredCommitElements);

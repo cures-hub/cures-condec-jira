@@ -63,7 +63,6 @@ public class ViewRestImpl implements ViewRest {
 	if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 	    return checkIfProjectKeyIsValidResponse;
 	}
-
 	// get all project branches
 	return getDiffViewerResponse(projectKey, projectKey);
     }
@@ -95,13 +94,15 @@ public class ViewRestImpl implements ViewRest {
     }
 
     private Response getDiffViewerResponse(String projectKey, String filter, Issue issue) throws PermissionException {
+
 	Response resp = this.getDiffViewerResponse(projectKey, filter);
 	Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
 	CommitMessageToCommentTranscriber transcriber = new CommitMessageToCommentTranscriber(issue);
 	// get current branch name
 	// iterate over commits to get all messages and post each one as a comment
 	// make sure to not post duplicates
-	List<Ref> branches = gitClient.getRemoteBranches();
+	gitClient = new GitClientImpl(projectKey);
+	List<Ref> branches = gitClient.getAllRemoteBranches();
 	for (Ref branch : branches) {
 	    Matcher branchMatcher = filterPattern.matcher(branch.getName());
 	    String repoUri = gitClient.getRepoUriFromBranch(branch);
@@ -110,20 +111,19 @@ public class ViewRestImpl implements ViewRest {
 		transcriber.postComments(branch);
 	    }
 	}
+	gitClient.closeAll();
 	return resp;
     }
 
     private Response getDiffViewerResponse(String projectKey, String filter) {
 	gitClient = new GitClientImpl(projectKey);
-	List<Ref> branches = gitClient.getRemoteBranches();
+	List<Ref> branches = gitClient.getAllRemoteBranches();
 	Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
-
 	if (branches.isEmpty()) {
 	    return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 	}
 	Map<Ref, List<KnowledgeElement>> ratBranchList = new HashMap<>();
 	GitDecXtract extractor = new GitDecXtract(projectKey);
-	// TODO: move the loop elsewhere or maybe in GitDecXtract
 	for (Ref branch : branches) {
 	    String branchName = branch.getName();
 	    Matcher branchMatcher = filterPattern.matcher(branchName);
@@ -132,7 +132,6 @@ public class ViewRestImpl implements ViewRest {
 	    }
 	}
 	extractor.close();
-	gitClient.closeAll();
 	DiffViewer diffView = new DiffViewer(ratBranchList);
 	Response resp = null;
 	try {

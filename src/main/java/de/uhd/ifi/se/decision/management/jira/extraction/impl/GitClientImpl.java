@@ -151,16 +151,16 @@ public class GitClientImpl implements GitClient {
 	    Map<String, String> defaultBranchFolderNames) {
 	fsManager = new GitRepositoryFSManager(defaultDirectory, projectKey, uris, defaultBranchFolderNames);
 	Map<String, String> defaultBranchPaths = fsManager.getDefaultBranchPaths();
+	this.remoteUris = uris;
+	this.projectKey = projectKey;
+	this.defaultDirectory = defaultDirectory;
+	this.defaultBranchFolderNames = defaultBranchFolderNames;
 	for (String uri : uris) {
 	    File directory = new File(defaultBranchPaths.get(uri));
 	    if (!pullOrClone(uri, directory)) {
 		return false;
 	    }
 	}
-	this.remoteUris = uris;
-	this.projectKey = projectKey;
-	this.defaultDirectory = defaultDirectory;
-	this.defaultBranchFolderNames = defaultBranchFolderNames;
 	return true;
     }
 
@@ -181,13 +181,12 @@ public class GitClientImpl implements GitClient {
 		return false;
 	    }
 	}
-
-	// get name of current branch, should be later replaced by project setting
-	defaultBranches.put(repoUri, getCurrentBranch(repoUri));
-	if (defaultBranches.get(repoUri) == null) {
+	if (defaultBranchFolderNames.get(repoUri) == null) {
 	    return false;
 	}
-	defaultBranchCommits.put(defaultBranches.get(repoUri), getCommitsFromDefaultBranch(repoUri));
+	Ref defaultBranch = getBranch(defaultBranchFolderNames.get(repoUri), repoUri);
+	defaultBranches.put(repoUri, defaultBranch);
+	defaultBranchCommits.put(defaultBranch, getCommitsFromDefaultBranch(repoUri));
 	return true;
     }
 
@@ -695,7 +694,7 @@ public class GitClientImpl implements GitClient {
      * discussions!
      */
     private Ref getRef(String jiraIssueKey, String repoUri) {
-	List<Ref> refs = getAllRefs(repoUri);
+	List<Ref> refs = getAllRefsForOneRepo(repoUri);
 	Ref branch = null;
 	for (Ref ref : refs) {
 	    if (ref.getName().contains(jiraIssueKey)) {
@@ -707,13 +706,18 @@ public class GitClientImpl implements GitClient {
 	return branch;
     }
 
-    private List<Ref> getAllRefs(String repoUri) {
-	return getRefs(ListBranchCommand.ListMode.ALL, repoUri);
+    @Override
+    public List<Ref> getAllRemoteBranches() {
+	return getAllRefs(ListBranchCommand.ListMode.REMOTE);
     }
 
     @Override
     public List<Ref> getRemoteBranches(String repoUri) {
 	return getRefs(ListBranchCommand.ListMode.REMOTE, repoUri);
+    }
+
+    private List<Ref> getAllRefsForOneRepo(String repoUri) {
+	return getRefs(ListBranchCommand.ListMode.ALL, repoUri);
     }
 
     private List<Ref> getRefs(ListBranchCommand.ListMode listMode, String repoUri) {
@@ -726,12 +730,7 @@ public class GitClientImpl implements GitClient {
 	return refs;
     }
 
-    @Override
-    public List<Ref> getRemoteBranches() {
-	return getRefs(ListBranchCommand.ListMode.REMOTE);
-    }
-
-    private List<Ref> getRefs(ListBranchCommand.ListMode listMode) {
+    private List<Ref> getAllRefs(ListBranchCommand.ListMode listMode) {
 	List<Ref> allRefs = new ArrayList<Ref>();
 	for (String uri : remoteUris) {
 	    try {
@@ -915,6 +914,10 @@ public class GitClientImpl implements GitClient {
 
     public Map<String, String> getDefaultBranchFolderNames() {
 	return defaultBranchFolderNames;
+    }
+
+    public Ref getDefaultBranch(String repoUri) {
+	return defaultBranches.get(repoUri);
     }
 
     public boolean isRepoInitSuccess() {

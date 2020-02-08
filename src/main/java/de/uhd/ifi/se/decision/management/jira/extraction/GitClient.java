@@ -139,7 +139,7 @@ public interface GitClient {
      *
      * @return Refs list
      */
-    List<Ref> getRemoteBranches();
+    List<Ref> getAllRemoteBranches();
 
     /**
      * Get a list of all commits of a <b>feature</b> branch, which do not exist in
@@ -249,6 +249,15 @@ public interface GitClient {
      * @return git object.
      */
     List<Git> getAllGit();
+
+    /**
+     * Return the default branch for the give Repository Uri
+     * 
+     * @param String repoUri
+     * @return Ref defaultBranch
+     */
+
+    Ref getDefaultBranch(String repoUri);
 
     /**
      * Sets the git object.

@@ -54,6 +54,7 @@ public class GitDecXtract {
 	for (RevCommit commit : featureCommits) {
 	    allGatheredElements.addAll(getElementsFromMessage(commit));
 	}
+
 	RevCommit baseCommit = featureCommits.get(0);
 	RevCommit lastFeatureBranchCommit = featureCommits.get(featureCommits.size() - 1);
 	allGatheredElements.addAll(getElementsFromCode(baseCommit, lastFeatureBranchCommit, branch));
@@ -90,13 +91,7 @@ public class GitDecXtract {
 
     public List<KnowledgeElement> getElementsFromMessage(RevCommit commit) {
 	GitCommitMessageExtractor extractorFromMessage = new GitCommitMessageExtractor(commit.getFullMessage());
-	List<KnowledgeElement> elementsFromMessage = extractorFromMessage.getElements().stream().map(element -> { // need
-														  // to
-														  // update
-														  // project
-														  // and
-														  // key
-														  // attributes
+	List<KnowledgeElement> elementsFromMessage = extractorFromMessage.getElements().stream().map(element -> {
 	    element.setProject(projecKey);
 	    element.setKey(updateKeyForMessageExtractedElement(element, commit.getId()));
 	    return element;
