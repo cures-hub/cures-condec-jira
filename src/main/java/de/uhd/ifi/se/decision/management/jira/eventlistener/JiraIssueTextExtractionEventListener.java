@@ -125,7 +125,7 @@ public class JiraIssueTextExtractionEventListener {
 			this.classificationManagerForJiraIssueComments.classifyComment(this.issueEvent.getComment());
 		} else {
 			MutableComment comment = (MutableComment) issueEvent.getComment();
-			JiraIssueTextPersistenceManager.getPartsOfComment(comment);
+			JiraIssueTextPersistenceManager.insertPartsOfComment(comment);
 		}
 		// JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 
@@ -146,7 +146,7 @@ public class JiraIssueTextExtractionEventListener {
 
 		if (ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey)) {
 			persistenceManager.deleteElementsInComment(issueEvent.getComment());
-			this.classificationManagerForJiraIssueComments.classifyComment(this.issueEvent.getComment());
+			this.classificationManagerForJiraIssueComments.classifyComment(issueEvent.getComment());
 		} else {
 			MutableComment comment = (MutableComment) issueEvent.getComment();
 			JiraIssueTextPersistenceManager.updateComment(comment);
@@ -167,9 +167,9 @@ public class JiraIssueTextExtractionEventListener {
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
 
-		if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
+		if (ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey)) {
 			persistenceManager.deleteElementsInDescription(issueEvent.getIssue());
-			this.classificationManagerForJiraIssueComments.classifyDescription(this.issueEvent);
+			this.classificationManagerForJiraIssueComments.classifyDescription((MutableIssue) issueEvent.getIssue());
 		} else {
 			JiraIssueTextPersistenceManager.updateDescription(issueEvent.getIssue());
 		}

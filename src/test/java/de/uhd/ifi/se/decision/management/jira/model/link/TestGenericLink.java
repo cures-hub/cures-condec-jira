@@ -52,7 +52,7 @@ public class TestGenericLink extends TestSetUp {
 	@NonTransactional
 	public void testSecondConstructor() {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.getPartsOfComment(comment);
+		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.insertPartsOfComment(comment);
 		KnowledgeElement element = new KnowledgeElementImpl(issue);
 		PartOfJiraIssueText sentence = sentences.get(0);
 		Link link = new LinkImpl(sentence, element);
@@ -67,7 +67,7 @@ public class TestGenericLink extends TestSetUp {
 	@NonTransactional
 	public void testThirdConstructor() {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.getPartsOfComment(comment);
+		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.insertPartsOfComment(comment);
 		KnowledgeElement element = new KnowledgeElementImpl(issue);
 		PartOfJiraIssueText sentence = sentences.get(0);
 		Link link = new LinkImpl(sentence, element, "contain");
@@ -84,7 +84,7 @@ public class TestGenericLink extends TestSetUp {
 	public void testSimpleLink() {
 		KnowledgeElement element = new KnowledgeElementImpl(issue);
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.getPartsOfComment(comment);
+		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.insertPartsOfComment(comment);
 		PartOfJiraIssueText sentence = sentences.get(0);
 		Link link = new LinkImpl(sentence, element);
 		GenericLinkManager.insertLink(link, null);
@@ -98,7 +98,7 @@ public class TestGenericLink extends TestSetUp {
 	public void testSimpleLinkFlipped() {
 		KnowledgeElement element = new KnowledgeElementImpl(issue);
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.getPartsOfComment(comment);
+		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.insertPartsOfComment(comment);
 		PartOfJiraIssueText sentence = sentences.get(0);
 		Link link = new LinkImpl(element, sentence);
 
@@ -112,7 +112,7 @@ public class TestGenericLink extends TestSetUp {
 	@NonTransactional
 	public void testLinkSentenceSentence() {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.getPartsOfComment(comment);
+		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.insertPartsOfComment(comment);
 		PartOfJiraIssueText s = sentences.get(0);
 		PartOfJiraIssueText s1 = sentences.get(1);
 		Link link = new LinkImpl(s1, s);
@@ -160,7 +160,7 @@ public class TestGenericLink extends TestSetUp {
 	@NonTransactional
 	public void testIsIssueLinkWithValidLink() {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.getPartsOfComment(comment);
+		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.insertPartsOfComment(comment);
 		PartOfJiraIssueText sentence = sentences.get(0);
 		KnowledgeElement element = new KnowledgeElementImpl(issue);
 		Link link = new LinkImpl(sentence, element);
@@ -180,7 +180,7 @@ public class TestGenericLink extends TestSetUp {
 	@NonTransactional
 	public void testToStringToBeatCodeCoverage() {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.getPartsOfComment(comment);
+		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.insertPartsOfComment(comment);
 		// JiraIssueComment comment = new JiraIssueCommentImpl();
 		PartOfJiraIssueText sentence = sentences.get(0);
 		KnowledgeElement element = new KnowledgeElementImpl(issue);

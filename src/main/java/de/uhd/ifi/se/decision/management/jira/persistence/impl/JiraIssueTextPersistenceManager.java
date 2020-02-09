@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.TextSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -691,31 +691,58 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	/**
-	 * Split a text into parts (substrings).
+	 * Splits a comment into parts (substrings) and inserts these parts into the
+	 * database table.
 	 *
 	 * @param comment
-	 *            JIRA issue comment.
-	 * @return list of sentence objects.
-	 * @see PartOfText
+	 *            Jira issue comment.
+	 * @return list of comment sentences with ids in database.
+	 * @see PartOfJiraIssueText
 	 */
-	public static List<PartOfJiraIssueText> getPartsOfComment(Comment comment) {
+	public static List<PartOfJiraIssueText> insertPartsOfComment(Comment comment) {
 		String projectKey = comment.getIssue().getProjectObject().getKey();
-		List<PartOfJiraIssueText> partsOfText = new TextSplitterImpl().getPartsOfText(comment.getBody(), projectKey);
+		List<PartOfJiraIssueText> partsOfComment = new TextSplitterImpl().getPartsOfText(comment.getBody(), projectKey);
 
-		List<PartOfJiraIssueText> parts = new ArrayList<PartOfJiraIssueText>();
+		List<PartOfJiraIssueText> partsOfCommentWithIdInDatabase = new ArrayList<PartOfJiraIssueText>();
 
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
-		// Create AO entries
-		for (PartOfText partOfText : partsOfText) {
-			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(partOfText, comment);
-			sentence = (PartOfJiraIssueText) persistenceManager.insertDecisionKnowledgeElement(sentence, null);
-			if (sentence.isRelevant()) {
-				AutomaticLinkCreator.createSmartLinkForElement(sentence);
-			}
-			parts.add(sentence);
+
+		// Create entries in the active objects (AO) database
+		for (PartOfJiraIssueText partOfComment : partsOfComment) {
+			partsOfCommentWithIdInDatabase
+					.add((PartOfJiraIssueText) persistenceManager.insertDecisionKnowledgeElement(partOfComment, null));
 		}
-		return parts;
+		return partsOfCommentWithIdInDatabase;
+	}
+
+	/**
+	 * Splits a Jira issue description into parts (substrings) and inserts these
+	 * parts into the database table.
+	 *
+	 * @param issue
+	 *            Jira issue.
+	 * @return list of sentences with ids in database.
+	 * @see PartOfJiraIssueText
+	 */
+	public static List<PartOfJiraIssueText> insertPartsOfDescription(MutableIssue issue) {
+		String projectKey = issue.getProjectObject().getKey();
+		// Convert description String to a list of PartOfJiraIssueText
+		List<PartOfJiraIssueText> partsOfDescription = new TextSplitterImpl()
+				.getPartsOfText(issue.getDescription(), projectKey).stream()
+				// The PartOfJiraIssueTextImpl constructor with signature (PartOfText, Issue)
+				// creates a Part of Description by setting the ID to 0
+				.map(part -> new PartOfJiraIssueTextImpl(part, issue)).collect(Collectors.toList());
+
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
+
+		List<PartOfJiraIssueText> partsOfDescriptionWithIdInDatabase = new ArrayList<PartOfJiraIssueText>();
+		for (PartOfJiraIssueText partOfDescription : partsOfDescription) {
+			partsOfDescriptionWithIdInDatabase.add((PartOfJiraIssueText) persistenceManager
+					.insertDecisionKnowledgeElement(partOfDescription, issue.getReporter()));
+		}
+		return partsOfDescriptionWithIdInDatabase;
 	}
 
 }
