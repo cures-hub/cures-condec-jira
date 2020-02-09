@@ -47,7 +47,13 @@
 		webhookToggle.checked = true;
 	} else {
 		webhookToggle.checked = false;
-	};
+	}
+	
+	webhookToggle.addEventListener("change", function(error) {
+		this.busy = true;
+		conDecAPI.setWebhookEnabled(this.checked, this.value);
+		this.busy = false;
+	});
 	
 	var webHookSubmit = document.getElementById("submitWebhook");
 	webHookSubmit.addEventListener("click", function() {
@@ -55,15 +61,9 @@
 		var secretInput = document.getElementById("webhook-secret");
 		conDecAPI.setWebhookData("$projectKey", urlInput.value, secretInput.value);
 		window.onbeforeunload = null;
+	});	
 
-	webhookToggle.addEventListener("change", function(error) {
-		this.busy = true;
-		conDecAPI.setWebhookEnabled(this.checked, this.value);
-		this.busy = false;
-	});
-
-    function getMultipleSelectedValue()
-    {
+    function getMultipleSelectedValue() {
         var x = document.getElementById("select-root-types");
         for (var i = 0; i < x.options.length; i++) {
             if(x.options[i].selected == true){
