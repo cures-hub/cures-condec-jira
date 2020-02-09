@@ -1,5 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.CreateException;
@@ -9,10 +15,16 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.JiraIssueTextExtractionEventListener;
-import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
@@ -22,11 +34,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
 import net.java.ao.Query;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Extends the abstract class
@@ -251,8 +258,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	@Override
-	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element,
-			ApplicationUser user, KnowledgeElement parentElement) {
+	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user,
+			KnowledgeElement parentElement) {
 		if (element == null || user == null) {
 			return null;
 		}
@@ -290,8 +297,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	@Override
-	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element,
-			ApplicationUser user) {
+	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		KnowledgeElement existingElement = checkIfElementExistsInDatabase(element);
 		if (existingElement != null) {
 			return existingElement;
@@ -488,8 +494,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (element.isLinked() > 0) {
 			return true;
 		}
-		KnowledgeElement parentElement = new KnowledgeElementImpl(
-				((PartOfJiraIssueText) element).getJiraIssue());
+		KnowledgeElement parentElement = new KnowledgeElementImpl(((PartOfJiraIssueText) element).getJiraIssue());
 		long linkId = KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(parentElement, element, null);
 		return linkId > 0;
 	}
@@ -557,8 +562,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
 
-		List<KnowledgeElement> knowledgeElementsInText = persistenceManager
-				.getElementsInComment(comment.getId());
+		List<KnowledgeElement> knowledgeElementsInText = persistenceManager.getElementsInComment(comment.getId());
 
 		// @issue Elements used to be deleted and new ones were created afterwards.
 		// How to enable a "real" update?
@@ -586,7 +590,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	public static List<KnowledgeElement> updateDescription(Issue jiraIssue) {
 		String projectKey = jiraIssue.getProjectObject().getKey();
-		List<PartOfJiraIssueText> partsOfText = new TextSplitterImpl().getPartsOfText(jiraIssue.getDescription(), projectKey);
+		List<PartOfJiraIssueText> partsOfText = new TextSplitterImpl().getPartsOfText(jiraIssue.getDescription(),
+				projectKey);
 
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
@@ -671,8 +676,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 *         that is documented in the description or the comments of a certain
 	 *         Jira issue.
 	 */
-	public static KnowledgeElement getYoungestElementForJiraIssue(long jiraIssueId,
-			KnowledgeType knowledgeType) {
+	public static KnowledgeElement getYoungestElementForJiraIssue(long jiraIssueId, KnowledgeType knowledgeType) {
 		PartOfJiraIssueText youngestElement = null;
 		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("JIRA_ISSUE_ID = ?", jiraIssueId).order("ID DESC"));
