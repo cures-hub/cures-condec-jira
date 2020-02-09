@@ -701,6 +701,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 */
 	public static List<PartOfJiraIssueText> insertPartsOfComment(Comment comment) {
 		String projectKey = comment.getIssue().getProjectObject().getKey();
+
+		// Convert comment String to a list of PartOfJiraIssueText
 		List<PartOfJiraIssueText> partsOfComment = new TextSplitterImpl().getPartsOfText(comment.getBody(), projectKey);
 
 		List<PartOfJiraIssueText> partsOfCommentWithIdInDatabase = new ArrayList<PartOfJiraIssueText>();
@@ -710,8 +712,12 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 		// Create entries in the active objects (AO) database
 		for (PartOfJiraIssueText partOfComment : partsOfComment) {
-			partsOfCommentWithIdInDatabase
-					.add((PartOfJiraIssueText) persistenceManager.insertDecisionKnowledgeElement(partOfComment, null));
+			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(partOfComment, comment);
+			sentence = (PartOfJiraIssueText) persistenceManager.insertDecisionKnowledgeElement(sentence, null);
+			if (sentence.isRelevant()) {
+				AutomaticLinkCreator.createSmartLinkForElement(sentence);
+			}
+			partsOfCommentWithIdInDatabase.add(sentence);
 		}
 		return partsOfCommentWithIdInDatabase;
 	}
@@ -734,9 +740,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				// creates a Part of Description by setting the ID to 0
 				.map(part -> new PartOfJiraIssueTextImpl(part, issue)).collect(Collectors.toList());
 
+		// Create entries in the active objects (AO) database
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
-
 		List<PartOfJiraIssueText> partsOfDescriptionWithIdInDatabase = new ArrayList<PartOfJiraIssueText>();
 		for (PartOfJiraIssueText partOfDescription : partsOfDescription) {
 			partsOfDescriptionWithIdInDatabase.add((PartOfJiraIssueText) persistenceManager

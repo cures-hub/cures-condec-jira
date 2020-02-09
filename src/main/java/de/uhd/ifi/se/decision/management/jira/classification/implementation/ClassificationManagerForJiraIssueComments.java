@@ -176,9 +176,7 @@ public class ClassificationManagerForJiraIssueComments {
 		int i = 0;
 		for (PartOfJiraIssueText sentence : sentences) {
 			if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
-				System.out.println(sentence);
 				sentence.setType(classificationResult.get(i));
-				System.out.println(sentence.getTypeAsString());
 				// sentence.setSummary(null);
 				sentence.setValidated(false);
 				persistenceManager.updateDecisionKnowledgeElement(sentence, null);
