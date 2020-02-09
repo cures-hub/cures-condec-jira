@@ -577,13 +577,15 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			if (i < numberOfTextPartsInComment) {
 				sentence.setId(knowledgeElementsInText.get(i).getId());
 				updateInDatabase(sentence);
+				knowledgeElementsInText.set(i, sentence);
 			} else {
 				sentence = (PartOfJiraIssueText) persistenceManager.insertDecisionKnowledgeElement(sentence, null);
+				knowledgeElementsInText.add(sentence);
 			}
 			if (sentence.isRelevant()) {
 				AutomaticLinkCreator.createSmartLinkForElement(sentence);
 			}
-			knowledgeElementsInText.set(i, sentence);
+
 		}
 		return knowledgeElementsInText;
 	}
