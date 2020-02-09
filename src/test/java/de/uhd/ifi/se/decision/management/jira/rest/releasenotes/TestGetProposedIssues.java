@@ -87,7 +87,7 @@ public class TestGetProposedIssues extends TestSetUp {
 
 	private void fillSentenceList() {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		JiraIssueTextPersistenceManager.getPartsOfComment(comment);
+		JiraIssueTextPersistenceManager.insertPartsOfComment(comment);
 	}
 
 	@Test
