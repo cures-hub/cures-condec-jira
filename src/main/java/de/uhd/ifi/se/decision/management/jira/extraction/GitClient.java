@@ -272,4 +272,13 @@ public interface GitClient {
      * @return DefaultBranchFolderNames parameter.
      */
     Map<String, String> getDefaultBranchFolderNames();
+
+    /**
+     * Get Default Branch Commits
+     * 
+     * @param repoUri
+     * @return
+     */
+    List<RevCommit> getDefaultBranchCommits(String repoUri);
+
 }

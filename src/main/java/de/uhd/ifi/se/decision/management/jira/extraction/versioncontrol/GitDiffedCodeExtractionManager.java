@@ -285,10 +285,12 @@ public class GitDiffedCodeExtractionManager {
     private List<CodeComment> getCommentsFromFile(String inspectedFileRelativePath, boolean fromNewerFile) {
 	File resultingFile = getInspectedFileAbsolutePath(inspectedFileRelativePath, fromNewerFile);
 	if (!resultingFile.isFile()) {
-	    LOGGER.error("Expected file " + resultingFile.getAbsolutePath() + " to exist!");
+	    // LOGGER.error("Expected file " + resultingFile.getAbsolutePath() + " to
+	    // exist!");
 	    return null;
 	} else if (!resultingFile.canRead()) {
-	    LOGGER.error("Expected file " + resultingFile.getAbsolutePath() + " to be readable!");
+	    // LOGGER.error("Expected file " + resultingFile.getAbsolutePath() + " to be
+	    // readable!");
 	    return null;
 	} else {
 	    CodeCommentParser commentParser = getCodeCommentParser(inspectedFileRelativePath);

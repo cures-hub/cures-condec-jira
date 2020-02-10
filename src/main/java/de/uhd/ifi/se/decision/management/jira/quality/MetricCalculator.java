@@ -3,12 +3,10 @@ package de.uhd.ifi.se.decision.management.jira.quality;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -226,23 +224,15 @@ public class MetricCalculator {
 	Map<String, Integer> distributionOfKnowledgeTypes = new HashMap<String, Integer>();
 	for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
 	    int numberOfElements = graph.getElements(type).size();
-	    for (KnowledgeElement element : (Optional.ofNullable(decisionKnowledgeCodeElements)
-		    .orElse(Collections.emptyList()))) {
-		if (element.getType().equals(type)) {
-		    numberOfElements++;
-		}
-	    }
-	    for (KnowledgeElement element : (Optional.ofNullable(decisionKnowledgeCommitElements)
-		    .orElse(Collections.emptyList()))) {
-		if (element.getType().equals(type)) {
-		    numberOfElements++;
-		}
-	    }
-	    for (Issue issue : jiraIssues) {
-		if (issue.getIssueType().getName().equals(type.toString())) {
-		    numberOfElements++;
-		}
-	    }
+	    /*
+	     * for (KnowledgeElement element :
+	     * (Optional.ofNullable(decisionKnowledgeCodeElements)
+	     * .orElse(Collections.emptyList()))) { if (element.getType().equals(type)) {
+	     * numberOfElements++; } } for (KnowledgeElement element :
+	     * (Optional.ofNullable(decisionKnowledgeCommitElements)
+	     * .orElse(Collections.emptyList()))) { if (element.getType().equals(type)) {
+	     * numberOfElements++; } }
+	     */
 	    distributionOfKnowledgeTypes.put(type.toString(), numberOfElements);
 	}
 	return distributionOfKnowledgeTypes;
@@ -289,8 +279,7 @@ public class MetricCalculator {
 	for (KnowledgeElement element : elements) {
 	    if (element.getDocumentationLocation().getIdentifier().equals("i")) {
 		numberIssues++;
-	    }
-	    if (element.getDocumentationLocation().getIdentifier().equals("s")) {
+	    } else if (element.getDocumentationLocation().getIdentifier().equals("s")) {
 		numberIssueContent++;
 	    }
 	}

@@ -97,7 +97,7 @@ public class GitClientImpl implements GitClient {
 	initMaps();
 	Map<String, String> defaultBranches = ConfigPersistenceManager.getDefaultBranches(projectKey);
 	for (int i = 0; i < uris.size(); i++) {
-	    if (defaultBranches.get(uris.get(i)) != null) {
+	    if (defaultBranches != null && defaultBranches.size() != 0 && defaultBranches.get(uris.get(i)) != null) {
 		defaultBranchFolderNames.put(uris.get(i), defaultBranches.get(uris.get(i)));
 	    } else {
 		defaultBranchFolderNames.put(uris.get(i), "develop");
@@ -304,8 +304,7 @@ public class GitClientImpl implements GitClient {
 	    return false;
 	}
 	try {
-	    Git git = Git.cloneRepository().setURI(uri).setDirectory(directory).setCloneAllBranches(true).call();
-	    gits.put(uri, git);
+	    gits.put(uri, Git.cloneRepository().setURI(uri).setDirectory(directory).setCloneAllBranches(true).call());
 	    setConfig(uri);
 	} catch (GitAPIException e) {
 	    LOGGER.error("Git repository could not be cloned: " + uri + " " + directory.getAbsolutePath() + "\n\t"
@@ -409,15 +408,17 @@ public class GitClientImpl implements GitClient {
     }
 
     public String getRepoUriFromBranch(Ref featureBranch) {
-	for (String uri : remoteUris) {
-	    Git git = gits.get(uri);
-	    try {
-		if (git.getRepository().exactRef(featureBranch.getName()) != null) {
-		    return uri;
+	if (featureBranch != null) {
+	    for (String uri : remoteUris) {
+		Git git = gits.get(uri);
+		try {
+		    if (git.getRepository() != null && git.getRepository().exactRef(featureBranch.getName()) != null) {
+			return uri;
+		    }
+		} catch (IOException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
 		}
-	    } catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
 	    }
 	}
 	return null;
@@ -551,14 +552,21 @@ public class GitClientImpl implements GitClient {
     }
 
     public void closeAll() {
-	for (String repoUri : this.remoteUris) {
-	    this.close(repoUri);
+	if (remoteUris != null) {
+	    for (String repoUri : this.remoteUris) {
+		if (gits.get(repoUri) == null) {
+		    return;
+		}
+		gits.get(repoUri).getRepository().close();
+		gits.get(repoUri).close();
+		gits.remove(repoUri);
+	    }
 	}
     }
 
     @Override
     public void deleteRepository(String repoUri) {
-	if (gits.get(repoUri) == null | this.getDirectory(repoUri) != null) {
+	if (gits == null || gits.get(repoUri) == null | this.getDirectory(repoUri) != null) {
 	    return;
 	}
 	close(repoUri);
@@ -630,7 +638,7 @@ public class GitClientImpl implements GitClient {
 	}
 	String jiraIssueKey = jiraIssue.getKey();
 	List<RevCommit> commitsForJiraIssue = new LinkedList<RevCommit>();
-	if (gits.get(repoUri) == null || jiraIssueKey == null) {
+	if (gits == null || gits.get(repoUri) == null || jiraIssueKey == null) {
 	    LOGGER.error("Commits cannot be retrieved since git object is null.");
 	    return commitsForJiraIssue;
 	}
@@ -922,6 +930,10 @@ public class GitClientImpl implements GitClient {
 
     public boolean isRepoInitSuccess() {
 	return repoInitSuccess;
+    }
+
+    public List<RevCommit> getDefaultBranchCommits(String repoUri) {
+	return defaultBranchCommits.get(defaultBranches.get(repoUri));
     }
 
 }

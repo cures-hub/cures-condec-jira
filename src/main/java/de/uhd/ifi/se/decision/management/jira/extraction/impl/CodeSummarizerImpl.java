@@ -40,10 +40,15 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 	}
 	this.minProbabilityOfCorrectness = minProbabilityOfCorrectness;
 	Diff completeDiff = new DiffImpl();
+	if (gitClient.getRemoteUris() == null) {
+	    return "";
+	}
 	for (String repoUri : gitClient.getRemoteUris()) {
 	    Diff diff = gitClient.getDiff(jiraIssue, repoUri);
-	    for (ChangedFile file : diff.getChangedFiles()) {
-		completeDiff.addChangedFile(file);
+	    if (diff != null) {
+		for (ChangedFile file : diff.getChangedFiles()) {
+		    completeDiff.addChangedFile(file);
+		}
 	    }
 	}
 	return createSummary(completeDiff);
