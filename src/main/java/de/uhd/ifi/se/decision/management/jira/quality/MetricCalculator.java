@@ -44,11 +44,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManage
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.ChartCreator;
 
-//TODO: Allow User to choose Branch
-//TODO: Allow User to choose which Elements make up Requirements
-//TODO: Which Metrics react to linkDistanceFilter
-//TODO: Put getLinkDistanceIssueMap into an extractor class
-//TODO: Metric for Decision Knowledge Elements how many from each source Code, Commit, Description, Comments
 public class MetricCalculator {
 
     private String projectKey;
