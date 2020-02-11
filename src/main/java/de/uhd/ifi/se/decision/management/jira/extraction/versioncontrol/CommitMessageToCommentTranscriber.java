@@ -54,7 +54,7 @@ public class CommitMessageToCommentTranscriber {
 	    builder.append("> Commit meta data\r\n");
 	    builder.append("> Author: " + commit.getAuthorIdent().getName() + "\r\n");
 	    builder.append("> Branch: " + featureBranch.getName() + "\r\n");
-	    builder.append("> Repository: " + gitClient.getRepoUriFromBranch(featureBranch));
+	    builder.append("> Repository: " + gitClient.getRepoUriFromBranch(featureBranch) + "\r\n");
 	    builder.append("> Hash: " + commit.getName());
 	    return (builder.toString());
 	}

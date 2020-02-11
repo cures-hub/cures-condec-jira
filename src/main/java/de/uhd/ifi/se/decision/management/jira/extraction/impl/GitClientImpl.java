@@ -366,6 +366,13 @@ public class GitClientImpl implements GitClient {
 	    return null;
 	}
 	List<RevCommit> commits = getCommits(jiraIssue, repoUri);
+	if (commits.size() == 0) {
+	    // No squashed Commits were found so all commits that are not on the default
+	    // branch will be chosen.
+	    Ref branch = getRef(jiraIssue.getKey(), repoUri);
+	    commits = getCommits(branch);
+	    commits.removeAll(defaultBranchCommits.get(defaultBranches.get(repoUri)));
+	}
 	return getDiff(commits, repoUri);
     }
 
