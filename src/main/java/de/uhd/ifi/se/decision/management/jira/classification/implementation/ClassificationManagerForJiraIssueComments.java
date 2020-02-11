@@ -1,19 +1,21 @@
 package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 /**
- * Class to classify the text in JIRA issue comments as either irrelevant in
+ * Class to classify the text in Jira issue comments as either irrelevant in
  * terms of decision knowledge (binary classification) or - if relevant - into
  * decision knowledge elements with certain knowledge types (fine grained
  * classification).
@@ -33,6 +35,16 @@ public class ClassificationManagerForJiraIssueComments {
 		this.classifyComments(getComments(issue));
 	}
 
+	public void classifyDescription(MutableIssue issue) {
+		if (issue == null) {
+			return;
+		}
+		List<PartOfJiraIssueText> partsOfDescriptionWithIdInDatabase = JiraIssueTextPersistenceManager
+				.insertPartsOfDescription(issue);
+		classifySentencesBinary(partsOfDescriptionWithIdInDatabase);
+		classifySentencesFineGrained(partsOfDescriptionWithIdInDatabase);
+	}
+
 	public void classifyComments(List<Comment> comments) {
 		if (comments == null || comments.isEmpty()) {
 			return;
@@ -40,7 +52,8 @@ public class ClassificationManagerForJiraIssueComments {
 		List<PartOfJiraIssueText> sentences = new ArrayList<PartOfJiraIssueText>();
 
 		for (Comment comment : comments) {
-			List<PartOfJiraIssueText> sentencesOfComment = JiraIssueTextPersistenceManager.getPartsOfComment(comment);
+			List<PartOfJiraIssueText> sentencesOfComment = JiraIssueTextPersistenceManager
+					.insertPartsOfComment(comment);
 			sentences.addAll(sentencesOfComment);
 		}
 		classifySentencesBinary(sentences);
@@ -61,11 +74,11 @@ public class ClassificationManagerForJiraIssueComments {
 		}
 		List<PartOfJiraIssueText> sentencesRelevantForBinaryClf = getSentencesForBinaryClassification(sentences);
 		List<String> stringsToBeClassified = extractStringsFromPoji(sentencesRelevantForBinaryClf);
-		List<Boolean> classificationResult = classifierTrainer.getClassifier().makeBinaryPredictions(stringsToBeClassified);
+		List<Boolean> classificationResult = classifierTrainer.getClassifier()
+				.makeBinaryPredictions(stringsToBeClassified);
 		updateSentencesWithBinaryClassificationResult(classificationResult, sentences);
 		return sentences;
 	}
-
 
 	private List<PartOfJiraIssueText> getSentencesForBinaryClassification(List<PartOfJiraIssueText> sentences) {
 		List<PartOfJiraIssueText> stringsToBeClassified = new ArrayList<PartOfJiraIssueText>();
@@ -77,23 +90,23 @@ public class ClassificationManagerForJiraIssueComments {
 		return stringsToBeClassified;
 	}
 
-
 	/**
-	 * Determines whether a part of JIRA issue comment (substring) should be the
+	 * Determines whether a part of Jira issue comment (substring) should be the
 	 * input for binary classification. It is qualified if it's plain text, and if
 	 * its type is not yet validated.
 	 *
-	 * @param sentence part of JIRA issue comment (substring) to check if qualified for
-	 *                 binary classification.
-	 * @return true if the part of JIRA issue comment (substring) should be the
-	 * input for binary classification.
+	 * @param sentence
+	 *            part of Jira issue comment (substring) to check if qualified for
+	 *            binary classification.
+	 * @return true if the part of Jira issue comment (substring) should be the
+	 *         input for binary classification.
 	 */
 	private static boolean isSentenceQualifiedForBinaryClassification(PartOfJiraIssueText sentence) {
 		return !sentence.isValidated() && sentence.isPlainText();
 	}
 
 	private List<PartOfJiraIssueText> updateSentencesWithBinaryClassificationResult(List<Boolean> classificationResult,
-																					List<PartOfJiraIssueText> sentences) {
+			List<PartOfJiraIssueText> sentences) {
 		if (classificationResult.size() == 0) {
 			return sentences;
 		}
@@ -113,11 +126,12 @@ public class ClassificationManagerForJiraIssueComments {
 		if (sentences == null) {
 			return new ArrayList<PartOfJiraIssueText>();
 		}
-		//make getStringsForFineGrainedClassification return List<PartOfJiraIssueText>
+		// make getStringsForFineGrainedClassification return List<PartOfJiraIssueText>
 		// add method to extract text
 		List<PartOfJiraIssueText> sentencesToBeClassified = getSentencesForFineGrainedClassification(sentences);
 		List<String> stringsToBeClassified = extractStringsFromPoji(sentencesToBeClassified);
-		List<KnowledgeType> classificationResult = this.classifierTrainer.getClassifier().makeFineGrainedPredictions(stringsToBeClassified);
+		List<KnowledgeType> classificationResult = this.classifierTrainer.getClassifier()
+				.makeFineGrainedPredictions(stringsToBeClassified);
 		updateSentencesWithFineGrainedClassificationResult(classificationResult, sentencesToBeClassified);
 		return sentences;
 	}
@@ -130,7 +144,6 @@ public class ClassificationManagerForJiraIssueComments {
 		return extractedStringsFromPoji;
 	}
 
-
 	private List<PartOfJiraIssueText> getSentencesForFineGrainedClassification(List<PartOfJiraIssueText> sentences) {
 		List<PartOfJiraIssueText> stringsToBeClassified = new ArrayList<PartOfJiraIssueText>();
 		for (PartOfJiraIssueText sentence : sentences) {
@@ -142,28 +155,29 @@ public class ClassificationManagerForJiraIssueComments {
 	}
 
 	/**
-	 * Determines whether a part of JIRA issue comment (substring) should be the
+	 * Determines whether a part of Jira issue comment (substring) should be the
 	 * input for fine grained classification. It is qualified if it's plain text, if
 	 * its type is not yet validated and if it's classified as relevant decision
 	 * knowledge by the binary classifier.
 	 *
-	 * @param sentence part of JIRA issue comment (substring) to check if qualified for
-	 *                 fine grained classification.
-	 * @return true if the part of JIRA issue comment (substring) should be the
-	 * input for fine grained classification.
+	 * @param sentence
+	 *            part of Jira issue comment (substring) to check if qualified for
+	 *            fine grained classification.
+	 * @return true if the part of Jira issue comment (substring) should be the
+	 *         input for fine grained classification.
 	 */
 	private static boolean isSentenceQualifiedForFineGrainedClassification(PartOfJiraIssueText sentence) {
 		return sentence.isRelevant() && isSentenceQualifiedForBinaryClassification(sentence);
 	}
 
-	private List<PartOfJiraIssueText> updateSentencesWithFineGrainedClassificationResult(List<KnowledgeType> classificationResult,
-																						 List<PartOfJiraIssueText> sentences) {
+	private List<PartOfJiraIssueText> updateSentencesWithFineGrainedClassificationResult(
+			List<KnowledgeType> classificationResult, List<PartOfJiraIssueText> sentences) {
 		JiraIssueTextPersistenceManager persistenceManager = new JiraIssueTextPersistenceManager("");
 		int i = 0;
 		for (PartOfJiraIssueText sentence : sentences) {
 			if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 				sentence.setType(classificationResult.get(i));
-				sentence.setSummary(null);
+				// sentence.setSummary(null);
 				sentence.setValidated(false);
 				persistenceManager.updateDecisionKnowledgeElement(sentence, null);
 				i++;
@@ -176,7 +190,7 @@ public class ClassificationManagerForJiraIssueComments {
 		return this.classifierTrainer;
 	}
 
-	public void classifyComments(Comment comment) {
-		this.classifyComments(Arrays.asList(new Comment[]{comment}));
+	public void classifyComment(Comment comment) {
+		this.classifyComments(Collections.singletonList(comment));
 	}
 }

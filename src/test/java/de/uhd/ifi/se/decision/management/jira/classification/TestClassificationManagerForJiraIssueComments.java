@@ -92,7 +92,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 
     private void fillSentenceList() {
         Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-        sentences = JiraIssueTextPersistenceManager.getPartsOfComment(comment);
+        sentences = JiraIssueTextPersistenceManager.insertPartsOfComment(comment);
     }
 
     @Test

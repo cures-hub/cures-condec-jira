@@ -1,12 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.model.text;
 
+import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-
-import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
-
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public interface TextSplitter {
 
@@ -28,14 +27,14 @@ public interface TextSplitter {
 	/**
 	 * Split a text into parts (substrings).
 	 * 
-	 * @see PartOfText
+	 * @see PartOfJiraIssueText
 	 * @param text
 	 *            text to be split.
 	 * @param projectKey
 	 *            of the JIRA project.
 	 * @return parts of text (substrings) as a list.
 	 */
-	List<PartOfText> getPartsOfText(String text, String projectKey);
+	List<PartOfJiraIssueText> getPartsOfText(String text, String projectKey);
 
 	static String parseIconsToTags(String text) {
 		if (text == null) {

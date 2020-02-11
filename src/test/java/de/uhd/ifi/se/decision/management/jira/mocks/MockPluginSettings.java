@@ -35,6 +35,7 @@ public class MockPluginSettings implements PluginSettings {
 	settings.put(subfix + "gitUris", TestSetUpGit.GIT_URI);
 	settings.put(subfix + "webhookUrl", "http://true");
 	settings.put(subfix + "webhookSecret", "myhoneybee");
+	settings.put(subfix + "setClassiferForIssueComments", "false");
 	return settings;
     }
 
