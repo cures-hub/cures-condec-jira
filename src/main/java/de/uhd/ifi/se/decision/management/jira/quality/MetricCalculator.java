@@ -162,17 +162,6 @@ public class MetricCalculator {
 	return numberMap;
     }
 
-    /*
-     * public Map<String, Integer> numberOfCommitsPerIssue() { Map<String, Integer>
-     * resultMap = new HashMap<String, Integer>(); if (resultMap.size() == 0) {
-     * return null; } try { if (this.gitClient != null) { for (Issue jiraIssue :
-     * jiraIssues) { int numberOfCommits =
-     * this.gitClient.getNumberOfCommits(jiraIssue);
-     * resultMap.put(jiraIssue.getKey(), numberOfCommits); } } } catch (Exception
-     * ex) { LOGGER.error(ex.getMessage()); } System.out.println("5"); return
-     * resultMap; }
-     */
-
     public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType type,
 	    Integer linkDistance) {
 	Map<String, Integer> numberOfSentencesPerIssue = new HashMap<String, Integer>();
