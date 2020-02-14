@@ -38,7 +38,7 @@ public class TestGitClient extends TestSetUpGit {
 
     @Test
     public void testSetGit() {
-	GitClient newGitClient = new GitClientImpl();
+	GitClient newGitClient = new GitClientImpl((GitClientImpl) gitClient);
 	newGitClient.setGit(gitClient.getGit(GIT_URI), GIT_URI);
 	assertEquals(gitClient.getGit(GIT_URI), newGitClient.getGit(GIT_URI));
     }

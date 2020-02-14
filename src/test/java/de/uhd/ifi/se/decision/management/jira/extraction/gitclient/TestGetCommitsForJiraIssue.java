@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -21,8 +22,8 @@ public class TestGetCommitsForJiraIssue extends TestSetUpGit {
     @Test
     public void testJiraIssue() {
 	List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests, GIT_URI);
-	assertEquals(2, commits.size());
-	assertEquals("TEST-12: Develop great software", commits.get(0).getShortMessage());
+	assertEquals(5, commits.size());
+	assertTrue(commits.get(0).getShortMessage().startsWith("TEST-12: Develop great software"));
     }
 
     @Test

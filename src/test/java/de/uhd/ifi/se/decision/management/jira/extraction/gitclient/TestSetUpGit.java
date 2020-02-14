@@ -53,6 +53,12 @@ public abstract class TestSetUpGit extends TestSetUp {
 
     @BeforeClass
     public static void setUpBeforeClass() {
+	System.out.println("BLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+		+ "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+		+ "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+		+ "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+		+ "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+		+ "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 	if (gitClient != null && gitClient.getDirectory(GIT_URI) != null) {
 	    return;
 	}
@@ -65,8 +71,10 @@ public abstract class TestSetUpGit extends TestSetUp {
 	List<String> uris = new ArrayList<String>();
 	uris.add(GIT_URI);
 	ConfigPersistenceManager.setGitUris("TEST", GIT_URI);
+	ConfigPersistenceManager.setDefaultBranches("TEST", "master");
 	gitClient = new GitClientImpl(uris, DIRECTORY.getAbsolutePath(), "TEST");
-
+	System.out.println("URI: " + gitClient.getRemoteUris());
+	System.out.println("Path: " + gitClient.getDirectory(GIT_URI));
 	// above line will log errors for pulling from still empty remote repositry.
 	makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
 	makeExampleCommit(fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
