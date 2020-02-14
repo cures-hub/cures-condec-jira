@@ -368,13 +368,21 @@ public class GitClientImpl implements GitClient {
 	List<RevCommit> squashcommits = getCommits(jiraIssue, repoUri);
 	Ref branch = getRef(jiraIssue.getKey(), repoUri);
 	List<RevCommit> commits = getCommits(branch);
-	commits.removeAll(defaultBranchCommits.get(defaultBranches.get(repoUri)));
-	for (RevCommit com : squashcommits) {
-	    if (!commits.contains(com)) {
-		commits.add(com);
+	if (commits != null) {
+	    commits.removeAll(getDefaultBranchCommits(repoUri));
+	    for (RevCommit com : squashcommits) {
+		if (!commits.contains(com)) {
+		    commits.add(com);
+		}
 	    }
+	    for (RevCommit com : commits) {
+	    }
+	    if (getDefaultBranchCommits(repoUri) == null || getDefaultBranchCommits(repoUri).size() == 0) {
+		commits.remove(commits.size() - 1);
+	    }
+	    return getDiff(commits, repoUri);
 	}
-	return getDiff(commits, repoUri);
+	return null;
     }
 
     @Override
@@ -391,7 +399,6 @@ public class GitClientImpl implements GitClient {
 	} catch (IOException e) {
 	    LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
 	}
-
 	File directory = getDirectory(repoUri);
 	String baseDirectory = "";
 	if (directory != null) {
@@ -806,7 +813,9 @@ public class GitClientImpl implements GitClient {
 	    }
 	    if (iterable != null) {
 		for (RevCommit commit : iterable) {
-		    commits.add(commit);
+		    if (!commits.contains(commit)) {
+			commits.add(commit);
+		    }
 		}
 	    }
 	}
@@ -913,7 +922,9 @@ public class GitClientImpl implements GitClient {
 
     @Override
     public void setGit(Git git, String repoUri) {
-	this.gits.put(repoUri, git);
+	if (gits != null && gits.get(repoUri) != git) {
+	    gits.put(repoUri, git);
+	}
     }
 
     public List<String> getRemoteUris() {
