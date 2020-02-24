@@ -27,7 +27,6 @@ public class TestGitRepositoryFSManager {
 	private List<String> baseProjectUriTempDir;
 	private List<String> expectedBaseProjectUriBranchDir;
 	private List<String> repoUris;
-	private Map<String, String> folderForDefaultBranchNames;
 
 	private static final String branchName = "myTempBranch";
 	private static final String distinctFileInBranchFolder = "branch.txt";
@@ -43,7 +42,7 @@ public class TestGitRepositoryFSManager {
 	@Before
 	public void setUp() {
 		File directory = getExampleDirectory();
-
+		Map<String, String> folderForDefaultBranchNames;
 		// add base dir
 		String baseDir = directory.getAbsolutePath();
 		baseProjectDir = new File(baseDir + File.separator + projectName);
@@ -204,22 +203,6 @@ public class TestGitRepositoryFSManager {
 			e.printStackTrace();
 		}
 		return directory;
-	}
-
-	private static List<String> getHashList(List<String> texts) {
-		List<String> result = new ArrayList<String>();
-		try {
-			for (String text : texts) {
-				MessageDigest md = MessageDigest.getInstance("MD5");
-				md.update(text.getBytes());
-				byte[] digest = md.digest();
-				result.add(DatatypeConverter.printHexBinary(digest).toUpperCase().substring(0, 5));
-			}
-			return result;
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return null;
-		}
 	}
 
 	private static String getHash(String text) {

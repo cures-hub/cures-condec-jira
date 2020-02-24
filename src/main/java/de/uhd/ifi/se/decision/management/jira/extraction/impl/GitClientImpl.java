@@ -195,36 +195,6 @@ public class GitClientImpl implements GitClient {
 		return directory.exists() && (gitDir.isDirectory());
 	}
 
-	private Ref getCurrentBranch(String repoUri) {
-		String branchName = null;
-		Ref branch = null;
-		Repository repository;
-
-		try {
-			repository = this.getRepository(repoUri);
-		} catch (Exception e) {
-			LOGGER.error("getRepository: " + e.getMessage());
-			return null;
-		}
-
-		if (repository == null) {
-			LOGGER.error("Git repository does not seem to exist");
-			return null;
-		}
-		try {
-			branchName = repository.getFullBranch();
-			branch = repository.findRef(branchName);
-			if (branch == null) {
-				LOGGER.error("Git repository does not seem to be on a branch");
-				return null;
-			}
-		} catch (Exception e) {
-			LOGGER.error("Git client has thrown error while getting branch name. " + e.getMessage());
-			return null;
-		}
-		return branch;
-	}
-
 	private boolean openRepository(String repoUri, File directory) {
 		try {
 			Git git = Git.open(directory);
@@ -374,8 +344,6 @@ public class GitClientImpl implements GitClient {
 				if (!commits.contains(com)) {
 					commits.add(com);
 				}
-			}
-			for (RevCommit com : commits) {
 			}
 			if ((getDefaultBranchCommits(repoUri) == null || getDefaultBranchCommits(repoUri).size() == 0)
 					&& commits.size() - 1 >= 0) {
@@ -708,7 +676,7 @@ public class GitClientImpl implements GitClient {
 			 * @con still some more code will be written. Scraping it, would require coding
 			 *      improvement in test code (TestGetCommits).
 			 */
-			commits.addAll(getCommits(branch));
+			commits.addAll(getCommits(repoUri, branch, false));
 		}
 		return commits;
 	}

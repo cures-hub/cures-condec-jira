@@ -71,7 +71,7 @@ public class GitRepositoryFSManager {
 	public String releaseBranchDirectoryNameToTemp(String branchShortName, String repoUri) {
 		if (baseProjectUriPaths.containsKey(repoUri)) {
 			String checkoutPath = getCheckoutPath(branchShortName, repoUri);
-			if (!checkoutPath.equals("")) {
+			if (!"".equals(checkoutPath)) {
 				File oldDir = new File(getCheckoutPath(branchShortName, repoUri));
 				if (!oldDir.isDirectory()) {
 					return null;
