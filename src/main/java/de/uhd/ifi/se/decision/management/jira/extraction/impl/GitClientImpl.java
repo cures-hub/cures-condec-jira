@@ -435,7 +435,7 @@ public class GitClientImpl implements GitClient {
 			branchUniqueCommits.add(commit);
 		}
 		if (lastCommonAncestor == null) {
-			branchUniqueCommits = null;
+			return Collections.emptyList();
 		} else if (branchUniqueCommits.size() > 0) {
 			branchUniqueCommits = Lists.reverse(branchUniqueCommits);
 		} else {
