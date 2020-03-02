@@ -22,7 +22,7 @@ public class TestGetCommitsForJiraIssue extends TestSetUpGit {
     @Test
     public void testJiraIssue() {
 	List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests, GIT_URI);
-	assertEquals(5, commits.size());
+	assertEquals(2, commits.size());
 	assertTrue(commits.get(0).getShortMessage().startsWith("TEST-12: Develop great software"));
     }
 

@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -56,7 +55,7 @@ public class TestRemoveFeatureBranchNotPresentInRemote extends TestSetUpGit {
 	// getting branch with performing pull
 	List<RevCommit> commits = testGitClient.getFeatureBranchCommits(featureBranch, GIT_URI);
 	// branch should not exist at local repo anymore
-	assertNull(commits);
+	assertTrue(commits.size() == 0);
     }
 
     @Test
@@ -92,7 +91,7 @@ public class TestRemoveFeatureBranchNotPresentInRemote extends TestSetUpGit {
 	assertTrue(resetPullControl(developDir));
 
 	// branch should not exist at local repo anymore
-	assertNull(testGitClient.getFeatureBranchCommits(featureBranch, GIT_URI));
+	assertTrue(testGitClient.getFeatureBranchCommits(featureBranch, GIT_URI).size() == 0);
     }
 
     private boolean moveFeatureBranchOnRemote() {
