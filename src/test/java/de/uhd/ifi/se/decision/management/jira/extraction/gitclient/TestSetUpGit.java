@@ -54,6 +54,7 @@ public abstract class TestSetUpGit extends TestSetUp {
     @BeforeClass
     public static void setUpBeforeClass() {
 	if (gitClient != null && gitClient.getDirectory(GIT_URI) != null) {
+
 	    return;
 	}
 	ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
