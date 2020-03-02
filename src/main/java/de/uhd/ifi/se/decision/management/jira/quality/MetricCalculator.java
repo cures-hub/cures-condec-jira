@@ -176,9 +176,6 @@ public class MetricCalculator {
 			numberOfElements++;
 		    }
 		    for (KnowledgeElement element : elements) {
-			if (issue.getKey().equals("CONDEC-18")) {
-			    System.out.println(element.getSummary());
-			}
 			if (element.getType().equals(type)) {
 			    numberOfElements++;
 			}

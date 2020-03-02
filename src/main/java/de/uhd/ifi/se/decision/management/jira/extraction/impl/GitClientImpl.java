@@ -553,9 +553,9 @@ public class GitClientImpl implements GitClient {
 	if (gits == null || gits.get(repoUri) == null || this.getDirectory(repoUri) != null) {
 	    return;
 	}
-	close(repoUri);
 	File directory = this.getDirectory(repoUri).getParentFile();
 	deleteFolder(directory);
+	close(repoUri);
     }
 
     private static void deleteFolder(File directory) {

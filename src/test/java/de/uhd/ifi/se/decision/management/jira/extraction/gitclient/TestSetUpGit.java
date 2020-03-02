@@ -112,11 +112,9 @@ public abstract class TestSetUpGit extends TestSetUp {
 		"TEST-62 add class A");
 	setupBranchWithDecKnowledge();
 	setupBranchForTranscriber();
-	//
-	// TODO: investigate issue: Is this really needed? Why do we close the git
-	// client here?
-	// gitClient.close();
-	// gitClient = new GitClientImpl(GIT_URI, DIRECTORY.getAbsolutePath(), "TEST");
+
+	gitClient.closeAll();
+	gitClient = new GitClientImpl(uris, DIRECTORY.getAbsolutePath(), "TEST");
     }
 
     @Before

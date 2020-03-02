@@ -28,15 +28,11 @@ public class TestRemoveFeatureBranchNotPresentInRemote extends TestSetUpGit {
 
     @After
     public void after() {
-	System.out.println("After of " + this.getClass().getName());
-	System.out.println(getBranchRefPathOnRemote());
-	System.out.println(getTempBranchRefPathOnRemote());
 	restoreFeatureBranchOnRemote();
     }
 
     @Test
     public void testGetFeatureBranchNotOnRemoteWithLocalPull() {
-	System.out.println("testGetFeatureBranchNotOnRemoteWithLocalPull");
 
 	// Use clean, distinct local repo dir for test
 	String cloneAt = repoBaseDirectory + "t1";
@@ -60,7 +56,6 @@ public class TestRemoveFeatureBranchNotPresentInRemote extends TestSetUpGit {
 
     @Test
     public void testGetFeatureBranchNotOnRemoteLocalPullCache() {
-	System.out.println("testGetFeatureBranchNotOnRemoteLocalPullCache");
 
 	// Use clean, distinct local repo dir for test
 	String cloneAt = repoBaseDirectory + "t2";
