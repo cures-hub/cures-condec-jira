@@ -78,8 +78,9 @@ public class ViewRestImpl implements ViewRest {
 	if (issue == null) {
 	    return jiraIssueKeyIsInvalid();
 	}
+	String regexFilter = normalizedIssueKey.toUpperCase() + "\\.|" + normalizedIssueKey.toUpperCase() + "$|"
+		+ normalizedIssueKey.toUpperCase() + "\\-";
 
-	String regexFilter = normalizedIssueKey.toUpperCase() + "\\.|" + normalizedIssueKey.toUpperCase() + "$";
 	// get feature branches of an issue
 	return getDiffViewerResponse(getProjectKey(normalizedIssueKey), regexFilter,
 		ComponentAccessor.getIssueManager().getIssueByCurrentKey(normalizedIssueKey));
@@ -96,19 +97,22 @@ public class ViewRestImpl implements ViewRest {
     private Response getDiffViewerResponse(String projectKey, String filter, Issue issue) throws PermissionException {
 
 	Response resp = this.getDiffViewerResponse(projectKey, filter);
+
 	Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
+
 	CommitMessageToCommentTranscriber transcriber = new CommitMessageToCommentTranscriber(issue);
 	// get current branch name
 	// iterate over commits to get all messages and post each one as a comment
 	// make sure to not post duplicates
 	gitClient = new GitClientImpl(projectKey);
-	List<Ref> branches = gitClient.getAllRemoteBranches();
-	for (Ref branch : branches) {
-	    Matcher branchMatcher = filterPattern.matcher(branch.getName());
-	    String repoUri = gitClient.getRepoUriFromBranch(branch);
-	    if (branchMatcher.find()
-		    || branch.getName().contains(gitClient.getDefaultBranchFolderNames().get(repoUri))) {
-		transcriber.postComments(branch);
+	for (String repoUri : gitClient.getRemoteUris()) {
+	    List<Ref> branches = gitClient.getRemoteBranches(repoUri);
+	    for (Ref branch : branches) {
+		Matcher branchMatcher = filterPattern.matcher(branch.getName());
+		if (branchMatcher.find()
+			|| branch.getName().contains("/" + gitClient.getDefaultBranchFolderNames().get(repoUri))) {
+		    transcriber.postComments(branch);
+		}
 	    }
 	}
 	gitClient.closeAll();
@@ -117,6 +121,7 @@ public class ViewRestImpl implements ViewRest {
 
     private Response getDiffViewerResponse(String projectKey, String filter) {
 	gitClient = new GitClientImpl(projectKey);
+	Response resp = null;
 	List<Ref> branches = gitClient.getAllRemoteBranches();
 	Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
 	if (branches.isEmpty()) {
@@ -133,7 +138,6 @@ public class ViewRestImpl implements ViewRest {
 	}
 	extractor.close();
 	DiffViewer diffView = new DiffViewer(ratBranchList);
-	Response resp = null;
 	try {
 	    Response.ResponseBuilder respBuilder = Response.ok(diffView);
 	    resp = respBuilder.build();

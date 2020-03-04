@@ -168,7 +168,7 @@ public class GitClientImpl implements GitClient {
 	if (isGitDirectory(directory)) {
 	    if (openRepository(repoUri, directory)) {
 		if (!pull(repoUri)) {
-		    LOGGER.error("failed Git pull " + directory);
+		    LOGGER.error("Failed Git pull " + directory);
 		    return false;
 		}
 	    } else {
@@ -208,6 +208,7 @@ public class GitClientImpl implements GitClient {
     }
 
     private boolean pull(String repoUri) {
+	LOGGER.info("Pulling Repository: " + repoUri);
 	if (!isPullNeeded(repoUri)) {
 	    return true;
 	}
@@ -274,7 +275,8 @@ public class GitClientImpl implements GitClient {
 	    return false;
 	}
 	try {
-	    gits.put(uri, Git.cloneRepository().setURI(uri).setDirectory(directory).setCloneAllBranches(true).call());
+	    Git git = Git.cloneRepository().setURI(uri).setDirectory(directory).setCloneAllBranches(true).call();
+	    gits.put(uri, git);
 	    setConfig(uri);
 	} catch (GitAPIException e) {
 	    LOGGER.error("Git repository could not be cloned: " + uri + " " + directory.getAbsolutePath() + "\n\t"
@@ -396,7 +398,8 @@ public class GitClientImpl implements GitClient {
 	    for (String uri : remoteUris) {
 		Git git = gits.get(uri);
 		try {
-		    if (git.getRepository() != null && git.getRepository().exactRef(featureBranch.getName()) != null) {
+		    if (git != null && git.getRepository() != null
+			    && git.getRepository().exactRef(featureBranch.getName()) != null) {
 			return uri;
 		    }
 		} catch (IOException e) {
@@ -475,7 +478,7 @@ public class GitClientImpl implements GitClient {
 	if (remoteBranches != null) {
 	    for (Ref branch : remoteBranches) {
 		String branchName = branch.getName();
-		if (branchName.endsWith(featureBranchName)) {
+		if (branchName.endsWith("/" + featureBranchName)) {
 		    return branch;
 		}
 	    }
@@ -594,7 +597,7 @@ public class GitClientImpl implements GitClient {
 	// will copy default branch folder
 	File directory = new File(fsManager.prepareBranchDirectory(commitName, repoUri));
 
-	return (switchGitDirectory(directory, repoUri) && checkout(commit.getName(), repoUri, true));
+	return (switchGitDirectory(directory, repoUri) && checkout(commitName, repoUri, true));
     }
 
     private boolean checkout(String branchShortName, String repoUri) {
@@ -610,9 +613,18 @@ public class GitClientImpl implements GitClient {
 	String repoUri = getRepoUriFromBranch(featureBranch);
 	String[] branchNameComponents = featureBranch.getName().split("/");
 	String branchShortName = branchNameComponents[branchNameComponents.length - 1];
+	String branchShortNameWithPrefix = branchShortName;
+	for (int i = 2; i <= branchNameComponents.length; i++) {
+	    branchShortNameWithPrefix = branchNameComponents[branchNameComponents.length - i] + "/"
+		    + branchShortNameWithPrefix;
+	    if (branchNameComponents[branchNameComponents.length - i].equals("origin")) {
+		break;
+	    }
+	}
 	File directory = new File(fsManager.prepareBranchDirectory(branchShortName, repoUri));
 
-	return (switchGitDirectory(directory, repoUri) && pull(repoUri) && checkout(branchShortName, repoUri));
+	return (switchGitDirectory(directory, repoUri) && pull(repoUri)
+		&& checkout(branchShortNameWithPrefix, repoUri));
     }
 
     @Override
@@ -762,6 +774,18 @@ public class GitClientImpl implements GitClient {
 	File directory;
 	String[] branchNameComponents = branch.getName().split("/");
 	String branchShortName = branchNameComponents[branchNameComponents.length - 1];
+	String branchShortNameWithPrefix = branchShortName;
+	if (!isDefaultBranch) {
+	    for (int i = 2; i <= branchNameComponents.length; i++) {
+		branchShortNameWithPrefix = branchNameComponents[branchNameComponents.length - i] + "/"
+			+ branchShortNameWithPrefix;
+		if (branchNameComponents[branchNameComponents.length - i].equals("origin")) {
+		    break;
+		}
+	    }
+	} else {
+	    branchShortNameWithPrefix = "origin/" + branchShortNameWithPrefix;
+	}
 	boolean canReleaseRepoDirectory = false;
 
 	if (isDefaultBranch) {
@@ -772,7 +796,7 @@ public class GitClientImpl implements GitClient {
 	    directory = new File(fsManager.prepareBranchDirectory(branchShortName, repoUri));
 	}
 
-	if (switchGitDirectory(directory, repoUri) && pull(repoUri) && checkout(branchShortName, repoUri)) {
+	if (switchGitDirectory(directory, repoUri) && pull(repoUri) && checkout(branchShortNameWithPrefix, repoUri)) {
 	    Iterable<RevCommit> iterable = null;
 	    try {
 		iterable = gits.get(repoUri).log().call();
@@ -796,14 +820,13 @@ public class GitClientImpl implements GitClient {
     }
 
     private boolean checkout(String checkoutObjectName, String repoUri, boolean isCommitWithinBranch) {
-
 	// checkout only remote branch
 	if (!isCommitWithinBranch) {
-	    String checkoutName = "origin/" + checkoutObjectName;
+	    String checkoutName = checkoutObjectName;
 	    try {
 		gits.get(repoUri).checkout().setName(checkoutName).call();
 	    } catch (GitAPIException | JGitInternalException e) {
-
+		System.out.println("Could not checkout " + checkoutName);
 		LOGGER.error("Could not checkout " + checkoutName + ". " + e.getMessage());
 		return false;
 	    }

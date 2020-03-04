@@ -382,9 +382,11 @@ public class ConfigRestImpl implements ConfigRest {
 		    .entity(ImmutableMap.of("error", "isKnowledgeExtractedFromGit = null")).build();
 	}
 	ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, Boolean.valueOf(isKnowledgeExtractedFromGit));
-	// deactivate other git extraction
-	ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey, false);
-	ConfigPersistenceManager.setPostSquashedCommits(projectKey, false);
+	// deactivate other git extraction if false
+	if (!Boolean.valueOf(isKnowledgeExtractedFromGit)) {
+	    ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey, false);
+	    ConfigPersistenceManager.setPostSquashedCommits(projectKey, false);
+	}
 	return Response.ok(Status.ACCEPTED).build();
     }
 
