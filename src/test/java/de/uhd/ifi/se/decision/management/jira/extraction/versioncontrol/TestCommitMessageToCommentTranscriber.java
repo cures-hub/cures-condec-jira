@@ -17,16 +17,14 @@ import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 
 public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 
     private CommitMessageToCommentTranscriber transcriber;
     private Issue issue;
     private Ref branch;
-    private GitClient gitClient;
+    // private GitClient gitClient;
 
     private static String DEFAULT_EXPECTED_COMMENT_MESSAGE = "{issue}This is an issue!{issue}";
 
@@ -41,7 +39,8 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 	this.issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(testIssueKey);
 	List<String> uris = new ArrayList<String>();
 	uris.add(GIT_URI);
-	this.gitClient = new GitClientImpl(uris, super.getRepoBaseDirectory(), "TEST");// ComponentGetter.getGitClient(issue.getProjectObject().getKey());//
+	// this.gitClient = new GitClientImpl(uris, super.getRepoBaseDirectory(),
+	// "TEST");// ComponentGetter.getGitClient(issue.getProjectObject().getKey());//
 	this.branch = null;
 	Iterator<Ref> it = gitClient.getAllRemoteBranches().iterator();
 	while (it.hasNext()) {

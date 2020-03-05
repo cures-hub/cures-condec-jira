@@ -89,6 +89,6 @@ public class TestGetDiff extends TestSetUpGit {
 	} catch (Exception ex) {
 	    ex.printStackTrace();
 	}
-	assertEquals("master", currentBranch);
+	assertEquals("origin/master", currentBranch);
     }
 }
