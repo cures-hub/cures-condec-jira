@@ -20,11 +20,10 @@ import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.MetricCalculator;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class RequirementsDashboardItem implements ContextProvider {
 
-    private ApplicationUser loggedUser;
+    public ApplicationUser loggedUser;
 
     @Override
     public void init(final Map<String, String> params) throws PluginParseException {
@@ -37,8 +36,6 @@ public class RequirementsDashboardItem implements ContextProvider {
     public Map<String, Object> getContextMap(final Map<String, Object> context) {
 	if (ComponentAccessor.getJiraAuthenticationContext() != null) {
 	    loggedUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
-	} else {
-	    loggedUser = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 	Map<String, Object> newContext = Maps.newHashMap(context);
 	Map<String, Object> projectContext = attachProjectsMaps();
@@ -108,7 +105,6 @@ public class RequirementsDashboardItem implements ContextProvider {
 	for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 	    Boolean hasPermission = ComponentAccessor.getPermissionManager()
 		    .hasPermission(ProjectPermissions.BROWSE_PROJECTS, project, loggedUser);
-	    System.out.println("HasPermission: " + hasPermission);
 	    if (ConfigPersistenceManager.isActivated(project.getKey()) && hasPermission) {
 		String projectKey = project.getKey();
 		String projectName = project.getName();
