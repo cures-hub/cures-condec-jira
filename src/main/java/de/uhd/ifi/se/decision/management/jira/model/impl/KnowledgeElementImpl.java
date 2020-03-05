@@ -31,334 +31,355 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManage
  */
 public class KnowledgeElementImpl implements KnowledgeElement {
 
-	protected long id;
-	protected DecisionKnowledgeProject project;
-	private String summary;
-	private String description;
-	protected KnowledgeType type;
-	private String key;
-	private Date created;
-	private Date closed;
-	protected DocumentationLocation documentationLocation;
-	protected KnowledgeStatus status;
+    protected long id;
+    protected DecisionKnowledgeProject project;
+    private String summary;
+    private String description;
+    protected KnowledgeType type;
+    private String key;
+    private Date created;
+    private Date closed;
+    protected DocumentationLocation documentationLocation;
+    protected KnowledgeStatus status;
+    private List<String> decisionGroup;
 
-	public KnowledgeElementImpl() {
-		this.description = "";
-		this.summary = "";
-		this.type = KnowledgeType.OTHER;
-	}
+    public KnowledgeElementImpl() {
+	this.description = "";
+	this.summary = "";
+	this.type = KnowledgeType.OTHER;
+    }
 
-	public KnowledgeElementImpl(long id, String summary, String description, KnowledgeType type, String projectKey,
-			String key, DocumentationLocation documentationLocation, KnowledgeStatus status) {
-		this.id = id;
-		this.summary = summary;
-		this.description = description;
-		this.type = type;
-		this.project = new DecisionKnowledgeProjectImpl(projectKey);
-		this.key = key;
-		this.documentationLocation = documentationLocation;
-		this.status = status;
-	}
+    public KnowledgeElementImpl(long id, String summary, String description, KnowledgeType type, String projectKey,
+	    String key, DocumentationLocation documentationLocation, KnowledgeStatus status) {
+	this.id = id;
+	this.summary = summary;
+	this.description = description;
+	this.type = type;
+	this.project = new DecisionKnowledgeProjectImpl(projectKey);
+	this.key = key;
+	this.documentationLocation = documentationLocation;
+	this.status = status;
+    }
 
-	public KnowledgeElementImpl(long id, String projectKey, String documentationLocation) {
-		this.id = id;
-		this.project = new DecisionKnowledgeProjectImpl(projectKey);
-		this.documentationLocation = DocumentationLocation
-				.getDocumentationLocationFromIdentifier(documentationLocation);
-	}
+    public KnowledgeElementImpl(long id, String projectKey, String documentationLocation) {
+	this.id = id;
+	this.project = new DecisionKnowledgeProjectImpl(projectKey);
+	this.documentationLocation = DocumentationLocation
+		.getDocumentationLocationFromIdentifier(documentationLocation);
+    }
 
-	public KnowledgeElementImpl(long id, String summary, String description, String type, String projectKey, String key,
-			String documentationLocation, String status) {
-		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key,
-				DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation),
-				KnowledgeStatus.getKnowledgeStatus(status));
-	}
+    public KnowledgeElementImpl(long id, String summary, String description, String type, String projectKey, String key,
+	    String documentationLocation, String status) {
+	this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key,
+		DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation),
+		KnowledgeStatus.getKnowledgeStatus(status));
+    }
 
-	public KnowledgeElementImpl(long id, String summary, String description, String type, String projectKey, String key,
-			DocumentationLocation documentationLocation, String status) {
-		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key, documentationLocation,
-				KnowledgeStatus.getKnowledgeStatus(status));
-	}
+    public KnowledgeElementImpl(long id, String summary, String description, String type, String projectKey, String key,
+	    DocumentationLocation documentationLocation, String status) {
+	this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key, documentationLocation,
+		KnowledgeStatus.getKnowledgeStatus(status));
+    }
 
-	public KnowledgeElementImpl(Issue issue) {
-		if (issue != null) {
-			this.id = issue.getId();
-			this.summary = issue.getSummary();
-			this.description = issue.getDescription();
-			if (issue.getIssueType() != null) {
-				this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
-			}
-			if (issue.getProjectObject() != null) {
-				this.project = new DecisionKnowledgeProjectImpl(issue.getProjectObject().getKey());
-			}
-			this.key = issue.getKey();
-			this.documentationLocation = DocumentationLocation.JIRAISSUE;
-			this.created = issue.getCreated();
-			// TODO Manage status for decision knowledge elements stored as entire Jira
-			// issues
-			this.status = KnowledgeStatus.RESOLVED;
-		}
+    public KnowledgeElementImpl(Issue issue) {
+	if (issue != null) {
+	    this.id = issue.getId();
+	    this.summary = issue.getSummary();
+	    this.description = issue.getDescription();
+	    if (issue.getIssueType() != null) {
+		this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
+	    }
+	    if (issue.getProjectObject() != null) {
+		this.project = new DecisionKnowledgeProjectImpl(issue.getProjectObject().getKey());
+	    }
+	    this.key = issue.getKey();
+	    this.documentationLocation = DocumentationLocation.JIRAISSUE;
+	    this.created = issue.getCreated();
+	    // TODO Manage status for decision knowledge elements stored as entire Jira
+	    // issues
+	    this.status = KnowledgeStatus.RESOLVED;
 	}
+    }
 
-	@Override
-	@XmlElement(name = "id")
-	public long getId() {
-		return id;
-	}
+    @Override
+    @XmlElement(name = "id")
+    public long getId() {
+	return id;
+    }
 
-	@Override
-	public void setId(long id) {
-		this.id = id;
-	}
+    @Override
+    public void setId(long id) {
+	this.id = id;
+    }
 
-	@Override
-	@XmlElement(name = "summary")
-	public String getSummary() {
-		return summary;
-	}
+    @Override
+    @XmlElement(name = "summary")
+    public String getSummary() {
+	return summary;
+    }
 
-	@Override
-	public void setSummary(String summary) {
-		this.summary = summary;
-	}
+    @Override
+    public void setSummary(String summary) {
+	this.summary = summary;
+    }
 
-	@Override
-	@XmlElement(name = "description")
-	public String getDescription() {
-		return description;
-	}
+    @Override
+    @XmlElement(name = "description")
+    public String getDescription() {
+	return description;
+    }
 
-	@Override
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    @Override
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	@Override
-	public KnowledgeType getType() {
-		if (type != null) {
-			return type;
-		}
-		return KnowledgeType.OTHER;
+    @Override
+    public KnowledgeType getType() {
+	if (type != null) {
+	    return type;
 	}
+	return KnowledgeType.OTHER;
+    }
 
-	@Override
-	@XmlElement(name = "type")
-	public String getTypeAsString() {
-		if (this.getType() == KnowledgeType.OTHER
-				&& this.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
-			IssueManager issueManager = ComponentAccessor.getIssueManager();
-			Issue issue = issueManager.getIssueByCurrentKey(this.getKey());
-			return issue.getIssueType().getName();
-		}
-		return this.getType().toString();
+    @Override
+    @XmlElement(name = "type")
+    public String getTypeAsString() {
+	if (this.getType() == KnowledgeType.OTHER
+		&& this.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
+	    IssueManager issueManager = ComponentAccessor.getIssueManager();
+	    Issue issue = issueManager.getIssueByCurrentKey(this.getKey());
+	    return issue.getIssueType().getName();
 	}
+	return this.getType().toString();
+    }
 
-	@Override
-	public void setType(KnowledgeType type) {
-		if (type == null) {
-			this.type = KnowledgeType.OTHER;
-		}
-		this.type = type;
+    @Override
+    public void setType(KnowledgeType type) {
+	if (type == null) {
+	    this.type = KnowledgeType.OTHER;
 	}
+	this.type = type;
+    }
 
-	@Override
-	@JsonProperty("type")
-	public void setType(String typeAsString) {
-		KnowledgeType type = KnowledgeType.getKnowledgeType(typeAsString);
-		this.setType(type);
-	}
+    @Override
+    @JsonProperty("type")
+    public void setType(String typeAsString) {
+	KnowledgeType type = KnowledgeType.getKnowledgeType(typeAsString);
+	this.setType(type);
+    }
 
-	@Override
-	public DecisionKnowledgeProject getProject() {
-		return this.project;
-	}
+    @Override
+    public List<String> getDecisionGroup() {
+	return decisionGroup;
+    }
 
-	@Override
-	public void setProject(DecisionKnowledgeProject project) {
-		this.project = project;
-	}
+    @Override
+    public void setDecisionGroup(List<String> decisionGroup) {
+	this.decisionGroup = decisionGroup;
+    }
 
-	@Override
-	@JsonProperty("projectKey")
-	public void setProject(String projectKey) {
-		this.project = new DecisionKnowledgeProjectImpl(projectKey);
-	}
+    @Override
+    public void addDecisionGroup(String group) {
+	this.decisionGroup.add(group);
+    }
 
-	@Override
-	@XmlElement(name = "key")
-	public String getKey() {
-		if (this.key == null && this.project != null) {
-			return this.project.getProjectKey() + "-" + this.id;
-		}
-		return this.key;
-	}
+    @Override
+    public void removeDecisionGroup(String group) {
+	this.decisionGroup.remove(group);
+    }
 
-	@Override
-	public void setKey(String key) {
-		this.key = key;
-	}
+    @Override
+    public DecisionKnowledgeProject getProject() {
+	return this.project;
+    }
 
-	@Override
-	public DocumentationLocation getDocumentationLocation() {
-		return this.documentationLocation;
-	}
+    @Override
+    public void setProject(DecisionKnowledgeProject project) {
+	this.project = project;
+    }
 
-	@Override
-	public void setDocumentationLocation(DocumentationLocation documentationLocation) {
-		this.documentationLocation = documentationLocation;
-	}
+    @Override
+    @JsonProperty("projectKey")
+    public void setProject(String projectKey) {
+	this.project = new DecisionKnowledgeProjectImpl(projectKey);
+    }
 
-	@Override
-	@XmlElement(name = "documentationLocation")
-	public String getDocumentationLocationAsString() {
-		if (documentationLocation != null) {
-			return this.documentationLocation.getIdentifier();
-		}
-		return "";
+    @Override
+    @XmlElement(name = "key")
+    public String getKey() {
+	if (this.key == null && this.project != null) {
+	    return this.project.getProjectKey() + "-" + this.id;
 	}
+	return this.key;
+    }
 
-	@Override
-	@JsonProperty("documentationLocation")
-	public void setDocumentationLocation(String documentationLocation) {
-		if (documentationLocation == null || documentationLocation.isBlank()) {
-			// TODO Add here persistence strategy chosen in project
-			this.documentationLocation = DocumentationLocation.JIRAISSUE;
-		}
-		this.documentationLocation = DocumentationLocation
-				.getDocumentationLocationFromIdentifier(documentationLocation);
-	}
+    @Override
+    public void setKey(String key) {
+	this.key = key;
+    }
 
-	@Override
-	@XmlElement(name = "url")
-	public String getUrl() {
-		String key = this.getKey();
-		if (this.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
-			key = key.split(":")[0];
-		}
-		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
-		return applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/" + key;
-	}
+    @Override
+    public DocumentationLocation getDocumentationLocation() {
+	return this.documentationLocation;
+    }
 
-	@Override
-	public Date getCreated() {
-		if (created == null) {
-			return new Date();
-		}
-		return this.created;
-	}
+    @Override
+    public void setDocumentationLocation(DocumentationLocation documentationLocation) {
+	this.documentationLocation = documentationLocation;
+    }
 
-	@Override
-	public void setCreated(Date date) {
-		this.created = date;
+    @Override
+    @XmlElement(name = "documentationLocation")
+    public String getDocumentationLocationAsString() {
+	if (documentationLocation != null) {
+	    return this.documentationLocation.getIdentifier();
 	}
+	return "";
+    }
 
-	@Override
-	public Date getClosed() {
-		return this.closed;
+    @Override
+    @JsonProperty("documentationLocation")
+    public void setDocumentationLocation(String documentationLocation) {
+	if (documentationLocation == null || documentationLocation.isBlank()) {
+	    // TODO Add here persistence strategy chosen in project
+	    this.documentationLocation = DocumentationLocation.JIRAISSUE;
 	}
+	this.documentationLocation = DocumentationLocation
+		.getDocumentationLocationFromIdentifier(documentationLocation);
+    }
 
-	@Override
-	public void setClosed(Date date) {
-		this.closed = date;
+    @Override
+    @XmlElement(name = "url")
+    public String getUrl() {
+	String key = this.getKey();
+	if (this.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
+	    key = key.split(":")[0];
 	}
+	ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
+	return applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/" + key;
+    }
 
-	@Override
-	public boolean existsInDatabase() {
-		KnowledgeElement elementInDatabase = KnowledgePersistenceManager.getOrCreate("").getDecisionKnowledgeElement(id,
-				documentationLocation);
-		return elementInDatabase != null && elementInDatabase.getId() > 0;
+    @Override
+    public Date getCreated() {
+	if (created == null) {
+	    return new Date();
 	}
+	return this.created;
+    }
 
-	@Override
-	public Issue getJiraIssue() {
-		if (documentationLocation == DocumentationLocation.JIRAISSUE) {
-			return ComponentAccessor.getIssueManager().getIssueObject(id);
-		}
-		if (documentationLocation == DocumentationLocation.JIRAISSUETEXT) {
-			return ((PartOfJiraIssueText) this).getJiraIssue();
-		}
-		return null;
-	}
+    @Override
+    public void setCreated(Date date) {
+	this.created = date;
+    }
 
-	@Override
-	public String toString() {
-		// return getDocumentationLocation().getIdentifier() + id;
-		return this.getDescription();
-	}
+    @Override
+    public Date getClosed() {
+	return this.closed;
+    }
 
-	@Override
-	public ApplicationUser getCreator() {
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(project.getProjectKey());
-		if (getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
-			return persistenceManager.getJiraIssueManager().getCreator(this);
-		}
-		if (getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
-			return persistenceManager.getJiraIssueTextManager().getCreator(this);
-		}
-		return null;
-	}
+    @Override
+    public void setClosed(Date date) {
+	this.closed = date;
+    }
 
-	@Override
-	public List<Link> getLinks() {
-		List<Link> links = GenericLinkManager.getLinksForElement(this);
-		if (documentationLocation == DocumentationLocation.JIRAISSUE) {
-			links.addAll(KnowledgeGraph.getOrCreate(project).edgesOf(this));
-		}
-		return links;
-	}
+    @Override
+    public boolean existsInDatabase() {
+	KnowledgeElement elementInDatabase = KnowledgePersistenceManager.getOrCreate("").getDecisionKnowledgeElement(id,
+		documentationLocation);
+	return elementInDatabase != null && elementInDatabase.getId() > 0;
+    }
 
-	@Override
-	public long isLinked() {
-		List<Link> links = getLinks();
-		if (!links.isEmpty()) {
-			return links.get(0).getId();
-		}
-		return 0;
+    @Override
+    public Issue getJiraIssue() {
+	if (documentationLocation == DocumentationLocation.JIRAISSUE) {
+	    return ComponentAccessor.getIssueManager().getIssueObject(id);
 	}
+	if (documentationLocation == DocumentationLocation.JIRAISSUETEXT) {
+	    return ((PartOfJiraIssueText) this).getJiraIssue();
+	}
+	return null;
+    }
 
-	@Override
-	public KnowledgeStatus getStatus() {
-		if (status == null || status == KnowledgeStatus.UNDEFINED) {
-			return KnowledgeStatus.getDefaultStatus(getType());
-		}
-		return status;
-	}
+    @Override
+    public String toString() {
+	// return getDocumentationLocation().getIdentifier() + id;
+	return this.getDescription();
+    }
 
-	@Override
-	public void setStatus(KnowledgeStatus status) {
-		this.status = status;
+    @Override
+    public ApplicationUser getCreator() {
+	KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
+		.getOrCreate(project.getProjectKey());
+	if (getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
+	    return persistenceManager.getJiraIssueManager().getCreator(this);
 	}
+	if (getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
+	    return persistenceManager.getJiraIssueTextManager().getCreator(this);
+	}
+	return null;
+    }
 
-	@Override
-	@JsonProperty("status")
-	public void setStatus(String status) {
-		this.status = KnowledgeStatus.getKnowledgeStatus(status);
+    @Override
+    public List<Link> getLinks() {
+	List<Link> links = GenericLinkManager.getLinksForElement(this);
+	if (documentationLocation == DocumentationLocation.JIRAISSUE) {
+	    links.addAll(KnowledgeGraph.getOrCreate(project).edgesOf(this));
 	}
+	return links;
+    }
 
-	@Override
-	@XmlElement(name = "status")
-	public String getStatusAsString() {
-		return getStatus().toString();
+    @Override
+    public long isLinked() {
+	List<Link> links = getLinks();
+	if (!links.isEmpty()) {
+	    return links.get(0).getId();
 	}
+	return 0;
+    }
 
-	@Override
-	public boolean equals(Object object) {
-		if (object == null) {
-			return false;
-		}
-		if (object == this) {
-			return true;
-		}
-		if (!(object instanceof KnowledgeElement)) {
-			return false;
-		}
-		KnowledgeElement element = (KnowledgeElement) object;
-		return this.id == element.getId() && this.getDocumentationLocation() == element.getDocumentationLocation();
+    @Override
+    public KnowledgeStatus getStatus() {
+	if (status == null || status == KnowledgeStatus.UNDEFINED) {
+	    return KnowledgeStatus.getDefaultStatus(getType());
 	}
+	return status;
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(id, getDocumentationLocation());
+    @Override
+    public void setStatus(KnowledgeStatus status) {
+	this.status = status;
+    }
+
+    @Override
+    @JsonProperty("status")
+    public void setStatus(String status) {
+	this.status = KnowledgeStatus.getKnowledgeStatus(status);
+    }
+
+    @Override
+    @XmlElement(name = "status")
+    public String getStatusAsString() {
+	return getStatus().toString();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+	if (object == null) {
+	    return false;
 	}
+	if (object == this) {
+	    return true;
+	}
+	if (!(object instanceof KnowledgeElement)) {
+	    return false;
+	}
+	KnowledgeElement element = (KnowledgeElement) object;
+	return this.id == element.getId() && this.getDocumentationLocation() == element.getDocumentationLocation();
+    }
+
+    @Override
+    public int hashCode() {
+	return Objects.hash(id, getDocumentationLocation());
+    }
 }
