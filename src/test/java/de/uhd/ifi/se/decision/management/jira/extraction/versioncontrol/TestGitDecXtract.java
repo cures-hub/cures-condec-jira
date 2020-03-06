@@ -1,100 +1,68 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.eclipse.jgit.lib.Ref;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 public class TestGitDecXtract extends TestSetUpGit {
-	private GitDecXtract gitDecX;
+    private GitDecXtract gitDecX;
 
-	@Test
-	public void nullOrEmptyFeatureBranchCommits() {
-		// git repository is setup already
-		gitDecX = new GitDecXtract("TEST", getExampleUri());
-		int numberExpectedElements = 0;
-		List<KnowledgeElement> gotElements = gitDecX.getElements((String) null);
-		Assert.assertEquals(numberExpectedElements, gotElements.size());
+    @Test
+    public void nullOrEmptyFeatureBranchCommits() {
+	// git repository is setup already
+	List<String> uris = new ArrayList<String>();
+	uris.add(getExampleUri());
+	gitDecX = new GitDecXtract("TEST", uris);
+	int numberExpectedElements = 0;
+	List<KnowledgeElement> gotElements = gitDecX.getElements(null);
+	Assert.assertEquals(numberExpectedElements, gotElements.size());
+    }
 
-		gotElements = gitDecX.getElements("");
-		Assert.assertEquals(numberExpectedElements, gotElements.size());
+    @Test
+    public void fromFeatureBranchCommits() {
+	// git repository is setup already
+	List<String> uris = new ArrayList<String>();
+	uris.add(getExampleUri());
+	gitDecX = new GitDecXtract("TEST", uris);
+	int numberExpectedElements = 14;
 
-		gotElements = gitDecX.getElements("doesNotExistBranch");
-		Assert.assertEquals(numberExpectedElements, gotElements.size());
+	// by Ref, find Ref first
+	List<Ref> featureBranches = gitClient.getAllRemoteBranches();
+	Ref featureBranch = null;
+	Iterator<Ref> it = featureBranches.iterator();
+	while (it.hasNext()) {
+	    Ref value = it.next();
+	    if (value.getName().endsWith("featureBranch")) {
+		featureBranch = value;
+		return;
+	    }
 	}
 
-	@Test
-	public void fromFeatureBranchCommits() {
-		// git repository is setup already
-		gitDecX = new GitDecXtract("TEST", getExampleUri());
-		// 5 code rationale exists in main branch, will be changed in feature branch
-		// feature branch: 5 in messages + 10 in final files + 3 outdated
-		// int numberExpectedElements = 5 + 10 + 3;
-		int numberExpectedElements = 14;
+	List<KnowledgeElement> gotElements = gitDecX.getElements(featureBranch);
+	Assert.assertEquals(numberExpectedElements, gotElements.size());
+    }
 
-		// by branch name
-		List<KnowledgeElement> gotElements = gitDecX.getElements("featureBranch");
-		Assert.assertEquals(numberExpectedElements, gotElements.size());
+    @Test
+    public void fromFeatureBranchCommitsNullInput() {
+	List<String> uris = new ArrayList<String>();
+	uris.add(getExampleUri());
+	gitDecX = new GitDecXtract("TEST", uris);
 
-		// by Ref, find Ref first
-		List<Ref> featureBranches = gitClient.getRemoteBranches();
-		Ref featureBranch = null;
-		Iterator<Ref> it = featureBranches.iterator();
-		while (it.hasNext()) {
-			Ref value = it.next();
-			if (value.getName().endsWith("featureBranch")) {
-				featureBranch = value;
-				return;
-			}
-		}
+	List<KnowledgeElement> gotElements = gitDecX.getElements(null);
+	Assert.assertNotNull(gotElements);
+	Assert.assertEquals(0, gotElements.size());
 
-		gotElements = gitDecX.getElements(featureBranch);
-		Assert.assertEquals(numberExpectedElements, gotElements.size());
-	}
+	gotElements = gitDecX.getElements((Ref) null);
+	Assert.assertNotNull(gotElements);
+	Assert.assertEquals(0, gotElements.size());
 
-	@Test
-	public void fromFeatureBranchCommitsNullInput() {
-		gitDecX = new GitDecXtract("TEST", getExampleUri());
+    }
 
-		List<KnowledgeElement> gotElements = gitDecX.getElements((String) null);
-		Assert.assertNotNull(gotElements);
-		Assert.assertEquals(0, gotElements.size());
-
-		gotElements = gitDecX.getElements((Ref) null);
-		Assert.assertNotNull(gotElements);
-		Assert.assertEquals(0, gotElements.size());
-
-	}
-
-	@Test
-	public void fromFeatureBranchCommitsCreateMap() {
-		// git repository is setup already
-		gitDecX = new GitDecXtract("TEST", getExampleUri());
-		int numberExpectedElements = 2;
-
-		// by branch name
-		Map<String, List<KnowledgeElement>> gotElements = gitDecX
-				.getElementsSplitByCodeAndCommit("featureBranch");
-		Assert.assertEquals(numberExpectedElements, gotElements.size());
-
-		// by Ref, find Ref first
-		List<Ref> featureBranches = gitClient.getRemoteBranches();
-		Ref featureBranch = null;
-		Iterator<Ref> it = featureBranches.iterator();
-		while (it.hasNext()) {
-			Ref value = it.next();
-			if (value.getName().endsWith("featureBranch")) {
-				featureBranch = value;
-				return;
-			}
-		}
-
-		gotElements = gitDecX.getElementsSplitByCodeAndCommit(featureBranch.getName());
-		Assert.assertEquals(numberExpectedElements, gotElements.size());
-	}
 }

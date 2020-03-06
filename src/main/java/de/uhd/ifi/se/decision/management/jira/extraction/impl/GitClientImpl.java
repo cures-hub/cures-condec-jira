@@ -3,9 +3,12 @@ package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
@@ -62,64 +65,110 @@ public class GitClientImpl implements GitClient {
 
     private static final long REPO_OUTDATED_AFTER = 15 * 60 * 1000; // ex. 15 minutes = 15 minutes * 60 seconds * 1000
     // miliseconds
-    private Git git;
-    private String remoteUri;
+    private Map<String, Git> gits;
+    private List<String> remoteUris;
     private String projectKey;
     private String defaultDirectory;
-    private String defaultBranchFolderName;
+    private Map<String, String> defaultBranchFolderNames;
     private boolean repoInitSuccess = false; // will be later made readable with upcoming features
-    private Ref defaultBranch; // TODO: should come from configuration of the project
-    private List<RevCommit> defaultBranchCommits; // will be later needed for upcoming features
+    private Map<String, Ref> defaultBranches; // TODO: should come from configuration of the project
+    private Map<Ref, List<RevCommit>> defaultBranchCommits; // will be later needed for upcoming features
     private GitRepositoryFSManager fsManager;
     private static final Logger LOGGER = LoggerFactory.getLogger(GitClientImpl.class);
 
     public GitClientImpl() {
     }
 
-    public GitClientImpl(File directory) {
-	repoInitSuccess = initRepository(directory);
+    public GitClientImpl(List<File> directories) {
+	initMaps();
+	List<String> uris = ConfigPersistenceManager.getGitUris(projectKey);
+	if (directories.size() == uris.size()) {
+	    boolean success = true;
+	    for (int i = 0; i < directories.size(); i++) {
+		success = initRepository(uris.get(i), directories.get(i));
+		if (!success) {
+		    this.repoInitSuccess = false;
+		}
+	    }
+	}
     }
 
-    public GitClientImpl(String uri, String defaultDirectory, String projectKey) {
-	// TODO: the last parameter should be a setting retrievable with
-	// ConfigPersistenceManager
-	repoInitSuccess = pullOrCloneRepository(projectKey, defaultDirectory, uri, "develop");
+    public GitClientImpl(List<String> uris, String defaultDirectory, String projectKey) {
+	initMaps();
+	Map<String, String> defaultBranches = ConfigPersistenceManager.getDefaultBranches(projectKey);
+	for (int i = 0; i < uris.size(); i++) {
+	    if (defaultBranches != null && defaultBranches.size() != 0 && defaultBranches.get(uris.get(i)) != null) {
+		defaultBranchFolderNames.put(uris.get(i), defaultBranches.get(uris.get(i)));
+	    } else {
+		defaultBranchFolderNames.put(uris.get(i), "develop");
+	    }
+	}
+	this.repoInitSuccess = pullOrCloneRepositories(projectKey, defaultDirectory, uris, defaultBranchFolderNames);
     }
 
-    public GitClientImpl(String uri, String projectKey) {
-	// TODO: the last parameter should be a setting retrievable with
-	// ConfigPersistenceManager
-	repoInitSuccess = pullOrCloneRepository(projectKey, DEFAULT_DIR, uri, "develop");
+    public GitClientImpl(List<String> uris, String projectKey) {
+	initMaps();
+	Map<String, String> defaultBranches = ConfigPersistenceManager.getDefaultBranches(projectKey);
+	for (int i = 0; i < uris.size(); i++) {
+	    if (defaultBranches.get(uris.get(i)) != null) {
+		defaultBranchFolderNames.put(uris.get(i), defaultBranches.get(uris.get(i)));
+	    } else {
+		defaultBranchFolderNames.put(uris.get(i), "develop");
+	    }
+	}
+	this.repoInitSuccess = pullOrCloneRepositories(projectKey, DEFAULT_DIR, uris, defaultBranchFolderNames);
     }
 
     public GitClientImpl(GitClientImpl originalClient) {
-	repoInitSuccess = pullOrCloneRepository(originalClient.getProjectKey(), originalClient.getDefaultDirectory(),
-		originalClient.getRemoteUri(), originalClient.getDefaultBranchFolderName());
+	initMaps();
+	this.repoInitSuccess = pullOrCloneRepositories(originalClient.getProjectKey(),
+		originalClient.getDefaultDirectory(), originalClient.getRemoteUris(),
+		originalClient.getDefaultBranchFolderNames());
     }
 
     public GitClientImpl(String projectKey) {
-	String uri = ConfigPersistenceManager.getGitUri(projectKey);
-	// TODO: the last parameter should be a setting retrievable with
-	// ConfigPersistenceManager
-	repoInitSuccess = pullOrCloneRepository(projectKey, DEFAULT_DIR, uri, "develop");
+	initMaps();
+	List<String> uris = ConfigPersistenceManager.getGitUris(projectKey);
+	Map<String, String> defaultBranches = ConfigPersistenceManager.getDefaultBranches(projectKey);
+	for (int i = 0; i < uris.size(); i++) {
+	    if (defaultBranches.get(uris.get(i)) != null) {
+		defaultBranchFolderNames.put(uris.get(i), defaultBranches.get(uris.get(i)));
+	    } else {
+		defaultBranchFolderNames.put(uris.get(i), "develop");
+	    }
+	}
+	this.repoInitSuccess = pullOrCloneRepositories(projectKey, DEFAULT_DIR, uris, defaultBranchFolderNames);
     }
 
-    private boolean pullOrCloneRepository(String projectKey, String defaultDirectory, String uri,
-	    String defaultBranchFolderName) {
-	fsManager = new GitRepositoryFSManager(defaultDirectory, projectKey, uri, defaultBranchFolderName);
-	File directory = new File(fsManager.getDefaultBranchPath());
-	this.remoteUri = uri;
+    private void initMaps() {
+	gits = new HashMap<String, Git>();
+	defaultBranchFolderNames = new HashMap<String, String>();
+	defaultBranches = new HashMap<String, Ref>();
+	defaultBranchCommits = new HashMap<Ref, List<RevCommit>>();
+    }
+
+    private boolean pullOrCloneRepositories(String projectKey, String defaultDirectory, List<String> uris,
+	    Map<String, String> defaultBranchFolderNames) {
+	fsManager = new GitRepositoryFSManager(defaultDirectory, projectKey, uris, defaultBranchFolderNames);
+	Map<String, String> defaultBranchPaths = fsManager.getDefaultBranchPaths();
+	this.remoteUris = uris;
 	this.projectKey = projectKey;
 	this.defaultDirectory = defaultDirectory;
-	this.defaultBranchFolderName = defaultBranchFolderName;
-	return pullOrClone(uri, directory);
+	this.defaultBranchFolderNames = defaultBranchFolderNames;
+	for (String uri : uris) {
+	    File directory = new File(defaultBranchPaths.get(uri));
+	    if (!pullOrClone(uri, directory)) {
+		return false;
+	    }
+	}
+	return true;
     }
 
-    private boolean pullOrClone(String uri, File directory) {
+    private boolean pullOrClone(String repoUri, File directory) {
 	if (isGitDirectory(directory)) {
-	    if (openRepository(directory)) {
-		if (!pull()) {
-		    LOGGER.error("failed Git pull " + directory);
+	    if (openRepository(repoUri, directory)) {
+		if (!pull(repoUri)) {
+		    LOGGER.error("Failed Git pull " + directory);
 		    return false;
 		}
 	    } else {
@@ -127,18 +176,17 @@ public class GitClientImpl implements GitClient {
 		return false;
 	    }
 	} else {
-	    if (!cloneRepository(uri, directory)) {
-		LOGGER.error("Could not clone repository " + uri + " to " + directory.getAbsolutePath());
+	    if (!cloneRepository(repoUri, directory)) {
+		LOGGER.error("Could not clone repository " + repoUri + " to " + directory.getAbsolutePath());
 		return false;
 	    }
 	}
-
-	// get name of current branch, should be later replaced by project setting
-	defaultBranch = getCurrentBranch();
-	if (defaultBranch == null) {
+	if (defaultBranchFolderNames.get(repoUri) == null) {
 	    return false;
 	}
-	defaultBranchCommits = getCommitsFromDefaultBranch();
+	Ref defaultBranch = getBranch(defaultBranchFolderNames.get(repoUri), repoUri);
+	defaultBranches.put(repoUri, defaultBranch);
+	defaultBranchCommits.put(defaultBranch, getCommitsFromDefaultBranch(repoUri));
 	return true;
     }
 
@@ -147,39 +195,10 @@ public class GitClientImpl implements GitClient {
 	return directory.exists() && (gitDir.isDirectory());
     }
 
-    private Ref getCurrentBranch() {
-	String branchName = null;
-	Ref branch = null;
-	Repository repository;
-
+    private boolean openRepository(String repoUri, File directory) {
 	try {
-	    repository = this.getRepository();
-	} catch (Exception e) {
-	    LOGGER.error("getRepository: " + e.getMessage());
-	    return null;
-	}
-
-	if (repository == null) {
-	    LOGGER.error("Git repository does not seem to exist");
-	    return null;
-	}
-	try {
-	    branchName = repository.getFullBranch();
-	    branch = repository.findRef(branchName);
-	    if (branch == null) {
-		LOGGER.error("Git repository does not seem to be on a branch");
-		return null;
-	    }
-	} catch (Exception e) {
-	    LOGGER.error("Git client has thrown error while getting branch name. " + e.getMessage());
-	    return null;
-	}
-	return branch;
-    }
-
-    private boolean openRepository(File directory) {
-	try {
-	    git = Git.open(directory);
+	    Git git = Git.open(directory);
+	    gits.put(repoUri, git);
 	} catch (IOException e) {
 	    LOGGER.error(
 		    "Git repository could not be opened: " + directory.getAbsolutePath() + "\n\t" + e.getMessage());
@@ -188,23 +207,24 @@ public class GitClientImpl implements GitClient {
 	return true;
     }
 
-    private boolean pull() {
-	if (!isPullNeeded()) {
+    private boolean pull(String repoUri) {
+	LOGGER.info("Pulling Repository: " + repoUri);
+	if (!isPullNeeded(repoUri)) {
 	    return true;
 	}
 	try {
-	    List<RemoteConfig> remotes = git.remoteList().call();
+	    List<RemoteConfig> remotes = gits.get(repoUri).remoteList().call();
 	    for (RemoteConfig remote : remotes) {
-		git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
+		gits.get(repoUri).fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
 			.setRemoveDeletedRefs(true).call();
-		LOGGER.info("Fetched branches in " + git.getRepository().getDirectory());
+		LOGGER.info("Fetched branches in " + gits.get(repoUri).getRepository().getDirectory());
 	    }
-	    git.pull().call();
+	    gits.get(repoUri).pull().call();
 	} catch (GitAPIException e) {
 	    LOGGER.error("Issue occurred while pulling from a remote." + "\n\t" + e.getMessage());
 	    return false;
 	}
-	LOGGER.info("Pulled from remote in " + git.getRepository().getDirectory());
+	LOGGER.info("Pulled from remote in " + gits.get(repoUri).getRepository().getDirectory());
 	return true;
     }
 
@@ -213,9 +233,9 @@ public class GitClientImpl implements GitClient {
      *
      * @return decision whether to make or not make the git pull call.
      */
-    private boolean isPullNeeded() {
+    private boolean isPullNeeded(String repoUri) {
 	String trackerFilename = "condec.pullstamp.";
-	Repository repository = this.getRepository();
+	Repository repository = this.getRepository(repoUri);
 	File file = new File(repository.getDirectory(), trackerFilename);
 
 	if (!file.isFile()) {
@@ -255,8 +275,9 @@ public class GitClientImpl implements GitClient {
 	    return false;
 	}
 	try {
-	    git = Git.cloneRepository().setURI(uri).setDirectory(directory).setCloneAllBranches(true).call();
-	    setConfig();
+	    Git git = Git.cloneRepository().setURI(uri).setDirectory(directory).setCloneAllBranches(true).call();
+	    gits.put(uri, git);
+	    setConfig(uri);
 	} catch (GitAPIException e) {
 	    LOGGER.error("Git repository could not be cloned: " + uri + " " + directory.getAbsolutePath() + "\n\t"
 		    + e.getMessage());
@@ -266,9 +287,10 @@ public class GitClientImpl implements GitClient {
 	return true;
     }
 
-    private boolean initRepository(File directory) {
+    private boolean initRepository(String repoUri, File directory) {
 	try {
-	    git = Git.init().setDirectory(directory).call();
+	    Git git = Git.init().setDirectory(directory).call();
+	    gits.put(repoUri, git);
 	} catch (IllegalStateException | GitAPIException e) {
 	    LOGGER.error("Bare git repository could not be initiated: " + directory.getAbsolutePath());
 	    return false;
@@ -276,8 +298,8 @@ public class GitClientImpl implements GitClient {
 	return true;
     }
 
-    private boolean setConfig() {
-	Repository repository = this.getRepository();
+    private boolean setConfig(String repoUri) {
+	Repository repository = this.getRepository(repoUri);
 	StoredConfig config = repository.getConfig();
 	/**
 	 * @issue The internal representation of a file might add system dependent new
@@ -300,44 +322,58 @@ public class GitClientImpl implements GitClient {
     }
 
     @Override
-    public Diff getDiff(List<RevCommit> commits) {
+    public Diff getDiff(List<RevCommit> commits, String repoUri) {
 	if (commits == null || commits.size() == 0) {
 	    return null;
 	}
 	// TODO Check if this is always correct
 	RevCommit firstCommit = commits.get(commits.size() - 1);
 	RevCommit lastCommit = commits.get(0);
-	return getDiff(firstCommit, lastCommit);
+	return getDiff(firstCommit, lastCommit, repoUri);
     }
 
     @Override
-    public Diff getDiff(Issue jiraIssue) {
+    public Diff getDiff(Issue jiraIssue, String repoUri) {
 	if (jiraIssue == null) {
 	    return null;
 	}
-	List<RevCommit> commits = getCommits(jiraIssue);
-	return getDiff(commits);
+	List<RevCommit> squashcommits = getCommits(jiraIssue, repoUri);
+	Ref branch = getRef(jiraIssue.getKey(), repoUri);
+	List<RevCommit> commits = getCommits(branch);
+	if (commits != null) {
+	    commits.removeAll(getDefaultBranchCommits(repoUri));
+	    for (RevCommit com : squashcommits) {
+		if (!commits.contains(com)) {
+		    commits.add(com);
+		}
+	    }
+	    if ((getDefaultBranchCommits(repoUri) == null || getDefaultBranchCommits(repoUri).size() == 0)
+		    && commits.size() - 1 >= 0) {
+		commits.remove(commits.size() - 1);
+	    }
+	    return getDiff(commits, repoUri);
+	}
+	return null;
     }
 
     @Override
-    public Diff getDiff(RevCommit firstCommit, RevCommit lastCommit) {
+    public Diff getDiff(RevCommit firstCommit, RevCommit lastCommit, String repoUri) {
 	Diff diff = new DiffImpl();
 	List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
 
-	DiffFormatter diffFormatter = getDiffFormater();
+	DiffFormatter diffFormatter = getDiffFormater(repoUri);
 	try {
-	    RevCommit parentCommit = getParent(firstCommit);
+	    RevCommit parentCommit = getParent(firstCommit, repoUri);
 	    if (parentCommit != null) {
 		diffEntries = diffFormatter.scan(parentCommit.getTree(), lastCommit.getTree());
 	    }
 	} catch (IOException e) {
 	    LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
 	}
-
-	File directory = getDirectory();
+	File directory = getDirectory(repoUri);
 	String baseDirectory = "";
 	if (directory != null) {
-	    baseDirectory = getDirectory().toString().replace(".git", "");
+	    baseDirectory = getDirectory(repoUri).toString().replace(".git", "");
 	}
 	for (DiffEntry diffEntry : diffEntries) {
 	    try {
@@ -353,48 +389,68 @@ public class GitClientImpl implements GitClient {
     }
 
     @Override
-    public Diff getDiff(RevCommit revCommit) {
-	return getDiff(revCommit, revCommit);
+    public Diff getDiff(RevCommit revCommit, String repoUri) {
+	return getDiff(revCommit, revCommit, repoUri);
+    }
+
+    public String getRepoUriFromBranch(Ref featureBranch) {
+	if (featureBranch != null) {
+	    for (String uri : remoteUris) {
+		Git git = gits.get(uri);
+		try {
+		    if (git != null && git.getRepository() != null
+			    && git.getRepository().exactRef(featureBranch.getName()) != null) {
+			return uri;
+		    }
+		} catch (IOException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		}
+	    }
+	}
+	return null;
     }
 
     /**
      * Temporally switches git client's directory to feature branch directory to
      * fetch commits, afterwards returns to default branch directory after.
      * 
-     * @param featureBranch ref of the feature branch.
+     * @param featureBranch ref of the feature branch, Uri of Git Repository
      * @return list of unique commits.
      */
     @Override
     public List<RevCommit> getFeatureBranchCommits(Ref featureBranch) {
+	String repoUri = getRepoUriFromBranch(featureBranch);
 	List<RevCommit> branchUniqueCommits = new ArrayList<RevCommit>();
 	List<RevCommit> branchCommits = getCommits(featureBranch);
 	RevCommit lastCommonAncestor = null;
-	if (defaultBranchCommits == null) {
-	    defaultBranchCommits = getCommitsFromDefaultBranch();
+	if (!defaultBranchCommits.containsKey(defaultBranches.get(repoUri))
+		|| defaultBranchCommits.get(defaultBranches.get(repoUri)) == null) {
+	    defaultBranchCommits.put(defaultBranches.get(repoUri), getCommitsFromDefaultBranch(repoUri));
 	}
 	for (RevCommit commit : branchCommits) {
-	    if (defaultBranchCommits != null && commit != null && defaultBranchCommits.contains(commit)) {
+	    if (defaultBranchCommits.get(defaultBranches.get(repoUri)) != null && commit != null
+		    && defaultBranchCommits.get(defaultBranches.get(repoUri)).contains(commit)) {
 		LOGGER.info("Found last common commit " + commit.toString());
 		lastCommonAncestor = commit;
 		break;
 	    }
 	    branchUniqueCommits.add(commit);
 	}
-
 	if (lastCommonAncestor == null) {
-	    branchUniqueCommits = null;
+	    return Collections.emptyList();
 	} else if (branchUniqueCommits.size() > 0) {
 	    branchUniqueCommits = Lists.reverse(branchUniqueCommits);
 	} else {
-	    branchUniqueCommits = branchCommits;
+	    branchUniqueCommits = Collections.emptyList();
 	}
 
 	return branchUniqueCommits;
     }
 
     @Override
-    public List<RevCommit> getFeatureBranchCommits(String featureBranchName) {
-	Ref featureBranch = getBranch(featureBranchName);
+    public List<RevCommit> getFeatureBranchCommits(String featureBranchName, String repoUri) {
+	Ref featureBranch = getBranch(featureBranchName, repoUri);
 	if (null == featureBranch) {
 	    /**
 	     * @issue What is the return value of methods that would normally return a
@@ -405,24 +461,24 @@ public class GitClientImpl implements GitClient {
 	     *      valid input parameter or because of an invalid parameter.
 	     * @alternative Methods with an invalid input parameter return null!
 	     * @con null values might be intended as result.
-	     * @decision Throw exception!
-	     * @pro this is the best practice, just look at most libraries.
+	     * @decision Return emtpyList to compensate for branch being in another
+	     *           repository
 	     */
-	    return null;
+	    return Collections.emptyList();
 	}
 	return getFeatureBranchCommits(featureBranch);
     }
 
-    private Ref getBranch(String featureBranchName) {
+    private Ref getBranch(String featureBranchName, String repoUri) {
 	if (featureBranchName == null || featureBranchName.length() == 0) {
 	    LOGGER.info("Null or empty branch name was passed.");
 	    return null;
 	}
-	List<Ref> remoteBranches = getRemoteBranches();
+	List<Ref> remoteBranches = getRemoteBranches(repoUri);
 	if (remoteBranches != null) {
 	    for (Ref branch : remoteBranches) {
 		String branchName = branch.getName();
-		if (branchName.endsWith(featureBranchName)) {
+		if (branchName.endsWith("/" + featureBranchName)) {
 		    return branch;
 		}
 	    }
@@ -431,9 +487,9 @@ public class GitClientImpl implements GitClient {
 	return null;
     }
 
-    private DiffFormatter getDiffFormater() {
+    private DiffFormatter getDiffFormater(String repoUri) {
 	DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
-	Repository repository = this.getRepository();
+	Repository repository = this.getRepository(repoUri);
 	if (repository == null) {
 	    return diffFormatter;
 	}
@@ -443,27 +499,26 @@ public class GitClientImpl implements GitClient {
 	return diffFormatter;
     }
 
-    @Override
-    public Repository getRepository() {
-	if (git == null) {
+    public Repository getRepository(String repoUri) {
+	if (gits == null || !this.gits.containsKey(repoUri)) {
 	    return null;
 	}
-	return this.git.getRepository();
+	return gits.get(repoUri).getRepository();
     }
 
     @Override
-    public File getDirectory() {
-	Repository repository = this.getRepository();
+    public File getDirectory(String repoUri) {
+	Repository repository = this.getRepository(repoUri);
 	if (repository == null) {
 	    return null;
 	}
 	return repository.getDirectory();
     }
 
-    private RevCommit getParent(RevCommit revCommit) {
+    private RevCommit getParent(RevCommit revCommit, String repoUri) {
 	RevCommit parentCommit = null;
 	try {
-	    Repository repository = this.getRepository();
+	    Repository repository = this.getRepository(repoUri);
 	    RevWalk revWalk = new RevWalk(repository);
 	    parentCommit = revWalk.parseCommit(revCommit.getParent(0).getId());
 	    revWalk.close();
@@ -474,22 +529,36 @@ public class GitClientImpl implements GitClient {
     }
 
     @Override
-    public void close() {
-	if (git == null) {
+    public void close(String repoUri) {
+	if (gits.get(repoUri) == null) {
 	    return;
 	}
-	git.getRepository().close();
-	git.close();
+	gits.get(repoUri).getRepository().close();
+	gits.get(repoUri).close();
+	gits.remove(repoUri);
+    }
+
+    public void closeAll() {
+	if (remoteUris != null) {
+	    for (String repoUri : this.remoteUris) {
+		if (gits.get(repoUri) == null) {
+		    return;
+		}
+		gits.get(repoUri).getRepository().close();
+		gits.get(repoUri).close();
+		gits.remove(repoUri);
+	    }
+	}
     }
 
     @Override
-    public void deleteRepository() {
-	if (git == null | this.getDirectory() != null) {
+    public void deleteRepository(String repoUri) {
+	if (gits == null || gits.get(repoUri) == null || this.getDirectory(repoUri) != null) {
 	    return;
 	}
-	close();
-	File directory = this.getDirectory().getParentFile();
+	File directory = this.getDirectory(repoUri).getParentFile();
 	deleteFolder(directory);
+	close(repoUri);
     }
 
     private static void deleteFolder(File directory) {
@@ -507,8 +576,8 @@ public class GitClientImpl implements GitClient {
      * go back to the default branch directory.
      */
     @Override
-    public boolean checkoutFeatureBranch(String featureBranchShortName) {
-	Ref featureBranch = getBranch(featureBranchShortName);
+    public boolean checkoutFeatureBranch(String featureBranchShortName, String repoUri) {
+	Ref featureBranch = getBranch(featureBranchShortName, repoUri);
 	if (null == featureBranch) {
 	    return false;
 	}
@@ -522,17 +591,17 @@ public class GitClientImpl implements GitClient {
      * directory.
      */
     @Override
-    public boolean checkoutCommit(RevCommit commit) {
+    public boolean checkoutCommit(RevCommit commit, String repoUri) {
 	String commitName = commit.getName();
 
 	// will copy default branch folder
-	File directory = new File(fsManager.prepareBranchDirectory(commitName));
+	File directory = new File(fsManager.prepareBranchDirectory(commitName, repoUri));
 
-	return (switchGitDirectory(directory) && checkout(commit.getName(), true));
+	return (switchGitDirectory(directory, repoUri) && checkout(commitName, repoUri, true));
     }
 
-    private boolean checkout(String branchShortName) {
-	return checkout(branchShortName, false);
+    private boolean checkout(String branchShortName, String repoUri) {
+	return checkout(branchShortName, repoUri, false);
     }
 
     /**
@@ -541,21 +610,31 @@ public class GitClientImpl implements GitClient {
      */
     @Override
     public boolean checkoutFeatureBranch(Ref featureBranch) {
+	String repoUri = getRepoUriFromBranch(featureBranch);
 	String[] branchNameComponents = featureBranch.getName().split("/");
 	String branchShortName = branchNameComponents[branchNameComponents.length - 1];
-	File directory = new File(fsManager.prepareBranchDirectory(branchShortName));
+	String branchShortNameWithPrefix = branchShortName;
+	for (int i = 2; i <= branchNameComponents.length; i++) {
+	    branchShortNameWithPrefix = branchNameComponents[branchNameComponents.length - i] + "/"
+		    + branchShortNameWithPrefix;
+	    if (branchNameComponents[branchNameComponents.length - i].equals("origin")) {
+		break;
+	    }
+	}
+	File directory = new File(fsManager.prepareBranchDirectory(branchShortName, repoUri));
 
-	return (switchGitDirectory(directory) && pull() && checkout(branchShortName));
+	return (switchGitDirectory(directory, repoUri) && pull(repoUri)
+		&& checkout(branchShortNameWithPrefix, repoUri));
     }
 
     @Override
-    public List<RevCommit> getCommits(Issue jiraIssue) {
+    public List<RevCommit> getCommits(Issue jiraIssue, String repoUri) {
 	if (jiraIssue == null) {
 	    return new LinkedList<RevCommit>();
 	}
 	String jiraIssueKey = jiraIssue.getKey();
 	List<RevCommit> commitsForJiraIssue = new LinkedList<RevCommit>();
-	if (git == null || jiraIssueKey == null) {
+	if (gits == null || gits.get(repoUri) == null || jiraIssueKey == null) {
 	    LOGGER.error("Commits cannot be retrieved since git object is null.");
 	    return commitsForJiraIssue;
 	}
@@ -572,7 +651,7 @@ public class GitClientImpl implements GitClient {
 	 * @pro issues with low key number (ex. CONDEC-1) and higher key numbers (ex.
 	 *      CONDEC-1000) will not be confused.
 	 */
-	Ref branch = getRef(jiraIssueKey);
+	Ref branch = getRef(jiraIssueKey, repoUri);
 	List<RevCommit> commits = getCommits(branch);
 	for (RevCommit commit : commits) {
 	    // TODO Improve identification of jira issue key in commit message
@@ -586,9 +665,9 @@ public class GitClientImpl implements GitClient {
     }
 
     @Override
-    public List<RevCommit> getCommits() {
+    public List<RevCommit> getCommits(String repoUri) {
 	List<RevCommit> commits = new ArrayList<RevCommit>();
-	for (Ref branch : getRemoteBranches()) {
+	for (Ref branch : getRemoteBranches(repoUri)) {
 	    /**
 	     * @issue All branches will be created in separate file system folders for this
 	     *        method's loop. How can this be prevented?
@@ -609,7 +688,7 @@ public class GitClientImpl implements GitClient {
 	     * @con still some more code will be written. Scraping it, would require coding
 	     *      improvement in test code (TestGetCommits).
 	     */
-	    commits.addAll(getCommits(branch));
+	    commits.addAll(getCommits(repoUri, branch, false));
 	}
 	return commits;
     }
@@ -618,101 +697,141 @@ public class GitClientImpl implements GitClient {
      * TODO: This method and getCommits(Issue jiraIssue) need refactoring and deeper
      * discussions!
      */
-    private Ref getRef(String jiraIssueKey) {
-	List<Ref> refs = getAllRefs();
+    private Ref getRef(String jiraIssueKey, String repoUri) {
+	List<Ref> refs = getAllRefsForOneRepo(repoUri);
 	Ref branch = null;
 	for (Ref ref : refs) {
 	    if (ref.getName().contains(jiraIssueKey)) {
 		return ref;
-	    } else if (ref.getName().equalsIgnoreCase("refs/heads/develop")) {
-		branch = ref;
-	    } else if (ref.getName().equalsIgnoreCase("refs/heads/master")) {
+	    } else if (ref.getName().equalsIgnoreCase("refs/heads/" + defaultBranchFolderNames.get(repoUri))) {
 		branch = ref;
 	    }
 	}
 	return branch;
     }
 
-    private List<Ref> getAllRefs() {
-	return getRefs(ListBranchCommand.ListMode.ALL);
+    @Override
+    public List<Ref> getAllRemoteBranches() {
+	return getAllRefs(ListBranchCommand.ListMode.REMOTE);
     }
 
     @Override
-    public List<Ref> getRemoteBranches() {
-	return getRefs(ListBranchCommand.ListMode.REMOTE);
+    public List<Ref> getRemoteBranches(String repoUri) {
+	return getRefs(ListBranchCommand.ListMode.REMOTE, repoUri);
     }
 
-    private List<Ref> getRefs(ListBranchCommand.ListMode listMode) {
+    private List<Ref> getAllRefsForOneRepo(String repoUri) {
+	return getRefs(ListBranchCommand.ListMode.ALL, repoUri);
+    }
+
+    private List<Ref> getRefs(ListBranchCommand.ListMode listMode, String repoUri) {
 	List<Ref> refs = new ArrayList<Ref>();
 	try {
-	    refs = git.branchList().setListMode(listMode).call();
+	    refs = gits.get(repoUri).branchList().setListMode(listMode).call();
 	} catch (GitAPIException | NullPointerException e) {
 	    LOGGER.error("Git could not get references. Message: " + e.getMessage());
 	}
 	return refs;
     }
 
-    private List<RevCommit> getCommitsFromDefaultBranch() {
-	return getCommits(defaultBranch, true);
+    private List<Ref> getAllRefs(ListBranchCommand.ListMode listMode) {
+	List<Ref> allRefs = new ArrayList<Ref>();
+	for (String uri : remoteUris) {
+	    try {
+		List<Ref> refs = gits.get(uri).branchList().setListMode(listMode).call();
+		allRefs.addAll(refs);
+	    } catch (GitAPIException | NullPointerException e) {
+		LOGGER.error("Git could not get references. Message: " + e.getMessage());
+	    }
+	}
+
+	return allRefs;
+    }
+
+    public List<RevCommit> getAllRelatedCommits(Issue jiraIssue) {
+	List<RevCommit> allCommits = new ArrayList<RevCommit>();
+	for (String repoUri : remoteUris) {
+	    List<RevCommit> com = getCommits(jiraIssue, repoUri);
+	    allCommits.addAll(com);
+	}
+	return allCommits;
+    }
+
+    private List<RevCommit> getCommitsFromDefaultBranch(String repoUri) {
+	return getCommits(repoUri, defaultBranches.get(repoUri), true);
     }
 
     private List<RevCommit> getCommits(Ref branch) {
-	return getCommits(branch, false);
+	String repoUri = getRepoUriFromBranch(branch);
+	return getCommits(repoUri, branch, false);
     }
 
-    private List<RevCommit> getCommits(Ref branch, boolean isDefaultBranch) {
+    private List<RevCommit> getCommits(String repoUri, Ref branch, boolean isDefaultBranch) {
 	List<RevCommit> commits = new ArrayList<RevCommit>();
 	if (branch == null || fsManager == null) {
 	    return commits;
 	}
-
 	File directory;
 	String[] branchNameComponents = branch.getName().split("/");
 	String branchShortName = branchNameComponents[branchNameComponents.length - 1];
+	String branchShortNameWithPrefix = branchShortName;
+	if (!isDefaultBranch) {
+	    for (int i = 2; i <= branchNameComponents.length; i++) {
+		branchShortNameWithPrefix = branchNameComponents[branchNameComponents.length - i] + "/"
+			+ branchShortNameWithPrefix;
+		if (branchNameComponents[branchNameComponents.length - i].equals("origin")) {
+		    break;
+		}
+	    }
+	} else {
+	    branchShortNameWithPrefix = "origin/" + branchShortNameWithPrefix;
+	}
 	boolean canReleaseRepoDirectory = false;
 
 	if (isDefaultBranch) {
-	    directory = new File(fsManager.getDefaultBranchPath());
+	    Map<String, String> defaultBranchPaths = fsManager.getDefaultBranchPaths();
+	    directory = new File(defaultBranchPaths.get(repoUri));
 	} else {
 	    canReleaseRepoDirectory = !fsManager.isBranchDirectoryInUse(branchShortName);
-	    directory = new File(fsManager.prepareBranchDirectory(branchShortName));
+	    directory = new File(fsManager.prepareBranchDirectory(branchShortName, repoUri));
 	}
 
-	if (switchGitDirectory(directory) && pull() && checkout(branchShortName)) {
+	if (switchGitDirectory(directory, repoUri) && pull(repoUri) && checkout(branchShortNameWithPrefix, repoUri)) {
 	    Iterable<RevCommit> iterable = null;
 	    try {
-		iterable = git.log().call();
+		iterable = gits.get(repoUri).log().call();
 	    } catch (GitAPIException e) {
 		LOGGER.error("Git could not get commits for the branch: " + branch.getName() + " Message: "
 			+ e.getMessage());
 	    }
 	    if (iterable != null) {
 		for (RevCommit commit : iterable) {
-		    commits.add(commit);
+		    if (!commits.contains(commit)) {
+			commits.add(commit);
+		    }
 		}
 	    }
 	}
 	if (canReleaseRepoDirectory) {
-	    fsManager.releaseBranchDirectoryNameToTemp(branchShortName);
+	    fsManager.releaseBranchDirectoryNameToTemp(branchShortName, repoUri);
 	}
-	switchGitClientBackToDefaultDirectory();
+	switchGitClientBackToDefaultDirectory(repoUri);
 	return commits;
     }
 
-    private boolean checkout(String checkoutObjectName, boolean isCommitWithinBranch) {
-
+    private boolean checkout(String checkoutObjectName, String repoUri, boolean isCommitWithinBranch) {
 	// checkout only remote branch
 	if (!isCommitWithinBranch) {
-	    String checkoutName = "origin/" + checkoutObjectName;
+	    String checkoutName = checkoutObjectName;
 	    try {
-		git.checkout().setName(checkoutName).call();
+		gits.get(repoUri).checkout().setName(checkoutName).call();
 	    } catch (GitAPIException | JGitInternalException e) {
-
+		System.out.println("Could not checkout " + checkoutName);
 		LOGGER.error("Could not checkout " + checkoutName + ". " + e.getMessage());
 		return false;
 	    }
 	    // create local branch
-	    if (!createLocalBranchIfNotExists(checkoutObjectName)) {
+	    if (!createLocalBranchIfNotExists(checkoutObjectName, repoUri)) {
 		LOGGER.error("Could delete and create local branch");
 		return false;
 
@@ -721,7 +840,7 @@ public class GitClientImpl implements GitClient {
 
 	// checkout local branch/commit
 	try {
-	    git.checkout().setName(checkoutObjectName).call();
+	    gits.get(repoUri).checkout().setName(checkoutObjectName).call();
 	} catch (GitAPIException | JGitInternalException e) {
 
 	    LOGGER.error("Could not checkout " + checkoutObjectName + ". " + e.getMessage());
@@ -730,9 +849,9 @@ public class GitClientImpl implements GitClient {
 	return true;
     }
 
-    private boolean createLocalBranchIfNotExists(String branchShortName) {
+    private boolean createLocalBranchIfNotExists(String branchShortName, String repoUri) {
 	try {
-	    git.branchCreate().setName(branchShortName).call();
+	    gits.get(repoUri).branchCreate().setName(branchShortName).call();
 	} catch (RefAlreadyExistsException e) {
 	    return true;
 	} catch (InvalidRefNameException | RefNotFoundException e) {
@@ -745,10 +864,11 @@ public class GitClientImpl implements GitClient {
 	return true;
     }
 
-    private boolean switchGitDirectory(File gitDirectory) {
-	git.close();
+    private boolean switchGitDirectory(File gitDirectory, String repoUri) {
+	gits.get(repoUri).close();
 	try {
-	    git = Git.open(gitDirectory);
+	    Git git = Git.open(gitDirectory);
+	    gits.put(repoUri, git);
 	} catch (IOException e) {
 	    LOGGER.error(
 		    "Could not switch into git directory " + gitDirectory.getAbsolutePath() + "\r\n" + e.getMessage());
@@ -757,37 +877,41 @@ public class GitClientImpl implements GitClient {
 	return true;
     }
 
-    private void switchGitClientBackToDefaultDirectory() {
-	File directory = new File(fsManager.getDefaultBranchPath());
+    private void switchGitClientBackToDefaultDirectory(String repoUri) {
+	Map<String, String> defaultBranchPaths = fsManager.getDefaultBranchPaths();
+	File directory = new File(defaultBranchPaths.get(repoUri));
 	try {
-	    git.close();
-	    git = Git.open(directory);
+	    gits.get(repoUri).close();
+	    gits.remove(repoUri);
+	    gits.put(repoUri, Git.open(directory));
 	} catch (IOException e) {
 	    LOGGER.error("Git could not get back to default branch. Message: " + e.getMessage());
 	}
     }
 
     @Override
-    public int getNumberOfCommits(Issue jiraIssue) {
+    public int getNumberOfCommits(Issue jiraIssue, String repoUri) {
 	if (jiraIssue == null) {
 	    return 0;
 	}
-	List<RevCommit> commits = getCommits(jiraIssue);
+	List<RevCommit> commits = getCommits(jiraIssue, repoUri);
 	return commits.size();
     }
 
     @Override
-    public Git getGit() {
-	return git;
+    public Git getGit(String repoUri) {
+	return gits.get(repoUri);
     }
 
     @Override
-    public void setGit(Git git) {
-	this.git = git;
+    public void setGit(Git git, String repoUri) {
+	if (gits != null && gits.get(repoUri) != git) {
+	    gits.put(repoUri, git);
+	}
     }
 
-    public String getRemoteUri() {
-	return remoteUri;
+    public List<String> getRemoteUris() {
+	return remoteUris;
     }
 
     public String getProjectKey() {
@@ -798,11 +922,20 @@ public class GitClientImpl implements GitClient {
 	return defaultDirectory;
     }
 
-    public String getDefaultBranchFolderName() {
-	return defaultBranchFolderName;
+    public Map<String, String> getDefaultBranchFolderNames() {
+	return defaultBranchFolderNames;
+    }
+
+    public Ref getDefaultBranch(String repoUri) {
+	return defaultBranches.get(repoUri);
     }
 
     public boolean isRepoInitSuccess() {
 	return repoInitSuccess;
     }
+
+    public List<RevCommit> getDefaultBranchCommits(String repoUri) {
+	return getCommitsFromDefaultBranch(repoUri);
+    }
+
 }

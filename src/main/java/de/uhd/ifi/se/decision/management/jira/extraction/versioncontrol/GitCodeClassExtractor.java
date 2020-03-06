@@ -18,47 +18,51 @@ import de.uhd.ifi.se.decision.management.jira.model.git.impl.ChangedFileImpl;
 public class GitCodeClassExtractor {
 
     private String projectKey;
-    private List<File> codeClassList;
+    private List<File> codeClassListFull;
 
     public GitCodeClassExtractor(String projectKey) {
 	this.projectKey = projectKey;
-	this.codeClassList = getCodeClassFiles();
+	this.codeClassListFull = getCodeClassFiles();
     }
 
     public List<File> getCodeClassFiles() {
-	List<File> codeClassList = new ArrayList<File>();
+	List<File> codeClassListFull = new ArrayList<File>();
 	GitClient gitClient = new GitClientImpl(projectKey);
-	Repository repository = gitClient.getRepository();
-	if (repository != null) {
-	    TreeWalk treeWalk = new TreeWalk(repository);
-	    try {
-		treeWalk.addTree(getHeadCommit(gitClient.getGit()).getTree());
-		treeWalk.setRecursive(false);
-		while (treeWalk.next()) {
-		    if (treeWalk.isSubtree()) {
-			treeWalk.enterSubtree();
-		    } else {
-			File file = new File(treeWalk.getPathString());
-			ChangedFile chfile = new ChangedFileImpl(file);
-			if (chfile.isJavaClass()) {
-			    codeClassList.add(file);
-			} /*
-			   * //Only needed if ChangedFile.isJavaClass() doesnt work if
-			   * (file.getName().endsWith(".java")) { codeClassList.add(file); }
-			   */
+	for (String repoUri : gitClient.getRemoteUris()) {
+	    List<File> codeClassList = new ArrayList<File>();
+	    Repository repository = gitClient.getRepository(repoUri);
+	    if (repository != null) {
+		TreeWalk treeWalk = new TreeWalk(repository);
+		try {
+		    treeWalk.addTree(getHeadCommit(gitClient.getGit(repoUri)).getTree());
+		    treeWalk.setRecursive(false);
+		    while (treeWalk.next()) {
+			if (treeWalk.isSubtree()) {
+			    treeWalk.enterSubtree();
+			} else {
+			    File file = new File(treeWalk.getPathString());
+			    ChangedFile chfile = new ChangedFileImpl(file);
+			    if (chfile.isJavaClass()) {
+				codeClassList.add(file);
+			    } /*
+			       * //Only needed if ChangedFile.isJavaClass() doesnt work if
+			       * (file.getName().endsWith(".java")) { codeClassList.add(file); }
+			       */
+			}
 		    }
+		} catch (IOException e) {
+		    System.out.println("Error while walking Git-Tree");
+		    e.printStackTrace();
 		}
-	    } catch (IOException e) {
-		System.out.println("Error while walking Git-Tree");
-		e.printStackTrace();
+		treeWalk.close();
 	    }
-	    treeWalk.close();
+	    codeClassListFull.addAll(codeClassList);
 	}
-	return codeClassList;
+	return codeClassListFull;
     }
 
     public Integer getNumberOfCodeClasses() {
-	return codeClassList.size();
+	return codeClassListFull.size();
     }
 
     private static RevCommit getHeadCommit(Git git) {

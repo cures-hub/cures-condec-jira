@@ -122,7 +122,7 @@ var ConDecDevBranches = [];
           }
         }
         else {
-          localStorage.setItem("condec.restCacheTTL",1000*60*3); /*
+          localStorage.setItem("condec.restCacheTTL",1000*60); /*
 																	 * init 3
 																	 * minute
 																	 * caching

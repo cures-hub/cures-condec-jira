@@ -10,6 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.TangledChangeDetector;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import de.uhd.ifi.se.decision.management.jira.model.git.impl.DiffImpl;
 
 public class CodeSummarizerImpl implements CodeSummarizer {
 
@@ -38,8 +39,19 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 	    return "";
 	}
 	this.minProbabilityOfCorrectness = minProbabilityOfCorrectness;
-	Diff diff = gitClient.getDiff(jiraIssue);
-	return createSummary(diff);
+	Diff completeDiff = new DiffImpl();
+	if (gitClient.getRemoteUris() == null) {
+	    return "";
+	}
+	for (String repoUri : gitClient.getRemoteUris()) {
+	    Diff diff = gitClient.getDiff(jiraIssue, repoUri);
+	    if (diff != null) {
+		for (ChangedFile file : diff.getChangedFiles()) {
+		    completeDiff.addChangedFile(file);
+		}
+	    }
+	}
+	return createSummary(completeDiff);
     }
 
     @Override
@@ -47,8 +59,14 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 	if (commit == null) {
 	    return "";
 	}
-	Diff diff = gitClient.getDiff(commit);
-	return createSummary(diff);
+	Diff completeDiff = new DiffImpl();
+	for (String repoUri : gitClient.getRemoteUris()) {
+	    Diff diff = gitClient.getDiff(commit, repoUri);
+	    for (ChangedFile file : diff.getChangedFiles()) {
+		completeDiff.addChangedFile(file);
+	    }
+	}
+	return createSummary(completeDiff);
     }
 
     /**
