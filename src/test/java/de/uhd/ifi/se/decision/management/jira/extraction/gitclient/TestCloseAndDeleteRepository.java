@@ -1,30 +1,43 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 
 public class TestCloseAndDeleteRepository extends TestSetUpGit {
 
-	@Test
-	public void testCloseGitNull() {
-		GitClient gitClient = new GitClientImpl();
-		gitClient.close();
-		assertNotNull(gitClient);
-	}
+    @Test
+    public void testCloseGitNull() {
+	GitClient gitClient = new GitClientImpl();
+	gitClient.closeAll();
+	assertNotNull(gitClient);
+    }
 
-	@Test
-	public void testCloseGitExisting() {
-		gitClient.close();
-		assertNotNull(gitClient);
-	}
+    @Test
+    public void testCloseGitExisting() {
+	gitClient.closeAll();
+	assertNotNull(gitClient);
+    }
 
-	@Test
-	public void testDeleteGitNull() {
-		GitClient gitClient = new GitClientImpl();
-		gitClient.deleteRepository();
-		assertNotNull(gitClient);
-	}
+    @Test
+    public void testDeleteGitNull() {
+	GitClient gitClient = new GitClientImpl();
+	gitClient.deleteRepository(GIT_URI);
+	assertNotNull(gitClient);
+    }
+
+    @Test
+    public void testDeleteRepositoryNotNull() {
+	List<String> uris = new ArrayList<String>();
+	uris.add(GIT_URI);
+	GitClient gitClient = new GitClientImpl(uris, "TEST");
+	gitClient.deleteRepository(GIT_URI);
+	assertNotNull(gitClient);
+    }
 }
