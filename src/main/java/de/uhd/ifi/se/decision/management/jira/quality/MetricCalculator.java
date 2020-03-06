@@ -5,8 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -55,6 +58,7 @@ public class MetricCalculator {
     private final String dataStringSeparator = " ";
     private String issueTypeId;
     private GitClientImpl gitClient;
+    private Map<String, Map<String, List<KnowledgeElement>>> extractedIssueRelatedElements;
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(ChartCreator.class);
 
@@ -72,6 +76,7 @@ public class MetricCalculator {
 	    this.decisionKnowledgeCodeElements = null;
 	    this.decisionKnowledgeCommitElements = null;
 	}
+	this.extractedIssueRelatedElements = getDecisionKnowledgeElementsFromCodeRelatedToIssue();
 	this.issueTypeId = issueTypeId;
     }
 
@@ -120,31 +125,76 @@ public class MetricCalculator {
 	List<KnowledgeElement> allGatheredCommitElements = new ArrayList<>();
 	List<KnowledgeElement> allGatheredCodeElements = new ArrayList<>();
 	for (String repoUri : gitClient.getRemoteUris()) {
-	    List<Ref> branches = gitClient.getRemoteBranches(repoUri);
-	    Ref lastBranch = branches.get(0);
 	    Ref defaultBranch = gitClient.getDefaultBranch(repoUri);
 	    List<KnowledgeElement> gatheredCommitElements = new ArrayList<>();
 	    List<KnowledgeElement> gatheredCodeElements = new ArrayList<>();
-	    List<RevCommit> defaultfeatureCommits = gitClient.getFeatureBranchCommits(defaultBranch);
-	    List<RevCommit> lastfeatureCommits = gitClient.getFeatureBranchCommits(lastBranch);
-	    if (defaultfeatureCommits == null || defaultfeatureCommits.size() == 0 || lastfeatureCommits == null
-		    || lastfeatureCommits.size() == 0) {
+	    List<RevCommit> defaultfeatureCommits = gitClient.getDefaultBranchCommits(repoUri);
+	    if (defaultfeatureCommits == null || defaultfeatureCommits.size() == 0) {
 		return resultMap;
 	    } else {
 		for (RevCommit commit : defaultfeatureCommits) {
 		    gatheredCommitElements.addAll(gitExtract.getElementsFromMessage(commit));
 		}
 		allGatheredCommitElements.addAll(gatheredCommitElements);
-		RevCommit baseCommit = lastfeatureCommits.get(0);
-		RevCommit lastFeatureBranchCommit = lastfeatureCommits.get(lastfeatureCommits.size() - 1);
+		RevCommit baseCommit = defaultfeatureCommits.get(defaultfeatureCommits.size() - 2);
+		RevCommit lastFeatureBranchCommit = defaultfeatureCommits.get(0);
 		gatheredCodeElements
-			.addAll(gitExtract.getElementsFromCode(baseCommit, lastFeatureBranchCommit, lastBranch));
+			.addAll(gitExtract.getElementsFromCode(baseCommit, lastFeatureBranchCommit, defaultBranch));
 		allGatheredCodeElements.addAll(gatheredCodeElements);
 	    }
 	}
 	resultMap.put("Commit", allGatheredCommitElements);
 	resultMap.put("Code", allGatheredCodeElements);
 	return resultMap;
+    }
+
+    private Map<String, Map<String, List<KnowledgeElement>>> getDecisionKnowledgeElementsFromCodeRelatedToIssue() {
+	// Extracts Decision Knowledge from Code Comments AND Commits related to the
+	// given Issue
+	Map<String, Map<String, List<KnowledgeElement>>> finalMap = new HashMap<String, Map<String, List<KnowledgeElement>>>();
+	GitDecXtract gitExtract = new GitDecXtract(projectKey);
+	GitClientImpl gitClient = new GitClientImpl(projectKey);
+	for (Issue issue : jiraIssues) {
+	    Map<String, List<KnowledgeElement>> resultMap = new HashMap<String, List<KnowledgeElement>>();
+	    List<KnowledgeElement> allGatheredCommitElements = new ArrayList<>();
+	    List<KnowledgeElement> allGatheredCodeElements = new ArrayList<>();
+
+	    String filter = issue.getKey().toUpperCase() + "\\.|" + issue.getKey().toUpperCase() + "$|"
+		    + issue.getKey().toUpperCase() + "\\-";
+	    List<Ref> branches = gitClient.getAllRemoteBranches();
+	    Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
+	    if (branches.isEmpty()) {
+		return null;
+	    }
+	    for (Ref branch : branches) {
+		String branchName = branch.getName();
+		Matcher branchMatcher = filterPattern.matcher(branchName);
+		if (branchMatcher.find()) {
+		    List<KnowledgeElement> gatheredCommitElements = new ArrayList<>();
+		    List<KnowledgeElement> gatheredCodeElements = new ArrayList<>();
+		    List<RevCommit> featureCommits = gitClient.getFeatureBranchCommits(branch);
+		    if (featureCommits == null || featureCommits.size() == 0) {
+			break;
+		    } else {
+			for (RevCommit commit : featureCommits) {
+			    gatheredCommitElements.addAll(gitExtract.getElementsFromMessage(commit));
+			}
+			allGatheredCommitElements.addAll(gatheredCommitElements);
+			RevCommit baseCommit = featureCommits.get(featureCommits.size() - 1);
+			RevCommit lastFeatureBranchCommit = featureCommits.get(0);
+			gatheredCodeElements
+				.addAll(gitExtract.getElementsFromCode(baseCommit, lastFeatureBranchCommit, branch));
+			allGatheredCodeElements.addAll(gatheredCodeElements);
+		    }
+		}
+	    }
+	    resultMap.put("Commit", allGatheredCommitElements);
+	    resultMap.put("Code", allGatheredCodeElements);
+	    finalMap.put(issue.getKey(), resultMap);
+	}
+	gitClient.closeAll();
+	gitExtract.close();
+	return finalMap;
     }
 
     public Map<String, Integer> numberOfCommentsPerIssue() {
@@ -180,15 +230,20 @@ public class MetricCalculator {
 			    numberOfElements++;
 			}
 		    }
-		    if (i <= linkDistance - 2 && decisionKnowledgeCodeElements != null) {
-			for (KnowledgeElement element : decisionKnowledgeCodeElements) {
+		    if (i > 0 && i <= (linkDistance - 1) && extractedIssueRelatedElements != null
+			    && extractedIssueRelatedElements.get(issue.getKey()) != null
+			    && extractedIssueRelatedElements.get(issue.getKey()).get("Commit") != null) {
+			for (KnowledgeElement element : extractedIssueRelatedElements.get(issue.getKey())
+				.get("Commit")) {
 			    if (element.getType().equals(type)) {
 				numberOfElements++;
 			    }
 			}
 		    }
-		    if (i > 0 && i <= (linkDistance - 1) && decisionKnowledgeCommitElements != null) {
-			for (KnowledgeElement element : decisionKnowledgeCommitElements) {
+		    if (i <= linkDistance - 2 && extractedIssueRelatedElements != null
+			    && extractedIssueRelatedElements.get(issue.getKey()) != null
+			    && extractedIssueRelatedElements.get(issue.getKey()).get("Code") != null) {
+			for (KnowledgeElement element : extractedIssueRelatedElements.get(issue.getKey()).get("Code")) {
 			    if (element.getType().equals(type)) {
 				numberOfElements++;
 			    }
@@ -309,17 +364,14 @@ public class MetricCalculator {
 		}
 	    }
 	}
-	// TODO: Find a way to include Elements from Commit and Code as they are not
-	// linked between Issue and Decision and there is no way to link to them in the
-	// chart
-	Map<String, String> havingLinkMap = new HashMap<String, String>();
+	Map<String, String> havingLinkMap = new LinkedHashMap<String, String>();
 	havingLinkMap.put(linkFrom.toString() + " has " + linkTo.toString(), data[0].trim());
 	havingLinkMap.put(linkFrom.toString() + " has no " + linkTo.toString(), data[1].trim());
 	return havingLinkMap;
     }
 
     public Map<String, Integer> getNumberOfRelevantComments() {
-	Map<String, Integer> numberOfRelevantSentences = new HashMap<String, Integer>();
+	Map<String, Integer> numberOfRelevantSentences = new LinkedHashMap<String, Integer>();
 	int isRelevant = 0;
 	int isIrrelevant = 0;
 
@@ -360,7 +412,7 @@ public class MetricCalculator {
 	if (knowledgeType == null) {
 	    return null;
 	}
-	Map<String, String> result = new HashMap<String, String>();
+	Map<String, String> result = new LinkedHashMap<String, String>();
 	String withLink = "";
 	String withoutLink = "";
 	for (Issue issue : jiraIssues) {

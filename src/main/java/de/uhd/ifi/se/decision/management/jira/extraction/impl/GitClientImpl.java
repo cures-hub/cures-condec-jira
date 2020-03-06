@@ -442,7 +442,7 @@ public class GitClientImpl implements GitClient {
 	} else if (branchUniqueCommits.size() > 0) {
 	    branchUniqueCommits = Lists.reverse(branchUniqueCommits);
 	} else {
-	    branchUniqueCommits = branchCommits;
+	    branchUniqueCommits = Collections.emptyList();
 	}
 
 	return branchUniqueCommits;
@@ -904,15 +904,6 @@ public class GitClientImpl implements GitClient {
     }
 
     @Override
-    public List<Git> getAllGit() {
-	List<Git> allGits = new ArrayList<Git>();
-	for (String key : gits.keySet()) {
-	    allGits.add(gits.get(key));
-	}
-	return allGits;
-    }
-
-    @Override
     public void setGit(Git git, String repoUri) {
 	if (gits != null && gits.get(repoUri) != git) {
 	    gits.put(repoUri, git);
@@ -944,7 +935,7 @@ public class GitClientImpl implements GitClient {
     }
 
     public List<RevCommit> getDefaultBranchCommits(String repoUri) {
-	return defaultBranchCommits.get(defaultBranches.get(repoUri));
+	return getCommitsFromDefaultBranch(repoUri);
     }
 
 }

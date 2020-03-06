@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -47,5 +49,13 @@ public class TestGitClient extends TestSetUpGit {
     public void testMockingOfGitDirectoryWorks() {
 	assertEquals(GitClient.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data" + File.separator
 		+ "condec-plugin" + File.separator + "git" + File.separator);
+    }
+
+    @Test
+    public void testCeateGitClientWithFileList() {
+	List<File> fileList = new ArrayList<File>();
+	fileList.add(gitClient.getDirectory(GIT_URI));
+	GitClient gitClient = new GitClientImpl(fileList);
+	assertNotNull(gitClient);
     }
 }

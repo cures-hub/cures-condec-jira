@@ -23,6 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestRequirementsDashboardItem {
@@ -55,6 +56,7 @@ public class TestRequirementsDashboardItem {
     @NonTransactional
     public void testGetContextMapShowProject() {
 	params.put("showProject", "showProject");
+	this.dashboardItem.loggedUser = JiraUsers.SYS_ADMIN.getApplicationUser();
 	Map<String, Object> ctxResult = this.dashboardItem.getContextMap(params);
 	assertTrue(ctxResult.containsKey("showDiv"));
     }
@@ -64,6 +66,7 @@ public class TestRequirementsDashboardItem {
     public void testGetContextMapShowIssueType() {
 	params.clear();
 	params.put("showIssueType", "TEST");
+	this.dashboardItem.loggedUser = JiraUsers.SYS_ADMIN.getApplicationUser();
 	Map<String, Object> ctxResult = this.dashboardItem.getContextMap(params);
 	assertTrue(ctxResult.containsKey("showDiv"));
 	assertTrue(ctxResult.containsKey("issueTypeNamesMap"));
