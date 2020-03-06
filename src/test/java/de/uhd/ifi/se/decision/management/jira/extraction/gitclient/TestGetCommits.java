@@ -7,14 +7,18 @@ import java.util.List;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+
 public class TestGetCommits extends TestSetUpGit {
 
     @Test
     public void testRepositoryExisting() {
+	GitClientImpl gitClient = new GitClientImpl("TEST");
 	List<RevCommit> allCommits = gitClient.getCommits(GIT_URI);
 	int expectedOnDefaultBranch = 8;
-	int expectedOnFeatureBranch = 29; /* all = unique to the branch + parent branch's commits */
+	int expectedOnFeatureBranch = 22; /* all = unique to the branch + parent branch's commits */
 	int expectedAllCommitsNumber = expectedOnDefaultBranch + expectedOnFeatureBranch;
 	assertEquals(expectedAllCommitsNumber, allCommits.size());
+	gitClient.closeAll();
     }
 }
