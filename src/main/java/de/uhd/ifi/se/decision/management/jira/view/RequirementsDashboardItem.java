@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.issuetype.IssueType;
+import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.plugin.PluginParseException;
@@ -22,6 +23,8 @@ import de.uhd.ifi.se.decision.management.jira.quality.MetricCalculator;
 
 public class RequirementsDashboardItem implements ContextProvider {
 
+    public ApplicationUser loggedUser;
+
     @Override
     public void init(final Map<String, String> params) throws PluginParseException {
 	/**
@@ -31,6 +34,9 @@ public class RequirementsDashboardItem implements ContextProvider {
 
     @Override
     public Map<String, Object> getContextMap(final Map<String, Object> context) {
+	if (ComponentAccessor.getJiraAuthenticationContext() != null) {
+	    loggedUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
+	}
 	Map<String, Object> newContext = Maps.newHashMap(context);
 	Map<String, Object> projectContext = attachProjectsMaps();
 	newContext.putAll(projectContext);
@@ -71,8 +77,7 @@ public class RequirementsDashboardItem implements ContextProvider {
 		projectKey = (String) req.getParameter("project");
 		issueTypeId = (String) req.getParameter("issuetype");
 	    }
-	    ApplicationUser loggedUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
-	    Map<String, Object> values = createValues(projectKey, issueTypeId, loggedUser);
+	    Map<String, Object> values = createValues(projectKey, issueTypeId);
 	    newContext.putAll(values);
 	    return newContext;
 	}
@@ -98,7 +103,9 @@ public class RequirementsDashboardItem implements ContextProvider {
 	Map<String, Object> newContext = new HashMap<>();
 	Map<String, String> projectNameMap = new TreeMap<String, String>();
 	for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
-	    if (ConfigPersistenceManager.isActivated(project.getKey())) {
+	    Boolean hasPermission = ComponentAccessor.getPermissionManager()
+		    .hasPermission(ProjectPermissions.BROWSE_PROJECTS, project, loggedUser);
+	    if (ConfigPersistenceManager.isActivated(project.getKey()) && hasPermission) {
 		String projectKey = project.getKey();
 		String projectName = project.getName();
 		projectNameMap.put(projectName, projectKey);
@@ -108,7 +115,7 @@ public class RequirementsDashboardItem implements ContextProvider {
 	return newContext;
     }
 
-    public Map<String, Object> createValues(String projectKey, String jiraIssueTypeId, ApplicationUser loggedUser) {
+    public Map<String, Object> createValues(String projectKey, String jiraIssueTypeId) {
 	Long projectId = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey).getId();
 	String issueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(jiraIssueTypeId);
 	ChartCreator chartCreator = new ChartCreator(

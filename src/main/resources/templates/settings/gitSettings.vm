@@ -28,20 +28,83 @@
 
     </div>
 </div>
-
+<!--
 <div class="field-group">
     <label for="git-uri-input-field">Git Repository</label>
     <input id="git-uri-input-field" type="text" class="text long-field"
            value="$project.getGitUri()" placeholder="https://github.com/cures-hub/cures-condec-jira.git"/>
     <input type="button"
            id="git-uri-button" class="aui-button aui-button-primary" value="Save Address"/>
-    <div class="description">Uniform resource identifier of the git repository that will be cloned.</div>
+    <div class="description">Uniform resource identifier of the git repository that will be cloned (Example: https://github.com/cures-hub/cures-condec-jira.git).</div>
+</div>
+-->
+<div class="field-group">
+	<label for="git-uri-input-field">Git Repositories</label>
+	<div class="description">First: Uniform resource identifier of the git repository that will be cloned (Example: https://github.com/cures-hub/cures-condec-jira.git). 
+		<br> Second: Name of default branch for the Repository (Example: develop).</div>
+	<div class="container1">
+	    #foreach($string in $project.getGitUris())
+	    	<div><input type="text" class="text long-field" value="$string">
+	    	Default Branch:<input type="text" class="text long-field2" value="$project.getDefaultBranches().get($string)"></div>   
+	    #end
+	    <button class="add_form_field" >Add New Repository &nbsp; 
+	    	<span style="font-size:16px; font-weight:bold;">+ </span>
+	    </button>
+		<input type="button" id="git-uris-button" class="aui-button aui-button-primary" value="Save Addresses"/>
+	</div>
 </div>
 
 
+
+<script>
+$(document).ready(function() {
+    var max_fields = 10;
+    var wrapper = $(".container1");
+    var add_button = $(".add_form_field");
+
+    var x = 1;
+    $(add_button).click(function(e) {
+        e.preventDefault();
+        if (x < max_fields) {
+            x++;
+            $(wrapper).append('<div><input type="text" name="mytext[]" class="text long-field"/>Default Branch:<input type="text" name="mytext[]" class="text long-field2"/><a href="#" class="delete">Delete</a></div>'); //add input box
+        } else {
+            alert('You Reached the limits')
+        }
+    });
+
+    $(wrapper).on("click", ".delete", function(e) {
+        e.preventDefault();
+        $(this).parent('div').remove();
+        x--;
+    })
+});
+
+	var gitsSubmitButton = document.getElementById("git-uris-button");
+
+    gitsSubmitButton.addEventListener("click", function () {
+        var gitUris = document.getElementsByClassName("text long-field");
+        var defaultBranches = document.getElementsByClassName("text long-field2");
+        var uristring = "";
+        var defaultBranchesString = "";
+        for (i = 0; i < gitUris.length; i++) {
+        	if(gitUris[i].value.length != 0 || defaultBranches[i].value.length != 0){
+            	if(i==0){
+        			uristring = gitUris[i].value;
+        			defaultBranchesString = defaultBranches[i].value;
+        		}else{
+        			uristring = uristring + ";;" +gitUris[i].value;    
+        			defaultBranchesString = defaultBranchesString +";;"+ defaultBranches[i].value;
+        		}        		
+        	}
+		}
+        conDecAPI.setGitUris("$projectKey", uristring, defaultBranchesString);
+        window.onbeforeunload = null;
+    });
+</script>
+
 <script>
     var gitToggle = document.getElementById("isKnowledgeExtractedFromGit-toggle");
-    var gitSubmitButton = document.getElementById("git-uri-button");
     var isPostSquashedCommitsActivatedToggle = document.getElementById('isPostSquashedCommitsActivated-toggle');
     var isPostFeatureBranchCommitsActivatedToggle = document.getElementById('isPostFeatureBranchCommitsActivated-toggle');
 
@@ -83,12 +146,6 @@
         this.busy = false;
     });
 
-
-    gitSubmitButton.addEventListener("click", function () {
-        var gitUri = document.getElementById("git-uri-input-field").value;
-        conDecAPI.setGitUri("$projectKey", gitUri);
-        window.onbeforeunload = null;
-    });
 
     gitToggle.addEventListener("change", function (error) {
         this.busy = true;

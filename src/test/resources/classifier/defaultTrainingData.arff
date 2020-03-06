@@ -8,7 +8,11 @@
 @attribute sentence string
 
 @data
-0,0,0,0,0,'Good idea.'
+0,0,0,0,1,'How can we implement?'
+0,0,0,0,1,'When should the API be called?'
+0,0,0,0,1,'What would be the best solution?'
+0,0,0,0,1,'Where should the view be shown?'
+0,0,0,0,0,'That is a good idea.'
 0,0,0,0,0,'I think @pdesombre might be able to help you.'
 0,0,0,0,0,'Nobody knows.'
 0,0,0,0,0,'I do not know.'
@@ -18,8 +22,4 @@
 0,0,0,0,0,'Sure, can do.'
 0,0,0,0,0,'Ask @ak for advice.'
 0,0,0,0,0,'Good question. I have no idea.'
-1,0,0,0,0,'Instead we could do the following thing.'
-1,0,0,0,0,'Alternatively we can implement it as that.'
-1,0,0,0,0,'I would suggest to try to apply the observer pattern'
-1,0,0,0,0,'This technology could also be used.'
-1,0,0,0,0,'I think another implementation is also worth trying.'
+0,0,0,0,0,'I like to implement it myself.'

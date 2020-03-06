@@ -616,11 +616,11 @@
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
-	ConDecAPI.prototype.setGitUri = function setGitUri(projectKey, gitUri) {
-		postJSON(this.restPrefix + "/config/setGitUri.json?projectKey=" + projectKey
-			+ "&gitUri=" + gitUri, null, function (error, response) {
+	ConDecAPI.prototype.setGitUris = function setGitUris(projectKey, gitUris, defaultBranches) {
+		postJSON(this.restPrefix + "/config/setGitUris.json?projectKey=" + projectKey
+			+ "&gitUris=" + gitUris + "&defaultBranches=" + defaultBranches, null, function (error, response) {
 			if (error === null) {
-				showFlag("success", "The git URI  " + gitUri + " for this project has been set.");
+				showFlag("success", "The git URIs for this project have been set.");
 			}
 		});
 	};

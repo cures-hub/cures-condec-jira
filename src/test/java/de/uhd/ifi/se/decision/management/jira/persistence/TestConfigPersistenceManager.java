@@ -379,8 +379,8 @@ public class TestConfigPersistenceManager extends TestSetUp {
 
 	@Test
 	public void testGetGitUri() {
-		ConfigPersistenceManager.setGitUri("TEST", TestGitClient.GIT_URI);
-		assertEquals(TestGitClient.GIT_URI, ConfigPersistenceManager.getGitUri("TEST"));
+		ConfigPersistenceManager.setGitUris("TEST", TestGitClient.GIT_URI);
+		assertEquals(TestGitClient.GIT_URI, ConfigPersistenceManager.getGitUris("TEST").get(0));
 	}
 
 	@Test

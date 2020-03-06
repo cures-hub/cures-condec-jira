@@ -3,9 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.DatatypeConverter;
@@ -35,7 +33,7 @@ public class GitDecXtract {
 	gitClient = new GitClientImpl(projecKey);
     }
 
-    public GitDecXtract(String projecKey, String uri) {
+    public GitDecXtract(String projecKey, List<String> uri) {
 	this.projecKey = projecKey;
 	gitClient = new GitClientImpl(uri, projecKey);
     }
@@ -43,70 +41,46 @@ public class GitDecXtract {
     /// TODO: can this be done better in JAVA?
     /// Release git client.
     public void close() {
-	gitClient.close();
+	gitClient.closeAll();
     }
 
     // TODO: below method signature will further improve
-    public List<KnowledgeElement> getElements(String featureBranchShortName) {
-	List<KnowledgeElement> gatheredElements = new ArrayList<>();
-	List<RevCommit> featureCommits = gitClient.getFeatureBranchCommits(featureBranchShortName);
+    public List<KnowledgeElement> getElements(Ref branch) {
+	List<KnowledgeElement> allGatheredElements = new ArrayList<>();
+	List<RevCommit> featureCommits = gitClient.getFeatureBranchCommits(branch);
 	if (featureCommits == null || featureCommits.size() == 0) {
-	    return gatheredElements;
-	} else {
-	    for (RevCommit commit : featureCommits) {
-		gatheredElements.addAll(getElementsFromMessage(commit));
-	    }
-	    RevCommit baseCommit = featureCommits.get(0);
-	    RevCommit lastFeatureBranchCommit = featureCommits.get(featureCommits.size() - 1);
-	    gatheredElements.addAll(getElementsFromCode(baseCommit, lastFeatureBranchCommit, featureBranchShortName));
+	    return allGatheredElements;
 	}
-	return gatheredElements;
+	for (RevCommit commit : featureCommits) {
+	    allGatheredElements.addAll(getElementsFromMessage(commit));
+	}
+
+	RevCommit baseCommit = featureCommits.get(0);
+	RevCommit lastFeatureBranchCommit = featureCommits.get(featureCommits.size() - 1);
+	allGatheredElements.addAll(getElementsFromCode(baseCommit, lastFeatureBranchCommit, branch));
+	return allGatheredElements;
     }
 
-    public Map<String, List<KnowledgeElement>> getElementsSplitByCodeAndCommit(String featureBranchShortName) {
-	Map<String, List<KnowledgeElement>> resultMap = new HashMap<String, List<KnowledgeElement>>();
-	List<KnowledgeElement> gatheredCommitElements = new ArrayList<>();
-	List<KnowledgeElement> gatheredCodeElements = new ArrayList<>();
-	List<RevCommit> featureCommits = gitClient.getFeatureBranchCommits(featureBranchShortName);
-	if (featureCommits == null || featureCommits.size() == 0) {
-	    return resultMap;
-	} else {
-	    for (RevCommit commit : featureCommits) {
-		gatheredCommitElements.addAll(getElementsFromMessage(commit));
-	    }
-	    resultMap.put("Commit", gatheredCommitElements);
-	    RevCommit baseCommit = featureCommits.get(0);
-	    RevCommit lastFeatureBranchCommit = featureCommits.get(featureCommits.size() - 1);
-	    gatheredCodeElements
-		    .addAll(getElementsFromCode(baseCommit, lastFeatureBranchCommit, featureBranchShortName));
-	    resultMap.put("Code", gatheredCodeElements);
-	}
-	return resultMap;
-    }
-
-    private List<KnowledgeElement> getElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd,
-	    String featureBranchShortName) {
+    public List<KnowledgeElement> getElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd, Ref branch) {
 	List<KnowledgeElement> elementsFromCode = new ArrayList<>();
-
+	String repoUri = gitClient.getRepoUriFromBranch(branch);
 	// git client which has access to correct version of files (revCommitEnd)
 	GitClient endAnchoredGitClient = new GitClientImpl((GitClientImpl) gitClient);
-	if (featureBranchShortName != null) {
-	    endAnchoredGitClient.checkoutFeatureBranch(featureBranchShortName);
+	if (branch != null) {
+	    endAnchoredGitClient.checkoutFeatureBranch(branch);
 	}
-
 	GitClient startAnchoredGitClient = new GitClientImpl((GitClientImpl) gitClient);
-	if (featureBranchShortName != null) {
-	    startAnchoredGitClient.checkoutCommit(revCommitStart.getParent(0));
+	if (branch != null) {
+	    startAnchoredGitClient.checkoutCommit(revCommitStart.getParent(0), repoUri);
 	}
-
-	Diff diff = gitClient.getDiff(revCommitStart, revCommitEnd);
+	Diff diff = gitClient.getDiff(revCommitStart, revCommitEnd, repoUri);
 	GitDiffedCodeExtractionManager diffCodeManager = new GitDiffedCodeExtractionManager(diff, endAnchoredGitClient,
-		startAnchoredGitClient);
+		startAnchoredGitClient, repoUri);
 	elementsFromCode = diffCodeManager.getNewDecisionKnowledgeElements();
 	elementsFromCode.addAll(diffCodeManager.getOldDecisionKnowledgeElements());
 
-	startAnchoredGitClient.close();
-	endAnchoredGitClient.close();
+	startAnchoredGitClient.closeAll();
+	endAnchoredGitClient.closeAll();
 
 	return elementsFromCode.stream().map(element -> {
 	    element.setProject(projecKey);
@@ -117,13 +91,7 @@ public class GitDecXtract {
 
     public List<KnowledgeElement> getElementsFromMessage(RevCommit commit) {
 	GitCommitMessageExtractor extractorFromMessage = new GitCommitMessageExtractor(commit.getFullMessage());
-	List<KnowledgeElement> elementsFromMessage = extractorFromMessage.getElements().stream().map(element -> { // need
-														  // to
-														  // update
-														  // project
-														  // and
-														  // key
-														  // attributes
+	List<KnowledgeElement> elementsFromMessage = extractorFromMessage.getElements().stream().map(element -> {
 	    element.setProject(projecKey);
 	    element.setKey(updateKeyForMessageExtractedElement(element, commit.getId()));
 	    return element;
@@ -171,14 +139,12 @@ public class GitDecXtract {
 	    return "";
 	}
     }
-
-    public List<KnowledgeElement> getElements(Ref branch) {
-	if (branch == null) {
-	    return getElements((String) null);
-	}
-
-	return getElements(generateBranchShortName(branch));
-    }
+    /*
+     * public List<KnowledgeElement> getElements(Ref branch) { if (branch == null) {
+     * return getElements((String) null); }
+     * 
+     * return getElements(generateBranchShortName(branch)); }
+     */
 
     public static String generateBranchShortName(Ref branch) {
 	String[] branchNameComponents = branch.getName().split("/");
