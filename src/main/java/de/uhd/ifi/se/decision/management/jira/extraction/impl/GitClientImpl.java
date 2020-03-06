@@ -904,15 +904,6 @@ public class GitClientImpl implements GitClient {
     }
 
     @Override
-    public List<Git> getAllGit() {
-	List<Git> allGits = new ArrayList<Git>();
-	for (String key : gits.keySet()) {
-	    allGits.add(gits.get(key));
-	}
-	return allGits;
-    }
-
-    @Override
     public void setGit(Git git, String repoUri) {
 	if (gits != null && gits.get(repoUri) != git) {
 	    gits.put(repoUri, git);

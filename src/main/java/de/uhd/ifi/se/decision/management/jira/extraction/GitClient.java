@@ -244,13 +244,6 @@ public interface GitClient {
     Git getGit(String repoUri);
 
     /**
-     * Returns List of all Git Objects.
-     * 
-     * @return git object.
-     */
-    List<Git> getAllGit();
-
-    /**
      * Return the default branch for the give Repository Uri
      * 
      * @param String repoUri

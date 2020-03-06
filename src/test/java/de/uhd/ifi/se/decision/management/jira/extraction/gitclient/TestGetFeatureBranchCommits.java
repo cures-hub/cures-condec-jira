@@ -20,7 +20,6 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
     private GitClient testGitClient;
 
     private String featureBranch = "featureBranch";
-    private String expectedFirstCommitMessage = "First message";
 
     public TestGetFeatureBranchCommits() {
 	repoBaseDirectory = super.getRepoBaseDirectory();
