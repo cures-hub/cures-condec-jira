@@ -334,8 +334,8 @@
 			var submitButton = document.getElementById("edit-dialog-submit-button");
 			var cancelButton = document.getElementById("edit-dialog-cancel-button");
 			
-			var selectLevelField = document.getElementById("assign-form-select-level");
-			var inputExistingGroupsField = document.getElementById("assign-form-input-existing");
+			var selectLevelField = document.getElementById("edit-form-select-level");
+			var inputExistingGroupsField = document.getElementById("edit-form-input-existing");
 
 			// Fill HTML elements
 			inputSummaryField.value = summary;

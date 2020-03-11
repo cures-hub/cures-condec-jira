@@ -24,16 +24,16 @@
 				<select id="edit-form-select-location" class="select full-width-field"></select>
 			</div>
 			<div class="field-group">
-				<label for="assign-form-select-level">Decision Level:</label>
-				<select id="assign-form-select-level" class="select full-width-field">
+				<label for="edit-form-select-level">Decision Level:</label>
+				<select id="edit-form-select-level" class="select full-width-field">
 					<option value="High_Level"> High Level</option>
 					<option value="Medium_Level"> Medium Level</option>
 					<option value="Realization_Level"> Realization Level</option>
 				</select>
 			</div>  
 			<div class="field-group">
-				<label for="assign-form-input-existing">Current Groups:</label>
-				<input id="assign-form-input-existing" type="text" class="text full-width-field" value="">
+				<label for="edit-form-input-existing">Current Groups:</label>
+				<input id="edit-form-input-existing" type="text" class="text full-width-field" value="">
 			</div>
 		</form>
     </div>
