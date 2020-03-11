@@ -95,6 +95,8 @@
 				depthOfTreeWarningLabel.style.visibility = "visible";
 			}
 		});
+		
+		//Group Filter Here !!!
 
 		updateView(null, treant, treeViewer);
 	}

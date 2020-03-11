@@ -24,6 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 
 /**
@@ -41,7 +42,6 @@ public class KnowledgeElementImpl implements KnowledgeElement {
     private Date closed;
     protected DocumentationLocation documentationLocation;
     protected KnowledgeStatus status;
-    private List<String> decisionGroup;
 
     public KnowledgeElementImpl() {
 	this.description = "";
@@ -170,23 +170,26 @@ public class KnowledgeElementImpl implements KnowledgeElement {
     }
 
     @Override
-    public List<String> getDecisionGroup() {
-	return decisionGroup;
+    public List<String> getDecisionGroups() {
+	List<String> groups = DecisionGroupManager.getGroupsForElement(this);
+	return groups;
     }
 
     @Override
-    public void setDecisionGroup(List<String> decisionGroup) {
-	this.decisionGroup = decisionGroup;
+    public void addDecisionGroups(List<String> decisionGroup) {
+	for (String group : decisionGroup) {
+	    DecisionGroupManager.insertGroup(group, this);
+	}
     }
 
     @Override
     public void addDecisionGroup(String group) {
-	this.decisionGroup.add(group);
+	DecisionGroupManager.insertGroup(group, this);
     }
 
     @Override
     public void removeDecisionGroup(String group) {
-	this.decisionGroup.remove(group);
+	DecisionGroupManager.deleteGroupAssignment(group, this);
     }
 
     @Override

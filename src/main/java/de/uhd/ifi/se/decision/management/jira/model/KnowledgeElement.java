@@ -313,14 +313,14 @@ public interface KnowledgeElement {
      *
      * @return List<String> of groups
      */
-    List<String> getDecisionGroup();
+    List<String> getDecisionGroups();
 
     /**
-     * Set the list of groups assigned to this decision
+     * Add a list of groups assigned to this decision
      *
      * @param List<String> of groups
      */
-    void setDecisionGroup(List<String> decisionGroup);
+    void addDecisionGroups(List<String> decisionGroup);
 
     /**
      * Add a group to the list of groups

@@ -37,6 +37,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.implementation.Onli
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
@@ -194,6 +195,31 @@ public class ConfigRestImpl implements ConfigRest {
 	    }
 	}
 	return Response.ok(knowledgeTypes).build();
+    }
+
+    @Override
+    @Path("/getDecisionGroups")
+    @GET
+    public Response getDecisionGroups(@QueryParam("elementId") long id, @QueryParam("location") String location,
+	    @QueryParam("projectKey") String projectKey) {
+	KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElement(id,
+		location);
+	if (element != null) {
+	    List<String> groups = element.getDecisionGroups();
+	    if (groups != null) {
+		for (String group : groups) {
+		    if (group.equals("High_Level") || group.equals("Medium_Level")
+			    || group.equals("Realization_Level")) {
+			int index = groups.indexOf(group);
+			if (index != 0) {
+			    Collections.swap(groups, 0, index);
+			}
+		    }
+		}
+		return Response.ok(groups).build();
+	    }
+	}
+	return Response.ok(Collections.emptyList()).build();
     }
 
     @Override

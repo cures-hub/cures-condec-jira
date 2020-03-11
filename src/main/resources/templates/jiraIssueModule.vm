@@ -47,6 +47,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 #parse("templates/dialogs/editDialog.vm")
 #parse("templates/dialogs/deleteDialog.vm")
 #parse("templates/dialogs/deleteLinkDialog.vm")
+#parse("templates/dialogs/assignDialog.vm")
 #parse("templates/dialogs/linkDialog.vm")
 #parse("templates/dialogs/changeTypeDialog.vm")
 #parse("templates/dialogs/changeStatusDialog.vm")

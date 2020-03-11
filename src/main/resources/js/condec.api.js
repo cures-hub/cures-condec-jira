@@ -101,6 +101,24 @@
 			}
 		});
 	};
+	
+	ConDecAPI.prototype.assignDecisionGroup = function assignDecisionGroup(level, existingGroups, 
+			addgroup, sourceId, documentationLocation, callback) {
+		var newElement= {};
+		var projectKey = getProjectKey();
+		postJSON(this.restPrefix + "/knowledge/assignDecisionGroup.json?sourceId="
+			+ sourceId + "&documentationLocation="
+			+ documentationLocation +"&projectKey="
+			+ projectKey+ "&level=" 
+			+ level +"&existingGroups=" 
+			+ existingGroups + "&addGroup="
+			+addgroup, newElement ,function (error, newElement) {
+			if (error === null) {
+				showFlag("Success", "Group Assignments have been created.");
+				callback(sourceId);
+			}
+		});
+	};
 
 	/*
 	 * external references: condec.dialog
@@ -682,6 +700,13 @@
 			}
 		});
 	};
+	
+	ConDecAPI.prototype.getDecisionGroups = function getDecisionGroups(id, location,inputExistingGroupsField,selectLevelField, callback) {
+		var projectKey = getProjectKey();
+		var decisionGroups = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getDecisionGroups.json?elementId=" +id
+				 + "&location="+location+ "&projectKey="+projectKey);
+		callback(selectLevelField, inputExistingGroupsField,decisionGroups);
+	}
 
 	/*
 	 * Replaces argument with pro-argument and con-argument in knowledge types
@@ -695,7 +720,7 @@
 		extendedKnowledgeTypes.push("Con-argument");
 		return extendedKnowledgeTypes;
 	}
-
+	
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */

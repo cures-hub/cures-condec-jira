@@ -16,7 +16,7 @@ import net.java.ao.schema.Table;
  * 
  * @see Link
  */
-@Table("CondecLink")
+@Table("CondecDecGroup")
 public interface DecisionGroupInDatabase extends RawEntity<Integer> {
     @AutoIncrement
     @PrimaryKey("ID")
@@ -35,6 +35,10 @@ public interface DecisionGroupInDatabase extends RawEntity<Integer> {
     String getSourceDocumentationLocation();
 
     void setSourceDocumentationLocation(String documentationLocation);
+
+    String getProjectKey();
+
+    void setProjectKey(String projectKey);
 
     /**
      * Deletes the {@group DecisionGroupInDatabase } object, i.e., removes it from
