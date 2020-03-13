@@ -96,13 +96,23 @@
 			}
 		});
 		
-		//Group Filter Here !!!
+		var selectGroupField = document.getElementById("select-decision-group");
+		conDecAPI.getAllDecisionGroups(selectGroupField,function(selectGroupField, groups){
+			if(!(groups === null) && groups.length > 0){
+				for(var i = 0 ; i< groups.length ; i++){
+					selectGroupField.insertAdjacentHTML("beforeend", "<option value='"+groups[i]+"'>"+groups[i]+"</option>");
+				}
+			}else{
+				selectGroupField.innerHTML= "";
+			}
+		});	
+		
+		
 
 		updateView(null, treant, treeViewer);
 	}
 
 	function updateView(nodeId, treant, treeViewer) {
-		console.log("conDecKnowledgePage updateView");
 		treeViewer.buildTreeViewer();
 		if (nodeId === undefined) {
 			var rootElement = treant.getCurrentRootElement();
@@ -116,6 +126,11 @@
 			var node = tree.node.data;
 			treant.buildTreant(node.key, true, "");
 		});
+		
+		var selectedGroup = document.getElementById("select-decision-group-input").value;
+		if(!selectedGroup===undefined || selectedGroup != ""){
+			treeViewer.filterNodesByGroup(selectedGroup);
+		}
 	}
 
 	/*

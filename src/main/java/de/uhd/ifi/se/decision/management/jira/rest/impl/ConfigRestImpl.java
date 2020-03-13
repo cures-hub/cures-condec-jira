@@ -43,6 +43,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
@@ -220,6 +221,18 @@ public class ConfigRestImpl implements ConfigRest {
 	    }
 	}
 	return Response.ok(Collections.emptyList()).build();
+    }
+
+    @Override
+    @Path("/getAllDecisionGroups")
+    @GET
+    public Response getAllDecisionGroups(@QueryParam("projectKey") String projectKey) {
+	List<String> groups = DecisionGroupManager.getAllDecisionGroups();
+	if (groups == null) {
+	    return Response.ok(Collections.emptyList()).build();
+	} else {
+	    return Response.ok(groups).build();
+	}
     }
 
     @Override

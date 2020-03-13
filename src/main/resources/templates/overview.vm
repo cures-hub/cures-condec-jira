@@ -7,9 +7,15 @@
            id="element-input-field" placeholder="$i18n.getText('condec.create.label')"/>
     <input type="button" id="create-element-button"
            class="aui-button aui-button-primary" value="$i18n.getText('condec.button.create')"/>
-    
+	<input id="select-decision-group-input" list="select-decision-group" name="select-decision-group-input" class="select medium-field" placeholder="Select a Group..."/>    
+    <datalist id="select-decision-group" class="select medium-field"></datalist>
+           
+
 	#set ($linkDistanceInputId = "depth-of-tree-input")	
 	#parse("templates/filter/linkDistance.vm")
+	
+
+    
 </form>
 <div class="aui-group">
     <div id="resizable" class="left">
@@ -29,4 +35,14 @@
             console.error("ConDecKnowledgePage could not get its dependencies.");
         }
     });
+
+    $("input").on('input', function () {
+        var inputValue = this.value;
+        if($('datalist').find('option').filter(function(){
+            return this.value == inputValue;        
+        }).length || inputValue == "") {
+        	conDecObservable.notify();
+        }
+    }); 
+    
 </script>

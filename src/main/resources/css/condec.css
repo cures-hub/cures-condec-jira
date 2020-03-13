@@ -49,3 +49,8 @@ a:focus a:hover {
 	list-style: none;
 	padding-left: 0;
 }
+
+#select-decision-group-input::-ms-clear {
+  width : 0;
+  height: 0;
+}

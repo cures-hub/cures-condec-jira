@@ -170,6 +170,7 @@ public class KnowledgeElementImpl implements KnowledgeElement {
     }
 
     @Override
+    @XmlElement(name = "groups")
     public List<String> getDecisionGroups() {
 	List<String> groups = DecisionGroupManager.getGroupsForElement(this);
 	return groups;

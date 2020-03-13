@@ -188,4 +188,15 @@ public class DecisionGroupManager {
 	}
 	return null;
     }
+
+    public static List<String> getAllDecisionGroups() {
+	List<String> groups = new ArrayList<String>();
+	for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
+	    String elementGroup = groupInDatabase.getGroup();
+	    if (!groups.contains(elementGroup) && !"".equals(elementGroup) && !" ".equals(elementGroup)) {
+		groups.add(elementGroup);
+	    }
+	}
+	return groups;
+    }
 }
