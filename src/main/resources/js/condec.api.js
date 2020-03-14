@@ -706,13 +706,13 @@
 		var decisionGroups = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getDecisionGroups.json?elementId=" +id
 				 + "&location="+location+ "&projectKey="+projectKey);
 		callback(selectLevelField, inputExistingGroupsField,decisionGroups);
-	}
+	};
 	
 	ConDecAPI.prototype.getAllDecisionGroups = function getAllDecisionGroups(selectGroupField, callback) {
 		var projectKey = getProjectKey();
 		var decisionGroups = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey="+projectKey);
 		callback(selectGroupField, decisionGroups);
-	}
+	};
 
 	/*
 	 * Replaces argument with pro-argument and con-argument in knowledge types

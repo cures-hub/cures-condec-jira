@@ -349,12 +349,12 @@
 			conDecAPI.getDecisionGroups(id,documentationLocation,inputExistingGroupsField,selectLevelField,function(selectLevelField, inputExistingGroupsField, groups){
 				if(!(groups === null) && groups.length > 0){
 					var groupZero = groups[0];
-					if("High_Level" == groupZero){
+					if("High_Level" === groupZero){
 						selectLevelField.innerHTML= "";
 						selectLevelField.insertAdjacentHTML("beforeend", "<option selected  value='High_Level'>High Level</option>" +
 								"<option value='Medium_Level'>Medium Level</option>" +
 								"<option value='Realization_Level'>Realization Level</option>");
-					}else if("Medium_Level" == groupZero){
+					}else if("Medium_Level" === groupZero){
 						selectLevelField.innerHTML= "";
 						selectLevelField.insertAdjacentHTML("beforeend", "<option value='High_Level'>High Level</option>" +
 								"<option selected value='Medium_Level'>Medium Level</option>" +

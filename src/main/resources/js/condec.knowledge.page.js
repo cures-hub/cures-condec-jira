@@ -99,7 +99,7 @@
 		var selectGroupField = document.getElementById("select-decision-group");
 		conDecAPI.getAllDecisionGroups(selectGroupField,function(selectGroupField, groups){
 			if(!(groups === null) && groups.length > 0){
-				for(var i = 0 ; i< groups.length ; i++){
+				for(var i = 0; i< groups.length; i++){
 					selectGroupField.insertAdjacentHTML("beforeend", "<option value='"+groups[i]+"'>"+groups[i]+"</option>");
 				}
 			}else{
@@ -128,7 +128,7 @@
 		});
 		
 		var selectedGroup = document.getElementById("select-decision-group-input").value;
-		if(!selectedGroup===undefined || selectedGroup != ""){
+		if(!selectedGroup===undefined || selectedGroup !== ""){
 			treeViewer.filterNodesByGroup(selectedGroup);
 		}
 	}

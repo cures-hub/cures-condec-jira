@@ -79,27 +79,24 @@
 			}
 		});
 	};
-	//TODO: FIX METHOD ONLY CALLED WITH ALERT !!!!!!!!!!!!
+
 	ConDecTreeViewer.prototype.filterNodesByGroup = function filterNodesByGroup(selectedGroup) {
 		console.log("conDecTreeViewer filterNodesByGroup");
-		jQueryConDec(document).ready(function() {
-			alert("Hello?");
+		jQueryConDec("#jstree").on("loaded.jstree",function() {
 			var treeViewer = jQueryConDec("#jstree").jstree(true);
 			if (treeViewer) {
 				var jsonNodes = treeViewer.get_json('#', { flat: true});
-				alert(jsonNodes);
 				$.each(jsonNodes, function (i, val) {
 						var kElement = $(val).attr("data");
 						var elementGroups = $(kElement).attr("groups");
 						var treeNode = document.getElementById($(val).attr("id"));
 						$(treeNode).hide();
-					    for(var j=0 ; j<elementGroups.length ; j++){
+					    for(var j=0; j<elementGroups.length; j++){
 					    	if(elementGroups[j] === selectedGroup){
-					    		alert("Yes");
 					    		$(treeNode).show();
 					    	}
 					    }
-				})
+				});
 			}
 		});
 	};
