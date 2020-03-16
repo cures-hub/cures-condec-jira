@@ -60,14 +60,23 @@ public class DecisionGroupManager {
      * @return If replacement was successful
      */
     public static boolean setGroupAssignment(List<String> groups, KnowledgeElement element) {
+	if (groups == null || element == null) {
+	    return false;
+	}
 	List<String> oldGroups = getGroupsForElement(element);
+	boolean success = false;
+	long id = 0;
 	for (String oldGroup : oldGroups) {
-	    deleteGroupAssignment(oldGroup, element);
+	    success = deleteGroupAssignment(oldGroup, element);
 	}
 	for (String group : groups) {
-	    insertGroup(group, element);
+	    id = insertGroup(group, element);
 	}
-	return false;
+	if (success == true && id != -1) {
+	    return true;
+	} else {
+	    return false;
+	}
 
     }
 
@@ -102,7 +111,7 @@ public class DecisionGroupManager {
      */
     public static List<String> getGroupsForElement(KnowledgeElement element) {
 	if (element == null) {
-	    return new ArrayList<String>();
+	    return null;
 	}
 	return getGroupsForElement(element.getId(), element.getDocumentationLocation());
     }
@@ -119,7 +128,7 @@ public class DecisionGroupManager {
     public static List<String> getGroupsForElement(long elementId, DocumentationLocation documentationLocation) {
 	List<String> groups = new ArrayList<String>();
 	if (elementId <= 0 || documentationLocation == null) {
-	    return new ArrayList<String>();
+	    return null;
 	}
 	String identifier = documentationLocation.getIdentifier();
 	DecisionGroupInDatabase[] groupsInDatabase = ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
@@ -140,6 +149,9 @@ public class DecisionGroupManager {
      *         failed.
      */
     public static long insertGroup(String group, KnowledgeElement sourceElement) {
+	if (group == null || sourceElement == null) {
+	    return -1;
+	}
 	long alreadyExistingId = isGroupAlreadyInDatabase(group, sourceElement);
 	if (alreadyExistingId != -1) {
 	    return alreadyExistingId;
@@ -181,6 +193,9 @@ public class DecisionGroupManager {
      * @return GroupInDatabase object.
      */
     public static DecisionGroupInDatabase getGroupInDatabase(String group, KnowledgeElement sourceElement) {
+	if (group == null || sourceElement == null) {
+	    return null;
+	}
 	for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
 	    if (groupInDatabase.getGroup() == group && groupInDatabase.getSourceId() == sourceElement.getId()) {
 		return groupInDatabase;

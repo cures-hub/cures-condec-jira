@@ -1,0 +1,71 @@
+package de.uhd.ifi.se.decision.management.jira.persistence.decisiongroupmanager;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
+
+/**
+ * Test class for the persistence of the assigned decision groups.
+ */
+public class TestSetGroupAssignment extends TestSetUp {
+
+    private long id;
+    private String summary;
+    private String description;
+    private KnowledgeType type;
+    private String projectKey;
+    private KnowledgeElement decisionKnowledgeElement;
+
+    @Before
+    public void setUp() {
+	init();
+	this.id = 100;
+	this.summary = "Test";
+	this.description = "Test";
+	this.type = KnowledgeType.SOLUTION;
+	this.projectKey = "Test";
+	String key = "Test";
+
+	this.decisionKnowledgeElement = new KnowledgeElementImpl(id, summary, description, type, projectKey, key,
+		DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
+
+	DecisionGroupManager.insertGroup("TestGroup1", this.decisionKnowledgeElement);
+    }
+
+    @Test
+    public void testSetGroupAssignmentGroupNull() {
+	assertFalse(DecisionGroupManager.setGroupAssignment(null, decisionKnowledgeElement));
+    }
+
+    @Test
+    public void testSetGroupAssignmentElementNull() {
+	List<String> groups = new ArrayList<String>();
+	groups.add("New1");
+	groups.add("New2");
+	assertFalse(DecisionGroupManager.setGroupAssignment(groups, null));
+    }
+
+    @Test
+    public void testSetGroupAssignmentArgsNotNull() {
+	List<String> groups = new ArrayList<String>();
+	groups.add("New1");
+	groups.add("New2");
+	DecisionGroupManager.setGroupAssignment(groups, decisionKnowledgeElement);
+	assertFalse(DecisionGroupManager.getGroupsForElement(decisionKnowledgeElement).contains("TestGroup1"));
+	assertTrue(DecisionGroupManager.getGroupsForElement(decisionKnowledgeElement).size() == 2);
+    }
+
+}
