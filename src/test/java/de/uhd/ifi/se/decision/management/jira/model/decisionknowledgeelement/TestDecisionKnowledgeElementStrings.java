@@ -148,7 +148,6 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
     public void testGetDecisionGroups() {
 	List<String> groups = decisionKnowledgeElement.getDecisionGroups();
 	assertEquals("TestGroup", groups.get(0));
-	assertTrue(groups.size() == 1);
     }
 
     @Test

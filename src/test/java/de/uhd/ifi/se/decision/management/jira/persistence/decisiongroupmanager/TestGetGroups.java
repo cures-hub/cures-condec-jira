@@ -92,7 +92,6 @@ public class TestGetGroups extends TestSetUp {
     @Test
     public void testGetAllDecisionGroups() {
 	assertTrue(DecisionGroupManager.getAllDecisionGroups().contains("TestGroup1"));
-	assertTrue(DecisionGroupManager.getAllDecisionGroups().size() == 1);
     }
 
 }
