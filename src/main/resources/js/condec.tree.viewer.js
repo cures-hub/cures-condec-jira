@@ -87,15 +87,21 @@
 			if (treeViewer) {
 				var jsonNodes = treeViewer.get_json('#', { flat: true});
 				$.each(jsonNodes, function (i, val) {
-						var kElement = $(val).attr("data");
-						var elementGroups = $(kElement).attr("groups");
-						var treeNode = document.getElementById($(val).attr("id"));
-						$(treeNode).hide();
-					    for(var j=0; j<elementGroups.length; j++){
-					    	if(elementGroups[j] === selectedGroup){
-					    		$(treeNode).show();
-					    	}
-					    }
+					var matches = 0;
+					var kElement = $(val).attr("data");
+					var elementGroups = $(kElement).attr("groups");
+					var treeNode = document.getElementById($(val).attr("id"));
+					$(treeNode).hide();
+				    for(var j=0; j<elementGroups.length; j++){
+				    	for(var x=0; x<selectedGroup.length; x++){
+					    	if(elementGroups[j] === selectedGroup[x]){
+					    		matches++;
+					    	}					    		
+				    	}
+				    	if(matches === selectedGroup.length){
+				    		$(treeNode).show();
+				    	}
+				    }
 				});
 			}
 		});

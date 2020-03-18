@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.filtering.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -16,6 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 
 /**
  * Model class for the filter criteria. The filter settings cover the key of the
@@ -25,204 +27,222 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
  */
 public class FilterSettingsImpl implements FilterSettings {
 
-	private String projectKey;
-	private String searchString;
-	private List<DocumentationLocation> documentationLocations;
-	private List<String> namesOfSelectedJiraIssueTypes;
-	private List<KnowledgeStatus> knowledgeStatus;
-	private List<String> namesOfSelectedLinkTypes;
+    private String projectKey;
+    private String searchString;
+    private List<DocumentationLocation> documentationLocations;
+    private List<String> namesOfSelectedJiraIssueTypes;
+    private List<KnowledgeStatus> knowledgeStatus;
+    private List<String> namesOfSelectedLinkTypes;
+    private List<String> decisionGroups;
 
-	@XmlElement
-	private long startDate;
-	@XmlElement
-	private long endDate;
+    @XmlElement
+    private long startDate;
+    @XmlElement
+    private long endDate;
 
-	// This default constructor is necessary for the JSON string to object mapping.
-	// Do not delete it!
-	public FilterSettingsImpl() {
-		this.projectKey = "";
-		this.searchString = "";
+    // This default constructor is necessary for the JSON string to object mapping.
+    // Do not delete it!
+    public FilterSettingsImpl() {
+	this.projectKey = "";
+	this.searchString = "";
+    }
+
+    public FilterSettingsImpl(String projectKey, String searchString) {
+	this.projectKey = projectKey;
+	this.searchString = searchString;
+	this.namesOfSelectedJiraIssueTypes = getAllJiraIssueTypes();
+	this.namesOfSelectedLinkTypes = getAllLinkTypes();
+	this.startDate = -1;
+	this.endDate = -1;
+	this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
+	this.knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
+	this.decisionGroups = DecisionGroupManager.getAllDecisionGroups();
+    }
+
+    public FilterSettingsImpl(String projectKey, String query, ApplicationUser user) {
+	this(projectKey, query);
+
+	JiraQueryHandler queryHandler = new JiraQueryHandlerImpl(user, projectKey, query);
+	this.searchString = queryHandler.getQuery();
+
+	List<String> namesOfJiraIssueTypesInQuery = queryHandler.getNamesOfJiraIssueTypesInQuery();
+	if (!namesOfJiraIssueTypesInQuery.isEmpty()) {
+	    this.namesOfSelectedJiraIssueTypes = namesOfJiraIssueTypesInQuery;
 	}
 
-	public FilterSettingsImpl(String projectKey, String searchString) {
-		this.projectKey = projectKey;
-		this.searchString = searchString;
-		this.namesOfSelectedJiraIssueTypes = getAllJiraIssueTypes();
-		this.namesOfSelectedLinkTypes = getAllLinkTypes();
-		this.startDate = -1;
-		this.endDate = -1;
-		this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
-		this.knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
+	this.startDate = queryHandler.getCreatedEarliest();
+	this.endDate = queryHandler.getCreatedLatest();
+    }
+
+    @Override
+    public String getProjectKey() {
+	return projectKey;
+    }
+
+    @Override
+    @JsonProperty("projectKey")
+    public void setProjectKey(String projectKey) {
+	this.projectKey = projectKey;
+    }
+
+    @Override
+    public String getSearchString() {
+	if (this.searchString == null) {
+	    this.searchString = "";
 	}
+	return searchString;
+    }
 
-	public FilterSettingsImpl(String projectKey, String query, ApplicationUser user) {
-		this(projectKey, query);
+    @Override
+    @JsonProperty("searchString")
+    public void setSearchString(String searchString) {
+	this.searchString = searchString;
+    }
 
-		JiraQueryHandler queryHandler = new JiraQueryHandlerImpl(user, projectKey, query);
-		this.searchString = queryHandler.getQuery();
+    @Override
+    public long getCreatedEarliest() {
+	return startDate;
+    }
 
-		List<String> namesOfJiraIssueTypesInQuery = queryHandler.getNamesOfJiraIssueTypesInQuery();
-		if (!namesOfJiraIssueTypesInQuery.isEmpty()) {
-			this.namesOfSelectedJiraIssueTypes = namesOfJiraIssueTypesInQuery;
-		}
+    @Override
+    @JsonProperty("createdEarliest")
+    public void setCreatedEarliest(long createdEarliest) {
+	this.startDate = createdEarliest;
+    }
 
-		this.startDate = queryHandler.getCreatedEarliest();
-		this.endDate = queryHandler.getCreatedLatest();
+    @Override
+    public long getCreatedLatest() {
+	return endDate;
+    }
+
+    @Override
+    @JsonProperty("createdLatest")
+    public void setCreatedLatest(long createdLatest) {
+	this.endDate = createdLatest;
+    }
+
+    @Override
+    public List<DocumentationLocation> getDocumentationLocations() {
+	if (documentationLocations == null) {
+	    documentationLocations = DocumentationLocation.getAllDocumentationLocations();
 	}
+	return documentationLocations;
+    }
 
-	@Override
-	public String getProjectKey() {
-		return projectKey;
+    @Override
+    @XmlElement(name = "documentationLocations")
+    public List<String> getNamesOfDocumentationLocations() {
+	List<String> documentationLocations = new ArrayList<String>();
+	for (DocumentationLocation location : getDocumentationLocations()) {
+	    documentationLocations.add(DocumentationLocation.getName(location));
 	}
+	return documentationLocations;
+    }
 
-	@Override
-	@JsonProperty("projectKey")
-	public void setProjectKey(String projectKey) {
-		this.projectKey = projectKey;
+    @Override
+    @JsonProperty("documentationLocations")
+    public void setDocumentationLocations(List<String> namesOfDocumentationLocations) {
+	this.documentationLocations = new ArrayList<DocumentationLocation>();
+	if (namesOfDocumentationLocations == null) {
+	    this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
+	    return;
 	}
-
-	@Override
-	public String getSearchString() {
-		if (this.searchString == null) {
-			this.searchString = "";
-		}
-		return searchString;
+	for (String location : namesOfDocumentationLocations) {
+	    this.documentationLocations.add(DocumentationLocation.getDocumentationLocationFromString(location));
 	}
+    }
 
-	@Override
-	@JsonProperty("searchString")
-	public void setSearchString(String searchString) {
-		this.searchString = searchString;
+    @Override
+    @XmlElement(name = "selectedJiraIssueTypes")
+    public List<String> getNamesOfSelectedJiraIssueTypes() {
+	if (namesOfSelectedJiraIssueTypes == null) {
+	    namesOfSelectedJiraIssueTypes = getAllJiraIssueTypes();
 	}
+	return namesOfSelectedJiraIssueTypes;
+    }
 
-	@Override
-	public long getCreatedEarliest() {
-		return startDate;
+    @Override
+    @JsonProperty("selectedJiraIssueTypes")
+    public void setSelectedJiraIssueTypes(List<String> namesOfTypes) {
+	namesOfSelectedJiraIssueTypes = namesOfTypes;
+    }
+
+    @Override
+    @XmlElement(name = "selectedStatus")
+    public List<KnowledgeStatus> getSelectedStatus() {
+	if (knowledgeStatus == null) {
+	    knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
 	}
+	return knowledgeStatus;
+    }
 
-	@Override
-	@JsonProperty("createdEarliest")
-	public void setCreatedEarliest(long createdEarliest) {
-		this.startDate = createdEarliest;
+    @Override
+    @JsonProperty("selectedStatus")
+    public void setSelectedStatus(List<String> status) {
+	knowledgeStatus = new ArrayList<KnowledgeStatus>();
+	if (status == null) {
+	    for (KnowledgeStatus eachStatus : KnowledgeStatus.values()) {
+		knowledgeStatus.add(eachStatus);
+	    }
+	    return;
 	}
-
-	@Override
-	public long getCreatedLatest() {
-		return endDate;
+	for (String stringStatus : status) {
+	    knowledgeStatus.add(KnowledgeStatus.getKnowledgeStatus(stringStatus));
 	}
+    }
 
-	@Override
-	@JsonProperty("createdLatest")
-	public void setCreatedLatest(long createdLatest) {
-		this.endDate = createdLatest;
+    @Override
+    @XmlElement(name = "selectedLinkTypes")
+    public List<String> getNamesOfSelectedLinkTypes() {
+	if (namesOfSelectedLinkTypes == null) {
+	    namesOfSelectedLinkTypes = getAllLinkTypes();
 	}
+	return namesOfSelectedLinkTypes;
+    }
 
-	@Override
-	public List<DocumentationLocation> getDocumentationLocations() {
-		if (documentationLocations == null) {
-			documentationLocations = DocumentationLocation.getAllDocumentationLocations();
-		}
-		return documentationLocations;
+    @Override
+    @JsonProperty("selectedLinkTypes")
+    public void setSelectedLinkTypes(List<String> namesOfTypes) {
+	namesOfSelectedLinkTypes = namesOfTypes;
+    }
+
+    @Override
+    @XmlElement(name = "allJiraIssueTypes")
+    public List<String> getAllJiraIssueTypes() {
+	List<String> allIssueTypes = new ArrayList<String>();
+	for (IssueType issueType : JiraIssueTypeGenerator.getJiraIssueTypes(projectKey)) {
+	    allIssueTypes.add(issueType.getNameTranslation());
+
 	}
+	return allIssueTypes;
+    }
 
-	@Override
-	@XmlElement(name = "documentationLocations")
-	public List<String> getNamesOfDocumentationLocations() {
-		List<String> documentationLocations = new ArrayList<String>();
-		for (DocumentationLocation location : getDocumentationLocations()) {
-			documentationLocations.add(DocumentationLocation.getName(location));
-		}
-		return documentationLocations;
+    @Override
+    @XmlElement(name = "allIssueStatus")
+    public List<String> getAllStatus() {
+	return KnowledgeStatus.toList();
+    }
+
+    @Override
+    @XmlElement(name = "allLinkTypes")
+    public List<String> getAllLinkTypes() {
+	return LinkType.toList();
+    }
+
+    @Override
+    @JsonProperty("selectedDecGroups")
+    public void setSelectedDecGroups(List<String> decGroups) {
+	System.out.println(decGroups);
+	decisionGroups = decGroups;
+    }
+
+    @Override
+    @XmlElement(name = "selectedDecGroups")
+    public List<String> getSelectedDecGroups() {
+	if (decisionGroups == null) {
+	    decisionGroups = Collections.emptyList();
 	}
-
-	@Override
-	@JsonProperty("documentationLocations")
-	public void setDocumentationLocations(List<String> namesOfDocumentationLocations) {
-		this.documentationLocations = new ArrayList<DocumentationLocation>();
-		if (namesOfDocumentationLocations == null) {
-			this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
-			return;
-		}
-		for (String location : namesOfDocumentationLocations) {
-			this.documentationLocations.add(DocumentationLocation.getDocumentationLocationFromString(location));
-		}
-	}
-
-	@Override
-	@XmlElement(name = "selectedJiraIssueTypes")
-	public List<String> getNamesOfSelectedJiraIssueTypes() {
-		if (namesOfSelectedJiraIssueTypes == null) {
-			namesOfSelectedJiraIssueTypes = getAllJiraIssueTypes();
-		}
-		return namesOfSelectedJiraIssueTypes;
-	}
-
-	@Override
-	@JsonProperty("selectedJiraIssueTypes")
-	public void setSelectedJiraIssueTypes(List<String> namesOfTypes) {
-		namesOfSelectedJiraIssueTypes = namesOfTypes;
-	}
-
-	@Override
-	@XmlElement(name = "selectedStatus")
-	public List<KnowledgeStatus> getSelectedStatus() {
-		if (knowledgeStatus == null) {
-			knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
-		}
-		return knowledgeStatus;
-	}
-
-	@Override
-	@JsonProperty("selectedStatus")
-	public void setSelectedStatus(List<String> status) {
-		knowledgeStatus = new ArrayList<KnowledgeStatus>();
-		if (status == null) {
-			for (KnowledgeStatus eachStatus : KnowledgeStatus.values()) {
-				knowledgeStatus.add(eachStatus);
-			}
-			return;
-		}
-		for (String stringStatus : status) {
-			knowledgeStatus.add(KnowledgeStatus.getKnowledgeStatus(stringStatus));
-		}
-	}
-
-	@Override
-	@XmlElement(name = "selectedLinkTypes")
-	public List<String> getNamesOfSelectedLinkTypes() {
-		if (namesOfSelectedLinkTypes == null) {
-			namesOfSelectedLinkTypes = getAllLinkTypes();
-		}
-		return namesOfSelectedLinkTypes;
-	}
-
-	@Override
-	@JsonProperty("selectedLinkTypes")
-	public void setSelectedLinkTypes(List<String> namesOfTypes) {
-		namesOfSelectedLinkTypes = namesOfTypes;
-	}
-
-	@Override
-	@XmlElement(name = "allJiraIssueTypes")
-	public List<String> getAllJiraIssueTypes() {
-		List<String> allIssueTypes = new ArrayList<String>();
-		for (IssueType issueType : JiraIssueTypeGenerator.getJiraIssueTypes(projectKey)) {
-			allIssueTypes.add(issueType.getNameTranslation());
-
-		}
-		return allIssueTypes;
-	}
-
-	@Override
-	@XmlElement(name = "allIssueStatus")
-	public List<String> getAllStatus() {
-		return KnowledgeStatus.toList();
-	}
-
-	@Override
-	@XmlElement(name = "allLinkTypes")
-	public List<String> getAllLinkTypes() {
-		return LinkType.toList();
-	}
+	return decisionGroups;
+    }
 
 }

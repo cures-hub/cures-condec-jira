@@ -21,152 +21,152 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 @JsonDeserialize(as = FilterSettingsImpl.class)
 public interface FilterSettings {
 
-	/**
-	 * Returns the key of the Jira project.
-	 *
-	 * @return key of the Jira project.
-	 */
-	String getProjectKey();
+    /**
+     * Returns the key of the Jira project.
+     *
+     * @return key of the Jira project.
+     */
+    String getProjectKey();
 
-	/**
-	 * Sets the key of the Jira project.
-	 *
-	 * @param projectKey
-	 *            of the Jira project.
-	 */
-	void setProjectKey(String projectKey);
+    /**
+     * Sets the key of the Jira project.
+     *
+     * @param projectKey of the Jira project.
+     */
+    void setProjectKey(String projectKey);
 
-	/**
-	 * Returns the search string. This string can be a jql, a filter string.
-	 *
-	 * @return search String
-	 */
-	String getSearchString();
+    /**
+     * Returns the search string. This string can be a jql, a filter string.
+     *
+     * @return search String
+     */
+    String getSearchString();
 
-	/**
-	 * Sets the search string of the filter.
-	 *
-	 * @param searchString
-	 */
-	void setSearchString(String searchString);
+    /**
+     * Sets the search string of the filter.
+     *
+     * @param searchString
+     */
+    void setSearchString(String searchString);
 
-	/**
-	 * Returns the earliest date when a element is created in milliseconds as long.
-	 *
-	 * @return date as long in milliseconds
-	 */
-	long getCreatedEarliest();
+    /**
+     * Returns the earliest date when a element is created in milliseconds as long.
+     *
+     * @return date as long in milliseconds
+     */
+    long getCreatedEarliest();
 
-	/**
-	 * Sets the earliest date when a element is created as a String.
-	 *
-	 * @param createdEarliest
-	 *            String with a long
-	 */
-	void setCreatedEarliest(long createdEarliest);
+    /**
+     * Sets the earliest date when a element is created as a String.
+     *
+     * @param createdEarliest String with a long
+     */
+    void setCreatedEarliest(long createdEarliest);
 
-	/**
-	 * Returns the latest date when a element is created in milliseconds as long.
-	 *
-	 * @return date as long in milliseconds
-	 */
-	long getCreatedLatest();
+    /**
+     * Returns the latest date when a element is created in milliseconds as long.
+     *
+     * @return date as long in milliseconds
+     */
+    long getCreatedLatest();
 
-	/**
-	 * Set the latest date when a element is created as a String.
-	 *
-	 * @param createdLatest
-	 *            String with a long
-	 */
-	void setCreatedLatest(long createdLatest);
+    /**
+     * Set the latest date when a element is created as a String.
+     *
+     * @param createdLatest String with a long
+     */
+    void setCreatedLatest(long createdLatest);
 
-	/**
-	 * Returns a list of documentation locations to be shown in the knowledge graph.
-	 *
-	 * @see DocumentationLocation
-	 * @return list of documentation locations.
-	 */
-	List<DocumentationLocation> getDocumentationLocations();
+    /**
+     * Returns a list of documentation locations to be shown in the knowledge graph.
+     *
+     * @see DocumentationLocation
+     * @return list of documentation locations.
+     */
+    List<DocumentationLocation> getDocumentationLocations();
 
-	/**
-	 * Returns the names of the documentation locations to be shown in the knowledge
-	 * graph.
-	 *
-	 * @see DocumentationLocation
-	 * @return list of names of documentation locations.
-	 */
-	List<String> getNamesOfDocumentationLocations();
+    /**
+     * Returns the names of the documentation locations to be shown in the knowledge
+     * graph.
+     *
+     * @see DocumentationLocation
+     * @return list of names of documentation locations.
+     */
+    List<String> getNamesOfDocumentationLocations();
 
-	/**
-	 * Set the documentation locations where the data is stored
-	 *
-	 * @param documentationLocations
-	 *            whit the locations as string
-	 */
-	void setDocumentationLocations(List<String> documentationLocations);
+    /**
+     * Set the documentation locations where the data is stored
+     *
+     * @param documentationLocations whit the locations as string
+     */
+    void setDocumentationLocations(List<String> documentationLocations);
 
-	/**
-	 * Gets the selected knowledge types from the filter
-	 *
-	 * @return list of knowledge types of the filter
-	 */
-	List<String> getNamesOfSelectedJiraIssueTypes();
+    /**
+     * Gets the selected knowledge types from the filter
+     *
+     * @return list of knowledge types of the filter
+     */
+    List<String> getNamesOfSelectedJiraIssueTypes();
 
-	/**
-	 * Returns the names of the Jira issue types to be shown in the knowledge graph
-	 * as a list.
-	 *
-	 * @return list of names of Jira {@link IssueType}s.
-	 */
-	void setSelectedJiraIssueTypes(List<String> types);
+    /**
+     * Returns the names of the Jira issue types to be shown in the knowledge graph
+     * as a list.
+     *
+     * @return list of names of Jira {@link IssueType}s.
+     */
+    void setSelectedJiraIssueTypes(List<String> types);
 
-	/**
-	 * Gets the selected {@link KnowledgeStatus} types from the filter
-	 * 
-	 * @return list of {@link KnowledgeStatus} types as string
-	 */
-	List<KnowledgeStatus> getSelectedStatus();
+    /**
+     * Gets the selected {@link KnowledgeStatus} types from the filter
+     * 
+     * @return list of {@link KnowledgeStatus} types as string
+     */
+    List<KnowledgeStatus> getSelectedStatus();
 
-	/**
-	 * Sets the issue status that a selected of a Filter
-	 * 
-	 * @param linkTypes
-	 */
-	void setSelectedLinkTypes(List<String> linkTypes);
+    /**
+     * Sets the issue status that a selected of a Filter
+     * 
+     * @param linkTypes
+     */
+    void setSelectedLinkTypes(List<String> linkTypes);
 
-	/**
-	 * Gets the selected link types from the filter
-	 * 
-	 * @return list of link types as string
-	 */
-	List<String> getNamesOfSelectedLinkTypes();
+    /**
+     * Gets the selected link types from the filter
+     * 
+     * @return list of link types as string
+     */
+    List<String> getNamesOfSelectedLinkTypes();
 
-	/**
-	 * Sets the link types that a selected of a Filter
-	 * 
-	 * @param linkTypes
-	 */
-	void setSelectedStatus(List<String> linkTypes);
+    /**
+     * Sets the link types that a selected of a Filter
+     * 
+     * @param linkTypes
+     */
+    void setSelectedStatus(List<String> linkTypes);
 
-	/**
-	 * Returns the names of all Jira issue types of the selected project.
-	 *
-	 * @return list of names of Jira {@link IssueType}s.
-	 */
-	List<String> getAllJiraIssueTypes();
+    /**
+     * Returns the names of all Jira issue types of the selected project.
+     *
+     * @return list of names of Jira {@link IssueType}s.
+     */
+    List<String> getAllJiraIssueTypes();
 
-	/**
-	 * Returns the names of all {@link KnowledgeStatus}
-	 * 
-	 * @return list of names of Jira {@link KnowledgeStatus}.
-	 */
-	List<String> getAllStatus();
+    /**
+     * Returns the names of all {@link KnowledgeStatus}
+     * 
+     * @return list of names of Jira {@link KnowledgeStatus}.
+     */
+    List<String> getAllStatus();
 
-	/**
-	 * Returns the names of all link types
-	 * 
-	 * @return list of names of {@link LinkType}s.
-	 */
-	List<String> getAllLinkTypes();
+    /**
+     * Returns the names of all link types
+     * 
+     * @return list of names of {@link LinkType}s.
+     */
+    List<String> getAllLinkTypes();
+
+    void setSelectedDecGroups(List<String> decGroups);
+
+    List<String> getSelectedDecGroups();
 
 }

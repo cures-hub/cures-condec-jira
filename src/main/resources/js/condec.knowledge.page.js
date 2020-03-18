@@ -96,7 +96,7 @@
 			}
 		});
 		
-		var selectGroupField = document.getElementById("select-decision-group");
+		var selectGroupField = document.getElementById("select2-decision-group");
 		conDecAPI.getAllDecisionGroups(selectGroupField,function(selectGroupField, groups){
 			if(!(groups === null) && groups.length > 0){
 				for(var i = 0; i< groups.length; i++){
@@ -105,7 +105,7 @@
 			}else{
 				selectGroupField.innerHTML= "";
 			}
-		});	
+		});
 		
 		
 
@@ -127,9 +127,15 @@
 			treant.buildTreant(node.key, true, "");
 		});
 		
-		var selectedGroup = document.getElementById("select-decision-group-input").value;
-		if(!selectedGroup===undefined || selectedGroup !== ""){
-			treeViewer.filterNodesByGroup(selectedGroup);
+		var selectedGroupsObj = $('#select2-decision-group').select2('data');
+		var selectedGroups = [];
+		for(var i=0; i<= selectedGroupsObj.length; i++){
+			if(selectedGroupsObj[i]){
+				selectedGroups[i] = selectedGroupsObj[i].text;				
+			}
+		}
+		if(!selectedGroups===undefined || selectedGroups.length>0){
+			treeViewer.filterNodesByGroup(selectedGroups);
 		}
 	}
 

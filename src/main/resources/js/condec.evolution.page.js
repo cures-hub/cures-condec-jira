@@ -27,7 +27,7 @@
 		console.log("ConDec build timeline");
 		conDecFiltering.initDropdown("knowledge-type-dropdown-chronology", conDecAPI.knowledgeTypes);
 		conDecFiltering.initDropdown("status-dropdown-chronology", conDecAPI.knowledgeStatus);
-		conDecAPI.getEvolutionData("", -1, -1, conDecAPI.knowledgeTypes, conDecAPI.knowledgeStatus, function(
+		conDecAPI.getEvolutionData("", -1, -1, conDecAPI.knowledgeTypes, conDecAPI.knowledgeStatus, [], function(
 				evolutionData) {
 			var container = document.getElementById('evolution-timeline');
 			var data = evolutionData.dataSet;
@@ -52,6 +52,16 @@
 				var documentationLocation = timeline.itemsData._data[nodeId].documentationLocation;
 				conDecContextMenu.createContextMenu(nodeId, documentationLocation, properties.event, "evolution-timeline");
 			});
+		});
+		var selectGroupField = document.getElementById("select2-decision-group-chrono");
+		conDecAPI.getAllDecisionGroups(selectGroupField,function(selectGroupField, groups){
+			if(!(groups === null) && groups.length > 0){
+				for(var i = 0; i< groups.length; i++){
+					selectGroupField.insertAdjacentHTML("beforeend", "<option value='"+groups[i]+"'>"+groups[i]+"</option>");
+				}
+			}else{
+				selectGroupField.innerHTML= "";
+			}
 		});
 		addOnClickEventToFilterTimeLineButton();
 	};
@@ -198,13 +208,23 @@
 			}
 			var searchString = document.getElementById("time-search-input").value;
 			
-			conDecAPI.getEvolutionData(searchString, firstDate, secondDate, knowledgeTypes, issueStatus, function(visData) {
+			var selectedGroupsObj = $('#select2-decision-group-chrono').select2('data');
+			var selectedGroups = [];
+			for(var i=0; i<= selectedGroupsObj.length; i++){
+				if(selectedGroupsObj[i]){
+					selectedGroups[i] = selectedGroupsObj[i].text;				
+				}
+			}
+			
+			conDecAPI.getEvolutionData(searchString, firstDate, secondDate, knowledgeTypes, issueStatus, selectedGroups, function(visData) {
 				var data = visData.dataSet;
 				var groups = visData.groupSet;
 				var item = new vis.DataSet(data);
 				timeline.setItems(item);
 				timeline.setGroups(groups);
 				timeline.redraw();
+				
+
 			});
 		});
 	}

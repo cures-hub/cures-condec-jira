@@ -472,8 +472,9 @@
 	/*
 	 * external references: condec.evolution.page
 	 */
-	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(searchString, created, closed, issueTypes, issueStatus,
+	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(searchString, created, closed, issueTypes, issueStatus, decGroups,
 																	 callback) {
+		
 		var filterSettings = {
 			"projectKey": projectKey,
 			"searchString": searchString,
@@ -481,7 +482,8 @@
 			"createdLatest": closed,
 			"documentationLocations": null,
 			"selectedJiraIssueTypes": issueTypes,
-			"selectedStatus": issueStatus
+			"selectedStatus": issueStatus,
+			"selectedDecGroups": decGroups
 		};
 		postJSON(this.restPrefix + "/view/getEvolutionData.json", filterSettings, function (
 			error, evolutionData) {

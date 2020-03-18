@@ -1,3 +1,4 @@
+<div>
 <form class="aui">
     <input class="text medium-long-field" id="jstree-search-input"
            placeholder="$i18n.getText('condec.filter.label')"/>
@@ -7,16 +8,15 @@
            id="element-input-field" placeholder="$i18n.getText('condec.create.label')"/>
     <input type="button" id="create-element-button"
            class="aui-button aui-button-primary" value="$i18n.getText('condec.button.create')"/>
-	<input id="select-decision-group-input" list="select-decision-group" name="select-decision-group-input" class="select medium-field" placeholder="Select a Group..."/>    
-    <datalist id="select-decision-group" class="select medium-field"></datalist>
-           
-
+	#set($select2-decision-group = "select2-decision-group")    
+  	#parse("templates/filter/decisionGroup.vm")          
 	#set ($linkDistanceInputId = "depth-of-tree-input")	
 	#parse("templates/filter/linkDistance.vm")
 	
 
     
 </form>
+</div>
 <div class="aui-group">
     <div id="resizable" class="left">
         <div id="jstree"></div>
@@ -35,6 +35,7 @@
             console.error("ConDecKnowledgePage could not get its dependencies.");
         }
     });
+    /*
     window.onload = function(){
         $("input").on('input', function () {
         var inputValue = this.value;
@@ -44,7 +45,11 @@
         	conDecObservable.notify();
         }
     	}); 
-    }
+    }*/
+    $("#select2-decision-group").on("change.select2", function (e) {
+    	conDecObservable.notify();
+    });
+    
 
     
     
