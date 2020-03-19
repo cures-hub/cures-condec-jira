@@ -30,7 +30,7 @@ public class TestDeleteInvalidGroups extends TestSetUp {
 	String summary = "Test";
 	String description = "Test";
 	KnowledgeType type = KnowledgeType.SOLUTION;
-	String projectKey = "Test";
+	this.projectKey = "Test";
 	String key = "Test";
 
 	this.decisionKnowledgeElement = new KnowledgeElementImpl(id, summary, description, type, projectKey, key,

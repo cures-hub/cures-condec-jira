@@ -22,11 +22,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
  */
 public class TestSetGroupAssignment extends TestSetUp {
 
-    private long id;
-    private String summary;
-    private String description;
-    private KnowledgeType type;
-    private String projectKey;
     private KnowledgeElement decisionKnowledgeElement;
 
     @Before

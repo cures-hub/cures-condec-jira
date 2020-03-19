@@ -724,7 +724,7 @@
 						+"<option value='Medium_Level'>Medium_Level</option>"
 						+"<option value='Realization_Level'>Realization_Level</option>");
 				for(var i = 0; i< groups.length; i++){
-					if(groups[i]!= "High_Level" && groups[i]!= "Medium_Level" && groups[i]!= "Realization_Level"){
+					if(groups[i]!== "High_Level" && groups[i]!== "Medium_Level" && groups[i]!== "Realization_Level"){
 						selectGroupField.insertAdjacentHTML("beforeend", "<option value='"+groups[i]+"'>"+groups[i]+"</option>");	
 					}
 				}
@@ -732,7 +732,7 @@
 				selectGroupField.innerHTML= "";
 			}
 		});
-	}
+	};
 	
 	function getAllDecisionGroups(selectGroupField, callback) {
 		var projectKey = getProjectKey();
