@@ -7,6 +7,9 @@
         		#set ($textInputId = "decision-search-input")
         		#parse("templates/filter/text.vm")
         	
+        		#set($select2-decision-group = "select2-decision-group-relationshipView")    
+  				#parse("templates/filter/decisionGroup.vm") 
+        	
         		#set ($filterButtonId = "filterDecisionLinks-button")
         		#parse("templates/filter/filterButton.vm")
         	</form>

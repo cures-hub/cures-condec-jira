@@ -26,13 +26,15 @@
 	ConDecRelationshipPage.prototype.buildDecisionGraph = function() {
 		console.log("ConDec build Decision Relationship Graph");
 
+		conDecAPI.fillDecisionGroupSelect("select2-decision-group-relationshipView");
+		
 		conDecAPI.getDecisionGraph(function (knowledgeGraph) {
 			buildGraphNetwork(knowledgeGraph);
 		});
 	};
 
-	ConDecRelationshipPage.prototype.buildDecisionGraphFiltered = function(linkTypes, searchString) {
-		conDecAPI.getDecisionGraphFiltered(linkTypes, searchString, function (knowledgeGraph) {
+	ConDecRelationshipPage.prototype.buildDecisionGraphFiltered = function(linkTypes, searchString, selectedGroups) {
+		conDecAPI.getDecisionGraphFiltered(linkTypes, searchString, selectedGroups, function (knowledgeGraph) {
 			buildGraphNetwork(knowledgeGraph);
 		});
 	};
@@ -50,7 +52,16 @@
 		filterButton.addEventListener("click", function(event) {
 			var linkTypes = conDecFiltering.getSelectedItems("linktype-dropdown");
 			var searchString = document.getElementById("decision-search-input").value;
-			conDecRelationshipPage.buildDecisionGraphFiltered(linkTypes, searchString);
+			
+			var selectedGroupsObj = $('#select2-decision-group-relationshipView').select2('data');
+			var selectedGroups = [];
+			for(var i=0; i<= selectedGroupsObj.length; i++){
+				if(selectedGroupsObj[i]){
+					selectedGroups[i] = selectedGroupsObj[i].text;				
+				}
+			}
+			
+			conDecRelationshipPage.buildDecisionGraphFiltered(linkTypes, searchString, selectedGroups);
 		});
 	}
 
