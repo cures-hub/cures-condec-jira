@@ -23,6 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 
@@ -166,6 +167,30 @@ public class KnowledgeElementImpl implements KnowledgeElement {
 	public void setType(String typeAsString) {
 		KnowledgeType type = KnowledgeType.getKnowledgeType(typeAsString);
 		this.setType(type);
+	}
+
+	@Override
+	@XmlElement(name = "groups")
+	public List<String> getDecisionGroups() {
+		List<String> groups = DecisionGroupManager.getGroupsForElement(this);
+		return groups;
+	}
+
+	@Override
+	public void addDecisionGroups(List<String> decisionGroup) {
+		for (String group : decisionGroup) {
+			DecisionGroupManager.insertGroup(group, this);
+		}
+	}
+
+	@Override
+	public void addDecisionGroup(String group) {
+		DecisionGroupManager.insertGroup(group, this);
+	}
+
+	@Override
+	public void removeDecisionGroup(String group) {
+		DecisionGroupManager.deleteGroupAssignment(group, this);
 	}
 
 	@Override

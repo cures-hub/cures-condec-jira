@@ -95,12 +95,13 @@
 				depthOfTreeWarningLabel.style.visibility = "visible";
 			}
 		});
+		
+		conDecAPI.fillDecisionGroupSelect("select2-decision-group");
 
 		updateView(null, treant, treeViewer);
 	}
 
 	function updateView(nodeId, treant, treeViewer) {
-		console.log("conDecKnowledgePage updateView");
 		treeViewer.buildTreeViewer();
 		if (nodeId === undefined) {
 			var rootElement = treant.getCurrentRootElement();
@@ -114,6 +115,17 @@
 			var node = tree.node.data;
 			treant.buildTreant(node.key, true, "");
 		});
+		
+		var selectedGroupsObj = $('#select2-decision-group').select2('data');
+		var selectedGroups = [];
+		for(var i=0; i<= selectedGroupsObj.length; i++){
+			if(selectedGroupsObj[i]){
+				selectedGroups[i] = selectedGroupsObj[i].text;				
+			}
+		}
+		if(!selectedGroups===undefined || selectedGroups.length>0){
+			treeViewer.filterNodesByGroup(selectedGroups);
+		}
 	}
 
 	/*

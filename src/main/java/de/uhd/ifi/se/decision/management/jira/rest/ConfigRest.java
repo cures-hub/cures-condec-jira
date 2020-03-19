@@ -95,4 +95,8 @@ public interface ConfigRest {
 	}
     }
 
+    Response getDecisionGroups(long id, String location, String projectKey);
+
+    Response getAllDecisionGroups(String projectKey);
+
 }

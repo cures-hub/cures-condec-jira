@@ -23,6 +23,18 @@
 				<label for="edit-form-select-location">$i18n.getText("condec.label.documentation.location"):</label>
 				<select id="edit-form-select-location" class="select full-width-field"></select>
 			</div>
+			<div class="field-group">
+				<label for="edit-form-select-level">Decision Level:</label>
+				<select id="edit-form-select-level" class="select full-width-field">
+					<option value="High_Level"> High Level</option>
+					<option value="Medium_Level"> Medium Level</option>
+					<option value="Realization_Level"> Realization Level</option>
+				</select>
+			</div>  
+			<div class="field-group">
+				<label for="edit-form-input-existing">Current Groups:</label>
+				<input id="edit-form-input-existing" type="text" class="text full-width-field" value="">
+			</div>
 		</form>
     </div>
 	<footer class="aui-dialog2-footer">

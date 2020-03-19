@@ -177,14 +177,4 @@ public class RequirementsDashboardItem implements ContextProvider {
 		metricCalculator.getLinksToIssueTypeMap(KnowledgeType.DECISION));
 	return chartCreator.getVelocityParameters();
     }
-    /*
-     * private void calculateInconsistencies(CommonMetricCalculator calculator,
-     * Map<String, String> chartNamesAndPurpose, Map<String, Object>
-     * chartNamesAndData) { String chartId = ""; chartId =
-     * "piechartRich-IssuesSolvedByManyDecisions"; chartNamesAndPurpose.put(chartId,
-     * "Issues (=decision problems) solved by more than one decision");
-     * chartNamesAndData.put(chartId, calculator.
-     * getDecKnowlElementsOfATypeGroupedByHavingMoreThanOneElementsOfOtherType(
-     * KnowledgeType.ISSUE, KnowledgeType.DECISION)); }
-     */
 }
