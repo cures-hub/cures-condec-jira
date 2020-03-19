@@ -102,6 +102,8 @@
 		});
 	};
 	
+	
+	
 	ConDecAPI.prototype.assignDecisionGroup = function assignDecisionGroup(level, existingGroups, 
 			addgroup, sourceId, documentationLocation, callback) {
 		var newElement= {};
@@ -508,13 +510,15 @@
 	 * external references: condec.relationship.page
 	 */
 	ConDecAPI.prototype.getDecisionGraph = function getDecisionGraph(callback) {
-		this.getDecisionGraphFiltered(null, "", callback);
+		this.getDecisionGraphFiltered(null, "",[], callback);
 	};
   
 	/*
 	 * external references: condec.relationship.page
 	 */
-	ConDecAPI.prototype.getDecisionGraphFiltered = function getDecisionGraphFiltered(selectedLinkTypes, searchString, callback) {
+	ConDecAPI.prototype.getDecisionGraphFiltered = function getDecisionGraphFiltered(selectedLinkTypes, searchString, decGroups, callback) {
+		
+		
 		var filterSettings = {
 			"projectKey" : projectKey,
 			"searchString" : searchString,
@@ -523,7 +527,8 @@
 			"documentationLocations" : null,
 			"selectedJiraIssueTypes" : ["Decision"],
 			"selectedStatus": null,
-			"selectedLinkTypes": selectedLinkTypes
+			"selectedLinkTypes": selectedLinkTypes,
+			"selectedDecGroups": decGroups
 		};
 
 		postJSON(this.restPrefix + "/view/getDecisionGraph.json?", filterSettings, function(error, graph) {
@@ -710,7 +715,26 @@
 		callback(selectLevelField, inputExistingGroupsField,decisionGroups);
 	};
 	
-	ConDecAPI.prototype.getAllDecisionGroups = function getAllDecisionGroups(selectGroupField, callback) {
+	ConDecAPI.prototype.fillDecisionGroupSelect = function fillDecisionGroupSelect(elementId){
+		var selectGroupField = document.getElementById(elementId);
+		getAllDecisionGroups(selectGroupField,function(selectGroupField, groups){
+			if(!(groups === null) && groups.length > 0){
+				selectGroupField.innerHTML= "";
+				selectGroupField.insertAdjacentHTML("beforeend", "<option value='High_Level'>High_Level</option>"
+						+"<option value='Medium_Level'>Medium_Level</option>"
+						+"<option value='Realization_Level'>Realization_Level</option>");
+				for(var i = 0; i< groups.length; i++){
+					if(groups[i]!= "High_Level" && groups[i]!= "Medium_Level" && groups[i]!= "Realization_Level"){
+						selectGroupField.insertAdjacentHTML("beforeend", "<option value='"+groups[i]+"'>"+groups[i]+"</option>");	
+					}
+				}
+			}else{
+				selectGroupField.innerHTML= "";
+			}
+		});
+	}
+	
+	function getAllDecisionGroups(selectGroupField, callback) {
 		var projectKey = getProjectKey();
 		var decisionGroups = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey="+projectKey);
 		callback(selectGroupField, decisionGroups);

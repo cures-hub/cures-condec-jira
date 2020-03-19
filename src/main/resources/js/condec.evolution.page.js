@@ -53,16 +53,7 @@
 				conDecContextMenu.createContextMenu(nodeId, documentationLocation, properties.event, "evolution-timeline");
 			});
 		});
-		var selectGroupField = document.getElementById("select2-decision-group-chrono");
-		conDecAPI.getAllDecisionGroups(selectGroupField,function(selectGroupField, groups){
-			if(!(groups === null) && groups.length > 0){
-				for(var i = 0; i< groups.length; i++){
-					selectGroupField.insertAdjacentHTML("beforeend", "<option value='"+groups[i]+"'>"+groups[i]+"</option>");
-				}
-			}else{
-				selectGroupField.innerHTML= "";
-			}
-		});
+		conDecAPI.fillDecisionGroupSelect("select2-decision-group-chrono");
 		addOnClickEventToFilterTimeLineButton();
 	};
 

@@ -249,11 +249,12 @@
 			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "none";
 			document.getElementById("condec-context-menu-sentence-convert-item").style.display = "none";
 			document.getElementById("condec-context-menu-set-root-item").style.display = "initial";
-		}if (documentationLocation === "i"){
+		}
+		/*if (documentationLocation === "i"){
 			document.getElementById("condec-context-menu-assign-decision-group-item").style.display = "none";
 		}else{
 			document.getElementById("condec-context-menu-assign-decision-group-item").style.display = "initial";
-		}
+		}*/
 	}
 
 	// export ConDecContextMenu

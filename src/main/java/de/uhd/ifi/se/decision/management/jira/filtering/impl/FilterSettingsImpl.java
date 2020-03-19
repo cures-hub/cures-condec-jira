@@ -232,7 +232,6 @@ public class FilterSettingsImpl implements FilterSettings {
     @Override
     @JsonProperty("selectedDecGroups")
     public void setSelectedDecGroups(List<String> decGroups) {
-	System.out.println(decGroups);
 	decisionGroups = decGroups;
     }
 

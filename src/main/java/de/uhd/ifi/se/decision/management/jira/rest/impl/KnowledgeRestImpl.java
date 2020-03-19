@@ -223,13 +223,17 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 	if (!"".equals(existingGroups)) {
 	    String[] groupSplitArray = existingGroups.replace(" ", "").split(",");
 	    for (String group : groupSplitArray) {
-		groupsToAssign.add(group);
+		if (!groupsToAssign.contains(group)) {
+		    groupsToAssign.add(group);
+		}
 	    }
 	}
 	if (!"".equals(addGroup)) {
 	    String[] groupSplitArray = addGroup.replace(" ", "").split(",");
 	    for (String group : groupSplitArray) {
-		groupsToAssign.add(group);
+		if (!groupsToAssign.contains(group)) {
+		    groupsToAssign.add(group);
+		}
 	    }
 	}
 	KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey)

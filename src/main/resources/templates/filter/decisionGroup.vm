@@ -2,4 +2,5 @@
 
 <script>
 AJS.$("#$select2-decision-group").auiSelect2();
+
 </script>
