@@ -19,6 +19,7 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
     private final String repoBaseDirectory;
     private GitClient testGitClient;
 
+
     private String featureBranch = "featureBranch";
 
     public TestGetFeatureBranchCommits() {

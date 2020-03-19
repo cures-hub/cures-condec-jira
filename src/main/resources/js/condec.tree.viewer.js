@@ -80,6 +80,33 @@
 		});
 	};
 
+	ConDecTreeViewer.prototype.filterNodesByGroup = function filterNodesByGroup(selectedGroup) {
+		console.log("conDecTreeViewer filterNodesByGroup");
+		jQueryConDec("#jstree").on("loaded.jstree",function() {
+			var treeViewer = jQueryConDec("#jstree").jstree(true);
+			if (treeViewer) {
+				var jsonNodes = treeViewer.get_json('#', { flat: true});
+				$.each(jsonNodes, function (i, val) {
+					var matches = 0;
+					var kElement = $(val).attr("data");
+					var elementGroups = $(kElement).attr("groups");
+					var treeNode = document.getElementById($(val).attr("id"));
+					$(treeNode).hide();
+				    for(var j=0; j<elementGroups.length; j++){
+				    	for(var x=0; x<selectedGroup.length; x++){
+					    	if(elementGroups[j] === selectedGroup[x]){
+					    		matches++;
+					    	}					    		
+				    	}
+				    	if(matches === selectedGroup.length){
+				    		$(treeNode).show();
+				    	}
+				    }
+				});
+			}
+		});
+	};
+
 	/**
 	 * called by view.tab.panel.js locally
 	 */

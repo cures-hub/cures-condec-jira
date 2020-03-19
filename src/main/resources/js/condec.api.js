@@ -101,6 +101,26 @@
 			}
 		});
 	};
+	
+	
+	
+	ConDecAPI.prototype.assignDecisionGroup = function assignDecisionGroup(level, existingGroups, 
+			addgroup, sourceId, documentationLocation, callback) {
+		var newElement= {};
+		var projectKey = getProjectKey();
+		postJSON(this.restPrefix + "/knowledge/assignDecisionGroup.json?sourceId="
+			+ sourceId + "&documentationLocation="
+			+ documentationLocation +"&projectKey="
+			+ projectKey+ "&level=" 
+			+ level +"&existingGroups=" 
+			+ existingGroups + "&addGroup="
+			+addgroup, newElement ,function (error, newElement) {
+			if (error === null) {
+				showFlag("Success", "Group Assignments have been created.");
+				callback(sourceId);
+			}
+		});
+	};
 
 	/*
 	 * external references: condec.dialog
@@ -454,8 +474,9 @@
 	/*
 	 * external references: condec.evolution.page
 	 */
-	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(searchString, created, closed, issueTypes, issueStatus,
+	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(searchString, created, closed, issueTypes, issueStatus, decGroups,
 																	 callback) {
+		
 		var filterSettings = {
 			"projectKey": projectKey,
 			"searchString": searchString,
@@ -463,7 +484,8 @@
 			"createdLatest": closed,
 			"documentationLocations": null,
 			"selectedJiraIssueTypes": issueTypes,
-			"selectedStatus": issueStatus
+			"selectedStatus": issueStatus,
+			"selectedDecGroups": decGroups
 		};
 		postJSON(this.restPrefix + "/view/getEvolutionData.json", filterSettings, function (
 			error, evolutionData) {
@@ -488,13 +510,15 @@
 	 * external references: condec.relationship.page
 	 */
 	ConDecAPI.prototype.getDecisionGraph = function getDecisionGraph(callback) {
-		this.getDecisionGraphFiltered(null, "", callback);
+		this.getDecisionGraphFiltered(null, "",[], callback);
 	};
   
 	/*
 	 * external references: condec.relationship.page
 	 */
-	ConDecAPI.prototype.getDecisionGraphFiltered = function getDecisionGraphFiltered(selectedLinkTypes, searchString, callback) {
+	ConDecAPI.prototype.getDecisionGraphFiltered = function getDecisionGraphFiltered(selectedLinkTypes, searchString, decGroups, callback) {
+		
+		
 		var filterSettings = {
 			"projectKey" : projectKey,
 			"searchString" : searchString,
@@ -503,7 +527,8 @@
 			"documentationLocations" : null,
 			"selectedJiraIssueTypes" : ["Decision"],
 			"selectedStatus": null,
-			"selectedLinkTypes": selectedLinkTypes
+			"selectedLinkTypes": selectedLinkTypes,
+			"selectedDecGroups": decGroups
 		};
 
 		postJSON(this.restPrefix + "/view/getDecisionGraph.json?", filterSettings, function(error, graph) {
@@ -682,6 +707,38 @@
 			}
 		});
 	};
+	
+	ConDecAPI.prototype.getDecisionGroups = function getDecisionGroups(id, location,inputExistingGroupsField,selectLevelField, callback) {
+		var projectKey = getProjectKey();
+		var decisionGroups = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getDecisionGroups.json?elementId=" +id
+				 + "&location="+location+ "&projectKey="+projectKey);
+		callback(selectLevelField, inputExistingGroupsField,decisionGroups);
+	};
+	
+	ConDecAPI.prototype.fillDecisionGroupSelect = function fillDecisionGroupSelect(elementId){
+		var selectGroupField = document.getElementById(elementId);
+		getAllDecisionGroups(selectGroupField,function(selectGroupField, groups){
+			if(!(groups === null) && groups.length > 0){
+				selectGroupField.innerHTML= "";
+				selectGroupField.insertAdjacentHTML("beforeend", "<option value='High_Level'>High_Level</option>"
+						+"<option value='Medium_Level'>Medium_Level</option>"
+						+"<option value='Realization_Level'>Realization_Level</option>");
+				for(var i = 0; i< groups.length; i++){
+					if(groups[i]!== "High_Level" && groups[i]!== "Medium_Level" && groups[i]!== "Realization_Level"){
+						selectGroupField.insertAdjacentHTML("beforeend", "<option value='"+groups[i]+"'>"+groups[i]+"</option>");	
+					}
+				}
+			}else{
+				selectGroupField.innerHTML= "";
+			}
+		});
+	};
+	
+	function getAllDecisionGroups(selectGroupField, callback) {
+		var projectKey = getProjectKey();
+		var decisionGroups = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey="+projectKey);
+		callback(selectGroupField, decisionGroups);
+	};
 
 	/*
 	 * Replaces argument with pro-argument and con-argument in knowledge types
@@ -695,7 +752,7 @@
 		extendedKnowledgeTypes.push("Con-argument");
 		return extendedKnowledgeTypes;
 	}
-
+	
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
