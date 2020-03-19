@@ -168,7 +168,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
     @Test
     public void testRemoveDecisionGroup() {
 	decisionKnowledgeElement.removeDecisionGroup("TestGroup");
-	assertTrue(!decisionKnowledgeElement.getDecisionGroups().contains("TestGroup"));
+	assertFalse(decisionKnowledgeElement.getDecisionGroups().contains("TestGroup"));
 
     }
 }

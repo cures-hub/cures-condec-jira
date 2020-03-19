@@ -235,9 +235,8 @@ public class FilteringManagerImpl implements FilteringManager {
 	}
 	if (matches == selectedGroups.size()) {
 	    return true;
-	} else {
-	    return false;
 	}
+	return false;
     }
 
     @Override

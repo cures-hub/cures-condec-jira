@@ -21,26 +21,22 @@ public class TestGetDecisionGroups extends TestSetUp {
 
     protected ConfigRest configRest;
     private long id;
-    private String summary;
-    private String description;
-    private KnowledgeType type;
     private String projectKey;
-    private KnowledgeElement decisionKnowledgeElement;
 
     @Before
     public void setUp() {
 	init();
 	configRest = new ConfigRestImpl();
 	this.id = 100;
-	this.summary = "Test";
-	this.description = "Test";
-	this.type = KnowledgeType.SOLUTION;
+	String summary = "Test";
+	String description = "Test";
+	KnowledgeType type = KnowledgeType.SOLUTION;
 	this.projectKey = "Test";
 	String key = "Test";
 
-	this.decisionKnowledgeElement = new KnowledgeElementImpl(id, summary, description, type, projectKey, key,
-		DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
-	DecisionGroupManager.insertGroup("TestGroup1", this.decisionKnowledgeElement);
+	KnowledgeElement decisionKnowledgeElement = new KnowledgeElementImpl(id, summary, description, type, projectKey,
+		key, DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
+	DecisionGroupManager.insertGroup("TestGroup1", decisionKnowledgeElement);
     }
 
     @Test

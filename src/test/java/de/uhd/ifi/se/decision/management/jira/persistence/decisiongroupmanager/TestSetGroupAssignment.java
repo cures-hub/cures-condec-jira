@@ -32,11 +32,11 @@ public class TestSetGroupAssignment extends TestSetUp {
     @Before
     public void setUp() {
 	init();
-	this.id = 100;
-	this.summary = "Test";
-	this.description = "Test";
-	this.type = KnowledgeType.SOLUTION;
-	this.projectKey = "Test";
+	long id = 100;
+	String summary = "Test";
+	String description = "Test";
+	KnowledgeType type = KnowledgeType.SOLUTION;
+	String projectKey = "Test";
 	String key = "Test";
 
 	this.decisionKnowledgeElement = new KnowledgeElementImpl(id, summary, description, type, projectKey, key,

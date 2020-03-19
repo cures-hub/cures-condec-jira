@@ -21,20 +21,16 @@ import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 public class TestGetGroups extends TestSetUp {
 
     private long id;
-    private String summary;
-    private String description;
-    private KnowledgeType type;
-    private String projectKey;
     private KnowledgeElement decisionKnowledgeElement;
 
     @Before
     public void setUp() {
 	init();
 	this.id = 100;
-	this.summary = "Test";
-	this.description = "Test";
-	this.type = KnowledgeType.SOLUTION;
-	this.projectKey = "Test";
+	String summary = "Test";
+	String description = "Test";
+	KnowledgeType type = KnowledgeType.SOLUTION;
+	String projectKey = "Test";
 	String key = "Test";
 
 	this.decisionKnowledgeElement = new KnowledgeElementImpl(id, summary, description, type, projectKey, key,

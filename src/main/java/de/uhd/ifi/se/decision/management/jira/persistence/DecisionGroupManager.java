@@ -72,11 +72,10 @@ public class DecisionGroupManager {
 	for (String group : groups) {
 	    id = insertGroup(group, element);
 	}
-	if (success == true && id != -1) {
+	if (success && id != -1) {
 	    return true;
-	} else {
-	    return false;
 	}
+	return false;
 
     }
 
