@@ -245,12 +245,14 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 	for (Link link : element.getLinks()) {
 	    KnowledgeElement linkedElement = link.getOppositeElement(element);
 	    linkedElements.add(linkedElement);
-	    if (linkedElement.getTypeAsString().equals("DECISION")
-		    || linkedElement.getTypeAsString().equals("ALTERNATIVE")) {
+	    if (linkedElement.getTypeAsString().equals("Decision")
+		    || linkedElement.getTypeAsString().equals("Alternative")
+		    || linkedElement.getTypeAsString().equals("Issue")) {
 		for (Link deeperLink : linkedElement.getLinks()) {
 		    KnowledgeElement deeperElement = deeperLink.getOppositeElement(linkedElement);
-		    if (deeperElement.getTypeAsString().equals("PRO")
-			    || deeperElement.getTypeAsString().equals("CON")) {
+		    if (deeperElement.getTypeAsString().equals("Pro") || deeperElement.getTypeAsString().equals("Con")
+			    || deeperElement.getTypeAsString().equals("Decision")
+			    || deeperElement.getTypeAsString().equals("Alternative")) {
 			linkedElements.add(deeperElement);
 		    }
 		}
@@ -260,7 +262,6 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 	    DecisionGroupManager.setGroupAssignment(groupsToAssign, ele);
 	}
 	return Response.status(Status.OK).build();
-
     }
 
     @Override

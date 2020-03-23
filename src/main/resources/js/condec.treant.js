@@ -4,7 +4,10 @@
 	var draggedElement;
 	var oldParentElement;
 	var treantTree;
-
+	
+	var treantid = "treant-container";
+	
+	
 	var ConDecTreant = function ConDecTreant() {
 	};
 
@@ -15,7 +18,23 @@
 		console.log("conDecTreant buildTreant");
 		var depthOfTree = getDepthOfTree();
 		conDecAPI.getTreant(elementKey, depthOfTree, searchTerm, function(treeStructure) {
-			document.getElementById("treant-container").innerHTML = "";
+			document.getElementById(treantid).innerHTML = "";
+			treantTree = new Treant(treeStructure);
+			if (isInteractive !== undefined && isInteractive) {
+				addDragAndDropSupportForTreant();
+				addContextMenuToTreant();
+				addTooltip();
+			}
+			changeColorForNodes();
+		});
+	};
+	
+	ConDecTreant.prototype.buildClassTreant = function buildClassTreant(elementKey, isInteractive, searchTerm, elementIds) {
+		console.log("conDecTreant buildClassTreant");
+		treantid = "treant-container-code";
+		var depthOfTree = getDepthOfTree();
+		conDecAPI.getClassTreant(elementKey, depthOfTree, searchTerm, elementIds, function(treeStructure) {
+			document.getElementById(treantid).innerHTML = "";
 			treantTree = new Treant(treeStructure);
 			if (isInteractive !== undefined && isInteractive) {
 				addDragAndDropSupportForTreant();
@@ -146,9 +165,9 @@
 			treantNodes[i].addEventListener('contextmenu', function(event) {
 				event.preventDefault();
 				if (this.getElementsByClassName("node-desc")[0].innerHTML.includes(":")) {
-					conDecContextMenu.createContextMenu(this.id, "s", event, "treant-container");
+					conDecContextMenu.createContextMenu(this.id, "s", event, treantid);
 				} else {
-					conDecContextMenu.createContextMenu(this.id, "i", event, "treant-container");
+					conDecContextMenu.createContextMenu(this.id, "i", event, treantid);
 				}
 			});
 		}

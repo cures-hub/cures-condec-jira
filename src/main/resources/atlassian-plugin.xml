@@ -24,6 +24,7 @@
 		<!-- general icons -->
 		<resource type="download" name="add.png" location="/images/add.png" />
 		<resource type="download" name="delete.png" location="/images/delete.png" />
+		<resource type="download" name="class.png" location="/images/class.png" />
 		<resource type="download" name="open.png" location="/images/open.png" />
 		<resource type="download" name="edit.png" location="/images/edit.png" />
 		<resource type="download" name="32px.png" location="/images/32px.png" />
@@ -124,6 +125,8 @@
 			location="/js/condec.relationship.page.js" />
 		<resource type="download" name="condec.relationshipMatrix.page.js"
 			location="/js/condec.relationshipMatrix.page.js" />
+		<resource type="download" name="condec.code.class.page.js"
+			location="/js/condec.code.class.page.js" />
 	</web-resource>
 
 	<web-resource key="decision-knowledge-page-resources"

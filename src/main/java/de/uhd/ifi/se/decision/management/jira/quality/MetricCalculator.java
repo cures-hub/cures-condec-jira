@@ -291,6 +291,7 @@ public class MetricCalculator {
 	summaryMap.put("Requirements", numberOfRequirements);
 	GitCodeClassExtractor extract = new GitCodeClassExtractor("CONDEC");
 	summaryMap.put("Code Classes", extract.getNumberOfCodeClasses());
+	extract.close();
 	return summaryMap;
     }
 

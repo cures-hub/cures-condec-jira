@@ -11,58 +11,69 @@ import com.google.common.collect.ImmutableMap;
  * Model class for Treant configuration
  */
 public class Chart {
-	@XmlElement
-	private String container;
-	@XmlElement
-	private Map<String, String> connectors;
-	@XmlElement
-	private String rootOrientation;
-	@XmlElement
-	private int levelSeparation;
-	@XmlElement
-	private int siblingSeparation;
-	@XmlElement
-	private int subTreeSeparation;
+    @XmlElement
+    private String container;
+    @XmlElement
+    private Map<String, String> connectors;
+    @XmlElement
+    private String rootOrientation;
+    @XmlElement
+    private int levelSeparation;
+    @XmlElement
+    private int siblingSeparation;
+    @XmlElement
+    private int subTreeSeparation;
 
-	@XmlElement
-	private Map<String, Boolean> node;
+    @XmlElement
+    private Map<String, Boolean> node;
 
-	public Chart() {
-		this.container = "#treant-container";
-		this.connectors = new ConcurrentHashMap<>();
-		this.connectors.put("type", "straight");
-		this.rootOrientation = "NORTH";
-		this.levelSeparation = 30;
-		this.siblingSeparation = 30;
-		this.subTreeSeparation = 30;
-		this.node = ImmutableMap.of("collapsable", true);
-	}
+    public Chart() {
+	this.container = "#treant-container";
+	this.connectors = new ConcurrentHashMap<>();
+	this.connectors.put("type", "straight");
+	this.rootOrientation = "NORTH";
+	this.levelSeparation = 30;
+	this.siblingSeparation = 30;
+	this.subTreeSeparation = 30;
+	this.node = ImmutableMap.of("collapsable", true);
+    }
 
-	public String getContainer() {
-		return this.container;
-	}
+    public Chart(String treantid) {
+	this.container = "#" + treantid;
+	this.connectors = new ConcurrentHashMap<>();
+	this.connectors.put("type", "straight");
+	this.rootOrientation = "NORTH";
+	this.levelSeparation = 30;
+	this.siblingSeparation = 30;
+	this.subTreeSeparation = 30;
+	this.node = ImmutableMap.of("collapsable", true);
+    }
 
-	public Map<String, String> getConnectors() {
-		return connectors;
-	}
+    public String getContainer() {
+	return this.container;
+    }
 
-	public String getRootOrientation() {
-		return rootOrientation;
-	}
+    public Map<String, String> getConnectors() {
+	return connectors;
+    }
 
-	public int getLevelSeparation() {
-		return levelSeparation;
-	}
+    public String getRootOrientation() {
+	return rootOrientation;
+    }
 
-	public int getSiblingSeparation() {
-		return siblingSeparation;
-	}
+    public int getLevelSeparation() {
+	return levelSeparation;
+    }
 
-	public int getSubTreeSeparation() {
-		return subTreeSeparation;
-	}
+    public int getSiblingSeparation() {
+	return siblingSeparation;
+    }
 
-	public Map<String, Boolean> getNode() {
-		return node;
-	}
+    public int getSubTreeSeparation() {
+	return subTreeSeparation;
+    }
+
+    public Map<String, Boolean> getNode() {
+	return node;
+    }
 }

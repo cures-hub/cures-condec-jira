@@ -1,5 +1,7 @@
 (function(global) {
 
+	var jstreeId = "#jstree";
+	
 	var ConDecTreeViewer = function ConDecTreeViewer() {
 	};
 
@@ -26,10 +28,35 @@
 		this.addDragAndDropSupportForTreeViewer();
 		this.addContextMenuToTreeViewer(null);
 	};
+	
+	/**
+	 * called by condec.code.class.page.js
+	 */
+	ConDecTreeViewer.prototype.buildClassTreeViewer = function buildClassTreeViewer() {
+		console.log("conDecTreeViewer buildClassTreeViewer");
+		jstreeId = "#jstree-code";
+		this.resetTreeViewer();
+		var rootElementType = "codeClass";
+		conDecAPI.getTreeViewer(rootElementType, function(core) {
+			jQueryConDec("#jstree-code").jstree({
+				"core" : core,
+				"plugins" : [ "dnd", "wholerow", "sort", "search", "state" ],
+				"search" : {
+					"show_only_matches" : true
+				}
+			});
+			$("#jstree-search-input-code").keyup(function() {
+				var searchString = $(this).val();
+				jQueryConDec("#jstree-code").jstree(true).search(searchString);
+			});
+		});
+		this.addDragAndDropSupportForTreeViewer();
+		this.addContextMenuToTreeViewer(null);
+	};
 
 	ConDecTreeViewer.prototype.addContextMenuToTreeViewer = function addContextMenuToTreeViewer(container) {
 		console.log("conDecTreeViewer addContextMenuToTreeViewer");
-		jQueryConDec("#jstree").on("contextmenu.jstree", function(event) {
+		jQueryConDec(jstreeId).on("contextmenu.jstree", function(event) {
 			event.preventDefault();
 
 			var nodeId = event.target.parentNode.id;
@@ -49,7 +76,7 @@
 	 */
 	ConDecTreeViewer.prototype.resetTreeViewer = function resetTreeViewer() {
 		console.log("conDecTreeViewer resetTreeViewer");
-		var treeViewer = jQueryConDec("#jstree").jstree(true);
+		var treeViewer = jQueryConDec(jstreeId).jstree(true);
 		if (treeViewer) {
 			treeViewer.destroy();
 		}
@@ -63,7 +90,7 @@
 		if (nodeId === "#") {
 			return nodeId;
 		}
-		return jQueryConDec("#jstree").jstree(true).get_node(nodeId);
+		return jQueryConDec(jstreeId).jstree(true).get_node(nodeId);
 	}
 	
 	/**
@@ -72,7 +99,7 @@
 	ConDecTreeViewer.prototype.selectNodeInTreeViewer = function selectNodeInTreeViewer(nodeId) {
 		console.log("conDecTreeViewer selectNodeInTreeViewer");
 		jQueryConDec(document).ready(function() {
-			var treeViewer = jQueryConDec("#jstree").jstree(true);
+			var treeViewer = jQueryConDec(jstreeId).jstree(true);
 			if (treeViewer) {
 				treeViewer.deselect_all(true);
 				treeViewer.select_node(nodeId);
@@ -83,7 +110,7 @@
 	ConDecTreeViewer.prototype.filterNodesByGroup = function filterNodesByGroup(selectedGroup) {
 		console.log("conDecTreeViewer filterNodesByGroup");
 		jQueryConDec("#jstree").on("loaded.jstree",function() {
-			var treeViewer = jQueryConDec("#jstree").jstree(true);
+			var treeViewer = jQueryConDec(jstreeId).jstree(true);
 			if (treeViewer) {
 				var jsonNodes = treeViewer.get_json('#', { flat: true});
 				$.each(jsonNodes, function (i, val) {
@@ -112,7 +139,7 @@
 	 */
 	ConDecTreeViewer.prototype.addDragAndDropSupportForTreeViewer = function addDragAndDropSupportForTreeViewer() {
 		console.log("conDecTreeViewer addDragAndDropSupportForTreeViewer");
-		jQueryConDec("#jstree").on(
+		jQueryConDec(jstreeId).on(
 				'move_node.jstree',
 				function(object, nodeInContext) {
 					var node = nodeInContext.node;

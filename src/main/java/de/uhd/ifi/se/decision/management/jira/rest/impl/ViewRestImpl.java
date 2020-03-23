@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,13 +161,17 @@ public class ViewRestImpl implements ViewRest {
 	if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 	    return checkIfProjectKeyIsValidResponse;
 	}
-	KnowledgeType rootType = KnowledgeType.getKnowledgeType(rootElementTypeString);
-	if (rootType == KnowledgeType.OTHER) {
-	    rootType = KnowledgeType.DECISION;
+	if ("codeClass".equals(rootElementTypeString)) {
+	    TreeViewer treeViewer = new TreeViewer(projectKey);
+	    return Response.ok(treeViewer).build();
+	} else {
+	    KnowledgeType rootType = KnowledgeType.getKnowledgeType(rootElementTypeString);
+	    if (rootType == KnowledgeType.OTHER) {
+		rootType = KnowledgeType.DECISION;
+	    }
+	    TreeViewer treeViewer = new TreeViewer(projectKey, rootType);
+	    return Response.ok(treeViewer).build();
 	}
-
-	TreeViewer treeViewer = new TreeViewer(projectKey, rootType);
-	return Response.ok(treeViewer).build();
     }
 
     @Override
@@ -239,6 +244,42 @@ public class ViewRestImpl implements ViewRest {
 	}
 	ApplicationUser user = AuthenticationManager.getUser(request);
 	Treant treant = new Treant(projectKey, elementKey, depth, searchTerm, user);
+	return Response.ok(treant).build();
+    }
+
+    @Override
+    @Path("/getMultipleTreant")
+    @GET
+    @Produces({ MediaType.APPLICATION_JSON })
+    public Response getMultipleTreant(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey,
+	    @QueryParam("depthOfTree") String depthOfTree, @QueryParam("searchTerm") String searchTerm,
+	    @QueryParam("elementKeys") String elementKeys) {
+
+	if (elementKey == null) {
+	    return Response.status(Status.BAD_REQUEST)
+		    .entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build();
+	}
+	String projectKey = getProjectKey(elementKey);
+	Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+	if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+	    return checkIfProjectKeyIsValidResponse;
+	}
+	int depth = 4; // default value
+	try {
+	    depth = Integer.parseInt(depthOfTree);
+	} catch (NumberFormatException e) {
+	    LOGGER.error(
+		    "Depth of tree could not be parsed, the default value of 4 is used. Message: " + e.getMessage());
+	    return Response.status(Status.BAD_REQUEST)
+		    .entity(ImmutableMap.of("error", "Treant cannot be shown since depth of Tree is NaN")).build();
+	}
+	ApplicationUser user = AuthenticationManager.getUser(request);
+	List<String> elementKeysList = new ArrayList<String>();
+	for (String ele : elementKeys.split(";")) {
+	    elementKeysList.add(ele);
+	}
+
+	Treant treant = new Treant(projectKey, elementKey, depth, searchTerm, user, elementKeysList);
 	return Response.ok(treant).build();
     }
 

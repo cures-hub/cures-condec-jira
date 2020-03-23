@@ -384,6 +384,15 @@
 			}
 		});
 	};
+	
+	ConDecAPI.prototype.getClassTreant = function getClassTreant(elementKey, depthOfTree, searchTerm, elementIds, callback) {
+		getJSON(this.restPrefix + "/view/getMultipleTreant.json?&elementKey=" + elementKey
+			+ "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm + "&elementKeys=" + elementIds, function (error, treant) {
+			if (error === null) {
+				callback(treant);
+			}
+		});
+	};
 
 	/*
 	 * external references: condec.vis
