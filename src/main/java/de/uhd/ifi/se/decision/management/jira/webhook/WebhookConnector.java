@@ -163,8 +163,8 @@ public class WebhookConnector {
 			String line = null;
 			if((line = input.readLine()) != "ok")
 			{
-				System.out.println(line);
-				return false;
+				//System.out.println(line);
+				throw new IllegalArgumentException(line);
 			}
 			else{
 				return true;
