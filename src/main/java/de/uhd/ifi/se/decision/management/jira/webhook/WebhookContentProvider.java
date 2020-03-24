@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Formatter;
+import java.util.Set;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -17,6 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+
 
 /**
  * Creates the content submitted via the webhook. The content consists of a key
@@ -27,13 +31,24 @@ public class WebhookContentProvider {
 	private String projectKey;
 	private String rootElementKey;
 	private String secret;
+	private KnowledgeElement knowledgeElement;
+	private String receiver;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(WebhookContentProvider.class);
 
-	public WebhookContentProvider(String projectKey, String elementKey, String secret) {
+	public WebhookContentProvider(String projectKey, String elementKey, String secret, String receiver) {
 		this.projectKey = projectKey;
 		this.rootElementKey = elementKey;
 		this.secret = secret;
+		this.receiver = receiver;
+	}
+
+	public WebhookContentProvider(String projectKey, KnowledgeElement knowledgeElement, String secret, String receiver) {
+		this.projectKey = projectKey;
+		this.rootElementKey = knowledgeElement.getKey();
+		this.secret = secret;
+		this.knowledgeElement = knowledgeElement;
+		this.receiver = receiver;
 	}
 
 	/**
@@ -43,10 +58,14 @@ public class WebhookContentProvider {
 	 */
 	public PostMethod createPostMethod() {
 		PostMethod postMethod = new PostMethod();
-		if (projectKey == null || rootElementKey == null || secret == null) {
+		if (projectKey == null || rootElementKey == null || secret == null|| receiver == null) {
 			return postMethod;
 		}
-		String webhookData = createWebhookData();
+		String webhookData = "";
+		if(receiver == "Other"){
+			LOGGER.info("receiver:  Other");
+			webhookData = createWebhookData();
+		}
 		try {
 			StringRequestEntity requestEntity = new StringRequestEntity(webhookData, "application/json", "UTF-8");
 			postMethod.setRequestEntity(requestEntity);
@@ -60,9 +79,10 @@ public class WebhookContentProvider {
 		return postMethod;
 	}
 
+
 	/**
 	 * Creates the key value JSON String transmitted via webhook.
-	 * 
+	 *
 	 * @return JSON String with the following pattern: { "issueKey": {String},
 	 *         "ConDecTree": {TreantJS JSON config and data} }
 	 */
@@ -72,8 +92,53 @@ public class WebhookContentProvider {
 	}
 
 	/**
+	 * Creates the key value JSON String transmitted via webhook for Slack.
+	 *(Differences: "text", mask \ and ")
+	 * @return JSON String with the following pattern: {"text": " \"issueKey\": {String},
+	 *         \"ConDecTree\": {TreantJS JSON config and data} " }
+	 */
+	public String createPostMethodforSlack(KnowledgeElement changedElement) {
+		System.out.println("Create Data for slack webhook");
+		if (projectKey == null || rootElementKey == null || receiver == null) {
+			return null;
+		}
+/*
+		String data =  "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'Folgendes Entscheidungswissen wurde angepasst \n hardgecodete Angaben, Link: google.com'}},{'type':'divider'},{'type':'section','text':{'type':'mrkdwn','text':'*Typ:*:"
+			+ knowledgeElement.getTypeAsString() +  ": "
+			+ knowledgeElement.getTypeAsString() +  "\n *Titel*:"
+			+ knowledgeElement.getSummary() + "\n'},'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url':'https://jira-se.ifi.uni-heidelberg.de/projects/"
+			+ knowledgeElement.getProject() +"/"
+			+knowledgeElement.getKey() +"'}}]}";
+		System.out.println(data);
+		*/
+		String summary = changedElement.getSummary();
+		System.out.println("Summary is now: "+summary);
+
+		if( summary.contains("{")){
+			System.out.println("Summary contains {.");
+			summary = cutSummary(changedElement.getSummary());
+			System.out.println("Summary is now: "+summary);
+		}
+
+		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'Folgendes Entscheidungswissen wurde angepasst'}},"+
+		"{'type':'divider'},{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :"+ changedElement.getType() + ": : " + changedElement.getType() +
+		" \\n *Titel*: " + summary + "\\n'},"+
+		"'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url':'"+ changedElement.getUrl() +"'}}]}";
+
+		String command = "curl -X POST -H 'Content-type:application/json' --data  \""+
+											data +
+											"\"";
+		return command;
+	}
+/*
+{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'Folgendes Entscheidungswissen wurde angepasst'}},
+{'type':'divider'},{'type':'section','text':{'type':'mrkdwn','text':'*Typ:*:issue: knowledgetype \n *Titel*: summary\n'},
+'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url':'https://google.com'}}]}
+*/
+
+	/**
 	 * Creates the Treant JSON String (value transmitted via webhook).
-	 * 
+	 *
 	 * @return TreantJS JSON String including config and data
 	 */
 	private String createTreantJsonString() {
@@ -91,12 +156,12 @@ public class WebhookContentProvider {
 	/**
 	 * Converts the webhook data String to a hexadecimal String using the secret
 	 * key.
-	 * 
+	 *
 	 * @param data
 	 *            String to be hashed
 	 * @param key
 	 *            secret key
-	 * 
+	 *
 	 * @return hexadecimal String
 	 */
 	public static String createHashedPayload(String data, String key) {
@@ -115,10 +180,10 @@ public class WebhookContentProvider {
 
 	/**
 	 * Converts an array of bytes to a hexadecimal String.
-	 * 
+	 *
 	 * @param bytes
 	 *            array of bytes
-	 * 
+	 *
 	 * @return hexadecimal String
 	 */
 	private static String toHexString(byte[] bytes) {
@@ -129,5 +194,27 @@ public class WebhookContentProvider {
 		String formattedString = formatter.toString();
 		formatter.close();
 		return formattedString;
+	}
+
+/* if there is a decision knowledge element located in a comment there was a rare
+ * bug: it puts "{*KnowledgeType*}" into the summary. that is bad for json format.
+ * --> cutSummary
+ */
+
+	/**
+	 * Remove all "{knowledgeType}"-parts from a string.
+	 *
+	 * @param toCut
+	 *            String
+	 *
+	 * @return String without "{knowledgeType}"-parts
+	 */
+	private String cutSummary(String toCut){
+		Set<KnowledgeType> types = knowledgeElement.getProject().getKnowledgeTypes();
+		for (KnowledgeType knowledgeType : types) {
+			String cut = "{"+knowledgeType.toString()+"}";
+			toCut = toCut.split(cut)[0];
+		}
+		return toCut;
 	}
 }

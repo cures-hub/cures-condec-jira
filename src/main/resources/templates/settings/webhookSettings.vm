@@ -4,12 +4,13 @@
 	<label for="isWebhookEnabled-toggle">Webhook Activated?</label>
 	<aui-toggle id="isWebhookEnabled-toggle"
 	    value="$projectKey" label="Webhook Activated?"></aui-toggle>
-	<div class="description">Activates or deactivates the webhook for this project. If the webhook 
-	    is activated, it is triggered whenever a decision knowledge element or a link between 
-	    elements is changed. Then, a key value JSON string is sent to the URL. 
+	<div class="description">Activates or deactivates the webhook for this project. If the webhook
+	    is activated, it is triggered whenever a decision knowledge element or a link between
+	    elements is changed. Then, a key value JSON string is sent to the URL.
 	    The key is the key of the root element and the value is the Treant JSON string.
 	</div>
 </div>
+
 
 <div class="field-group">
 	<label for="select-root-types">Root Element Types:</label>
@@ -33,35 +34,42 @@
 	<div class="description">URL that decision knowledge is posted
 		to when updated.</div>
 </div>
-	
+
 <div class="field-group">
 	<label for="webhook-secret">Shared Secret</label> <input type="text"
 		class="text long-field" id="webhook-secret" value="$project.getWebhookSecret()" />
-	<div class="description">Key to authenticate with remote server.</div>				
+	<div class="description">Key to authenticate with remote server.</div>
 	<input type="button" id="submitWebhook" class="aui-button aui-button-primary" value="Set Webhook URL and Secret" />
 </div>
-		
-<script>					
+
+<div class="field-group">
+	<label for="Test Slack Webhook">Test Slack Webhook</label>
+	<div class="description">Send a Webhook to given Slack-Url via cUrl, Use the URL form your Slack-app Setting - "Incomming WEbhook" </div>
+	<input type="button" id="testWebhook" class="aui-button aui-button-primary" value="Send Webhook" onclick="sendCURL()"/>
+</div>
+
+
+<script>
 	var webhookToggle = document.getElementById("isWebhookEnabled-toggle");
 	if ($project.isWebhookEnabled() == true) {
 		webhookToggle.checked = true;
 	} else {
 		webhookToggle.checked = false;
 	}
-	
+
 	webhookToggle.addEventListener("change", function(error) {
 		this.busy = true;
 		conDecAPI.setWebhookEnabled(this.checked, this.value);
 		this.busy = false;
 	});
-	
+
 	var webHookSubmit = document.getElementById("submitWebhook");
 	webHookSubmit.addEventListener("click", function() {
 		var urlInput = document.getElementById("webhook-url");
 		var secretInput = document.getElementById("webhook-secret");
 		conDecAPI.setWebhookData("$projectKey", urlInput.value, secretInput.value);
 		window.onbeforeunload = null;
-	});	
+	});
 
     function getMultipleSelectedValue() {
         var x = document.getElementById("select-root-types");
@@ -74,4 +82,9 @@
             }
         }
     }
+
+
+		function sendCURL(){
+				conDecAPI.sendCurltoSlack("$projectKey");
+		}
 </script>

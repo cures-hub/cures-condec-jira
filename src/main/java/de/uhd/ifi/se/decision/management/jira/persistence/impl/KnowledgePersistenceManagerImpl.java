@@ -21,12 +21,12 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 /**
  * Class that integates all available persistence managers for single
  * documentation locations for a given project.
- * 
+ *
  * @issue How can we integrate knowledge from different documentation locations?
  * @alternative Use the decorator design pattern to integrate persistence
  *              managers for different documentation locations!
  * @alternative Manually implement methods such as getDecisionKnowledgeElements!
- * 
+ *
  * @see AbstractPersistenceManagerForSingleLocation
  * @see JiraIssuePersistenceManager
  * @see JiraIssueTextPersistenceManager
@@ -230,6 +230,11 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 			KnowledgeElement updatedElement = persistenceManager.getDecisionKnowledgeElement(element.getId());
 			KnowledgeGraph.getOrCreate(projectKey).updateElement(updatedElement);
 		}
+		
+		if (isUpdated && ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
+			new WebhookConnector(projectKey).sendElementChanges(element);
+		}
+
 		return isUpdated;
 	}
 
@@ -244,6 +249,11 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		KnowledgeElement elementWithId = persistenceManager.insertDecisionKnowledgeElement(element, user,
 				parentElement);
 		KnowledgeGraph.getOrCreate(projectKey).addVertex(elementWithId);
+
+		if (elementWithId != null && ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
+			new WebhookConnector(projectKey).sendElementChanges(element);
+		}
+
 		return elementWithId;
 	}
 

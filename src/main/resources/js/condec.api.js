@@ -3,7 +3,7 @@
 
  Requires
  * conDecTreant.findParentElement
-    
+
  Is required by
  * conDecContextMenu
  * conDecDialog
@@ -14,9 +14,9 @@
  * conDecKnowledgePage
  * conDecTabPanel
  * conDecVis
-  
+
  Is referenced in HTML by
- * settingsForAllProjects.vm 
+ * settingsForAllProjects.vm
  * settingsForSingleProject.vm
  */
 (function (global) {
@@ -25,7 +25,7 @@
 
 	var ConDecAPI = function ConDecAPI() {
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest";
-		
+
 		projectKey = getProjectKey();
 		this.knowledgeTypes = getKnowledgeTypes(projectKey);
 		this.extendedKnowledgeTypes = getExtendedKnowledgeTypes(this.knowledgeTypes);
@@ -33,7 +33,7 @@
         this.optionStatus = ["idea", "discarded", "decided", "rejected", "undefined"];
         this.issueStatus = ["resolved", "unresolved"];
 		this.knowledgeStatus = this.optionStatus.concat(this.issueStatus);
-		
+
         this.linkTypes = getLinkTypes(projectKey);
 	};
 
@@ -79,10 +79,10 @@
 	 * Creates a new decision knowledge element. If the element should be
 	 * unlinked the idOfExistingElement must be 0 and the
 	 * documentationLocationOfExistingElement must be null
-	 * 
+	 *
 	 * external references: condec.knowledge.page, condec.dialog
 	 */
-	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElement(summary, description, 
+	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElement(summary, description,
 			type, documentationLocation, idOfExistingElement, documentationLocationOfExistingElement, callback) {
 		var newElement = {
 			"summary": summary,
@@ -91,6 +91,7 @@
 			"description": description,
 			"documentationLocation": documentationLocation
 		};
+		console.log("SH Neues element soll erstellt werden.")
 		console.log(newElement);
 		postJSON(this.restPrefix + "/knowledge/createDecisionKnowledgeElement.json?idOfExistingElement="
 			+ idOfExistingElement + "&documentationLocationOfExistingElement="
@@ -215,7 +216,7 @@
 			})
 		})
 	};
-	
+
 	ConDecAPI.prototype.getProjectWideSelectedIssueTypes = function getProjectWideSelectedIssueTypes() {
 		return new Promise(function (resolve, reject) {
 			var preSelectedIssueUrl = AJS.contextPath() + "/rest/condec/latest/config/getReleaseNoteMapping.json?projectKey=" + projectKey;
@@ -512,7 +513,7 @@
 	ConDecAPI.prototype.getDecisionGraph = function getDecisionGraph(callback) {
 		this.getDecisionGraphFiltered(null, "",[], callback);
 	};
-  
+
 	/*
 	 * external references: condec.relationship.page
 	 */
@@ -550,7 +551,7 @@
 			}
 		});
 	};
-	
+
 	/*
 	 * external references: condec.text.editor.extension
 	 */
@@ -687,7 +688,7 @@
 		var knowledgeTypes = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getKnowledgeTypes.json?projectKey=" + projectKey);
 		return knowledgeTypes;
 	}
-  
+
 	function getLinkTypes(projectKey) {
 		var linkTypes = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getLinkTypes.json?projectKey=" + projectKey);
 		if (linkTypes !== null) {
@@ -810,6 +811,17 @@
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
+ ConDecAPI.prototype.sendCurltoSlack = function sendCurltoSlack(projectKey){
+
+   postJSON(this.restPrefix + "/config/sendCurltoSlack?projectKey=" + projectKey, null, function(error, response) {
+			if (error === null) {
+				showFlag("success", "The webhook test was send.");
+			}
+		});
+ };
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
 	ConDecAPI.prototype.setReleaseNoteMapping = function setReleaseNoteMapping(releaseNoteCategory, projectKey, selectedIssueTypes) {
 		postJSON(this.restPrefix + "/config/setReleaseNoteMapping.json?projectKey=" + projectKey + "&releaseNoteCategory=" + releaseNoteCategory, selectedIssueTypes, function (
 			error, response) {
@@ -830,7 +842,7 @@
 			}
 		});
 	};
-	
+
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */

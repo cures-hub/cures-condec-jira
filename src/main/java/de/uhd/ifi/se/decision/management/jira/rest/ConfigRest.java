@@ -50,6 +50,9 @@ public interface ConfigRest {
     Response setWebhookType(HttpServletRequest request, String projectKey, String webhookType,
 	    boolean isWebhookTypeEnabled);
 
+	Response sendCurltoSlack(HttpServletRequest request,String projectKey);
+
+
     /* **************************************/
     /*										*/
     /* Configuration for Git integration */

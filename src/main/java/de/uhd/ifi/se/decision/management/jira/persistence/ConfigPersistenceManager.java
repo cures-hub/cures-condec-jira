@@ -50,28 +50,25 @@ public class ConfigPersistenceManager {
     }
 
     public static String getValue(String parameter, String projectKey, boolean isGlobalSetting) {
-	PluginSettings settings;
-	if (isGlobalSetting) {
-	    settings = pluginSettingsFactory.createGlobalSettings();
-	} else {
-	    if (projectKey == null || projectKey.equals("")) {
-		return "";
-	    }
-	    settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-	}
-	if (parameter == null || parameter.equals("")) {
-	    return "";
-	}
-	Object value = transactionTemplate.execute(new TransactionCallback<Object>() {
-	    @Override
-	    public Object doInTransaction() {
-		return settings.get(ComponentGetter.PLUGIN_KEY + "." + parameter);
-	    }
-	});
-	if (value instanceof String) {
-	    return value.toString();
-	}
-	return "";
+	      PluginSettings settings;
+	      if (isGlobalSetting) {
+         settings = pluginSettingsFactory.createGlobalSettings();
+	      } else {
+	        if (projectKey == null || projectKey.equals("")) {
+		          return "";
+            }
+          settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+        }
+	      Object value = transactionTemplate.execute(new TransactionCallback<Object>() {
+	         @Override
+	          public Object doInTransaction() {
+		            return settings.get(ComponentGetter.PLUGIN_KEY + "." + parameter);
+	          }
+	          });
+	          if (value instanceof String) {
+	             return value.toString();
+	            }
+	         return "";
     }
 
     public static String getWebhookSecret(String projectKey) {

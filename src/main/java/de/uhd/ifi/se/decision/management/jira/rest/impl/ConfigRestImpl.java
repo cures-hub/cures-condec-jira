@@ -48,6 +48,22 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManage
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.File;
+import java.util.*;
+
+import java.io.*;
 
 /**
  * REST resource for plug-in configuration
@@ -286,6 +302,35 @@ public class ConfigRestImpl implements ConfigRest {
 	ConfigPersistenceManager.setWebhookUrl(projectKey, webhookUrl);
 	ConfigPersistenceManager.setWebhookSecret(projectKey, webhookSecret);
 	return Response.ok(Status.ACCEPTED).build();
+    }
+
+    @Override
+    @Path("/sendCurltoSlack")
+    @POST
+    public Response sendCurltoSlack(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+      //System.out.println(projectKey);
+      String command = "curl -X POST -H 'Content-type:application/json'"+
+       " --data \"{'text':'Jira here. Test Post!'}\" "+
+       ConfigPersistenceManager.getWebhookUrl(projectKey);
+      try{
+        Process process = Runtime.getRuntime().exec(command);
+        BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        //System.out.println(input.readLine());
+        String line = null;
+        String res = null;
+        while ((line = input.readLine()) != null)
+        {
+          System.out.println(line);
+          res += line;
+        }
+
+
+      } catch (IOException | IllegalArgumentException e) {
+        LOGGER.error("Could not send webhook data because of " + e.getMessage());
+        return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "webhook konnte nicht versendet werden via  Curl.")).build();
+      }
+
+      return Response.ok(Status.ACCEPTED).build();
     }
 
     @Override
