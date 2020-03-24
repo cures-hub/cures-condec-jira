@@ -85,6 +85,23 @@ public class TestWebhookConnector extends TestSetUp {
 
 	@Test
 	@NonTransactional
+	public void testConstructorCorrectSlackUrl() {
+				WebhookConnector connector = new WebhookConnector("TEST",
+					"https://hooks.slack.com/services/T2E2",
+					"03f90207-73bc-44d9-9848-d3f1f8c8254e", null);
+		assertEquals("Slack", connector.getReceiver());
+	}
+	@Test
+	@NonTransactional
+	public void testConstructorCorrectOtherUrl() {
+				WebhookConnector connector = new WebhookConnector("TEST",
+					"https://cuu-staging.ase.in.tum.de/api/v1/projects/ConDecDev/integrations/conDec",
+					"03f90207-73bc-44d9-9848-d3f1f8c8254e", null);
+		assertEquals("Other", connector.getReceiver());
+	}
+
+	@Test
+	@NonTransactional
 	public void testSendElementChangesFails() {
 		assertFalse(webhookConnector.sendElementChanges(null));
 	}
@@ -137,6 +154,22 @@ public class TestWebhookConnector extends TestSetUp {
 	public void testSetGetUrl() {
 		webhookConnector.setUrl("https://ThisIsTheURL");
 		assertEquals("https://ThisIsTheURL", webhookConnector.getUrl());
+	}
+
+	@Test
+	@NonTransactional
+	public void testSetUrlGetReceiverSlack() {
+		webhookConnector.setUrl("https://hooks.slack.com/services/T2E2");
+		assertEquals("https://hooks.slack.com/services/T2E2", webhookConnector.getUrl());
+		assertEquals("Slack", webhookConnector.getReceiver());
+	}
+
+	@Test
+	@NonTransactional
+	public void testSetUrlGetReceiverOther() {
+		webhookConnector.setUrl("https://ThisIsTheURL");
+		assertEquals("https://ThisIsTheURL", webhookConnector.getUrl());
+		assertEquals("Other", webhookConnector.getReceiver());
 	}
 
 	@After
