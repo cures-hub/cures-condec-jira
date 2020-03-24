@@ -19,32 +19,32 @@ public class TestWebhookContentProvider extends TestSetUp {
 
 	@Test
 	public void testCreatePostMethodForMissingProjectKeyAndMissingElementKeyAndMissingSecret() {
-		WebhookContentProvider provider = new WebhookContentProvider(null, null, null);
+		WebhookContentProvider provider = new WebhookContentProvider(null, (String) null, null, null);
 		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
 	public void testCreatePostMethodForMissingProjectKeyAndMissingElementKeyAndProvidedSecret() {
-		WebhookContentProvider provider = new WebhookContentProvider(null, null, "1234IamASecretKey");
+		WebhookContentProvider provider = new WebhookContentProvider(null, (String) null, "1234IamASecretKey", null);
 		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
 	public void testCreatePostMethodForMissingProjectKeyAndProvidedElementKeyAndMissingSecret() {
-		WebhookContentProvider provider = new WebhookContentProvider(null, "TEST-14", null);
+		WebhookContentProvider provider = new WebhookContentProvider(null, "TEST-14", null, null);
 		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
 	public void testCreatePostMethodForProvidedProjectKeyAndMissingElementKeyAndMissingSecret() {
-		WebhookContentProvider provider = new WebhookContentProvider("TEST", null, null);
+		WebhookContentProvider provider = new WebhookContentProvider("TEST", (String) null, null, null);
 		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
 	@NonTransactional
 	public void testCreatePostMethodForProvidedProjectKeyAndProvidedElementKeyAndProvidedSecret() {
-		WebhookContentProvider provider = new WebhookContentProvider("TEST", "TEST-14", "1234IamASecretKey");
+		WebhookContentProvider provider = new WebhookContentProvider("TEST", "TEST-14", "1234IamASecretKey", "Other");
 		assertNotNull(provider.createPostMethod().getRequestEntity());
 	}
 

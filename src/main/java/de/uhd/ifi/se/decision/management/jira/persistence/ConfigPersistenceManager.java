@@ -59,6 +59,9 @@ public class ConfigPersistenceManager {
             }
           settings = pluginSettingsFactory.createSettingsForKey(projectKey);
         }
+        if (parameter == null || parameter.equals("")) {
+            return "";
+        }
 	      Object value = transactionTemplate.execute(new TransactionCallback<Object>() {
 	         @Override
 	          public Object doInTransaction() {
