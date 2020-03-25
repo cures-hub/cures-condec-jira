@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jgit.api.BlameCommand;
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.blame.BlameResult;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
@@ -51,7 +50,7 @@ public class GitCodeClassExtractor {
 	    if (repository != null) {
 		TreeWalk treeWalk = new TreeWalk(repository);
 		try {
-		    treeWalk.addTree(getHeadCommit(gitClient.getGit(repoUri)).getTree());
+		    treeWalk.addTree(gitClient.getDefaultBranchCommits(repoUri).get(0).getTree());
 		    treeWalk.setRecursive(false);
 		    while (treeWalk.next()) {
 			if (treeWalk.isSubtree()) {
@@ -127,6 +126,7 @@ public class GitCodeClassExtractor {
 	    Repository repository = gitClient.getGit(repoUri).getRepository();
 	    BlameCommand blamer = new BlameCommand(repository);
 	    blamer.setFilePath(treeWalkPath.get(file));
+	    blamer.setStartCommit(gitClient.getDefaultBranchCommits(repoUri).get(0));
 	    blameResult = blamer.call();
 	    // blameResult =
 	    // gitClient.getGit(repoUri).blame().setFilePath(gitFile.getPath()).call();
@@ -157,18 +157,6 @@ public class GitCodeClassExtractor {
 
     public Integer getNumberOfCodeClasses() {
 	return codeClassListFull.size();
-    }
-
-    private static RevCommit getHeadCommit(Git git) {
-	try {
-	    Iterable<RevCommit> history = git.log().setMaxCount(1).call();
-	    return history.iterator().next();
-	} catch (Exception e) {
-	    System.out.println("Could not get Head Commit");
-	    e.printStackTrace();
-	}
-	return null;
-
     }
 
     public List<File> getCodeClassListFull() {
