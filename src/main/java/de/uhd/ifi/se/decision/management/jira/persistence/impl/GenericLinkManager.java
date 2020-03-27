@@ -25,7 +25,7 @@ import net.java.ao.Query;
  * {@link IssueLinkManager}. If you are not sure whether your link is a Jira
  * issue link or not, use the methods of the {@link KnowledgePersistenceManager}
  * interface.
- * 
+ *
  * @see KnowledgePersistenceManager
  * @see LinkInDatabase
  * @see JiraIssuePersistenceManager
@@ -41,7 +41,7 @@ public class GenericLinkManager {
 	 * {@link JiraIssuePersistenceManager#deleteLink(Link, ApplicationUser)}
 	 * instead. If you are not sure what kind of link it is, use
 	 * {@link KnowledgePersistenceManager#deleteLink(Link, ApplicationUser)}.
-	 * 
+	 *
 	 * @param link
 	 *            (=edge) between a source and a destination decision knowledge
 	 *            element as a {@link Link} object. The link must not be Jira
@@ -68,7 +68,7 @@ public class GenericLinkManager {
 	 * {@link JiraIssuePersistenceManager#deleteLink(Link, ApplicationUser)}. If you
 	 * are not sure what kind of link it is, use
 	 * {@link KnowledgePersistenceManager#deleteLink(Link, ApplicationUser)}.
-	 * 
+	 *
 	 * @param elementId
 	 *            id of the node.
 	 * @param documentationLocation
@@ -92,7 +92,7 @@ public class GenericLinkManager {
 	/**
 	 * Deletes all links (=edges) that do not connect two existing nodes in the
 	 * {@link KnowledgeGraph}.
-	 * 
+	 *
 	 * @return true if at least one link was deleted, false if no link was deleted.
 	 * @see Link#isValid()
 	 * @see LinkInDatabase
@@ -115,7 +115,7 @@ public class GenericLinkManager {
 	 * {@link KnowledgeGraph}, except of Jira issue links. If you want to get the
 	 * Jira {@link IssueLink}s only, use
 	 * {@link JiraIssuePersistenceManager#getLinks(KnowledgeElement)}.
-	 * 
+	 *
 	 * @param element
 	 *            node in the {@link KnowledgeGraph}.
 	 * @return list of {@link} objects, does not contain Jira {@link IssueLink}s.
@@ -123,7 +123,7 @@ public class GenericLinkManager {
 	 *         except of Jira issue links. If you want to get the Jira
 	 *         {@link IssueLink}s only, use
 	 *         {@link JiraIssuePersistenceManager#getLinks(KnowledgeElement)}.
-	 * 
+	 *
 	 * @see KnowledgeElement
 	 */
 	public static List<Link> getLinksForElement(KnowledgeElement element) {
@@ -138,7 +138,7 @@ public class GenericLinkManager {
 	 * {@link KnowledgeGraph}, except of Jira issue links. If you want to get the
 	 * Jira {@link IssueLink}s only, use
 	 * {@link JiraIssuePersistenceManager#getLinks(KnowledgeElement)}.
-	 * 
+	 *
 	 * @param elementId
 	 *            id of the node.
 	 * @param documentationLocation
@@ -146,7 +146,7 @@ public class GenericLinkManager {
 	 * @return list of {@link} objects, does not contain Jira {@link IssueLink}s.
 	 *         (=edges) between all kinds of nodes in the {@link KnowledgeGraph},
 	 *         except of Jira issue links.
-	 * 
+	 *
 	 * @see KnowledgeElement
 	 */
 	public static List<Link> getLinksForElement(long elementId, DocumentationLocation documentationLocation) {
@@ -170,7 +170,7 @@ public class GenericLinkManager {
 	 * {@link KnowledgeGraph}, except of Jira issue links. If you want to get the
 	 * Jira {@link IssueLink}s only, use
 	 * {@link JiraIssuePersistenceManager#getOutwardLinks(KnowledgeElement)}.
-	 * 
+	 *
 	 * @param element
 	 *            node in the {@link KnowledgeGraph}.
 	 * @return list of {@link} objects, does not contain Jira {@link IssueLink}s.
@@ -178,7 +178,7 @@ public class GenericLinkManager {
 	 *         except of Jira issue links. If you want to get the Jira
 	 *         {@link IssueLink}s only, use
 	 *         {@link JiraIssuePersistenceManager#getLinks(KnowledgeElement)}.
-	 * 
+	 *
 	 * @see KnowledgeElement
 	 */
 	public static List<Link> getOutwardLinks(KnowledgeElement element) {
@@ -199,7 +199,7 @@ public class GenericLinkManager {
 	 * except of Jira issue links. If you want to get the Jira {@link IssueLink}s
 	 * only, use
 	 * {@link JiraIssuePersistenceManager#getOutwardLinks(KnowledgeElement)}.
-	 * 
+	 *
 	 * @param element
 	 *            node in the {@link KnowledgeGraph}.
 	 * @return list of {@link} objects, does not contain Jira {@link IssueLink}s.
@@ -207,7 +207,7 @@ public class GenericLinkManager {
 	 *         except of Jira issue links. If you want to get the Jira
 	 *         {@link IssueLink}s only, use
 	 *         {@link JiraIssuePersistenceManager#getLinks(KnowledgeElement)}.
-	 * 
+	 *
 	 * @see KnowledgeElement
 	 */
 	public static List<Link> getInwardLinks(KnowledgeElement element) {
@@ -266,7 +266,7 @@ public class GenericLinkManager {
 
 	/**
 	 * Returns the link id if the link already exists in database, otherwise -1.
-	 * 
+	 *
 	 * @param link
 	 *            {@link Link} object. The link must not be a Jira
 	 *            {@link IssueLink}.
@@ -285,7 +285,7 @@ public class GenericLinkManager {
 
 	/**
 	 * Returns the {@link LinkInDatabase} object of a {@link Link} object.
-	 * 
+	 *
 	 * @param link
 	 *            {@link Link} object.
 	 * @return {@link LinkInDatabase} object.

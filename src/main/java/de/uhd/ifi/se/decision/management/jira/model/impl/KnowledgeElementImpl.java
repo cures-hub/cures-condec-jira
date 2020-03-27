@@ -6,26 +6,19 @@ import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.user.ApplicationUser;
-
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassElementInDatabase;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  * Model class for knowledge elements
@@ -50,7 +43,7 @@ public class KnowledgeElementImpl implements KnowledgeElement {
 	}
 
 	public KnowledgeElementImpl(long id, String summary, String description, KnowledgeType type, String projectKey,
-			String key, DocumentationLocation documentationLocation, KnowledgeStatus status) {
+								String key, DocumentationLocation documentationLocation, KnowledgeStatus status) {
 		this.id = id;
 		this.summary = summary;
 		this.description = description;
@@ -69,14 +62,14 @@ public class KnowledgeElementImpl implements KnowledgeElement {
 	}
 
 	public KnowledgeElementImpl(long id, String summary, String description, String type, String projectKey, String key,
-			String documentationLocation, String status) {
+								String documentationLocation, String status) {
 		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key,
 				DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation),
 				KnowledgeStatus.getKnowledgeStatus(status));
 	}
 
 	public KnowledgeElementImpl(long id, String summary, String description, String type, String projectKey, String key,
-			DocumentationLocation documentationLocation, String status) {
+								DocumentationLocation documentationLocation, String status) {
 		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key, documentationLocation,
 				KnowledgeStatus.getKnowledgeStatus(status));
 	}
@@ -98,6 +91,19 @@ public class KnowledgeElementImpl implements KnowledgeElement {
 			// TODO Manage status for decision knowledge elements stored as entire Jira
 			// issues
 			this.status = KnowledgeStatus.RESOLVED;
+		}
+	}
+
+	public KnowledgeElementImpl(CodeClassElementInDatabase entry) {
+		if (entry != null) {
+			this.id = entry.getId();
+			this.summary = entry.getFileName();
+			this.description = entry.getJiraIssueKeys();
+			this.type = KnowledgeType.getKnowledgeType(null);
+			this.project = new DecisionKnowledgeProjectImpl(entry.getProjectKey());
+			this.key = entry.getProjectKey() + "-" + entry.getId();
+			this.documentationLocation = DocumentationLocation.COMMIT;
+			this.status = KnowledgeStatus.getKnowledgeStatus(null);
 		}
 	}
 

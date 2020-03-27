@@ -6,25 +6,14 @@ import java.util.Map;
 
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.user.ApplicationUser;
-
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgePersistenceManagerImpl;
+import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.*;
 
 /**
  * Interface that integrates all available persistence managers for single
  * documentation locations for a given project. Responsible to create, edit,
  * delete and retrieve decision knowledge elements and their links.
- * 
+ *
  * @see AbstractPersistenceManagerForSingleLocation
  * @see JiraIssuePersistenceManager
  * @see JiraIssueTextPersistenceManager
@@ -35,25 +24,23 @@ public interface KnowledgePersistenceManager {
 	 * Map of persistence manager instances that are identified by the project key.
 	 * Use the {@link KnowledgePersistenceManager#getOrCreate()} method to either
 	 * create or retrieve an existing object
-	 * 
+	 *
 	 * @issue How can we reuse existing objects instead of recreating them all the
-	 *        time?
+	 * time?
 	 * @decision Use a map of project keys and respective objects to reuse existing
-	 *           objects instead of recreating them all the time! Use the
-	 *           getOrCreate() method to either create or retrieve an existing
-	 *           object!
+	 * objects instead of recreating them all the time! Use the
+	 * getOrCreate() method to either create or retrieve an existing
+	 * object!
 	 */
 	static Map<String, KnowledgePersistenceManager> instances = new HashMap<String, KnowledgePersistenceManager>();
 
 	/**
 	 * Retrieves an existing PersistenceManager instance or creates a new instance
 	 * if there is no instance for the given project key.
-	 * 
-	 * @param projectKey
-	 *            of the Jira project that this persistence manager is responsible
-	 *            for.
+	 *
+	 * @param projectKey of the Jira project that this persistence manager is responsible
+	 *                   for.
 	 * @return either a new or already existing PersistenceManager instance.
-	 * 
 	 * @see DecisionKnowledgeProject
 	 */
 	static KnowledgePersistenceManager getOrCreate(String projectKey) {
@@ -78,7 +65,7 @@ public interface KnowledgePersistenceManager {
 	/**
 	 * Returns the key of the project that this persistence manager is responsible
 	 * for.
-	 * 
+	 *
 	 * @return key of the Jira project as a string.
 	 * @see DecisionKnowledgeProject
 	 */
@@ -96,11 +83,9 @@ public interface KnowledgePersistenceManager {
 	/**
 	 * Deletes an existing decision knowledge element in database.
 	 *
-	 * @param element
-	 *            decision knowledge element with id in database and the
-	 *            {@link DocumentationLocation} set.
-	 * @param user
-	 *            authenticated Jira {@link ApplicationUser}.
+	 * @param element decision knowledge element with id in database and the
+	 *                {@link DocumentationLocation} set.
+	 * @param user    authenticated Jira {@link ApplicationUser}.
 	 * @return true if deleting was successful.
 	 * @see KnowledgeElement
 	 */
@@ -109,10 +94,8 @@ public interface KnowledgePersistenceManager {
 	/**
 	 * Update an existing decision knowledge element in database.
 	 *
-	 * @param element
-	 *            decision knowledge element with id in database.
-	 * @param user
-	 *            authenticated Jira {@link ApplicationUser}.
+	 * @param element decision knowledge element with id in database.
+	 * @param user    authenticated Jira {@link ApplicationUser}.
 	 * @return true if updating was successful.
 	 * @see KnowledgeElement
 	 */
@@ -121,13 +104,11 @@ public interface KnowledgePersistenceManager {
 	/**
 	 * Inserts a new decision knowledge element into database.
 	 *
-	 * @param element
-	 *            decision knowledge element with attributes such as a summary, the
-	 *            knowledge type, and an optional description.
-	 * @param user
-	 *            authenticated Jira {@link ApplicationUser}.
+	 * @param element decision knowledge element with attributes such as a summary, the
+	 *                knowledge type, and an optional description.
+	 * @param user    authenticated Jira {@link ApplicationUser}.
 	 * @return decision knowledge element that is now filled with an internal
-	 *         database id and key. Returns null if insertion failed.
+	 * database id and key. Returns null if insertion failed.
 	 * @see KnowledgeElement
 	 */
 	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user);
@@ -135,31 +116,26 @@ public interface KnowledgePersistenceManager {
 	/**
 	 * Inserts a new decision knowledge element into database.
 	 *
-	 * @param element
-	 *            decision knowledge element with attributes such as a summary, the
-	 *            knowledge type, and an optional description.
-	 * @param parentElement
-	 *            (optional) decision knowledge element that is the parent of this
-	 *            element. The parent element is necessary for decision knowledge
-	 *            stored in JIRA issue description and comments.
-	 * @param user
-	 *            authenticated Jira {@link ApplicationUser}.
+	 * @param element       decision knowledge element with attributes such as a summary, the
+	 *                      knowledge type, and an optional description.
+	 * @param parentElement (optional) decision knowledge element that is the parent of this
+	 *                      element. The parent element is necessary for decision knowledge
+	 *                      stored in JIRA issue description and comments.
+	 * @param user          authenticated Jira {@link ApplicationUser}.
 	 * @return decision knowledge element that is now filled with an internal
-	 *         database id and key. Returns null if insertion failed.
+	 * database id and key. Returns null if insertion failed.
 	 * @see KnowledgeElement
 	 */
 	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user,
-			KnowledgeElement parentElement);
+														   KnowledgeElement parentElement);
 
 	/**
 	 * Inserts a new link into database. The link can be between any kinds of nodes
 	 * in the {@link KnowledgeGraph}.
 	 *
-	 * @param link
-	 *            link (=edge) between a source and a destination decision knowledge
-	 *            element as a {@link Link} object.
-	 * @param user
-	 *            authenticated Jira {@link ApplicationUser}.
+	 * @param link link (=edge) between a source and a destination decision knowledge
+	 *             element as a {@link Link} object.
+	 * @param user authenticated Jira {@link ApplicationUser}.
 	 * @return internal database id of inserted link, zero if insertion failed.
 	 */
 	long insertLink(Link link, ApplicationUser user);
@@ -167,15 +143,12 @@ public interface KnowledgePersistenceManager {
 	/**
 	 * Inserts a new link into database.
 	 *
+	 * @param childElement  a decision knowledge element that is on one end of the link.
+	 * @param parentElement a decision knowledge element that is on one end of the link.
+	 * @param user          authenticated Jira {@link ApplicationUser}.
+	 * @return internal database id of inserted link, zero if insertion failed.
 	 * @see KnowledgeElement
 	 * @see LinkType
-	 * @param childElement
-	 *            a decision knowledge element that is on one end of the link.
-	 * @param parentElement
-	 *            a decision knowledge element that is on one end of the link.
-	 * @param user
-	 *            authenticated Jira {@link ApplicationUser}.
-	 * @return internal database id of inserted link, zero if insertion failed.
 	 */
 	long insertLink(KnowledgeElement parentElement, KnowledgeElement childElement, ApplicationUser user);
 
@@ -183,35 +156,27 @@ public interface KnowledgePersistenceManager {
 	 * Updates an existing link in database. The link can be between any kinds of
 	 * nodes in the {@link KnowledgeGraph}.
 	 *
-	 * @param element
-	 *            child element of the link with the new knowledge type.
-	 * @param formerKnowledgeType
-	 *            former knowledge type of the child element before it was updated.
-	 * @param idOfParentElement
-	 *            id of the parent element.
-	 * @param documentationLocationOfParentElement
-	 *            {@link DocumentationLocation} of the parent element.
-	 * @param user
-	 *            authenticated Jira {@link ApplicationUser}.
+	 * @param element                              child element of the link with the new knowledge type.
+	 * @param formerKnowledgeType                  former knowledge type of the child element before it was updated.
+	 * @param idOfParentElement                    id of the parent element.
+	 * @param documentationLocationOfParentElement {@link DocumentationLocation} of the parent element.
+	 * @param user                                 authenticated Jira {@link ApplicationUser}.
 	 * @return internal database id of updated link, zero if updating failed.
-	 * 
 	 * @see KnowledgeElement
 	 * @see KnowledgeType
 	 * @see DocumentationLocation
 	 * @see Link
 	 */
 	long updateLink(KnowledgeElement element, KnowledgeType formerKnowledgeType, long idOfParentElement,
-			String documentationLocationOfParentElement, ApplicationUser user);
+					String documentationLocationOfParentElement, ApplicationUser user);
 
 	/**
 	 * Deletes an existing link in database. The link can be between any kinds of
 	 * nodes in the {@link KnowledgeGraph}.
 	 *
-	 * @param link
-	 *            link (=edge) between a source and a destination decision knowledge
-	 *            element as a {@link Link} object.
-	 * @param user
-	 *            authenticated Jira {@link ApplicationUser}.
+	 * @param link link (=edge) between a source and a destination decision knowledge
+	 *             element as a {@link Link} object.
+	 * @param user authenticated Jira {@link ApplicationUser}.
 	 * @return true if deletion was successful.
 	 */
 	boolean deleteLink(Link link, ApplicationUser user);
@@ -220,10 +185,9 @@ public interface KnowledgePersistenceManager {
 	 * Gets all links where the knowledge element is either the source or the
 	 * destination element.
 	 *
-	 * @param element
-	 *            knowledge element with id in database.
+	 * @param element knowledge element with id in database.
 	 * @return list of links where the given knowledge element is either the source
-	 *         or the destination element.
+	 * or the destination element.
 	 * @see Link
 	 */
 	public List<Link> getLinks(KnowledgeElement element);
@@ -232,12 +196,11 @@ public interface KnowledgePersistenceManager {
 	 * Returns the database id of a link object (either a Jira issue link or a
 	 * generic link). Returns a value <= 0 if the link is not existing in one of
 	 * these databases.
-	 * 
-	 * @param link
-	 *            {@link Link} object.
+	 *
+	 * @param link {@link Link} object.
 	 * @return database id of a link object (either a Jira issue link or a generic
-	 *         link). Returns a value <= 0 if the link is not existing in one of
-	 *         these databases.
+	 * link). Returns a value <= 0 if the link is not existing in one of
+	 * these databases.
 	 * @see GenericLinkManager
 	 * @see IssueLink
 	 */
@@ -257,10 +220,9 @@ public interface KnowledgePersistenceManager {
 	/**
 	 * Returns the persistence manager for a single documentation location that uses
 	 * Jira issue comments or the description to store decision knowledge.
-	 * 
+	 *
 	 * @return persistence manager that uses Jira issue comments or the description
-	 *         to store decision knowledge.
-	 * 
+	 * to store decision knowledge.
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
 	JiraIssueTextPersistenceManager getJiraIssueTextManager();
@@ -268,10 +230,9 @@ public interface KnowledgePersistenceManager {
 	/**
 	 * Returns the persistence manager for a single documentation location that uses
 	 * entire Jira issues with specific types to store decision knowledge.
-	 * 
+	 *
 	 * @return persistence manager that uses entire Jira issues with specific types
-	 *         to store decision knowledge.
-	 * 
+	 * to store decision knowledge.
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
 	JiraIssuePersistenceManager getJiraIssueManager();
@@ -279,11 +240,10 @@ public interface KnowledgePersistenceManager {
 	/**
 	 * Returns the persistence manager for a single documentation location.
 	 *
-	 * @param documentationLocation
-	 *            of knowledge.
+	 * @param documentationLocation of knowledge.
 	 * @return persistence manager associated to a documentation location. Returns
-	 *         the default persistence manager in case the documentation location
-	 *         cannot be found.
+	 * the default persistence manager in case the documentation location
+	 * cannot be found.
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
 	AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(
@@ -293,12 +253,11 @@ public interface KnowledgePersistenceManager {
 	 * Gets the persistence manager for a single documentation location by the
 	 * identifier of the location.
 	 *
-	 * @param documentationLocationIdentifier
-	 *            String identifier indicating the documentation location of
-	 *            knowledge (e.g., i for Jira issue).
+	 * @param documentationLocationIdentifier String identifier indicating the documentation location of
+	 *                                        knowledge (e.g., i for Jira issue).
 	 * @return persistence manager associated to a documentation location. Returns
-	 *         the default persistence manager in case the documentation location
-	 *         cannot be found.
+	 * the default persistence manager in case the documentation location
+	 * cannot be found.
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
 	AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(String documentationLocationIdentifier);
@@ -306,12 +265,11 @@ public interface KnowledgePersistenceManager {
 	/**
 	 * Get the persistence manager of a given decision knowledge elements.
 	 *
-	 * @param element
-	 *            decision knowledge element with project and documentation
-	 *            location.
+	 * @param element decision knowledge element with project and documentation
+	 *                location.
 	 * @return persistence manager of a given decision knowledge elements. Returns
-	 *         the default persistence manager in case the documentation location of
-	 *         the element cannot be found.
+	 * the default persistence manager in case the documentation location of
+	 * the element cannot be found.
 	 * @see AbstractPersistenceManagerForSingleLocation
 	 */
 	static AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(KnowledgeElement element) {
@@ -326,10 +284,8 @@ public interface KnowledgePersistenceManager {
 	 * Gets a decision knowledge element in database by its id and its documentation
 	 * location.
 	 *
-	 * @param id
-	 *            id of the decision knowledge element in database.
-	 * @param documentationLocation
-	 *            of the element.
+	 * @param id                    id of the decision knowledge element in database.
+	 * @param documentationLocation of the element.
 	 * @return decision knowledge element or null if it is not found.
 	 * @see KnowledgeElement
 	 * @see DocumentationLocation
@@ -340,11 +296,9 @@ public interface KnowledgePersistenceManager {
 	 * Gets a decision knowledge element in database by its id and its documentation
 	 * location.
 	 *
-	 * @param id
-	 *            id of the decision knowledge element in database.
-	 * @param documentationLocation
-	 *            identifier of the {@link DocumentationLocation} of the element,
-	 *            e.g., "i" for Jira issue.
+	 * @param id                    id of the decision knowledge element in database.
+	 * @param documentationLocation identifier of the {@link DocumentationLocation} of the element,
+	 *                              e.g., "i" for Jira issue.
 	 * @return decision knowledge element or null if it is not found.
 	 * @see KnowledgeElement
 	 */
