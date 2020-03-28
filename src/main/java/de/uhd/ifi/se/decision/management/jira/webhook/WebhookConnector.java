@@ -74,7 +74,9 @@ public class WebhookConnector {
 			return isSubmitted;
 	  }
 		if(this.receiver == "Slack"){
+			System.out.println("sendElementChanges, receiver : Slack, Element:"+changedElement.getSummary());
 			isSubmitted = postKnowledgeElement(changedElement);
+			System.out.println(isSubmitted);
 			return isSubmitted;
 		}
 		return false;
@@ -133,12 +135,13 @@ public class WebhookConnector {
 	}
 
 	private boolean postKnowledgeTree(KnowledgeElement rootElement) {
-		WebhookContentProvider provider = new WebhookContentProvider(projectKey, rootElement.getKey(), secret, receiver);
+		WebhookContentProvider provider = new WebhookContentProvider(projectKey, rootElement, secret, receiver);
 		PostMethod postMethod = provider.createPostMethod();
 
 		try {
 			HttpClient httpClient = new HttpClient();
 			postMethod.setURI(new HttpsURL(url));
+			System.out.println(postMethod.toString());
 			int httpResponse = httpClient.executeMethod(postMethod);
 			if (httpResponse >= 200 && httpResponse < 300) {
 				return true;
@@ -151,24 +154,17 @@ public class WebhookConnector {
 	}
 	private boolean postKnowledgeElement(KnowledgeElement changedElement) {
 		System.out.println("postKnowledgeElement");
-		WebhookContentProvider provider = new WebhookContentProvider(projectKey, changedElement.getKey(), secret, receiver);
-		String postMethod = provider.createPostMethodforSlack(changedElement);
-		postMethod += " "+ this.url;
-		System.out.println(postMethod);
+		WebhookContentProvider provider = new WebhookContentProvider(projectKey, changedElement, secret, receiver);
+		PostMethod postMethod = provider.createPostMethodforSlack(changedElement);
+		System.out.println(postMethod.toString());
 		try {
-
-			Process process = Runtime.getRuntime().exec(postMethod);
-			BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
-			//System.out.println(input.readLine());
-			String line = null;
-			if((line = input.readLine()) != "ok")
-			{
-				//System.out.println(line);
-				throw new IllegalArgumentException(line);
-			}
-			else{
+			HttpClient httpClient = new HttpClient();
+			postMethod.setURI(new HttpsURL(url));
+			int httpResponse = httpClient.executeMethod(postMethod);
+			if (httpResponse >= 200 && httpResponse < 300) {
 				return true;
 			}
+			LOGGER.error("Could not send webhook data. The HTTP response code is: " + httpResponse);
 			//LOGGER.error("Could not send webhook data. The HTTP response code is: " + process);
 		} catch (IOException | IllegalArgumentException e) {
 			LOGGER.error("Could not send webhook data because of " + e.getMessage());

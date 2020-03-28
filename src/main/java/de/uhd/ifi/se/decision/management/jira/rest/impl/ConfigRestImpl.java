@@ -17,6 +17,14 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpsURL;
+import org.apache.commons.httpclient.methods.PostMethod;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -309,10 +317,30 @@ public class ConfigRestImpl implements ConfigRest {
     @POST
     public Response sendCurltoSlack(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
       //System.out.println(projectKey);
-      String command = "curl -X POST -H 'Content-type:application/json'"+
+      /*String command = "curl -X POST -H 'Content-type:application/json'"+
        " --data \"{'text':'Jira here. Test Post!'}\" "+
-       ConfigPersistenceManager.getWebhookUrl(projectKey);
+       ConfigPersistenceManager.getWebhookUrl(projectKey);*/
+       String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'TESTPOST, geändertes Entscheidungswissen wird in dieser Form erscheinen:'}},"+
+   		"{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :issue: : Issue" +
+   		" \\n *Titel*: Test-Zusammenfassung \\n'}}]}";
+
+       PostMethod postMethod = new PostMethod();
+       Header header = new Header();
+   	   header.setName("X-Hub-Signature");
+       postMethod.setRequestHeader(header);
       try{
+        StringRequestEntity sRE = new StringRequestEntity(data, "application/json", "UTF-8");
+        postMethod.setRequestEntity(sRE);
+
+        HttpClient httpClient = new HttpClient();
+        postMethod.setURI(new HttpsURL(ConfigPersistenceManager.getWebhookUrl(projectKey)));
+
+        int httpResponse = httpClient.executeMethod(postMethod);
+  			if (httpResponse >= 200 && httpResponse < 300) {
+  				System.out.println("httpPequest ok");
+  			}
+
+/*
         Process process = Runtime.getRuntime().exec(command);
         BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
         //System.out.println(input.readLine());
@@ -323,7 +351,7 @@ public class ConfigRestImpl implements ConfigRest {
           System.out.println(line);
           res += line;
         }
-
+*/
 
       } catch (IOException | IllegalArgumentException e) {
         LOGGER.error("Could not send webhook data because of " + e.getMessage());

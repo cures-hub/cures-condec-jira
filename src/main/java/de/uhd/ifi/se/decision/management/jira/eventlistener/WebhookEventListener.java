@@ -32,7 +32,7 @@ public class WebhookEventListener {
 			LOGGER.info("WebhookListerner sendetElementchange"+ decisionKnowledgeElement.getSummary());
 			//System.out.println("WebhookListerner sendetElementchange"+ decisionKnowledgeElement.getSummary());
 			WebhookConnector connector = new WebhookConnector(projectKey);
-				System.out.println("gehe zu  WebhookConnector:" +projectKey);
+				System.out.println("EventListener: gehe zu  WebhookConnector:" +projectKey);
 			connector.sendElementChanges(decisionKnowledgeElement);
 		}
 		if (eventTypeId == EventType.ISSUE_DELETED_ID) {

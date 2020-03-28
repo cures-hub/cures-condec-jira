@@ -41,6 +41,7 @@ public class WebhookContentProvider {
 		this.rootElementKey = elementKey;
 		this.secret = secret;
 		this.receiver = receiver;
+
 	}
 
 	public WebhookContentProvider(String projectKey, KnowledgeElement knowledgeElement, String secret, String receiver) {
@@ -59,12 +60,21 @@ public class WebhookContentProvider {
 	public PostMethod createPostMethod() {
 		PostMethod postMethod = new PostMethod();
 		if (projectKey == null || rootElementKey == null || secret == null|| receiver == null) {
+				System.out.println("createPostMethod null");
 			return postMethod;
 		}
 		String webhookData = "";
 		if(receiver == "Other"){
 			LOGGER.info("receiver:  Other");
+			System.out.println("createPostMethod:receiver= other");
 			webhookData = createWebhookData();
+
+		}
+		if(receiver == "Slack"){
+			LOGGER.info("receiver:  Slack");
+			System.out.println("createPostMethod:receiver= slack");
+			webhookData = createWebhookDataforSlack(this.knowledgeElement);
+			System.out.println(webhookData);
 		}
 		try {
 			StringRequestEntity requestEntity = new StringRequestEntity(webhookData, "application/json", "UTF-8");
@@ -91,27 +101,11 @@ public class WebhookContentProvider {
 		return "{\"issueKey\": \"" + this.rootElementKey + "\", \"ConDecTree\": " + treantAsJson + "}";
 	}
 
-	/**
-	 * Creates the key value JSON String transmitted via webhook for Slack.
-	 *(Differences: "text", mask \ and ")
-	 * @return JSON String with the following pattern: {"text": " \"issueKey\": {String},
-	 *         \"ConDecTree\": {TreantJS JSON config and data} " }
-	 */
-	public String createPostMethodforSlack(KnowledgeElement changedElement) {
-		System.out.println("Create Data for slack webhook");
-		if (projectKey == null || rootElementKey == null || receiver == null) {
-			return null;
+	private String createWebhookDataforSlack(KnowledgeElement changedElement) {
+		if(changedElement == null){
+			return "";
 		}
-/*
-		String data =  "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'Folgendes Entscheidungswissen wurde angepasst \n hardgecodete Angaben, Link: google.com'}},{'type':'divider'},{'type':'section','text':{'type':'mrkdwn','text':'*Typ:*:"
-			+ knowledgeElement.getTypeAsString() +  ": "
-			+ knowledgeElement.getTypeAsString() +  "\n *Titel*:"
-			+ knowledgeElement.getSummary() + "\n'},'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url':'https://jira-se.ifi.uni-heidelberg.de/projects/"
-			+ knowledgeElement.getProject() +"/"
-			+knowledgeElement.getKey() +"'}}]}";
-		System.out.println(data);
-		*/
-		String summary = changedElement.getSummary();
+		String summary = knowledgeElement.getSummary();
 		System.out.println("Summary is now: "+summary);
 
 		if( summary.contains("{")){
@@ -119,17 +113,82 @@ public class WebhookContentProvider {
 			summary = cutSummary(changedElement.getSummary());
 			System.out.println("Summary is now: "+summary);
 		}
-
 		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'Folgendes Entscheidungswissen wurde angepasst'}},"+
-		"{'type':'divider'},{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :"+ changedElement.getType() + ": : " + changedElement.getType() +
+		"{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :"+ changedElement.getType() + ": : " + changedElement.getType() +
 		" \\n *Titel*: " + summary + "\\n'},"+
-		"'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url':'"+ changedElement.getUrl() +"'}}]}";
+		"'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '"+changedElement.getUrl()+"'}}]}";
+		System.out.println("createPostMethod: data"+data);
 
-		String command = "curl -X POST -H 'Content-type:application/json' --data  \""+
-											data +
-											"\"";
-		return command;
+		return data;
 	}
+	/**
+	 * Creates the key value JSON String transmitted via webhook for Slack.
+	 *(Differences: "text", mask \ and ")
+	 * @return JSON String with the following pattern: {"text": " \"issueKey\": {String},
+	 *         \"ConDecTree\": {TreantJS JSON config and data} " }
+	 */
+	public PostMethod createPostMethodforSlack1(KnowledgeElement changedElement) {
+		System.out.println("Create Data for slack webhook");
+		PostMethod postMethod = new PostMethod();
+		if (projectKey == null || rootElementKey == null || receiver == null) {
+			return null;
+		}
+
+			String summary = changedElement.getSummary();
+			System.out.println("Summary is now: "+summary);
+
+			if(summary.contains("{")){
+					System.out.println("Summary contains {.");
+					summary = cutSummary(changedElement.getSummary());
+					System.out.println("Summary is now: "+summary);
+			}
+			String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'Folgendes Entscheidungswissen wurde angepasst'}},"+
+						"{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :"+ changedElement.getType() + ": : " + changedElement.getType() +
+						" \\n *Titel*: " + summary + "\\n'},"+
+						"'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url':'"+"'}}]}";
+			try {
+						StringRequestEntity requestEntity = new StringRequestEntity(data, "application/json", "UTF-8");
+						postMethod.setRequestEntity(requestEntity);
+			} catch (UnsupportedEncodingException e) {
+						LOGGER.error("Creating the post method failed. Message: " + e.getMessage());
+			}
+			Header header = new Header();
+			header.setName("X-Hub-Signature");
+
+			postMethod.setRequestHeader(header);
+			return postMethod;
+}
+	public PostMethod createPostMethodforSlack(KnowledgeElement changedElement) {
+		PostMethod postMethod = new PostMethod();
+		if (projectKey == null || rootElementKey == null || secret == null|| receiver == null) {
+				System.out.println("createPostMethod null");
+			return postMethod;
+		}
+		String webhookData = "";
+		if(receiver == "Other"){
+			LOGGER.info("receiver:  Other");
+			System.out.println("createPostMethodForSlack:receiver= other");
+			return createPostMethod();
+
+		}
+		if(receiver == "Slack"){
+			LOGGER.info("receiver:  Slack");
+			System.out.println("createPostMethodForSlack:receiver= slack");
+			webhookData = createWebhookDataforSlack(changedElement);
+			System.out.println(webhookData);
+		}
+		try {
+			StringRequestEntity requestEntity = new StringRequestEntity(webhookData, "application/json", "UTF-8");
+			postMethod.setRequestEntity(requestEntity);
+		} catch (UnsupportedEncodingException e) {
+			LOGGER.error("Creating the post method failed. Message: " + e.getMessage());
+		}
+		Header header = new Header();
+		header.setName("X-Hub-Signature");
+		postMethod.setRequestHeader(header);
+		return postMethod;
+	}
+
 /*
 {'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'Folgendes Entscheidungswissen wurde angepasst'}},
 {'type':'divider'},{'type':'section','text':{'type':'mrkdwn','text':'*Typ:*:issue: knowledgetype \n *Titel*: summary\n'},
