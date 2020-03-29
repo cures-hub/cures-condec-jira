@@ -152,10 +152,12 @@ public class WebhookConnector {
 		}
 		return false;
 	}
+
+
 	private boolean postKnowledgeElement(KnowledgeElement changedElement) {
 		System.out.println("postKnowledgeElement");
 		WebhookContentProvider provider = new WebhookContentProvider(projectKey, changedElement, secret, receiver);
-		PostMethod postMethod = provider.createPostMethodforSlack(changedElement);
+		PostMethod postMethod = provider.createPostMethodForSlack(changedElement);
 		System.out.println(postMethod.toString());
 		try {
 			HttpClient httpClient = new HttpClient();

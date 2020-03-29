@@ -18,35 +18,75 @@ public class TestWebhookContentProvider extends TestSetUp {
 	}
 
 	@Test
-	public void testCreatePostMethodForMissingProjectKeyAndMissingElementKeyAndMissingSecret() {
+	public void testCreatePostMethodForMissingProjectKeyAndMissingElementKeyAndMissingSecretAndMissingReceiver() {
 		WebhookContentProvider provider = new WebhookContentProvider(null, (String) null, null, null);
 		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
-	public void testCreatePostMethodForMissingProjectKeyAndMissingElementKeyAndProvidedSecret() {
+	public void testCreatePostMethodForMissingProjectKeyAndMissingElementKeyAndProvidedSecretAndMissingReceiver() {
 		WebhookContentProvider provider = new WebhookContentProvider(null, (String) null, "1234IamASecretKey", null);
 		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
-	public void testCreatePostMethodForMissingProjectKeyAndProvidedElementKeyAndMissingSecret() {
+	public void testCreatePostMethodForMissingProjectKeyAndProvidedElementKeyAndMissingSecretAndMissingReceiver() {
 		WebhookContentProvider provider = new WebhookContentProvider(null, "TEST-14", null, null);
 		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
-	public void testCreatePostMethodForProvidedProjectKeyAndMissingElementKeyAndMissingSecret() {
+	public void testCreatePostMethodForProvidedProjectKeyAndMissingElementKeyAndMissingSecretAndMissingReceiver() {
 		WebhookContentProvider provider = new WebhookContentProvider("TEST", (String) null, null, null);
 		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
 	@NonTransactional
-	public void testCreatePostMethodForProvidedProjectKeyAndProvidedElementKeyAndProvidedSecret() {
+	public void testCreatePostMethodForProvidedProjectKeyAndProvidedElementKeyAndProvidedSecretAndOtherReceiver() {
 		WebhookContentProvider provider = new WebhookContentProvider("TEST", "TEST-14", "1234IamASecretKey", "Other");
 		assertNotNull(provider.createPostMethod().getRequestEntity());
 	}
+
+	@Test
+	@NonTransactional
+	public void testCreatePostMethodForSlackForMissingProjectKeyAndMissingElementKeyAndMissingSecretAndSlackReceiver() {
+		WebhookContentProvider provider = new WebhookContentProvider(null, (String) null, null, "Slack");
+		assertNull(provider.createPostMethodForSlack().getRequestEntity());
+	}
+
+	@Test
+	@NonTransactional
+	public void testCreatePostMethodForSlackForProvidedProjectKeyAndMissingElementKeyAndMissingSecretAndSlackReceiver() {
+		WebhookContentProvider provider = new WebhookContentProvider("TEST", (String) null, null, "Slack");
+		assertNull(provider.createPostMethodForSlack().getRequestEntity());
+	}
+
+	@Test
+	@NonTransactional
+	public void testCreatePostMethodForSlackForProvidedProjectKeyAndProvidedElementKeyAndMissingSecretAndSlackReceiver() {
+		WebhookContentProvider provider = new WebhookContentProvider("TEST", "TEST-14", null, "Slack");
+		assertNull(provider.createPostMethodForSlack().getRequestEntity());
+	}
+
+
+/*
+  // Static method problem here.
+	@Test
+	@NonTransactional
+	public void testCutSummaryRegularSummary() {
+		String cutSummary = WebhookContentProvider.cutSummary("Summary ohne geschwiete Klammern pro con issue");
+		assertEquals("Summary ohne geschwiete Klammern pro con issue", cutSummary);
+	}
+
+	@Test
+	@NonTransactional
+	public void testCutSummarycriticalSummary() {
+		String summary = "{pro} Summary mit geschwiete Klammern {pro} {con} {issue}";
+		String cutSummary = 	WebhookContentProvider.cutSummary(summary);
+		assertEquals(" Summary mit geschwiete Klammern   ",	cutSummary);
+	}
+*/
 
 	@Test
 	public void testCreateHashedPayload() {

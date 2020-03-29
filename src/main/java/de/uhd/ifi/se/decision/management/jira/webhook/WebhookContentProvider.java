@@ -73,7 +73,7 @@ public class WebhookContentProvider {
 		if(receiver == "Slack"){
 			LOGGER.info("receiver:  Slack");
 			System.out.println("createPostMethod:receiver= slack");
-			webhookData = createWebhookDataforSlack(this.knowledgeElement);
+			webhookData = createWebhookDataForSlack(this.knowledgeElement);
 			System.out.println(webhookData);
 		}
 		try {
@@ -101,8 +101,8 @@ public class WebhookContentProvider {
 		return "{\"issueKey\": \"" + this.rootElementKey + "\", \"ConDecTree\": " + treantAsJson + "}";
 	}
 
-	private String createWebhookDataforSlack(KnowledgeElement changedElement) {
-		if(changedElement == null){
+	private String createWebhookDataForSlack(KnowledgeElement changedElement) {
+		if(changedElement == null|| changedElement.getSummary() == null|| changedElement.getType() == null || changedElement.getUrl() == null){
 			return "";
 		}
 		String summary = knowledgeElement.getSummary();
@@ -121,13 +121,21 @@ public class WebhookContentProvider {
 
 		return data;
 	}
+
+
+		public PostMethod createPostMethodForSlack(){
+			if(knowledgeElement == null ){
+				return new PostMethod();
+			}
+			return createPostMethodForSlack(this.knowledgeElement);
+		}
 	/**
 	 * Creates the key value JSON String transmitted via webhook for Slack.
 	 *(Differences: "text", mask \ and ")
 	 * @return JSON String with the following pattern: {"text": " \"issueKey\": {String},
 	 *         \"ConDecTree\": {TreantJS JSON config and data} " }
 	 */
-	public PostMethod createPostMethodforSlack(KnowledgeElement changedElement) {
+	public PostMethod createPostMethodForSlack(KnowledgeElement changedElement) {
 		PostMethod postMethod = new PostMethod();
 		if (projectKey == null || changedElement == null || receiver == null) {
 				System.out.println("createPostMethod null");
@@ -142,9 +150,12 @@ public class WebhookContentProvider {
 		}
 		if(receiver == "Slack"){
 			LOGGER.info("receiver:  Slack");
-			System.out.println("createPostMethodForSlack:receiver= slack");
-			webhookData = createWebhookDataforSlack(changedElement);
-			System.out.println(webhookData);
+			//System.out.println("createPostMethodForSlack:receiver= slack");
+			webhookData = createWebhookDataForSlack(changedElement);
+			//System.out.println(webhookData);
+		}
+		if(webhookData == "" || webhookData == null){
+			return postMethod;
 		}
 		try {
 			StringRequestEntity requestEntity = new StringRequestEntity(webhookData, "application/json", "UTF-8");
@@ -237,7 +248,7 @@ public class WebhookContentProvider {
 	 *
 	 * @return String without "{knowledgeType}"-parts
 	 */
-	private String cutSummary(String toCut){
+	public String cutSummary(String toCut){
 		Set<KnowledgeType> types = knowledgeElement.getProject().getKnowledgeTypes();
 		for (KnowledgeType knowledgeType : types) {
 			String cut = "{"+knowledgeType.toString()+"}";
