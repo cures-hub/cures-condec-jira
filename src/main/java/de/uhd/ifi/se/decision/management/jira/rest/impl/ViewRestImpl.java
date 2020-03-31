@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +30,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
@@ -242,13 +242,11 @@ public class ViewRestImpl implements ViewRest {
 	}
 
 	@Override
-	@Path("/getMultipleTreant")
+	@Path("/getClassTreant")
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response getMultipleTreant(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey,
-									  @QueryParam("depthOfTree") String depthOfTree, @QueryParam("searchTerm") String searchTerm,
-									  @QueryParam("elementKeys") String elementKeys) {
-
+	public Response getClassTreant(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey,
+								   @QueryParam("depthOfTree") String depthOfTree, @QueryParam("searchTerm") String searchTerm) {
 		if (elementKey == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build();
@@ -269,12 +267,10 @@ public class ViewRestImpl implements ViewRest {
 		}
 		try {
 			ApplicationUser user = AuthenticationManager.getUser(request);
-			List<String> elementKeysList = new ArrayList<String>();
-			for (String ele : elementKeys.split(";")) {
-				elementKeysList.add(ele);
-			}
-
-			Treant treant = new Treant(projectKey, elementKey, depth, searchTerm, user, elementKeysList);
+			CodeClassKnowledgeElementPersistenceManager ccManager
+					= new CodeClassKnowledgeElementPersistenceManager(projectKey);
+			KnowledgeElement element = ccManager.getDecisionKnowledgeElement(elementKey);
+			Treant treant = new Treant(projectKey, element, depth, searchTerm, user, "treant-container-class");
 			return Response.ok(treant).build();
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -7,6 +7,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
@@ -28,12 +29,14 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	private String projectKey;
 	private JiraIssuePersistenceManager jiraIssuePersistenceManager;
 	private JiraIssueTextPersistenceManager jiraIssueTextPersistenceManager;
+	private CodeClassKnowledgeElementPersistenceManager codeClassKnowledgeElementPersistenceManager;
 	private List<AbstractPersistenceManagerForSingleLocation> activePersistenceManagersForSingleLocations;
 
 	public KnowledgePersistenceManagerImpl(String projectKey) {
 		this.projectKey = projectKey;
 		this.jiraIssuePersistenceManager = new JiraIssuePersistenceManager(projectKey);
 		this.jiraIssueTextPersistenceManager = new JiraIssueTextPersistenceManager(projectKey);
+		this.codeClassKnowledgeElementPersistenceManager = new CodeClassKnowledgeElementPersistenceManager(projectKey);
 		this.activePersistenceManagersForSingleLocations = initActivePersistenceManagersForSinleLocations();
 	}
 
@@ -95,6 +98,8 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 				return jiraIssuePersistenceManager;
 			case JIRAISSUETEXT:
 				return jiraIssueTextPersistenceManager;
+			case COMMIT:
+				return codeClassKnowledgeElementPersistenceManager;
 			default:
 				return null;
 		}

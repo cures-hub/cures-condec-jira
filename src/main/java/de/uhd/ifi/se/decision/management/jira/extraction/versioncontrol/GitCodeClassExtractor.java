@@ -28,13 +28,13 @@ public class GitCodeClassExtractor {
 	private String projectKey;
 	private List<File> codeClassListFull;
 	private Map<String, String> codeClassOriginMap;
-	private Map<File, String> treeWalkPath;
+	private Map<String, String> treeWalkPath;
 	private GitClient gitClient;
 
 	public GitCodeClassExtractor(String projectKey) {
 		this.projectKey = projectKey;
 		codeClassOriginMap = new HashMap<String, String>();
-		treeWalkPath = new HashMap<File, String>();
+		treeWalkPath = new HashMap<String, String>();
 		this.codeClassListFull = getCodeClassFiles();
 	}
 
@@ -58,7 +58,7 @@ public class GitCodeClassExtractor {
 							if (chfile.isExistingJavaClass()) {
 								codeClassListFull.add(file);
 								codeClassOriginMap.put(file.getAbsolutePath(), repoUri);
-								treeWalkPath.put(file, treeWalk.getPathString());
+								treeWalkPath.put(file.getAbsolutePath(), treeWalk.getPathString());
 							}
 						}
 					}
@@ -122,7 +122,7 @@ public class GitCodeClassExtractor {
 			String repoUri = codeClassOriginMap.get(file.getAbsolutePath());
 			Repository repository = gitClient.getGit(repoUri).getRepository();
 			BlameCommand blamer = new BlameCommand(repository);
-			blamer.setFilePath(treeWalkPath.get(file));
+			blamer.setFilePath(treeWalkPath.get(file.getAbsolutePath()));
 			blamer.setStartCommit(gitClient.getDefaultBranchCommits(repoUri).get(0));
 			blameResult = blamer.call();
 			// blameResult =

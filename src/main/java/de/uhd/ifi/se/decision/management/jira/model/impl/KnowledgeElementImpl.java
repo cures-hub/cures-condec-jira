@@ -98,7 +98,11 @@ public class KnowledgeElementImpl implements KnowledgeElement {
 		if (entry != null) {
 			this.id = entry.getId();
 			this.summary = entry.getFileName();
-			this.description = entry.getJiraIssueKeys();
+			String issueKeys = "";
+			for (String key : entry.getJiraIssueKeys().split(";")) {
+				issueKeys = issueKeys + entry.getProjectKey() + "-" + key + ";";
+			}
+			this.description = issueKeys;
 			this.type = KnowledgeType.getKnowledgeType(null);
 			this.project = new DecisionKnowledgeProjectImpl(entry.getProjectKey());
 			this.key = entry.getProjectKey() + "-" + entry.getId();

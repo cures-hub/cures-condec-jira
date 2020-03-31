@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import org.codehaus.jackson.annotate.JsonProperty;
-   
+
 /**
  * Model class for Treant node
  */
@@ -59,7 +59,13 @@ public class TreantNode {
 		if (decisionKnowledgeElement == null || decisionKnowledgeElement.getSummary() == null) {
 			return;
 		}
-		this.nodeContent = ImmutableMap.of("title", decisionKnowledgeElement.getSummary(), "documentationLocation",
+		String title = "";
+		if (decisionKnowledgeElement.getSummary().length() > 25) {
+			title = (decisionKnowledgeElement.getSummary().substring(0, 24) + "...");
+		} else {
+			title = decisionKnowledgeElement.getSummary();
+		}
+		this.nodeContent = ImmutableMap.of("title", title, "documentationLocation",
 				decisionKnowledgeElement.getDocumentationLocationAsString(), "status",
 				decisionKnowledgeElement.getStatusAsString(), "desc", decisionKnowledgeElement.getKey());
 		this.htmlClass = decisionKnowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);

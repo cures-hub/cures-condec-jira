@@ -50,7 +50,7 @@
                 jQueryConDec("#jstree-code").jstree(true).search(searchString);
             });
         });
-        //this.addDragAndDropSupportForTreeViewer();
+        this.addDragAndDropSupportForTreeViewer();
         this.addContextMenuToTreeViewer(null);
     };
 

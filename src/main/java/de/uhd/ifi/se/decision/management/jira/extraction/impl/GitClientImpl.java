@@ -48,8 +48,8 @@ import org.slf4j.LoggerFactory;
  * supported.
  */
 public class GitClientImpl implements GitClient {
-
-	private static final long REPO_OUTDATED_AFTER = 15 * 60 * 1000; // ex. 15 minutes = 15 minutes * 60 seconds * 1000
+	// TODO: CHANGE REPO OUTDATED BACK TO 15*60*1000
+	private static final long REPO_OUTDATED_AFTER = 60 * 1000; // ex. 15 minutes = 15 minutes * 60 seconds * 1000
 	// miliseconds
 	private Map<String, Git> gits;
 	private List<String> remoteUris;
@@ -196,10 +196,18 @@ public class GitClientImpl implements GitClient {
 	private boolean pull(String repoUri) {
 		LOGGER.info("Pulling Repository: " + repoUri);
 		if (!isPullNeeded(repoUri)) {
+			try {
+				System.out.println("Unneccesary: " + getRepository(repoUri).getBranch());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return true;
 		}
 		try {
+			System.out.println("Is necessary: " + repoUri);
 			ObjectId oldHead = getRepository(repoUri).resolve("HEAD^{tree}");
+			System.out.println("oldHead: " + oldHead);
 			List<RemoteConfig> remotes = gits.get(repoUri).remoteList().call();
 			for (RemoteConfig remote : remotes) {
 				gits.get(repoUri).fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
@@ -207,14 +215,27 @@ public class GitClientImpl implements GitClient {
 				LOGGER.info("Fetched branches in " + gits.get(repoUri).getRepository().getDirectory());
 			}
 			gits.get(repoUri).pull().call();
+
+
+			System.out.println("Pulled ");
 			ObjectId head = getRepository(repoUri).resolve("HEAD^{tree}");
-			CodeClassKnowledgeElementPersistenceManager persistenceManager = new CodeClassKnowledgeElementPersistenceManager(projectKey);
-			persistenceManager.maintainCodeClassKnowledgeElements(repoUri, oldHead, head);
+			System.out.println("NewHead: " + head);
+			if (oldHead != head) {
+				CodeClassKnowledgeElementPersistenceManager persistenceManager = new CodeClassKnowledgeElementPersistenceManager(
+						projectKey);
+				persistenceManager.maintainCodeClassKnowledgeElements(repoUri, oldHead, head);
+			} else {
+				System.out.println("Old equals new Head");
+			}
+
 		} catch (GitAPIException | IOException e) {
 			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t" + e.getMessage());
+			e.printStackTrace();
+			System.out.println("We had an Error");
 			return false;
 		}
 		LOGGER.info("Pulled from remote in " + gits.get(repoUri).getRepository().getDirectory());
+		System.out.println("Pull succeeded");
 		return true;
 	}
 
@@ -603,14 +624,7 @@ public class GitClientImpl implements GitClient {
 		String repoUri = getRepoUriFromBranch(featureBranch);
 		String[] branchNameComponents = featureBranch.getName().split("/");
 		String branchShortName = branchNameComponents[branchNameComponents.length - 1];
-		String branchShortNameWithPrefix = branchShortName;
-		for (int i = 2; i <= branchNameComponents.length; i++) {
-			branchShortNameWithPrefix = branchNameComponents[branchNameComponents.length - i] + "/"
-					+ branchShortNameWithPrefix;
-			if (branchNameComponents[branchNameComponents.length - i].equals("origin")) {
-				break;
-			}
-		}
+		String branchShortNameWithPrefix = featureBranch.getName().replaceFirst("refs/remotes/origin/", "");
 		File directory = new File(fsManager.prepareBranchDirectory(branchShortName, repoUri));
 
 		return (switchGitDirectory(directory, repoUri) && pull(repoUri)
@@ -762,20 +776,10 @@ public class GitClientImpl implements GitClient {
 			return commits;
 		}
 		File directory;
+
 		String[] branchNameComponents = branch.getName().split("/");
 		String branchShortName = branchNameComponents[branchNameComponents.length - 1];
-		String branchShortNameWithPrefix = branchShortName;
-		if (!isDefaultBranch) {
-			for (int i = 2; i <= branchNameComponents.length; i++) {
-				branchShortNameWithPrefix = branchNameComponents[branchNameComponents.length - i] + "/"
-						+ branchShortNameWithPrefix;
-				if (branchNameComponents[branchNameComponents.length - i].equals("origin")) {
-					break;
-				}
-			}
-		} else {
-			branchShortNameWithPrefix = "origin/" + branchShortNameWithPrefix;
-		}
+		String branchShortNameWithPrefix = branch.getName().replaceFirst("refs/remotes/origin/", "");
 		boolean canReleaseRepoDirectory = false;
 
 		if (isDefaultBranch) {
@@ -812,7 +816,7 @@ public class GitClientImpl implements GitClient {
 	private boolean checkout(String checkoutObjectName, String repoUri, boolean isCommitWithinBranch) {
 		// checkout only remote branch
 		if (!isCommitWithinBranch) {
-			String checkoutName = checkoutObjectName;
+			String checkoutName = "origin/" + checkoutObjectName;
 			try {
 				gits.get(repoUri).checkout().setName(checkoutName).call();
 			} catch (GitAPIException | JGitInternalException e) {

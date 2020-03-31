@@ -15,7 +15,7 @@ import net.java.ao.schema.Table;
  *
  * @see KnowledgeElement
  */
-@Table("CondecInComment")
+@Table("CondecCodeClass")
 public interface CodeClassElementInDatabase extends RawEntity<Long> {
 
 	@AutoIncrement
@@ -49,4 +49,3 @@ public interface CodeClassElementInDatabase extends RawEntity<Long> {
 		}
 	}
 }
-

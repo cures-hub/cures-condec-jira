@@ -1,22 +1,20 @@
 package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
-import java.io.File;
 import java.util.*;
 
 import javax.xml.bind.annotation.XmlElement;
 
 import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
-import org.eclipse.jgit.api.Git;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
 /**
@@ -117,29 +115,16 @@ public class TreeViewer {
 	/**
 	 * Constructor for a jstree tree viewer for a code class as the root element.
 	 * The tree viewer comprises only one tree.
-	 *
-	 * @param jiraIssueKey   the issue id
-	 * @param filterSettings {@link FilterSettings} object. The filter settings
-	 *                       cover the decision knowledge types to be shown.
 	 */
 	public TreeViewer(String projectKey) {
 		this();
-		GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
-		List<File> codeClasses = ccExtractor.getCodeClassListFull();
 		Set<Data> dataSet = new HashSet<Data>();
-		for (File file : codeClasses) {
-			// Extract relevant Issue Keys
-			List<String> issueKeys = ccExtractor.getIssuesKeysForFile(file);
-			if (issueKeys == null || issueKeys.size() == 0) {
-				issueKeys.add(projectKey + "-");
-			}
-			Git git = ccExtractor.getGitClient().getGit(ccExtractor.getCodeClassOriginMap().get(codeClasses.get(0).getAbsolutePath()));
-			String gitUrl = git.getRepository().getConfig().getString("remote", "origin", "url");
-			String gitName = gitUrl.split("/")[gitUrl.split("/").length - 1];
-			dataSet.add(this.makeIdUnique(new Data(file, issueKeys, projectKey, gitName)));
+		CodeClassKnowledgeElementPersistenceManager manager = new CodeClassKnowledgeElementPersistenceManager(projectKey);
+		List<KnowledgeElement> elementList = manager.getDecisionKnowledgeElements();
+		for (KnowledgeElement element : elementList) {
+			dataSet.add(this.makeIdUnique(new Data(element)));
 		}
 		this.data = dataSet;
-		ccExtractor.close();
 	}
 
 	private void removeChildrenWithType(Iterator<Data> iterator) {

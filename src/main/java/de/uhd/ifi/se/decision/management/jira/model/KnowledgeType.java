@@ -210,8 +210,7 @@ public enum KnowledgeType {
 			if (element instanceof PartOfJiraIssueText) {
 				return ComponentGetter.getUrlOfImageFolder() + "other.png";
 			}
-			if (element.getKey().split("-")[0].equals(element.getProject().getProjectKey())
-					&& !element.getKey().split("-")[1].matches("\\d+")) {
+			if (element.getSummary() != null && element.getSummary().contains(".java")) {
 				return ComponentGetter.getUrlOfImageFolder() + "class.png";
 			}
 			IssueManager issueManager = ComponentAccessor.getIssueManager();

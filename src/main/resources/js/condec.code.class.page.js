@@ -114,7 +114,7 @@
         }
         jQueryConDec("#jstree-code").on("select_node.jstree", function (error, tree) {
             var node = tree.node.data;
-            treant.buildClassTreant(node.key, true, "", node.description);
+            treant.buildClassTreant(node.key, true, "");
         });
         /* Have to change filterNodesByGroup
         var selectedGroupsObj = $('#select2-decision-group-code').select2('data');

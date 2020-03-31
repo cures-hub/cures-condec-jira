@@ -12,7 +12,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.*;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
@@ -54,8 +53,6 @@ public class Treant {
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 
 		AbstractPersistenceManagerForSingleLocation persistenceManager;
-		// TODO pass entire element object to the constructors instead of only the key
-		// and use the documentation location of the element
 		if (elementKey.contains(":")) {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 					.getManagerForSingleLocation(DocumentationLocation.JIRAISSUETEXT);
@@ -68,44 +65,23 @@ public class Treant {
 		this.setHyperlinked(isHyperlinked);
 	}
 
-	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user,
-				  List<String> elementKeys) {
+	public Treant(String projectKey, KnowledgeElement element, int depth, String query, ApplicationUser users, String treantId) {
 		this.traversedLinks = new HashSet<Link>();
 		this.depth = depth;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(projectKey).getJiraIssueManager();
-		KnowledgeElement classElement = new KnowledgeElementImpl();
-		String nodeNameWithGit = elementKey.replaceFirst(projectKey + "-", "");
-		String nodeName = nodeNameWithGit.split(";;")[0].split(".java")[0];
-		String gitName = nodeNameWithGit.split(";;")[1];
-		if (nodeName.length() > 25) {
-			classElement.setSummary(nodeName.substring(0, 24) + "...");
-		} else {
-			classElement.setSummary(nodeName);
+		this.setChart(new Chart(treantId));
+		List<Link> linkList = new ArrayList<>();
+		for (String key : element.getDescription().split(";")) {
+			KnowledgeElement issueElement = persistenceManager.getDecisionKnowledgeElement(key);
+			Link link = new LinkImpl(element, issueElement);
+			linkList.add(link);
 		}
-		classElement.setProject(projectKey);
-		classElement.setDocumentationLocation(DocumentationLocation.getDocumentationLocationFromIdentifier("c"));
-		classElement.setStatus(KnowledgeStatus.getKnowledgeStatus(null));
-		String elekey = projectKey + "-" + gitName;
-		if (elekey.length() > 24) {
-			elekey = elekey.substring(0, 20) + "...";
-		}
-		classElement.setKey(elekey);
-		classElement.setType(KnowledgeType.OTHER);
-		classElement.setId(0);
-		classElement.setDescription(elementKeys.toString());
-		List<Link> links = new ArrayList<Link>();
-		for (String key : elementKeys) {
-			if (key.contains(projectKey)) {
-				KnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(key);
-				Link link = new LinkImpl(classElement, rootElement);
-				links.add(link);
-			}
-		}
-		Set<Link> linkSet = new HashSet<Link>(links);
-		this.setChart(new Chart("treant-container-code"));
-		this.setNodeStructure(this.createNodeStructure(classElement, linkSet, 1));
+		Set<Link> links = new HashSet<Link>(linkList);
+		System.out.println("Links found: " + element.getLinks());
+		//Set<Link> links = new HashSet<Link>(element.getLinks());
+		this.setNodeStructure(this.createNodeStructure(element, links, 1));
 		this.setHyperlinked(false);
 	}
 
@@ -133,8 +109,6 @@ public class Treant {
 		if (element == null || element.getProject() == null) {
 			return new TreantNode();
 		}
-
-		// Set<Link> linksToTraverse = graph.edgesOf(element);
 		// boolean isCollapsed = isNodeCollapsed(linksToTraverse, currentDepth);
 		TreantNode node = createTreantNode(element, null, false);
 		if (currentDepth == depth + 1) {

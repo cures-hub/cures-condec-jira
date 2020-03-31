@@ -20,7 +20,7 @@
     <div id="resizable" class="left">
         <div id="jstree-code"></div>
     </div>
-    <div id="treant-container-code" class="right"></div>
+    <div id="treant-container-class" class="right"></div>
 </div>
 <script>
     /*

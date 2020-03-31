@@ -70,7 +70,7 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 	@Override
 	public KnowledgeElement getDecisionKnowledgeElement(String key) {
 		String id = key.split("-")[1];
-		return getDecisionKnowledgeElement(id);
+		return getDecisionKnowledgeElement(Long.parseLong(id));
 	}
 
 	public KnowledgeElement getDecisionKnowledgeElement(KnowledgeElement element) {
@@ -125,9 +125,12 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 			return existingElement;
 		}
 		CodeClassElementInDatabase databaseEntry = ACTIVE_OBJECTS.create(CodeClassElementInDatabase.class);
-
 		setParameters(element, databaseEntry);
-		databaseEntry.save();
+		try {
+			databaseEntry.save();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		KnowledgeElement newElement = new KnowledgeElementImpl(databaseEntry);
 		if (newElement.getId() > 0) {
@@ -137,7 +140,12 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 			for (String key : element.getDescription().split(";")) {
 				KnowledgeElement issueElement = persistenceManager.getDecisionKnowledgeElement(key);
 				Link link = new LinkImpl(element, issueElement);
-				GenericLinkManager.insertLink(link, user);
+				long databaseId = GenericLinkManager.insertLink(link, user);
+				System.out.println("Link databaseId: " + databaseId);
+				if (databaseId > 0) {
+					link.setId(databaseId);
+					KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
+				}
 			}
 		}
 		return newElement;
@@ -154,12 +162,17 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 	private static void setParameters(KnowledgeElement element, CodeClassElementInDatabase databaseEntry) {
 		databaseEntry.setProjectKey(element.getProject().getProjectKey());
 		databaseEntry.setType(element.getTypeAsString());
-		String issueKeys = "";
-		for (Link link : element.getLinks()) {
-			String issueKey = link.getTarget().getKey();
-			issueKeys = issueKeys + issueKey + ";";
+		String issuekeys = "";
+		for (String key : element.getDescription().split(";")) {
+			issuekeys = issuekeys + key.split("-")[1] + ";";
 		}
-		databaseEntry.setJiraIssueKeys(issueKeys);
+		if (issuekeys.length() > 255) {
+			issuekeys = issuekeys.substring(0, 255);
+		}
+		while (issuekeys.charAt(issuekeys.length() - 1) != ';') {
+			issuekeys = issuekeys.substring(0, issuekeys.length() - 2);
+		}
+		databaseEntry.setJiraIssueKeys(issuekeys);
 		databaseEntry.setFileName(element.getSummary());
 	}
 
@@ -214,12 +227,21 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 		GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
 		List<File> codeClasses = ccExtractor.getCodeClassListFull();
 		if (existingElements == null || existingElements.size() == 0) {
+			System.out.println("No existing Elements found");
 			for (File file : codeClasses) {
-				// Extract relevant Issue Keys
-				List<String> issueKeys = ccExtractor.getIssuesKeysForFile(file);
-				KnowledgeElement newElement = ccExtractor.createKnowledgeElementFromFile(file, issueKeys);
-				insertDecisionKnowledgeElement(newElement, user);
+				if (file != null) {
+					System.out.println("File: " + file.getName());
+					List<String> issueKeys = ccExtractor.getIssuesKeysForFile(file);
+					System.out.println("IssueKeys: " + issueKeys);
+					if (issueKeys != null && issueKeys.size() > 0) {
+						KnowledgeElement newElement = ccExtractor.createKnowledgeElementFromFile(file, issueKeys);
+						System.out.println("Created new Element");
+						insertDecisionKnowledgeElement(newElement, user);
+						System.out.println("Inserted");
+					}
+				}
 			}
+			System.out.println("All Elements inserted");
 			ccExtractor.close();
 		} else {
 			GitClient gitClient = new GitClientImpl(projectKey);
@@ -229,36 +251,52 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 				oldTreeIter.reset(reader, oldHead);
 				CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
 				newTreeIter.reset(reader, newhead);
-				List<DiffEntry> diffs = gitClient.getGit(repoUri).diff()
-						.setNewTree(newTreeIter)
-						.setOldTree(oldTreeIter)
+				List<DiffEntry> diffs = gitClient.getGit(repoUri).diff().setNewTree(newTreeIter).setOldTree(oldTreeIter)
 						.call();
+				System.out.println("Diffs: " + diffs);
 				for (DiffEntry diff : diffs) {
-					File file = new File(diff.getOldPath());
-					List<String> issueKeys = ccExtractor.getIssuesKeysForFile(file);
-					String keys = getIssueListAsString(issueKeys);
-					KnowledgeElement element = getDecisionKnowledgeElementByNameAndIssueKeys(file.getName(), keys);
-					if (diff.getChangeType().equals(DiffEntry.ChangeType.DELETE)) {
-						deleteDecisionKnowledgeElement(element, user);
-					} else if (diff.getChangeType().equals(DiffEntry.ChangeType.RENAME) || diff.getChangeType().equals(DiffEntry.ChangeType.MODIFY)) {
-						deleteDecisionKnowledgeElement(element, user);
-						File newFile = new File(diff.getNewPath());
-						insertDecisionKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(newFile,
-								ccExtractor.getIssuesKeysForFile(newFile)), user);
-					} else if (diff.getChangeType().equals(DiffEntry.ChangeType.ADD)) {
-						File newFile = new File(diff.getNewPath());
-						insertDecisionKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(newFile,
-								ccExtractor.getIssuesKeysForFile(newFile)), user);
+					System.out.println("Diff Old Path: " + diff.getOldPath());
+					if (diff.getOldPath().contains(".java")) {
+						File file = new File(diff.getOldPath());
+						System.out.println("Extracting IssueKeys");
+						List<String> issueKeys = ccExtractor.getIssuesKeysForFile(file);
+						System.out.println("Issue Keys: " + issueKeys);
+						String keys = getIssueListAsString(issueKeys);
+						KnowledgeElement element = getDecisionKnowledgeElementByNameAndIssueKeys(file.getName(), keys);
+						System.out.println("Corresponding KnowledgeElement: " + element);
+						if (diff.getChangeType().equals(DiffEntry.ChangeType.DELETE)) {
+							System.out.println("Type Delete");
+							deleteDecisionKnowledgeElement(element, user);
+							System.out.println("Deleted Successfully");
+						} else if (diff.getChangeType().equals(DiffEntry.ChangeType.RENAME)
+								|| diff.getChangeType().equals(DiffEntry.ChangeType.MODIFY)) {
+							System.out.println("Type " + diff.getChangeType().toString());
+							deleteDecisionKnowledgeElement(element, user);
+							System.out.println("Deleted Successfully");
+							File newFile = new File(diff.getNewPath());
+							System.out.println("New File: " + newFile);
+							insertDecisionKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(newFile,
+									ccExtractor.getIssuesKeysForFile(newFile)), user);
+							System.out.println("Inserted Successfully");
+						} else if (diff.getChangeType().equals(DiffEntry.ChangeType.ADD)) {
+							System.out.println("Type Add");
+							File newFile = new File(diff.getNewPath());
+							insertDecisionKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(newFile,
+									ccExtractor.getIssuesKeysForFile(newFile)), user);
+							System.out.println("Inserted Successfully");
+						}
 					}
 				}
 			} catch (IOException | GitAPIException e) {
 				e.printStackTrace();
-			} finally {
 				gitClient.closeAll();
+				ccExtractor.close();
 			}
+			gitClient.closeAll();
+			ccExtractor.close();
 		}
 	}
-	//TODO: Keep persistent when pull
-	//TODO: Refresh when issue deleted
+	// TODO: Keep persistent when pull
+	// TODO: Refresh when issue deleted
 
 }
