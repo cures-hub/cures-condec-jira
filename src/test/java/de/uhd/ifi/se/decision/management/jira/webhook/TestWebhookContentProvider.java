@@ -6,6 +6,13 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import net.java.ao.test.jdbc.NonTransactional;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+
+import java.io.*;
+
+
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -69,27 +76,34 @@ public class TestWebhookContentProvider extends TestSetUp {
 		assertNull(provider.createPostMethodForSlack().getRequestEntity());
 	}
 
-
-/*
-  // Static method problem here.
 	@Test
 	@NonTransactional
-	public void testCutSummaryRegularSummary() {
-		String cutSummary = WebhookContentProvider.cutSummary("Summary ohne geschwiete Klammern pro con issue");
-		assertEquals("Summary ohne geschwiete Klammern pro con issue", cutSummary);
-	}
+	public void testCreatePostMethodForSlackForProvidedProjectKeyAndProvidedElementAndMissingSecretAndSlackReceiver() {
+		KnowledgeElement knowledgeElement = new KnowledgeElementImpl((long) 1, "TEST", "i");
+		knowledgeElement.setSummary("Summary");
+		knowledgeElement.setDescription("Description");
+		knowledgeElement.setType(KnowledgeType.ISSUE);
+
+		WebhookContentProvider provider = new WebhookContentProvider("TEST", knowledgeElement, null, "Slack");
+		assertNotNull(provider.createPostMethodForSlack().getRequestEntity());
+			}
 
 	@Test
 	@NonTransactional
-	public void testCutSummarycriticalSummary() {
-		String summary = "{pro} Summary mit geschwiete Klammern {pro} {con} {issue}";
-		String cutSummary = 	WebhookContentProvider.cutSummary(summary);
-		assertEquals(" Summary mit geschwiete Klammern   ",	cutSummary);
-	}
-*/
+	public void testCreatePostMethodForSlackForProvidedProjectKeyAndProvidedKnowledgeElementAndMissingSecretAndSlackReceiverCutSummary() {
+		KnowledgeElement knowledgeElement1 = new KnowledgeElementImpl((long) 1, "TEST", "i");
+		knowledgeElement1.setSummary("{issue}Summary");
+		knowledgeElement1.setDescription("Description");
+		knowledgeElement1.setType(KnowledgeType.ISSUE);
+
+		WebhookContentProvider provider = new WebhookContentProvider("TEST", knowledgeElement1, null, "Slack");
+		assertNotNull(provider.createPostMethodForSlack().getRequestEntity());
+		}
+
 
 	@Test
 	public void testCreateHashedPayload() {
+		System.out.println("testCreateHashedPayload()");
 		assertEquals(
 				WebhookContentProvider.createHashedPayload("{\"issueKey\": \"CONDEC-1234\", \"ConDecTree\": "
 						+ "{\"nodeStructure\":{\"children\":[],\"text\":{\"title\":\"Test Send\","

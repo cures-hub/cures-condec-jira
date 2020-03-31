@@ -7,7 +7,7 @@
 
 The CURES ConDec Jira plug-in enables the user to capture and explore decision knowledge in [Jira](https://de.atlassian.com/software/jira).
 Decision knowledge covers knowledge about decisions, the problems they address, solution proposals, their context, and justifications (rationale). The documented decision knowledge can be linked to Jira issues such as features, tasks to implement a feature, or bug reports.
-The plug-in supports various documentation locations for decision knowledge, such as entire Jira issues with distinct types, comments and the description of existing Jira issues, and commit messages. 
+The plug-in supports various documentation locations for decision knowledge, such as entire Jira issues with distinct types, comments and the description of existing Jira issues, and commit messages.
 
 ## Installation
 
@@ -20,7 +20,7 @@ The following prerequisites are necessary to compile the plug-in from source cod
 The source code is compiled via terminal.
 Navigate into the cures-condec-jira folder and run the following command:
 ```
-atlas-mvn package
+atlas-package
 ```
 The .jar file is created.
 

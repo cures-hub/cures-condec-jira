@@ -44,7 +44,7 @@
 
 <div class="field-group">
 	<label for="Test Slack Webhook">Test Slack Webhook</label>
-	<div class="description">Send a Webhook to given Slack-Url via cUrl, Use the URL form your Slack-app Setting - "Incomming WEbhook" </div>
+	<div class="description">Send a Webhook to given Slack-Url. Use the URL form your Slack-app Setting under "Incomming Webhook" \n For Slack u dont need a Shared Secret. </div>
 	<input type="button" id="testWebhook" class="aui-button aui-button-primary" value="Send Webhook" onclick="sendCURL()"/>
 </div>
 

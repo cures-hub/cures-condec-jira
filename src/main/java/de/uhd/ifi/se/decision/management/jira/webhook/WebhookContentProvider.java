@@ -105,19 +105,19 @@ public class WebhookContentProvider {
 		if(changedElement == null|| changedElement.getSummary() == null|| changedElement.getType() == null || changedElement.getUrl() == null){
 			return "";
 		}
-		String summary = knowledgeElement.getSummary();
-		System.out.println("Summary is now: "+summary);
+		String summary = changedElement.getSummary();
+		//System.out.println("Summary is now: "+summary);
 
 		if( summary.contains("{")){
-			System.out.println("Summary contains {.");
-			summary = cutSummary(changedElement.getSummary());
-			System.out.println("Summary is now: "+summary);
+			//System.out.println("Summary contains {.");
+			summary = this.cutSummary(summary);
+			//System.out.println("Summary after cutting: "+ summary);
 		}
 		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'Folgendes Entscheidungswissen wurde angepasst'}},"+
 		"{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :"+ changedElement.getType() + ": : " + changedElement.getType() +
 		" \\n *Titel*: " + summary + "\\n'},"+
 		"'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '"+changedElement.getUrl()+"'}}]}";
-		System.out.println("createPostMethod: data"+data);
+		System.out.println("createPostMethodForSlack(): data "+data);
 
 		return data;
 	}
@@ -138,19 +138,19 @@ public class WebhookContentProvider {
 	public PostMethod createPostMethodForSlack(KnowledgeElement changedElement) {
 		PostMethod postMethod = new PostMethod();
 		if (projectKey == null || changedElement == null || receiver == null) {
-				System.out.println("createPostMethod null");
+				//System.out.println("createPostMethodForSlack null");
 			return postMethod;
 		}
 		String webhookData = "";
 		if(receiver == "Other"){
 			LOGGER.info("receiver:  Other");
-			System.out.println("createPostMethodForSlack:receiver= other");
+			//System.out.println("createPostMethodForSlack:receiver= other");
 			return createPostMethod();
 
 		}
 		if(receiver == "Slack"){
 			LOGGER.info("receiver:  Slack");
-			//System.out.println("createPostMethodForSlack:receiver= slack");
+			//System.out.println("createPostMethodForSlack:receiver = slack");
 			webhookData = createWebhookDataForSlack(changedElement);
 			//System.out.println(webhookData);
 		}
@@ -166,6 +166,7 @@ public class WebhookContentProvider {
 		Header header = new Header();
 		header.setName("X-Hub-Signature");
 		postMethod.setRequestHeader(header);
+
 		return postMethod;
 	}
 
@@ -241,19 +242,19 @@ public class WebhookContentProvider {
  */
 
 	/**
-	 * Remove all "{knowledgeType}"-parts from a string.
+	 * Remove all "{anything}"-parts from a string.
 	 *
 	 * @param toCut
 	 *            String
 	 *
-	 * @return String without "{knowledgeType}"-parts
+	 * @return String without "{anything}"-parts
 	 */
 	public String cutSummary(String toCut){
-		Set<KnowledgeType> types = knowledgeElement.getProject().getKnowledgeTypes();
-		for (KnowledgeType knowledgeType : types) {
-			String cut = "{"+knowledgeType.toString()+"}";
-			toCut = toCut.split(cut)[0];
-		}
+		//System.out.println("cutSummary(): " + toCut);
+		toCut = toCut.replaceAll("\\x7B(\\S*)\\x7D","");
+		//System.out.println("cutSummary() passed:" + toCut);
 		return toCut;
 	}
+
+
 }
