@@ -12,7 +12,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.*;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 
@@ -72,15 +71,7 @@ public class Treant {
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(projectKey).getJiraIssueManager();
 		this.setChart(new Chart(treantId));
-		List<Link> linkList = new ArrayList<>();
-		for (String key : element.getDescription().split(";")) {
-			KnowledgeElement issueElement = persistenceManager.getDecisionKnowledgeElement(key);
-			Link link = new LinkImpl(element, issueElement);
-			linkList.add(link);
-		}
-		Set<Link> links = new HashSet<Link>(linkList);
-		System.out.println("Links found: " + element.getLinks());
-		//Set<Link> links = new HashSet<Link>(element.getLinks());
+		Set<Link> links = new HashSet<Link>(element.getLinks());
 		this.setNodeStructure(this.createNodeStructure(element, links, 1));
 		this.setHyperlinked(false);
 	}

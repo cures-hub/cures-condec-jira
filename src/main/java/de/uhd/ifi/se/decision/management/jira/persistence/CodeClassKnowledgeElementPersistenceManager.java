@@ -131,7 +131,6 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		KnowledgeElement newElement = new KnowledgeElementImpl(databaseEntry);
 		if (newElement.getId() > 0) {
 			KnowledgeGraph.getOrCreate(projectKey).addVertex(newElement);
@@ -139,9 +138,8 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 					.getOrCreate(projectKey).getJiraIssueManager();
 			for (String key : element.getDescription().split(";")) {
 				KnowledgeElement issueElement = persistenceManager.getDecisionKnowledgeElement(key);
-				Link link = new LinkImpl(element, issueElement);
+				Link link = new LinkImpl(newElement, issueElement);
 				long databaseId = GenericLinkManager.insertLink(link, user);
-				System.out.println("Link databaseId: " + databaseId);
 				if (databaseId > 0) {
 					link.setId(databaseId);
 					KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
@@ -225,25 +223,21 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 		ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 		List<KnowledgeElement> existingElements = getDecisionKnowledgeElements();
 		GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
-		List<File> codeClasses = ccExtractor.getCodeClassListFull();
 		if (existingElements == null || existingElements.size() == 0) {
-			System.out.println("No existing Elements found");
+			List<File> codeClasses = ccExtractor.getCodeClassListFull();
 			for (File file : codeClasses) {
 				if (file != null) {
-					System.out.println("File: " + file.getName());
 					List<String> issueKeys = ccExtractor.getIssuesKeysForFile(file);
-					System.out.println("IssueKeys: " + issueKeys);
 					if (issueKeys != null && issueKeys.size() > 0) {
 						KnowledgeElement newElement = ccExtractor.createKnowledgeElementFromFile(file, issueKeys);
-						System.out.println("Created new Element");
 						insertDecisionKnowledgeElement(newElement, user);
-						System.out.println("Inserted");
 					}
 				}
 			}
 			System.out.println("All Elements inserted");
 			ccExtractor.close();
 		} else {
+			List<File> codeClasses = ccExtractor.getCodeClassListFull();
 			GitClient gitClient = new GitClientImpl(projectKey);
 			ObjectReader reader = gitClient.getRepository(repoUri).newObjectReader();
 			CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
@@ -256,8 +250,14 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 				System.out.println("Diffs: " + diffs);
 				for (DiffEntry diff : diffs) {
 					System.out.println("Diff Old Path: " + diff.getOldPath());
-					if (diff.getOldPath().contains(".java")) {
-						File file = new File(diff.getOldPath());
+					System.out.println("Diff New Path: " + diff.getNewPath());
+					if ((diff.getChangeType().equals(DiffEntry.ChangeType.DELETE) && diff.getOldPath().contains(".java"))
+							|| diff.getNewPath().contains(".java")) {
+						File file = new File(diff.getNewPath());
+						if (file == null) {
+							file = new File(diff.getOldPath());
+						}
+						System.out.println("File: " + file);
 						System.out.println("Extracting IssueKeys");
 						List<String> issueKeys = ccExtractor.getIssuesKeysForFile(file);
 						System.out.println("Issue Keys: " + issueKeys);
@@ -266,8 +266,8 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 						System.out.println("Corresponding KnowledgeElement: " + element);
 						if (diff.getChangeType().equals(DiffEntry.ChangeType.DELETE)) {
 							System.out.println("Type Delete");
-							deleteDecisionKnowledgeElement(element, user);
-							System.out.println("Deleted Successfully");
+							boolean delete = deleteDecisionKnowledgeElement(element, user);
+							System.out.println("Deleted Successfully: " delete);
 						} else if (diff.getChangeType().equals(DiffEntry.ChangeType.RENAME)
 								|| diff.getChangeType().equals(DiffEntry.ChangeType.MODIFY)) {
 							System.out.println("Type " + diff.getChangeType().toString());
