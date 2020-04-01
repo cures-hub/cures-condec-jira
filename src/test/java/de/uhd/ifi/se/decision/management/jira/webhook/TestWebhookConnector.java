@@ -135,6 +135,19 @@ public class TestWebhookConnector extends TestSetUp {
 		webhookConnector.setUrl("https://jira-se.ifi.uni-heidelberg.de/jira");
 		assertFalse(webhookConnector.sendElementChanges(element));
 	}
+	@Test
+	@NonTransactional
+	public void testsendElementchangesReceiverSlack(){
+	webhookConnector.setUrl("https://hooks.slack.com/services/T2E2");
+
+	KnowledgeElement knowledgeElement = new KnowledgeElementImpl((long) 1, "TEST", "i");
+	knowledgeElement.setSummary("Summary");
+	knowledgeElement.setDescription("Description");
+	knowledgeElement.setType(KnowledgeType.ISSUE);
+
+	assertFalse(webhookConnector.sendElementChanges(knowledgeElement));
+
+	}
 
 	@Test
 	@NonTransactional
@@ -187,6 +200,7 @@ public class TestWebhookConnector extends TestSetUp {
 	assertFalse(webhookConnector.sendnewElement(knowledgeElement));
 
 }
+
 
 
 	@After
