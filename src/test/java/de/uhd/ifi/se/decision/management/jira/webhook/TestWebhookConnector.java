@@ -18,7 +18,9 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestWebhookConnector extends TestSetUp {
@@ -171,6 +173,21 @@ public class TestWebhookConnector extends TestSetUp {
 		assertEquals("https://ThisIsTheURL", webhookConnector.getUrl());
 		assertEquals("Other", webhookConnector.getReceiver());
 	}
+
+	@Test
+	@NonTransactional
+	public void testsendnewElement(){
+	webhookConnector.setUrl("https://hooks.slack.com/services/T2E2");
+
+	KnowledgeElement knowledgeElement = new KnowledgeElementImpl((long) 1, "TEST", "i");
+	knowledgeElement.setSummary("Summary");
+	knowledgeElement.setDescription("Description");
+	knowledgeElement.setType(KnowledgeType.ISSUE);
+
+	assertFalse(webhookConnector.sendnewElement(knowledgeElement));
+
+}
+
 
 	@After
 	public void tearDown() {

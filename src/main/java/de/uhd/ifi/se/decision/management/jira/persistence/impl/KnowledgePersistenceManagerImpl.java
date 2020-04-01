@@ -230,7 +230,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 			KnowledgeElement updatedElement = persistenceManager.getDecisionKnowledgeElement(element.getId());
 			KnowledgeGraph.getOrCreate(projectKey).updateElement(updatedElement);
 		}
-		
+
 		if (isUpdated && ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
 			new WebhookConnector(projectKey).sendElementChanges(element);
 		}

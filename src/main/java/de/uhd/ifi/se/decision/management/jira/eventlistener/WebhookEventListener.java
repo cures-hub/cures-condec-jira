@@ -28,14 +28,21 @@ public class WebhookEventListener {
 		}
 		long eventTypeId = issueEvent.getEventTypeId();
 		KnowledgeElement decisionKnowledgeElement = new KnowledgeElementImpl(issueEvent.getIssue());
-		if (eventTypeId == EventType.ISSUE_CREATED_ID || eventTypeId == EventType.ISSUE_UPDATED_ID) {
+
+		if (eventTypeId == EventType.ISSUE_CREATED_ID){
+			LOGGER.info("WebhookListerner createdElement"+ decisionKnowledgeElement.getSummary());
+			WebhookConnector connector = new WebhookConnector(projectKey);
+				System.out.println("EventListener: gehe zu  WebhookConnector:" +projectKey);
+			connector.sendnewElement(decisionKnowledgeElement);
+		}
+		if(eventTypeId == EventType.ISSUE_UPDATED_ID) {
 			LOGGER.info("WebhookListerner sendetElementchange"+ decisionKnowledgeElement.getSummary());
 			//System.out.println("WebhookListerner sendetElementchange"+ decisionKnowledgeElement.getSummary());
 			WebhookConnector connector = new WebhookConnector(projectKey);
 				System.out.println("EventListener: gehe zu  WebhookConnector:" +projectKey);
 			connector.sendElementChanges(decisionKnowledgeElement);
 		}
-		if (eventTypeId == EventType.ISSUE_DELETED_ID) {
+		if(eventTypeId == EventType.ISSUE_DELETED_ID) {
 			System.out.println("deleted_id");
 			WebhookConnector webhookConnector = new WebhookConnector(projectKey);
 			webhookConnector.deleteElement(decisionKnowledgeElement, issueEvent.getUser());

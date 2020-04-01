@@ -10,6 +10,8 @@ import java.util.Set;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.atlassian.jira.event.type.EventType;
+
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
@@ -33,6 +35,7 @@ public class WebhookContentProvider {
 	private String secret;
 	private KnowledgeElement knowledgeElement;
 	private String receiver;
+
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(WebhookContentProvider.class);
 
@@ -73,7 +76,7 @@ public class WebhookContentProvider {
 		if(receiver == "Slack"){
 			LOGGER.info("receiver:  Slack");
 			System.out.println("createPostMethod:receiver= slack");
-			webhookData = createWebhookDataForSlack(this.knowledgeElement);
+			webhookData = createWebhookDataForSlack(this.knowledgeElement, "new");
 			System.out.println(webhookData);
 		}
 		try {
@@ -96,25 +99,30 @@ public class WebhookContentProvider {
 	 * @return JSON String with the following pattern: { "issueKey": {String},
 	 *         "ConDecTree": {TreantJS JSON config and data} }
 	 */
-	private String createWebhookData() {
+	public String createWebhookData() {
 		String treantAsJson = createTreantJsonString();
 		return "{\"issueKey\": \"" + this.rootElementKey + "\", \"ConDecTree\": " + treantAsJson + "}";
 	}
 
-	private String createWebhookDataForSlack(KnowledgeElement changedElement) {
+	public String createWebhookDataForSlack(KnowledgeElement changedElement, String event) {
 		if(changedElement == null|| changedElement.getSummary() == null|| changedElement.getType() == null || changedElement.getUrl() == null){
 			return "";
 		}
 		String summary = changedElement.getSummary();
-		//System.out.println("Summary is now: "+summary);
-
-		if( summary.contains("{")){
+		if(summary.contains("{")){
 			//System.out.println("Summary contains {.");
 			summary = this.cutSummary(summary);
 			//System.out.println("Summary after cutting: "+ summary);
 		}
-		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'Folgendes Entscheidungswissen wurde angepasst'}},"+
-		"{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :"+ changedElement.getType() + ": : " + changedElement.getType() +
+		String intro = "";
+		if(event == "new") {
+			intro = " Ein neues Entscheidungswissen wurde in Jira hinzugefügt:";
+		}
+		if(event == "changed" ){
+			intro = " Ein Entscheidungswissen wurde in Jira geändert:";
+		}
+		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'"+ intro +"'}},"+
+		"{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :"+ changedElement.getType() + ":  " + changedElement.getType() +
 		" \\n *Titel*: " + summary + "\\n'},"+
 		"'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '"+changedElement.getUrl()+"'}}]}";
 		System.out.println("createPostMethodForSlack(): data "+data);
@@ -127,7 +135,7 @@ public class WebhookContentProvider {
 			if(knowledgeElement == null ){
 				return new PostMethod();
 			}
-			return createPostMethodForSlack(this.knowledgeElement);
+			return createPostMethodForSlack(this.knowledgeElement, "new");
 		}
 	/**
 	 * Creates the key value JSON String transmitted via webhook for Slack.
@@ -135,9 +143,9 @@ public class WebhookContentProvider {
 	 * @return JSON String with the following pattern: {"text": " \"issueKey\": {String},
 	 *         \"ConDecTree\": {TreantJS JSON config and data} " }
 	 */
-	public PostMethod createPostMethodForSlack(KnowledgeElement changedElement) {
+	public PostMethod createPostMethodForSlack(KnowledgeElement changedElement, String event) {
 		PostMethod postMethod = new PostMethod();
-		if (projectKey == null || changedElement == null || receiver == null) {
+		if (projectKey == null || changedElement == null || receiver == null || event == null) {
 				//System.out.println("createPostMethodForSlack null");
 			return postMethod;
 		}
@@ -151,7 +159,7 @@ public class WebhookContentProvider {
 		if(receiver == "Slack"){
 			LOGGER.info("receiver:  Slack");
 			//System.out.println("createPostMethodForSlack:receiver = slack");
-			webhookData = createWebhookDataForSlack(changedElement);
+			webhookData = createWebhookDataForSlack(changedElement, event);
 			//System.out.println(webhookData);
 		}
 		if(webhookData == "" || webhookData == null){
