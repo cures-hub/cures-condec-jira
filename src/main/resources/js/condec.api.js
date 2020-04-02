@@ -91,8 +91,6 @@
 			"description": description,
 			"documentationLocation": documentationLocation
 		};
-		console.log("SH Neues element soll erstellt werden.")
-		console.log(newElement);
 		postJSON(this.restPrefix + "/knowledge/createDecisionKnowledgeElement.json?idOfExistingElement="
 			+ idOfExistingElement + "&documentationLocationOfExistingElement="
 			+ documentationLocationOfExistingElement, newElement, function (error, newElement) {

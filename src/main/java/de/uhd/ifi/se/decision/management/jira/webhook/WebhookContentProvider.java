@@ -5,12 +5,9 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Formatter;
-import java.util.Set;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-
-import com.atlassian.jira.event.type.EventType;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -21,7 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 
 /**
@@ -63,21 +59,21 @@ public class WebhookContentProvider {
 	public PostMethod createPostMethod() {
 		PostMethod postMethod = new PostMethod();
 		if (projectKey == null || rootElementKey == null || secret == null|| receiver == null) {
-				System.out.println("createPostMethod null");
+				//System.out.println("createPostMethod null");
 			return postMethod;
 		}
 		String webhookData = "";
-		if(receiver == "Other"){
+		if(receiver.equals("Other")){
 			LOGGER.info("receiver:  Other");
-			System.out.println("createPostMethod:receiver= other");
+			//System.out.println("createPostMethod:receiver= other");
 			webhookData = createWebhookData();
 
 		}
-		if(receiver == "Slack"){
+		if(receiver.equals("Slack")){
 			LOGGER.info("receiver:  Slack");
-			System.out.println("createPostMethod:receiver= slack");
+			//System.out.println("createPostMethod:receiver= slack");
 			webhookData = createWebhookDataForSlack(this.knowledgeElement, "new");
-			System.out.println(webhookData);
+			//System.out.println(webhookData);
 		}
 		try {
 			StringRequestEntity requestEntity = new StringRequestEntity(webhookData, "application/json", "UTF-8");
@@ -115,10 +111,10 @@ public class WebhookContentProvider {
 			//System.out.println("Summary after cutting: "+ summary);
 		}
 		String intro = "";
-		if(event == "new") {
+		if(event.equals("new")) {
 			intro = " Ein neues Entscheidungswissen wurde in Jira hinzugefügt:";
 		}
-		if(event == "changed" ){
+		if(event.equals("changed") ){
 			intro = " Ein Entscheidungswissen wurde in Jira geändert:";
 		}
 		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'"+ intro +"'}},"+
@@ -150,19 +146,19 @@ public class WebhookContentProvider {
 			return postMethod;
 		}
 		String webhookData = "";
-		if(receiver == "Other"){
+		if(receiver.equals("Other")){
 			LOGGER.info("receiver:  Other");
 			//System.out.println("createPostMethodForSlack:receiver= other");
 			return createPostMethod();
 
 		}
-		if(receiver == "Slack"){
+		if(receiver.equals("Slack")){
 			LOGGER.info("receiver:  Slack");
 			//System.out.println("createPostMethodForSlack:receiver = slack");
 			webhookData = createWebhookDataForSlack(changedElement, event);
 			//System.out.println(webhookData);
 		}
-		if(webhookData == "" || webhookData == null){
+		if(webhookData.equals("") || webhookData == null){
 			return postMethod;
 		}
 		try {
@@ -259,9 +255,9 @@ public class WebhookContentProvider {
 	 */
 	public String cutSummary(String toCut){
 		//System.out.println("cutSummary(): " + toCut);
-		toCut = toCut.replaceAll("\\x7B(\\S*)\\x7D","");
+		String cut = toCut.replaceAll("\\x7B(\\S*)\\x7D","");
 		//System.out.println("cutSummary() passed:" + toCut);
-		return toCut;
+		return cut;
 	}
 
 

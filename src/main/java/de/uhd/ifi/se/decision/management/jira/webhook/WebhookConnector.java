@@ -48,7 +48,8 @@ public class WebhookConnector {
 
 		this.receiver  = "Other";
 		if (this.url != null){
-			if(url.matches("https://hooks.slack.com(\\S*)")) {
+			String slackUrl = "https://hooks.slack.com(\\S*)";
+			if(url.matches(slackUrl)) {
 			this.receiver = "Slack";}
 		}
 
@@ -67,12 +68,12 @@ public class WebhookConnector {
 		if (!checkIfDataIsValid(newElement)) {
 			return isSubmitted;
 		}
-		if(this.receiver == "Other"){
+		if(this.receiver.equals("Other")){
 			List<KnowledgeElement> rootElements = getWebhookRootElements(newElement);
 			isSubmitted = postKnowledgeTrees(rootElements);
 			return isSubmitted;
 	  }
-		if(this.receiver == "Slack"){
+		if(this.receiver.equals("Slack")){
 			System.out.println("sendNewElement, receiver : Slack, Element:"+ newElement.getSummary());
 			isSubmitted = postKnowledgeElement(newElement, "new");
 			System.out.println(isSubmitted);
@@ -87,12 +88,12 @@ public class WebhookConnector {
 		if (!checkIfDataIsValid(changedElement)) {
 			return isSubmitted;
 		}
-		if(this.receiver == "Other"){
+		if(this.receiver.equals("Other")){
 			List<KnowledgeElement> rootElements = getWebhookRootElements(changedElement);
 			isSubmitted = postKnowledgeTrees(rootElements);
 			return isSubmitted;
 	  }
-		if(this.receiver == "Slack"){
+		if(this.receiver.equals("Slack")){
 			//System.out.println("sendElementChanges, receiver : Slack, Element:"+changedElement.getSummary());
 			isSubmitted = postKnowledgeElement(changedElement, "changed");
 			//System.out.println(isSubmitted);
@@ -198,7 +199,7 @@ public class WebhookConnector {
 			LOGGER.error("Could not trigger webhook data because the url is missing.");
 			return false;
 		}
-		if ((secret == null || secret.equals("")) && receiver != "Slack") {
+		if ((secret == null || secret.equals("")) && !receiver.equals("Slack")) {
 			LOGGER.error("Could not trigger webhook data because the secret is missing.");
 			return false;
 		}
@@ -223,7 +224,8 @@ public class WebhookConnector {
 		this.url = url;
 
 		if (this.url != null){
-			if(url.matches("https://hooks.slack.com(\\S*)")) {
+			String slackUrl = "https://hooks.slack.com(\\S*)";
+			if(url.matches(slackUrl)) {
 			this.receiver = "Slack";}
 		}else{
 			this.receiver  = "Other";

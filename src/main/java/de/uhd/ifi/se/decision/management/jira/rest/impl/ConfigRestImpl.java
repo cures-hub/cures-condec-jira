@@ -324,7 +324,8 @@ public class ConfigRestImpl implements ConfigRest {
        String data = "{'text':'TestPost from Jira-ConDec'}";
        String url = ConfigPersistenceManager.getWebhookUrl(projectKey);
        System.out.println("sendTestPost, url : "+ url);
-       if(url.matches("https://hooks.slack.com(\\S*)")) {
+       String slackUrl = "https://hooks.slack.com(\\S*)";
+       if(url.matches(slackUrl)) {
          data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'TESTPOST, geändertes Entscheidungswissen wird in dieser Form erscheinen:'}},"+
      		"{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :issue: : Issue" +
      		" \\n *Titel*: Test-Zusammenfassung \\n'}}]}";
