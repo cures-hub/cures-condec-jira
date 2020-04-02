@@ -63,13 +63,13 @@ public class WebhookContentProvider {
 			return postMethod;
 		}
 		String webhookData = "";
-		if(receiver.equals("Other")){
+		if("Other".equals(receiver)){
 			LOGGER.info("receiver:  Other");
 			//System.out.println("createPostMethod:receiver= other");
 			webhookData = createWebhookData();
 
 		}
-		if(receiver.equals("Slack")){
+		if("Slack".equals(receiver)){
 			LOGGER.info("receiver:  Slack");
 			//System.out.println("createPostMethod:receiver= slack");
 			webhookData = createWebhookDataForSlack(this.knowledgeElement, "new");
