@@ -199,7 +199,7 @@ public class WebhookConnector {
 			LOGGER.error("Could not trigger webhook data because the url is missing.");
 			return false;
 		}
-		if ((secret == null || secret.equals("")) && !receiver.equals("Slack")) {
+		if ((secret == null || secret.equals("")) && !"Slack".equals(receiver)) {
 			LOGGER.error("Could not trigger webhook data because the secret is missing.");
 			return false;
 		}

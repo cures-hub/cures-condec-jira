@@ -111,10 +111,10 @@ public class WebhookContentProvider {
 			//System.out.println("Summary after cutting: "+ summary);
 		}
 		String intro = "";
-		if(event.equals("new")) {
+		if("new".equals(event)) {
 			intro = " Ein neues Entscheidungswissen wurde in Jira hinzugefügt:";
 		}
-		if(event.equals("changed") ){
+		if("changed".equals(event) ){
 			intro = " Ein Entscheidungswissen wurde in Jira geändert:";
 		}
 		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'"+ intro +"'}},"+
@@ -146,19 +146,19 @@ public class WebhookContentProvider {
 			return postMethod;
 		}
 		String webhookData = "";
-		if(receiver.equals("Other")){
+		if("Other".equals(receiver)){
 			LOGGER.info("receiver:  Other");
 			//System.out.println("createPostMethodForSlack:receiver= other");
 			return createPostMethod();
 
 		}
-		if(receiver.equals("Slack")){
+		if("Slack".equals(receiver)){
 			LOGGER.info("receiver:  Slack");
 			//System.out.println("createPostMethodForSlack:receiver = slack");
 			webhookData = createWebhookDataForSlack(changedElement, event);
 			//System.out.println(webhookData);
 		}
-		if(webhookData.equals("") || webhookData == null){
+		if(webhookData == null || "".equals(webhookData)){
 			return postMethod;
 		}
 		try {
