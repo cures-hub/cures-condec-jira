@@ -7,7 +7,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -267,11 +271,10 @@ public class ViewRestImpl implements ViewRest {
 					.entity(ImmutableMap.of("error", "Treant cannot be shown since depth of Tree is NaN")).build();
 		}
 		try {
-			ApplicationUser user = AuthenticationManager.getUser(request);
 			CodeClassKnowledgeElementPersistenceManager ccManager
 					= new CodeClassKnowledgeElementPersistenceManager(projectKey);
 			KnowledgeElement element = ccManager.getDecisionKnowledgeElement(elementKey);
-			Treant treant = new Treant(projectKey, element, depth, searchTerm, user, "treant-container-class", checkboxflag);
+			Treant treant = new Treant(projectKey, element, depth, searchTerm, "treant-container-class", checkboxflag);
 			return Response.ok(treant).build();
 		} catch (Exception e) {
 			e.printStackTrace();

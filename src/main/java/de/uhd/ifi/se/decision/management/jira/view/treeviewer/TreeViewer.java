@@ -1,6 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -9,7 +15,11 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
-import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;

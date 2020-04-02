@@ -208,13 +208,11 @@ public class GitClientImpl implements GitClient {
 			gits.get(repoUri).pull().call();
 
 			ObjectId head = getRepository(repoUri).resolve("HEAD^{tree}");
-			if (oldHead != head && getRepository(repoUri).getBranch().equals(defaultBranchFolderNames.get(repoUri))) {
+			if (!oldHead.equals(head) && getRepository(repoUri).getBranch().equals(defaultBranchFolderNames.get(repoUri))) {
 				CodeClassKnowledgeElementPersistenceManager persistenceManager = new CodeClassKnowledgeElementPersistenceManager(
 						projectKey);
 				persistenceManager.maintainCodeClassKnowledgeElements(repoUri, oldHead, head);
-			} else {
 			}
-
 		} catch (GitAPIException | IOException e) {
 			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t" + e.getMessage());
 			e.printStackTrace();

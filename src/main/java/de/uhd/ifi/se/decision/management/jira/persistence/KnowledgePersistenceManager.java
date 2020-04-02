@@ -6,8 +6,19 @@ import java.util.Map;
 
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.user.ApplicationUser;
-import de.uhd.ifi.se.decision.management.jira.model.*;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.*;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgePersistenceManagerImpl;
+
 
 /**
  * Interface that integrates all available persistence managers for single

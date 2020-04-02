@@ -91,11 +91,12 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 
 	public CodeClassElementInDatabase getEntryForKnowledgeElement(KnowledgeElement element) {
 		Long id = element.getId();
+		CodeClassElementInDatabase entry = null;
 		for (CodeClassElementInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassElementInDatabase.class,
 				Query.select().where("ID = ?", id))) {
-			return databaseEntry;
+			entry = databaseEntry;
 		}
-		return null;
+		return entry;
 	}
 
 	@Override
@@ -146,7 +147,7 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 			AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 					.getOrCreate(projectKey).getJiraIssueManager();
 			for (String key : element.getDescription().split(";")) {
-				if (key != "") {
+				if (!"".equals(key)) {
 					KnowledgeElement issueElement = persistenceManager.getDecisionKnowledgeElement(key);
 					Link link = new LinkImpl(newElement, issueElement);
 					long databaseId = GenericLinkManager.insertLink(link, user);

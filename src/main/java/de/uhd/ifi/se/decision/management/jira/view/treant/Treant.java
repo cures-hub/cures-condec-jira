@@ -11,7 +11,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.atlassian.jira.user.ApplicationUser;
-import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
@@ -65,7 +69,7 @@ public class Treant {
 		this.setHyperlinked(isHyperlinked);
 	}
 
-	public Treant(String projectKey, KnowledgeElement element, int depth, String query, ApplicationUser users,
+	public Treant(String projectKey, KnowledgeElement element, int depth, String query,
 				  String treantId, boolean checkboxflag) {
 		this.traversedLinks = new HashSet<Link>();
 		this.depth = depth;

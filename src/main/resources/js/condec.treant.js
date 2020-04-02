@@ -141,7 +141,7 @@
         var documentationLocationOfChild = extractDocumentationLocationFromHTMLElement(draggedElement);
         var documentationLocationOfOldParent = extractDocumentationLocationFromHTMLId(findParentElement(childId)["id"]);
         var documentationLocationOfNewParent = extractDocumentationLocationFromHTMLElement(target);
-        if (documentationLocationOfNewParent != "c" && documentationLocationOfChild != "c") {
+        if (documentationLocationOfNewParent !== "c" && documentationLocationOfChild !== "c") {
             conDecAPI.deleteLink(oldParentElement.id, childId, documentationLocationOfOldParent,
                 documentationLocationOfChild, function () {
                     conDecAPI.createLink(null, target.id, draggedElement.id, documentationLocationOfNewParent,
