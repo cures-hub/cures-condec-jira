@@ -35,7 +35,7 @@ public class GitCodeClassExtractor {
 		this.projectKey = projectKey;
 		codeClassOriginMap = new HashMap<String, String>();
 		treeWalkPath = new HashMap<String, String>();
-		this.codeClassListFull = getCodeClassFiles();
+		getCodeClassFiles();
 	}
 
 	public List<File> getCodeClassFiles() {
@@ -63,12 +63,12 @@ public class GitCodeClassExtractor {
 						}
 					}
 				} catch (IOException e) {
-					System.out.println("Error while walking Git-Tree");
 					e.printStackTrace();
 				}
 				treeWalk.close();
 			}
 		}
+		this.codeClassListFull = codeClassListFull;
 		return codeClassListFull;
 	}
 
@@ -76,7 +76,7 @@ public class GitCodeClassExtractor {
 		BlameResult blameResult = getGitBlameForFile(file);
 		List<String> allKeys = new ArrayList<String>();
 		if (blameResult == null) {
-			return Collections.emptyList();
+			return null;
 		}
 		try {
 			int lines = countLines(file);
@@ -94,6 +94,9 @@ public class GitCodeClassExtractor {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		if (allKeys == null || allKeys.size() == 0) {
+			allKeys.add("");
 		}
 		return allKeys;
 	}
@@ -120,6 +123,9 @@ public class GitCodeClassExtractor {
 		}
 		try {
 			String repoUri = codeClassOriginMap.get(file.getAbsolutePath());
+			if (repoUri == null) {
+				return null;
+			}
 			Repository repository = gitClient.getGit(repoUri).getRepository();
 			BlameCommand blamer = new BlameCommand(repository);
 			blamer.setFilePath(treeWalkPath.get(file.getAbsolutePath()));
@@ -128,7 +134,6 @@ public class GitCodeClassExtractor {
 			// blameResult =
 			// gitClient.getGit(repoUri).blame().setFilePath(gitFile.getPath()).call();
 		} catch (RevisionSyntaxException | GitAPIException e) {
-			System.err.println("File could not be found.");
 			e.printStackTrace();
 		}
 		return blameResult;

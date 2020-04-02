@@ -1,19 +1,26 @@
 <div>
     <form class="aui">
-        <input class="text medium-long-field" id="jstree-search-input-code"
-               placeholder="$i18n.getText('condec.filter.label')"/>
-        <select id="select-root-element-type-code" name="select-root-element-type-code"
-                class="select medium-field"></select>
-        <input type="text" class="text medium-long-field"
-               id="element-input-field-code" placeholder="$i18n.getText('condec.create.label')"/>
-        <input type="button" id="create-element-button-code"
-               class="aui-button aui-button-primary" value="$i18n.getText('condec.button.create')"/>
-        #set($select2-decision-group = "select2-decision-group-code")
-        #parse("templates/filter/decisionGroup.vm")
-        #set ($linkDistanceInputId = "depth-of-tree-input")
-        #parse("templates/filter/linkDistance.vm")
+        <div>
+            <input class="text medium-long-field" id="jstree-search-input-code"
+                   placeholder="$i18n.getText('condec.filter.label')"/>
+            #set($select2-decision-group = "select2-decision-group-code")
+            #parse("templates/filter/decisionGroup.vm")
+            <label for="show-without-elements-input">Show Issues without Knowledge Elements:</label>
+            <input class="checked" type="checkbox" id="show-without-elements-input" onclick="checkBoxClicked()"
+                   checked/>
+            #set ($linkDistanceInputId = "depth-of-tree-input-code")
+            #parse("templates/filter/linkDistance.vm")
+        </div>
+        <div style="margin-top: 5px">
+            <label for="select-root-element-type-code">Create Knowledge Element:</label>
+            <select id="select-root-element-type-code" name="select-root-element-type-code"
+                    class="select medium-field"></select>
+            <input type="text" class="text medium-long-field"
+                   id="element-input-field-code" placeholder="$i18n.getText('condec.create.label')"/>
+            <input type="button" id="create-element-button-code"
+                   class="aui-button aui-button-primary" value="$i18n.getText('condec.button.create')"/>
 
-
+        </div>
     </form>
 </div>
 <div class="aui-group">
@@ -35,9 +42,12 @@
         }
     });
 
-    $("#select2-decision-group").on("change.select2", function (e) {
+    $("#select2-decision-group-code").on("change.select2", function (e) {
         conDecObservable.notify();
     });
 
+    function checkBoxClicked() {
+        conDecObservable.notify()
+    }
 
 </script>

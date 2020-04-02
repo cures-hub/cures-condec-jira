@@ -6,6 +6,7 @@
     var treantTree;
 
     var treantid = "treant-container";
+    var depthId = "depth-of-tree-input";
 
 
     var ConDecTreant = function ConDecTreant() {
@@ -33,7 +34,9 @@
         console.log("conDecTreant buildClassTreant");
         var depthOfTree = getDepthOfTree();
         treantid = "treant-container-class";
-        conDecAPI.getClassTreant(elementKey, depthOfTree, searchTerm, function (treeStructure) {
+        depthId = "depth-of-tree-input-code";
+        var checkboxflag = document.getElementById("show-without-elements-input").checked;
+        conDecAPI.getClassTreant(elementKey, depthOfTree, searchTerm, checkboxflag, function (treeStructure) {
             document.getElementById(treantid).innerHTML = "";
             treantTree = new Treant(treeStructure);
             if (isInteractive !== undefined && isInteractive) {
@@ -47,10 +50,13 @@
 
     function getDepthOfTree() {
         console.log("conDecTreant getDepthOfTree");
-        var depthOfTreeInput = document.getElementById("depth-of-tree-input");
+        var depthOfTreeInput = document.getElementById(depthId);
         var depthOfTree = 4;
         if (depthOfTreeInput !== null) {
             depthOfTree = depthOfTreeInput.value;
+            if (depthId === "depth-of-tree-input-code") {
+                depthOfTree = depthOfTree - 1;
+            }
         }
         return depthOfTree;
     }
@@ -135,14 +141,18 @@
         var documentationLocationOfChild = extractDocumentationLocationFromHTMLElement(draggedElement);
         var documentationLocationOfOldParent = extractDocumentationLocationFromHTMLId(findParentElement(childId)["id"]);
         var documentationLocationOfNewParent = extractDocumentationLocationFromHTMLElement(target);
+        if (documentationLocationOfNewParent != "c" && documentationLocationOfChild != "c") {
+            conDecAPI.deleteLink(oldParentElement.id, childId, documentationLocationOfOldParent,
+                documentationLocationOfChild, function () {
+                    conDecAPI.createLink(null, target.id, draggedElement.id, documentationLocationOfNewParent,
+                        documentationLocationOfChild, null, function () {
+                            conDecObservable.notify();
+                        });
+                });
+        } else {
+            alert("Can't Link a Knowledge Element to a Code Class");
+        }
 
-        conDecAPI.deleteLink(oldParentElement.id, childId, documentationLocationOfOldParent,
-            documentationLocationOfChild, function () {
-                conDecAPI.createLink(null, target.id, draggedElement.id, documentationLocationOfNewParent,
-                    documentationLocationOfChild, null, function () {
-                        conDecObservable.notify();
-                    });
-            });
     }
 
     function allowDrop(event) {
@@ -166,10 +176,10 @@
                 event.preventDefault();
                 if (this.getElementsByClassName("node-desc")[0].innerHTML.includes(":")) {
                     conDecContextMenu.createContextMenu(this.id, "s", event, treantid);
-                } else {
-                    if (this.id) {
-                        conDecContextMenu.createContextMenu(this.id, "i", event, treantid);
-                    }
+                } else if (this.getElementsByClassName("node-documentationLocation")[0].innerHTML.includes("c")) {
+                    conDecContextMenu.createContextMenu(this.id, "c", event, treantid);
+                } else if (this.id) {
+                    conDecContextMenu.createContextMenu(this.id, "i", event, treantid);
                 }
             });
         }
@@ -197,6 +207,9 @@
     function extractDocumentationLocationFromHTMLElement(element) {
         console.log("conDecTreant extractDocumentationLocationFromHTMLElement");
         // Sentences have the node desc shape "ProjectId-IssueID:SentenceID"
+        if ((element.getElementsByClassName("node-documentationLocation")[0].innerHTML.includes("c"))) {
+            return "c";
+        }
         if (element.getElementsByClassName("node-desc").length === 0) {
             return "i";
         }

@@ -85,7 +85,7 @@
             }
         });
 
-        var depthOfTreeInput = document.getElementById("depth-of-tree-input");
+        var depthOfTreeInput = document.getElementById("depth-of-tree-input-code");
         depthOfTreeInput.addEventListener("input", function () {
             var depthOfTreeWarningLabel = document.getElementById("depth-of-tree-warning");
             if (this.value > 0) {
@@ -116,17 +116,16 @@
             var node = tree.node.data;
             treant.buildClassTreant(node.key, true, "");
         });
-        /* Have to change filterNodesByGroup
         var selectedGroupsObj = $('#select2-decision-group-code').select2('data');
         var selectedGroups = [];
-        for(var i=0; i<= selectedGroupsObj.length; i++){
-            if(selectedGroupsObj[i]){
+        for (var i = 0; i <= selectedGroupsObj.length; i++) {
+            if (selectedGroupsObj[i]) {
                 selectedGroups[i] = selectedGroupsObj[i].text;
             }
         }
-        if(!selectedGroups===undefined || selectedGroups.length>0){
+        if (!selectedGroups === undefined || selectedGroups.length > 0) {
             treeViewer.filterNodesByGroup(selectedGroups);
-        } */
+        }
     }
 
     /*

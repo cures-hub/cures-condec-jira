@@ -37,7 +37,7 @@ public interface ViewRest {
 
 	Response getTreant(HttpServletRequest request, String elementKey, String depthOfTree, String searchTerm);
 
-	Response getClassTreant(HttpServletRequest request, String elementKey, String depthOfTree, String searchTerm);
+	Response getClassTreant(HttpServletRequest request, String elementKey, String depthOfTree, String searchTerm, boolean checkboxflag);
 
 	Response getVis(HttpServletRequest request, FilterSettings filterSettings, String elementKey);
 

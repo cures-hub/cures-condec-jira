@@ -112,7 +112,7 @@
 
     ConDecTreeViewer.prototype.filterNodesByGroup = function filterNodesByGroup(selectedGroup) {
         console.log("conDecTreeViewer filterNodesByGroup");
-        jQueryConDec("#jstree").on("loaded.jstree", function () {
+        jQueryConDec(jstreeId).on("loaded.jstree", function () {
             var treeViewer = jQueryConDec(jstreeId).jstree(true);
             if (treeViewer) {
                 var jsonNodes = treeViewer.get_json('#', {flat: true});

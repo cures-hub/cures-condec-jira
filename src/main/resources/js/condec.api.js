@@ -384,9 +384,9 @@
         });
     };
 
-    ConDecAPI.prototype.getClassTreant = function getClassTreant(elementKey, depthOfTree, searchTerm, callback) {
+    ConDecAPI.prototype.getClassTreant = function getClassTreant(elementKey, depthOfTree, searchTerm, checkboxflag, callback) {
         getJSON(this.restPrefix + "/view/getClassTreant.json?&elementKey=" + elementKey
-            + "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm, function (error, treant) {
+            + "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm + "&checkboxflag=" + checkboxflag, function (error, treant) {
             if (error === null) {
                 callback(treant);
             }

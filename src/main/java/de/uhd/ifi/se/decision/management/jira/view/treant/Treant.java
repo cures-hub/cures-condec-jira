@@ -14,6 +14,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 
 /**
  * Creates a tree data structure from the {@link KnowledgeGraph}. Uses the
@@ -64,15 +65,25 @@ public class Treant {
 		this.setHyperlinked(isHyperlinked);
 	}
 
-	public Treant(String projectKey, KnowledgeElement element, int depth, String query, ApplicationUser users, String treantId) {
+	public Treant(String projectKey, KnowledgeElement element, int depth, String query, ApplicationUser users,
+				  String treantId, boolean checkboxflag) {
 		this.traversedLinks = new HashSet<Link>();
 		this.depth = depth;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
-		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(projectKey).getJiraIssueManager();
 		this.setChart(new Chart(treantId));
-		Set<Link> links = new HashSet<Link>(element.getLinks());
-		this.setNodeStructure(this.createNodeStructure(element, links, 1));
+		Set<Link> usedLinks = new HashSet<>();
+		if (checkboxflag) {
+			for (Link link : element.getLinks()) {
+				KnowledgeElement targetElement = link.getTarget();
+				List<Link> elementLinks = GenericLinkManager.getOutwardLinks(targetElement);
+				if (elementLinks != null && elementLinks.size() > 0) {
+					usedLinks.add(link);
+				}
+			}
+		} else {
+			usedLinks = new HashSet<>(element.getLinks());
+		}
+		this.setNodeStructure(this.createNodeStructure(element, usedLinks, 1));
 		this.setHyperlinked(false);
 	}
 
@@ -106,13 +117,14 @@ public class Treant {
 			return node;
 		}
 		List<TreantNode> nodes = new ArrayList<TreantNode>();
+		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(element.getProject()).getJiraIssueManager();
 		for (Link link : links) {
-			TreantNode adult = createTreantNode(link.getTarget(), link, false);
-			adult.setChildren(getChildren(link.getTarget(), graph.edgesOf(link.getTarget()), currentDepth));
-			nodes.add(adult);
-			// nodes.addAll(getChildren(link.getOppositeElement(element),
-			// graph.edgesOf(link.getOppositeElement(element)),
-			// currentDepth));
+			if (persistenceManager.getDecisionKnowledgeElement(link.getTarget().getId()) != null) {
+				TreantNode adult = createTreantNode(link.getTarget(), link, false);
+				adult.setChildren(getChildren(link.getTarget(), graph.edgesOf(link.getTarget()), currentDepth));
+				nodes.add(adult);
+			}
 		}
 		if (nodes != null) {
 			node.setChildren(nodes);

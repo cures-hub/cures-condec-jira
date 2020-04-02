@@ -48,8 +48,7 @@ import org.slf4j.LoggerFactory;
  * supported.
  */
 public class GitClientImpl implements GitClient {
-	// TODO: CHANGE REPO OUTDATED BACK TO 15*60*1000
-	private static final long REPO_OUTDATED_AFTER = 60 * 1000; // ex. 15 minutes = 15 minutes * 60 seconds * 1000
+	private static final long REPO_OUTDATED_AFTER = 10 * 60 * 1000; // ex. 10 minutes = 10 minutes * 60 seconds * 1000
 	// miliseconds
 	private Map<String, Git> gits;
 	private List<String> remoteUris;
@@ -196,18 +195,10 @@ public class GitClientImpl implements GitClient {
 	private boolean pull(String repoUri) {
 		LOGGER.info("Pulling Repository: " + repoUri);
 		if (!isPullNeeded(repoUri)) {
-			try {
-				System.out.println("Unneccesary: " + getRepository(repoUri).getBranch());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			return true;
 		}
 		try {
-			System.out.println("Is necessary: " + repoUri);
 			ObjectId oldHead = getRepository(repoUri).resolve("HEAD^{tree}");
-			System.out.println("oldHead: " + oldHead);
 			List<RemoteConfig> remotes = gits.get(repoUri).remoteList().call();
 			for (RemoteConfig remote : remotes) {
 				gits.get(repoUri).fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
@@ -216,26 +207,20 @@ public class GitClientImpl implements GitClient {
 			}
 			gits.get(repoUri).pull().call();
 
-
-			System.out.println("Pulled ");
 			ObjectId head = getRepository(repoUri).resolve("HEAD^{tree}");
-			System.out.println("NewHead: " + head);
-			if (oldHead != head) {
+			if (oldHead != head && getRepository(repoUri).getBranch().equals(defaultBranchFolderNames.get(repoUri))) {
 				CodeClassKnowledgeElementPersistenceManager persistenceManager = new CodeClassKnowledgeElementPersistenceManager(
 						projectKey);
 				persistenceManager.maintainCodeClassKnowledgeElements(repoUri, oldHead, head);
 			} else {
-				System.out.println("Old equals new Head");
 			}
 
 		} catch (GitAPIException | IOException e) {
 			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t" + e.getMessage());
 			e.printStackTrace();
-			System.out.println("We had an Error");
 			return false;
 		}
 		LOGGER.info("Pulled from remote in " + gits.get(repoUri).getRepository().getDirectory());
-		System.out.println("Pull succeeded");
 		return true;
 	}
 
@@ -625,6 +610,7 @@ public class GitClientImpl implements GitClient {
 		String[] branchNameComponents = featureBranch.getName().split("/");
 		String branchShortName = branchNameComponents[branchNameComponents.length - 1];
 		String branchShortNameWithPrefix = featureBranch.getName().replaceFirst("refs/remotes/origin/", "");
+		branchShortNameWithPrefix = branchShortNameWithPrefix.replaceFirst("refs/heads/", "");
 		File directory = new File(fsManager.prepareBranchDirectory(branchShortName, repoUri));
 
 		return (switchGitDirectory(directory, repoUri) && pull(repoUri)
