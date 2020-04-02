@@ -125,7 +125,7 @@ public class WebhookContentProvider {
 		"{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :"+ changedElement.getType() + ":  " + changedElement.getType() +
 		" \\n *Titel*: " + summary + "\\n'},"+
 		"'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '"+changedElement.getUrl()+"'}}]}";
-		System.out.println("createPostMethodForSlack(): data "+data);
+		//System.out.println("createPostMethodForSlack(): data "+data);
 
 		return data;
 	}

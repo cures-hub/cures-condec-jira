@@ -102,18 +102,18 @@
 			}
 		});
 	};
-	
-	
-	
-	ConDecAPI.prototype.assignDecisionGroup = function assignDecisionGroup(level, existingGroups, 
+
+
+
+	ConDecAPI.prototype.assignDecisionGroup = function assignDecisionGroup(level, existingGroups,
 			addgroup, sourceId, documentationLocation, callback) {
 		var newElement= {};
 		var projectKey = getProjectKey();
 		postJSON(this.restPrefix + "/knowledge/assignDecisionGroup.json?sourceId="
 			+ sourceId + "&documentationLocation="
 			+ documentationLocation +"&projectKey="
-			+ projectKey+ "&level=" 
-			+ level +"&existingGroups=" 
+			+ projectKey+ "&level="
+			+ level +"&existingGroups="
 			+ existingGroups + "&addGroup="
 			+addgroup, newElement ,function (error, newElement) {
 			if (error === null) {
@@ -477,7 +477,7 @@
 	 */
 	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(searchString, created, closed, issueTypes, issueStatus, decGroups,
 																	 callback) {
-		
+
 		var filterSettings = {
 			"projectKey": projectKey,
 			"searchString": searchString,
@@ -518,8 +518,8 @@
 	 * external references: condec.relationship.page
 	 */
 	ConDecAPI.prototype.getDecisionGraphFiltered = function getDecisionGraphFiltered(selectedLinkTypes, searchString, decGroups, callback) {
-		
-		
+
+
 		var filterSettings = {
 			"projectKey" : projectKey,
 			"searchString" : searchString,
@@ -708,14 +708,14 @@
 			}
 		});
 	};
-	
+
 	ConDecAPI.prototype.getDecisionGroups = function getDecisionGroups(id, location,inputExistingGroupsField,selectLevelField, callback) {
 		var projectKey = getProjectKey();
 		var decisionGroups = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getDecisionGroups.json?elementId=" +id
 				 + "&location="+location+ "&projectKey="+projectKey);
 		callback(selectLevelField, inputExistingGroupsField,decisionGroups);
 	};
-	
+
 	ConDecAPI.prototype.fillDecisionGroupSelect = function fillDecisionGroupSelect(elementId){
 		var selectGroupField = document.getElementById(elementId);
 		getAllDecisionGroups(selectGroupField,function(selectGroupField, groups){
@@ -726,7 +726,7 @@
 						+"<option value='Realization_Level'>Realization_Level</option>");
 				for(var i = 0; i< groups.length; i++){
 					if(groups[i]!== "High_Level" && groups[i]!== "Medium_Level" && groups[i]!== "Realization_Level"){
-						selectGroupField.insertAdjacentHTML("beforeend", "<option value='"+groups[i]+"'>"+groups[i]+"</option>");	
+						selectGroupField.insertAdjacentHTML("beforeend", "<option value='"+groups[i]+"'>"+groups[i]+"</option>");
 					}
 				}
 			}else{
@@ -734,7 +734,7 @@
 			}
 		});
 	};
-	
+
 	function getAllDecisionGroups(selectGroupField, callback) {
 		var projectKey = getProjectKey();
 		var decisionGroups = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey="+projectKey);
@@ -753,7 +753,7 @@
 		extendedKnowledgeTypes.push("Con-argument");
 		return extendedKnowledgeTypes;
 	}
-	
+
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
@@ -811,9 +811,9 @@
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
- ConDecAPI.prototype.sendCurltoSlack = function sendCurltoSlack(projectKey){
+ ConDecAPI.prototype.sendTestPost = function sendTestPost(projectKey){
 
-   postJSON(this.restPrefix + "/config/sendCurltoSlack?projectKey=" + projectKey, null, function(error, response) {
+   postJSON(this.restPrefix + "/config/sendTestPost?projectKey=" + projectKey, null, function(error, response) {
 			if (error === null) {
 				showFlag("success", "The webhook test was send.");
 			}

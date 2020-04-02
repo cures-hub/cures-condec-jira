@@ -313,17 +313,22 @@ public class ConfigRestImpl implements ConfigRest {
     }
 
     @Override
-    @Path("/sendCurltoSlack")
+    @Path("/sendTestPost")
     @POST
-    public Response sendCurltoSlack(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+    public Response sendTestPost(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
       //System.out.println(projectKey);
       /*String command = "curl -X POST -H 'Content-type:application/json'"+
        " --data \"{'text':'Jira here. Test Post!'}\" "+
        ConfigPersistenceManager.getWebhookUrl(projectKey);*/
-       String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'TESTPOST, geändertes Entscheidungswissen wird in dieser Form erscheinen:'}},"+
-   		"{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :issue: : Issue" +
-   		" \\n *Titel*: Test-Zusammenfassung \\n'}}]}";
-
+       System.out.println("sendTestPost");
+       String data = "{'text':'TestPost from Jira-ConDec'}";
+       String url = ConfigPersistenceManager.getWebhookUrl(projectKey);
+       System.out.println("sendTestPost, url : "+ url);
+       if(url.matches("https://hooks.slack.com(\\S*)")) {
+         data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'TESTPOST, geändertes Entscheidungswissen wird in dieser Form erscheinen:'}},"+
+     		"{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :issue: : Issue" +
+     		" \\n *Titel*: Test-Zusammenfassung \\n'}}]}";
+      }
        PostMethod postMethod = new PostMethod();
        Header header = new Header();
    	   header.setName("X-Hub-Signature");
@@ -333,25 +338,13 @@ public class ConfigRestImpl implements ConfigRest {
         postMethod.setRequestEntity(sRE);
 
         HttpClient httpClient = new HttpClient();
-        postMethod.setURI(new HttpsURL(ConfigPersistenceManager.getWebhookUrl(projectKey)));
+        postMethod.setURI(new HttpsURL(url));
 
         int httpResponse = httpClient.executeMethod(postMethod);
   			if (httpResponse >= 200 && httpResponse < 300) {
-  				System.out.println("httpPequest ok");
+  				System.out.println("httpRequest ok");
   			}
 
-/*
-        Process process = Runtime.getRuntime().exec(command);
-        BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        //System.out.println(input.readLine());
-        String line = null;
-        String res = null;
-        while ((line = input.readLine()) != null)
-        {
-          System.out.println(line);
-          res += line;
-        }
-*/
 
       } catch (IOException | IllegalArgumentException e) {
         LOGGER.error("Could not send webhook data because of " + e.getMessage());
