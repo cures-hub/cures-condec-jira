@@ -74,9 +74,9 @@ public class WebhookConnector {
 			return isSubmitted;
 	  }
 		if(this.receiver.equals("Slack")){
-			System.out.println("sendNewElement, receiver : Slack, Element:"+ newElement.getSummary());
+			//System.out.println("sendNewElement, receiver : Slack, Element:"+ newElement.getSummary());
 			isSubmitted = postKnowledgeElement(newElement, "new");
-			System.out.println(isSubmitted);
+			//System.out.println(isSubmitted);
 			return isSubmitted;
 		}
 		return false;

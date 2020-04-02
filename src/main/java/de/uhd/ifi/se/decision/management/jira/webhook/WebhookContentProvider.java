@@ -67,7 +67,6 @@ public class WebhookContentProvider {
 			LOGGER.info("receiver:  Other");
 			//System.out.println("createPostMethod:receiver= other");
 			webhookData = createWebhookData();
-
 		}
 		if("Slack".equals(receiver)){
 			LOGGER.info("receiver:  Slack");
@@ -146,12 +145,12 @@ public class WebhookContentProvider {
 			return postMethod;
 		}
 		String webhookData = "";
+		/*
 		if("Other".equals(receiver)){
 			LOGGER.info("receiver:  Other");
 			//System.out.println("createPostMethodForSlack:receiver= other");
 			return createPostMethod();
-
-		}
+		}*/
 		if("Slack".equals(receiver)){
 			LOGGER.info("receiver:  Slack");
 			//System.out.println("createPostMethodForSlack:receiver = slack");
