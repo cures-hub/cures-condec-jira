@@ -211,7 +211,7 @@ public class TestTreeViewer extends TestSetUp {
 	@Test
 	public void testSecondConstructorWithProjectKeyNull() {
 		TreeViewer newTreeViewer = new TreeViewer(null);
-		assertNotNull(treeViewer);
+		assertNotNull(newTreeViewer);
 	}
 
 	@Test

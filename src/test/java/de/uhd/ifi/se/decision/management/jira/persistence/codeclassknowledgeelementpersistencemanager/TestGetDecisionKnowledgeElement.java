@@ -16,7 +16,6 @@ public class TestGetDecisionKnowledgeElement extends TestSetUp {
 	private KnowledgeElement classElement;
 	private KnowledgeElement classElement2;
 	private CodeClassKnowledgeElementPersistenceManager ccManager;
-	private ApplicationUser user;
 
 	@Before
 	public void setUp() {
@@ -27,7 +26,7 @@ public class TestGetDecisionKnowledgeElement extends TestSetUp {
 		classElement.setType("Other");
 		classElement.setDescription("TEST-1;");
 		classElement.setSummary("TestClass.java");
-		user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		classElement2 = ccManager.insertDecisionKnowledgeElement(classElement, user);
 	}
 

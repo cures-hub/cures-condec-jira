@@ -82,11 +82,12 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 
 	public KnowledgeElement getDecisionKnowledgeElementByNameAndIssueKeys(String name, String issueKeys) {
 		KnowledgeElement element = null;
+		String issueKeysWithRemove = issueKeys;
 		if (issueKeys.contains("-")) {
-			issueKeys = removeProjectKey(issueKeys, issueKeys.split("-")[0]);
+			issueKeysWithRemove = removeProjectKey(issueKeys, issueKeys.split("-")[0]);
 		}
 		for (CodeClassElementInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassElementInDatabase.class,
-				Query.select().where("FILE_NAME = ? AND JIRA_ISSUE_KEYS = ?", name, issueKeys))) {
+				Query.select().where("FILE_NAME = ? AND JIRA_ISSUE_KEYS = ?", name, issueKeysWithRemove))) {
 			element = new KnowledgeElementImpl(databaseEntry);
 		}
 		return element;

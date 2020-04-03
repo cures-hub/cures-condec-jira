@@ -14,7 +14,6 @@ import static org.junit.Assert.assertTrue;
 
 public class TestDeleteDecisonKnowledgeElement extends TestSetUp {
 
-	private KnowledgeElement classElement;
 	private CodeClassKnowledgeElementPersistenceManager ccManager;
 	private ApplicationUser user;
 
@@ -22,7 +21,7 @@ public class TestDeleteDecisonKnowledgeElement extends TestSetUp {
 	public void setUp() {
 		init();
 		ccManager = new CodeClassKnowledgeElementPersistenceManager("Test");
-		classElement = new KnowledgeElementImpl();
+		KnowledgeElement classElement = new KnowledgeElementImpl();
 		classElement.setProject("TEST");
 		classElement.setType("Other");
 		classElement.setDescription("TEST-1;");

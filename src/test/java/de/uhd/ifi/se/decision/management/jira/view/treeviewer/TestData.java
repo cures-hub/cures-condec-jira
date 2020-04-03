@@ -6,13 +6,13 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import de.uhd.ifi.se.decision.management.jira.testdata.Links;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class TestData extends TestSetUp {
 
@@ -35,28 +35,26 @@ public class TestData extends TestSetUp {
 
 	@Test
 	public void testConstructorWithDescNull() {
-		KnowledgeElement element2 = new KnowledgeElementImpl();
-		element2.setId(1);
-		element2.setSummary("Test-12");
-		element2.setType("Other");
+		element.setDescription(null);
+		Data data = new Data(element);
+		assertNotNull(data);
+		element.setDescription("TestDescription");
 	}
 
 	@Test
 	public void testConstructorWithDescBlank() {
-		KnowledgeElement element2 = new KnowledgeElementImpl();
-		element2.setId(1);
-		element2.setSummary("Test-12");
-		element2.setType("Other");
-		element2.setDescription("");
+		element.setDescription("");
+		Data data = new Data(element);
+		assertNotNull(data);
+		element.setDescription("TestDescription");
 	}
 
 	@Test
 	public void testConstructorWithDescUndefined() {
-		KnowledgeElement element2 = new KnowledgeElementImpl();
-		element2.setId(1);
-		element2.setSummary("Test-12");
-		element2.setType("Other");
-		element2.setDescription("undefined");
+		element.setDescription("undefined");
+		Data data = new Data(element);
+		assertNotNull(data);
+		element.setDescription("TestDescription");
 	}
 
 	@Test

@@ -813,9 +813,9 @@ public class GitClientImpl implements GitClient {
 
 	private boolean checkout(String checkoutObjectName, String repoUri, boolean isCommitWithinBranch) {
 		// checkout only remote branch
+		String shortCheckoutObjectName = checkoutObjectName.replaceFirst("refs/heads/", "");
 		if (!isCommitWithinBranch) {
-			checkoutObjectName = checkoutObjectName.replaceFirst("refs/heads/", "");
-			String checkoutName = "origin/" + checkoutObjectName;
+			String checkoutName = "origin/" + shortCheckoutObjectName;
 			try {
 				gits.get(repoUri).checkout().setName(checkoutName).call();
 			} catch (GitAPIException | JGitInternalException e) {
@@ -824,7 +824,7 @@ public class GitClientImpl implements GitClient {
 				return false;
 			}
 			// create local branch
-			if (!createLocalBranchIfNotExists(checkoutObjectName, repoUri)) {
+			if (!createLocalBranchIfNotExists(shortCheckoutObjectName, repoUri)) {
 				LOGGER.error("Could delete and create local branch");
 				return false;
 
@@ -833,10 +833,10 @@ public class GitClientImpl implements GitClient {
 
 		// checkout local branch/commit
 		try {
-			gits.get(repoUri).checkout().setName(checkoutObjectName).call();
+			gits.get(repoUri).checkout().setName(shortCheckoutObjectName).call();
 		} catch (GitAPIException | JGitInternalException e) {
 
-			LOGGER.error("Could not checkout " + checkoutObjectName + ". " + e.getMessage());
+			LOGGER.error("Could not checkout " + shortCheckoutObjectName + ". " + e.getMessage());
 			return false;
 		}
 		return true;
