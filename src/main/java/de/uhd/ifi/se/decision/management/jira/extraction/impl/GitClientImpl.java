@@ -2,7 +2,13 @@ package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.Lists;
@@ -15,13 +21,21 @@ import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElem
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
-import org.eclipse.jgit.api.errors.*;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRefNameException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
+import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawTextComparator;
-import org.eclipse.jgit.lib.*;
+import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.RemoteConfig;
@@ -608,7 +622,6 @@ public class GitClientImpl implements GitClient {
 		String[] branchNameComponents = featureBranch.getName().split("/");
 		String branchShortName = branchNameComponents[branchNameComponents.length - 1];
 		String branchShortNameWithPrefix = featureBranch.getName().replaceFirst("refs/remotes/origin/", "");
-		branchShortNameWithPrefix = branchShortNameWithPrefix.replaceFirst("refs/heads/", "");
 		File directory = new File(fsManager.prepareBranchDirectory(branchShortName, repoUri));
 
 		return (switchGitDirectory(directory, repoUri) && pull(repoUri)
@@ -764,6 +777,7 @@ public class GitClientImpl implements GitClient {
 		String[] branchNameComponents = branch.getName().split("/");
 		String branchShortName = branchNameComponents[branchNameComponents.length - 1];
 		String branchShortNameWithPrefix = branch.getName().replaceFirst("refs/remotes/origin/", "");
+		branchShortNameWithPrefix = branchShortNameWithPrefix.replaceFirst("refs/heads/", "");
 		boolean canReleaseRepoDirectory = false;
 
 		if (isDefaultBranch) {
@@ -800,6 +814,7 @@ public class GitClientImpl implements GitClient {
 	private boolean checkout(String checkoutObjectName, String repoUri, boolean isCommitWithinBranch) {
 		// checkout only remote branch
 		if (!isCommitWithinBranch) {
+			checkoutObjectName = checkoutObjectName.replaceFirst("refs/heads/", "");
 			String checkoutName = "origin/" + checkoutObjectName;
 			try {
 				gits.get(repoUri).checkout().setName(checkoutName).call();
