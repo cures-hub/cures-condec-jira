@@ -128,13 +128,15 @@ public class TreeViewer {
 	 */
 	public TreeViewer(String projectKey) {
 		this();
-		Set<Data> dataSet = new HashSet<Data>();
-		CodeClassKnowledgeElementPersistenceManager manager = new CodeClassKnowledgeElementPersistenceManager(projectKey);
-		List<KnowledgeElement> elementList = manager.getDecisionKnowledgeElements();
-		for (KnowledgeElement element : elementList) {
-			dataSet.add(this.makeIdUnique(new Data(element)));
+		if (projectKey != null) {
+			Set<Data> dataSet = new HashSet<Data>();
+			CodeClassKnowledgeElementPersistenceManager manager = new CodeClassKnowledgeElementPersistenceManager(projectKey);
+			List<KnowledgeElement> elementList = manager.getDecisionKnowledgeElements();
+			for (KnowledgeElement element : elementList) {
+				dataSet.add(this.makeIdUnique(new Data(element)));
+			}
+			this.data = dataSet;
 		}
-		this.data = dataSet;
 	}
 
 	private void removeChildrenWithType(Iterator<Data> iterator) {

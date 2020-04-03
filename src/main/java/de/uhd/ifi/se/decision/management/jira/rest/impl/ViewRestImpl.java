@@ -251,7 +251,7 @@ public class ViewRestImpl implements ViewRest {
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response getClassTreant(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey,
 								   @QueryParam("depthOfTree") String depthOfTree, @QueryParam("searchTerm") String searchTerm,
-								   @QueryParam("checkboxflag") boolean checkboxflag) {
+								   @QueryParam("checkboxflag") Boolean checkboxflag) {
 		if (elementKey == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build();
@@ -274,6 +274,7 @@ public class ViewRestImpl implements ViewRest {
 			CodeClassKnowledgeElementPersistenceManager ccManager
 					= new CodeClassKnowledgeElementPersistenceManager(projectKey);
 			KnowledgeElement element = ccManager.getDecisionKnowledgeElement(elementKey);
+			System.out.println("Element: " + element);
 			Treant treant = new Treant(projectKey, element, depth, searchTerm, "treant-container-class", checkboxflag);
 			return Response.ok(treant).build();
 		} catch (Exception e) {

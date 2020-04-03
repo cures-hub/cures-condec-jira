@@ -112,7 +112,7 @@ public class Treant {
 	}
 
 	public TreantNode createNodeStructure(KnowledgeElement element, Set<Link> links, int currentDepth) {
-		if (element == null || element.getProject() == null) {
+		if (element == null || element.getProject() == null || links == null) {
 			return new TreantNode();
 		}
 		// boolean isCollapsed = isNodeCollapsed(linksToTraverse, currentDepth);

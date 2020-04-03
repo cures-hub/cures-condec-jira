@@ -82,6 +82,9 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 
 	public KnowledgeElement getDecisionKnowledgeElementByNameAndIssueKeys(String name, String issueKeys) {
 		KnowledgeElement element = null;
+		if (issueKeys.contains("-")) {
+			issueKeys = removeProjectKey(issueKeys, issueKeys.split("-")[0]);
+		}
 		for (CodeClassElementInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassElementInDatabase.class,
 				Query.select().where("FILE_NAME = ? AND JIRA_ISSUE_KEYS = ?", name, issueKeys))) {
 			element = new KnowledgeElementImpl(databaseEntry);
@@ -161,8 +164,23 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 		return newElement;
 	}
 
+	private String removeProjectKey(String oldString, String projectKey) {
+		String newString = "";
+		for (String key : oldString.split(";")) {
+			String keyWithRemove = key.replace(projectKey + "-", "");
+			newString = newString + keyWithRemove + ";";
+		}
+		return newString;
+	}
+
 	private KnowledgeElement checkIfElementExistsInDatabase(KnowledgeElement element) {
-		KnowledgeElement existingElement = getDecisionKnowledgeElement(element);
+		KnowledgeElement existingElement = new KnowledgeElementImpl();
+		if (element.getId() > 0) {
+			existingElement = getDecisionKnowledgeElement(element);
+		} else {
+			existingElement = getDecisionKnowledgeElementByNameAndIssueKeys(element.getSummary(),
+					removeProjectKey(element.getDescription(), element.getProject().getProjectKey()));
+		}
 		if (existingElement != null) {
 			return existingElement;
 		}
@@ -174,27 +192,21 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 		databaseEntry.setType(element.getTypeAsString());
 		String issuekeys = "";
 		for (String key : element.getDescription().split(";")) {
-			issuekeys = issuekeys + key.split("-")[1] + ";";
+			if (key.contains("-")) {
+				issuekeys = issuekeys + key.split("-")[1] + ";";
+			}
 		}
 		if (issuekeys.length() > 255) {
 			issuekeys = issuekeys.substring(0, 255);
-		}
-		while (issuekeys.charAt(issuekeys.length() - 1) != ';') {
-			issuekeys = issuekeys.substring(0, issuekeys.length() - 2);
+			while (issuekeys.charAt(issuekeys.length() - 1) != ';') {
+				issuekeys = issuekeys.substring(0, issuekeys.length() - 2);
+			}
 		}
 		databaseEntry.setJiraIssueKeys(issuekeys);
 		databaseEntry.setFileName(element.getSummary());
 	}
 
-	public List<String> getIssueKeysAsList(KnowledgeElement element) {
-		List<String> issueKeys = new ArrayList<String>();
-		for (Link link : element.getLinks()) {
-			issueKeys.add(link.getTarget().getKey());
-		}
-		return issueKeys;
-	}
-
-	public String getIssueListAsString(List<String> list) {
+	private String getIssueListAsString(List<String> list) {
 		String keys = "";
 		for (String key : list) {
 			keys = keys + key + ";";
@@ -204,7 +216,7 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 
 	@Override
 	public ApplicationUser getCreator(KnowledgeElement element) {
-		return null;
+		return element.getCreator();
 	}
 
 	public boolean updateDecisionKnowledgeElement(KnowledgeElement newElement, ApplicationUser user) {
@@ -218,17 +230,6 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 		setParameters(newElement, entry);
 		entry.save();
 		return true;
-	}
-
-	public List<KnowledgeElement> getKnowledgeElementsForJiraIssueKey(String issueKey) {
-		List<KnowledgeElement> decisionKnowledgeElements = getDecisionKnowledgeElements();
-		List<KnowledgeElement> relevantElements = new ArrayList<>();
-		for (KnowledgeElement element : decisionKnowledgeElements) {
-			if (element.getDescription().contains(issueKey)) {
-				relevantElements.add(element);
-			}
-		}
-		return relevantElements;
 	}
 
 	public void maintainCodeClassKnowledgeElements(String repoUri, ObjectId oldHead, ObjectId newhead) {
