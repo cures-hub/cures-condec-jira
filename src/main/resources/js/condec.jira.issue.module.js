@@ -74,7 +74,7 @@
 				showTreant();
 			} else if (event.target.href.includes("#vis")) {
 				showGraph();
-			} else if (event.target.href.includes("#treant-container-class")){
+			} else if (event.target.href.includes("#class-treant")){
 				showClassTreant();
 			}
 		});
@@ -98,7 +98,6 @@
 	}
 	
 	function showClassTreant() {
-		alert("Called");
 		console.log("ConDecJiraIssueModule showTreant");
 		treant.buildClassTreant(issueKey, true, search, true);
 	}

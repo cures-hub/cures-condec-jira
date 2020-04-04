@@ -214,7 +214,6 @@ public class GitClientImpl implements GitClient {
 			return true;
 		}
 		try {
-			System.out.println("Pulling");
 			ObjectId oldHead = getRepository(repoUri).resolve("HEAD^{tree}");
 			List<RemoteConfig> remotes = gits.get(repoUri).remoteList().call();
 			for (RemoteConfig remote : remotes) {
@@ -225,9 +224,8 @@ public class GitClientImpl implements GitClient {
 			gits.get(repoUri).pull().call();
 
 			ObjectId head = getRepository(repoUri).resolve("HEAD^{tree}");
-			System.out.println(oldHead.equals(head));
-			System.out.println(getRepository(repoUri).getBranch().equals(defaultBranchFolderNames.get(repoUri)));
-			if (!oldHead.equals(head)) {
+			if (!oldHead.equals(head)
+					&& getRepository(repoUri).getBranch().equals(defaultBranchFolderNames.get(repoUri))) {
 				CodeClassKnowledgeElementPersistenceManager persistenceManager = new CodeClassKnowledgeElementPersistenceManager(
 						projectKey);
 				persistenceManager.maintainCodeClassKnowledgeElements(repoUri, oldHead, head);

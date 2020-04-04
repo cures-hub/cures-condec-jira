@@ -123,7 +123,6 @@ public class Treant {
 
 	public TreantNode createNodeStructure(KnowledgeElement element, Set<Link> links, int currentDepth,
 			boolean isIssueView) {
-		System.out.println("4: " + links);
 		if (element == null || element.getProject() == null || links == null) {
 			return new TreantNode();
 		}
@@ -141,7 +140,6 @@ public class Treant {
 				adult.setChildren(getChildren(link.getTarget(), graph.edgesOf(link.getTarget()), currentDepth));
 				nodes.add(adult);
 			} else if (isIssueView) {
-				System.out.println("5: " + link.getSource());
 				TreantNode adult = createTreantNode(link.getSource(), link, false);
 				nodes.add(adult);
 			}
@@ -149,7 +147,6 @@ public class Treant {
 		if (nodes != null) {
 			node.setChildren(nodes);
 		}
-		System.out.println("6");
 		return node;
 	}
 

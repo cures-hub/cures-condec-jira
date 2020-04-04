@@ -14,7 +14,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 			<a href="#featureBranchesTab">Feature branch(es)</a>
 		</li>
 		<li class="menu-item active-tab">
-			<a href="#treant-container-class">Connected Java-Classes</a>
+			<a href="#class-treant">Connected Java-Classes</a>
 		</li>
 	</ul>
 	<div class="tabs-pane active-pane" id="treant">
@@ -44,7 +44,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 		<div id="featureBranches-container">
 		</div>
 	</div>
-	<div class="tabs-pane" id="treant-class">
+	<div class="tabs-pane" id="class-treant">
 		<div style="height: auto" id="treant-container-class"></div>
 	</div>
 </div>

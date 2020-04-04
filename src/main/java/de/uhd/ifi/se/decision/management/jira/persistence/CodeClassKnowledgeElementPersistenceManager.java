@@ -251,17 +251,14 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 		ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 		List<KnowledgeElement> existingElements = getDecisionKnowledgeElements();
 		if (existingElements == null || existingElements.size() == 0) {
-			System.out.println("Here");
 			GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
 			List<File> codeClasses = ccExtractor.getCodeClassListFull();
-			System.out.println("Code Classes: " + codeClasses);
 			for (File file : codeClasses) {
 				if (file != null) {
 					List<String> issueKeys = ccExtractor.getIssuesKeysForFile(file);
 					if (issueKeys != null && issueKeys.size() > 0) {
 						KnowledgeElement newElement = ccExtractor.createKnowledgeElementFromFile(file, issueKeys);
 						insertDecisionKnowledgeElement(newElement, user);
-						System.out.println(newElement + "inserted");
 					}
 				}
 			}
