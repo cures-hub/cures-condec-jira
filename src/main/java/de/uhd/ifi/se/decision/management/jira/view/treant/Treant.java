@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -51,7 +52,7 @@ public class Treant {
 	}
 
 	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user,
-				  boolean isHyperlinked) {
+			boolean isHyperlinked) {
 		this.traversedLinks = new HashSet<Link>();
 		this.depth = depth;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
@@ -69,25 +70,34 @@ public class Treant {
 		this.setHyperlinked(isHyperlinked);
 	}
 
-	public Treant(String projectKey, KnowledgeElement element, int depth, String query,
-				  String treantId, boolean checkboxflag) {
+	public Treant(String projectKey, KnowledgeElement element, int depth, String query, String treantId,
+			boolean checkboxflag, boolean isIssueView) {
 		this.traversedLinks = new HashSet<Link>();
 		this.depth = depth;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 		this.setChart(new Chart(treantId));
 		Set<Link> usedLinks = new HashSet<>();
-		if (checkboxflag) {
+		if (isIssueView) {
 			for (Link link : element.getLinks()) {
-				KnowledgeElement targetElement = link.getTarget();
-				List<Link> elementLinks = GenericLinkManager.getOutwardLinks(targetElement);
-				if (elementLinks != null && elementLinks.size() > 0) {
+				if (link.getSource() != null && link.getSource().getSummary().contains(".java")
+						&& link.getSource().getDocumentationLocation().getIdentifier().equals("c")) {
 					usedLinks.add(link);
 				}
 			}
 		} else {
-			usedLinks = new HashSet<>(element.getLinks());
+			if (checkboxflag) {
+				for (Link link : element.getLinks()) {
+					KnowledgeElement targetElement = link.getTarget();
+					List<Link> elementLinks = GenericLinkManager.getOutwardLinks(targetElement);
+					if (elementLinks != null && elementLinks.size() > 0) {
+						usedLinks.add(link);
+					}
+				}
+			} else {
+				usedLinks = new HashSet<>(element.getLinks());
+			}
 		}
-		this.setNodeStructure(this.createNodeStructure(element, usedLinks, 1));
+		this.setNodeStructure(this.createNodeStructure(element, usedLinks, 1, isIssueView));
 		this.setHyperlinked(false);
 	}
 
@@ -111,7 +121,9 @@ public class Treant {
 		return node;
 	}
 
-	public TreantNode createNodeStructure(KnowledgeElement element, Set<Link> links, int currentDepth) {
+	public TreantNode createNodeStructure(KnowledgeElement element, Set<Link> links, int currentDepth,
+			boolean isIssueView) {
+		System.out.println("4: " + links);
 		if (element == null || element.getProject() == null || links == null) {
 			return new TreantNode();
 		}
@@ -124,15 +136,20 @@ public class Treant {
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(element.getProject()).getJiraIssueManager();
 		for (Link link : links) {
-			if (persistenceManager.getDecisionKnowledgeElement(link.getTarget().getId()) != null) {
+			if (!isIssueView && persistenceManager.getDecisionKnowledgeElement(link.getTarget().getId()) != null) {
 				TreantNode adult = createTreantNode(link.getTarget(), link, false);
 				adult.setChildren(getChildren(link.getTarget(), graph.edgesOf(link.getTarget()), currentDepth));
+				nodes.add(adult);
+			} else if (isIssueView) {
+				System.out.println("5: " + link.getSource());
+				TreantNode adult = createTreantNode(link.getSource(), link, false);
 				nodes.add(adult);
 			}
 		}
 		if (nodes != null) {
 			node.setChildren(nodes);
 		}
+		System.out.println("6");
 		return node;
 	}
 

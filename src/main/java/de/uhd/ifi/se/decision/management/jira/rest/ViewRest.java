@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import com.atlassian.jira.exception.PermissionException;
+
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
@@ -31,13 +32,11 @@ public interface ViewRest {
 	 * element. The tree viewer comprises only one tree.
 	 */
 	Response getTreeViewerForSingleElement(HttpServletRequest request, String jiraIssueKey,
-										   FilterSettings filterSettings);
+			FilterSettings filterSettings);
 
 	Response getEvolutionData(HttpServletRequest request, FilterSettings filterSettings);
 
 	Response getTreant(HttpServletRequest request, String elementKey, String depthOfTree, String searchTerm);
-
-	Response getClassTreant(HttpServletRequest request, String elementKey, String depthOfTree, String searchTerm, Boolean checkboxflag);
 
 	Response getVis(HttpServletRequest request, FilterSettings filterSettings, String elementKey);
 
@@ -48,5 +47,8 @@ public interface ViewRest {
 	Response getDecisionMatrix(HttpServletRequest request, String projectKey);
 
 	Response getDecisionGraph(HttpServletRequest request, FilterSettings filterSettings);
+
+	Response getClassTreant(HttpServletRequest request, String elementKey, String depthOfTree, String searchTerm,
+			Boolean checkboxflag, Boolean isIssueView);
 
 }

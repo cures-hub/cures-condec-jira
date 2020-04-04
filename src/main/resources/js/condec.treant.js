@@ -30,13 +30,16 @@
         });
     };
 
-    ConDecTreant.prototype.buildClassTreant = function buildClassTreant(elementKey, isInteractive, searchTerm) {
+    ConDecTreant.prototype.buildClassTreant = function buildClassTreant(elementKey, isInteractive, searchTerm, isIssueView) {
         console.log("conDecTreant buildClassTreant");
         var depthOfTree = getDepthOfTree();
         treantid = "treant-container-class";
         depthId = "depth-of-tree-input-code";
-        var checkboxflag = document.getElementById("show-without-elements-input").checked;
-        conDecAPI.getClassTreant(elementKey, depthOfTree, searchTerm, checkboxflag, function (treeStructure) {
+        var checkboxflag = false;
+        if(!isIssueView){
+        	checkboxflag = document.getElementById("show-without-elements-input").checked;
+        }
+        conDecAPI.getClassTreant(elementKey, depthOfTree, searchTerm, checkboxflag, isIssueView, function (treeStructure) {
             document.getElementById(treantid).innerHTML = "";
             treantTree = new Treant(treeStructure);
             if (isInteractive !== undefined && isInteractive) {

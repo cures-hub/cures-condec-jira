@@ -114,7 +114,7 @@
         }
         jQueryConDec("#jstree-code").on("select_node.jstree", function (error, tree) {
             var node = tree.node.data;
-            treant.buildClassTreant(node.key, true, "");
+            treant.buildClassTreant(node.key, true, "", false);
         });
         var selectedGroupsObj = $('#select2-decision-group-code').select2('data');
         var selectedGroups = [];

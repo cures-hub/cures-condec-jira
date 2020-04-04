@@ -10,15 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.atlassian.jira.issue.Issue;
-import com.google.common.collect.Lists;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.model.git.impl.ChangedFileImpl;
-import de.uhd.ifi.se.decision.management.jira.model.git.impl.DiffImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -43,23 +34,34 @@ import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.issue.Issue;
+import com.google.common.collect.Lists;
+
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import de.uhd.ifi.se.decision.management.jira.model.git.impl.ChangedFileImpl;
+import de.uhd.ifi.se.decision.management.jira.model.git.impl.DiffImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+
 /**
  * @issue How to access commits related to a Jira issue?
  * @decision Use the jGit library to access the git repositories for a Jira
- * project!
+ *           project!
  * @pro The jGit library is open source.
  * @alternative Both, the jgit library and the git integration for Jira plugin
- * were used to access git repositories!
+ *              were used to access git repositories!
  * @con An application link and oAuth is needed to call REST API on Java side in
- * order to access the git repository with the git integration for Jira
- * plugin.
- * <p>
- * <p>
- * This implementation works well only with configuration for one remote
- * git server. Multiple instances of this class are "thread-safe" in the
- * limited way that the checked-out branch files are stored in dedicated
- * branch folders and can be read. Modifying files is not safe and not
- * supported.
+ *      order to access the git repository with the git integration for Jira
+ *      plugin.
+ *      <p>
+ *      <p>
+ *      This implementation works well only with configuration for one remote
+ *      git server. Multiple instances of this class are "thread-safe" in the
+ *      limited way that the checked-out branch files are stored in dedicated
+ *      branch folders and can be read. Modifying files is not safe and not
+ *      supported.
  */
 public class GitClientImpl implements GitClient {
 	private static final long REPO_OUTDATED_AFTER = 10 * 60 * 1000; // ex. 10 minutes = 10 minutes * 60 seconds * 1000
@@ -147,7 +149,7 @@ public class GitClientImpl implements GitClient {
 	}
 
 	private boolean pullOrCloneRepositories(String projectKey, String defaultDirectory, List<String> uris,
-											Map<String, String> defaultBranchFolderNames) {
+			Map<String, String> defaultBranchFolderNames) {
 		fsManager = new GitRepositoryFSManager(defaultDirectory, projectKey, uris, defaultBranchFolderNames);
 		Map<String, String> defaultBranchPaths = fsManager.getDefaultBranchPaths();
 		this.remoteUris = uris;
@@ -212,6 +214,7 @@ public class GitClientImpl implements GitClient {
 			return true;
 		}
 		try {
+			System.out.println("Pulling");
 			ObjectId oldHead = getRepository(repoUri).resolve("HEAD^{tree}");
 			List<RemoteConfig> remotes = gits.get(repoUri).remoteList().call();
 			for (RemoteConfig remote : remotes) {
@@ -222,7 +225,9 @@ public class GitClientImpl implements GitClient {
 			gits.get(repoUri).pull().call();
 
 			ObjectId head = getRepository(repoUri).resolve("HEAD^{tree}");
-			if (!oldHead.equals(head) && getRepository(repoUri).getBranch().equals(defaultBranchFolderNames.get(repoUri))) {
+			System.out.println(oldHead.equals(head));
+			System.out.println(getRepository(repoUri).getBranch().equals(defaultBranchFolderNames.get(repoUri)));
+			if (!oldHead.equals(head)) {
 				CodeClassKnowledgeElementPersistenceManager persistenceManager = new CodeClassKnowledgeElementPersistenceManager(
 						projectKey);
 				persistenceManager.maintainCodeClassKnowledgeElements(repoUri, oldHead, head);

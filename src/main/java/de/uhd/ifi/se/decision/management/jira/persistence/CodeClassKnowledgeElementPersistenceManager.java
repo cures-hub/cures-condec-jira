@@ -5,9 +5,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectReader;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
@@ -23,13 +32,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManage
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassElementInDatabase;
 import net.java.ao.Query;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectReader;
-import org.eclipse.jgit.treewalk.CanonicalTreeParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersistenceManagerForSingleLocation {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextPersistenceManager.class);
@@ -120,6 +122,18 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 			decisionKnowledgeElements.add(new KnowledgeElementImpl(databaseEntry));
 		}
 		return decisionKnowledgeElements;
+	}
+
+	public List<String> getClassNamesConnectedToIssue(String issueKey) {
+		List<String> codeClasses = new ArrayList<String>();
+		for (CodeClassElementInDatabase dgData : ACTIVE_OBJECTS.find(CodeClassElementInDatabase.class)) {
+			for (String key : dgData.getJiraIssueKeys().split(";")) {
+				if (key.equals(issueKey.split("-")[1])) {
+					codeClasses.add(dgData.getFileName());
+				}
+			}
+		}
+		return codeClasses;
 	}
 
 	@Override
@@ -237,14 +251,17 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 		ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 		List<KnowledgeElement> existingElements = getDecisionKnowledgeElements();
 		if (existingElements == null || existingElements.size() == 0) {
+			System.out.println("Here");
 			GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
 			List<File> codeClasses = ccExtractor.getCodeClassListFull();
+			System.out.println("Code Classes: " + codeClasses);
 			for (File file : codeClasses) {
 				if (file != null) {
 					List<String> issueKeys = ccExtractor.getIssuesKeysForFile(file);
 					if (issueKeys != null && issueKeys.size() > 0) {
 						KnowledgeElement newElement = ccExtractor.createKnowledgeElementFromFile(file, issueKeys);
 						insertDecisionKnowledgeElement(newElement, user);
+						System.out.println(newElement + "inserted");
 					}
 				}
 			}
