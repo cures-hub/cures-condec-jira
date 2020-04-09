@@ -62,7 +62,6 @@ Test UI
     isConsistencyActivatedToggle.addEventListener("change", function () {
         //isConsistencyActivatedToggle.style.display = this.checked ? "inherit" : "none";
         this.busy = true;
-        console.log("$projectKey");
         conDecAPI.setConsistencyActivated(this.checked, "$projectKey");
         this.busy = false;
     });

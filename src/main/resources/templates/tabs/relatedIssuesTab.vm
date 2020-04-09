@@ -1,0 +1,84 @@
+<div>
+    <aui-spinner size="large" id="loading-spinner"></aui-spinner>
+</div>
+
+<table class="aui aui-table-sortable" id="results-table" style="visibility: hidden">
+    <thead>
+    <tr>
+        <th class="aui-table-column-issue-key">Issue key</th>
+        <th>Name</th>
+        <th class="aui-table-column-unsortable">Options</th>
+    <tr>
+    </thead>
+    <tbody id="table-content">
+    <!--<tr>
+        <td>TEST-12</td>
+        <td>Cannot sort tables</td>
+        <td>Table sorting should be allowed</td>
+    </tr>-->
+
+    </tbody>
+</table>
+
+<script>
+    const loadingSpinnerElement = document.getElementById("loading-spinner");
+    const resultsTableElement = document.getElementById("results-table");
+    const resultsTableContentElement = document.getElementById("table-content");
+
+
+    let displayRelatedIssues = function (relatedIssues) {
+        resultsTableContentElement.innerHTML = "";
+        for (let relatedIssue of relatedIssues) {
+            console.log("---------------");
+            console.log(relatedIssue);
+            console.log("---------------");
+            let row = generateTableRow();
+            row.appendChild(generateTableCell(relatedIssue.key));
+            row.appendChild(generateTableCell(relatedIssue.summary));
+            row.appendChild(generateTableCell(generateOptionButtons(relatedIssue.key, relatedIssue.id)));
+
+            resultsTableContentElement.appendChild(row);
+        }
+    };
+
+    let generateTableRow = function () {
+        return document.createElement("tr");
+    };
+
+    let generateTableCell = function (content) {
+        let tableCell = document.createElement("td");
+        tableCell.innerHTML = content;
+        return tableCell
+    };
+
+    let generateOptionButtons = function (issueKey, issueId) {
+        return "<a href='/" + issueKey + "'> <span class='aui-icon aui-icon-small aui-iconfont-watch-filled'></span> View </a>" +
+            "<a href='/jira/secure/LinkJiraIssue!default.jspa?id=" + issueId + "'> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link </a>"
+    };
+
+    let openLinkDialog = function (issueKey) {
+        return function () {
+
+        }
+    };
+
+
+    //load data when in focus!
+    window.addEventListener("focus", function (event) {
+        console.log("---- Related Issues ----");
+        let issueKey = conDecAPI.getIssueKey();
+        let projectKey = conDecAPI.getProjectKey();
+        //console.log("---------------");
+
+        conDecAPI.loadRelatedIssues(issueKey, projectKey)
+            .then((data) => displayRelatedIssues(data.relatedIssues))
+            .catch((error) => conDecAPI.showFlag("error", "Could not load related issues!"))
+            .finally(() => {
+                loadingSpinnerElement.style.display = "none";
+                resultsTableElement.style.visibility = "visible";
+
+            });
+
+    }, false);
+
+</script>

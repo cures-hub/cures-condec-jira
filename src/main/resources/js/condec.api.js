@@ -1030,223 +1030,35 @@
             + projectKey + "&id=" + id, null);
     };
 
+	ConDecAPI.prototype.getProjectKey = getProjectKey;
+
+	ConDecAPI.prototype.loadRelatedIssues = function (issueKey, projectKey) {
+		return getJSONReturnPromise(this.restPrefix + "/consistency/getRelatedIssues.json?projectKey="
+			+ projectKey + "&issueKey=" + issueKey);
+	};
+
+	function showFlag(type, message, status) {
+		if (status === null || status === undefined) {
+			status = "";
+		}
+		AJS.flag({
+			type: type,
+			close: "auto",
+			title: type.charAt(0).toUpperCase() + type.slice(1) + " " + status,
+			body: message
+		});
+	}
 
     ConDecAPI.prototype.getReleaseNotesById = function getReleaseNotesById(id) {
         return getJSONReturnPromise(this.restPrefix + "/release-note/getReleaseNote.json?projectKey="
             + projectKey + "&id=" + id);
-
     };
     ConDecAPI.prototype.getAllReleaseNotes = function getAllReleaseNotes(query) {
         return getJSONReturnPromise(this.restPrefix + "/release-note/getAllReleaseNotes.json?projectKey="
             + projectKey + "&query=" + query);
     };
+	ConDecAPI.prototype.showFlag = showFlag;
 
-    function getResponseAsReturnValue(url) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", url, false);
-        xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-        xhr.send();
-        return JSON.parse(xhr.response);
-    }
-
-    // @Deprecated
-    function _postWithResponseAsReturnValue(url) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", url, false);
-        xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-        xhr.send();
-        return JSON.parse(xhr.response);
-    }
-
-    function getJSON(url, callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", url, true);
-        xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-        xhr.setRequestHeader("Accept", "application/json");
-        xhr.responseType = "json";
-        xhr.onload = function () {
-            var status = xhr.status;
-            if (status === 200) {
-                callback(null, xhr.response);
-            } else {
-                showFlag("error", xhr.response.error, status);
-                callback(status);
-            }
-        };
-        xhr.send();
-    }
-
-    function getJSONReturnPromise(url) {
-        return new Promise(function (resolve, reject) {
-            getJSON(url, function (err, result) {
-                if (err === null) {
-                    resolve(result);
-                } else {
-                    reject(err);
-                }
-            });
-        });
-
-    }
-
-    function postJSONReturnPromise(url, data) {
-        return new Promise(function (resolve, reject) {
-            postJSON(url, data, function (err, result) {
-                if (err === null) {
-                    resolve(result);
-                } else {
-                    reject(err);
-                }
-            })
-        })
-    }
-
-    function deleteJSONReturnPromise(url, data) {
-        return new Promise(function (resolve, reject) {
-            deleteJSON(url, data, function (err, result) {
-                if (err === null) {
-                    resolve(result);
-                } else {
-                    reject(err);
-                }
-            })
-        })
-    }
-
-
-    function getText(url, callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", url, true);
-        xhr.setRequestHeader("Content-type", "plain/text");
-        xhr.onload = function () {
-            var status = xhr.status;
-            if (status === 200) {
-                callback(null, xhr.response);
-            } else {
-                showFlag("error", xhr.response.error, status);
-                callback(status);
-            }
-        };
-        xhr.send();
-    }
-
-    function postJSON(url, data, callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", url, true);
-        xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-        xhr.setRequestHeader("Accept", "application/json");
-        xhr.responseType = "json";
-        xhr.onload = function () {
-            var status = xhr.status;
-            if (status === 200) {
-                callback(null, xhr.response);
-            } else {
-                showFlag("error", xhr.response.error || "Unknown Error!", status);
-                callback(status, xhr.response);
-            }
-        };
-        xhr.send(JSON.stringify(data));
-    }
-
-    function putJSON(url, data, callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("PUT", url, true);
-        xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-        xhr.setRequestHeader("Accept", "application/json");
-        xhr.responseType = "json";
-        xhr.onload = function () {
-            var status = xhr.status;
-            if (status === 200) {
-                callback(null, xhr.response);
-            } else {
-                showFlag("error", xhr.response.error, status);
-                callback(status);
-            }
-        };
-        xhr.send(JSON.stringify(data));
-    }
-
-    function deleteJSON(url, data, callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("DELETE", url, true);
-        xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-        xhr.setRequestHeader("Accept", "application/json");
-        xhr.responseType = "json";
-        xhr.onload = function () {
-            var status = xhr.status;
-            if (status === 200) {
-                callback(null, xhr.response);
-            } else {
-                showFlag("error", xhr.response.error, status);
-                callback(status);
-            }
-        };
-        xhr.send(JSON.stringify(data));
-    }
-
-    function getIssueKey() {
-        var issueKey = null;
-        if (JIRA && JIRA.Issue && JIRA.Issue.getIssueKey) {
-            issueKey = JIRA.Issue.getIssueKey();
-        }
-        if (issueKey === undefined || !issueKey) {
-            // console.log("conDecAPI could not getIssueKey using object
-            // JIRA!");
-            if (AJS && AJS.Meta && AJS.Meta.get) {
-                issueKey = AJS.Meta.get("issue-key");
-            }
-        }
-        if (issueKey === undefined || !issueKey) {
-            // console.log("conDecAPI could not getIssueKey using object AJS!");
-            var chunks = document.location.pathname.split("/");
-            if (chunks.length > 0) {
-                var lastChunk = chunks[chunks.length - 1];
-                if (lastChunk.includes("-")) {
-                    issueKey = lastChunk;
-                }
-            }
-        }
-        // console.log("conDecAPI getIssueKey: " + issueKey);
-        return issueKey;
-    }
-
-    /*
-     * external references: condec.jira.issue.module, condec.export,
-     * condec.gitdiffviewer
-     */
-    ConDecAPI.prototype.getIssueKey = getIssueKey;
-
-    function getProjectKey() {
-        // console.log("conDecAPI getProjectKey");
-        var projectKey;
-        try {
-            projectKey = JIRA.API.Projects.getCurrentProjectKey();
-        } catch (error) {
-            // console.log(error);
-        }
-        if (projectKey === undefined) {
-            try {
-                var issueKey = getIssueKey();
-                projectKey = issueKey.split("-")[0];
-            } catch (error) {
-                // console.log(error);
-            }
-        }
-        return projectKey;
-    }
-
-    function showFlag(type, message, status) {
-        if (status === null || status === undefined) {
-            status = "";
-        }
-        AJS.flag({
-            type: type,
-            close: "auto",
-            title: type.charAt(0).toUpperCase() + type.slice(1) + " " + status,
-            body: message
-        });
-    }
-
-    // export ConDecAPI
-    global.conDecAPI = new ConDecAPI();
+	// export ConDecAPI
+	global.conDecAPI = new ConDecAPI();
 })(window);
