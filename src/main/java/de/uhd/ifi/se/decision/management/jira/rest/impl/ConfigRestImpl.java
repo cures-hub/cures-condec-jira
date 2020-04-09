@@ -723,4 +723,26 @@ public class ConfigRestImpl implements ConfigRest {
 		}
 	}
 
+	/* **************************************/
+	/*										*/
+	/* Configuration for Consistency		*/
+	/*										*/
+	/* **************************************/
+
+	@Override
+	@Path("/setConsistencyActivated")
+	@POST
+	public Response setConsistencyActivated(@Context HttpServletRequest request,
+													 @QueryParam("projectKey") String projectKey,
+													 @QueryParam("isConsistencyActivated") String isActivatedString) {
+		Response response = this.checkRequest(request, projectKey, isActivatedString);
+		if (response != null) {
+			return response;
+		}
+		boolean isActivated = Boolean.valueOf(isActivatedString);
+		ConfigPersistenceManager.setConsistencyActivated(projectKey, isActivated);
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
+
 }

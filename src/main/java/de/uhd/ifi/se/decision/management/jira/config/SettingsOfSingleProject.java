@@ -81,6 +81,9 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("releaseNoteMapping_new_features",
 				ConfigPersistenceManager.getReleaseNoteMapping(projectKey, ReleaseNoteCategory.NEW_FEATURES));
 
+		velocityParameters.put("isConsistencyActivated",
+			ConfigPersistenceManager.isConsistencyActivated(projectKey));
+
 		velocityParameters.put("isClassifierTraining", trainer.getClassifier().isTraining());
 		velocityParameters.put("isClassifierTrained", trainer.getClassifier().isTrained());
 

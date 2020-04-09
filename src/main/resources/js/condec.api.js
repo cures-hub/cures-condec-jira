@@ -598,6 +598,21 @@
             });
     };
 
+	/*
+		 * external references: consistencySettings.vm
+		 */
+	ConDecAPI.prototype.setConsistencyActivated = function (
+		isConsistencyActivated, projectKey) {
+		postJSON(this.restPrefix + "/config/setConsistencyActivated.json?projectKey="
+			+ projectKey + "&isConsistencyActivated=" + isConsistencyActivated, null, function (error,
+																									  response) {
+			if (error === null) {
+				showFlag("success",
+					"Usage of the consistency module of the ConDec plugin has been set to "
+					+ isConsistencyActivated + ".");
+			}
+		});
+	};
     /*
      * external references: settingsForSingleProject.vm,
      * settingsForAllProjects.vm

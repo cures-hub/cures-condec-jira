@@ -339,6 +339,15 @@
             <param-value>basic</param-value>
         </init-param>
     </servlet>
+    <web-item key="condec-project-settings-menu-item-consistency"
+              name="Menu Item for ConDec Plug-in Project Settings of Consistency-Checks"
+              section="atl.jira.proj.config/condec-project-settings-section" weight="21">
+        <description>Adds the "Consistency" menu item.</description>
+        <label key="condec.project.settings.menu.item.consistency" />
+        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=consistency
+        </link>
+        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+    </web-item>
 
     <!-- Active Objects -->
     <ao key="ao-module" name="Active Objects Service">
