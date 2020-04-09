@@ -85,14 +85,14 @@ public class TestTreant extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSecondConstructorCheckboxFalse() {
-		this.treant = new Treant("TEST", classElement, 3, "", "treantid", false);
+		this.treant = new Treant("TEST", classElement, 3, "", "treantid", false, false, 1, 100);
 		assertNotNull(this.treant);
 	}
 
 	@Test
 	@NonTransactional
 	public void testSecondConstructorCheckboxTrue() {
-		this.treant = new Treant("TEST", classElement, 3, "", "treantid", true);
+		this.treant = new Treant("TEST", classElement, 3, "", "treantid", true, false, 1, 100);
 		assertNotNull(this.treant);
 	}
 
@@ -182,13 +182,13 @@ public class TestTreant extends TestSetUp {
 		Set<Link> links = new HashSet<>();
 		Link link = new LinkImpl(classElement, persistenceManager.getDecisionKnowledgeElement("TEST-1"));
 		links.add(link);
-		TreantNode nodeStructure = treant.createNodeStructure(null, links, 0);
+		TreantNode nodeStructure = treant.createNodeStructure(null, links, 0, false);
 		assertEquals(TreantNode.class, nodeStructure.getClass());
 	}
 
 	@Test
 	public void testSecondCreateNodeStructureWithWithLinksNull() {
-		TreantNode nodeStructure = treant.createNodeStructure(classElement, (Set<Link>) null, 0);
+		TreantNode nodeStructure = treant.createNodeStructure(classElement, (Set<Link>) null, 0, false);
 		assertEquals(TreantNode.class, nodeStructure.getClass());
 	}
 
@@ -197,7 +197,7 @@ public class TestTreant extends TestSetUp {
 		Set<Link> links = new HashSet<>();
 		Link link = new LinkImpl(classElement, persistenceManager.getDecisionKnowledgeElement("TEST-1"));
 		links.add(link);
-		TreantNode nodeStructure = treant.createNodeStructure(classElement, links, 0);
+		TreantNode nodeStructure = treant.createNodeStructure(classElement, links, 0, false);
 		assertEquals(TreantNode.class, nodeStructure.getClass());
 		assertEquals(1, nodeStructure.getChildren().size());
 	}

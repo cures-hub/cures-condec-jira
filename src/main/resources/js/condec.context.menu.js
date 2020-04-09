@@ -76,6 +76,10 @@
     };
 
     function setContextMenuItemsEventHandlers(id, documentationLocation) {
+        document.getElementById("condec-context-menu-group-rename").onclick = function () {
+            conDecDialog.showRenameGroupDialog(id);
+        };
+
         document.getElementById("condec-context-menu-create-item").onclick = function () {
             conDecDialog.showCreateDialog(id, documentationLocation);
         };
@@ -218,6 +222,8 @@
     }
 
     function showOrHideContextMenuItems(id, documentationLocation, container) {
+        document.getElementById("fifth-context-section").style.display = "none";
+        document.getElementById("first-context-section").style.display = "block";
         if (documentationLocation === "c") {
             document.getElementById("condec-context-menu-create-item").style.display = "none";
             document.getElementById("condec-context-menu-edit-item").style.display = "none";
@@ -235,15 +241,16 @@
             document.getElementById("third-context-section").style.display = "block";
             document.getElementById("fourth-context-section").style.display = "block";
         }
-        conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function (decisionKnowledgeElement) {
-            var typesForStatus = new Array("issue", "alternative", "decision");
-            if (!typesForStatus.includes(decisionKnowledgeElement.type.toLowerCase())) {
-                document.getElementById("condec-context-menu-change-status-item").style.display = "none";
-            } else {
-                document.getElementById("condec-context-menu-change-status-item").style.display = "initial";
-            }
-        });
-
+        if (documentationLocation !== "groups") {
+            conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function (decisionKnowledgeElement) {
+                var typesForStatus = new Array("issue", "alternative", "decision");
+                if (!typesForStatus.includes(decisionKnowledgeElement.type.toLowerCase())) {
+                    document.getElementById("condec-context-menu-change-status-item").style.display = "none";
+                } else {
+                    document.getElementById("condec-context-menu-change-status-item").style.display = "initial";
+                }
+            });
+        }
         if (container == null || container.includes("vis")) {
             document.getElementById("condec-context-menu-set-root-item").style.display = "none";
             document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
@@ -272,6 +279,13 @@
         }else{
             document.getElementById("condec-context-menu-assign-decision-group-item").style.display = "initial";
         }*/
+        if (documentationLocation == "groups") {
+            document.getElementById("first-context-section").style.display = "none";
+            document.getElementById("second-context-section").style.display = "none";
+            document.getElementById("third-context-section").style.display = "none";
+            document.getElementById("fourth-context-section").style.display = "none";
+            document.getElementById("fifth-context-section").style.display = "initial";
+        }
     }
 
     // export ConDecContextMenu

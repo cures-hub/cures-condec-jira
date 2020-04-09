@@ -45,4 +45,8 @@
         <aui-item-link id="condec-context-menu-delete-item">$i18n.getText(
             "condec.context.menu.delete.item.label")</aui-item-link>
     </aui-section>
+    <aui-section id="fifth-context-section">
+        <aui-item-link id="condec-context-menu-group-rename">$i18n.getText(
+            "condec.context.menu.group.rename.label")</aui-item-link>
+    </aui-section>
 </aui-dropdown-menu>

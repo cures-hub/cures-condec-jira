@@ -128,6 +128,8 @@
                   location="/js/condec.relationshipMatrix.page.js"/>
         <resource type="download" name="condec.code.class.page.js"
                   location="/js/condec.code.class.page.js"/>
+        <resource type="download" name="condec.decision.group.view.js"
+                  location="/js/condec.decision.group.view.js"/>
     </web-resource>
 
     <web-resource key="decision-knowledge-page-resources"

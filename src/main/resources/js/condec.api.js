@@ -384,10 +384,11 @@
         });
     };
 
-    ConDecAPI.prototype.getClassTreant = function getClassTreant(elementKey, depthOfTree, searchTerm, checkboxflag, isIssueView, callback) {
+    ConDecAPI.prototype.getClassTreant = function getClassTreant(elementKey, depthOfTree, searchTerm, checkboxflag,
+                                                                 isIssueView, minLinkNumber, maxLinkNumber, callback) {
         getJSON(this.restPrefix + "/view/getClassTreant.json?&elementKey=" + elementKey
             + "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm + "&checkboxflag=" + checkboxflag
-            + "&isIssueView=" + isIssueView, function (error, treant) {
+            + "&isIssueView=" + isIssueView + "&minLinkNumber=" + minLinkNumber + "&maxLinkNumber=" + maxLinkNumber, function (error, treant) {
             if (error === null) {
                 callback(treant);
             }
@@ -748,6 +749,17 @@
         var decisionGroups = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey=" + projectKey);
         callback(selectGroupField, decisionGroups);
     };
+
+    ConDecAPI.prototype.getDecisionGroupTable = function getDecisionGroupTable(callback) {
+        var decisionGroups = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey=" + projectKey);
+        callback(decisionGroups, projectKey);
+    }
+
+    ConDecAPI.prototype.renameDecisionGroup = function renameDecisionGroup(oldName, newName, callback) {
+        getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/renameDecisionGroup.json?projectKey=" + projectKey
+            + "&oldName=" + oldName + "&newName=" + newName);
+        callback();
+    }
 
     /*
      * Replaces argument with pro-argument and con-argument in knowledge types

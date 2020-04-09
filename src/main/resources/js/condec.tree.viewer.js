@@ -10,6 +10,7 @@
      */
     ConDecTreeViewer.prototype.buildTreeViewer = function buildTreeViewer() {
         console.log("conDecTreeViewer buildTreeViewer");
+        jstreeId = "#jstree";
         this.resetTreeViewer();
         var rootElementType = $("select[name='select-root-element-type']").val();
         conDecAPI.getTreeViewer(rootElementType, function (core) {
@@ -34,11 +35,11 @@
      */
     ConDecTreeViewer.prototype.buildClassTreeViewer = function buildClassTreeViewer() {
         console.log("conDecTreeViewer buildClassTreeViewer");
-        jstreeId = "#jstree-code";
+        jstreeId = "#code-class-tree";
         this.resetTreeViewer();
         var rootElementType = "codeClass";
         conDecAPI.getTreeViewer(rootElementType, function (core) {
-            jQueryConDec("#jstree-code").jstree({
+            jQueryConDec("#code-class-tree").jstree({
                 "core": core,
                 "plugins": ["dnd", "wholerow", "sort", "search", "state"],
                 "search": {
@@ -47,11 +48,9 @@
             });
             $("#jstree-search-input-code").keyup(function () {
                 var searchString = $(this).val();
-                jQueryConDec("#jstree-code").jstree(true).search(searchString);
+                jQueryConDec("#code-class-tree").jstree(true).search(searchString);
             });
         });
-        this.addDragAndDropSupportForTreeViewer();
-        this.addContextMenuToTreeViewer(null);
     };
 
     ConDecTreeViewer.prototype.addContextMenuToTreeViewer = function addContextMenuToTreeViewer(container) {
@@ -60,13 +59,13 @@
             event.preventDefault();
 
             var nodeId = event.target.parentNode.id;
-            var node = getTreeViewerNodeById(nodeId);
+            var node = getTreeViewerNodeById(nodeId, "#jstree");
             var id = node.data.id;
 
             if (event.target.parentNode.classList.contains("sentence")) {
                 conDecContextMenu.createContextMenu(id, "s", event, container);
             } else {
-                if (jstreeId !== "#jstree-code") {
+                if (jstreeId !== "#code-class-tree") {
                     conDecContextMenu.createContextMenu(id, "i", event, container);
                 }
 
@@ -88,12 +87,12 @@
     /**
      * local usage only
      */
-    function getTreeViewerNodeById(nodeId) {
+    function getTreeViewerNodeById(nodeId, treeId) {
         console.log("conDecTreeViewer getTreeViewerNodeById(nodeId)");
         if (nodeId === "#") {
             return nodeId;
         }
-        return jQueryConDec(jstreeId).jstree(true).get_node(nodeId);
+        return jQueryConDec(treeId).jstree(true).get_node(nodeId);
     }
 
     /**
@@ -110,10 +109,10 @@
         });
     };
 
-    ConDecTreeViewer.prototype.filterNodesByGroup = function filterNodesByGroup(selectedGroup) {
+    ConDecTreeViewer.prototype.filterNodesByGroup = function filterNodesByGroup(selectedGroup, treeId) {
         console.log("conDecTreeViewer filterNodesByGroup");
-        jQueryConDec(jstreeId).on("loaded.jstree", function () {
-            var treeViewer = jQueryConDec(jstreeId).jstree(true);
+        jQueryConDec(treeId).on("state_ready.jstree", function () {
+            var treeViewer = jQueryConDec(treeId).jstree(true);
             if (treeViewer) {
                 var jsonNodes = treeViewer.get_json('#', {flat: true});
                 $.each(jsonNodes, function (i, val) {
@@ -146,8 +145,8 @@
             'move_node.jstree',
             function (object, nodeInContext) {
                 var node = nodeInContext.node;
-                var parentNode = getTreeViewerNodeById(nodeInContext.parent);
-                var oldParentNode = getTreeViewerNodeById(nodeInContext.old_parent);
+                var parentNode = getTreeViewerNodeById(nodeInContext.parent, "#jstree");
+                var oldParentNode = getTreeViewerNodeById(nodeInContext.old_parent, "#jstree");
                 var nodeId = node.data.id;
 
                 var sourceType = (node.li_attr['class'] === "sentence") ? "s" : "i";

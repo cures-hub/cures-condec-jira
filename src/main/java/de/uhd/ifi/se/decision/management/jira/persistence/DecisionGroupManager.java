@@ -9,6 +9,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgePersistenceManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupInDatabase;
 import net.java.ao.Query;
 
@@ -202,14 +203,43 @@ public class DecisionGroupManager {
 		return null;
 	}
 
-	public static List<String> getAllDecisionGroups() {
+	public static List<String> getAllDecisionGroups(String projectKey) {
 		List<String> groups = new ArrayList<String>();
 		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
 			String elementGroup = groupInDatabase.getGroup();
-			if (!groups.contains(elementGroup) && !"".equals(elementGroup) && !" ".equals(elementGroup)) {
+			if (groupInDatabase.getProjectKey().equals(projectKey) && !groups.contains(elementGroup) && !"".equals(elementGroup) && !" ".equals(elementGroup)) {
 				groups.add(elementGroup);
 			}
 		}
 		return groups;
+	}
+
+	public static List<String> getAllElementsWithCertainGroup(String group, String projectKey) {
+		List<String> keys = new ArrayList<>();
+		KnowledgePersistenceManager kpManager = new KnowledgePersistenceManagerImpl(projectKey);
+		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
+			if (groupInDatabase.getProjectKey().equals(projectKey)
+					&& groupInDatabase.getGroup().equals(group)
+					&& !groupInDatabase.getSourceDocumentationLocation().equals("c")) {
+				KnowledgeElement element =
+						kpManager.getManagerForSingleLocation(groupInDatabase.getSourceDocumentationLocation()).getDecisionKnowledgeElement(groupInDatabase.getSourceId());
+				if (element != null) {
+					keys.add(element.getKey());
+				}
+			}
+		}
+		return keys;
+	}
+
+	public static boolean updateGroupName(String oldGroup, String newGroup, String projectKey) {
+		boolean success = false;
+		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
+			if (groupInDatabase.getGroup().equals(oldGroup) && groupInDatabase.getProjectKey().equals(projectKey)) {
+				groupInDatabase.setGroup(newGroup);
+				groupInDatabase.save();
+				success = true;
+			}
+		}
+		return success;
 	}
 }

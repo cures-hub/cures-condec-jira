@@ -56,34 +56,6 @@
 
     function initializeDecisionKnowledgePage(conDecAPI, treant, treeViewer) {
         console.log("ConDecCodeClassPage initializeDecisionKnowledgePage");
-        var knowledgeTypes = conDecAPI.knowledgeTypes;
-        console.log(knowledgeTypes.length);
-        for (var index = 0; index < knowledgeTypes.length; index++) {
-            var isSelected = "";
-            if (knowledgeTypes[index] === "Issue") {
-                isSelected = "selected ";
-            }
-            jQueryConDec("select[name='select-root-element-type-code']")[0].insertAdjacentHTML("beforeend", "<option "
-                + isSelected + " value='" + knowledgeTypes[index] + "'>" + knowledgeTypes[index] + "</option>");
-        }
-
-        var createElementButton = document.getElementById("create-element-button-code");
-        var elementInputField = document.getElementById("element-input-field-code");
-        conDecAPI.isIssueStrategy(function (isEnabled) {
-            if (isEnabled) {
-                createElementButton.addEventListener("click", function () {
-                    var summary = elementInputField.value;
-                    var type = jQueryConDec("select[name='select-root-element-type-code']").val();
-                    elementInputField.value = "";
-                    conDecAPI.createDecisionKnowledgeElement(summary, "", type, "i", 0, null, function (id) {
-                        updateView(id, treant, treeViewer);
-                    });
-                });
-            } else {
-                createElementButton.style.display = "none";
-                elementInputField.style.display = "none";
-            }
-        });
 
         var depthOfTreeInput = document.getElementById("depth-of-tree-input-code");
         depthOfTreeInput.addEventListener("input", function () {
@@ -96,7 +68,7 @@
             }
         });
 
-        conDecAPI.fillDecisionGroupSelect("select2-decision-group-code");
+        conDecAPI.fillDecisionGroupSelect("select2-code-decision-group");
 
         updateView(null, treant, treeViewer);
     }
@@ -112,11 +84,11 @@
         } else {
             treeViewer.selectNodeInTreeViewer(nodeId);
         }
-        jQueryConDec("#jstree-code").on("select_node.jstree", function (error, tree) {
+        jQueryConDec("#code-class-tree").on("select_node.jstree", function (error, tree) {
             var node = tree.node.data;
             treant.buildClassTreant(node.key, true, "", false);
         });
-        var selectedGroupsObj = $('#select2-decision-group-code').select2('data');
+        var selectedGroupsObj = $('#select2-code-decision-group').select2('data');
         var selectedGroups = [];
         for (var i = 0; i <= selectedGroupsObj.length; i++) {
             if (selectedGroupsObj[i]) {
@@ -124,7 +96,7 @@
             }
         }
         if (!selectedGroups === undefined || selectedGroups.length > 0) {
-            treeViewer.filterNodesByGroup(selectedGroups);
+            treeViewer.filterNodesByGroup(selectedGroups, "#code-class-tree");
         }
     }
 

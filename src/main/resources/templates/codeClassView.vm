@@ -3,7 +3,7 @@
         <div>
             <input class="text medium-long-field" id="jstree-search-input-code"
                    placeholder="$i18n.getText('condec.filter.label')"/>
-            #set($select2-decision-group = "select2-decision-group-code")
+            #set($select2-decision-group = "select2-code-decision-group")
             #parse("templates/filter/decisionGroup.vm")
             <label for="show-without-elements-input">Show Issues without Knowledge Elements:</label>
             <input class="checked" type="checkbox" id="show-without-elements-input" onclick="checkBoxClicked()"
@@ -11,21 +11,11 @@
             #set ($linkDistanceInputId = "depth-of-tree-input-code")
             #parse("templates/filter/linkDistance.vm")
         </div>
-        <div style="margin-top: 5px">
-            <label for="select-root-element-type-code">Create Knowledge Element:</label>
-            <select id="select-root-element-type-code" name="select-root-element-type-code"
-                    class="select medium-field"></select>
-            <input type="text" class="text medium-long-field"
-                   id="element-input-field-code" placeholder="$i18n.getText('condec.create.label')"/>
-            <input type="button" id="create-element-button-code"
-                   class="aui-button aui-button-primary" value="$i18n.getText('condec.button.create')"/>
-
-        </div>
     </form>
 </div>
 <div class="aui-group">
     <div id="resizable" class="left">
-        <div id="jstree-code"></div>
+        <div id="code-class-tree"></div>
     </div>
     <div id="treant-container-class" class="right"></div>
 </div>
@@ -42,7 +32,7 @@
         }
     });
 
-    $("#select2-decision-group-code").on("change.select2", function (e) {
+    $("#select2-code-decision-group").on("change.select2", function (e) {
         conDecObservable.notify();
     });
 

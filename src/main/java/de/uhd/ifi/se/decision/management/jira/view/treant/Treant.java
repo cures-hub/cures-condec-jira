@@ -11,7 +11,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.atlassian.jira.user.ApplicationUser;
-
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -52,7 +51,7 @@ public class Treant {
 	}
 
 	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user,
-			boolean isHyperlinked) {
+				  boolean isHyperlinked) {
 		this.traversedLinks = new HashSet<Link>();
 		this.depth = depth;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
@@ -71,7 +70,7 @@ public class Treant {
 	}
 
 	public Treant(String projectKey, KnowledgeElement element, int depth, String query, String treantId,
-			boolean checkboxflag, boolean isIssueView) {
+				  boolean checkboxflag, boolean isIssueView, int minLinkNumber, int maxLinkNumber) {
 		this.traversedLinks = new HashSet<Link>();
 		this.depth = depth;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
@@ -79,8 +78,12 @@ public class Treant {
 		Set<Link> usedLinks = new HashSet<>();
 		if (isIssueView) {
 			for (Link link : element.getLinks()) {
-				if (link.getSource() != null && link.getSource().getSummary().contains(".java")
-						&& link.getSource().getDocumentationLocation().getIdentifier().equals("c")) {
+				if ((checkboxflag || !checkboxflag && !link.getSource().getSummary().startsWith("Test"))
+						&& link.getSource() != null && link.getSource().getSummary().contains(".java")
+						&& link.getSource().getDocumentationLocation().getIdentifier().equals("c")
+						&& link.getSource().getLinks().size() >= minLinkNumber
+						&& link.getSource().getLinks().size() <= maxLinkNumber
+						&& ("".equals(query) || " ".equals(query) || link.getSource().getSummary().contains(query))) {
 					usedLinks.add(link);
 				}
 			}
@@ -122,7 +125,7 @@ public class Treant {
 	}
 
 	public TreantNode createNodeStructure(KnowledgeElement element, Set<Link> links, int currentDepth,
-			boolean isIssueView) {
+										  boolean isIssueView) {
 		if (element == null || element.getProject() == null || links == null) {
 			return new TreantNode();
 		}

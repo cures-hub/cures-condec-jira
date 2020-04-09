@@ -36,10 +36,17 @@
         treantid = "treant-container-class";
         depthId = "depth-of-tree-input-code";
         var checkboxflag = false;
-        if(!isIssueView){
-        	checkboxflag = document.getElementById("show-without-elements-input").checked;
+        var minLinkNumber = 1;
+        var maxLinkNumber = 100;
+        if (!isIssueView) {
+            checkboxflag = document.getElementById("show-without-elements-input").checked;
+        } else {
+            minLinkNumber = document.getElementById("min-number-linked-issues-input").value;
+            maxLinkNumber = document.getElementById("max-number-linked-issues-input").value;
+            checkboxflag = document.getElementById("show-test-elements-input").checked;
+            searchTerm = document.getElementById("search-code-class-input").value;
         }
-        conDecAPI.getClassTreant(elementKey, depthOfTree, searchTerm, checkboxflag, isIssueView, function (treeStructure) {
+        conDecAPI.getClassTreant(elementKey, depthOfTree, searchTerm, checkboxflag, isIssueView, minLinkNumber, maxLinkNumber, function (treeStructure) {
             document.getElementById(treantid).innerHTML = "";
             treantTree = new Treant(treeStructure);
             if (isInteractive !== undefined && isInteractive) {

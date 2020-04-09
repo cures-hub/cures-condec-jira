@@ -39,22 +39,22 @@ public class TestGetClassTreant extends TestSetUp {
 
 	@Test
 	public void testElementKeyNullDepthNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getClassTreant(null, null, "", null, null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getClassTreant(null, null, "", null, null, false, 1, 00).getStatus());
 	}
 
 	@Test
 	public void testElementNotExistsDepthNull() throws GenericEntityException {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getClassTreant(null, "NotTEST", null, "", null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getClassTreant(null, "NotTEST", null, "", null, false, 1, 100).getStatus());
 	}
 
 	@Test
 	public void testElementNotExistsDepthFilled() throws GenericEntityException {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getClassTreant(null, "NotTEST", "3", "", true).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getClassTreant(null, "NotTEST", "3", "", true, false, 1, 100).getStatus());
 	}
 
 	@Test
 	public void testElementExistsDepthNaN() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getClassTreant(null, "TEST-12", "test", "", true).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getClassTreant(null, "TEST-12", "test", "", true, false, 1, 100).getStatus());
 	}
 
 	@Test
@@ -62,6 +62,6 @@ public class TestGetClassTreant extends TestSetUp {
 		HttpServletRequest request = new MockHttpServletRequest();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
-		assertEquals(Status.OK.getStatusCode(), viewRest.getClassTreant(request, "TEST-1", "3", "", false).getStatus());
+		assertEquals(Status.OK.getStatusCode(), viewRest.getClassTreant(request, "TEST-1", "3", "", false, false, 1, 100).getStatus());
 	}
 }

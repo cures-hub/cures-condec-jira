@@ -5,18 +5,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectReader;
-import org.eclipse.jgit.treewalk.CanonicalTreeParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
@@ -32,6 +23,13 @@ import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManage
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassElementInDatabase;
 import net.java.ao.Query;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectReader;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersistenceManagerForSingleLocation {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextPersistenceManager.class);
@@ -164,16 +162,23 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 			KnowledgeGraph.getOrCreate(projectKey).addVertex(newElement);
 			AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 					.getOrCreate(projectKey).getJiraIssueManager();
+			List<String> groupsToAssign = new ArrayList<String>();
 			for (String key : element.getDescription().split(";")) {
 				if (!"".equals(key)) {
 					KnowledgeElement issueElement = persistenceManager.getDecisionKnowledgeElement(key);
-					Link link = new LinkImpl(newElement, issueElement);
-					long databaseId = GenericLinkManager.insertLink(link, user);
-					if (databaseId > 0) {
-						link.setId(databaseId);
-						KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
+					if (issueElement != null) {
+						groupsToAssign.addAll(issueElement.getDecisionGroups());
+						Link link = new LinkImpl(newElement, issueElement);
+						long databaseId = GenericLinkManager.insertLink(link, user);
+						if (databaseId > 0) {
+							link.setId(databaseId);
+							KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
+						}
 					}
 				}
+			}
+			for (String group : groupsToAssign) {
+				DecisionGroupManager.insertGroup(group, newElement);
 			}
 		}
 		return newElement;

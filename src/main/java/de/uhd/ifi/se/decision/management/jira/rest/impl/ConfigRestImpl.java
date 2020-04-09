@@ -1,7 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.rest.impl;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -220,10 +225,36 @@ public class ConfigRestImpl implements ConfigRest {
 	}
 
 	@Override
+	@Path("/getAllElementsWithCertainGroup")
+	@GET
+	public Response getAllElementsWithCertainGroup(@QueryParam("projectKey") String projectKey,
+												   @QueryParam("group") String group) {
+		List<String> keys = DecisionGroupManager.getAllElementsWithCertainGroup(group, projectKey);
+		if (keys == null) {
+			return Response.ok(Collections.emptyList()).build();
+		} else {
+			return Response.ok(keys).build();
+		}
+	}
+
+	@Override
+	@Path("/renameDecisionGroup")
+	@GET
+	public Response renameDecisionGroup(@QueryParam("projectKey") String projectKey,
+										@QueryParam("oldName") String oldGroupName,
+										@QueryParam("newName") String newGroupName) {
+		if (DecisionGroupManager.updateGroupName(oldGroupName, newGroupName, projectKey)) {
+			return Response.ok().build();
+		} else {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No Group to Rename found")).build();
+		}
+	}
+
+	@Override
 	@Path("/getAllDecisionGroups")
 	@GET
 	public Response getAllDecisionGroups(@QueryParam("projectKey") String projectKey) {
-		List<String> groups = DecisionGroupManager.getAllDecisionGroups();
+		List<String> groups = DecisionGroupManager.getAllDecisionGroups(projectKey);
 		if (groups == null) {
 			return Response.ok(Collections.emptyList()).build();
 		} else {
