@@ -99,7 +99,11 @@ public interface ConfigRest {
 
 	Response getAllDecisionGroups(String projectKey);
 
-	Response getAllElementsWithCertainGroup(String projectKey, String group);
+	Response getAllClassElementsWithCertainGroup(String projectKey, String group);
+
+	Response getAllDecisionElementsWithCertainGroup(String projectKey, String group);
 
 	Response renameDecisionGroup(String projectKey, String oldGroupName, String newGroupName);
+
+	Response deleteDecisionGroup(String projectKey, String groupName);
 }

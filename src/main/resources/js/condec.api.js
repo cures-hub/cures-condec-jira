@@ -761,6 +761,12 @@
         callback();
     }
 
+    ConDecAPI.prototype.deleteDecisionGroup = function deleteDecisionGroup(groupName, callback) {
+        getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/deleteDecisionGroup.json?projectKey=" + projectKey
+            + "&groupName=" + groupName);
+        callback();
+    }
+
     /*
      * Replaces argument with pro-argument and con-argument in knowledge types
      * array.

@@ -52,6 +52,22 @@ public class DecisionGroupManager {
 		return isDeleted;
 	}
 
+	public static boolean deleteGroup(String group, String projectKey) {
+		System.out.println("Deleting");
+		if (group == null) {
+			return false;
+		}
+		boolean isDeleted = false;
+		for (DecisionGroupInDatabase dgData : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
+			if (dgData.getGroup().equals(group) && dgData.getProjectKey().equals(projectKey)) {
+				System.out.println("Delete!");
+				isDeleted = DecisionGroupInDatabase.deleteGroup(dgData);
+			}
+		}
+		System.out.println("Deleted: " + isDeleted);
+		return isDeleted;
+	}
+
 	/**
 	 * Replaces all current existing assignments for that element with a list of new
 	 * groups
@@ -214,13 +230,30 @@ public class DecisionGroupManager {
 		return groups;
 	}
 
-	public static List<String> getAllElementsWithCertainGroup(String group, String projectKey) {
+	public static List<String> getAllDecisionElementsWithCertainGroup(String group, String projectKey) {
 		List<String> keys = new ArrayList<>();
 		KnowledgePersistenceManager kpManager = new KnowledgePersistenceManagerImpl(projectKey);
 		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
 			if (groupInDatabase.getProjectKey().equals(projectKey)
 					&& groupInDatabase.getGroup().equals(group)
 					&& !groupInDatabase.getSourceDocumentationLocation().equals("c")) {
+				KnowledgeElement element =
+						kpManager.getManagerForSingleLocation(groupInDatabase.getSourceDocumentationLocation()).getDecisionKnowledgeElement(groupInDatabase.getSourceId());
+				if (element != null) {
+					keys.add(element.getKey());
+				}
+			}
+		}
+		return keys;
+	}
+
+	public static List<String> getAllClassElementsWithCertainGroup(String group, String projectKey) {
+		List<String> keys = new ArrayList<>();
+		KnowledgePersistenceManager kpManager = new KnowledgePersistenceManagerImpl(projectKey);
+		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
+			if (groupInDatabase.getProjectKey().equals(projectKey)
+					&& groupInDatabase.getGroup().equals(group)
+					&& groupInDatabase.getSourceDocumentationLocation().equals("c")) {
 				KnowledgeElement element =
 						kpManager.getManagerForSingleLocation(groupInDatabase.getSourceDocumentationLocation()).getDecisionKnowledgeElement(groupInDatabase.getSourceId());
 				if (element != null) {

@@ -225,11 +225,24 @@ public class ConfigRestImpl implements ConfigRest {
 	}
 
 	@Override
-	@Path("/getAllElementsWithCertainGroup")
+	@Path("/getAllDecisionElementsWithCertainGroup")
 	@GET
-	public Response getAllElementsWithCertainGroup(@QueryParam("projectKey") String projectKey,
-												   @QueryParam("group") String group) {
-		List<String> keys = DecisionGroupManager.getAllElementsWithCertainGroup(group, projectKey);
+	public Response getAllDecisionElementsWithCertainGroup(@QueryParam("projectKey") String projectKey,
+														   @QueryParam("group") String group) {
+		List<String> keys = DecisionGroupManager.getAllDecisionElementsWithCertainGroup(group, projectKey);
+		if (keys == null) {
+			return Response.ok(Collections.emptyList()).build();
+		} else {
+			return Response.ok(keys).build();
+		}
+	}
+
+	@Override
+	@Path("/getAllClassElementsWithCertainGroup")
+	@GET
+	public Response getAllClassElementsWithCertainGroup(@QueryParam("projectKey") String projectKey,
+														@QueryParam("group") String group) {
+		List<String> keys = DecisionGroupManager.getAllClassElementsWithCertainGroup(group, projectKey);
 		if (keys == null) {
 			return Response.ok(Collections.emptyList()).build();
 		} else {
@@ -244,7 +257,21 @@ public class ConfigRestImpl implements ConfigRest {
 										@QueryParam("oldName") String oldGroupName,
 										@QueryParam("newName") String newGroupName) {
 		if (DecisionGroupManager.updateGroupName(oldGroupName, newGroupName, projectKey)) {
-			return Response.ok().build();
+			return Response.ok(true).build();
+		} else {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No Group to Rename found")).build();
+		}
+	}
+
+	@Override
+	@Path("/deleteDecisionGroup")
+	@GET
+	public Response deleteDecisionGroup(@QueryParam("projectKey") String projectKey,
+										@QueryParam("groupName") String groupName) {
+		System.out.println("Group: " + groupName);
+		System.out.println("ProjectKey: " + projectKey);
+		if (DecisionGroupManager.deleteGroup(groupName, projectKey)) {
+			return Response.ok(true).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No Group to Rename found")).build();
 		}

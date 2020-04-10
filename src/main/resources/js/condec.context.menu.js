@@ -80,6 +80,10 @@
             conDecDialog.showRenameGroupDialog(id);
         };
 
+        document.getElementById("condec-context-menu-group-delete").onclick = function () {
+            conDecDialog.showDeleteGroupDialog(id);
+        };
+
         document.getElementById("condec-context-menu-create-item").onclick = function () {
             conDecDialog.showCreateDialog(id, documentationLocation);
         };

@@ -27,15 +27,21 @@
             firstRowHeaderElement.classList.add("columnHeader");
             thead.appendChild(firstRowHeaderElement);
             const secondHeaderElement = document.createElement("th");
-            secondHeaderElement.innerText = "Connected Issue-Keys:";
+            secondHeaderElement.innerText = "Decision Knowledge Elements";
             secondHeaderElement.classList.add("columnHeader");
             thead.appendChild(secondHeaderElement);
+            const thirdHeaderElement = document.createElement("th");
+            thirdHeaderElement.innerText = "Java Classes";
+            thirdHeaderElement.classList.add("columnHeader");
+            thead.appendChild(thirdHeaderElement);
             table.appendChild(thead);
             for (var i = 0; i < groups.length; i++) {
                 var group = groups[i];
-                var keys = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllElementsWithCertainGroup.json?projectKey=" + projectKey
+                var keys = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionElementsWithCertainGroup.json?projectKey=" + projectKey
                     + "&group=" + group);
-                newTableRow(table, group, keys.length);
+                var classes = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllClassElementsWithCertainGroup.json?projectKey=" + projectKey
+                    + "&group=" + group);
+                newTableRow(table, group, keys.length, classes.length);
             }
         });
     };
@@ -46,7 +52,7 @@
         conDecDecisionGroupView.buildMatrix();
     };
 
-    function newTableRow(table, row1, row2) {
+    function newTableRow(table, row1, row2, row3) {
         table.appendChild(document.createElement("tr"));
         const tableRowElement = document.createElement("td");
         tableRowElement.innerHTML = row1;
@@ -57,7 +63,14 @@
         table.appendChild(tableRowElement);
         const tableRowElement2 = document.createElement("td");
         tableRowElement2.innerHTML = row2;
+        tableRowElement2.align = "center";
+        tableRowElement2.width = "100";
         table.appendChild(tableRowElement2);
+        const tableRowElement3 = document.createElement("td");
+        tableRowElement3.innerHTML = row3;
+        tableRowElement3.align = "center";
+        tableRowElement3.width = "100";
+        table.appendChild(tableRowElement3);
     };
 
     /*
