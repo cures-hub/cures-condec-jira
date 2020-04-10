@@ -20,29 +20,80 @@
     </tbody>
 </table>
 
+#parse("templates/dialogs/linkIssuesDialog.vm")
+
+
 <script>
     const loadingSpinnerElement = document.getElementById("loading-spinner");
     const resultsTableElement = document.getElementById("results-table");
     const resultsTableContentElement = document.getElementById("table-content");
+    const linkTypeSelectElement = document.getElementById("link-type-select");
 
+    function fillLinkSelectOptions(options) {
+        for(let option of options){
+            console.log(option);
+            //create outward link
+            let linkOption = document.createElement("option");
+            linkOption.value = option.id;
+            linkOption.innerText = option.outward;
+            linkTypeSelectElement.appendChild(linkOption);
+
+            //create inward link
+            linkOption = document.createElement("option");
+            linkOption.value = option.id;
+            linkOption.innerText = option.inward;
+            linkTypeSelectElement.appendChild(linkOption);
+            //console.log(option.outward);
+        }
+    }
+
+    function linkIssues(){
+        //https://docs.atlassian.com/software/jira/docs/api/REST/8.5.4/#api/2/issueLink-linkIssues
+    }
+
+    // Shows the dialog when the "Show dialog" button is clicked
+    function showDialog(targetIssueKey) {
+        AJS.dialog2("#link-issue-dialog").show();
+        displayTargetIssue(targetIssueKey);
+        //load issue link types: https://docs.atlassian.com/software/jira/docs/api/REST/8.5.4/#api/2/issueLinkType
+        generalApi.getJSONReturnPromise(AJS.contextPath() +"/rest/api/2/issueLinkType")
+        .then((data) => fillLinkSelectOptions(data.issueLinkTypes))
+        .catch(error => conDecAPI.showFlag("error", error.toString()))
+    };
+
+
+    function displayTargetIssue(targetIssueKey) {
+        document.getElementById("target-issue-dialog-display").innerHTML = targetIssueKey;//`Link current issue to issue ${targetIssueKey}`;
+    }
+
+    // Hides the dialog
+    AJS.$("#link-issue-dialog-submit-button").on('click', function (e) {
+        e.preventDefault();
+        AJS.dialog2("#link-issue-dialog").hide();
+        linkIssues();
+    });
+
+    AJS.$("#link-issue-dialog-cancel-button").on('click', function (e) {
+        e.preventDefault();
+        AJS.dialog2("#link-issue-dialog").hide();
+    });
 
     let displayRelatedIssues = function (relatedIssues) {
+        //reset table content to empty
         resultsTableContentElement.innerHTML = "";
+        //append table rows with possibly related issues
         for (let relatedIssue of relatedIssues) {
-            console.log("---------------");
-            console.log(relatedIssue);
-            console.log("---------------");
-            let row = generateTableRow();
-            row.appendChild(generateTableCell(relatedIssue.key));
-            row.appendChild(generateTableCell(relatedIssue.summary));
-            row.appendChild(generateTableCell(generateOptionButtons(relatedIssue.key, relatedIssue.id)));
-
+            let row = generateTableRow(relatedIssue);
             resultsTableContentElement.appendChild(row);
         }
     };
 
-    let generateTableRow = function () {
-        return document.createElement("tr");
+    let generateTableRow = function (relatedIssue) {
+        let row = document.createElement("tr");
+        row.appendChild(generateTableCell(relatedIssue.key));
+        row.appendChild(generateTableCell(relatedIssue.summary));
+        row.appendChild(generateTableCell(generateOptionButtons(relatedIssue)));
+        return row;
     };
 
     let generateTableCell = function (content) {
@@ -51,20 +102,16 @@
         return tableCell
     };
 
-    let generateOptionButtons = function (issueKey, issueId) {
-        return "<a href='/" + issueKey + "'> <span class='aui-icon aui-icon-small aui-iconfont-watch-filled'></span> View </a>" +
-            "<a href='/jira/secure/LinkJiraIssue!default.jspa?id=" + issueId + "'> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link </a>"
-    };
-
-    let openLinkDialog = function (issueKey) {
-        return function () {
-
-        }
+    let generateOptionButtons = function (issue) {
+        return `<button class='aui-button' onclick="location.href='${issue.key}';"> <span class='aui-icon aui-icon-small aui-iconfont-watch-filled'></span> View </button>` +
+                `<button class='aui-button' onclick="showDialog('${issue.key}')"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link </button>`
     };
 
 
     //load data when in focus!
     window.addEventListener("focus", function (event) {
+        //loadingSpinnerElement.style.display = "visible";
+        //resultsTableElement.style.visibility = "none";
         console.log("---- Related Issues ----");
         let issueKey = conDecAPI.getIssueKey();
         let projectKey = conDecAPI.getProjectKey();
@@ -72,11 +119,10 @@
 
         conDecAPI.loadRelatedIssues(issueKey, projectKey)
             .then((data) => displayRelatedIssues(data.relatedIssues))
-            .catch((error) => conDecAPI.showFlag("error", "Could not load related issues!"))
+            .catch((error) => conDecAPI.showFlag("error", "Could not load related issues! </br>" + error))
             .finally(() => {
                 loadingSpinnerElement.style.display = "none";
                 resultsTableElement.style.visibility = "visible";
-
             });
 
     }, false);
