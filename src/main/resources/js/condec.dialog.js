@@ -301,9 +301,21 @@
             AJS.dialog2(linkDialog).hide();
         };
 
-        // Show dialog
-        AJS.dialog2(linkDialog).show();
-    };
+	function fillSelectTypeField(selectField, selectedKnowledgeType) {
+		if (selectField === null) {
+			return;
+		}
+		selectField.innerHTML = "";
+		var extendedKnowledgeTypes = conDecAPI.getExtendedKnowledgeTypes();
+		for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
+			var isSelected = "";
+			if (isKnowledgeTypeLocatedAtIndex(selectedKnowledgeType, extendedKnowledgeTypes, index)) {
+				isSelected = "selected";
+			}
+			selectField.insertAdjacentHTML("beforeend", "<option " + isSelected + " value='"
+				+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
+		}
+	}
 
     ConDecDialog.prototype.showLinkDialog = function showLinkDialog(id, documentationLocation) {
         console.log("conDecDialog showLinkDialog");

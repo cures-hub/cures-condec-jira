@@ -44,7 +44,7 @@
 	}
 
 	function addOnClickEventToDecisionLinkFilterButton() {
-		var linkTypes = conDecAPI.linkTypes;
+		var linkTypes = conDecAPI.getLinkTypesSync();
 		conDecFiltering.initDropdown("linktype-dropdown", linkTypes);
 
 		var filterButton = document.getElementById("filterDecisionLinks-button");
