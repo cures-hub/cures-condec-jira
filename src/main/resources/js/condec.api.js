@@ -753,19 +753,19 @@
     ConDecAPI.prototype.getDecisionGroupTable = function getDecisionGroupTable(callback) {
         var decisionGroups = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey=" + projectKey);
         callback(decisionGroups, projectKey);
-    }
+    };
 
     ConDecAPI.prototype.renameDecisionGroup = function renameDecisionGroup(oldName, newName, callback) {
         getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/renameDecisionGroup.json?projectKey=" + projectKey
             + "&oldName=" + oldName + "&newName=" + newName);
         callback();
-    }
+    };
 
     ConDecAPI.prototype.deleteDecisionGroup = function deleteDecisionGroup(groupName, callback) {
         getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/deleteDecisionGroup.json?projectKey=" + projectKey
             + "&groupName=" + groupName);
         callback();
-    }
+    };
 
     /*
      * Replaces argument with pro-argument and con-argument in knowledge types

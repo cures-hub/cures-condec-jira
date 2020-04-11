@@ -63,7 +63,7 @@
 
     ConDecJiraIssueModule.prototype.applyClassViewFilters = function applyClassViewFilters() {
         showClassTreant();
-    }
+    };
 
     function addOnClickEventToTab() {
         console.log("ConDecJiraIssueModule addOnClickEventVisualizationSelectionTab");

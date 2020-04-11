@@ -253,7 +253,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 						DecisionGroupManager.insertGroup("Realization_Level", linkedElement);
 					}
 					for (String group : groupsToAssign) {
-						if (!group.equals("High_Level") && !group.equals("Medium_Level") && !group.equals("Realization_Level")) {
+						if (!("High_Level").equals(group) && !("Medium_Level").equals(group) && !("Realization_Level").equals(group)) {
 							DecisionGroupManager.insertGroup(group, linkedElement);
 						}
 

@@ -283,7 +283,7 @@
         }else{
             document.getElementById("condec-context-menu-assign-decision-group-item").style.display = "initial";
         }*/
-        if (documentationLocation == "groups") {
+        if (documentationLocation === "groups") {
             document.getElementById("first-context-section").style.display = "none";
             document.getElementById("second-context-section").style.display = "none";
             document.getElementById("third-context-section").style.display = "none";
