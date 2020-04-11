@@ -1,0 +1,20 @@
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
+<div class="container">
+    <table class="aui" id="group-table" border="1" style="margin-top: 10px"></table>
+</div>
+
+<br>
+<br>
+
+<script>
+    $(document).ready(function () {
+        conDecAPI.checkIfProjectKeyIsValid();
+        if (window.conDecDecisionGroupView.init(conDecAPI, conDecObservable)) {
+            conDecAPI.checkIfProjectKeyIsValid();
+            window.conDecDecisionGroupView.buildMatrix();
+        } else {
+            console.error("ConDecDecisionGroupView could not get its dependencies.");
+        }
+    });
+</script>

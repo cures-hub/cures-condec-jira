@@ -35,17 +35,7 @@
             console.error("ConDecKnowledgePage could not get its dependencies.");
         }
     });
-    /*
-    window.onload = function(){
-        $("input").on('input', function () {
-        var inputValue = this.value;
-        if($('datalist').find('option').filter(function(){
-            return this.value == inputValue;        
-        }).length || inputValue == "") {
-        	conDecObservable.notify();
-        }
-    	}); 
-    }*/
+
     $("#select2-decision-group").on("change.select2", function (e) {
     	conDecObservable.notify();
     });
