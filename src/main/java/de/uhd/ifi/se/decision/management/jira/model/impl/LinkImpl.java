@@ -3,20 +3,18 @@ package de.uhd.ifi.se.decision.management.jira.model.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLink;
-
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Model class for links between decision knowledge elements
@@ -42,18 +40,18 @@ public class LinkImpl extends DefaultWeightedEdge implements Link {
 	}
 
 	public LinkImpl(KnowledgeElement sourceElement, KnowledgeElement destinationElement,
-			String linkType) {
+					String linkType) {
 		this(sourceElement, destinationElement);
 		this.type = linkType;
 	}
 
 	public LinkImpl(KnowledgeElement sourceElement, KnowledgeElement destinationElement,
-			LinkType linkType) {
+					LinkType linkType) {
 		this(sourceElement, destinationElement, linkType.toString());
 	}
 
 	public LinkImpl(long idOfSourceElement, long idOfDestinationElement,
-			DocumentationLocation sourceDocumentationLocation, DocumentationLocation destDocumentationLocation) {
+					DocumentationLocation sourceDocumentationLocation, DocumentationLocation destDocumentationLocation) {
 		super();
 		this.setSourceElement(idOfSourceElement, sourceDocumentationLocation);
 		this.setDestinationElement(idOfDestinationElement, destDocumentationLocation);

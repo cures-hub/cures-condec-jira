@@ -1,0 +1,43 @@
+<div>
+    <form class="aui">
+        <div>
+            <input class="text medium-long-field" id="jstree-search-input-code"
+                   placeholder="$i18n.getText('condec.filter.label')"/>
+            #set($select2-decision-group = "select2-code-decision-group")
+            #parse("templates/filter/decisionGroup.vm")
+            <label for="show-without-elements-input">Show Issues without Knowledge Elements:</label>
+            <input class="checked" type="checkbox" id="show-without-elements-input" onclick="checkBoxClicked()"
+                   checked/>
+            #set ($linkDistanceInputId = "depth-of-tree-input-code")
+            #parse("templates/filter/linkDistance.vm")
+        </div>
+    </form>
+</div>
+<div class="aui-group">
+    <div id="resizable" class="left">
+        <div id="code-class-tree"></div>
+    </div>
+    <div id="treant-container-class" class="right"></div>
+</div>
+<script>
+    /*
+     * Instantiate the ConDecCodeClassPage object controlling this view:
+     */
+    $(document).ready(function () {
+        conDecAPI.checkIfProjectKeyIsValid();
+        if (window.ConDecCodeClassPage.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant, conDecTreeViewer)) {
+            window.ConDecCodeClassPage.fetchAndRender();
+        } else {
+            console.error("ConDecCodeClassPage could not get its dependencies.");
+        }
+    });
+
+    $("#select2-code-decision-group").on("change.select2", function (e) {
+        conDecObservable.notify();
+    });
+
+    function checkBoxClicked() {
+        conDecObservable.notify()
+    }
+
+</script>

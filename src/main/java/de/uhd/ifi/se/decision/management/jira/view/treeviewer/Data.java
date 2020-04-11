@@ -7,7 +7,6 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlElement;
 
 import com.google.common.collect.ImmutableMap;
-
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -85,7 +84,7 @@ public class Data {
 		this.children = children;
 	}
 
-	public KnowledgeElement getElement() {
+	public Object getElement() {
 		return element;
 	}
 

@@ -10,11 +10,8 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import org.jgrapht.traverse.BreadthFirstIterator;
-
 import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
-
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
@@ -25,8 +22,10 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
+import org.jgrapht.traverse.BreadthFirstIterator;
 
 /**
  * Creates tree viewer content. The tree viewer is rendered with the jstree
@@ -67,10 +66,8 @@ public class TreeViewer {
 	 * Constructor for a jstree tree viewer for a list of trees where all root
 	 * elements have a specific {@link KnowledgeType}.
 	 *
-	 * @param projectKey
-	 *            of a Jira project.
-	 * @param rootElementType
-	 *            {@link KnowledgeType} of the root elements.
+	 * @param projectKey      of a Jira project.
+	 * @param rootElementType {@link KnowledgeType} of the root elements.
 	 */
 	public TreeViewer(String projectKey, KnowledgeType rootElementType) {
 		this();
@@ -92,11 +89,9 @@ public class TreeViewer {
 	 * Constructor for a jstree tree viewer for a single knowledge element as the
 	 * root element. The tree viewer comprises only one tree.
 	 *
-	 * @param jiraIssueKey
-	 *            the issue id
-	 * @param filterSettings
-	 *            {@link FilterSettings} object. The filter settings cover the
-	 *            decision knowledge types to be shown.
+	 * @param jiraIssueKey   the issue id
+	 * @param filterSettings {@link FilterSettings} object. The filter settings
+	 *                       cover the decision knowledge types to be shown.
 	 */
 	public TreeViewer(String jiraIssueKey, FilterSettings filterSettings) {
 		this();
@@ -127,9 +122,26 @@ public class TreeViewer {
 		}
 	}
 
+	/**
+	 * Constructor for a jstree tree viewer for a code class as the root element.
+	 * The tree viewer comprises only one tree.
+	 */
+	public TreeViewer(String projectKey) {
+		this();
+		if (projectKey != null) {
+			Set<Data> dataSet = new HashSet<Data>();
+			CodeClassKnowledgeElementPersistenceManager manager = new CodeClassKnowledgeElementPersistenceManager(projectKey);
+			List<KnowledgeElement> elementList = manager.getDecisionKnowledgeElements();
+			for (KnowledgeElement element : elementList) {
+				dataSet.add(this.makeIdUnique(new Data(element)));
+			}
+			this.data = dataSet;
+		}
+	}
+
 	private void removeChildrenWithType(Iterator<Data> iterator) {
 		Data currentNode = iterator.next();
-		if (!filteringManager.isElementMatchingKnowledgeTypeFilter(currentNode.getElement())) {
+		if (!filteringManager.isElementMatchingKnowledgeTypeFilter((KnowledgeElement) currentNode.getElement())) {
 			iterator.remove();
 			return;
 		} else {
@@ -184,7 +196,8 @@ public class TreeViewer {
 			}
 			this.alreadyVisitedEdges.add(edge.getId());
 			Data dataChild = new Data(nodeElement, edge);
-			if (dataChild.getElement().getProject() == null || !dataChild.getElement().getProject().getProjectKey()
+			if (((KnowledgeElement) dataChild.getElement()).getProject() == null
+					|| !((KnowledgeElement) dataChild.getElement()).getProject().getProjectKey()
 					.equals(decisionKnowledgeElement.getProject().getProjectKey())) {
 				continue;
 			}

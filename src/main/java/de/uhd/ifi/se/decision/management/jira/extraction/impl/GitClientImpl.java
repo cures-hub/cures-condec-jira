@@ -2,25 +2,28 @@ package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
-import com.atlassian.jira.issue.Issue;
-import com.google.common.collect.Lists;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.model.git.impl.ChangedFileImpl;
-import de.uhd.ifi.se.decision.management.jira.model.git.impl.DiffImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
-import org.eclipse.jgit.api.errors.*;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRefNameException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
+import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
@@ -31,27 +34,37 @@ import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.issue.Issue;
+import com.google.common.collect.Lists;
+
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import de.uhd.ifi.se.decision.management.jira.model.git.impl.ChangedFileImpl;
+import de.uhd.ifi.se.decision.management.jira.model.git.impl.DiffImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+
 /**
  * @issue How to access commits related to a Jira issue?
  * @decision Use the jGit library to access the git repositories for a Jira
- * project!
+ *           project!
  * @pro The jGit library is open source.
  * @alternative Both, the jgit library and the git integration for Jira plugin
- * were used to access git repositories!
+ *              were used to access git repositories!
  * @con An application link and oAuth is needed to call REST API on Java side in
- * order to access the git repository with the git integration for Jira
- * plugin.
- * <p>
- * <p>
- * This implementation works well only with configuration for one remote
- * git server. Multiple instances of this class are "thread-safe" in the
- * limited way that the checked-out branch files are stored in dedicated
- * branch folders and can be read. Modifying files is not safe and not
- * supported.
+ *      order to access the git repository with the git integration for Jira
+ *      plugin.
+ *      <p>
+ *      <p>
+ *      This implementation works well only with configuration for one remote
+ *      git server. Multiple instances of this class are "thread-safe" in the
+ *      limited way that the checked-out branch files are stored in dedicated
+ *      branch folders and can be read. Modifying files is not safe and not
+ *      supported.
  */
 public class GitClientImpl implements GitClient {
-
-	private static final long REPO_OUTDATED_AFTER = 15 * 60 * 1000; // ex. 15 minutes = 15 minutes * 60 seconds * 1000
+	private static final long REPO_OUTDATED_AFTER = 10 * 60 * 1000; // ex. 10 minutes = 10 minutes * 60 seconds * 1000
 	// miliseconds
 	private Map<String, Git> gits;
 	private List<String> remoteUris;
@@ -136,7 +149,7 @@ public class GitClientImpl implements GitClient {
 	}
 
 	private boolean pullOrCloneRepositories(String projectKey, String defaultDirectory, List<String> uris,
-											Map<String, String> defaultBranchFolderNames) {
+			Map<String, String> defaultBranchFolderNames) {
 		fsManager = new GitRepositoryFSManager(defaultDirectory, projectKey, uris, defaultBranchFolderNames);
 		Map<String, String> defaultBranchPaths = fsManager.getDefaultBranchPaths();
 		this.remoteUris = uris;
@@ -201,6 +214,7 @@ public class GitClientImpl implements GitClient {
 			return true;
 		}
 		try {
+			ObjectId oldHead = getRepository(repoUri).resolve("HEAD^{tree}");
 			List<RemoteConfig> remotes = gits.get(repoUri).remoteList().call();
 			for (RemoteConfig remote : remotes) {
 				gits.get(repoUri).fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
@@ -208,8 +222,17 @@ public class GitClientImpl implements GitClient {
 				LOGGER.info("Fetched branches in " + gits.get(repoUri).getRepository().getDirectory());
 			}
 			gits.get(repoUri).pull().call();
-		} catch (GitAPIException e) {
+
+			ObjectId head = getRepository(repoUri).resolve("HEAD^{tree}");
+			if (!oldHead.equals(head)
+					&& getRepository(repoUri).getBranch().equals(defaultBranchFolderNames.get(repoUri))) {
+				CodeClassKnowledgeElementPersistenceManager persistenceManager = new CodeClassKnowledgeElementPersistenceManager(
+						projectKey);
+				persistenceManager.maintainCodeClassKnowledgeElements(repoUri, oldHead, head);
+			}
+		} catch (GitAPIException | IOException e) {
 			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t" + e.getMessage());
+			e.printStackTrace();
 			return false;
 		}
 		LOGGER.info("Pulled from remote in " + gits.get(repoUri).getRepository().getDirectory());
@@ -757,6 +780,7 @@ public class GitClientImpl implements GitClient {
 		String[] branchNameComponents = branch.getName().split("/");
 		String branchShortName = branchNameComponents[branchNameComponents.length - 1];
 		String branchShortNameWithPrefix = branch.getName().replaceFirst("refs/remotes/origin/", "");
+		branchShortNameWithPrefix = branchShortNameWithPrefix.replaceFirst("refs/heads/", "");
 		boolean canReleaseRepoDirectory = false;
 
 		if (isDefaultBranch) {
@@ -792,8 +816,9 @@ public class GitClientImpl implements GitClient {
 
 	private boolean checkout(String checkoutObjectName, String repoUri, boolean isCommitWithinBranch) {
 		// checkout only remote branch
+		String shortCheckoutObjectName = checkoutObjectName.replaceFirst("refs/heads/", "");
 		if (!isCommitWithinBranch) {
-			String checkoutName = "origin/" + checkoutObjectName;
+			String checkoutName = "origin/" + shortCheckoutObjectName;
 			try {
 				gits.get(repoUri).checkout().setName(checkoutName).call();
 			} catch (GitAPIException | JGitInternalException e) {
@@ -802,7 +827,7 @@ public class GitClientImpl implements GitClient {
 				return false;
 			}
 			// create local branch
-			if (!createLocalBranchIfNotExists(checkoutObjectName, repoUri)) {
+			if (!createLocalBranchIfNotExists(shortCheckoutObjectName, repoUri)) {
 				LOGGER.error("Could delete and create local branch");
 				return false;
 
@@ -811,10 +836,10 @@ public class GitClientImpl implements GitClient {
 
 		// checkout local branch/commit
 		try {
-			gits.get(repoUri).checkout().setName(checkoutObjectName).call();
+			gits.get(repoUri).checkout().setName(shortCheckoutObjectName).call();
 		} catch (GitAPIException | JGitInternalException e) {
 
-			LOGGER.error("Could not checkout " + checkoutObjectName + ". " + e.getMessage());
+			LOGGER.error("Could not checkout " + shortCheckoutObjectName + ". " + e.getMessage());
 			return false;
 		}
 		return true;

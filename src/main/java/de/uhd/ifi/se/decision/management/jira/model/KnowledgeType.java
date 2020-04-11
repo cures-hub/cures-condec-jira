@@ -1,15 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 
@@ -17,7 +12,8 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
  * Type of decision knowledge element
  */
 public enum KnowledgeType {
-	ALTERNATIVE, ASSUMPTION, ASSESSMENT, ARGUMENT, PRO, CON, CLAIM, CONTEXT, CONSTRAINT, DECISION, GOAL, ISSUE, IMPLICATION, PROBLEM, RATIONALE, SOLUTION, OTHER, QUESTION;
+	ALTERNATIVE, ASSUMPTION, ASSESSMENT, ARGUMENT, PRO, CON, CLAIM, CONTEXT, CONSTRAINT, DECISION, GOAL, ISSUE,
+	IMPLICATION, PROBLEM, RATIONALE, SOLUTION, OTHER, QUESTION;
 
 	/**
 	 * Get the minimal set of decision knowledge types for the management of
@@ -32,8 +28,7 @@ public enum KnowledgeType {
 	/**
 	 * Converts a string to a knowledge type.
 	 *
-	 * @param type
-	 *            as a String.
+	 * @param type as a String.
 	 * @return knowledge type.
 	 */
 	public static KnowledgeType getKnowledgeType(String type) {
@@ -63,12 +58,12 @@ public enum KnowledgeType {
 
 	public static KnowledgeType replaceProAndConWithArgument(KnowledgeType type) {
 		switch (type) {
-		case PRO:
-			return KnowledgeType.ARGUMENT;
-		case CON:
-			return KnowledgeType.ARGUMENT;
-		default:
-			return type;
+			case PRO:
+				return KnowledgeType.ARGUMENT;
+			case CON:
+				return KnowledgeType.ARGUMENT;
+			default:
+				return type;
 		}
 	}
 
@@ -82,11 +77,10 @@ public enum KnowledgeType {
 	 * knowledge graph. For example, the parent type of argument is decision or
 	 * alternative. The parent type of decision or alternative is issue.
 	 *
-	 * @see KnowledgeElement
-	 * @param type
-	 *            of knowledge
+	 * @param type of knowledge
 	 * @return parent knowledge type of the knowledge type for link creation in the
-	 *         knowledge graph.
+	 * knowledge graph.
+	 * @see KnowledgeElement
 	 */
 	public static List<KnowledgeType> getParentTypes(KnowledgeType type) {
 		List<KnowledgeType> parentTypes = new ArrayList<KnowledgeType>();
@@ -107,37 +101,36 @@ public enum KnowledgeType {
 	 * For example, the super type of argument is rationale and the super type of
 	 * issue is problem.
 	 *
-	 * @see KnowledgeElement
-	 * @param type
-	 *            of knowledge
+	 * @param type of knowledge
 	 * @return super knowledge type of the knowledge type in the decision
-	 *         documentation model.
+	 * documentation model.
+	 * @see KnowledgeElement
 	 */
 	public static KnowledgeType getSuperType(KnowledgeType type) {
 		if (type == null) {
 			return null;
 		}
 		switch (type) {
-		case ISSUE:
-			return KnowledgeType.PROBLEM;
-		case GOAL:
-			return KnowledgeType.PROBLEM;
-		case ALTERNATIVE:
-			return KnowledgeType.SOLUTION;
-		case CLAIM:
-			return KnowledgeType.SOLUTION;
-		case CONSTRAINT:
-			return KnowledgeType.CONTEXT;
-		case ASSUMPTION:
-			return KnowledgeType.CONTEXT;
-		case IMPLICATION:
-			return KnowledgeType.CONTEXT;
-		case ARGUMENT:
-			return KnowledgeType.RATIONALE;
-		case ASSESSMENT:
-			return KnowledgeType.RATIONALE;
-		default:
-			return type;
+			case ISSUE:
+				return KnowledgeType.PROBLEM;
+			case GOAL:
+				return KnowledgeType.PROBLEM;
+			case ALTERNATIVE:
+				return KnowledgeType.SOLUTION;
+			case CLAIM:
+				return KnowledgeType.SOLUTION;
+			case CONSTRAINT:
+				return KnowledgeType.CONTEXT;
+			case ASSUMPTION:
+				return KnowledgeType.CONTEXT;
+			case IMPLICATION:
+				return KnowledgeType.CONTEXT;
+			case ARGUMENT:
+				return KnowledgeType.RATIONALE;
+			case ASSESSMENT:
+				return KnowledgeType.RATIONALE;
+			default:
+				return type;
 		}
 	}
 
@@ -146,8 +139,8 @@ public enum KnowledgeType {
 	 * For example, the super type of argument is rationale and the super type of
 	 * issue is problem.
 	 *
-	 * @see KnowledgeElement
 	 * @return super knowledge type of the decision knowledge element.
+	 * @see KnowledgeElement
 	 */
 	public KnowledgeType getSuperType() {
 		return getSuperType(this);
@@ -180,29 +173,29 @@ public enum KnowledgeType {
 
 	public String getIconString() {
 		switch (this) {
-		case PRO:
-			return "(y)";
-		case CON:
-			return "(n)";
-		case DECISION:
-			return "(/)";
-		case ISSUE:
-			return "(!)";
-		case ALTERNATIVE:
-			return "(?)";
-		default:
-			return "";
+			case PRO:
+				return "(y)";
+			case CON:
+				return "(n)";
+			case DECISION:
+				return "(/)";
+			case ISSUE:
+				return "(!)";
+			case ALTERNATIVE:
+				return "(?)";
+			default:
+				return "";
 		}
 	}
 
 	public String getIconUrl() {
 		switch (this) {
-		case PRO:
-			return ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
-		case CON:
-			return ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
-		default:
-			return ComponentGetter.getUrlOfImageFolder() + this.name().toLowerCase(Locale.ENGLISH) + ".png";
+			case PRO:
+				return ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
+			case CON:
+				return ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
+			default:
+				return ComponentGetter.getUrlOfImageFolder() + this.name().toLowerCase(Locale.ENGLISH) + ".png";
 		}
 	}
 
@@ -211,14 +204,20 @@ public enum KnowledgeType {
 			return "";
 		}
 		if (element instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) element).isRelevant()) {
-			return ComponentGetter.getUrlOfImageFolder() + "Other.png";
+			return ComponentGetter.getUrlOfImageFolder() + "other.png";
 		}
 		if (element.getType() == OTHER) {
 			if (element instanceof PartOfJiraIssueText) {
-				return ComponentGetter.getUrlOfImageFolder() + "Other.png";
+				return ComponentGetter.getUrlOfImageFolder() + "other.png";
+			}
+			if (element.getSummary() != null && element.getSummary().contains(".java")) {
+				return ComponentGetter.getUrlOfImageFolder() + "class.png";
 			}
 			IssueManager issueManager = ComponentAccessor.getIssueManager();
 			Issue issue = issueManager.getIssueByCurrentKey(element.getKey());
+			if (issue == null) {
+				return ComponentGetter.getUrlOfImageFolder() + "other.png";
+			}
 			return issue.getIssueType().getCompleteIconUrl();
 		}
 		return element.getType().getIconUrl();
@@ -229,14 +228,14 @@ public enum KnowledgeType {
 			return getIconUrl(element);
 		}
 		switch (element.getType()) {
-		case ARGUMENT:
-			if (linkType.equals("support")) {
-				return ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
-			} else if (linkType.equals("attack")) {
-				return ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
-			}
-		default:
-			return getIconUrl(element);
+			case ARGUMENT:
+				if (linkType.equals("support")) {
+					return ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
+				} else if (linkType.equals("attack")) {
+					return ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
+				}
+			default:
+				return getIconUrl(element);
 		}
 	}
 }
