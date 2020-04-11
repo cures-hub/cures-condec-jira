@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.atlassian.jira.user.ApplicationUser;
-
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -14,6 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
@@ -21,12 +21,11 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 /**
  * Class that integates all available persistence managers for single
  * documentation locations for a given project.
- * 
+ *
  * @issue How can we integrate knowledge from different documentation locations?
  * @alternative Use the decorator design pattern to integrate persistence
- *              managers for different documentation locations!
+ * managers for different documentation locations!
  * @alternative Manually implement methods such as getDecisionKnowledgeElements!
- * 
  * @see AbstractPersistenceManagerForSingleLocation
  * @see JiraIssuePersistenceManager
  * @see JiraIssueTextPersistenceManager
@@ -36,12 +35,14 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 	private String projectKey;
 	private JiraIssuePersistenceManager jiraIssuePersistenceManager;
 	private JiraIssueTextPersistenceManager jiraIssueTextPersistenceManager;
+	private CodeClassKnowledgeElementPersistenceManager codeClassKnowledgeElementPersistenceManager;
 	private List<AbstractPersistenceManagerForSingleLocation> activePersistenceManagersForSingleLocations;
 
 	public KnowledgePersistenceManagerImpl(String projectKey) {
 		this.projectKey = projectKey;
 		this.jiraIssuePersistenceManager = new JiraIssuePersistenceManager(projectKey);
 		this.jiraIssueTextPersistenceManager = new JiraIssueTextPersistenceManager(projectKey);
+		this.codeClassKnowledgeElementPersistenceManager = new CodeClassKnowledgeElementPersistenceManager(projectKey);
 		this.activePersistenceManagersForSingleLocations = initActivePersistenceManagersForSinleLocations();
 	}
 
@@ -61,6 +62,8 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 		// remove irrelevant sentences from graph
 		elements.removeIf(
 				element -> (element instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) element).isRelevant()));
+
+
 		return elements;
 	}
 
@@ -97,12 +100,14 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 			return null;
 		}
 		switch (documentationLocation) {
-		case JIRAISSUE:
-			return jiraIssuePersistenceManager;
-		case JIRAISSUETEXT:
-			return jiraIssueTextPersistenceManager;
-		default:
-			return null;
+			case JIRAISSUE:
+				return jiraIssuePersistenceManager;
+			case JIRAISSUETEXT:
+				return jiraIssueTextPersistenceManager;
+			case COMMIT:
+				return codeClassKnowledgeElementPersistenceManager;
+			default:
+				return null;
 		}
 	}
 
@@ -137,7 +142,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 
 	@Override
 	public boolean updateIssueStatus(KnowledgeElement parentElement, KnowledgeElement childElement,
-			ApplicationUser user) {
+									 ApplicationUser user) {
 		if (KnowledgeStatus.isIssueResolved(parentElement, childElement)) {
 			parentElement.setStatus(KnowledgeStatus.RESOLVED);
 			updateDecisionKnowledgeElement(parentElement, user);
@@ -187,7 +192,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 
 	@Override
 	public long updateLink(KnowledgeElement element, KnowledgeType formerKnowledgeType, long idOfParentElement,
-			String documentationLocationOfParentElement, ApplicationUser user) {
+						   String documentationLocationOfParentElement, ApplicationUser user) {
 
 		if (LinkType.linkTypesAreEqual(formerKnowledgeType, element.getType()) || idOfParentElement == 0) {
 			return -1;
@@ -235,7 +240,7 @@ public class KnowledgePersistenceManagerImpl implements KnowledgePersistenceMana
 
 	@Override
 	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user,
-			KnowledgeElement parentElement) {
+														   KnowledgeElement parentElement) {
 		if (element.getStatus() == KnowledgeStatus.UNDEFINED) {
 			element.setStatus(KnowledgeStatus.getDefaultStatus(element.getType()));
 		}

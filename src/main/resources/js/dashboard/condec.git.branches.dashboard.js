@@ -12,7 +12,7 @@
 var ConDecDevBranchesQuality = [];
 var ConDecDevBranches = [];
 
-(function(global) {
+(function (global) {
     var dashboards = {};    /*
 							 * TODO: object muss support more than one
 							 * dashboard.
@@ -32,46 +32,46 @@ var ConDecDevBranches = [];
 
     var branchesQuality = [];
 
-	var ConDecBranchesDashboard = function ConDecBranchesDashboard() {
-		console.log("ConDecBranchesDashboard constructor");
-	};
+    var ConDecBranchesDashboard = function ConDecBranchesDashboard() {
+        console.log("ConDecBranchesDashboard constructor");
+    };
 
     ConDecBranchesDashboard.prototype.init = function init(_projectKey, _dashboardUID, _gituri) {
-        console.log("received for project: "+ _projectKey +" UID:"+ _dashboardUID);
+        console.log("received for project: " + _projectKey + " UID:" + _dashboardUID);
         projectKey = _projectKey;
 
         /*
 		 * Match branch names either: starting with issue key followed by dot OR
 		 * exactly the issue key
 		 */
-        issueBranchKeyRx = RegExp("origin/(" + _projectKey + "-\\d+)\\.|origin/(" + _projectKey + "-\\d+)$","i");
+        issueBranchKeyRx = RegExp("origin/(" + _projectKey + "-\\d+)\\.|origin/(" + _projectKey + "-\\d+)$", "i");
         dashboardUID = _dashboardUID;
 
-        getHTMLNodes( "condec-branches-dashboard-contents-container"+dashboardUID
-        , "condec-branches-dashboard-contents-data-error"+dashboardUID
-        , "condec-branches-dashboard-no-project"+dashboardUID
-        , "condec-branches-dashboard-processing"+dashboardUID
-        , "condec-branches-dashboard-nogit-error"+dashboardUID);
+        getHTMLNodes("condec-branches-dashboard-contents-container" + dashboardUID
+            , "condec-branches-dashboard-contents-data-error" + dashboardUID
+            , "condec-branches-dashboard-no-project" + dashboardUID
+            , "condec-branches-dashboard-processing" + dashboardUID
+            , "condec-branches-dashboard-nogit-error" + dashboardUID);
 
         branchesQuality = [];
 
-        if (!_gituri || _gituri.length<1) {
+        if (!_gituri || _gituri.length < 1) {
             showDashboardSection(dashboardProjectWithoutGit);
-        }
-        else {
+        } else {
             getBranches(projectKey);
         }
     };
 
     function getHTMLNodes(containerName, dataErrorName, noProjectName, processingName, noGitName) {
-        dashboardContentNode   = document.getElementById(containerName);
+        dashboardContentNode = document.getElementById(containerName);
         dashboardDataErrorNode = document.getElementById(dataErrorName);
         dashboardNoContentsNode = document.getElementById(noProjectName);
         dashboardProcessingNode = document.getElementById(processingName);
         dashboardProjectWithoutGit = document.getElementById(noGitName);
     }
+
     function showDashboardSection(node) {
-  
+
         var hiddenClass = "hidden";
         dashboardContentNode.classList.add(hiddenClass);
         dashboardDataErrorNode.classList.add(hiddenClass);
@@ -81,8 +81,8 @@ var ConDecDevBranches = [];
         node.classList.remove(hiddenClass);
     }
 
-    function getBranches(projectKey){
-        if (!projectKey || !projectKey.length || !projectKey.length>0) {
+    function getBranches(projectKey) {
+        if (!projectKey || !projectKey.length || !projectKey.length > 0) {
             return;
         }
         /*
@@ -94,35 +94,34 @@ var ConDecDevBranches = [];
         url = conDecAPI.restPrefix + "/view/elementsFromBranchesOfProject.json?projectKey=" + projectKey;
         /* get cache or server data? */
         if (localStorage.getItem("condec.restCacheTTL")) {
-          console.log("condec.restCacheTTL setting found");
-          if (localStorage.getItem(url)) {
-            var data = null;
-            var now = Date.now();
-            var cacheTTL = parseInt(localStorage.getItem("condec.restCacheTTL"));
-            try {
-              data = JSON.parse(localStorage.getItem(url));
-            } catch (ex) {
-              data = null;
+            console.log("condec.restCacheTTL setting found");
+            if (localStorage.getItem(url)) {
+                var data = null;
+                var now = Date.now();
+                var cacheTTL = parseInt(localStorage.getItem("condec.restCacheTTL"));
+                try {
+                    data = JSON.parse(localStorage.getItem(url));
+                } catch (ex) {
+                    data = null;
+                }
+                if (data && cacheTTL) {
+                    if (now - data.timestamp < cacheTTL) {
+                        console.log(
+                            "Cache is within specified TTL, therefore getting data from local cache instead from server."
+                        );
+                        return processXhrResponseData(data);
+                    } else {
+                        console.log("Cache TTL expired, therefore starting  REST query.");
+                    }
+                }
+                if (!cacheTTL) {
+                    console.log(
+                        "Cache TTL is not a number, therefore starting  REST query."
+                    );
+                }
             }
-            if (data && cacheTTL) {
-              if (now - data.timestamp < cacheTTL) {
-                console.log(
-                  "Cache is within specified TTL, therefore getting data from local cache instead from server."
-                );
-                return processXhrResponseData(data);
-              } else {
-                console.log("Cache TTL expired, therefore starting  REST query.");
-              }
-            }
-            if (!cacheTTL) {
-              console.log(
-                "Cache TTL is not a number, therefore starting  REST query."
-              );
-            }
-          }
-        }
-        else {
-          localStorage.setItem("condec.restCacheTTL",1000*60); /*
+        } else {
+            localStorage.setItem("condec.restCacheTTL", 1000 * 60 * 3); /*
 																	 * init 3
 																	 * minute
 																	 * caching
@@ -130,21 +129,21 @@ var ConDecDevBranches = [];
         }
         console.log("Starting  REST query.");
         AJS.$.ajax({
-          url: url,
-          type: "get",
-          dataType: "json",
-          async: true,
-          success: conDecBranchesDashboard.processData,
-          error: conDecBranchesDashboard.processDataBad
+            url: url,
+            type: "get",
+            dataType: "json",
+            async: true,
+            success: conDecBranchesDashboard.processData,
+            error: conDecBranchesDashboard.processDataBad
         });
     }
 
-    ConDecBranchesDashboard.prototype.processDataBad = function processDataBad(data,uid) {
+    ConDecBranchesDashboard.prototype.processDataBad = function processDataBad(data, uid) {
         showDashboardSection(dashboardDataErrorNode);
     };
 
-    ConDecBranchesDashboard.prototype.processData = function processData(data,uid) {
-        processXhrResponseData(data);  
+    ConDecBranchesDashboard.prototype.processData = function processData(data, uid) {
+        processXhrResponseData(data);
     };
 
     function processXhrResponseData(data) {
@@ -163,14 +162,14 @@ var ConDecDevBranches = [];
 
     function warnStillProcessing() {
         dashboardProcessingNode.classList.add("error");
-        console.warn("Still processing request for: "+processing);
+        console.warn("Still processing request for: " + processing);
     }
 
     function countElementType(targetType, branch) {
         if (!targetType || !branch || !branch.elements || !branch.elements.length) {
             return 0;
         }
-        var filtered = branch.elements.filter(function(e){
+        var filtered = branch.elements.filter(function (e) {
             return e.type.toLowerCase() === targetType.toLowerCase();
         });
         return filtered.length;
@@ -178,10 +177,12 @@ var ConDecDevBranches = [];
 
     /* lex sorting */
     function sortBranches(branches) {
-        return branches.sort(function(a,b){return a.name.localeCompare(b.name); });
+        return branches.sort(function (a, b) {
+            return a.name.localeCompare(b.name);
+        });
     }
 
-    function processBranches(data){
+    function processBranches(data) {
         var branches = data.branches;
         ConDecDevBranches = branches; /*
 										 * remember in global scope for
@@ -192,25 +193,29 @@ var ConDecDevBranches = [];
 
             /* these elements are sorted by commit age and occurrence in message */
             var lastBranchElementsFromMessages =
-            lastBranch.elements.filter(function(e){return e.key.sourceTypeCommitMessage;});
+                lastBranch.elements.filter(function (e) {
+                    return e.key.sourceTypeCommitMessage;
+                });
 
             /* these elements are not sorted, we want only B(final) files. */
             var lastBranchElementsFromFilesButNotSorted =
-            lastBranch.elements.filter(function(e){return e.key.codeFileB;});
+                lastBranch.elements.filter(function (e) {
+                    return e.key.codeFileB;
+                });
 
             /* sort file elements */
             var lastBranchElementsFromFiles =
-            conDecLinkBranchCandidates.sortRationaleDiffOfFiles(lastBranchElementsFromFilesButNotSorted);
+                conDecLinkBranchCandidates.sortRationaleDiffOfFiles(lastBranchElementsFromFilesButNotSorted);
 
             var lastBranchRelevantElementsSortedWithPosition =
-            lastBranchElementsFromMessages.concat(lastBranchElementsFromFiles);
+                lastBranchElementsFromMessages.concat(lastBranchElementsFromFiles);
 
             /* assess relations between rationale and their problems */
             conDecLinkBranchCandidates.init(
-            lastBranchRelevantElementsSortedWithPosition,
-            lastBranch.branchName,
-            branchIdx,
-            '');
+                lastBranchRelevantElementsSortedWithPosition,
+                lastBranch.branchName,
+                branchIdx,
+                '');
 
             branchQuality = {};
             branchQuality.name = lastBranch.branchName;
@@ -229,8 +234,9 @@ var ConDecDevBranches = [];
         renderData();
     }
 
-    function renderData(){
+    function renderData() {
         BRANCHES_SEPARATOR_TOKEN = " ";
+
         function branchesPerJiraIssueReducer(accumulator, currentBranch) {
             var nameOfBranch = currentBranch.name;
             var issueMatch = nameOfBranch.match(issueBranchKeyRx);
@@ -239,8 +245,7 @@ var ConDecDevBranches = [];
 
             if (!issueMatch || (!issueMatch[1] && !issueMatch[2])) {
                 accumulatorField = "no Jira task";
-            }
-            else {
+            } else {
                 if (issueMatch[1]) {
                     accumulatorField = issueMatch[1];
                 }
@@ -258,19 +263,17 @@ var ConDecDevBranches = [];
         }
 
         function statusWithBranchesReducer(accumulator, currentBranch) {
-            var  statusOfBranch = currentBranch.status;
-            var  nameOfBranch = currentBranch.name;
+            var statusOfBranch = currentBranch.status;
+            var nameOfBranch = currentBranch.name;
             if (accumulator.has(statusOfBranch)) {
                 var previousBranchesInStatus = accumulator.get(statusOfBranch);
-                if (previousBranchesInStatus.length<1) {
+                if (previousBranchesInStatus.length < 1) {
                     accumulator.set(statusOfBranch, nameOfBranch);
-                }
-                else {
+                } else {
                     var newValue = previousBranchesInStatus + BRANCHES_SEPARATOR_TOKEN + nameOfBranch;
                     accumulator.set(statusOfBranch, newValue);
                 }
-            }
-            else {
+            } else {
                 accumulator.set(statusOfBranch, nameOfBranch);
             }
 
@@ -278,24 +281,23 @@ var ConDecDevBranches = [];
         }
 
         function problemsWithBranchesReducer(accumulator, currentBranch) {
-            var  problems = currentBranch.problems;
-            var  nameOfBranch = currentBranch.name;
+            var problems = currentBranch.problems;
+            var nameOfBranch = currentBranch.name;
 
             var it = problems.keys();
             var result = it.next();
 
             while (!result.done) {
                 var key = result.value;
-                if (problems.get(key)>0) {
+                if (problems.get(key) > 0) {
                     /* already has a bran chname */
-                    if (accumulator.get(key).length>1) {
+                    if (accumulator.get(key).length > 1) {
                         var newValue = accumulator.get(key)
-                                     + BRANCHES_SEPARATOR_TOKEN
-                                     + nameOfBranch;
+                            + BRANCHES_SEPARATOR_TOKEN
+                            + nameOfBranch;
                         accumulator.set(key, newValue);
-                    }
-                    else {
-                        accumulator.set(key,nameOfBranch);
+                    } else {
+                        accumulator.set(key, nameOfBranch);
                     }
                 }
                 result = it.next();
@@ -309,39 +311,46 @@ var ConDecDevBranches = [];
             accumulator.delete("none");
             return accumulator;
         }
+
         function numberDecisionsInBranchesReducer(accumulator, currentBranch) {
             accumulator.set(currentBranch.name, currentBranch.numDecisions);
             accumulator.delete("none");
             return accumulator;
         }
+
         function numberAlternativesInBranchesReducer(accumulator, currentBranch) {
             accumulator.set(currentBranch.name, currentBranch.numAlternatives);
             accumulator.delete("none");
             return accumulator;
         }
+
         function numberProsInBranchesReducer(accumulator, currentBranch) {
             accumulator.set(currentBranch.name, currentBranch.numPros);
             accumulator.delete("none");
             return accumulator;
         }
+
         function numberConInBranchesReducer(accumulator, currentBranch) {
             accumulator.set(currentBranch.name, currentBranch.numCons);
             accumulator.delete("none");
             return accumulator;
         }
+
         function sortByBranchNumberDescending(unsortedMap) {
             var keys = Array.from(unsortedMap.keys());
             var keyVal = [];
-            for (var i=0; i<keys.length; i++) {
+            for (var i = 0; i < keys.length; i++) {
                 var count = 0;
-                if (unsortedMap.get(keys[i]).length>0) {
+                if (unsortedMap.get(keys[i]).length > 0) {
                     count = unsortedMap.get(keys[i]).split(" ").length;
                 }
                 keyVal.push([keys[i], count]);
             }
-            var sortedKeyByVal = keyVal.sort(function(a,b){return b[1]-a[1]; });
+            var sortedKeyByVal = keyVal.sort(function (a, b) {
+                return b[1] - a[1];
+            });
             var sortedMap = new Map();
-            for (var i=0; i<sortedKeyByVal.length; i++) {
+            for (var i = 0; i < sortedKeyByVal.length; i++) {
                 var mapKey = sortedKeyByVal[i][0];
                 sortedMap.set(mapKey, unsortedMap.get(mapKey));
             }
@@ -361,13 +370,13 @@ var ConDecDevBranches = [];
         var consInBranches = new Map();
 
         /* set something for box plots in case no data will be added to them */
-        issuesInBranches.set("none",0);
-        decisionsInBranches.set("none",0);
-        alternativesInBranches.set("none",0);
-        prosInBranches.set("none",0);
-        consInBranches.set("none",0);
+        issuesInBranches.set("none", 0);
+        decisionsInBranches.set("none", 0);
+        alternativesInBranches.set("none", 0);
+        prosInBranches.set("none", 0);
+        consInBranches.set("none", 0);
 
-        branchesPerIssue.set("no Jira task","");
+        branchesPerIssue.set("no Jira task", "");
 
         /* form data for charts */
         branchesQuality.reduce(statusWithBranchesReducer, statusesForBranchesData);
@@ -384,46 +393,46 @@ var ConDecDevBranches = [];
         var sortedBranchesPerIssue = sortByBranchNumberDescending(branchesPerIssue);
 
         /* render pie-charts */
-        ConDecReqDash.initializeChartForBranchSource('piechartRich-QualityStatusForBranches'+dashboardUID,
-         '', 'How many branches document rationale well?',statusesForBranchesData); /* 'Quality status' */
-        ConDecReqDash.initializeChartForBranchSource('piechartRich-ProblemTypesInBranches'+dashboardUID,
-         '', 'Which documentation mistakes are most common?',sortedProblemTypesOccurrance); /*'Total quality problems' */
-        ConDecReqDash.initializeChartForBranchSource('piechartRich-BranchesPerIssue'+dashboardUID,
-         '', 'How many branches do Jira tasks have?',sortedBranchesPerIssue);
+        ConDecReqDash.initializeChartForBranchSource('piechartRich-QualityStatusForBranches' + dashboardUID,
+            '', 'How many branches document rationale well?', statusesForBranchesData); /* 'Quality status' */
+        ConDecReqDash.initializeChartForBranchSource('piechartRich-ProblemTypesInBranches' + dashboardUID,
+            '', 'Which documentation mistakes are most common?', sortedProblemTypesOccurrance); /*'Total quality problems' */
+        ConDecReqDash.initializeChartForBranchSource('piechartRich-BranchesPerIssue' + dashboardUID,
+            '', 'How many branches do Jira tasks have?', sortedBranchesPerIssue);
         /* render box-plots */
-        ConDecReqDash.initializeChartForBranchSource('boxplot-IssuesPerBranch'+dashboardUID,
-         '', 'Issues number in branches',issuesInBranches);
-        ConDecReqDash.initializeChartForBranchSource('boxplot-DecisionsPerBranch'+dashboardUID,
-         '', 'Decisions number in branches',decisionsInBranches);
-        ConDecReqDash.initializeChartForBranchSource('boxplot-AlternativesPerBranch'+dashboardUID,
-         '', 'Alternatives number in branches',alternativesInBranches);
-        ConDecReqDash.initializeChartForBranchSource('boxplot-ProsPerBranch'+dashboardUID,
-         '', 'Pro arguments number in branches',prosInBranches);
-        ConDecReqDash.initializeChartForBranchSource('boxplot-ConsPerBranch'+dashboardUID,
-         '', 'Con arguments number in branches',consInBranches);
+        ConDecReqDash.initializeChartForBranchSource('boxplot-IssuesPerBranch' + dashboardUID,
+            '', 'Issues number in branches', issuesInBranches);
+        ConDecReqDash.initializeChartForBranchSource('boxplot-DecisionsPerBranch' + dashboardUID,
+            '', 'Decisions number in branches', decisionsInBranches);
+        ConDecReqDash.initializeChartForBranchSource('boxplot-AlternativesPerBranch' + dashboardUID,
+            '', 'Alternatives number in branches', alternativesInBranches);
+        ConDecReqDash.initializeChartForBranchSource('boxplot-ProsPerBranch' + dashboardUID,
+            '', 'Pro arguments number in branches', prosInBranches);
+        ConDecReqDash.initializeChartForBranchSource('boxplot-ConsPerBranch' + dashboardUID,
+            '', 'Con arguments number in branches', consInBranches);
 
         /* remember in global scope for development/debugging */
-        ConDecDevBranchesQuality = { branchesQuality : branchesQuality };
-        ConDecDevBranchesQuality.getTitleByName = function(branchNameShortened) {
-            for (var i = 0; i< this.branchesQuality.length; i++) {
+        ConDecDevBranchesQuality = {branchesQuality: branchesQuality};
+        ConDecDevBranchesQuality.getTitleByName = function (branchNameShortened) {
+            for (var i = 0; i < this.branchesQuality.length; i++) {
                 if (this.branchesQuality[i].name.endsWith(branchNameShortened)) {
                     return this.getTitle(i);
                 }
             }
             return this.getTitle(-1);
         }
-        ConDecDevBranchesQuality.getTitle = function(idx){
+        ConDecDevBranchesQuality.getTitle = function (idx) {
             if (!this.branchesQuality[idx]) {
                 return "";
             }
             var branch = this.branchesQuality[idx];
             var buffer = " status: " + branch.status
-            //+"\n" + " problemCategoryNum: " + branch.problems.iterateMap..
-            +"\n" + " numAlternatives: " + branch.numAlternatives
-            +"\n" + " numCons: " + branch.numCons
-            +"\n" + " numDecisions: " + branch.numDecisions
-            +"\n" + " numIssues: " + branch.numIssues
-            +"\n" + " numPros: " + branch.numIssues
+                //+"\n" + " problemCategoryNum: " + branch.problems.iterateMap..
+                + "\n" + " numAlternatives: " + branch.numAlternatives
+                + "\n" + " numCons: " + branch.numCons
+                + "\n" + " numDecisions: " + branch.numDecisions
+                + "\n" + " numIssues: " + branch.numIssues
+                + "\n" + " numPros: " + branch.numIssues
             //+"\n" + " name: " + branch.name;
 
             return buffer;
@@ -431,5 +440,5 @@ var ConDecDevBranches = [];
 
     }
 
-	global.conDecBranchesDashboard  = new ConDecBranchesDashboard ();
+    global.conDecBranchesDashboard = new ConDecBranchesDashboard();
 })(window);

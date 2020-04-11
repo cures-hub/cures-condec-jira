@@ -17,86 +17,93 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
  */
 public interface ConfigRest {
 
-    Response cleanDatabases(HttpServletRequest request, String projectKey);
+	Response cleanDatabases(HttpServletRequest request, String projectKey);
 
-    Response getKnowledgeTypes(String projectKey);
+	Response getKnowledgeTypes(String projectKey);
 
-    Response getLinkTypes(String projectKey);
+	Response getLinkTypes(String projectKey);
 
-    Response getReleaseNoteMapping(String projectKey);
+	Response getReleaseNoteMapping(String projectKey);
 
-    Response isActivated(String projectKey);
+	Response isActivated(String projectKey);
 
-    Response isIssueStrategy(String projectKey);
+	Response isIssueStrategy(String projectKey);
 
-    Response isKnowledgeTypeEnabled(String projectKey, String knowledgeType);
+	Response isKnowledgeTypeEnabled(String projectKey, String knowledgeType);
 
-    Response setActivated(HttpServletRequest request, String projectKey, String isActivatedString);
+	Response setActivated(HttpServletRequest request, String projectKey, String isActivatedString);
 
-    Response setIconParsing(HttpServletRequest request, String projectKey, String isActivatedString);
+	Response setIconParsing(HttpServletRequest request, String projectKey, String isActivatedString);
 
-    Response setIssueStrategy(HttpServletRequest request, String projectKey, String isIssueStrategyString);
+	Response setIssueStrategy(HttpServletRequest request, String projectKey, String isIssueStrategyString);
 
-    Response setKnowledgeTypeEnabled(@Context HttpServletRequest request, String projectKey,
-	    String isKnowledgeTypeEnabledString, String knowledgeType);
+	Response setKnowledgeTypeEnabled(@Context HttpServletRequest request, String projectKey,
+									 String isKnowledgeTypeEnabledString, String knowledgeType);
 
-    Response setReleaseNoteMapping(HttpServletRequest request, String projectKey, ReleaseNoteCategory category,
-	    List<String> selectedIssueNames);
+	Response setReleaseNoteMapping(HttpServletRequest request, String projectKey, ReleaseNoteCategory category,
+								   List<String> selectedIssueNames);
 
-    Response setWebhookData(HttpServletRequest request, String projectKey, String webhookUrl, String webhookSecret);
+	Response setWebhookData(HttpServletRequest request, String projectKey, String webhookUrl, String webhookSecret);
 
-    Response setWebhookEnabled(HttpServletRequest request, String projectKey, String isActivatedString);
+	Response setWebhookEnabled(HttpServletRequest request, String projectKey, String isActivatedString);
 
-    Response setWebhookType(HttpServletRequest request, String projectKey, String webhookType,
-	    boolean isWebhookTypeEnabled);
+	Response setWebhookType(HttpServletRequest request, String projectKey, String webhookType,
+							boolean isWebhookTypeEnabled);
 
-    /* **************************************/
-    /*										*/
-    /* Configuration for Git integration */
-    /*										*/
-    /* **************************************/
+	/* **************************************/
+	/*										*/
+	/* Configuration for Git integration */
+	/*										*/
+	/* **************************************/
 
-    Response setGitUris(HttpServletRequest request, String projectKey, String gitUris, String defaultBranches);
+	Response setGitUris(HttpServletRequest request, String projectKey, String gitUris, String defaultBranches);
 
-    Response setKnowledgeExtractedFromGit(HttpServletRequest request, String projectKey,
-	    String isKnowledgeExtractedFromGit);
+	Response setKnowledgeExtractedFromGit(HttpServletRequest request, String projectKey,
+										  String isKnowledgeExtractedFromGit);
 
-    Response setPostSquashedCommits(HttpServletRequest request, String projectKey, String checked);
+	Response setPostSquashedCommits(HttpServletRequest request, String projectKey, String checked);
 
-    Response setPostFeatureBranchCommits(HttpServletRequest request, String projectKey, String checked);
+	Response setPostFeatureBranchCommits(HttpServletRequest request, String projectKey, String checked);
 
-    /* **************************************/
-    /*										*/
-    /* Configuration for Classifier */
-    /*										*/
-    /* **************************************/
-    Response evaluateModel(HttpServletRequest request, String projectKey);
+	/* **************************************/
+	/*										*/
+	/* Configuration for Classifier */
+	/*										*/
+	/* **************************************/
+	Response evaluateModel(HttpServletRequest request, String projectKey);
 
-    Response trainClassifier(HttpServletRequest request, String projectKey, String arffFileName);
+	Response trainClassifier(HttpServletRequest request, String projectKey, String arffFileName);
 
-    Response classifyWholeProject(HttpServletRequest request, String projectKey);
+	Response classifyWholeProject(HttpServletRequest request, String projectKey);
 
-    Response setUseClassifierForIssueComments(HttpServletRequest request, String projectKey, String isActivatedString);
+	Response setUseClassifierForIssueComments(HttpServletRequest request, String projectKey, String isActivatedString);
 
-    Response testClassifierWithText(HttpServletRequest request, String projectKey, String text);
+	Response testClassifierWithText(HttpServletRequest request, String projectKey, String text);
 
-    Response saveArffFile(HttpServletRequest request, String projectKey, boolean useOnlyValidatedData);
+	Response saveArffFile(HttpServletRequest request, String projectKey, boolean useOnlyValidatedData);
 
-    static void manageDefaultIssueTypes(String projectKey, boolean isIssueStrategy) {
-	Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaultTypes();
-	for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
-	    if (isIssueStrategy) {
-		ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), true);
-		PluginInitializer.createIssueType(knowledgeType.toString());
-		PluginInitializer.addIssueTypeToScheme(knowledgeType.toString(), projectKey);
-	    } else {
-		PluginInitializer.removeIssueTypeFromScheme(knowledgeType.toString(), projectKey);
-	    }
+	static void manageDefaultIssueTypes(String projectKey, boolean isIssueStrategy) {
+		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaultTypes();
+		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
+			if (isIssueStrategy) {
+				ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), true);
+				PluginInitializer.createIssueType(knowledgeType.toString());
+				PluginInitializer.addIssueTypeToScheme(knowledgeType.toString(), projectKey);
+			} else {
+				PluginInitializer.removeIssueTypeFromScheme(knowledgeType.toString(), projectKey);
+			}
+		}
 	}
-    }
 
-    Response getDecisionGroups(long id, String location, String projectKey);
+	Response getDecisionGroups(long id, String location, String projectKey);
 
-    Response getAllDecisionGroups(String projectKey);
+	Response getAllDecisionGroups(String projectKey);
 
+	Response getAllClassElementsWithCertainGroup(String projectKey, String group);
+
+	Response getAllDecisionElementsWithCertainGroup(String projectKey, String group);
+
+	Response renameDecisionGroup(String projectKey, String oldGroupName, String newGroupName);
+
+	Response deleteDecisionGroup(String projectKey, String groupName);
 }

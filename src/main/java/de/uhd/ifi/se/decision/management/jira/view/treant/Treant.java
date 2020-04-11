@@ -11,14 +11,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.atlassian.jira.user.ApplicationUser;
-
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
+import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 
 /**
  * Creates a tree data structure from the {@link KnowledgeGraph}. Uses the
@@ -51,14 +51,12 @@ public class Treant {
 	}
 
 	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user,
-			boolean isHyperlinked) {
+				  boolean isHyperlinked) {
 		this.traversedLinks = new HashSet<Link>();
 		this.depth = depth;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 
 		AbstractPersistenceManagerForSingleLocation persistenceManager;
-		// TODO pass entire element object to the constructors instead of only the key
-		// and use the documentation location of the element
 		if (elementKey.contains(":")) {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 					.getManagerForSingleLocation(DocumentationLocation.JIRAISSUETEXT);
@@ -67,8 +65,43 @@ public class Treant {
 		}
 		KnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
 		this.setChart(new Chart());
-		this.setNodeStructure(this.createNodeStructure(rootElement, null, 1));
+		this.setNodeStructure(this.createNodeStructure(rootElement, (Link) null, 1));
 		this.setHyperlinked(isHyperlinked);
+	}
+
+	public Treant(String projectKey, KnowledgeElement element, int depth, String query, String treantId,
+				  boolean checkboxflag, boolean isIssueView, int minLinkNumber, int maxLinkNumber) {
+		this.traversedLinks = new HashSet<Link>();
+		this.depth = depth;
+		this.graph = KnowledgeGraph.getOrCreate(projectKey);
+		this.setChart(new Chart(treantId));
+		Set<Link> usedLinks = new HashSet<>();
+		if (isIssueView) {
+			for (Link link : element.getLinks()) {
+				if ((checkboxflag || !checkboxflag && !link.getSource().getSummary().startsWith("Test"))
+						&& link.getSource() != null && link.getSource().getSummary().contains(".java")
+						&& link.getSource().getDocumentationLocation().getIdentifier().equals("c")
+						&& link.getSource().getLinks().size() >= minLinkNumber
+						&& link.getSource().getLinks().size() <= maxLinkNumber
+						&& ("".equals(query) || " ".equals(query) || link.getSource().getSummary().contains(query))) {
+					usedLinks.add(link);
+				}
+			}
+		} else {
+			if (checkboxflag) {
+				for (Link link : element.getLinks()) {
+					KnowledgeElement targetElement = link.getTarget();
+					List<Link> elementLinks = GenericLinkManager.getOutwardLinks(targetElement);
+					if (elementLinks != null && elementLinks.size() > 0) {
+						usedLinks.add(link);
+					}
+				}
+			} else {
+				usedLinks = new HashSet<>(element.getLinks());
+			}
+		}
+		this.setNodeStructure(this.createNodeStructure(element, usedLinks, 1, isIssueView));
+		this.setHyperlinked(false);
 	}
 
 	public TreantNode createNodeStructure(KnowledgeElement element, Link link, int currentDepth) {
@@ -78,6 +111,7 @@ public class Treant {
 
 		Set<Link> linksToTraverse = graph.edgesOf(element);
 		boolean isCollapsed = isNodeCollapsed(linksToTraverse, currentDepth);
+
 		TreantNode node = createTreantNode(element, link, isCollapsed);
 
 		if (currentDepth == depth + 1) {
@@ -87,6 +121,35 @@ public class Treant {
 		List<TreantNode> nodes = getChildren(element, linksToTraverse, currentDepth);
 		node.setChildren(nodes);
 
+		return node;
+	}
+
+	public TreantNode createNodeStructure(KnowledgeElement element, Set<Link> links, int currentDepth,
+										  boolean isIssueView) {
+		if (element == null || element.getProject() == null || links == null) {
+			return new TreantNode();
+		}
+		// boolean isCollapsed = isNodeCollapsed(linksToTraverse, currentDepth);
+		TreantNode node = createTreantNode(element, null, false);
+		if (currentDepth == depth + 1) {
+			return node;
+		}
+		List<TreantNode> nodes = new ArrayList<TreantNode>();
+		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(element.getProject()).getJiraIssueManager();
+		for (Link link : links) {
+			if (!isIssueView && persistenceManager.getDecisionKnowledgeElement(link.getTarget().getId()) != null) {
+				TreantNode adult = createTreantNode(link.getTarget(), link, false);
+				adult.setChildren(getChildren(link.getTarget(), graph.edgesOf(link.getTarget()), currentDepth));
+				nodes.add(adult);
+			} else if (isIssueView) {
+				TreantNode adult = createTreantNode(link.getSource(), link, false);
+				nodes.add(adult);
+			}
+		}
+		if (nodes != null) {
+			node.setChildren(nodes);
+		}
 		return node;
 	}
 
@@ -108,8 +171,7 @@ public class Treant {
 		return node;
 	}
 
-	private List<TreantNode> getChildren(KnowledgeElement rootElement, Set<Link> linksToTraverse,
-			int currentDepth) {
+	private List<TreantNode> getChildren(KnowledgeElement rootElement, Set<Link> linksToTraverse, int currentDepth) {
 		List<TreantNode> nodes = new ArrayList<TreantNode>();
 		for (Link currentLink : linksToTraverse) {
 			if (!traversedLinks.add(currentLink)) {

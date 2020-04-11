@@ -38,6 +38,17 @@ public class Chart {
 		this.node = ImmutableMap.of("collapsable", true);
 	}
 
+	public Chart(String treantid) {
+		this.container = "#" + treantid;
+		this.connectors = new ConcurrentHashMap<>();
+		this.connectors.put("type", "straight");
+		this.rootOrientation = "NORTH";
+		this.levelSeparation = 30;
+		this.siblingSeparation = 30;
+		this.subTreeSeparation = 30;
+		this.node = ImmutableMap.of("collapsable", true);
+	}
+
 	public String getContainer() {
 		return this.container;
 	}

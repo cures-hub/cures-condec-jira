@@ -1,29 +1,54 @@
 <aui-dropdown-menu id="condec-context-menu">
-    <aui-section>
-        <aui-item-link id="condec-context-menu-create-item">$i18n.getText("condec.context.menu.create.item.label")</aui-item-link>
-        <aui-item-link id="condec-context-menu-edit-item">$i18n.getText("condec.context.menu.edit.item.label")</aui-item-link>        
-        <aui-item-link id="condec-context-menu-link-item">$i18n.getText("condec.context.menu.link.item.label")</aui-item-link>
-        <aui-item-link id="condec-context-menu-delete-link-item">$i18n.getText("condec.context.menu.delete.link.item.label")</aui-item-link>  
-        <aui-item-link id="condec-context-menu-assign-decision-group-item">$i18n.getText("condec.context.menu.assign.decision.group.label")</aui-item-link>  
+    <aui-section id="first-context-section">
+        <aui-item-link id="condec-context-menu-create-item">$i18n.getText(
+            "condec.context.menu.create.item.label")</aui-item-link>
+        <aui-item-link id="condec-context-menu-edit-item">$i18n.getText(
+            "condec.context.menu.edit.item.label")</aui-item-link>
+        <aui-item-link id="condec-context-menu-link-item">$i18n.getText(
+            "condec.context.menu.link.item.label")</aui-item-link>
+        <aui-item-link id="condec-context-menu-delete-link-item">$i18n.getText(
+            "condec.context.menu.delete.link.item.label")</aui-item-link>
+        <aui-item-link id="condec-context-menu-assign-decision-group-item">$i18n.getText(
+            "condec.context.menu.assign.decision.group.label")</aui-item-link>
     </aui-section>
-    <aui-section>
-        <aui-item-link id="condec-context-menu-change-type-item">$i18n.getText("condec.context.menu.change.type.item.label")</aui-item-link>              
-        <aui-item-link id="condec-context-menu-change-status-item">$i18n.getText("condec.context.menu.change.status.item.label")</aui-item-link>
-        <aui-item-link id="condec-context-menu-issue-item">$i18n.getText("condec.context.menu.issue.item.label")</aui-item-link>
-        <aui-item-link id="condec-context-menu-decision-item">$i18n.getText("condec.context.menu.decision.item.label")</aui-item-link>      
-        <aui-item-link id="condec-context-menu-alternative-item">$i18n.getText("condec.context.menu.alternative.item.label")</aui-item-link>      
-        <aui-item-link id="condec-context-menu-pro-item">$i18n.getText("condec.context.menu.pro.item.label")</aui-item-link>      
-        <aui-item-link id="condec-context-menu-con-item">$i18n.getText("condec.context.menu.con.item.label")</aui-item-link>      
+    <aui-section id="second-context-section">
+        <aui-item-link id="condec-context-menu-change-type-item">$i18n.getText(
+            "condec.context.menu.change.type.item.label")</aui-item-link>
+        <aui-item-link id="condec-context-menu-change-status-item">$i18n.getText(
+            "condec.context.menu.change.status.item.label")</aui-item-link>
+        <aui-item-link id="condec-context-menu-issue-item">$i18n.getText(
+            "condec.context.menu.issue.item.label")</aui-item-link>
+        <aui-item-link id="condec-context-menu-decision-item">$i18n.getText(
+            "condec.context.menu.decision.item.label")</aui-item-link>
+        <aui-item-link id="condec-context-menu-alternative-item">$i18n.getText(
+            "condec.context.menu.alternative.item.label")</aui-item-link>
+        <aui-item-link id="condec-context-menu-pro-item">$i18n.getText(
+            "condec.context.menu.pro.item.label")</aui-item-link>
+        <aui-item-link id="condec-context-menu-con-item">$i18n.getText(
+            "condec.context.menu.con.item.label")</aui-item-link>
     </aui-section>
-    <aui-section>
-        <aui-item-link id="condec-context-menu-set-root-item">$i18n.getText("condec.context.menu.set.root.item.label")</aui-item-link>      
-        <aui-item-link id="condec-context-menu-open-jira-issue-item">$i18n.getText("condec.context.menu.open.jira.issue.item.label")</aui-item-link>  
-        <aui-item-link id="condec-context-menu-summarized-code">$i18n.getText("condec.context.menu.summarized.code.item.label")</aui-item-link> 
+    <aui-section id="third-context-section">
+        <aui-item-link id="condec-context-menu-set-root-item">$i18n.getText(
+            "condec.context.menu.set.root.item.label")</aui-item-link>
+        <aui-item-link id="condec-context-menu-open-jira-issue-item">$i18n.getText(
+            "condec.context.menu.open.jira.issue.item.label")</aui-item-link>
+        <aui-item-link id="condec-context-menu-summarized-code">$i18n.getText(
+            "condec.context.menu.summarized.code.item.label")</aui-item-link>
     </aui-section>
-    <aui-section>
-    	<aui-item-link id="condec-context-menu-sentence-irrelevant-item">$i18n.getText("condec.context.menu.sentence.irrelevant.item.label")</aui-item-link>  
-        <aui-item-link id="condec-context-menu-sentence-convert-item">$i18n.getText("condec.context.menu.change.location.item.label")</aui-item-link>
-        <aui-item-link id="condec-context-menu-export">$i18n.getText("condec.context.menu.export.item.label")</aui-item-link>
-        <aui-item-link id="condec-context-menu-delete-item">$i18n.getText("condec.context.menu.delete.item.label")</aui-item-link>
+    <aui-section id="fourth-context-section">
+        <aui-item-link id="condec-context-menu-sentence-irrelevant-item">$i18n.getText(
+            "condec.context.menu.sentence.irrelevant.item.label")</aui-item-link>
+        <aui-item-link id="condec-context-menu-sentence-convert-item">$i18n.getText(
+            "condec.context.menu.change.location.item.label")</aui-item-link>
+        <aui-item-link id="condec-context-menu-export">$i18n.getText(
+            "condec.context.menu.export.item.label")</aui-item-link>
+        <aui-item-link id="condec-context-menu-delete-item">$i18n.getText(
+            "condec.context.menu.delete.item.label")</aui-item-link>
+    </aui-section>
+    <aui-section id="fifth-context-section">
+        <aui-item-link id="condec-context-menu-group-rename">$i18n.getText(
+            "condec.context.menu.group.rename.label")</aui-item-link>
+        <aui-item-link id="condec-context-menu-group-delete">$i18n.getText(
+            "condec.context.menu.group.delete.label")</aui-item-link>
     </aui-section>
 </aui-dropdown-menu>
