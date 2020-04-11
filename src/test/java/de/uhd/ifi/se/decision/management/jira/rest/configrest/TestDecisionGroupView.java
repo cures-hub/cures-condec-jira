@@ -26,22 +26,19 @@ import static org.junit.Assert.assertFalse;
 public class TestDecisionGroupView extends TestSetUp {
 
 	private ConfigRest configRest;
-	private long id;
-	private String projectKey;
-	KnowledgeElement newElement;
+	private KnowledgeElement newElement;
 
-	private HttpServletRequest request;
 
 	@Before
 	public void setUp() {
 		configRest = new ConfigRestImpl();
 		init();
 		configRest = new ConfigRestImpl();
-		this.id = 100;
+		long id = 100;
 		String summary = "Test";
 		String description = "Test";
 		KnowledgeType type = KnowledgeType.SOLUTION;
-		this.projectKey = "TEST";
+		String projectKey = "TEST";
 		String key = "Test";
 
 		KnowledgeElement decisionKnowledgeElement = new KnowledgeElementImpl(id, summary, description, type, projectKey,
@@ -62,7 +59,7 @@ public class TestDecisionGroupView extends TestSetUp {
 		newElement = ccManager.insertDecisionKnowledgeElement(element, JiraUsers.SYS_ADMIN.getApplicationUser());
 		DecisionGroupManager.insertGroup("TestGroup2", newElement);
 
-		request = new MockHttpServletRequest();
+		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
 
@@ -91,7 +88,7 @@ public class TestDecisionGroupView extends TestSetUp {
 	@Test
 	public void testDeleteDecisionGroup() {
 		DecisionGroupManager.insertGroup("TestGroup3", newElement);
-		Response resp = configRest.deleteDecisionGroup("TEST", "TestGroup3");
+		configRest.deleteDecisionGroup("TEST", "TestGroup3");
 		assertFalse(DecisionGroupManager.getGroupsForElement(newElement).contains("TestGroup3"));
 	}
 
