@@ -91,8 +91,22 @@ public class TestTreant extends TestSetUp {
 
 	@Test
 	@NonTransactional
+	public void testSecondConstructorWithIssueViewCheckboxFalse() {
+		this.treant = new Treant("TEST", classElement, 3, "", "treantid", false, true, 1, 100);
+		assertNotNull(this.treant);
+	}
+
+	@Test
+	@NonTransactional
 	public void testSecondConstructorCheckboxTrue() {
 		this.treant = new Treant("TEST", classElement, 3, "", "treantid", true, false, 1, 100);
+		assertNotNull(this.treant);
+	}
+
+	@Test
+	@NonTransactional
+	public void testSecondConstructorWithIssueViewCheckboxTrue() {
+		this.treant = new Treant("TEST", classElement, 3, "", "treantid", true, true, 1, 100);
 		assertNotNull(this.treant);
 	}
 
@@ -198,6 +212,16 @@ public class TestTreant extends TestSetUp {
 		Link link = new LinkImpl(classElement, persistenceManager.getDecisionKnowledgeElement("TEST-1"));
 		links.add(link);
 		TreantNode nodeStructure = treant.createNodeStructure(classElement, links, 0, false);
+		assertEquals(TreantNode.class, nodeStructure.getClass());
+		assertEquals(1, nodeStructure.getChildren().size());
+	}
+
+	@Test
+	public void testSecondCreateNodeStructureWithAllFilledAndIssueView() {
+		Set<Link> links = new HashSet<>();
+		Link link = new LinkImpl(classElement, persistenceManager.getDecisionKnowledgeElement("TEST-1"));
+		links.add(link);
+		TreantNode nodeStructure = treant.createNodeStructure(classElement, links, 0, true);
 		assertEquals(TreantNode.class, nodeStructure.getClass());
 		assertEquals(1, nodeStructure.getChildren().size());
 	}
