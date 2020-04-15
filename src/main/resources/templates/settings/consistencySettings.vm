@@ -1,12 +1,66 @@
 <h2>Settings for the consistency checks of Jira Issues</h2>
 
-<div class="field-group">
-    <label for="isActivated-toggle">Consistency activated?</label>
-    <aui-toggle id="consistencyActivated-toggle" label="Consistency activated?"></aui-toggle>
-    <div class="description">Enables or disables the consistency module of the plug-in for this project.
-        <br/>Disabling disables the possibility to view related or duplicate issues.
+<form class="aui">
+
+
+    <div class="field-group">
+        <label for="isActivated-toggle">Consistency activated?</label>
+        <aui-toggle id="consistencyActivated-toggle" label="Consistency activated?"></aui-toggle>
+        <div class="description">Enables or disables the consistency module of the plug-in for this project.
+            <br/>Disabling disables the possibility to view related or duplicate issues.
+        </div>
     </div>
-</div>
+
+    <div class="border-rounded border-grey">
+
+
+        <div class="field-group">
+            <label>Activate configured events:</label>
+        </div>
+        <div class="field-group" id="configured-events-activation">
+            <aui-toggle id="configured-event-0" label="Activated?"></aui-toggle>
+            <div class="description">
+                Check when <i>Workflow</i> is <i>Done</i>.
+            </div>
+            <hr/>
+        </div>
+
+        <div class="field-group">
+            <label for="new-event-config">Add new check event</label>
+            <div id="new-event-config"> Check when
+
+                <select class="select" id="select-example" name="select-example">
+                    <option>Workflow</option>
+                    <option>Status</option>
+                </select>
+
+                is
+                <select class="select" id="select-example" name="select-example">
+                    <option>Done</option>
+                    <option>In Review</option>
+                </select>.
+                <button class='aui-button aui-button-primary' onclick="addConfig()"><span
+                    class="aui-icon aui-icon-small aui-iconfont-add-circle">Add</span></button>
+            </div>
+            <div class="description">
+                Configure new event triggers to check an issues consistency.
+            </div>
+        </div>
+    </div>
+
+</form>
+<style>
+    .border-rounded {
+        border: solid 2px;
+        border-radius: 5px;
+    }
+
+    .border-grey {
+        border-color: #6b778c;
+    }
+
+</style>
+
 <!--
 Test UI
 
