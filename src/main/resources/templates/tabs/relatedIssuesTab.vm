@@ -30,7 +30,7 @@
     const linkTypeSelectElement = document.getElementById("link-type-select");
 
     function fillLinkSelectOptions(options) {
-        for(let option of options){
+        for (let option of options) {
             console.log(option);
             //create outward link
             let linkOption = document.createElement("option");
@@ -47,8 +47,12 @@
         }
     }
 
-    function linkIssues(){
+    function linkIssues() {
         //https://docs.atlassian.com/software/jira/docs/api/REST/8.5.4/#api/2/issueLink-linkIssues
+    }
+
+    function discardLinkIssues(otherIssueKey) {
+        //discards the proposition of linking two issues.
     }
 
     // Shows the dialog when the "Show dialog" button is clicked
@@ -56,9 +60,9 @@
         AJS.dialog2("#link-issue-dialog").show();
         displayTargetIssue(targetIssueKey);
         //load issue link types: https://docs.atlassian.com/software/jira/docs/api/REST/8.5.4/#api/2/issueLinkType
-        generalApi.getJSONReturnPromise(AJS.contextPath() +"/rest/api/2/issueLinkType")
-        .then((data) => fillLinkSelectOptions(data.issueLinkTypes))
-        .catch(error => conDecAPI.showFlag("error", error.toString()))
+        generalApi.getJSONReturnPromise(AJS.contextPath() + "/rest/api/2/issueLinkType")
+            .then((data) => fillLinkSelectOptions(data.issueLinkTypes))
+            .catch(error => conDecAPI.showFlag("error", error.toString()))
     };
 
 
@@ -90,7 +94,7 @@
 
     let generateTableRow = function (relatedIssue) {
         let row = document.createElement("tr");
-        row.appendChild(generateTableCell(relatedIssue.key));
+        row.appendChild(generateTableCell(`<a href="${relatedIssue.key}">${relatedIssue.key}</a>`));
         row.appendChild(generateTableCell(relatedIssue.summary));
         row.appendChild(generateTableCell(generateOptionButtons(relatedIssue)));
         return row;
@@ -103,8 +107,8 @@
     };
 
     let generateOptionButtons = function (issue) {
-        return `<button class='aui-button' onclick="location.href='${issue.key}';"> <span class='aui-icon aui-icon-small aui-iconfont-watch-filled'></span> View </button>` +
-                `<button class='aui-button' onclick="showDialog('${issue.key}')"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link </button>`
+        return `<button class='aui-button aui-button-primary' onclick="showDialog('${issue.key}')"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link </button>` +
+            `<button class='aui-button aui-button-removed' onclick="discardLinkIssue('${issue.key}')"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard </button>`;
     };
 
 
