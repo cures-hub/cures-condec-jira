@@ -39,48 +39,50 @@
 </div>
 -->
 <div class="field-group">
-	<label for="git-uri-input-field">Git Repositories</label>
-	<div class="description">First: Uniform resource identifier of the git repository that will be cloned (Example: https://github.com/cures-hub/cures-condec-jira.git). 
-		<br> Second: Name of default branch for the Repository (Example: develop).</div>
-	<div class="container1">
-	    #foreach($string in $project.getGitUris())
-	    	<div><input type="text" class="text long-field" value="$string">
-	    	Default Branch:<input type="text" class="text long-field2" value="$project.getDefaultBranches().get($string)"></div>   
-	    #end
-	    <button class="add_form_field" >Add New Repository &nbsp; 
-	    	<span style="font-size:16px; font-weight:bold;">+ </span>
-	    </button>
-		<input type="button" id="git-uris-button" class="aui-button aui-button-primary" value="Save Addresses"/>
-	</div>
+    <label for="git-uri-input-field">Git Repositories</label>
+    <div class="description">First: Uniform resource identifier of the git repository that will be cloned (Example:
+        https://github.com/cures-hub/cures-condec-jira.git).
+        <br> Second: Name of default branch for the Repository (Example: develop).
+    </div>
+    <div class="container1">
+        #foreach($string in $project.getGitUris())
+            <div><input type="text" class="text long-field" value="$string">
+                Default Branch:<input type="text" class="text long-field2"
+                                      value=$project.getDefaultBranches().get($string)></div>
+        #end
+        <button class="add_form_field">Add New Repository &nbsp;
+            <span style="font-size:16px; font-weight:bold;">+ </span>
+        </button>
+        <input type="button" id="git-uris-button" class="aui-button aui-button-primary" value="Save Addresses"/>
+    </div>
 </div>
 
 
-
 <script>
-$(document).ready(function() {
-    var max_fields = 10;
-    var wrapper = $(".container1");
-    var add_button = $(".add_form_field");
+    $(document).ready(function () {
+        var max_fields = 10;
+        var wrapper = $(".container1");
+        var add_button = $(".add_form_field");
 
-    var x = 1;
-    $(add_button).click(function(e) {
-        e.preventDefault();
-        if (x < max_fields) {
-            x++;
-            $(wrapper).append('<div><input type="text" name="mytext[]" class="text long-field"/>Default Branch:<input type="text" name="mytext[]" class="text long-field2"/><a href="#" class="delete">Delete</a></div>'); //add input box
-        } else {
-            alert('You Reached the limits')
-        }
+        var x = 1;
+        $(add_button).click(function (e) {
+            e.preventDefault();
+            if (x < max_fields) {
+                x++;
+                $(wrapper).append('<div><input type="text" name="mytext[]" class="text long-field"/>Default Branch:<input type="text" name="mytext[]" class="text long-field2"/><a href="#" class="delete">Delete</a></div>'); //add input box
+            } else {
+                alert('You Reached the limits')
+            }
+        });
+
+        $(wrapper).on("click", ".delete", function (e) {
+            e.preventDefault();
+            $(this).parent('div').remove();
+            x--;
+        })
     });
 
-    $(wrapper).on("click", ".delete", function(e) {
-        e.preventDefault();
-        $(this).parent('div').remove();
-        x--;
-    })
-});
-
-	var gitsSubmitButton = document.getElementById("git-uris-button");
+    var gitsSubmitButton = document.getElementById("git-uris-button");
 
     gitsSubmitButton.addEventListener("click", function () {
         var gitUris = document.getElementsByClassName("text long-field");
@@ -88,16 +90,16 @@ $(document).ready(function() {
         var uristring = "";
         var defaultBranchesString = "";
         for (i = 0; i < gitUris.length; i++) {
-        	if(gitUris[i].value.length != 0 || defaultBranches[i].value.length != 0){
-            	if(i==0){
-        			uristring = gitUris[i].value;
-        			defaultBranchesString = defaultBranches[i].value;
-        		}else{
-        			uristring = uristring + ";;" +gitUris[i].value;    
-        			defaultBranchesString = defaultBranchesString +";;"+ defaultBranches[i].value;
-        		}        		
-        	}
-		}
+            if (gitUris[i].value.length != 0 || defaultBranches[i].value.length != 0) {
+                if (i == 0) {
+                    uristring = gitUris[i].value;
+                    defaultBranchesString = defaultBranches[i].value;
+                } else {
+                    uristring = uristring + ";;" + gitUris[i].value;
+                    defaultBranchesString = defaultBranchesString + ";;" + defaultBranches[i].value;
+                }
+            }
+        }
         conDecAPI.setGitUris("$projectKey", uristring, defaultBranchesString);
         window.onbeforeunload = null;
     });
@@ -124,12 +126,9 @@ $(document).ready(function() {
     }
 
     if ($project.isPostFeatureBranchCommitsActivated()
-    )
-    {
+    ) {
         isPostFeatureBranchCommitsActivatedToggle.checked = true;
-    }
-    else
-    {
+    } else {
         isPostFeatureBranchCommitsActivatedToggle.checked = false;
     }
 
@@ -152,7 +151,7 @@ $(document).ready(function() {
         conDecAPI.setKnowledgeExtractedFromGit(this.checked, this.value);
         isPostSquashedCommitsActivatedToggle.disabled = !this.checked;
         isPostFeatureBranchCommitsActivatedToggle.disabled = !this.checked;
-        if(!this.checked){
+        if (!this.checked) {
             isPostSquashedCommitsActivatedToggle.checked = false;
             isPostFeatureBranchCommitsActivatedToggle.checked = false;
         }
