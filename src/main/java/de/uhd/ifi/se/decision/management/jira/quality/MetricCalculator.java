@@ -36,6 +36,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
@@ -65,16 +66,18 @@ public class MetricCalculator {
 		this.user = user;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 		this.jiraIssues = getJiraIssuesForProject(projectId, user);
-		this.gitClient = new GitClientImpl(projectKey);
-		Map<String, List<KnowledgeElement>> elementMap = getDecisionKnowledgeElementsFromCode(projectKey);
-		if (elementMap != null) {
-			this.decisionKnowledgeCodeElements = elementMap.get("Code");
-			this.decisionKnowledgeCommitElements = elementMap.get("Commit");
-		} else {
-			this.decisionKnowledgeCodeElements = null;
-			this.decisionKnowledgeCommitElements = null;
+		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+			this.gitClient = new GitClientImpl(projectKey);
+			Map<String, List<KnowledgeElement>> elementMap = getDecisionKnowledgeElementsFromCode(projectKey);
+			if (elementMap != null) {
+				this.decisionKnowledgeCodeElements = elementMap.get("Code");
+				this.decisionKnowledgeCommitElements = elementMap.get("Commit");
+			} else {
+				this.decisionKnowledgeCodeElements = null;
+				this.decisionKnowledgeCommitElements = null;
+			}
+			this.extractedIssueRelatedElements = getDecisionKnowledgeElementsFromCodeRelatedToIssue();
 		}
-		this.extractedIssueRelatedElements = getDecisionKnowledgeElementsFromCodeRelatedToIssue();
 		this.issueTypeId = issueTypeId;
 	}
 
@@ -293,9 +296,14 @@ public class MetricCalculator {
 			}
 		}
 		summaryMap.put("Requirements", numberOfRequirements);
-		GitCodeClassExtractor extract = new GitCodeClassExtractor("CONDEC");
-		summaryMap.put("Code Classes", extract.getNumberOfCodeClasses());
-		extract.close();
+		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+			GitCodeClassExtractor extract = new GitCodeClassExtractor(projectKey);
+			summaryMap.put("Code Classes", extract.getNumberOfCodeClasses());
+			extract.close();
+		} else {
+			summaryMap.put("Code Classes", 0);
+		}
+
 		return summaryMap;
 	}
 
