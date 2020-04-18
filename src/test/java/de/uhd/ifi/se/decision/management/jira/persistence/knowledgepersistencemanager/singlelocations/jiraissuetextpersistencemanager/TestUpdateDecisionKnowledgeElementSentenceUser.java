@@ -15,7 +15,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -77,7 +77,7 @@ public class TestUpdateDecisionKnowledgeElementSentenceUser extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testUpdateKnowledgeTypeSentenceElementNull() {
-		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl();
+		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
 		sentence.setId(1000);
 		assertFalse(new JiraIssueTextPersistenceManager("").updateDecisionKnowledgeElement(sentence, null));
 	}

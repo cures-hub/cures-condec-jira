@@ -1,13 +1,91 @@
 package de.uhd.ifi.se.decision.management.jira.model.text;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 
 /**
- * Interface for textual parts (substrings) of natural language text. These
- * parts can either be relevant decision knowledge elements or irrelevant text.
+ * Models textual parts (substrings) of natural language text. These parts can
+ * either be relevant decision knowledge elements or irrelevant text.
  */
-public interface PartOfText extends KnowledgeElement {
+public class PartOfText extends KnowledgeElementImpl {
+
+	private int startPosition;
+	private int endPosition;
+	private boolean isRelevant;
+	private boolean isValidated;
+	private boolean isPlainText;
+	private long jiraIssueId;
+
+	public PartOfText() {
+
+	}
+
+	public PartOfText(int startPosition, int endPosition) {
+		this.startPosition = startPosition;
+		this.endPosition = endPosition;
+	}
+
+	/**
+	 * @return true if the text is decision knowledge.
+	 */
+	public boolean isRelevant() {
+		return this.isRelevant;
+	}
+
+	/**
+	 * Sets whether the part of the text is decision knowledge, i.e., relevant.
+	 * 
+	 * @param isRelevant
+	 *            true of the text is decision knowledge.
+	 */
+	public void setRelevant(boolean isRelevant) {
+		this.isRelevant = isRelevant;
+	}
+
+	/**
+	 * @return true if the classification of the text within the Jira issue comment
+	 *         is validated, i.e., is manually performed, updated, or checked by a
+	 *         human beeing.
+	 */
+	public boolean isValidated() {
+		return this.isValidated;
+	}
+
+	/**
+	 * Sets whether the classification of the part of the text is manually
+	 * performed, updated, or checked by a human beeing.
+	 * 
+	 * @param isValidated
+	 *            true if the classification of the text within the Jira issue
+	 *            comment is validated.
+	 */
+	public void setValidated(boolean isValidated) {
+		this.isValidated = isValidated;
+	}
+
+	/**
+	 * Determines whether the part of the text is relevant decision knowledge with a
+	 * knowledge type different than KnowledgeType.OTHER. Then, the part of the text
+	 * is tagged with the pattern: {knowledge type} text {knowledge type}.
+	 * 
+	 * @see KnowledgeType
+	 * @return true if the part of the text is relevant decision knowledge with a
+	 *         knowledge type different than KnowledgeType.OTHER.
+	 */
+	public boolean isTagged() {
+		return this.getType() != KnowledgeType.OTHER;
+	}
+
+	/**
+	 * @return start position (number of characters) of the decision knowledge
+	 *         element or the irrelevant text within the entire text.
+	 */
+	public int getStartPosition() {
+		return this.startPosition;
+	}
 
 	/**
 	 * Set the start position (number of characters) of the decision knowledge
@@ -17,16 +95,17 @@ public interface PartOfText extends KnowledgeElement {
 	 *            number of characters after that the decision knowledge element or
 	 *            the irrelevant text starts.
 	 */
-	void setStartPosition(int startPosition);
+	public void setStartPosition(int startPosition) {
+		this.startPosition = startPosition;
+	}
 
 	/**
-	 * Get the start position (number of characters) of the decision knowledge
-	 * element or the irrelevant text within the entire text.
-	 * 
-	 * @return number of characters after that the decision knowledge element or the
-	 *         irrelevant text starts.
+	 * @return end position (number of characters) of the decision knowledge element
+	 *         or the irrelevant text within the entire text.
 	 */
-	int getStartPosition();
+	public int getEndPosition() {
+		return this.endPosition;
+	}
 
 	/**
 	 * Set the end position (number of characters) of the decision knowledge element
@@ -36,109 +115,68 @@ public interface PartOfText extends KnowledgeElement {
 	 *            number of characters after that the decision knowledge element or
 	 *            the irrelevant text ends.
 	 */
-	void setEndPosition(int endPosition);
+	public void setEndPosition(int endPosition) {
+		this.endPosition = endPosition;
+	}
 
 	/**
-	 * Get the end position (number of characters) of the decision knowledge element
-	 * or the irrelevant text within the entire text.
+	 * Gets the length of the part of the text (substring). This is a derived
+	 * method.
 	 * 
-	 * @return number of characters after that the decision knowledge element or the
-	 *         irrelevant text ends.
+	 * @return end position - start position.
 	 */
-	int getEndPosition();
+	public int getLength() {
+		return this.endPosition - this.startPosition;
+	}
 
 	/**
-	 * Set whether the part of the text is decision knowledge, i.e., relevant.
-	 * 
-	 * @param isRelevant
-	 *            true of the text is decision knowledge.
+	 * @return true if the text of the decision knowledge element or irrelevant text
+	 *         is plain, e.g., does not contain any code or logger ouput.
 	 */
-	void setRelevant(boolean isRelevant);
+	public boolean isPlainText() {
+		return isPlainText;
+	}
 
 	/**
-	 * Determine whether the part of the text is decision knowledge, i.e., relevant.
-	 * 
-	 * @return true of the text is decision knowledge.
-	 */
-	boolean isRelevant();
-
-	/**
-	 * Set whether the classification of the part of the text is manually performed,
-	 * updated, or checked by a human beeing.
-	 * 
-	 * @param isValidated
-	 *            true if the classification of the text within the Jira issue
-	 *            comment is validated.
-	 */
-	void setValidated(boolean isValidated);
-
-	/**
-	 * Determine whether the classification of the part of the text is manually
-	 * performed, updated, or checked by a human beeing.
-	 * 
-	 * @return true if the classification of the text within the Jira issue comment
-	 *         is validated.
-	 */
-	boolean isValidated();
-
-	/**
-	 * Get the length of the part of the text (substring). This is a derived method.
-	 * 
-	 * @return end position - start position
-	 */
-	int getLength();
-
-	/**
-	 * Determine whether the part of the text is relevant decision knowledge with a
-	 * knowledge type different than KnowledgeType.OTHER. Then, the part of the text
-	 * is tagged with the pattern: {knowledge type} text {knowledge type}.
-	 * 
-	 * @see KnowledgeType
-	 * @return true if the part of the text is relevant decision knowledge with a
-	 *         knowledge type different than KnowledgeType.OTHER.
-	 */
-	boolean isTagged();
-
-	/**
-	 * Set the id of the Jira issue that the decision knowledge element or
-	 * irrelevant text is part of.
-	 * 
-	 * @param id
-	 *            of the Jira issue.
-	 */
-	void setJiraIssueId(long jiraIssueId);
-
-	/**
-	 * Get the id of the Jira issue that the decision knowledge element or
-	 * irrelevant text is part of.
-	 * 
-	 * @return id of the Jira issue.
-	 */
-	long getJiraIssueId();
-
-	/**
-	 * Set whether the text of the decision knowledge element or irrelevant text is
+	 * Sets whether the text of the decision knowledge element or irrelevant text is
 	 * plain, e.g., does not contain any code or logger ouput.
 	 * 
 	 * @param isPlainText
 	 *            true if the text of the decision knowledge element or irrelevant
 	 *            text is plain, e.g., does not contain any code or logger ouput.
 	 */
-	void setPlainText(boolean isPlainText);
+	public void setPlainText(boolean isPlainText) {
+		this.isPlainText = isPlainText;
+	}
 
 	/**
-	 * Determine whether the text of the decision knowledge element or irrelevant
-	 * text is plain, e.g., does not contain any code or logger ouput.
+	 * Sets the id of the Jira issue that the decision knowledge element or
+	 * irrelevant text is part of.
 	 * 
-	 * @return true if the text of the decision knowledge element or irrelevant text
-	 *         is plain, e.g., does not contain any code or logger ouput.
+	 * @param id
+	 *            of the Jira issue.
 	 */
-	boolean isPlainText();
+	public void setJiraIssueId(long issueId) {
+		this.jiraIssueId = issueId;
+	}
 
 	/**
-	 * Return the part of the text.
-	 * 
+	 * @return id of the Jira issue that the decision knowledge element or
+	 *         irrelevant text is part of.
+	 */
+	public long getJiraIssueId() {
+		return this.jiraIssueId;
+	}
+
+	@Override
+	public Issue getJiraIssue() {
+		return ComponentAccessor.getIssueManager().getIssueObject(jiraIssueId);
+	}
+
+	/**
 	 * @return part of the text.
 	 */
-	String getText();
+	public String getText() {
+		return super.getSummary();
+	}
 }

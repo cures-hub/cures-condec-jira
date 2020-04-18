@@ -76,7 +76,7 @@ public class GitCommitMessageExtractor {
 	/*
 	 * private void classifyMessage() { // If no Decision Knowledge was manually
 	 * annotated -> The Classifier is called. // Create splitted text. TextSplitter
-	 * splitter = new TextSplitterImpl(); List<PartOfText> parts =
+	 * splitter = new TextSplitter(); List<PartOfText> parts =
 	 * splitter.getPartsOfText(this.fullMessage, this.projectKey);
 	 * 
 	 * StringBuilder builder = new StringBuilder();
