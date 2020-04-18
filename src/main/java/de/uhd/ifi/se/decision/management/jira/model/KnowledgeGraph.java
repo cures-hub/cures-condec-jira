@@ -29,6 +29,12 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
  */
 public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement, Link> {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeGraph.class);
+
+	private static final long serialVersionUID = 1L;
+	protected List<Long> linkIds;
+	private KnowledgePersistenceManager persistenceManager;
+
 	/**
 	 * Instances of knowledge graphs that are identified by the project key.
 	 */
@@ -62,12 +68,6 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		}
 		return getOrCreate(project.getProjectKey());
 	}
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeGraph.class);
-
-	private static final long serialVersionUID = 1L;
-	protected List<Long> linkIds;
-	private KnowledgePersistenceManager persistenceManager;
 
 	public KnowledgeGraph(String projectKey) {
 		super(Link.class);
