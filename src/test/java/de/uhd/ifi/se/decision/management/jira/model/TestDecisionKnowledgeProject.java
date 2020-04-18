@@ -10,7 +10,6 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 
 /**
  * Test class for a JIRA project with the configuration settings used in this
@@ -30,7 +29,7 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 		this.projectName = "TestName";
 		this.isActivated = true;
 		this.isIssueStrategy = true;
-		this.project = new DecisionKnowledgeProjectImpl(projectKey, projectName);
+		this.project = new DecisionKnowledgeProject(projectKey, projectName);
 	}
 
 	@Test

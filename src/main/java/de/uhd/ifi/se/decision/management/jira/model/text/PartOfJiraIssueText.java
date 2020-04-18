@@ -14,9 +14,9 @@ import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 
 /**
@@ -87,7 +87,7 @@ public class PartOfJiraIssueText extends PartOfText {
 		this.setProject(projectKey);
 		this.setCommentId(commentId);
 		this.setJiraIssueId(issueId);
-		this.setProject(new DecisionKnowledgeProjectImpl(projectKey));
+		this.setProject(new DecisionKnowledgeProject(projectKey));
 		this.setType(type);
 		this.setStatus(status);
 		Issue issue = ComponentAccessor.getIssueManager().getIssueObject(issueId);

@@ -8,9 +8,9 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -42,7 +42,7 @@ public class TestTreant extends TestSetUp {
 		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueManager();
 		CodeClassKnowledgeElementPersistenceManager ccManager
 				= new CodeClassKnowledgeElementPersistenceManager("Test");
-		classElement = new KnowledgeElementImpl();
+		classElement = new KnowledgeElement();
 		classElement.setProject("TEST");
 		classElement.setType("Other");
 		classElement.setDescription("TEST-1;");
@@ -140,7 +140,7 @@ public class TestTreant extends TestSetUp {
 
 	@Test
 	public void testCreateNodeStructureEmptyNullZeroZero() {
-		KnowledgeElement element = new KnowledgeElementImpl();
+		KnowledgeElement element = new KnowledgeElement();
 		assertEquals(TreantNode.class, treant.createNodeStructure(element, (Link) null, 0).getClass());
 	}
 
@@ -157,7 +157,7 @@ public class TestTreant extends TestSetUp {
 	}
 
 	public void testCreateNodeStructureEmptyNullFilledFilled() {
-		KnowledgeElement element = new KnowledgeElementImpl();
+		KnowledgeElement element = new KnowledgeElement();
 		assertEquals(TreantNode.class, treant.createNodeStructure(element, (Link) null, 0).getClass());
 	}
 
@@ -172,7 +172,7 @@ public class TestTreant extends TestSetUp {
 	@NonTransactional
 	public void testCreateNodeStructureFilledFilledFilledFilled() {
 		KnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(14);
-		Link link = new LinkImpl(1, 14, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
+		Link link = new Link(1, 14, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		link.setType("support");
 		link.setDestinationElement(persistenceManager.getDecisionKnowledgeElement(14));
 		link.setSourceElement(persistenceManager.getDecisionKnowledgeElement(1));
@@ -194,7 +194,7 @@ public class TestTreant extends TestSetUp {
 	@Test
 	public void testSecondCreateNodeStructureWithElementNull() {
 		Set<Link> links = new HashSet<>();
-		Link link = new LinkImpl(classElement, persistenceManager.getDecisionKnowledgeElement("TEST-1"));
+		Link link = new Link(classElement, persistenceManager.getDecisionKnowledgeElement("TEST-1"));
 		links.add(link);
 		TreantNode nodeStructure = treant.createNodeStructure(null, links, 0, false);
 		assertEquals(TreantNode.class, nodeStructure.getClass());
@@ -209,7 +209,7 @@ public class TestTreant extends TestSetUp {
 	@Test
 	public void testSecondCreateNodeStructureWithAllFilled() {
 		Set<Link> links = new HashSet<>();
-		Link link = new LinkImpl(classElement, persistenceManager.getDecisionKnowledgeElement("TEST-1"));
+		Link link = new Link(classElement, persistenceManager.getDecisionKnowledgeElement("TEST-1"));
 		links.add(link);
 		TreantNode nodeStructure = treant.createNodeStructure(classElement, links, 0, false);
 		assertEquals(TreantNode.class, nodeStructure.getClass());
@@ -219,7 +219,7 @@ public class TestTreant extends TestSetUp {
 	@Test
 	public void testSecondCreateNodeStructureWithAllFilledAndIssueView() {
 		Set<Link> links = new HashSet<>();
-		Link link = new LinkImpl(classElement, persistenceManager.getDecisionKnowledgeElement("TEST-1"));
+		Link link = new Link(classElement, persistenceManager.getDecisionKnowledgeElement("TEST-1"));
 		links.add(link);
 		TreantNode nodeStructure = treant.createNodeStructure(classElement, links, 0, true);
 		assertEquals(TreantNode.class, nodeStructure.getClass());

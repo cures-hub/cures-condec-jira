@@ -10,11 +10,12 @@ import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
+
 import org.eclipse.jgit.api.BlameCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.blame.BlameResult;
@@ -158,7 +159,7 @@ public class GitCodeClassExtractor {
 	}
 
 	public KnowledgeElement createKnowledgeElementFromFile(File file, List<String> issueKeys) {
-		KnowledgeElement element = new KnowledgeElementImpl();
+		KnowledgeElement element = new KnowledgeElement();
 		String keyString = "";
 		for (String key : issueKeys) {
 			keyString = keyString + key + ";";

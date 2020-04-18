@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-
 public class TestKnowledgeStatus {
 
 	@Test
@@ -40,9 +38,9 @@ public class TestKnowledgeStatus {
 
 	@Test
 	public void testGetNewKnowledgeStatusForType() {
-		KnowledgeElement formerElement = new KnowledgeElementImpl();
+		KnowledgeElement formerElement = new KnowledgeElement();
 		formerElement.setType(KnowledgeType.ALTERNATIVE);
-		KnowledgeElement newElement = new KnowledgeElementImpl();
+		KnowledgeElement newElement = new KnowledgeElement();
 		newElement.setType(KnowledgeType.DECISION);
 		assertEquals(KnowledgeStatus.DECIDED, KnowledgeStatus.getNewKnowledgeStatusForType(formerElement, newElement));
 
@@ -54,7 +52,7 @@ public class TestKnowledgeStatus {
 
 	@Test
 	public void testGetNewKnowledgeTypeForStatus() {
-		KnowledgeElement element = new KnowledgeElementImpl();
+		KnowledgeElement element = new KnowledgeElement();
 		assertEquals(KnowledgeType.OTHER, KnowledgeStatus.getNewKnowledgeTypeForStatus(element));
 		assertEquals(KnowledgeType.OTHER, KnowledgeStatus.getNewKnowledgeTypeForStatus(null, null));
 

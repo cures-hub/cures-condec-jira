@@ -22,11 +22,11 @@ import de.uhd.ifi.se.decision.management.jira.classification.implementation.Onli
 import de.uhd.ifi.se.decision.management.jira.eventlistener.JiraIssueTextExtractionEventListener;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
@@ -494,7 +494,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (element.isLinked() > 0) {
 			return true;
 		}
-		KnowledgeElement parentElement = new KnowledgeElementImpl(((PartOfJiraIssueText) element).getJiraIssue());
+		KnowledgeElement parentElement = new KnowledgeElement(((PartOfJiraIssueText) element).getJiraIssue());
 		long linkId = KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(parentElement, element, null);
 		return linkId > 0;
 	}

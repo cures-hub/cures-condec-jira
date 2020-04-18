@@ -1,10 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +96,7 @@ public class RationaleFromCodeCommentExtractor {
 	}
 
 	private KnowledgeElement addElement(int start, String rationaleText, String rationaleType) {
-		return new KnowledgeElementImpl(0, getSummary(rationaleText), getDescription(rationaleText),
+		return new KnowledgeElement(0, getSummary(rationaleText), getDescription(rationaleText),
 				rationaleType.toUpperCase(), "" // unknown, not needed at the moment
 				, calculateAndCodeRationalePositionInSourceFile(start, rationaleText), DocumentationLocation.COMMIT,
 				"");

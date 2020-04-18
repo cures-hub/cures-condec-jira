@@ -16,9 +16,9 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 public class TestNode extends TestSetUp {
 
@@ -52,7 +52,7 @@ public class TestNode extends TestSetUp {
 		node.setLink(link);
 		node.setNodeContent(nodeContent);
 
-		element = new KnowledgeElementImpl();
+		element = new KnowledgeElement();
 		element.setId(1);
 		element.setKey("Test-1");
 		element.setType("Argument");
@@ -73,7 +73,7 @@ public class TestNode extends TestSetUp {
 
 	@Test
 	public void testElementLinkSupportConstructor() {
-		Link link = new LinkImpl(element, element);
+		Link link = new Link(element, element);
 		link.setType("support");
 		TreantNode newNode = new TreantNode(element, link, isCollapsed, isHyperlinked);
 		assertNotNull(newNode);
@@ -81,7 +81,7 @@ public class TestNode extends TestSetUp {
 
 	@Test
 	public void testElementLinkAttackConstructor() {
-		Link link = new LinkImpl(element, element);
+		Link link = new Link(element, element);
 		link.setType("attack");
 		TreantNode newNode = new TreantNode(element, link, isCollapsed, isHyperlinked);
 		assertNotNull(newNode);

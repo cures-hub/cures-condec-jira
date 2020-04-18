@@ -32,9 +32,9 @@ import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXt
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgePersistenceManagerImpl;
@@ -275,7 +275,7 @@ public class ViewRestImpl implements ViewRest {
 					.entity(ImmutableMap.of("error", "Treant cannot be shown since depth of Tree is NaN")).build();
 		}
 		try {
-			KnowledgeElement element = new KnowledgeElementImpl();
+			KnowledgeElement element = new KnowledgeElement();
 			if (!isIssueView) {
 				CodeClassKnowledgeElementPersistenceManager ccManager = new CodeClassKnowledgeElementPersistenceManager(
 						projectKey);

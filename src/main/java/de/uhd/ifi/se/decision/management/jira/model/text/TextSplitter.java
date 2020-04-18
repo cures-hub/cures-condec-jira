@@ -13,8 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
 
@@ -227,7 +227,7 @@ public class TextSplitter {
 	}
 
 	public static Set<String> getAllTagsUsedInProject(String projectKey) {
-		Set<KnowledgeType> projectKnowledgeTypes = new DecisionKnowledgeProjectImpl(projectKey).getKnowledgeTypes();
+		Set<KnowledgeType> projectKnowledgeTypes = new DecisionKnowledgeProject(projectKey).getKnowledgeTypes();
 		projectKnowledgeTypes.add(KnowledgeType.PRO);
 		projectKnowledgeTypes.add(KnowledgeType.CON);
 		Set<String> knowledgeTypeTags = new HashSet<String>();

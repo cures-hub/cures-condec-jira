@@ -4,7 +4,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.Project;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -56,7 +56,7 @@ public class SettingsOfAllProjects extends AbstractSettingsServlet {
 		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 			String projectKey = project.getKey();
 			String projectName = project.getName();
-			DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProjectImpl(projectKey, projectName);
+			DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(projectKey, projectName);
 			projects.add(jiraProject);
 		}
 		return projects;

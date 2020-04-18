@@ -31,10 +31,10 @@ import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXt
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -441,7 +441,7 @@ public class MetricCalculator {
 			}
 			for (Link link : GenericLinkManager.getLinksForElement(issue.getId(), DocumentationLocation.JIRAISSUE)) {
 				if (link.isValid()) {
-					KnowledgeElement dke = link.getOppositeElement(new KnowledgeElementImpl(issue));
+					KnowledgeElement dke = link.getOppositeElement(new KnowledgeElement(issue));
 					if (dke.getType().equals(knowledgeType)) {
 						linkExisting = true;
 					}
