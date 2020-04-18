@@ -13,7 +13,6 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.model.git.impl.ChangedFileImpl;
 
 public class TestChangedFile extends TestSetUpGit {
 
@@ -48,13 +47,13 @@ public class TestChangedFile extends TestSetUpGit {
 		changedFile.addMethodDeclaration(methodDeclaration.getDeclarationAsString());
 		assertEquals(3, changedFile.getMethodDeclarations().size());
 
-		ChangedFile changedFile = new ChangedFileImpl(new File("readme"));
+		ChangedFile changedFile = new ChangedFile(new File("readme"));
 		assertEquals(0, changedFile.getMethodDeclarations().size());
 	}
 
 	@Test
 	public void testParsingMethodsOfNonJavaFile() {
-		ChangedFile changedFile = new ChangedFileImpl(new File("readme"));
+		ChangedFile changedFile = new ChangedFile(new File("readme"));
 		assertEquals(0, changedFile.getMethodDeclarations().size());
 	}
 

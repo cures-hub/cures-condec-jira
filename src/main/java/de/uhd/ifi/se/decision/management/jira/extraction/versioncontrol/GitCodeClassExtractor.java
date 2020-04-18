@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.model.git.impl.ChangedFileImpl;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import org.eclipse.jgit.api.BlameCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -54,7 +54,7 @@ public class GitCodeClassExtractor {
 							treeWalk.enterSubtree();
 						} else {
 							File file = new File(repository.getWorkTree(), treeWalk.getPathString());
-							ChangedFile chfile = new ChangedFileImpl(file);
+							ChangedFile chfile = new ChangedFile(file);
 							if (chfile.isExistingJavaClass()) {
 								codeClassListFull.add(file);
 								codeClassOriginMap.put(file.getAbsolutePath(), repoUri);
