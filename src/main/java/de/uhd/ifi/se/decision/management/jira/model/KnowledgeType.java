@@ -18,9 +18,9 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
  * knowledge types most often used are decision, issue, argument, and
  * alternative.
  * 
- * Knowledge types can also be of other types. For example, knowledge elements
- * of other types are requirements, development tasks (=work items), and code
- * classes, but they are not included in this enum (only as OTHER).
+ * Knowledge elements can also be of other types. For example, knowledge
+ * elements of other types are requirements, development tasks (=work items),
+ * and code classes, but they are not included in this enum (only as OTHER).
  */
 public enum KnowledgeType {
 	ALTERNATIVE, ASSUMPTION, ASSESSMENT, ARGUMENT, PRO, CON, CLAIM, CONTEXT, CONSTRAINT, DECISION, GOAL, ISSUE, IMPLICATION, PROBLEM, RATIONALE, SOLUTION, OTHER, QUESTION;
