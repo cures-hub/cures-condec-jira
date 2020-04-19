@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
@@ -27,6 +28,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
  * @see GitClient
  * @see Graph
  */
+@JsonDeserialize(as = KnowledgeGraph.class)
 public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement, Link> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeGraph.class);

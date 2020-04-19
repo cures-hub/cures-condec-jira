@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  */
 public class GitCommitMessageExtractor {
 
-	private final static List<String> decKnowTags = KnowledgeType.toList();
+	private final static List<String> decKnowTags = KnowledgeType.toStringList();
 	/**
 	 * DecisionKnowledgeElement's key part to be replaced, probably by object higher
 	 * in hierarchy than this object, with commit ish.

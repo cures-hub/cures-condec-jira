@@ -6,13 +6,18 @@ import java.util.Map;
 import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 
 /**
- * Models a project and its configuration. The project is a JIRA project that is
+ * Models a project and its configuration. The project is a Jira project that is
  * extended with settings for this plug-in, for example, whether the plug-in is
  * activated for the project.
+ * 
+ * This class provides read-only access to the settings. To change the settings,
+ * use the {@link ConfigPersistenceManager}.
+ * 
+ * @issue Should the DecisionKnowledgeProject class extend the Jira project
+ *        class?
  */
 public class DecisionKnowledgeProject {
 
@@ -38,12 +43,10 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * Sets the key of the project. The project is a Jira project that is extended
-	 * with settings for this plug-in, for example, whether the plug-in is activated
-	 * for the project.
-	 *
 	 * @param projectKey
-	 *            of the Jira project.
+	 *            of the Jira project. The project is a Jira project that is
+	 *            extended with settings for this plug-in, for example, whether the
+	 *            plug-in is activated for the project.
 	 */
 	public void setProjectKey(String projectKey) {
 		this.projectKey = projectKey;
@@ -59,12 +62,10 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * Sets the name of the project. The project is a Jira project that is extended
-	 * with settings for this plug-in, for example, whether the plug-in is activated
-	 * for the project.
-	 *
 	 * @param projectName
-	 *            of the Jira project.
+	 *            of the Jira project. The project is a Jira project that is
+	 *            extended with settings for this plug-in, for example, whether the
+	 *            plug-in is activated for the project.
 	 */
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
@@ -78,51 +79,19 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * Sets whether the plug-in is activated for this project.
-	 *
-	 * @param isActivated
-	 *            true if the plug-in should be activated for this project.
-	 */
-	public void setActivated(boolean isActivated) {
-		ConfigPersistenceManager.setActivated(this.getProjectKey(), isActivated);
-	}
-
-	/**
-	 * Determines whether decision knowledge is stored in Jira issues for this
-	 * project. If you choose the issue strategy, you need to associate the project
-	 * with the decision knowledge issue type scheme.
-	 *
-	 * @see AbstractPersistenceManagerForSingleLocation
 	 * @see JiraIssuePersistenceManager
-	 * @return true if decision knowledge is stored in Jira issues for this project
-	 *         (issue strategy). Otherwise object relational mapping is used (active
-	 *         object strategy).
+	 * @return true if decision knowledge is stored in entire Jira issues for this
+	 *         project. If this is true, you need make sure that the project is
+	 *         associated with the decision knowledge issue type scheme.
 	 */
 	public boolean isIssueStrategy() {
 		return ConfigPersistenceManager.isIssueStrategy(this.getProjectKey());
 	}
 
 	/**
-	 * Sets whether decision knowledge is stored in Jira issues for this project. If
-	 * you choose the issue strategy, you need to associate the project with the
-	 * decision knowledge issue type scheme.
-	 *
-	 * @see AbstractPersistenceManagerForSingleLocation
-	 * @see JiraIssuePersistenceManager
-	 * @param isIssueStrategy
-	 *            true if decision knowledge should be stored in Jira issues for
-	 *            this project (issue strategy). Otherwise object relational mapping
-	 *            is used (active object strategy).
+	 * @return {@link KnowledgeType}s that are used in this project.
 	 */
-	public void setIssueStrategy(boolean isIssueStrategy) {
-		ConfigPersistenceManager.setIssueStrategy(this.getProjectKey(), isIssueStrategy);
-	}
-
-	/**
-	 * @return {@link KnowledgeType} of decision knowledge that are used in this
-	 *         project.
-	 */
-	public Set<KnowledgeType> getKnowledgeTypes() {
+	public Set<KnowledgeType> getDecisionKnowledgeTypes() {
 		Set<KnowledgeType> knowledgeTypes = new HashSet<KnowledgeType>();
 		for (KnowledgeType knowledgeType : KnowledgeType.values()) {
 			boolean isEnabled = ConfigPersistenceManager.isKnowledgeTypeEnabled(this.projectKey, knowledgeType);
@@ -157,17 +126,6 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * Sets whether decision knowledge is extracted from git commit messages.
-	 *
-	 * @param isKnowledgeExtractedFromGit
-	 *            true if decision knowledge should be extracted from git commit
-	 *            messages.
-	 */
-	public void setKnowledgeExtractedFromGit(boolean isKnowledgeExtractedFromGit) {
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, isKnowledgeExtractedFromGit);
-	}
-
-	/**
 	 * @return uniform resource identifiers of the git repositories for this project
 	 *         as a List<String> (if it is set, otherwise an empty List).
 	 */
@@ -176,23 +134,12 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * Returns the a map with uniform resource identifiers of the git repositories
-	 * for this project as keys and name of default branch as Value.
-	 *
-	 * @return default branches as Map<String,String>.
+	 * @return default branches as Map<String,String> with the uniform resource
+	 *         identifiers of the git repositories for this project as key and the
+	 *         name of default branch as value.
 	 */
 	public Map<String, String> getDefaultBranches() {
 		return ConfigPersistenceManager.getDefaultBranches(projectKey);
-	}
-
-	/**
-	 * Sets whether the webhook is enabled for this project.
-	 *
-	 * @param isWebhookEnabled
-	 *            true if the webhook is enabled for this project.
-	 */
-	public void setWebhookEnabled(boolean isWebhookEnabled) {
-		ConfigPersistenceManager.setWebhookEnabled(projectKey, isWebhookEnabled);
 	}
 
 	/**
@@ -200,23 +147,6 @@ public class DecisionKnowledgeProject {
 	 */
 	public boolean isWebhookEnabled() {
 		return ConfigPersistenceManager.isWebhookEnabled(projectKey);
-	}
-
-	/**
-	 * Sets the URL where the decision knowledge should be sent and the secret key
-	 * for the submission.
-	 *
-	 * @param webhookUrl
-	 *            URL of the webhook
-	 * @param webhookSecret
-	 *            secret key
-	 */
-	public void setWebhookData(String webhookUrl, String webhookSecret) {
-		if (webhookUrl == null || webhookSecret == null) {
-			return;
-		}
-		ConfigPersistenceManager.setWebhookUrl(projectKey, webhookUrl);
-		ConfigPersistenceManager.setWebhookSecret(projectKey, webhookSecret);
 	}
 
 	/**
@@ -249,10 +179,9 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * @return true, if is classifier used for Jira issue comments.
+	 * @return true, if the classifier is used for Jira issue comments.
 	 */
-	public boolean isClassifierUsedForIssueComments() {
+	public boolean isClassifierEnabled() {
 		return ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey);
 	}
-
 }

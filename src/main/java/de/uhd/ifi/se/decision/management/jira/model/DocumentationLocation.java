@@ -29,6 +29,7 @@ public enum DocumentationLocation {
 	 * @param identifier
 	 *            of the documentation location as a String, e.g. "i" for Jira
 	 *            issue.
+	 * @return {@link DocumentationLocation}.
 	 */
 	public static DocumentationLocation getDocumentationLocationFromIdentifier(String identifier) {
 		if (identifier == null || identifier.isBlank()) {
@@ -91,10 +92,8 @@ public enum DocumentationLocation {
 	}
 
 	/**
-	 * Convert the documentation locations to a String starting with a capital
-	 * letter, e.g., PullRequest, JiraIssue, Commit
-	 * 
-	 * @return documentation locations as a String starting with a capital letter.
+	 * @return documentation location as a String starting with a capital letter,
+	 *         e.g., PullRequest, JiraIssue, Commit.
 	 */
 	@Override
 	public String toString() {
@@ -102,9 +101,7 @@ public enum DocumentationLocation {
 	}
 
 	/**
-	 * Returns a list of all valid documentation locations.
-	 * 
-	 * @return list of documentation locations.
+	 * @return list of all valid documentation locations.
 	 */
 	public static List<DocumentationLocation> getAllDocumentationLocations() {
 		List<DocumentationLocation> locations = new ArrayList<DocumentationLocation>();

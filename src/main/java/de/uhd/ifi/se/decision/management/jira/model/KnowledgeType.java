@@ -1,35 +1,44 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 
 /**
- * Type of decision knowledge element
+ * Models the possible types of decision knowledge elements. The decision
+ * knowledge types most often used are decision, issue, argument, and
+ * alternative.
+ * 
+ * Knowledge types can also be of other types. For example, knowledge elements
+ * of other types are requirements, development tasks (=work items), and code
+ * classes, but they are not included in this enum (only as OTHER).
  */
 public enum KnowledgeType {
-	ALTERNATIVE, ASSUMPTION, ASSESSMENT, ARGUMENT, PRO, CON, CLAIM, CONTEXT, CONSTRAINT, DECISION, GOAL, ISSUE,
-	IMPLICATION, PROBLEM, RATIONALE, SOLUTION, OTHER, QUESTION;
+	ALTERNATIVE, ASSUMPTION, ASSESSMENT, ARGUMENT, PRO, CON, CLAIM, CONTEXT, CONSTRAINT, DECISION, GOAL, ISSUE, IMPLICATION, PROBLEM, RATIONALE, SOLUTION, OTHER, QUESTION;
 
 	/**
-	 * Get the minimal set of decision knowledge types for the management of
-	 * decision knowledge (decision, issue, argument, alternative).
-	 *
-	 * @return minimal set of decision knowledge types.
+	 * @return minimal set of decision knowledge types for the management of
+	 *         decision knowledge (decision, issue, argument, alternative).
 	 */
 	public static Set<KnowledgeType> getDefaultTypes() {
 		return EnumSet.of(DECISION, ISSUE, ARGUMENT, ALTERNATIVE);
 	}
 
 	/**
-	 * Converts a string to a knowledge type.
+	 * Converts a string to a decision knowledge type.
 	 *
-	 * @param type as a String.
-	 * @return knowledge type.
+	 * @param type
+	 *            of decision knowledge as a String.
+	 * @return decision knowledge type as a {@link KnowledgeType} object.
 	 */
 	public static KnowledgeType getKnowledgeType(String type) {
 		if (type == null || type.isEmpty()) {
@@ -50,37 +59,47 @@ public enum KnowledgeType {
 	}
 
 	/**
-	 * Return the argument knowledge type instead of pro-argument or con-argument.
+	 * @return the decision knowledge type. If it is a pro-argument or con-argument,
+	 *         the argument knowledge type is returned.
 	 */
 	public KnowledgeType replaceProAndConWithArgument() {
 		return replaceProAndConWithArgument(this);
 	}
 
+	/**
+	 * @param type
+	 *            of decision knowledge.
+	 * @return the decision knowledge type. If it is a pro-argument or con-argument,
+	 *         the argument knowledge type is returned.
+	 */
 	public static KnowledgeType replaceProAndConWithArgument(KnowledgeType type) {
 		switch (type) {
-			case PRO:
-				return KnowledgeType.ARGUMENT;
-			case CON:
-				return KnowledgeType.ARGUMENT;
-			default:
-				return type;
+		case PRO:
+			return KnowledgeType.ARGUMENT;
+		case CON:
+			return KnowledgeType.ARGUMENT;
+		default:
+			return type;
 		}
 	}
 
+	/**
+	 * @param type
+	 *            of decision knowledge as a String.
+	 * @return the decision knowledge type. If it is a pro-argument or con-argument,
+	 *         the argument knowledge type is returned.
+	 */
 	public static KnowledgeType replaceProAndConWithArgument(String type) {
 		KnowledgeType knowledgeType = getKnowledgeType(type);
 		return replaceProAndConWithArgument(knowledgeType);
 	}
 
 	/**
-	 * Get the parent knowledge type of a knowledge type for link creation in the
-	 * knowledge graph. For example, the parent type of argument is decision or
-	 * alternative. The parent type of decision or alternative is issue.
-	 *
-	 * @param type of knowledge
-	 * @return parent knowledge type of the knowledge type for link creation in the
-	 * knowledge graph.
-	 * @see KnowledgeElement
+	 * @param type
+	 *            of decision knowledge.
+	 * @return parent knowledge type of a knowledge type for link creation in the
+	 *         knowledge graph. For example, the parent type of argument is decision
+	 *         or alternative. The parent type of decision or alternative is issue.
 	 */
 	public static List<KnowledgeType> getParentTypes(KnowledgeType type) {
 		List<KnowledgeType> parentTypes = new ArrayList<KnowledgeType>();
@@ -97,60 +116,54 @@ public enum KnowledgeType {
 	}
 
 	/**
-	 * Get the super class of a knowledge type in the decision documentation model.
-	 * For example, the super type of argument is rationale and the super type of
-	 * issue is problem.
-	 *
-	 * @param type of knowledge
-	 * @return super knowledge type of the knowledge type in the decision
-	 * documentation model.
-	 * @see KnowledgeElement
+	 * @param type
+	 *            of decision knowledge.
+	 * @return super decision knowledge type of the decision knowledge element in
+	 *         the decision documentation model by Hesse and Paech (2013). For
+	 *         example, the super type of argument is rationale and the super type
+	 *         of issue is problem.
 	 */
 	public static KnowledgeType getSuperType(KnowledgeType type) {
 		if (type == null) {
 			return null;
 		}
 		switch (type) {
-			case ISSUE:
-				return KnowledgeType.PROBLEM;
-			case GOAL:
-				return KnowledgeType.PROBLEM;
-			case ALTERNATIVE:
-				return KnowledgeType.SOLUTION;
-			case CLAIM:
-				return KnowledgeType.SOLUTION;
-			case CONSTRAINT:
-				return KnowledgeType.CONTEXT;
-			case ASSUMPTION:
-				return KnowledgeType.CONTEXT;
-			case IMPLICATION:
-				return KnowledgeType.CONTEXT;
-			case ARGUMENT:
-				return KnowledgeType.RATIONALE;
-			case ASSESSMENT:
-				return KnowledgeType.RATIONALE;
-			default:
-				return type;
+		case ISSUE:
+			return KnowledgeType.PROBLEM;
+		case GOAL:
+			return KnowledgeType.PROBLEM;
+		case ALTERNATIVE:
+			return KnowledgeType.SOLUTION;
+		case CLAIM:
+			return KnowledgeType.SOLUTION;
+		case CONSTRAINT:
+			return KnowledgeType.CONTEXT;
+		case ASSUMPTION:
+			return KnowledgeType.CONTEXT;
+		case IMPLICATION:
+			return KnowledgeType.CONTEXT;
+		case ARGUMENT:
+			return KnowledgeType.RATIONALE;
+		case ASSESSMENT:
+			return KnowledgeType.RATIONALE;
+		default:
+			return type;
 		}
 	}
 
 	/**
-	 * Get the super class of a knowledge type in the decision documentation model.
-	 * For example, the super type of argument is rationale and the super type of
-	 * issue is problem.
-	 *
-	 * @return super knowledge type of the decision knowledge element.
-	 * @see KnowledgeElement
+	 * @return super decision knowledge type of the decision knowledge element in
+	 *         the decision documentation model by Hesse and Paech (2013). For
+	 *         example, the super type of argument is rationale and the super type
+	 *         of issue is problem.
 	 */
 	public KnowledgeType getSuperType() {
 		return getSuperType(this);
 	}
 
 	/**
-	 * Convert the knowledge type to a String starting with a capital letter, e.g.,
-	 * Argument, Decision, or Alternative.
-	 *
-	 * @return knowledge type as a String starting with a capital letter.
+	 * @return decision knowledge type as a String starting with a capital letter,
+	 *         e.g., Argument, Decision, or Alternative.
 	 */
 	@Override
 	public String toString() {
@@ -159,11 +172,10 @@ public enum KnowledgeType {
 	}
 
 	/**
-	 * Converts all knowledge types to a list of String.
-	 *
-	 * @return list of knowledge types as Strings starting with a capital letter.
+	 * @return list of decision knowledge types as Strings starting with a capital
+	 *         letter.
 	 */
-	public static List<String> toList() {
+	public static List<String> toStringList() {
 		List<String> knowledgeTypes = new ArrayList<String>();
 		for (KnowledgeType knowledgeType : KnowledgeType.values()) {
 			knowledgeTypes.add(knowledgeType.toString());
@@ -173,29 +185,29 @@ public enum KnowledgeType {
 
 	public String getIconString() {
 		switch (this) {
-			case PRO:
-				return "(y)";
-			case CON:
-				return "(n)";
-			case DECISION:
-				return "(/)";
-			case ISSUE:
-				return "(!)";
-			case ALTERNATIVE:
-				return "(?)";
-			default:
-				return "";
+		case PRO:
+			return "(y)";
+		case CON:
+			return "(n)";
+		case DECISION:
+			return "(/)";
+		case ISSUE:
+			return "(!)";
+		case ALTERNATIVE:
+			return "(?)";
+		default:
+			return "";
 		}
 	}
 
 	public String getIconUrl() {
 		switch (this) {
-			case PRO:
-				return ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
-			case CON:
-				return ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
-			default:
-				return ComponentGetter.getUrlOfImageFolder() + this.name().toLowerCase(Locale.ENGLISH) + ".png";
+		case PRO:
+			return ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
+		case CON:
+			return ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
+		default:
+			return ComponentGetter.getUrlOfImageFolder() + this.name().toLowerCase(Locale.ENGLISH) + ".png";
 		}
 	}
 
@@ -228,14 +240,14 @@ public enum KnowledgeType {
 			return getIconUrl(element);
 		}
 		switch (element.getType()) {
-			case ARGUMENT:
-				if (linkType.equals("support")) {
-					return ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
-				} else if (linkType.equals("attack")) {
-					return ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
-				}
-			default:
-				return getIconUrl(element);
+		case ARGUMENT:
+			if (linkType.equals("support")) {
+				return ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
+			} else if (linkType.equals("attack")) {
+				return ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
+			}
+		default:
+			return getIconUrl(element);
 		}
 	}
 }

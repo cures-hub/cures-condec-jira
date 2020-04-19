@@ -15,9 +15,6 @@ import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -93,13 +90,6 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	public void testGetTextFromCommentThatIsNull() {
 		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
 		assertEquals(sentence.getText(), "");
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetTextInSuperClass() {
-		PartOfText partOfText = new PartOfText();
-		assertEquals(partOfText.getText(), "");
 	}
 
 	@Test

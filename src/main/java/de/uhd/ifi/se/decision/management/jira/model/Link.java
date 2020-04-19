@@ -22,7 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 public class Link extends DefaultWeightedEdge {
 
 	private long id;
-	private String type; // TODO Use LinkType istead of String
+	private String type; // TODO Use LinkType instead of String
 	private KnowledgeElement source;
 	private KnowledgeElement target;
 
@@ -48,8 +48,8 @@ public class Link extends DefaultWeightedEdge {
 		this(sourceElement, destinationElement, linkType.toString());
 	}
 
-	public Link(long idOfSourceElement, long idOfDestinationElement,
-			DocumentationLocation sourceDocumentationLocation, DocumentationLocation destDocumentationLocation) {
+	public Link(long idOfSourceElement, long idOfDestinationElement, DocumentationLocation sourceDocumentationLocation,
+			DocumentationLocation destDocumentationLocation) {
 		super();
 		this.setSourceElement(idOfSourceElement, sourceDocumentationLocation);
 		this.setDestinationElement(idOfDestinationElement, destDocumentationLocation);
@@ -292,11 +292,10 @@ public class Link extends DefaultWeightedEdge {
 	}
 
 	/**
-	 * @see KnowledgeElement
 	 * @param elementId
 	 *            of a decision knowledge element on one side of this link.
 	 * 
-	 * @return opposite element of this link.
+	 * @return opposite {@link KnowledgeElement} of this link.
 	 */
 	public KnowledgeElement getOppositeElement(long elementId) {
 		if (!this.isValid()) {

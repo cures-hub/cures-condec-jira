@@ -218,13 +218,13 @@ public class FilterSettingsImpl implements FilterSettings {
 	@Override
 	@XmlElement(name = "allIssueStatus")
 	public List<String> getAllStatus() {
-		return KnowledgeStatus.toList();
+		return KnowledgeStatus.toStringList();
 	}
 
 	@Override
 	@XmlElement(name = "allLinkTypes")
 	public List<String> getAllLinkTypes() {
-		return LinkType.toList();
+		return LinkType.toStringList();
 	}
 
 	@Override

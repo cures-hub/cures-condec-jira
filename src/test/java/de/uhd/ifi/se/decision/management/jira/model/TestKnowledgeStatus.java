@@ -24,7 +24,7 @@ public class TestKnowledgeStatus {
 
 	@Test
 	public void testToList() {
-		assertEquals(7, KnowledgeStatus.toList().size());
+		assertEquals(7, KnowledgeStatus.toStringList().size());
 	}
 
 	@Test

@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -10,6 +9,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
  * Test class for a JIRA project with the configuration settings used in this
@@ -65,50 +65,8 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	}
 
 	@Test
-	public void testSetActivated() {
-		this.project.setActivated(this.isActivated);
-		assertEquals(this.isActivated, this.project.isActivated());
-	}
-
-	@Test
-	public void testSetIssueStrategy() {
-		this.project.setIssueStrategy(this.isIssueStrategy);
-		assertEquals(this.isIssueStrategy, this.project.isIssueStrategy());
-	}
-
-	@Test
 	public void testGetKnowledgeTypes() {
-		assertEquals(18, project.getKnowledgeTypes().size(), 0.0);
-	}
-
-	@Test
-	public void testSetIsKnowledgeExtractedFromGit() {
-		project.setKnowledgeExtractedFromGit(true);
-		assertTrue(project.isKnowledgeExtractedFromGit());
-	}
-
-	@Test
-	public void testSetWebhookDataNullNull() {
-		project.setWebhookData(null, null);
-		assertTrue(true);
-	}
-
-	@Test
-	public void testSetWebhookDataNullFilled() {
-		project.setWebhookData(null, "myhoneybee");
-		assertTrue(true);
-	}
-
-	@Test
-	public void testSetWebhookDataFilledNull() {
-		project.setWebhookData("http://true", null);
-		assertTrue(true);
-	}
-
-	@Test
-	public void testSetWebhookDataFilledFilled() {
-		project.setWebhookData("http://true", "myhoneybee");
-		assertTrue(true);
+		assertEquals(18, project.getDecisionKnowledgeTypes().size(), 0.0);
 	}
 
 	@Test
@@ -118,7 +76,7 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetWebhookSecret() {
-		project.setWebhookData("http://true", "myhoneybee");
+		ConfigPersistenceManager.setWebhookSecret(project.getProjectKey(), "myhoneybee");
 		assertEquals("myhoneybee", project.getWebhookSecret());
 	}
 

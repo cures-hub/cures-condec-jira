@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  */
 public class RationaleFromCodeCommentExtractor {
 	private ArrayList<KnowledgeElement> elements;
-	private final static List<String> decKnowTags = KnowledgeType.toList();
+	private final static List<String> decKnowTags = KnowledgeType.toStringList();
 	private CodeComment comment;
 	private final Pattern TAGS_SEARCH_PATTERN;
 	private final Pattern TWO_EMPTY_LINES_PATTERN;
