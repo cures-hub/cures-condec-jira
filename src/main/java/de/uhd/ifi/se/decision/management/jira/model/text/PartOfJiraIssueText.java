@@ -145,12 +145,10 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	}
 
 	/**
-	 * Sets whether the classification of the part of the text is manually
-	 * performed, updated, or checked by a human beeing.
-	 * 
 	 * @param isValidated
 	 *            true if the classification of the text within the Jira issue
-	 *            comment is validated.
+	 *            comment is validated. That means that the classification is
+	 *            manually performed, updated, or checked by a human beeing.
 	 */
 	public void setValidated(boolean isValidated) {
 		this.isValidated = isValidated;
@@ -375,11 +373,14 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	@Override
 	public ApplicationUser getCreator() {
 		Comment comment = this.getComment();
-		if (comment == null) {
-			Issue issue = this.getJiraIssue();
+		if (comment != null) {
+			return comment.getAuthorApplicationUser();
+		}
+		Issue issue = this.getJiraIssue();
+		if (issue != null) {
 			return issue.getReporter();
 		}
-		return comment.getAuthorApplicationUser();
+		return null;
 	}
 
 	/**
