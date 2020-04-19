@@ -16,7 +16,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
 
@@ -105,7 +105,7 @@ public class JiraIssues {
 	}
 
 	public static PartOfJiraIssueText addElementToDataBase(long id, String type) {
-		PartOfJiraIssueText element = new PartOfJiraIssueTextImpl();
+		PartOfJiraIssueText element = new PartOfJiraIssueText();
 		element.setProject("TEST");
 		element.setJiraIssueId(1);
 		element.setId(id);

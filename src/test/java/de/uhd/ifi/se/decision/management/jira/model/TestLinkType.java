@@ -13,6 +13,6 @@ public class TestLinkType {
 
 	@Test
 	public void testLinkTypeToList() {
-		assertEquals(10, LinkType.toList().size());
+		assertEquals(10, LinkType.toStringList().size());
 	}
 }

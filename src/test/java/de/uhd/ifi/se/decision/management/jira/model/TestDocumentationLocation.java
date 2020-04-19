@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-
 public class TestDocumentationLocation {
 
 	@Test
@@ -35,7 +33,7 @@ public class TestDocumentationLocation {
 	public void testGetIdentifierFromElement() {
 		assertEquals("", DocumentationLocation.getIdentifier((KnowledgeElement) null));
 
-		KnowledgeElement element = new KnowledgeElementImpl();
+		KnowledgeElement element = new KnowledgeElement();
 		assertEquals("", DocumentationLocation.getIdentifier(element));
 
 		element.setDocumentationLocation("s");

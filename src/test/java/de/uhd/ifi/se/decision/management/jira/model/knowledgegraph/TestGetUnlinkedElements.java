@@ -9,9 +9,9 @@ import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
 public class TestGetUnlinkedElements extends TestSetUp {
@@ -21,7 +21,7 @@ public class TestGetUnlinkedElements extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		graph = new KnowledgeGraphImpl("TEST");
+		graph = new KnowledgeGraph("TEST");
 	}
 
 	@Test
@@ -32,7 +32,7 @@ public class TestGetUnlinkedElements extends TestSetUp {
 	@Test
 	public void testElementValid() {
 		Issue issue = JiraIssues.getTestJiraIssues().get(0);
-		KnowledgeElement element = new KnowledgeElementImpl(issue);
+		KnowledgeElement element = new KnowledgeElement(issue);
 		assertEquals(5, graph.getUnlinkedElements(element).size());
 	}
 }

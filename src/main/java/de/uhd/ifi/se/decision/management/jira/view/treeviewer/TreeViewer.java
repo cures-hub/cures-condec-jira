@@ -17,10 +17,10 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
@@ -99,7 +99,7 @@ public class TreeViewer {
 		if (jiraIssue == null) {
 			return;
 		}
-		KnowledgeElement rootElement = new KnowledgeElementImpl(jiraIssue);
+		KnowledgeElement rootElement = new KnowledgeElement(jiraIssue);
 		graph = KnowledgeGraph.getOrCreate(rootElement.getProject().getProjectKey());
 
 		Data rootNode = this.getDataStructure(rootElement);

@@ -7,7 +7,7 @@ import org.junit.Test;
 import java.util.List;
 
 public class TestGitCommitMessageExtractor {
-	private List<String> tags = KnowledgeType.toList();
+	private List<String> tags = KnowledgeType.toStringList();
 	private GitCommitMessageExtractor gitCommitMessageX;
 
 	@Test

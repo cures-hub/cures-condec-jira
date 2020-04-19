@@ -35,8 +35,8 @@ import com.google.common.collect.Lists;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.model.git.impl.ChangedFileImpl;
-import de.uhd.ifi.se.decision.management.jira.model.git.impl.DiffImpl;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;*/
 
 /**

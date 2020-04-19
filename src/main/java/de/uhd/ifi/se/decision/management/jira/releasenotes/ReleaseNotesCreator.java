@@ -14,7 +14,7 @@ import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteIssueProposalImpl;
 
 /**
@@ -58,7 +58,7 @@ public class ReleaseNotesCreator {
 		HashMap<String, Integer> dkLinkedCount = new HashMap<String, Integer>();
 
 		for (int i = 0; i < elementsMatchingQuery.size(); i++) {
-			KnowledgeElement dkElement = new KnowledgeElementImpl(elementsMatchingQuery.get(i));
+			KnowledgeElement dkElement = new KnowledgeElement(elementsMatchingQuery.get(i));
 			// add key to used keys
 			usedKeys.add(dkElement.getKey());
 			// create Release note issue proposal with the element and the count of

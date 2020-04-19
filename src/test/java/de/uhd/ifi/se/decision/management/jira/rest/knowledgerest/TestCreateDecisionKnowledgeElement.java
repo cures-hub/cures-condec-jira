@@ -15,8 +15,8 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import de.uhd.ifi.se.decision.management.jira.rest.impl.KnowledgeRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -33,7 +33,7 @@ public class TestCreateDecisionKnowledgeElement extends TestSetUp {
 		knowledgeRest = new KnowledgeRestImpl();
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-3");
-		decisionKnowledgeElement = new KnowledgeElementImpl(issue);
+		decisionKnowledgeElement = new KnowledgeElement(issue);
 		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 
 		request = new MockHttpServletRequest();

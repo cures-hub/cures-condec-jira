@@ -1,210 +1,187 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
 
 /**
- * Interface for a project and its configuration. The project is a JIRA project
- * that is extended with settings for this plug-in, for example, whether the
- * plug-in is activated for the project.
+ * Models a project and its configuration. The project is a Jira project that is
+ * extended with settings for this plug-in, for example, whether the plug-in is
+ * activated for the project.
+ * 
+ * This class provides read-only access to the settings. To change the settings,
+ * use the {@link ConfigPersistenceManager}.
+ * 
+ * @issue Should the DecisionKnowledgeProject class extend the Jira project
+ *        class?
  */
-public interface DecisionKnowledgeProject {
+public class DecisionKnowledgeProject {
 
-    /**
-     * Get the key of the project. The project is a JIRA project that is extended
-     * with settings for this plug-in, for example, whether the plug-in is activated
-     * for the project.
-     *
-     * @return key of the JIRA project.
-     */
-    String getProjectKey();
+	private String projectKey;
+	private String projectName;
 
-    /**
-     * Set the key of the project. The project is a JIRA project that is extended
-     * with settings for this plug-in, for example, whether the plug-in is activated
-     * for the project.
-     *
-     * @param projectKey of the JIRA project.
-     */
-    void setProjectKey(String projectKey);
+	public DecisionKnowledgeProject(String projectKey) {
+		this.projectKey = projectKey;
+	}
 
-    /**
-     * Get the name of the project. The project is a JIRA project that is extended
-     * with settings for this plug-in, for example, whether the plug-in is activated
-     * for the project.
-     *
-     * @return name of the JIRA project.
-     */
-    String getProjectName();
+	public DecisionKnowledgeProject(String projectKey, String projectName) {
+		this(projectKey);
+		this.projectName = projectName;
+	}
 
-    /**
-     * Set the name of the project. The project is a JIRA project that is extended
-     * with settings for this plug-in, for example, whether the plug-in is activated
-     * for the project.
-     *
-     * @param projectName of the JIRA project.
-     */
-    void setProjectName(String projectName);
+	/**
+	 * @return key of the Jira project. The project is a Jira project that is
+	 *         extended with settings for this plug-in, for example, whether the
+	 *         plug-in is activated for the project.
+	 */
+	public String getProjectKey() {
+		return projectKey;
+	}
 
-    /**
-     * Determine whether the plug-in is activated for this project.
-     *
-     * @return true if the plug-in is activated for this project.
-     */
-    boolean isActivated();
+	/**
+	 * @param projectKey
+	 *            of the Jira project. The project is a Jira project that is
+	 *            extended with settings for this plug-in, for example, whether the
+	 *            plug-in is activated for the project.
+	 */
+	public void setProjectKey(String projectKey) {
+		this.projectKey = projectKey;
+	}
 
-    /**
-     * Set whether the plug-in is activated for this project.
-     *
-     * @param isActivated true if the plug-in should be activated for this project.
-     */
-    void setActivated(boolean isActivated);
+	/**
+	 * @return name of the project. The project is a Jira project that is extended
+	 *         with settings for this plug-in, for example, whether the plug-in is
+	 *         activated for the project.
+	 */
+	public String getProjectName() {
+		return projectName;
+	}
 
-    /**
-     * Determine whether decision knowledge is stored in JIRA issues for this
-     * project. If you choose the issue strategy, you need to associate the project
-     * with the decision knowledge issue type scheme.
-     *
-     * @see AbstractPersistenceManagerForSingleLocation
-     * @see JiraIssuePersistenceManager
-     * @return true if decision knowledge is stored in JIRA issues for this project
-     *         (issue strategy). Otherwise object relational mapping is used (active
-     *         object strategy).
-     */
-    boolean isIssueStrategy();
+	/**
+	 * @param projectName
+	 *            of the Jira project. The project is a Jira project that is
+	 *            extended with settings for this plug-in, for example, whether the
+	 *            plug-in is activated for the project.
+	 */
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
+	}
 
-    /**
-     * Set whether decision knowledge is stored in JIRA issues for this project. If
-     * you choose the issue strategy, you need to associate the project with the
-     * decision knowledge issue type scheme.
-     *
-     * @see AbstractPersistenceManagerForSingleLocation
-     * @see JiraIssuePersistenceManager
-     * @param isIssueStrategy true if decision knowledge should be stored in JIRA
-     *                        issues for this project (issue strategy). Otherwise
-     *                        object relational mapping is used (active object
-     *                        strategy).
-     */
-    void setIssueStrategy(boolean isIssueStrategy);
+	/**
+	 * @return true if the plug-in is activated for this project.
+	 */
+	public boolean isActivated() {
+		return ConfigPersistenceManager.isActivated(this.getProjectKey());
+	}
 
-    /**
-     * Get the types of decision knowledge that is used in this project.
-     *
-     * @see KnowledgeType
-     * @return set of decision knowledge types used in this project.
-     */
-    Set<KnowledgeType> getKnowledgeTypes();
+	/**
+	 * @see JiraIssuePersistenceManager
+	 * @return true if decision knowledge is stored in entire Jira issues for this
+	 *         project. If this is true, you need make sure that the project is
+	 *         associated with the decision knowledge issue type scheme.
+	 */
+	public boolean isIssueStrategy() {
+		return ConfigPersistenceManager.isIssueStrategy(this.getProjectKey());
+	}
 
-    /**
-     * Determine whether decision knowledge is extracted from git commit messages.
-     *
-     * @return true if decision knowledge is extracted from git commit messages.
-     */
-    boolean isKnowledgeExtractedFromGit();
+	/**
+	 * @return {@link KnowledgeType}s that are used in this project.
+	 */
+	public Set<KnowledgeType> getDecisionKnowledgeTypes() {
+		Set<KnowledgeType> knowledgeTypes = new HashSet<KnowledgeType>();
+		for (KnowledgeType knowledgeType : KnowledgeType.values()) {
+			boolean isEnabled = ConfigPersistenceManager.isKnowledgeTypeEnabled(this.projectKey, knowledgeType);
+			if (isEnabled) {
+				knowledgeTypes.add(knowledgeType);
+			}
+		}
+		return knowledgeTypes;
+	}
 
-    /**
-     * Determine whether comments extracted from git commit messages of squashed
-     * commits should be posted.
-     *
-     * @return true if they should be posted.
-     */
-    boolean isPostSquashedCommitsActivated();
+	/**
+	 * @return true if decision knowledge is extracted from git commit messages.
+	 */
+	public boolean isKnowledgeExtractedFromGit() {
+		return ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey);
+	}
 
-    /**
-     * Determine whether comments extracted from git commit messages of feature
-     * branch commits should be posted.
-     *
-     * @return true if they should be posted.
-     */
-    boolean isPostFeatureBranchCommitsActivated();
+	/**
+	 * @return true if git commit messages of squashed commits should be posted as
+	 *         Jira issue comments.
+	 */
+	public boolean isPostSquashedCommitsActivated() {
+		return ConfigPersistenceManager.isPostSquashedCommitsActivated(projectKey);
+	}
 
-    /**
-     * Set whether decision knowledge is extracted from git commit messages.
-     *
-     * @param isKnowledgeExtractedFromGit true if decision knowledge should be
-     *                                    extracted from git commit messages.
-     */
-    void setKnowledgeExtractedFromGit(boolean isKnowledgeExtractedFromGit);
+	/**
+	 * @return true if git commit messages of feature branch commits should be
+	 *         posted as Jira issue comments.
+	 */
+	public boolean isPostFeatureBranchCommitsActivated() {
+		return ConfigPersistenceManager.isPostFeatureBranchCommitsActivated(projectKey);
+	}
 
-    /**
-     * Set whether the webhook is enabled for this project.
-     *
-     * @param isWebhookEnabled true if the webhook is enabled for this project.
-     */
-    void setWebhookEnabled(boolean isWebhookEnabled);
+	/**
+	 * @return uniform resource identifiers of the git repositories for this project
+	 *         as a List<String> (if it is set, otherwise an empty List).
+	 */
+	public List<String> getGitUris() {
+		return ConfigPersistenceManager.getGitUris(projectKey);
+	}
 
-    /**
-     * Return whether the webhook is enabled for this project.
-     * 
-     * @return true if the webhook is enabled for this project.
-     */
-    boolean isWebhookEnabled();
+	/**
+	 * @return default branches as Map<String,String> with the uniform resource
+	 *         identifiers of the git repositories for this project as key and the
+	 *         name of default branch as value.
+	 */
+	public Map<String, String> getDefaultBranches() {
+		return ConfigPersistenceManager.getDefaultBranches(projectKey);
+	}
 
-    /**
-     * Set the URL where the decision knowledge should be sent and the secret key
-     * for the submission.
-     *
-     * @param webhookUrl    URL of the webhook
-     * @param webhookSecret secret key
-     */
-    void setWebhookData(String webhookUrl, String webhookSecret);
+	/**
+	 * @return true if the webhook is enabled for this project.
+	 */
+	public boolean isWebhookEnabled() {
+		return ConfigPersistenceManager.isWebhookEnabled(projectKey);
+	}
 
-    /**
-     * Return the webhook URL where the decision knowledge is sent to if the webhook
-     * is enabled.
-     *
-     * @return webhook URL where the decision knowledge is sent to if the webhook is
-     *         enabled.
-     */
-    String getWebhookUrl();
+	/**
+	 * @return webhook URL where the decision knowledge is sent to if the webhook is
+	 *         enabled.
+	 */
+	public String getWebhookUrl() {
+		return ConfigPersistenceManager.getWebhookUrl(projectKey);
+	}
 
-    /**
-     * Return the webhook secret key.
-     *
-     * @return secret key for the submission of the decision knowledge via webhook.
-     */
-    String getWebhookSecret();
+	/**
+	 * @return secret key for the submission of the decision knowledge via webhook.
+	 */
+	public String getWebhookSecret() {
+		return ConfigPersistenceManager.getWebhookSecret(projectKey);
+	}
 
-    /**
-     * Return the type of the root element of the sent decision knowledge tree via
-     * webhook.
-     *
-     * @return type of webhook root element.
-     */
-    boolean isWebhookTypeEnabled(String issueType);
+	/**
+	 * @return type of webhook root element.
+	 */
+	public boolean isWebhookTypeEnabled(String issueType) {
+		return ConfigPersistenceManager.isWebhookTypeEnabled(projectKey, issueType);
+	}
 
-    /**
-     * Checks if is icon parsing enabled.
-     *
-     * @return true, if is icon parsing enabled
-     */
-    boolean isIconParsingEnabled();
+	/**
+	 * @return true, if icon parsing in Jira issue comments is enabled.
+	 */
+	public boolean isIconParsingEnabled() {
+		return ConfigPersistenceManager.isIconParsing(projectKey);
+	}
 
-    /**
-     * Checks if is classifier used for issue comments.
-     *
-     * @return true, if is classifier used for issue comments
-     */
-    boolean isClassifierUsedForIssueComments();
-
-    /**
-     * Return the uniform resource identifiers of the git repositories for this
-     * project.
-     *
-     * @return git uris as a List<String> (if it is set, otherwise an empty List).
-     */
-
-    List<String> getGitUris();
-
-    /**
-     * Return the a map with uniform resource identifiers of the git repositories
-     * for this project as keys and name of default branch as Value.
-     *
-     * @return default branches as Map<String,String>.
-     */
-    Map<String, String> getDefaultBranches();
+	/**
+	 * @return true, if the classifier is used for Jira issue comments.
+	 */
+	public boolean isClassifierEnabled() {
+		return ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey);
+	}
 }

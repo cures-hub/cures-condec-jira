@@ -5,7 +5,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.implementation.Onli
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Assert;
 import org.junit.Before;
@@ -103,7 +103,7 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
     public void testUpdate() {
         trainer.train();
 
-        PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl();
+        PartOfJiraIssueText sentence = new PartOfJiraIssueText();
         sentence.setDescription("In my opinion the query would be better!");
         sentence.setRelevant(true);
         sentence.setType(KnowledgeType.ALTERNATIVE);

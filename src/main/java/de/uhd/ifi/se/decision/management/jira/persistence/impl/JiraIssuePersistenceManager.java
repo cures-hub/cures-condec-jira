@@ -33,12 +33,12 @@ import com.atlassian.jira.util.ErrorCollection;
 
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
  * Extends the abstract class
@@ -225,13 +225,13 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		if (issue == null) {
 			return null;
 		}
-		return new KnowledgeElementImpl(issue);
+		return new KnowledgeElement(issue);
 	}
 
 	@Override
 	public KnowledgeElement getDecisionKnowledgeElement(String key) {
 		Issue issue = getJiraIssue(key);
-		return new KnowledgeElementImpl(issue);
+		return new KnowledgeElement(issue);
 	}
 
 	public static Issue getJiraIssue(String key) {
@@ -249,7 +249,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 			return decisionKnowledgeElements;
 		}
 		for (Issue issue : getIssueIdCollection()) {
-			decisionKnowledgeElements.add(new KnowledgeElementImpl(issue));
+			decisionKnowledgeElements.add(new KnowledgeElement(issue));
 		}
 		return decisionKnowledgeElements;
 	}
@@ -259,7 +259,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		List<IssueLink> inwardIssueLinks = getInwardIssueLinks(element);
 		List<Link> inwardLinks = new ArrayList<Link>();
 		for (IssueLink inwardIssueLink : inwardIssueLinks) {
-			Link link = new LinkImpl(inwardIssueLink);
+			Link link = new Link(inwardIssueLink);
 			if (link.isValid()) {
 				inwardLinks.add(link);
 			}
@@ -272,7 +272,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		List<IssueLink> outwardIssueLinks = getOutwardIssueLinks(element);
 		List<Link> outwardLinks = new ArrayList<Link>();
 		for (IssueLink outwardIssueLink : outwardIssueLinks) {
-			Link link = new LinkImpl(outwardIssueLink);
+			Link link = new Link(outwardIssueLink);
 			if (link.isValid()) {
 				outwardLinks.add(link);
 			}
@@ -311,7 +311,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueResult issueResult = issueService.getIssue(user, element.getId());
 		MutableIssue issueToBeUpdated = issueResult.getIssue();
-		KnowledgeElement formerElement = new KnowledgeElementImpl(issueToBeUpdated);
+		KnowledgeElement formerElement = new KnowledgeElement(issueToBeUpdated);
 		element.setStatus(KnowledgeStatus.getNewKnowledgeStatusForType(formerElement, element));
 		return dataUpdateElement(element, issueToBeUpdated, user, issueService);
 	}

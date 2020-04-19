@@ -16,8 +16,8 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -124,7 +124,7 @@ public class TestTreeViewer extends TestSetUp {
 	@Test(expected = NullPointerException.class)
 	@NonTransactional
 	public void testGetDataStructureEmpty() {
-		KnowledgeElement element = new KnowledgeElementImpl();
+		KnowledgeElement element = new KnowledgeElement();
 		System.out.println(treeViewer.getDataStructure(element));
 	}
 
@@ -219,7 +219,7 @@ public class TestTreeViewer extends TestSetUp {
 		KnowledgeElement classElement;
 		CodeClassKnowledgeElementPersistenceManager ccManager
 				= new CodeClassKnowledgeElementPersistenceManager("Test");
-		classElement = new KnowledgeElementImpl();
+		classElement = new KnowledgeElement();
 		classElement.setProject("TEST");
 		classElement.setType("Other");
 		classElement.setDescription("TEST-1;");
