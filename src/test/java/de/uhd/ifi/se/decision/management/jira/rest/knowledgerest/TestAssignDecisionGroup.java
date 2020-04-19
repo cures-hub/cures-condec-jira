@@ -9,9 +9,9 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
@@ -40,16 +40,16 @@ public class TestAssignDecisionGroup extends TestSetUp {
 		init();
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-3");
-		decisionKnowledgeElementIss = new KnowledgeElementImpl(issue);
+		decisionKnowledgeElementIss = new KnowledgeElement(issue);
 		decisionKnowledgeElementIss.setType(KnowledgeType.ISSUE);
 		/*
-		 * decisionKnowledgeElemenDec = new KnowledgeElementImpl(issue);
+		 * decisionKnowledgeElemenDec = new KnowledgeElement(issue);
 		 * decisionKnowledgeElemenDec.setType(KnowledgeType.DECISION);
-		 * decisionKnowledgeElementAlt = new KnowledgeElementImpl(issue);
+		 * decisionKnowledgeElementAlt = new KnowledgeElement(issue);
 		 * decisionKnowledgeElementAlt.setType(KnowledgeType.ALTERNATIVE);
-		 * decisionKnowledgeElementPro = new KnowledgeElementImpl(issue);
+		 * decisionKnowledgeElementPro = new KnowledgeElement(issue);
 		 * decisionKnowledgeElementPro.setType(KnowledgeType.PRO);
-		 * decisionKnowledgeElementCon = new KnowledgeElementImpl(issue);
+		 * decisionKnowledgeElementCon = new KnowledgeElement(issue);
 		 * decisionKnowledgeElementCon.setType(KnowledgeType.CON);
 		 */
 
@@ -87,7 +87,7 @@ public class TestAssignDecisionGroup extends TestSetUp {
 
 	@Test
 	public void testAssignDecisionGroupElementLinkedToDocLocCommit() {
-		KnowledgeElement element = new KnowledgeElementImpl();
+		KnowledgeElement element = new KnowledgeElement();
 		element.setDocumentationLocation(DocumentationLocation.COMMIT);
 		element.setSummary("AbstractTestHandler.java");
 		element.setDescription("TEST-3;");

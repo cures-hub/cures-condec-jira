@@ -20,11 +20,11 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
@@ -46,7 +46,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 		init();
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
-		decisionKnowledgeElement = new KnowledgeElementImpl(issue);
+		decisionKnowledgeElement = new KnowledgeElement(issue);
 		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 
 		request = new MockHttpServletRequest();
@@ -60,7 +60,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("This is a test sentence.");
 		KnowledgeElement sentence = comment.get(0);
 
-		Link link = new LinkImpl(sentence, decisionKnowledgeElement);
+		Link link = new Link(sentence, decisionKnowledgeElement);
 		GenericLinkManager.insertLink(link, null);
 
 		assertEquals(Status.OK.getStatusCode(),
@@ -69,7 +69,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 
 	@Test
 	public void testRequestFilledElementEmptyParentIdZeroParentDocumentationLocationEmpty() {
-		KnowledgeElement decisionKnowledgeElement = new KnowledgeElementImpl();
+		KnowledgeElement decisionKnowledgeElement = new KnowledgeElement();
 		decisionKnowledgeElement.setProject("TEST");
 
 		assertEquals(Status.NOT_FOUND.getStatusCode(),

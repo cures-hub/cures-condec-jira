@@ -18,10 +18,10 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 
 /**
  * Class for accessing the filtered knowledge graph. The filter criteria are
@@ -113,7 +113,7 @@ public class FilteringManagerImpl implements FilteringManager {
 	KnowledgeGraph graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
 
 	for (Issue jiraIssue : jiraIssues) {
-	    KnowledgeElement element = new KnowledgeElementImpl(jiraIssue);
+	    KnowledgeElement element = new KnowledgeElement(jiraIssue);
 	    if (elements.contains(element)) {
 		continue;
 	    }

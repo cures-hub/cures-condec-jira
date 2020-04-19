@@ -6,7 +6,8 @@ import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.model.git.impl.DiffImpl;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,6 +75,6 @@ public class TestCodeSummarizer extends TestSetUpGit {
 
 	@Test
 	public void testDiffEmpty() {
-		assertEquals("", summarizer.createSummary(new DiffImpl()));
+		assertEquals("", summarizer.createSummary(new Diff()));
 	}
 }

@@ -1,9 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  */
 public class GitCommitMessageExtractor {
 
-	private final static List<String> decKnowTags = KnowledgeType.toList();
+	private final static List<String> decKnowTags = KnowledgeType.toStringList();
 	/**
 	 * DecisionKnowledgeElement's key part to be replaced, probably by object higher
 	 * in hierarchy than this object, with commit ish.
@@ -76,7 +76,7 @@ public class GitCommitMessageExtractor {
 	/*
 	 * private void classifyMessage() { // If no Decision Knowledge was manually
 	 * annotated -> The Classifier is called. // Create splitted text. TextSplitter
-	 * splitter = new TextSplitterImpl(); List<PartOfText> parts =
+	 * splitter = new TextSplitter(); List<PartOfText> parts =
 	 * splitter.getPartsOfText(this.fullMessage, this.projectKey);
 	 * 
 	 * StringBuilder builder = new StringBuilder();
@@ -148,7 +148,7 @@ public class GitCommitMessageExtractor {
 	}
 
 	private KnowledgeElement createElement(int start, String rationaleType, String rationaleText, int end) {
-		return new KnowledgeElementImpl(0, getSummary(rationaleText), getDescription(rationaleText),
+		return new KnowledgeElement(0, getSummary(rationaleText), getDescription(rationaleText),
 				rationaleType.toUpperCase(), "" // unknown, not needed at the moment
 				, COMMIT_PLACEHOLDER + start + ":" + end, DocumentationLocation.COMMIT, "");
 	}

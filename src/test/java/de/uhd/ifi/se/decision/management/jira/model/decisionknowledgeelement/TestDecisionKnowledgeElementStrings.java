@@ -14,9 +14,9 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 
 /**
@@ -40,7 +40,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 	this.projectKey = "Test";
 	String key = "Test";
 
-	this.decisionKnowledgeElement = new KnowledgeElementImpl(id, summary, description, type, projectKey, key,
+	this.decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey, key,
 		DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
 
 	DecisionGroupManager.insertGroup("TestGroup", this.decisionKnowledgeElement);
@@ -53,7 +53,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 
     @Test
     public void testGetTypeOther() {
-	KnowledgeElement decisionKnowledgeElement = new KnowledgeElementImpl(id, summary, description, "Work-Item",
+	KnowledgeElement decisionKnowledgeElement = new KnowledgeElement(id, summary, description, "Work-Item",
 		projectKey, "TEST-1", DocumentationLocation.JIRAISSUE, "");
 	assertEquals(KnowledgeType.OTHER, decisionKnowledgeElement.getType());
     }
@@ -115,7 +115,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 
     @Test
     public void testGetKeyKeyNull() {
-	KnowledgeElement decisionKnowledgeElement = new KnowledgeElementImpl();
+	KnowledgeElement decisionKnowledgeElement = new KnowledgeElement();
 	decisionKnowledgeElement.setProject("TEST");
 	decisionKnowledgeElement.setId(10);
 	assertEquals("TEST-10", decisionKnowledgeElement.getKey());
@@ -128,7 +128,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 
     @Test
     public void testEqualsNotTheObject() {
-	KnowledgeElement element = new KnowledgeElementImpl();
+	KnowledgeElement element = new KnowledgeElement();
 	element.setId(123);
 	assertFalse(this.decisionKnowledgeElement.equals(element));
     }

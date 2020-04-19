@@ -23,8 +23,8 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestWebhookEventListener extends TestSetUp {
@@ -78,7 +78,7 @@ public class TestWebhookEventListener extends TestSetUp {
 		IssueEvent event = new IssueEvent(issue, user, jiraComment, null, new MockGenericValue("test"),
 				new HashMap<String, String>(), EventType.ISSUE_DELETED_ID);
 		listener.onIssueEvent(event);
-		KnowledgeGraph.getOrCreate("TEST").addVertex(new KnowledgeElementImpl(issue));
+		KnowledgeGraph.getOrCreate("TEST").addVertex(new KnowledgeElement(issue));
 	}
 
 	@Test

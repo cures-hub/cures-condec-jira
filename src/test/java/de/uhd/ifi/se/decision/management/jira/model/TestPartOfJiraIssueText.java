@@ -15,9 +15,6 @@ import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
-import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
-import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfTextImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -32,7 +29,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSetKnowledgeTypeEnum() {
-		PartOfJiraIssueText partOfText = new PartOfJiraIssueTextImpl();
+		PartOfJiraIssueText partOfText = new PartOfJiraIssueText();
 		assertNotNull(partOfText);
 		assertEquals(KnowledgeType.OTHER, partOfText.getType());
 
@@ -43,7 +40,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSetKnowledgeTypeString() {
-		PartOfJiraIssueText partOfText = new PartOfJiraIssueTextImpl();
+		PartOfJiraIssueText partOfText = new PartOfJiraIssueText();
 		partOfText.setType(KnowledgeType.ALTERNATIVE.toString());
 		assertEquals(KnowledgeType.ALTERNATIVE.toString(), partOfText.getTypeAsString());
 
@@ -57,7 +54,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testToString() {
-		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl();
+		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
 		sentence.setDescription("This is a decision.");
 		assertEquals(sentence.toString(), "This is a decision.");
 	}
@@ -65,7 +62,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetKnowledgeTypeAsString() {
-		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl();
+		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
 		sentence.setType("");
 		assertEquals("Other", sentence.getTypeAsString());
 	}
@@ -73,7 +70,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetCreated() {
-		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl();
+		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
 		sentence.setCreated(new Date());
 		assertNotNull(sentence.getCreated());
 	}
@@ -91,21 +88,14 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetTextFromCommentThatIsNull() {
-		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl();
+		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
 		assertEquals(sentence.getText(), "");
 	}
 
 	@Test
 	@NonTransactional
-	public void testGetTextInSuperClass() {
-		PartOfText partOfText = new PartOfTextImpl();
-		assertEquals(partOfText.getText(), "");
-	}
-
-	@Test
-	@NonTransactional
 	public void testIsTagged() {
-		PartOfJiraIssueText partOfText = new PartOfJiraIssueTextImpl();
+		PartOfJiraIssueText partOfText = new PartOfJiraIssueText();
 		assertFalse(partOfText.isTagged());
 
 		partOfText.setType(KnowledgeType.CON);
@@ -220,7 +210,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetJiraIssue() {
-		PartOfJiraIssueText partOfText = new PartOfJiraIssueTextImpl();
+		PartOfJiraIssueText partOfText = new PartOfJiraIssueText();
 		partOfText.setJiraIssueId(1);
 		Issue jiraIssue = partOfText.getJiraIssue();
 		assertNotNull(jiraIssue);

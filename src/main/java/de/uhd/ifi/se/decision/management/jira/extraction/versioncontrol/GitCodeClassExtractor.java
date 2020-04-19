@@ -10,11 +10,12 @@ import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.model.git.impl.ChangedFileImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+
 import org.eclipse.jgit.api.BlameCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.blame.BlameResult;
@@ -54,7 +55,7 @@ public class GitCodeClassExtractor {
 							treeWalk.enterSubtree();
 						} else {
 							File file = new File(repository.getWorkTree(), treeWalk.getPathString());
-							ChangedFile chfile = new ChangedFileImpl(file);
+							ChangedFile chfile = new ChangedFile(file);
 							if (chfile.isExistingJavaClass()) {
 								codeClassListFull.add(file);
 								codeClassOriginMap.put(file.getAbsolutePath(), repoUri);
@@ -158,7 +159,7 @@ public class GitCodeClassExtractor {
 	}
 
 	public KnowledgeElement createKnowledgeElementFromFile(File file, List<String> issueKeys) {
-		KnowledgeElement element = new KnowledgeElementImpl();
+		KnowledgeElement element = new KnowledgeElement();
 		String keyString = "";
 		for (String key : issueKeys) {
 			keyString = keyString + key + ";";

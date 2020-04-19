@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import net.java.ao.Query;
@@ -97,7 +97,7 @@ public class GenericLinkManager {
 		boolean isLinkDeleted = false;
 		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class);
 		for (LinkInDatabase databaseEntry : linksInDatabase) {
-			Link link = new LinkImpl(databaseEntry);
+			Link link = new Link(databaseEntry);
 			if (!link.isValid()) {
 				isLinkDeleted = true;
 				LinkInDatabase.deleteLink(databaseEntry);
@@ -150,7 +150,7 @@ public class GenericLinkManager {
 				"DESTINATION_ID = ? AND DEST_DOCUMENTATION_LOCATION = ? OR SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?",
 				elementId, identifier, elementId, identifier));
 		for (LinkInDatabase linkInDatabase : linksInDatabase) {
-			Link link = new LinkImpl(linkInDatabase);
+			Link link = new Link(linkInDatabase);
 			links.add(link);
 		}
 		return links;
@@ -177,7 +177,7 @@ public class GenericLinkManager {
 
 		List<Link> links = new ArrayList<Link>();
 		for (LinkInDatabase linkInDatabase : linksInDatabase) {
-			Link link = new LinkImpl(linkInDatabase);
+			Link link = new Link(linkInDatabase);
 			links.add(link);
 		}
 		return links;
@@ -204,7 +204,7 @@ public class GenericLinkManager {
 
 		List<Link> links = new ArrayList<Link>();
 		for (LinkInDatabase linkInDatabase : linksInDatabase) {
-			Link link = new LinkImpl(linkInDatabase);
+			Link link = new Link(linkInDatabase);
 			links.add(link);
 		}
 		return links;

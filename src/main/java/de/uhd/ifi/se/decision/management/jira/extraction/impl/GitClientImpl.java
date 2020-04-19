@@ -39,9 +39,9 @@ import com.google.common.collect.Lists;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.model.git.impl.ChangedFileImpl;
-import de.uhd.ifi.se.decision.management.jira.model.git.impl.DiffImpl;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
@@ -369,7 +369,7 @@ public class GitClientImpl implements GitClient {
 
 	@Override
 	public Diff getDiff(RevCommit firstCommit, RevCommit lastCommit, String repoUri) {
-		Diff diff = new DiffImpl();
+		Diff diff = new Diff();
 		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
 
 		DiffFormatter diffFormatter = getDiffFormater(repoUri);
@@ -389,7 +389,7 @@ public class GitClientImpl implements GitClient {
 		for (DiffEntry diffEntry : diffEntries) {
 			try {
 				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
-				diff.addChangedFile(new ChangedFileImpl(diffEntry, editList, baseDirectory));
+				diff.addChangedFile(new ChangedFile(diffEntry, editList, baseDirectory));
 			} catch (IOException e) {
 				LOGGER.error("Git diff for the file " + diffEntry.getNewPath() + " could not be retrieved. Message: "
 						+ e.getMessage());

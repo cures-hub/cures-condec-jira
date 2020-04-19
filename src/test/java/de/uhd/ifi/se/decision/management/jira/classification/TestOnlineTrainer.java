@@ -3,8 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +27,7 @@ public class TestOnlineTrainer extends TestSetUp {
     }
 
     public static KnowledgeElement createElement(KnowledgeType type, String summary) {
-        KnowledgeElement element = new KnowledgeElementImpl();
+        KnowledgeElement element = new KnowledgeElement();
         element.setType(type);
         element.setSummary(summary);
         return element;

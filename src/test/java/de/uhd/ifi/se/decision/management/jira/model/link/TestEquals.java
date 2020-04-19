@@ -7,9 +7,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.testdata.Links;
 
 public class TestEquals extends TestSetUp {
@@ -30,7 +30,7 @@ public class TestEquals extends TestSetUp {
 	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void testNoLinkObject() {
-		assertFalse(link.equals(new KnowledgeElementImpl()));
+		assertFalse(link.equals(new KnowledgeElement()));
 	}
 
 	@Test
@@ -40,7 +40,7 @@ public class TestEquals extends TestSetUp {
 
 	@Test
 	public void testNewLinkWithSameEndings() {
-		Link newLink = new LinkImpl(link.getSource(), link.getTarget());
+		Link newLink = new Link(link.getSource(), link.getTarget());
 		assertTrue(link.equals(newLink));
 	}
 }

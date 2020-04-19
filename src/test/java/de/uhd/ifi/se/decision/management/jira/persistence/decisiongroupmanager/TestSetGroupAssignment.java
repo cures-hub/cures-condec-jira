@@ -12,9 +12,9 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 
 /**
@@ -34,7 +34,7 @@ public class TestSetGroupAssignment extends TestSetUp {
 	String projectKey = "Test";
 	String key = "Test";
 
-	this.decisionKnowledgeElement = new KnowledgeElementImpl(id, summary, description, type, projectKey, key,
+	this.decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey, key,
 		DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
 
 	DecisionGroupManager.insertGroup("TestGroup1", this.decisionKnowledgeElement);

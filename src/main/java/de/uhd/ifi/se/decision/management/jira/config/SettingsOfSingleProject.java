@@ -10,7 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.FileTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 
@@ -54,7 +54,7 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		}
 
 		String projectKey = request.getParameter("projectKey");
-		DecisionKnowledgeProject decisionKnowledgeProject = new DecisionKnowledgeProjectImpl(projectKey);
+		DecisionKnowledgeProject decisionKnowledgeProject = new DecisionKnowledgeProject(projectKey);
 
 		Set<String> issueTypes = getJiraIssueTypeNames(projectKey);
 

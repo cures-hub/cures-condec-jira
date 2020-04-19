@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence.codeclassknowledgeele
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import org.junit.Before;
@@ -21,7 +21,7 @@ public class TestDeleteDecisonKnowledgeElement extends TestSetUp {
 	public void setUp() {
 		init();
 		ccManager = new CodeClassKnowledgeElementPersistenceManager("Test");
-		KnowledgeElement classElement = new KnowledgeElementImpl();
+		KnowledgeElement classElement = new KnowledgeElement();
 		classElement.setProject("TEST");
 		classElement.setType("Other");
 		classElement.setDescription("TEST-1;");

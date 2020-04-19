@@ -7,9 +7,9 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -41,7 +41,7 @@ public class TestDecisionGroupView extends TestSetUp {
 		String projectKey = "TEST";
 		String key = "Test";
 
-		KnowledgeElement decisionKnowledgeElement = new KnowledgeElementImpl(id, summary, description, type, projectKey,
+		KnowledgeElement decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey,
 				key, DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
 		KnowledgePersistenceManager kpManager = new KnowledgePersistenceManagerImpl(projectKey);
 		KnowledgeElement nextElement =
@@ -49,7 +49,7 @@ public class TestDecisionGroupView extends TestSetUp {
 						.insertDecisionKnowledgeElement(decisionKnowledgeElement, JiraUsers.SYS_ADMIN.getApplicationUser());
 		DecisionGroupManager.insertGroup("TestGroup1", nextElement);
 
-		KnowledgeElement element = new KnowledgeElementImpl();
+		KnowledgeElement element = new KnowledgeElement();
 		element.setDocumentationLocation(DocumentationLocation.COMMIT);
 		element.setSummary("AbstractTestHandler.java");
 		element.setDescription("TEST-3;");
