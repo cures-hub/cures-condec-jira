@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
@@ -50,7 +50,7 @@ public class AutomaticLinkCreator {
 		}
 		List<KnowledgeElement> potentialParentElements = getPotentialParentElements(element);
 		if (potentialParentElements.isEmpty()) {
-			return new KnowledgeElementImpl(element.getJiraIssue());
+			return new KnowledgeElement(element.getJiraIssue());
 		}
 		if (potentialParentElements.size() == 2) {
 			return getMostRecentElement(potentialParentElements.get(0), potentialParentElements.get(1));

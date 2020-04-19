@@ -8,10 +8,10 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
@@ -33,9 +33,9 @@ public class TestDeleteLinksForElements extends TestSetUp {
 	@NonTransactional
 	public void testElementFilled() {
 		KnowledgeElement element = JiraIssues.addElementToDataBase();
-		KnowledgeElement elementJiraIssue = new KnowledgeElementImpl(
+		KnowledgeElement elementJiraIssue = new KnowledgeElement(
 				JiraIssues.getTestJiraIssues().get(0));
-		Link link = new LinkImpl(elementJiraIssue, element);
+		Link link = new Link(elementJiraIssue, element);
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(link, null);
 		assertTrue(GenericLinkManager.deleteLinksForElement(1, DocumentationLocation.JIRAISSUE));
 	}

@@ -3,9 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.persistence.decisiongroupmanager;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -35,7 +35,7 @@ public class TestGetGroups extends TestSetUp {
 		String projectKey = "Test";
 		String key = "Test-100";
 
-		this.decisionKnowledgeElement = new KnowledgeElementImpl(id, summary, description, type, projectKey, key,
+		this.decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey, key,
 				DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
 
 		DecisionGroupManager.insertGroup("TestGroup1", this.decisionKnowledgeElement);
@@ -99,7 +99,7 @@ public class TestGetGroups extends TestSetUp {
 
 	@Test
 	public void testGetAllClassElementsWithCertainGroup() {
-		KnowledgeElement element = new KnowledgeElementImpl();
+		KnowledgeElement element = new KnowledgeElement();
 		element.setDocumentationLocation(DocumentationLocation.COMMIT);
 		element.setSummary("AbstractTestHandler.java");
 		element.setDescription("TEST-3;");

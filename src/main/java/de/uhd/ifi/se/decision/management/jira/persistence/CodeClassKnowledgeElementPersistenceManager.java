@@ -14,10 +14,10 @@ import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
@@ -51,7 +51,7 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 		for (CodeClassElementInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassElementInDatabase.class,
 				Query.select().where("ID = ?", id))) {
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.COMMIT);
-			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new KnowledgeElementImpl(databaseEntry));
+			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new KnowledgeElement(databaseEntry));
 			isDeleted = CodeClassElementInDatabase.deleteElement(databaseEntry);
 		}
 		return isDeleted;
@@ -62,7 +62,7 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 		KnowledgeElement element = null;
 		for (CodeClassElementInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassElementInDatabase.class,
 				Query.select().where("ID = ?", id))) {
-			element = new KnowledgeElementImpl(databaseEntry);
+			element = new KnowledgeElement(databaseEntry);
 		}
 		return element;
 	}
@@ -88,7 +88,7 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 		}
 		for (CodeClassElementInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassElementInDatabase.class,
 				Query.select().where("FILE_NAME = ? AND JIRA_ISSUE_KEYS = ?", name, issueKeysWithRemove))) {
-			element = new KnowledgeElementImpl(databaseEntry);
+			element = new KnowledgeElement(databaseEntry);
 		}
 		return element;
 	}
@@ -108,7 +108,7 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 		List<KnowledgeElement> decisionKnowledgeElements = new ArrayList<KnowledgeElement>();
 		for (CodeClassElementInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassElementInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			decisionKnowledgeElements.add(new KnowledgeElementImpl(databaseEntry));
+			decisionKnowledgeElements.add(new KnowledgeElement(databaseEntry));
 		}
 		return decisionKnowledgeElements;
 	}
@@ -117,7 +117,7 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 		List<KnowledgeElement> decisionKnowledgeElements = new ArrayList<KnowledgeElement>();
 		for (CodeClassElementInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassElementInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND FILE_NAME = ?", projectKey, fileName))) {
-			decisionKnowledgeElements.add(new KnowledgeElementImpl(databaseEntry));
+			decisionKnowledgeElements.add(new KnowledgeElement(databaseEntry));
 		}
 		return decisionKnowledgeElements;
 	}
@@ -157,7 +157,7 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		KnowledgeElement newElement = new KnowledgeElementImpl(databaseEntry);
+		KnowledgeElement newElement = new KnowledgeElement(databaseEntry);
 		if (newElement.getId() > 0) {
 			KnowledgeGraph.getOrCreate(projectKey).addVertex(newElement);
 			AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
@@ -168,7 +168,7 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 					KnowledgeElement issueElement = persistenceManager.getDecisionKnowledgeElement(key);
 					if (issueElement != null) {
 						groupsToAssign.addAll(issueElement.getDecisionGroups());
-						Link link = new LinkImpl(newElement, issueElement);
+						Link link = new Link(newElement, issueElement);
 						long databaseId = GenericLinkManager.insertLink(link, user);
 						if (databaseId > 0) {
 							link.setId(databaseId);
@@ -194,7 +194,7 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 	}
 
 	private KnowledgeElement checkIfElementExistsInDatabase(KnowledgeElement element) {
-		KnowledgeElement existingElement = new KnowledgeElementImpl();
+		KnowledgeElement existingElement = new KnowledgeElement();
 		if (element.getId() > 0) {
 			existingElement = getDecisionKnowledgeElement(element);
 		} else {

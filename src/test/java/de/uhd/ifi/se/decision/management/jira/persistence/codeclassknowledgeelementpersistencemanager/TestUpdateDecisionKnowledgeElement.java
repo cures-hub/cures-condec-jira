@@ -4,7 +4,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import org.junit.Before;
@@ -23,7 +23,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 	public void setUp() {
 		init();
 		ccManager = new CodeClassKnowledgeElementPersistenceManager("Test");
-		classElement = new KnowledgeElementImpl();
+		classElement = new KnowledgeElement();
 		classElement.setProject("TEST");
 		classElement.setType("Other");
 		classElement.setDescription("TEST-1;");
@@ -46,7 +46,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 
 	@Test
 	public void testUpdateDecisionKnowledgeElementWithElementNotInDatabase() {
-		KnowledgeElement newClassElement = new KnowledgeElementImpl();
+		KnowledgeElement newClassElement = new KnowledgeElement();
 		newClassElement.setProject("TEST");
 		assertFalse(ccManager.updateDecisionKnowledgeElement(newClassElement, user));
 	}

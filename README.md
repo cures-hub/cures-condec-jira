@@ -22,6 +22,7 @@ Navigate into the cures-condec-jira folder and run the following command:
 ```
 atlas-mvn package
 ```
+(Run `atlas-mvn package -DskipTests=true` to skip unit tests to speed-up compilation.) 
 The .jar file is created.
 
 Run the plug-in locally via:

@@ -5,9 +5,9 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import de.uhd.ifi.se.decision.management.jira.rest.impl.KnowledgeRestImpl;
@@ -39,7 +39,7 @@ public class TestCreateIssueFromSentence extends TestSetUp {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
 
-		decisionKnowledgeElement = new KnowledgeElementImpl();
+		decisionKnowledgeElement = new KnowledgeElement();
 		decisionKnowledgeElement.setProject("TEST");
 		decisionKnowledgeElement.setSummary("Test summary");
 		decisionKnowledgeElement.setType(KnowledgeType.ISSUE);
