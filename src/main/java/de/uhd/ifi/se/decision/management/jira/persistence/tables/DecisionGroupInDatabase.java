@@ -9,8 +9,7 @@ import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
 
 /**
- * Interface for links used to link decision knowledge elements of various
- * documentation locations, e.g. JIRA issue comments and commit messages.
+ * Interface for groups of decisison and solution options (alternatives).
  * Determines which table columns are used for object relational mapping of link
  * objects to the database.
  * 
@@ -18,41 +17,42 @@ import net.java.ao.schema.Table;
  */
 @Table("CondecDecGroup")
 public interface DecisionGroupInDatabase extends RawEntity<Integer> {
-    @AutoIncrement
-    @PrimaryKey("ID")
-    long getId();
+	@AutoIncrement
+	@PrimaryKey("ID")
+	long getId();
 
-    void setId(long id);
+	void setId(long id);
 
-    String getGroup();
+	String getGroup();
 
-    void setGroup(String group);
+	void setGroup(String group);
 
-    long getSourceId();
+	long getSourceId();
 
-    void setSourceId(long id);
+	void setSourceId(long id);
 
-    String getSourceDocumentationLocation();
+	String getSourceDocumentationLocation();
 
-    void setSourceDocumentationLocation(String documentationLocation);
+	void setSourceDocumentationLocation(String documentationLocation);
 
-    String getProjectKey();
+	String getProjectKey();
 
-    void setProjectKey(String projectKey);
+	void setProjectKey(String projectKey);
 
-    /**
-     * Deletes the {@group DecisionGroupInDatabase } object, i.e., removes it from
-     * database.
-     * 
-     * @param groupToDelete {@group DecisionGroupInDatabase} object.
-     * @return true if deletion was successful, false otherwise.
-     */
-    static boolean deleteGroup(DecisionGroupInDatabase groupAssignmentToDelete) {
-	try {
-	    groupAssignmentToDelete.getEntityManager().delete(groupAssignmentToDelete);
-	    return true;
-	} catch (SQLException e) {
-	    return false;
+	/**
+	 * Deletes the {@group DecisionGroupInDatabase } object, i.e., removes it from
+	 * database.
+	 * 
+	 * @param groupToDelete
+	 *            {@group DecisionGroupInDatabase} object.
+	 * @return true if deletion was successful, false otherwise.
+	 */
+	static boolean deleteGroup(DecisionGroupInDatabase groupAssignmentToDelete) {
+		try {
+			groupAssignmentToDelete.getEntityManager().delete(groupAssignmentToDelete);
+			return true;
+		} catch (SQLException e) {
+			return false;
+		}
 	}
-    }
 }

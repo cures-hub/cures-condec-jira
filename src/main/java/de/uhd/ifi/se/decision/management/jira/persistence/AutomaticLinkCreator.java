@@ -1,20 +1,18 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.impl;
+package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
 /**
- * Class responsible for automatic link creation (=edges) between nodes in the
- * {@link KnowledgeGraph}. Currently only working for decision knowledge
- * elements documented in the description or the comments of a certain Jira
- * issue.
+ * Responsible for automatic link creation (=edges) between nodes in the
+ * {@link KnowledgeGraph}. Is currently only working for decision knowledge
+ * elements documented in the description or the comments of a Jira issue.
  * 
  * @see Link
  * @see JiraIssueTextPersistenceManager
@@ -72,8 +70,7 @@ public class AutomaticLinkCreator {
 		return potentialParentElements;
 	}
 
-	public static KnowledgeElement getMostRecentElement(KnowledgeElement first,
-			KnowledgeElement second) {
+	public static KnowledgeElement getMostRecentElement(KnowledgeElement first, KnowledgeElement second) {
 		if (first == null) {
 			return second;
 		}

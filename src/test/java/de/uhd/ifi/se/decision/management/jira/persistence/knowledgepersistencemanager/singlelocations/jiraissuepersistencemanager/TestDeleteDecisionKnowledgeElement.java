@@ -16,13 +16,13 @@ public class TestDeleteDecisionKnowledgeElement extends TestJiraIssuePersistence
 
 	@Test(expected = NullPointerException.class)
 	public void testElementNullUserNull() {
-		assertFalse(issueStrategy.deleteDecisionKnowledgeElement(null, null));
+		assertFalse(issueStrategy.deleteKnowledgeElement(null, null));
 	}
 
 	@Test
 	public void testElementNonExistentUserNull() {
 		KnowledgeElement element = new KnowledgeElement();
-		assertFalse(issueStrategy.deleteDecisionKnowledgeElement(element, null));
+		assertFalse(issueStrategy.deleteKnowledgeElement(element, null));
 	}
 
 	@Test
@@ -31,7 +31,7 @@ public class TestDeleteDecisionKnowledgeElement extends TestJiraIssuePersistence
 		element.setId(1);
 		element.setProject("TEST");
 		element.setType(KnowledgeType.SOLUTION);
-		assertTrue(issueStrategy.deleteDecisionKnowledgeElement(element, user));
+		assertTrue(issueStrategy.deleteKnowledgeElement(element, user));
 	}
 
 	@Test
@@ -41,6 +41,6 @@ public class TestDeleteDecisionKnowledgeElement extends TestJiraIssuePersistence
 		element.setProject("TEST");
 		element.setType(KnowledgeType.SOLUTION);
 		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
-		assertFalse(issueStrategy.deleteDecisionKnowledgeElement(element, user));
+		assertFalse(issueStrategy.deleteKnowledgeElement(element, user));
 	}
 }

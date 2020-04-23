@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -40,7 +40,7 @@ public class TestGetDecisionKnowledgeElements extends TestSetUp {
 		assertEquals(KnowledgeType.ISSUE, sentences.get(1).getType());
 
 		List<KnowledgeElement> listWithObjects = new JiraIssueTextPersistenceManager("TEST")
-				.getDecisionKnowledgeElements();
+				.getKnowledgeElements();
 		// TODO Why 4, not 3?
 		assertEquals(4, listWithObjects.size());
 	}
@@ -53,7 +53,7 @@ public class TestGetDecisionKnowledgeElements extends TestSetUp {
 		assertEquals(KnowledgeType.ALTERNATIVE, sentences.get(1).getType());
 
 		List<KnowledgeElement> listWithObjects = new JiraIssueTextPersistenceManager("TEST")
-				.getDecisionKnowledgeElements();
+				.getKnowledgeElements();
 		assertEquals(4, listWithObjects.size());
 	}
 
@@ -68,7 +68,7 @@ public class TestGetDecisionKnowledgeElements extends TestSetUp {
 		assertEquals(3, sentences.size());
 
 		List<KnowledgeElement> listWithObjects = new JiraIssueTextPersistenceManager("TEST")
-				.getDecisionKnowledgeElements();
+				.getKnowledgeElements();
 		assertEquals(4, listWithObjects.size());
 	}
 
@@ -80,7 +80,7 @@ public class TestGetDecisionKnowledgeElements extends TestSetUp {
 		assertEquals(KnowledgeType.OTHER, sentences.get(2).getType());
 
 		List<KnowledgeElement> listWithObjects = new JiraIssueTextPersistenceManager("TEST")
-				.getDecisionKnowledgeElements();
+				.getKnowledgeElements();
 		assertEquals(4, listWithObjects.size());
 	}
 }

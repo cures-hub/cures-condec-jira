@@ -14,19 +14,19 @@ public class TestInsertDecisionKnowledgeElement extends TestJiraIssuePersistence
 
 	@Test(expected = NullPointerException.class)
 	public void testElementNullUserNull() {
-		issueStrategy.insertDecisionKnowledgeElement(null, null);
+		issueStrategy.insertKnowledgeElement(null, null);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void testElementEmptyUserNull() {
 		KnowledgeElement element = new KnowledgeElement();
-		issueStrategy.insertDecisionKnowledgeElement(element, null);
+		issueStrategy.insertKnowledgeElement(element, null);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void testElementEmptyUserExistent() {
 		KnowledgeElement element = new KnowledgeElement();
-		assertNotNull(issueStrategy.insertDecisionKnowledgeElement(element, user));
+		assertNotNull(issueStrategy.insertKnowledgeElement(element, user));
 	}
 
 	@Test
@@ -34,7 +34,7 @@ public class TestInsertDecisionKnowledgeElement extends TestJiraIssuePersistence
 		KnowledgeElement element = new KnowledgeElement();
 		element.setProject("TEST");
 		element.setType(KnowledgeType.SOLUTION);
-		assertNotNull(issueStrategy.insertDecisionKnowledgeElement(element, user));
+		assertNotNull(issueStrategy.insertKnowledgeElement(element, user));
 	}
 
 	@Test
@@ -42,6 +42,6 @@ public class TestInsertDecisionKnowledgeElement extends TestJiraIssuePersistence
 		KnowledgeElement element = new KnowledgeElement();
 		element.setProject("TEST");
 		element.setType(KnowledgeType.SOLUTION);
-		assertNull(issueStrategy.insertDecisionKnowledgeElement(element, JiraUsers.BLACK_HEAD.getApplicationUser()));
+		assertNull(issueStrategy.insertKnowledgeElement(element, JiraUsers.BLACK_HEAD.getApplicationUser()));
 	}
 }

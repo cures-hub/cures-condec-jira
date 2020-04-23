@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.impl;
+package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,16 +33,14 @@ import com.atlassian.jira.util.ErrorCollection;
 
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
  * Extends the abstract class
- * {@link AbstractPersistenceManagerForSingleLocation}. Uses JIRA issues to
+ * {@link AbstractPersistenceManagerForSingleLocation}. Uses Jira issues to
  * store decision knowledge.
  *
  * @see AbstractPersistenceManagerForSingleLocation
@@ -138,7 +136,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	 *            element as a {@link Link} object. Needs to be a Jira
 	 *            {@link IssueLink}.
 	 * @param user
-	 *            authenticated JIRA {@link ApplicationUser}.
+	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return internal database id of inserted link, zero if insertion failed.
 	 */
 	public static long insertLink(Link link, ApplicationUser user) {
@@ -197,7 +195,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user) {
+	public boolean deleteKnowledgeElement(long id, ApplicationUser user) {
 		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueService.IssueResult issue = issueService.getIssue(user, id);
 		if (issue.isValid() && issue.getIssue() != null) {
@@ -219,7 +217,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public KnowledgeElement getDecisionKnowledgeElement(long id) {
+	public KnowledgeElement getKnowledgeElement(long id) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue issue = issueManager.getIssueObject(id);
 		if (issue == null) {
@@ -229,7 +227,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public KnowledgeElement getDecisionKnowledgeElement(String key) {
+	public KnowledgeElement getKnowledgeElement(String key) {
 		Issue issue = getJiraIssue(key);
 		return new KnowledgeElement(issue);
 	}
@@ -243,7 +241,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public List<KnowledgeElement> getDecisionKnowledgeElements() {
+	public List<KnowledgeElement> getKnowledgeElements() {
 		List<KnowledgeElement> decisionKnowledgeElements = new ArrayList<KnowledgeElement>();
 		if (this.projectKey == null) {
 			return decisionKnowledgeElements;
@@ -281,7 +279,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
+	public KnowledgeElement insertKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
 		setParameters(element, issueInputParameters);
 		issueInputParameters.setReporterId(user.getName());
@@ -307,7 +305,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public boolean updateDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
+	public boolean updateKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueResult issueResult = issueService.getIssue(user, element.getId());
 		MutableIssue issueToBeUpdated = issueResult.getIssue();

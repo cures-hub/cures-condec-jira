@@ -9,14 +9,13 @@ import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
 
 /**
- * Interface for decision knowledge elements stored in Jira issue comments or
- * the description. Determines which table columns are used for object
- * relational mapping to the database.
+ * Interface for code classes. Determines which table columns are used for
+ * object relational mapping to the database.
  *
  * @see KnowledgeElement
  */
 @Table("CondecCodeClass")
-public interface CodeClassElementInDatabase extends RawEntity<Long> {
+public interface CodeClassInDatabase extends RawEntity<Long> {
 
 	@AutoIncrement
 	@PrimaryKey("ID")
@@ -40,7 +39,7 @@ public interface CodeClassElementInDatabase extends RawEntity<Long> {
 
 	void setProjectKey(String projectKey);
 
-	static boolean deleteElement(CodeClassElementInDatabase elementToDelete) {
+	static boolean deleteElement(CodeClassInDatabase elementToDelete) {
 		try {
 			elementToDelete.getEntityManager().delete(elementToDelete);
 			return true;

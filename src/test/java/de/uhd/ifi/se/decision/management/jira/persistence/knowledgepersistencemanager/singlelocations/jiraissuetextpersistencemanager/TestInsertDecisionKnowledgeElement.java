@@ -15,7 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -39,52 +39,52 @@ public class TestInsertDecisionKnowledgeElement extends TestSetUp {
 	@NonTransactional
 	public void testElementInsertedTwice() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("first Comment");
-		long id = manager.insertDecisionKnowledgeElement(comment.get(0), null).getId();
-		long id2 = manager.insertDecisionKnowledgeElement(comment.get(0), null).getId();
-		assertNotNull(new JiraIssueTextPersistenceManager("").getDecisionKnowledgeElement(id));
+		long id = manager.insertKnowledgeElement(comment.get(0), null).getId();
+		long id2 = manager.insertKnowledgeElement(comment.get(0), null).getId();
+		assertNotNull(new JiraIssueTextPersistenceManager("").getKnowledgeElement(id));
 		assertTrue(id == id2);
 	}
 
 	@Test
 	@NonTransactional
 	public void testElementNullUserNullParentNull() {
-		assertNull(manager.insertDecisionKnowledgeElement(null, null, null));
+		assertNull(manager.insertKnowledgeElement(null, null, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testElementFilledUserNullParentNull() {
-		assertNull(manager.insertDecisionKnowledgeElement(decisionKnowledgeElement, null, null));
+		assertNull(manager.insertKnowledgeElement(decisionKnowledgeElement, null, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testElementNullUserFilledParentNull() {
-		assertNull(manager.insertDecisionKnowledgeElement(null, null, null));
+		assertNull(manager.insertKnowledgeElement(null, null, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testElementFilledUserFilledParentNull() {
-		assertNull(manager.insertDecisionKnowledgeElement(decisionKnowledgeElement, null, null));
+		assertNull(manager.insertKnowledgeElement(decisionKnowledgeElement, null, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testElementNullUserNullParentFilled() {
-		assertNull(manager.insertDecisionKnowledgeElement(null, null, null));
+		assertNull(manager.insertKnowledgeElement(null, null, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testElementFilledUserNullParentFilled() {
-		assertNull(manager.insertDecisionKnowledgeElement(decisionKnowledgeElement, null, null));
+		assertNull(manager.insertKnowledgeElement(decisionKnowledgeElement, null, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testElementFilledUserFilledParentFilled() {
-		assertNotNull(manager.insertDecisionKnowledgeElement(element, JiraUsers.SYS_ADMIN.getApplicationUser(),
+		assertNotNull(manager.insertKnowledgeElement(element, JiraUsers.SYS_ADMIN.getApplicationUser(),
 				decisionKnowledgeElement));
 	}
 

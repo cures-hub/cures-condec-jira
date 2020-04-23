@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -133,7 +133,7 @@ public class TestGetIdOfElement extends TestSetUp {
 	public void testBodyWrongIssueIdOkTypeFilledKeyFilled() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
-		manager.insertDecisionKnowledgeElement(comment.get(1), null);
+		manager.insertKnowledgeElement(comment.get(1), null);
 		assertEquals(0, manager.getIdOfElement("Not the right Body", comment.get(0).getJiraIssueId(),
 				KnowledgeType.ISSUE));
 	}
@@ -143,7 +143,7 @@ public class TestGetIdOfElement extends TestSetUp {
 	public void testBodyFilledIssueIdOkTypeFilledKeyFilled() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
-		manager.insertDecisionKnowledgeElement(comment.get(1), null);
+		manager.insertKnowledgeElement(comment.get(1), null);
 		assertEquals(3,
 				manager.getIdOfElement("testobject", comment.get(0).getJiraIssueId(), KnowledgeType.ISSUE));
 	}
