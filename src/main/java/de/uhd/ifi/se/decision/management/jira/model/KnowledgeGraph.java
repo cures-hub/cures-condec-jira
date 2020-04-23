@@ -84,7 +84,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	}
 
 	private void addElements() {
-		List<KnowledgeElement> elements = persistenceManager.getDecisionKnowledgeElements();
+		List<KnowledgeElement> elements = persistenceManager.getKnowledgeElements();
 		for (KnowledgeElement element : elements) {
 			addVertex(element);
 		}

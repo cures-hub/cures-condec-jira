@@ -6,8 +6,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import org.junit.Before;
 import org.junit.Test;
@@ -105,8 +105,8 @@ public class TestGetGroups extends TestSetUp {
 		element.setDescription("TEST-3;");
 		element.setProject("TEST");
 		element.setType(KnowledgeType.OTHER);
-		CodeClassKnowledgeElementPersistenceManager ccManager = new CodeClassKnowledgeElementPersistenceManager("TEST");
-		KnowledgeElement newElement = ccManager.insertDecisionKnowledgeElement(element, JiraUsers.SYS_ADMIN.getApplicationUser());
+		CodeClassPersistenceManager ccManager = new CodeClassPersistenceManager("TEST");
+		KnowledgeElement newElement = ccManager.insertKnowledgeElement(element, JiraUsers.SYS_ADMIN.getApplicationUser());
 		DecisionGroupManager.insertGroup("TestGroup2", newElement);
 		assertEquals(1, DecisionGroupManager.getAllClassElementsWithCertainGroup("TestGroup2", "TEST").size());
 	}

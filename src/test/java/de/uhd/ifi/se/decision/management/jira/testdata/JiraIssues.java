@@ -18,7 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
 public class JiraIssues {
 
@@ -84,7 +84,7 @@ public class JiraIssues {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("{issue} testobject {issue}");
 		PartOfJiraIssueText sentence = comment.get(0);
 		sentence.setJiraIssueId(issue.getId());
-		KnowledgePersistenceManager.getOrCreate("TEST").insertDecisionKnowledgeElement(sentence,
+		KnowledgePersistenceManager.getOrCreate("TEST").insertKnowledgeElement(sentence,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
 
 		return sentence.getJiraIssue();
@@ -114,7 +114,7 @@ public class JiraIssues {
 		element.setDescription("Old");
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 		element = (PartOfJiraIssueText) KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager()
-				.insertDecisionKnowledgeElement(element, JiraUsers.SYS_ADMIN.getApplicationUser());
+				.insertKnowledgeElement(element, JiraUsers.SYS_ADMIN.getApplicationUser());
 		return element;
 	}
 
