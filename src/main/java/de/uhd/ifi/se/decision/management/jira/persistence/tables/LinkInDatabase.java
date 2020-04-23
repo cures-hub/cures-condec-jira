@@ -10,7 +10,7 @@ import net.java.ao.schema.Table;
 
 /**
  * Interface for links used to link decision knowledge elements of various
- * documentation locations, e.g. JIRA issue comments and commit messages.
+ * documentation locations, e.g. Jira issue comments and commit messages.
  * Determines which table columns are used for object relational mapping of link
  * objects to the database.
  * 

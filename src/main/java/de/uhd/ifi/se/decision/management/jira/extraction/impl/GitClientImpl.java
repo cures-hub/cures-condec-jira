@@ -42,8 +42,8 @@ import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepos
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 
 /**
  * @issue How to access commits related to a Jira issue?
@@ -226,7 +226,7 @@ public class GitClientImpl implements GitClient {
 			ObjectId head = getRepository(repoUri).resolve("HEAD^{tree}");
 			if (!oldHead.equals(head)
 					&& getRepository(repoUri).getBranch().equals(defaultBranchFolderNames.get(repoUri))) {
-				CodeClassKnowledgeElementPersistenceManager persistenceManager = new CodeClassKnowledgeElementPersistenceManager(
+				CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(
 						projectKey);
 				persistenceManager.maintainCodeClassKnowledgeElements(repoUri, oldHead, head);
 			}

@@ -9,7 +9,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smile.validation.ClassificationMeasure;
@@ -440,7 +441,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		// load validated Jira Issue texts
 		//JiraIssueTextPersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey)
 		//	.getJiraIssueTextManager();
-		List<KnowledgeElement> partsOfText = KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
+		List<KnowledgeElement> partsOfText = KnowledgePersistenceManager.getOrCreate(projectKey).getKnowledgeElements();
 //		manager.getUserValidatedPartsOfText(projectKey);
 //		KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
 		return evaluateClassifier(defaultMeasurements, partsOfText);
