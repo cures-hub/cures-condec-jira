@@ -80,7 +80,7 @@ public class TestRequirementsDashboardItem {
 	PartOfJiraIssueText partOfJiraIssueText = JiraIssues.getSentencesForCommentText("More Comment with some text")
 		.get(0);
 	partOfJiraIssueText.setType(KnowledgeType.ALTERNATIVE);
-	new JiraIssueTextPersistenceManager("").updateDecisionKnowledgeElement(partOfJiraIssueText, null);
+	new JiraIssueTextPersistenceManager("").updateKnowledgeElement(partOfJiraIssueText, null);
 	assertNotNull(this.dashboardItem.createValues("TEST", "10100"));
     }
 }

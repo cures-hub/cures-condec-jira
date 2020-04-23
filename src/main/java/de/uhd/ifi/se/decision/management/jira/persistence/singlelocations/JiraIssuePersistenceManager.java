@@ -195,7 +195,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user) {
+	public boolean deleteKnowledgeElement(long id, ApplicationUser user) {
 		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueService.IssueResult issue = issueService.getIssue(user, id);
 		if (issue.isValid() && issue.getIssue() != null) {
@@ -217,7 +217,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public KnowledgeElement getDecisionKnowledgeElement(long id) {
+	public KnowledgeElement getKnowledgeElement(long id) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue issue = issueManager.getIssueObject(id);
 		if (issue == null) {
@@ -227,7 +227,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public KnowledgeElement getDecisionKnowledgeElement(String key) {
+	public KnowledgeElement getKnowledgeElement(String key) {
 		Issue issue = getJiraIssue(key);
 		return new KnowledgeElement(issue);
 	}
@@ -241,7 +241,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public List<KnowledgeElement> getDecisionKnowledgeElements() {
+	public List<KnowledgeElement> getKnowledgeElements() {
 		List<KnowledgeElement> decisionKnowledgeElements = new ArrayList<KnowledgeElement>();
 		if (this.projectKey == null) {
 			return decisionKnowledgeElements;
@@ -279,7 +279,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
+	public KnowledgeElement insertKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
 		setParameters(element, issueInputParameters);
 		issueInputParameters.setReporterId(user.getName());
@@ -305,7 +305,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public boolean updateDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
+	public boolean updateKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueResult issueResult = issueService.getIssue(user, element.getId());
 		MutableIssue issueToBeUpdated = issueResult.getIssue();

@@ -72,7 +72,7 @@ public class VisGraph {
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(filterSettings.getProjectKey());
 		KnowledgeElement rootElement = persistenceManager.getJiraIssueManager()
-				.getDecisionKnowledgeElement(rootElementKey);
+				.getKnowledgeElement(rootElementKey);
 
 		// TODO This is not a key but id_documentationLocation
 		this.rootElementKey = rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString();

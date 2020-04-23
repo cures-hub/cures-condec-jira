@@ -58,7 +58,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 					.build();
 		}
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		KnowledgeElement decisionKnowledgeElement = persistenceManager.getDecisionKnowledgeElement(id,
+		KnowledgeElement decisionKnowledgeElement = persistenceManager.getKnowledgeElement(id,
 				documentationLocationIdentifier);
 		if (decisionKnowledgeElement != null) {
 			return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
@@ -79,7 +79,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 					.build();
 		}
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		KnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(id, documentationLocation);
+		KnowledgeElement element = persistenceManager.getKnowledgeElement(id, documentationLocation);
 		List<KnowledgeElement> unlinkedDecisionKnowledgeElements = KnowledgeGraph.getOrCreate(projectKey)
 				.getUnlinkedElements(element);
 		return Response.ok(unlinkedDecisionKnowledgeElements).build();
@@ -110,9 +110,9 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		KnowledgeElement existingElement = persistenceManager.getDecisionKnowledgeElement(idOfExistingElement,
+		KnowledgeElement existingElement = persistenceManager.getKnowledgeElement(idOfExistingElement,
 				documentationLocationOfExistingElement);
-		KnowledgeElement newElementWithId = persistenceManager.insertDecisionKnowledgeElement(element, user,
+		KnowledgeElement newElementWithId = persistenceManager.insertKnowledgeElement(element, user,
 				existingElement);
 
 		if (newElementWithId == null) {
@@ -153,7 +153,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(element.getProject());
 
-		KnowledgeElement formerElement = persistenceManager.getDecisionKnowledgeElement(element.getId(),
+		KnowledgeElement formerElement = persistenceManager.getKnowledgeElement(element.getId(),
 				element.getDocumentationLocation());
 		if (formerElement == null || formerElement.getId() <= 0) {
 			return Response.status(Status.NOT_FOUND)
@@ -161,7 +161,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 					.build();
 		}
 
-		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(element, user);
+		boolean isUpdated = persistenceManager.updateKnowledgeElement(element, user);
 
 		if (!isUpdated) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -172,7 +172,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 		if (idOfParentElement == 0) {
 			return Response.status(Status.OK).build();
 		}
-		KnowledgeElement updatedElement = persistenceManager.getDecisionKnowledgeElement(element.getId(),
+		KnowledgeElement updatedElement = persistenceManager.getKnowledgeElement(element.getId(),
 				element.getDocumentationLocation());
 		long linkId = persistenceManager.updateLink(updatedElement, formerElement.getType(), idOfParentElement,
 				documentationLocationOfParentElement, user);
@@ -182,7 +182,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 		}
 		KnowledgeElement parentElement = persistenceManager
 				.getManagerForSingleLocation(documentationLocationOfParentElement)
-				.getDecisionKnowledgeElement(idOfParentElement);
+				.getKnowledgeElement(idOfParentElement);
 		persistenceManager.updateIssueStatus(parentElement, updatedElement, user);
 		return Response.status(Status.OK).build();
 	}
@@ -201,7 +201,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
 		boolean isDeleted = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.deleteDecisionKnowledgeElement(decisionKnowledgeElement, user);
+				.deleteKnowledgeElement(decisionKnowledgeElement, user);
 		if (isDeleted) {
 			return Response.status(Status.OK).entity(true).build();
 		}
@@ -236,7 +236,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 			}
 		}
 		KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getDecisionKnowledgeElement(sourceId, location);
+				.getKnowledgeElement(sourceId, location);
 		DecisionGroupManager.setGroupAssignment(groupsToAssign, element);
 		inheritGroupAssignent(groupsToAssign, element);
 
@@ -301,9 +301,9 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
 
-		KnowledgeElement parentElement = persistenceManager.getDecisionKnowledgeElement(idOfParent,
+		KnowledgeElement parentElement = persistenceManager.getKnowledgeElement(idOfParent,
 				documentationLocationOfParent);
-		KnowledgeElement childElement = persistenceManager.getDecisionKnowledgeElement(idOfChild,
+		KnowledgeElement childElement = persistenceManager.getKnowledgeElement(idOfChild,
 				documentationLocationOfChild);
 
 		if (parentElement == null || childElement == null) {
@@ -412,7 +412,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Only sentence elements can be set to irrelevant.")).build();
 		}
 		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager
-				.getDecisionKnowledgeElement(decisionKnowledgeElement.getId(), DocumentationLocation.JIRAISSUETEXT);
+				.getKnowledgeElement(decisionKnowledgeElement.getId(), DocumentationLocation.JIRAISSUETEXT);
 		if (sentence == null) {
 			return Response.status(Status.NOT_FOUND)
 					.entity(ImmutableMap.of("error", "Element could not be found in database.")).build();
@@ -421,7 +421,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 		sentence.setRelevant(false);
 		sentence.setType(KnowledgeType.OTHER);
 		sentence.setSummary(null);
-		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(sentence, null);
+		boolean isUpdated = persistenceManager.updateKnowledgeElement(sentence, null);
 		if (isUpdated) {
 			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUETEXT);
 			persistenceManager.getJiraIssueTextManager().createLinksForNonLinkedElements(sentence.getJiraIssueId());

@@ -16,7 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  *
  * @see JiraIssuePersistenceManager
  * @see JiraIssueTextPersistenceManager
- * @see CodeClassKnowledgeElementPersistenceManager
+ * @see CodeClassPersistenceManager
  */
 public abstract class AbstractPersistenceManagerForSingleLocation {
 
@@ -33,8 +33,8 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @return true if deleting was successful.
 	 * @see ApplicationUser
 	 */
-	public boolean deleteDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
-		return this.deleteDecisionKnowledgeElement(element.getId(), user);
+	public boolean deleteKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
+		return this.deleteKnowledgeElement(element.getId(), user);
 	}
 
 	/**
@@ -47,27 +47,27 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @return true if deleting was successful.
 	 * @see ApplicationUser
 	 */
-	public abstract boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user);
+	public abstract boolean deleteKnowledgeElement(long id, ApplicationUser user);
 
 	/**
 	 * @param id
 	 *            id of the {@link KnowledgeElement} in database.
 	 * @return {@link KnowledgeElement}.
 	 */
-	public abstract KnowledgeElement getDecisionKnowledgeElement(long id);
+	public abstract KnowledgeElement getKnowledgeElement(long id);
 
 	/**
 	 * @param key
 	 *            of the {@link KnowledgeElement}.
 	 * @return {@link KnowledgeElement}.
 	 */
-	public abstract KnowledgeElement getDecisionKnowledgeElement(String key);
+	public abstract KnowledgeElement getKnowledgeElement(String key);
 
 	/**
 	 * @return list of all {@link KnowledgeElement} for a project of a certain
 	 *         documentation location.
 	 */
-	public abstract List<KnowledgeElement> getDecisionKnowledgeElements();
+	public abstract List<KnowledgeElement> getKnowledgeElements();
 
 	/**
 	 * @param element
@@ -100,9 +100,9 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @return {@link KnowledgeElement} that is now filled with an internal database
 	 *         id and key. Returns null if insertion failed.
 	 */
-	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user,
+	public KnowledgeElement insertKnowledgeElement(KnowledgeElement element, ApplicationUser user,
 			KnowledgeElement parentElement) {
-		return insertDecisionKnowledgeElement(element, user);
+		return insertKnowledgeElement(element, user);
 	}
 
 	/**
@@ -116,7 +116,7 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @return {@link KnowledgeElement} that is now filled with an internal database
 	 *         id and key. Returns null if insertion failed.
 	 */
-	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
+	public KnowledgeElement insertKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		return null;
 	}
 
@@ -129,7 +129,7 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return true if updating was successful.
 	 */
-	public abstract boolean updateDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user);
+	public abstract boolean updateKnowledgeElement(KnowledgeElement element, ApplicationUser user);
 
 	/**
 	 * @param element

@@ -204,7 +204,7 @@ public class ConfigRestImpl implements ConfigRest {
 		if (id == -1 || location == null || projectKey == null) {
 			return Response.ok(Collections.emptyList()).build();
 		}
-		KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElement(id,
+		KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey).getKnowledgeElement(id,
 				location);
 		if (element != null) {
 			List<String> groups = element.getDecisionGroups();

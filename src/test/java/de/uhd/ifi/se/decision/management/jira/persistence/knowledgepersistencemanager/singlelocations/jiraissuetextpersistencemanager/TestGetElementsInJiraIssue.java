@@ -36,7 +36,7 @@ public class TestGetElementsInJiraIssue extends TestSetUp {
 	public void testGetElementsInJiraIssue() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
-		long id = manager.insertDecisionKnowledgeElement(comment.get(1), null).getId();
+		long id = manager.insertKnowledgeElement(comment.get(1), null).getId();
 
 		assertEquals(3, id);
 

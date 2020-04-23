@@ -10,10 +10,9 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
 /**
- * Class responsible for automatic link creation (=edges) between nodes in the
- * {@link KnowledgeGraph}. Currently only working for decision knowledge
- * elements documented in the description or the comments of a certain Jira
- * issue.
+ * Responsible for automatic link creation (=edges) between nodes in the
+ * {@link KnowledgeGraph}. Is currently only working for decision knowledge
+ * elements documented in the description or the comments of a Jira issue.
  * 
  * @see Link
  * @see JiraIssueTextPersistenceManager

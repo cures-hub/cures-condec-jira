@@ -18,12 +18,11 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import net.java.ao.Query;
 
 /**
- * Class responsible for links (=edges) between all kinds of nodes in the
+ * Responsible for links (=edges) between all kinds of nodes in the
  * {@link KnowledgeGraph}, except of Jira issue links. Jira {@link IssueLink}s
- * are stored in the internal database of Jira and managed by the Jira
- * {@link IssueLinkManager}. If you are not sure whether your link is a Jira
- * issue link or not, use the methods of the {@link KnowledgePersistenceManager}
- * interface.
+ * are managed by the Jira {@link IssueLinkManager}. If you are not sure whether
+ * your link is a Jira issue link or not, use the methods of the
+ * {@link KnowledgePersistenceManager} interface.
  *
  * @see KnowledgePersistenceManager
  * @see LinkInDatabase
@@ -110,19 +109,13 @@ public class GenericLinkManager {
 	}
 
 	/**
-	 * Returns all links (=edges) between all kinds of nodes in the
-	 * {@link KnowledgeGraph}, except of Jira issue links. If you want to get the
-	 * Jira {@link IssueLink}s only, use
-	 * {@link JiraIssuePersistenceManager#getLinks(KnowledgeElement)}.
-	 *
 	 * @param element
-	 *            node in the {@link KnowledgeGraph}.
+	 *            {@link KnowledgeElement} in the {@link KnowledgeGraph}.
 	 * @return list of {@link} objects, does not contain Jira {@link IssueLink}s.
 	 *         (=edges) between all kinds of nodes in the {@link KnowledgeGraph},
 	 *         except of Jira issue links. If you want to get the Jira
 	 *         {@link IssueLink}s only, use
 	 *         {@link JiraIssuePersistenceManager#getLinks(KnowledgeElement)}.
-	 * @see KnowledgeElement
 	 */
 	public static List<Link> getLinksForElement(KnowledgeElement element) {
 		if (element == null) {
@@ -132,19 +125,15 @@ public class GenericLinkManager {
 	}
 
 	/**
-	 * Returns all links (=edges) between all kinds of nodes in the
-	 * {@link KnowledgeGraph}, except of Jira issue links. If you want to get the
-	 * Jira {@link IssueLink}s only, use
-	 * {@link JiraIssuePersistenceManager#getLinks(KnowledgeElement)}.
-	 *
 	 * @param elementId
-	 *            id of the node.
+	 *            id of the {@link KnowledgeElement}.
 	 * @param documentationLocation
 	 *            {@link DocumentationLocation} of the knowledge element.
 	 * @return list of {@link} objects, does not contain Jira {@link IssueLink}s.
 	 *         (=edges) between all kinds of nodes in the {@link KnowledgeGraph},
-	 *         except of Jira issue links.
-	 * @see KnowledgeElement
+	 *         except of Jira issue links. If you want to get the Jira
+	 *         {@link IssueLink}s only, use
+	 *         {@link JiraIssuePersistenceManager#getLinks(KnowledgeElement)}.
 	 */
 	public static List<Link> getLinksForElement(long elementId, DocumentationLocation documentationLocation) {
 		List<Link> links = new ArrayList<Link>();
@@ -163,19 +152,14 @@ public class GenericLinkManager {
 	}
 
 	/**
-	 * Returns all outgoing links (=edges) from a node in the
-	 * {@link KnowledgeGraph}, except of Jira issue links. If you want to get the
-	 * Jira {@link IssueLink}s only, use
-	 * {@link JiraIssuePersistenceManager#getOutwardLinks(KnowledgeElement)}.
-	 *
 	 * @param element
-	 *            node in the {@link KnowledgeGraph}.
-	 * @return list of {@link} objects, does not contain Jira {@link IssueLink}s.
+	 *            {@link KnowledgeElement} in the {@link KnowledgeGraph}.
+	 * @return list of outgoing links (=edges) from a {@link KnowledgeElement} in
+	 *         the {@link KnowledgeGraph}, except of Jira {@link IssueLink}s.
 	 *         (=edges) between all kinds of nodes in the {@link KnowledgeGraph},
 	 *         except of Jira issue links. If you want to get the Jira
 	 *         {@link IssueLink}s only, use
 	 *         {@link JiraIssuePersistenceManager#getLinks(KnowledgeElement)}.
-	 * @see KnowledgeElement
 	 */
 	public static List<Link> getOutwardLinks(KnowledgeElement element) {
 		String identifier = element.getDocumentationLocation().getIdentifier();
@@ -191,19 +175,12 @@ public class GenericLinkManager {
 	}
 
 	/**
-	 * Returns all ingoing links (=edges) to a node in the {@link KnowledgeGraph},
-	 * except of Jira issue links. If you want to get the Jira {@link IssueLink}s
-	 * only, use
-	 * {@link JiraIssuePersistenceManager#getOutwardLinks(KnowledgeElement)}.
-	 *
 	 * @param element
-	 *            node in the {@link KnowledgeGraph}.
-	 * @return list of {@link} objects, does not contain Jira {@link IssueLink}s.
-	 *         (=edges) between all kinds of nodes in the {@link KnowledgeGraph},
-	 *         except of Jira issue links. If you want to get the Jira
-	 *         {@link IssueLink}s only, use
+	 *            {@link KnowledgeElement} in the {@link KnowledgeGraph}.
+	 * @return ingoing links (=edges) to a {@link KnowledgeElement} in the
+	 *         {@link KnowledgeGraph}, except of Jira issue links. If you want to
+	 *         get the Jira {@link IssueLink}s only, use
 	 *         {@link JiraIssuePersistenceManager#getLinks(KnowledgeElement)}.
-	 * @see KnowledgeElement
 	 */
 	public static List<Link> getInwardLinks(KnowledgeElement element) {
 		String identifier = element.getDocumentationLocation().getIdentifier();
@@ -260,8 +237,6 @@ public class GenericLinkManager {
 	}
 
 	/**
-	 * Returns the link id if the link already exists in database, otherwise -1.
-	 *
 	 * @param link
 	 *            {@link Link} object. The link must not be a Jira
 	 *            {@link IssueLink}.
@@ -279,11 +254,9 @@ public class GenericLinkManager {
 	}
 
 	/**
-	 * Returns the {@link LinkInDatabase} object of a {@link Link} object.
-	 *
 	 * @param link
 	 *            {@link Link} object.
-	 * @return {@link LinkInDatabase} object.
+	 * @return {@link LinkInDatabase} object of a {@link Link} object.
 	 */
 	public static LinkInDatabase getLinkInDatabase(Link link) {
 		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class);

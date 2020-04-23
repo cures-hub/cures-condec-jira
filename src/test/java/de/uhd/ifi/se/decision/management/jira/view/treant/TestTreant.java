@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassKnowledgeElementPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -40,15 +40,15 @@ public class TestTreant extends TestSetUp {
 		this.treant.setChart(chart);
 		this.treant.setNodeStructure(nodeStructure);
 		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueManager();
-		CodeClassKnowledgeElementPersistenceManager ccManager
-				= new CodeClassKnowledgeElementPersistenceManager("Test");
+		CodeClassPersistenceManager ccManager
+				= new CodeClassPersistenceManager("Test");
 		classElement = new KnowledgeElement();
 		classElement.setProject("TEST");
 		classElement.setType("Other");
 		classElement.setDescription("TEST-1;");
 		classElement.setSummary("TestClass.java");
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		classElement = ccManager.insertDecisionKnowledgeElement(classElement, user);
+		classElement = ccManager.insertKnowledgeElement(classElement, user);
 	}
 
 	@Test
@@ -147,7 +147,7 @@ public class TestTreant extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCreateNodeStructureFilledNullZeroZero() {
-		KnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(14);
+		KnowledgeElement element = persistenceManager.getKnowledgeElement(14);
 		assertEquals(TreantNode.class, treant.createNodeStructure(element, (Link) null, 0).getClass());
 	}
 
@@ -164,18 +164,18 @@ public class TestTreant extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCreateNodeStructureFilledNullFilledFilled() {
-		KnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(14);
+		KnowledgeElement element = persistenceManager.getKnowledgeElement(14);
 		assertEquals(TreantNode.class, treant.createNodeStructure(element, (Link) null, 0).getClass());
 	}
 
 	@Test
 	@NonTransactional
 	public void testCreateNodeStructureFilledFilledFilledFilled() {
-		KnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(14);
+		KnowledgeElement element = persistenceManager.getKnowledgeElement(14);
 		Link link = new Link(1, 14, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		link.setType("support");
-		link.setDestinationElement(persistenceManager.getDecisionKnowledgeElement(14));
-		link.setSourceElement(persistenceManager.getDecisionKnowledgeElement(1));
+		link.setDestinationElement(persistenceManager.getKnowledgeElement(14));
+		link.setSourceElement(persistenceManager.getKnowledgeElement(1));
 		link.setId(23);
 		assertEquals(TreantNode.class, treant.createNodeStructure(element, link, 0).getClass());
 	}
@@ -185,7 +185,7 @@ public class TestTreant extends TestSetUp {
 	public void testCreateNodeStructureWithSentenceInIssue() {
 		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText("This is a testsentence");
 		sentences.get(0).setRelevant(true);
-		KnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(sentences.get(0).getJiraIssueId());
+		KnowledgeElement element = persistenceManager.getKnowledgeElement(sentences.get(0).getJiraIssueId());
 		TreantNode nodeStructure = treant.createNodeStructure(element, (Link) null, 0);
 		assertEquals(TreantNode.class, nodeStructure.getClass());
 		assertEquals(1, nodeStructure.getChildren().size());
@@ -194,7 +194,7 @@ public class TestTreant extends TestSetUp {
 	@Test
 	public void testSecondCreateNodeStructureWithElementNull() {
 		Set<Link> links = new HashSet<>();
-		Link link = new Link(classElement, persistenceManager.getDecisionKnowledgeElement("TEST-1"));
+		Link link = new Link(classElement, persistenceManager.getKnowledgeElement("TEST-1"));
 		links.add(link);
 		TreantNode nodeStructure = treant.createNodeStructure(null, links, 0, false);
 		assertEquals(TreantNode.class, nodeStructure.getClass());
@@ -209,7 +209,7 @@ public class TestTreant extends TestSetUp {
 	@Test
 	public void testSecondCreateNodeStructureWithAllFilled() {
 		Set<Link> links = new HashSet<>();
-		Link link = new Link(classElement, persistenceManager.getDecisionKnowledgeElement("TEST-1"));
+		Link link = new Link(classElement, persistenceManager.getKnowledgeElement("TEST-1"));
 		links.add(link);
 		TreantNode nodeStructure = treant.createNodeStructure(classElement, links, 0, false);
 		assertEquals(TreantNode.class, nodeStructure.getClass());
@@ -219,7 +219,7 @@ public class TestTreant extends TestSetUp {
 	@Test
 	public void testSecondCreateNodeStructureWithAllFilledAndIssueView() {
 		Set<Link> links = new HashSet<>();
-		Link link = new Link(classElement, persistenceManager.getDecisionKnowledgeElement("TEST-1"));
+		Link link = new Link(classElement, persistenceManager.getKnowledgeElement("TEST-1"));
 		links.add(link);
 		TreantNode nodeStructure = treant.createNodeStructure(classElement, links, 0, true);
 		assertEquals(TreantNode.class, nodeStructure.getClass());

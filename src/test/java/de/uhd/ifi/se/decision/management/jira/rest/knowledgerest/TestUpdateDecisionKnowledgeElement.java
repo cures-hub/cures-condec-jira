@@ -122,7 +122,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "").getStatus());
 		PartOfJiraIssueText sentence = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
-				.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
+				.getKnowledgeElement(decisionKnowledgeElement.getId());
 		assertEquals(sentence.getType(), KnowledgeType.PRO);
 		assertEquals(newText, sentence.getDescription());
 	}
@@ -140,7 +140,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "s").getStatus());
 		PartOfJiraIssueText sentence = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
-				.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
+				.getKnowledgeElement(decisionKnowledgeElement.getId());
 		assertEquals(sentence.getType(), KnowledgeType.ISSUE);
 		assertEquals(newText, sentence.getDescription());
 

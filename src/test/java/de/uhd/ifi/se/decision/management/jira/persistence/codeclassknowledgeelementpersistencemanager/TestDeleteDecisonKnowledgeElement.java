@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence.codeclassknowledgeele
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassKnowledgeElementPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import org.junit.Before;
@@ -14,35 +14,35 @@ import static org.junit.Assert.assertTrue;
 
 public class TestDeleteDecisonKnowledgeElement extends TestSetUp {
 
-	private CodeClassKnowledgeElementPersistenceManager ccManager;
+	private CodeClassPersistenceManager ccManager;
 	private ApplicationUser user;
 
 	@Before
 	public void setUp() {
 		init();
-		ccManager = new CodeClassKnowledgeElementPersistenceManager("Test");
+		ccManager = new CodeClassPersistenceManager("Test");
 		KnowledgeElement classElement = new KnowledgeElement();
 		classElement.setProject("TEST");
 		classElement.setType("Other");
 		classElement.setDescription("TEST-1;");
 		classElement.setSummary("TestClass.java");
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		classElement = ccManager.insertDecisionKnowledgeElement(classElement, user);
+		classElement = ccManager.insertKnowledgeElement(classElement, user);
 	}
 
 	@Test
 	public void testDeleteDecisionKnowledgeElementWithUserNull() {
-		assertFalse(ccManager.deleteDecisionKnowledgeElement(1, null));
+		assertFalse(ccManager.deleteKnowledgeElement(1, null));
 	}
 
 	@Test
 	public void testDeleteDecisionKnowledgeElementWithIdZero() {
-		assertFalse(ccManager.deleteDecisionKnowledgeElement(0, user));
+		assertFalse(ccManager.deleteKnowledgeElement(0, user));
 	}
 
 	@Test
 	public void testDeleteDecisionKnowledgeElement() {
-		assertTrue(ccManager.deleteDecisionKnowledgeElement(1, user));
-		assertTrue(ccManager.getDecisionKnowledgeElements().size() == 0);
+		assertTrue(ccManager.deleteKnowledgeElement(1, user));
+		assertTrue(ccManager.getKnowledgeElements().size() == 0);
 	}
 }

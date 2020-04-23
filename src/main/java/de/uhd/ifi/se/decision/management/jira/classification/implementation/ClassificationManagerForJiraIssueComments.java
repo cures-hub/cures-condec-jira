@@ -179,7 +179,7 @@ public class ClassificationManagerForJiraIssueComments {
 				sentence.setType(classificationResult.get(i));
 				// sentence.setSummary(null);
 				sentence.setValidated(false);
-				persistenceManager.updateDecisionKnowledgeElement(sentence, null);
+				persistenceManager.updateKnowledgeElement(sentence, null);
 				i++;
 			}
 		}

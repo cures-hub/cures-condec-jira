@@ -100,7 +100,7 @@ public class TestGetElementsWithTypeInJiraIssue extends TestSetUp {
 	public void testIdMoreSProjectKeyFilledTypeFilled() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
-		manager.insertDecisionKnowledgeElement(comment.get(1), null);
+		manager.insertKnowledgeElement(comment.get(1), null);
 
 		assertEquals(1,
 				manager.getElementsWithTypeInJiraIssue(comment.get(0).getJiraIssueId(), KnowledgeType.ISSUE).size());

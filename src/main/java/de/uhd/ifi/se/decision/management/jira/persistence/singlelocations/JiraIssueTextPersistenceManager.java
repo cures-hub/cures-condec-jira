@@ -52,7 +52,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	@Override
-	public boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user) {
+	public boolean deleteKnowledgeElement(long id, ApplicationUser user) {
 		if (id <= 0 || user == null) {
 			LOGGER.error(
 					"Element cannot be deleted since it does not exist (id is less than zero) or the user is null.");
@@ -116,7 +116,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	@Override
-	public KnowledgeElement getDecisionKnowledgeElement(long id) {
+	public KnowledgeElement getKnowledgeElement(long id) {
 		PartOfJiraIssueText sentence = null;
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("ID = ?", id))) {
@@ -126,22 +126,22 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	@Override
-	public KnowledgeElement getDecisionKnowledgeElement(String key) {
+	public KnowledgeElement getKnowledgeElement(String key) {
 		if (key == null) {
 			return null;
 		}
 		long id = Long.parseLong(key.split(":")[1]);
-		return getDecisionKnowledgeElement(id);
+		return getKnowledgeElement(id);
 	}
 
 	@Override
-	public List<KnowledgeElement> getDecisionKnowledgeElements() {
-		List<KnowledgeElement> decisionKnowledgeElements = new ArrayList<KnowledgeElement>();
+	public List<KnowledgeElement> getKnowledgeElements() {
+		List<KnowledgeElement> knowledgeElements = new ArrayList<KnowledgeElement>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			decisionKnowledgeElements.add(new PartOfJiraIssueText(databaseEntry));
+			knowledgeElements.add(new PartOfJiraIssueText(databaseEntry));
 		}
-		return decisionKnowledgeElements;
+		return knowledgeElements;
 	}
 
 	/**
@@ -257,20 +257,20 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	@Override
-	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user,
+	public KnowledgeElement insertKnowledgeElement(KnowledgeElement element, ApplicationUser user,
 			KnowledgeElement parentElement) {
 		if (element == null || user == null) {
 			return null;
 		}
 		if (parentElement == null) {
-			return insertDecisionKnowledgeElement(element, user);
+			return insertKnowledgeElement(element, user);
 		}
 		Issue jiraIssue = parentElement.getJiraIssue();
 		if (jiraIssue == null) {
 			return null;
 		}
 		Comment comment = createCommentInJiraIssue(element, jiraIssue, user);
-		return insertDecisionKnowledgeElement(PartOfJiraIssueText.getFirstPartOfTextInComment(comment), user);
+		return insertKnowledgeElement(PartOfJiraIssueText.getFirstPartOfTextInComment(comment), user);
 	}
 
 	/**
@@ -282,7 +282,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @return Jira issue as an {@link Issue} object.
 	 */
 	public Issue getJiraIssue(long id) {
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) this.getDecisionKnowledgeElement(id);
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) this.getKnowledgeElement(id);
 		if (sentence == null) {
 			return null;
 		}
@@ -296,7 +296,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	@Override
-	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
+	public KnowledgeElement insertKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		KnowledgeElement existingElement = checkIfElementExistsInDatabase(element);
 		if (existingElement != null) {
 			return existingElement;
@@ -318,7 +318,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (element.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
 			return null;
 		}
-		KnowledgeElement existingElement = getDecisionKnowledgeElement(element);
+		KnowledgeElement existingElement = getKnowledgeElement(element);
 		if (existingElement != null) {
 			ensureThatElementIsLinked(existingElement);
 			return existingElement;
@@ -326,12 +326,12 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return null;
 	}
 
-	public KnowledgeElement getDecisionKnowledgeElement(KnowledgeElement element) {
+	public KnowledgeElement getKnowledgeElement(KnowledgeElement element) {
 		if (element == null) {
 			return null;
 		}
 		if (element.getId() > 0) {
-			return this.getDecisionKnowledgeElement(element.getId());
+			return this.getKnowledgeElement(element.getId());
 		}
 
 		PartOfJiraIssueText sentence = (PartOfJiraIssueText) element;
@@ -361,7 +361,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	@Override
-	public boolean updateDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
+	public boolean updateKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		if (element == null) {
 			return false;
 		}
@@ -379,7 +379,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(newElement.getProject()).getJiraIssueTextManager();
 		PartOfJiraIssueText formerElement = (PartOfJiraIssueText) persistenceManager
-				.getDecisionKnowledgeElement(newElement);
+				.getKnowledgeElement(newElement);
 		if (formerElement == null) {
 			return false;
 		}
@@ -465,7 +465,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	@Override
 	public ApplicationUser getCreator(KnowledgeElement element) {
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) getDecisionKnowledgeElement(element.getId());
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) getKnowledgeElement(element.getId());
 		if (sentence == null) {
 			LOGGER.error("Element could not be found.");
 			return null;
@@ -478,7 +478,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	public boolean createLinksForNonLinkedElements() {
-		return createLinksForNonLinkedElements(getDecisionKnowledgeElements());
+		return createLinksForNonLinkedElements(getKnowledgeElements());
 	}
 
 	public boolean createLinksForNonLinkedElements(List<KnowledgeElement> elements) {
@@ -508,9 +508,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 */
 	public boolean deleteInvalidElements(ApplicationUser user) {
 		boolean isAnyElementDeleted = false;
-		for (KnowledgeElement element : getDecisionKnowledgeElements()) {
+		for (KnowledgeElement element : getKnowledgeElements()) {
 			if (!((PartOfJiraIssueText) element).isValid()) {
-				deleteDecisionKnowledgeElement(element, user);
+				deleteKnowledgeElement(element, user);
 				isAnyElementDeleted = true;
 			}
 		}
@@ -523,11 +523,11 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			return null;
 		}
 
-		PartOfJiraIssueText element = (PartOfJiraIssueText) this.getDecisionKnowledgeElement(aoId);
+		PartOfJiraIssueText element = (PartOfJiraIssueText) this.getKnowledgeElement(aoId);
 
 		JiraIssuePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(this.projectKey)
 				.getJiraIssueManager();
-		KnowledgeElement decElement = persistenceManager.insertDecisionKnowledgeElement(element, user);
+		KnowledgeElement decElement = persistenceManager.insertKnowledgeElement(element, user);
 
 		MutableIssue issue = ComponentAccessor.getIssueService().getIssue(user, decElement.getId()).getIssue();
 
@@ -547,7 +547,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		updateSentenceLengthForOtherSentencesInSameComment(element, length);
 
 		// delete ao sentence entry
-		KnowledgePersistenceManager.getOrCreate(projectKey).deleteDecisionKnowledgeElement(element, null);
+		KnowledgePersistenceManager.getOrCreate(projectKey).deleteKnowledgeElement(element, null);
 
 		createLinksForNonLinkedElements(element.getJiraIssueId());
 
@@ -579,7 +579,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				updateInDatabase(sentence);
 				knowledgeElementsInText.set(i, sentence);
 			} else {
-				sentence = (PartOfJiraIssueText) persistenceManager.insertDecisionKnowledgeElement(sentence, null);
+				sentence = (PartOfJiraIssueText) persistenceManager.insertKnowledgeElement(sentence, null);
 				knowledgeElementsInText.add(sentence);
 			}
 			if (sentence.isRelevant()) {
@@ -614,10 +614,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				parts.set(i, sentence);
 			} else {
 				// Create new AO entry
-				sentence = (PartOfJiraIssueText) persistenceManager.insertDecisionKnowledgeElement(sentence, null);
+				sentence = (PartOfJiraIssueText) persistenceManager.insertKnowledgeElement(sentence, null);
 				parts.add(sentence);
 			}
-			sentence = (PartOfJiraIssueText) persistenceManager.getDecisionKnowledgeElement(sentence);
+			sentence = (PartOfJiraIssueText) persistenceManager.getKnowledgeElement(sentence);
 			if (sentence.isRelevant()) {
 				AutomaticLinkCreator.createSmartLinkForElement(sentence);
 			}
@@ -719,7 +719,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		// Create entries in the active objects (AO) database
 		for (PartOfJiraIssueText partOfComment : partsOfComment) {
 			partOfComment.setComment(comment);
-			partOfComment = (PartOfJiraIssueText) persistenceManager.insertDecisionKnowledgeElement(partOfComment,
+			partOfComment = (PartOfJiraIssueText) persistenceManager.insertKnowledgeElement(partOfComment,
 					null);
 			if (partOfComment.isRelevant()) {
 				AutomaticLinkCreator.createSmartLinkForElement(partOfComment);
@@ -751,7 +751,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		List<PartOfJiraIssueText> partsOfDescriptionWithIdInDatabase = new ArrayList<PartOfJiraIssueText>();
 		for (PartOfJiraIssueText partOfDescription : partsOfDescription) {
 			partsOfDescriptionWithIdInDatabase.add((PartOfJiraIssueText) persistenceManager
-					.insertDecisionKnowledgeElement(partOfDescription, issue.getReporter()));
+					.insertKnowledgeElement(partOfDescription, issue.getReporter()));
 		}
 		return partsOfDescriptionWithIdInDatabase;
 	}

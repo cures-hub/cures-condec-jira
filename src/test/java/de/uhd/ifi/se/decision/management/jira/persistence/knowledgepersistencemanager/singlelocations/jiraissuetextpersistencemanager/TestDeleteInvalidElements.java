@@ -40,7 +40,7 @@ public class TestDeleteInvalidElements extends TestSetUp {
 	@NonTransactional
 	public void testOneElementInvalid() {
 		JiraIssues.addElementToDataBase();
-		List<KnowledgeElement> elements = manager.getDecisionKnowledgeElements();
+		List<KnowledgeElement> elements = manager.getKnowledgeElements();
 
 		assertEquals(1, elements.size());
 		assertTrue(manager.deleteInvalidElements(user));

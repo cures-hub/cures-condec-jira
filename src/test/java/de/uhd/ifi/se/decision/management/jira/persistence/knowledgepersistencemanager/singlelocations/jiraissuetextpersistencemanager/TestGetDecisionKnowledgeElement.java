@@ -30,19 +30,19 @@ public class TestGetDecisionKnowledgeElement extends TestSetUp {
 		manager = new JiraIssueTextPersistenceManager("TEST");
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("first Comment");
-		element = manager.insertDecisionKnowledgeElement(comment.get(0), null);
+		element = manager.insertKnowledgeElement(comment.get(0), null);
 	}
 
 	@Test
 	@NonTransactional
 	public void testElementExistingInDatabase() {
-		assertEquals("first Comment", manager.getDecisionKnowledgeElement(element.getId()).getSummary());
+		assertEquals("first Comment", manager.getKnowledgeElement(element.getId()).getSummary());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIdZero() {
-		assertNull(manager.getDecisionKnowledgeElement(0));
+		assertNull(manager.getKnowledgeElement(0));
 	}
 
 	@Test
@@ -50,24 +50,24 @@ public class TestGetDecisionKnowledgeElement extends TestSetUp {
 	public void testElementExistingInDatabaseButIdZero() {
 		// pretend that database id of the element is unknown
 		element.setId(0);
-		assertEquals("first Comment", manager.getDecisionKnowledgeElement((PartOfJiraIssueText) element).getSummary());
+		assertEquals("first Comment", manager.getKnowledgeElement((PartOfJiraIssueText) element).getSummary());
 	}
 
 	@Test
 	@NonTransactional
 	public void testElementNull() {
-		assertNull(manager.getDecisionKnowledgeElement((PartOfJiraIssueText) null));
+		assertNull(manager.getKnowledgeElement((PartOfJiraIssueText) null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testKeyNull() {
-		assertNull(manager.getDecisionKnowledgeElement((String) null));
+		assertNull(manager.getKnowledgeElement((String) null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testKeyValid() {
-		assertEquals("first Comment", manager.getDecisionKnowledgeElement("TEST-30:1").getSummary());
+		assertEquals("first Comment", manager.getKnowledgeElement("TEST-30:1").getSummary());
 	}
 }

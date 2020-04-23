@@ -42,7 +42,7 @@ public class TestDeleteInvalidGroups extends TestSetUp {
     @Test
     public void testDeleteInvalidGroups() {
 	KnowledgePersistenceManager kpManager = KnowledgePersistenceManager.getOrCreate(projectKey);
-	kpManager.deleteDecisionKnowledgeElement(decisionKnowledgeElement, JiraUsers.SYS_ADMIN.getApplicationUser());
+	kpManager.deleteKnowledgeElement(decisionKnowledgeElement, JiraUsers.SYS_ADMIN.getApplicationUser());
 	assertTrue(DecisionGroupManager.deleteInvalidGroups());
     }
 

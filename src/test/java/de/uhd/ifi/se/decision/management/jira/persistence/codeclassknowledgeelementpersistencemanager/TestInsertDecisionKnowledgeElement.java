@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence.codeclassknowledgeele
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassKnowledgeElementPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import org.junit.Before;
@@ -14,13 +14,13 @@ import static org.junit.Assert.assertEquals;
 public class TestInsertDecisionKnowledgeElement extends TestSetUp {
 
 	private KnowledgeElement classElement;
-	private CodeClassKnowledgeElementPersistenceManager ccManager;
+	private CodeClassPersistenceManager ccManager;
 	private ApplicationUser user;
 
 	@Before
 	public void setUp() {
 		init();
-		ccManager = new CodeClassKnowledgeElementPersistenceManager("Test");
+		ccManager = new CodeClassPersistenceManager("Test");
 		classElement = new KnowledgeElement();
 		classElement.setProject("TEST");
 		classElement.setType("Other");
@@ -31,7 +31,7 @@ public class TestInsertDecisionKnowledgeElement extends TestSetUp {
 
 	@Test
 	public void testInsertDecisionKnwoledgeElement() {
-		KnowledgeElement newElement = ccManager.insertDecisionKnowledgeElement(classElement, user);
+		KnowledgeElement newElement = ccManager.insertKnowledgeElement(classElement, user);
 		assertEquals(classElement.getSummary(), newElement.getSummary());
 	}
 }

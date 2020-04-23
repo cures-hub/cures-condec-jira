@@ -43,7 +43,7 @@ public class TestDeleteElementsInDescription extends TestSetUp {
 		PartOfJiraIssueText sentence = comment.get(1);
 		sentence.setId(4);
 		sentence.setCommentId(0);
-		manager.insertDecisionKnowledgeElement(sentence, user);
+		manager.insertKnowledgeElement(sentence, user);
 
 		assertTrue(manager.deleteElementsInDescription(sentence.getJiraIssue()));
 	}

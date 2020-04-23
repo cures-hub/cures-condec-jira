@@ -107,7 +107,7 @@ public class DecisionGroupManager {
 		DecisionGroupInDatabase[] groupsInDatabase = ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class);
 		for (DecisionGroupInDatabase databaseEntry : groupsInDatabase) {
 			String projectKey = databaseEntry.getProjectKey();
-			KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElement(
+			KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey).getKnowledgeElement(
 					databaseEntry.getSourceId(), databaseEntry.getSourceDocumentationLocation());
 			if (element == null) {
 				isGroupDeleted = true;
@@ -251,7 +251,7 @@ public class DecisionGroupManager {
 					&& !groupInDatabase.getSourceDocumentationLocation().equals("c")) {
 				KnowledgeElement element = kpManager
 						.getManagerForSingleLocation(groupInDatabase.getSourceDocumentationLocation())
-						.getDecisionKnowledgeElement(groupInDatabase.getSourceId());
+						.getKnowledgeElement(groupInDatabase.getSourceId());
 				if (element != null) {
 					keys.add(element.getKey());
 				}
@@ -268,7 +268,7 @@ public class DecisionGroupManager {
 					&& groupInDatabase.getSourceDocumentationLocation().equals("c")) {
 				KnowledgeElement element = kpManager
 						.getManagerForSingleLocation(groupInDatabase.getSourceDocumentationLocation())
-						.getDecisionKnowledgeElement(groupInDatabase.getSourceId());
+						.getKnowledgeElement(groupInDatabase.getSourceId());
 				if (element != null) {
 					keys.add(element.getKey());
 				}

@@ -37,7 +37,7 @@ public class TestGetElementsInDescription extends TestSetUp {
 		PartOfJiraIssueText sentence = comment.get(1);
 		sentence.setId(4);
 		sentence.setCommentId(0);
-		manager.insertDecisionKnowledgeElement(sentence, user);
+		manager.insertKnowledgeElement(sentence, user);
 
 		long jiraIssueId = comment.get(1).getJiraIssueId();
 		List<KnowledgeElement> listWithObjects = manager.getElementsInDescription(jiraIssueId);

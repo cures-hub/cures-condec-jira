@@ -35,7 +35,7 @@ public class TestCreateLinksForNonLinkedElements extends TestSetUp {
 	public void testLinkAllUnlinkedSentence() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText(
 				"some sentence in front.  {pro} testobject {pro} some sentence in the back.");
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) manager.insertDecisionKnowledgeElement(comment.get(1),
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) manager.insertKnowledgeElement(comment.get(1),
 				null);
 		long id = sentence.getId();
 		assertEquals(1, GenericLinkManager.getLinksForElement(id, DocumentationLocation.JIRAISSUETEXT).size());

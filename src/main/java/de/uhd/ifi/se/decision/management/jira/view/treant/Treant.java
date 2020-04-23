@@ -63,7 +63,7 @@ public class Treant {
 		} else {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager();
 		}
-		KnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
+		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(elementKey);
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, (Link) null, 1));
 		this.setHyperlinked(isHyperlinked);
@@ -138,7 +138,7 @@ public class Treant {
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(element.getProject()).getJiraIssueManager();
 		for (Link link : links) {
-			if (!isIssueView && persistenceManager.getDecisionKnowledgeElement(link.getTarget().getId()) != null) {
+			if (!isIssueView && persistenceManager.getKnowledgeElement(link.getTarget().getId()) != null) {
 				TreantNode adult = createTreantNode(link.getTarget(), link, false);
 				adult.setChildren(getChildren(link.getTarget(), graph.edgesOf(link.getTarget()), currentDepth));
 				nodes.add(adult);

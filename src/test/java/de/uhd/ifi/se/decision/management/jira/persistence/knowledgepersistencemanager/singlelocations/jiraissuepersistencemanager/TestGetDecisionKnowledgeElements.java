@@ -12,11 +12,11 @@ public class TestGetDecisionKnowledgeElements extends TestJiraIssuePersistenceMa
 	@Test
 	public void testProjectNonExistent() {
 		JiraIssuePersistenceManager issueStrategy = KnowledgePersistenceManager.getOrCreate("NOTEXISTENT").getJiraIssueManager();
-		assertEquals(0, issueStrategy.getDecisionKnowledgeElements().size());
+		assertEquals(0, issueStrategy.getKnowledgeElements().size());
 	}
 
 	@Test
 	public void testProjectExistent() {
-		assertEquals(numberOfElements, issueStrategy.getDecisionKnowledgeElements().size());
+		assertEquals(numberOfElements, issueStrategy.getKnowledgeElements().size());
 	}
 }

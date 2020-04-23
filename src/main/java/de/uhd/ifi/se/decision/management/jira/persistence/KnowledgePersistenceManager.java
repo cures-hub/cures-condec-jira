@@ -18,13 +18,13 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassKnowledgeElementPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
- * Integates all available persistence managers for single documentation
+ * Integrates all available persistence managers for single documentation
  * locations for a given project.
  *
  * @issue How can we integrate knowledge from different documentation locations?
@@ -34,13 +34,14 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
  * @see AbstractPersistenceManagerForSingleLocation
  * @see JiraIssuePersistenceManager
  * @see JiraIssueTextPersistenceManager
+ * @see CodeClassPersistenceManager
  */
 public class KnowledgePersistenceManager {
 
 	private String projectKey;
 	private JiraIssuePersistenceManager jiraIssuePersistenceManager;
 	private JiraIssueTextPersistenceManager jiraIssueTextPersistenceManager;
-	private CodeClassKnowledgeElementPersistenceManager codeClassKnowledgeElementPersistenceManager;
+	private CodeClassPersistenceManager codeClassKnowledgeElementPersistenceManager;
 	private List<AbstractPersistenceManagerForSingleLocation> activePersistenceManagersForSingleLocations;
 
 	/**
@@ -90,7 +91,7 @@ public class KnowledgePersistenceManager {
 		this.projectKey = projectKey;
 		this.jiraIssuePersistenceManager = new JiraIssuePersistenceManager(projectKey);
 		this.jiraIssueTextPersistenceManager = new JiraIssueTextPersistenceManager(projectKey);
-		this.codeClassKnowledgeElementPersistenceManager = new CodeClassKnowledgeElementPersistenceManager(projectKey);
+		this.codeClassKnowledgeElementPersistenceManager = new CodeClassPersistenceManager(projectKey);
 		this.activePersistenceManagersForSingleLocations = initActivePersistenceManagersForSinleLocations();
 	}
 
@@ -104,10 +105,9 @@ public class KnowledgePersistenceManager {
 	/**
 	 * @return list of all {@link KnowledgeElement}s for a Jira project.
 	 */
-	public List<KnowledgeElement> getDecisionKnowledgeElements() {
+	public List<KnowledgeElement> getKnowledgeElements() {
 		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
-		activePersistenceManagersForSingleLocations
-				.forEach(manager -> elements.addAll(manager.getDecisionKnowledgeElements()));
+		activePersistenceManagersForSingleLocations.forEach(manager -> elements.addAll(manager.getKnowledgeElements()));
 
 		// remove irrelevant sentences from graph
 		elements.removeIf(
@@ -247,7 +247,7 @@ public class KnowledgePersistenceManager {
 			ApplicationUser user) {
 		if (KnowledgeStatus.isIssueResolved(parentElement, childElement)) {
 			parentElement.setStatus(KnowledgeStatus.RESOLVED);
-			updateDecisionKnowledgeElement(parentElement, user);
+			updateKnowledgeElement(parentElement, user);
 			return true;
 		}
 		return false;
@@ -370,11 +370,11 @@ public class KnowledgePersistenceManager {
 	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return true if deleting was successful.
 	 */
-	public boolean deleteDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
+	public boolean deleteKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getManagerForSingleLocation(element);
 		KnowledgeGraph.getOrCreate(projectKey).removeVertex(element);
-		return persistenceManager.deleteDecisionKnowledgeElement(element, user);
+		return persistenceManager.deleteKnowledgeElement(element, user);
 	}
 
 	/**
@@ -386,12 +386,12 @@ public class KnowledgePersistenceManager {
 	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return true if updating was successful.
 	 */
-	public boolean updateDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
+	public boolean updateKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getManagerForSingleLocation(element);
-		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(element, user);
+		boolean isUpdated = persistenceManager.updateKnowledgeElement(element, user);
 		if (isUpdated) {
-			KnowledgeElement updatedElement = persistenceManager.getDecisionKnowledgeElement(element.getId());
+			KnowledgeElement updatedElement = persistenceManager.getKnowledgeElement(element.getId());
 			KnowledgeGraph.getOrCreate(projectKey).updateElement(updatedElement);
 		}
 		return isUpdated;
@@ -412,15 +412,14 @@ public class KnowledgePersistenceManager {
 	 * @return {@link KnowledgeElement} that is now filled with an internal database
 	 *         id and key. Returns null if insertion failed.
 	 */
-	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user,
+	public KnowledgeElement insertKnowledgeElement(KnowledgeElement element, ApplicationUser user,
 			KnowledgeElement parentElement) {
 		if (element.getStatus() == KnowledgeStatus.UNDEFINED) {
 			element.setStatus(KnowledgeStatus.getDefaultStatus(element.getType()));
 		}
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getManagerForSingleLocation(element);
-		KnowledgeElement elementWithId = persistenceManager.insertDecisionKnowledgeElement(element, user,
-				parentElement);
+		KnowledgeElement elementWithId = persistenceManager.insertKnowledgeElement(element, user, parentElement);
 		KnowledgeGraph.getOrCreate(projectKey).addVertex(elementWithId);
 		return elementWithId;
 	}
@@ -436,8 +435,8 @@ public class KnowledgePersistenceManager {
 	 * @return {@link KnowledgeElement} that is now filled with an internal database
 	 *         id and key. Returns null if insertion failed.
 	 */
-	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
-		return insertDecisionKnowledgeElement(element, user, null);
+	public KnowledgeElement insertKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
+		return insertKnowledgeElement(element, user, null);
 	}
 
 	/**
@@ -447,13 +446,13 @@ public class KnowledgePersistenceManager {
 	 *            of the element, see {@link DocumentationLocation}.
 	 * @return {@link KnowledgeElement} or null if it is not found.
 	 */
-	public KnowledgeElement getDecisionKnowledgeElement(long id, DocumentationLocation documentationLocation) {
+	public KnowledgeElement getKnowledgeElement(long id, DocumentationLocation documentationLocation) {
 		AbstractPersistenceManagerForSingleLocation persistenceManager = getManagerForSingleLocation(
 				documentationLocation);
 		if (persistenceManager == null) {
 			return null;
 		}
-		return persistenceManager.getDecisionKnowledgeElement(id);
+		return persistenceManager.getKnowledgeElement(id);
 	}
 
 	/**
@@ -464,10 +463,10 @@ public class KnowledgePersistenceManager {
 	 *            e.g., "i" for Jira issue.
 	 * @return {@link KnowledgeElement} or null if it is not found.
 	 */
-	public KnowledgeElement getDecisionKnowledgeElement(long id, String documentationLocationIdentifier) {
+	public KnowledgeElement getKnowledgeElement(long id, String documentationLocationIdentifier) {
 		DocumentationLocation documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
-		return getDecisionKnowledgeElement(id, documentationLocation);
+		return getKnowledgeElement(id, documentationLocation);
 	}
 
 	/**
