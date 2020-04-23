@@ -37,7 +37,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgePersistenceManagerImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
@@ -281,7 +281,7 @@ public class ViewRestImpl implements ViewRest {
 						projectKey);
 				element = ccManager.getDecisionKnowledgeElement(elementKey);
 			} else {
-				KnowledgePersistenceManager kpManager = new KnowledgePersistenceManagerImpl(projectKey);
+				KnowledgePersistenceManager kpManager = new KnowledgePersistenceManager(projectKey);
 				element = kpManager.getJiraIssueManager().getDecisionKnowledgeElement(elementKey);
 			}
 			Treant treant = new Treant(projectKey, element, depth, searchTerm, "treant-container-class", checkboxflag,

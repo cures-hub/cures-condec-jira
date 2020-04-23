@@ -9,7 +9,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgePersistenceManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupInDatabase;
 import net.java.ao.Query;
 
@@ -232,7 +231,7 @@ public class DecisionGroupManager {
 
 	public static List<String> getAllDecisionElementsWithCertainGroup(String group, String projectKey) {
 		List<String> keys = new ArrayList<>();
-		KnowledgePersistenceManager kpManager = new KnowledgePersistenceManagerImpl(projectKey);
+		KnowledgePersistenceManager kpManager = new KnowledgePersistenceManager(projectKey);
 		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
 			if (groupInDatabase.getProjectKey().equals(projectKey)
 					&& groupInDatabase.getGroup().equals(group)
@@ -249,7 +248,7 @@ public class DecisionGroupManager {
 
 	public static List<String> getAllClassElementsWithCertainGroup(String group, String projectKey) {
 		List<String> keys = new ArrayList<>();
-		KnowledgePersistenceManager kpManager = new KnowledgePersistenceManagerImpl(projectKey);
+		KnowledgePersistenceManager kpManager = new KnowledgePersistenceManager(projectKey);
 		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
 			if (groupInDatabase.getProjectKey().equals(projectKey)
 					&& groupInDatabase.getGroup().equals(group)

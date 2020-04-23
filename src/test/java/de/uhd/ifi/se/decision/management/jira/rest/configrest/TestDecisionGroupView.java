@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.KnowledgePersistenceManagerImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.rest.impl.ConfigRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -43,7 +43,7 @@ public class TestDecisionGroupView extends TestSetUp {
 
 		KnowledgeElement decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey,
 				key, DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
-		KnowledgePersistenceManager kpManager = new KnowledgePersistenceManagerImpl(projectKey);
+		KnowledgePersistenceManager kpManager = new KnowledgePersistenceManager(projectKey);
 		KnowledgeElement nextElement =
 				kpManager.getManagerForSingleLocation(decisionKnowledgeElement.getDocumentationLocation())
 						.insertDecisionKnowledgeElement(decisionKnowledgeElement, JiraUsers.SYS_ADMIN.getApplicationUser());
