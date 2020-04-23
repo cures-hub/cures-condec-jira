@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 
 /**
  * Models a project and its configuration. The project is a Jira project that is

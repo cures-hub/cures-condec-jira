@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.impl;
+package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +27,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
+import de.uhd.ifi.se.decision.management.jira.persistence.AutomaticLinkCreator;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
@@ -535,7 +537,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		try {
 			issueLinkManager.createIssueLink(element.getJiraIssueId(), issue.getId(), linkTypeId, (long) 0, user);
 		} catch (CreateException e) {
-			LOGGER.error("Creating JIRA issue from part of text failed. Message: " + e.getMessage());
+			LOGGER.error("Creating  issue from part of text failed. Message: " + e.getMessage());
 			return null;
 		}
 

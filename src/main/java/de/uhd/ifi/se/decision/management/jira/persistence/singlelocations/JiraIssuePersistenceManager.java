@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.impl;
+package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,7 +40,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
  * Extends the abstract class
- * {@link AbstractPersistenceManagerForSingleLocation}. Uses JIRA issues to
+ * {@link AbstractPersistenceManagerForSingleLocation}. Uses Jira issues to
  * store decision knowledge.
  *
  * @see AbstractPersistenceManagerForSingleLocation
@@ -136,7 +136,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	 *            element as a {@link Link} object. Needs to be a Jira
 	 *            {@link IssueLink}.
 	 * @param user
-	 *            authenticated JIRA {@link ApplicationUser}.
+	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return internal database id of inserted link, zero if insertion failed.
 	 */
 	public static long insertLink(Link link, ApplicationUser user) {

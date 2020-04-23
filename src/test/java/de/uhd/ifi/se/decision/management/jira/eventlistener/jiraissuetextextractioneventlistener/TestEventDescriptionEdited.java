@@ -15,7 +15,7 @@ import com.atlassian.jira.issue.comments.Comment;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestEventDescriptionEdited extends TestSetUpEventListener {

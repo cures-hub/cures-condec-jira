@@ -42,8 +42,8 @@ import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepos
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassKnowledgeElementPersistenceManager;
 
 /**
  * @issue How to access commits related to a Jira issue?
