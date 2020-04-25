@@ -12,7 +12,6 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestFilteringManager extends TestSetUp {
@@ -47,7 +46,7 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testConstructorWithFilterSettingsValidQueryEmpty() {
-		FilteringManager extractor = new FilteringManager(user, new FilterSettingsImpl("TEST", ""));
+		FilteringManager extractor = new FilteringManager(user, new FilterSettings("TEST", ""));
 		assertEquals(8, extractor.getAllElementsMatchingFilterSettings().size());
 	}
 
@@ -68,22 +67,16 @@ public class TestFilteringManager extends TestSetUp {
 	@Test
 	public void testSetFilterSettings() {
 		FilteringManager filteringManager = new FilteringManager(user, null);
-		FilterSettings settings = new FilterSettingsImpl("TEST", "TEST");
+		FilterSettings settings = new FilterSettings("TEST", "TEST");
 		filteringManager.setFilterSettings(settings);
 		assertEquals("TEST", filteringManager.getFilterSettings().getSearchString());
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void testFilterSettingsEmpty() {
-		FilteringManager filteringManager = new FilteringManager(user, new FilterSettingsImpl());
-		assertEquals(0, filteringManager.getAllElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	public void testGetElementsByType() {
 		List<String> knowledgeTypes = new ArrayList<String>();
 		knowledgeTypes.add("Decision");
-		FilterSettings settings = new FilterSettingsImpl("TEST", "TEST");
+		FilterSettings settings = new FilterSettings("TEST", "TEST");
 		settings.setSelectedJiraIssueTypes(knowledgeTypes);
 
 		FilteringManager filteringManager = new FilteringManager(user, settings);
@@ -93,7 +86,7 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testGetElementsBySubstring() {
-		FilterSettings settings = new FilterSettingsImpl("TEST", "Implement feature");
+		FilterSettings settings = new FilterSettings("TEST", "Implement feature");
 		FilteringManager filteringManager = new FilteringManager(user, settings);
 		assertEquals(1, filteringManager.getAllElementsMatchingFilterSettings().size());
 		assertEquals(1, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
@@ -103,7 +96,7 @@ public class TestFilteringManager extends TestSetUp {
 	public void testGetSubgraph() {
 		List<String> linkTypes = new ArrayList<String>();
 		linkTypes.add("support");
-		FilterSettings settings = new FilterSettingsImpl("TEST", "TEST");
+		FilterSettings settings = new FilterSettings("TEST", "TEST");
 		settings.setSelectedLinkTypes(linkTypes);
 
 		FilteringManager filteringManager = new FilteringManager(user, settings);

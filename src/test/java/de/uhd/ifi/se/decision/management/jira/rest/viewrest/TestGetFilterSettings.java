@@ -14,7 +14,7 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.rest.impl.ViewRestImpl;
 
@@ -54,7 +54,7 @@ public class TestGetFilterSettings extends TestSetUp {
 		Response filterSettingsResponse = viewRest.getFilterSettings(request, "?jql=issuetype%20%3D%20Issue", "TEST-1");
 		assertEquals(Response.Status.OK.getStatusCode(), filterSettingsResponse.getStatus());
 
-		FilterSettingsImpl filterSettings = (FilterSettingsImpl) filterSettingsResponse.getEntity();
+		FilterSettings filterSettings = (FilterSettings) filterSettingsResponse.getEntity();
 		List<String> issueTypesMatchingFilter = filterSettings.getNamesOfSelectedJiraIssueTypes();
 		assertEquals("Issue", issueTypesMatchingFilter.get(0));
 		assertEquals(1, issueTypesMatchingFilter.size());
@@ -67,7 +67,7 @@ public class TestGetFilterSettings extends TestSetUp {
 		Response filterSettingsResponse = viewRest.getFilterSettings(request, "?filter=allopenissues", "TEST-12");
 		assertEquals(Response.Status.OK.getStatusCode(), filterSettingsResponse.getStatus());
 
-		FilterSettingsImpl filterSettings = (FilterSettingsImpl) filterSettingsResponse.getEntity();
+		FilterSettings filterSettings = (FilterSettings) filterSettingsResponse.getEntity();
 		assertEquals(-1, filterSettings.getCreatedEarliest());
 		assertEquals(-1, filterSettings.getCreatedLatest());
 	}

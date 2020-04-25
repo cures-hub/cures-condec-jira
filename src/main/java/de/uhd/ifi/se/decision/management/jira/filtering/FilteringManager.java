@@ -13,8 +13,6 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.JiraQueryHandlerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -47,7 +45,7 @@ public class FilteringManager {
 	}
 
 	public FilteringManager(String projectKey, ApplicationUser user, String query) {
-		this(user, new FilterSettingsImpl(projectKey, query, user));
+		this(user, new FilterSettings(projectKey, query, user));
 	}
 
 	/**
@@ -101,7 +99,7 @@ public class FilteringManager {
 		if (filterSettings == null) {
 			return null;
 		}
-		JiraQueryHandler queryHandler = new JiraQueryHandlerImpl(user, filterSettings.getProjectKey(),
+		JiraQueryHandler queryHandler = new JiraQueryHandler(user, filterSettings.getProjectKey(),
 				filterSettings.getSearchString());
 		if (queryHandler == null || queryHandler.getQueryType() == JiraQueryType.OTHER) {
 			return null;
@@ -282,9 +280,9 @@ public class FilteringManager {
 	}
 
 	/**
-	 * @param {@link
-	 *            FilterSettings} object (=filter criteria) that the filtering
-	 *            manager uses.
+	 * @param filterSettings
+	 *            {@link FilterSettings} object (=filter criteria) that the
+	 *            filtering manager uses.
 	 */
 	public void setFilterSettings(FilterSettings filterSettings) {
 		this.filterSettings = filterSettings;

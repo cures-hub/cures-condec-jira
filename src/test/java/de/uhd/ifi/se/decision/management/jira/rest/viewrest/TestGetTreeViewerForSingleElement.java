@@ -13,7 +13,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.rest.impl.ViewRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -31,7 +31,7 @@ public class TestGetTreeViewerForSingleElement extends TestSetUp {
 		request = new MockHttpServletRequest();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
-		filterSettings = new FilterSettingsImpl("TEST", "");
+		filterSettings = new FilterSettings("TEST", "");
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class TestGetTreeViewerForSingleElement extends TestSetUp {
 
 	@Test
 	public void testRequestValidJiraIssueKeyValidFilterSettingsInvalid() {
-		FilterSettings filterSettings = new FilterSettingsImpl("NOTEXISTINGPROJECTKEY", "");
+		FilterSettings filterSettings = new FilterSettings("NOTEXISTINGPROJECTKEY", "");
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				viewRest.getTreeViewerForSingleElement(request, "NOTEXISTINGPROJECTKEY-5", filterSettings).getStatus());
 	}

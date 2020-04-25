@@ -1,70 +1,257 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.atlassian.jira.bc.issue.search.SearchService;
+import com.atlassian.jira.bc.issue.search.SearchService.ParseResult;
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.search.SearchException;
+import com.atlassian.jira.issue.search.SearchResults;
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 
 /**
- * Interface to handle queries in Jira, either written in Jira Query Language
- * (JQL) or as a preset filter (can also be set by the user).
+ * Handles queries in Jira, either written in Jira Query Language (JQL) or as a
+ * preset filter (can also be set by the user).
  */
-public interface JiraQueryHandler {
+public class JiraQueryHandler {
+	private static final Logger LOGGER = LoggerFactory.getLogger(JiraQueryHandler.class);
+
+	private SearchService searchService;
+	private ApplicationUser user;
+	private String query;
+	private String projectKey;
+	private JiraQueryType queryType;
+
+	public JiraQueryHandler(ApplicationUser user, String projectKey, String query) {
+		this.searchService = ComponentAccessor.getComponentOfType(SearchService.class);
+		this.user = user;
+		this.projectKey = projectKey;
+		this.queryType = JiraQueryType.getJiraQueryType(query);
+		this.query = getFinalQuery(query, queryType);
+	}
+
+	private String getFinalQuery(String query, JiraQueryType queryType) {
+		String finalQuery = getRawQuery(query);
+		switch (queryType) {
+		case FILTER:
+			finalQuery = finalQuery.substring(8);
+			finalQuery = "?jql=" + JiraFilter.getQueryForFilter(finalQuery);
+			break;
+		case JQL:
+			finalQuery = cleanDirtyJqlString(finalQuery);
+			break;
+		default:
+			finalQuery = "?jql=resolution = Unresolved";
+			break;
+		}
+		finalQuery = appendProjectKey(finalQuery);
+		return finalQuery;
+	}
+
+	private String appendProjectKey(String query) {
+		if (query.contains("project") || projectKey == null || projectKey.isBlank()) {
+			return query;
+		}
+		return query + " AND project = " + projectKey;
+	}
 
 	/**
-	 * Returns all Jira issues that match the query.
-	 * 
-	 * @return list of Jira issues that match the query.
+	 * The searchTerm might start with "abc§" but should start with "?". This method
+	 * replaces "abc§" with "?".
 	 */
-	List<Issue> getJiraIssuesFromQuery();
+	private String getRawQuery(String searchString) {
+		if (searchString == null || searchString.isEmpty()) {
+			return "?jql = resolution = Unresolved";
+		}
+		String croppedQuery = searchString;
+		String[] split = searchString.split("§");
+		if (split.length > 1) {
+			croppedQuery = "?" + split[1];
+		}
+		return croppedQuery;
+	}
+
+	private String cleanDirtyJqlString(String jql) {
+		return jql.replaceAll("%20", " ").replaceAll("%3D", "=").replaceAll("%2C", ",");
+	}
 
 	/**
-	 * Returns the names of the Jira issue types explicitly mentioned in the query,
-	 * e.g. "issuetype in (Decision, Issue)". Returns an empty list for the query
-	 * "type != null".
-	 * 
-	 * @return names of the Jira issue types explicitly mentioned in the query.
+	 * @return names of the Jira issue types explicitly mentioned in the query. e.g.
+	 *         "issuetype in (Decision, Issue)". Returns an empty list for the query
+	 *         "type != null".
 	 */
-	List<String> getNamesOfJiraIssueTypesInQuery();
+	public List<String> getNamesOfJiraIssueTypesInQuery() {
+		if (!query.contains("issuetype")) {
+			return new ArrayList<String>();
+		}
+		List<String> types = new ArrayList<String>();
+		String queryPartContainingTypes = query.split("issuetype")[1];
+		queryPartContainingTypes = queryPartContainingTypes.split("AND")[0];
+
+		// issuetype = Decision
+		if (queryPartContainingTypes.contains("=")) {
+			String split[] = queryPartContainingTypes.split("=");
+			types.add(split[1].trim());
+			return types;
+		}
+
+		// issuetype in (Decision, Issue, ...)
+		String issueTypesSeparated = queryPartContainingTypes.split("AND")[0];
+		String issueTypesCleared = issueTypesSeparated.replaceAll("[()]", "").replaceAll("\"", "").replaceAll("in", "");
+		String[] split = issueTypesCleared.split(",");
+		for (String issueType : split) {
+			issueType = issueType.replaceAll("[()]", "");
+			types.add(issueType.trim());
+		}
+		return types;
+	}
 
 	/**
-	 * Returns the earliest creation date (start date) that Jira issues are included
-	 * as a long value or -1 if empty.
-	 * 
-	 * @return creation start date as a long value or -1 if empty.
+	 * @return earliest creation date (start date) that Jira issues are included in
+	 *         the filter result as a long value or -1 if empty.
 	 */
-	long getCreatedEarliest();
+	public long getCreatedEarliest() {
+		if (!query.contains("created") || !query.contains(" >= ")) {
+			return -1;
+		}
+		String timeSubstringOfQuery = getQuerySubstringWithTimeInformation().split(">=")[1].trim();
+		long startTime = 0;
+		if (timeSubstringOfQuery.matches("(\\d\\d\\d\\d-\\d\\d-\\d\\d)(.)*")) {
+			// created >= 1970-01-01
+			startTime = getDateFromYearMonthDateFormat(timeSubstringOfQuery);
+		} else if (timeSubstringOfQuery.matches("(-\\d+(.)*)")) {
+			// created >= -1w
+			long currentDate = new Date().getTime();
+			startTime = getTimeFromNumberAndFactorLetter(currentDate, timeSubstringOfQuery);
+		}
+		return startTime;
+	}
+
+	private String getQuerySubstringWithTimeInformation() {
+		return query.substring(query.indexOf("created"), query.length());
+	}
 
 	/**
-	 * Returns the latest creation date (end date) that Jira issues are included as
-	 * a long value or -1 if empty.
-	 * 
-	 * @return creation end date as a long value or -1 if empty.
+	 * @return latest creation date (end date) that Jira issues are included in the
+	 *         filter result as a long value or -1 if empty.
 	 */
-	long getCreatedLatest();
+	public long getCreatedLatest() {
+		if (!query.contains("created") || !query.contains(" <= ")) {
+			return -1;
+		}
+		String timeSubstringOfQuery = getQuerySubstringWithTimeInformation().split("<=")[1].trim();
+		long endTime = 0;
+		if (timeSubstringOfQuery.matches("(\\d\\d\\d\\d-\\d\\d-\\d\\d)(.)*")) {
+			// created <= 1970-01-01
+			endTime = getDateFromYearMonthDateFormat(timeSubstringOfQuery);
+		} else if (timeSubstringOfQuery.matches("-\\d+(.)*")) {
+			// created <= -1w
+			long currentDate = new Date().getTime();
+			endTime = getTimeFromNumberAndFactorLetter(currentDate, timeSubstringOfQuery);
+		}
+		return endTime;
+	}
+
+	private long getDateFromYearMonthDateFormat(String dateAsString) {
+		long dateAsLong = -1;
+		try {
+			DateFormat simple = new SimpleDateFormat("yyyy-MM-dd");
+			Date date = simple.parse(dateAsString);
+			dateAsLong = date.getTime();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return dateAsLong;
+	}
+
+	private long getTimeFromNumberAndFactorLetter(long currentDate, String dateAsNumberAndLetter) {
+		long factor;
+		String clearedTime = dateAsNumberAndLetter.replaceAll("\\s(.)+", "");
+		char factorLetter = clearedTime.charAt(clearedTime.length() - 1);
+		factor = getTimeFactor(factorLetter);
+		long queryTime = currentDate + 1;
+		String queryTimeString = dateAsNumberAndLetter.replaceAll("\\D+", "");
+		try {
+			queryTime = Long.parseLong(queryTimeString);
+		} catch (NumberFormatException e) {
+			LOGGER.error("No valid time was given in the Jira query.");
+		}
+		long result = currentDate - (queryTime * factor);
+		return result;
+	}
+
+	private long getTimeFactor(char factorAsALetter) {
+		switch (factorAsALetter) {
+		case 'm':
+			return 60000;
+		case 'h':
+			return 3600000;
+		case 'd':
+			return 86400000;
+		case 'w':
+			return 604800000;
+		default:
+			return 1;
+		}
+	}
 
 	/**
-	 * Returns the query as a String. If a filter was inserted in the constructor,
-	 * the respective JQL query is returned.
-	 * 
-	 * @return query as a String.
+	 * @return query as a String. If a filter was inserted in the constructor, the
+	 *         respective JQL query is returned.
 	 */
-	String getQuery();
+	public String getQuery() {
+		return query;
+	}
 
 	/**
-	 * Returns the query object.
-	 * 
 	 * @return query object.
 	 */
-	Query getQueryObject();
+	public Query getQueryObject() {
+		return getParseResult().getQuery();
+	}
 
 	/**
-	 * Returns the query type. This can either be a query in Jira Query Language
-	 * (JQL), a preset filter (can also be set by the user), or could be of any
-	 * other format.
-	 * 
-	 * @see JiraQueryType
-	 * @return query type, either JQL, FILTER, or OTHER if unknown.
+	 * @return {@link JiraQueryType}, either JQL, FILTER, or OTHER if unknown. This
+	 *         can either be a query in Jira Query Language (JQL), a preset filter
+	 *         (can also be set by the user), or could be of any other format.
 	 */
-	JiraQueryType getQueryType();
+	public JiraQueryType getQueryType() {
+		return queryType;
+	}
+
+	/**
+	 * @return list of Jira issues that match the query.
+	 */
+	public List<Issue> getJiraIssuesFromQuery() {
+		ParseResult parseResult = getParseResult();
+		if (!parseResult.isValid()) {
+			LOGGER.error("Getting Jira issues from JQL query failed. " + parseResult.getErrors().toString());
+			return new ArrayList<Issue>();
+		}
+
+		List<Issue> jiraIssues = new ArrayList<Issue>();
+		try {
+			SearchResults<Issue> results = searchService.search(user, parseResult.getQuery(),
+					PagerFilter.getUnlimitedFilter());
+			jiraIssues = JiraSearchServiceHelper.getJiraIssues(results);
+		} catch (SearchException e) {
+			LOGGER.error("Getting Jira issues from JQL query failed. Message: " + e.getMessage());
+		}
+		return jiraIssues;
+	}
+
+	private ParseResult getParseResult() {
+		return searchService.parseQuery(this.user, query.substring(5));
+	}
 }

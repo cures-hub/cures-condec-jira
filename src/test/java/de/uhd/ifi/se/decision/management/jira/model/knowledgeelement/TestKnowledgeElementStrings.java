@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.model.decisionknowledgeelement;
+package de.uhd.ifi.se.decision.management.jira.model.knowledgeelement;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -22,7 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 /**
  * Test class for decision knowledge element getter and setter methods
  */
-public class TestDecisionKnowledgeElementStrings extends TestSetUp {
+public class TestKnowledgeElementStrings extends TestSetUp {
     private long id;
     private String summary;
     private String description;

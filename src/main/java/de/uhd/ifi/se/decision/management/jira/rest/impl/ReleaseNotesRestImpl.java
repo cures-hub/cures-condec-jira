@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.JiraQueryHandlerImpl;
+import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.persistence.ReleaseNotesPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.MarkdownCreator;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
@@ -47,7 +47,7 @@ public class ReleaseNotesRestImpl implements ReleaseNotesRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		String query = "?jql=project=" + projectKey + " && resolved >= " + releaseNoteConfiguration.getStartDate()
 				+ " && resolved <= " + releaseNoteConfiguration.getEndDate();
-		JiraQueryHandler queryHandler = new JiraQueryHandlerImpl(user, projectKey, query);
+		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, query);
 		List<Issue> jiraIssuesMatchingQuery = queryHandler.getJiraIssuesFromQuery();
 		if (jiraIssuesMatchingQuery.size() == 0) {
 			return Response.status(Response.Status.BAD_REQUEST)

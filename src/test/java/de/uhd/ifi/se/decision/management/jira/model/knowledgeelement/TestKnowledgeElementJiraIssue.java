@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.model.decisionknowledgeelement;
+package de.uhd.ifi.se.decision.management.jira.model.knowledgeelement;
 
 import static org.junit.Assert.assertEquals;
 
@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
-public class TestDecisionKnowledgeElementJiraIssue extends TestSetUp {
+public class TestKnowledgeElementJiraIssue extends TestSetUp {
 	private KnowledgeElement decisionKnowledgeElement;
 
 	@Before

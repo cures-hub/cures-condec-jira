@@ -30,7 +30,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -349,7 +349,7 @@ public class ViewRestImpl implements ViewRest {
 			return checkIfElementIsValid(elementKey);
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		return Response.ok(new FilterSettingsImpl(projectKey, searchTerm, user)).build();
+		return Response.ok(new FilterSettings(projectKey, searchTerm, user)).build();
 	}
 
 	@Override
