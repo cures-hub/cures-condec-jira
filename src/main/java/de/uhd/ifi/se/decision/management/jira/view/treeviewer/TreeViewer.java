@@ -14,7 +14,7 @@ import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -113,7 +113,7 @@ public class TreeViewer {
 			}
 		}
 
-		filteringManager = new FilteringManagerImpl(filterSettings);
+		filteringManager = new FilteringManager(filterSettings);
 		data = new HashSet<Data>(Arrays.asList(rootNode));
 		for (Data node : this.data) {
 			Iterator<Data> iterator = node.getChildren().iterator();

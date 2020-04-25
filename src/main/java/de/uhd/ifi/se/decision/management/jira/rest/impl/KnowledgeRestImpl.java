@@ -24,7 +24,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -363,7 +363,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 		}
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		FilteringManager filteringManager = new FilteringManagerImpl(projectKey, user, query);
+		FilteringManager filteringManager = new FilteringManager(projectKey, user, query);
 		List<KnowledgeElement> elementsMatchingQuery = filteringManager.getAllElementsMatchingFilterSettings();
 		return Response.ok(elementsMatchingQuery).build();
 	}
