@@ -246,10 +246,7 @@ public class FilteringManager {
 		if (element.getType() == KnowledgeType.OTHER) {
 			type = element.getTypeAsString();
 		}
-		if (filterSettings.getNamesOfSelectedJiraIssueTypes().contains(type)) {
-			return true;
-		}
-		return false;
+		return filterSettings.getNamesOfSelectedJiraIssueTypes().contains(type);
 	}
 
 	/**

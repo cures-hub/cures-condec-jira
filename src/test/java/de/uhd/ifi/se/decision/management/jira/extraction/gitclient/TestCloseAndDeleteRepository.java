@@ -8,13 +8,13 @@ import java.util.List;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 
 public class TestCloseAndDeleteRepository extends TestSetUpGit {
 
     @Test
     public void testCloseGitNull() {
-	GitClient gitClient = new GitClientImpl();
+	GitClient gitClient = new GitClient();
 	gitClient.closeAll();
 	assertNotNull(gitClient);
     }
@@ -27,7 +27,7 @@ public class TestCloseAndDeleteRepository extends TestSetUpGit {
 
     @Test
     public void testDeleteGitNull() {
-	GitClient gitClient = new GitClientImpl();
+	GitClient gitClient = new GitClient();
 	gitClient.deleteRepository(GIT_URI);
 	assertNotNull(gitClient);
     }
@@ -36,7 +36,7 @@ public class TestCloseAndDeleteRepository extends TestSetUpGit {
     public void testDeleteRepositoryNotNull() {
 	List<String> uris = new ArrayList<String>();
 	uris.add(GIT_URI);
-	GitClient gitClient = new GitClientImpl(uris, "TEST");
+	GitClient gitClient = new GitClient(uris, "TEST");
 	gitClient.deleteRepository(GIT_URI);
 	assertNotNull(gitClient);
     }

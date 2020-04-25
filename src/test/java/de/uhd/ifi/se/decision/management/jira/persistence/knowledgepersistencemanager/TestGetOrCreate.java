@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import net.java.ao.test.jdbc.NonTransactional;
 

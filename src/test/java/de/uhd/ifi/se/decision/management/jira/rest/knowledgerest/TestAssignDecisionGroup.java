@@ -1,14 +1,21 @@
 package de.uhd.ifi.se.decision.management.jira.rest.knowledgerest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -17,12 +24,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import de.uhd.ifi.se.decision.management.jira.rest.impl.KnowledgeRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class TestAssignDecisionGroup extends TestSetUp {
 

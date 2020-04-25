@@ -72,6 +72,11 @@ public class TestFilteringManager extends TestSetUp {
 		assertEquals("TEST", filteringManager.getFilterSettings().getSearchString());
 	}
 
+	public void testFilterSettingsEmpty() {
+		FilteringManager filteringManager = new FilteringManager(user, new FilterSettings(null, null));
+		assertEquals(0, filteringManager.getAllElementsMatchingFilterSettings().size());
+	}
+
 	@Test
 	public void testGetElementsByType() {
 		List<String> knowledgeTypes = new ArrayList<String>();

@@ -9,7 +9,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 
 public class TestGetCommitsForJiraIssue extends TestSetUpGit {
 
@@ -40,7 +40,7 @@ public class TestGetCommitsForJiraIssue extends TestSetUpGit {
 
     @Test
     public void testGitNull() {
-	GitClient gitClient = new GitClientImpl();
+	GitClient gitClient = new GitClient();
 	List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests, GIT_URI);
 	assertEquals(0, commits.size());
     }

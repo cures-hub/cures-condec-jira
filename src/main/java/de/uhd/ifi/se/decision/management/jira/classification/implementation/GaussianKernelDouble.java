@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
+
 import smile.math.kernel.GaussianKernel;
 import smile.math.kernel.MercerKernel;
 

@@ -15,7 +15,6 @@ import com.sun.jersey.api.client.ClientResponse.Status;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.rest.impl.ViewRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;

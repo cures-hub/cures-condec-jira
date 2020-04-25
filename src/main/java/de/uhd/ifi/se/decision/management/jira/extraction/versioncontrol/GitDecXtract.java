@@ -13,7 +13,7 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
@@ -30,12 +30,12 @@ public class GitDecXtract {
 
     public GitDecXtract(String projecKey) {
 	this.projecKey = projecKey;
-	gitClient = new GitClientImpl(projecKey);
+	gitClient = new GitClient(projecKey);
     }
 
     public GitDecXtract(String projecKey, List<String> uri) {
 	this.projecKey = projecKey;
-	gitClient = new GitClientImpl(uri, projecKey);
+	gitClient = new GitClient(uri, projecKey);
     }
 
     /// TODO: can this be done better in JAVA?
@@ -65,11 +65,11 @@ public class GitDecXtract {
 	List<KnowledgeElement> elementsFromCode = new ArrayList<>();
 	String repoUri = gitClient.getRepoUriFromBranch(branch);
 	// git client which has access to correct version of files (revCommitEnd)
-	GitClient endAnchoredGitClient = new GitClientImpl((GitClientImpl) gitClient);
+	GitClient endAnchoredGitClient = new GitClient((GitClient) gitClient);
 	if (branch != null) {
 	    endAnchoredGitClient.checkoutFeatureBranch(branch);
 	}
-	GitClient startAnchoredGitClient = new GitClientImpl((GitClientImpl) gitClient);
+	GitClient startAnchoredGitClient = new GitClient((GitClient) gitClient);
 	if (branch != null) {
 	    startAnchoredGitClient.checkoutCommit(revCommitStart.getParent(0), repoUri);
 	}

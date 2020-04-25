@@ -1,17 +1,24 @@
 package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
+
 import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Class to identify decision knowledge in natural language texts using a binary

@@ -1,12 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
+import java.util.List;
+
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
+
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.GaussianKernelDouble;
 import smile.classification.SVM;
 import smile.math.kernel.MercerKernel;
 import weka.core.SerializationHelper;
-
-import java.util.List;
 
 public abstract class AbstractClassifier implements Classifier{
 

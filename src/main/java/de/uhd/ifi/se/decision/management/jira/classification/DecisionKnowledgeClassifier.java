@@ -1,16 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.util.JiraHome;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.BinaryClassifierImpl;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.FineGrainedClassifierImpl;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.util.JiraHome;
+
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.BinaryClassifierImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.FineGrainedClassifierImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
  * Interface to identify decision knowledge in natural language texts using a

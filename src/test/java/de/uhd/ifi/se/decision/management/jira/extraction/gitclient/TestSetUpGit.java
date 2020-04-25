@@ -24,7 +24,7 @@ import com.atlassian.jira.mock.issue.MockIssue;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
@@ -67,7 +67,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 	uris.add(GIT_URI);
 	ConfigPersistenceManager.setGitUris("TEST", GIT_URI);
 	ConfigPersistenceManager.setDefaultBranches("TEST", "master");
-	gitClient = new GitClientImpl(uris, DIRECTORY.getAbsolutePath(), "TEST");
+	gitClient = new GitClient(uris, DIRECTORY.getAbsolutePath(), "TEST");
 	// above line will log errors for pulling from still empty remote repositry.
 	makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
 	makeExampleCommit(fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
@@ -115,7 +115,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 	setupBranchForTranscriber();
 
 	gitClient.closeAll();
-	gitClient = new GitClientImpl(uris, DIRECTORY.getAbsolutePath(), "TEST");
+	gitClient = new GitClient(uris, DIRECTORY.getAbsolutePath(), "TEST");
     }
 
     @Before

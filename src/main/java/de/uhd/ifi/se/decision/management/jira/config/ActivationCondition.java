@@ -1,11 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
+import java.util.Map;
+
 import com.atlassian.jira.plugin.webfragment.conditions.AbstractWebCondition;
 import com.atlassian.jira.plugin.webfragment.model.JiraHelper;
 import com.atlassian.jira.user.ApplicationUser;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
-import java.util.Map;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
  * Condition for the activation of the plugin. Determines whether the plugin is displayed

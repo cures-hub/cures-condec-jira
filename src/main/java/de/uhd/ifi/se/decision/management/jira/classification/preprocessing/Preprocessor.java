@@ -1,11 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.classification.preprocessing;
 
+import java.util.Arrays;
+import java.util.List;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.FileTrainer;
-
-import java.util.Arrays;
-import java.util.List;
 
 public interface Preprocessor {
 

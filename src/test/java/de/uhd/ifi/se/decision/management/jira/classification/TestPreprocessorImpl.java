@@ -1,15 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
 
 public class TestPreprocessorImpl extends TestSetUp {
 

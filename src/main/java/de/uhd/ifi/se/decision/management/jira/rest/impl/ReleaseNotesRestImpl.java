@@ -21,7 +21,6 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
-import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.persistence.ReleaseNotesPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.MarkdownCreator;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;

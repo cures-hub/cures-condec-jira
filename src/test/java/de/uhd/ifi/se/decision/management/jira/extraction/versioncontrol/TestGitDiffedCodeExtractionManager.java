@@ -1,8 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 
 
 /** think how this can be tested alone, without too much helper code.

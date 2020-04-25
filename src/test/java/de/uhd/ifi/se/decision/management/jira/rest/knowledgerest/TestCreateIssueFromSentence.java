@@ -1,12 +1,22 @@
 package de.uhd.ifi.se.decision.management.jira.rest.knowledgerest;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
@@ -14,15 +24,6 @@ import de.uhd.ifi.se.decision.management.jira.rest.impl.KnowledgeRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
-import org.junit.Before;
-import org.junit.Test;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 public class TestCreateIssueFromSentence extends TestSetUp {
 

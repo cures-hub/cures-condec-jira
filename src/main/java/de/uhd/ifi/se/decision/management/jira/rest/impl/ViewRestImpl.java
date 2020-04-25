@@ -17,6 +17,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.jgit.lib.Ref;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.issue.Issue;
@@ -24,20 +28,18 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
+
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
@@ -45,9 +47,6 @@ import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
-import org.eclipse.jgit.lib.Ref;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * REST resource for view
@@ -106,7 +105,7 @@ public class ViewRestImpl implements ViewRest {
 		// get current branch name
 		// iterate over commits to get all messages and post each one as a comment
 		// make sure to not post duplicates
-		gitClient = new GitClientImpl(projectKey);
+		gitClient = new GitClient(projectKey);
 		for (String repoUri : gitClient.getRemoteUris()) {
 			List<Ref> branches = gitClient.getRemoteBranches(repoUri);
 			for (Ref branch : branches) {
@@ -122,7 +121,7 @@ public class ViewRestImpl implements ViewRest {
 	}
 
 	private Response getDiffViewerResponse(String projectKey, String filter) {
-		gitClient = new GitClientImpl(projectKey);
+		gitClient = new GitClient(projectKey);
 		Response resp = null;
 		List<Ref> branches = gitClient.getAllRemoteBranches();
 		Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);

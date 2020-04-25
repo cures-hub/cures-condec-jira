@@ -1,20 +1,21 @@
 package de.uhd.ifi.se.decision.management.jira.rest.viewrest;
 
-import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
-import com.atlassian.jira.user.ApplicationUser;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.ViewRestImpl;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+import com.atlassian.jira.user.ApplicationUser;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
+import de.uhd.ifi.se.decision.management.jira.rest.impl.ViewRestImpl;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestGetCompareVis extends TestSetUp {
 	private ViewRest viewRest;

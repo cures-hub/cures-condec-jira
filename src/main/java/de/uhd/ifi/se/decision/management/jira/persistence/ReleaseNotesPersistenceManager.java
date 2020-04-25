@@ -1,17 +1,19 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInDatabase;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteImpl;
 import net.java.ao.Query;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class ReleaseNotesPersistenceManager {

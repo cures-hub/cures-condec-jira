@@ -1,12 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.releasenotespersistencemanager;
 
+import org.junit.BeforeClass;
+
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.persistence.ReleaseNotesPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-import org.junit.BeforeClass;
 
 public abstract class TestReleaseNotesPersistenceManagerSetUp extends TestSetUp {
 

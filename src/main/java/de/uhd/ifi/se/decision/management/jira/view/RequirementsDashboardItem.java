@@ -15,6 +15,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.plugin.PluginParseException;
 import com.atlassian.plugin.web.ContextProvider;
 import com.google.common.collect.Maps;
+
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;

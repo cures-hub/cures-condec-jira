@@ -39,7 +39,7 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 	this.issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(testIssueKey);
 	List<String> uris = new ArrayList<String>();
 	uris.add(GIT_URI);
-	// this.gitClient = new GitClientImpl(uris, super.getRepoBaseDirectory(),
+	// this.gitClient = new GitClient(uris, super.getRepoBaseDirectory(),
 	// "TEST");// ComponentGetter.getGitClient(issue.getProjectObject().getKey());//
 	this.branch = null;
 	Iterator<Ref> it = gitClient.getAllRemoteBranches().iterator();

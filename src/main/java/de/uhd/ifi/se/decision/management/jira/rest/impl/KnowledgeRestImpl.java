@@ -21,9 +21,9 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
+
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
+import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -457,7 +457,7 @@ public class KnowledgeRestImpl implements KnowledgeRest {
 					.build();
 		}
 
-		String summary = new CodeSummarizerImpl(projectKey).createSummary(jiraIssue, probability);
+		String summary = new CodeSummarizer(projectKey).createSummary(jiraIssue, probability);
 		if (summary == null || summary.isEmpty()) {
 			summary = "This JIRA issue does not have any code committed.";
 		}

@@ -17,7 +17,7 @@ import com.atlassian.sal.api.user.UserManager;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 /**
@@ -102,7 +102,7 @@ public class ComponentGetter {
 		if (gitClients.containsKey(projectKey)) {
 			return gitClients.get(projectKey);
 		}
-		GitClient gitClient = new GitClientImpl(projectKey);
+		GitClient gitClient = new GitClient(projectKey);
 		gitClients.put(projectKey, gitClient);
 		return gitClient;
 	}

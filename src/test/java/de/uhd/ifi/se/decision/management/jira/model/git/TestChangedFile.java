@@ -12,7 +12,6 @@ import org.junit.Test;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 
 public class TestChangedFile extends TestSetUpGit {
 
