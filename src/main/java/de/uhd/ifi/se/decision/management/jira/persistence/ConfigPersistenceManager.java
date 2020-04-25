@@ -123,7 +123,7 @@ public class ConfigPersistenceManager {
 		return "true".equals(isKnowledgeTypeEnabled);
 	}
 
-	public static boolean isUseClassiferForIssueComments(String projectKey) {
+	public static boolean isUseClassifierForIssueComments(String projectKey) {
 		return getValue(projectKey, "setClassiferForIssueComments").equals("true");
 	}
 

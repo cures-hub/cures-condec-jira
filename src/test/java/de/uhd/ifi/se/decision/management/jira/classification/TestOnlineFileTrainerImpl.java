@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -62,7 +61,7 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
 	@NonTransactional
 	public void testSaveArffFile() {
 		File file = trainer.saveTrainingFile(false);
-		Assert.assertTrue(file.exists());
+		assertTrue(file.exists());
 		file.delete();
 	}
 

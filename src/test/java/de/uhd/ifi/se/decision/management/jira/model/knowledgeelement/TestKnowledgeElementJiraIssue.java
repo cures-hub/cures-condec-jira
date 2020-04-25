@@ -73,8 +73,8 @@ public class TestKnowledgeElementJiraIssue extends TestSetUp {
 
 	@Test
 	public void testSetProjectKey() {
-		this.decisionKnowledgeElement.setProject("CONDEC");
-		assertEquals("CONDEC", this.decisionKnowledgeElement.getProject().getProjectKey());
+		this.decisionKnowledgeElement.setProject("TEST");
+		assertEquals("TEST", this.decisionKnowledgeElement.getProject().getProjectKey());
 	}
 
 	@Test

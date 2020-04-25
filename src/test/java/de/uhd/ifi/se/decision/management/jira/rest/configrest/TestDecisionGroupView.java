@@ -22,12 +22,12 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.rest.impl.ConfigRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestDecisionGroupView extends TestSetUp {
 
 	private ConfigRest configRest;
 	private KnowledgeElement newElement;
-
 
 	@Before
 	public void setUp() {
@@ -44,9 +44,9 @@ public class TestDecisionGroupView extends TestSetUp {
 		KnowledgeElement decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey,
 				key, DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
 		KnowledgePersistenceManager kpManager = new KnowledgePersistenceManager(projectKey);
-		KnowledgeElement nextElement =
-				kpManager.getManagerForSingleLocation(decisionKnowledgeElement.getDocumentationLocation())
-						.insertKnowledgeElement(decisionKnowledgeElement, JiraUsers.SYS_ADMIN.getApplicationUser());
+		KnowledgeElement nextElement = kpManager
+				.getManagerForSingleLocation(decisionKnowledgeElement.getDocumentationLocation())
+				.insertKnowledgeElement(decisionKnowledgeElement, JiraUsers.SYS_ADMIN.getApplicationUser());
 		DecisionGroupManager.insertGroup("TestGroup1", nextElement);
 
 		KnowledgeElement element = new KnowledgeElement();
@@ -64,6 +64,7 @@ public class TestDecisionGroupView extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetAllDecisionElementsWithCertainGroup() {
 		Response resp = configRest.getAllDecisionElementsWithCertainGroup("TEST", "TestGroup1");
 		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
@@ -71,6 +72,7 @@ public class TestDecisionGroupView extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetAllClassElementsWithCertainGroup() {
 		Response resp = configRest.getAllClassElementsWithCertainGroup("TEST", "TestGroup2");
 		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
@@ -78,6 +80,7 @@ public class TestDecisionGroupView extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testRenameDecisionGroup() {
 		Response resp = configRest.renameDecisionGroup("TEST", "TestGroup2", "NewTestGroup2");
 		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
@@ -86,11 +89,11 @@ public class TestDecisionGroupView extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testDeleteDecisionGroup() {
 		DecisionGroupManager.insertGroup("TestGroup3", newElement);
 		configRest.deleteDecisionGroup("TEST", "TestGroup3");
 		assertFalse(DecisionGroupManager.getGroupsForElement(newElement).contains("TestGroup3"));
 	}
-
 
 }

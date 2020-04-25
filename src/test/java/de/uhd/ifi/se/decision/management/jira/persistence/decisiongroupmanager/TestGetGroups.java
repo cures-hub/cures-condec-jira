@@ -32,7 +32,7 @@ public class TestGetGroups extends TestSetUp {
 		String summary = "Test";
 		String description = "Test";
 		KnowledgeType type = KnowledgeType.SOLUTION;
-		String projectKey = "Test";
+		String projectKey = "TEST";
 		String key = "Test-100";
 
 		this.decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey, key,
@@ -89,7 +89,7 @@ public class TestGetGroups extends TestSetUp {
 
 	@Test
 	public void testGetAllDecisionGroups() {
-		assertTrue(DecisionGroupManager.getAllDecisionGroups("Test").contains("TestGroup1"));
+		assertTrue(DecisionGroupManager.getAllDecisionGroups("TEST").contains("TestGroup1"));
 	}
 
 	@Test
@@ -106,7 +106,8 @@ public class TestGetGroups extends TestSetUp {
 		element.setProject("TEST");
 		element.setType(KnowledgeType.OTHER);
 		CodeClassPersistenceManager ccManager = new CodeClassPersistenceManager("TEST");
-		KnowledgeElement newElement = ccManager.insertKnowledgeElement(element, JiraUsers.SYS_ADMIN.getApplicationUser());
+		KnowledgeElement newElement = ccManager.insertKnowledgeElement(element,
+				JiraUsers.SYS_ADMIN.getApplicationUser());
 		DecisionGroupManager.insertGroup("TestGroup2", newElement);
 		assertEquals(1, DecisionGroupManager.getAllClassElementsWithCertainGroup("TestGroup2", "TEST").size());
 	}

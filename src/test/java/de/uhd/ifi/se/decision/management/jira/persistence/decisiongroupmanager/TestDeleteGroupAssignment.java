@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
+import net.java.ao.test.jdbc.NonTransactional;
 
 /**
  * Test class for the persistence of the assigned decision groups.
@@ -42,6 +43,7 @@ public class TestDeleteGroupAssignment extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testDeleteGroupAssignmentIdNotNull() {
 		DecisionGroupManager.insertGroup("TestGroup2", this.decisionKnowledgeElement);
 		Long elementId = DecisionGroupManager.getGroupInDatabase("TestGroup2", decisionKnowledgeElement).getId();
@@ -49,16 +51,19 @@ public class TestDeleteGroupAssignment extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testDeleteGroupAssignmentGroupNull() {
 		assertFalse(DecisionGroupManager.deleteGroupAssignment(null, this.decisionKnowledgeElement));
 	}
 
 	@Test
+	@NonTransactional
 	public void testDeleteGroupAssignmentElementNull() {
 		assertFalse(DecisionGroupManager.deleteGroupAssignment("TestGroup1", null));
 	}
 
 	@Test
+	@NonTransactional
 	public void testDeleteGroupAssignmentGroupAndElementNotNull() {
 		DecisionGroupManager.insertGroup("TestGroup3", this.decisionKnowledgeElement);
 		DecisionGroupManager.deleteGroupAssignment("TestGroup3", this.decisionKnowledgeElement);
@@ -66,6 +71,7 @@ public class TestDeleteGroupAssignment extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testDeleteGroupWithGroupNull() {
 		DecisionGroupManager.insertGroup("TestGroup4", this.decisionKnowledgeElement);
 		assertFalse(DecisionGroupManager.deleteGroup(null, "TEST"));
@@ -73,6 +79,7 @@ public class TestDeleteGroupAssignment extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testDeleteGroup() {
 		DecisionGroupManager.insertGroup("TestGroup4", this.decisionKnowledgeElement);
 		DecisionGroupManager.deleteGroup("TestGroup4", "TEST");

@@ -44,20 +44,18 @@ public class SettingsOfAllProjects extends AbstractSettingsServlet {
 			return new ConcurrentHashMap<>();
 		}
 
-		List<DecisionKnowledgeProject> configMap = getProjects();
-		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
+		List<DecisionKnowledgeProject> projects = getProjects();
+		Map<String, Object> velocityParameters = new ConcurrentHashMap<>();
 		velocityParameters.put("request", request);
-		velocityParameters.put("projects", configMap);
+		velocityParameters.put("projects", projects);
 
 		return velocityParameters;
 	}
 
 	public static List<DecisionKnowledgeProject> getProjects() {
-		List<DecisionKnowledgeProject> projects = new ArrayList<DecisionKnowledgeProject>();
+		List<DecisionKnowledgeProject> projects = new ArrayList<>();
 		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
-			String projectKey = project.getKey();
-			String projectName = project.getName();
-			DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(projectKey, projectName);
+			DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
 			projects.add(jiraProject);
 		}
 		return projects;

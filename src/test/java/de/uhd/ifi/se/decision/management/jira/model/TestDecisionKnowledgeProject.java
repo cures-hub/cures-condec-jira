@@ -10,63 +10,44 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 
 /**
- * Test class for a JIRA project with the configuration settings used in this
- * plug-in
+ * Test class for a Jira project with the configuration settings used in this
+ * plug-in.
  */
 public class TestDecisionKnowledgeProject extends TestSetUp {
 	private DecisionKnowledgeProject project;
-	private String projectKey;
-	private String projectName;
-	private boolean isActivated;
-	private boolean isIssueStrategy;
 
 	@Before
 	public void setUp() {
 		init();
-		this.projectKey = "TestKey";
-		this.projectName = "TestName";
-		this.isActivated = true;
-		this.isIssueStrategy = true;
-		this.project = new DecisionKnowledgeProject(projectKey, projectName);
+		this.project = new DecisionKnowledgeProject(JiraProjects.getTestProject());
 	}
 
 	@Test
 	public void testGetProjectKey() {
-		assertEquals(this.projectKey, this.project.getProjectKey());
+		assertEquals("TEST", project.getProjectKey());
 	}
 
 	@Test
 	public void testGetProjectName() {
-		assertEquals(this.projectName, this.project.getProjectName());
+		assertEquals("TEST", project.getProjectName());
 	}
 
 	@Test
 	public void testIsActivated() {
-		assertEquals(this.isActivated, this.project.isActivated());
+		assertEquals(true, this.project.isActivated());
 	}
 
 	@Test
 	public void testIsIssueStrategy() {
-		assertEquals(this.isIssueStrategy, this.project.isIssueStrategy());
-	}
-
-	@Test
-	public void testSetProjectKey() {
-		this.project.setProjectKey(this.projectKey + "New");
-		assertEquals(this.projectKey + "New", this.project.getProjectKey());
-	}
-
-	@Test
-	public void testSetProjectName() {
-		this.project.setProjectName(this.projectName + "New");
-		assertEquals(this.projectName + "New", this.project.getProjectName());
+		assertEquals(true, this.project.isIssueStrategy());
 	}
 
 	@Test
 	public void testGetKnowledgeTypes() {
-		assertEquals(18, project.getDecisionKnowledgeTypes().size(), 0.0);
+		assertEquals(18, project.getDecisionKnowledgeTypes().size());
 	}
 
 	@Test

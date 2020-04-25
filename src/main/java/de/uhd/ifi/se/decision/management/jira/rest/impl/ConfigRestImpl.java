@@ -701,7 +701,7 @@ public class ConfigRestImpl implements ConfigRest {
 			return isValidDataResponse;
 		}
 
-		if (!ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey)) {
+		if (!ConfigPersistenceManager.isUseClassifierForIssueComments(projectKey)) {
 			return Response.status(Status.FORBIDDEN)
 					.entity(ImmutableMap.of("error", "Automatic classification is disabled for this project.")).build();
 		}
