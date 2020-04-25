@@ -9,17 +9,15 @@ import smile.classification.SVM;
 import smile.math.kernel.MercerKernel;
 import weka.core.SerializationHelper;
 
-public abstract class AbstractClassifier implements Classifier{
+public abstract class AbstractClassifier implements Classifier {
 
 	public static final String DEFAULT_PATH = DecisionKnowledgeClassifier.DEFAULT_DIR;
-
 
 	protected SVM<Double[]> model;
 	private Integer epochs;
 	private boolean modelIsTrained;
 	private Integer numClasses;
 	private Boolean currentlyTraining;
-
 
 	public AbstractClassifier(Integer numClasses) {
 		this(0.5, 3, numClasses);
@@ -29,7 +27,7 @@ public abstract class AbstractClassifier implements Classifier{
 		this(c, new GaussianKernelDouble<Double>(), epochs, numClasses);
 	}
 
-	public AbstractClassifier(Double c, MercerKernel kernel, Integer epochs, Integer numClasses) {
+	public AbstractClassifier(Double c, MercerKernel<Double[]> kernel, Integer epochs, Integer numClasses) {
 		if (numClasses <= 2) {
 			this.model = new SVM<Double[]>(kernel, c, numClasses);
 		} else {
@@ -40,7 +38,6 @@ public abstract class AbstractClassifier implements Classifier{
 		this.numClasses = numClasses;
 		this.currentlyTraining = false;
 	}
-
 
 	/**
 	 * Trains the model using supervised training data, features and labels.
@@ -80,8 +77,7 @@ public abstract class AbstractClassifier implements Classifier{
 		for (int i = 0; i < features.size(); i++) {
 			featuresArray[i] = features.get(i).toArray(Double[]::new);
 		}
-		this.train(featuresArray,
-			labels.toArray(Integer[]::new));
+		this.train(featuresArray, labels.toArray(Integer[]::new));
 	}
 
 	/**
@@ -140,6 +136,7 @@ public abstract class AbstractClassifier implements Classifier{
 	 * @param filePathAndName
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean loadFromFile(String filePathAndName) {
 		SVM<Double[]> oldModel = this.model;
@@ -161,7 +158,7 @@ public abstract class AbstractClassifier implements Classifier{
 	@Override
 	public abstract boolean loadFromFile();
 
-	public boolean isModelTrained(){
+	public boolean isModelTrained() {
 		return this.modelIsTrained;
 	}
 
@@ -175,4 +172,3 @@ public abstract class AbstractClassifier implements Classifier{
 		return this.currentlyTraining;
 	}
 }
-

@@ -15,7 +15,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.ReleaseNotesRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -37,7 +36,7 @@ public class TestCRUDReleaseNotes extends TestSetUp {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
 		releaseNoteContent = "some short content";
-		releaseNote = new ReleaseNoteImpl();
+		releaseNote = new ReleaseNote();
 		postObject = new HashMap<String, String>();
 		postObject.put("title", "some title");
 		postObject.put("content", releaseNoteContent);

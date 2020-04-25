@@ -41,7 +41,7 @@ class PreTrainedGloveSingleton {
 
 
     public static PreTrainedGloveSingleton getInstance() {
-        return PreTrainedGloveSingleton.getInstance(new File(PreprocessorImpl.DEFAULT_DIR + "glove.6b.50d.csv"));
+        return PreTrainedGloveSingleton.getInstance(new File(Preprocessor.DEFAULT_DIR + "glove.6b.50d.csv"));
     }
 
     // This method is private because at the moment only the 50D vector is used.

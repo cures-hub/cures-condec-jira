@@ -27,7 +27,6 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteIssueProposal;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCreator;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteImpl;
 
 /**
  * REST resource for release notes
@@ -99,7 +98,7 @@ public class ReleaseNotesRest {
 		String endDate = postObject.get("endDate");
 		String releaseNoteContent = postObject.get("content");
 
-		ReleaseNoteImpl releaseNote = new ReleaseNoteImpl(title, releaseNoteContent, projectKey, startDate, endDate);
+		ReleaseNote releaseNote = new ReleaseNote(title, releaseNoteContent, projectKey, startDate, endDate);
 		long id = ReleaseNotesPersistenceManager.createReleaseNotes(releaseNote, user);
 
 		return Response.ok(id).build();

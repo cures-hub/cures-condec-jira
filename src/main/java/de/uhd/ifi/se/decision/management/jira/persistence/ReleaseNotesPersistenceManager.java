@@ -12,7 +12,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInDatabase;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteImpl;
 import net.java.ao.Query;
 
 
@@ -49,7 +48,7 @@ public class ReleaseNotesPersistenceManager {
 	public static ReleaseNote getReleaseNotes(long id) {
 		ReleaseNote releaseNote = null;
 		for (ReleaseNotesInDatabase databaseEntry : ACTIVE_OBJECTS.find(ReleaseNotesInDatabase.class, Query.select().where("ID = ?", id))) {
-			releaseNote = new ReleaseNoteImpl(databaseEntry);
+			releaseNote = new ReleaseNote(databaseEntry);
 		}
 		return releaseNote;
 	}
@@ -96,7 +95,7 @@ public class ReleaseNotesPersistenceManager {
 	public static List<ReleaseNote> getAllReleaseNotes(String projectKey,String query) {
 		List<ReleaseNote> result = new ArrayList<ReleaseNote>();
 		for (ReleaseNotesInDatabase databaseEntry : ACTIVE_OBJECTS.find(ReleaseNotesInDatabase.class, Query.select().where("PROJECT_KEY = ? AND CONTENT LIKE ?", projectKey,"%"+query+"%"))) {
-			result.add(new ReleaseNoteImpl(databaseEntry));
+			result.add(new ReleaseNote(databaseEntry));
 		}
 		return result;
 	}

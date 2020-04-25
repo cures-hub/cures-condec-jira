@@ -24,7 +24,6 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.AdditionalConfigurationOptions;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteConfiguration;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteConfigurationImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.ReleaseNotesRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -41,7 +40,7 @@ public class TestGetProposedIssues extends TestSetUp {
 		init();
 		request = new MockHttpServletRequest();
 		projectKey = "TEST";
-		releaseNoteConfiguration = new ReleaseNoteConfigurationImpl();
+		releaseNoteConfiguration = new ReleaseNoteConfiguration();
 		SimpleDateFormat now = new SimpleDateFormat();
 		releaseNoteConfiguration.setStartDate(now.toString());
 		releaseNoteConfiguration.setEndDate(now.toString());

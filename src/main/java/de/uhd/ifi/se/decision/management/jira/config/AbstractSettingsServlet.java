@@ -17,7 +17,8 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 /**
- * Abstract super class to render the administration pages
+ * Abstract super class to render the administration pages. Extended in the
+ * {@link SettingsOfAllProjects} and the {@link SettingsOfSingleProject}.
  */
 public abstract class AbstractSettingsServlet extends HttpServlet {
 

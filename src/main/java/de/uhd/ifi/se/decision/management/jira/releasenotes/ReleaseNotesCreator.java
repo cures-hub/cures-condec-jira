@@ -14,7 +14,6 @@ import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteIssueProposalImpl;
 
 /**
  * Class to compute the metrics for the proposals and to compare the ratings.
@@ -63,7 +62,7 @@ public class ReleaseNotesCreator {
 			// create Release note issue proposal with the element and the count of
 			// associated decision knowledge
 			// check if DK or Comment
-			ReleaseNoteIssueProposal proposal = new ReleaseNoteIssueProposalImpl(dkElement, 0);
+			ReleaseNoteIssueProposal proposal = new ReleaseNoteIssueProposal(dkElement, 0);
 			String dkKey = dkElement.getKey();
 
 			// check if it is a dk Issue or just a DK comment

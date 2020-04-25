@@ -60,7 +60,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	protected static final Logger LOGGER = LoggerFactory.getLogger(OnlineFileTrainerImpl.class);
 
 	public OnlineFileTrainerImpl() {
-		this.classifier = DecisionKnowledgeClassifierImpl.getInstance();
+		this.classifier = DecisionKnowledgeClassifier.getInstance();
 		this.directory = new File(DecisionKnowledgeClassifier.DEFAULT_DIR);
 		directory.mkdirs();
 	}

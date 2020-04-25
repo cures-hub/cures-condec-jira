@@ -10,18 +10,17 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
 
 public class TestPreprocessorImpl extends TestSetUp {
 
 	private static final String testSentence = "The quick brown fox jumps over the lazy dog.";
 
-	private PreprocessorImpl pp;
+	private Preprocessor pp;
 
 	@Before
 	public void setUp() {
 		init();
-		pp = new PreprocessorImpl();
+		pp = new Preprocessor();
 	}
 
 	@Test

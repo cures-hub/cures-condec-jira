@@ -19,7 +19,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteIssueProposalImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestReleaseNoteIssueProposal extends TestSetUp {
@@ -39,7 +38,7 @@ public class TestReleaseNoteIssueProposal extends TestSetUp {
 		dkElement.setId(idOfDKElement);
 		dkElement.setDescription("this is a test helloo");
 		dkElement.setSummary("this is a summary test helloo");
-		proposal = new ReleaseNoteIssueProposalImpl(dkElement, 3);
+		proposal = new ReleaseNoteIssueProposal(dkElement, 3);
 		rating = 54.21;
 		proposal.setRating(rating);
 		existingReporterCount = new HashMap<String, Integer>();

@@ -145,6 +145,7 @@
             }
         });
     };
+    
     /*
      * external references: condec.dialog
      */
@@ -173,6 +174,7 @@
             })
         })
     };
+    
     ConDecAPI.prototype.getIssueTypes = function getIssueTypes() {
         // first we need the boards then we can get the Sprints for each board
         return new Promise(function (resolve, reject) {
@@ -198,7 +200,9 @@
             })
         })
     };
+    
     ConDecAPI.prototype.getReleases = function getReleases() {
+    	// TODO Not working for projects without releases
         // first we need the boards then we can get the Sprints for each board
         return new Promise(function (resolve, reject) {
             var issueTypeUrl = "/rest/projects/latest/project/" + projectKey + "/release/allversions";
