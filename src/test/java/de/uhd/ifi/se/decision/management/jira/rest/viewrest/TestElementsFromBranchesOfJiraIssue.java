@@ -16,7 +16,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.ViewRestImpl;
+import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 
@@ -27,7 +27,7 @@ public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 	@Override
 	@Before
 	public void setUp() {
-		viewRest = new ViewRestImpl();
+		viewRest = new ViewRest();
 		init();
 		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
 		request = new MockHttpServletRequest();

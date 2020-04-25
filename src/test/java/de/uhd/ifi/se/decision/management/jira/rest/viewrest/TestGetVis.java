@@ -16,7 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.ViewRestImpl;
+import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestGetVis extends TestSetUp {
@@ -27,7 +27,7 @@ public class TestGetVis extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		viewRest = new ViewRestImpl();
+		viewRest = new ViewRest();
 		init();
 		request = new MockHttpServletRequest();
 		String jql = "?jql=issuetype%20%3D%20Issue";

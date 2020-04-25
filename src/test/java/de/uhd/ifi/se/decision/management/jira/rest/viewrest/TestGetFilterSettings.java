@@ -15,7 +15,7 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.ViewRestImpl;
+import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 
 public class TestGetFilterSettings extends TestSetUp {
 
@@ -24,7 +24,7 @@ public class TestGetFilterSettings extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		viewRest = new ViewRestImpl();
+		viewRest = new ViewRest();
 		init();
 		request = new MockHttpServletRequest();
 	}

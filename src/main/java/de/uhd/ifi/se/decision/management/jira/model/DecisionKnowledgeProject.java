@@ -24,6 +24,12 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
  * 
  * @issue Should the DecisionKnowledgeProject class extend the Jira project
  *        class?
+ * @decision The DecisionKnowledgeProject does not extend the Jira project class
+ *           (ProjectImpl) but holds the Jira project as an attribute instead!
+ * @alternative The DecisionKnowledgeProject could extend/inherit from the Jira
+ *              project class (ProjectImpl)!
+ * @con The constructor of the Jira project class is hard to use since it gets a
+ *      generic value as a parameter.
  */
 public class DecisionKnowledgeProject {
 

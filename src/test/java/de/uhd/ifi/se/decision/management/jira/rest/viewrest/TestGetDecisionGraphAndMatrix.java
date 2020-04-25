@@ -14,7 +14,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.ViewRestImpl;
+import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestGetDecisionGraphAndMatrix extends TestSetUp {
@@ -24,7 +24,7 @@ public class TestGetDecisionGraphAndMatrix extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		viewRest = new ViewRestImpl();
+		viewRest = new ViewRest();
 		init();
 		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
 		request = new MockHttpServletRequest();

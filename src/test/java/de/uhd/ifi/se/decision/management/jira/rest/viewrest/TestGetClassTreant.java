@@ -16,7 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.ViewRestImpl;
+import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestGetClassTreant extends TestSetUp {
@@ -26,7 +26,7 @@ public class TestGetClassTreant extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		viewRest = new ViewRestImpl();
+		viewRest = new ViewRest();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		CodeClassPersistenceManager ccManager
 				= new CodeClassPersistenceManager("Test");
