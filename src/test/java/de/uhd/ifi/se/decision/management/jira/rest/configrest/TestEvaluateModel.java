@@ -11,6 +11,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.implementation.Onli
 
 public class TestEvaluateModel extends TestConfigSuper {
 
+	@Override
 	@Before
 	public void setUp() {
 		super.setUp();

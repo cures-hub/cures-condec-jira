@@ -13,7 +13,6 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
@@ -65,11 +64,11 @@ public class GitDecXtract {
 	List<KnowledgeElement> elementsFromCode = new ArrayList<>();
 	String repoUri = gitClient.getRepoUriFromBranch(branch);
 	// git client which has access to correct version of files (revCommitEnd)
-	GitClient endAnchoredGitClient = new GitClient((GitClient) gitClient);
+	GitClient endAnchoredGitClient = new GitClient(gitClient);
 	if (branch != null) {
 	    endAnchoredGitClient.checkoutFeatureBranch(branch);
 	}
-	GitClient startAnchoredGitClient = new GitClient((GitClient) gitClient);
+	GitClient startAnchoredGitClient = new GitClient(gitClient);
 	if (branch != null) {
 	    startAnchoredGitClient.checkoutCommit(revCommitStart.getParent(0), repoUri);
 	}

@@ -15,6 +15,7 @@ public class TestGetSummarizedCode extends TestSetUpGit {
 
 	private KnowledgeRest knowledgeRest;
 
+	@Override
 	@Before
 	public void setUp() {
 		knowledgeRest = new KnowledgeRestImpl();

@@ -22,7 +22,8 @@ public class TestTangledChangeDetector extends TestSetUpGit {
 
     private TangledChangeDetector tangledCommitDetection;
 
-    @Before
+    @Override
+	@Before
     public void setUp() {
 	super.setUp();
 	tangledCommitDetection = new TangledChangeDetector();

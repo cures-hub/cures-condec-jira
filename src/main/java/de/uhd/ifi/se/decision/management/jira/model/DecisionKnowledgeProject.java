@@ -1,9 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
+import com.atlassian.jira.issue.issuetype.IssueType;
+import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
@@ -183,5 +189,23 @@ public class DecisionKnowledgeProject {
 	 */
 	public boolean isClassifierEnabled() {
 		return ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey);
+	}
+
+	private Project getJiraProject() {
+		return ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
+	}
+
+	/**
+	 * @return names of Jira issue types available in the project.
+	 */
+	public Set<String> getJiraIssueTypeNames() {
+		Project project = getJiraProject();
+		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
+		Collection<IssueType> types = issueTypeSchemeManager.getIssueTypesForProject(project);
+		Set<String> issueTypes = new HashSet<String>();
+		for (IssueType type : types) {
+			issueTypes.add(type.getName());
+		}
+		return issueTypes;
 	}
 }

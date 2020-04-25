@@ -28,146 +28,144 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestOnlineFileTrainerImpl extends TestSetUp {
 
-    private OnlineFileTrainerImpl trainer;
-    private static final List<String> TEST_SENTENCES = Arrays.asList("Pizza is preferred", "I have an issue");
+	private OnlineFileTrainerImpl trainer;
+	private static final List<String> TEST_SENTENCES = Arrays.asList("Pizza is preferred", "I have an issue");
 
-    @Before
-    public void setUp() {
-        init();
-        trainer = new OnlineFileTrainerImpl("TEST");
-        trainer.setTrainingData(getTrainingData());
-    }
+	@Before
+	public void setUp() {
+		init();
+		trainer = new OnlineFileTrainerImpl("TEST");
+		trainer.setTrainingData(getTrainingData());
+	}
 
-    @Test
-    @NonTransactional
-    public void testOnlineClassificationTrainerSetTrainingData() {
-        List<KnowledgeElement> trainingElements = getTrainingData();
-        trainer.setTrainingData(trainingElements);
-        Assert.assertTrue(trainer.train());
-    }
+	@Test
+	@NonTransactional
+	public void testOnlineClassificationTrainerSetTrainingData() {
+		List<KnowledgeElement> trainingElements = getTrainingData();
+		trainer.setTrainingData(trainingElements);
+		assertTrue(trainer.train());
+	}
 
-    @Test
-    @NonTransactional
-    public void testOnlineClassificationTrainerFromArffFile() {
-        File file = trainer.saveTrainingFile(true);
-        trainer.setTrainingFile(file);
-        assertNotNull(trainer.getInstances());
-        trainer = new OnlineFileTrainerImpl("TEST", file.getName());
-        //assertNotNull(trainer.getInstances());
-        assertTrue(trainer.train());
-        file.delete();
-    }
+	@Test
+	@NonTransactional
+	public void testOnlineClassificationTrainerFromArffFile() {
+		File file = trainer.saveTrainingFile(true);
+		trainer.setTrainingFile(file);
+		assertNotNull(trainer.getInstances());
+		trainer = new OnlineFileTrainerImpl("TEST", file.getName());
+		// assertNotNull(trainer.getInstances());
+		assertTrue(trainer.train());
+		file.delete();
+	}
 
-    @Test
-    @NonTransactional
-    public void testSaveArffFile() {
-        File file = trainer.saveTrainingFile(false);
-        Assert.assertTrue(file.exists());
-        file.delete();
-    }
+	@Test
+	@NonTransactional
+	public void testSaveArffFile() {
+		File file = trainer.saveTrainingFile(false);
+		Assert.assertTrue(file.exists());
+		file.delete();
+	}
 
-    @Test
-    @NonTransactional
-    public void testMockingOfClassifierDirectoryWorks() {
-        assertEquals(DecisionKnowledgeClassifier.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data"
-                + File.separator + "condec-plugin" + File.separator + "classifier" + File.separator);
-    }
+	@Test
+	@NonTransactional
+	public void testMockingOfClassifierDirectoryWorks() {
+		assertEquals(DecisionKnowledgeClassifier.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data"
+				+ File.separator + "condec-plugin" + File.separator + "classifier" + File.separator);
+	}
 
-    @Test
-    @NonTransactional
-    public void testDefaultArffFile() {
-        File file = getTrimmedDefaultArffFile();
-        Assert.assertTrue(file.exists());
-        trainer.setTrainingFile(file);
-    }
+	@Test
+	@NonTransactional
+	public void testDefaultArffFile() {
+		File file = getTrimmedDefaultArffFile();
+		assertTrue(file.exists());
+		trainer.setTrainingFile(file);
+	}
 
-    @Test
-    @NonTransactional
-    public void testGetArffFiles() {
-        assertEquals(ArrayList.class, trainer.getTrainingFileNames().getClass());
-    }
+	@Test
+	@NonTransactional
+	public void testGetArffFiles() {
+		assertEquals(ArrayList.class, trainer.getTrainingFileNames().getClass());
+	}
 
-    @Test
-    @NonTransactional
-    public void testEvaluateClassifier(){
-        trainer.train();
-        boolean executionSuccessful = true;
-        try{
-            trainer.evaluateClassifier();
-        }catch (Exception e){
-            executionSuccessful = false;
-        }
-        assertTrue(executionSuccessful);
-    }
+	@Test
+	@NonTransactional
+	public void testEvaluateClassifier() {
+		trainer.train();
+		boolean executionSuccessful = true;
+		try {
+			trainer.evaluateClassifier();
+		} catch (Exception e) {
+			executionSuccessful = false;
+		}
+		assertTrue(executionSuccessful);
+	}
 
-    // TODO: evaluate without existing dec. know.
+	// TODO: evaluate without existing dec. know.
 
+	@Test
+	@NonTransactional
+	public void testUpdate() {
+		trainer.train();
 
-    @Test
-    @NonTransactional
-    public void testUpdate() {
-        trainer.train();
+		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
+		sentence.setDescription("In my opinion the query would be better!");
+		sentence.setRelevant(true);
+		sentence.setType(KnowledgeType.ALTERNATIVE);
+		sentence.setValidated(true);
 
-        PartOfJiraIssueText sentence = new PartOfJiraIssueText();
-        sentence.setDescription("In my opinion the query would be better!");
-        sentence.setRelevant(true);
-        sentence.setType(KnowledgeType.ALTERNATIVE);
-        sentence.setValidated(true);
+		assertTrue(trainer.update(sentence));
+	}
 
-        assertTrue(trainer.update(sentence));
-    }
+	// TODO: tests with unvalidated data element
 
-    //TODO: tests with unvalidated data element
+	@Test
+	@NonTransactional
+	public void testGetClassifier() {
+		assertNotNull(this.trainer.getClassifier());
+	}
 
-    @Test
-    @NonTransactional
-    public void testGetClassifier() {
-        assertNotNull(this.trainer.getClassifier());
-    }
+	@Test
+	@NonTransactional
+	public void testGetInstances() {
+		assertNotNull(this.trainer.getInstances());
+	}
 
-    @Test
-    @NonTransactional
-    public void testGetInstances() {
-        assertNotNull(this.trainer.getInstances());
-    }
+	@Test
+	@NonTransactional
+	public void testMakeBinaryPredicition() {
+		assertEquals(2, this.trainer.getClassifier().makeBinaryPredictions(TEST_SENTENCES).size());
+	}
 
-    @Test
-    @NonTransactional
-    public void testMakeBinaryPredicition() {
-        assertEquals(2, this.trainer.getClassifier().makeBinaryPredictions(TEST_SENTENCES).size());
-    }
+	@Test
+	@NonTransactional
+	public void testMakeFineGrainedPredicition() {
+		assertEquals(2, this.trainer.getClassifier().makeFineGrainedPredictions(TEST_SENTENCES).size());
+	}
 
-    @Test
-    @NonTransactional
-    public void testMakeFineGrainedPredicition() {
-        assertEquals(2, this.trainer.getClassifier().makeFineGrainedPredictions(TEST_SENTENCES).size());
-    }
+	private File getTrimmedDefaultArffFile() {
+		File fullDefaultFile = new File("src/main/resources/classifier/defaultTrainingData.arff");
+		File trimmedDefaultFile = new File(TestFileTrainer.TEST_ARFF_FILE_PATH);
 
-    private File getTrimmedDefaultArffFile() {
-        File fullDefaultFile = new File("src/main/resources/classifier/defaultTrainingData.arff");
-        File trimmedDefaultFile = new File(TestFileTrainer.TEST_ARFF_FILE_PATH);
+		int numberOfLines = 25;
 
-        int numberOfLines = 25;
+		BufferedWriter writer = null;
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(fullDefaultFile));
+			writer = new BufferedWriter(new FileWriter(trimmedDefaultFile));
 
-        BufferedWriter writer = null;
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(fullDefaultFile));
-            writer = new BufferedWriter(new FileWriter(trimmedDefaultFile));
-
-            String currentLine;
-            int counter = 0;
-            while ((currentLine = reader.readLine()) != null && counter < numberOfLines) {
-                writer.write(currentLine + System.getProperty("line.separator"));
-                counter++;
-            }
-            writer.close();
-            reader.close();
-            return trimmedDefaultFile;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return fullDefaultFile;
-    }
-
+			String currentLine;
+			int counter = 0;
+			while ((currentLine = reader.readLine()) != null && counter < numberOfLines) {
+				writer.write(currentLine + System.getProperty("line.separator"));
+				counter++;
+			}
+			writer.close();
+			reader.close();
+			return trimmedDefaultFile;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return fullDefaultFile;
+	}
 
 }

@@ -12,7 +12,6 @@ import org.junit.After;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 
 public class TestRemoveFeatureBranchNotPresentInRemote extends TestSetUpGit {
 

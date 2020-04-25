@@ -11,11 +11,13 @@ public class BinaryClassifierImpl extends AbstractClassifier {
     }
 
 
-    public boolean loadFromFile() {
+    @Override
+	public boolean loadFromFile() {
         return super.loadFromFile(AbstractClassifier.DEFAULT_PATH + BinaryClassifierImpl.DEFAULT_MODEL_NAME);
     }
 
-    public void saveToFile() throws Exception {
+    @Override
+	public void saveToFile() throws Exception {
         super.saveToFile(AbstractClassifier.DEFAULT_PATH + BinaryClassifierImpl.DEFAULT_MODEL_NAME);
     }
 

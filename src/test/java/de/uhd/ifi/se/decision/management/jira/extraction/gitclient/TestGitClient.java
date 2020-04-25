@@ -12,7 +12,6 @@ import java.util.List;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 
 public class TestGitClient extends TestSetUpGit {
 
@@ -40,7 +39,7 @@ public class TestGitClient extends TestSetUpGit {
 
     @Test
     public void testSetGit() {
-	GitClient newGitClient = new GitClient((GitClient) gitClient);
+	GitClient newGitClient = new GitClient(gitClient);
 	newGitClient.setGit(gitClient.getGit(GIT_URI), GIT_URI);
 	assertEquals(gitClient.getGit(GIT_URI), newGitClient.getGit(GIT_URI));
     }

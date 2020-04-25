@@ -87,13 +87,13 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testUpdateNode() {
-		KnowledgeElement node = (KnowledgeElement) graph.vertexSet().iterator().next();
+		KnowledgeElement node = graph.vertexSet().iterator().next();
 		assertEquals("WI: Implement feature", node.getSummary());
 		node.setSummary("Updated");
 		assertEquals(2, graph.edgesOf(node).size());
 
 		KnowledgePersistenceManager.getOrCreate("TEST").updateKnowledgeElement(node, null);
-		node = (KnowledgeElement) graph.vertexSet().iterator().next();
+		node = graph.vertexSet().iterator().next();
 		assertEquals("Updated", node.getSummary());
 		assertEquals(2, graph.edgesOf(node).size());
 	}

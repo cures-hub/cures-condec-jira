@@ -236,6 +236,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 		return this.fineGrainedClassifier;
 	}
 
+	@Override
 	public boolean isTraining() {
 		return (this.getFineGrainedClassifier().isCurrentlyTraining()
 			|| this.getBinaryClassifier().isCurrentlyTraining());

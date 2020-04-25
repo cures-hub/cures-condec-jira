@@ -17,6 +17,7 @@ public class TestChangedFile extends TestSetUpGit {
 
 	private ChangedFile changedFile;
 
+	@Override
 	@Before
 	public void setUp() {
 		super.setUp();

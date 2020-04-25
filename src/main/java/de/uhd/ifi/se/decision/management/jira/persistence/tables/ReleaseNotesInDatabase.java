@@ -17,12 +17,15 @@ import net.java.ao.schema.Table;
  */
 @Table("CondecReleaseNotes")
 public interface ReleaseNotesInDatabase extends RawEntity<Integer>, ReleaseNote {
+	@Override
 	@AutoIncrement
 	@PrimaryKey("ID")
 	long getId();
 
+	@Override
 	void setId(long id);
 
+	@Override
 	@StringLength(value = StringLength.UNLIMITED)
 	void setContent(String content);
 

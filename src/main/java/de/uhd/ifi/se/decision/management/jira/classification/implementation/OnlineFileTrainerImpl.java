@@ -437,6 +437,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		return extractedStringsFromPoji;
 	}
 
+	@Override
 	public Map<String, Double> evaluateClassifier() throws Exception {
 		// create and initialize default measurements list
 		List<ClassificationMeasure> defaultMeasurements = new ArrayList<>();
@@ -455,6 +456,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		return evaluateClassifier(defaultMeasurements, partsOfText);
 	}
 
+	@Override
 	public Map<String, Double> evaluateClassifier(List<ClassificationMeasure> measurements,
 												  List<KnowledgeElement> partOfJiraIssueTexts) throws Exception {
 		LOGGER.debug("Started evaluation!");

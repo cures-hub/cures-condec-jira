@@ -8,7 +8,6 @@ import java.util.List;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 
 public class TestCloseAndDeleteRepository extends TestSetUpGit {
 
