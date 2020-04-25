@@ -77,6 +77,8 @@ public class GitClient {
 	private static final long REPO_OUTDATED_AFTER = 10 * 60 * 1000; // ex. 10 minutes = 10 minutes * 60 seconds * 1000
 	// miliseconds
 	private Map<String, Git> gits;
+	// TODO Add a GitClientForSingleRepository with one remote URI and default
+	// branch, only contain a list here
 	private List<String> remoteUris;
 	private String projectKey;
 	private String defaultDirectory;

@@ -38,9 +38,7 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * @return key of the Jira project. The project is a Jira project that is
-	 *         extended with settings for this plug-in, for example, whether the
-	 *         plug-in is activated for the project.
+	 * @return key of the Jira project.
 	 */
 	public String getProjectKey() {
 		if (jiraProject == null) {
@@ -50,9 +48,7 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * @return name of the project. The project is a Jira project that is extended
-	 *         with settings for this plug-in, for example, whether the plug-in is
-	 *         activated for the project.
+	 * @return name of the Jira project.
 	 */
 	public String getProjectName() {
 		if (jiraProject == null) {
@@ -70,8 +66,8 @@ public class DecisionKnowledgeProject {
 
 	/**
 	 * @see JiraIssuePersistenceManager
-	 * @return true if decision knowledge is stored in entire Jira issues for this
-	 *         project. If this is true, you need make sure that the project is
+	 * @return true if decision knowledge is stored in entire Jira issues in this
+	 *         Jira project. If this is true, you need make sure that the project is
 	 *         associated with the decision knowledge issue type scheme.
 	 */
 	public boolean isIssueStrategy() {
@@ -165,7 +161,7 @@ public class DecisionKnowledgeProject {
 	 * @return true, if the classifier is used for Jira issue comments.
 	 */
 	public boolean isClassifierEnabled() {
-		return ConfigPersistenceManager.isUseClassifierForIssueComments(getProjectKey());
+		return ConfigPersistenceManager.isClassifierEnabled(getProjectKey());
 	}
 
 	/**

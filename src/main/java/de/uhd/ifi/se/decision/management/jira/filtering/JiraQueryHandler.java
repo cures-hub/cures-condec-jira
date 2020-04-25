@@ -244,7 +244,7 @@ public class JiraQueryHandler {
 		try {
 			SearchResults<Issue> results = searchService.search(user, parseResult.getQuery(),
 					PagerFilter.getUnlimitedFilter());
-			jiraIssues = JiraSearchServiceHelper.getJiraIssues(results);
+			jiraIssues = results.getResults();
 		} catch (SearchException e) {
 			LOGGER.error("Getting Jira issues from JQL query failed. Message: " + e.getMessage());
 		}

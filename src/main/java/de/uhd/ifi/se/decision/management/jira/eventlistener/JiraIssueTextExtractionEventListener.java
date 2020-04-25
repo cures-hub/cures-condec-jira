@@ -120,7 +120,7 @@ public class JiraIssueTextExtractionEventListener {
 
     private void handleNewComment() {
 	parseIconsToTags();
-	if (ConfigPersistenceManager.isUseClassifierForIssueComments(projectKey)) {
+	if (ConfigPersistenceManager.isClassifierEnabled(projectKey)) {
 	    this.classificationManagerForJiraIssueComments.classifyComment(this.issueEvent.getComment());
 	} else {
 	    MutableComment comment = (MutableComment) issueEvent.getComment();
@@ -143,7 +143,7 @@ public class JiraIssueTextExtractionEventListener {
 	JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 		.getJiraIssueTextManager();
 
-	if (ConfigPersistenceManager.isUseClassifierForIssueComments(projectKey)) {
+	if (ConfigPersistenceManager.isClassifierEnabled(projectKey)) {
 	    persistenceManager.deleteElementsInComment(issueEvent.getComment());
 	    this.classificationManagerForJiraIssueComments.classifyComment(issueEvent.getComment());
 	} else {
@@ -166,7 +166,7 @@ public class JiraIssueTextExtractionEventListener {
 	JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 		.getJiraIssueTextManager();
 
-	if (ConfigPersistenceManager.isUseClassifierForIssueComments(projectKey)) {
+	if (ConfigPersistenceManager.isClassifierEnabled(projectKey)) {
 	    persistenceManager.deleteElementsInDescription(issueEvent.getIssue());
 	    this.classificationManagerForJiraIssueComments.classifyDescription((MutableIssue) issueEvent.getIssue());
 	} else {

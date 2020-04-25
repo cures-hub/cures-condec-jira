@@ -34,7 +34,6 @@ import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
-import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -112,7 +111,7 @@ public class MetricCalculator {
 		SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
 		try {
 			searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
-			jiraIssues = JiraSearchServiceHelper.getJiraIssues(searchResults);
+			jiraIssues = searchResults.getResults();
 		} catch (SearchException e) {
 			LOGGER.error("Getting JIRA issues for project failed. Message: " + e.getMessage());
 		}
@@ -218,7 +217,7 @@ public class MetricCalculator {
 	}
 
 	public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType type,
-																				  Integer linkDistance) {
+			Integer linkDistance) {
 		LOGGER.info("RequirementsDashboard getNumberOfDecisionKnowledgeElementsForJiraIssues");
 		Map<String, Integer> numberOfSentencesPerIssue = new HashMap<String, Integer>();
 		for (Issue jiraIssue : jiraIssues) {
@@ -340,7 +339,7 @@ public class MetricCalculator {
 	}
 
 	public Map<String, String> getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType linkFrom,
-																							KnowledgeType linkTo) {
+			KnowledgeType linkTo) {
 		LOGGER.info("RequirementsDashboard getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType");
 		String[] data = new String[2];
 		Arrays.fill(data, "");
@@ -353,8 +352,8 @@ public class MetricCalculator {
 			boolean hastOtherElementLinked = false;
 
 			for (Link link : links) {
-				if (link != null && link.getTarget() != null && link.getSource() != null
-						&& link.isValid() && link.getOppositeElement(issue.getId()) instanceof PartOfJiraIssueText
+				if (link != null && link.getTarget() != null && link.getSource() != null && link.isValid()
+						&& link.getOppositeElement(issue.getId()) instanceof PartOfJiraIssueText
 						&& link.getOppositeElement(issue.getId()).getType().equals(linkTo)) {
 					hastOtherElementLinked = true;
 					data[0] += issue.getKey() + dataStringSeparator;
