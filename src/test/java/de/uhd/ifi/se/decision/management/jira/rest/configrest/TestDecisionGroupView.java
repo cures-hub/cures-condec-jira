@@ -20,7 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.ConfigRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -31,9 +30,9 @@ public class TestDecisionGroupView extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		configRest = new ConfigRestImpl();
+		configRest = new ConfigRest();
 		init();
-		configRest = new ConfigRestImpl();
+		configRest = new ConfigRest();
 		long id = 100;
 		String summary = "Test";
 		String description = "Test";

@@ -14,7 +14,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.ConfigRestImpl;
 
 public class TestGetAllDecisionGroups extends TestSetUp {
 
@@ -24,7 +23,7 @@ public class TestGetAllDecisionGroups extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		configRest = new ConfigRestImpl();
+		configRest = new ConfigRest();
 		long id = 100;
 		String summary = "Test";
 		String description = "Test";

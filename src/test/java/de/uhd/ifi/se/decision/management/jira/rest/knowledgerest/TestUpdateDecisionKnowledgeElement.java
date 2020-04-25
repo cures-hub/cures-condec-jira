@@ -27,7 +27,6 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.KnowledgeRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -40,7 +39,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		knowledgeRest = new KnowledgeRestImpl();
+		knowledgeRest = new KnowledgeRest();
 		init();
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");

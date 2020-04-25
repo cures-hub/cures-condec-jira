@@ -20,7 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.KnowledgeRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -35,7 +34,7 @@ public class TestCreateIssueFromSentence extends TestSetUp {
 	@Before
 	public void setUp() {
 		super.init();
-		knowledgeRest = new KnowledgeRestImpl();
+		knowledgeRest = new KnowledgeRest();
 		request = new MockHttpServletRequest();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);

@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
-import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGetTreeViewer extends TestSetUp {

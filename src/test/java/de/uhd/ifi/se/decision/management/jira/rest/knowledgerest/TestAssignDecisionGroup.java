@@ -22,7 +22,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.KnowledgeRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestAssignDecisionGroup extends TestSetUp {
@@ -37,7 +36,7 @@ public class TestAssignDecisionGroup extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		knowledgeRest = new KnowledgeRestImpl();
+		knowledgeRest = new KnowledgeRest();
 		init();
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-3");

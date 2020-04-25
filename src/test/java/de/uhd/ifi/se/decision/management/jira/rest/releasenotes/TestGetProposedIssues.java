@@ -26,7 +26,6 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.AdditionalConfigurati
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteConfigurationImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.ReleaseNotesRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.ReleaseNotesRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestGetProposedIssues extends TestSetUp {
@@ -38,7 +37,7 @@ public class TestGetProposedIssues extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		releaseNoteRest = new ReleaseNotesRestImpl();
+		releaseNoteRest = new ReleaseNotesRest();
 		init();
 		request = new MockHttpServletRequest();
 		projectKey = "TEST";

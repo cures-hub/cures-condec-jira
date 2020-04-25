@@ -17,7 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.ReleaseNotesRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.ReleaseNotesRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestCRUDReleaseNotes extends TestSetUp {
@@ -30,7 +29,7 @@ public class TestCRUDReleaseNotes extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		releaseNoteRest = new ReleaseNotesRestImpl();
+		releaseNoteRest = new ReleaseNotesRest();
 		init();
 		request = new MockHttpServletRequest();
 		projectKey = "TEST";
