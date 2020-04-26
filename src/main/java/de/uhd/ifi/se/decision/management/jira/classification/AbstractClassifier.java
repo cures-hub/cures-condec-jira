@@ -9,7 +9,7 @@ import smile.classification.SVM;
 import smile.math.kernel.MercerKernel;
 import weka.core.SerializationHelper;
 
-public abstract class AbstractClassifier implements Classifier {
+public abstract class AbstractClassifier {
 
 	public static final String DEFAULT_PATH = DecisionKnowledgeClassifier.DEFAULT_DIR;
 
@@ -45,7 +45,6 @@ public abstract class AbstractClassifier implements Classifier {
 	 * @param features
 	 * @param labels
 	 */
-	@Override
 	public void train(Double[][] features, Integer[] labels) throws AlreadyInTrainingException {
 
 		if (!this.currentlyTraining) {
@@ -71,7 +70,6 @@ public abstract class AbstractClassifier implements Classifier {
 	 * @param features
 	 * @param labels
 	 */
-	@Override
 	public void train(List<List<Double>> features, List<Integer> labels) {
 		Double[][] featuresArray = new Double[features.size()][features.get(0).size()];
 		for (int i = 0; i < features.size(); i++) {
@@ -86,7 +84,6 @@ public abstract class AbstractClassifier implements Classifier {
 	 * @param features
 	 * @param label
 	 */
-	@Override
 	public void train(Double[] features, Integer label) {
 		this.modelIsTrained = true;
 
@@ -99,7 +96,6 @@ public abstract class AbstractClassifier implements Classifier {
 	 * @param feature
 	 * @return probabilities of the labels
 	 */
-	@Override
 	public double[] predictProbabilities(Double[] feature) throws InstantiationError {
 		if (this.modelIsTrained) {
 			double[] probabilities = new double[this.numClasses];
@@ -117,7 +113,6 @@ public abstract class AbstractClassifier implements Classifier {
 	 * @param filePathAndName
 	 * @throws Exception
 	 */
-	@Override
 	public void saveToFile(String filePathAndName) throws Exception {
 		SerializationHelper.write(filePathAndName, this.model);
 	}
@@ -127,7 +122,6 @@ public abstract class AbstractClassifier implements Classifier {
 	 *
 	 * @throws Exception
 	 */
-	@Override
 	public abstract void saveToFile() throws Exception;
 
 	/**
@@ -137,7 +131,6 @@ public abstract class AbstractClassifier implements Classifier {
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	@Override
 	public boolean loadFromFile(String filePathAndName) {
 		SVM<Double[]> oldModel = this.model;
 		try {
@@ -155,19 +148,16 @@ public abstract class AbstractClassifier implements Classifier {
 	 *
 	 * @throws Exception
 	 */
-	@Override
 	public abstract boolean loadFromFile();
 
 	public boolean isModelTrained() {
 		return this.modelIsTrained;
 	}
 
-	@Override
 	public Integer getNumClasses() {
 		return numClasses;
 	}
 
-	@Override
 	public Boolean isCurrentlyTraining() {
 		return this.currentlyTraining;
 	}

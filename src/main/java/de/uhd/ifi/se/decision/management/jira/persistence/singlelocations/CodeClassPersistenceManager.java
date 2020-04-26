@@ -163,7 +163,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 					.getOrCreate(projectKey).getJiraIssueManager();
 			List<String> groupsToAssign = new ArrayList<String>();
 			for (String key : element.getDescription().split(";")) {
-				if (!"".equals(key)) {
+				if (!key.isBlank()) {
 					KnowledgeElement issueElement = persistenceManager.getKnowledgeElement(key);
 					if (issueElement != null) {
 						groupsToAssign.addAll(issueElement.getDecisionGroups());
@@ -252,6 +252,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return true;
 	}
 
+	// TODO This method is too long
 	public void maintainCodeClassKnowledgeElements(String repoUri, ObjectId oldHead, ObjectId newhead) {
 		ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 		List<KnowledgeElement> existingElements = getKnowledgeElements();

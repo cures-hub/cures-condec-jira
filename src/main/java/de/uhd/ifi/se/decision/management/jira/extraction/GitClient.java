@@ -47,6 +47,12 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 
 /**
+ * Retrieves commits and code changes (diffs) from one or more git repositories.
+ * 
+ * Multiple instances of this class are "thread-safe" in the limited way that
+ * the checked-out branch files are stored in dedicated branch folders and can
+ * be read. Modifying files is not supported.
+ * 
  * @issue How to access commits related to a Jira issue?
  * @decision Use the jGit library to access the git repositories for a Jira
  *           project!
@@ -56,12 +62,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
  * @con An application link and oAuth is needed to call REST API on Java side in
  *      order to access the git repository with the git integration for Jira
  *      plugin.
- *
- *      This implementation works well only with configuration for one remote
- *      git server. Multiple instances of this class are "thread-safe" in the
- *      limited way that the checked-out branch files are stored in dedicated
- *      branch folders and can be read. Modifying files is not safe and not
- *      supported.
  */
 public class GitClient {
 

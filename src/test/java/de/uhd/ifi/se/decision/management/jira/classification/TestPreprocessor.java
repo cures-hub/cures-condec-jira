@@ -11,7 +11,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 
-public class TestPreprocessorImpl extends TestSetUp {
+public class TestPreprocessor extends TestSetUp {
 
 	private static final String testSentence = "The quick brown fox jumps over the lazy dog.";
 
@@ -26,7 +26,7 @@ public class TestPreprocessorImpl extends TestSetUp {
 	@Test
 	public void testTokenizingWorks() {
 		List<String> tokenizedTestSentence = Arrays.asList("The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog", ".");
-		assertEquals(pp.tokenize(TestPreprocessorImpl.testSentence), tokenizedTestSentence);
+		assertEquals(pp.tokenize(TestPreprocessor.testSentence), tokenizedTestSentence);
 	}
 
 	@Test
@@ -49,7 +49,7 @@ public class TestPreprocessorImpl extends TestSetUp {
 
 		int testTokenizedSize = 0;
 		try {
-			testTokenizedSize = pp.preprocess(TestPreprocessorImpl.testSentence).size();
+			testTokenizedSize = pp.preprocess(TestPreprocessor.testSentence).size();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
