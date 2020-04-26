@@ -1,6 +1,31 @@
 package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
+import static java.lang.Math.round;
+import static java.util.stream.Collectors.toList;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.IntStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
+
 import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.EvaluableClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.FileTrainer;
@@ -10,9 +35,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import smile.validation.ClassificationMeasure;
 import smile.validation.FMeasure;
 import weka.core.Attribute;
@@ -20,20 +42,6 @@ import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Timestamp;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.IntStream;
-
-import static java.lang.Math.round;
-import static java.util.stream.Collectors.toList;
 
 /**
  * Class responsible to train the supervised text classifier. For this purpose,
@@ -52,7 +60,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	protected static final Logger LOGGER = LoggerFactory.getLogger(OnlineFileTrainerImpl.class);
 
 	public OnlineFileTrainerImpl() {
-		this.classifier = DecisionKnowledgeClassifierImpl.getInstance();
+		this.classifier = DecisionKnowledgeClassifier.getInstance();
 		this.directory = new File(DecisionKnowledgeClassifier.DEFAULT_DIR);
 		directory.mkdirs();
 	}
@@ -429,6 +437,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		return extractedStringsFromPoji;
 	}
 
+	@Override
 	public Map<String, Double> evaluateClassifier() throws Exception {
 		// create and initialize default measurements list
 		List<ClassificationMeasure> defaultMeasurements = new ArrayList<>();
@@ -447,6 +456,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		return evaluateClassifier(defaultMeasurements, partsOfText);
 	}
 
+	@Override
 	public Map<String, Double> evaluateClassifier(List<ClassificationMeasure> measurements,
 												  List<KnowledgeElement> partOfJiraIssueTexts) throws Exception {
 		LOGGER.debug("Started evaluation!");

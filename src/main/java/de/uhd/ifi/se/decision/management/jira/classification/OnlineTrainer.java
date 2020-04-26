@@ -1,10 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 /**
  * Interface responsible to train the supervised text classifier. For this

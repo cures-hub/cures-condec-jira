@@ -12,7 +12,6 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.JiraQueryHandlerImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestJiraQueryHandler extends TestSetUp {
@@ -28,40 +27,40 @@ public class TestJiraQueryHandler extends TestSetUp {
 
 	@Test
 	public void testConstructorQueryNull() {
-		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", null);
+		jiraQueryHandler = new JiraQueryHandler(user, "TEST", null);
 		assertEquals(JiraQueryType.OTHER, jiraQueryHandler.getQueryType());
 		assertEquals("?jql=resolution = Unresolved AND project = TEST", jiraQueryHandler.getQuery());
 	}
 
 	@Test
 	public void testConstructorQueryEmpty() {
-		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "");
+		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "");
 		assertEquals(JiraQueryType.OTHER, jiraQueryHandler.getQueryType());
 		assertEquals("?jql=resolution = Unresolved AND project = TEST", jiraQueryHandler.getQuery());
 	}
 
 	@Test
 	public void testGetJiraIssuesFromEmptyQuery() {
-		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "");
+		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "");
 		assertTrue(jiraQueryHandler.getJiraIssuesFromQuery().size() > 0);
 	}
 
 	@Test
 	public void testGetJiraIssuesFromFilledQuery() {
-		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "?jql=project=TEST");
+		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "?jql=project=TEST");
 		List<Issue> jiraIssues = jiraQueryHandler.getJiraIssuesFromQuery();
 		assertEquals(8, jiraIssues.size());
 	}
 
 	@Test
 	public void testGetJiraIssuesFromFilledQueryNonExistingProject() {
-		jiraQueryHandler = new JiraQueryHandlerImpl(user, "", "?jql=project=UNKNOWNPROJECT");
+		jiraQueryHandler = new JiraQueryHandler(user, "", "?jql=project=UNKNOWNPROJECT");
 		assertEquals(0, jiraQueryHandler.getJiraIssuesFromQuery().size());
 	}
 
 	@Test
 	public void testGetNamesOfJiraIssueTypesInQueryOneType() {
-		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST",
+		jiraQueryHandler = new JiraQueryHandler(user, "TEST",
 				"?jql=project=TEST AND issuetype = Issue AND resolution = Unresolved");
 		assertEquals(JiraQueryType.JQL, jiraQueryHandler.getQueryType());
 		assertEquals("?jql=project=TEST AND issuetype = Issue AND resolution = Unresolved",
@@ -73,14 +72,14 @@ public class TestJiraQueryHandler extends TestSetUp {
 
 	@Test
 	public void testGetNamesOfJiraIssueTypesInQueryZeroTypes() {
-		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "?jql=project=TEST");
+		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "?jql=project=TEST");
 		List<String> types = jiraQueryHandler.getNamesOfJiraIssueTypesInQuery();
 		assertEquals(0, types.size());
 	}
 
 	@Test
 	public void testGetNamesOfJiraIssueTypesInQueryThreeTypes() {
-		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST",
+		jiraQueryHandler = new JiraQueryHandler(user, "TEST",
 				"abc§jql=project=TEST AND issuetype in (Decision, Issue, Alternative) AND resolution = Unresolved");
 		assertEquals("?jql=project=TEST AND issuetype in (Decision, Issue, Alternative) AND resolution = Unresolved",
 				jiraQueryHandler.getQuery());
@@ -93,7 +92,7 @@ public class TestJiraQueryHandler extends TestSetUp {
 
 	@Test
 	public void testGetDatesNoDatesInQuery() {
-		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "");
+		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "");
 		assertEquals(-1, jiraQueryHandler.getCreatedEarliest());
 		assertEquals(-1, jiraQueryHandler.getCreatedLatest());
 	}
@@ -101,7 +100,7 @@ public class TestJiraQueryHandler extends TestSetUp {
 	@Test
 	public void testGetDatesInQuery() {
 		assertTrue("1970-01-01".matches("\\d\\d\\d\\d-\\d\\d-\\d\\d(.)*"));
-		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST",
+		jiraQueryHandler = new JiraQueryHandler(user, "TEST",
 				"?jql=resolution = Unresolved AND created >= 1970-01-02 AND created <= 1970-01-03");
 		assertEquals(
 				"?jql=resolution = Unresolved AND created >= 1970-01-02 AND created <= 1970-01-03 AND project = TEST",
@@ -112,12 +111,12 @@ public class TestJiraQueryHandler extends TestSetUp {
 
 	@Test
 	public void testGetDatesInQueryFromTimeFactor() {
-		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST",
+		jiraQueryHandler = new JiraQueryHandler(user, "TEST",
 				"?jql=project = TEST AND created >= -1m AND created <= -1w");
 		assertTrue(jiraQueryHandler.getCreatedEarliest() > 100000000);
 		assertTrue(jiraQueryHandler.getCreatedLatest() > 100000000);
 
-		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST",
+		jiraQueryHandler = new JiraQueryHandler(user, "TEST",
 				"?jql=project = TEST AND created >= -1d AND created <= -1h");
 		assertTrue(jiraQueryHandler.getCreatedEarliest() > 100000000);
 		assertTrue(jiraQueryHandler.getCreatedLatest() > 100000000);
@@ -125,7 +124,7 @@ public class TestJiraQueryHandler extends TestSetUp {
 
 	@Test
 	public void testGetQueryObject() {
-		jiraQueryHandler = new JiraQueryHandlerImpl(user, "TEST", "?jql=project=TEST");
+		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "?jql=project=TEST");
 		assertEquals("project=TEST", jiraQueryHandler.getQueryObject().getQueryString());
 	}
 

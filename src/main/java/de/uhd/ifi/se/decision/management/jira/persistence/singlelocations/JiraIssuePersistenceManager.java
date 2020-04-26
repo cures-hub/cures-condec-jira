@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.IssueService.CreateValidationResult;
 import com.atlassian.jira.bc.issue.IssueService.IssueResult;
+import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.event.type.EventDispatchOption;
@@ -27,9 +28,15 @@ import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
+import com.atlassian.jira.issue.search.SearchException;
+import com.atlassian.jira.issue.search.SearchResults;
+import com.atlassian.jira.jql.builder.JqlClauseBuilder;
+import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ErrorCollection;
+import com.atlassian.jira.web.bean.PagerFilter;
+import com.atlassian.query.Query;
 
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -363,5 +370,18 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		// KnowledgePersistenceManager.updateGraphNode(element);
 		issueService.update(user, result);
 		return true;
+	}
+
+	public static List<Issue> getAllJiraIssuesForProject(ApplicationUser user, String projectKey) {
+		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
+		Query query = jqlClauseBuilder.project(projectKey).buildQuery();
+		SearchResults<Issue> searchResult = null;
+		try {
+			SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
+			searchResult = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
+		} catch (SearchException e) {
+			LOGGER.error("Getting all Jira issues for this project failed. Message: " + e.getMessage());
+		}
+		return searchResult.getResults();
 	}
 }

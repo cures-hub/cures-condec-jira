@@ -12,7 +12,6 @@ import org.junit.After;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 
 public class TestRemoveFeatureBranchNotPresentInRemote extends TestSetUpGit {
 
@@ -40,7 +39,7 @@ public class TestRemoveFeatureBranchNotPresentInRemote extends TestSetUpGit {
 	// fetches the 'default' branch commits. Do not use TestSetUpGit' gitClient.
 	List<String> uris = new ArrayList<String>();
 	uris.add(GIT_URI);
-	testGitClient = new GitClientImpl(uris, cloneAt, "TEST");
+	testGitClient = new GitClient(uris, cloneAt, "TEST");
 
 	// "delete" branch on remote
 	assertTrue(moveFeatureBranchOnRemote());
@@ -63,7 +62,7 @@ public class TestRemoveFeatureBranchNotPresentInRemote extends TestSetUpGit {
 	// fetches the 'default' branch commits. Do not use TestSetUpGit' gitClient
 	List<String> uris = new ArrayList<String>();
 	uris.add(GIT_URI);
-	testGitClient = new GitClientImpl(uris, cloneAt, "TEST");
+	testGitClient = new GitClient(uris, cloneAt, "TEST");
 	File developDir = testGitClient.getDirectory(GIT_URI);
 
 	// fetch the branch, it will be cached for a while and not automatically

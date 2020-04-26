@@ -12,7 +12,6 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.ConfigRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestCleanDatabases extends TestSetUp {
@@ -23,7 +22,7 @@ public class TestCleanDatabases extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		configRest = new ConfigRestImpl();
+		configRest = new ConfigRest();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
