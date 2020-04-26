@@ -1,14 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 public class TestTrainAbstractClassifier extends TestConfigSuper {
 	private static final String INVALID_ARFF_FILE = "The classifier could not be trained since the ARFF file name is invalid.";
 	private static final String INTERNAL_SERVER_ERROR = "The classifier could not be trained due to an internal server error.";
 
+	@Override
 	@Before
 	public void setUp() {
 		super.setUp();

@@ -1,10 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import smile.validation.ClassificationMeasure;
-
 import java.util.List;
 import java.util.Map;
+
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import smile.validation.ClassificationMeasure;
 
 public interface EvaluableClassifier {
 

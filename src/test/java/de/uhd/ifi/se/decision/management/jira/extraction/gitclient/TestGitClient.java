@@ -12,7 +12,6 @@ import java.util.List;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 
 public class TestGitClient extends TestSetUpGit {
 
@@ -28,19 +27,19 @@ public class TestGitClient extends TestSetUpGit {
 
     @Test
     public void testGetRepositoryGitNull() {
-	GitClient gitClient = new GitClientImpl();
+	GitClient gitClient = new GitClient();
 	assertNull(gitClient.getRepository(GIT_URI));
     }
 
     @Test
     public void testGetDirectoryGitNull() {
-	GitClient gitClient = new GitClientImpl();
+	GitClient gitClient = new GitClient();
 	assertNull(gitClient.getDirectory(GIT_URI));
     }
 
     @Test
     public void testSetGit() {
-	GitClient newGitClient = new GitClientImpl((GitClientImpl) gitClient);
+	GitClient newGitClient = new GitClient(gitClient);
 	newGitClient.setGit(gitClient.getGit(GIT_URI), GIT_URI);
 	assertEquals(gitClient.getGit(GIT_URI), newGitClient.getGit(GIT_URI));
     }
@@ -55,7 +54,7 @@ public class TestGitClient extends TestSetUpGit {
     public void testCeateGitClientWithFileList() {
 	List<File> fileList = new ArrayList<File>();
 	fileList.add(gitClient.getDirectory(GIT_URI));
-	GitClient gitClient = new GitClientImpl(fileList);
+	GitClient gitClient = new GitClient(fileList);
 	assertNotNull(gitClient);
     }
 }

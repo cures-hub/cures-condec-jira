@@ -15,6 +15,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.plugin.PluginParseException;
 import com.atlassian.plugin.web.ContextProvider;
 import com.google.common.collect.Maps;
+
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -58,7 +59,7 @@ public class RequirementsDashboardItem implements ContextProvider {
 			if (context.get("showIssueType") != null) {
 				projectKey = (String) context.get("showIssueType");
 			} else {
-				projectKey = (String) req.getParameter("project");
+				projectKey = req.getParameter("project");
 			}
 			newContext.put("projectKey", projectKey);
 			Map<String, Object> issueTypeContext = attachIssueTypeMaps(projectKey);
@@ -73,8 +74,8 @@ public class RequirementsDashboardItem implements ContextProvider {
 				projectKey = (String) context.get("showContentProjectKey");
 				issueTypeId = (String) context.get("showContentIssueTypeId");
 			} else {
-				projectKey = (String) req.getParameter("project");
-				issueTypeId = (String) req.getParameter("issuetype");
+				projectKey = req.getParameter("project");
+				issueTypeId = req.getParameter("issuetype");
 			}
 			Map<String, Object> values = createValues(projectKey, issueTypeId);
 			newContext.putAll(values);

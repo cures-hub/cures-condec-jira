@@ -1,10 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 public class TestGetLinkTypes extends TestConfigSuper {
 	@Test

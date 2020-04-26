@@ -1,22 +1,22 @@
 package de.uhd.ifi.se.decision.management.jira.rest.viewrest;
 
+import static org.junit.Assert.assertEquals;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
-import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
-import com.atlassian.jira.user.ApplicationUser;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.ViewRestImpl;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import org.junit.Before;
 import org.junit.Test;
 import org.ofbiz.core.entity.GenericEntityException;
 
-import static org.junit.Assert.assertEquals;
+import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+import com.atlassian.jira.user.ApplicationUser;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestGetClassTreant extends TestSetUp {
 
@@ -25,7 +25,7 @@ public class TestGetClassTreant extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		viewRest = new ViewRestImpl();
+		viewRest = new ViewRest();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		CodeClassPersistenceManager ccManager
 				= new CodeClassPersistenceManager("Test");

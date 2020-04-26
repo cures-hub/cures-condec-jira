@@ -1,32 +1,32 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
 
-public class TestPreprocessorImpl extends TestSetUp {
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+
+public class TestPreprocessor extends TestSetUp {
 
 	private static final String testSentence = "The quick brown fox jumps over the lazy dog.";
 
-	private PreprocessorImpl pp;
+	private Preprocessor pp;
 
 	@Before
 	public void setUp() {
 		init();
-		pp = new PreprocessorImpl();
+		pp = new Preprocessor();
 	}
 
 	@Test
 	public void testTokenizingWorks() {
 		List<String> tokenizedTestSentence = Arrays.asList("The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog", ".");
-		assertEquals(pp.tokenize(TestPreprocessorImpl.testSentence), tokenizedTestSentence);
+		assertEquals(pp.tokenize(TestPreprocessor.testSentence), tokenizedTestSentence);
 	}
 
 	@Test
@@ -49,7 +49,7 @@ public class TestPreprocessorImpl extends TestSetUp {
 
 		int testTokenizedSize = 0;
 		try {
-			testTokenizedSize = pp.preprocess(TestPreprocessorImpl.testSentence).size();
+			testTokenizedSize = pp.preprocess(TestPreprocessor.testSentence).size();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -16,7 +16,7 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 
@@ -123,7 +123,7 @@ public class ConfigPersistenceManager {
 		return "true".equals(isKnowledgeTypeEnabled);
 	}
 
-	public static boolean isUseClassiferForIssueComments(String projectKey) {
+	public static boolean isClassifierEnabled(String projectKey) {
 		return getValue(projectKey, "setClassiferForIssueComments").equals("true");
 	}
 
@@ -155,7 +155,7 @@ public class ConfigPersistenceManager {
 	public static void setKnowledgeExtractedFromGit(String projectKey, boolean isKnowledgeExtractedFromGit) {
 		setValue(projectKey, "isKnowledgeExtractedFromGit", Boolean.toString(isKnowledgeExtractedFromGit));
 		if (isKnowledgeExtractedFromGit) {
-			new GitClientImpl(projectKey);
+			new GitClient(projectKey);
 		}
 	}
 

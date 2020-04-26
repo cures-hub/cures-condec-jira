@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import net.java.ao.test.jdbc.NonTransactional;
-import org.junit.Ignore;
-import org.junit.Test;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -10,9 +10,10 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestFileTrainer {
 

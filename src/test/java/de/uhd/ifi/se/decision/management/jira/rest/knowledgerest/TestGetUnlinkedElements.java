@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.KnowledgeRestImpl;
 
 public class TestGetUnlinkedElements extends TestSetUp {
 
@@ -18,7 +17,7 @@ public class TestGetUnlinkedElements extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		knowledgeRest = new KnowledgeRestImpl();
+		knowledgeRest = new KnowledgeRest();
 	}
 
 	@Test

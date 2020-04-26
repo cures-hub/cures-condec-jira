@@ -19,7 +19,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -164,7 +163,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 					.getOrCreate(projectKey).getJiraIssueManager();
 			List<String> groupsToAssign = new ArrayList<String>();
 			for (String key : element.getDescription().split(";")) {
-				if (!"".equals(key)) {
+				if (!key.isBlank()) {
 					KnowledgeElement issueElement = persistenceManager.getKnowledgeElement(key);
 					if (issueElement != null) {
 						groupsToAssign.addAll(issueElement.getDecisionGroups());
@@ -253,6 +252,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return true;
 	}
 
+	// TODO This method is too long
 	public void maintainCodeClassKnowledgeElements(String repoUri, ObjectId oldHead, ObjectId newhead) {
 		ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 		List<KnowledgeElement> existingElements = getKnowledgeElements();
@@ -271,7 +271,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 			ccExtractor.close();
 		} else {
 			GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
-			GitClient gitClient = new GitClientImpl(projectKey);
+			GitClient gitClient = new GitClient(projectKey);
 			ObjectReader reader = gitClient.getRepository(repoUri).newObjectReader();
 			CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
 			try {

@@ -14,8 +14,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -65,7 +63,7 @@ public class TestVisTimeLine extends TestSetUp {
 	@Test
 	public void testConstructorUserValidFilterSettingsValid() {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		FilterSettings filterSettings = new FilterSettingsImpl("TEST", "");
+		FilterSettings filterSettings = new FilterSettings("TEST", "");
 		VisTimeLine visTimeLine = new VisTimeLine(user, filterSettings);
 		assertNotNull(visTimeLine);
 		assertEquals(1, visTimeLine.getGroups().size());

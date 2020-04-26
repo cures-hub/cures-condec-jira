@@ -12,8 +12,6 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestFilteringManager extends TestSetUp {
@@ -28,7 +26,7 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testConstructorWithQueryInvalid() {
-		FilteringManager filteringManager = new FilteringManagerImpl(null, null, (String) null);
+		FilteringManager filteringManager = new FilteringManager(null, null, (String) null);
 		assertNull(filteringManager.getFilterSettings());
 		assertEquals(0, filteringManager.getAllElementsMatchingFilterSettings().size());
 		assertNull(filteringManager.getSubgraphMatchingFilterSettings());
@@ -36,47 +34,46 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testConstructorWithFilterSettingsInvalid() {
-		FilteringManager filteringManager = new FilteringManagerImpl(null, (FilterSettings) null);
+		FilteringManager filteringManager = new FilteringManager(null, (FilterSettings) null);
 		assertNull(filteringManager.getFilterSettings());
 	}
 
 	@Test
 	public void testConstructorValidQueryEmpty() {
-		FilteringManager filteringManager = new FilteringManagerImpl("TEST", user, "");
+		FilteringManager filteringManager = new FilteringManager("TEST", user, "");
 		assertEquals(8, filteringManager.getAllElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	public void testConstructorWithFilterSettingsValidQueryEmpty() {
-		FilteringManager extractor = new FilteringManagerImpl(user, new FilterSettingsImpl("TEST", ""));
+		FilteringManager extractor = new FilteringManager(user, new FilterSettings("TEST", ""));
 		assertEquals(8, extractor.getAllElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	public void testConstructorValidQueryFilter() {
-		FilteringManager filteringManager = new FilteringManagerImpl("TEST", user, "?filter=allopenissues");
+		FilteringManager filteringManager = new FilteringManager("TEST", user, "?filter=allopenissues");
 		assertEquals(8, filteringManager.getAllElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	// TODO
 	public void testConstructorValidQueryJQL() {
-		FilteringManager filteringManager = new FilteringManagerImpl("TEST", user, "?jql=project=TEST");
+		FilteringManager filteringManager = new FilteringManager("TEST", user, "?jql=project=TEST");
 		assertEquals("?jql=project=TEST", filteringManager.getFilterSettings().getSearchString());
 		assertEquals(8, filteringManager.getAllElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	public void testSetFilterSettings() {
-		FilteringManager filteringManager = new FilteringManagerImpl(user, null);
-		FilterSettings settings = new FilterSettingsImpl("TEST", "TEST");
+		FilteringManager filteringManager = new FilteringManager(user, null);
+		FilterSettings settings = new FilterSettings("TEST", "TEST");
 		filteringManager.setFilterSettings(settings);
 		assertEquals("TEST", filteringManager.getFilterSettings().getSearchString());
 	}
 
-	@Test(expected = NullPointerException.class)
 	public void testFilterSettingsEmpty() {
-		FilteringManager filteringManager = new FilteringManagerImpl(user, new FilterSettingsImpl());
+		FilteringManager filteringManager = new FilteringManager(user, new FilterSettings(null, null));
 		assertEquals(0, filteringManager.getAllElementsMatchingFilterSettings().size());
 	}
 
@@ -84,18 +81,18 @@ public class TestFilteringManager extends TestSetUp {
 	public void testGetElementsByType() {
 		List<String> knowledgeTypes = new ArrayList<String>();
 		knowledgeTypes.add("Decision");
-		FilterSettings settings = new FilterSettingsImpl("TEST", "TEST");
+		FilterSettings settings = new FilterSettings("TEST", "TEST");
 		settings.setSelectedJiraIssueTypes(knowledgeTypes);
 
-		FilteringManager filteringManager = new FilteringManagerImpl(user, settings);
+		FilteringManager filteringManager = new FilteringManager(user, settings);
 		assertEquals(1, filteringManager.getAllElementsMatchingFilterSettings().size());
 		assertEquals(1, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
 	}
 
 	@Test
 	public void testGetElementsBySubstring() {
-		FilterSettings settings = new FilterSettingsImpl("TEST", "Implement feature");
-		FilteringManager filteringManager = new FilteringManagerImpl(user, settings);
+		FilterSettings settings = new FilterSettings("TEST", "Implement feature");
+		FilteringManager filteringManager = new FilteringManager(user, settings);
 		assertEquals(1, filteringManager.getAllElementsMatchingFilterSettings().size());
 		assertEquals(1, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
 	}
@@ -104,10 +101,10 @@ public class TestFilteringManager extends TestSetUp {
 	public void testGetSubgraph() {
 		List<String> linkTypes = new ArrayList<String>();
 		linkTypes.add("support");
-		FilterSettings settings = new FilterSettingsImpl("TEST", "TEST");
+		FilterSettings settings = new FilterSettings("TEST", "TEST");
 		settings.setSelectedLinkTypes(linkTypes);
 
-		FilteringManager filteringManager = new FilteringManagerImpl(user, settings);
+		FilteringManager filteringManager = new FilteringManager(user, settings);
 		assertEquals(8, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
 		// Currently, the mock links all have the "relate" type.
 		assertEquals(0, filteringManager.getSubgraphMatchingFilterSettings().edgeSet().size());

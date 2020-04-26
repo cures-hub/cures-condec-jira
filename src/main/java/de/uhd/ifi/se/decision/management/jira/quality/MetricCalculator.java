@@ -11,6 +11,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -24,13 +29,12 @@ import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
+
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
-import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -41,10 +45,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.ChartCreator;
-import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MetricCalculator {
 
@@ -56,7 +56,7 @@ public class MetricCalculator {
 	private List<KnowledgeElement> decisionKnowledgeCommitElements;
 	private final String dataStringSeparator = " ";
 	private String issueTypeId;
-	private GitClientImpl gitClient;
+	private GitClient gitClient;
 	private Map<String, Map<String, List<KnowledgeElement>>> extractedIssueRelatedElements;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ChartCreator.class);
@@ -67,7 +67,7 @@ public class MetricCalculator {
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 		this.jiraIssues = getJiraIssuesForProject(projectId, user);
 		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			this.gitClient = new GitClientImpl(projectKey);
+			this.gitClient = new GitClient(projectKey);
 			Map<String, List<KnowledgeElement>> elementMap = getDecisionKnowledgeElementsFromCode(projectKey);
 			if (elementMap != null) {
 				this.decisionKnowledgeCodeElements = elementMap.get("Code");
@@ -111,7 +111,7 @@ public class MetricCalculator {
 		SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
 		try {
 			searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
-			jiraIssues = JiraSearchServiceHelper.getJiraIssues(searchResults);
+			jiraIssues = searchResults.getResults();
 		} catch (SearchException e) {
 			LOGGER.error("Getting JIRA issues for project failed. Message: " + e.getMessage());
 		}
@@ -156,7 +156,7 @@ public class MetricCalculator {
 		// given Issue
 		Map<String, Map<String, List<KnowledgeElement>>> finalMap = new HashMap<String, Map<String, List<KnowledgeElement>>>();
 		GitDecXtract gitExtract = new GitDecXtract(projectKey);
-		GitClientImpl gitClient = new GitClientImpl(projectKey);
+		GitClient gitClient = new GitClient(projectKey);
 		for (Issue issue : jiraIssues) {
 			Map<String, List<KnowledgeElement>> resultMap = new HashMap<String, List<KnowledgeElement>>();
 			List<KnowledgeElement> allGatheredCommitElements = new ArrayList<>();
@@ -217,7 +217,7 @@ public class MetricCalculator {
 	}
 
 	public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType type,
-																				  Integer linkDistance) {
+			Integer linkDistance) {
 		LOGGER.info("RequirementsDashboard getNumberOfDecisionKnowledgeElementsForJiraIssues");
 		Map<String, Integer> numberOfSentencesPerIssue = new HashMap<String, Integer>();
 		for (Issue jiraIssue : jiraIssues) {
@@ -339,7 +339,7 @@ public class MetricCalculator {
 	}
 
 	public Map<String, String> getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType linkFrom,
-																							KnowledgeType linkTo) {
+			KnowledgeType linkTo) {
 		LOGGER.info("RequirementsDashboard getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType");
 		String[] data = new String[2];
 		Arrays.fill(data, "");
@@ -352,8 +352,8 @@ public class MetricCalculator {
 			boolean hastOtherElementLinked = false;
 
 			for (Link link : links) {
-				if (link != null && link.getTarget() != null && link.getSource() != null
-						&& link.isValid() && link.getOppositeElement(issue.getId()) instanceof PartOfJiraIssueText
+				if (link != null && link.getTarget() != null && link.getSource() != null && link.isValid()
+						&& link.getOppositeElement(issue.getId()) instanceof PartOfJiraIssueText
 						&& link.getOppositeElement(issue.getId()).getType().equals(linkTo)) {
 					hastOtherElementLinked = true;
 					data[0] += issue.getKey() + dataStringSeparator;

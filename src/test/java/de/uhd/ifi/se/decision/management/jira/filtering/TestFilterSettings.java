@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 
@@ -23,17 +22,12 @@ public class TestFilterSettings extends TestSetUp {
 	public void setUp() {
 		init();
 		createDate = -1;
-		filterSettings = new FilterSettingsImpl("TEST", "?jql=project%20%3D%20CONDEC", null);
-	}
-
-	@Test
-	public void testDefaultConstructor() {
-		assertNotNull(new FilterSettingsImpl());
+		filterSettings = new FilterSettings("TEST", "?jql=project%20%3D%20CONDEC", null);
 	}
 
 	@Test
 	public void testKeySearchConstructor() {
-		assertNotNull(new FilterSettingsImpl("TEST", "search string"));
+		assertNotNull(new FilterSettings("TEST", "search string"));
 	}
 
 	@Test
@@ -101,7 +95,7 @@ public class TestFilterSettings extends TestSetUp {
 	@Test
 	public void testGetNamesOfSelectedJiraIssueTypes() {
 		assertEquals(5, filterSettings.getNamesOfSelectedJiraIssueTypes().size());
-		filterSettings = new FilterSettingsImpl("TEST", "?jql=issuetype in (Decision, Issue)", null);
+		filterSettings = new FilterSettings("TEST", "?jql=issuetype in (Decision, Issue)", null);
 		assertEquals(2, filterSettings.getNamesOfSelectedJiraIssueTypes().size());
 	}
 
