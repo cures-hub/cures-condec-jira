@@ -1,108 +1,155 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import javax.xml.bind.annotation.XmlElement;
+
+import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInDatabase;
 
 /**
- * Interface for release notes
+ * Models release notes.
  */
-@JsonDeserialize(as = ReleaseNoteImpl.class)
-public interface ReleaseNote {
+public class ReleaseNote {
+
+	private long id;
+	private String title;
+	private String content;
+	private String projectKey;
+	private String startDate;
+	private String endDate;
+
+	// This default constructor is necessary for the JSON string to object mapping.
+	// Do not delete it!
+	public ReleaseNote() {
+	}
+
+	public ReleaseNote(String title, String content, String projectKey, String startDate, String endDate) {
+		this.title = title;
+		this.content = content;
+		this.projectKey = projectKey;
+		this.startDate = startDate;
+		this.endDate = endDate;
+	}
+
+	public ReleaseNote(ReleaseNotesInDatabase dbEntry) {
+		this(dbEntry.getId(), dbEntry.getTitle(), dbEntry.getProjectKey(), dbEntry.getContent(), dbEntry.getStartDate(),
+				dbEntry.getEndDate());
+	}
+
+	private ReleaseNote(long id, String title, String projectKey, String content, String startDate,
+			String endDate) {
+		this.id = id;
+		this.title = title;
+		this.projectKey = projectKey;
+		this.content = content;
+		this.startDate = startDate;
+		this.endDate = endDate;
+	}
 
 	/**
-	 * Get the id of the release note.
-	 * 
-	 * @return id of the release note.
+	 * @return id of the release notes.
 	 */
-	long getId();
+	@XmlElement(name = "id")
+	public long getId() {
+		return this.id;
+	}
 
 	/**
-	 * Set the id of the release note.
-	 * 
 	 * @param id
-	 *            of the release note.
+	 *            of the release notes.
 	 */
-	void setId(long id);
+	@JsonProperty("id")
+	public void setId(long id) {
+		this.id = id;
+	}
 
 	/**
-	 * Get the title of the release note.
-	 *
-	 * @return title of the release note.
+	 * @return title of the release notes.
 	 */
-	String getTitle();
+	@XmlElement(name = "title")
+	public String getTitle() {
+		return this.title;
+	}
 
 	/**
-	 * Set the summary of the release note.
-	 *
 	 * @param title
-	 *            of the release note.
+	 *            of the release notes.
 	 */
-	void setTitle(String title);
+	@JsonProperty("title")
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
 	/**
-	 * Get the startDate of the release note.
-	 *
-	 * @return startDate of the release note.
+	 * @return startDate of the release notes.
 	 */
-	String getStartDate();
+	@XmlElement(name = "startDate")
+	public String getStartDate() {
+		return this.startDate;
+	}
 
 	/**
-	 * Set the startDate of the release note.
-	 *
 	 * @param startDate
-	 *            of the release note.
+	 *            of the release notes.
 	 */
-	void setStartDate(String startDate);
+	@JsonProperty("startDate")
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
 
 	/**
-	 * Get the end Date of the release note.
-	 *
-	 * @return timeRange of the release note.
+	 * @return end date of the release notes.
 	 */
-	String getEndDate();
+	@XmlElement(name = "endDate")
+	public String getEndDate() {
+		return this.endDate;
+	}
 
 	/**
-	 * Set the end date of the release note.
-	 *
 	 * @param endDate
-	 *            of the release note.
+	 *            of the release notes.
 	 */
-	void setEndDate(String endDate);
+	@JsonProperty("endDate")
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
 
 	/**
-	 * Get the project key that the release note belongs to. The project is a JIRA
-	 * project that is extended with settings for this plug-in, for example, whether
-	 * the plug-in is activated for the project.
-	 *
+	 * @return project key that the release notes belongs to.
 	 * @see DecisionKnowledgeProject
 	 */
-	String getProjectKey();
+	@XmlElement(name = "projectKey")
+	public String getProjectKey() {
+		return this.projectKey;
+	}
 
 	/**
-	 * Set the project that the release note belongs to via its key. The project is
-	 * a JIRA project that is extended with settings for this plug-in, for example,
-	 * whether the plug-in is activated for the project.
-	 *
 	 * @param projectKey
-	 *            key of JIRA project.
+	 *            key of Jira project that the release notes belongs to.
 	 * @see DecisionKnowledgeProject
 	 */
-	void setProjectKey(String projectKey);
+	@JsonProperty("projectKey")
+	public void setProjectKey(String projectKey) {
+		this.projectKey = projectKey;
+	}
 
 	/**
-	 * Get the content of the release note. The content is in HTML, txt or md.
-	 *
-	 * @return content of the release note.
+	 * @return content of the release notes. The content is in HTML, txt or md.
 	 */
-	String getContent();
+	@XmlElement(name = "content")
+	public String getContent() {
+		return this.content;
+	}
 
 	/**
-	 * Set the description of the release note. The content is in HTML, txt or md.
-	 *
 	 * @param content
-	 *            of the release note.
+	 *            description of the release note. The content is in HTML, txt or
+	 *            md.
 	 */
-	void setContent(String content);
+	@JsonProperty("content")
+	public void setContent(String content) {
+		this.content = content;
+	}
+
 }

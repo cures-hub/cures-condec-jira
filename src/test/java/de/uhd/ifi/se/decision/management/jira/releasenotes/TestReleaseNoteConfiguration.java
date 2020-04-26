@@ -9,8 +9,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteConfigurationImpl;
-
 public class TestReleaseNoteConfiguration {
 	private ReleaseNoteConfiguration config;
 	private String startDate;
@@ -24,7 +22,7 @@ public class TestReleaseNoteConfiguration {
 
 	@Before
 	public void setUp() {
-		config = new ReleaseNoteConfigurationImpl();
+		config = new ReleaseNoteConfiguration();
 		startDate = "2019-01-12";
 		endDate = "2020-01-12";
 		sprintId = "15";

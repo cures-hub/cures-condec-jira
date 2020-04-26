@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.persistence.tables;
 
 import java.sql.SQLException;
 
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
 import net.java.ao.schema.PrimaryKey;
@@ -16,15 +15,34 @@ import net.java.ao.schema.Table;
  * @see ReleaseNote
  */
 @Table("CondecReleaseNotes")
-public interface ReleaseNotesInDatabase extends RawEntity<Integer>, ReleaseNote {
+public interface ReleaseNotesInDatabase extends RawEntity<Integer> {
+
 	@AutoIncrement
 	@PrimaryKey("ID")
 	long getId();
 
 	void setId(long id);
 
+	String getProjectKey();
+
+	void setProjectKey(String projectKey);
+
+	String getTitle();
+
+	void setTitle(String title);
+
+	String getContent();
+
 	@StringLength(value = StringLength.UNLIMITED)
 	void setContent(String content);
+
+	String getStartDate();
+
+	void setStartDate(String startDate);
+
+	String getEndDate();
+
+	void setEndDate(String endDate);
 
 	static boolean deleteReleaseNotes(ReleaseNotesInDatabase elementToDelete) {
 		try {

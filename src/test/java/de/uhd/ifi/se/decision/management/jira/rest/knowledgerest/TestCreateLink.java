@@ -19,7 +19,6 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.KnowledgeRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -32,7 +31,7 @@ public class TestCreateLink extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		knowledgeRest = new KnowledgeRestImpl();
+		knowledgeRest = new KnowledgeRest();
 		init();
 
 		request = new MockHttpServletRequest();

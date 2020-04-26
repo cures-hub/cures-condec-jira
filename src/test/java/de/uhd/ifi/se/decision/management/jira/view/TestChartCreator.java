@@ -8,12 +8,9 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.atlassian.jira.project.MockProject;
-
 public class TestChartCreator {
 
 	private ChartCreator creator;
-	private MockProject project;
 
 	@Before
 	public void setUp() {

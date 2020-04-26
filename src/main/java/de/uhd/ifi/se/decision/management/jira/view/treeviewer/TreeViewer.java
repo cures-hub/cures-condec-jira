@@ -10,13 +10,14 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.jgrapht.traverse.BreadthFirstIterator;
+
 import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
+
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -25,8 +26,6 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
-
-import org.jgrapht.traverse.BreadthFirstIterator;
 
 /**
  * Creates tree viewer content. The tree viewer is rendered with the jstree
@@ -113,7 +112,7 @@ public class TreeViewer {
 			}
 		}
 
-		filteringManager = new FilteringManagerImpl(filterSettings);
+		filteringManager = new FilteringManager(filterSettings);
 		data = new HashSet<Data>(Arrays.asList(rootNode));
 		for (Data node : this.data) {
 			Iterator<Data> iterator = node.getChildren().iterator();

@@ -5,8 +5,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteImpl;
-
 public class TestReleaseNote {
 	private ReleaseNote note;
 	private long id;
@@ -16,7 +14,7 @@ public class TestReleaseNote {
 
 	@Before
 	public void setUp() {
-		note = new ReleaseNoteImpl(null, null, null, null, null);
+		note = new ReleaseNote(null, null, null, null, null);
 		id = 312;
 		title = "version 1.0 Great title";
 		projectKey = "TEST";

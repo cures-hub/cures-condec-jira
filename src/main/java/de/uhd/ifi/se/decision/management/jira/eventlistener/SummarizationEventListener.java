@@ -11,7 +11,6 @@ import com.atlassian.jira.issue.changehistory.ChangeHistoryManager;
 import com.atlassian.jira.issue.history.ChangeItemBean;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
@@ -33,7 +32,7 @@ public class SummarizationEventListener {
 		}
 
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueKey);
-		CodeSummarizer summarizer = new CodeSummarizerImpl(projectKey);
+		CodeSummarizer summarizer = new CodeSummarizer(projectKey);
 		summarizer.setFormatForComments(true);
 		String summary = summarizer.createSummary(issueEvent.getIssue(), 0);
 

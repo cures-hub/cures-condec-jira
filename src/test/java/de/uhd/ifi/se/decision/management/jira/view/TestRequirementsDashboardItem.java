@@ -28,59 +28,59 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestRequirementsDashboardItem {
 
-    private RequirementsDashboardItem dashboardItem;
-    private Map<String, Object> params;
+	private RequirementsDashboardItem dashboardItem;
+	private Map<String, Object> params;
 
-    @Before
-    public void setUp() {
-	TestSetUp.init();
-	MockProjectManager projectManager = new MockProjectManager();
-	this.dashboardItem = new RequirementsDashboardItem();
+	@Before
+	public void setUp() {
+		TestSetUp.init();
+		MockProjectManager projectManager = new MockProjectManager();
+		this.dashboardItem = new RequirementsDashboardItem();
 
-	params = new HashMap<String, Object>();
-	ComponentAccessor.getProjectManager().getProjects();
+		params = new HashMap<String, Object>();
+		ComponentAccessor.getProjectManager().getProjects();
 
-	// add two projects
-	Project project = new MockProject(1, "TEST");
-	((MockProject) project).setKey("TEST");
-	((MockProjectManager) projectManager).addProject(project);
-	Project project2 = new MockProject(2, "SETS");
-	((MockProject) project2).setKey("SETS");
-	((MockProjectManager) projectManager).addProject(project2);
+		// add two projects
+		Project project = new MockProject(1, "TEST");
+		((MockProject) project).setKey("TEST");
+		projectManager.addProject(project);
+		Project project2 = new MockProject(2, "SETS");
+		((MockProject) project2).setKey("SETS");
+		projectManager.addProject(project2);
 
-	IssueType issueType = new MockIssueType(10100, "WI");
-	PluginInitializer.addIssueTypeToScheme(issueType.getName(), project.getKey());
-    }
+		IssueType issueType = new MockIssueType(10100, "WI");
+		PluginInitializer.addIssueTypeToScheme(issueType.getName(), project.getKey());
+	}
 
-    @Test
-    @NonTransactional
-    public void testGetContextMapShowProject() {
-	params.put("showProject", "showProject");
-	this.dashboardItem.loggedUser = JiraUsers.SYS_ADMIN.getApplicationUser();
-	Map<String, Object> ctxResult = this.dashboardItem.getContextMap(params);
-	assertTrue(ctxResult.containsKey("showDiv"));
-    }
+	@Test
+	@NonTransactional
+	public void testGetContextMapShowProject() {
+		params.put("showProject", "showProject");
+		this.dashboardItem.loggedUser = JiraUsers.SYS_ADMIN.getApplicationUser();
+		Map<String, Object> ctxResult = this.dashboardItem.getContextMap(params);
+		assertTrue(ctxResult.containsKey("showDiv"));
+	}
 
-    @Test
-    @NonTransactional
-    public void testGetContextMapShowIssueType() {
-	params.clear();
-	params.put("showIssueType", "TEST");
-	this.dashboardItem.loggedUser = JiraUsers.SYS_ADMIN.getApplicationUser();
-	Map<String, Object> ctxResult = this.dashboardItem.getContextMap(params);
-	assertTrue(ctxResult.containsKey("showDiv"));
-	assertTrue(ctxResult.containsKey("issueTypeNamesMap"));
-	Map<String, Object> issueTypeNamesMap = (Map<String, Object>) ctxResult.get("issueTypeNamesMap");
-	assertFalse(issueTypeNamesMap.isEmpty());
-    }
+	@Test
+	@NonTransactional
+	public void testGetContextMapShowIssueType() {
+		params.clear();
+		params.put("showIssueType", "TEST");
+		this.dashboardItem.loggedUser = JiraUsers.SYS_ADMIN.getApplicationUser();
+		Map<String, Object> ctxResult = this.dashboardItem.getContextMap(params);
+		assertTrue(ctxResult.containsKey("showDiv"));
+		assertTrue(ctxResult.containsKey("issueTypeNamesMap"));
+		Map<String, Object> issueTypeNamesMap = (Map<String, Object>) ctxResult.get("issueTypeNamesMap");
+		assertFalse(issueTypeNamesMap.isEmpty());
+	}
 
-    @Test(expected = Exception.class)
-    @NonTransactional
-    public void testCreationWithObjects() {
-	PartOfJiraIssueText partOfJiraIssueText = JiraIssues.getSentencesForCommentText("More Comment with some text")
-		.get(0);
-	partOfJiraIssueText.setType(KnowledgeType.ALTERNATIVE);
-	new JiraIssueTextPersistenceManager("").updateKnowledgeElement(partOfJiraIssueText, null);
-	assertNotNull(this.dashboardItem.createValues("TEST", "10100"));
-    }
+	@Test(expected = Exception.class)
+	@NonTransactional
+	public void testCreationWithObjects() {
+		PartOfJiraIssueText partOfJiraIssueText = JiraIssues.getSentencesForCommentText("More Comment with some text")
+				.get(0);
+		partOfJiraIssueText.setType(KnowledgeType.ALTERNATIVE);
+		new JiraIssueTextPersistenceManager("").updateKnowledgeElement(partOfJiraIssueText, null);
+		assertNotNull(this.dashboardItem.createValues("TEST", "10100"));
+	}
 }

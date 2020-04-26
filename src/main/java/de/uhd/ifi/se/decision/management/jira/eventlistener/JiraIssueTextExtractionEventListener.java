@@ -18,7 +18,6 @@ import com.atlassian.jira.util.collect.MapBuilder;
 
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -121,7 +120,7 @@ public class JiraIssueTextExtractionEventListener {
 
     private void handleNewComment() {
 	parseIconsToTags();
-	if (ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey)) {
+	if (ConfigPersistenceManager.isClassifierEnabled(projectKey)) {
 	    this.classificationManagerForJiraIssueComments.classifyComment(this.issueEvent.getComment());
 	} else {
 	    MutableComment comment = (MutableComment) issueEvent.getComment();
@@ -144,7 +143,7 @@ public class JiraIssueTextExtractionEventListener {
 	JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 		.getJiraIssueTextManager();
 
-	if (ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey)) {
+	if (ConfigPersistenceManager.isClassifierEnabled(projectKey)) {
 	    persistenceManager.deleteElementsInComment(issueEvent.getComment());
 	    this.classificationManagerForJiraIssueComments.classifyComment(issueEvent.getComment());
 	} else {
@@ -167,7 +166,7 @@ public class JiraIssueTextExtractionEventListener {
 	JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 		.getJiraIssueTextManager();
 
-	if (ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey)) {
+	if (ConfigPersistenceManager.isClassifierEnabled(projectKey)) {
 	    persistenceManager.deleteElementsInDescription(issueEvent.getIssue());
 	    this.classificationManagerForJiraIssueComments.classifyDescription((MutableIssue) issueEvent.getIssue());
 	} else {

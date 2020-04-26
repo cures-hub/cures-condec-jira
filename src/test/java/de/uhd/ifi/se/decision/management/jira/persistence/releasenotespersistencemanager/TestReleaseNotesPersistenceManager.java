@@ -1,11 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.releasenotespersistencemanager;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 import de.uhd.ifi.se.decision.management.jira.persistence.ReleaseNotesPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
 import net.java.ao.test.jdbc.NonTransactional;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 public class TestReleaseNotesPersistenceManager extends TestReleaseNotesPersistenceManagerSetUp {
 

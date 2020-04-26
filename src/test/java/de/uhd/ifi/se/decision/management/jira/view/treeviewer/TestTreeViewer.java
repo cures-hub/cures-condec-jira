@@ -1,5 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -7,15 +11,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
@@ -26,12 +32,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class TestTreeViewer extends TestSetUp {
 	private AbstractPersistenceManagerForSingleLocation persistenceManager;
@@ -58,7 +58,7 @@ public class TestTreeViewer extends TestSetUp {
 		treeViewer.setThemes(themes);
 		treeViewer.setData(data);
 		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueManager();
-		filterSettings = new FilterSettingsImpl("TEST", "");
+		filterSettings = new FilterSettings("TEST", "");
 	}
 
 	@Test
