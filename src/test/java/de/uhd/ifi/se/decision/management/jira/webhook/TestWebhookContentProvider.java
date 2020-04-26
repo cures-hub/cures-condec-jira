@@ -99,23 +99,34 @@ public class TestWebhookContentProvider extends TestSetUp {
 
 	@Test
 	@NonTransactional
+	public void testCreatePostMethodForProvidedProjectKeyAndProvidedKnowledgeElementAndMissingSecretAndSlackReceiver() {
+		KnowledgeElement knowledgeElement1 = new KnowledgeElementImpl((long) 1, "TEST", "i");
+		knowledgeElement1.setSummary("Summary");
+		knowledgeElement1.setDescription("Description");
+		knowledgeElement1.setType(KnowledgeType.ISSUE);
+
+		WebhookContentProvider provider = new WebhookContentProvider("TEST", knowledgeElement1, null, "Slack");
+		assertNull(provider.createPostMethod().getRequestEntity());
+	}
+
+	@Test
+	@NonTransactional
 	public void testcreateWebhookDataForSlackNewElement(){
 		KnowledgeElement knowledgeElement = new KnowledgeElementImpl((long) 1, "TEST", "i");
 		knowledgeElement.setSummary("Summary");
 		knowledgeElement.setDescription("Description");
 		knowledgeElement.setType(KnowledgeType.ISSUE);
 
-
 		WebhookContentProvider provider = new WebhookContentProvider("TEST", knowledgeElement, null, "Slack");
 
-		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'"+ " Ein neues Entscheidungswissen wurde in Jira hinzugefügt:" +"'}},"+
+		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'"+ "TEST : Ein neues Entscheidungswissen wurde in Jira dokumentiert:" +"'}},"+
 		"{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :Issue:  Issue" +
 		" \\n *Titel*: Summary\\n'},"+
 		"'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '"+knowledgeElement.getUrl()+"'}}]}";
 
 		assertEquals(data, provider.createWebhookDataForSlack(knowledgeElement, "new"));
-
 	}
+
 	@Test
 	@NonTransactional
 	public void testcreateWebhookDataForSlackChangedElement(){
@@ -127,13 +138,12 @@ public class TestWebhookContentProvider extends TestSetUp {
 
 		WebhookContentProvider provider = new WebhookContentProvider("TEST", knowledgeElement, null, "Slack");
 
-		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'"+ " Ein Entscheidungswissen wurde in Jira geändert:" +"'}},"+
+		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'"+ "TEST : Dieses dokumentierte Entscheidungswissen wurde geändert:" +"'}},"+
 		"{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :Issue:  Issue" +
 		" \\n *Titel*: Summary\\n'},"+
 		"'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '"+knowledgeElement.getUrl()+"'}}]}";
 
 		assertEquals(data, provider.createWebhookDataForSlack(knowledgeElement, "changed"));
-
 	}
 
 

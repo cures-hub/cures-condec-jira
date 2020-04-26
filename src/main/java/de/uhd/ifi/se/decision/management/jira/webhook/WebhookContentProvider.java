@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 
 
 /**
@@ -111,15 +112,27 @@ public class WebhookContentProvider {
 		}
 		String intro = "";
 		if("new".equals(event)) {
-			intro = " Ein neues Entscheidungswissen wurde in Jira hinzugefügt:";
+			intro = "Ein neues Entscheidungswissen wurde in Jira dokumentiert:";
 		}
 		if("changed".equals(event) ){
-			intro = " Ein Entscheidungswissen wurde in Jira geändert:";
+			intro = "Dieses dokumentierte Entscheidungswissen wurde geändert:";
 		}
-		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'"+ intro +"'}},"+
+
+		String project = changedElement.getProject().getProjectKey();
+
+		String url = changedElement.getUrl();
+		/*
+		there is a problem with the url, wehn the DK is located in comments.
+		if(DocumentationLocation.JIRAISSUE != changedElement.getDocumentationLocation()){
+			url = changedElement.getJiraIssue().getUrl();
+		}
+		*/
+
+
+		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'"+ project +" : "+ intro +"'}},"+
 		"{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :"+ changedElement.getType() + ":  " + changedElement.getType() +
 		" \\n *Titel*: " + summary + "\\n'},"+
-		"'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '"+changedElement.getUrl()+"'}}]}";
+		"'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '"+url+"'}}]}";
 		//System.out.println("createPostMethodForSlack(): data "+data);
 
 		return data;
