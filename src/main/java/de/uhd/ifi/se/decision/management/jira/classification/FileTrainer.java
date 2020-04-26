@@ -49,25 +49,19 @@ public interface FileTrainer {
 	void setTrainingFile(File file);
 
 	/**
-	 * Gets all files on the server.
-	 *
 	 * @return all files on the server as a list.
 	 */
 	List<File> getTrainingFiles();
 
 	/**
-	 * Gets the names of all files on the server.
-	 *
 	 * @return names of all files on the server as a list of strings.
 	 */
 	List<String> getTrainingFileNames();
 
 	/**
-	 * Gets the supervised binary and fine grained classifier to identify decision
-	 * knowledge in natural language texts.
-	 *
-	 * @return instance of DecisionKnowledgeClassifier.
-	 * @see DecisionKnowledgeClassifier
+	 * @return instance of {@link DecisionKnowledgeClassifier}, i.e., supervised
+	 *         binary and fine grained classifier to identify decision knowledge in
+	 *         natural language texts.
 	 */
 	DecisionKnowledgeClassifier getClassifier();
 

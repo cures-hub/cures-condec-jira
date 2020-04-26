@@ -18,8 +18,8 @@ import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.util.JiraHome;
 
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.BinaryClassifierImpl;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.FineGrainedClassifierImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.BinaryClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.FineGrainedClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
@@ -30,8 +30,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 public class DecisionKnowledgeClassifier {
 
 	private Preprocessor preprocessor;
-	private BinaryClassifierImpl binaryClassifier;
-	private FineGrainedClassifierImpl fineGrainedClassifier;
+	private BinaryClassifier binaryClassifier;
+	private FineGrainedClassifier fineGrainedClassifier;
 
 	/**
 	 * @issue What is the best place to store the supervised text classifier related
@@ -53,7 +53,6 @@ public class DecisionKnowledgeClassifier {
 		loadDefaultBinaryClassifier();
 		loadDefaultFineGrainedClassifier();
 		this.preprocessor = pp;
-
 	}
 
 	public static DecisionKnowledgeClassifier getInstance() {
@@ -64,7 +63,7 @@ public class DecisionKnowledgeClassifier {
 	}
 
 	private void loadDefaultBinaryClassifier() {
-		this.binaryClassifier = new BinaryClassifierImpl();
+		this.binaryClassifier = new BinaryClassifier();
 		/*
 		 * try { //this.binaryClassifier.loadFromFile(); } catch (Exception e) {
 		 * System.err.println("Could not load a binary classifier from File."); }
@@ -72,7 +71,7 @@ public class DecisionKnowledgeClassifier {
 	}
 
 	private void loadDefaultFineGrainedClassifier() {
-		this.fineGrainedClassifier = new FineGrainedClassifierImpl(5);
+		this.fineGrainedClassifier = new FineGrainedClassifier(5);
 	}
 
 	/**
@@ -268,11 +267,11 @@ public class DecisionKnowledgeClassifier {
 		return preprocessedFeaturesWithLabels;
 	}
 
-	public BinaryClassifierImpl getBinaryClassifier() {
+	public BinaryClassifier getBinaryClassifier() {
 		return this.binaryClassifier;
 	}
 
-	public FineGrainedClassifierImpl getFineGrainedClassifier() {
+	public FineGrainedClassifier getFineGrainedClassifier() {
 		return this.fineGrainedClassifier;
 	}
 
