@@ -6,6 +6,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.atlassian.jira.project.Project;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
@@ -26,6 +28,19 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	}
 
 	@Test
+	public void testUnderlyingJiraProjectNull() {
+		DecisionKnowledgeProject project = new DecisionKnowledgeProject((Project) null);
+		assertEquals("", project.getProjectKey());
+		assertEquals("", project.getProjectName());
+	}
+
+	@Test
+	public void testConstructorWithProjectKey() {
+		DecisionKnowledgeProject project = new DecisionKnowledgeProject("TEST");
+		assertEquals(JiraProjects.getTestProject(), project.getJiraProject());
+	}
+
+	@Test
 	public void testGetProjectKey() {
 		assertEquals("TEST", project.getProjectKey());
 	}
@@ -37,17 +52,37 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testIsActivated() {
-		assertEquals(true, this.project.isActivated());
+		assertEquals(true, project.isActivated());
 	}
 
 	@Test
-	public void testIsIssueStrategy() {
-		assertEquals(true, this.project.isIssueStrategy());
+	public void testIsJiraIssueStorage() {
+		assertEquals(true, project.isIssueStrategy());
 	}
 
 	@Test
 	public void testGetKnowledgeTypes() {
 		assertEquals(18, project.getDecisionKnowledgeTypes().size());
+	}
+
+	@Test
+	public void testIsKnowledgeExtractedFromGit() {
+		assertEquals(true, project.isKnowledgeExtractedFromGit());
+	}
+
+	@Test
+	public void testIsPostSquashedCommitsActivated() {
+		assertEquals(true, project.isPostSquashedCommitsActivated());
+	}
+
+	@Test
+	public void testIsPostFeatureBranchCommitsActivated() {
+		assertEquals(true, project.isPostFeatureBranchCommitsActivated());
+	}
+
+	@Test
+	public void testIsWebhookEnabled() {
+		assertEquals(true, project.isWebhookEnabled());
 	}
 
 	@Test
@@ -59,6 +94,16 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	public void testGetWebhookSecret() {
 		ConfigPersistenceManager.setWebhookSecret(project.getProjectKey(), "myhoneybee");
 		assertEquals("myhoneybee", project.getWebhookSecret());
+	}
+
+	@Test
+	public void testIsClassifierEnabled() {
+		assertEquals(false, project.isClassifierEnabled());
+	}
+
+	@Test
+	public void testGetJiraIssueTypes() {
+		assertEquals(5, project.getJiraIssueTypeNames().size());
 	}
 
 	@AfterClass

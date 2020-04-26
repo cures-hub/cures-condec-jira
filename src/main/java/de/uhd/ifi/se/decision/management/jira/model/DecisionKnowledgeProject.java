@@ -44,6 +44,13 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
+	 * @return underlying Jira project.
+	 */
+	public Project getJiraProject() {
+		return jiraProject;
+	}
+
+	/**
 	 * @return key of the Jira project.
 	 */
 	public String getProjectKey() {
@@ -171,13 +178,20 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
+	 * @return Jira issue types available in the project.
+	 */
+	public Set<IssueType> getJiraIssueTypes() {
+		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
+		Collection<IssueType> types = issueTypeSchemeManager.getIssueTypesForProject(jiraProject);
+		return new HashSet<>(types);
+	}
+
+	/**
 	 * @return names of Jira issue types available in the project.
 	 */
 	public Set<String> getJiraIssueTypeNames() {
-		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
-		Collection<IssueType> types = issueTypeSchemeManager.getIssueTypesForProject(jiraProject);
 		Set<String> issueTypes = new HashSet<String>();
-		for (IssueType type : types) {
+		for (IssueType type : getJiraIssueTypes()) {
 			issueTypes.add(type.getName());
 		}
 		return issueTypes;

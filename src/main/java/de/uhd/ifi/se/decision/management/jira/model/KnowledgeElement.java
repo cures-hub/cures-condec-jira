@@ -231,6 +231,12 @@ public class KnowledgeElement {
 	}
 
 	/**
+	 * TODO Address issue
+	 * 
+	 * @issue Currently, groups are a derived attribute of this class. How efficient
+	 *        is it to query the database via the DecisionGroupsManager? Would it be
+	 *        more efficient to have a "real" groups attribute in this class?
+	 * 
 	 * @return List<String> of groups assigned to this knowledge element.
 	 */
 	@XmlElement(name = "groups")
