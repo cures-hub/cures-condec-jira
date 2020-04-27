@@ -18,6 +18,7 @@
     var conDecContextMenu = null;
     var treant = null;
     var vis = null;
+    var decisionTable = null;
 
     var issueKey = "";
     var search = "";
@@ -27,13 +28,13 @@
     };
 
     ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog,
-                                                         _conDecContextMenu, _treant, _vis) {
+                                                         _conDecContextMenu, _treant, _vis, _decisionTable) {
 
         console.log("ConDecJiraIssueModule init");
 
         if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
             && isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
-            && isConDecTreantType(_treant) && isConDecVisType(_vis)) {
+            && isConDecTreantType(_treant) && isConDecVisType(_vis) && isConDecDecisionTableTyp(_decisionTable)) {
 
             conDecAPI = _conDecAPI;
             conDecObservable = _conDecObservable;
@@ -41,6 +42,7 @@
             conDecContextMenu = _conDecContextMenu;
             treant = _treant;
             vis = _vis;
+            decisionTable = _decisionTable;
 
             // Register/subscribe this view as an observer
             conDecObservable.subscribe(this);
@@ -80,6 +82,8 @@
                 showGraph();
             } else if (event.target.href.includes("#class-treant")) {
                 showClassTreant();
+            } else if (event.target.href.includes("#decisionTable")) {
+                showDecisionTable();
             }
         });
     }
@@ -109,6 +113,11 @@
     function showGraph() {
         console.log("ConDecJiraIssueModule showGraph");
         vis.buildVis(issueKey, search);
+    }
+
+    function showDecisionTable() {
+        console.log("ConDecJiraIssueModule showDecisionTable");
+        decisionTable.buildTable(issueKeay);
     }
 
     function applyFilters() {
@@ -242,6 +251,13 @@
         return true;
     }
 
+    function isConDecDecisionTableTyp(conDecVis) {
+        if(!(conDecVis !== undefined && conDecVis.buildDecisionTable !== undefined && typeof conDecVis.buildDecisionTable === 'function')) {
+            console.warn("ConDecJiraIssueModule: ivalid conDecDecisionTable object received.");
+            return false;
+        };
+        return true;
+    }
     // export ConDecJiraIssueModule
     global.conDecJiraIssueModule = new ConDecJiraIssueModule();
 })(window);
