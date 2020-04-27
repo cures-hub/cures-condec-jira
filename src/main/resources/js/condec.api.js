@@ -1030,6 +1030,19 @@
             + projectKey + "&query=" + query);
     };
 
+    ConDecAPI.prototype.getDecisionTable = function getDecisionTable(id) {
+        let decisionTabelData = {};
+        decisionTabelData.qa = ["Usability", "Interoperability", "Functional suitable"];
+        decisionTabelData.score = [["98", "18"], ["10", "94"], ["65", "65"]];
+        decisionTabelData.description = [
+        ["Lorem ipsum dolor sit amet, consectetur adipiscing elit", "Lorem ipsum dolor sit amet, consectetur   adipiscing elit"],
+        ["- Lorem ipsum dolor sit amet, consectetur   adipiscing elit \n-  Nulla ac lacus id tortor vulputate sodales a nec libero", 
+        "+ Lorem ipsum dolor sit amet, consectetur   adipiscing elit \n+  Morbi vel erat bibendum, iaculis nunc vitae, pretium quam"], 
+        ["+ Lorem ipsum dolor sit amet, consectetur   adipiscing elit \n+  Morbi vel erat bibendum, iaculis nunc vitae, pretium quam", 
+        "+ Lorem ipsum dolor sit amet, consectetur   adipiscing elit \n+  Morbi vel erat bibendum, iaculis nunc vitae, pretium quam"]];
+        return decisionTabelData;
+    };
+
     function getResponseAsReturnValue(url) {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", url, false);
