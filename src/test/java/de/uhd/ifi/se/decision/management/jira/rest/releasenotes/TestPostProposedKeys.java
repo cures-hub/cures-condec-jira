@@ -19,7 +19,6 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.AdditionalConfigurationOptions;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 import de.uhd.ifi.se.decision.management.jira.rest.ReleaseNotesRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.ReleaseNotesRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestPostProposedKeys extends TestSetUp {
@@ -31,7 +30,7 @@ public class TestPostProposedKeys extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		releaseNoteRest = new ReleaseNotesRestImpl();
+		releaseNoteRest = new ReleaseNotesRest();
 		init();
 		request = new MockHttpServletRequest();
 		projectKey = "TEST";

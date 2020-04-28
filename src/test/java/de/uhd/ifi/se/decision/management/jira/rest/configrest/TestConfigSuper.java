@@ -13,12 +13,12 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.ConfigRestImpl;
+import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public abstract class TestConfigSuper extends TestSetUp {
 	protected HttpServletRequest request;
-	protected ConfigRestImpl configRest;
+	protected ConfigRest configRest;
 
 	protected static final String INVALID_PROJECTKEY = "Project key is invalid.";
 	protected static final String INVALID_REQUEST = "request = null";
@@ -28,7 +28,7 @@ public abstract class TestConfigSuper extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		configRest = new ConfigRestImpl();
+		configRest = new ConfigRest();
 		init();
 
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();

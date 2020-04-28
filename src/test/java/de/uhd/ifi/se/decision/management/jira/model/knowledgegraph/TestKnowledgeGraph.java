@@ -11,11 +11,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -89,13 +87,13 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testUpdateNode() {
-		KnowledgeElement node = (KnowledgeElement) graph.vertexSet().iterator().next();
+		KnowledgeElement node = graph.vertexSet().iterator().next();
 		assertEquals("WI: Implement feature", node.getSummary());
 		node.setSummary("Updated");
 		assertEquals(2, graph.edgesOf(node).size());
 
-		KnowledgePersistenceManager.getOrCreate("TEST").updateDecisionKnowledgeElement(node, null);
-		node = (KnowledgeElement) graph.vertexSet().iterator().next();
+		KnowledgePersistenceManager.getOrCreate("TEST").updateKnowledgeElement(node, null);
+		node = graph.vertexSet().iterator().next();
 		assertEquals("Updated", node.getSummary());
 		assertEquals(2, graph.edgesOf(node).size());
 	}

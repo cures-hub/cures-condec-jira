@@ -7,7 +7,6 @@ import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 public class Links {
 

@@ -1,20 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.codesummarizer;
 
-import java.util.List;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import java.util.List;
 
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 public class TestCodeSummarizer extends TestSetUpGit {
 
@@ -24,12 +22,12 @@ public class TestCodeSummarizer extends TestSetUpGit {
 	@Before
 	public void setUp() {
 		super.setUp();
-		summarizer = new CodeSummarizerImpl(gitClient);
+		summarizer = new CodeSummarizer(gitClient);
 	}
 
 	@Test
 	public void testConstructorWithProjectKey() {
-		CodeSummarizer codeSummarizer = new CodeSummarizerImpl("TEST");
+		CodeSummarizer codeSummarizer = new CodeSummarizer("TEST");
 		assertNotNull(codeSummarizer);
 	}
 

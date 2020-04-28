@@ -18,9 +18,9 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassElementInDatabase;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
 
 /**
  * Models knowledge elements, e.g. decision knowledge elements or requirements.
@@ -101,7 +101,7 @@ public class KnowledgeElement {
 		}
 	}
 
-	public KnowledgeElement(CodeClassElementInDatabase entry) {
+	public KnowledgeElement(CodeClassInDatabase entry) {
 		if (entry != null) {
 			this.id = entry.getId();
 			this.summary = entry.getFileName();
@@ -231,6 +231,12 @@ public class KnowledgeElement {
 	}
 
 	/**
+	 * TODO Address issue
+	 * 
+	 * @issue Currently, groups are a derived attribute of this class. How efficient
+	 *        is it to query the database via the DecisionGroupsManager? Would it be
+	 *        more efficient to have a "real" groups attribute in this class?
+	 * 
 	 * @return List<String> of groups assigned to this knowledge element.
 	 */
 	@XmlElement(name = "groups")
@@ -426,7 +432,7 @@ public class KnowledgeElement {
 	 * @return true if the element exists in database.
 	 */
 	public boolean existsInDatabase() {
-		KnowledgeElement elementInDatabase = KnowledgePersistenceManager.getOrCreate("").getDecisionKnowledgeElement(id,
+		KnowledgeElement elementInDatabase = KnowledgePersistenceManager.getOrCreate("").getKnowledgeElement(id,
 				documentationLocation);
 		return elementInDatabase != null && elementInDatabase.getId() > 0;
 	}

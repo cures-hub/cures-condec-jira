@@ -17,7 +17,8 @@ public class TestDiff extends TestSetUpGit {
     private Diff diffForCommit;
     private Diff diffForJiraIssue;
 
-    @Before
+    @Override
+	@Before
     public void setUp() {
 	super.setUp();
 	diffForCommit = createDiff(mockJiraIssueForGitTestsTangledSingleCommit);

@@ -2,7 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.mocks;
 
 import java.sql.SQLException;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassElementInDatabase;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
@@ -19,7 +19,7 @@ public class MockDatabase implements DatabaseUpdater {
 			entityManager.migrate(PartOfJiraIssueTextInDatabase.class);
 			entityManager.migrate(LinkInDatabase.class);
 			entityManager.migrate(DecisionGroupInDatabase.class);
-			entityManager.migrate(CodeClassElementInDatabase.class);
+			entityManager.migrate(CodeClassInDatabase.class);
 			entityManager.migrate(ReleaseNotesInDatabase.class);
 		} catch (SQLException | NullPointerException e) {
 			e.printStackTrace();

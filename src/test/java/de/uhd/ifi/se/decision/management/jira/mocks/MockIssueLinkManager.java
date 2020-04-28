@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
 import org.ofbiz.core.entity.GenericValue;
 
 import com.atlassian.jira.exception.CreateException;
@@ -15,6 +14,7 @@ import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.LinkCollection;
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class MockIssueLinkManager implements IssueLinkManager {

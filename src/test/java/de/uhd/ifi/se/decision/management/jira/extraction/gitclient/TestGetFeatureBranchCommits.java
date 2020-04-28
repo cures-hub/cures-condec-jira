@@ -12,7 +12,6 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 
 public class TestGetFeatureBranchCommits extends TestSetUpGit {
 
@@ -31,7 +30,7 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 	// fetches the 'default' branch commits. Do not use TestSetUpGit' gitClient
 	List<String> uris = new ArrayList<String>();
 	uris.add(GIT_URI);
-	testGitClient = new GitClientImpl(uris, repoBaseDirectory, "TEST");
+	testGitClient = new GitClient(uris, repoBaseDirectory, "TEST");
 
 	List<RevCommit> commits = testGitClient.getFeatureBranchCommits(featureBranch, GIT_URI);
 	assertTrue(commits != null);
@@ -42,7 +41,7 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 	// fetches the 'default' branch commits. Do not use TestSetUpGit' gitClient
 	List<String> uris = new ArrayList<String>();
 	uris.add(GIT_URI);
-	testGitClient = new GitClientImpl(uris, repoBaseDirectory, "TEST");
+	testGitClient = new GitClient(uris, repoBaseDirectory, "TEST");
 
 	// get the Ref
 	List<Ref> remoteBranches = testGitClient.getAllRemoteBranches();

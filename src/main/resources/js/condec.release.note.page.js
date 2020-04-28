@@ -4,19 +4,16 @@
  Requires
  * conDecAPI
  * conDecObservable
- * conDecContextMenu
- * conDecTreant
- * conDecTreeViewer
+ * conDecDialog
 
  Is referenced in HTML by
- * decisionKnowledgePage.vm
+ * releaseNotesPage.vm
  */
 (function(global) {
 	/* private vars */
 	var conDecObservable = null;
 	var conDecAPI = null;
 	var conDecDialog = null;
-
 
 	var ConDecReleaseNotePage = function ConDecReleaseNotePage() {
 	};
@@ -134,6 +131,6 @@
 	}
 
 
-	// export ConDecKnowledgePage
+	// export ConDecReleaseNotePage
 	global.conDecReleaseNotePage = new ConDecReleaseNotePage();
 })(window);

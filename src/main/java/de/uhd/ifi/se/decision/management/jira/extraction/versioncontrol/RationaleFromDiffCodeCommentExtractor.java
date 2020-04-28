@@ -1,15 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.RationaleFromCodeCommentExtractor;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
-import org.eclipse.jgit.diff.Edit;
-import org.eclipse.jgit.diff.EditList;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.eclipse.jgit.diff.Edit;
+import org.eclipse.jgit.diff.EditList;
+
+import de.uhd.ifi.se.decision.management.jira.extraction.RationaleFromCodeCommentExtractor;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 
 /**
  * Extracts decision knowledge elements in the list of comments of one source
@@ -58,7 +59,7 @@ public class RationaleFromDiffCodeCommentExtractor {
 			 * @issue: A problem was observed within changes of branch
 			 * refs/remotes/origin/CONDEC-503.rest.API.feature.branch.rationale for change
 			 * on old JAVA file
-			 * src/main/java/de/uhd/../jira/extraction/impl/GitClientImpl.java
+			 * src/main/java/de/uhd/../jira/extraction/impl/GitClient.java
 			 * https://github.com/cures-hub/cures-condec-jira/pull/147/
 			 * commits/847c56aaa0e71ee4c2bdf9d8e674f9dd92bf77b9
 			 * #diff-1e393b83bbc1e0b69baddee0f2897586L473 at lines 472 and 473. The DECISION

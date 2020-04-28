@@ -10,7 +10,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.atlassian.jira.mock.issue.MockIssue;
 import org.ofbiz.core.entity.GenericValue;
 
 import com.atlassian.jira.issue.Issue;
@@ -20,6 +19,7 @@ import com.atlassian.jira.issue.comments.CommentSummary;
 import com.atlassian.jira.issue.comments.MockComment;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.issue.history.ChangeItemBean;
+import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.security.roles.ProjectRole;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.json.JSONObject;

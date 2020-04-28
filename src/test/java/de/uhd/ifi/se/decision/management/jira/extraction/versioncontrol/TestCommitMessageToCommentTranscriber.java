@@ -32,14 +32,15 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 	    + "> Branch: refs/remotes/origin/TEST-4.transcriberBranch\r\n" + "> Repository: " + GIT_URI + "\r\n"
 	    + "> Hash: ";
 
-    @Before
+    @Override
+	@Before
     public void setUp() {
 	init();
 	String testIssueKey = "TEST-4";
 	this.issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(testIssueKey);
 	List<String> uris = new ArrayList<String>();
 	uris.add(GIT_URI);
-	// this.gitClient = new GitClientImpl(uris, super.getRepoBaseDirectory(),
+	// this.gitClient = new GitClient(uris, super.getRepoBaseDirectory(),
 	// "TEST");// ComponentGetter.getGitClient(issue.getProjectObject().getKey());//
 	this.branch = null;
 	Iterator<Ref> it = gitClient.getAllRemoteBranches().iterator();
@@ -62,28 +63,28 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 
     @Test
     public void testLowercaseIssueMessage() {
-	RevCommit commit = this.gitClient.getFeatureBranchCommits(this.branch).get(1);
+	RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(this.branch).get(1);
 	assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + META_DATA_STRING + commit.getName(),
 		transcriber.generateCommentString(commit, branch));
     }
 
     @Test
     public void testUppercaseIssueMessage() {
-	RevCommit commit = this.gitClient.getFeatureBranchCommits(this.branch).get(2);
+	RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(this.branch).get(2);
 	assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + META_DATA_STRING + commit.getName(),
 		transcriber.generateCommentString(commit, branch));
     }
 
     @Test
     public void testMixedcaseIssueMessage() {
-	RevCommit commit = this.gitClient.getFeatureBranchCommits(this.branch).get(3);
+	RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(this.branch).get(3);
 	assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + META_DATA_STRING + commit.getName(),
 		transcriber.generateCommentString(commit, branch));
     }
 
     @Test
     public void testIssueMessageWithAdditionalText() {
-	RevCommit commit = this.gitClient.getFeatureBranchCommits(this.branch).get(4);
+	RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(this.branch).get(4);
 	assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + " But I love pizza!" + META_DATA_STRING + commit.getName(),
 		transcriber.generateCommentString(commit, branch));
     }
@@ -98,7 +99,7 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 	String additionalMessage = "";
 	List<Comment> comments = ComponentAccessor.getCommentManager().getComments(issue);
 	for (int i = 0, j = 1; i < comments.size(); i++, j++) {
-	    RevCommit currentCommit = this.gitClient.getFeatureBranchCommits(this.branch).get(j);
+	    RevCommit currentCommit = TestSetUpGit.gitClient.getFeatureBranchCommits(this.branch).get(j);
 	    if (j == comments.size()) {
 		additionalMessage = " But I love pizza!";
 	    }

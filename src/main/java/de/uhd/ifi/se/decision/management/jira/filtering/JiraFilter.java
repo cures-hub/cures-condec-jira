@@ -35,8 +35,6 @@ public enum JiraFilter {
 	}
 
 	/**
-	 * Returns the Jira query as a String.
-	 *
 	 * @return Jira query as a String.
 	 */
 	public String getJqlString() {
@@ -44,8 +42,6 @@ public enum JiraFilter {
 	}
 
 	/**
-	 * Returns the number of the Jira filter.
-	 *
 	 * @return number of the Jira filter.
 	 */
 	public long getId() {

@@ -20,8 +20,8 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.JavaCodeCommentParser;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.MethodVisitor;
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.JavaCodeCommentParser;
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.MethodVisitor;
 
 /**
  * Models a changed file as part of a {@link Diff}.

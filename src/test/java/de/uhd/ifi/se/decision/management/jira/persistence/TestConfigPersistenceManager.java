@@ -13,7 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestGitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -379,8 +379,8 @@ public class TestConfigPersistenceManager extends TestSetUp {
 
 	@Test
 	public void testGetGitUri() {
-		ConfigPersistenceManager.setGitUris("TEST", TestGitClient.GIT_URI);
-		assertEquals(TestGitClient.GIT_URI, ConfigPersistenceManager.getGitUris("TEST").get(0));
+		ConfigPersistenceManager.setGitUris("TEST", TestSetUpGit.GIT_URI);
+		assertEquals(TestSetUpGit.GIT_URI, ConfigPersistenceManager.getGitUris("TEST").get(0));
 	}
 
 	@Test
