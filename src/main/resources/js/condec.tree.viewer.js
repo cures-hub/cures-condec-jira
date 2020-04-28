@@ -136,6 +136,29 @@
         });
     };
 
+    ConDecTreeViewer.prototype.minMaxFilter = function minMaxFilter(treeId) {
+        console.log("conDecTreeViewer filterNodesByGroup");
+        jQueryConDec(treeId).on("state_ready.jstree", function () {
+            var treeViewer = jQueryConDec(treeId).jstree(true);
+            if (treeViewer) {
+                minLinkNumber = document.getElementById("min-number-linked-issues-input").value;
+                maxLinkNumber = document.getElementById("max-number-linked-issues-input").value;
+                var jsonNodes = treeViewer.get_json('#', {flat: true});
+                $.each(jsonNodes, function (i, val) {
+                    var treeNode = document.getElementById($(val).attr("id"));
+                    if (treeNode.style.display !== "none") {
+                        var kElement = $(val).attr("data");
+                        var description = $(kElement).attr("description");
+                        var number = description.split(";").length - 1;
+                        if (number < minLinkNumber || number > maxLinkNumber) {
+                            $(treeNode).hide();
+                        }
+                    }
+                });
+            }
+        });
+    };
+
     /**
      * called by view.tab.panel.js locally
      */

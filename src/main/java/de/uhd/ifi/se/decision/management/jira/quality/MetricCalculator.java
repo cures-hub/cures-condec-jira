@@ -31,7 +31,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXt
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -119,7 +118,7 @@ public class MetricCalculator {
 	}
 
 	private Map<String, List<KnowledgeElement>> getDecisionKnowledgeElementsFromCode(String projectKey) {
-		LOGGER.info("RequirementsDashboard getDecisionKnowledgeElementsFromCode");
+		LOGGER.info("RequirementsDashboard getDecisionKnowledgeElementsFromCode 14");
 		// Extracts Decision Knowledge from Code Comments AND Commits
 		GitDecXtract gitExtract = new GitDecXtract(projectKey);
 
@@ -151,7 +150,7 @@ public class MetricCalculator {
 	}
 
 	private Map<String, Map<String, List<KnowledgeElement>>> getDecisionKnowledgeElementsFromCodeRelatedToIssue() {
-		LOGGER.info("RequirementsDashboard getDecisionKnowledgeElementsFromCodeRelatedToIssue");
+		LOGGER.info("RequirementsDashboard getDecisionKnowledgeElementsFromCodeRelatedToIssue 7");
 		// Extracts Decision Knowledge from Code Comments AND Commits related to the
 		// given Issue
 		Map<String, Map<String, List<KnowledgeElement>>> finalMap = new HashMap<String, Map<String, List<KnowledgeElement>>>();
@@ -201,7 +200,7 @@ public class MetricCalculator {
 	}
 
 	public Map<String, Integer> numberOfCommentsPerIssue() {
-		LOGGER.info("RequirementsDashboard numberOfCommentsPerIssue");
+		LOGGER.info("RequirementsDashboard numberOfCommentsPerIssue 1");
 		Map<String, Integer> numberMap = new HashMap<String, Integer>();
 		int numberOfComments;
 		for (Issue jiraIssue : jiraIssues) {
@@ -218,7 +217,7 @@ public class MetricCalculator {
 
 	public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType type,
 																				  Integer linkDistance) {
-		LOGGER.info("RequirementsDashboard getNumberOfDecisionKnowledgeElementsForJiraIssues");
+		LOGGER.info("RequirementsDashboard getNumberOfDecisionKnowledgeElementsForJiraIssues 35 36");
 		Map<String, Integer> numberOfSentencesPerIssue = new HashMap<String, Integer>();
 		for (Issue jiraIssue : jiraIssues) {
 			int numberOfElements = 0;
@@ -262,7 +261,7 @@ public class MetricCalculator {
 	}
 
 	public Map<String, Integer> getDistributionOfKnowledgeTypes() {
-		LOGGER.info("RequirementsDashboard getDistributionOfKnowledgeTypes");
+		LOGGER.info("RequirementsDashboard getDistributionOfKnowledgeTypes 1");
 		Map<String, Integer> distributionOfKnowledgeTypes = new HashMap<String, Integer>();
 		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
 			int numberOfElements = graph.getElements(type).size();
@@ -281,7 +280,7 @@ public class MetricCalculator {
 	}
 
 	public Map<String, Integer> getReqAndClassSummary() {
-		LOGGER.info("RequirementsDashboard getReqAndClassSummary");
+		LOGGER.info("RequirementsDashboard getReqAndClassSummary 3");
 		Map<String, Integer> summaryMap = new HashMap<String, Integer>();
 		int numberOfRequirements = 0;
 		for (Issue issue : jiraIssues) {
@@ -308,7 +307,7 @@ public class MetricCalculator {
 	}
 
 	public Map<String, Integer> getKnowledgeSourceCount() {
-		LOGGER.info("RequirementsDashboard getKnowledgeSourceCount");
+		LOGGER.info("RequirementsDashboard getKnowledgeSourceCount 1");
 		Map<String, Integer> sourceMap = new HashMap<String, Integer>();
 		if (decisionKnowledgeCodeElements != null) {
 			sourceMap.put("Code", decisionKnowledgeCodeElements.size());
@@ -340,7 +339,7 @@ public class MetricCalculator {
 
 	public Map<String, String> getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType linkFrom,
 																							KnowledgeType linkTo) {
-		LOGGER.info("RequirementsDashboard getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType");
+		LOGGER.info("RequirementsDashboard getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType 4 3 5 4 4 4 4");
 		String[] data = new String[2];
 		Arrays.fill(data, "");
 
@@ -387,7 +386,7 @@ public class MetricCalculator {
 	}
 
 	public Map<String, Integer> getNumberOfRelevantComments() {
-		LOGGER.info("RequirementsDashboard getNumberOfRelevantComments");
+		LOGGER.info("RequirementsDashboard getNumberOfRelevantComments 3");
 		Map<String, Integer> numberOfRelevantSentences = new LinkedHashMap<String, Integer>();
 		int isRelevant = 0;
 		int isIrrelevant = 0;
@@ -426,7 +425,7 @@ public class MetricCalculator {
 	}
 
 	public Map<String, String> getLinksToIssueTypeMap(KnowledgeType knowledgeType) {
-		LOGGER.info("RequirementsDashboard getLinksToIssueTypeMap");
+		LOGGER.info("RequirementsDashboard getLinksToIssueTypeMap 13 14");
 		if (knowledgeType == null) {
 			return null;
 		}
