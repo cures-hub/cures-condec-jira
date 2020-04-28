@@ -85,7 +85,7 @@
     }
 
 
-		function sendTestPost(){
+		function sendTestPost() {
 				conDecAPI.sendTestPost("$projectKey");
 		}
 </script>

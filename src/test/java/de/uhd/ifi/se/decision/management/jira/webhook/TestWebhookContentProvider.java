@@ -119,7 +119,7 @@ public class TestWebhookContentProvider extends TestSetUp {
 
 		WebhookContentProvider provider = new WebhookContentProvider("TEST", knowledgeElement, null, "Slack");
 
-		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'"+ "TEST : Ein neues Entscheidungswissen wurde in Jira dokumentiert:" +"'}},"+
+		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'"+ "TEST : Neues Entscheidungswissen wurde in Jira dokumentiert:" +"'}},"+
 		"{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :Issue:  Issue" +
 		" \\n *Titel*: Summary\\n'},"+
 		"'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '"+knowledgeElement.getUrl()+"'}}]}";

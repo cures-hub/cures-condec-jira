@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+//import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 
 
 /**
@@ -112,7 +112,7 @@ public class WebhookContentProvider {
 		}
 		String intro = "";
 		if("new".equals(event)) {
-			intro = "Ein neues Entscheidungswissen wurde in Jira dokumentiert:";
+			intro = "Neues Entscheidungswissen wurde in Jira dokumentiert:";
 		}
 		if("changed".equals(event) ){
 			intro = "Dieses dokumentierte Entscheidungswissen wurde geändert:";
