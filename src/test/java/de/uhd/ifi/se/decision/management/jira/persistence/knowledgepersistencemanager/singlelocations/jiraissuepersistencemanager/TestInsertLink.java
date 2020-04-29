@@ -8,7 +8,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -21,7 +20,7 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test
 	public void testLinkFilledUserNull() {
-		Link link = new LinkImpl(1, 2, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
+		Link link = new Link(1, 2, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		link.setType("contains");
 		link.getTarget().setProject("TEST");
 		link.getSource().setProject("TEST");
@@ -36,7 +35,7 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test
 	public void testLinkFilledUserFilled() {
-		Link link = new LinkImpl(1, 2, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
+		Link link = new Link(1, 2, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		link.setType("contains");
 		link.getTarget().setProject("TEST");
 		link.getSource().setProject("TEST");
@@ -48,7 +47,7 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test
 	public void testCreateException() {
-		Link link = new LinkImpl(2, 3, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
+		Link link = new Link(2, 3, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		link.setType("contains");
 		link.getTarget().setProject("TEST");
 		link.getSource().setProject("TEST");
@@ -58,7 +57,7 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test
 	public void testMoreInwardLinks() {
-		Link link = new LinkImpl(30, 3, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
+		Link link = new Link(30, 3, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		link.setType("Contains");
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		assertEquals(1, KnowledgePersistenceManager.getOrCreate("TEST").insertLink(link, user));
@@ -67,7 +66,7 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test
 	public void testMoreOutwardLinks() {
-		Link link = new LinkImpl(1, 30, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
+		Link link = new Link(1, 30, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		link.setType("Contains");
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		assertEquals(1, KnowledgePersistenceManager.getOrCreate("TEST").insertLink(link, user));

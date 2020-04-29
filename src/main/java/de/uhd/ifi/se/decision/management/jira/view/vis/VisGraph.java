@@ -15,7 +15,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -60,7 +59,7 @@ public class VisGraph {
 		if (user == null) {
 			return;
 		}
-		FilteringManager filteringManager = new FilteringManagerImpl(user, filterSettings);
+		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
 		AsSubgraph<KnowledgeElement, Link> subgraph = filteringManager.getSubgraphMatchingFilterSettings();
 		if (subgraph == null || subgraph.vertexSet().isEmpty()) {
 			return;
@@ -72,7 +71,7 @@ public class VisGraph {
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(filterSettings.getProjectKey());
 		KnowledgeElement rootElement = persistenceManager.getJiraIssueManager()
-				.getDecisionKnowledgeElement(rootElementKey);
+				.getKnowledgeElement(rootElementKey);
 
 		// TODO This is not a key but id_documentationLocation
 		this.rootElementKey = rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString();

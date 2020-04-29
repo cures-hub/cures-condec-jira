@@ -85,7 +85,7 @@ public class Data {
 		this.children = children;
 	}
 
-	public KnowledgeElement getElement() {
+	public Object getElement() {
 		return element;
 	}
 

@@ -15,8 +15,6 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.testdata.Links;
 
@@ -76,7 +74,7 @@ public class TestLink extends TestSetUp {
 
 	@Test
 	public void testSetSourceElement() {
-		KnowledgeElement element = new KnowledgeElementImpl();
+		KnowledgeElement element = new KnowledgeElement();
 		KnowledgeElement oldElement = link.getSource();
 		element.setKey("TestNew");
 		link.setSourceElement(element);
@@ -91,7 +89,7 @@ public class TestLink extends TestSetUp {
 
 	@Test
 	public void testSetDestinationElement() {
-		KnowledgeElement element = new KnowledgeElementImpl();
+		KnowledgeElement element = new KnowledgeElement();
 		KnowledgeElement oldElement = link.getTarget();
 		element.setKey("TestNew");
 		link.setDestinationElement(element);
@@ -102,26 +100,26 @@ public class TestLink extends TestSetUp {
 	@Test
 	public void testConstructorLinkEntity() {
 		LinkInDatabase linkInDatabase = mock(LinkInDatabase.class);
-		Link link = new LinkImpl(linkInDatabase);
+		Link link = new Link(linkInDatabase);
 		assertNotNull(link);
 	}
 
 	@Test
 	public void testConstructorDecisionKnowledgeElement() {
-		KnowledgeElement sourceElement = new KnowledgeElementImpl();
+		KnowledgeElement sourceElement = new KnowledgeElement();
 		sourceElement.setId(14);
 		sourceElement.setKey("TestSourceElement");
-		KnowledgeElement destinationElement = new KnowledgeElementImpl();
+		KnowledgeElement destinationElement = new KnowledgeElement();
 		destinationElement.setId(15);
 		destinationElement.setKey("TestDestinationElement");
-		Link link = new LinkImpl(sourceElement, destinationElement);
+		Link link = new Link(sourceElement, destinationElement);
 		assertEquals("TestSourceElement", link.getSource().getKey());
 	}
 
 	@Test
 	public void testConstructorIssueLink() {
 		IssueLink issueLink = new MockIssueLink(1, 2, 1);
-		Link link = new LinkImpl(issueLink);
+		Link link = new Link(issueLink);
 		assertNotNull(link);
 	}
 
@@ -158,7 +156,7 @@ public class TestLink extends TestSetUp {
 
 	@Test
 	public void testLinkIdZeroElementSame() {
-		Link newLink = new LinkImpl(link.getSource(), link.getTarget());
+		Link newLink = new Link(link.getSource(), link.getTarget());
 		long linkId = newLink.getId();
 		newLink.setId(0);
 		assertEquals(linkId, newLink.getId());

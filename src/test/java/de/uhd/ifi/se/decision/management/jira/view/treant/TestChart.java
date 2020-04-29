@@ -3,13 +3,13 @@ package de.uhd.ifi.se.decision.management.jira.view.treant;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class TestChart {
 
@@ -60,5 +60,11 @@ public class TestChart {
 	@Test
 	public void testGetNode() {
 		assertEquals(ImmutableMap.of("collapsable", true), chart.getNode());
+	}
+
+	@Test
+	public void testSecondConstructor() {
+		Chart newChart = new Chart("treant-container-two");
+		assertEquals(newChart.getContainer(), "#treant-container-two");
 	}
 }

@@ -1,21 +1,24 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.properties.APKeys;
-import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
-import com.atlassian.templaterenderer.TemplateRenderer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.properties.APKeys;
+import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
+import com.atlassian.templaterenderer.TemplateRenderer;
 
 /**
- * Abstract super class to render the administration pages
+ * Abstract super class to render the administration pages. Extended in the
+ * {@link SettingsOfAllProjects} and the {@link SettingsOfSingleProject}.
  */
 public abstract class AbstractSettingsServlet extends HttpServlet {
 

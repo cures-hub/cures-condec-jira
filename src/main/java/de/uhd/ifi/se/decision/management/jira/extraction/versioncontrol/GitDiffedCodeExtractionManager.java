@@ -12,15 +12,14 @@ import org.eclipse.jgit.diff.Edit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.CodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.JavaCodeCommentParser;
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.CodeCommentParser;
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.JavaCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 
 /**
  * Extracts decision knowledge elements from files modified by a sequence of
@@ -132,7 +131,7 @@ public class GitDiffedCodeExtractionManager {
 			for (Map.Entry<Edit, List<KnowledgeElement>> editListEntry : codeExtractionResult.entrySet()) {
 			    if (editListEntry.getKey() != null) {
 				resultValues.addAll(editListEntry.getValue().stream().map(d -> {
-				    KnowledgeElement n = new KnowledgeElementImpl();
+				    KnowledgeElement n = new KnowledgeElement();
 				    n.setDocumentationLocation(d.getDocumentationLocation());
 				    n.setDescription(d.getDescription());
 				    n.setId(d.getId());
@@ -149,7 +148,7 @@ public class GitDiffedCodeExtractionManager {
 				}).collect(Collectors.toList()));
 			    } else {
 				resultValues.addAll(editListEntry.getValue().stream().map(d -> {
-				    KnowledgeElement n = new KnowledgeElementImpl();
+				    KnowledgeElement n = new KnowledgeElement();
 				    n.setDocumentationLocation(d.getDocumentationLocation());
 				    n.setDescription(d.getDescription());
 				    n.setId(d.getId());

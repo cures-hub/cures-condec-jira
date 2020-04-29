@@ -1,21 +1,26 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import net.java.ao.test.jdbc.NonTransactional;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertEquals;
 
 
 public class TestOnlineTrainer extends TestSetUp {
@@ -27,7 +32,7 @@ public class TestOnlineTrainer extends TestSetUp {
     }
 
     public static KnowledgeElement createElement(KnowledgeType type, String summary) {
-        KnowledgeElement element = new KnowledgeElementImpl();
+        KnowledgeElement element = new KnowledgeElement();
         element.setType(type);
         element.setSummary(summary);
         return element;

@@ -11,7 +11,6 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 
 public class TestMatrix extends TestSetUp {
 	private Matrix matrix;
@@ -21,11 +20,11 @@ public class TestMatrix extends TestSetUp {
 		init();
 		List<KnowledgeElement> decisions = new ArrayList<>();
 
-		KnowledgeElement element_1 = new KnowledgeElementImpl(1, "TESTfwf", "", "Decision", "TEST",
+		KnowledgeElement element_1 = new KnowledgeElement(1, "TESTfwf", "", "Decision", "TEST",
 				"Test-1", "i", "");
 		decisions.add(element_1);
 
-		KnowledgeElement element_2 = new KnowledgeElementImpl(2, "TESTfwfw", "", "Decision", "TEST",
+		KnowledgeElement element_2 = new KnowledgeElement(2, "TESTfwfw", "", "Decision", "TEST",
 				"Test-1", "i", "");
 		decisions.add(element_2);
 

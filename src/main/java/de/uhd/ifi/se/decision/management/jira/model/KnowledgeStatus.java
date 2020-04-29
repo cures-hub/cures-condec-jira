@@ -31,11 +31,9 @@ public enum KnowledgeStatus {
 	}
 
 	/**
-	 * Converts all knowledge status to a list of String.
-	 *
-	 * @return list of knowledge status as Strings in lower case.
+	 * @return list of all knowledge status as Strings in lower case.
 	 */
-	public static List<String> toList() {
+	public static List<String> toStringList() {
 		List<String> knowledgeStatus = new ArrayList<String>();
 		for (KnowledgeStatus status : KnowledgeStatus.values()) {
 			knowledgeStatus.add(status.toString());
@@ -49,14 +47,11 @@ public enum KnowledgeStatus {
 	}
 
 	/**
-	 * Returns the default status that is set when a new decision knowledge element
-	 * is created. The default status for alternatives is "idea", for decision is
-	 * "decided", and for issues is "unresolved".
-	 * 
 	 * @param type
 	 *            {@link KnowledgeType} object.
 	 * @return default status that is set when a new decision knowledge element is
-	 *         created, e.g. "idea" for alternative.
+	 *         created. The default status for alternatives is "idea", for decision
+	 *         is "decided", and for issues is "unresolved".
 	 */
 	public static KnowledgeStatus getDefaultStatus(KnowledgeType type) {
 		if (type == null) {
@@ -90,8 +85,8 @@ public enum KnowledgeStatus {
 		return getNewKnowledgeStatusForType(formerElement.getType(), newElement.getType(), newElement.getStatus());
 	}
 
-	public static KnowledgeStatus getNewKnowledgeStatusForType(KnowledgeType formerType, KnowledgeType newType,
-			KnowledgeStatus newStatus) {
+	public static KnowledgeStatus getNewKnowledgeStatusForType(KnowledgeType formerType,
+			KnowledgeType newType, KnowledgeStatus newStatus) {
 		if (formerType == KnowledgeType.DECISION && newType == KnowledgeType.ALTERNATIVE) {
 			return REJECTED;
 		}
@@ -115,7 +110,8 @@ public enum KnowledgeStatus {
 		return getNewKnowledgeTypeForStatus(newElement.getStatus(), newElement.getType());
 	}
 
-	public static KnowledgeType getNewKnowledgeTypeForStatus(KnowledgeStatus newStatus, KnowledgeType formerType) {
+	public static KnowledgeType getNewKnowledgeTypeForStatus(KnowledgeStatus newStatus,
+			KnowledgeType formerType) {
 		if (formerType == null) {
 			return KnowledgeType.OTHER;
 		}
@@ -129,14 +125,13 @@ public enum KnowledgeStatus {
 	}
 
 	public static boolean isIssueResolved(KnowledgeElement parentElement, KnowledgeElement childElement) {
-		return parentElement.getType() == KnowledgeType.ISSUE && childElement.getType() == KnowledgeType.DECISION
+		return parentElement.getType() == KnowledgeType.ISSUE
+				&& childElement.getType() == KnowledgeType.DECISION
 				&& childElement.getStatus() == KnowledgeStatus.DECIDED;
 	}
 
 	/**
-	 * Returns a list of all valid knowledge status.
-	 *
-	 * @return list of knowledge status.
+	 * @return list of all valid knowledge status.
 	 */
 	public static List<KnowledgeStatus> getAllKnowledgeStatus() {
 		List<KnowledgeStatus> statuses = new ArrayList<KnowledgeStatus>();

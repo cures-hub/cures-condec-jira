@@ -1,77 +1,140 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.link.IssueLink;
+
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 
 /**
- * Interface for links (=edges) between knowledge elements. The links are
- * directed, i.e., they are arrows starting from a source element and ending in
- * a destination element.
+ * Models links (=edges) between knowledge elements. The links are directed,
+ * i.e., they are arrows starting from a source element and ending in a
+ * destination element.
  */
-@JsonDeserialize(as = LinkImpl.class)
-public interface Link {
+public class Link extends DefaultWeightedEdge {
+
+	private long id;
+	private String type; // TODO Use LinkType instead of String
+	private KnowledgeElement source;
+	private KnowledgeElement target;
+
+	protected static final Logger LOGGER = LoggerFactory.getLogger(Link.class);
+	private static final long serialVersionUID = 1L;
+
+	public Link() {
+		super();
+	}
+
+	public Link(KnowledgeElement sourceElement, KnowledgeElement destinationElement) {
+		this();
+		this.source = sourceElement;
+		this.target = destinationElement;
+	}
+
+	public Link(KnowledgeElement sourceElement, KnowledgeElement destinationElement, String linkType) {
+		this(sourceElement, destinationElement);
+		this.type = linkType;
+	}
+
+	public Link(KnowledgeElement sourceElement, KnowledgeElement destinationElement, LinkType linkType) {
+		this(sourceElement, destinationElement, linkType.toString());
+	}
+
+	public Link(long idOfSourceElement, long idOfDestinationElement, DocumentationLocation sourceDocumentationLocation,
+			DocumentationLocation destDocumentationLocation) {
+		super();
+		this.setSourceElement(idOfSourceElement, sourceDocumentationLocation);
+		this.setDestinationElement(idOfDestinationElement, destDocumentationLocation);
+	}
+
+	public Link(IssueLink jiraIssueLink) {
+		super();
+		this.id = jiraIssueLink.getId();
+		this.type = jiraIssueLink.getIssueLinkType().getName();
+		Issue sourceJiraIssue = jiraIssueLink.getSourceObject();
+		if (sourceJiraIssue != null) {
+			this.source = new KnowledgeElement(sourceJiraIssue);
+		}
+		Issue destinationJiraIssue = jiraIssueLink.getDestinationObject();
+		if (destinationJiraIssue != null) {
+			this.target = new KnowledgeElement(destinationJiraIssue);
+		}
+	}
+
+	public Link(LinkInDatabase linkInDatabase) {
+		super();
+		if (linkInDatabase.getSourceId() > 0) {
+			this.setSourceElement(linkInDatabase.getSourceId(), linkInDatabase.getSourceDocumentationLocation());
+		}
+		if (linkInDatabase.getDestinationId() > 0) {
+			this.setDestinationElement(linkInDatabase.getDestinationId(),
+					linkInDatabase.getDestDocumentationLocation());
+		}
+		this.id = linkInDatabase.getId();
+		this.type = linkInDatabase.getType();
+	}
 
 	/**
-	 * Get the id of the link. This id is the internal database id.
-	 *
-	 * @return id of the link.
+	 * @return id of the link. This id is the internal database id.
 	 */
-	long getId();
+	public long getId() {
+		if (id <= 0) {
+			id = KnowledgePersistenceManager.getLinkId(this);
+		}
+		return id;
+	}
 
 	/**
-	 * Set the id of the link. This id is the internal database id.
+	 * Sets the id of the link. This id is the internal database id.
 	 *
 	 * @param id
 	 *            of the link.
 	 */
-	void setId(long id);
+	public void setId(long id) {
+		this.id = id;
+	}
 
 	/**
-	 * Get the type of the link.
-	 *
 	 * @see LinkType
-	 * @return type of the link.
+	 * @return type of the link. TODO Return LinkType instead of String
 	 */
-	String getType();
+	public String getType() {
+		if (type == null || type.isBlank()) {
+			return "Relates";
+		}
+		return type;
+	}
 
 	/**
-	 * Set the type of the link.
+	 * Sets the type of the link.
 	 *
 	 * @see LinkType
 	 * @param type
 	 *            of the link.
 	 */
-	void setType(LinkType type);
+	public void setType(LinkType type) {
+		this.type = type.toString();
+	}
 
 	/**
-	 * Set the type of the link.
+	 * Sets the type of the link.
 	 *
 	 * @see LinkType
 	 * @param type
 	 *            of the link as a String, e.g. "relates".
 	 */
-	void setType(String type);
-
-	/**
-	 * Returns the source element of this link (=edge).
-	 *
-	 * @see KnowledgeElement
-	 * @return source element of this link.
-	 */
-	KnowledgeElement getSource();
-
-	/**
-	 * Set the source element of this link.
-	 *
-	 * @see KnowledgeElement
-	 * @param decisionKnowledgeElement
-	 *            that is the source element of this link.
-	 */
-	void setSourceElement(KnowledgeElement decisionKnowledgeElement);
+	@JsonProperty("type")
+	public void setType(String type) {
+		this.type = type;
+	}
 
 	/**
 	 * Set the source element of this link by its id and documentation location.
@@ -83,10 +146,20 @@ public interface Link {
 	 * @param documenationLocation
 	 *            of the decision knowledge element.
 	 */
-	void setSourceElement(long id, DocumentationLocation documentationLocation);
+	public void setSourceElement(long id, DocumentationLocation documentationLocation) {
+		if (this.source == null) {
+			this.source = KnowledgePersistenceManager.getOrCreate("").getKnowledgeElement(id,
+					documentationLocation);
+		}
+		if (this.source == null) {
+			this.source = new KnowledgeElement();
+		}
+		this.source.setId(id);
+		this.source.setDocumentationLocation(documentationLocation);
+	}
 
 	/**
-	 * Set the source element of this link by its id and documentation location.
+	 * Sets the source element of this link by its id and documentation location.
 	 *
 	 * @see KnowledgeElement
 	 * @see DocumentationLocation
@@ -96,105 +169,179 @@ public interface Link {
 	 *            of the decision knowledge element as a String, e.g. "i" for JIRA
 	 *            issue.
 	 */
-	void setSourceElement(long id, String documentationLocation);
+	public void setSourceElement(long id, String documentationLocation) {
+		this.setSourceElement(id, DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation));
+	}
 
 	/**
-	 * Set the id of the source element of this link. Instantiates a new decision
+	 * @see KnowledgeElement
+	 * @return source element of this link (=edge).
+	 */
+	@Override
+	public KnowledgeElement getSource() {
+		if (source == null) {
+			source = (KnowledgeElement) super.getSource();
+		}
+		return source;
+	}
+
+	/**
+	 * Sets the source element of this link.
+	 *
+	 * @see KnowledgeElement
+	 * @param sourceElement
+	 *            that is the source element of this link.
+	 */
+	public void setSourceElement(KnowledgeElement sourceElement) {
+		this.source = sourceElement;
+	}
+
+	/**
+	 * Sets the destination element of this link by its id and documentation
+	 * location.
+	 *
+	 * @see KnowledgeElement
+	 * @see DocumentationLocation
+	 * @param id
+	 *            of the destination element of this link.
+	 * @param documenationLocation
+	 *            of the decision knowledge element.
+	 */
+	public void setDestinationElement(long id, DocumentationLocation documentationLocation) {
+		if (this.target == null) {
+			this.target = KnowledgePersistenceManager.getOrCreate("").getKnowledgeElement(id,
+					documentationLocation);
+		}
+		if (this.target == null) {
+			this.target = new KnowledgeElement();
+		}
+		this.target.setId(id);
+		this.target.setDocumentationLocation(documentationLocation);
+	}
+
+	/**
+	 * Sets the destination element of this link by its id and documentation
+	 * location.
+	 *
+	 * @see KnowledgeElement
+	 * @see DocumentationLocation
+	 * @param id
+	 *            of the destination element of this link.
+	 * @param documenationLocation
+	 *            of the decision knowledge element as a String, e.g. "i" for JIRA
+	 *            issue.
+	 */
+	public void setDestinationElement(long id, String documentationLocation) {
+		this.setDestinationElement(id,
+				DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation));
+	}
+
+	/**
+	 * @see KnowledgeElement
+	 * @return target (=destination) element of this link (=edge).
+	 */
+	@Override
+	public KnowledgeElement getTarget() {
+		if (target == null) {
+			target = (KnowledgeElement) super.getTarget();
+		}
+		return target;
+	}
+
+	/**
+	 * Sets the destination element of this link.
+	 *
+	 * @see KnowledgeElement
+	 * @param destinationElement
+	 *            that is the destination element of this link.
+	 */
+	public void setDestinationElement(KnowledgeElement destinationElement) {
+		this.target = destinationElement;
+	}
+
+	/**
+	 * Sets the id of the source element of this link. Instantiates a new decision
 	 * knowledge element if the source element is null.
 	 *
 	 * @see KnowledgeElement
 	 * @param id
 	 *            of the destination element of this link.
 	 */
-	void setIdOfSourceElement(long id);
+	@JsonProperty("idOfSourceElement")
+	public void setIdOfSourceElement(long id) {
+		if (this.source == null) {
+			this.source = new KnowledgeElement();
+		}
+		this.source.setId(id);
+	}
 
 	/**
-	 * Returns the target (=destination) element of this link (=edge).
-	 *
-	 * @see KnowledgeElement
-	 * @return destination element of this link.
-	 */
-	KnowledgeElement getTarget();
-
-	/**
-	 * Set the destination element of this link.
-	 *
-	 * @see KnowledgeElement
-	 * @param decisionKnowledgeElement
-	 *            that is the destination element of this link.
-	 */
-	void setDestinationElement(KnowledgeElement decisionKnowledgeElement);
-
-	/**
-	 * Set the destination element of this link by its id and documentation
-	 * location.
-	 *
-	 * @see KnowledgeElement
-	 * @see DocumentationLocation
-	 * @param id
-	 *            of the destination element of this link.
-	 * @param documenationLocation
-	 *            of the decision knowledge element.
-	 */
-	void setDestinationElement(long id, DocumentationLocation documentationLocation);
-
-	/**
-	 * Set the destination element of this link by its id and documentation
-	 * location.
-	 *
-	 * @see KnowledgeElement
-	 * @see DocumentationLocation
-	 * @param id
-	 *            of the destination element of this link.
-	 * @param documenationLocation
-	 *            of the decision knowledge element as a String, e.g. "i" for JIRA
-	 *            issue.
-	 */
-	void setDestinationElement(long id, String documentationLocation);
-
-	/**
-	 * Set the id of the destination element of this link. Instantiates a new
+	 * Sets the id of the destination element of this link. Instantiates a new
 	 * decision knowledge element if the destination element is null.
 	 *
 	 * @see KnowledgeElement
 	 * @param id
 	 *            of the destination element of this link.
 	 */
-	void setIdOfDestinationElement(long id);
+	@JsonProperty("idOfDestinationElement")
+	public void setIdOfDestinationElement(long id) {
+		if (this.target == null) {
+			this.target = new KnowledgeElement();
+		}
+		this.target.setId(id);
+	}
 
 	/**
-	 * Get the opposite element of this link.
-	 *
-	 * @see KnowledgeElement
 	 * @param elementId
 	 *            of a decision knowledge element on one side of this link.
 	 * 
-	 * @return opposite element of this link.
+	 * @return opposite {@link KnowledgeElement} of this link.
 	 */
-	KnowledgeElement getOppositeElement(long elementId);
+	public KnowledgeElement getOppositeElement(long elementId) {
+		if (!this.isValid()) {
+			return null;
+		}
+		if (this.source.getId() == elementId) {
+			return target;
+		}
+		if (this.target.getId() == elementId) {
+			return source;
+		}
+		return null;
+	}
 
 	/**
-	 * Get the opposite element of this link.
-	 *
 	 * @see KnowledgeElement
 	 * @param element
 	 *            a decision knowledge element on one side of this link.
 	 * 
 	 * @return opposite element of this link.
 	 */
-	KnowledgeElement getOppositeElement(KnowledgeElement element);
+	public KnowledgeElement getOppositeElement(KnowledgeElement element) {
+		return getOppositeElement(element.getId());
+	}
 
 	/**
-	 * Get both elements that are linked (both sides of the link) as a list.
-	 *
 	 * @see KnowledgeElement
-	 * 
-	 * @return list of linked elements.
+	 * @return both elements that are linked (both sides of the link) as a list.
 	 */
-	List<KnowledgeElement> getBothElements();
+	public List<KnowledgeElement> getBothElements() {
+		List<KnowledgeElement> bothElements = new ArrayList<KnowledgeElement>();
+		bothElements.add(target);
+		bothElements.add(source);
+		return bothElements;
+	}
 
 	/**
-	 * Determine whether the link is an intra (false) or an inter (true) project
+	 * @see KnowledgeElement
+	 * @return true if the link connects two existing decision knowledge elements.
+	 */
+	public boolean isValid() {
+		return source.existsInDatabase() && target.existsInDatabase();
+	}
+
+	/**
+	 * Determines whether the link is an intra (false) or an inter (true) project
 	 * link.
 	 *
 	 * @see DecisionKnowledgeProject
@@ -202,28 +349,110 @@ public interface Link {
 	 * @return true if the link connects decision knowledge elements from two
 	 *         different projects.
 	 */
-	boolean isInterProjectLink();
+	public boolean isInterProjectLink() {
+		try {
+			return !source.getProject().getProjectKey().equals(target.getProject().getProjectKey());
+		} catch (NullPointerException e) {
+			LOGGER.error("Link is not valid. Message: " + e.getMessage());
+			return false;
+		}
+	}
 
 	/**
-	 * Determine whether the link connects two existing decision knowledge elements.
-	 *
 	 * @see KnowledgeElement
-	 * 
-	 * @return true if the link connects two existing decision knowledge elements.
-	 */
-	boolean isValid();
-
-	/**
-	 * Get the a new link with swapped source and destination elements.
-	 * 
-	 * @see KnowledgeElement
-	 * 
 	 * @return new link with swapped source and destination elements.
 	 */
-	Link flip();
+	public Link flip() {
+		return new Link(this.getTarget(), this.getSource());
+	}
+
+	@Override
+	public String toString() {
+		String sourceElementIdPrefix = DocumentationLocation.getIdentifier(source);
+		String destinationElementIdPrefix = DocumentationLocation.getIdentifier(target);
+		return sourceElementIdPrefix + source.getId() + " to " + destinationElementIdPrefix + target.getId();
+	}
 
 	/**
-	 * Get a link object with the correct direction: In case the child element is a
+	 * Sets the documentation location of the source element of this link. Retrieves
+	 * a new decision knowledge element from database if the source element
+	 * currently has a different documentation location.
+	 *
+	 * @see KnowledgeElement
+	 * @see DocumentationLocation
+	 * @param documentationLocation
+	 *            of the source element of this link, e.g., "i" for JIRA issue.
+	 */
+	@JsonProperty("documentationLocationOfSourceElement")
+	public void setDocumentationLocationOfSourceElement(String documentationLocationIdentifier) {
+		DocumentationLocation documentationLocation = DocumentationLocation
+				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
+		this.getSource().setDocumentationLocation(documentationLocation);
+	}
+
+	/**
+	 * Sets the documentation location of the destination element of this link.
+	 * Retrieves a new decision knowledge element from database if the destination
+	 * element currently has a different documentation location.
+	 *
+	 * @see KnowledgeElement
+	 * @see DocumentationLocation
+	 * @param documentationLocation
+	 *            of the destination element of this link, e.g., "i" for JIRA issue.
+	 */
+	@JsonProperty("documentationLocationOfDestinationElement")
+	public void setDocumentationLocationOfDestinationElement(String documentationLocationIdentifier) {
+		DocumentationLocation documentationLocation = DocumentationLocation
+				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
+		this.getTarget().setDocumentationLocation(documentationLocation);
+	}
+
+	/**
+	 * @see KnowledgeElement
+	 * 
+	 * @return true if both source and destination element of the link are
+	 *         documented as Jira issues.
+	 */
+	public boolean isIssueLink() {
+		return this.getSource().getDocumentationLocation() == DocumentationLocation.JIRAISSUE
+				&& this.getTarget().getDocumentationLocation() == DocumentationLocation.JIRAISSUE;
+	}
+
+	/**
+	 * @see KnowledgeElement
+	 * @return true if the source and/or the destination element of the link have an
+	 *         unknown documentation location.
+	 */
+	public boolean containsUnknownDocumentationLocation() {
+		return this.getTarget().getDocumentationLocation() == DocumentationLocation.UNKNOWN
+				|| this.getSource().getDocumentationLocation() == DocumentationLocation.UNKNOWN;
+	}
+
+	/**
+	 * @return weight of this link (=edge).
+	 */
+	@Override
+	public double getWeight() {
+		return super.getWeight();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object == null) {
+			return false;
+		}
+		if (object == this) {
+			return true;
+		}
+		if (!(object instanceof Link)) {
+			return false;
+		}
+		Link link = (Link) object;
+		return this.getSource().equals(link.getSource()) && this.getTarget().equals(link.getTarget());
+	}
+
+	/**
+	 * Gets a link object with the correct direction: In case the child element is a
 	 * pro- or con-argument, the link points from the child towards the parent
 	 * element. In case the child element is NOT a pro- or con-argument, the link
 	 * points from the parent towards the child element.
@@ -239,13 +468,13 @@ public interface Link {
 	 * 
 	 * @return a link object.
 	 */
-	public static Link instantiateDirectedLink(KnowledgeElement parentElement,
-			KnowledgeElement childElement, LinkType linkType) {
-		return new LinkImpl(parentElement, childElement, linkType.getName());
+	public static Link instantiateDirectedLink(KnowledgeElement parentElement, KnowledgeElement childElement,
+			LinkType linkType) {
+		return new Link(parentElement, childElement, linkType.getName());
 	}
 
 	/**
-	 * Get a link object with the correct direction: In case the child element is a
+	 * Gets a link object with the correct direction: In case the child element is a
 	 * pro- or con-argument, the link points from the child towards the parent
 	 * element. In case the child element is NOT a pro- or con-argument, the link
 	 * points from the parent towards the child element.
@@ -259,74 +488,26 @@ public interface Link {
 	 * 
 	 * @return a link object.
 	 */
-	static Link instantiateDirectedLink(KnowledgeElement parentElement, KnowledgeElement childElement) {
+	public static Link instantiateDirectedLink(KnowledgeElement parentElement, KnowledgeElement childElement) {
 		KnowledgeType knowledgeTypeOfChildElement = childElement.getType();
 		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(knowledgeTypeOfChildElement);
 		return instantiateDirectedLink(parentElement, childElement, linkType);
 	}
 
 	/**
-	 * Determine if both source and destination element of the link are documented
-	 * as Jira issues.
-	 *
-	 * @see KnowledgeElement
-	 * 
-	 * @return true if both source and destination element of the link are
-	 *         documented as Jira issues.
-	 */
-	boolean isIssueLink();
-
-	/**
-	 * Determine if the source and/or destination element of the link have an
-	 * unknown documentation location.
-	 *
-	 * @see KnowledgeElement
-	 * 
-	 * @return true if the source and/or the destination element of the link have an
-	 *         unknown documentation location.
-	 */
-	boolean containsUnknownDocumentationLocation();
-
-	/**
-	 * Set the documentation location of the source element of this link. Retrieves
-	 * a new decision knowledge element from database if the source element
-	 * currently has a different documentation location.
-	 *
-	 * @see KnowledgeElement
-	 * @see DocumentationLocation
-	 * @param documentationLocation
-	 *            of the source element of this link, e.g., "i" for JIRA issue.
-	 */
-	void setDocumentationLocationOfSourceElement(String documentationLocation);
-
-	/**
-	 * Retrieves the weight of this link (=edge).
-	 *
-	 * @return weight of this link.
-	 */
-	double getWeight();
-
-	/**
-	 * Set the documentation location of the destination element of this link.
-	 * Retrieves a new decision knowledge element from database if the destination
-	 * element currently has a different documentation location.
-	 *
-	 * @see KnowledgeElement
-	 * @see DocumentationLocation
-	 * @param documentationLocation
-	 *            of the destination element of this link, e.g., "i" for JIRA issue.
-	 */
-	void setDocumentationLocationOfDestinationElement(String documentationLocation);
-
-	/**
-	 * Determine whether a link object has the same source and destination id as a
-	 * database object.
-	 * 
 	 * @see LinkInDatabase
-	 * 
 	 * @param linkInDatabase
 	 *            link stored in database
-	 * @return true if objects have the same source and destination id.
+	 * @return true if link object has the same source and destination id as a
+	 *         database object.
 	 */
-	boolean equals(LinkInDatabase linkInDatabase);
+	public boolean equals(LinkInDatabase linkInDatabase) {
+		return this.source.getId() == linkInDatabase.getSourceId()
+				&& this.target.getId() == linkInDatabase.getDestinationId();
+	}
+
+	@Override
+	public int hashCode() {
+		return getSource().hashCode() + getTarget().hashCode();
+	}
 }

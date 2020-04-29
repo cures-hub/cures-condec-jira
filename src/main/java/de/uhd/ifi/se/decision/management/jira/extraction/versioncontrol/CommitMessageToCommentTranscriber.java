@@ -45,7 +45,7 @@ public class CommitMessageToCommentTranscriber {
     public String generateCommentString(RevCommit commit, Ref featureBranch) {
 	String comment = commit.getFullMessage();
 	if (comment != null && !comment.equals("")) {
-	    for (String tag : KnowledgeType.toList()) {
+	    for (String tag : KnowledgeType.toStringList()) {
 		String replaceString = "{" + tag.toLowerCase() + "}";
 		comment = comment.replaceAll(GitDecXtract.generateRegexToFindAllTags(tag), replaceString);
 	    }

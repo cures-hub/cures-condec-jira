@@ -14,9 +14,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilterSettingsImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -27,7 +25,7 @@ public class TestVisTimeLine extends TestSetUp {
 	public void setUp() {
 		init();
 		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
-		KnowledgeElement element = new KnowledgeElementImpl(JiraIssues.getTestJiraIssues().get(0));
+		KnowledgeElement element = new KnowledgeElement(JiraIssues.getTestJiraIssues().get(0));
 		elements.add(element);
 		visTimeLine = new VisTimeLine(elements);
 	}
@@ -45,7 +43,7 @@ public class TestVisTimeLine extends TestSetUp {
 
 	@Test
 	public void testAddElement() {
-		KnowledgeElement element = new KnowledgeElementImpl(JiraIssues.getTestJiraIssues().get(1));
+		KnowledgeElement element = new KnowledgeElement(JiraIssues.getTestJiraIssues().get(1));
 		visTimeLine.addElement(element);
 		assertEquals(2, visTimeLine.getTimeLineNodes().size());
 	}
@@ -65,7 +63,7 @@ public class TestVisTimeLine extends TestSetUp {
 	@Test
 	public void testConstructorUserValidFilterSettingsValid() {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		FilterSettings filterSettings = new FilterSettingsImpl("TEST", "");
+		FilterSettings filterSettings = new FilterSettings("TEST", "");
 		VisTimeLine visTimeLine = new VisTimeLine(user, filterSettings);
 		assertNotNull(visTimeLine);
 		assertEquals(1, visTimeLine.getGroups().size());

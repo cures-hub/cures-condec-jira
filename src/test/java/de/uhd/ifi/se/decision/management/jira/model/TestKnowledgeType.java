@@ -58,7 +58,7 @@ public class TestKnowledgeType {
 
 	@Test
 	public void testToList() {
-		assertEquals(ArrayList.class, KnowledgeType.toList().getClass());
+		assertEquals(ArrayList.class, KnowledgeType.toStringList().getClass());
 	}
 
 	@Test

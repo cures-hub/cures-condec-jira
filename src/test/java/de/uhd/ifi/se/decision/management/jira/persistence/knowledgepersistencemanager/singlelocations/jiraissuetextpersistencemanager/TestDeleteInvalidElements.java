@@ -13,7 +13,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -40,7 +40,7 @@ public class TestDeleteInvalidElements extends TestSetUp {
 	@NonTransactional
 	public void testOneElementInvalid() {
 		JiraIssues.addElementToDataBase();
-		List<KnowledgeElement> elements = manager.getDecisionKnowledgeElements();
+		List<KnowledgeElement> elements = manager.getKnowledgeElements();
 
 		assertEquals(1, elements.size());
 		assertTrue(manager.deleteInvalidElements(user));

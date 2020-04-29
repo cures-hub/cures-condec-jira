@@ -7,7 +7,6 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 
 public class KnowledgeElements {
 
@@ -29,7 +28,7 @@ public class KnowledgeElements {
 		List<MutableIssue> jiraIssues = JiraIssues.getTestJiraIssues();
 
 		for (Issue jiraIssue : jiraIssues) {
-			elements.add(new KnowledgeElementImpl(jiraIssue));
+			elements.add(new KnowledgeElement(jiraIssue));
 		}
 
 		return elements;

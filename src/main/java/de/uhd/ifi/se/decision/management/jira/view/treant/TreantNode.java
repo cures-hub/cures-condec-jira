@@ -12,8 +12,8 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
@@ -61,7 +61,14 @@ public class TreantNode {
 		if (decisionKnowledgeElement == null || decisionKnowledgeElement.getSummary() == null) {
 			return;
 		}
-		this.nodeContent = ImmutableMap.of("title", decisionKnowledgeElement.getSummary(), "documentationLocation",
+		String title = "";
+		if (decisionKnowledgeElement.getSummary().length() > 25
+				&& !decisionKnowledgeElement.getSummary().contains(" ")) {
+			title = (decisionKnowledgeElement.getSummary().substring(0, 24) + "...");
+		} else {
+			title = decisionKnowledgeElement.getSummary();
+		}
+		this.nodeContent = ImmutableMap.of("title", title, "documentationLocation",
 				decisionKnowledgeElement.getDocumentationLocationAsString(), "status",
 				decisionKnowledgeElement.getStatusAsString(), "desc", decisionKnowledgeElement.getKey());
 		this.htmlClass = decisionKnowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
@@ -86,22 +93,22 @@ public class TreantNode {
 	}
 
 	public TreantNode(KnowledgeElement decisionKnowledgeElement, Link link, boolean isCollapsed,
-			boolean isHyperlinked) {
+					  boolean isHyperlinked) {
 		this(decisionKnowledgeElement, isCollapsed, isHyperlinked);
 		this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement, link.getType());
 		switch (link.getType()) {
-		case "support":
-			if (decisionKnowledgeElement.getId() == link.getSource().getId()) {
-				this.htmlClass = "pro";
-			}
-			break;
-		case "attack":
-			if (decisionKnowledgeElement.getId() == link.getSource().getId()) {
-				this.htmlClass = "con";
-			}
-			break;
-		default:
-			break;
+			case "support":
+				if (decisionKnowledgeElement.getId() == link.getSource().getId()) {
+					this.htmlClass = "pro";
+				}
+				break;
+			case "attack":
+				if (decisionKnowledgeElement.getId() == link.getSource().getId()) {
+					this.htmlClass = "con";
+				}
+				break;
+			default:
+				break;
 		}
 	}
 

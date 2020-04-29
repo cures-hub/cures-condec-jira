@@ -1,13 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.List;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class TestGitCommitMessageExtractor {
-	private List<String> tags = KnowledgeType.toList();
+	private List<String> tags = KnowledgeType.toStringList();
 	private GitCommitMessageExtractor gitCommitMessageX;
 
 	@Test

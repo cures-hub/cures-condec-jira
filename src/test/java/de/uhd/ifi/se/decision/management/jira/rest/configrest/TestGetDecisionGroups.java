@@ -12,64 +12,62 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.ConfigRestImpl;
 
 public class TestGetDecisionGroups extends TestSetUp {
 
-    protected ConfigRest configRest;
-    private long id;
-    private String projectKey;
+	protected ConfigRest configRest;
+	private long id;
+	private String projectKey;
 
-    @Before
-    public void setUp() {
-	init();
-	configRest = new ConfigRestImpl();
-	this.id = 100;
-	String summary = "Test";
-	String description = "Test";
-	KnowledgeType type = KnowledgeType.SOLUTION;
-	this.projectKey = "Test";
-	String key = "Test";
+	@Before
+	public void setUp() {
+		init();
+		configRest = new ConfigRest();
+		this.id = 100;
+		String summary = "Test";
+		String description = "Test";
+		KnowledgeType type = KnowledgeType.SOLUTION;
+		this.projectKey = "TEST";
+		String key = "Test";
 
-	KnowledgeElement decisionKnowledgeElement = new KnowledgeElementImpl(id, summary, description, type, projectKey,
-		key, DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
-	DecisionGroupManager.insertGroup("TestGroup1", decisionKnowledgeElement);
-    }
+		KnowledgeElement decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey,
+				key, DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
+		DecisionGroupManager.insertGroup("TestGroup1", decisionKnowledgeElement);
+	}
 
-    @Test
-    public void testGetDecisionGroupsIdInvalid() {
-	Response response = configRest.getDecisionGroups(-1, DocumentationLocation.JIRAISSUE.getIdentifier(),
-		this.projectKey);
-	assertEquals("[]", response.getEntity().toString());
-    }
+	@Test
+	public void testGetDecisionGroupsIdInvalid() {
+		Response response = configRest.getDecisionGroups(-1, DocumentationLocation.JIRAISSUE.getIdentifier(),
+				this.projectKey);
+		assertEquals("[]", response.getEntity().toString());
+	}
 
-    @Test
-    public void testGetDecisionGroupsDocLocNull() {
-	Response response = configRest.getDecisionGroups(this.id, null, this.projectKey);
-	assertEquals("[]", response.getEntity().toString());
-    }
+	@Test
+	public void testGetDecisionGroupsDocLocNull() {
+		Response response = configRest.getDecisionGroups(this.id, null, this.projectKey);
+		assertEquals("[]", response.getEntity().toString());
+	}
 
-    @Test
-    public void testGetDecisionGroupsProjectKeyNull() {
-	Response response = configRest.getDecisionGroups(this.id, DocumentationLocation.JIRAISSUE.getIdentifier(),
-		null);
-	assertEquals("[]", response.getEntity().toString());
-    }
+	@Test
+	public void testGetDecisionGroupsProjectKeyNull() {
+		Response response = configRest.getDecisionGroups(this.id, DocumentationLocation.JIRAISSUE.getIdentifier(),
+				null);
+		assertEquals("[]", response.getEntity().toString());
+	}
 
-    @Test
-    public void testGetDecisionGroupsNothingFound() {
-	Response response = configRest.getDecisionGroups(this.id, DocumentationLocation.JIRAISSUE.getIdentifier(),
-		"Test1");
-	assertEquals("[]", response.getEntity().toString());
-    }
-    /*
-     * @Test public void testProjectKeyValid() { Response response =
-     * configRest.getDecisionGroups(this.id,
-     * DocumentationLocation.JIRAISSUE.getIdentifier(), this.projectKey);
-     * assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-     * assertEquals("[TestGroup1]", response.getEntity().toString()); }
-     */
+	@Test
+	public void testGetDecisionGroupsNothingFound() {
+		Response response = configRest.getDecisionGroups(this.id, DocumentationLocation.JIRAISSUE.getIdentifier(),
+				"Test1");
+		assertEquals("[]", response.getEntity().toString());
+	}
+	/*
+	 * @Test public void testProjectKeyValid() { Response response =
+	 * configRest.getDecisionGroups(this.id,
+	 * DocumentationLocation.JIRAISSUE.getIdentifier(), this.projectKey);
+	 * assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+	 * assertEquals("[TestGroup1]", response.getEntity().toString()); }
+	 */
 }

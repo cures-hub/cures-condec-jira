@@ -34,10 +34,10 @@ public class TestFeatureBranchQualityDashboardItem extends TestSetUp {
 		// add two projects
 		Project project = new MockProject(1, "TEST");
 		((MockProject) project).setKey("TEST");
-		((MockProjectManager) projectManager).addProject(project);
+		projectManager.addProject(project);
 		project = new MockProject(1, "SETS");
 		((MockProject) project).setKey("SETS");
-		((MockProjectManager) projectManager).addProject(project);
+		projectManager.addProject(project);
 
 	}
 

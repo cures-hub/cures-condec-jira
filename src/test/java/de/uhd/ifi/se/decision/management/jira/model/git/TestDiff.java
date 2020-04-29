@@ -11,14 +11,14 @@ import org.junit.Test;
 import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.model.git.impl.DiffImpl;
 
 public class TestDiff extends TestSetUpGit {
 
     private Diff diffForCommit;
     private Diff diffForJiraIssue;
 
-    @Before
+    @Override
+	@Before
     public void setUp() {
 	super.setUp();
 	diffForCommit = createDiff(mockJiraIssueForGitTestsTangledSingleCommit);
@@ -32,7 +32,7 @@ public class TestDiff extends TestSetUpGit {
 
     @Test
     public void createDiff() {
-	Diff diff = new DiffImpl();
+	Diff diff = new Diff();
 	assertEquals(0, diff.getChangedFiles().size());
     }
 

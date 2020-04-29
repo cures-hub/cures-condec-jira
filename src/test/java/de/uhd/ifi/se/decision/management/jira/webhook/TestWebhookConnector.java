@@ -36,7 +36,7 @@ public class TestWebhookConnector extends TestSetUp {
 		webhookConnector = new WebhookConnector("TEST",
 				"https://cuu-staging.ase.in.tum.de/api/v1/projects/ConDecDev/integrations/conDec",
 				"03f90207-73bc-44d9-9848-d3f1f8c8254e", rootTypes);
-		element = new KnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 4));
+		element = new KnowledgeElement(ComponentAccessor.getIssueManager().getIssueObject((long) 4));
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 

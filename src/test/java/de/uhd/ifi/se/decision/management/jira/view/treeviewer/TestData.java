@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,30 @@ public class TestData extends TestSetUp {
 		Link link = Links.getTestLink();
 		Data data = new Data(element, link);
 		assertEquals("tv1", data.getId());
+	}
+
+	@Test
+	public void testConstructorWithDescNull() {
+		element.setDescription(null);
+		Data data = new Data(element);
+		assertNotNull(data);
+		element.setDescription("TestDescription");
+	}
+
+	@Test
+	public void testConstructorWithDescBlank() {
+		element.setDescription("");
+		Data data = new Data(element);
+		assertNotNull(data);
+		element.setDescription("TestDescription");
+	}
+
+	@Test
+	public void testConstructorWithDescUndefined() {
+		element.setDescription("undefined");
+		Data data = new Data(element);
+		assertNotNull(data);
+		element.setDescription("TestDescription");
 	}
 
 	@Test

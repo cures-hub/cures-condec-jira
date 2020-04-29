@@ -1,5 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import org.junit.Before;
 import org.junit.Test;
 

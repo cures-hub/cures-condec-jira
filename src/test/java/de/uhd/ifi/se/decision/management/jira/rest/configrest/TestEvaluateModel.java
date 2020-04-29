@@ -1,15 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
-import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
-import de.uhd.ifi.se.decision.management.jira.classification.TestOnlineTrainer;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
+import de.uhd.ifi.se.decision.management.jira.classification.TestOnlineTrainer;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 
 public class TestEvaluateModel extends TestConfigSuper {
 
+	@Override
 	@Before
 	public void setUp() {
 		super.setUp();
