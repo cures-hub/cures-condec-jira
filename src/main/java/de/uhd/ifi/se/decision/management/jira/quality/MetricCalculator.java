@@ -422,7 +422,6 @@ public class MetricCalculator {
 	public Map<String, String> getLinksToIssueTypeMap(KnowledgeType knowledgeType, int linkDistance) {
 		LOGGER.info("RequirementsDashboard getLinksToIssueTypeMap 1 3");
 		Map<String, String> result = new LinkedHashMap<String, String>();
-		String type = JiraIssueTypeGenerator.getJiraIssueTypeName(issueTypeId);
 		String withLink = "";
 		String withoutLink = "";
 		for (Issue jiraIssue : jiraIssues) {
