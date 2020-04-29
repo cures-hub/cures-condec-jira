@@ -19,30 +19,24 @@ public class WebhookEventListener {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(WebhookEventListener.class);
 
 	public void onIssueEvent(IssueEvent issueEvent) {
-		//System.out.println("WebhookListerner aufgelöst");
 		String projectKey = issueEvent.getProject().getKey();
 		if (!ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
-			System.out.println("isWebhookEnabled : FALSE");
 			return;
 		}
 		long eventTypeId = issueEvent.getEventTypeId();
 		KnowledgeElement decisionKnowledgeElement = new KnowledgeElement(issueEvent.getIssue());
 
-		if (eventTypeId == EventType.ISSUE_CREATED_ID){
-			LOGGER.info("WebhookListerner createdElement"+ decisionKnowledgeElement.getSummary());
+		if (eventTypeId == EventType.ISSUE_CREATED_ID) {
+			LOGGER.info("WebhookListerner createdElement" + decisionKnowledgeElement.getSummary());
 			WebhookConnector connector = new WebhookConnector(projectKey);
-				System.out.println("EventListener: gehe zu  WebhookConnector:" +projectKey);
 			connector.sendnewElement(decisionKnowledgeElement);
 		}
-		if(eventTypeId == EventType.ISSUE_UPDATED_ID) {
-			LOGGER.info("WebhookListerner sendetElementchange"+ decisionKnowledgeElement.getSummary());
-			//System.out.println("WebhookListerner sendetElementchange"+ decisionKnowledgeElement.getSummary());
+		if (eventTypeId == EventType.ISSUE_UPDATED_ID) {
+			LOGGER.info("WebhookListerner sendetElementchange" + decisionKnowledgeElement.getSummary());
 			WebhookConnector connector = new WebhookConnector(projectKey);
-				System.out.println("EventListener: gehe zu  WebhookConnector:" +projectKey);
 			connector.sendElementChanges(decisionKnowledgeElement);
 		}
-		if(eventTypeId == EventType.ISSUE_DELETED_ID) {
-			System.out.println("deleted_id");
+		if (eventTypeId == EventType.ISSUE_DELETED_ID) {
 			WebhookConnector webhookConnector = new WebhookConnector(projectKey);
 			webhookConnector.deleteElement(decisionKnowledgeElement, issueEvent.getUser());
 		}

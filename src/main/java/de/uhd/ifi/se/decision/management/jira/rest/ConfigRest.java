@@ -18,6 +18,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpsURL;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,13 +30,6 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
-
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpsURL;
-import org.apache.commons.httpclient.methods.PostMethod;
 
 import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
@@ -352,36 +350,35 @@ public class ConfigRest {
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
-  @Path("/sendTestPost")
+	@Path("/sendTestPost")
 	@POST
 	public Response sendTestPost(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'" + projectKey
+				+ ": TESTPOST, changed decision knowledge will be shown like this:'}},"
+				+ "{'type':'section','text':{'type':'mrkdwn','text':'*Type:* :issue: : Issue"
+				+ " \\n *Title*: Test summary \\n'}}]}";
+		PostMethod postMethod = new PostMethod();
+		Header header = new Header();
+		header.setName("X-Hub-Signature");
+		postMethod.setRequestHeader(header);
+		try {
+			StringRequestEntity sRE = new StringRequestEntity(data, "application/json", "UTF-8");
+			postMethod.setRequestEntity(sRE);
 
-		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'"+ projectKey+": TESTPOST, geändertes Entscheidungswissen wird in dieser Form erscheinen:'}},"+
-		 "{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :issue: : Issue" +
-		 " \\n *Titel*: Test-Zusammenfassung \\n'}}]}";
+			HttpClient httpClient = new HttpClient();
+			postMethod.setURI(new HttpsURL(ConfigPersistenceManager.getWebhookUrl(projectKey)));
 
-			PostMethod postMethod = new PostMethod();
-			Header header = new Header();
-			header.setName("X-Hub-Signature");
-			postMethod.setRequestHeader(header);
-		 try{
-			 StringRequestEntity sRE = new StringRequestEntity(data, "application/json", "UTF-8");
-			 postMethod.setRequestEntity(sRE);
+			int httpResponse = httpClient.executeMethod(postMethod);
+			if (httpResponse >= 200 && httpResponse < 300) {
+				return Response.ok(Status.ACCEPTED).build();
+			}
+		} catch (IOException | IllegalArgumentException e) {
+			LOGGER.error("Could not send test webhook post because of " + e.getMessage());
 
-			 HttpClient httpClient = new HttpClient();
-			 postMethod.setURI(new HttpsURL(ConfigPersistenceManager.getWebhookUrl(projectKey)));
-
-			 int httpResponse = httpClient.executeMethod(postMethod);
-			 if (httpResponse >= 200 && httpResponse < 300) {
-				 return Response.ok(Status.ACCEPTED).build();
-			 }
-		 } catch (IOException | IllegalArgumentException e) {
-			 LOGGER.error("Could not send test webhook because of " + e.getMessage());
-
-		 }
-		 return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Test Post Failed."))
-				 .build();
-	 }
+		}
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Test webhook post failed."))
+				.build();
+	}
 
 	@Path("/setReleaseNoteMapping")
 	@POST

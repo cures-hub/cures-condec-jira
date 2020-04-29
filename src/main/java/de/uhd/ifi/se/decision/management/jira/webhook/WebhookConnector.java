@@ -19,8 +19,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
-import java.io.*;
-
 /**
  * Webhook class that posts changed decision knowledge to a given URL.
  */
@@ -31,8 +29,7 @@ public class WebhookConnector {
 	private String projectKey;
 	private List<Long> elementIds;
 	private Collection<String> rootTypes;
-	private String receiver;
-
+	private WebhookType type;
 
 	public WebhookConnector(String projectKey, String webhookUrl, String webhookSecret, Collection<String> rootTypes) {
 		this.projectKey = projectKey;
@@ -46,57 +43,44 @@ public class WebhookConnector {
 		}
 		this.elementIds = new ArrayList<Long>();
 
-		this.receiver  = "Other";
-		if (this.url != null){
-			String slackUrl = "https://hooks.slack.com(\\S*)";
-			if(url.matches(slackUrl)) {
-			this.receiver = "Slack";}
-		}
-
-
+		this.type = WebhookType.getTypeFromUrl(url);
 	}
 
 	public WebhookConnector(String projectKey) {
-		this(projectKey,
-				ConfigPersistenceManager.getWebhookUrl(projectKey),
+		this(projectKey, ConfigPersistenceManager.getWebhookUrl(projectKey),
 				ConfigPersistenceManager.getWebhookSecret(projectKey),
 				ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
 	}
 
-	public boolean sendnewElement(KnowledgeElement newElement){
+	public boolean sendnewElement(KnowledgeElement newElement) {
 		boolean isSubmitted = false;
 		if (!checkIfDataIsValid(newElement)) {
 			return isSubmitted;
 		}
-		if(this.receiver.equals("Other")){
+		if (type == WebhookType.TREANT) {
 			List<KnowledgeElement> rootElements = getWebhookRootElements(newElement);
 			isSubmitted = postKnowledgeTrees(rootElements);
 			return isSubmitted;
-	  }
-		if(this.receiver.equals("Slack")){
-			//System.out.println("sendNewElement, receiver : Slack, Element:"+ newElement.getSummary());
+		}
+		if (type == WebhookType.SLACK) {
 			isSubmitted = postKnowledgeElement(newElement, "new");
-			//System.out.println(isSubmitted);
 			return isSubmitted;
 		}
 		return false;
 	}
 
 	public boolean sendElementChanges(KnowledgeElement changedElement) {
-		//System.out.println("sendElementChanges. Receiver: "+this.receiver);
 		boolean isSubmitted = false;
 		if (!checkIfDataIsValid(changedElement)) {
 			return isSubmitted;
 		}
-		if(this.receiver.equals("Other")){
+		if (type == WebhookType.TREANT) {
 			List<KnowledgeElement> rootElements = getWebhookRootElements(changedElement);
 			isSubmitted = postKnowledgeTrees(rootElements);
 			return isSubmitted;
-	  }
-		if(this.receiver.equals("Slack")){
-			//System.out.println("sendElementChanges, receiver : Slack, Element:"+changedElement.getSummary());
+		}
+		if (type == WebhookType.SLACK) {
 			isSubmitted = postKnowledgeElement(changedElement, "changed");
-			//System.out.println(isSubmitted);
 			return isSubmitted;
 		}
 		return false;
@@ -155,13 +139,12 @@ public class WebhookConnector {
 	}
 
 	private boolean postKnowledgeTree(KnowledgeElement rootElement) {
-		WebhookContentProvider provider = new WebhookContentProvider(projectKey, rootElement, secret, receiver);
+		WebhookContentProvider provider = new WebhookContentProvider(projectKey, rootElement, secret, type);
 		PostMethod postMethod = provider.createPostMethod();
 
 		try {
 			HttpClient httpClient = new HttpClient();
 			postMethod.setURI(new HttpsURL(url));
-			System.out.println(postMethod.toString());
 			int httpResponse = httpClient.executeMethod(postMethod);
 			if (httpResponse >= 200 && httpResponse < 300) {
 				return true;
@@ -173,12 +156,9 @@ public class WebhookConnector {
 		return false;
 	}
 
-
 	private boolean postKnowledgeElement(KnowledgeElement changedElement, String event) {
-		//System.out.println("postKnowledgeElement");
-		WebhookContentProvider provider = new WebhookContentProvider(projectKey, changedElement, secret, receiver);
+		WebhookContentProvider provider = new WebhookContentProvider(projectKey, changedElement, secret, type);
 		PostMethod postMethod = provider.createPostMethodForSlack(changedElement, event);
-		//System.out.println(postMethod.toString());
 		try {
 			HttpClient httpClient = new HttpClient();
 			postMethod.setURI(new HttpsURL(url));
@@ -187,7 +167,6 @@ public class WebhookConnector {
 				return true;
 			}
 			LOGGER.error("Could not send webhook data. The HTTP response code is: " + httpResponse);
-			//LOGGER.error("Could not send webhook data. The HTTP response code is: " + process);
 		} catch (IOException | IllegalArgumentException e) {
 			LOGGER.error("Could not send webhook data because of " + e.getMessage());
 		}
@@ -199,7 +178,7 @@ public class WebhookConnector {
 			LOGGER.error("Could not trigger webhook data because the url is missing.");
 			return false;
 		}
-		if ((secret == null || secret.equals("")) && !"Slack".equals(receiver)) {
+		if ((secret == null || secret.equals("")) && type != WebhookType.SLACK) {
 			LOGGER.error("Could not trigger webhook data because the secret is missing.");
 			return false;
 		}
@@ -217,19 +196,9 @@ public class WebhookConnector {
 	public String getUrl() {
 		return this.url;
 	}
-	public String getReceiver() {
-		return this.receiver;
-	}
+
 	public void setUrl(String url) {
 		this.url = url;
-
-		if (this.url != null){
-			String slackUrl = "https://hooks.slack.com(\\S*)";
-			if(url.matches(slackUrl)) {
-			this.receiver = "Slack";}
-		}else{
-			this.receiver  = "Other";
-		}
-
+		this.type = WebhookType.getTypeFromUrl(url);
 	}
 }

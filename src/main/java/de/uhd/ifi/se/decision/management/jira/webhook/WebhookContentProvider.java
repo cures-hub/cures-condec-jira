@@ -16,10 +16,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-//import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-
+import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 
 /**
  * Creates the content submitted via the webhook. The content consists of a key
@@ -31,25 +29,24 @@ public class WebhookContentProvider {
 	private String rootElementKey;
 	private String secret;
 	private KnowledgeElement knowledgeElement;
-	private String receiver;
-
+	private WebhookType type;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(WebhookContentProvider.class);
 
-	public WebhookContentProvider(String projectKey, String elementKey, String secret, String receiver) {
+	public WebhookContentProvider(String projectKey, String elementKey, String secret, WebhookType type) {
 		this.projectKey = projectKey;
 		this.rootElementKey = elementKey;
 		this.secret = secret;
-		this.receiver = receiver;
-
+		this.type = type;
 	}
 
-	public WebhookContentProvider(String projectKey, KnowledgeElement knowledgeElement, String secret, String receiver) {
+	public WebhookContentProvider(String projectKey, KnowledgeElement knowledgeElement, String secret,
+			WebhookType type) {
 		this.projectKey = projectKey;
 		this.rootElementKey = knowledgeElement.getKey();
 		this.secret = secret;
 		this.knowledgeElement = knowledgeElement;
-		this.receiver = receiver;
+		this.type = type;
 	}
 
 	/**
@@ -59,21 +56,18 @@ public class WebhookContentProvider {
 	 */
 	public PostMethod createPostMethod() {
 		PostMethod postMethod = new PostMethod();
-		if (projectKey == null || rootElementKey == null || secret == null|| receiver == null) {
-				//System.out.println("createPostMethod null");
+		if (projectKey == null || rootElementKey == null || secret == null || type == null) {
+			// System.out.println("createPostMethod null");
 			return postMethod;
 		}
 		String webhookData = "";
-		if("Other".equals(receiver)){
-			LOGGER.info("receiver:  Other");
-			//System.out.println("createPostMethod:receiver= other");
+		if (type == WebhookType.TREANT) {
+			LOGGER.info("type:  Other");
 			webhookData = createWebhookData();
 		}
-		if("Slack".equals(receiver)){
-			LOGGER.info("receiver:  Slack");
-			//System.out.println("createPostMethod:receiver= slack");
+		if (type == WebhookType.SLACK) {
+			LOGGER.info("type:  Slack");
 			webhookData = createWebhookDataForSlack(this.knowledgeElement, "new");
-			//System.out.println(webhookData);
 		}
 		try {
 			StringRequestEntity requestEntity = new StringRequestEntity(webhookData, "application/json", "UTF-8");
@@ -88,7 +82,6 @@ public class WebhookContentProvider {
 		return postMethod;
 	}
 
-
 	/**
 	 * Creates the key value JSON String transmitted via webhook.
 	 *
@@ -101,76 +94,59 @@ public class WebhookContentProvider {
 	}
 
 	public String createWebhookDataForSlack(KnowledgeElement changedElement, String event) {
-		if(changedElement == null|| changedElement.getSummary() == null|| changedElement.getType() == null || changedElement.getUrl() == null){
+		if (changedElement == null || changedElement.getSummary() == null || changedElement.getType() == null
+				|| changedElement.getUrl() == null) {
 			return "";
 		}
 		String summary = changedElement.getSummary();
-		if(summary.contains("{")){
-			//System.out.println("Summary contains {.");
+		if (summary.contains("{")) {
 			summary = this.cutSummary(summary);
-			//System.out.println("Summary after cutting: "+ summary);
 		}
 		String intro = "";
-		if("new".equals(event)) {
+		if ("new".equals(event)) {
 			intro = "Neues Entscheidungswissen wurde in Jira dokumentiert:";
 		}
-		if("changed".equals(event) ){
+		if ("changed".equals(event)) {
 			intro = "Dieses dokumentierte Entscheidungswissen wurde geändert:";
 		}
 
 		String project = changedElement.getProject().getProjectKey();
 
 		String url = changedElement.getUrl();
-		/*
-		there is a problem with the url, wehn the DK is located in comments.
-		if(DocumentationLocation.JIRAISSUE != changedElement.getDocumentationLocation()){
-			url = changedElement.getJiraIssue().getUrl();
-		}
-		*/
 
-
-		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'"+ project +" : "+ intro +"'}},"+
-		"{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :"+ changedElement.getType() + ":  " + changedElement.getType() +
-		" \\n *Titel*: " + summary + "\\n'},"+
-		"'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '"+url+"'}}]}";
-		//System.out.println("createPostMethodForSlack(): data "+data);
-
+		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'" + project + " : " + intro + "'}},"
+				+ "{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :" + changedElement.getType() + ":  "
+				+ changedElement.getType() + " \\n *Titel*: " + summary + "\\n'},"
+				+ "'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '" + url
+				+ "'}}]}";
 		return data;
 	}
 
-
-		public PostMethod createPostMethodForSlack(){
-			if(knowledgeElement == null ){
-				return new PostMethod();
-			}
-			return createPostMethodForSlack(this.knowledgeElement, "new");
+	public PostMethod createPostMethodForSlack() {
+		if (knowledgeElement == null) {
+			return new PostMethod();
 		}
+		return createPostMethodForSlack(this.knowledgeElement, "new");
+	}
+
 	/**
 	 * Creates the key value JSON String transmitted via webhook for Slack.
-	 *(Differences: "text", mask \ and ")
-	 * @return JSON String with the following pattern: {"text": " \"issueKey\": {String},
-	 *         \"ConDecTree\": {TreantJS JSON config and data} " }
+	 * (Differences: "text", mask \ and ")
+	 * 
+	 * @return JSON String with the following pattern: {"text": " \"issueKey\":
+	 *         {String}, \"ConDecTree\": {TreantJS JSON config and data} " }
 	 */
 	public PostMethod createPostMethodForSlack(KnowledgeElement changedElement, String event) {
 		PostMethod postMethod = new PostMethod();
-		if (projectKey == null || changedElement == null || receiver == null || event == null) {
-				//System.out.println("createPostMethodForSlack null");
+		if (projectKey == null || changedElement == null || type == null || event == null) {
 			return postMethod;
 		}
 		String webhookData = "";
-		/*
-		if("Other".equals(receiver)){
-			LOGGER.info("receiver:  Other");
-			//System.out.println("createPostMethodForSlack:receiver= other");
-			return createPostMethod();
-		}*/
-		if("Slack".equals(receiver)){
-			LOGGER.info("receiver:  Slack");
-			//System.out.println("createPostMethodForSlack:receiver = slack");
+		if (type == WebhookType.SLACK) {
+			LOGGER.info("type:  Slack");
 			webhookData = createWebhookDataForSlack(changedElement, event);
-			//System.out.println(webhookData);
 		}
-		if(webhookData == null || "".equals(webhookData)){
+		if (webhookData == null || "".equals(webhookData)) {
 			return postMethod;
 		}
 		try {
@@ -185,12 +161,6 @@ public class WebhookContentProvider {
 
 		return postMethod;
 	}
-
-/*
-{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'Folgendes Entscheidungswissen wurde angepasst'}},
-{'type':'divider'},{'type':'section','text':{'type':'mrkdwn','text':'*Typ:*:issue: knowledgetype \n *Titel*: summary\n'},
-'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url':'https://google.com'}}]}
-*/
 
 	/**
 	 * Creates the Treant JSON String (value transmitted via webhook).
@@ -252,25 +222,14 @@ public class WebhookContentProvider {
 		return formattedString;
 	}
 
-/* if there is a decision knowledge element located in a comment there was a rare
- * bug: it puts "{*KnowledgeType*}" into the summary. that is bad for json format.
- * --> cutSummary
- */
-
 	/**
-	 * Remove all "{anything}"-parts from a string.
-	 *
 	 * @param toCut
-	 *            String
+	 *            String with unwanted parts.
 	 *
 	 * @return String without "{anything}"-parts
 	 */
-	public String cutSummary(String toCut){
-		//System.out.println("cutSummary(): " + toCut);
-		String cut = toCut.replaceAll("\\x7B(\\S*)\\x7D","");
-		//System.out.println("cutSummary() passed:" + toCut);
+	public String cutSummary(String toCut) {
+		String cut = toCut.replaceAll("\\x7B(\\S*)\\x7D", "");
 		return cut;
 	}
-
-
 }

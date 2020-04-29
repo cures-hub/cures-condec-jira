@@ -19,7 +19,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestWebhookConnector extends TestSetUp {
@@ -86,23 +85,6 @@ public class TestWebhookConnector extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testConstructorCorrectSlackUrl() {
-				WebhookConnector connector = new WebhookConnector("TEST",
-					"https://hooks.slack.com/services/T2E2",
-					"03f90207-73bc-44d9-9848-d3f1f8c8254e", null);
-		assertEquals("Slack", connector.getReceiver());
-	}
-	@Test
-	@NonTransactional
-	public void testConstructorCorrectOtherUrl() {
-				WebhookConnector connector = new WebhookConnector("TEST",
-					"https://cuu-staging.ase.in.tum.de/api/v1/projects/ConDecDev/integrations/conDec",
-					"03f90207-73bc-44d9-9848-d3f1f8c8254e", null);
-		assertEquals("Other", connector.getReceiver());
-	}
-
-	@Test
-	@NonTransactional
 	public void testSendElementChangesFails() {
 		assertFalse(webhookConnector.sendElementChanges(null));
 	}
@@ -134,17 +116,18 @@ public class TestWebhookConnector extends TestSetUp {
 		webhookConnector.setUrl("https://jira-se.ifi.uni-heidelberg.de/jira");
 		assertFalse(webhookConnector.sendElementChanges(element));
 	}
+
 	@Test
 	@NonTransactional
-	public void testsendElementchangesReceiverSlack(){
-	webhookConnector.setUrl("https://hooks.slack.com/services/T2E2");
+	public void testsendElementchangesReceiverSlack() {
+		webhookConnector.setUrl("https://hooks.slack.com/services/T2E2");
 
-	KnowledgeElement knowledgeElement = new KnowledgeElement((long) 1, "TEST", "i");
-	knowledgeElement.setSummary("Summary");
-	knowledgeElement.setDescription("Description");
-	knowledgeElement.setType(KnowledgeType.ISSUE);
+		KnowledgeElement knowledgeElement = new KnowledgeElement(1, "TEST", "i");
+		knowledgeElement.setSummary("Summary");
+		knowledgeElement.setDescription("Description");
+		knowledgeElement.setType(KnowledgeType.ISSUE);
 
-	assertFalse(webhookConnector.sendElementChanges(knowledgeElement));
+		assertFalse(webhookConnector.sendElementChanges(knowledgeElement));
 
 	}
 
@@ -175,7 +158,6 @@ public class TestWebhookConnector extends TestSetUp {
 	public void testSetUrlGetReceiverSlack() {
 		webhookConnector.setUrl("https://hooks.slack.com/services/T2E2");
 		assertEquals("https://hooks.slack.com/services/T2E2", webhookConnector.getUrl());
-		assertEquals("Slack", webhookConnector.getReceiver());
 	}
 
 	@Test
@@ -183,24 +165,20 @@ public class TestWebhookConnector extends TestSetUp {
 	public void testSetUrlGetReceiverOther() {
 		webhookConnector.setUrl("https://ThisIsTheURL");
 		assertEquals("https://ThisIsTheURL", webhookConnector.getUrl());
-		assertEquals("Other", webhookConnector.getReceiver());
 	}
 
 	@Test
 	@NonTransactional
-	public void testsendnewElement(){
-	webhookConnector.setUrl("https://hooks.slack.com/services/T2E2");
+	public void testSendNewElement() {
+		webhookConnector.setUrl("https://hooks.slack.com/services/T2E2");
 
-	KnowledgeElement knowledgeElement = new KnowledgeElement((long) 1, "TEST", "i");
-	knowledgeElement.setSummary("Summary");
-	knowledgeElement.setDescription("Description");
-	knowledgeElement.setType(KnowledgeType.ISSUE);
+		KnowledgeElement knowledgeElement = new KnowledgeElement(1, "TEST", "i");
+		knowledgeElement.setSummary("Summary");
+		knowledgeElement.setDescription("Description");
+		knowledgeElement.setType(KnowledgeType.ISSUE);
 
-	assertFalse(webhookConnector.sendnewElement(knowledgeElement));
-
-}
-
-
+		assertFalse(webhookConnector.sendnewElement(knowledgeElement));
+	}
 
 	@After
 	public void tearDown() {
