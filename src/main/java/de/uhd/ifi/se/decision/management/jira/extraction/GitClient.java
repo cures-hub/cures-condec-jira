@@ -48,11 +48,11 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
 
 /**
  * Retrieves commits and code changes (diffs) from one or more git repositories.
- * 
+ *
  * Multiple instances of this class are "thread-safe" in the limited way that
  * the checked-out branch files are stored in dedicated branch folders and can
  * be read. Modifying files is not supported.
- * 
+ *
  * @issue How to access commits related to a Jira issue?
  * @decision Use the jGit library to access the git repositories for a Jira
  *           project!
@@ -747,12 +747,12 @@ public class GitClient {
 
 	/**
 	 * Retrieves the Jira issue key from a commit message.
-	 * 
+	 *
 	 * @param commitMessage
 	 *            a commit message that should contain a Jira issue key.
 	 * @return extracted Jira issue key or empty String if no Jira issue key could
 	 *         be found.
-	 * 
+	 *
 	 * @issue How to identify the Jira issue key(s) in a commit message?
 	 * @alternative This is a very simple method to detect the Jira issue key as the
 	 *              first word in the message and should be improved!

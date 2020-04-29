@@ -15,7 +15,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.plugin.PluginParseException;
 import com.atlassian.plugin.web.ContextProvider;
 import com.google.common.collect.Maps;
-
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -34,6 +33,7 @@ public class RequirementsDashboardItem implements ContextProvider {
 
 	@Override
 	public Map<String, Object> getContextMap(final Map<String, Object> context) {
+
 		if (ComponentAccessor.getJiraAuthenticationContext() != null) {
 			loggedUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 		}
@@ -46,12 +46,7 @@ public class RequirementsDashboardItem implements ContextProvider {
 		newContext.put("selectID", selectId);
 		newContext.put("dashboardUID", uid);
 		HttpServletRequest req = getHttpReq();
-		if (context.containsKey("showProject") || (req != null && req.getParameterMap().isEmpty())
-				|| (req != null && req.getParameter("selectPageId") != null)) {
-			String showDiv = "configproject";
-			newContext.put("showDiv", showDiv);
-			return newContext;
-		} else if (context.containsKey("showIssueType")
+		if (context.containsKey("showIssueType")
 				|| (req != null && req.getParameter("project") != null && req.getParameter("issuetype") == null)) {
 			String showDiv = "configissuetype";
 			newContext.put("showDiv", showDiv);
@@ -65,7 +60,7 @@ public class RequirementsDashboardItem implements ContextProvider {
 			Map<String, Object> issueTypeContext = attachIssueTypeMaps(projectKey);
 			newContext.putAll(issueTypeContext);
 			return newContext;
-		} else {
+		} else if (context.containsKey("showContentProjectKey") || req.getParameter("project") != null) {
 			String showDiv = "dynamic-content";
 			newContext.put("showDiv", showDiv);
 			String projectKey = "";
@@ -79,8 +74,13 @@ public class RequirementsDashboardItem implements ContextProvider {
 			}
 			Map<String, Object> values = createValues(projectKey, issueTypeId);
 			newContext.putAll(values);
+			String issueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(issueTypeId);
+			newContext.put("issueType", issueTypeName);
 			return newContext;
 		}
+		String showDiv = "configproject";
+		newContext.put("showDiv", showDiv);
+		return newContext;
 	}
 
 	private HttpServletRequest getHttpReq() {
@@ -166,14 +166,14 @@ public class RequirementsDashboardItem implements ContextProvider {
 				"piechartRich-ConArgumentDocumentedForDecision",
 				metricCalculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType.DECISION,
 						KnowledgeType.CON));
-		chartCreator.addChart("Relevance of Comments in JIRA Issues", "piechartInteger-RelevantSentences",
+		chartCreator.addChart("Comments in JIRA Issues relevant to Decision Knowledge", "piechartInteger-RelevantSentences",
 				metricCalculator.getNumberOfRelevantComments());
 		chartCreator.addChartWithIssueContent("For how many " + issueTypeName + " types is an issue documented?",
 				"piechartRich-DecisionDocumentedForSelectedJiraIssue",
-				metricCalculator.getLinksToIssueTypeMap(KnowledgeType.ISSUE));
+				metricCalculator.getLinksToIssueTypeMap(KnowledgeType.ISSUE, 2));
 		chartCreator.addChartWithIssueContent("For how many " + issueTypeName + " types is a decision documented?",
 				"piechartRich-IssueDocumentedForSelectedJiraIssue",
-				metricCalculator.getLinksToIssueTypeMap(KnowledgeType.DECISION));
+				metricCalculator.getLinksToIssueTypeMap(KnowledgeType.DECISION, 2));
 		return chartCreator.getVelocityParameters();
 	}
 }
