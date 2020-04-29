@@ -29,7 +29,7 @@ public class WebhookEventListener {
 		if (eventTypeId == EventType.ISSUE_CREATED_ID) {
 			LOGGER.info("WebhookListerner createdElement" + decisionKnowledgeElement.getSummary());
 			WebhookConnector connector = new WebhookConnector(projectKey);
-			connector.sendnewElement(decisionKnowledgeElement);
+			connector.sendNewElement(decisionKnowledgeElement);
 		}
 		if (eventTypeId == EventType.ISSUE_UPDATED_ID) {
 			LOGGER.info("WebhookListerner sendetElementchange" + decisionKnowledgeElement.getSummary());

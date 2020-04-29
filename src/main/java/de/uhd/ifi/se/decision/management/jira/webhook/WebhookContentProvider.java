@@ -146,7 +146,7 @@ public class WebhookContentProvider {
 			LOGGER.info("type:  Slack");
 			webhookData = createWebhookDataForSlack(changedElement, event);
 		}
-		if (webhookData == null || "".equals(webhookData)) {
+		if (webhookData == null || webhookData.isBlank()) {
 			return postMethod;
 		}
 		try {

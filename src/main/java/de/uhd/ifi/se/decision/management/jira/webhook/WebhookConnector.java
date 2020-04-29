@@ -42,7 +42,6 @@ public class WebhookConnector {
 			this.rootTypes = rootTypes;
 		}
 		this.elementIds = new ArrayList<Long>();
-
 		this.type = WebhookType.getTypeFromUrl(url);
 	}
 
@@ -52,7 +51,7 @@ public class WebhookConnector {
 				ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
 	}
 
-	public boolean sendnewElement(KnowledgeElement newElement) {
+	public boolean sendNewElement(KnowledgeElement newElement) {
 		boolean isSubmitted = false;
 		if (!checkIfDataIsValid(newElement)) {
 			return isSubmitted;
@@ -174,15 +173,15 @@ public class WebhookConnector {
 	}
 
 	private boolean checkIfDataIsValid(KnowledgeElement changedElement) {
-		if (url == null || url.equals("")) {
+		if (url == null || url.isBlank()) {
 			LOGGER.error("Could not trigger webhook data because the url is missing.");
 			return false;
 		}
-		if ((secret == null || secret.equals("")) && type != WebhookType.SLACK) {
+		if ((secret == null || secret.isBlank()) && type != WebhookType.SLACK) {
 			LOGGER.error("Could not trigger webhook data because the secret is missing.");
 			return false;
 		}
-		if (projectKey == null || projectKey.equals("")) {
+		if (projectKey == null || projectKey.isBlank()) {
 			LOGGER.error("Could not trigger webhook data because the project key is missing.");
 			return false;
 		}

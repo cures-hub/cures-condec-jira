@@ -119,7 +119,7 @@ public class TestWebhookConnector extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testsendElementchangesReceiverSlack() {
+	public void testSendElementChangesReceiverSlack() {
 		webhookConnector.setUrl("https://hooks.slack.com/services/T2E2");
 
 		KnowledgeElement knowledgeElement = new KnowledgeElement(1, "TEST", "i");
@@ -128,7 +128,6 @@ public class TestWebhookConnector extends TestSetUp {
 		knowledgeElement.setType(KnowledgeType.ISSUE);
 
 		assertFalse(webhookConnector.sendElementChanges(knowledgeElement));
-
 	}
 
 	@Test
@@ -177,7 +176,7 @@ public class TestWebhookConnector extends TestSetUp {
 		knowledgeElement.setDescription("Description");
 		knowledgeElement.setType(KnowledgeType.ISSUE);
 
-		assertFalse(webhookConnector.sendnewElement(knowledgeElement));
+		assertFalse(webhookConnector.sendNewElement(knowledgeElement));
 	}
 
 	@After

@@ -44,8 +44,8 @@
 
 <div class="field-group">
 	<label for="Test Webhook">Test Webhook</label>
-	<div class="description">Sends a Webhook to given Url.<br /></div>
 	<input type="button" id="testWebhook" class="aui-button aui-button-primary" value="Send Webhook" onclick="sendTestPost()"/>
+	<div class="description">Sends test data to the given URL.</div>
 </div>
 
 
@@ -83,8 +83,7 @@
         }
     }
 
-
-		function sendTestPost() {
-				conDecAPI.sendTestPost("$projectKey");
-		}
+	function sendTestPost() {
+		conDecAPI.sendTestPost("$projectKey");
+	}
 </script>

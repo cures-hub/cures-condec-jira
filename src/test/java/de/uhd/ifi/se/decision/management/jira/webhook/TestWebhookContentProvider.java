@@ -112,7 +112,7 @@ public class TestWebhookContentProvider extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testcreateWebhookDataForSlackNewElement() {
+	public void testCreateWebhookDataForSlackNewElement() {
 		KnowledgeElement knowledgeElement = new KnowledgeElement(1, "TEST", "i");
 		knowledgeElement.setSummary("Summary");
 		knowledgeElement.setDescription("Description");
@@ -132,7 +132,7 @@ public class TestWebhookContentProvider extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testcreateWebhookDataForSlackChangedElement() {
+	public void testCreateWebhookDataForSlackChangedElement() {
 		KnowledgeElement knowledgeElement = new KnowledgeElement(1, "TEST", "i");
 		knowledgeElement.setSummary("Summary");
 		knowledgeElement.setDescription("Description");
