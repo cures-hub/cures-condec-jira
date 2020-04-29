@@ -26,7 +26,7 @@ public class WebhookEventListener {
 			return;
 		}
 		long eventTypeId = issueEvent.getEventTypeId();
-		KnowledgeElement decisionKnowledgeElement = new KnowledgeElementImpl(issueEvent.getIssue());
+		KnowledgeElement decisionKnowledgeElement = new KnowledgeElement(issueEvent.getIssue());
 
 		if (eventTypeId == EventType.ISSUE_CREATED_ID){
 			LOGGER.info("WebhookListerner createdElement"+ decisionKnowledgeElement.getSummary());

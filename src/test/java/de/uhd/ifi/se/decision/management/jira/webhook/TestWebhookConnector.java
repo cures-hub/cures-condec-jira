@@ -17,7 +17,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -140,7 +139,7 @@ public class TestWebhookConnector extends TestSetUp {
 	public void testsendElementchangesReceiverSlack(){
 	webhookConnector.setUrl("https://hooks.slack.com/services/T2E2");
 
-	KnowledgeElement knowledgeElement = new KnowledgeElementImpl((long) 1, "TEST", "i");
+	KnowledgeElement knowledgeElement = new KnowledgeElement((long) 1, "TEST", "i");
 	knowledgeElement.setSummary("Summary");
 	knowledgeElement.setDescription("Description");
 	knowledgeElement.setType(KnowledgeType.ISSUE);
@@ -192,7 +191,7 @@ public class TestWebhookConnector extends TestSetUp {
 	public void testsendnewElement(){
 	webhookConnector.setUrl("https://hooks.slack.com/services/T2E2");
 
-	KnowledgeElement knowledgeElement = new KnowledgeElementImpl((long) 1, "TEST", "i");
+	KnowledgeElement knowledgeElement = new KnowledgeElement((long) 1, "TEST", "i");
 	knowledgeElement.setSummary("Summary");
 	knowledgeElement.setDescription("Description");
 	knowledgeElement.setType(KnowledgeType.ISSUE);

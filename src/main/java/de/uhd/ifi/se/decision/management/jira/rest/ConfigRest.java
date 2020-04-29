@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,6 +25,13 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
+
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpsURL;
+import org.apache.commons.httpclient.methods.PostMethod;
 
 import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
@@ -328,7 +336,7 @@ public class ConfigRest {
 		}
 		ConfigPersistenceManager.setWebhookUrl(projectKey, webhookUrl);
 		ConfigPersistenceManager.setWebhookSecret(projectKey, webhookSecret);
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok(Status.OK).build();
 	}
 
 	@Path("/setWebhookType")
@@ -343,6 +351,37 @@ public class ConfigRest {
 		ConfigPersistenceManager.setWebhookType(projectKey, webhookType, isWebhookTypeEnabled);
 		return Response.ok(Status.ACCEPTED).build();
 	}
+
+  @Path("/sendTestPost")
+	@POST
+	public Response sendTestPost(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+
+		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'"+ projectKey+": TESTPOST, geändertes Entscheidungswissen wird in dieser Form erscheinen:'}},"+
+		 "{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :issue: : Issue" +
+		 " \\n *Titel*: Test-Zusammenfassung \\n'}}]}";
+
+			PostMethod postMethod = new PostMethod();
+			Header header = new Header();
+			header.setName("X-Hub-Signature");
+			postMethod.setRequestHeader(header);
+		 try{
+			 StringRequestEntity sRE = new StringRequestEntity(data, "application/json", "UTF-8");
+			 postMethod.setRequestEntity(sRE);
+
+			 HttpClient httpClient = new HttpClient();
+			 postMethod.setURI(new HttpsURL(ConfigPersistenceManager.getWebhookUrl(projectKey)));
+
+			 int httpResponse = httpClient.executeMethod(postMethod);
+			 if (httpResponse >= 200 && httpResponse < 300) {
+				 return Response.ok(Status.ACCEPTED).build();
+			 }
+		 } catch (IOException | IllegalArgumentException e) {
+			 LOGGER.error("Could not send test webhook because of " + e.getMessage());
+
+		 }
+		 return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Test Post Failed."))
+				 .build();
+	 }
 
 	@Path("/setReleaseNoteMapping")
 	@POST

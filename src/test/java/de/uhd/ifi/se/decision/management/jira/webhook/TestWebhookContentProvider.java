@@ -11,7 +11,6 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import net.java.ao.test.jdbc.NonTransactional;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 import static org.junit.Assert.assertNull;
@@ -80,7 +79,7 @@ public class TestWebhookContentProvider extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCreatePostMethodForSlackForProvidedProjectKeyAndProvidedElementAndMissingSecretAndSlackReceiver() {
-		KnowledgeElement knowledgeElement = new KnowledgeElementImpl((long) 1, "TEST", "i");
+		KnowledgeElement knowledgeElement = new KnowledgeElement((long) 1, "TEST", "i");
 		knowledgeElement.setSummary("Summary");
 		knowledgeElement.setDescription("Description");
 		knowledgeElement.setType(KnowledgeType.ISSUE);
@@ -92,7 +91,7 @@ public class TestWebhookContentProvider extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCreatePostMethodForSlackForProvidedProjectKeyAndProvidedKnowledgeElementAndMissingSecretAndSlackReceiverCutSummary() {
-		KnowledgeElement knowledgeElement1 = new KnowledgeElementImpl((long) 1, "TEST", "i");
+		KnowledgeElement knowledgeElement1 = new KnowledgeElement((long) 1, "TEST", "i");
 		knowledgeElement1.setSummary("{issue}Summary");
 		knowledgeElement1.setDescription("Description");
 		knowledgeElement1.setType(KnowledgeType.ISSUE);
@@ -104,7 +103,7 @@ public class TestWebhookContentProvider extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCreatePostMethodForProvidedProjectKeyAndProvidedKnowledgeElementAndMissingSecretAndSlackReceiver() {
-		KnowledgeElement knowledgeElement1 = new KnowledgeElementImpl((long) 1, "TEST", "i");
+		KnowledgeElement knowledgeElement1 = new KnowledgeElement((long) 1, "TEST", "i");
 		knowledgeElement1.setSummary("Summary");
 		knowledgeElement1.setDescription("Description");
 		knowledgeElement1.setType(KnowledgeType.ISSUE);
@@ -116,7 +115,7 @@ public class TestWebhookContentProvider extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testcreateWebhookDataForSlackNewElement(){
-		KnowledgeElement knowledgeElement = new KnowledgeElementImpl((long) 1, "TEST", "i");
+		KnowledgeElement knowledgeElement = new KnowledgeElement((long) 1, "TEST", "i");
 		knowledgeElement.setSummary("Summary");
 		knowledgeElement.setDescription("Description");
 		knowledgeElement.setType(KnowledgeType.ISSUE);
@@ -134,7 +133,7 @@ public class TestWebhookContentProvider extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testcreateWebhookDataForSlackChangedElement(){
-		KnowledgeElement knowledgeElement = new KnowledgeElementImpl((long) 1, "TEST", "i");
+		KnowledgeElement knowledgeElement = new KnowledgeElement((long) 1, "TEST", "i");
 		knowledgeElement.setSummary("Summary");
 		knowledgeElement.setDescription("Description");
 		knowledgeElement.setType(KnowledgeType.ISSUE);
