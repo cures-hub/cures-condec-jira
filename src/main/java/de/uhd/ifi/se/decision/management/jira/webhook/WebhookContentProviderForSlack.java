@@ -1,23 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Formatter;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
+
 
 /**
  * Creates the content submitted via the webhook. The content consists of a key
@@ -26,8 +16,6 @@ import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 public class WebhookContentProviderForSlack {
 
 	private String projectKey;
-	private String rootElementKey;
-	private String secret;
 	private KnowledgeElement knowledgeElement;
 	private WebhookType type;
 
@@ -35,16 +23,12 @@ public class WebhookContentProviderForSlack {
 
 	public WebhookContentProviderForSlack(String projectKey, String elementKey, String secret, WebhookType type) {
 		this.projectKey = projectKey;
-		this.rootElementKey = elementKey;
-		this.secret = secret;
 		this.type = type;
 	}
 
 	public WebhookContentProviderForSlack(String projectKey, KnowledgeElement knowledgeElement, String secret,
 			WebhookType type) {
 		this.projectKey = projectKey;
-		this.rootElementKey = knowledgeElement.getKey();
-		this.secret = secret;
 		this.knowledgeElement = knowledgeElement;
 		this.type = type;
 	}

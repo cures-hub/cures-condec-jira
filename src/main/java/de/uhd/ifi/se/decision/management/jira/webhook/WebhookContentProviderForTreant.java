@@ -28,7 +28,6 @@ public class WebhookContentProviderForTreant {
 	private String projectKey;
 	private String rootElementKey;
 	private String secret;
-	private KnowledgeElement knowledgeElement;
 	private WebhookType type;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(WebhookContentProviderForTreant.class);
