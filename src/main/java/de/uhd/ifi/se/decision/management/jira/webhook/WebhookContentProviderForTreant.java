@@ -23,7 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
  * Creates the content submitted via the webhook. The content consists of a key
  * value pair. The key is an issue id. The value is the Treant JSON String.
  */
-public class WebhookContentProvider {
+public class WebhookContentProviderForTreant {
 
 	private String projectKey;
 	private String rootElementKey;
@@ -31,16 +31,16 @@ public class WebhookContentProvider {
 	private KnowledgeElement knowledgeElement;
 	private WebhookType type;
 
-	protected static final Logger LOGGER = LoggerFactory.getLogger(WebhookContentProvider.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(WebhookContentProviderForTreant.class);
 
-	public WebhookContentProvider(String projectKey, String elementKey, String secret, WebhookType type) {
+	public WebhookContentProviderForTreant(String projectKey, String elementKey, String secret, WebhookType type) {
 		this.projectKey = projectKey;
 		this.rootElementKey = elementKey;
 		this.secret = secret;
 		this.type = type;
 	}
 
-	public WebhookContentProvider(String projectKey, KnowledgeElement knowledgeElement, String secret,
+	public WebhookContentProviderForTreant(String projectKey, KnowledgeElement knowledgeElement, String secret,
 			WebhookType type) {
 		this.projectKey = projectKey;
 		this.rootElementKey = knowledgeElement.getKey();
@@ -54,21 +54,18 @@ public class WebhookContentProvider {
 	 *
 	 * @return post method ready to be posted
 	 */
-	public PostMethod createPostMethod() {
+	public PostMethod createPostMethodForTreant() {
 		PostMethod postMethod = new PostMethod();
 		if (projectKey == null || rootElementKey == null || secret == null || type == null) {
 			// System.out.println("createPostMethod null");
 			return postMethod;
 		}
-		String webhookData = "";
-		if (type == WebhookType.TREANT) {
-			LOGGER.info("type:  Other");
-			webhookData = createWebhookData();
+
+		String	webhookData = createWebhookDataForTreant();
+		if (webhookData == null || webhookData.isBlank()) {
+			return postMethod;
 		}
-		if (type == WebhookType.SLACK) {
-			LOGGER.info("type:  Slack");
-			webhookData = createWebhookDataForSlack(this.knowledgeElement, "new");
-		}
+
 		try {
 			StringRequestEntity requestEntity = new StringRequestEntity(webhookData, "application/json", "UTF-8");
 			postMethod.setRequestEntity(requestEntity);
@@ -88,79 +85,21 @@ public class WebhookContentProvider {
 	 * @return JSON String with the following pattern: { "issueKey": {String},
 	 *         "ConDecTree": {TreantJS JSON config and data} }
 	 */
-	public String createWebhookData() {
+	public String createWebhookDataForTreant() {
 		String treantAsJson = createTreantJsonString();
 		return "{\"issueKey\": \"" + this.rootElementKey + "\", \"ConDecTree\": " + treantAsJson + "}";
 	}
 
-	public String createWebhookDataForSlack(KnowledgeElement changedElement, String event) {
-		if (changedElement == null || changedElement.getSummary() == null || changedElement.getType() == null
-				|| changedElement.getUrl() == null) {
-			return "";
-		}
-		String summary = changedElement.getSummary();
-		if (summary.contains("{")) {
-			summary = this.cutSummary(summary);
-		}
-		String intro = "";
-		if ("new".equals(event)) {
-			intro = "Neues Entscheidungswissen wurde in Jira dokumentiert:";
-		}
-		if ("changed".equals(event)) {
-			intro = "Dieses dokumentierte Entscheidungswissen wurde geändert:";
-		}
 
-		String project = changedElement.getProject().getProjectKey();
-
-		String url = changedElement.getUrl();
-
-		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'" + project + " : " + intro + "'}},"
-				+ "{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :" + changedElement.getType() + ":  "
-				+ changedElement.getType() + " \\n *Titel*: " + summary + "\\n'},"
-				+ "'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '" + url
-				+ "'}}]}";
-		return data;
-	}
-
-	public PostMethod createPostMethodForSlack() {
-		if (knowledgeElement == null) {
-			return new PostMethod();
-		}
-		return createPostMethodForSlack(this.knowledgeElement, "new");
-	}
 
 	/**
 	 * Creates the key value JSON String transmitted via webhook for Slack.
 	 * (Differences: "text", mask \ and ")
-	 * 
+	 *
 	 * @return JSON String with the following pattern: {"text": " \"issueKey\":
 	 *         {String}, \"ConDecTree\": {TreantJS JSON config and data} " }
 	 */
-	public PostMethod createPostMethodForSlack(KnowledgeElement changedElement, String event) {
-		PostMethod postMethod = new PostMethod();
-		if (projectKey == null || changedElement == null || type == null || event == null) {
-			return postMethod;
-		}
-		String webhookData = "";
-		if (type == WebhookType.SLACK) {
-			LOGGER.info("type:  Slack");
-			webhookData = createWebhookDataForSlack(changedElement, event);
-		}
-		if (webhookData == null || webhookData.isBlank()) {
-			return postMethod;
-		}
-		try {
-			StringRequestEntity requestEntity = new StringRequestEntity(webhookData, "application/json", "UTF-8");
-			postMethod.setRequestEntity(requestEntity);
-		} catch (UnsupportedEncodingException e) {
-			LOGGER.error("Creating the post method failed. Message: " + e.getMessage());
-		}
-		Header header = new Header();
-		header.setName("X-Hub-Signature");
-		postMethod.setRequestHeader(header);
 
-		return postMethod;
-	}
 
 	/**
 	 * Creates the Treant JSON String (value transmitted via webhook).
@@ -222,14 +161,5 @@ public class WebhookContentProvider {
 		return formattedString;
 	}
 
-	/**
-	 * @param toCut
-	 *            String with unwanted parts.
-	 *
-	 * @return String without "{anything}"-parts
-	 */
-	public String cutSummary(String toCut) {
-		String cut = toCut.replaceAll("\\x7B(\\S*)\\x7D", "");
-		return cut;
-	}
+
 }

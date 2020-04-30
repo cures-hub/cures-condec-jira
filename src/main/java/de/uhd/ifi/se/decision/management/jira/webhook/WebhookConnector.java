@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -51,6 +52,58 @@ public class WebhookConnector {
 				ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
 	}
 
+
+	public boolean sendElement(KnowledgeElement sendElement){
+		return sendElement(sendElement, "new");
+
+	}
+
+
+	public boolean sendElement(KnowledgeElement sendElement, String event){
+
+		boolean isSubmitted = false;
+
+		if (!checkIfDataIsValid(sendElement)) {
+			return isSubmitted;
+		}
+		if (type == WebhookType.TREANT) {
+			isSubmitted = postKnowledgeTree(sendElement);
+			return isSubmitted;
+		}
+		if (type == WebhookType.SLACK) {
+			isSubmitted = postKnowledgeElement(sendElement, event);
+			return isSubmitted;
+		}
+		return false;
+
+	}
+
+/*
+	public boolean sendTestPost(WebhookType type){
+		KnowledgeElement testElement = new KnowledgeElement();
+		testElement.setType(KnowledgeType.ISSUE);
+		testElement.setDescription("Test descirption");
+		testElement.setSummary("Test Summary");
+		testElement.setKey("projectKey");
+
+		boolean isSubmitted = false;
+
+		if (!checkIfDataIsValid(testElement)) {
+			return isSubmitted;
+		}
+		if (type == WebhookType.TREANT) {
+			isSubmitted = postKnowledgeTree(testElement);
+			return isSubmitted;
+		}
+		if (type == WebhookType.SLACK) {
+			isSubmitted = postKnowledgeElement(testElement, "test");
+			return isSubmitted;
+		}
+		return false;
+	}
+
+
+
 	public boolean sendNewElement(KnowledgeElement newElement) {
 		boolean isSubmitted = false;
 		if (!checkIfDataIsValid(newElement)) {
@@ -84,6 +137,7 @@ public class WebhookConnector {
 		}
 		return false;
 	}
+	*/
 
 	public boolean deleteElement(KnowledgeElement elementToBeDeleted, ApplicationUser user) {
 		if (!checkIfDataIsValid(elementToBeDeleted)) {
@@ -107,6 +161,9 @@ public class WebhookConnector {
 		return isDeleted;
 	}
 
+	/**
+	 * Is Used for Treant
+	 */
 	private boolean postKnowledgeTrees(List<KnowledgeElement> rootElements) {
 		for (KnowledgeElement rootElement : rootElements) {
 			if (!postKnowledgeTree(rootElement)) {
@@ -116,6 +173,9 @@ public class WebhookConnector {
 		return true;
 	}
 
+	/**
+	 * Is Used for Treant
+	 */
 	private List<KnowledgeElement> getWebhookRootElements(KnowledgeElement element) {
 		List<KnowledgeElement> webhookRootElements = new ArrayList<KnowledgeElement>();
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
@@ -136,10 +196,12 @@ public class WebhookConnector {
 		}
 		return webhookRootElements;
 	}
-
+	/**
+	 * Is Used for Treant (singel element)
+	 */
 	private boolean postKnowledgeTree(KnowledgeElement rootElement) {
-		WebhookContentProvider provider = new WebhookContentProvider(projectKey, rootElement, secret, type);
-		PostMethod postMethod = provider.createPostMethod();
+		WebhookContentProviderForTreant provider = new WebhookContentProviderForTreant(projectKey, rootElement, secret, type);
+		PostMethod postMethod = provider.createPostMethodForTreant();
 
 		try {
 			HttpClient httpClient = new HttpClient();
@@ -155,8 +217,12 @@ public class WebhookConnector {
 		return false;
 	}
 
+
+/**
+ * Is Used for Slack
+ */
 	private boolean postKnowledgeElement(KnowledgeElement changedElement, String event) {
-		WebhookContentProvider provider = new WebhookContentProvider(projectKey, changedElement, secret, type);
+		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack(projectKey, changedElement, secret, type);
 		PostMethod postMethod = provider.createPostMethodForSlack(changedElement, event);
 		try {
 			HttpClient httpClient = new HttpClient();

@@ -42,14 +42,14 @@ public class TestWebhookConnector extends TestSetUp {
 	@NonTransactional
 	public void testConstructorMissingProjectKeyMissingUrlMissingSecretMissingRootType() {
 		WebhookConnector connector = new WebhookConnector(null, null, null, null);
-		assertFalse(connector.sendElementChanges(null));
+		assertFalse(connector.sendElement(null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testConstructorMissingProjectKeyMissingUrlProvidedSecretMissingRootType() {
 		WebhookConnector connector = new WebhookConnector(null, null, "1234IamASecretKey", null);
-		assertFalse(connector.sendElementChanges(null));
+		assertFalse(connector.sendElement(null));
 	}
 
 	@Test
@@ -57,14 +57,14 @@ public class TestWebhookConnector extends TestSetUp {
 	public void testConstructorMissingProjectKeyProvidedUrlMissingSecretMissingRootType() {
 		WebhookConnector connector = new WebhookConnector(null, "https://ThisIsTheURL", null, null);
 		assertEquals("https://ThisIsTheURL", connector.getUrl());
-		assertFalse(connector.sendElementChanges(null));
+		assertFalse(connector.sendElement(null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testConstructorProvidedProjectKeyMissingUrlMissingSecretMissingRootType() {
 		WebhookConnector connector = new WebhookConnector("TEST", null, null, null);
-		assertFalse(connector.sendElementChanges(null));
+		assertFalse(connector.sendElement(null));
 	}
 
 	@Test
@@ -72,7 +72,7 @@ public class TestWebhookConnector extends TestSetUp {
 	public void testConstructorWrongProjectKey() {
 		WebhookConnector connector = new WebhookConnector("NoTest");
 		assertEquals("http://true", connector.getUrl());
-		assertFalse(connector.sendElementChanges(null));
+		assertFalse(connector.sendElement(null));
 	}
 
 	@Test
@@ -80,13 +80,13 @@ public class TestWebhookConnector extends TestSetUp {
 	public void testConstructorCorrectProjectKey() {
 		WebhookConnector connector = new WebhookConnector("TEST");
 		assertEquals("http://true", connector.getUrl());
-		assertFalse(connector.sendElementChanges(null));
+		assertFalse(connector.sendElement(null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testSendElementChangesFails() {
-		assertFalse(webhookConnector.sendElementChanges(null));
+		assertFalse(webhookConnector.sendElement(null, "changed"));
 	}
 
 	@Test
@@ -100,21 +100,21 @@ public class TestWebhookConnector extends TestSetUp {
 	public void testSendElementChangesWorks() {
 		// Sending does only work for project key "ConDec". Currently, the project key
 		// is "TEST".
-		assertFalse(webhookConnector.sendElementChanges(element));
+		assertFalse(webhookConnector.sendElement(element,"changed"));
 	}
 
 	@Test
 	@NonTransactional
 	public void testSendElementChangesWrongHTTP() {
 		webhookConnector.setUrl("https://wrong");
-		assertFalse(webhookConnector.sendElementChanges(element));
+		assertFalse(webhookConnector.sendElement(element, "changed"));
 	}
 
 	@Test
 	@NonTransactional
 	public void testSendElementChangesWrongResponse() {
 		webhookConnector.setUrl("https://jira-se.ifi.uni-heidelberg.de/jira");
-		assertFalse(webhookConnector.sendElementChanges(element));
+		assertFalse(webhookConnector.sendElement(element, "changed"));
 	}
 
 	@Test
@@ -127,7 +127,7 @@ public class TestWebhookConnector extends TestSetUp {
 		knowledgeElement.setDescription("Description");
 		knowledgeElement.setType(KnowledgeType.ISSUE);
 
-		assertFalse(webhookConnector.sendElementChanges(knowledgeElement));
+		assertFalse(webhookConnector.sendElement(element, "changed"));
 	}
 
 	@Test
@@ -176,7 +176,7 @@ public class TestWebhookConnector extends TestSetUp {
 		knowledgeElement.setDescription("Description");
 		knowledgeElement.setType(KnowledgeType.ISSUE);
 
-		assertFalse(webhookConnector.sendNewElement(knowledgeElement));
+		assertFalse(webhookConnector.sendElement(knowledgeElement, "new"));
 	}
 
 	@After

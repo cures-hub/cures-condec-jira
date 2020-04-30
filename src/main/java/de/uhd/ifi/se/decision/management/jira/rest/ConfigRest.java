@@ -47,6 +47,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
  * REST resource for plug-in configuration
@@ -353,6 +354,22 @@ public class ConfigRest {
 	@Path("/sendTestPost")
 	@POST
 	public Response sendTestPost(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+
+		KnowledgeElement testElement = new KnowledgeElement();
+		testElement.setType(KnowledgeType.ISSUE);
+		testElement.setDescription("Test descirption");
+		testElement.setSummary("Test Summary");
+		testElement.setKey("projectKey");
+
+		WebhookConnector connector = new WebhookConnector(projectKey);
+		if(connector.sendElement(testElement, "test")){
+			return Response.ok(Status.ACCEPTED).build();
+		}
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Test webhook post failed."))
+				.build();
+	}
+
+		/*
 		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'" + projectKey
 				+ ": TESTPOST, changed decision knowledge will be shown like this:'}},"
 				+ "{'type':'section','text':{'type':'mrkdwn','text':'*Type:* :issue: : Issue"
@@ -379,6 +396,7 @@ public class ConfigRest {
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Test webhook post failed."))
 				.build();
 	}
+	*/
 
 	@Path("/setReleaseNoteMapping")
 	@POST
