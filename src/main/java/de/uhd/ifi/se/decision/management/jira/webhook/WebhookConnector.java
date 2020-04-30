@@ -221,7 +221,7 @@ public class WebhookConnector {
  * Is Used for Slack
  */
 	private boolean postKnowledgeElement(KnowledgeElement changedElement, String event) {
-		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack(projectKey, changedElement, secret, type);
+		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack(projectKey, changedElement, type);
 		PostMethod postMethod = provider.createPostMethodForSlack(changedElement, event);
 		try {
 			HttpClient httpClient = new HttpClient();

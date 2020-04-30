@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
+import java.io.UnsupportedEncodingException;
+
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
@@ -21,12 +23,12 @@ public class WebhookContentProviderForSlack {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(WebhookContentProviderForSlack.class);
 
-	public WebhookContentProviderForSlack(String projectKey, String elementKey, String secret, WebhookType type) {
+	public WebhookContentProviderForSlack(String projectKey, String elementKey, WebhookType type) {
 		this.projectKey = projectKey;
 		this.type = type;
 	}
 
-	public WebhookContentProviderForSlack(String projectKey, KnowledgeElement knowledgeElement, String secret,
+	public WebhookContentProviderForSlack(String projectKey, KnowledgeElement knowledgeElement,
 			WebhookType type) {
 		this.projectKey = projectKey;
 		this.knowledgeElement = knowledgeElement;

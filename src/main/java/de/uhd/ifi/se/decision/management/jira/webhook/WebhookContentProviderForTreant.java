@@ -44,7 +44,6 @@ public class WebhookContentProviderForTreant {
 		this.projectKey = projectKey;
 		this.rootElementKey = knowledgeElement.getKey();
 		this.secret = secret;
-		this.knowledgeElement = knowledgeElement;
 		this.type = type;
 	}
 
