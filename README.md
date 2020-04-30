@@ -22,7 +22,7 @@ Navigate into the cures-condec-jira folder and run the following command:
 ```
 atlas-package
 ```
-(Run `atlas-mvn package -DskipTests=true` to skip unit tests to speed-up compilation.) 
+(Run `atlas-package -DskipTests=true` to skip unit tests to speed-up compilation.)
 The .jar file is created.
 
 Run the plug-in locally via:
@@ -44,6 +44,22 @@ Alternatively, the plug-in can be installed via uploading the .jar file to your 
 - Click "Upload" for upload and installation.
 - [Activate the "Decision Documentation and Exploration" plug-in.](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/installed_plugin.png)
 - Activate the plug-in for the specific project in the [setting page.](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/config_plugin.png)
+
+
+### Set up a webhook
+
+Jira ConDec provides a webhook sending decision knowledge. To activate a webhook you do the following steps:
+
+- As a system administrator, navigate to Jira project settings
+- Select 'Webhook' on the side-bar under 'ConDec Decision Knowledge'
+
+- Select root elements, which triggers the webhook, if they are created or edited
+- Insert a URL, which recieves the Webhook, and a Shared Secret
+- (For Slack there is  no need to set a Shared Secret)
+- Activate the webhook with the switch on the top of the page
+
+- You can click the test button to send a test post to the given URL
+
 
 ## User Interface
 
