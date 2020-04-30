@@ -60,7 +60,7 @@ public class RequirementsDashboardItem implements ContextProvider {
 			Map<String, Object> issueTypeContext = attachIssueTypeMaps(projectKey);
 			newContext.putAll(issueTypeContext);
 			return newContext;
-		} else if (context.containsKey("showContentProjectKey") || req.getParameter("project") != null) {
+		} else if (context.containsKey("showContentProjectKey") || (req != null && req.getParameter("project") != null)) {
 			String showDiv = "dynamic-content";
 			newContext.put("showDiv", showDiv);
 			String projectKey = "";
