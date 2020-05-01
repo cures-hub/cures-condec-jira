@@ -28,40 +28,40 @@ public class TestWebhookContentProviderForSlack extends TestSetUp {
 	@Test
 	public void testcreatePostMethodForSlackForMissingProjectKeyAndMissingElementKeyAndMissingReceiver() {
 		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack(null,  null, null);
-		assertNull(provider.createPostMethodForSlack().getRequestEntity());
+		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
 	public void testcreatePostMethodForSlackForMissingProjectKeyAndProvidedElementKeyAndAndMissingReceiver() {
 		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack(null, knowledgeElement, null);
-		assertNull(provider.createPostMethodForSlack().getRequestEntity());
+		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
-	public void testcreatePostMethodForSlackForProvidedProjectKeyAndMissingElementKeyAndMissingReceiver() {
+	public void testcreatePostMethodForProvidedProjectKeyAndMissingElementKeyAndMissingReceiver() {
 		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST",  null, null);
-		assertNull(provider.createPostMethodForSlack().getRequestEntity());
+		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
 	@NonTransactional
 	public void testcreatePostMethodForSlackForMissingProjectKeyAndMissingElementKeyAndSlackReceiver() {
 		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack(null, null, WebhookType.SLACK);
-		assertNull(provider.createPostMethodForSlack().getRequestEntity());
+		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
 	@NonTransactional
 	public void testcreatePostMethodForSlackForProvidedProjectKeyAndMissingElementKeyAndSlackReceiver() {
 		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST",  null, WebhookType.SLACK);
-		assertNull(provider.createPostMethodForSlack().getRequestEntity());
+		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
 	@NonTransactional
 	public void testcreatePostMethodForSlackForProvidedProjectKeyAndProvidedElementKeyAndSlackReceiver() {
 		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", knowledgeElement, WebhookType.SLACK);
-		assertNotNull(provider.createPostMethodForSlack().getRequestEntity());
+		assertNotNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
@@ -69,7 +69,7 @@ public class TestWebhookContentProviderForSlack extends TestSetUp {
 	public void testcreatePostMethodForSlackForProvidedProjectKeyAndProvidedElementAndSlackReceiver() {
 
 		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", knowledgeElement, WebhookType.SLACK);
-		assertNotNull(provider.createPostMethodForSlack().getRequestEntity());
+		assertNotNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
@@ -81,7 +81,7 @@ public class TestWebhookContentProviderForSlack extends TestSetUp {
 		knowledgeElement1.setType(KnowledgeType.ISSUE);
 
 		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", knowledgeElement1,	WebhookType.SLACK);
-		assertNotNull(provider.createPostMethodForSlack().getRequestEntity());
+		assertNotNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class TestWebhookContentProviderForSlack extends TestSetUp {
 		knowledgeElement1.setType(KnowledgeType.ISSUE);
 
 		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", knowledgeElement1, WebhookType.SLACK);
-		assertNotNull(provider.createPostMethodForSlack().getRequestEntity());
+		assertNotNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test

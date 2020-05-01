@@ -15,11 +15,9 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  * Creates the content submitted via the webhook. The content consists of a key
  * value pair. The key is an issue id. The value is the Treant JSON String.
  */
-public class WebhookContentProviderForSlack {
+public class WebhookContentProviderForSlack extends AbstractWebookContentProvider {
 
-	private String projectKey;
 	private KnowledgeElement knowledgeElement;
-	private WebhookType type;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(WebhookContentProviderForSlack.class);
 
@@ -69,7 +67,8 @@ public class WebhookContentProviderForSlack {
 	/**
 	 *
 	 */
-	public PostMethod createPostMethodForSlack() {
+	 @Override
+	public PostMethod createPostMethod() {
 		if (knowledgeElement == null) {
 			return new PostMethod();
 		}
