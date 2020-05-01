@@ -29,8 +29,9 @@ public class PreprocessorImpl implements Preprocessor {
     private String[] posTags;
     //private NameFinderME nameFinder;
     private Integer nGramN;
+	private List<String> tokens;
 
-    public PreprocessorImpl() {
+	public PreprocessorImpl() {
         this.nGramN = 3;
         this.glove = PreTrainedGloveSingleton.getInstance();
 
@@ -93,7 +94,7 @@ public class PreprocessorImpl implements Preprocessor {
 
 
         } catch (Exception e) {
-            e.printStackTrace();
+			System.err.println(e.getMessage());
         }
         return new ArrayList<>();
     }
@@ -127,7 +128,11 @@ public class PreprocessorImpl implements Preprocessor {
     }
 
 
-    @Override
+	public List<String> getTokens() {
+		return tokens;
+	}
+
+	@Override
     public synchronized List preprocess(String sentence) throws Exception {
 
 
@@ -152,7 +157,7 @@ public class PreprocessorImpl implements Preprocessor {
         this.nameFinder.clearAdaptiveData();
          */
 
-			tokens = this.lemmatize(tokens);
+			this.tokens = this.lemmatize(tokens);
 
 			List<List<Double>> numberTokens = this.convertToNumbers(tokens);
 

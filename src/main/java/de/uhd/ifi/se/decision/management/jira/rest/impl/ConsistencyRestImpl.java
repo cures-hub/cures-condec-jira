@@ -2,14 +2,14 @@ package de.uhd.ifi.se.decision.management.jira.rest.impl;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.MutableIssue;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.rest.ConsistencyRest;
-import scala.util.parsing.combinator.testing.Str;
+import com.atlassian.jira.issue.IssueManager;
+import de.uhd.ifi.se.decision.management.jira.consistency.ContextInformation;
+import de.uhd.ifi.se.decision.management.jira.consistency.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceManager;
+import org.ofbiz.core.entity.GenericEntityException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -21,33 +21,63 @@ import java.util.*;
  */
 
 @Path("/consistency")
-public class ConsistencyRestImpl implements ConsistencyRest {
+public class ConsistencyRestImpl {
+	private IssueManager issueManager = ComponentAccessor.getIssueManager();
 
-	@Override
 	@Path("/getRelatedIssues")
 	@GET
-	public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-								 @QueryParam("issueKey") String issueKey) {
-		//System.out.println(issueKey);
-		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(issueKey);
-		/*Set<String> issueKeys  = ComponentAccessor.getIssueManager().getIssueObject(issueKey);
-		Iterator<String> iter =  issueKeys.iterator();
-		List<Issue> issues = new ArrayList<Issue>();
-		while (iter.hasNext()){
-			issues.add(ComponentAccessor.getIssueManager().getIssueByCurrentKey(iter.next()));
-		}
-*/
-		HashMap<String, Object> result = new HashMap<String, Object>();
-		result.put("relatedIssues", List.of(this.issueToJsonMap(issue)));
+	public Response getRelatedIssues(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+									 @QueryParam("issueKey") String issueKey) {
+		try {
+			ContextInformation ci = new ContextInformation(issueKey);
+			Collection<LinkSuggestion> linkSuggestions = ci.getLinkSuggestions();
+			HashMap<String, Object> result = new HashMap<>();
 
-		return Response.ok(result).build();
+			List<Map<String, Object>> jsonifiedIssues = new ArrayList<>();
+			for (LinkSuggestion linkSuggestion : linkSuggestions) {
+				jsonifiedIssues.add(this.suggestionToJsonMap(linkSuggestion));
+			}
+			result.put("relatedIssues", jsonifiedIssues);
+
+			return Response.ok(result).build();
+		} catch (GenericEntityException e) {
+			return Response.status(500).build();
+		}
 	}
 
-	private Map<String, String> issueToJsonMap(Issue issue) {
-		Map jsonMap =  new HashMap<>();
-		jsonMap.put("key", issue.getKey());
-		jsonMap.put("summary", issue.getSummary());
-		jsonMap.put("id", issue.getId());
+
+	private Collection<Issue> getAllIssuesForProject(Long projectId) throws GenericEntityException {
+		Collection<Issue> issuesOfProject = new ArrayList<>();
+		Collection<Long> issueIds = issueManager.getIssueIdsForProject(projectId);
+
+		for (Long issueId : issueIds) {
+			issuesOfProject.add(issueManager.getIssueObject(issueId));
+		}
+		return issuesOfProject;
+	}
+
+	private Collection<Issue> getAllIssuesForProject(String projectKey) throws GenericEntityException {
+		return getAllIssuesForProject(ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey).getId());
+	}
+
+	@Path("/discardLinkSuggestion")
+	@GET
+	public Response discardLinkSuggestion(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+										  @QueryParam("originIssueKey") String originIssueKey, @QueryParam("targetIssueKey") String targetIssueKey) {
+		long databaseId = ConsistencyPersistenceManager.addDiscardedSuggestions(originIssueKey, targetIssueKey, projectKey);
+		Response response = Response.status(200).build();
+		if (databaseId == -1) {
+			response = Response.status(500).build();
+		}
+		return response;
+	}
+
+	private Map<String, Object> suggestionToJsonMap(LinkSuggestion linkSuggestion) {
+		Map<String, Object> jsonMap = new HashMap<>();
+		jsonMap.put("key", linkSuggestion.getTargetIssue().getKey());
+		jsonMap.put("summary", linkSuggestion.getTargetIssue().getSummary());
+		jsonMap.put("id", linkSuggestion.getTargetIssue().getId());
+		jsonMap.put("score", linkSuggestion.getScore());
 
 		return jsonMap;
 	}
