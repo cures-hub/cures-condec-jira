@@ -48,6 +48,7 @@ public class Preprocessor {
 	private String[] posTags;
 	// private NameFinderME nameFinder;
 	private Integer nGramN;
+	private List<String> tokens;
 
 	public Preprocessor() {
 		this.nGramN = 3;
@@ -217,7 +218,7 @@ public class Preprocessor {
 			 * } this.nameFinder.clearAdaptiveData();
 			 */
 
-			tokens = this.lemmatize(tokens);
+			this.tokens = this.lemmatize(tokens);
 
 			List<List<Double>> numberTokens = this.convertToNumbers(tokens);
 
@@ -241,5 +242,9 @@ public class Preprocessor {
 			FileTrainer.copyDataToFile(DecisionKnowledgeClassifier.DEFAULT_DIR, currentPreprocessingFileName,
 					ComponentGetter.getUrlOfClassifierFolder());
 		}
+	}
+
+	public List<String> getTokens() {
+		return this.tokens;
 	}
 }

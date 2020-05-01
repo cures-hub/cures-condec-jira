@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.consistency.implementation;
 
 import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessorImpl;
 import de.uhd.ifi.se.decision.management.jira.consistency.ContextInformationProvider;
 
 import java.util.ArrayList;
@@ -13,11 +12,11 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 	private String id = "TextualSimilarityCIP_jaccard";
 	private String name = "TextualSimilarityCIP";
 
-	private static PreprocessorImpl pp;
+	private static Preprocessor pp;
 
 	public TextualSimilarityCIP() {
 		if(pp == null){
-			pp  = new PreprocessorImpl();
+			pp  = new Preprocessor();
 		}
 	}
 

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.impl;
+package de.uhd.ifi.se.decision.management.jira.rest;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -21,7 +21,7 @@ import java.util.*;
  */
 
 @Path("/consistency")
-public class ConsistencyRestImpl {
+public class ConsistencyRest {
 	private IssueManager issueManager = ComponentAccessor.getIssueManager();
 
 	@Path("/getRelatedIssues")
