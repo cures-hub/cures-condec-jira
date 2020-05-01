@@ -12,12 +12,10 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 	private String id = "TextualSimilarityCIP_jaccard";
 	private String name = "TextualSimilarityCIP";
 
-	private static Preprocessor pp;
+	private Preprocessor pp;
 
 	public TextualSimilarityCIP() {
-		if(pp == null){
-			pp  = new Preprocessor();
-		}
+		pp = new Preprocessor();
 	}
 
 	@Override
@@ -43,7 +41,7 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 			concatenatedList.addAll(lemmatizedI2Description);
 
 			int numIdenticalElements = uniqueElements(concatenatedList).length;
-			int numTotalElements = uniqueElements(lemmatizedI1Description).length +  uniqueElements(lemmatizedI2Description).length;
+			int numTotalElements = uniqueElements(lemmatizedI1Description).length + uniqueElements(lemmatizedI2Description).length;
 
 			// Jaccard Similarity:
 			return (numTotalElements - numIdenticalElements) / (double) numIdenticalElements;

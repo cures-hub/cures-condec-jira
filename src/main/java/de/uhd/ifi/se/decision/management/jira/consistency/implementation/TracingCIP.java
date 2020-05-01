@@ -10,7 +10,7 @@ import java.util.*;
 public class TracingCIP implements ContextInformationProvider {
 	private String id = "TracingCIP_BFS";
 	private String name = "TracingCIP";
-	IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
+	private IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 
 	@Override
 	public String getId() {
