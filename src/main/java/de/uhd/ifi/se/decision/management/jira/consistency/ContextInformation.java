@@ -91,13 +91,18 @@ public class ContextInformation {
 				.mapToDouble(Double::doubleValue)
 				.max().orElse(1.0);
 
+			if (maxOfIndividualScoresForCurrentCip == 0){
+				maxOfIndividualScoresForCurrentCip = 1.;
+			}
+			Double finalMaxOfIndividualScoresForCurrentCip = maxOfIndividualScoresForCurrentCip;
 
-			// for this purpose it might be better ti divide by max value.
+
+			// for this purpose it might be better to divide by max value.
 			individualScores.entrySet()
 				.stream()
 				.forEach(score -> {
 					LinkSuggestion linkSuggestion = linkSuggestions.get(score.getKey());
-					linkSuggestion.addToScore(score.getValue() / maxOfIndividualScoresForCurrentCip);//sumOfIndividualScoresForCurrentCip);
+					linkSuggestion.addToScore(score.getValue() / finalMaxOfIndividualScoresForCurrentCip);//sumOfIndividualScoresForCurrentCip);
 				});
 		}
 
