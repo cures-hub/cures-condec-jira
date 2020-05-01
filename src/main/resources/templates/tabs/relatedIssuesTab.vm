@@ -2,7 +2,7 @@
     <aui-spinner size="large" id="loading-spinner"></aui-spinner>
 </div>
 
-<table class="aui aui-table-list" id="results-table" style="visibility: hidden">
+<table class="aui aui-table-list" id="results-table">
     <thead>
     <tr>
         <th id="th-key" class="aui-table-column-issue-key">Issue key</th>
@@ -203,6 +203,9 @@
     //-----------------------------------------
 
     function loadData() {
+        resultsTableElement.style.visibility = "hidden";
+        loadingSpinnerElement.style.display = "flex";
+
         console.log("---- Related Issues ----");
         let issueKey = conDecAPI.getIssueKey();
         let projectKey = conDecAPI.getProjectKey();

@@ -4,15 +4,16 @@ import com.atlassian.jira.issue.Issue;
 
 public class LinkSuggestion {
 
+	private Issue baseIssue;
+	private Issue targetIssue;
+	private Double score;
+
 	public LinkSuggestion(Issue baseIssue, Issue targetIssue, Double score) {
 		this.baseIssue = baseIssue;
 		this.targetIssue = targetIssue;
 		this.score = score;
 	}
 
-	private Issue baseIssue;
-	private Issue targetIssue;
-	private Double score;
 
 
 	public Issue getBaseIssue() {

@@ -82,10 +82,12 @@ public class ContextInformation {
 			for (Issue otherIssue : projectIssues) {
 				individualScores.put(otherIssue.getKey(), cip.assessRelation(this.issue, otherIssue));
 			}
+			/*
 			Double sumOfIndividualScoresForCurrentCip = individualScores.values()
 				.stream()
 				.mapToDouble(Double::doubleValue)
 				.sum();
+			 */
 			Double maxOfIndividualScoresForCurrentCip = individualScores.values()
 				.stream()
 				.mapToDouble(Double::doubleValue)

@@ -6,7 +6,6 @@ import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
 
 import java.sql.SQLException;
-import java.util.List;
 
 @Table("CondecConsistency")
 public interface DiscardedLinkSuggestionsInDatabase extends RawEntity<Long> {
