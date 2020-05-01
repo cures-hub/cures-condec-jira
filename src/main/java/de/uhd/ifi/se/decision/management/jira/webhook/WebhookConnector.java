@@ -59,6 +59,10 @@ public class WebhookConnector {
 
 
 	public boolean sendElement(KnowledgeElement sendElement, String event){
+		if(sendElement == null || event == null){
+			return false;
+		}
+		//SH 		System.out.println("WebhookConnector event: "+event+" ,sendElement WebhookType: "+sendElement.getTypeAsString());
 
 		boolean isSubmitted = false;
 
@@ -77,66 +81,6 @@ public class WebhookConnector {
 
 	}
 
-/*
-	public boolean sendTestPost(WebhookType type){
-		KnowledgeElement testElement = new KnowledgeElement();
-		testElement.setType(KnowledgeType.ISSUE);
-		testElement.setDescription("Test descirption");
-		testElement.setSummary("Test Summary");
-		testElement.setKey("projectKey");
-
-		boolean isSubmitted = false;
-
-		if (!checkIfDataIsValid(testElement)) {
-			return isSubmitted;
-		}
-		if (type == WebhookType.TREANT) {
-			isSubmitted = postKnowledgeTree(testElement);
-			return isSubmitted;
-		}
-		if (type == WebhookType.SLACK) {
-			isSubmitted = postKnowledgeElement(testElement, "test");
-			return isSubmitted;
-		}
-		return false;
-	}
-
-
-
-	public boolean sendNewElement(KnowledgeElement newElement) {
-		boolean isSubmitted = false;
-		if (!checkIfDataIsValid(newElement)) {
-			return isSubmitted;
-		}
-		if (type == WebhookType.TREANT) {
-			List<KnowledgeElement> rootElements = getWebhookRootElements(newElement);
-			isSubmitted = postKnowledgeTrees(rootElements);
-			return isSubmitted;
-		}
-		if (type == WebhookType.SLACK) {
-			isSubmitted = postKnowledgeElement(newElement, "new");
-			return isSubmitted;
-		}
-		return false;
-	}
-
-	public boolean sendElementChanges(KnowledgeElement changedElement) {
-		boolean isSubmitted = false;
-		if (!checkIfDataIsValid(changedElement)) {
-			return isSubmitted;
-		}
-		if (type == WebhookType.TREANT) {
-			List<KnowledgeElement> rootElements = getWebhookRootElements(changedElement);
-			isSubmitted = postKnowledgeTrees(rootElements);
-			return isSubmitted;
-		}
-		if (type == WebhookType.SLACK) {
-			isSubmitted = postKnowledgeElement(changedElement, "changed");
-			return isSubmitted;
-		}
-		return false;
-	}
-	*/
 
 	public boolean deleteElement(KnowledgeElement elementToBeDeleted, ApplicationUser user) {
 		if (!checkIfDataIsValid(elementToBeDeleted)) {
@@ -221,6 +165,7 @@ public class WebhookConnector {
  * Is Used for Slack
  */
 	private boolean postKnowledgeElement(KnowledgeElement changedElement, String event) {
+		//SH 		System.out.println("WebhookConnector postKnowledgeElement: "+event+" ,sendElement: "+changedElement.getTypeAsString());
 		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack(projectKey, changedElement, type);
 		PostMethod postMethod = provider.createPostMethodForSlack(changedElement, event);
 		try {

@@ -23,11 +23,6 @@ public class WebhookContentProviderForSlack {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(WebhookContentProviderForSlack.class);
 
-	public WebhookContentProviderForSlack(String projectKey, String elementKey, WebhookType type) {
-		this.projectKey = projectKey;
-		this.type = type;
-	}
-
 	public WebhookContentProviderForSlack(String projectKey, KnowledgeElement knowledgeElement,
 			WebhookType type) {
 		this.projectKey = projectKey;

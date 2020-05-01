@@ -348,10 +348,10 @@ public class ConfigRest {
 	@Path("/sendTestPost")
 	@POST
 	public Response sendTestPost(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+		//SH 		System.out.println("ConfigRest sendTestPost: projectKey:"+ projectKey);
 
 		KnowledgeElement testElement = new KnowledgeElement();
 		testElement.setType(KnowledgeType.ISSUE);
-		testElement.setDescription("Test descirption");
 		testElement.setSummary("Test Summary");
 		testElement.setKey("projectKey");
 
@@ -363,34 +363,6 @@ public class ConfigRest {
 				.build();
 	}
 
-		/*
-		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'" + projectKey
-				+ ": TESTPOST, changed decision knowledge will be shown like this:'}},"
-				+ "{'type':'section','text':{'type':'mrkdwn','text':'*Type:* :issue: : Issue"
-				+ " \\n *Title*: Test summary \\n'}}]}";
-		PostMethod postMethod = new PostMethod();
-		Header header = new Header();
-		header.setName("X-Hub-Signature");
-		postMethod.setRequestHeader(header);
-		try {
-			StringRequestEntity sRE = new StringRequestEntity(data, "application/json", "UTF-8");
-			postMethod.setRequestEntity(sRE);
-
-			HttpClient httpClient = new HttpClient();
-			postMethod.setURI(new HttpsURL(ConfigPersistenceManager.getWebhookUrl(projectKey)));
-
-			int httpResponse = httpClient.executeMethod(postMethod);
-			if (httpResponse >= 200 && httpResponse < 300) {
-				return Response.ok(Status.ACCEPTED).build();
-			}
-		} catch (IOException | IllegalArgumentException e) {
-			LOGGER.error("Could not send test webhook post because of " + e.getMessage());
-
-		}
-		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Test webhook post failed."))
-				.build();
-	}
-	*/
 
 	@Path("/setReleaseNoteMapping")
 	@POST
