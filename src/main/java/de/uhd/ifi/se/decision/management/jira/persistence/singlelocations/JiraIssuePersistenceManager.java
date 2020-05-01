@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.impl;
+package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.IssueService.CreateValidationResult;
 import com.atlassian.jira.bc.issue.IssueService.IssueResult;
+import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.event.type.EventDispatchOption;
@@ -27,9 +28,15 @@ import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
+import com.atlassian.jira.issue.search.SearchException;
+import com.atlassian.jira.issue.search.SearchResults;
+import com.atlassian.jira.jql.builder.JqlClauseBuilder;
+import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ErrorCollection;
+import com.atlassian.jira.web.bean.PagerFilter;
+import com.atlassian.query.Query;
 
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -37,12 +44,10 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 
 /**
  * Extends the abstract class
- * {@link AbstractPersistenceManagerForSingleLocation}. Uses JIRA issues to
+ * {@link AbstractPersistenceManagerForSingleLocation}. Uses Jira issues to
  * store decision knowledge.
  *
  * @see AbstractPersistenceManagerForSingleLocation
@@ -138,7 +143,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	 *            element as a {@link Link} object. Needs to be a Jira
 	 *            {@link IssueLink}.
 	 * @param user
-	 *            authenticated JIRA {@link ApplicationUser}.
+	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return internal database id of inserted link, zero if insertion failed.
 	 */
 	public static long insertLink(Link link, ApplicationUser user) {
@@ -197,7 +202,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user) {
+	public boolean deleteKnowledgeElement(long id, ApplicationUser user) {
 		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueService.IssueResult issue = issueService.getIssue(user, id);
 		if (issue.isValid() && issue.getIssue() != null) {
@@ -219,19 +224,19 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public KnowledgeElement getDecisionKnowledgeElement(long id) {
+	public KnowledgeElement getKnowledgeElement(long id) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue issue = issueManager.getIssueObject(id);
 		if (issue == null) {
 			return null;
 		}
-		return new KnowledgeElementImpl(issue);
+		return new KnowledgeElement(issue);
 	}
 
 	@Override
-	public KnowledgeElement getDecisionKnowledgeElement(String key) {
+	public KnowledgeElement getKnowledgeElement(String key) {
 		Issue issue = getJiraIssue(key);
-		return new KnowledgeElementImpl(issue);
+		return new KnowledgeElement(issue);
 	}
 
 	public static Issue getJiraIssue(String key) {
@@ -243,13 +248,13 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public List<KnowledgeElement> getDecisionKnowledgeElements() {
+	public List<KnowledgeElement> getKnowledgeElements() {
 		List<KnowledgeElement> decisionKnowledgeElements = new ArrayList<KnowledgeElement>();
 		if (this.projectKey == null) {
 			return decisionKnowledgeElements;
 		}
 		for (Issue issue : getIssueIdCollection()) {
-			decisionKnowledgeElements.add(new KnowledgeElementImpl(issue));
+			decisionKnowledgeElements.add(new KnowledgeElement(issue));
 		}
 		return decisionKnowledgeElements;
 	}
@@ -259,7 +264,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		List<IssueLink> inwardIssueLinks = getInwardIssueLinks(element);
 		List<Link> inwardLinks = new ArrayList<Link>();
 		for (IssueLink inwardIssueLink : inwardIssueLinks) {
-			Link link = new LinkImpl(inwardIssueLink);
+			Link link = new Link(inwardIssueLink);
 			if (link.isValid()) {
 				inwardLinks.add(link);
 			}
@@ -272,7 +277,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		List<IssueLink> outwardIssueLinks = getOutwardIssueLinks(element);
 		List<Link> outwardLinks = new ArrayList<Link>();
 		for (IssueLink outwardIssueLink : outwardIssueLinks) {
-			Link link = new LinkImpl(outwardIssueLink);
+			Link link = new Link(outwardIssueLink);
 			if (link.isValid()) {
 				outwardLinks.add(link);
 			}
@@ -281,7 +286,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
+	public KnowledgeElement insertKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
 		setParameters(element, issueInputParameters);
 		issueInputParameters.setReporterId(user.getName());
@@ -307,11 +312,11 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public boolean updateDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
+	public boolean updateKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueResult issueResult = issueService.getIssue(user, element.getId());
 		MutableIssue issueToBeUpdated = issueResult.getIssue();
-		KnowledgeElement formerElement = new KnowledgeElementImpl(issueToBeUpdated);
+		KnowledgeElement formerElement = new KnowledgeElement(issueToBeUpdated);
 		element.setStatus(KnowledgeStatus.getNewKnowledgeStatusForType(formerElement, element));
 		return dataUpdateElement(element, issueToBeUpdated, user, issueService);
 	}
@@ -365,5 +370,18 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		// KnowledgePersistenceManager.updateGraphNode(element);
 		issueService.update(user, result);
 		return true;
+	}
+
+	public static List<Issue> getAllJiraIssuesForProject(ApplicationUser user, String projectKey) {
+		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
+		Query query = jqlClauseBuilder.project(projectKey).buildQuery();
+		SearchResults<Issue> searchResult = null;
+		try {
+			SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
+			searchResult = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
+		} catch (SearchException e) {
+			LOGGER.error("Getting all Jira issues for this project failed. Message: " + e.getMessage());
+		}
+		return searchResult.getResults();
 	}
 }

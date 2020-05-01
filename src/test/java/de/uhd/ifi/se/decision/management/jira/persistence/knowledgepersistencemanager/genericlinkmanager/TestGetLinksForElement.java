@@ -6,13 +6,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -33,9 +31,9 @@ public class TestGetLinksForElement extends TestSetUp {
 	@NonTransactional
 	public void testElementIdFilledDocumentationLocationFilled() {
 		KnowledgeElement element = JiraIssues.addElementToDataBase();
-		KnowledgeElement elementJiraIssue = new KnowledgeElementImpl(
+		KnowledgeElement elementJiraIssue = new KnowledgeElement(
 				JiraIssues.getTestJiraIssues().get(0));
-		Link link = new LinkImpl(elementJiraIssue, element);
+		Link link = new Link(elementJiraIssue, element);
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(link, null);
 		assertEquals(1, GenericLinkManager.getLinksForElement(1, DocumentationLocation.JIRAISSUE).size());
 	}
@@ -44,9 +42,9 @@ public class TestGetLinksForElement extends TestSetUp {
 	@NonTransactional
 	public void testElementFilled() {
 		KnowledgeElement element = JiraIssues.addElementToDataBase();
-		KnowledgeElement elementJiraIssue = new KnowledgeElementImpl(
+		KnowledgeElement elementJiraIssue = new KnowledgeElement(
 				JiraIssues.getTestJiraIssues().get(0));
-		Link link = new LinkImpl(elementJiraIssue, element);
+		Link link = new Link(elementJiraIssue, element);
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(link, null);
 		assertEquals(1, GenericLinkManager.getLinksForElement(element).size());
 	}

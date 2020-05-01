@@ -9,8 +9,6 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
 public class TestGetAdjacentElements extends TestSetUp {
@@ -20,12 +18,12 @@ public class TestGetAdjacentElements extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		graph = new KnowledgeGraphImpl("TEST");
+		graph = new KnowledgeGraph("TEST");
 	}
 
 	@Test
 	public void testDecisionKnowledgeElementValid() {
-		KnowledgeElement element = new KnowledgeElementImpl(JiraIssues.getTestJiraIssues().get(1));
+		KnowledgeElement element = new KnowledgeElement(JiraIssues.getTestJiraIssues().get(1));
 		assertEquals(2, Graphs.neighborListOf(graph, element).size());
 	}
 }

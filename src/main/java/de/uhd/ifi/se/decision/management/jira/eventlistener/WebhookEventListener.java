@@ -7,7 +7,6 @@ import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
@@ -25,7 +24,7 @@ public class WebhookEventListener {
 			return;
 		}
 		long eventTypeId = issueEvent.getEventTypeId();
-		KnowledgeElement decisionKnowledgeElement = new KnowledgeElementImpl(issueEvent.getIssue());
+		KnowledgeElement decisionKnowledgeElement = new KnowledgeElement(issueEvent.getIssue());
 		if (eventTypeId == EventType.ISSUE_CREATED_ID || eventTypeId == EventType.ISSUE_UPDATED_ID) {
 			WebhookConnector connector = new WebhookConnector(projectKey);
 			connector.sendElementChanges(decisionKnowledgeElement);

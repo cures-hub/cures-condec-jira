@@ -1,13 +1,14 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.impl;
-
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+package de.uhd.ifi.se.decision.management.jira.extraction.parser;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+
 /**
- * the MethodVisitor class creates ParsedMethodItems out of parsed content
+ * Retrieves method declarations from a Java class. Used to parse changed files
+ * in commits.
  */
 public class MethodVisitor extends VoidVisitorAdapter<Void> {
 

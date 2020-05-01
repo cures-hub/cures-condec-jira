@@ -1,89 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}"
-                  plugins-version="2">
+	plugins-version="2">
 
-    <!-- Plug-in Information -->
-    <plugin-info>
-        <description>${project.description}</description>
-        <version>${project.version}</version>
-        <vendor name="${project.organization.name}" url="${project.organization.url}" />
-        <param name="plugin-icon">images/pluginIcon.png</param>
-        <param name="plugin-logo">images/pluginLogo.png</param>
-    </plugin-info>
+	<!-- Plug-in Information -->
+	<plugin-info>
+		<description>${project.description}</description>
+		<version>${project.version}</version>
+		<vendor name="${project.organization.name}" url="${project.organization.url}" />
+		<param name="plugin-icon">images/pluginIcon.png</param>
+		<param name="plugin-logo">images/pluginLogo.png</param>
+	</plugin-info>
 
-    <!-- Internationalisation -->
-    <resource type="i18n" name="i18n" location="i18n/condec" />
+	<!-- Internationalisation -->
+	<resource type="i18n" name="i18n" location="i18n/condec" />
 
-    <!-- Web Resources -->
-    <web-resource key="stylesheet-and-icon-resources" name="Style Sheets and Icons">
-        <description>
-            Provides the style sheets and icons used in this plug-in.
-        </description>
-        <context>atl.general</context>
-        <!-- general icons -->
-        <resource type="download" name="add.png" location="/images/add.png" />
-        <resource type="download" name="delete.png" location="/images/delete.png" />
-        <resource type="download" name="class.png" location="/images/class.png" />
-        <resource type="download" name="open.png" location="/images/open.png" />
-        <resource type="download" name="edit.png" location="/images/edit.png" />
-        <resource type="download" name="32px.png" location="/images/32px.png" />
-        <resource type="download" name="40px.png" location="/images/40px.png" />
-        <resource type="download" name="throbber.gif" location="/images/throbber.gif" />
-        <!-- default decision knowledge icons -->
-        <resource type="download" name="decision.png" location="/images/decision.png" />
-        <resource type="download" name="issue.png" location="/images/issue.png" />
-        <resource type="download" name="alternative.png" location="/images/alternative.png" />
-        <resource type="download" name="solution.png" location="/images/solution.png" />
-        <resource type="download" name="argument.png" location="/images/argument.png" />
-        <resource type="download" name="argument_pro.png" location="/images/argument_pro.png" />
-        <resource type="download" name="argument_con.png" location="/images/argument_con.png" />
-        <!-- additional decision knowledge icons -->
-        <resource type="download" name="problem.png" location="/images/problem.png" />
-        <resource type="download" name="goal.png" location="/images/goal.png" />
-        <resource type="download" name="claim.png" location="/images/claim.png" />
-        <resource type="download" name="context.png" location="/images/context.png" />
-        <resource type="download" name="constraint.png" location="/images/constraint.png" />
-        <resource type="download" name="implication.png" location="/images/implication.png" />
-        <resource type="download" name="assumption.png" location="/images/assumption.png" />
-        <resource type="download" name="assessment.png" location="/images/assessment.png" />
-        <resource type="download" name="codesummarization.png"
-                  location="/images/codesummarization.png" />
-        <!-- visGraph.js icons -->
-        <resource type="download" name="addNodeIcon.png" location="/images/addNodeIcon.png" />
-        <resource type="download" name="backIcon.png" location="/images/backIcon.png" />
-        <resource type="download" name="editIcon.png" location="/images/editIcon.png" />
-        <!-- dashboard item thumbnail -->
-        <resource type="download" name="dashboardItem.png" location="/images/dashboardItem.png" />
-        <!-- style sheets -->
-        <resource type="download" name="treant.css" location="/css/treant.css" />
-        <resource type="download" name="condec.css" location="/css/condec.css" />
-        <resource type="download" name="jstree.css" location="/css/jstree.css" />
-        <resource type="download" name="visTimeLine.css" location="/css/visTimeLine.css" />
-        <resource type="download" name="matrix.css" location="/css/matrix.css" />
+	<!-- Web Resources -->
+	<web-resource key="stylesheet-and-icon-resources" name="Style Sheets and Icons">
+		<description>
+			Provides the style sheets and icons used in this plug-in.
+		</description>
+		<context>atl.general</context>
+		<!-- general icons -->
+		<resource type="download" name="add.png" location="/images/add.png" />
+		<resource type="download" name="delete.png" location="/images/delete.png" />
+		<resource type="download" name="class.png" location="/images/class.png" />
+		<resource type="download" name="open.png" location="/images/open.png" />
+		<resource type="download" name="edit.png" location="/images/edit.png" />
+		<resource type="download" name="32px.png" location="/images/32px.png" />
+		<resource type="download" name="40px.png" location="/images/40px.png" />
+		<resource type="download" name="throbber.gif" location="/images/throbber.gif" />
+		<!-- default decision knowledge icons -->
+		<resource type="download" name="decision.png" location="/images/decision.png" />
+		<resource type="download" name="issue.png" location="/images/issue.png" />
+		<resource type="download" name="alternative.png" location="/images/alternative.png" />
+		<resource type="download" name="solution.png" location="/images/solution.png" />
+		<resource type="download" name="argument.png" location="/images/argument.png" />
+		<resource type="download" name="argument_pro.png" location="/images/argument_pro.png" />
+		<resource type="download" name="argument_con.png" location="/images/argument_con.png" />
+		<!-- additional decision knowledge icons -->
+		<resource type="download" name="problem.png" location="/images/problem.png" />
+		<resource type="download" name="goal.png" location="/images/goal.png" />
+		<resource type="download" name="claim.png" location="/images/claim.png" />
+		<resource type="download" name="context.png" location="/images/context.png" />
+		<resource type="download" name="constraint.png" location="/images/constraint.png" />
+		<resource type="download" name="implication.png" location="/images/implication.png" />
+		<resource type="download" name="assumption.png" location="/images/assumption.png" />
+		<resource type="download" name="assessment.png" location="/images/assessment.png" />
+		<resource type="download" name="codesummarization.png"
+			location="/images/codesummarization.png" />
+		<!-- visGraph.js icons -->
+		<resource type="download" name="addNodeIcon.png" location="/images/addNodeIcon.png" />
+		<resource type="download" name="backIcon.png" location="/images/backIcon.png" />
+		<resource type="download" name="editIcon.png" location="/images/editIcon.png" />
+		<!-- dashboard item thumbnail -->
+		<resource type="download" name="dashboardItem.png" location="/images/dashboardItem.png" />
+		<!-- style sheets -->
+		<resource type="download" name="treant.css" location="/css/treant.css" />
+		<resource type="download" name="condec.css" location="/css/condec.css" />
+		<resource type="download" name="jstree.css" location="/css/jstree.css" />
+		<resource type="download" name="visTimeLine.css" location="/css/visTimeLine.css" />
+		<resource type="download" name="matrix.css" location="/css/matrix.css" />
 
-        <resource type="download" name="vis.css" location="/js/lib/vis/dist/vis.css" />
-        <resource type="download" name="gitdiffviewer.css" location="/css/gitdiffviewer.css" />        <!-- look and feel like JIRA -->
-        <dependency>com.atlassian.auiplugin:ajs</dependency>
-        <dependency>com.atlassian.auiplugin:aui-flag</dependency>
-        <dependency>com.atlassian.auiplugin:aui-buttons</dependency>
-        <dependency>com.atlassian.auiplugin:aui-forms</dependency>
-        <dependency>com.atlassian.auiplugin:aui-navigation</dependency>
-        <dependency>com.atlassian.auiplugin:aui-toggle</dependency>
-        <dependency>com.atlassian.auiplugin:table</dependency>
-        <dependency>com.atlassian.auiplugin:aui-lozenge</dependency>
-        <dependency>com.atlassian.auiplugin:dialog2</dependency>
-        <dependency>com.atlassian.auiplugin:aui-dropdown2</dependency>
-        <dependency>com.atlassian.auiplugin:aui-select2</dependency>
-        <dependency>com.atlassian.auiplugin:aui-experimental-iconfont</dependency>
-        <dependency>com.atlassian.auiplugin:aui-tooltips</dependency>
-        <dependency>com.atlassian.auiplugin:tabs</dependency>
-        <dependency>com.atlassian.auiplugin:aui-expander</dependency>
-        <dependency>com.atlassian.auiplugin:aui-table-sortable</dependency>
-        <!-- JIRA dialogs -->
-        <dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-edit-issue</dependency>
-        <dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-create-issue</dependency>
-    </web-resource>
+		<resource type="download" name="vis.css" location="/js/lib/vis/dist/vis.css" />
+		<resource type="download" name="gitdiffviewer.css" location="/css/gitdiffviewer.css" />        <!-- look and feel like JIRA -->
+		<dependency>com.atlassian.auiplugin:ajs</dependency>
+		<dependency>com.atlassian.auiplugin:aui-flag</dependency>
+		<dependency>com.atlassian.auiplugin:aui-buttons</dependency>
+		<dependency>com.atlassian.auiplugin:aui-forms</dependency>
+		<dependency>com.atlassian.auiplugin:aui-navigation</dependency>
+		<dependency>com.atlassian.auiplugin:aui-toggle</dependency>
+		<dependency>com.atlassian.auiplugin:table</dependency>
+		<dependency>com.atlassian.auiplugin:aui-lozenge</dependency>
+		<dependency>com.atlassian.auiplugin:dialog2</dependency>
+		<dependency>com.atlassian.auiplugin:aui-dropdown2</dependency>
+		<dependency>com.atlassian.auiplugin:aui-select2</dependency>
+		<dependency>com.atlassian.auiplugin:aui-experimental-iconfont</dependency>
+		<dependency>com.atlassian.auiplugin:aui-tooltips</dependency>
+		<dependency>com.atlassian.auiplugin:tabs</dependency>
+		<dependency>com.atlassian.auiplugin:aui-expander</dependency>
+		<dependency>com.atlassian.auiplugin:aui-table-sortable</dependency>
+		<!-- JIRA dialogs -->
+		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-edit-issue</dependency>
+		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-create-issue</dependency>
+	</web-resource>
 
     <web-resource key="decision-knowledge-management-resources"
                   name="ConDec Decision Knowledge Management Resources">
@@ -132,213 +132,213 @@
                   location="/js/condec.decision.group.view.js" />
     </web-resource>
 
-    <web-resource key="decision-knowledge-page-resources"
-                  name="ConDec Decision Knowledge Page Resources">
-        <description>
-            Provides the JavaScript files for the separate decision knowledge page of this
-            plug-in.
-        </description>
-        <resource type="download" name="condec.knowledge.page.js"
-                  location="/js/condec.knowledge.page.js" />
-    </web-resource>
+	<web-resource key="decision-knowledge-page-resources"
+		name="ConDec Decision Knowledge Page Resources">
+		<description>
+			Provides the JavaScript files for the separate decision knowledge page of this
+			plug-in.
+		</description>
+		<resource type="download" name="condec.knowledge.page.js"
+			location="/js/condec.knowledge.page.js" />
+	</web-resource>
 
-    <web-resource key="release-note-page-resources"
-                  name="ConDec Release Notes Page Resources">
-        <description>
-            Provides the JavaScript files for the separate release note page of this
-            plug-in.
-        </description>
-        <resource type="download" name="condec.release.note.page.js"
-                  location="/js/condec.release.note.page.js" />
-        <!--Markdown editor -->
-        <resource type="download" name="condec.release.note.markdowneditor.editor.js"
-                  location="/js/lib/markdowneditor/editor.js" />
-        <resource type="download" name="condec.release.note.markdowneditor.marked.js"
-                  location="/js/lib/markdowneditor/marked.js" />
-        <resource type="download" name="condec.release.note.markdowneditor.editor.css"
-                  location="/js/lib/markdowneditor/editor.css" />
+	<web-resource key="release-note-page-resources"
+		name="ConDec Release Notes Page Resources">
+		<description>
+			Provides the JavaScript files for the separate release note page of this
+			plug-in.
+		</description>
+		<resource type="download" name="condec.release.note.page.js"
+			location="/js/condec.release.note.page.js" />
+		<!--Markdown editor -->
+		<resource type="download" name="condec.release.note.markdowneditor.editor.js"
+			location="/js/lib/markdowneditor/editor.js" />
+		<resource type="download" name="condec.release.note.markdowneditor.marked.js"
+			location="/js/lib/markdowneditor/marked.js" />
+		<resource type="download" name="condec.release.note.markdowneditor.editor.css"
+			location="/js/lib/markdowneditor/editor.css" />
 
-        <resource type="download" name="condec.release.note.markdowneditor.icomoon.eot"
-                  location="/js/lib/markdowneditor/icomoon.eot" />
-        <resource type="download" name="condec.release.note.markdowneditor.icomoon.ttf"
-                  location="/js/lib/markdowneditor/icomoon.ttf" />
-        <resource type="download" name="condec.release.note.markdowneditor.icomoon.woff"
-                  location="/js/lib/markdowneditor/icomoon.woff" />
-        <resource type="download" name="condec.release.note.markdowneditor.icomoon_ie.eot"
-                  location="/js/lib/markdowneditor/icomoon_ie.eot" />
-    </web-resource>
+		<resource type="download" name="condec.release.note.markdowneditor.icomoon.eot"
+			location="/js/lib/markdowneditor/icomoon.eot" />
+		<resource type="download" name="condec.release.note.markdowneditor.icomoon.ttf"
+			location="/js/lib/markdowneditor/icomoon.ttf" />
+		<resource type="download" name="condec.release.note.markdowneditor.icomoon.woff"
+			location="/js/lib/markdowneditor/icomoon.woff" />
+		<resource type="download" name="condec.release.note.markdowneditor.icomoon_ie.eot"
+			location="/js/lib/markdowneditor/icomoon_ie.eot" />
+	</web-resource>
 
-    <web-resource key="jira-issue-module-resources"
-                  name="ConDec JIRA Issue Module Resources">
-        <description>
-            Provides the JavaScript file used in the JIRA issue module.
-        </description>
-        <context>jira.view.issue</context>
-        <resource type="download" name="condec.jira.issue.module.js"
-                  location="/js/condec.jira.issue.module.js" />
-    </web-resource>
+	<web-resource key="jira-issue-module-resources"
+		name="ConDec JIRA Issue Module Resources">
+		<description>
+			Provides the JavaScript file used in the JIRA issue module.
+		</description>
+		<context>jira.view.issue</context>
+		<resource type="download" name="condec.jira.issue.module.js"
+			location="/js/condec.jira.issue.module.js" />
+	</web-resource>
 
-    <web-resource key="classifier-resources"
-                  name="Resources for Decision Knowledge Extraction">
-        <description>
-            Provides the resources needed for extraction of decision knowledge from JIRA issue
-            comments such as the model files for Weka and Meka classifiers.
-        </description>
-        <context>jira.view.issue</context>
-        <resource type="download" name="defaultTrainingData.arff"
-                  location="/classifier/defaultTrainingData.arff" />
-        <resource type="download" name="condec.tab.panel.js" location="/js/condec.tab.panel.js" />
+	<web-resource key="classifier-resources"
+		name="Resources for Decision Knowledge Extraction">
+		<description>
+			Provides the resources needed for extraction of decision knowledge from JIRA issue
+			comments such as the model files for Weka and Meka classifiers.
+		</description>
+		<context>jira.view.issue</context>
+		<resource type="download" name="defaultTrainingData.arff"
+			location="/classifier/defaultTrainingData.arff" />
+		<resource type="download" name="condec.tab.panel.js" location="/js/condec.tab.panel.js" />
 
-        <!--Language models -->
-        <resource type="download" name="person.bin" location="/classifier/person.bin" />
-        <resource type="download" name="lemmatizer.dict" location="/classifier/lemmatizer.dict" />
-        <resource type="download" name="glove.6b.50d.csv" location="/classifier/glove.6b.50d.csv" />
-        <resource type="download" name="pos.bin" location="/classifier/pos.bin" />
-        <resource type="download" name="token.bin" location="/classifier/token.bin" />
-    </web-resource>
+		<!--Language models -->
+		<resource type="download" name="person.bin" location="/classifier/person.bin" />
+		<resource type="download" name="lemmatizer.dict" location="/classifier/lemmatizer.dict" />
+		<resource type="download" name="glove.6b.50d.csv" location="/classifier/glove.6b.50d.csv" />
+		<resource type="download" name="pos.bin" location="/classifier/pos.bin" />
+		<resource type="download" name="token.bin" location="/classifier/token.bin" />
+	</web-resource>
 
-    <!-- Decision Knowledge Page -->
-    <web-item name="Link to the Decision Knowledge Page in Side Bar" key="sidebar-link"
-              section="jira.project.sidebar.plugins.navigation" weight="1000">
-        <description>Provides the "Decision Knowledge" link in the project's navigation sidebar.
-        </description>
-        <label key="condec.sidebar.link.label" />
-        <param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-decision" />
-        <link>/projects/$pathEncodedProjectKey?selectedItem=decision-knowledge-page</link>
-        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-    </web-item>
-    <web-panel name="Decision Knowledge Page" key="decision-knowledge-page"
-               location="decision-knowledge-page" weight="1000">
-        <description>
-            Provides the plug-in page that developers use to manage decision knowledge.
-        </description>
-        <resource name="view" type="velocity" location="templates/decisionKnowledgePage.vm" />
-    </web-panel>
+	<!-- Decision Knowledge Page -->
+	<web-item name="Link to the Decision Knowledge Page in Side Bar" key="sidebar-link"
+		section="jira.project.sidebar.plugins.navigation" weight="1000">
+		<description>Provides the "Decision Knowledge" link in the project's navigation sidebar.
+		</description>
+		<label key="condec.sidebar.link.label" />
+		<param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-decision" />
+		<link>/projects/$pathEncodedProjectKey?selectedItem=decision-knowledge-page</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<web-panel name="Decision Knowledge Page" key="decision-knowledge-page"
+		location="decision-knowledge-page" weight="1000">
+		<description>
+			Provides the plug-in page that developers use to manage decision knowledge.
+		</description>
+		<resource name="view" type="velocity" location="templates/decisionKnowledgePage.vm" />
+	</web-panel>
 
-    <!-- Release Notes Page -->
-    <web-item name="Link to the Release Note Page in Side Bar" key="sidebar-link-release-note"
-              section="jira.project.sidebar.plugins.navigation" weight="1000">
-        <description>Provides the "Release Notes" link in the project's navigation sidebar.
-        </description>
-        <label key="condec.sidebar.link.label.release.note" />
-        <param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-queues" />
-        <link>/projects/$pathEncodedProjectKey?selectedItem=release-note-page</link>
-        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-    </web-item>
-    <web-panel name="Decision Knowledge Page" key="release-note-page"
-               location="release-note-page" weight="1000">
-        <description>
-            Provides the plug-in page that developers use to manage release notes.
-        </description>
-        <resource name="view" type="velocity" location="templates/releaseNotePage.vm" />
-    </web-panel>
+	<!-- Release Notes Page -->
+	<web-item name="Link to the Release Note Page in Side Bar" key="sidebar-link-release-note"
+		section="jira.project.sidebar.plugins.navigation" weight="1000">
+		<description>Provides the "Release Notes" link in the project's navigation sidebar.
+		</description>
+		<label key="condec.sidebar.link.label.release.note" />
+		<param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-queues" />
+		<link>/projects/$pathEncodedProjectKey?selectedItem=release-note-page</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<web-panel name="Decision Knowledge Page" key="release-note-page"
+		location="release-note-page" weight="1000">
+		<description>
+			Provides the plug-in page that developers use to manage release notes.
+		</description>
+		<resource name="view" type="velocity" location="templates/releaseNotePage.vm" />
+	</web-panel>
 
-    <!-- REST API -->
-    <rest name="Decision Knowledge REST" key="decision-knowledge-rest" path="/condec"
-          version="1.0">
-        <description>
-            Provides REST resources to manage decision knowledge.
-        </description>
-    </rest>
-    <rest name="Release Note REST" key="release-note-rest" path="/release-note" version="1.0">
-        <description>
-            Provides REST resources to manage Release Notes.
-        </description>
-    </rest>
+	<!-- REST API -->
+	<rest name="Decision Knowledge REST" key="decision-knowledge-rest" path="/condec"
+		version="1.0">
+		<description>
+			Provides REST resources to manage decision knowledge.
+		</description>
+	</rest>
+	<rest name="Release Note REST" key="release-note-rest" path="/release-note" version="1.0">
+		<description>
+			Provides REST resources to manage Release Notes.
+		</description>
+	</rest>
 
-    <!-- Global Settings -->
-    <web-section key="condec-admin-section"
-                 name="Web Section Label for ConDec Plug-in Administration" location="admin_plugins_menu">
-        <label key="condec.admin.section.label" />
-        <description>
-            Adds the "Decision Knowledge" label to the sidebar of the add-ons admin page.
-        </description>
-    </web-section>
-    <web-item key="condec-admin-menu-item" name="Menu Item for ConDec Plug-in Administration"
-              section="admin_plugins_menu/condec-admin-section" weight="10" application="jira">
-        <label key="condec.admin.menu.item.label" />
-        <description>
-            Adds the "ConDec settings" menu item that links to the ConDec admin page.
-        </description>
-        <link>/plugins/servlet/condec/globalsettings</link>
-    </web-item>
-    <servlet key="servlet-for-settings-of-all-projects"
-             name="Servlet for Settings of All Projects"
-             class="de.uhd.ifi.se.decision.management.jira.config.SettingsOfAllProjects">
-        <description>Provides the administration page.</description>
-        <url-pattern>/condec/globalsettings</url-pattern>
-    </servlet>
+	<!-- Global Settings -->
+	<web-section key="condec-admin-section"
+		name="Web Section Label for ConDec Plug-in Administration" location="admin_plugins_menu">
+		<label key="condec.admin.section.label" />
+		<description>
+			Adds the "Decision Knowledge" label to the sidebar of the add-ons admin page.
+		</description>
+	</web-section>
+	<web-item key="condec-admin-menu-item" name="Menu Item for ConDec Plug-in Administration"
+		section="admin_plugins_menu/condec-admin-section" weight="10" application="jira">
+		<label key="condec.admin.menu.item.label" />
+		<description>
+			Adds the "ConDec settings" menu item that links to the ConDec admin page.
+		</description>
+		<link>/plugins/servlet/condec/globalsettings</link>
+	</web-item>
+	<servlet key="servlet-for-settings-of-all-projects"
+		name="Servlet for Settings of All Projects"
+		class="de.uhd.ifi.se.decision.management.jira.config.SettingsOfAllProjects">
+		<description>Provides the administration page.</description>
+		<url-pattern>/condec/globalsettings</url-pattern>
+	</servlet>
 
-    <!-- Project Settings -->
-    <web-section key="condec-project-settings-section"
-                 name="Web Section for ConDec Plug-in in Project Settings" location="atl.jira.proj.config">
-        <label key="condec.project.settings.section.label" />
-        <description>
-            Adds the "ConDec Decision Knowledge" label to the project settings menu.
-        </description>
-    </web-section>
-    <web-item key="condec-project-settings-menu-item"
-              name="Menu Item for ConDec Plug-in Project Settings"
-              section="atl.jira.proj.config/condec-project-settings-section" weight="15">
-        <description>Adds the "Basic settings" menu item that links to the project settings.
-        </description>
-        <label key="condec.project.settings.menu.item" />
-        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded</link>
-        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-    </web-item>
-    <web-item key="condec-project-settings-menu-item-rationale-model"
-              name="Menu Item for ConDec Plug-in Project Settings of Rationale Model"
-              section="atl.jira.proj.config/condec-project-settings-section" weight="16">
-        <description>Adds the "Rationale model" menu item.</description>
-        <label key="condec.project.settings.menu.item.rationale.model" />
-        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=rationaleModel
-        </link>
-        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-    </web-item>
-    <web-item key="condec-project-settings-menu-item-classification"
-              name="Menu Item for ConDec Plug-in Project Settings of Classification"
-              section="atl.jira.proj.config/condec-project-settings-section" weight="17">
-        <description>Adds the "Classification" menu item.</description>
-        <label key="condec.project.settings.menu.item.classification" />
-        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=classification
-        </link>
-        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-    </web-item>
-    <web-item key="condec-project-settings-menu-item-git"
-              name="Menu Item for ConDec Plug-in Project Settings of Git Connection"
-              section="atl.jira.proj.config/condec-project-settings-section" weight="18">
-        <description>Adds the "Git Extraction" menu item.</description>
-        <label key="condec.project.settings.menu.item.git" />
-        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=git</link>
-        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-    </web-item>
-    <web-item key="condec-project-settings-menu-item-webhook"
-              name="Menu Item for ConDec Plug-in Project Settings of Webhook"
-              section="atl.jira.proj.config/condec-project-settings-section" weight="19">
-        <description>Adds the "Webhook" menu item.</description>
-        <label key="condec.project.settings.menu.item.webhook" />
-        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=webhook</link>
-        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-    </web-item>
-    <web-item key="condec-project-settings-menu-item-release-notes"
-              name="Menu Item for ConDec Plug-in Project Settings of Release Notes"
-              section="atl.jira.proj.config/condec-project-settings-section" weight="20">
-        <description>Adds the "Release Notes" menu item.</description>
-        <label key="condec.project.settings.menu.item.release.notes" />
-        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=releaseNotes
-        </link>
-        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-    </web-item>
-    <servlet key="servlet-for-settings-of-single-project"
-             name="Servlet for Settings of Single Project"
-             class="de.uhd.ifi.se.decision.management.jira.config.SettingsOfSingleProject">
-        <description>Provides the project settings page for the project administrators.</description>
-        <url-pattern>/condec/settings</url-pattern>
-        <init-param>
-            <param-name>category</param-name>
-            <param-value>basic</param-value>
-        </init-param>
-    </servlet>
+	<!-- Project Settings -->
+	<web-section key="condec-project-settings-section"
+		name="Web Section for ConDec Plug-in in Project Settings" location="atl.jira.proj.config">
+		<label key="condec.project.settings.section.label" />
+		<description>
+			Adds the "ConDec Decision Knowledge" label to the project settings menu.
+		</description>
+	</web-section>
+	<web-item key="condec-project-settings-menu-item"
+		name="Menu Item for ConDec Plug-in Project Settings"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="15">
+		<description>Adds the "Basic settings" menu item that links to the project settings.
+		</description>
+		<label key="condec.project.settings.menu.item" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<web-item key="condec-project-settings-menu-item-rationale-model"
+		name="Menu Item for ConDec Plug-in Project Settings of Rationale Model"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="16">
+		<description>Adds the "Rationale model" menu item.</description>
+		<label key="condec.project.settings.menu.item.rationale.model" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=rationaleModel
+		</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<web-item key="condec-project-settings-menu-item-classification"
+		name="Menu Item for ConDec Plug-in Project Settings of Classification"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="17">
+		<description>Adds the "Classification" menu item.</description>
+		<label key="condec.project.settings.menu.item.classification" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=classification
+		</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<web-item key="condec-project-settings-menu-item-git"
+		name="Menu Item for ConDec Plug-in Project Settings of Git Connection"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="18">
+		<description>Adds the "Git Extraction" menu item.</description>
+		<label key="condec.project.settings.menu.item.git" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=git</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<web-item key="condec-project-settings-menu-item-webhook"
+		name="Menu Item for ConDec Plug-in Project Settings of Webhook"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="19">
+		<description>Adds the "Webhook" menu item.</description>
+		<label key="condec.project.settings.menu.item.webhook" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=webhook</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<web-item key="condec-project-settings-menu-item-release-notes"
+		name="Menu Item for ConDec Plug-in Project Settings of Release Notes"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="20">
+		<description>Adds the "Release Notes" menu item.</description>
+		<label key="condec.project.settings.menu.item.release.notes" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=releaseNotes
+		</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<servlet key="servlet-for-settings-of-single-project"
+		name="Servlet for Settings of Single Project"
+		class="de.uhd.ifi.se.decision.management.jira.config.SettingsOfSingleProject">
+		<description>Provides the project settings page for the project administrators.</description>
+		<url-pattern>/condec/settings</url-pattern>
+		<init-param>
+			<param-name>category</param-name>
+			<param-value>basic</param-value>
+		</init-param>
+	</servlet>
 
     <!-- Active Objects -->
     <ao key="ao-module" name="Active Objects Service">
@@ -352,6 +352,9 @@
         <entity>
             de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupInDatabase
         </entity>
+		<entity>
+			de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase
+		</entity>
         <entity>
             de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase
         </entity>
@@ -363,87 +366,87 @@
         </entity>
     </ao>
 
-    <!-- Decision Knowledge Issue Module -->
-    <web-panel key="condec-jira-issue-module" name="Decision Knowledge JIRA Issue Module"
-               location="atl.jira.view.issue.left.context" weight="200">
-        <description>Decision Knowledge related to a JIRA Issue</description>
-        <label key="condec.jira.issue.module.label" />
-        <resource type="velocity" name="view" location="templates/jiraIssueModule.vm" />
-        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-        <supports-ajax-load>true</supports-ajax-load>
-    </web-panel>
+	<!-- Decision Knowledge Issue Module -->
+	<web-panel key="condec-jira-issue-module" name="Decision Knowledge JIRA Issue Module"
+		location="atl.jira.view.issue.left.context" weight="200">
+		<description>Decision Knowledge related to a JIRA Issue</description>
+		<label key="condec.jira.issue.module.label" />
+		<resource type="velocity" name="view" location="templates/jiraIssueModule.vm" />
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+		<supports-ajax-load>true</supports-ajax-load>
+	</web-panel>
 
-    <!-- Decision Knowledge Export Functions -->
-    <web-item key="export-as-table-item"
-              name="Menu Item for Decision Knowledge Export as Table" section="operations-operations">
-        <label key="condec.export.as.table.item.label" />
-        <description>Adds a menu item to the "More" dropdown in the Jira issue view.</description>
-        <link linkId="export-as-table-link" />
-        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-    </web-item>
+	<!-- Decision Knowledge Export Functions -->
+	<web-item key="export-as-table-item"
+		name="Menu Item for Decision Knowledge Export as Table" section="operations-operations">
+		<label key="condec.export.as.table.item.label" />
+		<description>Adds a menu item to the "More" dropdown in the Jira issue view.</description>
+		<link linkId="export-as-table-link" />
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
 
-    <!-- Decision Knowledge Extraction From JIRA Issue Description and Comments -->
-    <issue-tabpanel key="condec-tab-panel"
-                    name="Decision Knowledge Extraction Tab Panel"
-                    class="de.uhd.ifi.se.decision.management.jira.view.JiraIssueTabPanelRenderer">
-        <description>Tab panel to manage extraction of decision knowledge from JIRA issue description and
-            comments.
-        </description>
-        <label key="condec.tab.panel.label" />
-        <order>10</order>
-        <resource type="velocity" name="view" location="templates/tabPanel.vm" />
-        <supports-ajax-load>true</supports-ajax-load>
-    </issue-tabpanel>
+	<!-- Decision Knowledge Extraction From JIRA Issue Description and Comments -->
+	<issue-tabpanel key="condec-tab-panel"
+		name="Decision Knowledge Extraction Tab Panel"
+		class="de.uhd.ifi.se.decision.management.jira.view.JiraIssueTabPanelRenderer">
+		<description>Tab panel to manage extraction of decision knowledge from JIRA issue description and
+			comments.
+		</description>
+		<label key="condec.tab.panel.label" />
+		<order>10</order>
+		<resource type="velocity" name="view" location="templates/tabPanel.vm" />
+		<supports-ajax-load>true</supports-ajax-load>
+	</issue-tabpanel>
 
-    <macro key="issue" name="ConDec Editor Macro for Issues"
-           class="de.uhd.ifi.se.decision.management.jira.view.macros.IssueMacro">
-        <description>Highlights issue knowledge elements in the description and comments of Jira issue.
-        </description>
-    </macro>
+	<macro key="issue" name="ConDec Editor Macro for Issues"
+		class="de.uhd.ifi.se.decision.management.jira.view.macros.IssueMacro">
+		<description>Highlights issue knowledge elements in the description and comments of Jira issue.
+		</description>
+	</macro>
 
-    <macro key="decision" name="ConDec Editor Macro for Decisions"
-           class="de.uhd.ifi.se.decision.management.jira.view.macros.DecisionMacro">
-        <description>Highlights decision knowledge elements in the description and comments of Jira issue.
-        </description>
-    </macro>
+	<macro key="decision" name="ConDec Editor Macro for Decisions"
+		class="de.uhd.ifi.se.decision.management.jira.view.macros.DecisionMacro">
+		<description>Highlights decision knowledge elements in the description and comments of Jira issue.
+		</description>
+	</macro>
 
-    <macro key="alternative" name="ConDec Editor Macro for Alternatives"
-           class="de.uhd.ifi.se.decision.management.jira.view.macros.AlternativeMacro">
-        <description>Highlights alternative knowledge elements in the description and comments of Jira
-            issue.
-        </description>
-    </macro>
+	<macro key="alternative" name="ConDec Editor Macro for Alternatives"
+		class="de.uhd.ifi.se.decision.management.jira.view.macros.AlternativeMacro">
+		<description>Highlights alternative knowledge elements in the description and comments of Jira
+			issue.
+		</description>
+	</macro>
 
-    <macro key="pro" name="ConDec Editor Macro for Pro-arguments"
-           class="de.uhd.ifi.se.decision.management.jira.view.macros.ProMacro">
-        <description>Highlights pro knowledge elements in the description and comments of Jira issue.
-        </description>
-    </macro>
+	<macro key="pro" name="ConDec Editor Macro for Pro-arguments"
+		class="de.uhd.ifi.se.decision.management.jira.view.macros.ProMacro">
+		<description>Highlights pro knowledge elements in the description and comments of Jira issue.
+		</description>
+	</macro>
 
-    <macro key="con" name="ConDec Editor Macro for Con-arguments"
-           class="de.uhd.ifi.se.decision.management.jira.view.macros.ConMacro">
-        <description>Highlights con knowledge elements in the description and comments of Jira issue.
-        </description>
-    </macro>
+	<macro key="con" name="ConDec Editor Macro for Con-arguments"
+		class="de.uhd.ifi.se.decision.management.jira.view.macros.ConMacro">
+		<description>Highlights con knowledge elements in the description and comments of Jira issue.
+		</description>
+	</macro>
 
-    <macro key="codesummarization" name="ConDec Editor Macro for Code Summarization"
-           class="de.uhd.ifi.se.decision.management.jira.view.macros.CodeSummarizationMacro">
-        <description>Highlights code summarization in the description and comments of Jira issue.
-        </description>
-    </macro>
+	<macro key="codesummarization" name="ConDec Editor Macro for Code Summarization"
+		class="de.uhd.ifi.se.decision.management.jira.view.macros.CodeSummarizationMacro">
+		<description>Highlights code summarization in the description and comments of Jira issue.
+		</description>
+	</macro>
 
-    <web-resource key="toolbar" name="JIRA Editor Reference Plugin Toolbar Init">
-        <description>Extends the rich text editor with menu items that enable the user to manually
-            classify text into decision knowledge elements.
-        </description>
-        <context>jira.rich.editor</context>
-        <context>jira.view.issue</context>
-        <context>jira.edit.issue</context>
-        <context>jira.create.issue</context>
-        <context>gh-rapid</context>
-        <resource type="download" name="js/toolbar-init.js"
-                  location="js/condec.text.editor.extension.js" />
-    </web-resource>
+	<web-resource key="toolbar" name="JIRA Editor Reference Plugin Toolbar Init">
+		<description>Extends the rich text editor with menu items that enable the user to manually
+			classify text into decision knowledge elements.
+		</description>
+		<context>jira.rich.editor</context>
+		<context>jira.view.issue</context>
+		<context>jira.edit.issue</context>
+		<context>jira.create.issue</context>
+		<context>gh-rapid</context>
+		<resource type="download" name="js/toolbar-init.js"
+			location="js/condec.text.editor.extension.js" />
+	</web-resource>
 
 
     <web-resource key="dashboard-item-condec-resources"
@@ -461,49 +464,49 @@
         <resource type="download" name="condec.api.js" location="/js/condec.api.js" />
         <resource type="download" name="general.api.js" location="/js/general.api.js" />
 
-        <context>atl.dashboard</context>
-    </web-resource>
+		<context>atl.dashboard</context>
+	</web-resource>
 
-    <!-- ConDec feature branch dashboard item -->
-    <!-- https://developer.atlassian.com/server/jira/platform/building-a-dashboard-item/ https://developer.atlassian.com/server/jira/platform/writing-a-dashboard-item-app/
-        Dashboard item will eventually replace gadgets: https://developer.atlassian.com/server/jira/platform/dashboard-item-module/ -->
-    <dashboard-item key="condec-feature-branch-dashboard-item"
-                    name="ConDec Dashboard for Feature Task Branches">
-        <definition>
-            <title key="condec.dashboard.featurebranch.title" />
-            <categories>
-                <category>Jira</category>
-            </categories>
-            <author>
-                <name>ConDec team</name>
-            </author>
-            <thumbnail
-                location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
-        </definition>
-        <description key="condec.dashboard.featurebranch.description" />
-        <resource name="view" type="velocity"
-                  location="/templates/dashboard/featureBranchesDashboardItem.vm" />
-        <context-provider
-            class="de.uhd.ifi.se.decision.management.jira.view.FeatureBranchQualityDashboardItem" />
-    </dashboard-item>
+	<!-- ConDec feature branch dashboard item -->
+	<!-- https://developer.atlassian.com/server/jira/platform/building-a-dashboard-item/ https://developer.atlassian.com/server/jira/platform/writing-a-dashboard-item-app/ 
+		Dashboard item will eventually replace gadgets: https://developer.atlassian.com/server/jira/platform/dashboard-item-module/ -->
+	<dashboard-item key="condec-feature-branch-dashboard-item"
+		name="ConDec Dashboard for Feature Task Branches">
+		<definition>
+			<title key="condec.dashboard.featurebranch.title" />
+			<categories>
+				<category>Jira</category>
+			</categories>
+			<author>
+				<name>ConDec team</name>
+			</author>
+			<thumbnail
+				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
+		</definition>
+		<description key="condec.dashboard.featurebranch.description" />
+		<resource name="view" type="velocity"
+			location="/templates/dashboard/featureBranchesDashboardItem.vm" />
+		<context-provider
+			class="de.uhd.ifi.se.decision.management.jira.view.FeatureBranchQualityDashboardItem" />
+	</dashboard-item>
 
-    <dashboard-item key="condec-requirements-dashboard-item"
-                    name="ConDec Dashboard for Project Requirements">
-        <definition>
-            <title key="condec.dashboard.requirements.title" />
-            <categories>
-                <category>Jira</category>
-            </categories>
-            <author>
-                <name>ConDec team</name>
-            </author>
-            <thumbnail
-                location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
-        </definition>
-        <description key="condec.dashboard.requirements.description" />
-        <resource name="view" type="velocity"
-                  location="/templates/dashboard/requirementsDashboardItem.vm" />
-        <context-provider
-            class="de.uhd.ifi.se.decision.management.jira.view.RequirementsDashboardItem" />
-    </dashboard-item>
+	<dashboard-item key="condec-requirements-dashboard-item"
+		name="ConDec Dashboard for Project Requirements">
+		<definition>
+			<title key="condec.dashboard.requirements.title" />
+			<categories>
+				<category>Jira</category>
+			</categories>
+			<author>
+				<name>ConDec team</name>
+			</author>
+			<thumbnail
+				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
+		</definition>
+		<description key="condec.dashboard.requirements.description" />
+		<resource name="view" type="velocity"
+			location="/templates/dashboard/requirementsDashboardItem.vm" />
+		<context-provider
+			class="de.uhd.ifi.se.decision.management.jira.view.RequirementsDashboardItem" />
+	</dashboard-item>
 </atlassian-plugin>

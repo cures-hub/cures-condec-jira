@@ -10,7 +10,6 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGetOrCreate extends TestSetUp {
@@ -30,7 +29,7 @@ public class TestGetOrCreate extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testProjectValid() {
-		assertNotNull(KnowledgeGraph.getOrCreate(new DecisionKnowledgeProjectImpl("TEST")));
+		assertNotNull(KnowledgeGraph.getOrCreate(new DecisionKnowledgeProject("TEST")));
 	}
 
 	@Test

@@ -12,7 +12,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -100,7 +100,7 @@ public class TestGetElementsWithTypeInJiraIssue extends TestSetUp {
 	public void testIdMoreSProjectKeyFilledTypeFilled() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
-		manager.insertDecisionKnowledgeElement(comment.get(1), null);
+		manager.insertKnowledgeElement(comment.get(1), null);
 
 		assertEquals(1,
 				manager.getElementsWithTypeInJiraIssue(comment.get(0).getJiraIssueId(), KnowledgeType.ISSUE).size());

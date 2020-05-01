@@ -1,14 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
+
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 
 public class TestRationaleFromCodeCommentExtractor {
 	private RationaleFromCodeCommentExtractor rationaleFromCodeCommentExtractor;

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.impl;
+package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,15 +6,13 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
 /**
- * Class responsible for automatic link creation (=edges) between nodes in the
- * {@link KnowledgeGraph}. Currently only working for decision knowledge
- * elements documented in the description or the comments of a certain Jira
- * issue.
+ * Responsible for automatic link creation (=edges) between nodes in the
+ * {@link KnowledgeGraph}. Is currently only working for decision knowledge
+ * elements documented in the description or the comments of a Jira issue.
  * 
  * @see Link
  * @see JiraIssueTextPersistenceManager
@@ -50,7 +48,7 @@ public class AutomaticLinkCreator {
 		}
 		List<KnowledgeElement> potentialParentElements = getPotentialParentElements(element);
 		if (potentialParentElements.isEmpty()) {
-			return new KnowledgeElementImpl(element.getJiraIssue());
+			return new KnowledgeElement(element.getJiraIssue());
 		}
 		if (potentialParentElements.size() == 2) {
 			return getMostRecentElement(potentialParentElements.get(0), potentialParentElements.get(1));
@@ -72,8 +70,7 @@ public class AutomaticLinkCreator {
 		return potentialParentElements;
 	}
 
-	public static KnowledgeElement getMostRecentElement(KnowledgeElement first,
-			KnowledgeElement second) {
+	public static KnowledgeElement getMostRecentElement(KnowledgeElement first, KnowledgeElement second) {
 		if (first == null) {
 			return second;
 		}

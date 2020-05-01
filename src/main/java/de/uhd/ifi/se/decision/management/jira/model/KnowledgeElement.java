@@ -2,338 +2,564 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import javax.xml.bind.annotation.XmlElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.properties.APKeys;
+import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
 
 /**
- * Interface for knowledge elements, e.g. knowledge elements or requirements.
- * These elements are nodes of the knowledge graph.
+ * Models knowledge elements, e.g. decision knowledge elements or requirements.
+ * These elements are nodes of the knowledge graph and connected by
+ * links/edges/relationships.
  * 
  * @see KnowledgeGraph
  * @see Link
  */
-@JsonDeserialize(as = KnowledgeElementImpl.class)
-public interface KnowledgeElement {
+public class KnowledgeElement {
 
-    /**
-     * Get the id of the knowledge element. This id is the internal database id.
-     * When using Jira issues to persist knowledge, this id is different to the
-     * project internal id that is part of the key.
-     *
-     * @return id of the knowledge element.
-     */
-    long getId();
+	protected long id;
+	protected DecisionKnowledgeProject project;
+	private String summary;
+	private String description;
+	protected KnowledgeType type;
+	private String key;
+	private Date created;
+	private Date closed;
+	protected DocumentationLocation documentationLocation;
+	protected KnowledgeStatus status;
 
-    /**
-     * Set the id of the knowledge element. This id is the internal database id.
-     * When using Jira issues to persist knowledge, this id is different to the
-     * project internal id that is part of the key.
-     *
-     * @param id of the knowledge element.
-     */
-    void setId(long id);
+	public KnowledgeElement() {
+		this.description = "";
+		this.summary = "";
+		this.type = KnowledgeType.OTHER;
+	}
 
-    /**
-     * Get the summary of the knowledge element. The summary is a short description
-     * of the element.
-     *
-     * @return summary of the knowledge element.
-     */
-    String getSummary();
+	public KnowledgeElement(long id, String summary, String description, KnowledgeType type, String projectKey,
+			String key, DocumentationLocation documentationLocation, KnowledgeStatus status) {
+		this.id = id;
+		this.summary = summary;
+		this.description = description;
+		this.type = type;
+		this.project = new DecisionKnowledgeProject(projectKey);
+		this.key = key;
+		this.documentationLocation = documentationLocation;
+		this.status = status;
+	}
 
-    /**
-     * Set the summary of the knowledge element. The summary is a short description
-     * of the element.
-     *
-     * @param summary of the knowledge element.
-     */
-    void setSummary(String summary);
+	public KnowledgeElement(long id, String projectKey, String documentationLocation) {
+		this.id = id;
+		this.project = new DecisionKnowledgeProject(projectKey);
+		this.documentationLocation = DocumentationLocation
+				.getDocumentationLocationFromIdentifier(documentationLocation);
+	}
 
-    /**
-     * Get the description of the knowledge element. The description provides
-     * details about the element. When using Jira issues to persist knowledge, it
-     * can include images and other fancy stuff.
-     *
-     * @return description of the knowledge element.
-     */
-    String getDescription();
+	public KnowledgeElement(long id, String summary, String description, String type, String projectKey, String key,
+			String documentationLocation, String status) {
+		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key,
+				DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation),
+				KnowledgeStatus.getKnowledgeStatus(status));
+	}
 
-    /**
-     * Set the description of the knowledge element. The description provides
-     * details about the element. When using Jira issues to persist knowledge, it
-     * can include images and other fancy stuff.
-     *
-     * @param description of the knowledge element.
-     */
-    void setDescription(String description);
+	public KnowledgeElement(long id, String summary, String description, String type, String projectKey, String key,
+			DocumentationLocation documentationLocation, String status) {
+		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key, documentationLocation,
+				KnowledgeStatus.getKnowledgeStatus(status));
+	}
 
-    /**
-     * Get the type of the knowledge element. For example, prominent types are
-     * decision, alternative, issue, and argument.
-     *
-     * @see KnowledgeType
-     * @return type of the knowledge element.
-     */
-    KnowledgeType getType();
+	public KnowledgeElement(Issue issue) {
+		if (issue != null) {
+			this.id = issue.getId();
+			this.summary = issue.getSummary();
+			this.description = issue.getDescription();
+			if (issue.getIssueType() != null) {
+				this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
+			}
+			if (issue.getProjectObject() != null) {
+				this.project = new DecisionKnowledgeProject(issue.getProjectObject().getKey());
+			}
+			this.key = issue.getKey();
+			this.documentationLocation = DocumentationLocation.JIRAISSUE;
+			this.created = issue.getCreated();
+			// TODO Manage status for decision knowledge elements stored as entire Jira
+			// issues
+			this.status = KnowledgeStatus.RESOLVED;
+		}
+	}
 
-    /**
-     * Get the type of the knowledge element as a String. For example, prominent
-     * types are decision, alternative, issue, and argument. This methods returns
-     * the type of Jira issues that are no knowledge elements.
-     *
-     * @see KnowledgeType
-     * @return type of the knowledge element.
-     */
-    String getTypeAsString();
+	public KnowledgeElement(CodeClassInDatabase entry) {
+		if (entry != null) {
+			this.id = entry.getId();
+			this.summary = entry.getFileName();
+			String issueKeys = "";
+			for (String key : entry.getJiraIssueKeys().split(";")) {
+				issueKeys = issueKeys + entry.getProjectKey() + "-" + key + ";";
+			}
+			this.description = issueKeys;
+			this.type = KnowledgeType.getKnowledgeType(null);
+			this.project = new DecisionKnowledgeProject(entry.getProjectKey());
+			this.key = entry.getProjectKey() + "-" + entry.getId();
+			this.documentationLocation = DocumentationLocation.COMMIT;
+			this.status = KnowledgeStatus.getKnowledgeStatus(null);
+		}
+	}
 
-    /**
-     * Set the type of the knowledge element. For example, prominent types are
-     * decision, alternative, issue, and argument.
-     *
-     * @see KnowledgeType
-     * @param type of the knowledge element.
-     */
-    void setType(KnowledgeType type);
+	/**
+	 * @return id of the knowledge element. This id is the internal database id.
+	 *         When using Jira issues to persist knowledge, this id is different to
+	 *         the project internal id that is part of the key.
+	 */
+	@XmlElement(name = "id")
+	public long getId() {
+		return id;
+	}
 
-    /**
-     * Set the type of the knowledge element. For example, prominent types are
-     * decision, alternative, issue, and argument.
-     *
-     * @see KnowledgeType
-     * @param type of the knowledge element.
-     */
-    void setType(String type);
+	/**
+	 * @param id
+	 *            of the knowledge element. This id is the internal database id.
+	 *            When using Jira issues to persist knowledge, this id is different
+	 *            to the project internal id that is part of the key.
+	 */
+	public void setId(long id) {
+		this.id = id;
+	}
 
-    /**
-     * Get the project that the knowledge element belongs to. The project is a Jira
-     * project that is extended with settings for this plug-in, for example, whether
-     * the plug-in is activated for the project.
-     *
-     * @see DecisionKnowledgeProject
-     * @return project.
-     */
-    DecisionKnowledgeProject getProject();
+	/**
+	 * @return summary of the knowledge element. The summary is a short description
+	 *         of the element.
+	 */
+	@XmlElement(name = "summary")
+	public String getSummary() {
+		return summary;
+	}
 
-    /**
-     * Set the project that the knowledge element belongs to. The project is a Jira
-     * project that is extended with settings for this plug-in, for example, whether
-     * the plug-in is activated for the project.
-     *
-     * @see DecisionKnowledgeProject
-     * @param project knowledge project.
-     */
-    void setProject(DecisionKnowledgeProject project);
+	/**
+	 * @param summary
+	 *            of the knowledge element. The summary is a short description of
+	 *            the element.
+	 */
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
 
-    /**
-     * Set the project that the knowledge element belongs to via its key. The
-     * project is a Jira project that is extended with settings for this plug-in,
-     * for example, whether the plug-in is activated for the project.
-     *
-     * @see DecisionKnowledgeProject
-     * @param projectKey key of Jira project.
-     */
-    void setProject(String projectKey);
+	/**
+	 * @return description of the knowledge element. The description provides
+	 *         details about the element. When using Jira issues to persist
+	 *         knowledge, it can include images and other fancy stuff.
+	 */
+	@XmlElement(name = "description")
+	public String getDescription() {
+		return description;
+	}
 
-    /**
-     * Get the key of the knowledge element.
-     *
-     * @return key of the knowledge element. The key is composed of
-     *         projectKey-project internal id.
-     */
-    String getKey();
+	/**
+	 * @param description
+	 *            of the knowledge element. The description provides details about
+	 *            the element. When using Jira issues to persist knowledge, it can
+	 *            include images and other fancy stuff.
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    /**
-     * Set the key of the knowledge element.
-     *
-     * @param key of the knowledge element. The key is composed of
-     *            projectKey-project internal id.
-     */
-    void setKey(String key);
+	/**
+	 * @see KnowledgeType
+	 * @return type of the knowledge element. For example, types are decision,
+	 *         alternative, issue, and argument.
+	 */
+	public KnowledgeType getType() {
+		if (type != null) {
+			return type;
+		}
+		return KnowledgeType.OTHER;
+	}
 
-    /**
-     * Get the documentation location of the knowledge element. For example,
-     * knowledge can be documented in commit messages or in the comments to a Jira
-     * issue.
-     *
-     * @see DocumentationLocation
-     * @return documentation location of the knowledge element.
-     */
-    DocumentationLocation getDocumentationLocation();
+	/**
+	 * @see KnowledgeType
+	 * @return type of the knowledge element as a String. For example, types are
+	 *         decision, alternative, issue, and argument. This methods returns the
+	 *         type of Jira issues that are no knowledge elements.
+	 */
+	@XmlElement(name = "type")
+	public String getTypeAsString() {
+		if (this.getType() == KnowledgeType.OTHER
+				&& this.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
+			IssueManager issueManager = ComponentAccessor.getIssueManager();
+			Issue issue = issueManager.getIssueByCurrentKey(this.getKey());
+			return issue.getIssueType().getName();
+		}
+		return this.getType().toString();
+	}
 
-    /**
-     * Get the documentation location of the knowledge element. For example,
-     * knowledge can be documented in commit messages or in the comments to a Jira
-     * issue.
-     *
-     * @see DocumentationLocation
-     * @return documentation location of the knowledge element as a String.
-     */
-    String getDocumentationLocationAsString();
+	/**
+	 * @see KnowledgeType
+	 * @param type
+	 *            of the knowledge element. For example, types are decision,
+	 *            alternative, issue, and argument.
+	 */
+	public void setType(KnowledgeType type) {
+		if (type == null) {
+			this.type = KnowledgeType.OTHER;
+		}
+		this.type = type;
+	}
 
-    /**
-     * Set the documentation location of the knowledge element. For example,
-     * knowledge can be documented in commit messages or in the comments to a Jira
-     * issue.
-     *
-     * @see DocumentationLocation
-     * @param documentationLocation of the knowledge element.
-     */
-    void setDocumentationLocation(DocumentationLocation documentationLocation);
+	/**
+	 * @see KnowledgeType
+	 * @param type
+	 *            of the knowledge element. For example, types are decision,
+	 *            alternative, issue, and argument.
+	 */
+	@JsonProperty("type")
+	public void setType(String typeAsString) {
+		KnowledgeType type = KnowledgeType.getKnowledgeType(typeAsString);
+		this.setType(type);
+	}
 
-    /**
-     * Set the documentation location of the knowledge element. For example,
-     * knowledge can be documented in commit messages or in the comments to a Jira
-     * issue.
-     *
-     * @see DocumentationLocation
-     * @param documentationLocation of the knowledge element.
-     */
-    void setDocumentationLocation(String documentationLocation);
+	/**
+	 * TODO Address issue
+	 * 
+	 * @issue Currently, groups are a derived attribute of this class. How efficient
+	 *        is it to query the database via the DecisionGroupsManager? Would it be
+	 *        more efficient to have a "real" groups attribute in this class?
+	 * 
+	 * @return List<String> of groups assigned to this knowledge element.
+	 */
+	@XmlElement(name = "groups")
+	public List<String> getDecisionGroups() {
+		List<String> groups = DecisionGroupManager.getGroupsForElement(this);
+		return groups;
+	}
 
-    /**
-     * Get the URL to the knowledge element.
-     *
-     * @return an URL as String.
-     */
-    String getUrl();
+	/**
+	 * Add a list of groups assigned to this decision
+	 *
+	 * @param List<String>
+	 *            of groups
+	 */
+	public void addDecisionGroups(List<String> decisionGroup) {
+		for (String group : decisionGroup) {
+			DecisionGroupManager.insertGroup(group, this);
+		}
+	}
 
-    /**
-     * Get the creation date of the knowledge element.
-     *
-     * @return creation date.
-     */
-    Date getCreated();
+	/**
+	 * Add a group to the list of groups
+	 * 
+	 * @param group
+	 *            to add as string
+	 */
+	public void addDecisionGroup(String group) {
+		DecisionGroupManager.insertGroup(group, this);
+	}
 
-    /**
-     * Set the creation date of the knowledge element.
-     *
-     * @param date of creation.
-     */
-    void setCreated(Date date);
+	/**
+	 * Remove a group from the list of groups
+	 * 
+	 * @param group
+	 *            to remove as string
+	 */
+	public void removeDecisionGroup(String group) {
+		DecisionGroupManager.deleteGroupAssignment(group, this);
+	}
 
-    /**
-     * Returns the creator of an element as an application user object.
-     *
-     * @return creator of an element as an {@link ApplicationUser} object.
-     */
-    ApplicationUser getCreator();
+	/**
+	 * @see DecisionKnowledgeProject
+	 * @return project that the knowledge element belongs to. The project is a Jira
+	 *         project that is extended with settings for this plug-in, for example,
+	 *         whether the plug-in is activated for the project.
+	 */
+	public DecisionKnowledgeProject getProject() {
+		return this.project;
+	}
 
-    /**
-     * Get the close date fo the knowledge element.
-     *
-     * @return close date.
-     */
-    Date getClosed();
+	/**
+	 * @see DecisionKnowledgeProject
+	 * @param project
+	 *            that the knowledge element belongs to. The project is a Jira
+	 *            project that is extended with settings for this plug-in, for
+	 *            example, whether the plug-in is activated for the project.
+	 */
+	public void setProject(DecisionKnowledgeProject project) {
+		this.project = project;
+	}
 
-    /**
-     * Set the close date of the knowledge element.
-     *
-     * @param date
-     */
-    void setClosed(Date date);
+	/**
+	 * @see DecisionKnowledgeProject
+	 * @param projectKey
+	 *            key of Jira project that the knowledge element belongs to via its
+	 *            key. The project is a Jira project that is extended with settings
+	 *            for this plug-in, for example, whether the plug-in is activated
+	 *            for the project.
+	 */
+	@JsonProperty("projectKey")
+	public void setProject(String projectKey) {
+		this.project = new DecisionKnowledgeProject(projectKey);
+	}
 
-    /**
-     * Check whether the element exists in database.
-     * 
-     * @return true if the element exists in database.
-     */
-    boolean existsInDatabase();
+	/**
+	 * @return key of the knowledge element. The key is composed of
+	 *         projectKey-project internal id.
+	 */
+	@XmlElement(name = "key")
+	public String getKey() {
+		if (this.key == null && this.project != null) {
+			return this.project.getProjectKey() + "-" + this.id;
+		}
+		return this.key;
+	}
 
-    /**
-     * Get the Jira issue that the knowledge element or irrelevant text is part of.
-     * 
-     * @return Jira issue.
-     */
-    Issue getJiraIssue();
+	/**
+	 * @param key
+	 *            of the knowledge element. The key is composed of
+	 *            projectKey-project internal id.
+	 */
+	public void setKey(String key) {
+		this.key = key;
+	}
 
-    /**
-     * Returns all links (=edges) of this element in the {@link KnowledgeGraph}.
-     * 
-     * @param element node in the {@link KnowledgeGraph}.
-     * @return list of {@link} objects, does contain Jira {@link IssueLink}s and
-     *         generic links.
-     * 
-     * @see GenericLinkManager
-     */
-    List<Link> getLinks();
+	/**
+	 * @see DocumentationLocation
+	 * @return documentation location of the knowledge element. For example,
+	 *         knowledge can be documented in commit messages or in the comments to
+	 *         a Jira issue.
+	 */
+	public DocumentationLocation getDocumentationLocation() {
+		return this.documentationLocation;
+	}
 
-    /**
-     * Determines whether an element is linked to at least one other decision
-     * knowledge element.
-     * 
-     * @return id of first link that is found.
-     */
-    long isLinked();
+	/**
+	 * @see DocumentationLocation
+	 * @param documentationLocation
+	 *            of the knowledge element. For example, knowledge can be documented
+	 *            in commit messages or in the comments to a Jira issue.
+	 */
+	public void setDocumentationLocation(DocumentationLocation documentationLocation) {
+		this.documentationLocation = documentationLocation;
+	}
 
-    /**
-     * Get the status of the knowledge element. For example, the status for issues
-     * can be solved or unsolved.
-     *
-     * @see KnowledgeStatus
-     * @return status of the knowledge element.
-     */
-    KnowledgeStatus getStatus();
+	/**
+	 * @see DocumentationLocation
+	 * @return documentation location of the knowledge element as a String. For
+	 *         example, knowledge can be documented in commit messages or in the
+	 *         comments to a Jira issue.
+	 */
+	@XmlElement(name = "documentationLocation")
+	public String getDocumentationLocationAsString() {
+		if (documentationLocation != null) {
+			return this.documentationLocation.getIdentifier();
+		}
+		return "";
+	}
 
-    /**
-     * Get the status of the knowledge element. For example, the status for issues
-     * can be solved or unsolved.
-     *
-     * @see KnowledgeStatus
-     * @return status of the knowledge element.
-     */
-    String getStatusAsString();
+	/**
+	 * @see DocumentationLocation
+	 * @param documentationLocation
+	 *            of the knowledge element. For example, knowledge can be documented
+	 *            in commit messages or in the comments to a Jira issue.
+	 */
+	@JsonProperty("documentationLocation")
+	public void setDocumentationLocation(String documentationLocation) {
+		if (documentationLocation == null || documentationLocation.isBlank()) {
+			// TODO Add here persistence strategy chosen in project
+			this.documentationLocation = DocumentationLocation.JIRAISSUE;
+		}
+		this.documentationLocation = DocumentationLocation
+				.getDocumentationLocationFromIdentifier(documentationLocation);
+	}
 
-    /**
-     * Set the status of the knowledge element. For example, the status for issues
-     * can be solved or unsolved.
-     *
-     * @see KnowledgeStatus
-     * @param status of the knowledge element.
-     */
-    void setStatus(KnowledgeStatus status);
+	/**
+	 * @return an URL of the knowledge element as String.
+	 */
+	@XmlElement(name = "url")
+	public String getUrl() {
+		String key = this.getKey();
+		if (this.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
+			key = key.split(":")[0];
+		}
+		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
+		return applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/" + key;
+	}
 
-    /**
-     * Set the status of the knowledge element. For example, the status for issues
-     * can be solved or unsolved.
-     *
-     * @see KnowledgeStatus
-     * @param status of the knowledge element.
-     */
-    void setStatus(String status);
+	/**
+	 * @return creation date of the knowledge element.
+	 */
+	public Date getCreated() {
+		if (created == null) {
+			return new Date();
+		}
+		return this.created;
+	}
 
-    /**
-     * Get the list of groups assigned to this decision
-     *
-     * @return List<String> of groups
-     */
-    List<String> getDecisionGroups();
+	/**
+	 * @param date
+	 *            of creation of the knowledge element.
+	 */
+	public void setCreated(Date date) {
+		this.created = date;
+	}
 
-    /**
-     * Add a list of groups assigned to this decision
-     *
-     * @param List<String> of groups
-     */
-    void addDecisionGroups(List<String> decisionGroup);
+	/**
+	 * @return close date for the knowledge element.
+	 */
+	public Date getClosed() {
+		return this.closed;
+	}
 
-    /**
-     * Add a group to the list of groups
-     * 
-     * @param The group to add as string
-     */
-    void addDecisionGroup(String group);
+	/**
+	 * @param date
+	 *            close date of the knowledge element.
+	 */
+	public void setClosed(Date date) {
+		this.closed = date;
+	}
 
-    /**
-     * Remove a group from the list of groups
-     * 
-     * @param The group to remove as string
-     */
-    void removeDecisionGroup(String group);
+	/**
+	 * @return true if the element exists in database.
+	 */
+	public boolean existsInDatabase() {
+		KnowledgeElement elementInDatabase = KnowledgePersistenceManager.getOrCreate("").getKnowledgeElement(id,
+				documentationLocation);
+		return elementInDatabase != null && elementInDatabase.getId() > 0;
+	}
 
+	/**
+	 * @return Jira issue that the knowledge element or irrelevant text is part of.
+	 */
+	public Issue getJiraIssue() {
+		if (documentationLocation == DocumentationLocation.JIRAISSUE) {
+			return ComponentAccessor.getIssueManager().getIssueObject(id);
+		}
+		if (documentationLocation == DocumentationLocation.JIRAISSUETEXT) {
+			return ((PartOfJiraIssueText) this).getJiraIssue();
+		}
+		return null;
+	}
+
+	@Override
+	public String toString() {
+		// return getDocumentationLocation().getIdentifier() + id;
+		return this.getDescription();
+	}
+
+	/**
+	 * @return creator of an element as an {@link ApplicationUser} object.
+	 */
+	public ApplicationUser getCreator() {
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(project.getProjectKey());
+		if (getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
+			return persistenceManager.getJiraIssueManager().getCreator(this);
+		}
+		if (getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
+			return persistenceManager.getJiraIssueTextManager().getCreator(this);
+		}
+		return null;
+	}
+
+	/**
+	 * @return all links (=edges) of this element in the {@link KnowledgeGraph} as
+	 *         list of {@link} objects, does contain Jira {@link IssueLink}s and
+	 *         generic links.
+	 * 
+	 * @see GenericLinkManager
+	 */
+	public List<Link> getLinks() {
+		List<Link> links = GenericLinkManager.getLinksForElement(this);
+		if (documentationLocation == DocumentationLocation.JIRAISSUE) {
+			links.addAll(KnowledgeGraph.getOrCreate(project).edgesOf(this));
+		}
+		return links;
+	}
+
+	/**
+	 * Determines whether an element is linked to at least one other decision
+	 * knowledge element.
+	 * 
+	 * @return id of first link that is found.
+	 */
+	public long isLinked() {
+		List<Link> links = getLinks();
+		if (!links.isEmpty()) {
+			return links.get(0).getId();
+		}
+		return 0;
+	}
+
+	/**
+	 * @see KnowledgeStatus
+	 * @return status of the knowledge element. For example, the status for issues
+	 *         can be solved or unsolved.
+	 */
+	public KnowledgeStatus getStatus() {
+		if (status == null || status == KnowledgeStatus.UNDEFINED) {
+			return KnowledgeStatus.getDefaultStatus(getType());
+		}
+		return status;
+	}
+
+	/**
+	 * @see KnowledgeStatus
+	 * @param status
+	 *            of the knowledge element. For example, the status for issues can
+	 *            be solved or unsolved.
+	 */
+	public void setStatus(KnowledgeStatus status) {
+		this.status = status;
+	}
+
+	/**
+	 * @see KnowledgeStatus
+	 * @param status
+	 *            of the knowledge element. For example, the status for issues can
+	 *            be solved or unsolved.
+	 */
+	@JsonProperty("status")
+	public void setStatus(String status) {
+		this.status = KnowledgeStatus.getKnowledgeStatus(status);
+	}
+
+	/**
+	 * @see KnowledgeStatus
+	 * @return status of the knowledge element. For example, the status for issues
+	 *         can be solved or unsolved.
+	 */
+	@XmlElement(name = "status")
+	public String getStatusAsString() {
+		return getStatus().toString();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object == null) {
+			return false;
+		}
+		if (object == this) {
+			return true;
+		}
+		if (!(object instanceof KnowledgeElement)) {
+			return false;
+		}
+		KnowledgeElement element = (KnowledgeElement) object;
+		return this.id == element.getId() && this.getDocumentationLocation() == element.getDocumentationLocation();
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, getDocumentationLocation());
+	}
 }

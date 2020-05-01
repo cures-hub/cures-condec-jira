@@ -1,28 +1,28 @@
 package de.uhd.ifi.se.decision.management.jira.rest.knowledgerest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.KnowledgeRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class TestAssignDecisionGroup extends TestSetUp {
 
@@ -36,20 +36,20 @@ public class TestAssignDecisionGroup extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		knowledgeRest = new KnowledgeRestImpl();
+		knowledgeRest = new KnowledgeRest();
 		init();
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-3");
-		decisionKnowledgeElementIss = new KnowledgeElementImpl(issue);
+		decisionKnowledgeElementIss = new KnowledgeElement(issue);
 		decisionKnowledgeElementIss.setType(KnowledgeType.ISSUE);
 		/*
-		 * decisionKnowledgeElemenDec = new KnowledgeElementImpl(issue);
+		 * decisionKnowledgeElemenDec = new KnowledgeElement(issue);
 		 * decisionKnowledgeElemenDec.setType(KnowledgeType.DECISION);
-		 * decisionKnowledgeElementAlt = new KnowledgeElementImpl(issue);
+		 * decisionKnowledgeElementAlt = new KnowledgeElement(issue);
 		 * decisionKnowledgeElementAlt.setType(KnowledgeType.ALTERNATIVE);
-		 * decisionKnowledgeElementPro = new KnowledgeElementImpl(issue);
+		 * decisionKnowledgeElementPro = new KnowledgeElement(issue);
 		 * decisionKnowledgeElementPro.setType(KnowledgeType.PRO);
-		 * decisionKnowledgeElementCon = new KnowledgeElementImpl(issue);
+		 * decisionKnowledgeElementCon = new KnowledgeElement(issue);
 		 * decisionKnowledgeElementCon.setType(KnowledgeType.CON);
 		 */
 
@@ -87,14 +87,14 @@ public class TestAssignDecisionGroup extends TestSetUp {
 
 	@Test
 	public void testAssignDecisionGroupElementLinkedToDocLocCommit() {
-		KnowledgeElement element = new KnowledgeElementImpl();
+		KnowledgeElement element = new KnowledgeElement();
 		element.setDocumentationLocation(DocumentationLocation.COMMIT);
 		element.setSummary("AbstractTestHandler.java");
 		element.setDescription("TEST-3;");
 		element.setProject("TEST");
 		element.setType(KnowledgeType.OTHER);
-		CodeClassKnowledgeElementPersistenceManager ccManager = new CodeClassKnowledgeElementPersistenceManager("TEST");
-		KnowledgeElement newElement = ccManager.insertDecisionKnowledgeElement(element, JiraUsers.SYS_ADMIN.getApplicationUser());
+		CodeClassPersistenceManager ccManager = new CodeClassPersistenceManager("TEST");
+		KnowledgeElement newElement = ccManager.insertKnowledgeElement(element, JiraUsers.SYS_ADMIN.getApplicationUser());
 		Response resp = knowledgeRest.assignDecisionGroup(request, decisionKnowledgeElementIss.getId(),
 				decisionKnowledgeElementIss.getDocumentationLocationAsString(), "High_Level", "Property,TestGroup",
 				"Safety", "TEST");

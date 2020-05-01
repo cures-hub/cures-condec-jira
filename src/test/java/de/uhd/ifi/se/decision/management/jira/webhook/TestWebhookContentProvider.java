@@ -1,14 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import net.java.ao.test.jdbc.NonTransactional;
-
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class TestWebhookContentProvider extends TestSetUp {
 

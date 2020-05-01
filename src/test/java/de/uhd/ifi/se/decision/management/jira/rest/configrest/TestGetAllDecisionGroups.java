@@ -12,37 +12,35 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.ConfigRestImpl;
 
 public class TestGetAllDecisionGroups extends TestSetUp {
 
-    protected ConfigRest configRest;
-    private String projectKey;
+	protected ConfigRest configRest;
+	private String projectKey;
 
-    @Before
-    public void setUp() {
-	init();
-	configRest = new ConfigRestImpl();
-	long id = 100;
-	String summary = "Test";
-	String description = "Test";
-	KnowledgeType type = KnowledgeType.SOLUTION;
-	this.projectKey = "Test";
-	String key = "Test";
+	@Before
+	public void setUp() {
+		init();
+		configRest = new ConfigRest();
+		long id = 100;
+		String summary = "Test";
+		String description = "Test";
+		KnowledgeType type = KnowledgeType.SOLUTION;
+		this.projectKey = "TEST";
+		String key = "Test";
 
-	KnowledgeElement decisionKnowledgeElement = new KnowledgeElementImpl(id, summary, description, type, projectKey,
-		key, DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
-	DecisionGroupManager.insertGroup("TestGroup1", decisionKnowledgeElement);
-    }
+		KnowledgeElement decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey,
+				key, DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
+		DecisionGroupManager.insertGroup("TestGroup1", decisionKnowledgeElement);
+	}
 
-    @Test
-    public void testGetAllDecisionGroups() {
-	Response response = configRest.getAllDecisionGroups(this.projectKey);
-	assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-	assertEquals("[TestGroup1]", response.getEntity().toString());
-    }
+	@Test
+	public void testGetAllDecisionGroups() {
+		Response response = configRest.getAllDecisionGroups(this.projectKey);
+		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+		assertEquals("[TestGroup1]", response.getEntity().toString());
+	}
 
 }

@@ -1,16 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 
 /**
  * purpose: extract decision knowledge elements from single comment. Codes
@@ -18,7 +17,7 @@ import java.util.stream.Collectors;
  */
 public class RationaleFromCodeCommentExtractor {
 	private ArrayList<KnowledgeElement> elements;
-	private final static List<String> decKnowTags = KnowledgeType.toList();
+	private final static List<String> decKnowTags = KnowledgeType.toStringList();
 	private CodeComment comment;
 	private final Pattern TAGS_SEARCH_PATTERN;
 	private final Pattern TWO_EMPTY_LINES_PATTERN;
@@ -96,7 +95,7 @@ public class RationaleFromCodeCommentExtractor {
 	}
 
 	private KnowledgeElement addElement(int start, String rationaleText, String rationaleType) {
-		return new KnowledgeElementImpl(0, getSummary(rationaleText), getDescription(rationaleText),
+		return new KnowledgeElement(0, getSummary(rationaleText), getDescription(rationaleText),
 				rationaleType.toUpperCase(), "" // unknown, not needed at the moment
 				, calculateAndCodeRationalePositionInSourceFile(start, rationaleText), DocumentationLocation.COMMIT,
 				"");

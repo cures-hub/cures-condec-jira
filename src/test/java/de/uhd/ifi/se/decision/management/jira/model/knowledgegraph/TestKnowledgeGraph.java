@@ -11,12 +11,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeGraphImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
@@ -30,7 +28,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		graph = new KnowledgeGraphImpl("TEST");
+		graph = new KnowledgeGraph("TEST");
 	}
 
 	@Test
@@ -48,7 +46,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testContainsEdge() {
-		Link link = new LinkImpl(2, 4, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
+		Link link = new Link(2, 4, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		link.setId(2);
 		assertTrue(graph.containsEdge(link));
 	}
@@ -56,7 +54,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testRemoveEdge() {
-		Link link = new LinkImpl(2, 4, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
+		Link link = new Link(2, 4, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		assertTrue(graph.removeEdge(link));
 		assertEquals(JiraIssueLinks.getTestJiraIssueLinks().size() - 1, graph.edgeSet().size());
 		assertTrue(graph.addEdge(link));
@@ -89,13 +87,13 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testUpdateNode() {
-		KnowledgeElement node = (KnowledgeElement) graph.vertexSet().iterator().next();
+		KnowledgeElement node = graph.vertexSet().iterator().next();
 		assertEquals("WI: Implement feature", node.getSummary());
 		node.setSummary("Updated");
 		assertEquals(2, graph.edgesOf(node).size());
 
-		KnowledgePersistenceManager.getOrCreate("TEST").updateDecisionKnowledgeElement(node, null);
-		node = (KnowledgeElement) graph.vertexSet().iterator().next();
+		KnowledgePersistenceManager.getOrCreate("TEST").updateKnowledgeElement(node, null);
+		node = graph.vertexSet().iterator().next();
 		assertEquals("Updated", node.getSummary());
 		assertEquals(2, graph.edgesOf(node).size());
 	}

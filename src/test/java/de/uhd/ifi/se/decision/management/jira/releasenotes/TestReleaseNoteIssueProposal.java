@@ -19,8 +19,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteIssueProposalImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestReleaseNoteIssueProposal extends TestSetUp {
@@ -36,11 +34,11 @@ public class TestReleaseNoteIssueProposal extends TestSetUp {
 	public void setUp() {
 		init();
 		idOfDKElement = 14;
-		KnowledgeElement dkElement = new KnowledgeElementImpl();
+		KnowledgeElement dkElement = new KnowledgeElement();
 		dkElement.setId(idOfDKElement);
 		dkElement.setDescription("this is a test helloo");
 		dkElement.setSummary("this is a summary test helloo");
-		proposal = new ReleaseNoteIssueProposalImpl(dkElement, 3);
+		proposal = new ReleaseNoteIssueProposal(dkElement, 3);
 		rating = 54.21;
 		proposal.setRating(rating);
 		existingReporterCount = new HashMap<String, Integer>();
@@ -76,7 +74,7 @@ public class TestReleaseNoteIssueProposal extends TestSetUp {
 
 	@Test
 	public void testSetDecisionKnowledgeElement() {
-		KnowledgeElement dkElement2 = new KnowledgeElementImpl();
+		KnowledgeElement dkElement2 = new KnowledgeElement();
 		dkElement2.setId(15);
 		proposal.setDecisionKnowledgeElement(dkElement2);
 		assertEquals(15, proposal.getDecisionKnowledgeElement().getId());

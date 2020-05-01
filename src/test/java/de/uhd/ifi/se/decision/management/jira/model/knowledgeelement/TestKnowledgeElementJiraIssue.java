@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.model.decisionknowledgeelement;
+package de.uhd.ifi.se.decision.management.jira.model.knowledgeelement;
 
 import static org.junit.Assert.assertEquals;
 
@@ -10,17 +10,16 @@ import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
-public class TestDecisionKnowledgeElementJiraIssue extends TestSetUp {
+public class TestKnowledgeElementJiraIssue extends TestSetUp {
 	private KnowledgeElement decisionKnowledgeElement;
 
 	@Before
 	public void setUp() {
 		init();
 		Issue issue = JiraIssues.getTestJiraIssues().get(0);
-		decisionKnowledgeElement = new KnowledgeElementImpl(issue);
+		decisionKnowledgeElement = new KnowledgeElement(issue);
 	}
 
 	@Test
@@ -74,8 +73,8 @@ public class TestDecisionKnowledgeElementJiraIssue extends TestSetUp {
 
 	@Test
 	public void testSetProjectKey() {
-		this.decisionKnowledgeElement.setProject("CONDEC");
-		assertEquals("CONDEC", this.decisionKnowledgeElement.getProject().getProjectKey());
+		this.decisionKnowledgeElement.setProject("TEST");
+		assertEquals("TEST", this.decisionKnowledgeElement.getProject().getProjectKey());
 	}
 
 	@Test

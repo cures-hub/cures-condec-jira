@@ -3,164 +3,187 @@ package de.uhd.ifi.se.decision.management.jira.releasenotes;
 import java.util.EnumMap;
 import java.util.List;
 
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
-
-import de.uhd.ifi.se.decision.management.jira.releasenotes.impl.ReleaseNoteConfigurationImpl;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
- * Interface for the configuration of release notes.
+ * Models release notes configuration.
  */
-@JsonDeserialize(as = ReleaseNoteConfigurationImpl.class)
-public interface ReleaseNoteConfiguration {
+public class ReleaseNoteConfiguration {
+	private String title;
+	private String startDate;
+	private String endDate;
+	private String sprintId;
+	private TargetGroup targetGroup;
+	private EnumMap<JiraIssueMetric, Double> jiraIssueMetric;
+	private List<Integer> bugFixMapping;
+	private List<Integer> featureMapping;
+	private List<Integer> improvementMapping;
+	private EnumMap<AdditionalConfigurationOptions, Boolean> additionalConfiguration;
+
+	// This default constructor is necessary for the JSON string to object mapping.
+	// Do not delete it!
+	public ReleaseNoteConfiguration() {
+		this.targetGroup = TargetGroup.getTargetGroup("");
+		this.jiraIssueMetric = JiraIssueMetric.toDoubleEnumMap();
+	}
 
 	/**
-	 * Get the title of the release note.
-	 *
-	 * @return title of the release note.
+	 * @return title of the release notes.
 	 */
-	String getTitle();
+	public String getTitle() {
+		return this.title;
+	}
 
 	/**
-	 * Set the title of the release note.
-	 *
 	 * @param title
-	 *            of the release note.
+	 *            of the release notes.
 	 */
-	void setTitle(String title);
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
 	/**
-	 * Get the startDate of the release note.
-	 *
-	 * @return startDate of the release note.
+	 * @return startDate of the release notes.
 	 */
-	String getStartDate();
+	public String getStartDate() {
+		return this.startDate;
+	}
 
 	/**
-	 * Set the startDate of the release note.
-	 *
 	 * @param startDate
-	 *            of the release note.
+	 *            of the release notes.
 	 */
-	void setStartDate(String startDate);
+	@JsonProperty("startDate")
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
 
 	/**
-	 * Get the end Date of the release note.
-	 *
-	 * @return timeRange of the release note.
+	 * @return end date of the release notes.
 	 */
-	String getEndDate();
+	public String getEndDate() {
+		return this.endDate;
+	}
 
 	/**
-	 * Set the end date of the release note.
-	 *
 	 * @param endDate
-	 *            of the release note.
+	 *            of the release notes.
 	 */
-	void setEndDate(String endDate);
+	@JsonProperty("endDate")
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
 
 	/**
-	 * Get the sprint id of the release note.
-	 *
-	 * @return timeRange of the release note.
+	 * @return sprint id of the release notes.
 	 */
-	String getSprintId();
+	public String getSprintId() {
+		return this.sprintId;
+	}
 
 	/**
-	 * Set the sprint id of the release note.
-	 *
 	 * @param sprintId
-	 *            of the release note.
+	 *            of the release notes.
 	 */
-	void setSprintId(String sprintId);
+	@JsonProperty("sprintId")
+	public void setSprintId(String sprintId) {
+		this.sprintId = sprintId;
+	}
 
 	/**
-	 * Get the targetGroup of the release note.
-	 *
-	 * @return targetGroup of the release note.
+	 * @return targetGroup of the release notes.
 	 */
-	TargetGroup getTargetGroup();
+	public TargetGroup getTargetGroup() {
+		return this.targetGroup;
+	}
 
 	/**
-	 * Set the targetGroup of the release note.
-	 *
 	 * @param targetGroup
-	 *            of the release note.
+	 *            of the release notes.
 	 */
-
-	void setTargetGroup(TargetGroup targetGroup);
+	@JsonProperty("targetGroup")
+	public void setTargetGroup(TargetGroup targetGroup) {
+		this.targetGroup = targetGroup;
+	}
 
 	/**
-	 * Get the issueMetricWeight of the release note.
-	 *
-	 * @return JiraIssueMetric of the release note.
+	 * @return weight of JiraIssueMetric of the release notes.
 	 */
-	EnumMap<JiraIssueMetric, Double> getJiraIssueMetricWeight();
+	public EnumMap<JiraIssueMetric, Double> getJiraIssueMetricWeight() {
+		return this.jiraIssueMetric;
+	}
 
 	/**
-	 * Set the issueMetricWeight of the release note.
-	 *
 	 * @param issueMetricWeight
-	 *            of the release note.
+	 *            of the release notes.
 	 */
-	void setJiraIssueMetricWeight(EnumMap<JiraIssueMetric, Double> issueMetricWeight);
+	@JsonProperty("jiraIssueMetric")
+	public void setJiraIssueMetricWeight(EnumMap<JiraIssueMetric, Double> jiraIssueMetricWeight) {
+		this.jiraIssueMetric = jiraIssueMetricWeight;
+	}
 
 	/**
-	 * Get the list with mapped bug fix issues.
-	 *
-	 * @return List<Integer>
+	 * @return list with mapped bug fix issues.
 	 */
-	List<Integer> getBugFixMapping();
+	public List<Integer> getBugFixMapping() {
+		return this.bugFixMapping;
+	}
 
 	/**
-	 * Set the list with mapped bug fix issues.
-	 *
 	 * @param bugFixMapping
-	 *            of the release note.
+	 *            list with mapped bug fix issues of the release notes.
 	 */
-	void setBugFixMapping(List<Integer> bugFixMapping);
+	@JsonProperty("bugFixMapping")
+	public void setBugFixMapping(List<Integer> bugFixMapping) {
+		this.bugFixMapping = bugFixMapping;
+	}
 
 	/**
-	 * Get the list with mapped bug fix issues.
-	 *
-	 * @return List<Integer>
+	 * @return list with mapped bug fix issues.
 	 */
-	List<Integer> getFeatureMapping();
+	public List<Integer> getFeatureMapping() {
+		return this.featureMapping;
+	}
 
 	/**
-	 * Set the list with mapped bug fix issues.
-	 *
 	 * @param featureMapping
-	 *            of the release note.
+	 *            list with mapped bug fix issues of the release note.
 	 */
-	void setFeatureMapping(List<Integer> featureMapping);
+	@JsonProperty("featureMapping")
+	public void setFeatureMapping(List<Integer> featureMapping) {
+		this.featureMapping = featureMapping;
+	}
 
 	/**
-	 * Get the list with mapped bug fix issues.
-	 *
-	 * @return List<Integer>
+	 * @return list with mapped bug fix issues.
 	 */
-	List<Integer> getImprovementMapping();
+	public List<Integer> getImprovementMapping() {
+		return this.improvementMapping;
+	}
 
 	/**
-	 * Set the list with mapped bug fix issues.
-	 *
 	 * @param improvementMapping
-	 *            of the release note.
+	 *            list with mapped bug fix issues of the release notes.
 	 */
-	void setImprovementMapping(List<Integer> improvementMapping);
+	@JsonProperty("improvementMapping")
+	public void setImprovementMapping(List<Integer> improvementMapping) {
+		this.improvementMapping = improvementMapping;
+	}
 
 	/**
-	 * Get the hash mpa with the additional configuration
-	 * 
-	 * @return EnumMap<AdditionalConfigurationOptions,Boolean>
+	 * @return map with the additional configuration of the release notes.
 	 */
-	EnumMap<AdditionalConfigurationOptions, Boolean> getAdditionalConfiguration();
+	public EnumMap<AdditionalConfigurationOptions, Boolean> getAdditionalConfiguration() {
+		return this.additionalConfiguration;
+	}
 
 	/**
-	 * Set the hash map with the additional configuration.
-	 *
 	 * @param additionalConfiguration
-	 *            of the release note.
+	 *            map with the additional configuration of the release notes.
 	 */
-	void setAdditionalConfiguration(EnumMap<AdditionalConfigurationOptions, Boolean> additionalConfiguration);
+	@JsonProperty("additionalConfiguration")
+	public void setAdditionalConfiguration(EnumMap<AdditionalConfigurationOptions, Boolean> additionalConfiguration) {
+		this.additionalConfiguration = additionalConfiguration;
+	}
+
 }

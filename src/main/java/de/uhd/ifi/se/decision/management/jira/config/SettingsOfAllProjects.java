@@ -1,17 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.project.Project;
-import com.atlassian.templaterenderer.TemplateRenderer;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
-
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.project.Project;
+import com.atlassian.templaterenderer.TemplateRenderer;
+
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
 /**
  * Renders the administration page to change the plug-in's activation of all
@@ -43,20 +44,18 @@ public class SettingsOfAllProjects extends AbstractSettingsServlet {
 			return new ConcurrentHashMap<>();
 		}
 
-		List<DecisionKnowledgeProject> configMap = getProjects();
-		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
+		List<DecisionKnowledgeProject> projects = getProjects();
+		Map<String, Object> velocityParameters = new ConcurrentHashMap<>();
 		velocityParameters.put("request", request);
-		velocityParameters.put("projects", configMap);
+		velocityParameters.put("projects", projects);
 
 		return velocityParameters;
 	}
 
 	public static List<DecisionKnowledgeProject> getProjects() {
-		List<DecisionKnowledgeProject> projects = new ArrayList<DecisionKnowledgeProject>();
+		List<DecisionKnowledgeProject> projects = new ArrayList<>();
 		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
-			String projectKey = project.getKey();
-			String projectName = project.getName();
-			DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProjectImpl(projectKey, projectName);
+			DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
 			projects.add(jiraProject);
 		}
 		return projects;

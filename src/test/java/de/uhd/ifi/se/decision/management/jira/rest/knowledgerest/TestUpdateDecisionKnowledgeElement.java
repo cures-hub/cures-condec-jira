@@ -23,13 +23,10 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
-import de.uhd.ifi.se.decision.management.jira.rest.impl.KnowledgeRestImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -42,11 +39,11 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		knowledgeRest = new KnowledgeRestImpl();
+		knowledgeRest = new KnowledgeRest();
 		init();
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
-		decisionKnowledgeElement = new KnowledgeElementImpl(issue);
+		decisionKnowledgeElement = new KnowledgeElement(issue);
 		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 
 		request = new MockHttpServletRequest();
@@ -60,7 +57,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("This is a test sentence.");
 		KnowledgeElement sentence = comment.get(0);
 
-		Link link = new LinkImpl(sentence, decisionKnowledgeElement);
+		Link link = new Link(sentence, decisionKnowledgeElement);
 		GenericLinkManager.insertLink(link, null);
 
 		assertEquals(Status.OK.getStatusCode(),
@@ -69,7 +66,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 
 	@Test
 	public void testRequestFilledElementEmptyParentIdZeroParentDocumentationLocationEmpty() {
-		KnowledgeElement decisionKnowledgeElement = new KnowledgeElementImpl();
+		KnowledgeElement decisionKnowledgeElement = new KnowledgeElement();
 		decisionKnowledgeElement.setProject("TEST");
 
 		assertEquals(Status.NOT_FOUND.getStatusCode(),
@@ -122,7 +119,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "").getStatus());
 		PartOfJiraIssueText sentence = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
-				.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
+				.getKnowledgeElement(decisionKnowledgeElement.getId());
 		assertEquals(sentence.getType(), KnowledgeType.PRO);
 		assertEquals(newText, sentence.getDescription());
 	}
@@ -140,7 +137,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "s").getStatus());
 		PartOfJiraIssueText sentence = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
-				.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
+				.getKnowledgeElement(decisionKnowledgeElement.getId());
 		assertEquals(sentence.getType(), KnowledgeType.ISSUE);
 		assertEquals(newText, sentence.getDescription());
 

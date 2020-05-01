@@ -1,21 +1,27 @@
 package de.uhd.ifi.se.decision.management.jira.model.git;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Interface for a list of changed files. The scope for the diff might be a
- * single git commit, a whole feature branch (with many commits), or all commits
- * belonging to a JIRA issue.
+ * Models a list of changed files. The scope for the diff might be a single git
+ * commit, a whole feature branch (with many commits), or all commits belonging
+ * to a Jira issue.
  */
-public interface Diff {
+public class Diff {
+
+	private List<ChangedFile> changedFiles;
+
+	public Diff() {
+		this.changedFiles = new ArrayList<ChangedFile>();
+	}
 
 	/**
-	 * Returns the files changed in the diff as a list of {@link ChangedFile}
-	 * objects.
-	 * 
-	 * @return list of {@link ChangedFile} objects.
+	 * @return files changed in the diff as a list of {@link ChangedFile} objects.
 	 */
-	List<ChangedFile> getChangedFiles();
+	public List<ChangedFile> getChangedFiles() {
+		return changedFiles;
+	}
 
 	/**
 	 * Adds a new {@link ChangedFile} to the diff.
@@ -23,5 +29,7 @@ public interface Diff {
 	 * @param changedFile
 	 *            object of {@link ChangedFile} class.
 	 */
-	void addChangedFile(ChangedFile changedFile);
+	public void addChangedFile(ChangedFile changedFile) {
+		changedFiles.add(changedFile);
+	}
 }

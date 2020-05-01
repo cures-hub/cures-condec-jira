@@ -1,28 +1,10 @@
-package de.uhd.ifi.se.decision.management.jira.persistence;
+package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.atlassian.activeobjects.external.ActiveObjects;
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.user.ApplicationUser;
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassElementInDatabase;
-import net.java.ao.Query;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.ObjectId;
@@ -31,72 +13,89 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersistenceManagerForSingleLocation {
+import com.atlassian.activeobjects.external.ActiveObjects;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.user.ApplicationUser;
+
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
+import net.java.ao.Query;
+
+public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSingleLocation {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextPersistenceManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
-	public CodeClassKnowledgeElementPersistenceManager(String projectKey) {
+	public CodeClassPersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
 		this.documentationLocation = DocumentationLocation.COMMIT;
 	}
 
 	@Override
-	public boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user) {
+	public boolean deleteKnowledgeElement(long id, ApplicationUser user) {
 		if (id <= 0 || user == null) {
 			LOGGER.error(
 					"Element cannot be deleted since it does not exist (id is less than zero) or the user is null.");
 			return false;
 		}
 		boolean isDeleted = false;
-		for (CodeClassElementInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassElementInDatabase.class,
+		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("ID = ?", id))) {
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.COMMIT);
-			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new KnowledgeElementImpl(databaseEntry));
-			isDeleted = CodeClassElementInDatabase.deleteElement(databaseEntry);
+			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new KnowledgeElement(databaseEntry));
+			isDeleted = CodeClassInDatabase.deleteElement(databaseEntry);
 		}
 		return isDeleted;
 	}
 
 	@Override
-	public KnowledgeElement getDecisionKnowledgeElement(long id) {
+	public KnowledgeElement getKnowledgeElement(long id) {
 		KnowledgeElement element = null;
-		for (CodeClassElementInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassElementInDatabase.class,
+		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("ID = ?", id))) {
-			element = new KnowledgeElementImpl(databaseEntry);
+			element = new KnowledgeElement(databaseEntry);
 		}
 		return element;
 	}
 
 	@Override
-	public KnowledgeElement getDecisionKnowledgeElement(String key) {
+	public KnowledgeElement getKnowledgeElement(String key) {
 		String id = key.split("-")[1];
-		return getDecisionKnowledgeElement(Long.parseLong(id));
+		return getKnowledgeElement(Long.parseLong(id));
 	}
 
-	public KnowledgeElement getDecisionKnowledgeElement(KnowledgeElement element) {
+	public KnowledgeElement getKnowledgeElement(KnowledgeElement element) {
 		if (element == null || element.getId() <= 0) {
 			return null;
 		}
-		return this.getDecisionKnowledgeElement(element.getId());
+		return this.getKnowledgeElement(element.getId());
 	}
 
-	public KnowledgeElement getDecisionKnowledgeElementByNameAndIssueKeys(String name, String issueKeys) {
+	public KnowledgeElement getKnowledgeElementByNameAndIssueKeys(String name, String issueKeys) {
 		KnowledgeElement element = null;
 		String issueKeysWithRemove = issueKeys;
 		if (issueKeys.contains("-")) {
 			issueKeysWithRemove = removeProjectKey(issueKeys, issueKeys.split("-")[0]);
 		}
-		for (CodeClassElementInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassElementInDatabase.class,
+		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("FILE_NAME = ? AND JIRA_ISSUE_KEYS = ?", name, issueKeysWithRemove))) {
-			element = new KnowledgeElementImpl(databaseEntry);
+			element = new KnowledgeElement(databaseEntry);
 		}
 		return element;
 	}
 
-	public CodeClassElementInDatabase getEntryForKnowledgeElement(KnowledgeElement element) {
+	public CodeClassInDatabase getEntryForKnowledgeElement(KnowledgeElement element) {
 		Long id = element.getId();
-		CodeClassElementInDatabase entry = null;
-		for (CodeClassElementInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassElementInDatabase.class,
+		CodeClassInDatabase entry = null;
+		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("ID = ?", id))) {
 			entry = databaseEntry;
 		}
@@ -104,27 +103,27 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 	}
 
 	@Override
-	public List<KnowledgeElement> getDecisionKnowledgeElements() {
+	public List<KnowledgeElement> getKnowledgeElements() {
 		List<KnowledgeElement> decisionKnowledgeElements = new ArrayList<KnowledgeElement>();
-		for (CodeClassElementInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassElementInDatabase.class,
+		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			decisionKnowledgeElements.add(new KnowledgeElementImpl(databaseEntry));
+			decisionKnowledgeElements.add(new KnowledgeElement(databaseEntry));
 		}
 		return decisionKnowledgeElements;
 	}
 
-	public List<KnowledgeElement> getDecisionKnowledgeElementsMatchingName(String fileName) {
+	public List<KnowledgeElement> getKnowledgeElementsMatchingName(String fileName) {
 		List<KnowledgeElement> decisionKnowledgeElements = new ArrayList<KnowledgeElement>();
-		for (CodeClassElementInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassElementInDatabase.class,
+		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND FILE_NAME = ?", projectKey, fileName))) {
-			decisionKnowledgeElements.add(new KnowledgeElementImpl(databaseEntry));
+			decisionKnowledgeElements.add(new KnowledgeElement(databaseEntry));
 		}
 		return decisionKnowledgeElements;
 	}
 
 	public List<String> getClassNamesConnectedToIssue(String issueKey) {
 		List<String> codeClasses = new ArrayList<String>();
-		for (CodeClassElementInDatabase dgData : ACTIVE_OBJECTS.find(CodeClassElementInDatabase.class)) {
+		for (CodeClassInDatabase dgData : ACTIVE_OBJECTS.find(CodeClassInDatabase.class)) {
 			for (String key : dgData.getJiraIssueKeys().split(";")) {
 				if (key.equals(issueKey.split("-")[1])) {
 					codeClasses.add(dgData.getFileName());
@@ -145,30 +144,30 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 	}
 
 	@Override
-	public KnowledgeElement insertDecisionKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
+	public KnowledgeElement insertKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		KnowledgeElement existingElement = checkIfElementExistsInDatabase(element);
 		if (existingElement != null) {
 			return existingElement;
 		}
-		CodeClassElementInDatabase databaseEntry = ACTIVE_OBJECTS.create(CodeClassElementInDatabase.class);
+		CodeClassInDatabase databaseEntry = ACTIVE_OBJECTS.create(CodeClassInDatabase.class);
 		setParameters(element, databaseEntry);
 		try {
 			databaseEntry.save();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		KnowledgeElement newElement = new KnowledgeElementImpl(databaseEntry);
+		KnowledgeElement newElement = new KnowledgeElement(databaseEntry);
 		if (newElement.getId() > 0) {
 			KnowledgeGraph.getOrCreate(projectKey).addVertex(newElement);
 			AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 					.getOrCreate(projectKey).getJiraIssueManager();
 			List<String> groupsToAssign = new ArrayList<String>();
 			for (String key : element.getDescription().split(";")) {
-				if (!"".equals(key)) {
-					KnowledgeElement issueElement = persistenceManager.getDecisionKnowledgeElement(key);
+				if (!key.isBlank()) {
+					KnowledgeElement issueElement = persistenceManager.getKnowledgeElement(key);
 					if (issueElement != null) {
 						groupsToAssign.addAll(issueElement.getDecisionGroups());
-						Link link = new LinkImpl(newElement, issueElement);
+						Link link = new Link(newElement, issueElement);
 						long databaseId = GenericLinkManager.insertLink(link, user);
 						if (databaseId > 0) {
 							link.setId(databaseId);
@@ -194,11 +193,11 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 	}
 
 	private KnowledgeElement checkIfElementExistsInDatabase(KnowledgeElement element) {
-		KnowledgeElement existingElement = new KnowledgeElementImpl();
+		KnowledgeElement existingElement = new KnowledgeElement();
 		if (element.getId() > 0) {
-			existingElement = getDecisionKnowledgeElement(element);
+			existingElement = getKnowledgeElement(element);
 		} else {
-			existingElement = getDecisionKnowledgeElementByNameAndIssueKeys(element.getSummary(),
+			existingElement = getKnowledgeElementByNameAndIssueKeys(element.getSummary(),
 					removeProjectKey(element.getDescription(), element.getProject().getProjectKey()));
 		}
 		if (existingElement != null) {
@@ -207,7 +206,7 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 		return null;
 	}
 
-	private static void setParameters(KnowledgeElement element, CodeClassElementInDatabase databaseEntry) {
+	private static void setParameters(KnowledgeElement element, CodeClassInDatabase databaseEntry) {
 		databaseEntry.setProjectKey(element.getProject().getProjectKey());
 		databaseEntry.setType(element.getTypeAsString());
 		String issuekeys = "";
@@ -239,11 +238,12 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 		return element.getCreator();
 	}
 
-	public boolean updateDecisionKnowledgeElement(KnowledgeElement newElement, ApplicationUser user) {
+	@Override
+	public boolean updateKnowledgeElement(KnowledgeElement newElement, ApplicationUser user) {
 		if (newElement == null || newElement.getProject() == null) {
 			return false;
 		}
-		CodeClassElementInDatabase entry = getEntryForKnowledgeElement(newElement);
+		CodeClassInDatabase entry = getEntryForKnowledgeElement(newElement);
 		if (entry == null) {
 			return false;
 		}
@@ -252,9 +252,10 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 		return true;
 	}
 
+	// TODO This method is too long
 	public void maintainCodeClassKnowledgeElements(String repoUri, ObjectId oldHead, ObjectId newhead) {
 		ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
-		List<KnowledgeElement> existingElements = getDecisionKnowledgeElements();
+		List<KnowledgeElement> existingElements = getKnowledgeElements();
 		if (existingElements == null || existingElements.size() == 0) {
 			GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
 			List<File> codeClasses = ccExtractor.getCodeClassListFull();
@@ -263,14 +264,14 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 					List<String> issueKeys = ccExtractor.getIssuesKeysForFile(file);
 					if (issueKeys != null && issueKeys.size() > 0) {
 						KnowledgeElement newElement = ccExtractor.createKnowledgeElementFromFile(file, issueKeys);
-						insertDecisionKnowledgeElement(newElement, user);
+						insertKnowledgeElement(newElement, user);
 					}
 				}
 			}
 			ccExtractor.close();
 		} else {
 			GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
-			GitClient gitClient = new GitClientImpl(projectKey);
+			GitClient gitClient = new GitClient(projectKey);
 			ObjectReader reader = gitClient.getRepository(repoUri).newObjectReader();
 			CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
 			try {
@@ -285,26 +286,26 @@ public class CodeClassKnowledgeElementPersistenceManager extends AbstractPersist
 					if (diff.getChangeType().equals(DiffEntry.ChangeType.DELETE)
 							&& diff.getOldPath().contains(".java")) {
 						File file = new File(gitPath, diff.getOldPath());
-						List<KnowledgeElement> elements = getDecisionKnowledgeElementsMatchingName(file.getName());
+						List<KnowledgeElement> elements = getKnowledgeElementsMatchingName(file.getName());
 						for (KnowledgeElement element : elements) {
 							if (ccExtractor.getIssuesKeysForFile(file) == null) {
-								deleteDecisionKnowledgeElement(element, user);
+								deleteKnowledgeElement(element, user);
 							}
 						}
 					} else if (diff.getNewPath().contains(".java")) {
 						File file = new File(gitPath, diff.getNewPath());
 						List<String> issueKeys = ccExtractor.getIssuesKeysForFile(file);
 						String keys = getIssueListAsString(issueKeys);
-						KnowledgeElement element = getDecisionKnowledgeElementByNameAndIssueKeys(file.getName(), keys);
+						KnowledgeElement element = getKnowledgeElementByNameAndIssueKeys(file.getName(), keys);
 						if (diff.getChangeType().equals(DiffEntry.ChangeType.RENAME)
 								|| diff.getChangeType().equals(DiffEntry.ChangeType.MODIFY)) {
-							deleteDecisionKnowledgeElement(element, user);
+							deleteKnowledgeElement(element, user);
 							File newFile = new File(gitPath, diff.getNewPath());
-							insertDecisionKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(newFile,
+							insertKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(newFile,
 									ccExtractor.getIssuesKeysForFile(newFile)), user);
 						} else if (diff.getChangeType().equals(DiffEntry.ChangeType.ADD)) {
 							File newFile = new File(gitPath, diff.getNewPath());
-							insertDecisionKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(newFile,
+							insertKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(newFile,
 									ccExtractor.getIssuesKeysForFile(newFile)), user);
 						}
 					}

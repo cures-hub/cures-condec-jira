@@ -11,14 +11,15 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.AbstractPersistenceManagerForSingleLocation;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 
 /**
  * Creates a tree data structure from the {@link KnowledgeGraph}. Uses the
@@ -63,7 +64,7 @@ public class Treant {
 		} else {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager();
 		}
-		KnowledgeElement rootElement = persistenceManager.getDecisionKnowledgeElement(elementKey);
+		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(elementKey);
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, (Link) null, 1));
 		this.setHyperlinked(isHyperlinked);
@@ -138,7 +139,7 @@ public class Treant {
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(element.getProject()).getJiraIssueManager();
 		for (Link link : links) {
-			if (!isIssueView && persistenceManager.getDecisionKnowledgeElement(link.getTarget().getId()) != null) {
+			if (!isIssueView && persistenceManager.getKnowledgeElement(link.getTarget().getId()) != null) {
 				TreantNode adult = createTreantNode(link.getTarget(), link, false);
 				adult.setChildren(getChildren(link.getTarget(), graph.edgesOf(link.getTarget()), currentDepth));
 				nodes.add(adult);

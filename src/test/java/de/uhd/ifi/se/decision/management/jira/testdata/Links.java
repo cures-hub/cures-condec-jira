@@ -7,7 +7,6 @@ import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 
 public class Links {
 
@@ -23,7 +22,7 @@ public class Links {
 		List<Link> links = new ArrayList<Link>();
 		List<IssueLink> jiraIssueLinks = JiraIssueLinks.getTestJiraIssueLinks();
 		for (IssueLink issueLink : jiraIssueLinks) {
-			links.add(new LinkImpl(issueLink));
+			links.add(new Link(issueLink));
 		}
 		return links;
 	}

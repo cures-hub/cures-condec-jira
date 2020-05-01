@@ -10,22 +10,22 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.jgrapht.traverse.BreadthFirstIterator;
+
 import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
+
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
-import de.uhd.ifi.se.decision.management.jira.filtering.impl.FilteringManagerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.impl.KnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.CodeClassKnowledgeElementPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.impl.JiraIssuePersistenceManager;
-import org.jgrapht.traverse.BreadthFirstIterator;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 
 /**
  * Creates tree viewer content. The tree viewer is rendered with the jstree
@@ -99,7 +99,7 @@ public class TreeViewer {
 		if (jiraIssue == null) {
 			return;
 		}
-		KnowledgeElement rootElement = new KnowledgeElementImpl(jiraIssue);
+		KnowledgeElement rootElement = new KnowledgeElement(jiraIssue);
 		graph = KnowledgeGraph.getOrCreate(rootElement.getProject().getProjectKey());
 
 		Data rootNode = this.getDataStructure(rootElement);
@@ -112,7 +112,7 @@ public class TreeViewer {
 			}
 		}
 
-		filteringManager = new FilteringManagerImpl(filterSettings);
+		filteringManager = new FilteringManager(filterSettings);
 		data = new HashSet<Data>(Arrays.asList(rootNode));
 		for (Data node : this.data) {
 			Iterator<Data> iterator = node.getChildren().iterator();
@@ -130,8 +130,8 @@ public class TreeViewer {
 		this();
 		if (projectKey != null) {
 			Set<Data> dataSet = new HashSet<Data>();
-			CodeClassKnowledgeElementPersistenceManager manager = new CodeClassKnowledgeElementPersistenceManager(projectKey);
-			List<KnowledgeElement> elementList = manager.getDecisionKnowledgeElements();
+			CodeClassPersistenceManager manager = new CodeClassPersistenceManager(projectKey);
+			List<KnowledgeElement> elementList = manager.getKnowledgeElements();
 			for (KnowledgeElement element : elementList) {
 				dataSet.add(this.makeIdUnique(new Data(element)));
 			}

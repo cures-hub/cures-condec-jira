@@ -142,9 +142,9 @@
 </div>
 
 <script>
-    //Init the variables
+    // init the variables
     const isClassifierUsedToggle = document.getElementById("isClassifierUsed-toggle");
-    isClassifierUsedToggle.checked = $project.isClassifierUsedForIssueComments();
+    isClassifierUsedToggle.checked = $project.isClassifierEnabled();
 
     const testClassifierWithTextBtn = document.getElementById("testClassifierWithText-button");
     const testClassifierWithTextInput = document.getElementById("testClassifierWithText-input");

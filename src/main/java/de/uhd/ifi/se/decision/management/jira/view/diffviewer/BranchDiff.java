@@ -1,9 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.view.diffviewer;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
-import java.util.*;
+
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 /**
  * Model class for DiffViewer's branches node

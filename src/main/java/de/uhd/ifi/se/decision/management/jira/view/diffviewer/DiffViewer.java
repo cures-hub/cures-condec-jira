@@ -1,13 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.view.diffviewer;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import org.eclipse.jgit.lib.Ref;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.*;
+
+import org.eclipse.jgit.lib.Ref;
+
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 /**
  * Creates diff viewer content for a list of git repository branches

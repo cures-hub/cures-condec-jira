@@ -1,14 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.mock.MockConstantsManager;
-import de.uhd.ifi.se.decision.management.jira.config.TestPluginInitializer;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import de.uhd.ifi.se.decision.management.jira.config.TestPluginInitializer;
 
 public class MockIssueTypeManager implements IssueTypeManager {
 
