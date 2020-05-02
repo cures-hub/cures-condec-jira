@@ -37,21 +37,21 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testSetProjectKey() {
-		filterSettings.setProjectKey("NEWTEST");
-		assertEquals(filterSettings.getProjectKey(), "NEWTEST");
+		filterSettings.setProjectKey("TEST");
+		assertEquals(filterSettings.getProjectKey(), "TEST");
 	}
 
 	@Test
 	public void testGetSearchString() {
-		assertEquals("?jql=project = CONDEC", filterSettings.getSearchString());
+		assertEquals("?jql=project = CONDEC", filterSettings.getSearchTerm());
 	}
 
 	@Test
 	public void testSetSearchString() {
-		filterSettings.setSearchString(filterSettings.getSearchString() + "TEST ENDING");
-		assertEquals("?jql=project = CONDEC" + "TEST ENDING", filterSettings.getSearchString());
-		filterSettings.setSearchString(null);
-		assertEquals("", filterSettings.getSearchString());
+		filterSettings.setSearchTerm(filterSettings.getSearchTerm() + "TEST ENDING");
+		assertEquals("?jql=project = CONDEC" + "TEST ENDING", filterSettings.getSearchTerm());
+		filterSettings.setSearchTerm(null);
+		assertEquals("", filterSettings.getSearchTerm());
 	}
 
 	@Test
@@ -93,52 +93,47 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
-	public void testGetNamesOfSelectedJiraIssueTypes() {
-		assertEquals(5, filterSettings.getNamesOfSelectedJiraIssueTypes().size());
+	public void testGetNamesOfJiraIssueTypes() {
+		assertEquals(5, filterSettings.getJiraIssueTypes().size());
 		filterSettings = new FilterSettings("TEST", "?jql=issuetype in (Decision, Issue)", null);
-		assertEquals(2, filterSettings.getNamesOfSelectedJiraIssueTypes().size());
+		assertEquals(2, filterSettings.getJiraIssueTypes().size());
 	}
 
 	@Test
-	public void testSetSelectedJiraIssueTypes() {
-		filterSettings.setSelectedJiraIssueTypes(null);
-		assertEquals(5, filterSettings.getNamesOfSelectedJiraIssueTypes().size());
+	public void testSetJiraIssueTypes() {
+		filterSettings.setJiraIssueTypes(null);
+		assertEquals(5, filterSettings.getJiraIssueTypes().size());
 	}
 
 	@Test
-	public void testGetNamesOfSelectedLinkTypes() {
-		assertEquals(10, filterSettings.getNamesOfSelectedLinkTypes().size());
+	public void testGetNamesOfLinkTypes() {
+		assertEquals(10, filterSettings.getLinkTypes().size());
 		List<String> selectedLinkTypes = new ArrayList<>();
 		selectedLinkTypes.add("Forbids");
 		selectedLinkTypes.add("Relates");
-		filterSettings.setSelectedLinkTypes(selectedLinkTypes);
-		assertEquals(2, filterSettings.getNamesOfSelectedLinkTypes().size());
+		filterSettings.setLinkTypes(selectedLinkTypes);
+		assertEquals(2, filterSettings.getLinkTypes().size());
 	}
 
 	@Test
-	public void testSetSelectedLinkTypes() {
-		filterSettings.setSelectedJiraIssueTypes(null);
-		assertEquals(10, filterSettings.getNamesOfSelectedLinkTypes().size());
+	public void testSetLinkTypes() {
+		filterSettings.setJiraIssueTypes(null);
+		assertEquals(10, filterSettings.getLinkTypes().size());
 	}
 
 	@Test
-	public void testGetAllJiraIssueStatus() {
-		assertEquals(7, filterSettings.getAllStatus().size());
+	public void testGetStatus() {
+		assertEquals(7, filterSettings.getStatus().size());
 	}
 
 	@Test
-	public void testGetSelectedStatus() {
-		assertEquals(7, filterSettings.getSelectedStatus().size());
-	}
-
-	@Test
-	public void testSetSelectedStatus() {
-		filterSettings.setSelectedStatus(null);
-		assertEquals(7, filterSettings.getSelectedStatus().size());
+	public void testSetStatus() {
+		filterSettings.setStatus(null);
+		assertEquals(7, filterSettings.getStatus().size());
 
 		List<String> status = new ArrayList<String>();
 		status.add(KnowledgeStatus.UNRESOLVED.toString());
-		filterSettings.setSelectedStatus(status);
-		assertEquals(1, filterSettings.getSelectedStatus().size());
+		filterSettings.setStatus(status);
+		assertEquals(1, filterSettings.getStatus().size());
 	}
 }

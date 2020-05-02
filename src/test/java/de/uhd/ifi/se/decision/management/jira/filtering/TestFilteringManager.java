@@ -4,7 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,8 +29,7 @@ public class TestFilteringManager extends TestSetUp {
 	@Test
 	public void testConstructorWithQueryInvalid() {
 		FilteringManager filteringManager = new FilteringManager(null, null, (String) null);
-		assertNull(filteringManager.getFilterSettings());
-		assertEquals(0, filteringManager.getAllElementsMatchingFilterSettings().size());
+		assertEquals(0, filteringManager.getElementsMatchingFilterSettings().size());
 		assertNull(filteringManager.getSubgraphMatchingFilterSettings());
 	}
 
@@ -41,27 +42,27 @@ public class TestFilteringManager extends TestSetUp {
 	@Test
 	public void testConstructorValidQueryEmpty() {
 		FilteringManager filteringManager = new FilteringManager("TEST", user, "");
-		assertEquals(8, filteringManager.getAllElementsMatchingFilterSettings().size());
+		assertEquals(8, filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	public void testConstructorWithFilterSettingsValidQueryEmpty() {
 		FilteringManager extractor = new FilteringManager(user, new FilterSettings("TEST", ""));
-		assertEquals(8, extractor.getAllElementsMatchingFilterSettings().size());
+		assertEquals(8, extractor.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	public void testConstructorValidQueryFilter() {
 		FilteringManager filteringManager = new FilteringManager("TEST", user, "?filter=allopenissues");
-		assertEquals(8, filteringManager.getAllElementsMatchingFilterSettings().size());
+		assertEquals(8, filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	// TODO
 	public void testConstructorValidQueryJQL() {
 		FilteringManager filteringManager = new FilteringManager("TEST", user, "?jql=project=TEST");
-		assertEquals("?jql=project=TEST", filteringManager.getFilterSettings().getSearchString());
-		assertEquals(8, filteringManager.getAllElementsMatchingFilterSettings().size());
+		assertEquals("?jql=project=TEST", filteringManager.getFilterSettings().getSearchTerm());
+		assertEquals(8, filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
@@ -69,23 +70,23 @@ public class TestFilteringManager extends TestSetUp {
 		FilteringManager filteringManager = new FilteringManager(user, null);
 		FilterSettings settings = new FilterSettings("TEST", "TEST");
 		filteringManager.setFilterSettings(settings);
-		assertEquals("TEST", filteringManager.getFilterSettings().getSearchString());
+		assertEquals("TEST", filteringManager.getFilterSettings().getSearchTerm());
 	}
 
 	public void testFilterSettingsEmpty() {
 		FilteringManager filteringManager = new FilteringManager(user, new FilterSettings(null, null));
-		assertEquals(0, filteringManager.getAllElementsMatchingFilterSettings().size());
+		assertEquals(0, filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	public void testGetElementsByType() {
-		List<String> knowledgeTypes = new ArrayList<String>();
+		Set<String> knowledgeTypes = new HashSet<String>();
 		knowledgeTypes.add("Decision");
 		FilterSettings settings = new FilterSettings("TEST", "TEST");
-		settings.setSelectedJiraIssueTypes(knowledgeTypes);
+		settings.setJiraIssueTypes(knowledgeTypes);
 
 		FilteringManager filteringManager = new FilteringManager(user, settings);
-		assertEquals(1, filteringManager.getAllElementsMatchingFilterSettings().size());
+		assertEquals(1, filteringManager.getElementsMatchingFilterSettings().size());
 		assertEquals(1, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
 	}
 
@@ -93,7 +94,7 @@ public class TestFilteringManager extends TestSetUp {
 	public void testGetElementsBySubstring() {
 		FilterSettings settings = new FilterSettings("TEST", "Implement feature");
 		FilteringManager filteringManager = new FilteringManager(user, settings);
-		assertEquals(1, filteringManager.getAllElementsMatchingFilterSettings().size());
+		assertEquals(1, filteringManager.getElementsMatchingFilterSettings().size());
 		assertEquals(1, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
 	}
 
@@ -102,7 +103,7 @@ public class TestFilteringManager extends TestSetUp {
 		List<String> linkTypes = new ArrayList<String>();
 		linkTypes.add("support");
 		FilterSettings settings = new FilterSettings("TEST", "TEST");
-		settings.setSelectedLinkTypes(linkTypes);
+		settings.setLinkTypes(linkTypes);
 
 		FilteringManager filteringManager = new FilteringManager(user, settings);
 		assertEquals(8, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());

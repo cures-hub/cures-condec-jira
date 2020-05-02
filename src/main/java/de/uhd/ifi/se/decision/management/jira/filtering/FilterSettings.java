@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -12,7 +13,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
@@ -21,18 +22,18 @@ import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 /**
  * Represents the filter criteria. The filter settings cover the key of the
  * selected project, the time frame, documentation locations, Jira issue types,
- * and decision knowledge types. The search string can contain a query in Jira
+ * and decision knowledge types. The search term can contain a query in Jira
  * Query Language (JQL), a {@link JiraFilter} or a search string specified in
  * the frontend of the plug-in.
  */
 public class FilterSettings {
 
-	private String projectKey;
-	private String searchString;
+	private DecisionKnowledgeProject project;
+	private String searchTerm;
 	private List<DocumentationLocation> documentationLocations;
-	private List<String> namesOfSelectedJiraIssueTypes;
+	private Set<String> jiraIssueTypes;
 	private List<KnowledgeStatus> knowledgeStatus;
-	private List<String> namesOfSelectedLinkTypes;
+	private List<String> linkTypes;
 	private List<String> decisionGroups;
 
 	@XmlElement
@@ -42,11 +43,11 @@ public class FilterSettings {
 
 	@JsonCreator
 	public FilterSettings(@JsonProperty("projectKey") String projectKey,
-			@JsonProperty("searchString") String searchString) {
-		this.projectKey = projectKey;
-		this.searchString = searchString;
-		this.namesOfSelectedJiraIssueTypes = getAllJiraIssueTypes();
-		this.namesOfSelectedLinkTypes = getAllLinkTypes();
+			@JsonProperty("searchTerm") String searchTerm) {
+		this.project = new DecisionKnowledgeProject(projectKey);
+		this.searchTerm = searchTerm;
+		this.jiraIssueTypes = project.getJiraIssueTypeNames();
+		this.linkTypes = LinkType.toStringList();
 		this.startDate = -1;
 		this.endDate = -1;
 		this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
@@ -58,11 +59,11 @@ public class FilterSettings {
 		this(projectKey, query);
 
 		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, query);
-		this.searchString = queryHandler.getQuery();
+		this.searchTerm = queryHandler.getQuery();
 
-		List<String> namesOfJiraIssueTypesInQuery = queryHandler.getNamesOfJiraIssueTypesInQuery();
+		Set<String> namesOfJiraIssueTypesInQuery = queryHandler.getNamesOfJiraIssueTypesInQuery();
 		if (!namesOfJiraIssueTypesInQuery.isEmpty()) {
-			this.namesOfSelectedJiraIssueTypes = namesOfJiraIssueTypesInQuery;
+			this.jiraIssueTypes = namesOfJiraIssueTypesInQuery;
 		}
 
 		this.startDate = queryHandler.getCreatedEarliest();
@@ -73,7 +74,10 @@ public class FilterSettings {
 	 * @return key of the Jira project.
 	 */
 	public String getProjectKey() {
-		return projectKey;
+		if (project == null) {
+			return null;
+		}
+		return project.getProjectKey();
 	}
 
 	/**
@@ -82,28 +86,28 @@ public class FilterSettings {
 	 */
 	@JsonProperty("projectKey")
 	public void setProjectKey(String projectKey) {
-		this.projectKey = projectKey;
+		this.project = new DecisionKnowledgeProject(projectKey);
 	}
 
 	/**
-	 * @return search String. This string can also be a Jira Query or a predefined
-	 *         filter (e.g. allopenissues).
+	 * @return search term. This string can also be a Jira Query or a predefined
+	 *         {@link JiraFilter} (e.g. allopenissues).
 	 */
-	public String getSearchString() {
-		if (this.searchString == null) {
-			this.searchString = "";
+	public String getSearchTerm() {
+		if (this.searchTerm == null) {
+			this.searchTerm = "";
 		}
-		return searchString;
+		return searchTerm;
 	}
 
 	/**
-	 * @param searchString
-	 *            search String. This string can also be a Jira Query or a
-	 *            predefined filter (e.g. allopenissues).
+	 * @param searchTerm
+	 *            search term. This string can also be a Jira Query or a predefined
+	 *            {@link JiraFilter} (e.g. allopenissues).
 	 */
-	@JsonProperty("searchString")
-	public void setSearchString(String searchString) {
-		this.searchString = searchString;
+	@JsonProperty("searchTerm")
+	public void setSearchTerm(String searchTerm) {
+		this.searchTerm = searchTerm;
 	}
 
 	/**
@@ -186,29 +190,29 @@ public class FilterSettings {
 	/**
 	 * @return list of knowledge types to be shown in the knowledge graph.
 	 */
-	@XmlElement(name = "selectedJiraIssueTypes")
-	public List<String> getNamesOfSelectedJiraIssueTypes() {
-		if (namesOfSelectedJiraIssueTypes == null) {
-			namesOfSelectedJiraIssueTypes = getAllJiraIssueTypes();
+	@XmlElement(name = "jiraIssueTypes")
+	public Set<String> getJiraIssueTypes() {
+		if (jiraIssueTypes == null && project != null) {
+			jiraIssueTypes = project.getJiraIssueTypeNames();
 		}
-		return namesOfSelectedJiraIssueTypes;
+		return jiraIssueTypes;
 	}
 
 	/**
 	 * @param namesOfTypes
 	 *            list of names of Jira {@link IssueType}s as Strings.
 	 */
-	@JsonProperty("selectedJiraIssueTypes")
-	public void setSelectedJiraIssueTypes(List<String> namesOfTypes) {
-		namesOfSelectedJiraIssueTypes = namesOfTypes;
+	@JsonProperty("jiraIssueTypes")
+	public void setJiraIssueTypes(Set<String> namesOfTypes) {
+		jiraIssueTypes = namesOfTypes;
 	}
 
 	/**
 	 * @return list of {@link KnowledgeStatus} types to be shown in the knowledge
 	 *         graph as strings.
 	 */
-	@XmlElement(name = "selectedStatus")
-	public List<KnowledgeStatus> getSelectedStatus() {
+	@XmlElement(name = "status")
+	public List<KnowledgeStatus> getStatus() {
 		if (knowledgeStatus == null) {
 			knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
 		}
@@ -220,8 +224,8 @@ public class FilterSettings {
 	 *            list of {@link KnowledgeStatus} types to be shown in the knowledge
 	 *            graph as strings.
 	 */
-	@JsonProperty("selectedStatus")
-	public void setSelectedStatus(List<String> status) {
+	@JsonProperty("status")
+	public void setStatus(List<String> status) {
 		knowledgeStatus = new ArrayList<KnowledgeStatus>();
 		if (status == null) {
 			for (KnowledgeStatus eachStatus : KnowledgeStatus.values()) {
@@ -238,12 +242,12 @@ public class FilterSettings {
 	 * @return list of {@link LinkType}s to be shown in the knowledge graph as
 	 *         strings.
 	 */
-	@XmlElement(name = "selectedLinkTypes")
-	public List<String> getNamesOfSelectedLinkTypes() {
-		if (namesOfSelectedLinkTypes == null) {
-			namesOfSelectedLinkTypes = getAllLinkTypes();
+	@XmlElement(name = "linkTypes")
+	public List<String> getLinkTypes() {
+		if (linkTypes == null) {
+			linkTypes = LinkType.toStringList();
 		}
-		return namesOfSelectedLinkTypes;
+		return linkTypes;
 	}
 
 	/**
@@ -251,54 +255,25 @@ public class FilterSettings {
 	 *            list of {@link LinkType}s to be shown in the knowledge graph as
 	 *            strings.
 	 */
-	@JsonProperty("selectedLinkTypes")
-	public void setSelectedLinkTypes(List<String> namesOfTypes) {
-		namesOfSelectedLinkTypes = namesOfTypes;
-	}
-
-	/**
-	 * @return list of names of all Jira {@link IssueType}s of the selected project.
-	 */
-	@XmlElement(name = "allJiraIssueTypes")
-	public List<String> getAllJiraIssueTypes() {
-		List<String> allIssueTypes = new ArrayList<String>();
-		for (IssueType issueType : JiraIssueTypeGenerator.getJiraIssueTypes(projectKey)) {
-			allIssueTypes.add(issueType.getNameTranslation());
-
-		}
-		return allIssueTypes;
-	}
-
-	/**
-	 * @return list of names of all {@link KnowledgeStatus}.
-	 */
-	@XmlElement(name = "allIssueStatus")
-	public List<String> getAllStatus() {
-		return KnowledgeStatus.toStringList();
-	}
-
-	/**
-	 * @return list of names of all {@link LinkType}s.
-	 */
-	@XmlElement(name = "allLinkTypes")
-	public List<String> getAllLinkTypes() {
-		return LinkType.toStringList();
+	@JsonProperty("linkTypes")
+	public void setLinkTypes(List<String> namesOfTypes) {
+		linkTypes = namesOfTypes;
 	}
 
 	/**
 	 * @param decGroups
 	 *            list of names of all groups.
 	 */
-	@JsonProperty("selectedDecGroups")
-	public void setSelectedDecGroups(List<String> decGroups) {
+	@JsonProperty("groups")
+	public void setDecisionGroups(List<String> decGroups) {
 		decisionGroups = decGroups;
 	}
 
 	/**
 	 * @return list of names of all groups.
 	 */
-	@XmlElement(name = "selectedDecGroups")
-	public List<String> getSelectedDecGroups() {
+	@XmlElement(name = "groups")
+	public List<String> getDecisionGroups() {
 		if (decisionGroups == null) {
 			decisionGroups = Collections.emptyList();
 		}

@@ -409,17 +409,17 @@
     /*
      * external references: condec.vis
      */
-    ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, selectedJiraIssueTypes,
+    ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, jiraIssueTypes,
                                                                  createdAfter, createdBefore, linkTypes, documentationLocations, callback) {
         var filterSettings = {
             "projectKey": projectKey,
-            "searchString": searchTerm,
+            "searchTerm": searchTerm,
             "createdEarliest": createdBefore,
             "createdLatest": createdAfter,
             "documentationLocations": documentationLocations,
-            "selectedJiraIssueTypes": selectedJiraIssueTypes,
-            "selectedStatus": this.extendedStatus,
-            "selectedLinkTypes": linkTypes
+            "jiraIssueTypes": jiraIssueTypes,
+            "status": this.extendedStatus,
+            "linkTypes": linkTypes
         };
         postJSON(this.restPrefix + "/view/getVis.json?elementKey=" + elementKey,
             filterSettings, function (error, vis) {
@@ -432,15 +432,15 @@
     /*
      * external reference: condec.evolution.page.js
      */
-    ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed, searchString, knowledgeTypes, status, callback) {
+    ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed, searchTerm, knowledgeTypes, status, callback) {
         var filterSettings = {
             "projectKey": projectKey,
-            "searchString": searchString,
+            "searchTerm": searchTerm,
             "createdEarliest": created,
             "createdLatest": closed,
             "documentationLocations": null,
-            "selectedJiraIssueTypes": knowledgeTypes,
-            "selectedStatus": status
+            "jiraIssueTypes": knowledgeTypes,
+            "status": status
         };
         postJSON(this.restPrefix + "/view/getCompareVis.json", filterSettings, function (error,
                                                                                          vis) {
@@ -473,10 +473,10 @@
     /*
      * external references: condec.tab.panel
      */
-    ConDecAPI.prototype.getTreeViewerForSingleElement = function getTreeViewerForSingleElement(jiraIssueKey, selectedKnowledgeTypes, callback) {
+    ConDecAPI.prototype.getTreeViewerForSingleElement = function getTreeViewerForSingleElement(jiraIssueKey, knowledgeTypes, callback) {
         var filterSettings = {
             "projectKey": projectKey,
-            "selectedJiraIssueTypes": selectedKnowledgeTypes
+            "jiraIssueTypes": knowledgeTypes
         };
         postJSON(this.restPrefix + "/view/getTreeViewerForSingleElement.json?jiraIssueKey=" + jiraIssueKey, filterSettings, function (error, core) {
             if (error === null) {
@@ -488,18 +488,18 @@
     /*
      * external references: condec.evolution.page
      */
-    ConDecAPI.prototype.getEvolutionData = function getEvolutionData(searchString, created, closed, issueTypes, issueStatus, decGroups,
+    ConDecAPI.prototype.getEvolutionData = function getEvolutionData(searchTerm, created, closed, issueTypes, issueStatus, decGroups,
                                                                      callback) {
 
         var filterSettings = {
             "projectKey": projectKey,
-            "searchString": searchString,
+            "searchTerm": searchTerm,
             "createdEarliest": created,
             "createdLatest": closed,
             "documentationLocations": null,
-            "selectedJiraIssueTypes": issueTypes,
-            "selectedStatus": issueStatus,
-            "selectedDecGroups": decGroups
+            "jiraIssueTypes": issueTypes,
+            "status": issueStatus,
+            "groups": decGroups
         };
         postJSON(this.restPrefix + "/view/getEvolutionData.json", filterSettings, function (
             error, evolutionData) {
@@ -530,19 +530,19 @@
     /*
      * external references: condec.relationship.page
      */
-    ConDecAPI.prototype.getDecisionGraphFiltered = function getDecisionGraphFiltered(selectedLinkTypes, searchString, decGroups, callback) {
+    ConDecAPI.prototype.getDecisionGraphFiltered = function getDecisionGraphFiltered(linkTypes, searchTerm, decGroups, callback) {
 
 
         var filterSettings = {
             "projectKey": projectKey,
-            "searchString": searchString,
+            "searchTerm": searchTerm,
             "createdEarliest": -1,
             "createdLatest": -1,
             "documentationLocations": null,
-            "selectedJiraIssueTypes": ["Decision"],
-            "selectedStatus": null,
-            "selectedLinkTypes": selectedLinkTypes,
-            "selectedDecGroups": decGroups
+            "jiraIssueTypes": ["Decision"],
+            "status": null,
+            "linkTypes": linkTypes,
+            "groups": decGroups
         };
 
         postJSON(this.restPrefix + "/view/getDecisionGraph.json?", filterSettings, function (error, graph) {
