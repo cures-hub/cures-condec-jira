@@ -27,7 +27,14 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testKeySearchConstructor() {
-		assertNotNull(new FilterSettings("TEST", "search string"));
+		assertNotNull(new FilterSettings("TEST", "search term"));
+	}
+
+	@Test
+	public void testUnknownProject() {
+		FilterSettings settings = new FilterSettings(null, "");
+		assertNotNull(settings);
+		assertEquals("", settings.getProjectKey());
 	}
 
 	@Test
@@ -42,12 +49,12 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
-	public void testGetSearchString() {
+	public void testGetSearchTerm() {
 		assertEquals("?jql=project = CONDEC", filterSettings.getSearchTerm());
 	}
 
 	@Test
-	public void testSetSearchString() {
+	public void testSetSearchTerm() {
 		filterSettings.setSearchTerm(filterSettings.getSearchTerm() + "TEST ENDING");
 		assertEquals("?jql=project = CONDEC" + "TEST ENDING", filterSettings.getSearchTerm());
 		filterSettings.setSearchTerm(null);
@@ -135,5 +142,18 @@ public class TestFilterSettings extends TestSetUp {
 		status.add(KnowledgeStatus.UNRESOLVED.toString());
 		filterSettings.setStatus(status);
 		assertEquals(1, filterSettings.getStatus().size());
+	}
+
+	@Test
+	public void testGetGroups() {
+		assertEquals(0, filterSettings.getDecisionGroups().size());
+	}
+
+	@Test
+	public void testSetGroups() {
+		List<String> groups = new ArrayList<>();
+		groups.add("High Level");
+		filterSettings.setDecisionGroups(groups);
+		assertEquals(1, filterSettings.getDecisionGroups().size());
 	}
 }

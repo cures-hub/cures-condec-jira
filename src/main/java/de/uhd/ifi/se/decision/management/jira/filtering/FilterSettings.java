@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -74,9 +73,6 @@ public class FilterSettings {
 	 * @return key of the Jira project.
 	 */
 	public String getProjectKey() {
-		if (project == null) {
-			return null;
-		}
 		return project.getProjectKey();
 	}
 
@@ -151,9 +147,6 @@ public class FilterSettings {
 	 *         graph.
 	 */
 	public List<DocumentationLocation> getDocumentationLocations() {
-		if (documentationLocations == null) {
-			documentationLocations = DocumentationLocation.getAllDocumentationLocations();
-		}
 		return documentationLocations;
 	}
 
@@ -213,9 +206,6 @@ public class FilterSettings {
 	 */
 	@XmlElement(name = "status")
 	public List<KnowledgeStatus> getStatus() {
-		if (knowledgeStatus == null) {
-			knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
-		}
 		return knowledgeStatus;
 	}
 
@@ -244,9 +234,6 @@ public class FilterSettings {
 	 */
 	@XmlElement(name = "linkTypes")
 	public List<String> getLinkTypes() {
-		if (linkTypes == null) {
-			linkTypes = LinkType.toStringList();
-		}
 		return linkTypes;
 	}
 
@@ -274,9 +261,6 @@ public class FilterSettings {
 	 */
 	@XmlElement(name = "groups")
 	public List<String> getDecisionGroups() {
-		if (decisionGroups == null) {
-			decisionGroups = Collections.emptyList();
-		}
 		return decisionGroups;
 	}
 }

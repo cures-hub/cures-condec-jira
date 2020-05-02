@@ -68,9 +68,9 @@ public class VisNode {
 
 	private Map<String, String> determineFont(KnowledgeElement element) {
 		KnowledgeStatus status = element.getStatus();
-		if (status == KnowledgeStatus.DISCARDED || status == KnowledgeStatus.REJECTED
-				|| status == KnowledgeStatus.UNRESOLVED) {
-			return ImmutableMap.of("color", "red");
+		String color = status.getColor();
+		if (!color.isBlank()) {
+			return ImmutableMap.of("color", color);
 		}
 		return ImmutableMap.of("color", "black");
 	}
