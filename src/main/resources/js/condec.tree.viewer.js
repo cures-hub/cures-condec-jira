@@ -119,14 +119,14 @@
 				$.each(jsonNodes, function(i, val) {
 					var matches = 0;
 					var kElement = $(val).attr("data");
-					var elementGroups = $(kElement).attr("groups");
-					var treeNode = document.getElementById($(val).attr("id"));					
-					for (var j = 0; j < elementGroups.length; j++) {	
+					var elementGroups = $(kElement).attr("groups");					
+					for (var j = 0; j < elementGroups.length; j++) {
 						if (selectedGroups.includes(elementGroups[j])) {
 							matches++;
-						}		
+						}
 					}
 					if (matches !== selectedGroups.length) {
+						var treeNode = document.getElementById($(val).attr("id"));
 						$(treeNode).hide();
 					}
 				});
@@ -145,9 +145,9 @@
 				$.each(jsonNodes, function(i, val) {
 					var matches = 0;
 					var kElement = $(val).attr("data");
-					var elementStatus = $(kElement).attr("status");
-					var treeNode = document.getElementById($(val).attr("id"));					
+					var elementStatus = $(kElement).attr("status");					
 					if (!selectedStatus.includes(elementStatus)) {
+						var treeNode = document.getElementById($(val).attr("id"));
 						$(treeNode).hide();
 					}
 				});

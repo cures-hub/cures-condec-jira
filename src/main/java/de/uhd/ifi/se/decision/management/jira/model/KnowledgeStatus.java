@@ -85,8 +85,8 @@ public enum KnowledgeStatus {
 		return getNewKnowledgeStatusForType(formerElement.getType(), newElement.getType(), newElement.getStatus());
 	}
 
-	public static KnowledgeStatus getNewKnowledgeStatusForType(KnowledgeType formerType,
-			KnowledgeType newType, KnowledgeStatus newStatus) {
+	public static KnowledgeStatus getNewKnowledgeStatusForType(KnowledgeType formerType, KnowledgeType newType,
+			KnowledgeStatus newStatus) {
 		if (formerType == KnowledgeType.DECISION && newType == KnowledgeType.ALTERNATIVE) {
 			return REJECTED;
 		}
@@ -110,8 +110,7 @@ public enum KnowledgeStatus {
 		return getNewKnowledgeTypeForStatus(newElement.getStatus(), newElement.getType());
 	}
 
-	public static KnowledgeType getNewKnowledgeTypeForStatus(KnowledgeStatus newStatus,
-			KnowledgeType formerType) {
+	public static KnowledgeType getNewKnowledgeTypeForStatus(KnowledgeStatus newStatus, KnowledgeType formerType) {
 		if (formerType == null) {
 			return KnowledgeType.OTHER;
 		}
@@ -125,8 +124,7 @@ public enum KnowledgeStatus {
 	}
 
 	public static boolean isIssueResolved(KnowledgeElement parentElement, KnowledgeElement childElement) {
-		return parentElement.getType() == KnowledgeType.ISSUE
-				&& childElement.getType() == KnowledgeType.DECISION
+		return parentElement.getType() == KnowledgeType.ISSUE && childElement.getType() == KnowledgeType.DECISION
 				&& childElement.getStatus() == KnowledgeStatus.DECIDED;
 	}
 
@@ -139,5 +137,20 @@ public enum KnowledgeStatus {
 			statuses.add(status);
 		}
 		return statuses;
+	}
+
+	public String getColor() {
+		switch (this) {
+		case UNRESOLVED:
+			return "red";
+		case UNDEFINED:
+			return "red";
+		case DISCARDED:
+			return "gray";
+		case REJECTED:
+			return "gray";
+		default:
+			return "";
+		}
 	}
 }

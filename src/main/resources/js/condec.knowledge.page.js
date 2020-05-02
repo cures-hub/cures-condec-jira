@@ -95,17 +95,6 @@
                 depthOfTreeWarningLabel.style.visibility = "visible";
             }
         });
-
-        conDecAPI.fillDecisionGroupSelect("select2-decision-group");     
-        $("#select2-decision-group").on("change.select2", function (e) {
-        	conDecObservable.notify();
-        });
-        
-        conDecFiltering.initDropdown("status-dropdown-overview", conDecAPI.knowledgeStatus);
-        var statusDropdown = document.getElementById("status-dropdown-overview");
-        statusDropdown.addEventListener("change", function (e) {
-        	conDecObservable.notify();
-        });
         
         updateView(null, treant, treeViewer);
     }
