@@ -10,7 +10,6 @@ public abstract class AbstractWebookContentProvider  {
   String projectKey;
   WebhookType type;
 
-
   public abstract PostMethod createPostMethod();
   //  abstract String createWebhookData();
 

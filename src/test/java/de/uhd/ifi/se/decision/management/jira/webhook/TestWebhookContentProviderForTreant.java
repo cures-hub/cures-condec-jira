@@ -20,25 +20,25 @@ public class TestWebhookContentProviderForTreant extends TestSetUp {
 	@Test
 	public void testCreatePostMethodForMissingProjectKeyAndMissingElementKeyAndMissingSecretAndMissingReceiver() {
 		WebhookContentProviderForTreant provider = new WebhookContentProviderForTreant(null, (String) null, null, null);
-		assertNull(provider.createPostMethodForTreant().getRequestEntity());
+		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
 	public void testCreatePostMethodForMissingProjectKeyAndMissingElementKeyAndProvidedSecretAndMissingReceiver() {
 		WebhookContentProviderForTreant provider = new WebhookContentProviderForTreant(null, (String) null, "1234IamASecretKey", null);
-		assertNull(provider.createPostMethodForTreant().getRequestEntity());
+		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
 	public void testCreatePostMethodForMissingProjectKeyAndProvidedElementKeyAndMissingSecretAndMissingReceiver() {
 		WebhookContentProviderForTreant provider = new WebhookContentProviderForTreant(null, "TEST-14", null, null);
-		assertNull(provider.createPostMethodForTreant().getRequestEntity());
+		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
 	public void testCreatePostMethodForProvidedProjectKeyAndMissingElementKeyAndMissingSecretAndMissingReceiver() {
 		WebhookContentProviderForTreant provider = new WebhookContentProviderForTreant("TEST", (String) null, null, null);
-		assertNull(provider.createPostMethodForTreant().getRequestEntity());
+		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
@@ -46,7 +46,7 @@ public class TestWebhookContentProviderForTreant extends TestSetUp {
 	public void testCreatePostMethodForProvidedProjectKeyAndProvidedElementKeyAndProvidedSecretAndOtherReceiver() {
 		WebhookContentProviderForTreant provider = new WebhookContentProviderForTreant("TEST", "TEST-14", "1234IamASecretKey",
 				WebhookType.TREANT);
-		assertNotNull(provider.createPostMethodForTreant().getRequestEntity());
+		assertNotNull(provider.createPostMethod().getRequestEntity());
 	}
 
 

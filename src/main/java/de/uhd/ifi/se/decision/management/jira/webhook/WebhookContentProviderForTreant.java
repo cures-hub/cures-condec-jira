@@ -23,12 +23,11 @@ import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
  * Creates the content submitted via the webhook. The content consists of a key
  * value pair. The key is an issue id. The value is the Treant JSON String.
  */
-public class WebhookContentProviderForTreant {
+public class WebhookContentProviderForTreant extends AbstractWebookContentProvider {
 
-	private String projectKey;
+
 	private String rootElementKey;
 	private String secret;
-	private WebhookType type;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(WebhookContentProviderForTreant.class);
 
@@ -52,7 +51,8 @@ public class WebhookContentProviderForTreant {
 	 *
 	 * @return post method ready to be posted
 	 */
-	public PostMethod createPostMethodForTreant() {
+	 @Override
+	public PostMethod createPostMethod() {
 		PostMethod postMethod = new PostMethod();
 		if (projectKey == null || rootElementKey == null || secret == null || type == null) {
 			// System.out.println("createPostMethod null");
