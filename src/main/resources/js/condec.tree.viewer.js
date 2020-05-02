@@ -68,7 +68,6 @@
 				if (jstreeId !== "#code-class-tree") {
 					conDecContextMenu.createContextMenu(id, "i", event, container);
 				}
-
 			}
 		});
 	}
@@ -109,7 +108,7 @@
 		});
 	};
 
-	ConDecTreeViewer.prototype.filterNodesByGroup = function filterNodesByGroup(selectedGroup, treeId) {
+	ConDecTreeViewer.prototype.filterNodesByGroup = function filterNodesByGroup(selectedGroups, treeId) {
 		console.log("conDecTreeViewer filterNodesByGroup");
 		jQueryConDec(treeId).on("state_ready.jstree", function() {
 			var treeViewer = jQueryConDec(treeId).jstree(true);
@@ -121,17 +120,14 @@
 					var matches = 0;
 					var kElement = $(val).attr("data");
 					var elementGroups = $(kElement).attr("groups");
-					var treeNode = document.getElementById($(val).attr("id"));
-					$(treeNode).hide();
-					for (var j = 0; j < elementGroups.length; j++) {
-						for (var x = 0; x < selectedGroup.length; x++) {
-							if (elementGroups[j] === selectedGroup[x]) {
-								matches++;
-							}
-						}
-						if (matches === selectedGroup.length) {
-							$(treeNode).show();
-						}
+					var treeNode = document.getElementById($(val).attr("id"));					
+					for (var j = 0; j < elementGroups.length; j++) {	
+						if (selectedGroups.includes(elementGroups[j])) {
+							matches++;
+						}		
+					}
+					if (matches !== selectedGroups.length) {
+						$(treeNode).hide();
 					}
 				});
 			}

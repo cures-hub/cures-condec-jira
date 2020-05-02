@@ -403,13 +403,13 @@
      * external references: condec.vis
      */
     ConDecAPI.prototype.getVis = function getVis(elementKey, searchTerm, callback) {
-        this.getVisFiltered(elementKey, null, null, -1, -1, null, null, callback);
+        this.getVisFiltered(elementKey, null, null, null, -1, -1, null, null, callback);
     };
 
     /*
      * external references: condec.vis
      */
-    ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, jiraIssueTypes,
+    ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, jiraIssueTypes, status,
                                                                  createdAfter, createdBefore, linkTypes, documentationLocations, callback) {
         var filterSettings = {
             "projectKey": projectKey,
@@ -418,7 +418,7 @@
             "createdLatest": createdAfter,
             "documentationLocations": documentationLocations,
             "jiraIssueTypes": jiraIssueTypes,
-            "status": this.extendedStatus,
+            "status": status,
             "linkTypes": linkTypes
         };
         postJSON(this.restPrefix + "/view/getVis.json?elementKey=" + elementKey,
@@ -978,10 +978,11 @@
      * external references: condec.context.menu
      */
     ConDecAPI.prototype.openJiraIssue = function openJiraIssue(elementId, documentationLocation) {
-        this.getDecisionKnowledgeElement(elementId, documentationLocation, function (decisionKnowledgeElement) {
-            global.open(decisionKnowledgeElement.url, '_self');
+        this.getDecisionKnowledgeElement(elementId, documentationLocation, function (knowledgeElement) {
+            global.open(knowledgeElement.url);
         });
     };
+    
     /*
      * external references: condec.release.note.page
      */
