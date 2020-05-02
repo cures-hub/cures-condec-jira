@@ -3,6 +3,9 @@
         <div class="aui-toolbar-2-inner">
         	<form class="aui">
         		#parse("templates/filter/linkType.vm")
+        		
+        		#set ($statusDropdownId = "status-dropdown-graph")	
+        		#parse("templates/filter/status.vm")
 
         		#set ($textInputId = "decision-search-input")
         		#parse("templates/filter/text.vm")

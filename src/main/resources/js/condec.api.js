@@ -524,13 +524,13 @@
      * external references: condec.relationship.page
      */
     ConDecAPI.prototype.getDecisionGraph = function getDecisionGraph(callback) {
-        this.getDecisionGraphFiltered(null, "", [], callback);
+        this.getDecisionGraphFiltered(null, "", null, [], callback);
     };
 
     /*
      * external references: condec.relationship.page
      */
-    ConDecAPI.prototype.getDecisionGraphFiltered = function getDecisionGraphFiltered(linkTypes, searchTerm, decGroups, callback) {
+    ConDecAPI.prototype.getDecisionGraphFiltered = function getDecisionGraphFiltered(linkTypes, searchTerm, status, decGroups, callback) {
 
 
         var filterSettings = {
@@ -540,7 +540,7 @@
             "createdLatest": -1,
             "documentationLocations": null,
             "jiraIssueTypes": ["Decision"],
-            "status": null,
+            "status": status,
             "linkTypes": linkTypes,
             "groups": decGroups
         };

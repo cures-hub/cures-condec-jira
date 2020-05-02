@@ -1,7 +1,8 @@
 <div>
 <form class="aui">
-    <input class="text medium-field" id="jstree-search-input"
-           placeholder="$i18n.getText('condec.filter.label')"/>
+	#set ($textInputId = "jstree-search-input")
+	#parse("templates/filter/text.vm")
+
     <select id="select-root-element-type" name="select-root-element-type"
             class="select short-field" onchange="conDecObservable.notify()"></select>
     <input type="text" class="text medium-field"
