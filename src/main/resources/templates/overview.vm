@@ -37,9 +37,5 @@
         else {
             console.error("ConDecKnowledgePage could not get its dependencies.");
         }
-    });
-
-    $("#select2-decision-group").on("change.select2", function (e) {
-    	conDecObservable.notify();
     }); 
 </script>
