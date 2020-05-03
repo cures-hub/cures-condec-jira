@@ -98,13 +98,18 @@
         
         conDecAPI.fillDecisionGroupSelect("select2-decision-group");     
         $("#select2-decision-group").on("change.select2", function (e) {
-        	conDecObservable.notify();
+        	// @issue Should filters change all views or only the current view?
+        	// @decision Filters are only applied in the current view using updateView()! 
+        	// @alternative We update all views using conDecObservable.notify()!
+        	// @pro The user could reuse the filter settings, which is more useable.
+        	// @con This would need more computation and decreases performance.
+        	this.updateView();
         });
         
         conDecFiltering.initDropdown("status-dropdown-overview", conDecAPI.knowledgeStatus);
         var statusDropdown = document.getElementById("status-dropdown-overview");
         statusDropdown.addEventListener("change", function (e) {
-        	conDecObservable.notify();
+        	this.updateView();
         });
         
         updateView(null, treant, treeViewer);
