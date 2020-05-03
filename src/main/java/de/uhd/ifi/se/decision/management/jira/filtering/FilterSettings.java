@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -91,9 +92,6 @@ public class FilterSettings {
 	 *         {@link JiraFilter} (e.g. allopenissues).
 	 */
 	public String getSearchTerm() {
-		if (this.searchTerm == null) {
-			this.searchTerm = "";
-		}
 		return searchTerm;
 	}
 
@@ -104,7 +102,7 @@ public class FilterSettings {
 	 */
 	@JsonProperty("searchTerm")
 	public void setSearchTerm(String searchTerm) {
-		this.searchTerm = searchTerm;
+		this.searchTerm = searchTerm != null ? searchTerm : "";
 	}
 
 	/**
@@ -148,9 +146,6 @@ public class FilterSettings {
 	 *         graph.
 	 */
 	public List<DocumentationLocation> getDocumentationLocations() {
-		if (documentationLocations == null) {
-			documentationLocations = DocumentationLocation.getAllDocumentationLocations();
-		}
 		return documentationLocations;
 	}
 
@@ -174,13 +169,13 @@ public class FilterSettings {
 	 */
 	@JsonProperty("documentationLocations")
 	public void setDocumentationLocations(List<String> namesOfDocumentationLocations) {
-		this.documentationLocations = new ArrayList<DocumentationLocation>();
-		if (namesOfDocumentationLocations == null) {
+		if (namesOfDocumentationLocations != null) {
+			this.documentationLocations = new ArrayList<>();
+			for (String location : namesOfDocumentationLocations) {
+				this.documentationLocations.add(DocumentationLocation.getDocumentationLocationFromString(location));
+			}
+		} else {
 			this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
-			return;
-		}
-		for (String location : namesOfDocumentationLocations) {
-			this.documentationLocations.add(DocumentationLocation.getDocumentationLocationFromString(location));
 		}
 	}
 
@@ -189,9 +184,6 @@ public class FilterSettings {
 	 */
 	@XmlElement(name = "jiraIssueTypes")
 	public Set<String> getJiraIssueTypes() {
-		if (jiraIssueTypes == null && project != null) {
-			jiraIssueTypes = project.getJiraIssueTypeNames();
-		}
 		return jiraIssueTypes;
 	}
 
@@ -201,7 +193,7 @@ public class FilterSettings {
 	 */
 	@JsonProperty("jiraIssueTypes")
 	public void setJiraIssueTypes(Set<String> namesOfTypes) {
-		jiraIssueTypes = namesOfTypes;
+		jiraIssueTypes = namesOfTypes != null ? namesOfTypes : project.getJiraIssueTypeNames();
 	}
 
 	/**
@@ -210,9 +202,6 @@ public class FilterSettings {
 	 */
 	@XmlElement(name = "status")
 	public List<KnowledgeStatus> getStatus() {
-		if (knowledgeStatus == null) {
-			knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
-		}
 		return knowledgeStatus;
 	}
 
@@ -241,9 +230,6 @@ public class FilterSettings {
 	 */
 	@XmlElement(name = "linkTypes")
 	public List<String> getLinkTypes() {
-		if (linkTypes == null) {
-			linkTypes = LinkType.toStringList();
-		}
 		return linkTypes;
 	}
 
@@ -254,7 +240,7 @@ public class FilterSettings {
 	 */
 	@JsonProperty("linkTypes")
 	public void setLinkTypes(List<String> namesOfTypes) {
-		linkTypes = namesOfTypes;
+		linkTypes = namesOfTypes != null ? namesOfTypes : LinkType.toStringList();
 	}
 
 	/**
@@ -263,7 +249,7 @@ public class FilterSettings {
 	 */
 	@JsonProperty("groups")
 	public void setDecisionGroups(List<String> decGroups) {
-		decisionGroups = decGroups;
+		decisionGroups = decGroups != null ? decGroups : Collections.emptyList();
 	}
 
 	/**
