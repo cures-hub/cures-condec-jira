@@ -45,7 +45,7 @@ public class FilterSettings {
 	public FilterSettings(@JsonProperty("projectKey") String projectKey,
 			@JsonProperty("searchTerm") String searchTerm) {
 		this.project = new DecisionKnowledgeProject(projectKey);
-		this.searchTerm = searchTerm;
+		setSearchTerm(searchTerm);
 		this.jiraIssueTypes = project.getJiraIssueTypeNames();
 		this.linkTypes = LinkType.toStringList();
 		this.startDate = -1;
