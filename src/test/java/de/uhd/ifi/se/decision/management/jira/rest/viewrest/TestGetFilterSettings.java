@@ -2,7 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.rest.viewrest;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
@@ -41,8 +41,7 @@ public class TestGetFilterSettings extends TestSetUp {
 
 		FilterSettings filterSettings = (FilterSettings) filterSettingsResponse.getEntity();
 		assertEquals(4, filterSettings.getNamesOfDocumentationLocations().size());
-		assertEquals(5, filterSettings.getAllJiraIssueTypes().size());
-		assertEquals(5, filterSettings.getNamesOfSelectedJiraIssueTypes().size());
+		assertEquals(5, filterSettings.getJiraIssueTypes().size());
 		assertEquals(-1, filterSettings.getCreatedEarliest());
 		assertEquals(-1, filterSettings.getCreatedLatest());
 	}
@@ -53,8 +52,8 @@ public class TestGetFilterSettings extends TestSetUp {
 		assertEquals(Response.Status.OK.getStatusCode(), filterSettingsResponse.getStatus());
 
 		FilterSettings filterSettings = (FilterSettings) filterSettingsResponse.getEntity();
-		List<String> issueTypesMatchingFilter = filterSettings.getNamesOfSelectedJiraIssueTypes();
-		assertEquals("Issue", issueTypesMatchingFilter.get(0));
+		Set<String> issueTypesMatchingFilter = filterSettings.getJiraIssueTypes();
+		assertEquals("Issue", issueTypesMatchingFilter.iterator().next());
 		assertEquals(1, issueTypesMatchingFilter.size());
 		assertEquals(-1, filterSettings.getCreatedEarliest());
 		assertEquals(-1, filterSettings.getCreatedLatest());
