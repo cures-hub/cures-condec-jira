@@ -148,6 +148,9 @@ public class FilterSettings {
 	 *         graph.
 	 */
 	public List<DocumentationLocation> getDocumentationLocations() {
+		if (documentationLocations == null) {
+			documentationLocations = DocumentationLocation.getAllDocumentationLocations();
+		}
 		return documentationLocations;
 	}
 
@@ -207,6 +210,9 @@ public class FilterSettings {
 	 */
 	@XmlElement(name = "status")
 	public List<KnowledgeStatus> getStatus() {
+		if (knowledgeStatus == null) {
+			knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
+		}
 		return knowledgeStatus;
 	}
 
@@ -235,6 +241,9 @@ public class FilterSettings {
 	 */
 	@XmlElement(name = "linkTypes")
 	public List<String> getLinkTypes() {
+		if (linkTypes == null) {
+			linkTypes = LinkType.toStringList();
+		}
 		return linkTypes;
 	}
 

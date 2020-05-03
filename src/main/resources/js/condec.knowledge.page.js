@@ -103,13 +103,13 @@
         	// @alternative We update all views using conDecObservable.notify()!
         	// @pro The user could reuse the filter settings, which is more useable.
         	// @con This would need more computation and decreases performance.
-        	this.updateView();
+        	updateView(null, treant, treeViewer);
         });
         
         conDecFiltering.initDropdown("status-dropdown-overview", conDecAPI.knowledgeStatus);
         var statusDropdown = document.getElementById("status-dropdown-overview");
         statusDropdown.addEventListener("change", function (e) {
-        	this.updateView();
+        	updateView(null, treant, treeViewer);
         });
         
         updateView(null, treant, treeViewer);

@@ -36,13 +36,11 @@ public class FilteringManager {
 	}
 
 	public FilteringManager(ApplicationUser user, FilterSettings filterSettings) {
-		if (filterSettings == null || filterSettings.getProjectKey() == null) {
-			LOGGER.error("FilteringManager could not be created due to an invalid input.");
-			return;
-		}
 		this.user = user;
 		this.filterSettings = filterSettings;
-		this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
+		if (filterSettings != null) {
+			this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
+		}
 	}
 
 	public FilteringManager(String projectKey, ApplicationUser user, String query) {
@@ -54,6 +52,7 @@ public class FilteringManager {
 	 */
 	public List<KnowledgeElement> getElementsMatchingFilterSettings() {
 		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null) {
+			LOGGER.error("FilteringManager misses important attributes.");
 			return new ArrayList<KnowledgeElement>();
 		}
 		String searchString = filterSettings.getSearchTerm().toLowerCase();
@@ -69,7 +68,8 @@ public class FilteringManager {
 	 *         {@link FilterSetting}s.
 	 */
 	public AsSubgraph<KnowledgeElement, Link> getSubgraphMatchingFilterSettings() {
-		if (graph == null) {
+		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null) {
+			LOGGER.error("FilteringManager misses important attributes.");
 			return null;
 		}
 		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>(getElementsMatchingFilterSettings());

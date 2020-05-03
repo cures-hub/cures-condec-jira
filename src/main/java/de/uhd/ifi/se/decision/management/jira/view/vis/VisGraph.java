@@ -56,7 +56,7 @@ public class VisGraph {
 
 	public VisGraph(ApplicationUser user, FilterSettings filterSettings, String rootElementKey) {
 		this(filterSettings);
-		if (user == null) {
+		if (user == null || filterSettings == null) {
 			return;
 		}
 		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
@@ -70,8 +70,7 @@ public class VisGraph {
 		}
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(filterSettings.getProjectKey());
-		KnowledgeElement rootElement = persistenceManager.getJiraIssueManager()
-				.getKnowledgeElement(rootElementKey);
+		KnowledgeElement rootElement = persistenceManager.getJiraIssueManager().getKnowledgeElement(rootElementKey);
 
 		// TODO This is not a key but id_documentationLocation
 		this.rootElementKey = rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString();

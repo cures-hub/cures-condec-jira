@@ -57,8 +57,12 @@ public class Data {
 		}
 		String textColor = knowledgeElement.getStatus().getColor();
 		if (!textColor.isBlank()) {
-			a_attr = new ImmutableMap.Builder<String, String>().putAll(a_attr).put("style", "color:" + textColor)
-					.build();
+			if (a_attr == null) {
+				a_attr = ImmutableMap.of("style", "color:" + textColor);
+			} else {
+				a_attr = new ImmutableMap.Builder<String, String>().putAll(a_attr).put("style", "color:" + textColor)
+						.build();
+			}
 		}
 	}
 
