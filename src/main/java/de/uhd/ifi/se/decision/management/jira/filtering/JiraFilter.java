@@ -10,7 +10,8 @@ import com.atlassian.jira.issue.search.SearchRequest;
 import com.atlassian.jira.issue.search.SearchRequestManager;
 
 /**
- * Type of preset filters in Jira.
+ * Type of preset filters in Jira. This enum also contains static methods to
+ * handle custom filters created by a user.
  */
 public enum JiraFilter {
 
@@ -27,18 +28,18 @@ public enum JiraFilter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraFilter.class);
 
 	private long id;
-	private String jqlString;
+	private String jql;
 
-	private JiraFilter(long id, String jqlString) {
+	private JiraFilter(long id, String jql) {
 		this.id = id;
-		this.jqlString = jqlString;
+		this.jql = jql;
 	}
 
 	/**
 	 * @return Jira query as a String.
 	 */
 	public String getJqlString() {
-		return this.jqlString;
+		return this.jql;
 	}
 
 	/**
@@ -79,6 +80,11 @@ public enum JiraFilter {
 		return filterId <= 0;
 	}
 
+	/**
+	 * @param filterId
+	 *            id of a custom filter created by a user. This id needs to be >0.
+	 * @return Jira query as a String.
+	 */
 	private static String getQueryForCustomFilter(long filterId) {
 		SearchRequestManager searchRequestManager = ComponentAccessor.getComponentOfType(SearchRequestManager.class);
 		SearchRequest filter = searchRequestManager.getSharedEntity(filterId);

@@ -42,24 +42,33 @@ public class Data {
 	public Data() {
 	}
 
-	public Data(KnowledgeElement decisionKnowledgeElement) {
-		this.id = "tv" + String.valueOf(decisionKnowledgeElement.getId());
-		this.text = decisionKnowledgeElement.getSummary();
-		this.icon = KnowledgeType.getIconUrl(decisionKnowledgeElement);
-		this.element = decisionKnowledgeElement;
-		if (decisionKnowledgeElement.getDescription() != null && !decisionKnowledgeElement.getDescription().isBlank()
-				&& !decisionKnowledgeElement.getDescription().equals("undefined")) {
-			this.a_attr = ImmutableMap.of("title", decisionKnowledgeElement.getDescription());
+	public Data(KnowledgeElement knowledgeElement) {
+		this.id = "tv" + String.valueOf(knowledgeElement.getId());
+		this.text = knowledgeElement.getSummary();
+		this.icon = KnowledgeType.getIconUrl(knowledgeElement);
+		this.element = knowledgeElement;
+		if (knowledgeElement.getDescription() != null && !knowledgeElement.getDescription().isBlank()
+				&& !knowledgeElement.getDescription().equals("undefined")) {
+			this.a_attr = ImmutableMap.of("title", knowledgeElement.getDescription());
 		}
 		this.li_attr = ImmutableMap.of("class", "issue");
-		if (decisionKnowledgeElement instanceof PartOfJiraIssueText) {
-			this.li_attr = ImmutableMap.of("class", "sentence", "sid", "s" + decisionKnowledgeElement.getId());
+		if (knowledgeElement instanceof PartOfJiraIssueText) {
+			this.li_attr = ImmutableMap.of("class", "sentence", "sid", "s" + knowledgeElement.getId());
+		}
+		String textColor = knowledgeElement.getStatus().getColor();
+		if (!textColor.isBlank()) {
+			if (a_attr == null) {
+				a_attr = ImmutableMap.of("style", "color:" + textColor);
+			} else {
+				a_attr = new ImmutableMap.Builder<String, String>().putAll(a_attr).put("style", "color:" + textColor)
+						.build();
+			}
 		}
 	}
 
-	public Data(KnowledgeElement decisionKnowledgeElement, Link link) {
-		this(decisionKnowledgeElement);
-		this.icon = KnowledgeType.getIconUrl(decisionKnowledgeElement, link.getType());
+	public Data(KnowledgeElement knowledgeElement, Link link) {
+		this(knowledgeElement);
+		this.icon = KnowledgeType.getIconUrl(knowledgeElement, link.getType());
 	}
 
 	public String getId() {
