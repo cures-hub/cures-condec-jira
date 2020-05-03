@@ -57,7 +57,6 @@
     function initializeDecisionKnowledgePage(conDecAPI, treant, treeViewer) {
         console.log("conDecKnowledgePage initializeDecisionKnowledgePage");
         var knowledgeTypes = conDecAPI.knowledgeTypes;
-        console.log(knowledgeTypes.length);
         for (var index = 0; index < knowledgeTypes.length; index++) {
             var isSelected = "";
             if (knowledgeTypes[index] === "Issue") {
@@ -103,13 +102,13 @@
         	// @alternative We update all views using conDecObservable.notify()!
         	// @pro The user could reuse the filter settings, which is more useable.
         	// @con This would need more computation and decreases performance.
-        	updateView(null, treant, treeViewer);
+        	conDecKnowledgePage.updateView();
         });
         
         conDecFiltering.initDropdown("status-dropdown-overview", conDecAPI.knowledgeStatus);
         var statusDropdown = document.getElementById("status-dropdown-overview");
         statusDropdown.addEventListener("change", function (e) {
-        	updateView(null, treant, treeViewer);
+        	conDecKnowledgePage.updateView();
         });
         
         updateView(null, treant, treeViewer);
@@ -139,12 +138,12 @@
         }
         if (selectedGroups !== undefined && selectedGroups.length > 0) {
             treeViewer.filterNodesByGroup(selectedGroups, "#jstree");
-        }
+        }     
         
         var selectedStatus = conDecFiltering.getSelectedItems("status-dropdown-overview");
-        if (selectedStatus !== undefined && selectedStatus < conDecAPI.knowledgeStatus) {
+        if (selectedStatus !== undefined && selectedStatus.length < conDecAPI.knowledgeStatus.length) {
         	treeViewer.filterNodesByStatus(selectedStatus, "#jstree");
-        }        
+        }   
     }
 
     /*

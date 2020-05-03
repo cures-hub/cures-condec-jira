@@ -4,7 +4,7 @@
 	#parse("templates/filter/text.vm")
 
     <select id="select-root-element-type" name="select-root-element-type"
-            class="select short-field" onchange="conDecObservable.notify()"></select>
+            class="select short-field" onchange="conDecKnowledgePage.updateView()"></select>
     <input type="text" class="text medium-field"
            id="element-input-field" placeholder="$i18n.getText('condec.create.label')"/>
     <input type="button" id="create-element-button"
