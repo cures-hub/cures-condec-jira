@@ -107,6 +107,12 @@
 		<!-- Jira -->
 		<dependency>
 			<groupId>com.atlassian.jira</groupId>
+			<artifactId>jira-core</artifactId>
+			<version>8.5.3</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.atlassian.jira</groupId>
 			<artifactId>jira-api</artifactId>
 			<version>8.7.1</version>
 			<scope>provided</scope>
