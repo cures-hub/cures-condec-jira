@@ -66,4 +66,12 @@ public class TestKnowledgeStatus {
 				KnowledgeStatus.getNewKnowledgeTypeForStatus(KnowledgeStatus.IDEA, KnowledgeType.DECISION));
 	}
 
+	@Test
+	public void testGetColor() {
+		assertEquals("red", KnowledgeStatus.UNRESOLVED.getColor());
+		assertEquals("red", KnowledgeStatus.UNDEFINED.getColor());
+		assertEquals("gray", KnowledgeStatus.DISCARDED.getColor());
+		assertEquals("gray", KnowledgeStatus.REJECTED.getColor());
+	}
+
 }

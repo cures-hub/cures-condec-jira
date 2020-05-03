@@ -25,7 +25,8 @@ import com.atlassian.query.Query;
 
 /**
  * Handles queries in Jira, either written in Jira Query Language (JQL) or as a
- * preset filter (can also be set by the user).
+ * preset filter (can also be set by the user). Helps to parse a query into a
+ * {@link FilterSettings} object.
  */
 public class JiraQueryHandler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraQueryHandler.class);

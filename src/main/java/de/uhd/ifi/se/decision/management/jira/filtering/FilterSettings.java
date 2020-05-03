@@ -57,6 +57,7 @@ public class FilterSettings {
 	public FilterSettings(String projectKey, String query, ApplicationUser user) {
 		this(projectKey, query);
 
+		// The JiraQueryHandler parses a Jira query into attributes of this class
 		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, query);
 		this.searchTerm = queryHandler.getQuery();
 
