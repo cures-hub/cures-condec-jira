@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestVisTimeLineNode extends TestSetUp {
@@ -49,6 +50,7 @@ public class TestVisTimeLineNode extends TestSetUp {
 
 	@Test
 	public void testGetContent() {
+		element.setStatus(KnowledgeStatus.DECIDED);
 		assertEquals("<img src=" + '"' + element.getType().getIconUrl() + '"' + "> " + element.getSummary(),
 				timeNode.getContent());
 	}
@@ -89,7 +91,7 @@ public class TestVisTimeLineNode extends TestSetUp {
 	@Test
 	public void testGetAndSetGroup() {
 		timeNode.setGroup(19012);
-		assertEquals(19012, timeNode.getGroup(), 0.0);
+		assertEquals(19012, timeNode.getGroup());
 	}
 
 	@Test

@@ -2,6 +2,9 @@
 #set ($knowledgeTypeDropdownId = "issuetype-dropdown")	
 #parse("templates/filter/knowledgeType.vm")
 
+#set ($statusDropdownId = "status-dropdown")	
+#parse("templates/filter/status.vm")
+
 #set ($datepickerStartId = "created-after-picker")
 #set ($datepickerEndId = "created-before-picker")
 #parse("templates/filter/creationDate.vm")
