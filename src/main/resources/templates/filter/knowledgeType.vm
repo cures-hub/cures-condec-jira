@@ -1,4 +1,4 @@
-<button aria-controls="$knowledgeTypeDropdownId" class="aui-button aui-style-default aui-dropdown2-trigger" aria-haspopup="true">
+<button aria-controls="$knowledgeTypeDropdownId" class="aui-button aui-style-default aui-dropdown2-trigger short-field" aria-haspopup="true">
 	$i18n.getText('condec.label.knowledge.type')
 </button>
 <aui-dropdown-menu id="$knowledgeTypeDropdownId" style="overflow:auto;max-height:200px;"></aui-dropdown-menu>

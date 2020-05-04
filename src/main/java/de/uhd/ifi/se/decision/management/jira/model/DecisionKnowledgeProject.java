@@ -40,7 +40,9 @@ public class DecisionKnowledgeProject {
 	}
 
 	public DecisionKnowledgeProject(String projectKey) {
-		this.jiraProject = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
+		if (projectKey != null && !projectKey.isBlank()) {
+			this.jiraProject = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
+		}
 	}
 
 	/**
@@ -192,7 +194,7 @@ public class DecisionKnowledgeProject {
 	public Set<String> getJiraIssueTypeNames() {
 		Set<String> issueTypes = new HashSet<String>();
 		for (IssueType type : getJiraIssueTypes()) {
-			issueTypes.add(type.getName());
+			issueTypes.add(type.getNameTranslation());
 		}
 		return issueTypes;
 	}

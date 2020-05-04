@@ -79,7 +79,7 @@
             var status = node.data.treenode.text.status;
             if (redStatus.includes(status.toLowerCase())) {
                 for (var j = 1; j < node.childNodes.length - 1; j++) {
-                    node.childNodes[j].style.color = "red";
+                    node.childNodes[j].style.color = "gray";
                 }
             }
         }
