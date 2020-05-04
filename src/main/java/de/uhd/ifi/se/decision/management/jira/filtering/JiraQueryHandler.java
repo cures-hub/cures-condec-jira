@@ -5,7 +5,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +25,8 @@ import com.atlassian.query.Query;
 
 /**
  * Handles queries in Jira, either written in Jira Query Language (JQL) or as a
- * preset filter (can also be set by the user).
+ * preset filter (can also be set by the user). Helps to parse a query into a
+ * {@link FilterSettings} object.
  */
 public class JiraQueryHandler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraQueryHandler.class);
@@ -91,11 +95,11 @@ public class JiraQueryHandler {
 	 *         "issuetype in (Decision, Issue)". Returns an empty list for the query
 	 *         "type != null".
 	 */
-	public List<String> getNamesOfJiraIssueTypesInQuery() {
+	public Set<String> getNamesOfJiraIssueTypesInQuery() {
 		if (!query.contains("issuetype")) {
-			return new ArrayList<String>();
+			return new HashSet<String>();
 		}
-		List<String> types = new ArrayList<String>();
+		Set<String> types = new LinkedHashSet<String>();
 		String queryPartContainingTypes = query.split("issuetype")[1];
 		queryPartContainingTypes = queryPartContainingTypes.split("AND")[0];
 

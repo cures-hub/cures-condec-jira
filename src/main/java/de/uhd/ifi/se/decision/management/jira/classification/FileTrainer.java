@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.security.MessageDigest;
@@ -122,21 +121,19 @@ public interface FileTrainer {
 				int read;
 				byte[] bytes = new byte[1024];
 
+				if (!file.exists()) {
+					return file;
+				}
 				while ((read = inputStream.read(bytes)) != -1) {
 					new FileOutputStream(file).write(bytes, 0, read);
 				}
 				// System.out.println("Copied default preprocessing data to file. Message: " +
 				// file.getName());
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
 			System.out.println("Path: " + path + ", filename: " + filename + ", url: " + url);
 			System.err.println("Failed to copy data to file. Message: " + e.getMessage());
-
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
-
 		return file;
 	}
 

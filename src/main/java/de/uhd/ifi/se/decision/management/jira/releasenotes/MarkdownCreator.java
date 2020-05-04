@@ -42,7 +42,7 @@ public class MarkdownCreator {
 		String query = "?jql=project=" + projectKey + "&& key in(" + issueQuery + ")";
 		FilteringManager extractor = new FilteringManager(projectKey, user, query);
 		List<KnowledgeElement> elementsQueryLinked = new ArrayList<KnowledgeElement>();
-		elementsQueryLinked = extractor.getAllElementsMatchingFilterSettings();
+		elementsQueryLinked = extractor.getElementsMatchingFilterSettings();
 		return elementsQueryLinked;
 	}
 

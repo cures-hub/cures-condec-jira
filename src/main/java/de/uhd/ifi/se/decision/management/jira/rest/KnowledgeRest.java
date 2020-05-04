@@ -397,7 +397,7 @@ public class KnowledgeRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		FilteringManager filteringManager = new FilteringManager(projectKey, user, query);
-		List<KnowledgeElement> elementsMatchingQuery = filteringManager.getAllElementsMatchingFilterSettings();
+		List<KnowledgeElement> elementsMatchingQuery = filteringManager.getElementsMatchingFilterSettings();
 		return Response.ok(elementsMatchingQuery).build();
 	}
 

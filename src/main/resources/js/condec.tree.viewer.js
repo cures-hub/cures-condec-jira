@@ -158,7 +158,6 @@
             }
         });
     };
-
     /**
      * called by view.tab.panel.js locally
      */

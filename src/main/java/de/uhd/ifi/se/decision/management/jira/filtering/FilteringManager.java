@@ -19,6 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
 /**
  * Filters the {@link KnowledgeGraph}. The filter criteria are specified in the
@@ -35,13 +36,11 @@ public class FilteringManager {
 	}
 
 	public FilteringManager(ApplicationUser user, FilterSettings filterSettings) {
-		if (filterSettings == null || filterSettings.getProjectKey() == null) {
-			LOGGER.error("FilteringManager could not be created due to an invalid input.");
-			return;
-		}
 		this.user = user;
 		this.filterSettings = filterSettings;
-		this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
+		if (filterSettings != null) {
+			this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
+		}
 	}
 
 	public FilteringManager(String projectKey, ApplicationUser user, String query) {
@@ -51,11 +50,12 @@ public class FilteringManager {
 	/**
 	 * @return list of all knowledge elements that match the {@link FilterSetting}s.
 	 */
-	public List<KnowledgeElement> getAllElementsMatchingFilterSettings() {
-		if (filterSettings == null || filterSettings.getProjectKey() == null) {
+	public List<KnowledgeElement> getElementsMatchingFilterSettings() {
+		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null) {
+			LOGGER.error("FilteringManager misses important attributes.");
 			return new ArrayList<KnowledgeElement>();
 		}
-		String searchString = filterSettings.getSearchString().toLowerCase();
+		String searchString = filterSettings.getSearchTerm().toLowerCase();
 		if (JiraQueryType.getJiraQueryType(searchString) == JiraQueryType.OTHER) {
 			Set<KnowledgeElement> elements = graph.vertexSet();
 			return filterElements(elements);
@@ -68,12 +68,13 @@ public class FilteringManager {
 	 *         {@link FilterSetting}s.
 	 */
 	public AsSubgraph<KnowledgeElement, Link> getSubgraphMatchingFilterSettings() {
-		if (graph == null) {
+		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null) {
+			LOGGER.error("FilteringManager misses important attributes.");
 			return null;
 		}
-		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>(getAllElementsMatchingFilterSettings());
+		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>(getElementsMatchingFilterSettings());
 		AsSubgraph<KnowledgeElement, Link> subgraph = new AsSubgraph<KnowledgeElement, Link>(graph, elements);
-		if (filterSettings.getNamesOfSelectedLinkTypes().size() < filterSettings.getAllLinkTypes().size()) {
+		if (filterSettings.getLinkTypes().size() < LinkType.toStringList().size()) {
 			Set<Link> linksNotMatchingFilterSettings = getLinksNotMatchingFilterSettings(subgraph.edgeSet());
 			subgraph.removeAllEdges(linksNotMatchingFilterSettings);
 		}
@@ -83,7 +84,7 @@ public class FilteringManager {
 	private Set<Link> getLinksNotMatchingFilterSettings(Set<Link> links) {
 		Set<Link> linksNotMatchingFilterSettings = new HashSet<Link>();
 		for (Link link : links) {
-			if (!filterSettings.getNamesOfSelectedLinkTypes().contains(link.getType())) {
+			if (!filterSettings.getLinkTypes().contains(link.getType())) {
 				linksNotMatchingFilterSettings.add(link);
 			}
 		}
@@ -100,7 +101,7 @@ public class FilteringManager {
 			return null;
 		}
 		JiraQueryHandler queryHandler = new JiraQueryHandler(user, filterSettings.getProjectKey(),
-				filterSettings.getSearchString());
+				filterSettings.getSearchTerm());
 		if (queryHandler == null || queryHandler.getQueryType() == JiraQueryType.OTHER) {
 			return null;
 		}
@@ -108,6 +109,9 @@ public class FilteringManager {
 	}
 
 	private List<KnowledgeElement> getElementsInJiraIssuesMatchingFilterSettings(List<Issue> jiraIssues) {
+		if (graph == null) {
+			return null;
+		}
 		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
 
@@ -190,7 +194,7 @@ public class FilteringManager {
 	 *         {@link KnowledgeStatus} in the {@link FilterSetting}s.
 	 */
 	public boolean isElementMatchingStatusFilter(KnowledgeElement element) {
-		return filterSettings.getSelectedStatus().contains(element.getStatus());
+		return filterSettings.getStatus().contains(element.getStatus());
 	}
 
 	/**
@@ -218,7 +222,7 @@ public class FilteringManager {
 	 *         substring in the {@link FilterSetting}s.
 	 */
 	public boolean isElementMatchingSubStringFilter(KnowledgeElement element) {
-		String searchString = filterSettings.getSearchString().toLowerCase();
+		String searchString = filterSettings.getSearchTerm().toLowerCase();
 		if (JiraQueryType.getJiraQueryType(searchString) != JiraQueryType.OTHER) {
 			// JQL string or filter
 			return true;
@@ -246,7 +250,7 @@ public class FilteringManager {
 		if (element.getType() == KnowledgeType.OTHER) {
 			type = element.getTypeAsString();
 		}
-		return filterSettings.getNamesOfSelectedJiraIssueTypes().contains(type);
+		return filterSettings.getJiraIssueTypes().contains(type);
 	}
 
 	/**
@@ -257,7 +261,7 @@ public class FilteringManager {
 	 */
 	public boolean isElementMatchingDecisionGroupFilter(KnowledgeElement element) {
 		List<String> groups = element.getDecisionGroups();
-		List<String> selectedGroups = filterSettings.getSelectedDecGroups();
+		List<String> selectedGroups = filterSettings.getDecisionGroups();
 		int matches = 0;
 		for (String group : selectedGroups) {
 			if (groups.contains(group)) {

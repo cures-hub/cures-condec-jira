@@ -114,8 +114,8 @@ public class DecisionGroupManager {
 		DecisionGroupInDatabase[] groupsInDatabase = ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class);
 		for (DecisionGroupInDatabase databaseEntry : groupsInDatabase) {
 			String projectKey = databaseEntry.getProjectKey();
-			KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey).getKnowledgeElement(
-					databaseEntry.getSourceId(), databaseEntry.getSourceDocumentationLocation());
+			KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey)
+					.getKnowledgeElement(databaseEntry.getSourceId(), databaseEntry.getSourceDocumentationLocation());
 			if (element == null) {
 				isGroupDeleted = true;
 				DecisionGroupInDatabase.deleteGroup(databaseEntry);
@@ -239,7 +239,7 @@ public class DecisionGroupManager {
 		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
 			String elementGroup = groupInDatabase.getGroup();
 			if (groupInDatabase.getProjectKey().equals(projectKey) && !groups.contains(elementGroup)
-					&& !"".equals(elementGroup) && !" ".equals(elementGroup)) {
+					&& !elementGroup.isBlank()) {
 				groups.add(elementGroup);
 			}
 		}

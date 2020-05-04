@@ -39,7 +39,7 @@ public class VisTimeLine {
 			return;
 		}
 		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
-		List<KnowledgeElement> elements = filteringManager.getAllElementsMatchingFilterSettings();
+		List<KnowledgeElement> elements = filteringManager.getElementsMatchingFilterSettings();
 		addElements(elements);
 	}
 
