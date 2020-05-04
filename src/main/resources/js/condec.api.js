@@ -842,7 +842,7 @@
      * external references: settingsForSingleProject.vm
      */
    ConDecAPI.prototype.sendTestPost = function sendTestPost(projectKey){
-     postJSON(this.restPrefix + "/config/sendTestPost.json?projectKey=" + projectKey, null, function(error, response) {
+     postJSON(this.restPrefix + "/config/sendTestPost?projectKey=" + projectKey, null, function(error, response) {
         if (error === null) {
           showFlag("success", "The webhook test was send.");
         }

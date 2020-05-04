@@ -348,7 +348,7 @@ public class ConfigRest {
 	@Path("/sendTestPost")
 	@POST
 	public Response sendTestPost(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		//SH 		System.out.println("ConfigRest sendTestPost: projectKey:"+ projectKey);
+		//SH		System.out.println("ConfigRest sendTestPost: projectKey:"+ projectKey);
 
 		KnowledgeElement testElement = new KnowledgeElement();
 		testElement.setType(KnowledgeType.ISSUE);

@@ -62,7 +62,7 @@ public class WebhookConnector {
 		if(sendElement == null || event == null){
 			return false;
 		}
-		//SH 		System.out.println("WebhookConnector event: "+event+" ,sendElement WebhookType: "+sendElement.getTypeAsString());
+		//SH		System.out.println("WebhookConnector event: "+event+" ,sendElement WebhookType: "+sendElement.getTypeAsString());
 
 		boolean isSubmitted = false;
 
@@ -77,7 +77,7 @@ public class WebhookConnector {
 			isSubmitted = postKnowledgeElement(sendElement, event);
 			return isSubmitted;
 		}
-		return false;
+		return isSubmitted;
 
 	}
 
@@ -165,7 +165,7 @@ public class WebhookConnector {
  * Is Used for Slack
  */
 	private boolean postKnowledgeElement(KnowledgeElement changedElement, String event) {
-		//SH 		System.out.println("WebhookConnector postKnowledgeElement: "+event+" ,sendElement: "+changedElement.getTypeAsString());
+		//SH		System.out.println("WebhookConnector postKnowledgeElement: "+event+" ,sendElement: "+changedElement.getTypeAsString());
 		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack(projectKey, changedElement, type);
 		PostMethod postMethod = provider.createPostMethodForSlack(changedElement, event);
 		try {
