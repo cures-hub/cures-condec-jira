@@ -264,7 +264,7 @@
 				"status": status
 			};
 			var parentElement = conDecTreant.findParentElement(id);
-			postJSON(this.restPrefix + "/knowledge/updateDecisionKnowledgeElement.json?idOfParentElement="
+			generalApi.postJSON(this.restPrefix + "/knowledge/updateDecisionKnowledgeElement.json?idOfParentElement="
 				+ parentElement["id"] + "&documentationLocationOfParentElement="
 				+ parentElement["documentationLocation"], element, function (error, response) {
 				if (error === null) {
@@ -280,12 +280,12 @@
 			// first we need the boards then we can get the Sprints for each board
 			return new Promise(function (resolve, reject) {
 				var boardUrl = "/rest/agile/latest/board?projectKeyOrId=" + projectKey;
-				var boardPromise = getJSONReturnPromise(AJS.contextPath() + boardUrl);
+				var boardPromise = generalApi.getJSONReturnPromise(AJS.contextPath() + boardUrl);
 				boardPromise.then(function (boards) {
 					if (boards && boards.values && boards.values.length) {
 						var sprintPromises = boards.values.map(function (board) {
 							var sprintUrl = "/rest/agile/latest/board/" + board.id + "/sprint";
-							return getJSONReturnPromise(AJS.contextPath() + sprintUrl);
+							return generalApi.getJSONReturnPromise(AJS.contextPath() + sprintUrl);
 						});
 						Promise.all(sprintPromises)
 							.then(function (sprints) {
@@ -305,7 +305,7 @@
 			// first we need the boards then we can get the Sprints for each board
 			return new Promise(function (resolve, reject) {
 				var issueTypeUrl = "/rest/api/2/issue/createmeta?expand=projects.issuetypes";
-				var issuePromise = getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
+				var issuePromise = generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
 				issuePromise.then(function (result) {
 					if (result && result.projects && result.projects.length) {
 						var correctIssueTypes = result.projects.filter(function (project) {
@@ -496,115 +496,115 @@
 				});
 		};
 
-    /*
-     * external references: condec.vis
-     */
-    ConDecAPI.prototype.getVis = function getVis(elementKey, searchTerm, callback) {
-        this.getVisFiltered(elementKey, null, null, null, -1, -1, null, null, callback);
-    };
+		/*
+		 * external references: condec.vis
+		 */
+		ConDecAPI.prototype.getVis = function getVis(elementKey, searchTerm, callback) {
+			this.getVisFiltered(elementKey, null, null, null, -1, -1, null, null, callback);
+		};
 
-    /*
-     * external references: condec.vis
-     */
-    ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, jiraIssueTypes, status,
-                                                                 createdAfter, createdBefore, linkTypes, documentationLocations, callback) {
-        var filterSettings = {
-            "projectKey": projectKey,
-            "searchTerm": searchTerm,
-            "createdEarliest": createdBefore,
-            "createdLatest": createdAfter,
-            "documentationLocations": documentationLocations,
-            "jiraIssueTypes": jiraIssueTypes,
-            "status": status,
-            "linkTypes": linkTypes
-        };
-        postJSON(this.restPrefix + "/view/getVis.json?elementKey=" + elementKey,
-            filterSettings, function (error, vis) {
-                if (error === null) {
-                    callback(vis);
-                }
-            });
-    };
+		/*
+		 * external references: condec.vis
+		 */
+		ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, jiraIssueTypes, status,
+																	 createdAfter, createdBefore, linkTypes, documentationLocations, callback) {
+			var filterSettings = {
+				"projectKey": projectKey,
+				"searchTerm": searchTerm,
+				"createdEarliest": createdBefore,
+				"createdLatest": createdAfter,
+				"documentationLocations": documentationLocations,
+				"jiraIssueTypes": jiraIssueTypes,
+				"status": status,
+				"linkTypes": linkTypes
+			};
+			postJSON(this.restPrefix + "/view/getVis.json?elementKey=" + elementKey,
+				filterSettings, function (error, vis) {
+					if (error === null) {
+						callback(vis);
+					}
+				});
+		};
 
-    /*
-     * external reference: condec.evolution.page.js
-     */
-    ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed, searchTerm, knowledgeTypes, status, callback) {
-        var filterSettings = {
-            "projectKey": projectKey,
-            "searchTerm": searchTerm,
-            "createdEarliest": created,
-            "createdLatest": closed,
-            "documentationLocations": null,
-            "jiraIssueTypes": knowledgeTypes,
-            "status": status
-        };
-        postJSON(this.restPrefix + "/view/getCompareVis.json", filterSettings, function (error,
-                                                                                         vis) {
-            if (error === null) {
-                vis.nodes.sort(function (a, b) {
-                    if (a.id > b.id) {
-                        return 1;
-                    }
-                    if (a.id < b.id) {
-                        return -1;
-                    }
-                    return 0;
-                });
-                callback(vis);
-            }
-        });
-    };
-    /*
-     * external reference: condec.jira.issue.module
-     */
-    ConDecAPI.prototype.getFilterSettings = function getFilterSettings(elementKey, searchTerm, callback) {
-        getJSON(this.restPrefix + "/view/getFilterSettings.json?elementKey=" + elementKey
-            + "&searchTerm=" + searchTerm, function (error, filterSettings) {
-            if (error === null) {
-                callback(filterSettings);
-            }
-        });
-    };
+		/*
+		 * external reference: condec.evolution.page.js
+		 */
+		ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed, searchTerm, knowledgeTypes, status, callback) {
+			var filterSettings = {
+				"projectKey": projectKey,
+				"searchTerm": searchTerm,
+				"createdEarliest": created,
+				"createdLatest": closed,
+				"documentationLocations": null,
+				"jiraIssueTypes": knowledgeTypes,
+				"status": status
+			};
+			postJSON(this.restPrefix + "/view/getCompareVis.json", filterSettings, function (error,
+																							 vis) {
+				if (error === null) {
+					vis.nodes.sort(function (a, b) {
+						if (a.id > b.id) {
+							return 1;
+						}
+						if (a.id < b.id) {
+							return -1;
+						}
+						return 0;
+					});
+					callback(vis);
+				}
+			});
+		};
+		/*
+		 * external reference: condec.jira.issue.module
+		 */
+		ConDecAPI.prototype.getFilterSettings = function getFilterSettings(elementKey, searchTerm, callback) {
+			getJSON(this.restPrefix + "/view/getFilterSettings.json?elementKey=" + elementKey
+				+ "&searchTerm=" + searchTerm, function (error, filterSettings) {
+				if (error === null) {
+					callback(filterSettings);
+				}
+			});
+		};
 
-    /*
-     * external references: condec.tab.panel
-     */
-    ConDecAPI.prototype.getTreeViewerForSingleElement = function getTreeViewerForSingleElement(jiraIssueKey, knowledgeTypes, callback) {
-        var filterSettings = {
-            "projectKey": projectKey,
-            "jiraIssueTypes": knowledgeTypes
-        };
-        postJSON(this.restPrefix + "/view/getTreeViewerForSingleElement.json?jiraIssueKey=" + jiraIssueKey, filterSettings, function (error, core) {
-            if (error === null) {
-                callback(core);
-            }
-        });
-    };
+		/*
+		 * external references: condec.tab.panel
+		 */
+		ConDecAPI.prototype.getTreeViewerForSingleElement = function getTreeViewerForSingleElement(jiraIssueKey, knowledgeTypes, callback) {
+			var filterSettings = {
+				"projectKey": projectKey,
+				"jiraIssueTypes": knowledgeTypes
+			};
+			postJSON(this.restPrefix + "/view/getTreeViewerForSingleElement.json?jiraIssueKey=" + jiraIssueKey, filterSettings, function (error, core) {
+				if (error === null) {
+					callback(core);
+				}
+			});
+		};
 
-    /*
-     * external references: condec.evolution.page
-     */
-    ConDecAPI.prototype.getEvolutionData = function getEvolutionData(searchTerm, created, closed, issueTypes, issueStatus, decGroups,
-                                                                     callback) {
+		/*
+		 * external references: condec.evolution.page
+		 */
+		ConDecAPI.prototype.getEvolutionData = function getEvolutionData(searchTerm, created, closed, issueTypes, issueStatus, decGroups,
+																		 callback) {
 
-        var filterSettings = {
-            "projectKey": projectKey,
-            "searchTerm": searchTerm,
-            "createdEarliest": created,
-            "createdLatest": closed,
-            "documentationLocations": null,
-            "jiraIssueTypes": issueTypes,
-            "status": issueStatus,
-            "groups": decGroups
-        };
-        postJSON(this.restPrefix + "/view/getEvolutionData.json", filterSettings, function (
-            error, evolutionData) {
-            if (error === null) {
-                callback(evolutionData);
-            }
-        });
-    };
+			var filterSettings = {
+				"projectKey": projectKey,
+				"searchTerm": searchTerm,
+				"createdEarliest": created,
+				"createdLatest": closed,
+				"documentationLocations": null,
+				"jiraIssueTypes": issueTypes,
+				"status": issueStatus,
+				"groups": decGroups
+			};
+			postJSON(this.restPrefix + "/view/getEvolutionData.json", filterSettings, function (
+				error, evolutionData) {
+				if (error === null) {
+					callback(evolutionData);
+				}
+			});
+		};
 
 		/*
 		 * external references: condec.relationship.page
@@ -613,17 +613,17 @@
 			this.getDecisionGraphFiltered(null, "", [], callback);
 		};
 
-    /*
-     * external references: condec.relationship.page
-     */
-    ConDecAPI.prototype.getDecisionGraph = function getDecisionGraph(callback) {
-        this.getDecisionGraphFiltered(null, "", null, [], callback);
-    };
+		/*
+		 * external references: condec.relationship.page
+		 */
+		ConDecAPI.prototype.getDecisionGraph = function getDecisionGraph(callback) {
+			this.getDecisionGraphFiltered(null, "", null, [], callback);
+		};
 
-    /*
-     * external references: condec.relationship.page
-     */
-    ConDecAPI.prototype.getDecisionGraphFiltered = function getDecisionGraphFiltered(linkTypes, searchTerm, status, decGroups, callback) {
+		/*
+		 * external references: condec.relationship.page
+		 */
+		ConDecAPI.prototype.getDecisionGraphFiltered = function getDecisionGraphFiltered(linkTypes, searchTerm, status, decGroups, callback) {
 
 			var filterSettings = {
 				"projectKey": projectKey,
@@ -637,18 +637,23 @@
 				"selectedDecGroups": decGroups
 			};
 
-        var filterSettings = {
-            "projectKey": projectKey,
-            "searchTerm": searchTerm,
-            "createdEarliest": -1,
-            "createdLatest": -1,
-            "documentationLocations": null,
-            "jiraIssueTypes": ["Decision"],
-            "status": status,
-            "linkTypes": linkTypes,
-            "groups": decGroups
-        };
-
+			var filterSettings = {
+				"projectKey": projectKey,
+				"searchTerm": searchTerm,
+				"createdEarliest": -1,
+				"createdLatest": -1,
+				"documentationLocations": null,
+				"jiraIssueTypes": ["Decision"],
+				"status": status,
+				"linkTypes": linkTypes,
+				"groups": decGroups
+			};
+			generalApi.postJSON(this.restPrefix + "/view/getDecisionGraph.json?", filterSettings, function (error, graph) {
+				if (error == null) {
+					callback(graph);
+				}
+			});
+		};
 		/*
 		 * external references: settingsForSingleProject.vm,
 		 * settingsForAllProjects.vm
@@ -991,7 +996,7 @@
 		};
 
 		function getLinkTypes(projectKey) {
-			var linkTypes = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getLinkTypes.json?projectKey=" + projectKey);
+			var linkTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getLinkTypes.json?projectKey=" + projectKey);
 			if (linkTypes !== null) {
 				var linkTypeArray = [];
 				for (var link in linkTypes) {
@@ -1023,7 +1028,7 @@
 
 		ConDecAPI.prototype.getDecisionGroups = function getDecisionGroups(id, location, inputExistingGroupsField, selectLevelField, callback) {
 			var projectKey = getProjectKey();
-			var decisionGroups = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getDecisionGroups.json?elementId=" + id
+			var decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getDecisionGroups.json?elementId=" + id
 				+ "&location=" + location + "&projectKey=" + projectKey);
 			callback(selectLevelField, inputExistingGroupsField, decisionGroups);
 		};
@@ -1050,7 +1055,7 @@
 
 		function getAllDecisionGroups(selectGroupField, callback) {
 			var projectKey = getProjectKey();
-			var decisionGroups = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey=" + projectKey);
+			var decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey=" + projectKey);
 			callback(selectGroupField, decisionGroups);
 		};
 		/*
@@ -1163,34 +1168,34 @@
 				+ projectKey + "&id=" + id, null);
 		};
 
-    /*
-     * external references: condec.context.menu
-     */
-    ConDecAPI.prototype.openJiraIssue = function openJiraIssue(elementId, documentationLocation) {
-        this.getDecisionKnowledgeElement(elementId, documentationLocation, function (knowledgeElement) {
-            global.open(knowledgeElement.url);
-        });
-    };
-    
-    /*
-     * external references: condec.release.note.page
-     */
-    ConDecAPI.prototype.getReleaseNotes = function getReleaseNotes(callback) {
-        var projectKey = getProjectKey();
-        getJSON(this.restPrefix + "/release-note/getReleaseNotes.json?projectKey="
-            + projectKey, function (error, elements) {
-            if (error === null) {
-                callback(elements);
-            }
-        });
-    };
-    /*
-     * external references: condec.dialog
-     */
-    ConDecAPI.prototype.getProposedIssues = function getReleaseNotes(releaseNoteConfiguration) {
-        return postJSONReturnPromise(this.restPrefix + "/release-note/getProposedIssues.json?projectKey="
-            + projectKey, releaseNoteConfiguration);
-    };
+		/*
+		 * external references: condec.context.menu
+		 */
+		ConDecAPI.prototype.openJiraIssue = function openJiraIssue(elementId, documentationLocation) {
+			this.getDecisionKnowledgeElement(elementId, documentationLocation, function (knowledgeElement) {
+				global.open(knowledgeElement.url);
+			});
+		};
+
+		/*
+		 * external references: condec.release.note.page
+		 */
+		ConDecAPI.prototype.getReleaseNotes = function getReleaseNotes(callback) {
+			var projectKey = getProjectKey();
+			getJSON(this.restPrefix + "/release-note/getReleaseNotes.json?projectKey="
+				+ projectKey, function (error, elements) {
+				if (error === null) {
+					callback(elements);
+				}
+			});
+		};
+		/*
+		 * external references: condec.dialog
+		 */
+		ConDecAPI.prototype.getProposedIssues = function getReleaseNotes(releaseNoteConfiguration) {
+			return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/getProposedIssues.json?projectKey="
+				+ projectKey, releaseNoteConfiguration);
+		};
 
 		ConDecAPI.prototype.getReleaseNotesById = function getReleaseNotesById(id) {
 			return generalApi.getJSONReturnPromise(this.restPrefix + "/release-note/getReleaseNote.json?projectKey="
@@ -1253,24 +1258,24 @@
 		 * external references: condec.dialog
 		 */
 		ConDecAPI.prototype.getProposedIssues = function getReleaseNotes(releaseNoteConfiguration) {
-			return postJSONReturnPromise(this.restPrefix + "/release-note/getProposedIssues.json?projectKey="
+			return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/getProposedIssues.json?projectKey="
 				+ projectKey, releaseNoteConfiguration);
 		};
 
 		ConDecAPI.prototype.postProposedKeys = function postProposedKeys(proposedKeys) {
-			return postJSONReturnPromise(this.restPrefix + "/release-note/postProposedKeys.json?projectKey="
+			return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/postProposedKeys.json?projectKey="
 				+ projectKey, proposedKeys);
 		};
 		ConDecAPI.prototype.createReleaseNote = function createReleaseNote(content) {
-			return postJSONReturnPromise(this.restPrefix + "/release-note/createReleaseNote.json?projectKey="
+			return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/createReleaseNote.json?projectKey="
 				+ projectKey, content);
 		};
 		ConDecAPI.prototype.updateReleaseNote = function updateReleaseNote(releaseNote) {
-			return postJSONReturnPromise(this.restPrefix + "/release-note/updateReleaseNote.json?projectKey="
+			return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/updateReleaseNote.json?projectKey="
 				+ projectKey, releaseNote)
 		};
 		ConDecAPI.prototype.deleteReleaseNote = function deleteReleaseNote(id) {
-			return deleteJSONReturnPromise(this.restPrefix + "/release-note/deleteReleaseNote.json?projectKey="
+			return generalApi.deleteJSONReturnPromise(this.restPrefix + "/release-note/deleteReleaseNote.json?projectKey="
 				+ projectKey + "&id=" + id, null);
 		};
 
@@ -1293,13 +1298,14 @@
 		}
 
 		ConDecAPI.prototype.getReleaseNotesById = function getReleaseNotesById(id) {
-			return getJSONReturnPromise(this.restPrefix + "/release-note/getReleaseNote.json?projectKey="
+			return generalApi.getJSONReturnPromise(this.restPrefix + "/release-note/getReleaseNote.json?projectKey="
 				+ projectKey + "&id=" + id);
 		};
 		ConDecAPI.prototype.getAllReleaseNotes = function getAllReleaseNotes(query) {
-			return getJSONReturnPromise(this.restPrefix + "/release-note/getAllReleaseNotes.json?projectKey="
+			return generalApi.getJSONReturnPromise(this.restPrefix + "/release-note/getAllReleaseNotes.json?projectKey="
 				+ projectKey + "&query=" + query);
 		};
+
 		function getIssueKey() {
 			var issueKey = null;
 			if (JIRA && JIRA.Issue && JIRA.Issue.getIssueKey) {
@@ -1355,6 +1361,22 @@
 		 * external references: relatedIssuesTab.vm
 		 */
 		ConDecAPI.prototype.getProjectKey = getProjectKey;
+
+		var showFlag = function(type, message, status) {
+			if (status === null || status === undefined) {
+				status = "";
+			}
+			AJS.flag({
+				type: type,
+				close: "auto",
+				title: type.charAt(0).toUpperCase() + type.slice(1) + " " + status,
+				body: message
+			});
+		};
+
+		ConDecAPI.prototype.showFlag = showFlag
+
+
 
 		// export ConDecAPI
 		global.conDecAPI = new ConDecAPI();
