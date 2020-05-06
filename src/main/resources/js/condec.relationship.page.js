@@ -33,8 +33,8 @@
 		});
 	};
 
-	ConDecRelationshipPage.prototype.buildDecisionGraphFiltered = function(linkTypes, searchString, selectedGroups) {
-		conDecAPI.getDecisionGraphFiltered(linkTypes, searchString, selectedGroups, function (knowledgeGraph) {
+	ConDecRelationshipPage.prototype.buildDecisionGraphFiltered = function(linkTypes, searchString, status, selectedGroups) {
+		conDecAPI.getDecisionGraphFiltered(linkTypes, searchString, status, selectedGroups, function (knowledgeGraph) {
 			buildGraphNetwork(knowledgeGraph);
 		});
 	};
@@ -44,24 +44,25 @@
 	}
 
 	function addOnClickEventToDecisionLinkFilterButton() {
-		var linkTypes = conDecAPI.getLinkTypesSync();
-		conDecFiltering.initDropdown("linktype-dropdown", linkTypes);
+		conDecFiltering.initDropdown("linktype-dropdown", conDecAPI.linkTypes);
+		conDecFiltering.initDropdown("status-dropdown-graph", conDecAPI.knowledgeStatus);
 
 		var filterButton = document.getElementById("filterDecisionLinks-button");
 
 		filterButton.addEventListener("click", function(event) {
 			var linkTypes = conDecFiltering.getSelectedItems("linktype-dropdown");
+			var status = conDecFiltering.getSelectedItems("status-dropdown-graph");
 			var searchString = document.getElementById("decision-search-input").value;
 			
 			var selectedGroupsObj = $('#select2-decision-group-relationshipView').select2('data');
 			var selectedGroups = [];
-			for(var i=0; i<= selectedGroupsObj.length; i++){
+			for (var i=0; i<= selectedGroupsObj.length; i++){
 				if(selectedGroupsObj[i]){
 					selectedGroups[i] = selectedGroupsObj[i].text;				
 				}
 			}
 			
-			conDecRelationshipPage.buildDecisionGraphFiltered(linkTypes, searchString, selectedGroups);
+			conDecRelationshipPage.buildDecisionGraphFiltered(linkTypes, searchString, status, selectedGroups);
 		});
 	}
 

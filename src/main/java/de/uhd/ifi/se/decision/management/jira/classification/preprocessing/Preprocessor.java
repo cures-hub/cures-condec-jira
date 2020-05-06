@@ -62,14 +62,23 @@ public class Preprocessor {
 		File tokenizerFile = new File(Preprocessor.DEFAULT_DIR + "token.bin");
 		File posFile = new File(Preprocessor.DEFAULT_DIR + "pos.bin");
 		try {
+			if (!lemmatizerFile.exists()) {
+				return;
+			}
 			InputStream lemmatizerModelIn = new FileInputStream(lemmatizerFile);
 			this.lemmatizer = new DictionaryLemmatizer(lemmatizerModelIn);
 			// lemmatizerModel = new LemmatizerModel(modelIn);
 
+			if (!tokenizerFile.exists()) {
+				return;
+			}
 			InputStream tokenizerModelIn = new FileInputStream(tokenizerFile);
 			TokenizerModel tokenizerModel = new TokenizerModel(tokenizerModelIn);
 			this.tokenizer = new TokenizerME(tokenizerModel);
 
+			if (!posFile.exists()) {
+				return;
+			}
 			InputStream posModelIn = new FileInputStream(posFile);
 			POSModel posModel = new POSModel(posModelIn);
 			this.tagger = new POSTaggerME(posModel);

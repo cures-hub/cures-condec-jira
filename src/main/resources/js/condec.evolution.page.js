@@ -27,6 +27,7 @@
 		console.log("ConDec build timeline");
 		conDecFiltering.initDropdown("knowledge-type-dropdown-chronology", conDecAPI.knowledgeTypes);
 		conDecFiltering.initDropdown("status-dropdown-chronology", conDecAPI.knowledgeStatus);
+		conDecAPI.fillDecisionGroupSelect("select2-decision-group-chrono");
 		conDecAPI.getEvolutionData("", -1, -1, conDecAPI.knowledgeTypes, conDecAPI.knowledgeStatus, [], function(
 				evolutionData) {
 			var container = document.getElementById('evolution-timeline');
@@ -53,7 +54,6 @@
 				conDecContextMenu.createContextMenu(nodeId, documentationLocation, properties.event, "evolution-timeline");
 			});
 		});
-		conDecAPI.fillDecisionGroupSelect("select2-decision-group-chrono");
 		addOnClickEventToFilterTimeLineButton();
 	};
 
