@@ -11,7 +11,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.atlassian.jira.user.ApplicationUser;
-
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -89,7 +88,7 @@ public class Treant {
 				}
 			}
 		} else {
-			if (checkboxflag) {
+			if (!checkboxflag) {
 				for (Link link : element.getLinks()) {
 					KnowledgeElement targetElement = link.getTarget();
 					List<Link> elementLinks = GenericLinkManager.getOutwardLinks(targetElement);

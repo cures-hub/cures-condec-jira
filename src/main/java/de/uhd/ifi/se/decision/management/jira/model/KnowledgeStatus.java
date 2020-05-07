@@ -14,8 +14,7 @@ public enum KnowledgeStatus {
 	/**
 	 * Converts a string to a knowledge status.
 	 *
-	 * @param status
-	 *            as a String.
+	 * @param status as a String.
 	 * @return knowledge status.
 	 */
 	public static KnowledgeStatus getKnowledgeStatus(String status) {
@@ -47,25 +46,24 @@ public enum KnowledgeStatus {
 	}
 
 	/**
-	 * @param type
-	 *            {@link KnowledgeType} object.
+	 * @param type {@link KnowledgeType} object.
 	 * @return default status that is set when a new decision knowledge element is
-	 *         created. The default status for alternatives is "idea", for decision
-	 *         is "decided", and for issues is "unresolved".
+	 * created. The default status for alternatives is "idea", for decision
+	 * is "decided", and for issues is "unresolved".
 	 */
 	public static KnowledgeStatus getDefaultStatus(KnowledgeType type) {
 		if (type == null) {
 			return UNDEFINED;
 		}
 		switch (type) {
-		case ISSUE:
-			return UNRESOLVED;
-		case DECISION:
-			return DECIDED;
-		case ALTERNATIVE:
-			return IDEA;
-		default:
-			return UNDEFINED;
+			case ISSUE:
+				return UNRESOLVED;
+			case DECISION:
+				return DECIDED;
+			case ALTERNATIVE:
+				return IDEA;
+			default:
+				return UNDEFINED;
 		}
 	}
 
@@ -73,20 +71,18 @@ public enum KnowledgeStatus {
 	 * If the knowledge type changes, the status might change as well. For example,
 	 * when an alternative is picked as the decision, the status changes to
 	 * "decided".
-	 * 
-	 * @param formerElement
-	 *            {@link KnowledgeElement} before the change.
-	 * @param newElement
-	 *            {@link KnowledgeElement} after it was updated.
+	 *
+	 * @param formerElement {@link KnowledgeElement} before the change.
+	 * @param newElement    {@link KnowledgeElement} after it was updated.
 	 * @return new status after the change of the {@link KnowledgeType}.
 	 */
 	public static KnowledgeStatus getNewKnowledgeStatusForType(KnowledgeElement formerElement,
-			KnowledgeElement newElement) {
+															   KnowledgeElement newElement) {
 		return getNewKnowledgeStatusForType(formerElement.getType(), newElement.getType(), newElement.getStatus());
 	}
 
 	public static KnowledgeStatus getNewKnowledgeStatusForType(KnowledgeType formerType, KnowledgeType newType,
-			KnowledgeStatus newStatus) {
+															   KnowledgeStatus newStatus) {
 		if (formerType == KnowledgeType.DECISION && newType == KnowledgeType.ALTERNATIVE) {
 			return REJECTED;
 		}
@@ -100,11 +96,10 @@ public enum KnowledgeStatus {
 	 * If the knowledge status changes, the knowledge type might change as well. For
 	 * example, when the status of an alternative is changed to "decided", the
 	 * alternative becomes a decision.
-	 * 
-	 * @param newElement
-	 *            {@link KnowledgeElement} after it was updated.
+	 *
+	 * @param newElement {@link KnowledgeElement} after it was updated.
 	 * @return new {@link KnowledgeType} after the change of the
-	 *         {@link KnowledgeStatus}.
+	 * {@link KnowledgeStatus}.
 	 */
 	public static KnowledgeType getNewKnowledgeTypeForStatus(KnowledgeElement newElement) {
 		return getNewKnowledgeTypeForStatus(newElement.getStatus(), newElement.getType());
@@ -141,16 +136,14 @@ public enum KnowledgeStatus {
 
 	public String getColor() {
 		switch (this) {
-		case UNRESOLVED:
-			return "red";
-		case UNDEFINED:
-			return "red";
-		case DISCARDED:
-			return "gray";
-		case REJECTED:
-			return "gray";
-		default:
-			return "";
+			case UNRESOLVED:
+				return "red";
+			case DISCARDED:
+				return "gray";
+			case REJECTED:
+				return "gray";
+			default:
+				return "";
 		}
 	}
 }
