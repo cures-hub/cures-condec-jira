@@ -2,6 +2,10 @@ package de.uhd.ifi.se.decision.management.jira.webhook;
 
 import java.io.UnsupportedEncodingException;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.properties.APKeys;
+import com.atlassian.jira.config.properties.ApplicationProperties;
+
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
@@ -32,16 +36,43 @@ public class WebhookContentProviderForSlack extends AbstractWebookContentProvide
  /**
   *
   */
-	public String createWebhookDataForSlack(KnowledgeElement changedElement, String event) {
-		if (changedElement == null || changedElement.getSummary() == null || changedElement.getType() == null
-				|| changedElement.getUrl() == null) {
+	public String createWebhookDataForSlack(String event) {
+		if (this.knowledgeElement == null || this.knowledgeElement.getSummary() == null || this.knowledgeElement.getType() == null
+				|| this.knowledgeElement.getUrl() == null) {
 			return "";
 		}
-		String summary = changedElement.getSummary();
+		String summary = this.knowledgeElement.getSummary();
 		if (summary.contains("{")) {
 			summary = this.cutSummary(summary);
 		}
 		String intro = "";
+		intro = getIntro(event);
+
+		String project = this.knowledgeElement.getProject().getProjectKey();
+
+		String url ="";
+
+		if("test".equals(event)){
+		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
+		url =  applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/"+ this.projectKey;
+	}else{
+		url = this.knowledgeElement.getUrl();
+	}
+
+		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'" + project + " : " + intro + "'}},"
+				+ "{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :" + this.knowledgeElement.getType() + ":  "
+				+ this.knowledgeElement.getType() + " \\n *Titel*: " + summary + "\\n'}";
+				if(!"test".equals(event)){
+				data += ",'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '" + url + "'}" ;
+			  }
+				data += "}]}";
+
+		return data;
+	}
+
+	private String getIntro(String event){
+		String intro = "";
+
 		if ("new".equals(event)) {
 			intro = "Neues Entscheidungswissen wurde in Jira dokumentiert:";
 		}
@@ -51,17 +82,7 @@ public class WebhookContentProviderForSlack extends AbstractWebookContentProvide
 		if ("test".equals(event)) {
 			intro = "TESTPOST, changed decision knowledge will be shown like this:";
 		}
-
-		String project = changedElement.getProject().getProjectKey();
-
-		String url = changedElement.getUrl();
-
-		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'" + project + " : " + intro + "'}},"
-				+ "{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :" + changedElement.getType() + ":  "
-				+ changedElement.getType() + " \\n *Titel*: " + summary + "\\n'},"
-				+ "'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '" + url
-				+ "'}}]}";
-		return data;
+		return intro;
 	}
 
 	/**
@@ -72,16 +93,16 @@ public class WebhookContentProviderForSlack extends AbstractWebookContentProvide
 		if (knowledgeElement == null) {
 			return new PostMethod();
 		}
-		return createPostMethodForSlack(this.knowledgeElement, "new");
+		return createPostMethodForSlack("new");
 	}
 
-	public PostMethod createPostMethodForSlack(KnowledgeElement changedElement, String event) {
+	public PostMethod createPostMethodForSlack(String event) {
 		PostMethod postMethod = new PostMethod();
-		if (projectKey == null || changedElement == null || type == null || event == null) {
+		if (projectKey == null || this.knowledgeElement == null || type == null || event == null) {
 			return postMethod;
 		}
 
-		String	webhookData = createWebhookDataForSlack(this.knowledgeElement, event);
+		String	webhookData = createWebhookDataForSlack(event);
 
 		if (webhookData == null || webhookData.isBlank()) {
 			return postMethod;
@@ -97,6 +118,15 @@ public class WebhookContentProviderForSlack extends AbstractWebookContentProvide
 		postMethod.setRequestHeader(header);
 
 		return postMethod;
+	}
+
+
+	@Override
+	public PostMethod createTestPostMethod(){
+		PostMethod postMethod = createPostMethodForSlack("test");
+
+		return postMethod ;
+
 	}
 
 	/**

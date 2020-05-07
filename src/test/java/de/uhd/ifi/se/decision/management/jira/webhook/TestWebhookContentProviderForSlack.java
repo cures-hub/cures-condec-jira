@@ -109,7 +109,7 @@ public class TestWebhookContentProviderForSlack extends TestSetUp {
 				+ "'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '"
 				+ knowledgeElement.getUrl() + "'}}]}";
 
-		assertEquals(data, provider.createWebhookDataForSlack(knowledgeElement, "new"));
+		assertEquals(data, provider.createWebhookDataForSlack("new"));
 	}
 
 	@Test
@@ -125,28 +125,27 @@ public class TestWebhookContentProviderForSlack extends TestSetUp {
 				+ "'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '"
 				+ knowledgeElement.getUrl() + "'}}]}";
 
-		assertEquals(data, provider.createWebhookDataForSlack(knowledgeElement, "changed"));
+		assertEquals(data, provider.createWebhookDataForSlack("changed"));
 	}
 
   @Test
 	@NonTransactional
 	public void testCreateWebhookDataForSlackTestElement() {
-    KnowledgeElement testElement =new KnowledgeElement(1, "TEST", "i");
+    KnowledgeElement testElement = new KnowledgeElement(1, "TEST", "i");
 		testElement.setType(KnowledgeType.ISSUE);
-		testElement.setDescription("Test descirption");
 		testElement.setSummary("Test Summary");
-		testElement.setKey("TEST");
 
-		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", knowledgeElement, WebhookType.SLACK);
+		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", testElement, WebhookType.SLACK);
 
-    String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'" + "TEST" + " : "
-         + "TESTPOST, changed decision knowledge will be shown like this:" + "'}},"
+    String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'"
+         + "TEST : TESTPOST, changed decision knowledge will be shown like this:" + "'}},"
     		 + "{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :" + testElement.getType() + ":  "
-    		 + testElement.getType() + " \\n *Titel*: " + testElement.getSummary() + "\\n'},"
-    		 + "'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '" + testElement.getUrl()
-    		 + "'}}]}";
+    		 + testElement.getType()
+				 + " \\n *Titel*: " + testElement.getSummary() + "\\n'}}]}";
+    		 //+ ",'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '"
+				 //+ "null/browse/TEST" + "'}}]}";
 
-		assertEquals(data, provider.createWebhookDataForSlack(testElement, "test"));
+		assertEquals(data, provider.createWebhookDataForSlack("test"));
 	}
 
 

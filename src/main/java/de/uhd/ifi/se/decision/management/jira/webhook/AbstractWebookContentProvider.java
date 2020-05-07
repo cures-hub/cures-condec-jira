@@ -11,7 +11,9 @@ public abstract class AbstractWebookContentProvider  {
   protected WebhookType type;
 
   public abstract PostMethod createPostMethod();
-  //  abstract String createWebhookData();
+
+  public abstract PostMethod createTestPostMethod();
+
 
 
 }

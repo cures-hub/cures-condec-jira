@@ -130,6 +130,15 @@ public class TestWebhookConnector extends TestSetUp {
 		assertFalse(webhookConnector.sendElement(element, "changed"));
 	}
 
+
+	@Test
+	@NonTransactional
+	public void testSendTestReceiverSlack() {
+		webhookConnector.setUrl("https://hooks.slack.com/services/T2E2");
+
+		assertFalse(webhookConnector.sendTest());
+	}
+
 	@Test
 	@NonTransactional
 	public void testDeleteRootElementInTreeWorks() {

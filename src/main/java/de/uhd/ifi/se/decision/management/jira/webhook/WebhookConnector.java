@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -104,6 +105,37 @@ public class WebhookConnector {
 		return isDeleted;
 	}
 
+	public boolean sendTest(){
+		PostMethod postMethod = new PostMethod();
+
+    KnowledgeElement testElement = new KnowledgeElement(1, this.projectKey, "i");
+		testElement.setType(KnowledgeType.ISSUE);
+		testElement.setSummary("Test Summary");
+
+
+		if (type == WebhookType.TREANT) {
+			WebhookContentProviderForTreant provider = new WebhookContentProviderForTreant(projectKey, testElement, secret, type);
+			postMethod = provider.createTestPostMethod();
+		}
+		if (type == WebhookType.SLACK) {
+			WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack(projectKey, testElement, type);
+		  postMethod = provider.createTestPostMethod();
+		}
+		try {
+			HttpClient httpClient = new HttpClient();
+			postMethod.setURI(new HttpsURL(url));
+			int httpResponse = httpClient.executeMethod(postMethod);
+			if (httpResponse >= 200 && httpResponse < 300) {
+				return true;
+			}
+			LOGGER.error("Could not send webhook data. The HTTP response code is: " + httpResponse);
+		} catch (IOException | IllegalArgumentException e) {
+			LOGGER.error("Could not send webhook data because of " + e.getMessage());
+		}
+		return false;
+
+	}
+
 	/**
 	 * Is Used for Treant
 	 */
@@ -167,7 +199,7 @@ public class WebhookConnector {
 	private boolean postKnowledgeElement(KnowledgeElement changedElement, String event) {
 		//SH		System.out.println("WebhookConnector postKnowledgeElement: "+event+" ,sendElement: "+changedElement.getTypeAsString());
 		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack(projectKey, changedElement, type);
-		PostMethod postMethod = provider.createPostMethodForSlack(changedElement, event);
+		PostMethod postMethod = provider.createPostMethodForSlack(event);
 		try {
 			HttpClient httpClient = new HttpClient();
 			postMethod.setURI(new HttpsURL(url));

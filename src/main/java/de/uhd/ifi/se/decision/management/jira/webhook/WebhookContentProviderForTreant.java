@@ -55,7 +55,6 @@ public class WebhookContentProviderForTreant extends AbstractWebookContentProvid
 	public PostMethod createPostMethod() {
 		PostMethod postMethod = new PostMethod();
 		if (projectKey == null || rootElementKey == null || secret == null || type == null) {
-			// System.out.println("createPostMethod null");
 			return postMethod;
 		}
 
@@ -76,6 +75,31 @@ public class WebhookContentProviderForTreant extends AbstractWebookContentProvid
 		postMethod.setRequestHeader(header);
 		return postMethod;
 	}
+	/**
+	 * Creates test post method for a single test decision knowledge.
+	 *
+	 * @return post method ready to be posted
+	 */
+	 @Override
+	public PostMethod createTestPostMethod(){
+		PostMethod postMethod = new PostMethod();
+		if (projectKey == null || rootElementKey == null || secret == null || type == null) {
+			return postMethod;
+		}
+			String	webhookData =  "{\"issueKey\": \"" + this.rootElementKey + "\"}";
+		try {
+			StringRequestEntity requestEntity = new StringRequestEntity(webhookData, "application/json", "UTF-8");
+			postMethod.setRequestEntity(requestEntity);
+		} catch (UnsupportedEncodingException e) {
+			LOGGER.error("Creating the test post method failed. Message: " + e.getMessage());
+		}
+		Header header = new Header();
+		header.setName("X-Hub-Signature");
+		header.setValue("sha256=" + createHashedPayload(webhookData, secret));
+		postMethod.setRequestHeader(header);
+		return postMethod;
+	}
+
 
 	/**
 	 * Creates the key value JSON String transmitted via webhook.
@@ -85,7 +109,7 @@ public class WebhookContentProviderForTreant extends AbstractWebookContentProvid
 	 */
 	public String createWebhookDataForTreant() {
 		String treantAsJson = createTreantJsonString();
-		return "{\"issueKey\": \"" + this.rootElementKey + "\", \"ConDecTree\": " + treantAsJson + "}";
+		return "{\"issueKey\": \"" + this.rootElementKey + "\", \"TESTPOST\" }";
 	}
 
 
