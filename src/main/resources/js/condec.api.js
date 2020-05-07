@@ -1179,9 +1179,8 @@
 				+ projectKey + "&id=" + id, null);
 		};
 
-		ConDecAPI.prototype.loadRelatedIssues = function (issueKey, projectKey) {
-			return generalApi.getJSONReturnPromise(this.restPrefix + "/consistency/getRelatedIssues.json?projectKey="
-				+ projectKey + "&issueKey=" + issueKey);
+		ConDecAPI.prototype.loadRelatedIssues = function (issueKey) {
+			return generalApi.getJSONReturnPromise(this.restPrefix + "/consistency/getRelatedIssues.json?issueKey=" + issueKey);
 		};
 
 

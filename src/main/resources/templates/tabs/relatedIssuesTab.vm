@@ -211,7 +211,7 @@
         let projectKey = conDecAPI.getProjectKey();
         //console.log("---------------");
 
-        conDecAPI.loadRelatedIssues(issueKey, projectKey)
+        conDecAPI.loadRelatedIssues(issueKey)
             .then((data) => displayRelatedIssues(processRelatedIssuesResponse(data)))
             .catch((error) => conDecAPI.showFlag("error", "Could not load related issues! </br>" + error))
             .finally(() => {

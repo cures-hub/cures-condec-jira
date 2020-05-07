@@ -1,12 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.IssueManager;
 import de.uhd.ifi.se.decision.management.jira.consistency.ContextInformation;
 import de.uhd.ifi.se.decision.management.jira.consistency.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
-import org.ofbiz.core.entity.GenericEntityException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -21,12 +17,10 @@ import java.util.*;
 
 @Path("/consistency")
 public class ConsistencyRest {
-	private IssueManager issueManager = ComponentAccessor.getIssueManager();
 
 	@Path("/getRelatedIssues")
 	@GET
-	public Response getRelatedIssues(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-									 @QueryParam("issueKey") String issueKey) {
+	public Response getRelatedIssues(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey) {
 		try {
 			ContextInformation ci = new ContextInformation(issueKey);
 			Collection<LinkSuggestion> linkSuggestions = ci.getLinkSuggestions();
@@ -39,29 +33,14 @@ public class ConsistencyRest {
 			result.put("relatedIssues", jsonifiedIssues);
 
 			return Response.ok(result).build();
-		} catch (GenericEntityException e) {
+		} catch (Exception e) {
 			return Response.status(500).build();
 		}
 	}
 
-
-	private Collection<Issue> getAllIssuesForProject(Long projectId) throws GenericEntityException {
-		Collection<Issue> issuesOfProject = new ArrayList<>();
-		Collection<Long> issueIds = issueManager.getIssueIdsForProject(projectId);
-
-		for (Long issueId : issueIds) {
-			issuesOfProject.add(issueManager.getIssueObject(issueId));
-		}
-		return issuesOfProject;
-	}
-
-	private Collection<Issue> getAllIssuesForProject(String projectKey) throws GenericEntityException {
-		return getAllIssuesForProject(ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey).getId());
-	}
-
 	@Path("/discardLinkSuggestion")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
+	@Produces({MediaType.APPLICATION_JSON})
 	public Response discardLinkSuggestion(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 										  @QueryParam("originIssueKey") String originIssueKey, @QueryParam("targetIssueKey") String targetIssueKey) {
 		long databaseId = ConsistencyPersistenceHelper.addDiscardedSuggestions(originIssueKey, targetIssueKey, projectKey);
