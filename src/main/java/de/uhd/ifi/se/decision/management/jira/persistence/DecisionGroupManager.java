@@ -159,7 +159,7 @@ public class DecisionGroupManager {
 			groups.add(group);
 		}
 		for (String group : groups) {
-			if (group.equals("High_Level") || group.equals("Medium_Level") || group.equals("Realization_Level")) {
+			if (("High_Level").equals(group) || ("Medium_Level").equals(group) || ("Realization_Level").equals(group)) {
 				Collections.swap(groups, groups.indexOf(group), 0);
 			}
 		}
