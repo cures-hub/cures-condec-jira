@@ -1,46 +1,52 @@
 <section id="edit-dialog" class="aui-dialog2 aui-dialog2-medium aui-layer" role="dialog" aria-hidden="true">
-	<header class="aui-dialog2-header">
-		<h2 id="edit-dialog-header" class="aui-dialog2-header-main">$i18n.getText("condec.context.menu.edit.item.label")</h2>
-		<a class="aui-dialog2-header-close"> 
-			<span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
-		</a>
-	</header>
-	<div id="edit-dialog-content" class="aui-dialog2-content">
-		<form class="aui">
-			<div class="field-group">
-				<label for="edit-form-input-summary">$i18n.getText("condec.label.summary"):</label>
-				<input id="edit-form-input-summary" type="text" placeholder=$i18n.getText("condec.label.summary") class="text full-width-field" value="">
-			</div>
-			<div class="field-group">
-				<label for="edit-form-input-description">$i18n.getText("condec.label.description"):</label>
-				<textarea id="edit-form-input-description" placeholder=$i18n.getText("condec.label.description") class="textarea full-width-field"></textarea>
-			</div>
-			<div class="field-group">
-				<label for="edit-form-select-type">$i18n.getText("condec.label.knowledge.type"):</label>
-				<select id="edit-form-select-type" class="select full-width-field"></select>
-			</div>            			
-			<div class="field-group">
-				<label for="edit-form-select-location">$i18n.getText("condec.label.documentation.location"):</label>
-				<select id="edit-form-select-location" class="select full-width-field"></select>
-			</div>
-			<div class="field-group">
-				<label for="edit-form-select-level">Decision Level:</label>
-				<select id="edit-form-select-level" class="select full-width-field">
-					<option value="High_Level"> High Level</option>
-					<option value="Medium_Level"> Medium Level</option>
-					<option value="Realization_Level"> Realization Level</option>
-				</select>
-			</div>  
-			<div class="field-group">
-				<label for="edit-form-input-existing">Current Groups:</label>
-				<input id="edit-form-input-existing" type="text" class="text full-width-field" value="">
-			</div>
-		</form>
+    <header class="aui-dialog2-header">
+        <h2 id="edit-dialog-header" class="aui-dialog2-header-main">$i18n.getText(
+            "condec.context.menu.edit.item.label")</h2>
+        <a class="aui-dialog2-header-close">
+            <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+        </a>
+    </header>
+    <div id="edit-dialog-content" class="aui-dialog2-content">
+        <form class="aui">
+            <div class="field-group">
+                <label for="edit-form-input-summary">$i18n.getText("condec.label.summary"):</label>
+                <input id="edit-form-input-summary" type="text"
+                       placeholder=$i18n.getText("condec.label.summary") class="text full-width-field" value="">
+            </div>
+            <div class="field-group">
+                <label for="edit-form-input-description">$i18n.getText("condec.label.description"):</label>
+                <textarea id="edit-form-input-description"
+                          placeholder=$i18n.getText("condec.label.description") class="textarea
+                          full-width-field"></textarea>
+            </div>
+            <div class="field-group">
+                <label for="edit-form-select-type">$i18n.getText("condec.label.knowledge.type"):</label>
+                <select id="edit-form-select-type" class="select full-width-field"></select>
+            </div>
+            <div class="field-group">
+                <label for="edit-form-select-location">$i18n.getText("condec.label.documentation.location"):</label>
+                <select id="edit-form-select-location" class="select full-width-field"></select>
+            </div>
+            <div class="field-group">
+                <label for="edit-form-select-level">Decision Level:</label>
+                <select id="edit-form-select-level" class="select full-width-field">
+                    <option value="High_Level"> High Level</option>
+                    <option value="Medium_Level"> Medium Level</option>
+                    <option value="Realization_Level"> Realization Level</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <label for="edit-form-input-existing">Decision Groups:</label>
+                <input id="edit-form-input-existing" type="text" class="text full-width-field" value="">
+            </div>
+        </form>
     </div>
-	<footer class="aui-dialog2-footer">
-		<div class="aui-dialog2-footer-actions">
-			<button id="edit-dialog-submit-button" class="aui-button aui-button-primary">$i18n.getText("condec.button.update")</button>
-			<button id="edit-dialog-cancel-button" class="aui-button aui-button-link">$i18n.getText("condec.button.cancel")</button>
-		</div>
-	</footer>
+    <footer class="aui-dialog2-footer">
+        <div class="aui-dialog2-footer-actions">
+            <button id="edit-dialog-submit-button" class="aui-button aui-button-primary">$i18n.getText(
+                "condec.button.update")</button>
+            <button id="edit-dialog-cancel-button" class="aui-button aui-button-link">$i18n.getText(
+                "condec.button.cancel")</button>
+        </div>
+    </footer>
 </section>
