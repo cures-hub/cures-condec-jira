@@ -23,7 +23,8 @@ public abstract class TestConfigSuper extends TestSetUp {
 	protected static final String INVALID_PROJECTKEY = "Project key is invalid.";
 	protected static final String INVALID_REQUEST = "request = null";
 	protected static final String INVALID_STRATEGY = "isIssueStrategy = null";
-	protected static final String INVALID_ACTIVATION = "isActivated = null";
+	protected static final String INVALID_ACTIVATION_NULL = "isActivated = null";
+	protected static final String INVALID_ACTIVATION_STRING = "isActivated is invalid";
 	protected static ApplicationUser user;
 
 	@Before

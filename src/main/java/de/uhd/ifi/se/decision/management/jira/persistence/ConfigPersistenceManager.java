@@ -269,4 +269,17 @@ public class ConfigPersistenceManager {
 		return Arrays.asList(joinedIssueNames.split(","));
 	}
 
+	/* **************************************/
+	/*										*/
+	/* Configuration for Consistency		*/
+	/*										*/
+	/* **************************************/
+
+	public static boolean isConsistencyActivated(String projectKey) {
+		return getValue(projectKey, "isConsistencyActivated").equals("true");
+	}
+
+	public static void setConsistencyActivated(String projectKey, boolean isActivated) {
+		setValue(projectKey, "isConsistencyActivated", Boolean.toString(isActivated));
+	}
 }
