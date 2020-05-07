@@ -5,7 +5,7 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import de.uhd.ifi.se.decision.management.jira.consistency.ContextInformation;
 import de.uhd.ifi.se.decision.management.jira.consistency.LinkSuggestion;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import org.ofbiz.core.entity.GenericEntityException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -64,7 +64,7 @@ public class ConsistencyRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response discardLinkSuggestion(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 										  @QueryParam("originIssueKey") String originIssueKey, @QueryParam("targetIssueKey") String targetIssueKey) {
-		long databaseId = ConsistencyPersistenceManager.addDiscardedSuggestions(originIssueKey, targetIssueKey, projectKey);
+		long databaseId = ConsistencyPersistenceHelper.addDiscardedSuggestions(originIssueKey, targetIssueKey, projectKey);
 		Response response = Response.status(200).build();
 		if (databaseId == -1) {
 			response = Response.status(500).build();

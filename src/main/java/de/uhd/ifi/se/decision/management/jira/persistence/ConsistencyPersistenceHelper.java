@@ -15,18 +15,19 @@ import java.util.List;
 /**
  * Class responsible for the persistence of the consistency component.
  * Groups are stored in the internal database of Jira.
+ * This class is called ...Helper because of the codacy checks of the ConDec github project.
  *
  * @see DiscardedLinkSuggestionsInDatabase
  */
 
-public class ConsistencyPersistenceManager {
+public class ConsistencyPersistenceHelper {
 
 	public static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 	public static final IssueManager ISSUE_MANAGER = ComponentAccessor.getIssueManager();
 
 
 	public static List<Issue> getDiscardedSuggestions(Issue baseIssue) {
-		return ConsistencyPersistenceManager.getDiscardedSuggestions(baseIssue.getKey());
+		return ConsistencyPersistenceHelper.getDiscardedSuggestions(baseIssue.getKey());
 	}
 
 	public static List<Issue> getDiscardedSuggestions(String baseIssueKey) {
@@ -40,7 +41,7 @@ public class ConsistencyPersistenceManager {
 	}
 
 	public static DiscardedLinkSuggestionsInDatabase[] getDiscardedSuggestion(Issue baseIssue, Issue targetIssue) {
-		return ConsistencyPersistenceManager.getDiscardedSuggestion(baseIssue.getKey(), targetIssue.getKey());
+		return ConsistencyPersistenceHelper.getDiscardedSuggestion(baseIssue.getKey(), targetIssue.getKey());
 	}
 
 	public static DiscardedLinkSuggestionsInDatabase[] getDiscardedSuggestion(String baseIssueKey, String targetIssueKey) {

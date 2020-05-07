@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.consistency.implementation;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.link.LinkCollection;
 import de.uhd.ifi.se.decision.management.jira.consistency.ContextInformationProvider;
 

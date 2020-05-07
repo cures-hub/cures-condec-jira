@@ -7,7 +7,7 @@ import de.uhd.ifi.se.decision.management.jira.consistency.implementation.Textual
 import de.uhd.ifi.se.decision.management.jira.consistency.implementation.TimeCIP;
 import de.uhd.ifi.se.decision.management.jira.consistency.implementation.TracingCIP;
 import de.uhd.ifi.se.decision.management.jira.consistency.implementation.UserCIP;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import org.ofbiz.core.entity.GenericEntityException;
 
 import java.util.*;
@@ -43,7 +43,7 @@ public class ContextInformation {
 	}
 
 	public Collection<Issue> getDiscardedSuggestionIssues() {
-		return ConsistencyPersistenceManager.getDiscardedSuggestions(this.issue);
+		return ConsistencyPersistenceHelper.getDiscardedSuggestions(this.issue);
 	}
 
 	public Collection<LinkSuggestion> getLinkSuggestions() throws GenericEntityException {
