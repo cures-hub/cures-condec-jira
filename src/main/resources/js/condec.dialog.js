@@ -75,6 +75,7 @@
         var cancelButton = document.getElementById("assign-dialog-cancel-button");
 
         //Fill HTML elements
+        inputAddGroupField.value = "";
 
         conDecAPI.getDecisionGroups(sourceId, documentationLocation, inputExistingGroupsField, selectLevelField, function (selectLevelField, inputExistingGroupsField, groups) {
             if (!(groups === null) && groups.length > 0) {
