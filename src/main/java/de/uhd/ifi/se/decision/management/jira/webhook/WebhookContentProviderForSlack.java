@@ -55,16 +55,16 @@ public class WebhookContentProviderForSlack extends AbstractWebookContentProvide
 		if("test".equals(event)){
 		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
 		url =  applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/"+ this.projectKey;
-	}else{
+	  }else{
 		url = this.knowledgeElement.getUrl();
-	}
+	  }
 
 		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'" + project + " : " + intro + "'}},"
 				+ "{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :" + this.knowledgeElement.getType() + ":  "
 				+ this.knowledgeElement.getType() + " \\n *Titel*: " + summary + "\\n'}";
-				if(!"test".equals(event)){
+				//if(!"test".equals(event)){}
 				data += ",'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '" + url + "'}" ;
-			  }
+
 				data += "}]}";
 
 		return data;

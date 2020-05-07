@@ -141,9 +141,9 @@ public class TestWebhookContentProviderForSlack extends TestSetUp {
          + "TEST : TESTPOST, changed decision knowledge will be shown like this:" + "'}},"
     		 + "{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :" + testElement.getType() + ":  "
     		 + testElement.getType()
-				 + " \\n *Titel*: " + testElement.getSummary() + "\\n'}}]}";
-    		 //+ ",'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '"
-				 //+ "null/browse/TEST" + "'}}]}";
+				 + " \\n *Titel*: " + testElement.getSummary() + "\\n'}"
+    		 + ",'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '"
+				 + "null/browse/TEST" + "'}}]}";
 
 		assertEquals(data, provider.createWebhookDataForSlack("test"));
 	}
