@@ -1,13 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.consistency;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
-import com.atlassian.jira.issue.link.IssueLinkType;
-import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.project.Project;
-import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
@@ -15,8 +10,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ofbiz.core.entity.GenericEntityException;
 
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
