@@ -73,6 +73,9 @@ public class ConfigRest {
 		if (isActivatedString == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
 		}
+		if (!"true".equals(isActivatedString) && !"false".equals(isActivatedString)){
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated is invalid")).build();
+		}
 		return null;
 	}
 
@@ -706,6 +709,29 @@ public class ConfigRest {
 			LOGGER.error("Failed to classify the whole project. Message: " + e.getMessage());
 			return Response.status(Status.CONFLICT).entity(ImmutableMap.of("isSucceeded", false)).build();
 		}
+	}
+
+	/* **************************************/
+	/*										*/
+	/* Configuration for Consistency		*/
+	/*										*/
+	/* **************************************/
+	@Path("/setConsistencyActivated")
+	@POST
+	public Response setConsistencyActivated(@Context HttpServletRequest request,
+											@QueryParam("projectKey") String projectKey,
+											@QueryParam("isConsistencyActivated") String isActivatedString) {
+		Response response = this.checkRequest(request, projectKey, isActivatedString);
+		if (response != null) {
+			return response;
+		}
+		response = checkIfProjectKeyIsValid(projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+		boolean isActivated = Boolean.parseBoolean(isActivatedString);
+		ConfigPersistenceManager.setConsistencyActivated(projectKey, isActivated);
+		return Response.ok(Status.ACCEPTED).build();
 	}
 
 }

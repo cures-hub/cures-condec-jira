@@ -22,13 +22,12 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 /**
  * Test class for the persistence of the plugin settings. The plugin settings
  * are mocked in the {@link MockPluginSettings} class.
- * 
- * @see MockPluginSettings
- * @see MockPluginSettingsFactory
- * 
+ *
  * @issue How can we enable that settings can be set during testing?
  * @decision Implement MockPluginSettings and MockPluginSettingsFactory classes
- *           to enable that settings can be set during testing!
+ * to enable that settings can be set during testing!
+ * @see MockPluginSettings
+ * @see MockPluginSettingsFactory
  */
 public class TestConfigPersistenceManager extends TestSetUp {
 
@@ -390,6 +389,17 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		ReleaseNoteCategory category = ReleaseNoteCategory.IMPROVEMENTS;
 		ConfigPersistenceManager.setReleaseNoteMapping("TEST", category, input);
 		assertEquals(input, ConfigPersistenceManager.getReleaseNoteMapping("TEST", category));
+	}
+
+	@Test
+	public void testSetAndGetConsistency() {
+		boolean input = true;
+		ConfigPersistenceManager.setConsistencyActivated("TEST", input);
+		assertEquals("Activated should be true.", input, ConfigPersistenceManager.isConsistencyActivated("TEST"));
+
+		input = false;
+		ConfigPersistenceManager.setConsistencyActivated("TEST", input);
+		assertEquals("Activated should be false.", input, ConfigPersistenceManager.isConsistencyActivated("TEST"));
 	}
 
 	@AfterClass
