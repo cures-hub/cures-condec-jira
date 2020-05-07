@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.consistency;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.link.LinkCollection;
 import de.uhd.ifi.se.decision.management.jira.consistency.implementation.TextualSimilarityCIP;
 import de.uhd.ifi.se.decision.management.jira.consistency.implementation.TimeCIP;
 import de.uhd.ifi.se.decision.management.jira.consistency.implementation.TracingCIP;
@@ -33,7 +34,12 @@ public class ContextInformation {
 	}
 
 	public Collection<Issue> getLinkedIssues() {
-		return ComponentAccessor.getIssueLinkManager().getLinkCollectionOverrideSecurity(this.issue).getAllIssues();
+		Collection<Issue> linkedIssues = new ArrayList<>();
+		LinkCollection linkCollection = ComponentAccessor.getIssueLinkManager().getLinkCollectionOverrideSecurity(this.issue);
+		if (linkCollection != null) {
+			linkedIssues = linkCollection.getAllIssues();
+		}
+		return linkedIssues;
 	}
 
 	public Collection<Issue> getDiscardedSuggestionIssues() {
@@ -76,6 +82,7 @@ public class ContextInformation {
 			linkSuggestions.put(otherIssue.getKey(), new LinkSuggestion(this.issue, otherIssue, 0.0));
 		}
 
+		System.out.println(projectIssues);
 
 		for (ContextInformationProvider cip : this.cips) {
 			Map<String, Double> individualScores = new HashMap<>();
@@ -93,7 +100,7 @@ public class ContextInformation {
 				.mapToDouble(Double::doubleValue)
 				.max().orElse(1.0);
 
-			if (maxOfIndividualScoresForCurrentCip == 0){
+			if (maxOfIndividualScoresForCurrentCip == 0) {
 				maxOfIndividualScoresForCurrentCip = 1.;
 			}
 			Double finalMaxOfIndividualScoresForCurrentCip = maxOfIndividualScoresForCurrentCip;

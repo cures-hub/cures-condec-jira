@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.consistency.implementation;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLinkManager;
+import com.atlassian.jira.issue.link.LinkCollection;
 import de.uhd.ifi.se.decision.management.jira.consistency.ContextInformationProvider;
 
 import java.util.*;
@@ -10,7 +11,6 @@ import java.util.*;
 public class TracingCIP implements ContextInformationProvider {
 	private String id = "TracingCIP_BFS";
 	private String name = "TracingCIP";
-	private IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 
 	@Override
 	public String getId() {
@@ -60,7 +60,11 @@ public class TracingCIP implements ContextInformationProvider {
 			!wasVisited(endNode, distanceMap) &&
 			iteration < maxIterations) {
 			for (Issue nodeToCheck : currentNodesToCheck) {
-				Collection<Issue> linkedIssues = this.issueLinkManager.getLinkCollectionOverrideSecurity(nodeToCheck).getAllIssues();
+				LinkCollection linkCollection = ComponentAccessor.getIssueLinkManager().getLinkCollectionOverrideSecurity(nodeToCheck);
+				if (linkCollection == null){
+					continue;
+				}
+				Collection<Issue> linkedIssues = linkCollection.getAllIssues();
 				for (Issue linkedIssue : linkedIssues) {
 					if (!wasVisited(linkedIssue, distanceMap) && !nextNodesToCheck.contains(linkedIssue)) {
 						nextNodesToCheck.add(linkedIssue);

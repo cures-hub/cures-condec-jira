@@ -221,13 +221,23 @@
     }
 
     //load data when page finished loading!
-    window.addEventListener("load", function (event) {
+    window.addEventListener("hashchange", function (event) {
         //loadingSpinnerElement.style.display = "visible";
         //resultsTableElement.style.visibility = "none";
+        console.log(event);
         loadData();
 
     }, false);
 
-
+    AJS.$("#visualization-selection-tabs").on("tabSelect", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.target.href === undefined) {
+            return;
+        }
+        if (event.target.href.includes("#related-issues-tab")) {
+            loadData();
+        }
+    });
 
 </script>

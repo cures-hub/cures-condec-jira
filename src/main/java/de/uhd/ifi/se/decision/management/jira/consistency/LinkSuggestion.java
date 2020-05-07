@@ -2,7 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.consistency;
 
 import com.atlassian.jira.issue.Issue;
 
-public class LinkSuggestion {
+public class LinkSuggestion implements Comparable<LinkSuggestion> {
 
 	private Issue baseIssue;
 	private Issue targetIssue;
@@ -13,7 +13,6 @@ public class LinkSuggestion {
 		this.targetIssue = targetIssue;
 		this.score = score;
 	}
-
 
 
 	public Issue getBaseIssue() {
@@ -45,4 +44,17 @@ public class LinkSuggestion {
 	}
 
 
+	@Override
+	public int compareTo(LinkSuggestion o) {
+		if (o == null){
+			return -1;
+		}
+		int compareValue = 0;
+		if (this.getScore() > o.getScore()) {
+			compareValue = 1;
+		} else {
+			compareValue = -1;
+		}
+		return compareValue;
+	}
 }

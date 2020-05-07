@@ -40,11 +40,10 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 			concatenatedList.addAll(lemmatizedI1Description);
 			concatenatedList.addAll(lemmatizedI2Description);
 
-			int numIdenticalElements = uniqueElements(concatenatedList).length;
-			int numTotalElements = uniqueElements(lemmatizedI1Description).length + uniqueElements(lemmatizedI2Description).length;
+			int unionCount = uniqueElements(concatenatedList).length;
 
-			// Jaccard Similarity:
-			return (numTotalElements - numIdenticalElements) / (double) numIdenticalElements;
+			// Jaccard similarity: (|A| + |B| - |A u B|) / |A u B|
+			return (uniqueElements(lemmatizedI1Description).length + uniqueElements(lemmatizedI2Description).length - unionCount) / (double) unionCount;
 		} catch (Exception e) {
 			return 0;
 		}

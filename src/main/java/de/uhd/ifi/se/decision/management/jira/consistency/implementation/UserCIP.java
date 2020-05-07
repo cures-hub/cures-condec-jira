@@ -21,15 +21,15 @@ public class UserCIP implements ContextInformationProvider {
 
 	@Override
 	public double assessRelation(Issue i1, Issue i2) {
-		int isCreatorEqual = i1.getCreator().equals(i2.getCreator()) ? 1 : 0;
+		return this.isApplicationUserEqual( i1.getCreator(), i2.getCreator())
+			+ this.isApplicationUserEqual(i1.getAssignee(), i2.getAssignee());
+	}
 
-		ApplicationUser i1Assignee = i1.getAssignee();
-
-		int isAssigneeEqual = 0;
-		if (i1Assignee != null && i1Assignee.equals(i2.getAssignee())) {
-			isAssigneeEqual = 1;
+	private int isApplicationUserEqual(ApplicationUser user1, ApplicationUser user2) {
+		int isUserEqual = 0;
+		if ((user1 != null && user1.equals(user2)) || (user1 == null && user2 == null)) {
+			isUserEqual = 1;
 		}
-
-		return isCreatorEqual + isAssigneeEqual;
+		return isUserEqual;
 	}
 }

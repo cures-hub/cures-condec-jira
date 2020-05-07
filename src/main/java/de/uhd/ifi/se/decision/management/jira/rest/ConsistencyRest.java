@@ -9,10 +9,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistence
 import org.ofbiz.core.entity.GenericEntityException;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.*;
 
@@ -61,7 +60,8 @@ public class ConsistencyRest {
 	}
 
 	@Path("/discardLinkSuggestion")
-	@GET
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response discardLinkSuggestion(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 										  @QueryParam("originIssueKey") String originIssueKey, @QueryParam("targetIssueKey") String targetIssueKey) {
 		long databaseId = ConsistencyPersistenceManager.addDiscardedSuggestions(originIssueKey, targetIssueKey, projectKey);
