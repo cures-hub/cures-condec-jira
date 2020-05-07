@@ -35,7 +35,9 @@ public class ConsistencyPersistenceHelper {
 		DiscardedLinkSuggestionsInDatabase[] discardedLinkSuggestions = ACTIVE_OBJECTS.find(DiscardedLinkSuggestionsInDatabase.class,
 			Query.select().where("ORIGIN_ISSUE_KEY = ?", baseIssueKey));
 		for (DiscardedLinkSuggestionsInDatabase discardedLinkSuggestion : discardedLinkSuggestions) {
-			discardedSuggestions.add(ISSUE_MANAGER.getIssueObject(discardedLinkSuggestion.getDiscardedIssueKey()));
+			if (discardedLinkSuggestion != null) {
+				discardedSuggestions.add(ISSUE_MANAGER.getIssueObject(discardedLinkSuggestion.getDiscardedIssueKey()));
+			}
 		}
 		return discardedSuggestions;
 	}
@@ -76,6 +78,15 @@ public class ConsistencyPersistenceHelper {
 	}
 
 	public static long addDiscardedSuggestions(Issue originIssue, Issue discardedSuggestion) {
+		if (originIssue == null || discardedSuggestion == null){
+			return -1;
+		}
 		return addDiscardedSuggestions(originIssue.getKey(), discardedSuggestion.getKey(), originIssue.getProjectObject().getKey());
+	}
+
+	public static void resetDiscardedSuggestions(){
+		DiscardedLinkSuggestionsInDatabase[] discardedLinkSuggestions = ACTIVE_OBJECTS.find(DiscardedLinkSuggestionsInDatabase.class,
+			Query.select().where("1 = 1"));
+		ACTIVE_OBJECTS.delete(discardedLinkSuggestions);
 	}
 }

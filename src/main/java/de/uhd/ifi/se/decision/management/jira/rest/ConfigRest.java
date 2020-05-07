@@ -72,6 +72,9 @@ public class ConfigRest {
 		if (isActivatedString == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
 		}
+		if (isActivatedString != "true" && isActivatedString != "false"){
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated is invalid")).build();
+		}
 		return null;
 	}
 
@@ -708,7 +711,11 @@ public class ConfigRest {
 		if (response != null) {
 			return response;
 		}
-		boolean isActivated = Boolean.valueOf(isActivatedString);
+		response = checkIfProjectKeyIsValid(projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+		boolean isActivated = Boolean.parseBoolean(isActivatedString);
 		ConfigPersistenceManager.setConsistencyActivated(projectKey, isActivated);
 		return Response.ok(Status.ACCEPTED).build();
 	}
