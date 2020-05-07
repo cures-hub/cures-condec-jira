@@ -16,6 +16,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
         <li class="menu-item active-tab">
             <a href="#class-treant">Connected Java-Classes</a>
         </li>
+        <li class="menu-item">
+            <a href="#related-issues-tab">Related issues</a>
+        </li>
     </ul>
     <div class="tabs-pane active-pane" id="treant">
         <div style="height: auto" id="treant-container"></div>
@@ -45,26 +48,10 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
         </div>
     </div>
     <div class="tabs-pane" id="class-treant">
-        <div class="aui-toolbar2" role="toolbar">
-            <div class="aui-toolbar-2-inner" id="class-treant-filter">
-                <form class="aui">
-                    <input class="text medium-long-field" id="search-code-class-input"
-                           placeholder="Filter by Name..."/>
-                    <label for="show-test-elements-input">Show Test-Classes:</label>
-                    <input class="checked" type="checkbox" id="show-test-elements-input"/>
-                    <label for="min-number-linked-issues-input">Linked Issues Min:</label>
-                    <input type="number" id="min-number-linked-issues-input" value="1" min="1"
-                           class="text short-field"/>
-                    <label for="max-number-linked-issues-input"> Max:</label>
-                    <input type="number" id="max-number-linked-issues-input" value="100" min="1"
-                           class="text short-field"/>
-                    <input type="button" id="code-class-filter-button" class="aui-button aui-button-primary"
-                           value="Filter"
-                           onclick="filter()"/>
-                </form>
-            </div>
-        </div>
-        <div style="height: auto" id="treant-container-class"></div>
+        #parse("templates/tabs/classTreantTab.vm")
+    </div>
+    <div class="tabs-pane active-pane" id="related-issues-tab">
+        #parse("templates/tabs/relatedIssuesTab.vm")
     </div>
 </div>
 

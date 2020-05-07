@@ -7,16 +7,15 @@
  * delete a link between two knowledge elements,
  * change the documentation location (e.g. from issue comments to single JIRA issues),
  * set an element to the root element in the knowledge tree.
- 
+
  Requires
  * conDecAPI
- 
+
  Is required by
  * conDecContextMenu
  * conDecReleaseNotePage
  */
 (function (global) {
-
     var ConDecDialog = function ConDecDialog() {
     };
 
