@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest.consistencyrest;
 
 import com.atlassian.jira.issue.Issue;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

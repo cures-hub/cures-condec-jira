@@ -72,7 +72,7 @@ public class ConfigRest {
 		if (isActivatedString == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
 		}
-		if (!isActivatedString.equals("true") && !isActivatedString.equals("false")){
+		if (!"true".equals(isActivatedString) && !"false".equals(isActivatedString)){
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated is invalid")).build();
 		}
 		return null;
