@@ -250,7 +250,7 @@
         AJS.dialog2(deleteLinkDialog).show();
     };
 
-    ConDecDialog.prototype.showDecisionLinkDialog = function showDecisionLinkDialog(idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild) {
+    ConDecDialog.prototype.showDecisionLinkDialog = function showDecisionLinkDialog(idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, submitCallback) {
         console.log("conDecDialog showDecisionLinkDialog");
 
         // HTML elements
@@ -294,6 +294,10 @@
             conDecAPI.createLink(null, idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, linkType, function () {
                 conDecObservable.notify();
             });
+            if (submitCallback !== null){
+				submitCallback();
+
+			}
             AJS.dialog2(linkDialog).hide();
         };
 

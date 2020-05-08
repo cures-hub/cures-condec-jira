@@ -303,6 +303,8 @@
 				if (error === null) {
 					showFlag("success", "Link has been created.");
 					callback(link);
+				}else {
+					showFlag("error", error);
 				}
 			});
 		};
@@ -770,6 +772,8 @@
 			generalApi.getJSON(this.restPrefix + "/config/getLinkTypes.json?projectKey=" + projectKey, function (error, linkTypes) {
 				if (error === null) {
 					callback(linkTypes);
+				}else{
+					showFlag("error", error);
 				}
 			});
 		};
