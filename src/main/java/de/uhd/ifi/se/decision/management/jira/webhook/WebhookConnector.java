@@ -76,6 +76,7 @@ public class WebhookConnector {
 			break;
 		default:
 			LOGGER.error("Webhook type is unknown.");
+			break;
 		}
 		return isSubmitted;
 	}
