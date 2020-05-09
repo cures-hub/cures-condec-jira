@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
@@ -52,18 +52,17 @@ public class WebhookConnector {
 				ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
 	}
 
-
-	public boolean sendElement(KnowledgeElement sendElement){
+	public boolean sendElement(KnowledgeElement sendElement) {
 		return sendElement(sendElement, "new");
 
 	}
 
-
-	public boolean sendElement(KnowledgeElement sendElement, String event){
-		if(sendElement == null || event == null){
+	public boolean sendElement(KnowledgeElement sendElement, String event) {
+		if (sendElement == null || event == null) {
 			return false;
 		}
-		//SH		System.out.println("WebhookConnector event: "+event+" ,sendElement WebhookType: "+sendElement.getTypeAsString());
+		// SH System.out.println("WebhookConnector event: "+event+" ,sendElement
+		// WebhookType: "+sendElement.getTypeAsString());
 
 		boolean isSubmitted = false;
 
@@ -81,7 +80,6 @@ public class WebhookConnector {
 		return isSubmitted;
 
 	}
-
 
 	public boolean deleteElement(KnowledgeElement elementToBeDeleted, ApplicationUser user) {
 		if (!checkIfDataIsValid(elementToBeDeleted)) {
@@ -105,21 +103,21 @@ public class WebhookConnector {
 		return isDeleted;
 	}
 
-	public boolean sendTest(){
+	public boolean sendTest() {
 		PostMethod postMethod = new PostMethod();
 
-    KnowledgeElement testElement = new KnowledgeElement(1, this.projectKey, "i");
+		KnowledgeElement testElement = new KnowledgeElement(1, this.projectKey, "i");
 		testElement.setType(KnowledgeType.ISSUE);
 		testElement.setSummary("Test Summary");
 
-
 		if (type == WebhookType.TREANT) {
-			WebhookContentProviderForTreant provider = new WebhookContentProviderForTreant(projectKey, testElement, secret, type);
+			WebhookContentProviderForTreant provider = new WebhookContentProviderForTreant(projectKey, testElement,
+					secret, type);
 			postMethod = provider.createTestPostMethod();
 		}
 		if (type == WebhookType.SLACK) {
 			WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack(projectKey, testElement, type);
-		  postMethod = provider.createTestPostMethod();
+			postMethod = provider.createTestPostMethod();
 		}
 		try {
 			HttpClient httpClient = new HttpClient();
@@ -171,11 +169,13 @@ public class WebhookConnector {
 		}
 		return webhookRootElements;
 	}
+
 	/**
 	 * Is Used for Treant (singel element)
 	 */
 	private boolean postKnowledgeTree(KnowledgeElement rootElement) {
-		WebhookContentProviderForTreant provider = new WebhookContentProviderForTreant(projectKey, rootElement, secret, type);
+		WebhookContentProviderForTreant provider = new WebhookContentProviderForTreant(projectKey, rootElement, secret,
+				type);
 		PostMethod postMethod = provider.createPostMethod();
 
 		try {
@@ -192,12 +192,12 @@ public class WebhookConnector {
 		return false;
 	}
 
-
-/**
- * Is Used for Slack
- */
+	/**
+	 * Is Used for Slack
+	 */
 	private boolean postKnowledgeElement(KnowledgeElement changedElement, String event) {
-		//SH		System.out.println("WebhookConnector postKnowledgeElement: "+event+" ,sendElement: "+changedElement.getTypeAsString());
+		// SH System.out.println("WebhookConnector postKnowledgeElement: "+event+"
+		// ,sendElement: "+changedElement.getTypeAsString());
 		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack(projectKey, changedElement, type);
 		PostMethod postMethod = provider.createPostMethodForSlack(event);
 		try {

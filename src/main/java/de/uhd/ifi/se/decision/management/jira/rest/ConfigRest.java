@@ -73,8 +73,9 @@ public class ConfigRest {
 		if (isActivatedString == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
 		}
-		if (!"true".equals(isActivatedString) && !"false".equals(isActivatedString)){
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated is invalid")).build();
+		if (!"true".equals(isActivatedString) && !"false".equals(isActivatedString)) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated is invalid"))
+					.build();
 		}
 		return null;
 	}
@@ -351,15 +352,13 @@ public class ConfigRest {
 	@Path("/sendTestPost")
 	@POST
 	public Response sendTestPost(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		//SH		System.out.println("ConfigRest sendTestPost: projectKey:"+ projectKey);
 		WebhookConnector connector = new WebhookConnector(projectKey);
-		if(connector.sendTest()){
+		if (connector.sendTest()) {
 			return Response.ok(Status.ACCEPTED).build();
 		}
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Test webhook post failed."))
 				.build();
 	}
-
 
 	@Path("/setReleaseNoteMapping")
 	@POST
@@ -713,14 +712,14 @@ public class ConfigRest {
 
 	/* **************************************/
 	/*										*/
-	/* Configuration for Consistency		*/
+	/* Configuration for Consistency */
 	/*										*/
 	/* **************************************/
 	@Path("/setConsistencyActivated")
 	@POST
 	public Response setConsistencyActivated(@Context HttpServletRequest request,
-											@QueryParam("projectKey") String projectKey,
-											@QueryParam("isConsistencyActivated") String isActivatedString) {
+			@QueryParam("projectKey") String projectKey,
+			@QueryParam("isConsistencyActivated") String isActivatedString) {
 		Response response = this.checkRequest(request, projectKey, isActivatedString);
 		if (response != null) {
 			return response;

@@ -1,10 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
 /**
- * Determines the format of the posted data via webhook.
+ * Determines the format of the posted data via webhook. Is used in the
+ * {@link AbstractWebookContentProvider}.
  */
 public enum WebhookType {
-	SLACK("https://hooks.slack.com(\\S*)"), TREANT("");
+	SLACK("https://hooks.slack.com(\\S*)"), // used for knowledge sharing in a Slack channel
+	TREANT(""); // used for integration with CuuSE platform
 
 	String url;
 
