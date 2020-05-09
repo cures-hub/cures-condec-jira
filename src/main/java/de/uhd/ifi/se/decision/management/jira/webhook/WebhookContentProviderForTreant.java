@@ -22,9 +22,10 @@ import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 /**
  * Creates the content submitted via the webhook. The content consists of a key
  * value pair. The key is an issue id. The value is the Treant JSON String.
+ * 
+ * @see WebhookType
  */
 public class WebhookContentProviderForTreant extends AbstractWebookContentProvider {
-
 
 	private String rootElementKey;
 	private String secret;
@@ -51,14 +52,14 @@ public class WebhookContentProviderForTreant extends AbstractWebookContentProvid
 	 *
 	 * @return post method ready to be posted
 	 */
-	 @Override
+	@Override
 	public PostMethod createPostMethod() {
 		PostMethod postMethod = new PostMethod();
 		if (projectKey == null || rootElementKey == null || secret == null || type == null) {
 			return postMethod;
 		}
 
-		String	webhookData = createWebhookDataForTreant();
+		String webhookData = createWebhookDataForTreant();
 		if (webhookData == null || webhookData.isBlank()) {
 			return postMethod;
 		}
@@ -75,18 +76,19 @@ public class WebhookContentProviderForTreant extends AbstractWebookContentProvid
 		postMethod.setRequestHeader(header);
 		return postMethod;
 	}
+
 	/**
 	 * Creates test post method for a single test decision knowledge.
 	 *
 	 * @return post method ready to be posted
 	 */
-	 @Override
-	public PostMethod createTestPostMethod(){
+	@Override
+	public PostMethod createTestPostMethod() {
 		PostMethod postMethod = new PostMethod();
 		if (projectKey == null || rootElementKey == null || secret == null || type == null) {
 			return postMethod;
 		}
-			String	webhookData =  "{\"issueKey\": \"" + this.rootElementKey + "\"}";
+		String webhookData = "{\"issueKey\": \"" + this.rootElementKey + "\"}";
 		try {
 			StringRequestEntity requestEntity = new StringRequestEntity(webhookData, "application/json", "UTF-8");
 			postMethod.setRequestEntity(requestEntity);
@@ -100,7 +102,6 @@ public class WebhookContentProviderForTreant extends AbstractWebookContentProvid
 		return postMethod;
 	}
 
-
 	/**
 	 * Creates the key value JSON String transmitted via webhook.
 	 *
@@ -112,8 +113,6 @@ public class WebhookContentProviderForTreant extends AbstractWebookContentProvid
 		return "{\"issueKey\": \"" + this.rootElementKey + "\", \"TESTPOST\" }";
 	}
 
-
-
 	/**
 	 * Creates the key value JSON String transmitted via webhook for Slack.
 	 * (Differences: "text", mask \ and ")
@@ -121,7 +120,6 @@ public class WebhookContentProviderForTreant extends AbstractWebookContentProvid
 	 * @return JSON String with the following pattern: {"text": " \"issueKey\":
 	 *         {String}, \"ConDecTree\": {TreantJS JSON config and data} " }
 	 */
-
 
 	/**
 	 * Creates the Treant JSON String (value transmitted via webhook).
@@ -182,6 +180,5 @@ public class WebhookContentProviderForTreant extends AbstractWebookContentProvid
 		formatter.close();
 		return formattedString;
 	}
-
 
 }

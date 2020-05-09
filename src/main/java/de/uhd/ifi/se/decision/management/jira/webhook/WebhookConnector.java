@@ -21,7 +21,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 /**
- * Webhook class that posts changed decision knowledge to a given URL.
+ * Webhook class that posts changed decision knowledge to a given URL. The
+ * format of the posted data is determined by the {@link WebhookType}.
  */
 public class WebhookConnector {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebhookConnector.class);
@@ -54,16 +55,12 @@ public class WebhookConnector {
 
 	public boolean sendElement(KnowledgeElement sendElement) {
 		return sendElement(sendElement, "new");
-
 	}
 
 	public boolean sendElement(KnowledgeElement sendElement, String event) {
 		if (sendElement == null || event == null) {
 			return false;
 		}
-		// SH System.out.println("WebhookConnector event: "+event+" ,sendElement
-		// WebhookType: "+sendElement.getTypeAsString());
-
 		boolean isSubmitted = false;
 
 		if (!checkIfDataIsValid(sendElement)) {
@@ -78,7 +75,6 @@ public class WebhookConnector {
 			return isSubmitted;
 		}
 		return isSubmitted;
-
 	}
 
 	public boolean deleteElement(KnowledgeElement elementToBeDeleted, ApplicationUser user) {
@@ -103,7 +99,7 @@ public class WebhookConnector {
 		return isDeleted;
 	}
 
-	public boolean sendTest() {
+	public boolean sendTestPost() {
 		PostMethod postMethod = new PostMethod();
 
 		KnowledgeElement testElement = new KnowledgeElement(1, this.projectKey, "i");
@@ -119,19 +115,7 @@ public class WebhookConnector {
 			WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack(projectKey, testElement, type);
 			postMethod = provider.createTestPostMethod();
 		}
-		try {
-			HttpClient httpClient = new HttpClient();
-			postMethod.setURI(new HttpsURL(url));
-			int httpResponse = httpClient.executeMethod(postMethod);
-			if (httpResponse >= 200 && httpResponse < 300) {
-				return true;
-			}
-			LOGGER.error("Could not send webhook data. The HTTP response code is: " + httpResponse);
-		} catch (IOException | IllegalArgumentException e) {
-			LOGGER.error("Could not send webhook data because of " + e.getMessage());
-		}
-		return false;
-
+		return executePostMethod(postMethod);
 	}
 
 	/**
@@ -177,7 +161,10 @@ public class WebhookConnector {
 		WebhookContentProviderForTreant provider = new WebhookContentProviderForTreant(projectKey, rootElement, secret,
 				type);
 		PostMethod postMethod = provider.createPostMethod();
+		return executePostMethod(postMethod);
+	}
 
+	private boolean executePostMethod(PostMethod postMethod) {
 		try {
 			HttpClient httpClient = new HttpClient();
 			postMethod.setURI(new HttpsURL(url));
@@ -196,22 +183,9 @@ public class WebhookConnector {
 	 * Is Used for Slack
 	 */
 	private boolean postKnowledgeElement(KnowledgeElement changedElement, String event) {
-		// SH System.out.println("WebhookConnector postKnowledgeElement: "+event+"
-		// ,sendElement: "+changedElement.getTypeAsString());
 		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack(projectKey, changedElement, type);
 		PostMethod postMethod = provider.createPostMethodForSlack(event);
-		try {
-			HttpClient httpClient = new HttpClient();
-			postMethod.setURI(new HttpsURL(url));
-			int httpResponse = httpClient.executeMethod(postMethod);
-			if (httpResponse >= 200 && httpResponse < 300) {
-				return true;
-			}
-			LOGGER.error("Could not send webhook data. The HTTP response code is: " + httpResponse);
-		} catch (IOException | IllegalArgumentException e) {
-			LOGGER.error("Could not send webhook data because of " + e.getMessage());
-		}
-		return false;
+		return executePostMethod(postMethod);
 	}
 
 	private boolean checkIfDataIsValid(KnowledgeElement changedElement) {
@@ -234,10 +208,19 @@ public class WebhookConnector {
 		return true;
 	}
 
+	/**
+	 * @return url of the receiver as a string, e.g.
+	 *         "https://hooks.slack.com/services/...".
+	 */
 	public String getUrl() {
 		return this.url;
 	}
 
+	/**
+	 * @param url
+	 *            of the receiver, e.g. "https://hooks.slack.com/services/...". This
+	 *            also determines the {@link WebhookType}.
+	 */
 	public void setUrl(String url) {
 		this.url = url;
 		this.type = WebhookType.getTypeFromUrl(url);

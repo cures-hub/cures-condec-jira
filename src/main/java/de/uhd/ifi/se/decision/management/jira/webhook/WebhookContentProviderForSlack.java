@@ -2,22 +2,24 @@ package de.uhd.ifi.se.decision.management.jira.webhook;
 
 import java.io.UnsupportedEncodingException;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.properties.APKeys;
-import com.atlassian.jira.config.properties.ApplicationProperties;
-
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.properties.APKeys;
+import com.atlassian.jira.config.properties.ApplicationProperties;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
-
 /**
- * Creates the content submitted via the webhook. The content consists of a key
- * value pair. The key is an issue id. The value is the Treant JSON String.
+ * Creates the content submitted via the webhook to a Slack channel. The content
+ * consists of a key value pair. The key is an issue id. The value is the Treant
+ * JSON String.
+ * 
+ * @see WebhookType
  */
 public class WebhookContentProviderForSlack extends AbstractWebookContentProvider {
 
@@ -25,20 +27,18 @@ public class WebhookContentProviderForSlack extends AbstractWebookContentProvide
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(WebhookContentProviderForSlack.class);
 
-	public WebhookContentProviderForSlack(String projectKey, KnowledgeElement knowledgeElement,
-			WebhookType type) {
+	public WebhookContentProviderForSlack(String projectKey, KnowledgeElement knowledgeElement, WebhookType type) {
 		this.projectKey = projectKey;
 		this.knowledgeElement = knowledgeElement;
 		this.type = type;
 	}
 
-
- /**
-  *
-  */
+	/**
+	 *
+	 */
 	public String createWebhookDataForSlack(String event) {
-		if (this.knowledgeElement == null || this.knowledgeElement.getSummary() == null || this.knowledgeElement.getType() == null
-				|| this.knowledgeElement.getUrl() == null) {
+		if (this.knowledgeElement == null || this.knowledgeElement.getSummary() == null
+				|| this.knowledgeElement.getType() == null || this.knowledgeElement.getUrl() == null) {
 			return "";
 		}
 		String summary = this.knowledgeElement.getSummary();
@@ -50,27 +50,27 @@ public class WebhookContentProviderForSlack extends AbstractWebookContentProvide
 
 		String project = this.knowledgeElement.getProject().getProjectKey();
 
-		String url ="";
+		String url = "";
 
-		if("test".equals(event)){
-		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
-		url =  applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/"+ this.projectKey;
-	  }else{
-		url = this.knowledgeElement.getUrl();
-	  }
+		if ("test".equals(event)) {
+			ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
+			url = applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/" + this.projectKey;
+		} else {
+			url = this.knowledgeElement.getUrl();
+		}
 
 		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'" + project + " : " + intro + "'}},"
 				+ "{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :" + this.knowledgeElement.getType() + ":  "
 				+ this.knowledgeElement.getType() + " \\n *Titel*: " + summary + "\\n'}";
-				//if(!"test".equals(event)){}
-				data += ",'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '" + url + "'}" ;
+		// if(!"test".equals(event)){}
+		data += ",'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '" + url + "'}";
 
-				data += "}]}";
+		data += "}]}";
 
 		return data;
 	}
 
-	private String getIntro(String event){
+	private String getIntro(String event) {
 		String intro = "";
 
 		if ("new".equals(event)) {
@@ -88,7 +88,7 @@ public class WebhookContentProviderForSlack extends AbstractWebookContentProvide
 	/**
 	 *
 	 */
-	 @Override
+	@Override
 	public PostMethod createPostMethod() {
 		if (knowledgeElement == null) {
 			return new PostMethod();
@@ -102,7 +102,7 @@ public class WebhookContentProviderForSlack extends AbstractWebookContentProvide
 			return postMethod;
 		}
 
-		String	webhookData = createWebhookDataForSlack(event);
+		String webhookData = createWebhookDataForSlack(event);
 
 		if (webhookData == null || webhookData.isBlank()) {
 			return postMethod;
@@ -120,12 +120,11 @@ public class WebhookContentProviderForSlack extends AbstractWebookContentProvide
 		return postMethod;
 	}
 
-
 	@Override
-	public PostMethod createTestPostMethod(){
+	public PostMethod createTestPostMethod() {
 		PostMethod postMethod = createPostMethodForSlack("test");
 
-		return postMethod ;
+		return postMethod;
 
 	}
 

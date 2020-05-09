@@ -136,7 +136,7 @@ public class TestWebhookConnector extends TestSetUp {
 	public void testSendTestReceiverSlack() {
 		webhookConnector.setUrl("https://hooks.slack.com/services/T2E2");
 
-		assertFalse(webhookConnector.sendTest());
+		assertFalse(webhookConnector.sendTestPost());
 	}
 
 	@Test

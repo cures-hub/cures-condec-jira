@@ -353,7 +353,7 @@ public class ConfigRest {
 	@POST
 	public Response sendTestPost(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
 		WebhookConnector connector = new WebhookConnector(projectKey);
-		if (connector.sendTest()) {
+		if (connector.sendTestPost()) {
 			return Response.ok(Status.ACCEPTED).build();
 		}
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Test webhook post failed."))
