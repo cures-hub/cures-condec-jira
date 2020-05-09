@@ -27,7 +27,7 @@ public class TestWebhookContentProviderForSlack extends TestSetUp {
 
 	@Test
 	public void testcreatePostMethodForSlackForMissingProjectKeyAndMissingElementKeyAndMissingReceiver() {
-		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack(null,  null, null);
+		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack(null, null, null);
 		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
@@ -39,7 +39,7 @@ public class TestWebhookContentProviderForSlack extends TestSetUp {
 
 	@Test
 	public void testcreatePostMethodForProvidedProjectKeyAndMissingElementKeyAndMissingReceiver() {
-		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST",  null, null);
+		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", null, null);
 		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
@@ -53,14 +53,15 @@ public class TestWebhookContentProviderForSlack extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testcreatePostMethodForSlackForProvidedProjectKeyAndMissingElementKeyAndSlackReceiver() {
-		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST",  null, WebhookType.SLACK);
+		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", null, WebhookType.SLACK);
 		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
 	@NonTransactional
 	public void testcreatePostMethodForSlackForProvidedProjectKeyAndProvidedElementKeyAndSlackReceiver() {
-		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", knowledgeElement, WebhookType.SLACK);
+		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", knowledgeElement,
+				WebhookType.SLACK);
 		assertNotNull(provider.createPostMethod().getRequestEntity());
 	}
 
@@ -68,7 +69,8 @@ public class TestWebhookContentProviderForSlack extends TestSetUp {
 	@NonTransactional
 	public void testcreatePostMethodForSlackForProvidedProjectKeyAndProvidedElementAndSlackReceiver() {
 
-		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", knowledgeElement, WebhookType.SLACK);
+		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", knowledgeElement,
+				WebhookType.SLACK);
 		assertNotNull(provider.createPostMethod().getRequestEntity());
 	}
 
@@ -80,7 +82,8 @@ public class TestWebhookContentProviderForSlack extends TestSetUp {
 		knowledgeElement1.setDescription("Description");
 		knowledgeElement1.setType(KnowledgeType.ISSUE);
 
-		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", knowledgeElement1,	WebhookType.SLACK);
+		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", knowledgeElement1,
+				WebhookType.SLACK);
 		assertNotNull(provider.createPostMethod().getRequestEntity());
 	}
 
@@ -92,7 +95,8 @@ public class TestWebhookContentProviderForSlack extends TestSetUp {
 		knowledgeElement1.setDescription("Description");
 		knowledgeElement1.setType(KnowledgeType.ISSUE);
 
-		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", knowledgeElement1, WebhookType.SLACK);
+		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", knowledgeElement1,
+				WebhookType.SLACK);
 		assertNotNull(provider.createPostMethod().getRequestEntity());
 	}
 
@@ -100,12 +104,13 @@ public class TestWebhookContentProviderForSlack extends TestSetUp {
 	@NonTransactional
 	public void testCreateWebhookDataForSlackNewElement() {
 
-		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", knowledgeElement, WebhookType.SLACK);
+		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", knowledgeElement,
+				WebhookType.SLACK);
 
 		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'"
-				+ "TEST : Neues Entscheidungswissen wurde in Jira dokumentiert:" + "'}},"
-				+ "{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :Issue:  Issue"
-				+ " \\n *Titel*: Summary\\n'},"
+				+ "TEST : The following decision knowledge element was documented:" + "'}},"
+				+ "{'type':'section','text':{'type':'mrkdwn','text':'*Type:* :Issue:  Issue"
+				+ " \\n *Title*: Summary\\n'},"
 				+ "'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '"
 				+ knowledgeElement.getUrl() + "'}}]}";
 
@@ -116,41 +121,37 @@ public class TestWebhookContentProviderForSlack extends TestSetUp {
 	@NonTransactional
 	public void testCreateWebhookDataForSlackChangedElement() {
 
-		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", knowledgeElement, WebhookType.SLACK);
+		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", knowledgeElement,
+				WebhookType.SLACK);
 
 		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'"
-				+ "TEST : Dieses dokumentierte Entscheidungswissen wurde geändert:" + "'}},"
-				+ "{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :Issue:  Issue"
-				+ " \\n *Titel*: Summary\\n'},"
+				+ "TEST : The following decision knowledge element was changed:" + "'}},"
+				+ "{'type':'section','text':{'type':'mrkdwn','text':'*Type:* :Issue:  Issue"
+				+ " \\n *Title*: Summary\\n'},"
 				+ "'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '"
 				+ knowledgeElement.getUrl() + "'}}]}";
 
 		assertEquals(data, provider.createWebhookDataForSlack("changed"));
 	}
 
-  @Test
+	@Test
 	@NonTransactional
 	public void testCreateWebhookDataForSlackTestElement() {
-    KnowledgeElement testElement = new KnowledgeElement(1, "TEST", "i");
+		KnowledgeElement testElement = new KnowledgeElement(1, "TEST", "i");
 		testElement.setType(KnowledgeType.ISSUE);
 		testElement.setSummary("Test Summary");
 
-		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", testElement, WebhookType.SLACK);
+		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack("TEST", testElement,
+				WebhookType.SLACK);
 
-    String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'"
-         + "TEST : TESTPOST, changed decision knowledge will be shown like this:" + "'}},"
-    		 + "{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :" + testElement.getType() + ":  "
-    		 + testElement.getType()
-				 + " \\n *Titel*: " + testElement.getSummary() + "\\n'}"
-    		 + ",'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '"
-				 + "null/browse/TEST" + "'}}]}";
+		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'"
+				+ "TEST : This is a test post. Changed decision knowledge will be shown like this:" + "'}},"
+				+ "{'type':'section','text':{'type':'mrkdwn','text':'*Type:* :" + testElement.getType() + ":  "
+				+ testElement.getType() + " \\n *Title*: " + testElement.getSummary() + "\\n'}"
+				+ ",'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '"
+				+ "null/browse/TEST" + "'}}]}";
 
 		assertEquals(data, provider.createWebhookDataForSlack("test"));
 	}
-
-
-
-
-
 
 }

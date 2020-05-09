@@ -33,76 +33,18 @@ public class WebhookContentProviderForSlack extends AbstractWebookContentProvide
 		this.type = type;
 	}
 
-	/**
-	 *
-	 */
-	public String createWebhookDataForSlack(String event) {
-		if (this.knowledgeElement == null || this.knowledgeElement.getSummary() == null
-				|| this.knowledgeElement.getType() == null || this.knowledgeElement.getUrl() == null) {
-			return "";
-		}
-		String summary = this.knowledgeElement.getSummary();
-		if (summary.contains("{")) {
-			summary = this.cutSummary(summary);
-		}
-		String intro = "";
-		intro = getIntro(event);
-
-		String project = this.knowledgeElement.getProject().getProjectKey();
-
-		String url = "";
-
-		if ("test".equals(event)) {
-			ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
-			url = applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/" + this.projectKey;
-		} else {
-			url = this.knowledgeElement.getUrl();
-		}
-
-		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'" + project + " : " + intro + "'}},"
-				+ "{'type':'section','text':{'type':'mrkdwn','text':'*Typ:* :" + this.knowledgeElement.getType() + ":  "
-				+ this.knowledgeElement.getType() + " \\n *Titel*: " + summary + "\\n'}";
-		// if(!"test".equals(event)){}
-		data += ",'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '" + url + "'}";
-
-		data += "}]}";
-
-		return data;
-	}
-
-	private String getIntro(String event) {
-		String intro = "";
-
-		if ("new".equals(event)) {
-			intro = "Neues Entscheidungswissen wurde in Jira dokumentiert:";
-		}
-		if ("changed".equals(event)) {
-			intro = "Dieses dokumentierte Entscheidungswissen wurde geändert:";
-		}
-		if ("test".equals(event)) {
-			intro = "TESTPOST, changed decision knowledge will be shown like this:";
-		}
-		return intro;
-	}
-
-	/**
-	 *
-	 */
 	@Override
 	public PostMethod createPostMethod() {
-		if (knowledgeElement == null) {
-			return new PostMethod();
-		}
-		return createPostMethodForSlack("new");
+		return createPostMethod("new");
 	}
 
-	public PostMethod createPostMethodForSlack(String event) {
+	public PostMethod createPostMethod(String eventType) {
 		PostMethod postMethod = new PostMethod();
-		if (projectKey == null || this.knowledgeElement == null || type == null || event == null) {
-			return postMethod;
+		if (knowledgeElement == null || projectKey == null || type == null) {
+			return new PostMethod();
 		}
 
-		String webhookData = createWebhookDataForSlack(event);
+		String webhookData = createWebhookDataForSlack(eventType);
 
 		if (webhookData == null || webhookData.isBlank()) {
 			return postMethod;
@@ -122,10 +64,60 @@ public class WebhookContentProviderForSlack extends AbstractWebookContentProvide
 
 	@Override
 	public PostMethod createTestPostMethod() {
-		PostMethod postMethod = createPostMethodForSlack("test");
-
+		PostMethod postMethod = createPostMethod("test");
 		return postMethod;
+	}
 
+	public String createWebhookDataForSlack(String event) {
+		if (this.knowledgeElement == null || this.knowledgeElement.getSummary() == null
+				|| this.knowledgeElement.getType() == null || this.knowledgeElement.getUrl() == null) {
+			return "";
+		}
+
+		String intro = getIntro(event);
+
+		String url = "";
+		if ("test".equals(event)) {
+			url = getTestUrl();
+		} else {
+			url = this.knowledgeElement.getUrl();
+		}
+
+		return getData(knowledgeElement, intro, url);
+	}
+
+	private String getTestUrl() {
+		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
+		return applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/" + this.projectKey;
+	}
+
+	private String getData(KnowledgeElement element, String intro, String url) {
+		String summary = cleanSummary(element.getSummary());
+
+		String data = "{'blocks':[{'type':'section','text':{'type':'mrkdwn','text':'"
+				+ element.getProject().getProjectKey() + " : " + intro + "'}},"
+				+ "{'type':'section','text':{'type':'mrkdwn','text':'*Type:* :" + element.getType() + ":  "
+				+ element.getType() + " \\n *Title*: " + summary + "\\n'}";
+		data += ",'accessory':{'type':'button','text':{'type':'plain_text','text':'Go to Jira'},'url' : '" + url + "'}";
+		data += "}]}";
+
+		return data;
+	}
+
+	// TODO Add enum for EventType
+	private String getIntro(String event) {
+		String intro = "";
+
+		if ("new".equals(event)) {
+			intro = "The following decision knowledge element was documented:";
+		}
+		if ("changed".equals(event)) {
+			intro = "The following decision knowledge element was changed:";
+		}
+		if ("test".equals(event)) {
+			intro = "This is a test post. Changed decision knowledge will be shown like this:";
+		}
+		return intro;
 	}
 
 	/**
@@ -134,7 +126,10 @@ public class WebhookContentProviderForSlack extends AbstractWebookContentProvide
 	 *
 	 * @return String without "{anything}"-parts
 	 */
-	public String cutSummary(String toCut) {
+	public String cleanSummary(String toCut) {
+		if (!toCut.contains("{")) {
+			return toCut;
+		}
 		String cut = toCut.replaceAll("\\x7B(\\S*)\\x7D", "");
 		return cut;
 	}

@@ -66,13 +66,16 @@ public class WebhookConnector {
 		if (!checkIfDataIsValid(sendElement)) {
 			return isSubmitted;
 		}
-		if (type == WebhookType.TREANT) {
+
+		switch (type) {
+		case TREANT:
 			isSubmitted = postKnowledgeTree(sendElement);
-			return isSubmitted;
-		}
-		if (type == WebhookType.SLACK) {
+			break;
+		case SLACK:
 			isSubmitted = postKnowledgeElement(sendElement, event);
-			return isSubmitted;
+			break;
+		default:
+			LOGGER.error("Webhook type is unknown.");
 		}
 		return isSubmitted;
 	}
@@ -184,7 +187,7 @@ public class WebhookConnector {
 	 */
 	private boolean postKnowledgeElement(KnowledgeElement changedElement, String event) {
 		WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack(projectKey, changedElement, type);
-		PostMethod postMethod = provider.createPostMethodForSlack(event);
+		PostMethod postMethod = provider.createPostMethod(event);
 		return executePostMethod(postMethod);
 	}
 
