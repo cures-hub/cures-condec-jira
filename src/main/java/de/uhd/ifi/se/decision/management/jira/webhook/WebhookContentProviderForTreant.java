@@ -84,22 +84,7 @@ public class WebhookContentProviderForTreant extends AbstractWebookContentProvid
 	 */
 	@Override
 	public PostMethod createTestPostMethod() {
-		PostMethod postMethod = new PostMethod();
-		if (projectKey == null || rootElementKey == null || secret == null || type == null) {
-			return postMethod;
-		}
-		String webhookData = "{\"issueKey\": \"" + this.rootElementKey + "\"}";
-		try {
-			StringRequestEntity requestEntity = new StringRequestEntity(webhookData, "application/json", "UTF-8");
-			postMethod.setRequestEntity(requestEntity);
-		} catch (UnsupportedEncodingException e) {
-			LOGGER.error("Creating the test post method failed. Message: " + e.getMessage());
-		}
-		Header header = new Header();
-		header.setName("X-Hub-Signature");
-		header.setValue("sha256=" + createHashedPayload(webhookData, secret));
-		postMethod.setRequestHeader(header);
-		return postMethod;
+		return new PostMethod();
 	}
 
 	/**
@@ -110,16 +95,8 @@ public class WebhookContentProviderForTreant extends AbstractWebookContentProvid
 	 */
 	public String createWebhookDataForTreant() {
 		String treantAsJson = createTreantJsonString();
-		return "{\"issueKey\": \"" + this.rootElementKey + "\", \"TESTPOST\" }";
+		return "{\"issueKey\": \"" + this.rootElementKey + "\", \"ConDecTree\": " + treantAsJson + "}";
 	}
-
-	/**
-	 * Creates the key value JSON String transmitted via webhook for Slack.
-	 * (Differences: "text", mask \ and ")
-	 *
-	 * @return JSON String with the following pattern: {"text": " \"issueKey\":
-	 *         {String}, \"ConDecTree\": {TreantJS JSON config and data} " }
-	 */
 
 	/**
 	 * Creates the Treant JSON String (value transmitted via webhook).

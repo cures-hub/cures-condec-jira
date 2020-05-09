@@ -109,15 +109,18 @@ public class WebhookConnector {
 		testElement.setType(KnowledgeType.ISSUE);
 		testElement.setSummary("Test Summary");
 
+		AbstractWebookContentProvider provider = null;
 		if (type == WebhookType.TREANT) {
-			WebhookContentProviderForTreant provider = new WebhookContentProviderForTreant(projectKey, testElement,
-					secret, type);
-			postMethod = provider.createTestPostMethod();
+			provider = new WebhookContentProviderForTreant(projectKey, testElement, secret, type);
 		}
 		if (type == WebhookType.SLACK) {
-			WebhookContentProviderForSlack provider = new WebhookContentProviderForSlack(projectKey, testElement, type);
+			provider = new WebhookContentProviderForSlack(projectKey, testElement, type);
+
+		}
+		if (provider != null) {
 			postMethod = provider.createTestPostMethod();
 		}
+
 		return executePostMethod(postMethod);
 	}
 
