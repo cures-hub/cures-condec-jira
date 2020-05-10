@@ -45,22 +45,6 @@ Alternatively, the plug-in can be installed via uploading the .jar file to your 
 - [Activate the "Decision Documentation and Exploration" plug-in.](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/installed_plugin.png)
 - Activate the plug-in for the specific project in the [setting page.](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/config_plugin.png)
 
-
-### Set up a webhook
-
-Jira ConDec provides a webhook sending decision knowledge. To activate a webhook you do the following steps:
-
-- As a system administrator, navigate to Jira project settings
-- Select 'Webhook' on the side-bar under 'ConDec Decision Knowledge'
-
-- Select root elements, which triggers the webhook, if they are created or edited
-- Insert a URL, which recieves the Webhook, and a Shared Secret
-- (For Slack there is  no need to set a Shared Secret)
-- Activate the webhook with the switch on the top of the page
-
-- You can click the test button to send a test post to the given URL
-
-
 ## User Interface
 
 ### Decision Knowledge Page
@@ -113,3 +97,13 @@ These services can be accessed via the following link:
 **Jira base URL**/rest/condec/latest/**knowledge|config|view**/**REST service**
 
 The Jira ConDec plug-in uses the REST services in the [REST Java Script client](https://github.com/cures-hub/cures-condec-jira/blob/master/src/main/resources/js/condec.api.js) from the user interface.
+
+### Webhook
+Jira ConDec provides a webhook sending decision knowledge to a receiver system via a HTTP post request. To activate the webhook, do the following steps:
+
+- As a project administrator, navigate to Jira project settings.
+- Select "Webhook" on the side-bar under "ConDec Decision Knowledge".
+- Insert a receiver URL and a shared secret (for Slack, there is no need to set a shared secret).
+- Select the types of elements, which trigger the webhook, if they are created or edited.
+- Activate the webhook with the switch on the top of the page
+- You can click the test button to send a test post to the given URL.
