@@ -7,7 +7,7 @@
 
 The CURES ConDec Jira plug-in enables the user to capture and explore decision knowledge in [Jira](https://de.atlassian.com/software/jira).
 Decision knowledge covers knowledge about decisions, the problems they address, solution proposals, their context, and justifications (rationale). The documented decision knowledge can be linked to Jira issues such as features, tasks to implement a feature, or bug reports.
-The plug-in supports various documentation locations for decision knowledge, such as entire Jira issues with distinct types, comments and the description of existing Jira issues, and commit messages. 
+The plug-in supports various documentation locations for decision knowledge, such as entire Jira issues with distinct types, comments and the description of existing Jira issues, and commit messages.
 
 ## Installation
 
@@ -20,9 +20,9 @@ The following prerequisites are necessary to compile the plug-in from source cod
 The source code is compiled via terminal.
 Navigate into the cures-condec-jira folder and run the following command:
 ```
-atlas-mvn package
+atlas-package
 ```
-(Run `atlas-mvn package -DskipTests=true` to skip unit tests to speed-up compilation.) 
+(Run `atlas-package -DskipTests=true` to skip unit tests to speed-up compilation.)
 The .jar file is created.
 
 Run the plug-in locally via:
@@ -97,3 +97,13 @@ These services can be accessed via the following link:
 **Jira base URL**/rest/condec/latest/**knowledge|config|view**/**REST service**
 
 The Jira ConDec plug-in uses the REST services in the [REST Java Script client](https://github.com/cures-hub/cures-condec-jira/blob/master/src/main/resources/js/condec.api.js) from the user interface.
+
+### Webhook
+Jira ConDec provides a webhook sending decision knowledge to a receiver system via a HTTP post request. To activate the webhook, do the following steps:
+
+- As a project administrator, navigate to Jira project settings.
+- Select "Webhook" on the side-bar under "ConDec Decision Knowledge".
+- Insert a receiver URL and a shared secret (for Slack, there is no need to set a shared secret).
+- Select the types of elements, which trigger the webhook, if they are created or edited.
+- Activate the webhook with the switch on the top of the page
+- You can click the test button to send a test post to the given URL.
