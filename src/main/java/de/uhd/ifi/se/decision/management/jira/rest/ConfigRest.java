@@ -712,14 +712,14 @@ public class ConfigRest {
 
 	/* **************************************/
 	/*										*/
-	/* Configuration for Consistency */
+	/* Configuration for Consistency		*/
 	/*										*/
 	/* **************************************/
 	@Path("/setConsistencyActivated")
 	@POST
 	public Response setConsistencyActivated(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isConsistencyActivated") String isActivatedString) {
+											@QueryParam("projectKey") String projectKey,
+											@QueryParam("isConsistencyActivated") String isActivatedString) {
 		Response response = this.checkRequest(request, projectKey, isActivatedString);
 		if (response != null) {
 			return response;

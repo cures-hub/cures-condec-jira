@@ -19,6 +19,8 @@ public class TimeCIP implements ContextInformationProvider {
 
 	@Override
 	public double assessRelation(Issue i1, Issue i2) {
-		return 1./Math.abs(i1.getCreated().getTime() - i2.getCreated().getTime());
+		long differenceInDays = i1.getCreated().getTime() - i2.getCreated().getTime() / (1000 * 60 * 60 * 24);
+
+		return 1. / Math.abs(differenceInDays + 1);
 	}
 }
