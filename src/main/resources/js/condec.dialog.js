@@ -250,7 +250,7 @@
         AJS.dialog2(deleteLinkDialog).show();
     };
 
-    ConDecDialog.prototype.showDecisionLinkDialog = function showDecisionLinkDialog(idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild) {
+    ConDecDialog.prototype.showDecisionLinkDialog = function showDecisionLinkDialog(idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, submitCallback) {
         console.log("conDecDialog showDecisionLinkDialog");
 
         // HTML elements
@@ -264,6 +264,12 @@
 
         // Fill HTML elements
         selectElementField.innerHTML = "";
+        /* NOTE!
+         Instead the Jira API could be called using GET "/rest/api/2/issueLinkType".
+         This call "[r]eturns a list of available issue link types, if issue linking is enabled.
+         Each issue link type has an id, a name and a label for the outward and inward link relationship."
+         @see https://docs.atlassian.com/software/jira/docs/api/REST/8.5.4/#api/2/issueLinkType-getIssueLinkTypes
+         */
         conDecAPI.getLinkTypes(function (linkTypes) {
             var linkTypeNames = Object.keys(linkTypes);
             var linkTypeColors = Object.values(linkTypes);
@@ -294,6 +300,10 @@
             conDecAPI.createLink(null, idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, linkType, function () {
                 conDecObservable.notify();
             });
+            if (submitCallback !== null){
+				submitCallback();
+
+			}
             AJS.dialog2(linkDialog).hide();
         };
 

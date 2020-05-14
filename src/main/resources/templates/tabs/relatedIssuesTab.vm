@@ -22,7 +22,7 @@
     </tbody>
 </table>
 
-#parse("templates/dialogs/linkIssuesDialog.vm")
+#parse("templates/dialogs/linkDecisionsDialog.vm")
 
 
 <script>
@@ -31,7 +31,6 @@
     const resultsTableContentElement = document.getElementById("table-content");
     const targetIssueDialogDisplay = document.getElementById("target-issue-dialog-display");
     const linkTypeSelectElement = AJS.$("#link-type-select")[0];
-
 
 
     function discardSuggestion(otherIssueKey) {
@@ -51,113 +50,15 @@
             .catch((error) => conDecAPI.showFlag("error", "Could not discard suggestion! </br>" + error));
     }
 
-    //-----------------------------------------
-    // Link issues dialog
-    //-----------------------------------------
-
-    /**
-     * Fills the selection of the link-issues dialog.
-     *
-     * @param options object of existing link types
-     */
-    function fillLinkSelectOptions(options) {
-        for (let option of options) {
-            //create outward link
-            let linkOption = document.createElement("option");
-            linkOption.value = option.name;
-            linkOption.innerText = option.outward;
-            linkTypeSelectElement.appendChild(linkOption);
-
-            //create inward link
-            //linkOption = document.createElement("option");
-            //linkOption.value = option.name;
-            //linkOption.innerText = option.inward;
-            //linkTypeSelectElement.appendChild(linkOption);
-            //console.log(option.outward);
-        }
-    }
-
-    /**
-     * Sends API call to link two issues.
-     *
-     * @param baseIssueKey outward issue
-     * @param targetIssueKey inward issue
-     * @param linkType type of link from outward to inward issue
-     * @returns {Promise<void>}
-     */
-    async function linkIssues(baseIssueKey, targetIssueKey, linkType) {
-        //https://docs.atlassian.com/software/jira/docs/api/REST/8.5.4/#api/2/issueLink-linkIssues
-        console.log(generateLinkIssueJson(baseIssueKey, targetIssueKey, linkType));
-        generalApi.postJSONReturnPromise("/jira/rest/api/2/issueLink", generateLinkIssueJson(baseIssueKey, targetIssueKey, linkType))
-            .then(() => {
-                loadData();
-                conDecAPI.showFlag("success", "Linked suggestion successfully!");
-            }).catch( e => conDecAPI.showFlag("error", "An error occurred when linking the issues!"))
-
-    }
-
-    /**
-     * Helper function to generate valid JSON for link-issues API call.
-     */
-    function generateLinkIssueJson(baseIssueKey, targetIssueKey, linkType) {
-        return {
-            "type": {
-                "name": linkType
-            },
-            "inwardIssue": {
-                "key":  targetIssueKey
-            },
-            "outwardIssue": {
-                "key":  baseIssueKey
-            }
-        };
-    }
-
-    /**
-     * Shows the dialog when the "Show dialog" button is clicked
-     *
-     */
-    function showDialog(targetIssueKey) {
-        AJS.dialog2("#link-issue-dialog").show();
-        displayTargetIssue(targetIssueKey);
-        //load issue link types: https://docs.atlassian.com/software/jira/docs/api/REST/8.5.4/#api/2/issueLinkType
-        generalApi.getJSONReturnPromise(AJS.contextPath() + "/rest/api/2/issueLinkType")
-            .then((data) => fillLinkSelectOptions(data.issueLinkTypes))
-            .catch(error => conDecAPI.showFlag("error", error.toString()))
-    }
-
-
-    function displayTargetIssue(targetIssueKey) {
-        targetIssueDialogDisplay.innerText = targetIssueKey;//`Link current issue to issue ${targetIssueKey}`;
-    }
-
-    /**
-     * Event listener for when link issues is confirmed in dialog.
-     */
-    AJS.$("#link-issue-dialog-submit-button").on('click', function (e) {
-        e.preventDefault();
-        AJS.dialog2("#link-issue-dialog").hide();
-
-        let selectedLinkType = linkTypeSelectElement.selectedOptions[0].value;
-        linkIssues(conDecAPI.getIssueKey(), targetIssueDialogDisplay.innerText, selectedLinkType);
-        loadData();
-    });
-
-    // Hides the dialog
-    AJS.$("#link-issue-dialog-cancel-button").on('click', function (e) {
-        e.preventDefault();
-        AJS.dialog2("#link-issue-dialog").hide();
-    });
 
     //-----------------------------------------
     //            Generate table
     //-----------------------------------------
-
     let displayRelatedIssues = function (relatedIssues) {
-        if (relatedIssues.length === 0){
+        if (relatedIssues.length === 0) {
             //reset table content to empty
             resultsTableContentElement.innerHTML = "<i>No related issues found!</i>";
-        }else{
+        } else {
             //reset table content to empty
             resultsTableContentElement.innerHTML = "";
             //append table rows with possibly related issues
@@ -187,21 +88,24 @@
     };
 
     let generateOptionButtons = function (relatedIssue) {
-        return `<button class='aui-button aui-button-primary' onclick="showDialog('${relatedIssue.key}')"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link </button>` +
+        return `<button class='aui-button aui-button-primary' onclick="showDialog('${relatedIssue.id}')"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link </button>` +
             `<button class='aui-button aui-button-removed' onclick="discardSuggestion('${relatedIssue.key}')"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard </button>`;
     };
 
+    let showDialog = function (targetIssueId) {
+        conDecDialog.showDecisionLinkDialog(JIRA.Issue.getIssueId(), targetIssueId, "i", "i", loadData);
+    }
+
     let processRelatedIssuesResponse = function (response) {
         return response.relatedIssues.map(suggestion => {
-            suggestion.score = Math.round(suggestion.score*1000)/1000.;
+            suggestion.score = Math.round(suggestion.score * 1000) / 1000.;
             return suggestion;
-        }).sort((a,b) => b.score-a.score).filter(suggestion => suggestion.score >0.3)
+        }).sort((a, b) => b.score - a.score).filter(suggestion => suggestion.score > 0.3)
     }
 
     //-----------------------------------------
-    // Load data and init loading.
+    // Load data and call display logic.
     //-----------------------------------------
-
     function loadData() {
         resultsTableElement.style.visibility = "hidden";
         loadingSpinnerElement.style.display = "flex";
@@ -220,15 +124,9 @@
             });
     }
 
-    //load data when page finished loading!
-    window.addEventListener("hashchange", function (event) {
-        //loadingSpinnerElement.style.display = "visible";
-        //resultsTableElement.style.visibility = "none";
-        console.log(event);
-        loadData();
-
-    }, false);
-
+    /**
+     * Load data when tab is selected.
+     */
     AJS.$("#visualization-selection-tabs").on("tabSelect", function (event) {
         event.preventDefault();
         event.stopPropagation();
