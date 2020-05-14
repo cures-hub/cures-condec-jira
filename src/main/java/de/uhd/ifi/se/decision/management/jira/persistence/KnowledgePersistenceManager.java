@@ -233,7 +233,7 @@ public class KnowledgePersistenceManager {
 
 		if (ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
 			KnowledgeElement sourceElement = link.getSource();
-			new WebhookConnector(projectKey).sendElementChanges(sourceElement);
+			new WebhookConnector(projectKey).sendElement(sourceElement, "changed");
 		}
 		databaseId = GenericLinkManager.insertLink(link, user);
 		if (databaseId > 0) {
@@ -307,7 +307,7 @@ public class KnowledgePersistenceManager {
 
 		if (isDeleted && ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
 			KnowledgeElement sourceElement = link.getSource();
-			new WebhookConnector(projectKey).sendElementChanges(sourceElement);
+			new WebhookConnector(projectKey).sendElement(sourceElement, "changed");
 		}
 
 		return isDeleted;

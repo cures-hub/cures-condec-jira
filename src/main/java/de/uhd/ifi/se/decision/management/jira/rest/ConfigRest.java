@@ -41,6 +41,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
  * REST resource for plug-in configuration
@@ -72,8 +73,9 @@ public class ConfigRest {
 		if (isActivatedString == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
 		}
-		if (!"true".equals(isActivatedString) && !"false".equals(isActivatedString)){
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated is invalid")).build();
+		if (!"true".equals(isActivatedString) && !"false".equals(isActivatedString)) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated is invalid"))
+					.build();
 		}
 		return null;
 	}
@@ -331,7 +333,7 @@ public class ConfigRest {
 		}
 		ConfigPersistenceManager.setWebhookUrl(projectKey, webhookUrl);
 		ConfigPersistenceManager.setWebhookSecret(projectKey, webhookSecret);
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok(Status.OK).build();
 	}
 
 	@Path("/setWebhookType")
@@ -345,6 +347,17 @@ public class ConfigRest {
 		}
 		ConfigPersistenceManager.setWebhookType(projectKey, webhookType, isWebhookTypeEnabled);
 		return Response.ok(Status.ACCEPTED).build();
+	}
+
+	@Path("/sendTestPost")
+	@POST
+	public Response sendTestPost(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+		WebhookConnector connector = new WebhookConnector(projectKey);
+		if (connector.sendTestPost()) {
+			return Response.ok(Status.ACCEPTED).build();
+		}
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Test webhook post failed."))
+				.build();
 	}
 
 	@Path("/setReleaseNoteMapping")

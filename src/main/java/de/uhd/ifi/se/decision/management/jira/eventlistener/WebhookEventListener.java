@@ -25,9 +25,16 @@ public class WebhookEventListener {
 		}
 		long eventTypeId = issueEvent.getEventTypeId();
 		KnowledgeElement decisionKnowledgeElement = new KnowledgeElement(issueEvent.getIssue());
-		if (eventTypeId == EventType.ISSUE_CREATED_ID || eventTypeId == EventType.ISSUE_UPDATED_ID) {
+
+		if (eventTypeId == EventType.ISSUE_CREATED_ID) {
+			LOGGER.info("WebhookListerner createdElement" + decisionKnowledgeElement.getSummary());
 			WebhookConnector connector = new WebhookConnector(projectKey);
-			connector.sendElementChanges(decisionKnowledgeElement);
+			connector.sendElement(decisionKnowledgeElement, "new");
+		}
+		if (eventTypeId == EventType.ISSUE_UPDATED_ID) {
+			LOGGER.info("WebhookListerner sendetElementchange" + decisionKnowledgeElement.getSummary());
+			WebhookConnector connector = new WebhookConnector(projectKey);
+			connector.sendElement(decisionKnowledgeElement, "changed");
 		}
 		if (eventTypeId == EventType.ISSUE_DELETED_ID) {
 			WebhookConnector webhookConnector = new WebhookConnector(projectKey);
@@ -40,6 +47,6 @@ public class WebhookEventListener {
 			return;
 		}
 		WebhookConnector connector = new WebhookConnector(decisionKnowledgeElement.getProject().getProjectKey());
-		connector.sendElementChanges(decisionKnowledgeElement);
+		connector.sendElement(decisionKnowledgeElement, "changed");
 	}
 }

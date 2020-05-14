@@ -3,7 +3,7 @@
 
  Requires
  * conDecTreant.findParentElement
-    
+
  Is required by
  * conDecContextMenu
  * conDecDialog
@@ -14,9 +14,9 @@
  * conDecKnowledgePage
  * conDecTabPanel
  * conDecVis
-  
+
  Is referenced in HTML by
- * settingsForAllProjects.vm 
+ * settingsForAllProjects.vm
  * settingsForSingleProject.vm
  */
 (function (global) {
@@ -27,30 +27,46 @@
 			this.restPrefix = AJS.contextPath() + "/rest/condec/latest";
 
 			projectKey = getProjectKey();
+			
+			// @issue How store settings retrieved from the backend such as knowledge types? 
+			// @decision The settings that do not change are stored as global attributes!
+			// @pro This avoids redundant REST calls and improves performance.
+			// @alternative Use getter methods that include the REST calls in their body!
+			// @con REST calls would be redundant, which leads to longer loading times.
+			this.knowledgeTypes = getKnowledgeTypes(projectKey);
+		    this.extendedKnowledgeTypes = createExtendedKnowledgeTypes(this.knowledgeTypes);
+		        
 			this.optionStatus = ["idea", "discarded", "decided", "rejected", "undefined"];
 			this.issueStatus = ["resolved", "unresolved"];
 			this.knowledgeStatus = this.optionStatus.concat(this.issueStatus);
 		};
-
+		
 		/*
-		 * Replaces argument with pro-argument and con-argument in knowledge types
-		 * array.
+		 * Replaces argument with pro-argument and con-argument in knowledge
+		 * types array.
 		 */
-		ConDecAPI.prototype.getExtendedKnowledgeTypes = function getExtendedKnowledgeTypes() {
-			let knowledgeTypes = getKnowledgeTypes(projectKey);
+		function createExtendedKnowledgeTypes(knowledgeTypes) {
 			var extendedKnowledgeTypes = knowledgeTypes.filter(function (value) {
 				return value.toLowerCase() !== "argument";
 			});
 			extendedKnowledgeTypes.push("Pro-argument");
 			extendedKnowledgeTypes.push("Con-argument");
 			return extendedKnowledgeTypes;
+		}
+
+		// @issue How can we access global attributes of closure objects, e.g. extendedKnowlegdeTypes?
+		// @decision Do not use getters in Javascript but directly call e.g. "conDecAPI.extendedKnowlegdeTypes"!
+		// @pro Less code.
+		// @alternative Use getters in Javascript and e.g. call "conDecAPI.getExtendedKnowledgeTypes()"!
+		ConDecAPI.prototype.getExtendedKnowledgeTypes = function() {
+			return this.extendedKnowledgeTypes;
 		};
 
 		ConDecAPI.prototype.checkIfProjectKeyIsValid = function checkIfProjectKeyIsValid() {
 			if (projectKey === null || projectKey === undefined) {
 				/*
-				 * Some dependencies were missing when the closure object was first
-				 * instantiated. Instantiates the object again.
+				 * Some dependencies were missing when the closure object was
+				 * first instantiated. Instantiates the object again.
 				 */
 				global.conDecAPI = new ConDecAPI();
 			}
@@ -97,7 +113,7 @@
 		 * Creates a new decision knowledge element. If the element should be
 		 * unlinked the idOfExistingElement must be 0 and the
 		 * documentationLocationOfExistingElement must be null
-		 *
+		 * 
 		 * external references: condec.knowledge.page, condec.dialog
 		 */
 		ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElement(summary, description,
@@ -120,7 +136,6 @@
 			});
 		};
 
-
 		ConDecAPI.prototype.assignDecisionGroup = function assignDecisionGroup(level, existingGroups,
 																			   addgroup, sourceId, documentationLocation, callback) {
 			var newElement = {};
@@ -139,9 +154,9 @@
 			});
 		};
 
-
 		ConDecAPI.prototype.getIssueTypes = function getIssueTypes() {
-			// first we need the boards then we can get the Sprints for each board
+			// first we need the boards then we can get the Sprints for each
+			// board
 			return new Promise(function (resolve, reject) {
 				var issueTypeUrl = "/rest/api/2/issue/createmeta?expand=projects.issuetypes";
 				var issuePromise = generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
@@ -166,7 +181,8 @@
 			})
 		};
 		ConDecAPI.prototype.getReleases = function getReleases() {
-			// first we need the boards then we can get the Sprints for each board
+			// first we need the boards then we can get the Sprints for each
+			// board
 			return new Promise(function (resolve, reject) {
 				var issueTypeUrl = "/rest/projects/latest/project/" + projectKey + "/release/allversions";
 				var issuePromise = generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
@@ -222,11 +238,13 @@
 				}
 			});
 		};
+		
 		/*
 		 * external references: condec.dialog
 		 */
 		ConDecAPI.prototype.getSprintsByProject = function getSprintsByProject() {
-			// first we need the boards then we can get the Sprints for each board
+			// first we need the boards then we can get the Sprints for each
+			// board
 			return new Promise(function (resolve, reject) {
 				var boardUrl = "/rest/agile/latest/board?projectKeyOrId=" + projectKey;
 				var boardPromise = generalApi.getJSONReturnPromise(AJS.contextPath() + boardUrl);
@@ -251,7 +269,8 @@
 			})
 		};
 		ConDecAPI.prototype.getIssueTypes = function getIssueTypes() {
-			// first we need the boards then we can get the Sprints for each board
+			// first we need the boards then we can get the Sprints for each
+			// board
 			return new Promise(function (resolve, reject) {
 				var issueTypeUrl = "/rest/api/2/issue/createmeta?expand=projects.issuetypes";
 				var issuePromise = generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
@@ -303,8 +322,6 @@
 				if (error === null) {
 					showFlag("success", "Link has been created.");
 					callback(link);
-				}else {
-					showFlag("error", error);
 				}
 			});
 		};
@@ -328,6 +345,13 @@
 					}
 				});
 		};
+		
+	    /*
+	     * external references: condec.dialog
+	     */
+	    ConDecAPI.prototype.setStatus = function setStatus(id, documentationLocation, type, status, callback) {
+	        this.updateDecisionKnowledgeElement(id, null, null, type, documentationLocation, status, callback);
+	    };
 
 		/*
 		 * external references: condec.dialog
@@ -747,9 +771,10 @@
 		};
 
 		/*
-		 * Knowledge types are a subset of "Alternative", "Argument", "Assessment",
-		 * "Assumption", "Claim", "Constraint", "Context", "Decision", "Goal",
-		 * "Implication", "Issue", "Problem", and "Solution".
+		 * Knowledge types are a subset of "Alternative", "Argument",
+		 * "Assessment", "Assumption", "Claim", "Constraint", "Context",
+		 * "Decision", "Goal", "Implication", "Issue", "Problem", and
+		 * "Solution".
 		 */
 		function getKnowledgeTypes(projectKey) {
 			var knowledgeTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getKnowledgeTypes.json?projectKey=" + projectKey);
@@ -772,8 +797,6 @@
 			generalApi.getJSON(this.restPrefix + "/config/getLinkTypes.json?projectKey=" + projectKey, function (error, linkTypes) {
 				if (error === null) {
 					callback(linkTypes);
-				}else{
-					showFlag("error", error);
 				}
 			});
 		};
@@ -827,8 +850,8 @@
 		};
 
 		/*
-			 * external references: consistencySettings.vm
-			 */
+		 * external references: consistencySettings.vm
+		 */
 		ConDecAPI.prototype.setConsistencyActivated = function (
 			isConsistencyActivated, projectKey) {
 			generalApi.postJSON(this.restPrefix + "/config/setConsistencyActivated.json?projectKey="
@@ -890,6 +913,19 @@
 				error, response) {
 				if (error === null) {
 					showFlag("success", "The webhook root element type was changed for this project.");
+				}
+			});
+		};
+
+
+		/*
+		 * external references: settingsForSingleProject.vm
+		 */
+		ConDecAPI.prototype.sendTestPost = function sendTestPost(projectKey){
+			generalApi.postJSON(this.restPrefix + "/config/sendTestPost.json?projectKey="
+					+ projectKey, null, function(error, response) {
+				if (error === null) {
+					showFlag("success", "The webhook test was send.");
 				}
 			});
 		};
@@ -1008,8 +1044,8 @@
 		};
 
 		/*
-			* external references: settingsForSingleProject.vm
-			*/
+		 * external references: settingsForSingleProject.vm
+		 */
 		ConDecAPI.prototype.trainClassifier = function trainClassifier(projectKey, arffFileName, animatedElement) {
 			animatedElement.classList.add("aui-progress-indicator-value");
 			generalApi.postJSON(this.restPrefix + "/config/trainClassifier.json?projectKey=" + projectKey + "&arffFileName="
@@ -1125,7 +1161,8 @@
 				}
 			}
 			if (issueKey === undefined || !issueKey) {
-				// console.log("conDecAPI could not getIssueKey using object AJS!");
+				// console.log("conDecAPI could not getIssueKey using object
+				// AJS!");
 				var chunks = document.location.pathname.split("/");
 				if (chunks.length > 0) {
 					var lastChunk = chunks[chunks.length - 1];

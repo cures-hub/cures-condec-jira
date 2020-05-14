@@ -26,7 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInData
  * Models knowledge elements, e.g. decision knowledge elements or requirements.
  * These elements are nodes of the knowledge graph and connected by
  * links/edges/relationships.
- * 
+ *
  * @see KnowledgeGraph
  * @see Link
  */
@@ -232,11 +232,11 @@ public class KnowledgeElement {
 
 	/**
 	 * TODO Address issue
-	 * 
+	 *
 	 * @issue Currently, groups are a derived attribute of this class. How efficient
 	 *        is it to query the database via the DecisionGroupsManager? Would it be
 	 *        more efficient to have a "real" groups attribute in this class?
-	 * 
+	 *
 	 * @return List<String> of groups assigned to this knowledge element.
 	 */
 	@XmlElement(name = "groups")
@@ -259,7 +259,7 @@ public class KnowledgeElement {
 
 	/**
 	 * Add a group to the list of groups
-	 * 
+	 *
 	 * @param group
 	 *            to add as string
 	 */
@@ -269,7 +269,7 @@ public class KnowledgeElement {
 
 	/**
 	 * Remove a group from the list of groups
-	 * 
+	 *
 	 * @param group
 	 *            to remove as string
 	 */
@@ -475,7 +475,7 @@ public class KnowledgeElement {
 	 * @return all links (=edges) of this element in the {@link KnowledgeGraph} as
 	 *         list of {@link} objects, does contain Jira {@link IssueLink}s and
 	 *         generic links.
-	 * 
+	 *
 	 * @see GenericLinkManager
 	 */
 	public List<Link> getLinks() {
@@ -489,7 +489,7 @@ public class KnowledgeElement {
 	/**
 	 * Determines whether an element is linked to at least one other decision
 	 * knowledge element.
-	 * 
+	 *
 	 * @return id of first link that is found.
 	 */
 	public long isLinked() {
