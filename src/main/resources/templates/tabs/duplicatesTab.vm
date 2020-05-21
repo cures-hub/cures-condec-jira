@@ -1,0 +1,138 @@
+<div>
+    <aui-spinner size="large" id="loading-spinner-duplicate"></aui-spinner>
+</div>
+
+<table class="aui aui-table-list" id="duplicate-results-table">
+    <thead>
+    <tr>
+        <th id="th-key-duplicate" class="aui-table-column-issue-key">Issue key</th>
+        <th id="th-text-fragment-duplicate">Duplicate</th>
+        <th id="th-options-duplicate" class="aui-table-column-unsortable">Options</th>
+    <tr>
+    </thead>
+    <tbody id="table-content-duplicate">
+    <!--<tr>
+        <td>TEST-12</td>
+        <td>Cannot sort tables</td>
+        <td>Table sorting should be allowed</td>
+    </tr>-->
+
+    </tbody>
+</table>
+
+<script>
+    const loadingDuplicateSpinnerElement = document.getElementById("loading-spinner-duplicate");
+    const duplicateResultsTableElement = document.getElementById("duplicate-results-table");
+    const duplicateResultsTableContentElement = document.getElementById("table-content-duplicate");
+
+    function discardDuplicate(otherIssueKey) {
+        duplicateResultsTableElement.style.visibility = "visible";
+
+        console.log("---- Discard Duplicate ----");
+        let baseIssueKey = conDecAPI.getIssueKey();
+        let projectKey = conDecAPI.getProjectKey();
+        console.log(baseIssueKey + " <-> " + otherIssueKey);
+        console.log("---------------");
+
+        consistencyAPI.discardDuplicateSuggestion(baseIssueKey, otherIssueKey, projectKey)
+            .then((data) => {
+                conDecAPI.showFlag("success", "Discarded suggestion sucessfully!");
+                loadingDuplicateData();
+            })
+            .catch((error) => conDecAPI.showFlag("error", "Could not discard suggestion! </br>" + error));
+    }
+
+    function markAsDuplicate(otherIssueId) {
+        conDecAPI.createLink(null, JIRA.Issue.getIssueId(), targetIssueId, "i", "i", "duplicates", loadingDuplicateData);
+    }
+
+    //-----------------------------------------
+    //            Generate table
+    //-----------------------------------------
+    let displayDuplicateIssues = function (duplicates) {
+        if (duplicates.length === 0) {
+            //reset table content to empty
+            duplicateResultsTableContentElement.innerHTML = "<i>No duplicates found!</i>";
+        } else {
+            //reset table content to empty
+            duplicateResultsTableContentElement.innerHTML = "";
+            //append table rows with duplicates
+            for (let duplicate of duplicates) {
+                let row = generateDuplicateTableRow(duplicate);
+                duplicateResultsTableContentElement.appendChild(row);
+            }
+        }
+
+    };
+
+
+    let generateDuplicateTableRow = function (duplicate) {
+        let row = document.createElement("tr");
+        row.appendChild(generateDuplicateTableCell(`<a href="${duplicate.key}">${duplicate.key}</a>`, "th-key-duplicate", {}));
+
+        //TODO: visualize the duplicate fragment
+        let scoreCell = generateDuplicateTableCell(duplicate.preprocessedSummary.slice(duplicate.startDuplicate, duplicate.startDuplicate+duplicate.length), "th-text-fragment-duplicate", {title: "Length:" + duplicate.length});
+        AJS.$(scoreCell).tooltip();
+        row.appendChild(scoreCell);
+
+        row.appendChild(generateDuplicateTableCell(generateDuplicateOptionButtons(duplicate), "th-options-duplicate", {}));
+        return row;
+    };
+
+    let generateDuplicateTableCell = function (content, headersId, attributes) {
+        let tableCell = document.createElement("td");
+        tableCell.headers = headersId;
+        tableCell.innerHTML = content;
+        for (let key in attributes) {
+            console.log(attributes[key]);
+            tableCell[key] = attributes[key];
+        }
+        return tableCell
+    };
+
+    let generateDuplicateOptionButtons = function (duplicate) {
+        return `<button class='aui-button aui-button-primary' onclick="markAsDuplicate('${duplicate.id}')"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link as duplicate </button>` +
+            `<button class='aui-button aui-button-removed' onclick="discardDuplicate('${duplicate.key}')"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard </button>`;
+    };
+
+    let processDuplicateIssuesResponse = function (response) {
+        return response.duplicates.sort((a, b) => b.length - a.length);
+    }
+
+    //-----------------------------------------
+    // Load data and call display logic.
+    //-----------------------------------------
+    function loadingDuplicateData() {
+        duplicateResultsTableElement.style.visibility = "hidden";
+        loadingDuplicateSpinnerElement.style.display = "flex";
+
+        console.log("---- Related Issues ----");
+        let issueKey = conDecAPI.getIssueKey();
+        let projectKey = conDecAPI.getProjectKey();
+        //console.log("---------------");
+
+        consistencyAPI.getDuplicatesForIssue(issueKey)
+            .then((data) => displayDuplicateIssues(processDuplicateIssuesResponse(data)))
+            .catch((error) => conDecAPI.showFlag("error", "Could not load duplicates! </br>" + error))
+            .finally(() => {
+                loadingDuplicateSpinnerElement.style.display = "none";
+                duplicateResultsTableElement.style.visibility = "visible";
+            });
+    }
+
+    /**
+     * Load data when tab is selected.
+     */
+    AJS.$("#visualization-selection-tabs").on("tabSelect", function (event) {
+        console.log("duplicates");
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.target.href === undefined) {
+            return;
+        }
+        if (event.target.href.includes("#duplicate-issues-tab")) {
+            loadingDuplicateData();
+        }
+    });
+
+</script>

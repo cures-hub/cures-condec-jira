@@ -18,6 +18,7 @@ public class MockDatabase implements DatabaseUpdater {
 			entityManager.migrate(CodeClassInDatabase.class);
 			entityManager.migrate(ReleaseNotesInDatabase.class);
 			entityManager.migrate(DiscardedLinkSuggestionsInDatabase.class);
+			entityManager.migrate(DiscardedDuplicatesInDatabase.class);
 
 		} catch (SQLException | NullPointerException e) {
 			e.printStackTrace();

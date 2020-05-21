@@ -7,8 +7,9 @@ import net.java.ao.schema.Table;
 
 import java.sql.SQLException;
 
-@Table("DiscLink")
-public interface DiscardedLinkSuggestionsInDatabase extends RawEntity<Long> {
+@Table("DiscDup")
+public interface DiscardedDuplicatesInDatabase extends RawEntity<Long> {
+
 	@AutoIncrement
 	@PrimaryKey("ID")
 	long getId();
@@ -27,7 +28,7 @@ public interface DiscardedLinkSuggestionsInDatabase extends RawEntity<Long> {
 
 	void setProjectKey(String key);
 
-	static boolean deleteDiscardedLink(DiscardedLinkSuggestionsInDatabase elementToDelete) {
+	static boolean deleteDiscardedDuplicate(DiscardedDuplicatesInDatabase elementToDelete) {
 		try {
 			elementToDelete.getEntityManager().delete(elementToDelete);
 			return true;

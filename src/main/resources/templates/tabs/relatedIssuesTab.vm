@@ -42,7 +42,7 @@
         console.log(baseIssueKey + " <-> " + otherIssueKey);
         console.log("---------------");
 
-        conDecAPI.discardLinkSuggestion(baseIssueKey, otherIssueKey, projectKey)
+        consistencyAPI.discardLinkSuggestion(baseIssueKey, otherIssueKey, projectKey)
             .then((data) => {
                 conDecAPI.showFlag("success", "Discarded suggestion sucessfully!");
                 loadData();
@@ -73,17 +73,23 @@
     let generateTableRow = function (relatedIssue) {
         let row = document.createElement("tr");
         row.appendChild(generateTableCell(`<a href="${relatedIssue.key}">${relatedIssue.key}</a>`, "th-key"));
-        row.appendChild(generateTableCell(relatedIssue.summary, "th-name"));
-        row.appendChild(generateTableCell(relatedIssue.score, "th-score"));
+        row.appendChild(generateTableCell(relatedIssue.summary, "th-name", {}));
+        let scoreCell = (generateTableCell(relatedIssue.score, "th-score", {"title": relatedIssue.results.scores}));
+        AJS.$(scoreCell).tooltip();
+        row.appendChild(scoreCell);
 
         row.appendChild(generateTableCell(generateOptionButtons(relatedIssue), "th-options"));
         return row;
     };
 
-    let generateTableCell = function (content, headersId) {
+    let generateTableCell = function (content, headersId, attributes) {
         let tableCell = document.createElement("td");
         tableCell.headers = headersId;
         tableCell.innerHTML = content;
+        for (let key in attributes) {
+            console.log(attributes[key]);
+            tableCell[key] = JSON.stringify(attributes[key]);
+        }
         return tableCell
     };
 
@@ -100,7 +106,7 @@
         return response.relatedIssues.map(suggestion => {
             suggestion.score = Math.round(suggestion.score * 1000) / 1000.;
             return suggestion;
-        }).sort((a, b) => b.score - a.score).filter(suggestion => suggestion.score > 0.3)
+        }).sort((a, b) => b.score - a.score);
     }
 
     //-----------------------------------------
@@ -115,7 +121,7 @@
         let projectKey = conDecAPI.getProjectKey();
         //console.log("---------------");
 
-        conDecAPI.loadRelatedIssues(issueKey)
+        consistencyAPI.loadRelatedIssues(issueKey)
             .then((data) => displayRelatedIssues(processRelatedIssuesResponse(data)))
             .catch((error) => conDecAPI.showFlag("error", "Could not load related issues! </br>" + error))
             .finally(() => {

@@ -7,6 +7,7 @@ import de.uhd.ifi.se.decision.management.jira.consistency.implementation.Textual
 import de.uhd.ifi.se.decision.management.jira.consistency.implementation.TimeCIP;
 import de.uhd.ifi.se.decision.management.jira.consistency.implementation.TracingCIP;
 import de.uhd.ifi.se.decision.management.jira.consistency.implementation.UserCIP;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import org.ofbiz.core.entity.GenericEntityException;
 
@@ -59,7 +60,10 @@ public class ContextInformation {
 		//retain scores of filtered issues
 		return linkSuggestionScores
 			.stream()
+			// issue was not filtered out
 			.filter(linkSuggestion -> filteredIssues.contains(linkSuggestion.getTargetIssue()))
+			// the probability is higher or equal to the minimum probability set by the admin for the project
+			.filter(linkSuggestion -> linkSuggestion.getTotalScore() >= ConfigPersistenceManager.getMinLinkSuggestionProbability(this.issue.getProjectObject().getKey()))
 			.collect(Collectors.toCollection(ArrayList::new));
 	}
 
@@ -72,6 +76,7 @@ public class ContextInformation {
 
 		//Calculate difference between all issues of project and the issues that need to be filtered out.
 		filteredIssues.removeAll(filterOutIssues);
+
 		return filteredIssues;
 	}
 
@@ -79,7 +84,7 @@ public class ContextInformation {
 		// init the link suggestions
 		Map<String, LinkSuggestion> linkSuggestions = new HashMap<>();
 		for (Issue otherIssue : projectIssues) {
-			linkSuggestions.put(otherIssue.getKey(), new LinkSuggestion(this.issue, otherIssue, 0.0));
+			linkSuggestions.put(otherIssue.getKey(), new LinkSuggestion(this.issue, otherIssue));
 		}
 
 		System.out.println(projectIssues);
@@ -111,14 +116,9 @@ public class ContextInformation {
 				.stream()
 				.forEach(score -> {
 					LinkSuggestion linkSuggestion = linkSuggestions.get(score.getKey());
-					linkSuggestion.addToScore(score.getValue() / finalMaxOfIndividualScoresForCurrentCip);//sumOfIndividualScoresForCurrentCip);
+					linkSuggestion.addToScore(score.getValue() / finalMaxOfIndividualScoresForCurrentCip, cip.getName());//sumOfIndividualScoresForCurrentCip);
 				});
 		}
-
-		linkSuggestions
-			.values()
-			.stream()
-			.forEach(suggestion -> suggestion.setScore(suggestion.getScore() / this.cips.size()));
 
 		return linkSuggestions.values();
 	}

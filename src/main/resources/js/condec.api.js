@@ -26,21 +26,11 @@
 		var ConDecAPI = function ConDecAPI() {
 			this.restPrefix = AJS.contextPath() + "/rest/condec/latest";
 
-			projectKey = getProjectKey();
-			
-			// @issue How store settings retrieved from the backend such as knowledge types? 
-			// @decision The settings that do not change are stored as global attributes!
-			// @pro This avoids redundant REST calls and improves performance.
-			// @alternative Use getter methods that include the REST calls in their body!
-			// @con REST calls would be redundant, which leads to longer loading times.
-			this.knowledgeTypes = getKnowledgeTypes(projectKey);
-		    this.extendedKnowledgeTypes = createExtendedKnowledgeTypes(this.knowledgeTypes);
-		        
 			this.optionStatus = ["idea", "discarded", "decided", "rejected", "undefined"];
 			this.issueStatus = ["resolved", "unresolved"];
 			this.knowledgeStatus = this.optionStatus.concat(this.issueStatus);
 		};
-		
+
 		/*
 		 * Replaces argument with pro-argument and con-argument in knowledge
 		 * types array.
@@ -57,8 +47,21 @@
 		// @issue How can we access global attributes of closure objects, e.g. extendedKnowlegdeTypes?
 		// @decision Do not use getters in Javascript but directly call e.g. "conDecAPI.extendedKnowlegdeTypes"!
 		// @pro Less code.
+		// @con directly using attributes instead of getters and setters can lead to wrong access
 		// @alternative Use getters in Javascript and e.g. call "conDecAPI.getExtendedKnowledgeTypes()"!
-		ConDecAPI.prototype.getExtendedKnowledgeTypes = function() {
+		ConDecAPI.prototype.getExtendedKnowledgeTypes = function () {
+			if(this.extendedKnowledgeTypes === null || this.extendedKnowledgeTypes === undefined){
+				projectKey = getProjectKey();
+
+				// @issue How store settings retrieved from the backend such as knowledge types?
+				// @decision The settings that do not change are stored as global attributes!
+				// @pro This avoids redundant REST calls and improves performance.
+				// @alternative Use getter methods that include the REST calls in their body!
+				// @con REST calls would be redundant, which leads to longer loading times.
+				this.knowledgeTypes = getKnowledgeTypes(projectKey);
+				this.extendedKnowledgeTypes = createExtendedKnowledgeTypes(this.knowledgeTypes);
+
+			}
 			return this.extendedKnowledgeTypes;
 		};
 
@@ -87,14 +90,6 @@
 			});
 		};
 
-		/*
-		 */
-		ConDecAPI.prototype.discardLinkSuggestion = function discardLinkSuggestion(baseIssueKey, otherIssueKey, projectKey) {
-			return generalApi.postJSONReturnPromise(
-				`${this.restPrefix}/consistency/discardLinkSuggestion.json?projectKey=${projectKey}
-				&originIssueKey=${baseIssueKey}&targetIssueKey=${otherIssueKey}`
-			);
-		};
 
 		/*
 		 * external references: condec.dialog
@@ -238,7 +233,7 @@
 				}
 			});
 		};
-		
+
 		/*
 		 * external references: condec.dialog
 		 */
@@ -345,13 +340,13 @@
 					}
 				});
 		};
-		
-	    /*
-	     * external references: condec.dialog
-	     */
-	    ConDecAPI.prototype.setStatus = function setStatus(id, documentationLocation, type, status, callback) {
-	        this.updateDecisionKnowledgeElement(id, null, null, type, documentationLocation, status, callback);
-	    };
+
+		/*
+		 * external references: condec.dialog
+		 */
+		ConDecAPI.prototype.setStatus = function setStatus(id, documentationLocation, type, status, callback) {
+			this.updateDecisionKnowledgeElement(id, null, null, type, documentationLocation, status, callback);
+		};
 
 		/*
 		 * external references: condec.dialog
@@ -516,7 +511,7 @@
 			};
 
 			generalApi.postJSON(this.restPrefix + "/view/getCompareVis.json", filterSettings, function (error,
-																							 vis) {
+																										vis) {
 				if (error === null) {
 					vis.nodes.sort(function (a, b) {
 						if (a.id > b.id) {
@@ -849,21 +844,7 @@
 			});
 		};
 
-		/*
-		 * external references: consistencySettings.vm
-		 */
-		ConDecAPI.prototype.setConsistencyActivated = function (
-			isConsistencyActivated, projectKey) {
-			generalApi.postJSON(this.restPrefix + "/config/setConsistencyActivated.json?projectKey="
-				+ projectKey + "&isConsistencyActivated=" + isConsistencyActivated, null, function (error,
-																									response) {
-				if (error === null) {
-					showFlag("success",
-						"Usage of the consistency module of the ConDec plugin has been set to "
-						+ isConsistencyActivated + ".");
-				}
-			});
-		};
+
 		/*
 		 * external references: settingsForSingleProject.vm,
 		 * settingsForAllProjects.vm
@@ -921,9 +902,9 @@
 		/*
 		 * external references: settingsForSingleProject.vm
 		 */
-		ConDecAPI.prototype.sendTestPost = function sendTestPost(projectKey){
+		ConDecAPI.prototype.sendTestPost = function sendTestPost(projectKey) {
 			generalApi.postJSON(this.restPrefix + "/config/sendTestPost.json?projectKey="
-					+ projectKey, null, function(error, response) {
+				+ projectKey, null, function (error, response) {
 				if (error === null) {
 					showFlag("success", "The webhook test was send.");
 				}
@@ -1117,25 +1098,6 @@
 			});
 		};
 
-		/*
-		 * external references: condec.release.note.page
-		 */
-		ConDecAPI.prototype.getReleaseNotes = function getReleaseNotes(callback) {
-			var projectKey = getProjectKey();
-			generalApi.getJSON(this.restPrefix + "/release-note/getReleaseNotes.json?projectKey="
-				+ projectKey, function (error, elements) {
-				if (error === null) {
-					callback(elements);
-				}
-			});
-		};
-		/*
-		 * external references: condec.dialog
-		 */
-		ConDecAPI.prototype.getProposedIssues = function getReleaseNotes(releaseNoteConfiguration) {
-			return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/getProposedIssues.json?projectKey="
-				+ projectKey, releaseNoteConfiguration);
-		};
 
 		ConDecAPI.prototype.getReleaseNotesById = function getReleaseNotesById(id) {
 			return generalApi.getJSONReturnPromise(this.restPrefix + "/release-note/getReleaseNote.json?projectKey="
@@ -1220,10 +1182,6 @@
 				+ projectKey + "&id=" + id, null);
 		};
 
-		ConDecAPI.prototype.loadRelatedIssues = function (issueKey) {
-			return generalApi.getJSONReturnPromise(this.restPrefix + "/consistency/getRelatedIssues.json?issueKey=" + issueKey);
-		};
-
 
 		ConDecAPI.prototype.showFlag = function (type, message, status) {
 			if (status === null || status === undefined) {
@@ -1268,7 +1226,7 @@
 		 */
 		ConDecAPI.prototype.getProjectKey = getProjectKey;
 
-		var showFlag = function(type, message, status) {
+		var showFlag = function (type, message, status) {
 			if (status === null || status === undefined) {
 				status = "";
 			}
@@ -1280,7 +1238,7 @@
 			});
 		};
 
-		ConDecAPI.prototype.showFlag = showFlag
+		ConDecAPI.prototype.showFlag = showFlag;
 
 		// export ConDecAPI
 		global.conDecAPI = new ConDecAPI();

@@ -1,0 +1,47 @@
+<h4>Settings for the suggested related issues</h4>
+
+<div class="field-group top-label">
+    <label for="min-probability-link">Minimum probability for link suggestion</label>
+    <input class="text short-field"
+           type="number"
+           data-aui-validation-field
+           value="$minProbabilityLink"
+           step="0.1" min="0" max="1"
+           id="min-probability-link"
+           name="min-probability-link">
+
+    <button id="save-min-probability-link-btn" class='aui-button aui-button-primary aui-button-compact'>
+        Save
+    </button>
+
+</div>
+
+
+<script>
+    const saveMinProbabilityLinkBtn = document.getElementById("save-min-probability-link-btn");
+    const minProbabilityInput = document.getElementById("min-probability-link");
+
+    const saveMinProbabilityLink = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        window.onbeforeunload = null;
+        if (!saveMinProbabilityLinkBtn.isBusy()) {
+            saveMinProbabilityLinkBtn.setAttribute('aria-disabled', 'true');
+            saveMinProbabilityLinkBtn.busy();
+            configAPI.setMinimumLinkSuggestionProbability(conDecAPI.getProjectKey(), minProbabilityInput.value)
+                .then(() => conDecAPI.showFlag("success", "Configuration successfully updated!"))
+                .catch(() => conDecAPI.showFlag("error", "An error occurred while updating the configuration!"))
+                .finally(() => {
+                    saveMinProbabilityLinkBtn.setAttribute('aria-disabled', 'false');
+                    saveMinProbabilityLinkBtn.idle();
+                })
+        }
+
+    }
+
+    // Issue: When emitting the event the page is reloaded.
+    // Solution: Get click event and stop default behavior as well as propagation.
+    saveMinProbabilityLinkBtn.addEventListener('click', event => saveMinProbabilityLink(event));
+
+
+</script>

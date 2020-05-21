@@ -58,6 +58,8 @@ public class Preprocessor {
 	}
 
 	private void initFiles() {
+		Preprocessor.copyDefaultPreprocessingDataToFile();
+
 		File lemmatizerFile = new File(Preprocessor.DEFAULT_DIR + "lemmatizer.dict");
 		File tokenizerFile = new File(Preprocessor.DEFAULT_DIR + "token.bin");
 		File posFile = new File(Preprocessor.DEFAULT_DIR + "pos.bin");
@@ -86,7 +88,7 @@ public class Preprocessor {
 			// modelIn = new FileInputStream(LANGUAGE_MODEL_PATH + "person.bin");
 			// TokenNameFinderModel model = new TokenNameFinderModel(modelIn);
 			// this.nameFinder = new NameFinderME(model);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

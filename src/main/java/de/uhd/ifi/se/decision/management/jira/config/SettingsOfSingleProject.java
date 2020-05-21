@@ -76,6 +76,11 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("isConsistencyActivated",
 			ConfigPersistenceManager.isConsistencyActivated(projectKey));
 
+	velocityParameters.put("minLengthDuplicate",
+			ConfigPersistenceManager.getMinDuplicateLength(projectKey));
+	velocityParameters.put("minProbabilityLink",
+			ConfigPersistenceManager.getMinLinkSuggestionProbability(projectKey));
+
 		return velocityParameters;
 	}
 }

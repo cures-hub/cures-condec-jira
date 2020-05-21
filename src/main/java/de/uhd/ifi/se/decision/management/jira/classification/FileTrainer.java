@@ -109,6 +109,7 @@ public interface FileTrainer {
 		}
 		String downloadUrlOfFile = url + filename;
 		File file = new File(path + filename);
+
 		try {
 			InputStream inputStream = new URL(downloadUrlOfFile).openStream();
 
@@ -121,18 +122,21 @@ public interface FileTrainer {
 				int read;
 				byte[] bytes = new byte[1024];
 
-				if (!file.exists()) {
-					return file;
-				}
+				FileOutputStream fos = new FileOutputStream(file);
+
 				while ((read = inputStream.read(bytes)) != -1) {
-					new FileOutputStream(file).write(bytes, 0, read);
+					fos.write(bytes, 0, read);
 				}
+				fos.flush();
+				fos.close();
+
 				// System.out.println("Copied default preprocessing data to file. Message: " +
 				// file.getName());
 			}
 		} catch (Exception e) {
 			System.out.println("Path: " + path + ", filename: " + filename + ", url: " + url);
 			System.err.println("Failed to copy data to file. Message: " + e.getMessage());
+		}finally {
 		}
 		return file;
 	}
