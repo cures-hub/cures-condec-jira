@@ -20,6 +20,11 @@
 			projectKey=${projectKey}&eventKey=${eventKey}&isActivated=${isActivated}`, null);
 		}
 
+		ConfigAPI.prototype.getActivationStatusOfConsistencyEvent = function(projectKey, eventKey){
+			return generalApi.getJSONReturnPromise(this.restPrefix + `/isConsistencyEventActivated?
+			projectKey=${projectKey}&eventKey=${eventKey}`, null);
+		}
+
 		ConfigAPI.prototype.setActivationStatusOfAllConsistencyEvents = function(projectKey, isActivated){
 			return generalApi.postJSONReturnPromise(this.restPrefix + "/setConsistencyActivated.json?projectKey="
 				+ projectKey + "&isConsistencyActivated=" + isActivated, null);

@@ -1,0 +1,106 @@
+<h4>Settings for the consistency check events</h4>
+
+
+<div class="field-group">
+    <label for="isDoneActivated-toggle">Consistency check for done event activated?</label>
+    <aui-toggle id="isDoneActivated-toggle" label="Resolved event activated?"></aui-toggle>
+    <div class="description">Enables or disables the check dialog for the done event of an issue.
+    </div>
+</div>
+
+<div class="field-group">
+    <label for="isClosedActivated-toggle">Consistency event check for closed event activated?</label>
+    <aui-toggle id="isClosedActivated-toggle" label="Closed event activated?"></aui-toggle>
+    <div class="description">Enables or disables the check dialog for the closed event of an issue.
+    </div>
+</div>
+<!--
+<div class="field-group">
+    <label for="isActivated-toggle">Consistency events activated?</label>
+    <aui-toggle id="consistencyActivated-toggle" label="Consistency activated?"></aui-toggle>
+    <div class="description">Enables or disables the consistency module of the plug-in for this project.
+        <br/>Disabling disables the possibility to view related or duplicate issues.
+    </div>
+</div>
+
+
+
+    <div class="field-group">
+        <label>Activate configured events:</label>
+    </div>
+    <div class="field-group" id="configured-events-activation">
+        <aui-toggle id="configured-event-0" label="Activated?"></aui-toggle>
+        <div class="description">
+            Check when <i>Workflow</i> is <i>Done</i>.
+        </div>
+        <hr/>
+    </div>
+
+    <div class="field-group">
+        <label for="new-event-config">Add new check event</label>
+        <div id="new-event-config"> Check when
+
+            <select class="select" id="select-example" name="select-example">
+                <option>Workflow</option>
+                <option>Status</option>
+            </select>
+
+            is
+            <select class="select" id="select-example" name="select-example">
+                <option>Done</option>
+                <option>In Review</option>
+            </select>.
+            <button class='aui-button aui-button-primary' onclick="addConfig()"><span
+                class="aui-icon aui-icon-small aui-iconfont-add-circle">Add</span></button>
+        </div>
+        <div class="description">
+            Configure new event triggers to check an issues consistency.
+        </div>
+    </div>
+
+-->
+<script>
+    //Init the variables
+    const isDoneActivatedToggle = document.getElementById("isDoneActivated-toggle");
+    const isClosedActivatedToggle = document.getElementById("isClosedActivated-toggle");
+
+    //show current toggle status
+    function initToggles(toggleElement, eventKey) {
+        toggleElement.busy = true;
+        toggle.disabled = true;
+
+        console.log("load toggle status");
+        configAPI.getActivationStatusOfConsistencyEvent("$projectKey", eventKey)
+            .then(response => toggleElement.checked = response.isActivated)
+            .catch((error) => {
+                conDecAPI.showFlag("error", "Could not load activation status of consistency event. " + error);
+            })
+            .finally(() => {
+                    toggleElement.busy = false;
+                    toggle.disabled = false;
+                }
+            );
+    }
+
+    initToggles(isClosedActivatedToggle, "closed");
+    initToggles(isDoneActivatedToggle, "done");
+
+    // add listeners
+    isDoneActivatedToggle.addEventListener("change", callSetActivationStatusOfConsistencyEvent(isDoneActivatedToggle, "done"));
+    // add listeners
+    isClosedActivatedToggle.addEventListener("change", callSetActivationStatusOfConsistencyEvent(isClosedActivatedToggle, "closed"));
+
+    function callSetActivationStatusOfConsistencyEvent(toggle, eventKey) {
+        return () => {
+            toggle.busy = true;
+            configAPI.setActivationStatusOfConsistencyEvent("$projectKey", eventKey, toggle.checked)
+                .then(() => conDecAPI.showFlag("success", "Activated consistency event."))
+                .catch((error) => {
+                    conDecAPI.showFlag("error", "Could not activate consistency event. " + error);
+                    toggle.checked = !toggle.checked;
+                })
+                .finally(() => toggle.busy = false);
+        }
+    }
+
+</script>

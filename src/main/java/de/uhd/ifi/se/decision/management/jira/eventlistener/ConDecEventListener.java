@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.eventlistener;
 
+import com.atlassian.jira.auditing.handlers.WorkflowEventHandlerImpl;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.ConsistencyCheckEventListener;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.JiraIssueTextExtractionEventListener;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.SummarizationEventListener;

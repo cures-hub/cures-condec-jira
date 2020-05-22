@@ -1,9 +1,9 @@
 <h2>Settings for the consistency checks of Jira Issues</h2>
 
 <form class="aui">
-    #parse("templates/settings/consistencyLinkSettings.vm")
-    #parse("templates/settings/consistencyDuplicationSettings.vm")
-    #parse("templates/settings/consistencyEventSettings.vm")
+    #parse("templates/settings/fragments/consistencyLinkSettings.vm")
+    #parse("templates/settings/fragments/consistencyDuplicationSettings.vm")
+    #parse("templates/settings/fragments/consistencyEventSettings.vm")
 
 </form>
 

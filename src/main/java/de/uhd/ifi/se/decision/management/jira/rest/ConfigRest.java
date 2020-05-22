@@ -717,24 +717,6 @@ public class ConfigRest {
 	/* Configuration for Consistency		*/
 	/*										*/
 	/* **************************************/
-	@Path("/setConsistencyActivated")
-	@POST
-	public Response setConsistencyActivated(@Context HttpServletRequest request,
-											@QueryParam("projectKey") String projectKey,
-											@QueryParam("isConsistencyActivated") String isActivatedString) {
-		Response response = this.checkRequest(request, projectKey, isActivatedString);
-		if (response != null) {
-			return response;
-		}
-		response = checkIfProjectKeyIsValid(projectKey);
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			return response;
-		}
-		boolean isActivated = Boolean.parseBoolean(isActivatedString);
-		ConfigPersistenceManager.setConsistencyActivated(projectKey, isActivated);
-		return Response.ok(Status.ACCEPTED).build();
-	}
-
 	@Path("/setMinimumLinkSuggestionProbability")
 	@POST
 	public Response setConsistencyActivated(@Context HttpServletRequest request,
@@ -748,7 +730,7 @@ public class ConfigRest {
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
-		if (! (1. >= minLinkSuggestionProbability && minLinkSuggestionProbability >=0.)){
+		if (!(1. >= minLinkSuggestionProbability && minLinkSuggestionProbability >= 0.)) {
 			return response;
 
 		}
@@ -770,12 +752,50 @@ public class ConfigRest {
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
-		if (!(minDuplicateLength >= 3)){
+		if (!(minDuplicateLength >= 3)) {
 			return response;
 
 		}
 		ConfigPersistenceManager.setMinDuplicateLength(projectKey, minDuplicateLength);
 		return Response.ok(Status.ACCEPTED).build();
 	}
+
+	@Path("/activateConsistencyEvent")
+	@POST
+	public Response setActivationStatusOfConsistencyEvent(@Context HttpServletRequest request,
+														  @QueryParam("projectKey") String projectKey,
+														  @QueryParam("eventKey") String eventKey,
+														  @QueryParam("isActivated") boolean isActivated) {
+		Response response = this.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+		response = checkIfProjectKeyIsValid(projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+
+		ConfigPersistenceManager.setActivationStatusOfConsistencyEvent(projectKey, eventKey, isActivated);
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
+	@Path("/isConsistencyEventActivated")
+	@GET
+	public Response getActivationStatusOfConsistencyEvent(@Context HttpServletRequest request,
+														  @QueryParam("projectKey") String projectKey,
+														  @QueryParam("eventKey") String eventKey) {
+		Response response = this.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+		response = checkIfProjectKeyIsValid(projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+
+		boolean isActivated = ConfigPersistenceManager.getActivationStatusOfConsistencyEvent(projectKey, eventKey);
+		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isActivated", isActivated)).build();
+	}
+
 
 }
