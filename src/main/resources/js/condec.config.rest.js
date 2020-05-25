@@ -24,6 +24,9 @@
 			return generalApi.getJSONReturnPromise(this.restPrefix + `/isConsistencyEventActivated?
 			projectKey=${projectKey}&eventKey=${eventKey}`, null);
 		}
+		ConfigAPI.prototype.getConsistencyEventTriggerNames = function(){
+			return generalApi.getJSONReturnPromise(this.restPrefix + `/getConsistencyEventTriggerNames`, null);
+		}
 
 		ConfigAPI.prototype.setActivationStatusOfAllConsistencyEvents = function(projectKey, isActivated){
 			return generalApi.postJSONReturnPromise(this.restPrefix + "/setConsistencyActivated.json?projectKey="

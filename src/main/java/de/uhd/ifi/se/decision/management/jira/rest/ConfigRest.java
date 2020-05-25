@@ -17,6 +17,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.ConsistencyCheckEventListenerSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -797,5 +798,11 @@ public class ConfigRest {
 		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isActivated", isActivated)).build();
 	}
 
+	@Path("/getConsistencyEventTriggerNames")
+	@GET
+	public Response getAllConsistencyCheckEventTriggerNames(@Context HttpServletRequest request) {
+		ConsistencyCheckEventListenerSingleton listener = ConsistencyCheckEventListenerSingleton.getInstance();
+		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("names", listener.getAllConsistencyCheckEventTriggerNames())).build();
 
+	}
 }

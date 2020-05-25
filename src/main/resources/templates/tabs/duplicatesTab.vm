@@ -92,7 +92,7 @@
 
     let generateDuplicateOptionButtons = function (duplicate) {
         return `<button class='aui-button aui-button-primary' onclick="markAsDuplicate('${duplicate.id}')"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link as duplicate </button>` +
-            `<button class='aui-button aui-button-removed' onclick="discardDuplicate('${duplicate.key}')"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard </button>`;
+            `<button class='aui-button aui-button-removed' onclick="discardDuplicate('${duplicate.key}')"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard suggestion </button>`;
     };
 
     let processDuplicateIssuesResponse = function (response) {

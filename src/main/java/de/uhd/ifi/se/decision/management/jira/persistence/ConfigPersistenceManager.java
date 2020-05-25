@@ -273,7 +273,7 @@ public class ConfigPersistenceManager {
 	/* **************************************/
 
 	public static boolean isConsistencyActivated(String projectKey) {
-		return getValue(projectKey, "isConsistencyActivated").equals("true");
+		return "true".equals(getValue(projectKey, "isConsistencyActivated"));
 	}
 
 	public static void setConsistencyActivated(String projectKey, boolean isActivated) {
@@ -294,5 +294,13 @@ public class ConfigPersistenceManager {
 
 	public static double getMinLinkSuggestionProbability(String projectKey) {
 		return NumberUtils.toDouble(getValue(projectKey, "minLinkSuggestionProbability"), 0.3);
+	}
+
+	public static void setActivationStatusOfConsistencyEvent(String projectKey, String eventKey, boolean isActivated) {
+	setValue(projectKey, eventKey, Boolean.toString(isActivated));
+	}
+
+	public static boolean getActivationStatusOfConsistencyEvent(String projectKey, String eventKey) {
+		return "true".equals(getValue(projectKey, eventKey));
 	}
 }

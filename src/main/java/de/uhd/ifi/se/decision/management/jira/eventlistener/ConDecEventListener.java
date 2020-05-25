@@ -1,25 +1,22 @@
 package de.uhd.ifi.se.decision.management.jira.eventlistener;
 
-import com.atlassian.jira.auditing.handlers.WorkflowEventHandlerImpl;
-import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.ConsistencyCheckEventListener;
-import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.JiraIssueTextExtractionEventListener;
-import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.SummarizationEventListener;
-import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.WebhookEventListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.atlassian.event.api.EventListener;
 import com.atlassian.event.api.EventPublisher;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.issue.link.IssueLinkCreatedEvent;
 import com.atlassian.jira.event.issue.link.IssueLinkDeletedEvent;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
-
+import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.ConsistencyCheckEventListenerSingleton;
+import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.JiraIssueTextExtractionEventListener;
+import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.SummarizationEventListener;
+import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.WebhookEventListener;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,16 +42,28 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 	public ConDecEventListener(EventPublisher eventPublisher) {
 		this.eventPublisher = eventPublisher;
 		LOGGER.info("ConDec event listener object was created.");
+		//init lists of listeners
 		issueEventListeners = new ArrayList<>();
-		issueEventListeners.add(new WebhookEventListener());
-		issueEventListeners.add(new JiraIssueTextExtractionEventListener());
-		issueEventListeners.add(new SummarizationEventListener());
-		issueEventListeners.add(new ConsistencyCheckEventListener());
-
-
 		linkEventListeners = new ArrayList<>();
-		linkEventListeners.add(new WebhookEventListener());
 
+		//attach listeners
+		attach((IssueEventListener) new WebhookEventListener());
+		attach(new JiraIssueTextExtractionEventListener());
+		attach(new SummarizationEventListener());
+		attach(ConsistencyCheckEventListenerSingleton.getInstance());
+
+		attach((LinkEventListener) new WebhookEventListener());
+
+
+	}
+
+	public void attach(IssueEventListener listener) {
+		this.issueEventListeners.add(listener);
+
+	}
+
+	public void attach(LinkEventListener listener) {
+		this.linkEventListeners.add(listener);
 	}
 
 	/**

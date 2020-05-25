@@ -95,7 +95,7 @@
 
     let generateOptionButtons = function (relatedIssue) {
         return `<button class='aui-button aui-button-primary' onclick="showDialog('${relatedIssue.id}')"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link </button>` +
-            `<button class='aui-button aui-button-removed' onclick="discardSuggestion('${relatedIssue.key}')"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard </button>`;
+            `<button class='aui-button aui-button-removed' onclick="discardSuggestion('${relatedIssue.key}')"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard suggestion </button>`;
     };
 
     let showDialog = function (targetIssueId) {

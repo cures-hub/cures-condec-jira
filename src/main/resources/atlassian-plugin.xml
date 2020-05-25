@@ -271,6 +271,12 @@
 		<description>Provides the administration page.</description>
 		<url-pattern>/condec/globalsettings</url-pattern>
 	</servlet>
+    <servlet key="servlet-for-server-sent-check-event"
+             name="Servlet for server ent consistency check events"
+             class="de.uhd.ifi.se.decision.management.jira.rest.EventEmitter">
+        <description>Provides a servlet for server ent consistency check events.</description>
+        <url-pattern>/events/consistencyCheck</url-pattern>
+    </servlet>
 
 	<!-- Project Settings -->
 	<web-section key="condec-project-settings-section"

@@ -1,0 +1,31 @@
+<section id="consistency-check-dialog" class="aui-dialog2 aui-dialog2-medium aui-layer" role="dialog" aria-hidden="true">
+    <header class="aui-dialog2-header">
+        <h2 id="consistency-check-dialog-header" class="aui-dialog2-header-main">Consistency check:</h2>
+        <a class="aui-dialog2-header-close">
+            <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+        </a>
+    </header>
+    <div id="consistency-check-dialog-content" class="aui-dialog2-content">
+        TEST
+    </div>
+    <footer class="aui-dialog2-footer">
+        <div class="aui-dialog2-footer-actions">
+            <button id="consistency-check-dialog-submit-button" class="aui-button aui-button-primary">$i18n.getText("condec.button.ok")</button>
+            <button id="consistency-check-dialog-cancel-button" class="aui-button aui-button-link">$i18n.getText("condec.button.cancel")</button>
+        </div>
+    </footer>
+</section>
+
+<script>
+    const consistencyCheckDialog = document.getElementById("consistency-check-dialog");
+    let eventSource = new EventSource("/jira/plugins/servlet/events/consistencyCheck");
+    eventSource.onmessage = function(event) {
+        console.dir(event.data);
+        eventSource.close();
+        AJS.dialog2(consistencyCheckDialog).show();
+    };
+
+    console.log("trigger dialog");
+
+
+</script>
