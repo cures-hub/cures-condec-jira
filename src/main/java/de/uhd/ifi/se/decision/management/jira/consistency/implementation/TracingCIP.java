@@ -5,7 +5,11 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.LinkCollection;
 import de.uhd.ifi.se.decision.management.jira.consistency.ContextInformationProvider;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class TracingCIP implements ContextInformationProvider {
 	private String id = "TracingCIP_BFS";

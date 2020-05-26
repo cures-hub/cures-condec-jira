@@ -1,8 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.consistency;
 
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
-import de.uhd.ifi.se.decision.management.jira.consistency.implementation.BasicDuplicateTextDetector;
 import de.uhd.ifi.se.decision.management.jira.consistency.implementation.DuplicateFragment;
 
 import java.util.ArrayList;
