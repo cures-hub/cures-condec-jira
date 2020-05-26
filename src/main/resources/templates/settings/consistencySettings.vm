@@ -4,6 +4,9 @@
     #parse("templates/settings/fragments/consistencyLinkSettings.vm")
     #parse("templates/settings/fragments/consistencyDuplicationSettings.vm")
     #parse("templates/settings/fragments/consistencyEventSettings.vm")
-
 </form>
-
+<script>
+    $(document).ready(function () {
+        conDecJiraIssueConsistencyModule.init();
+    });
+</script>

@@ -5,7 +5,7 @@
 
 		};
 
-		ConsistencyAPI.prototype.loadRelatedIssues = function (issueKey) {
+		ConsistencyAPI.prototype.getRelatedIssues = function (issueKey) {
 			return generalApi.getJSONReturnPromise(this.restPrefix + "/consistency/getRelatedIssues.json?issueKey=" + issueKey);
 		};
 
@@ -17,14 +17,14 @@
 			);
 		};
 
-		ConsistencyAPI.prototype.discardDuplicateSuggestion = function discardLinkSuggestion(baseIssueKey, otherIssueKey, projectKey) {
+		ConsistencyAPI.prototype.discardDuplicateSuggestion = function discardDuplicateSuggestion(baseIssueKey, otherIssueKey, projectKey) {
 			return generalApi.postJSONReturnPromise(
 				`${this.restPrefix}/consistency/discardDuplicate.json?projectKey=${projectKey}
 				&originIssueKey=${baseIssueKey}&targetIssueKey=${otherIssueKey}`
 			);
 		};
 
-		ConsistencyAPI.prototype.getDuplicatesForIssue = function discardLinkSuggestion(issueKey) {
+		ConsistencyAPI.prototype.getDuplicatesForIssue = function getDuplicatesForIssue(issueKey) {
 			return generalApi.getJSONReturnPromise(
 				`${this.restPrefix}/consistency/getDuplicatesForIssue.json?issueKey=${issueKey}`
 			);

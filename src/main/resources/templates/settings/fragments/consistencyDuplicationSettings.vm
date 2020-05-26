@@ -18,36 +18,3 @@
     </div>
 
 </div>
-
-
-<script>
-    const saveMinLengthDuplicateBtn = document.getElementById("save-min-length-duplicate-btn");
-    const minLengthDuplicateInput = document.getElementById("min-length-duplicate");
-
-    const saveMinLengthDuplicate = (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        window.onbeforeunload = null;
-        if (!saveMinLengthDuplicateBtn.isBusy()) {
-            console.log(minLengthDuplicateInput.value);
-            saveMinLengthDuplicateBtn.setAttribute('aria-disabled', 'true');
-            saveMinLengthDuplicateBtn.busy();
-
-            configAPI.setMinimumDuplicateLength(conDecAPI.getProjectKey(), minLengthDuplicateInput.value)
-                .then(() => conDecAPI.showFlag("success", "Configuration successfully updated!"))
-                .catch(() => conDecAPI.showFlag("error", "An error occurred while updating the configuration!"))
-            .finally(() => {
-                saveMinLengthDuplicateBtn.setAttribute('aria-disabled', 'false');
-                saveMinLengthDuplicateBtn.idle();
-            })
-
-        }
-
-    }
-
-    // Issue: When emitting the event the page is reloaded.
-    // Solution: Get click event and stop default behavior as well as propagation.
-    saveMinLengthDuplicateBtn.addEventListener('click', event => saveMinLengthDuplicate(event));
-
-
-</script>

@@ -20,12 +20,17 @@
     const consistencyCheckDialog = document.getElementById("consistency-check-dialog");
     let eventSource = new EventSource("/jira/plugins/servlet/events/consistencyCheck");
     eventSource.onmessage = function(event) {
-        console.dir(event.data);
-        eventSource.close();
-        AJS.dialog2(consistencyCheckDialog).show();
+        Promise.all([consistencyAPI.getDuplicatesForIssue(JIRA.Issue.getIssueKey()),
+        consistencyAPI.getRelatedIssues(JIRA.Issue.getIssueKey())]).then(
+            (values) => {
+                console.dir(values);
+                eventSource.close();
+                AJS.dialog2(consistencyCheckDialog).show();
+            }
+        )
+
+
+
     };
-
-    console.log("trigger dialog");
-
 
 </script>

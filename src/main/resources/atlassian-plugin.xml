@@ -106,6 +106,7 @@
         <resource type="download" name="general.api.js" location="/js/general.api.js" />
 
         <resource type="download" name="condec.api.js" location="/js/condec.api.js" />
+
         <resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />
         <resource type="download" name="condec.dialog.js" location="/js/condec.dialog.js" />
         <resource type="download" name="condec.context.menu.js"
@@ -132,6 +133,7 @@
                   location="/js/condec.decision.group.view.js" />
         <resource type="download" name="condec.consistency.api.js" location="/js/condec.consistency.api.js" />
         <resource type="download" name="condec.config.rest.js" location="/js/condec.config.rest.js" />
+        <resource type="download" name="condec.settings.consistency.js" location="/js/condec.settings.consistency.js" />
 
     </web-resource>
 

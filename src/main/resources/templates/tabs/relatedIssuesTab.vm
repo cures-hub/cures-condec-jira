@@ -121,7 +121,7 @@
         let projectKey = conDecAPI.getProjectKey();
         //console.log("---------------");
 
-        consistencyAPI.loadRelatedIssues(issueKey)
+        consistencyAPI.getRelatedIssues(issueKey)
             .then((data) => displayRelatedIssues(processRelatedIssuesResponse(data)))
             .catch((error) => conDecAPI.showFlag("error", "Could not load related issues! </br>" + error))
             .finally(() => {
