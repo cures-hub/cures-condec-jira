@@ -80,7 +80,11 @@
                 showGraph();
             } else if (event.target.href.includes("#class-treant")) {
                 showClassTreant();
-            }
+            }else if (event.target.href.includes("#duplicate-issues-tab")) {
+				consistencyTabsModule.loadDuplicateData();
+			} else if (event.target.href.includes("#related-issues-tab")) {
+				consistencyTabsModule.loadData();
+			}
         });
     }
 
