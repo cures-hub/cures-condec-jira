@@ -1,36 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.ConsistencyCheckEventListenerSingleton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
-
 import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
+import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.ConsistencyCheckEventListenerSingleton;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -43,6 +22,24 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * REST resource for plug-in configuration
@@ -720,9 +717,9 @@ public class ConfigRest {
 	/* **************************************/
 	@Path("/setMinimumLinkSuggestionProbability")
 	@POST
-	public Response setConsistencyActivated(@Context HttpServletRequest request,
-											@QueryParam("projectKey") String projectKey,
-											@QueryParam("minLinkSuggestionProbability") double minLinkSuggestionProbability) {
+	public Response setMinimumLinkSuggestionProbability(@Context HttpServletRequest request,
+														@QueryParam("projectKey") String projectKey,
+														@QueryParam("minLinkSuggestionProbability") double minLinkSuggestionProbability) {
 		Response response = this.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
@@ -732,8 +729,8 @@ public class ConfigRest {
 			return response;
 		}
 		if (!(1. >= minLinkSuggestionProbability && minLinkSuggestionProbability >= 0.)) {
-			return response;
-
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "The minimum of the score value is invalid."))
+				.build();
 		}
 
 		ConfigPersistenceManager.setMinLinkSuggestionProbability(projectKey, minLinkSuggestionProbability);
@@ -742,9 +739,9 @@ public class ConfigRest {
 
 	@Path("/setMinimumDuplicateLength")
 	@POST
-	public Response setConsistencyActivated(@Context HttpServletRequest request,
-											@QueryParam("projectKey") String projectKey,
-											@QueryParam("minDuplicateLength") int minDuplicateLength) {
+	public Response setMinimumDuplicateLength(@Context HttpServletRequest request,
+											  @QueryParam("projectKey") String projectKey,
+											  @QueryParam("minDuplicateLength") int minDuplicateLength) {
 		Response response = this.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
@@ -754,8 +751,8 @@ public class ConfigRest {
 			return response;
 		}
 		if (!(minDuplicateLength >= 3)) {
-			return response;
-
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "The minimum length for the duplicates is invalid."))
+				.build();
 		}
 		ConfigPersistenceManager.setMinDuplicateLength(projectKey, minDuplicateLength);
 		return Response.ok(Status.ACCEPTED).build();
@@ -763,28 +760,45 @@ public class ConfigRest {
 
 	@Path("/activateConsistencyEvent")
 	@POST
-	public Response setActivationStatusOfConsistencyEvent(@Context HttpServletRequest request,
-														  @QueryParam("projectKey") String projectKey,
-														  @QueryParam("eventKey") String eventKey,
-														  @QueryParam("isActivated") boolean isActivated) {
-		Response response = this.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
+	public Response activateConsistencyEvent(@Context HttpServletRequest request,
+											 @QueryParam("projectKey") String projectKey,
+											 @QueryParam("eventKey") String eventKey,
+											 @QueryParam("isActivated") boolean isActivated) {
+		Response isValidDataResponse = this.checkIfConsistencyTriggerRequestIsValid(request, projectKey, eventKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
 		}
-		response = checkIfProjectKeyIsValid(projectKey);
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			return response;
-		}
-
 		ConfigPersistenceManager.setActivationStatusOfConsistencyEvent(projectKey, eventKey, isActivated);
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
 	@Path("/isConsistencyEventActivated")
 	@GET
-	public Response getActivationStatusOfConsistencyEvent(@Context HttpServletRequest request,
-														  @QueryParam("projectKey") String projectKey,
-														  @QueryParam("eventKey") String eventKey) {
+	public Response isConsistencyEventActivated(@Context HttpServletRequest request,
+												@QueryParam("projectKey") String projectKey,
+												@QueryParam("eventKey") String eventKey) {
+
+		Response isValidDataResponse = this.checkIfConsistencyTriggerRequestIsValid(request, projectKey, eventKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		boolean isActivated = ConfigPersistenceManager.getActivationStatusOfConsistencyEvent(projectKey, eventKey);
+		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isActivated", isActivated)).build();
+	}
+
+	@Path("/getConsistencyEventTriggerNames")
+	@GET
+	public Response getAllConsistencyCheckEventTriggerNames() {
+		ConsistencyCheckEventListenerSingleton listener = ConsistencyCheckEventListenerSingleton.getInstance();
+		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("names", listener.getAllConsistencyCheckEventTriggerNames())).build();
+
+	}
+
+	private boolean checkIfTriggerExists(String triggerName) {
+		return ConsistencyCheckEventListenerSingleton.getInstance().doesConsistencyCheckEventTriggerNameExist(triggerName);
+	}
+
+	private Response checkIfConsistencyTriggerRequestIsValid(HttpServletRequest request, String projectKey, String eventKey) {
 		Response response = this.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
@@ -793,16 +807,11 @@ public class ConfigRest {
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
-
-		boolean isActivated = ConfigPersistenceManager.getActivationStatusOfConsistencyEvent(projectKey, eventKey);
-		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isActivated", isActivated)).build();
+		if (!this.checkIfTriggerExists(eventKey)) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No trigger exists for this event."))
+				.build();
+		}
+		return Response.status(Status.OK).build();
 	}
 
-	@Path("/getConsistencyEventTriggerNames")
-	@GET
-	public Response getAllConsistencyCheckEventTriggerNames(@Context HttpServletRequest request) {
-		ConsistencyCheckEventListenerSingleton listener = ConsistencyCheckEventListenerSingleton.getInstance();
-		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("names", listener.getAllConsistencyCheckEventTriggerNames())).build();
-
-	}
 }

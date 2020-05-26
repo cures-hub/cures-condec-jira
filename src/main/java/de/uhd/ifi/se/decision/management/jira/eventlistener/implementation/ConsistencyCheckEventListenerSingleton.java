@@ -10,6 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.eventlistener.Subscriber;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
 
 public class ConsistencyCheckEventListenerSingleton implements IssueEventListener, Observabel {
 
@@ -50,6 +51,12 @@ public class ConsistencyCheckEventListenerSingleton implements IssueEventListene
 
 	public List<ConsistencyCheckEventTrigger> getAllConsistencyCheckEventTriggerNames() {
 		return this.consistencyCheckEventTriggerList;
+	}
+
+	public boolean doesConsistencyCheckEventTriggerNameExist(String triggerName){
+		return this.getAllConsistencyCheckEventTriggerNames()
+			.stream()
+			.anyMatch(trigger -> trigger.getName().equals(triggerName));
 	}
 
 	@Override
