@@ -12,6 +12,7 @@ import net.java.ao.Query;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Class responsible for the persistence of the consistency component.
@@ -35,9 +36,9 @@ public class ConsistencyPersistenceHelper {
 
 	public static List<Issue> getDiscardedSuggestions(String baseIssueKey) {
 		List<Issue> discardedSuggestions = new ArrayList<>();
-		DiscardedLinkSuggestionsInDatabase[] discardedLinkSuggestions = ACTIVE_OBJECTS.find(DiscardedLinkSuggestionsInDatabase.class,
-			Query.select().where("ORIGIN_ISSUE_KEY = ?", baseIssueKey));
-		for (DiscardedLinkSuggestionsInDatabase discardedLinkSuggestion : discardedLinkSuggestions) {
+		Optional<DiscardedLinkSuggestionsInDatabase[]> discardedLinkSuggestions = Optional.ofNullable(ACTIVE_OBJECTS.find(DiscardedLinkSuggestionsInDatabase.class,
+			Query.select().where("ORIGIN_ISSUE_KEY = ?", baseIssueKey)));
+		for (DiscardedLinkSuggestionsInDatabase discardedLinkSuggestion : discardedLinkSuggestions.orElseGet(() -> new DiscardedLinkSuggestionsInDatabase[0])) {
 			if (discardedLinkSuggestion != null) {
 				discardedSuggestions.add(ISSUE_MANAGER.getIssueObject(discardedLinkSuggestion.getDiscardedIssueKey()));
 			}
@@ -121,9 +122,9 @@ public class ConsistencyPersistenceHelper {
 
 	public static List<Issue> getDiscardedDuplicates(String baseIssueKey) {
 		List<Issue> discardedDuplicates = new ArrayList<>();
-		DiscardedDuplicatesInDatabase[] discardedDuplicatesPresentInDB = ACTIVE_OBJECTS.find(DiscardedDuplicatesInDatabase.class,
-			Query.select().where("ORIGIN_ISSUE_KEY = ?", baseIssueKey));
-		for (DiscardedDuplicatesInDatabase discardedDuplicate : discardedDuplicatesPresentInDB) {
+		Optional<DiscardedDuplicatesInDatabase[]> discardedDuplicatesPresentInDB =  Optional.ofNullable(ACTIVE_OBJECTS.find(DiscardedDuplicatesInDatabase.class,
+			Query.select().where("ORIGIN_ISSUE_KEY = ?", baseIssueKey)));
+		for (DiscardedDuplicatesInDatabase discardedDuplicate : discardedDuplicatesPresentInDB.orElseGet(() -> new DiscardedDuplicatesInDatabase[0])) {
 			if (discardedDuplicate != null) {
 				discardedDuplicates.add(ISSUE_MANAGER.getIssueObject(discardedDuplicate.getDiscardedIssueKey()));
 			}

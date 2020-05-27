@@ -23,6 +23,7 @@ public class TestCipCalculation extends TestSetUp {
 
 	@BeforeClass
 	public static void setUp() {
+		TestSetUp.init();
 		Project project = JiraProjects.getTestProject();
 		List<MutableIssue> testIssues = JiraIssues.createJiraIssues(project);
 		TestCipCalculation.baseIssue = testIssues.get(0);
@@ -40,7 +41,7 @@ public class TestCipCalculation extends TestSetUp {
 			assertEquals("The baseIssue should be the most similar to itself.", baseIssue.getKey(),
 				sortedLinkSuggestions.get(sortedLinkSuggestions.size() - 1).getTargetIssue().getKey());
 		} catch (NullPointerException | GenericEntityException e) {
-			System.out.println("ERROR:");
+			System.err.println("ERROR:");
 			e.printStackTrace();
 			assertNull(e);
 		}

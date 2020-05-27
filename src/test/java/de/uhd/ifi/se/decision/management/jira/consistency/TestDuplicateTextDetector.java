@@ -23,6 +23,7 @@ public class TestDuplicateTextDetector extends TestSetUp {
 
 	@BeforeClass
 	public static void setUp() {
+		TestSetUp.init();
 		Project project = JiraProjects.getTestProject();
 		List<MutableIssue> testIssues = JiraIssues.createJiraIssues(project);
 		baseIssue = testIssues.get(0);
