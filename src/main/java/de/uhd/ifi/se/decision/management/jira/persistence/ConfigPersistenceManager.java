@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import java.util.*;
-
 import com.atlassian.gzipfilter.org.apache.commons.lang.math.NumberUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
@@ -10,12 +8,17 @@ import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
-import scala.Int;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
@@ -272,13 +275,6 @@ public class ConfigPersistenceManager {
 	/*										*/
 	/* **************************************/
 
-	public static boolean isConsistencyActivated(String projectKey) {
-		return "true".equals(getValue(projectKey, "isConsistencyActivated"));
-	}
-
-	public static void setConsistencyActivated(String projectKey, boolean isActivated) {
-		setValue(projectKey, "isConsistencyActivated", Boolean.toString(isActivated));
-	}
 
 	public static void setMinDuplicateLength(String projectKey, int minDuplicateLength) {
 		setValue(projectKey, "minDuplicateLength", Integer.toString(minDuplicateLength));
@@ -288,11 +284,11 @@ public class ConfigPersistenceManager {
 		return NumberUtils.toInt(getValue(projectKey, "minDuplicateLength"), 3);
 	}
 
-	public static void setMinLinkSuggestionProbability(String projectKey, double minLinkSuggestionProbability) {
+	public static void setMinLinkSuggestionScore(String projectKey, double minLinkSuggestionProbability) {
 		setValue(projectKey, "minLinkSuggestionProbability", Double.toString(minLinkSuggestionProbability));
 	}
 
-	public static double getMinLinkSuggestionProbability(String projectKey) {
+	public static double getMinLinkSuggestionScore(String projectKey) {
 		return NumberUtils.toDouble(getValue(projectKey, "minLinkSuggestionProbability"), 0.3);
 	}
 

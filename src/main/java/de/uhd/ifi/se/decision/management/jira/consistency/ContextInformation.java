@@ -69,7 +69,7 @@ public class ContextInformation {
 			// issue was not filtered out
 			.filter(linkSuggestion -> filteredIssues.contains(linkSuggestion.getTargetIssue()))
 			// the probability is higher or equal to the minimum probability set by the admin for the project
-			.filter(linkSuggestion -> linkSuggestion.getTotalScore() >= ConfigPersistenceManager.getMinLinkSuggestionProbability(this.issue.getProjectObject().getKey()))
+			.filter(linkSuggestion -> linkSuggestion.getTotalScore() >= ConfigPersistenceManager.getMinLinkSuggestionScore(this.issue.getProjectObject().getKey()))
 			.collect(Collectors.toCollection(ArrayList::new));
 	}
 

@@ -733,7 +733,7 @@ public class ConfigRest {
 				.build();
 		}
 
-		ConfigPersistenceManager.setMinLinkSuggestionProbability(projectKey, minLinkSuggestionProbability);
+		ConfigPersistenceManager.setMinLinkSuggestionScore(projectKey, minLinkSuggestionProbability);
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
