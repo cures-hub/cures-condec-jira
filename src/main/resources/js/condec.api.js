@@ -14,6 +14,7 @@
  * conDecKnowledgePage
  * conDecTabPanel
  * conDecVis
+ * conDecDecisionTable
   
  Is referenced in HTML by
  * settingsForAllProjects.vm 
@@ -1030,17 +1031,16 @@
             + projectKey + "&query=" + query);
     };
 
-    ConDecAPI.prototype.getDecisionTable = function getDecisionTable(id) {
+    ConDecAPI.prototype.getDecisionTable = function getDecisionTable(elementKey, callback) {
         let decisionTabelData = {};
-        decisionTabelData.qa = ["Usability", "Interoperability", "Functional suitable"];
-        decisionTabelData.score = [["98", "18"], ["10", "94"], ["65", "65"]];
+        decisionTabelData.qa = ["Options/Alternatives", "Usability", "Interoperability", "Functional suitable"];
         decisionTabelData.description = [
-        ["Lorem ipsum dolor sit amet, consectetur adipiscing elit", "Lorem ipsum dolor sit amet, consectetur   adipiscing elit"],
-        ["- Lorem ipsum dolor sit amet, consectetur   adipiscing elit \n-  Nulla ac lacus id tortor vulputate sodales a nec libero", 
-        "+ Lorem ipsum dolor sit amet, consectetur   adipiscing elit \n+  Morbi vel erat bibendum, iaculis nunc vitae, pretium quam"], 
-        ["+ Lorem ipsum dolor sit amet, consectetur   adipiscing elit \n+  Morbi vel erat bibendum, iaculis nunc vitae, pretium quam", 
-        "+ Lorem ipsum dolor sit amet, consectetur   adipiscing elit \n+  Morbi vel erat bibendum, iaculis nunc vitae, pretium quam"]];
-        return decisionTabelData;
+        ["Single Platform","Cross Platform"], ["+ Lorem ipsum dolor sit amet, consectetur adipiscing elit", "- Lorem ipsum dolor sit amet, consectetur   adipiscing elit"],
+        ["- Lorem ipsum dolor sit amet, consectetur   adipiscing elit <br>-  Nulla ac lacus id tortor vulputate sodales a nec libero", 
+        "+ Lorem ipsum dolor sit amet, consectetur   adipiscing elit <br>+  Morbi vel erat bibendum, iaculis nunc vitae, pretium quam"], 
+        ["+ Lorem ipsum dolor sit amet, consectetur   adipiscing elit <br>+  Morbi vel erat bibendum, iaculis nunc vitae, pretium quam", 
+        "+ Lorem ipsum dolor sit amet, consectetur   adipiscing elit <br>+  Morbi vel erat bibendum, iaculis nunc vitae, pretium quam"]];
+        callback(decisionTabelData);
     };
 
     function getResponseAsReturnValue(url) {

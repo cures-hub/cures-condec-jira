@@ -6,7 +6,8 @@
  * conDecObservable
  * conDecContextMenu
  * conDecTreant
-
+ * conDecDecisionTable
+ 
  Is referenced in HTML by
  * jiraIssueModule.vm
  */
@@ -29,9 +30,6 @@
 
     ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog,
                                                          _conDecContextMenu, _treant, _vis, _decisionTable) {
-
-        console.log("ConDecJiraIssueModule init");
-
         if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
             && isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
             && isConDecTreantType(_treant) && isConDecVisType(_vis) && isConDecDecisionTableTyp(_decisionTable)) {
@@ -51,8 +49,10 @@
             addOnClickEventToTab();
             addOnClickEventToFilterButton();
 
+            console.log("ConDecJiraIssueModule true");
             return true;
         }
+        console.log("ConDecJiraIssueModule false");
         return false;
     };
 
@@ -117,7 +117,7 @@
 
     function showDecisionTable() {
         console.log("ConDecJiraIssueModule showDecisionTable");
-        decisionTable.buildTable(issueKeay);
+        decisionTable.buildTable(issueKey);
     }
 
     function applyFilters() {
@@ -251,8 +251,8 @@
         return true;
     }
 
-    function isConDecDecisionTableTyp(conDecVis) {
-        if(!(conDecVis !== undefined && conDecVis.buildDecisionTable !== undefined && typeof conDecVis.buildDecisionTable === 'function')) {
+    function isConDecDecisionTableTyp(conDecDecisionTable) {
+        if(!(conDecVis !== undefined && conDecDecisionTable.buildTable !== undefined && typeof conDecDecisionTable.buildTable === 'function')) {
             console.warn("ConDecJiraIssueModule: ivalid conDecDecisionTable object received.");
             return false;
         };
