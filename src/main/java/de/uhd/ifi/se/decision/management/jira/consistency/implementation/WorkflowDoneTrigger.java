@@ -7,8 +7,10 @@ import de.uhd.ifi.se.decision.management.jira.consistency.ConsistencyCheckEventT
 public class WorkflowDoneTrigger implements ConsistencyCheckEventTrigger {
 	@Override
 	public boolean isTriggered(IssueEvent issueEvent) {
-		return "workflow".equals(issueEvent.getParams().get("eventsource"))
-			&& "done".equals(issueEvent.getIssue().getStatus().getSimpleStatus().getStatusCategory().getKey());
+		return issueEvent != null &&
+			"workflow".equals(issueEvent.getParams().get("eventsource"))
+			//TODO: check if this line is correct in running system
+			&& "Done".equals(issueEvent.getIssue().getStatus().getSimpleStatus().getName());
 	}
 
 	@Override

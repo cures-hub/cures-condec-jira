@@ -8,7 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.consistency.ConsistencyCheckEventT
 public class StatusClosedTrigger implements ConsistencyCheckEventTrigger {
 	@Override
 	public boolean isTriggered(IssueEvent issueEvent) {
-		return EventType.ISSUE_CLOSED_ID.equals(issueEvent.getEventTypeId());
+		return issueEvent != null && EventType.ISSUE_CLOSED_ID.equals(issueEvent.getEventTypeId());
 	}
 
 	@Override
