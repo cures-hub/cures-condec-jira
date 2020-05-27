@@ -9,6 +9,8 @@ import java.util.Formatter;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
@@ -16,24 +18,32 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
-
 /**
  * Creates the content submitted via the webhook. The content consists of a key
  * value pair. The key is an issue id. The value is the Treant JSON String.
+ *
+ * @see WebhookType
  */
-public class WebhookContentProvider {
+public class WebhookContentProviderForTreant extends AbstractWebookContentProvider {
 
-	private String projectKey;
 	private String rootElementKey;
 	private String secret;
 
-	protected static final Logger LOGGER = LoggerFactory.getLogger(WebhookContentProvider.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(WebhookContentProviderForTreant.class);
 
-	public WebhookContentProvider(String projectKey, String elementKey, String secret) {
+	public WebhookContentProviderForTreant(String projectKey, String elementKey, String secret, WebhookType type) {
 		this.projectKey = projectKey;
 		this.rootElementKey = elementKey;
 		this.secret = secret;
+		this.type = type;
+	}
+
+	public WebhookContentProviderForTreant(String projectKey, KnowledgeElement knowledgeElement, String secret,
+										   WebhookType type) {
+		this.projectKey = projectKey;
+		this.rootElementKey = knowledgeElement.getKey();
+		this.secret = secret;
+		this.type = type;
 	}
 
 	/**
@@ -41,12 +51,18 @@ public class WebhookContentProvider {
 	 *
 	 * @return post method ready to be posted
 	 */
+	@Override
 	public PostMethod createPostMethod() {
 		PostMethod postMethod = new PostMethod();
-		if (projectKey == null || rootElementKey == null || secret == null) {
+		if (projectKey == null || rootElementKey == null || secret == null || type == null) {
 			return postMethod;
 		}
-		String webhookData = createWebhookData();
+
+		String webhookData = createWebhookDataForTreant();
+		if (webhookData == null || webhookData.isBlank()) {
+			return postMethod;
+		}
+
 		try {
 			StringRequestEntity requestEntity = new StringRequestEntity(webhookData, "application/json", "UTF-8");
 			postMethod.setRequestEntity(requestEntity);
@@ -61,19 +77,29 @@ public class WebhookContentProvider {
 	}
 
 	/**
-	 * Creates the key value JSON String transmitted via webhook.
-	 * 
-	 * @return JSON String with the following pattern: { "issueKey": {String},
-	 *         "ConDecTree": {TreantJS JSON config and data} }
+	 * Creates test post method for a single test decision knowledge.
+	 *
+	 * @return post method ready to be posted
 	 */
-	private String createWebhookData() {
+	@Override
+	public PostMethod createTestPostMethod() {
+		return new PostMethod();
+	}
+
+	/**
+	 * Creates the key value JSON String transmitted via webhook.
+	 *
+	 * @return JSON String with the following pattern: { "issueKey": {String},
+	 * "ConDecTree": {TreantJS JSON config and data} }
+	 */
+	public String createWebhookDataForTreant() {
 		String treantAsJson = createTreantJsonString();
 		return "{\"issueKey\": \"" + this.rootElementKey + "\", \"ConDecTree\": " + treantAsJson + "}";
 	}
 
 	/**
 	 * Creates the Treant JSON String (value transmitted via webhook).
-	 * 
+	 *
 	 * @return TreantJS JSON String including config and data
 	 */
 	private String createTreantJsonString() {
@@ -91,12 +117,9 @@ public class WebhookContentProvider {
 	/**
 	 * Converts the webhook data String to a hexadecimal String using the secret
 	 * key.
-	 * 
-	 * @param data
-	 *            String to be hashed
-	 * @param key
-	 *            secret key
-	 * 
+	 *
+	 * @param data String to be hashed
+	 * @param key  secret key
 	 * @return hexadecimal String
 	 */
 	public static String createHashedPayload(String data, String key) {
@@ -115,10 +138,8 @@ public class WebhookContentProvider {
 
 	/**
 	 * Converts an array of bytes to a hexadecimal String.
-	 * 
-	 * @param bytes
-	 *            array of bytes
-	 * 
+	 *
+	 * @param bytes array of bytes
 	 * @return hexadecimal String
 	 */
 	private static String toHexString(byte[] bytes) {
@@ -130,4 +151,5 @@ public class WebhookContentProvider {
 		formatter.close();
 		return formattedString;
 	}
+
 }

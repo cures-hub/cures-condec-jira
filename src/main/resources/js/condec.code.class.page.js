@@ -98,6 +98,8 @@
         if (!selectedGroups === undefined || selectedGroups.length > 0) {
             treeViewer.filterNodesByGroup(selectedGroups, "#code-class-tree");
         }
+
+        treeViewer.minMaxFilter("#code-class-tree");
     }
 
     /*

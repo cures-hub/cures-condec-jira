@@ -11,7 +11,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.atlassian.jira.user.ApplicationUser;
-
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -36,26 +35,28 @@ public class Treant {
 
 	private KnowledgeGraph graph;
 	private boolean isHyperlinked;
+	private boolean showOtherJiraIssues;
 	private Set<Link> traversedLinks;
 	private int depth;
 
 	public Treant(String projectKey, String elementKey, int depth, boolean isHyperlinked) {
-		this(projectKey, elementKey, depth, null, null, isHyperlinked);
+		this(projectKey, elementKey, depth, null, null, isHyperlinked, false);
 	}
 
 	public Treant(String projectKey, String elementKey, int depth) {
 		this(projectKey, elementKey, depth, false);
 	}
 
-	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user) {
-		this(projectKey, elementKey, depth, query, user, false);
+	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user, boolean showOtherJiraIssues) {
+		this(projectKey, elementKey, depth, query, user, false, showOtherJiraIssues);
 	}
 
 	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user,
-				  boolean isHyperlinked) {
+				  boolean isHyperlinked, boolean showOtherJiraIssues) {
 		this.traversedLinks = new HashSet<Link>();
 		this.depth = depth;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
+		this.showOtherJiraIssues = showOtherJiraIssues;
 
 		AbstractPersistenceManagerForSingleLocation persistenceManager;
 		if (elementKey.contains(":")) {
@@ -89,7 +90,7 @@ public class Treant {
 				}
 			}
 		} else {
-			if (checkboxflag) {
+			if (!checkboxflag) {
 				for (Link link : element.getLinks()) {
 					KnowledgeElement targetElement = link.getTarget();
 					List<Link> elementLinks = GenericLinkManager.getOutwardLinks(targetElement);
@@ -179,7 +180,8 @@ public class Treant {
 				continue;
 			}
 			KnowledgeElement oppositeElement = currentLink.getOppositeElement(rootElement);
-			if (oppositeElement == null || oppositeElement.getType() == KnowledgeType.OTHER) {
+			if (oppositeElement == null || (oppositeElement.getType() == KnowledgeType.OTHER && !showOtherJiraIssues)
+					|| (showOtherJiraIssues && oppositeElement.getType() == KnowledgeType.OTHER && !"i".equals(oppositeElement.getDocumentationLocation().getIdentifier()))) {
 				continue;
 			}
 			TreantNode newChildNode = createNodeStructure(oppositeElement, currentLink, currentDepth + 1);

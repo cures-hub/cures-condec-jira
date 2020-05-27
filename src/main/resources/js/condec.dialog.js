@@ -7,16 +7,15 @@
  * delete a link between two knowledge elements,
  * change the documentation location (e.g. from issue comments to single JIRA issues),
  * set an element to the root element in the knowledge tree.
- 
+
  Requires
  * conDecAPI
- 
+
  Is required by
  * conDecContextMenu
  * conDecReleaseNotePage
  */
 (function (global) {
-
     var ConDecDialog = function ConDecDialog() {
     };
 
@@ -75,6 +74,7 @@
         var cancelButton = document.getElementById("assign-dialog-cancel-button");
 
         //Fill HTML elements
+        inputAddGroupField.value = "";
 
         conDecAPI.getDecisionGroups(sourceId, documentationLocation, inputExistingGroupsField, selectLevelField, function (selectLevelField, inputExistingGroupsField, groups) {
             if (!(groups === null) && groups.length > 0) {
@@ -250,7 +250,7 @@
         AJS.dialog2(deleteLinkDialog).show();
     };
 
-    ConDecDialog.prototype.showDecisionLinkDialog = function showDecisionLinkDialog(idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild) {
+    ConDecDialog.prototype.showDecisionLinkDialog = function showDecisionLinkDialog(idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, submitCallback) {
         console.log("conDecDialog showDecisionLinkDialog");
 
         // HTML elements
@@ -264,6 +264,12 @@
 
         // Fill HTML elements
         selectElementField.innerHTML = "";
+        /* NOTE!
+         Instead the Jira API could be called using GET "/rest/api/2/issueLinkType".
+         This call "[r]eturns a list of available issue link types, if issue linking is enabled.
+         Each issue link type has an id, a name and a label for the outward and inward link relationship."
+         @see https://docs.atlassian.com/software/jira/docs/api/REST/8.5.4/#api/2/issueLinkType-getIssueLinkTypes
+         */
         conDecAPI.getLinkTypes(function (linkTypes) {
             var linkTypeNames = Object.keys(linkTypes);
             var linkTypeColors = Object.values(linkTypes);
@@ -294,6 +300,10 @@
             conDecAPI.createLink(null, idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, linkType, function () {
                 conDecObservable.notify();
             });
+            if (submitCallback !== null){
+				submitCallback();
+
+			}
             AJS.dialog2(linkDialog).hide();
         };
 

@@ -1,19 +1,23 @@
 <div>
 <form class="aui">
-    <input class="text medium-long-field" id="jstree-search-input"
-           placeholder="$i18n.getText('condec.filter.label')"/>
+	#set ($textInputId = "jstree-search-input")
+	#parse("templates/filter/text.vm")
+
     <select id="select-root-element-type" name="select-root-element-type"
-            class="select medium-field" onchange="conDecObservable.notify()"></select>
-    <input type="text" class="text medium-long-field"
+            class="select short-field" onchange="conDecKnowledgePage.updateView()"></select>
+    <input type="text" class="text medium-field"
            id="element-input-field" placeholder="$i18n.getText('condec.create.label')"/>
     <input type="button" id="create-element-button"
            class="aui-button aui-button-primary" value="$i18n.getText('condec.button.create')"/>
+           
 	#set($select2-decision-group = "select2-decision-group")    
-  	#parse("templates/filter/decisionGroup.vm")          
+  	#parse("templates/filter/decisionGroup.vm")  
+  	
+  	#set ($statusDropdownId = "status-dropdown-overview")	
+    #parse("templates/filter/status.vm")
+  			
 	#set ($linkDistanceInputId = "depth-of-tree-input")	
 	#parse("templates/filter/linkDistance.vm")
-	
-
     
 </form>
 </div>
@@ -33,14 +37,6 @@
             window.conDecKnowledgePage.fetchAndRender();
         else {
             console.error("ConDecKnowledgePage could not get its dependencies.");
-        }
-    });
-
-    $("#select2-decision-group").on("change.select2", function (e) {
-    	conDecObservable.notify();
-    });
-    
-
-    
-    
+        }       
+    }); 
 </script>

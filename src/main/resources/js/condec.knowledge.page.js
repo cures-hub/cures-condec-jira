@@ -57,7 +57,6 @@
     function initializeDecisionKnowledgePage(conDecAPI, treant, treeViewer) {
         console.log("conDecKnowledgePage initializeDecisionKnowledgePage");
         var knowledgeTypes = conDecAPI.knowledgeTypes;
-        console.log(knowledgeTypes.length);
         for (var index = 0; index < knowledgeTypes.length; index++) {
             var isSelected = "";
             if (knowledgeTypes[index] === "Issue") {
@@ -97,6 +96,20 @@
         });
 
         conDecAPI.fillDecisionGroupSelect("select2-decision-group");
+        $("#select2-decision-group").on("change.select2", function (e) {
+            // @issue Should filters change all views or only the current view?
+            // @decision Filters are only applied in the current view using updateView()!
+            // @alternative We update all views using conDecObservable.notify()!
+            // @pro The user could reuse the filter settings, which is more useable.
+            // @con This would need more computation and decreases performance.
+            conDecKnowledgePage.updateView();
+        });
+
+        conDecFiltering.initDropdown("status-dropdown-overview", conDecAPI.knowledgeStatus);
+        var statusDropdown = document.getElementById("status-dropdown-overview");
+        statusDropdown.addEventListener("change", function (e) {
+            conDecKnowledgePage.updateView();
+        });
 
         updateView(null, treant, treeViewer);
     }
@@ -113,7 +126,7 @@
         }
         jQueryConDec("#jstree").on("select_node.jstree", function (error, tree) {
             var node = tree.node.data;
-            treant.buildTreant(node.key, true, "");
+            treant.buildTreant(node.key, true, "", false);
         });
 
         var selectedGroupsObj = $('#select2-decision-group').select2('data');
@@ -123,8 +136,13 @@
                 selectedGroups[i] = selectedGroupsObj[i].text;
             }
         }
-        if (!selectedGroups === undefined || selectedGroups.length > 0) {
+        if (selectedGroups !== undefined && selectedGroups.length > 0) {
             treeViewer.filterNodesByGroup(selectedGroups, "#jstree");
+        }
+
+        var selectedStatus = conDecFiltering.getSelectedItems("status-dropdown-overview");
+        if (selectedStatus !== undefined && selectedStatus.length < conDecAPI.knowledgeStatus.length) {
+            treeViewer.filterNodesByStatus(selectedStatus, "#jstree");
         }
     }
 

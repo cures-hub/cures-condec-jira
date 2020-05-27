@@ -67,6 +67,10 @@
         showClassTreant();
     };
 
+    ConDecJiraIssueModule.prototype.applyTreeVisFilters = function applyTreeVisFilters() {
+        showTreant();
+    };
+
     function addOnClickEventToTab() {
         console.log("ConDecJiraIssueModule addOnClickEventVisualizationSelectionTab");
 
@@ -102,7 +106,8 @@
 
     function showTreant() {
         console.log("ConDecJiraIssueModule showTreant");
-        treant.buildTreant(issueKey, true, search);
+        var showOtherJiraIssues = document.getElementById("show-elements-input").checked;
+        treant.buildTreant(issueKey, true, search, showOtherJiraIssues);
     }
 
     function showClassTreant() {
@@ -124,6 +129,7 @@
         var issueTypes = conDecFiltering.getSelectedItems("issuetype-dropdown");
         var createdAfter = -1;
         var createdBefore = -1;
+        var status = conDecFiltering.getSelectedItems("status-dropdown");
         var documentationLocations = conDecFiltering.getSelectedItems("documentation-dropdown");
         var linkTypes = conDecFiltering.getSelectedItems("linktype-dropdown");
 
@@ -138,7 +144,7 @@
         if (nodeDistanceInput !== null) {
             nodeDistance = nodeDistanceInput.value;
         }
-        vis.buildVisFiltered(issueKey, search, nodeDistance, issueTypes, createdAfter, createdBefore, linkTypes,
+        vis.buildVisFiltered(issueKey, search, nodeDistance, issueTypes, status, createdAfter, createdBefore, linkTypes,
             documentationLocations);
     }
 
@@ -149,8 +155,11 @@
         var secondDatePicker = document.getElementById("created-before-picker");
 
         conDecAPI.getFilterSettings(issueKey, search, function (filterData) {
-            var allIssueTypes = filterData.allJiraIssueTypes;
-            var selectedIssueTypes = filterData.selectedJiraIssueTypes;
+            var allIssueTypes = filterData.jiraIssueTypes;
+            var selectedIssueTypes = filterData.jiraIssueTypes;
+
+            var status = conDecAPI.knowledgeStatus;
+
             var documentationLocation = filterData.documentationLocations;
             issueTypeDropdown.innerHTML = "";
 
@@ -162,6 +171,7 @@
                 issueTypeDropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + isSelected + ">"
                     + allIssueTypes[index] + "</aui-item-checkbox>");
             }
+            conDecFiltering.initDropdown("status-dropdown", status);
             conDecFiltering.initDropdown("documentation-dropdown", documentationLocation);
             if (filterData.startDate >= 0) {
                 firstDatePicker.valueAsDate = new Date(filterData.startDate + 1000);

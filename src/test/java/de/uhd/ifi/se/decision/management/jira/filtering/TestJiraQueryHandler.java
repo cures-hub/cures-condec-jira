@@ -3,7 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -65,15 +67,15 @@ public class TestJiraQueryHandler extends TestSetUp {
 		assertEquals(JiraQueryType.JQL, jiraQueryHandler.getQueryType());
 		assertEquals("?jql=project=TEST AND issuetype = Issue AND resolution = Unresolved",
 				jiraQueryHandler.getQuery());
-		List<String> types = jiraQueryHandler.getNamesOfJiraIssueTypesInQuery();
+		Set<String> types = jiraQueryHandler.getNamesOfJiraIssueTypesInQuery();
 		assertEquals(1, types.size());
-		assertEquals("Issue", types.get(0));
+		assertEquals("Issue", types.iterator().next());
 	}
 
 	@Test
 	public void testGetNamesOfJiraIssueTypesInQueryZeroTypes() {
 		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "?jql=project=TEST");
-		List<String> types = jiraQueryHandler.getNamesOfJiraIssueTypesInQuery();
+		Set<String> types = jiraQueryHandler.getNamesOfJiraIssueTypesInQuery();
 		assertEquals(0, types.size());
 	}
 
@@ -83,10 +85,11 @@ public class TestJiraQueryHandler extends TestSetUp {
 				"abc§jql=project=TEST AND issuetype in (Decision, Issue, Alternative) AND resolution = Unresolved");
 		assertEquals("?jql=project=TEST AND issuetype in (Decision, Issue, Alternative) AND resolution = Unresolved",
 				jiraQueryHandler.getQuery());
-		List<String> types = jiraQueryHandler.getNamesOfJiraIssueTypesInQuery();
-		assertEquals("Decision", types.get(0));
-		assertEquals("Issue", types.get(1));
-		assertEquals("Alternative", types.get(2));
+		Set<String> types = jiraQueryHandler.getNamesOfJiraIssueTypesInQuery();
+		Iterator<String> iterator = types.iterator();
+		assertEquals("Decision", iterator.next());
+		assertEquals("Issue", iterator.next());
+		assertEquals("Alternative", iterator.next());
 		assertEquals(3, types.size());
 	}
 

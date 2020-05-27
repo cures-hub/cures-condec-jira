@@ -62,6 +62,10 @@ public class JiraIssues {
 		issue = createJiraIssue(5, jiraIssueTypes.get(4), project, "This is a great solution.", user);
 		jiraIssues.add(issue);
 
+		// Consistency
+		//issue = createJiraIssue(101, jiraIssueTypes.get(4), project, "This is a great solution.", user);
+		//jiraIssues.add(issue);
+
 		return jiraIssues;
 	}
 

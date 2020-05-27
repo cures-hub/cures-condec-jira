@@ -73,7 +73,7 @@ public enum KnowledgeStatus {
 	 * If the knowledge type changes, the status might change as well. For example,
 	 * when an alternative is picked as the decision, the status changes to
 	 * "decided".
-	 * 
+	 *
 	 * @param formerElement
 	 *            {@link KnowledgeElement} before the change.
 	 * @param newElement
@@ -85,8 +85,8 @@ public enum KnowledgeStatus {
 		return getNewKnowledgeStatusForType(formerElement.getType(), newElement.getType(), newElement.getStatus());
 	}
 
-	public static KnowledgeStatus getNewKnowledgeStatusForType(KnowledgeType formerType,
-			KnowledgeType newType, KnowledgeStatus newStatus) {
+	public static KnowledgeStatus getNewKnowledgeStatusForType(KnowledgeType formerType, KnowledgeType newType,
+			KnowledgeStatus newStatus) {
 		if (formerType == KnowledgeType.DECISION && newType == KnowledgeType.ALTERNATIVE) {
 			return REJECTED;
 		}
@@ -100,7 +100,7 @@ public enum KnowledgeStatus {
 	 * If the knowledge status changes, the knowledge type might change as well. For
 	 * example, when the status of an alternative is changed to "decided", the
 	 * alternative becomes a decision.
-	 * 
+	 *
 	 * @param newElement
 	 *            {@link KnowledgeElement} after it was updated.
 	 * @return new {@link KnowledgeType} after the change of the
@@ -110,8 +110,7 @@ public enum KnowledgeStatus {
 		return getNewKnowledgeTypeForStatus(newElement.getStatus(), newElement.getType());
 	}
 
-	public static KnowledgeType getNewKnowledgeTypeForStatus(KnowledgeStatus newStatus,
-			KnowledgeType formerType) {
+	public static KnowledgeType getNewKnowledgeTypeForStatus(KnowledgeStatus newStatus, KnowledgeType formerType) {
 		if (formerType == null) {
 			return KnowledgeType.OTHER;
 		}
@@ -125,8 +124,7 @@ public enum KnowledgeStatus {
 	}
 
 	public static boolean isIssueResolved(KnowledgeElement parentElement, KnowledgeElement childElement) {
-		return parentElement.getType() == KnowledgeType.ISSUE
-				&& childElement.getType() == KnowledgeType.DECISION
+		return parentElement.getType() == KnowledgeType.ISSUE && childElement.getType() == KnowledgeType.DECISION
 				&& childElement.getStatus() == KnowledgeStatus.DECIDED;
 	}
 
@@ -139,5 +137,17 @@ public enum KnowledgeStatus {
 			statuses.add(status);
 		}
 		return statuses;
+	}
+
+	public String getColor() {
+		switch (this) {
+		case UNRESOLVED:
+			return "red";
+		case DISCARDED:
+		case REJECTED:
+			return "gray";
+		default:
+			return "";
+		}
 	}
 }

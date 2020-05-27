@@ -1,1 +1,1 @@
-<input class="text medium-long-field" id="$textInputId" placeholder="$i18n.getText('condec.filter.label')"/>
+<input class="text medium-field" id="$textInputId" placeholder="$i18n.getText('condec.filter.label')"/>
