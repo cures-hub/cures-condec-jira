@@ -10,11 +10,12 @@ import de.uhd.ifi.se.decision.management.jira.eventlistener.Subscriber;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
 
 public class ConsistencyCheckEventListenerSingleton implements IssueEventListener, Observabel {
 
 	List<ConsistencyCheckEventTrigger> consistencyCheckEventTriggerList;
+
+
 	private List<Subscriber> subscribers = new ArrayList<>();
 	private static ConsistencyCheckEventListenerSingleton instance;
 
@@ -25,11 +26,11 @@ public class ConsistencyCheckEventListenerSingleton implements IssueEventListene
 
 	}
 
-	public static ConsistencyCheckEventListenerSingleton getInstance(){
-		if (ConsistencyCheckEventListenerSingleton.instance == null){
+	public static ConsistencyCheckEventListenerSingleton getInstance() {
+		if (ConsistencyCheckEventListenerSingleton.instance == null) {
 			ConsistencyCheckEventListenerSingleton.instance = new ConsistencyCheckEventListenerSingleton();
 		}
-			return ConsistencyCheckEventListenerSingleton.instance;
+		return ConsistencyCheckEventListenerSingleton.instance;
 	}
 
 	public void onIssueEvent(IssueEvent issueEvent) {
@@ -42,7 +43,7 @@ public class ConsistencyCheckEventListenerSingleton implements IssueEventListene
 	}
 
 	private void notifyAllSubscribers() {
-		this.subscribers.forEach((subscriber -> subscriber.update()));
+		this.subscribers.forEach((Subscriber::update));
 	}
 
 	private String getProjectKeyFromEvent(IssueEvent issueEvent) {
@@ -53,7 +54,7 @@ public class ConsistencyCheckEventListenerSingleton implements IssueEventListene
 		return this.consistencyCheckEventTriggerList;
 	}
 
-	public boolean doesConsistencyCheckEventTriggerNameExist(String triggerName){
+	public boolean doesConsistencyCheckEventTriggerNameExist(String triggerName) {
 		return this.getAllConsistencyCheckEventTriggerNames()
 			.stream()
 			.anyMatch(trigger -> trigger.getName().equals(triggerName));
@@ -61,11 +62,17 @@ public class ConsistencyCheckEventListenerSingleton implements IssueEventListene
 
 	@Override
 	public void register(Subscriber subscriber) {
-		this.subscribers.add(subscriber);
+		if (subscriber != null)
+			this.subscribers.add(subscriber);
 	}
 
 	@Override
 	public void unregister(Subscriber subscriber) {
 		this.subscribers.remove(subscriber);
+	}
+
+
+	public List<Subscriber> getSubscribers() {
+		return subscribers;
 	}
 }

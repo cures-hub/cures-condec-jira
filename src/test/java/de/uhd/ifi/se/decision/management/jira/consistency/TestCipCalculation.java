@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public class TestCipCalculation extends TestSetUp {
@@ -41,6 +42,7 @@ public class TestCipCalculation extends TestSetUp {
 			LinkSuggestion identicalIssueSuggestion = sortedLinkSuggestions.get(sortedLinkSuggestions.size() - 1);
 			assertEquals("The baseIssue should be the most similar to itself.", baseIssue.getKey(),
 				identicalIssueSuggestion.getTargetIssue().getKey());
+			assertNotNull(identicalIssueSuggestion.getScore().getScores());
 
 			assertEquals("The baseIssue should be set correctly.", baseIssue.getKey(),
 				identicalIssueSuggestion.getBaseIssue().getKey());

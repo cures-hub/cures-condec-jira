@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class TestDiscardSuggestion extends TestConsistencyRestSuper {
+public class TestDiscardLinkSuggestion extends TestConsistencyRestSuper {
 
 	@Test
 	public void testWithValidIssues() {
