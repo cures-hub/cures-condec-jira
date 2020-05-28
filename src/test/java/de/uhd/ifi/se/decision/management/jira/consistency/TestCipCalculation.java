@@ -38,8 +38,13 @@ public class TestCipCalculation extends TestSetUp {
 				.stream()
 				.sorted((LinkSuggestion::compareTo))
 				.collect(Collectors.toList());
+			LinkSuggestion identicalIssueSuggestion = sortedLinkSuggestions.get(sortedLinkSuggestions.size() - 1);
 			assertEquals("The baseIssue should be the most similar to itself.", baseIssue.getKey(),
-				sortedLinkSuggestions.get(sortedLinkSuggestions.size() - 1).getTargetIssue().getKey());
+				identicalIssueSuggestion.getTargetIssue().getKey());
+
+			assertEquals("The baseIssue should be set correctly.", baseIssue.getKey(),
+				identicalIssueSuggestion.getBaseIssue().getKey());
+
 		} catch (NullPointerException | GenericEntityException e) {
 			System.err.println("ERROR:");
 			e.printStackTrace();

@@ -17,7 +17,7 @@ public class DuplicateDetectionManager {
 		this.duplicateDetectionStrategy = duplicateDetectionStrategy;
 	}
 
-	public List<DuplicateFragment> findAllDuplicates(Collection<Issue> issuesToCheck) {
+	public List<DuplicateFragment> findAllDuplicates(Collection<? extends Issue> issuesToCheck) {
 		issuesToCheck.remove(this.baseIssue);
 		//issuesToCheck.removeAll();// remove discareded issues;
 		List foundDuplicateFragments = new ArrayList();

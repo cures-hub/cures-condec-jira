@@ -20,16 +20,8 @@ public class LinkSuggestion implements Comparable<LinkSuggestion> {
 		return baseIssue;
 	}
 
-	public void setBaseIssue(Issue baseIssue) {
-		this.baseIssue = baseIssue;
-	}
-
 	public Issue getTargetIssue() {
 		return targetIssue;
-	}
-
-	public void setTargetIssue(Issue targetIssue) {
-		this.targetIssue = targetIssue;
 	}
 
 	public Double getTotalScore() {
@@ -38,10 +30,6 @@ public class LinkSuggestion implements Comparable<LinkSuggestion> {
 
 	public SimilarityScore getScore() {
 		return score;
-	}
-
-	public void setScore(SimilarityScore score) {
-		this.score = score;
 	}
 
 	public void addToScore(Double score, String field) {
