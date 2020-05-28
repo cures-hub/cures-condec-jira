@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 
 public class TestDuplicateFragment extends TestSetUp {
 
-	List<MutableIssue> testIssues;
+	private List<MutableIssue> testIssues;
 
 	@Before
 	public void setUp() {

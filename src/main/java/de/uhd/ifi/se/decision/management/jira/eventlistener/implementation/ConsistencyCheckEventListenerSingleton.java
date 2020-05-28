@@ -13,10 +13,8 @@ import java.util.List;
 
 public class ConsistencyCheckEventListenerSingleton implements IssueEventListener, Observabel {
 
-	List<ConsistencyCheckEventTrigger> consistencyCheckEventTriggerList;
-
-
-	private List<Subscriber> subscribers = new ArrayList<>();
+	private List<ConsistencyCheckEventTrigger> consistencyCheckEventTriggerList;
+	private final List<Subscriber> subscribers = new ArrayList<>();
 	private static ConsistencyCheckEventListenerSingleton instance;
 
 	private ConsistencyCheckEventListenerSingleton() {

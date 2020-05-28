@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 public class TestConsistencyCheckEventListener {
 
-	ConsistencyCheckEventListenerSingleton eventListener;
+	private ConsistencyCheckEventListenerSingleton eventListener;
 
 	@Before
 	public void setUp() {

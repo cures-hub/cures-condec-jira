@@ -1,5 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -7,12 +12,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 
 public interface FileTrainer {
 
@@ -136,7 +135,6 @@ public interface FileTrainer {
 		} catch (Exception e) {
 			System.out.println("Path: " + path + ", filename: " + filename + ", url: " + url);
 			System.err.println("Failed to copy data to file. Message: " + e.getMessage());
-		}finally {
 		}
 		return file;
 	}

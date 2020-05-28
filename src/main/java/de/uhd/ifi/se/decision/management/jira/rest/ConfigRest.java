@@ -728,7 +728,7 @@ public class ConfigRest {
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
-		if (!(1. >= minLinkSuggestionProbability && minLinkSuggestionProbability >= 0.)) {
+		if (1. < minLinkSuggestionProbability && minLinkSuggestionProbability < 0.) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "The minimum of the score value is invalid."))
 				.build();
 		}
@@ -750,7 +750,7 @@ public class ConfigRest {
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
-		if (!(minDuplicateLength >= 3)) {
+		if (minDuplicateLength < 3) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "The minimum length for the duplicates is invalid."))
 				.build();
 		}

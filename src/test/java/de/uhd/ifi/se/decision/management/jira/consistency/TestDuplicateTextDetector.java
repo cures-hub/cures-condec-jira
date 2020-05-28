@@ -18,7 +18,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestDuplicateTextDetector extends TestSetUp {
-	private static MutableIssue baseIssue, otherIssue;
+	private static MutableIssue baseIssue;
+	private static MutableIssue otherIssue;
 	private static DuplicateDetectionStrategy basicDuplicateTextDetector;
 
 	@BeforeClass

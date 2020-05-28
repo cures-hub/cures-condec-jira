@@ -14,8 +14,8 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 	private int minDuplicateLength;
 
 	public BasicDuplicateTextDetector(int minDuplicateLength){
-		if (BasicDuplicateTextDetector.preprocessor == null){
-			BasicDuplicateTextDetector.preprocessor = new Preprocessor();
+		if (preprocessor == null){
+			preprocessor = new Preprocessor();
 
 		}
 		this.minDuplicateLength = minDuplicateLength;

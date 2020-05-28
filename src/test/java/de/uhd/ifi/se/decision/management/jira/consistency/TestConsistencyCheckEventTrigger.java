@@ -22,7 +22,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class TestConsistencyCheckEventTrigger extends TestSetUp {
-	ConsistencyCheckEventTrigger trigger;
+	private ConsistencyCheckEventTrigger trigger;
 	private ApplicationUser user;
 	private MutableIssue issue;
 	private Comment jiraComment;
