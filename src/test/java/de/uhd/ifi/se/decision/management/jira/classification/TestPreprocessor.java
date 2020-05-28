@@ -1,15 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import static org.junit.Assert.assertEquals;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import static org.junit.Assert.assertEquals;
 
 public class TestPreprocessor extends TestSetUp {
 
@@ -30,11 +29,11 @@ public class TestPreprocessor extends TestSetUp {
 	}
 
 	@Test
-	public void testLemmatizationWorksStandalone() {
+	public void testStemmingWorksStandalone() {
 		List<String> tokenizedTestSentence = Arrays.asList("The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog", ".");
 		pp.setPosTags(pp.calculatePosTags(tokenizedTestSentence));
-		assertEquals(Arrays.asList("the", "quick", "brown", "fox", "jump", "over", "the", "lazy", "dog", "."),
-			pp.lemmatize(tokenizedTestSentence));
+		assertEquals(Arrays.asList("The", "quick", "brown", "fox", "jump", "over", "the", "lazi", "dog", "."),
+			pp.stem(tokenizedTestSentence));
 	}
 
 	@Test

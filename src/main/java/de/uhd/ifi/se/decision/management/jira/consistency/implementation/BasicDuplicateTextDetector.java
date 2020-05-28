@@ -31,7 +31,7 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 		String s2 = cleanMarkdown(i2.getDescription());
 		List<DuplicateFragment> duplicateList = new ArrayList();
 		BasicDuplicateTextDetector.preprocessor.preprocess(s1);
-		List<String> preprocessedS1Tokens = BasicDuplicateTextDetector.preprocessor.getTokens();
+		List<CharSequence> preprocessedS1Tokens = BasicDuplicateTextDetector.preprocessor.getTokens();
 
 		BasicDuplicateTextDetector.preprocessor.preprocess(s2);
 		s2 = String.join(" ",BasicDuplicateTextDetector.preprocessor.getTokens());
@@ -72,7 +72,7 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 		return duplicateList;
 	}
 
-	private static String generateStringToSearch(List<String> preprocessedS1Tokens, int index, int numberOfDuplicateTokens) {
+	private static String generateStringToSearch(List<CharSequence> preprocessedS1Tokens, int index, int numberOfDuplicateTokens) {
 		StringBuilder stringToSearch = new StringBuilder();
 		for (int i = index; i < preprocessedS1Tokens.size() && i < index + numberOfDuplicateTokens; i++) {
 			stringToSearch.append(preprocessedS1Tokens.get(i)).append(" ");

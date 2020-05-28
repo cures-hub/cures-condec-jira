@@ -52,7 +52,7 @@ public class TracingCIP implements ContextInformationProvider {
 		currentNodesToCheck.add(startNode);
 		Set<Issue> nextNodesToCheck = new HashSet<>();
 
-		int maxIterations = 4;
+		int maxIterations = 7;
 		int iteration = 1;
 
 		// Halt  the loop if there are either:
