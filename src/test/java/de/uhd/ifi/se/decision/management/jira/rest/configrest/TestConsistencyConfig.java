@@ -83,8 +83,29 @@ public class TestConsistencyConfig extends TestConfigSuper {
 	}
 
 	// Tests for the method activateConsistencyEvent
+	@Test
+	@DisplayName("Tests the method activateConsistencyEvent.")
+	public void testActivateConsistencyEventWithValidData(){
+		assertEquals(200, configRest.activateConsistencyEvent(request, VALID_PROJECT_KEY, "done", true).getStatus());
+	}
+
+	@Test
+	@DisplayName("Tests the method activateConsistencyEvent.")
+	public void testActivateConsistencyEventWithInvalidData(){
+		assertEquals(400, configRest.activateConsistencyEvent(request, VALID_PROJECT_KEY, "none", true).getStatus());
+	}
 
 	// Tests for the method isConsistencyEventActivated
+	@Test
+	@DisplayName("Tests the method isConsistencyEventActivated.")
+	public void testIsConsistencyEventActivatedWithValidData(){
+		assertEquals(200, configRest.isConsistencyEventActivated(request, VALID_PROJECT_KEY, "done").getStatus());
+	}
+	@Test
+	@DisplayName("Tests the method isConsistencyEventActivated.")
+	public void testIsConsistencyEventActivatedWithInvalidData(){
+		assertEquals(400, configRest.isConsistencyEventActivated(request, VALID_PROJECT_KEY, "none").getStatus());
+	}
 
 	// Tests for the method getAllConsistencyCheckEventTriggerNames
 	@Test
@@ -92,6 +113,8 @@ public class TestConsistencyConfig extends TestConfigSuper {
 	public void getAllConsistencyCheckEventTriggerNames(){
 		assertEquals(200, configRest.getAllConsistencyCheckEventTriggerNames().getStatus());
 	}
+
+
 
 }
 

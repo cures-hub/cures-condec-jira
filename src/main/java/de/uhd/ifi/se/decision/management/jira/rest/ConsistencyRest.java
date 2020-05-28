@@ -120,7 +120,7 @@ public class ConsistencyRest {
 	@Path("/discardDuplicate")
 	@POST
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response DiscardDetectedDuplicate(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("originIssueKey") String originIssueKey, @QueryParam("targetIssueKey") String targetIssueKey) {
+	public Response discardDetectedDuplicate(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("originIssueKey") String originIssueKey, @QueryParam("targetIssueKey") String targetIssueKey) {
 		long databaseId = ConsistencyPersistenceHelper.addDiscardedDuplicate(originIssueKey, targetIssueKey, projectKey);
 		Response response = Response.status(200).build();
 		if (databaseId == -1) {
