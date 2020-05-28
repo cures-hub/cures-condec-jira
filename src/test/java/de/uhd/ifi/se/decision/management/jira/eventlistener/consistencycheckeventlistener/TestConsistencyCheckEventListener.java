@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.eventlistener.consistencycheckeve
 import de.uhd.ifi.se.decision.management.jira.eventlistener.Subscriber;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.ConsistencyCheckEventListenerSingleton;
 import de.uhd.ifi.se.decision.management.jira.rest.EventEmitter;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,6 +48,12 @@ public class TestConsistencyCheckEventListener {
 		assertFalse("Name 'none' should NOT exist.", eventListener.doesConsistencyCheckEventTriggerNameExist("none"));
 
 		assertFalse("Name being null should NOT exist.", eventListener.doesConsistencyCheckEventTriggerNameExist(null));
+	}
+
+	@After
+	public void cleanUp() {
+		eventListener.resetSubscribers();
+
 	}
 
 }

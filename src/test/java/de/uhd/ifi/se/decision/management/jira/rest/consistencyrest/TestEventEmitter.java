@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.rest.consistencyrest;
 
+import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.ConsistencyCheckEventListenerSingleton;
 import de.uhd.ifi.se.decision.management.jira.rest.EventEmitter;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -36,6 +38,12 @@ public class TestEventEmitter extends Mockito {
 
 		writer.flush(); // it may not have been flushed yet...
 		assertTrue(stringWriter.toString().isEmpty());
+	}
+
+	@After
+	public void cleanUp(){
+		ConsistencyCheckEventListenerSingleton.getInstance().resetSubscribers();
+
 	}
 
 }

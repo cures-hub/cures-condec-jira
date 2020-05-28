@@ -73,4 +73,9 @@ public class ConsistencyCheckEventListenerSingleton implements IssueEventListene
 	public List<Subscriber> getSubscribers() {
 		return subscribers;
 	}
+
+	public void resetSubscribers() {
+		subscribers.removeAll(subscribers);
+	}
+
 }
