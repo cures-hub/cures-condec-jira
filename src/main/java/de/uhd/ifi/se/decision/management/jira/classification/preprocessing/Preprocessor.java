@@ -207,7 +207,7 @@ public class Preprocessor {
 			return this.generateNGram(numberTokens, this.nGramN);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			initFiles();
+			//initFiles();
 			throw new FileNotFoundException(e.getMessage());
 		}
 	}

@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.consistency.ContextInformation;
 import de.uhd.ifi.se.decision.management.jira.consistency.DuplicateDetectionManager;
 import de.uhd.ifi.se.decision.management.jira.consistency.LinkSuggestion;
@@ -9,7 +10,6 @@ import de.uhd.ifi.se.decision.management.jira.consistency.implementation.BasicDu
 import de.uhd.ifi.se.decision.management.jira.consistency.implementation.DuplicateFragment;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
-import org.ofbiz.core.entity.GenericEntityException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -90,30 +90,41 @@ public class ConsistencyRest {
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response getDuplicatesForIssue(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey) {
-		Issue baseIssue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey);
-		HashMap<String, Object> result = new HashMap<>();
-		DuplicateDetectionManager manager = new DuplicateDetectionManager(baseIssue, new BasicDuplicateTextDetector( ConfigPersistenceManager.getMinDuplicateLength(baseIssue.getProjectObject().getKey())));
+		boolean areIssueKeysValid;
+		Response response;
 		try {
-			// get Issues of project
-			Collection<Long> issueKeysToCheck = ComponentAccessor.getIssueManager().getIssueIdsForProject(baseIssue.getProjectId());
-			Collection<Issue> issuesToCheck = new ArrayList<>();
-			for (Long issueId : issueKeysToCheck) {
-				issuesToCheck.add(ComponentAccessor.getIssueManager().getIssueObject(issueId));
-			}
-			// detect duplicates
-			List<DuplicateFragment> foundDuplicateFragments = manager.findAllDuplicates(issuesToCheck);
+			areIssueKeysValid = ComponentAccessor.getIssueManager().isExistingIssueKey(issueKey);
 
-			// convert to Json
-			List<Map<String, Object>> jsonifiedIssues = new ArrayList<>();
-			for (DuplicateFragment duplicateFragment : foundDuplicateFragments) {
-				jsonifiedIssues.add(this.duplicateToJsonMap(duplicateFragment));
+			if (areIssueKeysValid) {
+				Issue baseIssue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey);
+				HashMap<String, Object> result = new HashMap<>();
+				DuplicateDetectionManager manager = new DuplicateDetectionManager(baseIssue, new BasicDuplicateTextDetector(ConfigPersistenceManager.getMinDuplicateLength(baseIssue.getProjectObject().getKey())));
+
+				// get Issues of project
+				Collection<Long> issueKeysToCheck = ComponentAccessor.getIssueManager().getIssueIdsForProject(baseIssue.getProjectId());
+				Collection<Issue> issuesToCheck = new ArrayList<>();
+				for (Long issueId : issueKeysToCheck) {
+					issuesToCheck.add(ComponentAccessor.getIssueManager().getIssueObject(issueId));
+				}
+				// detect duplicates
+				List<DuplicateFragment> foundDuplicateFragments = manager.findAllDuplicates(issuesToCheck);
+
+				// convert to Json
+				List<Map<String, Object>> jsonifiedIssues = new ArrayList<>();
+				for (DuplicateFragment duplicateFragment : foundDuplicateFragments) {
+					jsonifiedIssues.add(this.duplicateToJsonMap(duplicateFragment));
+				}
+				result.put("duplicates", jsonifiedIssues);
+				response = Response.ok(result).build();
+			} else {
+				response = Response.status(400).entity(
+					ImmutableMap.of("error", "No issue with the given key exists!")).build();
 			}
-			result.put("duplicates", jsonifiedIssues);
-			return Response.ok(result).build();
-		} catch (GenericEntityException e) {
-			e.printStackTrace();
-			return Response.status(500).entity(e).build();
+		} catch (Exception e) {
+			//e.printStackTrace();
+			response = Response.status(500).entity(e).build();
 		}
+		return response;
 	}
 
 
@@ -121,11 +132,27 @@ public class ConsistencyRest {
 	@POST
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response discardDetectedDuplicate(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("originIssueKey") String originIssueKey, @QueryParam("targetIssueKey") String targetIssueKey) {
-		long databaseId = ConsistencyPersistenceHelper.addDiscardedDuplicate(originIssueKey, targetIssueKey, projectKey);
-		Response response = Response.status(200).build();
-		if (databaseId == -1) {
-			response = Response.status(500).build();
+		Response response;
+		//check if issue keys exist
+		boolean areIssueKeysValid;
+		try {
+			areIssueKeysValid = ComponentAccessor.getIssueManager().isExistingIssueKey(originIssueKey) && ComponentAccessor.getIssueManager().isExistingIssueKey(originIssueKey);
+			if (areIssueKeysValid) {
+				long databaseId = ConsistencyPersistenceHelper.addDiscardedDuplicate(originIssueKey, targetIssueKey, projectKey);
+				response = Response.status(200).build();
+				if (databaseId == -1) {
+					response = Response.status(500).build();
+				}
+			} else {
+				response = Response.status(400).entity(
+					ImmutableMap.of("error", "No issues with the given key exists!")).build();
+			}
+		} catch (Exception e) {
+			//e.printStackTrace();
+			response = Response.status(500).entity(
+				ImmutableMap.of("error", e.toString())).build();
 		}
+
 		return response;
 	}
 
