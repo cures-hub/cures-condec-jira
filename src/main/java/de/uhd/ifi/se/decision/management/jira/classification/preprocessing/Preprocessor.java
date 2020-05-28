@@ -41,10 +41,9 @@ public class Preprocessor {
 	private Tokenizer tokenizer;
 	private Stemmer stemmer;
 	private POSTaggerME tagger;
-	private PreTrainedGloveSingleton glove;
-	private String[] posTags;
+	private final PreTrainedGloveSingleton glove;
 	// private NameFinderME nameFinder;
-	private Integer nGramN;
+	private final Integer nGramN;
 	private List<CharSequence> tokens;
 
 	public Preprocessor() {
@@ -191,7 +190,6 @@ public class Preprocessor {
 			cleaned_sentence = cleaned_sentence.toLowerCase();
 			List<String> tokens = this.tokenize(cleaned_sentence);
 
-			this.posTags = this.calculatePosTags(tokens);
 
 			/*
 			 * TODO: if time is sufficient Span[] spans = this.nameFinder.find((String[])
@@ -212,9 +210,6 @@ public class Preprocessor {
 		}
 	}
 
-	public void setPosTags(String[] posTags) {
-		this.posTags = posTags;
-	}
 
 	/**
 	 * Copies the default preprocessing files to the files in the plugin target.

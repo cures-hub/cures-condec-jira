@@ -31,7 +31,6 @@ public class TestPreprocessor extends TestSetUp {
 	@Test
 	public void testStemmingWorksStandalone() {
 		List<String> tokenizedTestSentence = Arrays.asList("The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog", ".");
-		pp.setPosTags(pp.calculatePosTags(tokenizedTestSentence));
 		assertEquals(Arrays.asList("The", "quick", "brown", "fox", "jump", "over", "the", "lazi", "dog", "."),
 			pp.stem(tokenizedTestSentence));
 	}
