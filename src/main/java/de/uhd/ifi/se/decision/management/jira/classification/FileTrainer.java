@@ -133,8 +133,8 @@ public interface FileTrainer {
 				// file.getName());
 			}
 		} catch (Exception e) {
-			System.out.println("Path: " + path + ", filename: " + filename + ", url: " + url);
-			System.err.println("Failed to copy data to file. Message: " + e.getMessage());
+			//System.out.println("Path: " + path + ", filename: " + filename + ", url: " + url);
+			//System.err.println("Failed to copy data to file. Message: " + e.getMessage());
 		}
 		return file;
 	}

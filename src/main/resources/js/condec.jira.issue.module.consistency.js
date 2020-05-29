@@ -34,7 +34,7 @@
 	ConsistencyTabsModule.prototype.discardDuplicate = function (otherIssueKey) {
 		this.duplicateResultsTableElement.style.visibility = "visible";
 
-		consistencyAPI.discardDuplicateSuggestion(this.issueKey, otherIssueKey,this. projectKey)
+		consistencyAPI.discardDuplicateSuggestion(this.issueKey, otherIssueKey, this.projectKey)
 			.then((data) => {
 				displaySuccessMessage("Discarded suggestion sucessfully!");
 				this.loadDuplicateData();
@@ -42,7 +42,7 @@
 			.catch((error) => displayErrorMessage(error));
 	}
 
-	ConsistencyTabsModule.prototype.discardSuggestion = function(otherIssueKey) {
+	ConsistencyTabsModule.prototype.discardSuggestion = function (otherIssueKey) {
 		//resultsTableElement.style.visibility = "visible";
 
 		consistencyAPI.discardLinkSuggestion(this.issueKey, otherIssueKey, this.projectKey)
@@ -53,7 +53,7 @@
 			.catch((error) => displayErrorMessage(error));
 	}
 
-	ConsistencyTabsModule.prototype.markAsDuplicate = function(otherIssueId) {
+	ConsistencyTabsModule.prototype.markAsDuplicate = function (otherIssueId) {
 		conDecAPI.createLink(null, this.issueKey, otherIssueId, "i", "i", "duplicates", this.loadDuplicateData);
 	}
 
@@ -72,6 +72,7 @@
 				let row = generateTableRow(relatedIssue);
 				this.resultsTableContentElement.appendChild(row);
 			}
+			AJS.tabs.setup();
 		}
 
 	};
@@ -93,7 +94,7 @@
 		tableCell.headers = headersId;
 		tableCell.innerHTML = content;
 		for (let key in attributes) {
-			console.log(attributes[key]);
+			//console.log(attributes[key]);
 			tableCell[key] = JSON.stringify(attributes[key]);
 		}
 		return tableCell
@@ -130,6 +131,8 @@
 				let row = generateDuplicateTableRow(duplicate);
 				this.duplicateResultsTableContentElement.appendChild(row);
 			}
+			AJS.tabs.setup();
+
 		}
 
 	};
@@ -195,6 +198,7 @@
 	function displayErrorMessage(error) {
 		conDecAPI.showFlag("error", "Could not load issues! </br>" + error)
 	}
+
 	function displaySuccessMessage(message) {
 		conDecAPI.showFlag("success", message)
 	}

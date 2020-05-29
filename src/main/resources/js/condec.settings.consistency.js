@@ -52,7 +52,7 @@
 			this.saveMinLengthDuplicateBtn.setAttribute('aria-disabled', 'true');
 			this.saveMinLengthDuplicateBtn.busy();
 
-			configAPI.setMinimumDuplicateLength(conDecAPI.getProjectKey(), minLengthDuplicateInput.value)
+			configAPI.setMinimumDuplicateLength(conDecAPI.getProjectKey(), this.minLengthDuplicateInput.value)
 				.then(() => showSuccessFlag())
 				.catch(() => conDecAPI.showFlag("error", "An error occurred while updating the configuration!"))
 				.finally(() => {

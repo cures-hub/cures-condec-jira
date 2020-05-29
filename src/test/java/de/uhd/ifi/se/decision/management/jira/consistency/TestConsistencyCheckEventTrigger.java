@@ -6,6 +6,8 @@ import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.status.MockStatus;
+import com.atlassian.jira.issue.status.category.StatusCategory;
+import com.atlassian.jira.issue.status.category.StatusCategoryImpl;
 import com.atlassian.jira.mock.ofbiz.MockGenericValue;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
@@ -43,7 +45,7 @@ public class TestConsistencyCheckEventTrigger extends TestSetUp {
 
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("eventsource", "workflow");
-		issue.setStatus(new MockStatus("Done", "Done"));
+		issue.setStatus(new MockStatus("Done", "Done",  StatusCategoryImpl.findByKey(StatusCategory.COMPLETE)));
 
 		IssueEvent event = new IssueEvent(issue, user, jiraComment, null, new MockGenericValue("test"),
 			params, EventType.ISSUE_GENERICEVENT_ID);

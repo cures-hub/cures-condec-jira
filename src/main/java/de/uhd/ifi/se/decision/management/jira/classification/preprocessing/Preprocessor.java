@@ -56,13 +56,10 @@ public class Preprocessor {
 	private void initFiles() {
 		Preprocessor.copyDefaultPreprocessingDataToFile();
 
-		File lemmatizerFile = new File(Preprocessor.DEFAULT_DIR + "lemmatizer.dict");
 		File tokenizerFile = new File(Preprocessor.DEFAULT_DIR + "token.bin");
 		File posFile = new File(Preprocessor.DEFAULT_DIR + "pos.bin");
 		try {
-			if (!lemmatizerFile.exists()) {
-				return;
-			}
+
 			this.stemmer = new PorterStemmer();
 			// lemmatizerModel = new LemmatizerModel(modelIn);
 

@@ -5,16 +5,14 @@ import de.uhd.ifi.se.decision.management.jira.consistency.ConsistencyCheckEventT
 import de.uhd.ifi.se.decision.management.jira.consistency.implementation.StatusClosedTrigger;
 import de.uhd.ifi.se.decision.management.jira.consistency.implementation.WorkflowDoneTrigger;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.IssueEventListener;
-import de.uhd.ifi.se.decision.management.jira.eventlistener.Observabel;
-import de.uhd.ifi.se.decision.management.jira.eventlistener.Subscriber;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConsistencyCheckEventListenerSingleton implements IssueEventListener, Observabel {
+public class ConsistencyCheckEventListenerSingleton implements IssueEventListener {
 
-	private List<ConsistencyCheckEventTrigger> consistencyCheckEventTriggerList;
-	private final List<Subscriber> subscribers = new ArrayList<>();
+	private final List<ConsistencyCheckEventTrigger> consistencyCheckEventTriggerList;
 	private static ConsistencyCheckEventListenerSingleton instance;
 
 	private ConsistencyCheckEventListenerSingleton() {
@@ -33,16 +31,18 @@ public class ConsistencyCheckEventListenerSingleton implements IssueEventListene
 
 	public void onIssueEvent(IssueEvent issueEvent) {
 		String projectKey = getProjectKeyFromEvent(issueEvent);
+		boolean triggered = false;
 		for (ConsistencyCheckEventTrigger trigger : this.consistencyCheckEventTriggerList) {
 			if (trigger.isActivated(projectKey) && trigger.isTriggered(issueEvent)) {
-				notifyAllSubscribers();
+				ConsistencyCheckLogHelper.addCheck(issueEvent.getIssue());
+				triggered = true;
 			}
+		}
+		if (! triggered && "workflow".equals(issueEvent.getParams().get("eventsource"))){
+			ConsistencyCheckLogHelper.deleteCheck(issueEvent.getIssue());
 		}
 	}
 
-	private void notifyAllSubscribers() {
-		this.subscribers.forEach((Subscriber::update));
-	}
 
 	private String getProjectKeyFromEvent(IssueEvent issueEvent) {
 		return issueEvent.getIssue().getProjectObject().getKey();
@@ -58,24 +58,5 @@ public class ConsistencyCheckEventListenerSingleton implements IssueEventListene
 			.anyMatch(trigger -> trigger.getName().equals(triggerName));
 	}
 
-	@Override
-	public void register(Subscriber subscriber) {
-		if (subscriber != null)
-			this.subscribers.add(subscriber);
-	}
-
-	@Override
-	public void unregister(Subscriber subscriber) {
-		this.subscribers.remove(subscriber);
-	}
-
-
-	public List<Subscriber> getSubscribers() {
-		return subscribers;
-	}
-
-	public void resetSubscribers() {
-		subscribers.removeAll(subscribers);
-	}
 
 }

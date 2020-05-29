@@ -9,7 +9,7 @@ public class WorkflowDoneTrigger implements ConsistencyCheckEventTrigger {
 	public boolean isTriggered(IssueEvent issueEvent) {
 		return issueEvent != null &&
 			"workflow".equals(issueEvent.getParams().get("eventsource"))
-			&& "Done".equals(issueEvent.getIssue().getStatus().getSimpleStatus().getName());
+			&& "done".equals(issueEvent.getIssue().getStatus().getStatusCategory().getKey());
 	}
 
 	@Override

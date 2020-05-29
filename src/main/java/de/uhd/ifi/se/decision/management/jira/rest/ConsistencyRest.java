@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.consistency.ContextInformation;
 import de.uhd.ifi.se.decision.management.jira.consistency.DuplicateDetectionManager;
@@ -9,6 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.consistency.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.consistency.implementation.BasicDuplicateTextDetector;
 import de.uhd.ifi.se.decision.management.jira.consistency.implementation.DuplicateFragment;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 
 import javax.servlet.http.HttpServletRequest;
@@ -170,5 +172,58 @@ public class ConsistencyRest {
 
 		return jsonMap;
 	}
+
+
+	@Path("/doesIssueNeedApproval")
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response doesIssueNeedApproval(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey) {
+		boolean isIssueKeyValid;
+		Response response;
+		try {
+			isIssueKeyValid = ComponentAccessor.getIssueManager().isExistingIssueKey(issueKey);
+
+			if (isIssueKeyValid) {
+				Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey);
+
+				boolean doesIssueNeedApproval = ConsistencyCheckLogHelper.doesIssueNeedApproval(issue);
+				response = Response.ok().entity(ImmutableMap.of("needsApproval", doesIssueNeedApproval)).build();
+			} else {
+				response = Response.status(400).entity(
+					ImmutableMap.of("error", "No issue with the given key exists!")).build();
+			}
+		} catch (Exception e) {
+			//e.printStackTrace();
+			response = Response.status(500).entity(e).build();
+		}
+		return response;
+	}
+
+	@Path("/approveCheck")
+	@POST
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response approveCheck(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey, @QueryParam("user") String user) {
+		boolean isIssueKeyValid;
+		ApplicationUser doesUserExist;
+		Response response;
+		try {
+			isIssueKeyValid = ComponentAccessor.getIssueManager().isExistingIssueKey(issueKey);
+			doesUserExist = ComponentAccessor.getUserManager().getUserByName(user);
+			if (isIssueKeyValid && doesUserExist != null) {
+				Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey);
+
+				ConsistencyCheckLogHelper.approveCheck(issue, user);
+				response = Response.ok().build();
+			} else {
+				response = Response.status(400).entity(
+					ImmutableMap.of("error", "No issue with the given key exists!")).build();
+			}
+		} catch (Exception e) {
+			//e.printStackTrace();
+			response = Response.status(500).entity(e).build();
+		}
+		return response;
+	}
+
 
 }
