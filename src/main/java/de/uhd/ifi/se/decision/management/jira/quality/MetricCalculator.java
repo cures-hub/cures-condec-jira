@@ -26,7 +26,6 @@ import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -35,10 +34,13 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.ChartCreator;
+import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
@@ -56,15 +58,25 @@ public class MetricCalculator {
 	private String issueTypeId;
 	private GitClient gitClient;
 	private Map<String, List<KnowledgeElement>> extractedIssueRelatedElements;
+	private boolean ignoreGit;
+	private List<String> knowledgeTypes;
+	private List<String> knowledgeStatus;
+	private List<String> decisionGroups;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ChartCreator.class);
 
-	public MetricCalculator(Long projectId, ApplicationUser user, String issueTypeId) {
+	public MetricCalculator(Long projectId, ApplicationUser user, String issueTypeId, boolean ignoreGit,
+							List<String> knowledgeTypes, List<String> knowledgeStatus,
+							List<String> decisionGroups) {
 		this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
 		this.user = user;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 		this.jiraIssues = getJiraIssuesForProject(projectId, user);
-		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+		this.ignoreGit = ignoreGit;
+		this.knowledgeTypes = knowledgeTypes;
+		this.knowledgeStatus = knowledgeStatus;
+		this.decisionGroups = decisionGroups;
+		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey) && !ignoreGit) {
 			this.gitClient = new GitClient(projectKey);
 			extractedIssueRelatedElements = new HashMap<>();
 			Map<String, List<KnowledgeElement>> elementMap = getDecisionKnowledgeElementsFromCode(projectKey);
@@ -144,12 +156,23 @@ public class MetricCalculator {
 						}
 					}
 				}
-				allGatheredCommitElements.addAll(gatheredCommitElements);
+				for (KnowledgeElement element : gatheredCommitElements) {
+					if (knowledgeTypes.contains(element.getTypeAsString())
+							&& knowledgeStatus.contains(element.getStatusAsString())
+							&& groupsMatch(element)) {
+						allGatheredCommitElements.add(element);
+					}
+				}
 				RevCommit baseCommit = defaultfeatureCommits.get(defaultfeatureCommits.size() - 2);
 				RevCommit lastFeatureBranchCommit = defaultfeatureCommits.get(0);
-				gatheredCodeElements
-						.addAll(gitExtract.getElementsFromCode(baseCommit, lastFeatureBranchCommit, defaultBranch));
-				allGatheredCodeElements.addAll(gatheredCodeElements);
+				List<KnowledgeElement> extractedCodeElements = gitExtract.getElementsFromCode(baseCommit, lastFeatureBranchCommit, defaultBranch);
+				for (KnowledgeElement element : extractedCodeElements) {
+					if (knowledgeTypes.contains(element.getTypeAsString())
+							&& knowledgeStatus.contains(element.getStatusAsString())
+							&& groupsMatch(element)) {
+						allGatheredCodeElements.add(element);
+					}
+				}
 			}
 		}
 		resultMap.put("Commit", allGatheredCommitElements);
@@ -184,18 +207,22 @@ public class MetricCalculator {
 			int numberOfElements = 0;
 			List<KnowledgeElement> elements = KnowledgePersistenceManager.getOrCreate(projectKey)
 					.getJiraIssueTextManager().getElementsInJiraIssue(jiraIssue.getId());
-			if (jiraIssue.getIssueType().getName().equals(type.toString())) {
+			if (jiraIssue.getIssueType().getName().equals(type.toString())
+					&& knowledgeStatus.contains(new KnowledgeElement(jiraIssue).getStatusAsString())
+					&& groupsMatch(new KnowledgeElement(jiraIssue))) {
 				numberOfElements++;
 			}
 			for (KnowledgeElement element : elements) {
-				if (element.getType().equals(type)) {
+				if (element.getType().equals(type) && knowledgeStatus.contains(element.getStatusAsString())
+						&& groupsMatch(element)) {
 					numberOfElements++;
 				}
 			}
 			if (linkDistance >= 1 && extractedIssueRelatedElements != null
 					&& extractedIssueRelatedElements.get(jiraIssue.getKey()) != null) {
 				for (KnowledgeElement element : extractedIssueRelatedElements.get(jiraIssue.getKey())) {
-					if (element.getType().equals(type)) {
+					if (element.getType().equals(type) && knowledgeStatus.contains(element.getStatusAsString())
+							&& groupsMatch(element)) {
 						numberOfElements++;
 					}
 				}
@@ -209,16 +236,14 @@ public class MetricCalculator {
 		LOGGER.info("RequirementsDashboard getDistributionOfKnowledgeTypes <1");
 		Map<String, Integer> distributionOfKnowledgeTypes = new HashMap<String, Integer>();
 		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
-			int numberOfElements = graph.getElements(type).size();
-			/*
-			 * for (KnowledgeElement element :
-			 * (Optional.ofNullable(decisionKnowledgeCodeElements)
-			 * .orElse(Collections.emptyList()))) { if (element.getType().equals(type)) {
-			 * numberOfElements++; } } for (KnowledgeElement element :
-			 * (Optional.ofNullable(decisionKnowledgeCommitElements)
-			 * .orElse(Collections.emptyList()))) { if (element.getType().equals(type)) {
-			 * numberOfElements++; } }
-			 */
+			int numberOfElements = 0;
+			List<KnowledgeElement> elements = graph.getElements(type);
+			for (KnowledgeElement element : elements) {
+				if (knowledgeStatus.contains(element.getStatusAsString())
+						&& groupsMatch(element)) {
+					numberOfElements++;
+				}
+			}
 			distributionOfKnowledgeTypes.put(type.toString(), numberOfElements);
 		}
 		return distributionOfKnowledgeTypes;
@@ -240,10 +265,9 @@ public class MetricCalculator {
 			}
 		}
 		summaryMap.put("Requirements", numberOfRequirements);
-		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			GitCodeClassExtractor extract = new GitCodeClassExtractor(projectKey);
-			summaryMap.put("Code Classes", extract.getNumberOfCodeClasses());
-			extract.close();
+		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey) && !ignoreGit) {
+			CodeClassPersistenceManager ccpManager = new CodeClassPersistenceManager(projectKey);
+			summaryMap.put("Code Classes", ccpManager.getKnowledgeElements().size());
 		} else {
 			summaryMap.put("Code Classes", 0);
 		}
@@ -271,9 +295,15 @@ public class MetricCalculator {
 			elements.addAll(graph.getElements(type));
 		}
 		for (KnowledgeElement element : elements) {
-			if (element.getDocumentationLocation().getIdentifier().equals("i")) {
+			if (element.getDocumentationLocation().getIdentifier().equals("i")
+					&& knowledgeTypes.contains(element.getTypeAsString())
+					&& knowledgeStatus.contains(element.getStatusAsString())
+					&& groupsMatch(element)) {
 				numberIssues++;
-			} else if (element.getDocumentationLocation().getIdentifier().equals("s")) {
+			} else if (element.getDocumentationLocation().getIdentifier().equals("s")
+					&& knowledgeTypes.contains(element.getTypeAsString())
+					&& knowledgeStatus.contains(element.getStatusAsString())
+					&& groupsMatch(element)) {
 				numberIssueContent++;
 			}
 		}
@@ -298,7 +328,11 @@ public class MetricCalculator {
 			for (Link link : links) {
 				if (link != null && link.getTarget() != null && link.getSource() != null && link.isValid()
 						&& link.getOppositeElement(issue.getId()) instanceof PartOfJiraIssueText
-						&& link.getOppositeElement(issue.getId()).getType().equals(linkTo)) {
+						&& link.getOppositeElement(issue.getId()).getType().equals(linkTo)
+						&& knowledgeStatus.contains(issue.getStatusAsString())
+						&& knowledgeStatus.contains(link.getOppositeElement(issue).getStatusAsString())
+						&& groupsMatch(issue)
+						&& groupsMatch(link.getOppositeElement(issue))) {
 					hastOtherElementLinked = true;
 					data[0] += issue.getKey() + dataStringSeparator;
 				}
@@ -314,7 +348,9 @@ public class MetricCalculator {
 				Collection<Issue> issueColl = issueLinkManager.getLinkCollection(issue, user).getAllIssues();
 				boolean hasDecision = false;
 				for (Issue linkedIssue : issueColl) {
-					if (!hasDecision && linkedIssue.getIssueType().getName().equals(linkTo.toString())) {
+					if (!hasDecision && linkedIssue.getIssueType().getName().equals(linkTo.toString())
+							&& knowledgeStatus.contains(new KnowledgeElement(linkedIssue).getStatusAsString())
+							&& groupsMatch(new KnowledgeElement(linkedIssue))) {
 						hasDecision = true;
 						data[0] += issue.getKey() + dataStringSeparator;
 					}
@@ -345,7 +381,10 @@ public class MetricCalculator {
 				boolean relevant = false;
 				for (KnowledgeElement currentElement : elements) {
 					if (comment.getBody().contains(currentElement.getDescription())
-							&& currentElement.getTypeAsString() != "OTHER") {
+							&& currentElement.getTypeAsString() != "OTHER"
+							&& knowledgeTypes.contains(currentElement.getTypeAsString())
+							&& knowledgeStatus.contains(currentElement.getStatusAsString())
+							&& groupsMatch(currentElement)) {
 						relevant = true;
 						isRelevant++;
 					}
@@ -383,14 +422,16 @@ public class MetricCalculator {
 				List<KnowledgeElement> elements = KnowledgePersistenceManager.getOrCreate(projectKey)
 						.getJiraIssueTextManager().getElementsInJiraIssue(jiraIssue.getId());
 				for (KnowledgeElement element : elements) {
-					if (element.getType().equals(knowledgeType)) {
+					if (element.getType().equals(knowledgeType) && knowledgeStatus.contains(element.getStatusAsString())
+							&& groupsMatch(element)) {
 						numberOfElements++;
 					}
 				}
 				if (linkDistance >= 1 && extractedIssueRelatedElements != null
 						&& extractedIssueRelatedElements.get(jiraIssue.getKey()) != null) {
 					for (KnowledgeElement element : extractedIssueRelatedElements.get(jiraIssue.getKey())) {
-						if (element.getType().equals(knowledgeType)) {
+						if (element.getType().equals(knowledgeType) && knowledgeStatus.contains(element.getStatusAsString())
+								&& groupsMatch(element)) {
 							numberOfElements++;
 						}
 					}
@@ -406,6 +447,13 @@ public class MetricCalculator {
 		result.put("Links from " + jiraIssueTypeName + " to " + knowledgeType.toString(), withLink);
 		result.put("No links from " + jiraIssueTypeName + " to " + knowledgeType.toString(), withoutLink);
 		return result;
+	}
+
+	private boolean groupsMatch(KnowledgeElement element) {
+		if (decisionGroups == null || (DecisionGroupManager.getGroupsForElement(element) != null && CollectionUtils.containsAny(decisionGroups, DecisionGroupManager.getGroupsForElement(element)))) {
+			return true;
+		}
+		return false;
 	}
 
 	private boolean checkEqualIssueTypeIssue(IssueType issueType2) {

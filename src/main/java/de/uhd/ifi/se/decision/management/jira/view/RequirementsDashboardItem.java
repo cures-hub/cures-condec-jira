@@ -1,7 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.view;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -16,8 +19,10 @@ import com.atlassian.plugin.PluginParseException;
 import com.atlassian.plugin.web.ContextProvider;
 import com.google.common.collect.Maps;
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.quality.MetricCalculator;
 
 public class RequirementsDashboardItem implements ContextProvider {
@@ -33,7 +38,6 @@ public class RequirementsDashboardItem implements ContextProvider {
 
 	@Override
 	public Map<String, Object> getContextMap(final Map<String, Object> context) {
-
 		if (ComponentAccessor.getJiraAuthenticationContext() != null) {
 			loggedUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 		}
@@ -60,7 +64,8 @@ public class RequirementsDashboardItem implements ContextProvider {
 			Map<String, Object> issueTypeContext = attachIssueTypeMaps(projectKey);
 			newContext.putAll(issueTypeContext);
 			return newContext;
-		} else if (context.containsKey("showContentProjectKey") || (req != null && req.getParameter("project") != null)) {
+		} else if (context.containsKey("showContentProjectKey") ||
+				(req != null && req.getParameter("project") != null && req.getParameter("filter") == null)) {
 			String showDiv = "dynamic-content";
 			newContext.put("showDiv", showDiv);
 			String projectKey = "";
@@ -72,10 +77,75 @@ public class RequirementsDashboardItem implements ContextProvider {
 				projectKey = req.getParameter("project");
 				issueTypeId = req.getParameter("issuetype");
 			}
-			Map<String, Object> values = createValues(projectKey, issueTypeId);
+			Map<String, Object> values = createValues(projectKey, issueTypeId, 2, false,
+					KnowledgeType.toStringList(),
+					KnowledgeStatus.toStringList(),
+					null);
 			newContext.putAll(values);
 			String issueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(issueTypeId);
 			newContext.put("issueType", issueTypeName);
+			newContext.put("issueTypeId", issueTypeId);
+			newContext.put("project", projectKey);
+			newContext.put("linkDistance", 2);
+			newContext.put("knowledgeTypes", KnowledgeType.getDefaultTypes());
+			newContext.put("status", KnowledgeStatus.getAllKnowledgeStatus());
+			newContext.put("groups", DecisionGroupManager.getAllDecisionGroups(projectKey));
+
+			return newContext;
+		} else if (req != null && req.getParameter("filter") != null) {
+			//newContext = Maps.newHashMap(context);
+			String showDiv = "dynamic-content";
+			newContext.put("showDiv", showDiv);
+			String projectKey = req.getParameter("project");
+			String issueTypeId = req.getParameter("issueType");
+			String issueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(issueTypeId);
+			newContext.put("issueType", issueTypeName);
+			newContext.put("issueTypeId", issueTypeId);
+			newContext.put("project", projectKey);
+			//Link Distance Filter
+			int linkDistance = 2;
+			if (req.getParameter("linkDistance") != null) {
+				linkDistance = Integer.parseInt(req.getParameter("linkDistance"));
+			}
+			newContext.put("linkDistance", linkDistance);
+			//Ignore Git Filter
+			boolean ignoreGit = false;
+			if (req.getParameter("ignoreGit") != null) {
+				ignoreGit = true;
+			}
+			newContext.put("ignoreGit", req.getParameter("ignoreGit"));
+			//Knowledge Type Filter
+			newContext.put("knowledgeTypes", KnowledgeType.getDefaultTypes());
+			List<String> knowledgeTypes = new ArrayList<String>();
+			if (req.getParameterValues("knowledgeTypes") != null && req.getParameterValues("knowledgeTypes").length > 0) {
+				knowledgeTypes = Arrays.asList(req.getParameterValues("knowledgeTypes"));
+				newContext.put("selectedKnowledgeTypes", knowledgeTypes);
+			} else {
+				knowledgeTypes.addAll(KnowledgeType.toStringList());
+
+			}
+			//Knowledge Status Filter
+			newContext.put("status", KnowledgeStatus.getAllKnowledgeStatus());
+			List<String> knowledgeStatus = new ArrayList<String>();
+			if (req.getParameterValues("status") != null && req.getParameterValues("status").length > 0) {
+				knowledgeStatus = Arrays.asList(req.getParameterValues("status"));
+				newContext.put("selectedStatus", knowledgeStatus);
+			} else {
+				knowledgeStatus.addAll(KnowledgeStatus.toStringList());
+			}
+			//Decision Group Filter
+			newContext.put("groups", DecisionGroupManager.getAllDecisionGroups(projectKey));
+			List<String> decisionGroups = new ArrayList<String>();
+			if (req.getParameterValues("group") != null && req.getParameterValues("group").length > 0) {
+				decisionGroups = Arrays.asList(req.getParameterValues("group"));
+				newContext.put("selectedGroups", decisionGroups);
+			} else {
+				decisionGroups = null;
+			}
+
+			Map<String, Object> values = createValues(projectKey, issueTypeId, linkDistance, ignoreGit, knowledgeTypes, knowledgeStatus, decisionGroups);
+			newContext.putAll(values);
+
 			return newContext;
 		}
 		String showDiv = "configproject";
@@ -115,23 +185,25 @@ public class RequirementsDashboardItem implements ContextProvider {
 		return newContext;
 	}
 
-	public Map<String, Object> createValues(String projectKey, String jiraIssueTypeId) {
+	public Map<String, Object> createValues(String projectKey, String jiraIssueTypeId, int linkDistance, boolean ignoreGit,
+											List<String> knowledgeTypes,
+											List<String> knowledgeStatus,
+											List<String> decisionGroups) {
 		Long projectId = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey).getId();
 		String issueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(jiraIssueTypeId);
 		ChartCreator chartCreator = new ChartCreator(
 				ComponentAccessor.getProjectManager().getProjectObj(projectId).getName());
-		MetricCalculator metricCalculator = new MetricCalculator(projectId, loggedUser, jiraIssueTypeId);
+		MetricCalculator metricCalculator = new MetricCalculator(projectId, loggedUser, jiraIssueTypeId, ignoreGit, knowledgeTypes, knowledgeStatus, decisionGroups);
 		chartCreator.addChart("#Comments per JIRA Issue", "boxplot-CommentsPerJiraIssue",
 				metricCalculator.numberOfCommentsPerIssue());
 		/*
 		 * chartCreator.addChart("#Commits per JIRA Issue",
 		 * "boxplot-CommitsPerJiraIssue", metricCalculator.numberOfCommitsPerIssue());
 		 */
-		// TODO:LinkDistance filter
 		chartCreator.addChart("#Decisions per JIRA Issue", "boxplot-DecisionsPerJiraIssue",
-				metricCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.DECISION, 2));
+				metricCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.DECISION, linkDistance));
 		chartCreator.addChart("#Issues per JIRA Issue", "boxplot-IssuesPerJiraIssue",
-				metricCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE, 2));
+				metricCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE, linkDistance));
 		chartCreator.addChart("#Distribution of Knowledge Types", "piechartInteger-KnowledgeTypeDistribution",
 				metricCalculator.getDistributionOfKnowledgeTypes());
 		chartCreator.addChart("#Requirements and Code Classes", "piechartInteger-ReqCodeSummary",
@@ -170,10 +242,10 @@ public class RequirementsDashboardItem implements ContextProvider {
 				metricCalculator.getNumberOfRelevantComments());
 		chartCreator.addChartWithIssueContent("For how many " + issueTypeName + " types is an issue documented?",
 				"piechartRich-DecisionDocumentedForSelectedJiraIssue",
-				metricCalculator.getLinksToIssueTypeMap(KnowledgeType.ISSUE, 2));
+				metricCalculator.getLinksToIssueTypeMap(KnowledgeType.ISSUE, linkDistance));
 		chartCreator.addChartWithIssueContent("For how many " + issueTypeName + " types is a decision documented?",
 				"piechartRich-IssueDocumentedForSelectedJiraIssue",
-				metricCalculator.getLinksToIssueTypeMap(KnowledgeType.DECISION, 2));
+				metricCalculator.getLinksToIssueTypeMap(KnowledgeType.DECISION, linkDistance));
 		return chartCreator.getVelocityParameters();
 	}
 }

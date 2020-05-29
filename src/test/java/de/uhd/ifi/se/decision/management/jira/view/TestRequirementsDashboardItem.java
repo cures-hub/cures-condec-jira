@@ -1,14 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.HashMap;
 import java.util.Map;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -16,15 +9,21 @@ import com.atlassian.jira.issue.issuetype.MockIssueType;
 import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class TestRequirementsDashboardItem {
 
@@ -81,6 +80,9 @@ public class TestRequirementsDashboardItem {
 				.get(0);
 		partOfJiraIssueText.setType(KnowledgeType.ALTERNATIVE);
 		new JiraIssueTextPersistenceManager("").updateKnowledgeElement(partOfJiraIssueText, null);
-		assertNotNull(this.dashboardItem.createValues("TEST", "10100"));
+		assertNotNull(this.dashboardItem.createValues("TEST", "10100", 2, false,
+				KnowledgeType.toStringList(),
+				KnowledgeStatus.toStringList(),
+				null));
 	}
 }

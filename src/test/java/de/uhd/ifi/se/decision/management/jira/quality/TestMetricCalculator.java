@@ -8,6 +8,7 @@ import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Before;
@@ -28,8 +29,7 @@ public class TestMetricCalculator extends TestSetUp {
 		TestSetUpGit.setUpBeforeClass();
 		init();
 		ApplicationUser user = de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers.SYS_ADMIN.getApplicationUser();
-
-		calculator = new MetricCalculator((long) 1, user, "16");
+		calculator = new MetricCalculator((long) 1, user, "16", false, KnowledgeType.toStringList(), KnowledgeStatus.toStringList(), null);
 		de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addElementToDataBase(17, "Issue");
 		de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addElementToDataBase(18, "Decision");
 		de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addElementToDataBase(19, "Argument");
