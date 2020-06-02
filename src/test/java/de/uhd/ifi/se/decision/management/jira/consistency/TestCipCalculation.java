@@ -54,11 +54,6 @@ public class TestCipCalculation extends TestSetUp {
 		}
 	}
 
-	@Test
-	public void testTracingCIP() {
-		//((MutableIssue) testIssues.get(0)).
-		//ComponentAccessor.getIssueLinkManager().createIssueLink(testIssues.get(0).get);
-	}
 
 	@Test
 	public void testLinkSuggestion() {
