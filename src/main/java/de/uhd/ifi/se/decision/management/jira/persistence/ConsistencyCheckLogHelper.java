@@ -56,6 +56,7 @@ public class ConsistencyCheckLogHelper {
 		return id.get();
 	}
 
+	/*
 	public static void resetCheckApproval(Issue issue) {
 		Optional<ConsistencyCheckLogsInDatabase> check = getCheck(issue.getKey());
 
@@ -65,9 +66,8 @@ public class ConsistencyCheckLogHelper {
 			existingCheck.setApprover("");
 			existingCheck.save();
 		});
-
-
 	}
+	*/
 
 	public static boolean doesIssueNeedApproval(Issue issue) {
 		Optional<ConsistencyCheckLogsInDatabase> check = getCheck(issue.getKey());

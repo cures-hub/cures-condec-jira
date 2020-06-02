@@ -29,6 +29,15 @@ public class TestConsistencyCheckEventTrigger extends TestSetUp {
 	private MutableIssue issue;
 	private Comment jiraComment;
 
+	public static IssueEvent generateWorkflowIssueEvent(MutableIssue issue, ApplicationUser user, Comment jiraComment, String status, StatusCategory category, Long eventType) {
+		HashMap<String, String> params = new HashMap<String, String>();
+		params.put("eventsource", "workflow");
+		issue.setStatus(new MockStatus(status, status, category));
+
+		return new IssueEvent(issue, user, jiraComment, null, new MockGenericValue("test"),
+			params, eventType);
+	}
+
 	@Before
 	public void setUp() {
 		TestSetUp.init();
@@ -38,44 +47,35 @@ public class TestConsistencyCheckEventTrigger extends TestSetUp {
 	}
 
 	@Test
-	public void testWorkflowDoneTrigger(){
+	public void testWorkflowDoneTrigger() {
 		trigger = new WorkflowDoneTrigger();
 
 		assertEquals("The name should be 'done'.", "done", trigger.getName());
 
-		HashMap<String, String> params = new HashMap<String, String>();
-		params.put("eventsource", "workflow");
-		issue.setStatus(new MockStatus("Done", "Done",  StatusCategoryImpl.findByKey(StatusCategory.COMPLETE)));
-
-		IssueEvent event = new IssueEvent(issue, user, jiraComment, null, new MockGenericValue("test"),
-			params, EventType.ISSUE_GENERICEVENT_ID);
+		IssueEvent event = generateWorkflowIssueEvent(issue, user, jiraComment, "Done", StatusCategoryImpl.findByKey(StatusCategory.COMPLETE), EventType.ISSUE_GENERICEVENT_ID);
 
 		assertTrue("Trigger should be triggered.", trigger.isTriggered(event));
 
 		event = new IssueEvent(issue, user, jiraComment, null, new MockGenericValue("test"),
 			new HashMap<String, String>(), EventType.ISSUE_DELETED_ID);
-		assertFalse("Trigger should not be triggered.",trigger.isTriggered(event));
+		assertFalse("Trigger should not be triggered.", trigger.isTriggered(event));
 
-		assertFalse("Trigger should not be triggered.",trigger.isTriggered(null));
+		assertFalse("Trigger should not be triggered.", trigger.isTriggered(null));
 
 	}
 
+
 	@Test
-	public void testStatusClosedTrigger(){
+	public void testStatusClosedTrigger() {
 		trigger = new StatusClosedTrigger();
+		assertEquals("The name should be 'closed'.", "closed", trigger.getName());
 
-		assertEquals("The name should be 'done'.", "closed", trigger.getName());
+		IssueEvent event = generateWorkflowIssueEvent(issue, user, jiraComment, "Done", StatusCategoryImpl.findByKey(StatusCategory.COMPLETE), EventType.ISSUE_CLOSED_ID);
+		assertTrue("Trigger should be triggered.", trigger.isTriggered(event));
 
-		IssueEvent event = new IssueEvent(issue, user, jiraComment, null, new MockGenericValue("test"),
-			new HashMap<String, String>(), EventType.ISSUE_CLOSED_ID);
-
-		assertTrue("Trigger should be triggered.",trigger.isTriggered(event));
-
-		event = new IssueEvent(issue, user, jiraComment, null, new MockGenericValue("test"),
-			new HashMap<String, String>(), EventType.ISSUE_DELETED_ID);
-		assertFalse("Trigger should not be triggered.",trigger.isTriggered(event));
-
-		assertFalse("Trigger should not be triggered.",trigger.isTriggered(null));
+		event = generateWorkflowIssueEvent(issue, user, jiraComment, "Done", StatusCategoryImpl.findByKey(StatusCategory.COMPLETE), EventType.ISSUE_DELETED_ID);
+		assertFalse("Trigger should not be triggered.", trigger.isTriggered(event));
+		assertFalse("Trigger should not be triggered.", trigger.isTriggered(null));
 
 	}
 }

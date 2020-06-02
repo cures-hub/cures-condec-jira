@@ -20,19 +20,19 @@ import static org.junit.Assert.assertNull;
 
 public class TestCipCalculation extends TestSetUp {
 
-	private static Issue baseIssue;
+	private static List<MutableIssue> testIssues;
 
 	@BeforeClass
 	public static void setUp() {
 		TestSetUp.init();
 		Project project = JiraProjects.getTestProject();
-		List<MutableIssue> testIssues = JiraIssues.createJiraIssues(project);
-		TestCipCalculation.baseIssue = testIssues.get(0);
+		TestCipCalculation.testIssues = JiraIssues.createJiraIssues(project);
 	}
 
 	@Test
 	public void testCIP() {
-		ContextInformation contextInformation = new ContextInformation(TestCipCalculation.baseIssue);
+		Issue baseIssue = TestCipCalculation.testIssues.get(0);
+		ContextInformation contextInformation = new ContextInformation(baseIssue);
 		try {
 			Collection<LinkSuggestion> linkSuggestions = contextInformation.getLinkSuggestions();
 			List<LinkSuggestion> sortedLinkSuggestions = linkSuggestions
@@ -52,5 +52,11 @@ public class TestCipCalculation extends TestSetUp {
 			e.printStackTrace();
 			assertNull(e);
 		}
+	}
+
+	@Test
+	public void testTracingCIP() {
+		//((MutableIssue) testIssues.get(0)).
+		//ComponentAccessor.getIssueLinkManager().createIssueLink(testIssues.get(0).get);
 	}
 }
