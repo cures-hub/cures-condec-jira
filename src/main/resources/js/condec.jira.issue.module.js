@@ -79,9 +79,8 @@
             event.stopPropagation();
            determineSelectedTab(event.target.href);
         });
-
-
-
+        //initial call of active tab
+		determineSelectedTab(AJS.$(".active-tab")[0].firstElementChild.href)
     }
 
     function determineSelectedTab(href) {
