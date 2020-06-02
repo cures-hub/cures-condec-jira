@@ -49,6 +49,8 @@
             addOnClickEventToTab();
             addOnClickEventToFilterButton();
 
+			//initial call to api depending on selected tab!
+			determineSelectedTab(window.location.href);
             return true;
         }
         return false;
@@ -72,21 +74,31 @@
     function addOnClickEventToTab() {
         console.log("ConDecJiraIssueModule addOnClickEventVisualizationSelectionTab");
 
-        AJS.$("#visualization-selection-tabs").on("tabSelect", function (event) {
+        AJS.$("#visualization-selection-tabs").on("click", function (event) {
             event.preventDefault();
             event.stopPropagation();
-            if (event.target.href === undefined) {
-                return;
-            }
-            if (event.target.href.includes("#treant")) {
-                showTreant();
-            } else if (event.target.href.includes("#vis")) {
-                showGraph();
-            } else if (event.target.href.includes("#class-treant")) {
-                showClassTreant();
-            }
+           determineSelectedTab(event.target.href);
         });
+        //initial call of active tab
+		determineSelectedTab(AJS.$(".active-tab")[0].firstElementChild.href)
     }
+
+    function determineSelectedTab(href) {
+		if (href === undefined) {
+			return;
+		}
+		if (href.includes("#treant")) {
+			showTreant();
+		} else if (href.includes("#vis")) {
+			showGraph();
+		} else if (href.includes("#class-treant")) {
+			showClassTreant();
+		}else if (href.includes("#duplicate-issues-tab")) {
+			consistencyTabsModule.loadDuplicateData();
+		} else if (href.includes("#related-issues-tab")) {
+			consistencyTabsModule.loadData();
+		}
+	}
 
     function addOnClickEventToFilterButton() {
         console.log("ConDecJiraIssueModule addOnClickEventToFilterButton");

@@ -19,6 +19,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
         <li class="menu-item">
             <a href="#related-issues-tab">Related issues</a>
         </li>
+        <li class="menu-item">
+            <a href="#duplicate-issues-tab">Duplicate issues</a>
+        </li>
     </ul>
     <div class="tabs-pane active-pane" id="treant">
         <div class="aui-toolbar2" role="toolbar">
@@ -63,6 +66,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
     <div class="tabs-pane" id="related-issues-tab">
         #parse("templates/tabs/relatedIssuesTab.vm")
     </div>
+    <div class="tabs-pane" id="duplicate-issues-tab">
+        #parse("templates/tabs/duplicatesTab.vm")
+    </div>
 </div>
 
 #parse("templates/dialogs/createDialog.vm")
@@ -75,6 +81,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 #parse("templates/dialogs/changeStatusDialog.vm")
 #parse("templates/dialogs/summarizationDialog.vm")
 #parse("templates/dialogs/exportDialog.vm")
+#parse("templates/dialogs/consistencyCheckDialog.vm")
+
 #parse("templates/contextMenu.vm")
 
 <script>
@@ -84,6 +92,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
     $(document).ready(function () {
         conDecAPI.checkIfProjectKeyIsValid();
 
+        consistencyTabsModule.init();
         if (window.conDecJiraIssueModule.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant,
                 conDecVis)) {
 

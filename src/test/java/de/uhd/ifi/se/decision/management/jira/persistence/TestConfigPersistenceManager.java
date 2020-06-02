@@ -1,23 +1,22 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test class for the persistence of the plugin settings. The plugin settings
@@ -392,14 +391,55 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
-	public void testSetAndGetConsistency() {
-		boolean input = true;
-		ConfigPersistenceManager.setConsistencyActivated("TEST", input);
-		assertEquals("Activated should be true.", input, ConfigPersistenceManager.isConsistencyActivated("TEST"));
+	public void testSetAndGetMinDuplicateLength() {
+		int input = 4;
+		ConfigPersistenceManager.setMinDuplicateLength("TEST", input);
+		assertEquals("Activated should be 4.", 4, ConfigPersistenceManager.getMinDuplicateLength("TEST"));
+		// Cannot be tested because the MockPluginSettingsFactory does not support multiple projects
+		/*
+		input = 3;
+		ConfigPersistenceManager.setMinDuplicateLength("NOTTEST", input);
+		assertEquals("Activated should still be 4.", 4, ConfigPersistenceManager.getMinDuplicateLength("TEST"));
 
-		input = false;
-		ConfigPersistenceManager.setConsistencyActivated("TEST", input);
-		assertEquals("Activated should be false.", input, ConfigPersistenceManager.isConsistencyActivated("TEST"));
+		 */
+	}
+
+	@Test
+	public void testSetAndGetMinLinkSuggestionScore() {
+		double input = 0.4;
+		ConfigPersistenceManager.setMinLinkSuggestionScore("TEST", input);
+		assertEquals("Activated should be 0.4.", input, ConfigPersistenceManager.getMinLinkSuggestionScore("TEST"), 0.0);
+		// Cannot be tested because the MockPluginSettingsFactory does not support multiple projects
+		/*
+		input = 0.3;
+		ConfigPersistenceManager.setMinLinkSuggestionScore("NOTTEST", input);
+		assertTrue("Activated should still be 0.4.", 0.4 == ConfigPersistenceManager.getMinLinkSuggestionScore("TEST"));
+
+		 */
+	}
+
+	@Test
+	public void testSetAndGetActivationStatusOfConsistencyEvent() {
+		String consistencyEvent = "done";
+		boolean isActivated = true;
+		ConfigPersistenceManager.setActivationStatusOfConsistencyEvent("TEST", consistencyEvent, isActivated);
+		assertTrue("Activated should be true.", ConfigPersistenceManager.getActivationStatusOfConsistencyEvent("TEST", consistencyEvent));
+
+		isActivated = false;
+		ConfigPersistenceManager.setActivationStatusOfConsistencyEvent("TEST", consistencyEvent, isActivated);
+		assertFalse("Activated should be false.", ConfigPersistenceManager.getActivationStatusOfConsistencyEvent("TEST", consistencyEvent));
+
+		String otherConsistencyEvent = "none";
+		isActivated = true;
+		ConfigPersistenceManager.setActivationStatusOfConsistencyEvent("TEST", otherConsistencyEvent, isActivated);
+		assertFalse("Activated for 'done' should still be false.", ConfigPersistenceManager.getActivationStatusOfConsistencyEvent("TEST", consistencyEvent));
+
+		// Cannot be tested because the MockPluginSettingsFactory does not support multiple projects
+		/*
+		isActivated = true;
+		ConfigPersistenceManager.setActivationStatusOfConsistencyEvent("NOTTEST", consistencyEvent, isActivated);
+		assertFalse("Activated for 'done' of project 'TEST' should still be false.", ConfigPersistenceManager.getActivationStatusOfConsistencyEvent("TEST", consistencyEvent));
+		*/
 	}
 
 	@AfterClass

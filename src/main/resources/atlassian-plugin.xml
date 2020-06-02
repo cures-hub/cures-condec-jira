@@ -106,6 +106,7 @@
         <resource type="download" name="general.api.js" location="/js/general.api.js" />
 
         <resource type="download" name="condec.api.js" location="/js/condec.api.js" />
+
         <resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />
         <resource type="download" name="condec.dialog.js" location="/js/condec.dialog.js" />
         <resource type="download" name="condec.context.menu.js"
@@ -130,6 +131,11 @@
                   location="/js/condec.code.class.page.js" />
         <resource type="download" name="condec.decision.group.view.js"
                   location="/js/condec.decision.group.view.js" />
+        <resource type="download" name="condec.consistency.api.js" location="/js/condec.consistency.api.js" />
+        <resource type="download" name="condec.config.rest.js" location="/js/condec.config.rest.js" />
+        <resource type="download" name="condec.settings.consistency.js" location="/js/condec.settings.consistency.js" />
+        <resource type="download" name="condec.jira.issue.module.consistency.js" location="/js/condec.jira.issue.module.consistency.js" />
+
     </web-resource>
 
 	<web-resource key="decision-knowledge-page-resources"
@@ -329,6 +335,15 @@
 		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
+    <web-item key="condec-project-settings-menu-item-consistency"
+              name="Menu Item for ConDec Plug-in Project Settings of Consistency"
+              section="atl.jira.proj.config/condec-project-settings-section" weight="21">
+        <description>Adds the "Consistency" menu item.</description>
+        <label key="condec.project.settings.menu.item.consistency" />
+        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=consistency
+        </link>
+        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+    </web-item>
 	<servlet key="servlet-for-settings-of-single-project"
 		name="Servlet for Settings of Single Project"
 		class="de.uhd.ifi.se.decision.management.jira.config.SettingsOfSingleProject">
@@ -363,6 +378,12 @@
         </entity>
         <entity>
             de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedLinkSuggestionsInDatabase
+        </entity>
+        <entity>
+            de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedDuplicatesInDatabase
+        </entity>
+        <entity>
+            de.uhd.ifi.se.decision.management.jira.persistence.tables.ConsistencyCheckLogsInDatabase
         </entity>
     </ao>
 
