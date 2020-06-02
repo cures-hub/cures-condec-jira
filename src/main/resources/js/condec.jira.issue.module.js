@@ -67,6 +67,10 @@
         showClassTreant();
     };
 
+    ConDecJiraIssueModule.prototype.applyTreeVisFilters = function applyTreeVisFilters() {
+        showTreant();
+    };
+
     function addOnClickEventToTab() {
         console.log("ConDecJiraIssueModule addOnClickEventVisualizationSelectionTab");
 
@@ -111,7 +115,8 @@
 
     function showTreant() {
         console.log("ConDecJiraIssueModule showTreant");
-        treant.buildTreant(issueKey, true, search);
+        var showOtherJiraIssues = document.getElementById("show-elements-input").checked;
+        treant.buildTreant(issueKey, true, search, showOtherJiraIssues);
     }
 
     function showClassTreant() {
@@ -156,9 +161,9 @@
         conDecAPI.getFilterSettings(issueKey, search, function (filterData) {
             var allIssueTypes = filterData.jiraIssueTypes;
             var selectedIssueTypes = filterData.jiraIssueTypes;
-            
+
             var status = conDecAPI.knowledgeStatus;
-            
+
             var documentationLocation = filterData.documentationLocations;
             issueTypeDropdown.innerHTML = "";
 
