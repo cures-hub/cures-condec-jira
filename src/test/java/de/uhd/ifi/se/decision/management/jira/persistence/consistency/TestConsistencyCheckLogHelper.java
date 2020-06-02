@@ -23,7 +23,8 @@ public class TestConsistencyCheckLogHelper extends TestSetUp {
 		TestSetUp.init();
 		issue = JiraIssues.getTestJiraIssues().get(0);
 		otherIssue = JiraIssues.getTestJiraIssues().get(1);
-		//projectKey = issues.get(0).getProjectObject().getKey();
+		ConsistencyCheckLogHelper.resetConsistencyCheckLogs();
+
 	}
 
 	@Test
@@ -33,7 +34,7 @@ public class TestConsistencyCheckLogHelper extends TestSetUp {
 		assertTrue("A pending check should exist.", ConsistencyCheckLogHelper.getCheck(issue.getKey()).isPresent());
 		assertEquals("If the added check already exist, the ids should be equal.", ConsistencyCheckLogHelper.addCheck(issue), idOfCheck);
 
-		long idOfNull = ConsistencyCheckLogHelper.addCheck(issue);
+		long idOfNull = ConsistencyCheckLogHelper.addCheck(null);
 		assertEquals("If the added check is null, -1 should be the returned id.", -1L, idOfNull);
 	}
 

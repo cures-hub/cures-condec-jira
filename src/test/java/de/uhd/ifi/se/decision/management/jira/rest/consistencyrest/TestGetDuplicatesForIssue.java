@@ -10,8 +10,6 @@ public class TestGetDuplicatesForIssue extends TestConsistencyRestSuper {
 	public void testGetDuplicatesForIssue() {
 		assertEquals("Request should be valid.", 200, consistencyRest.getDuplicatesForIssue(request, issues.get(0).getKey()).getStatus());
 		assertEquals("Request should be invalid.", 400, consistencyRest.getDuplicatesForIssue(request, "null").getStatus());
-
 		assertEquals("Request should be invalid.", 500, consistencyRest.getDuplicatesForIssue(request, null).getStatus());
-
 	}
 }

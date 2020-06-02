@@ -11,7 +11,6 @@ public class TestDiscardDuplicate extends TestConsistencyRestSuper {
 		assertEquals("Request should be valid.", 200, consistencyRest.discardDetectedDuplicate(request, project.getKey(), issues.get(0).getKey(), issues.get(1).getKey()).getStatus());
 		assertEquals("Request should be invalid.", 400, consistencyRest.discardDetectedDuplicate(request, project.getKey(), "null", issues.get(1).getKey()).getStatus());
 		assertEquals("Request should be invalid.", 500, consistencyRest.discardDetectedDuplicate(request, project.getKey(), null, issues.get(1).getKey()).getStatus());
-
 	}
 
 }

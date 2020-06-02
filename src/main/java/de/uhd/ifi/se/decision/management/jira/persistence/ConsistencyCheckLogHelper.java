@@ -14,13 +14,14 @@ public class ConsistencyCheckLogHelper {
 
 	public static long approveCheck(Issue issue, String user) {
 		AtomicLong id = new AtomicLong(-1);
-		Optional<ConsistencyCheckLogsInDatabase> check = getCheck(issue.getKey());
-		check.ifPresent(presentCheck -> {
-			id.set(presentCheck.getId());
-			presentCheck.setApprover(user);
-			presentCheck.save();
-		});
-
+		if (issue != null){
+			Optional<ConsistencyCheckLogsInDatabase> check = getCheck(issue.getKey());
+			check.ifPresent(presentCheck -> {
+				id.set(presentCheck.getId());
+				presentCheck.setApprover(user);
+				presentCheck.save();
+			});
+		}
 		return id.get();
 	}
 
