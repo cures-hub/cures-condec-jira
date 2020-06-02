@@ -1,9 +1,10 @@
-package de.uhd.ifi.se.decision.management.jira.eventlistener;
+package de.uhd.ifi.se.decision.management.jira.eventlistener.implementation;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.uhd.ifi.se.decision.management.jira.eventlistener.IssueEventListener;
 import org.ofbiz.core.entity.GenericEntityException;
 import org.ofbiz.core.entity.GenericValue;
 import org.slf4j.Logger;
@@ -30,7 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
  * in the knowledge graph when the user changes either a comment or the
  * description of a Jira issue.
  */
-public class JiraIssueTextExtractionEventListener {
+public class JiraIssueTextExtractionEventListener implements IssueEventListener {
 
     private String projectKey;
     private IssueEvent issueEvent;

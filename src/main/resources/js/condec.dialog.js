@@ -486,7 +486,7 @@
             return;
         }
         selectField.innerHTML = "";
-        var extendedKnowledgeTypes = conDecAPI.extendedKnowledgeTypes;
+        var extendedKnowledgeTypes = conDecAPI.getExtendedKnowledgeTypes();
         for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
             var isSelected = "";
             if (isKnowledgeTypeLocatedAtIndex(selectedKnowledgeType, extendedKnowledgeTypes, index)) {

@@ -1,17 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.consistency;
 
 import com.atlassian.jira.issue.Issue;
+import de.uhd.ifi.se.decision.management.jira.consistency.implementation.SimilarityScore;
 
 public class LinkSuggestion implements Comparable<LinkSuggestion> {
 
 	private Issue baseIssue;
 	private Issue targetIssue;
-	private Double score;
+	private SimilarityScore score;
 
-	public LinkSuggestion(Issue baseIssue, Issue targetIssue, Double score) {
+	public LinkSuggestion(Issue baseIssue, Issue targetIssue) {
 		this.baseIssue = baseIssue;
 		this.targetIssue = targetIssue;
-		this.score = score;
+		this.score = new SimilarityScore();
 	}
 
 
@@ -19,28 +20,20 @@ public class LinkSuggestion implements Comparable<LinkSuggestion> {
 		return baseIssue;
 	}
 
-	public void setBaseIssue(Issue baseIssue) {
-		this.baseIssue = baseIssue;
-	}
-
 	public Issue getTargetIssue() {
 		return targetIssue;
 	}
 
-	public void setTargetIssue(Issue targetIssue) {
-		this.targetIssue = targetIssue;
+	public Double getTotalScore() {
+		return score.getTotal();
 	}
 
-	public Double getScore() {
+	public SimilarityScore getScore() {
 		return score;
 	}
 
-	public void setScore(Double score) {
-		this.score = score;
-	}
-
-	public void addToScore(Double toAdd) {
-		this.score += toAdd;
+	public void addToScore(Double score, String field) {
+		this.score.put(field, score);
 	}
 
 
@@ -50,7 +43,7 @@ public class LinkSuggestion implements Comparable<LinkSuggestion> {
 			return -1;
 		}
 		int compareValue = 0;
-		if (this.getScore() > o.getScore()) {
+		if (this.getTotalScore() > o.getTotalScore()) {
 			compareValue = 1;
 		} else {
 			compareValue = -1;

@@ -1,123 +1,12 @@
 <h2>Settings for the consistency checks of Jira Issues</h2>
 
 <form class="aui">
-
-
-    <div class="field-group">
-        <label for="isActivated-toggle">Consistency activated?</label>
-        <aui-toggle id="consistencyActivated-toggle" label="Consistency activated?"></aui-toggle>
-        <div class="description">Enables or disables the consistency module of the plug-in for this project.
-            <br/>Disabling disables the possibility to view related or duplicate issues.
-        </div>
-    </div>
-
-    <div class="border-rounded border-grey">
-
-
-        <div class="field-group">
-            <label>Activate configured events:</label>
-        </div>
-        <div class="field-group" id="configured-events-activation">
-            <aui-toggle id="configured-event-0" label="Activated?"></aui-toggle>
-            <div class="description">
-                Check when <i>Workflow</i> is <i>Done</i>.
-            </div>
-            <hr/>
-        </div>
-
-        <div class="field-group">
-            <label for="new-event-config">Add new check event</label>
-            <div id="new-event-config"> Check when
-
-                <select class="select" id="select-example" name="select-example">
-                    <option>Workflow</option>
-                    <option>Status</option>
-                </select>
-
-                is
-                <select class="select" id="select-example" name="select-example">
-                    <option>Done</option>
-                    <option>In Review</option>
-                </select>.
-                <button class='aui-button aui-button-primary' onclick="addConfig()"><span
-                    class="aui-icon aui-icon-small aui-iconfont-add-circle">Add</span></button>
-            </div>
-            <div class="description">
-                Configure new event triggers to check an issues consistency.
-            </div>
-        </div>
-    </div>
-
+    #parse("templates/settings/fragments/consistencyLinkSettings.vm")
+    #parse("templates/settings/fragments/consistencyDuplicationSettings.vm")
+    #parse("templates/settings/fragments/consistencyEventSettings.vm")
 </form>
-<style>
-    .border-rounded {
-        border: solid 2px;
-        border-radius: 5px;
-    }
-
-    .border-grey {
-        border-color: #6b778c;
-    }
-
-</style>
-
-<!--
-Test UI
-
-
-<div class="aui-page-panel">
-    <div class="aui-page-panel-inner">
-        <section class="aui-page-panel-content">
-            <h2>Check events</h2>
-            <p>Configure and activate consistency check events.</p>
-            <form class="aui">
-
-                <fieldset class="group">
-                    <legend><span>Activate events</span></legend>
-                    <aui-toggle id="checkBoxThree"></aui-toggle>
-                    <label for="checkBoxThree">When Workflow is in In Review.</label>
-                </fieldset>
-
-                <fieldset class="group">
-                    <legend><span>Configure events</span></legend>
-
-                    <label for="addConfig-button">
-                        When
-                        <select class="select" id="select-type" name="select-type">
-                            <option>Workflow</option>
-                        </select>
-                        is
-                        <select class="select" id="select-trigger" name="select-trigger">
-                            <option>Done</option>
-                            <option>In Review</option>
-                        </select>.
-                    </label>
-
-                    <button class="aui-button aui-button-primary" id="addConfig-button">
-                        <span class="aui-icon aui-icon-small aui-iconfont-add-circle">
-                            Add
-                        </span>
-                    </button>
-                </fieldset>
-            </form>
-
-
-        </section>
-    </div>
-</div>
--->
 <script>
-    //Init the variables
-    const isConsistencyActivatedToggle = document.getElementById("consistencyActivated-toggle");
-    isConsistencyActivatedToggle.checked = $isConsistencyActivated;
-
-
-    // add listeners
-    isConsistencyActivatedToggle.addEventListener("change", function () {
-        //isConsistencyActivatedToggle.style.display = this.checked ? "inherit" : "none";
-        this.busy = true;
-        conDecAPI.setConsistencyActivated(this.checked, "$projectKey");
-        this.busy = false;
+    $(document).ready(function () {
+        conDecJiraIssueConsistencyModule.init();
     });
-
 </script>

@@ -1,24 +1,22 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-
 import com.atlassian.jira.mock.servlet.MockHttpServletResponse;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.templaterenderer.TemplateRenderer;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTemplateRenderer;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class TestSettingsOfSingleProject {
 
@@ -97,6 +95,6 @@ public class TestSettingsOfSingleProject {
 	@NonTransactional
 	public void testGetVelocityParametersFilled() {
 		request.setAttribute("projectKey", "TEST");
-		assertEquals(12, servlet.getVelocityParameters(request).size());
+		assertEquals(13, servlet.getVelocityParameters(request).size());
 	}
 }
