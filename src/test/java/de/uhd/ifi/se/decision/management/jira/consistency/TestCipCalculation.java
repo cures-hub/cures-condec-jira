@@ -15,34 +15,61 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public class TestCipCalculation extends TestSetUp {
 
-	private static Issue baseIssue;
+	private static List<MutableIssue> testIssues;
 
 	@BeforeClass
 	public static void setUp() {
+		TestSetUp.init();
 		Project project = JiraProjects.getTestProject();
-		List<MutableIssue> testIssues = JiraIssues.createJiraIssues(project);
-		TestCipCalculation.baseIssue = testIssues.get(0);
+		TestCipCalculation.testIssues = JiraIssues.createJiraIssues(project);
 	}
 
 	@Test
 	public void testCIP() {
-		ContextInformation contextInformation = new ContextInformation(TestCipCalculation.baseIssue);
+		Issue baseIssue = TestCipCalculation.testIssues.get(0);
+		ContextInformation contextInformation = new ContextInformation(baseIssue);
 		try {
 			Collection<LinkSuggestion> linkSuggestions = contextInformation.getLinkSuggestions();
 			List<LinkSuggestion> sortedLinkSuggestions = linkSuggestions
 				.stream()
 				.sorted((LinkSuggestion::compareTo))
 				.collect(Collectors.toList());
+			LinkSuggestion identicalIssueSuggestion = sortedLinkSuggestions.get(sortedLinkSuggestions.size() - 1);
 			assertEquals("The baseIssue should be the most similar to itself.", baseIssue.getKey(),
-				sortedLinkSuggestions.get(sortedLinkSuggestions.size() - 1).getTargetIssue().getKey());
+				identicalIssueSuggestion.getTargetIssue().getKey());
+			assertNotNull(identicalIssueSuggestion.getScore().getScores());
+
+			assertEquals("The baseIssue should be set correctly.", baseIssue.getKey(),
+				identicalIssueSuggestion.getBaseIssue().getKey());
+
 		} catch (NullPointerException | GenericEntityException e) {
-			System.out.println("ERROR:");
+			System.err.println("ERROR:");
 			e.printStackTrace();
 			assertNull(e);
 		}
+	}
+
+
+	@Test
+	public void testLinkSuggestion() {
+		LinkSuggestion linkSuggestion1 = new LinkSuggestion(testIssues.get(0), testIssues.get(1));
+		linkSuggestion1.addToScore(0.5, "test");
+		assertEquals(-1, linkSuggestion1.compareTo(null));
+
+
+		LinkSuggestion linkSuggestion2 = new LinkSuggestion(testIssues.get(0), testIssues.get(1));
+		linkSuggestion2.addToScore(0.5, "test");
+		assertEquals(-1, linkSuggestion1.compareTo(linkSuggestion2));
+
+		linkSuggestion2.addToScore(0.5, "test1");
+		assertEquals(-1, linkSuggestion1.compareTo(linkSuggestion2));
+
+		linkSuggestion1.addToScore(1., "test1");
+		assertEquals(1, linkSuggestion1.compareTo(linkSuggestion2));
 	}
 }

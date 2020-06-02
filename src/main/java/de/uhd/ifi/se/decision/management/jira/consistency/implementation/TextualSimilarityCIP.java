@@ -31,27 +31,27 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 	@Override
 	public double assessRelation(Issue i1, Issue i2) {
 		try {
-			pp.preprocess(i1.getDescription());
-			List<String> lemmatizedI1Description = pp.getTokens();
+			pp.preprocess(i1.getDescription().toLowerCase());
+			List<CharSequence> stemmedI1Description = pp.getTokens();
 
-			pp.preprocess(i2.getDescription());
-			List<String> lemmatizedI2Description = pp.getTokens();
-			List<String> concatenatedList = new ArrayList<>();
-			concatenatedList.addAll(lemmatizedI1Description);
-			concatenatedList.addAll(lemmatizedI2Description);
+			pp.preprocess(i2.getDescription().toLowerCase());
+			List<CharSequence> stemmedI2Description = pp.getTokens();
+			List<CharSequence> concatenatedList = new ArrayList<>();
+			concatenatedList.addAll(stemmedI1Description);
+			concatenatedList.addAll(stemmedI2Description);
 
 			int unionCount = uniqueElements(concatenatedList).length;
 
 			// Jaccard similarity: (|A| + |B| - |A u B|) / |A u B|
-			return (uniqueElements(lemmatizedI1Description).length + uniqueElements(lemmatizedI2Description).length - unionCount) / (double) unionCount;
+			return (uniqueElements(stemmedI1Description).length + uniqueElements(stemmedI2Description).length - unionCount) / (double) unionCount;
 		} catch (Exception e) {
 			return 0;
 		}
 
 	}
 
-	private String[] uniqueElements(List<String> list) {
-		HashSet<String> hashedArray = new HashSet<String>(list);
+	private String[] uniqueElements(List<CharSequence> list) {
+		HashSet<CharSequence> hashedArray = new HashSet<CharSequence>(list);
 		return hashedArray.toArray(String[]::new);
 	}
 

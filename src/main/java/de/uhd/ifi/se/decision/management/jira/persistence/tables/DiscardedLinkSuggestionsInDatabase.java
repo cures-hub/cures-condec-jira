@@ -7,7 +7,7 @@ import net.java.ao.schema.Table;
 
 import java.sql.SQLException;
 
-@Table("CondecConsistency")
+@Table("DiscLink")
 public interface DiscardedLinkSuggestionsInDatabase extends RawEntity<Long> {
 	@AutoIncrement
 	@PrimaryKey("ID")

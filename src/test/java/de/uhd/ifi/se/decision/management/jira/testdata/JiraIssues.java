@@ -1,9 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.testdata;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
@@ -13,11 +9,14 @@ import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
-
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JiraIssues {
 
@@ -69,7 +68,7 @@ public class JiraIssues {
 		return jiraIssues;
 	}
 
-	private static MutableIssue createJiraIssue(int id, IssueType issueType, Project project, String summary,
+	public static MutableIssue createJiraIssue(int id, IssueType issueType, Project project, String summary,
 			ApplicationUser user) {
 		MutableIssue issue = new MockIssue(id, project.getKey() + "-" + id);
 		((MockIssue) issue).setProjectId(project.getId());

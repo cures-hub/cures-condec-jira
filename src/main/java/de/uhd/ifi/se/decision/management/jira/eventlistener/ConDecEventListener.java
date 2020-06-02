@@ -1,5 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.eventlistener;
 
+import com.atlassian.event.api.EventListener;
+import com.atlassian.event.api.EventPublisher;
+import com.atlassian.jira.event.issue.IssueEvent;
+import com.atlassian.jira.event.issue.link.IssueLinkCreatedEvent;
+import com.atlassian.jira.event.issue.link.IssueLinkDeletedEvent;
+import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
+import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.ConsistencyCheckEventListenerSingleton;
+import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.JiraIssueTextExtractionEventListener;
+import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.SummarizationEventListener;
+import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.WebhookEventListener;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -7,18 +18,12 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.atlassian.event.api.EventListener;
-import com.atlassian.event.api.EventPublisher;
-import com.atlassian.jira.event.issue.IssueEvent;
-import com.atlassian.jira.event.issue.link.IssueLinkCreatedEvent;
-import com.atlassian.jira.event.issue.link.IssueLinkDeletedEvent;
-import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
-
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class is responsible for all the event listeners used in this plug-in.
- * 
+ *
  * @see JiraIssueTextExtractionEventListener
  * @see SummarizationEventListener
  * @see WebhookEventListener
@@ -28,9 +33,8 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 
 	@JiraImport
 	private final EventPublisher eventPublisher;
-	private WebhookEventListener webhookEventListener;
-	private JiraIssueTextExtractionEventListener jiraIssueTextExtractionEventListener;
-	private SummarizationEventListener summarizationEventListener;
+	private List<IssueEventListener> issueEventListeners;
+	private List<LinkEventListener> linkEventListeners;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ConDecEventListener.class);
 
@@ -38,10 +42,28 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 	public ConDecEventListener(EventPublisher eventPublisher) {
 		this.eventPublisher = eventPublisher;
 		LOGGER.info("ConDec event listener object was created.");
-		webhookEventListener = new WebhookEventListener();
-		jiraIssueTextExtractionEventListener = new JiraIssueTextExtractionEventListener();
+		//init lists of listeners
+		issueEventListeners = new ArrayList<>();
+		linkEventListeners = new ArrayList<>();
 
-		summarizationEventListener = new SummarizationEventListener();
+		//attach listeners
+		attach((IssueEventListener) new WebhookEventListener());
+		attach(new JiraIssueTextExtractionEventListener());
+		attach(new SummarizationEventListener());
+		attach(ConsistencyCheckEventListenerSingleton.getInstance());
+
+		attach((LinkEventListener) new WebhookEventListener());
+
+
+	}
+
+	public void attach(IssueEventListener listener) {
+		this.issueEventListeners.add(listener);
+
+	}
+
+	public void attach(LinkEventListener listener) {
+		this.linkEventListeners.add(listener);
 	}
 
 	/**
@@ -71,24 +93,27 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 		if (issueEvent == null) {
 			return;
 		}
-		webhookEventListener.onIssueEvent(issueEvent);
-		jiraIssueTextExtractionEventListener.onIssueEvent(issueEvent);
-		summarizationEventListener.onIssueEvent(issueEvent);
+		this.issueEventListeners
+			.forEach(issueEventListener -> issueEventListener.onIssueEvent(issueEvent));
+
 	}
 
 	@EventListener
 	public void onLinkCreatedIssueEvent(IssueLinkCreatedEvent linkCreatedEvent) {
 		KnowledgeElement element = new KnowledgeElement(
-				linkCreatedEvent.getIssueLink().getSourceObject());
-		webhookEventListener.onLinkEvent(element);
+			linkCreatedEvent.getIssueLink().getSourceObject());
+		linkEventListeners
+			.forEach(linkEventListener -> linkEventListener.onLinkEvent(element));
 		LOGGER.info("ConDec event listener on link create issue event was triggered.");
 	}
 
 	@EventListener
 	public void onLinkDeletedIssueEvent(IssueLinkDeletedEvent linkDeletedEvent) {
 		KnowledgeElement element = new KnowledgeElement(
-				linkDeletedEvent.getIssueLink().getSourceObject());
-		webhookEventListener.onLinkEvent(element);
+			linkDeletedEvent.getIssueLink().getSourceObject());
+		linkEventListeners
+			.forEach(linkEventListener -> linkEventListener.onLinkEvent(element));
+
 		LOGGER.info("ConDec event listener on link deleted issue event was triggered.");
 	}
 }
