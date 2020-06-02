@@ -59,4 +59,22 @@ public class TestCipCalculation extends TestSetUp {
 		//((MutableIssue) testIssues.get(0)).
 		//ComponentAccessor.getIssueLinkManager().createIssueLink(testIssues.get(0).get);
 	}
+
+	@Test
+	public void testLinkSuggestion() {
+		LinkSuggestion linkSuggestion1 = new LinkSuggestion(testIssues.get(0), testIssues.get(1));
+		linkSuggestion1.addToScore(0.5, "test");
+		assertEquals(-1, linkSuggestion1.compareTo(null));
+
+
+		LinkSuggestion linkSuggestion2 = new LinkSuggestion(testIssues.get(0), testIssues.get(1));
+		linkSuggestion2.addToScore(0.5, "test");
+		assertEquals(-1, linkSuggestion1.compareTo(linkSuggestion2));
+
+		linkSuggestion2.addToScore(0.5, "test1");
+		assertEquals(-1, linkSuggestion1.compareTo(linkSuggestion2));
+
+		linkSuggestion1.addToScore(1., "test1");
+		assertEquals(1, linkSuggestion1.compareTo(linkSuggestion2));
+	}
 }
