@@ -141,6 +141,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		System.out.println("Entry: " + databaseEntry.getId());
 		KnowledgeElement newElement = new KnowledgeElement(databaseEntry);
 		if (newElement.getId() > 0) {
 			KnowledgeGraph.getOrCreate(projectKey).addVertex(newElement);
@@ -151,7 +152,9 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 				if (!key.isBlank()) {
 					KnowledgeElement issueElement = persistenceManager.getKnowledgeElement(key);
 					if (issueElement != null) {
-						groupsToAssign.addAll(issueElement.getDecisionGroups());
+						if (issueElement.getDecisionGroups() != null) {
+							groupsToAssign.addAll(issueElement.getDecisionGroups());
+						}
 						Link link = new Link(newElement, issueElement);
 						long databaseId = GenericLinkManager.insertLink(link, null);
 						if (databaseId > 0) {
@@ -240,6 +243,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	public void maintainCodeClassKnowledgeElements(String repoUri, ObjectId oldHead, ObjectId newhead) {
 		List<KnowledgeElement> existingElements = getKnowledgeElements();
 		if (existingElements == null || existingElements.size() == 0) {
+			System.out.println("Hello");
 			extractAllCodeClasses(null);
 		} else {
 			GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
@@ -306,12 +310,9 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
 		List<File> codeClasses = ccExtractor.getCodeClassListFull();
 		for (File file : codeClasses) {
-			if (file != null) {
-				List<String> issueKeys = ccExtractor.getIssuesKeysForFile(file);
-				if (issueKeys != null && issueKeys.size() > 0) {
-					KnowledgeElement newElement = ccExtractor.createKnowledgeElementFromFile(file, issueKeys);
-					insertKnowledgeElement(newElement, user);
-				}
+			List<String> issueKeys = ccExtractor.getIssuesKeysForFile(file);
+			if (issueKeys != null && issueKeys.size() > 0) {
+				insertKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(file, issueKeys), user);
 			}
 		}
 		ccExtractor.close();

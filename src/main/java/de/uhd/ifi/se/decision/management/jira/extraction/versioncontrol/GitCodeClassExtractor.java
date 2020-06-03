@@ -61,7 +61,7 @@ public class GitCodeClassExtractor {
 						} else {
 							File file = new File(repository.getWorkTree(), treeWalk.getPathString());
 							ChangedFile chfile = new ChangedFile(file);
-							if (chfile.isExistingJavaClass()) {
+							if (chfile.isExistingJavaClass() && file != null) {
 								codeClassListFull.add(file);
 								codeClassOriginMap.put(file.getAbsolutePath(), repoUri);
 								treeWalkPath.put(file.getAbsolutePath(), treeWalk.getPathString());

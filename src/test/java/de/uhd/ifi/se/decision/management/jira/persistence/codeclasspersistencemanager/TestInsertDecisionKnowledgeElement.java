@@ -23,13 +23,30 @@ public class TestInsertDecisionKnowledgeElement extends TestSetUp {
 		classElement = new KnowledgeElement();
 		classElement.setProject("TEST");
 		classElement.setType("Other");
-		classElement.setDescription("TEST-1;");
 		classElement.setSummary("TestClass.java");
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 
 	@Test
 	public void testInsertDecisionKnwoledgeElement() {
+		classElement.setDescription("TEST-1;");
+		KnowledgeElement newElement = ccManager.insertKnowledgeElement(classElement, user);
+		assertEquals(classElement.getSummary(), newElement.getSummary());
+	}
+
+	@Test
+	public void testInsertDecisionKnwoledgeElementDescLength() {
+		classElement.setDescription("TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;" +
+				"TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;" +
+				"TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;" +
+				"TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;" +
+				"TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;" +
+				"TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;" +
+				"TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;" +
+				"TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;" +
+				"TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;" +
+				"TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;" +
+				"TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;");
 		KnowledgeElement newElement = ccManager.insertKnowledgeElement(classElement, user);
 		assertEquals(classElement.getSummary(), newElement.getSummary());
 	}
