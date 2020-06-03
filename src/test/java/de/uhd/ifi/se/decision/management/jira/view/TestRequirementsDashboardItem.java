@@ -73,7 +73,7 @@ public class TestRequirementsDashboardItem {
 		assertFalse(issueTypeNamesMap.isEmpty());
 	}
 
-	@Test(expected = Exception.class)
+	@Test
 	@NonTransactional
 	public void testCreationWithObjects() {
 		PartOfJiraIssueText partOfJiraIssueText = JiraIssues.getSentencesForCommentText("More Comment with some text")

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +13,8 @@ import java.util.regex.Pattern;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
-import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.search.SearchException;
 import com.atlassian.jira.issue.search.SearchResults;
@@ -89,28 +88,6 @@ public class MetricCalculator {
 			}
 		}
 		this.issueTypeId = issueTypeId;
-	}
-
-	public Map<Integer, List<Issue>> getLinkDistanceIssueMap(Integer linkDistance, Issue jiraIssue) {
-		Map<Integer, List<Issue>> linkDistanceMap = new HashMap<Integer, List<Issue>>();
-		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
-		List<Issue> linkissues = new ArrayList<Issue>();
-		linkissues.add(jiraIssue);
-		linkDistanceMap.put(0, linkissues);
-		List<Issue> inMap = new ArrayList<Issue>();
-		inMap.add(jiraIssue);
-		for (int i = 1; i <= linkDistance; i++) {
-			linkissues = new ArrayList<Issue>();
-			for (Issue issue : linkDistanceMap.get(i - 1)) {
-				Collection<Issue> issueColl = issueLinkManager.getLinkCollection(issue, user).getAllIssues();
-				linkissues.addAll(issueColl);
-				linkissues.removeAll(inMap);
-			}
-			List<Issue> linkissueswithoutduplicate = new ArrayList<>(new HashSet<>(linkissues)); // Remove Duplicates
-			linkDistanceMap.put(i, linkissueswithoutduplicate);
-			inMap.addAll(linkissueswithoutduplicate);
-		}
-		return linkDistanceMap;
 	}
 
 	public static List<Issue> getJiraIssuesForProject(long projectId, ApplicationUser user) {
@@ -344,7 +321,7 @@ public class MetricCalculator {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		// Elements from Issues
 		for (Issue issue : jiraIssues) {
-			if (issue.getIssueType().getName().equals(linkFrom.toString())) {
+			if (issue.getIssueType().getName().equals(linkFrom.toString()) && issueLinkManager.getLinkCollection(issue, user) != null) {
 				Collection<Issue> issueColl = issueLinkManager.getLinkCollection(issue, user).getAllIssues();
 				boolean hasDecision = false;
 				for (Issue linkedIssue : issueColl) {
@@ -456,12 +433,10 @@ public class MetricCalculator {
 		return false;
 	}
 
-	private boolean checkEqualIssueTypeIssue(IssueType issueType2) {
-		if (issueType2 == null) {
-			return false;
+	public void setJiraIssues(List<MutableIssue> issues) {
+		jiraIssues = new ArrayList<>();
+		for (MutableIssue issue : issues) {
+			jiraIssues.add(issue);
 		}
-
-		String jiraIssueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(issueTypeId);
-		return issueType2.getName().equalsIgnoreCase(jiraIssueTypeName);
 	}
 }
