@@ -91,56 +91,55 @@ public class RequirementsDashboardItem implements ContextProvider {
 			newContext.put("status", KnowledgeStatus.getAllKnowledgeStatus());
 			newContext.put("groups", DecisionGroupManager.getAllDecisionGroups(projectKey));
 			return newContext;
-		} else if (req != null && req.getParameter("filter") != null) {
+		} else if (context.containsKey("showContentFilter") || req != null && req.getParameter("filter") != null) {
 			//newContext = Maps.newHashMap(context);
 			String showDiv = "dynamic-content";
 			newContext.put("showDiv", showDiv);
-			String projectKey = req.getParameter("project");
-			String issueTypeId = req.getParameter("issueType");
+			String projectKey = "TEST";
+			String issueTypeId = "16";
+			int linkDistance = 2;
+			newContext.put("linkDistance", linkDistance);
+			boolean ignoreGit = false;
+			List<String> knowledgeTypes = KnowledgeType.toStringList();
+			newContext.put("knowledgeTypes", KnowledgeType.getDefaultTypes());
+			List<String> knowledgeStatus = KnowledgeStatus.toStringList();
+			newContext.put("selectedStatus", knowledgeStatus);
+			List<String> decisionGroups = null;
+			newContext.put("groups", DecisionGroupManager.getAllDecisionGroups(projectKey));
+			if (req != null) {
+				projectKey = req.getParameter("project");
+				issueTypeId = req.getParameter("issueType");
+				if (req.getParameter("linkDistance") != null) {
+					linkDistance = Integer.parseInt(req.getParameter("linkDistance"));
+				}
+				//Ignore Git Filter
+				if (req.getParameter("ignoreGit") != null) {
+					ignoreGit = true;
+				}
+				newContext.put("ignoreGit", req.getParameter("ignoreGit"));
+				//Knowledge Type Filter
+				if (req.getParameterValues("knowledgeTypes") != null && req.getParameterValues("knowledgeTypes").length > 0) {
+					knowledgeTypes = Arrays.asList(req.getParameterValues("knowledgeTypes"));
+					newContext.put("selectedKnowledgeTypes", knowledgeTypes);
+				}
+				//Knowledge Status Filter
+				newContext.put("status", KnowledgeStatus.getAllKnowledgeStatus());
+				if (req.getParameterValues("status") != null && req.getParameterValues("status").length > 0) {
+					knowledgeStatus = Arrays.asList(req.getParameterValues("status"));
+				}
+
+				//Decision Group Filter
+				if (req.getParameterValues("group") != null && req.getParameterValues("group").length > 0) {
+					decisionGroups = new ArrayList<>();
+					decisionGroups = Arrays.asList(req.getParameterValues("group"));
+					newContext.put("selectedGroups", decisionGroups);
+				}
+			}
 			String issueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(issueTypeId);
 			newContext.put("issueType", issueTypeName);
 			newContext.put("issueTypeId", issueTypeId);
 			newContext.put("project", projectKey);
 			//Link Distance Filter
-			int linkDistance = 2;
-			if (req.getParameter("linkDistance") != null) {
-				linkDistance = Integer.parseInt(req.getParameter("linkDistance"));
-			}
-			newContext.put("linkDistance", linkDistance);
-			//Ignore Git Filter
-			boolean ignoreGit = false;
-			if (req.getParameter("ignoreGit") != null) {
-				ignoreGit = true;
-			}
-			newContext.put("ignoreGit", req.getParameter("ignoreGit"));
-			//Knowledge Type Filter
-			newContext.put("knowledgeTypes", KnowledgeType.getDefaultTypes());
-			List<String> knowledgeTypes = new ArrayList<String>();
-			if (req.getParameterValues("knowledgeTypes") != null && req.getParameterValues("knowledgeTypes").length > 0) {
-				knowledgeTypes = Arrays.asList(req.getParameterValues("knowledgeTypes"));
-				newContext.put("selectedKnowledgeTypes", knowledgeTypes);
-			} else {
-				knowledgeTypes.addAll(KnowledgeType.toStringList());
-
-			}
-			//Knowledge Status Filter
-			newContext.put("status", KnowledgeStatus.getAllKnowledgeStatus());
-			List<String> knowledgeStatus = new ArrayList<String>();
-			if (req.getParameterValues("status") != null && req.getParameterValues("status").length > 0) {
-				knowledgeStatus = Arrays.asList(req.getParameterValues("status"));
-				newContext.put("selectedStatus", knowledgeStatus);
-			} else {
-				knowledgeStatus.addAll(KnowledgeStatus.toStringList());
-			}
-			//Decision Group Filter
-			newContext.put("groups", DecisionGroupManager.getAllDecisionGroups(projectKey));
-			List<String> decisionGroups = new ArrayList<String>();
-			if (req.getParameterValues("group") != null && req.getParameterValues("group").length > 0) {
-				decisionGroups = Arrays.asList(req.getParameterValues("group"));
-				newContext.put("selectedGroups", decisionGroups);
-			} else {
-				decisionGroups = null;
-			}
 
 			Map<String, Object> values = createValues(projectKey, issueTypeId, linkDistance, ignoreGit, knowledgeTypes, knowledgeStatus, decisionGroups);
 			newContext.putAll(values);

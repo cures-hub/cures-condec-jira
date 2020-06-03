@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.view;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
@@ -33,6 +35,7 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addElementToDataBase;
 import static org.junit.Assert.assertFalse;
@@ -43,6 +46,8 @@ public class TestRequirementsDashboardItem extends TestSetUp {
 
 	private RequirementsDashboardItem dashboardItem;
 	private Map<String, Object> params;
+	@Mock
+	HttpServletRequest req;
 
 	@Before
 	public void setUp() {
@@ -96,6 +101,19 @@ public class TestRequirementsDashboardItem extends TestSetUp {
 		params.put("showContentProjectKey", "TEST");
 		params.put("showContentIssueTypeId", "16");
 
+		this.dashboardItem.loggedUser = JiraUsers.SYS_ADMIN.createApplicationUser();
+		Map<String, Object> ctxResult = this.dashboardItem.getContextMap(params);
+		assertTrue(ctxResult.containsKey("showDiv"));
+		assertTrue(ctxResult.containsKey("project"));
+
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetContextMapShowContentFiltered() {
+		params.clear();
+		params.put("showContentFilter", "TEST");
+		params.put("showContentIssueTypeId", "16");
 		this.dashboardItem.loggedUser = JiraUsers.SYS_ADMIN.createApplicationUser();
 		Map<String, Object> ctxResult = this.dashboardItem.getContextMap(params);
 		assertTrue(ctxResult.containsKey("showDiv"));
