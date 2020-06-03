@@ -35,7 +35,7 @@ public class TestMetricCalculator extends TestSetUp {
 		TestSetUpGit.setUpBeforeClass();
 		init();
 		ApplicationUser user = de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers.SYS_ADMIN.getApplicationUser();
-		calculator = new MetricCalculator((long) 1, user, "16", false, KnowledgeType.toStringList(), KnowledgeStatus.toStringList(), null);
+		calculator = new MetricCalculator((long) 1, user, "alternative", false, KnowledgeType.toStringList(), KnowledgeStatus.toStringList(), null);
 		addElementToDataBase(17, "Issue");
 		addElementToDataBase(18, "Decision");
 		addElementToDataBase(19, "Argument");
@@ -93,7 +93,7 @@ public class TestMetricCalculator extends TestSetUp {
 	@Test
 	public void testGetLinksToIssueTypeMapTypeFilled() {
 		Object map = calculator.getLinksToIssueTypeMap(KnowledgeType.ARGUMENT, 0);
-		assertEquals("{Links from  to Argument=, No links from  to Argument=}", map.toString());
+		assertEquals("{Links from  to Argument=, No links from  to Argument=TEST-1 TEST-14 TEST-30 TEST-2 TEST-12 TEST-3 TEST-4 TEST-5 }", map.toString());
 	}
 
 	@Test

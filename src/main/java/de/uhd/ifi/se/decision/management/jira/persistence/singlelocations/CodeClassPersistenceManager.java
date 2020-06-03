@@ -141,7 +141,6 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("Entry: " + databaseEntry.getId());
 		KnowledgeElement newElement = new KnowledgeElement(databaseEntry);
 		if (newElement.getId() > 0) {
 			KnowledgeGraph.getOrCreate(projectKey).addVertex(newElement);
@@ -243,7 +242,6 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	public void maintainCodeClassKnowledgeElements(String repoUri, ObjectId oldHead, ObjectId newhead) {
 		List<KnowledgeElement> existingElements = getKnowledgeElements();
 		if (existingElements == null || existingElements.size() == 0) {
-			System.out.println("Hello");
 			extractAllCodeClasses(null);
 		} else {
 			GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
@@ -254,22 +252,16 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 				oldTreeIter.reset(reader, oldHead);
 				CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
 				newTreeIter.reset(reader, newhead);
-				List<DiffEntry> diffs = gitClient.getGit(repoUri).diff().setNewTree(newTreeIter).setOldTree(oldTreeIter)
-						.call();
 				String gitPath = ccExtractor.getGitClient().getDirectory(repoUri).getAbsolutePath();
 				gitPath = gitPath.substring(0, gitPath.length() - 5);
-				for (DiffEntry diff : diffs) {
-					if (diff.getChangeType().equals(DiffEntry.ChangeType.DELETE)
-							&& diff.getOldPath().contains(".java")) {
+				for (DiffEntry diff : gitClient.getGit(repoUri).diff().setNewTree(newTreeIter).setOldTree(oldTreeIter).call()) {
+					if (diff.getChangeType().equals(DiffEntry.ChangeType.DELETE) && diff.getOldPath().contains(".java")) {
 						diffDelete(null, ccExtractor, gitPath, diff);
 					} else if (diff.getNewPath().contains(".java")) {
 						File file = new File(gitPath, diff.getNewPath());
-						List<String> issueKeys = ccExtractor.getIssuesKeysForFile(file);
-						String keys = getIssueListAsString(issueKeys);
-						KnowledgeElement element = getKnowledgeElementByNameAndIssueKeys(file.getName(), keys);
 						if (diff.getChangeType().equals(DiffEntry.ChangeType.RENAME)
 								|| diff.getChangeType().equals(DiffEntry.ChangeType.MODIFY)) {
-							diffModify(null, ccExtractor, gitPath, diff, element);
+							diffModify(null, ccExtractor, gitPath, diff, getKnowledgeElementByNameAndIssueKeys(file.getName(), getIssueListAsString(ccExtractor.getIssuesKeysForFile(file))));
 						} else if (diff.getChangeType().equals(DiffEntry.ChangeType.ADD)) {
 							diffAdd(null, ccExtractor, gitPath, diff);
 						}
@@ -287,8 +279,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 
 	private void diffAdd(ApplicationUser user, GitCodeClassExtractor ccExtractor, String gitPath, DiffEntry diff) {
 		File newFile = new File(gitPath, diff.getNewPath());
-		insertKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(newFile,
-				ccExtractor.getIssuesKeysForFile(newFile)), user);
+		insertKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(newFile, ccExtractor.getIssuesKeysForFile(newFile)), user);
 	}
 
 	private void diffModify(ApplicationUser user, GitCodeClassExtractor ccExtractor, String gitPath, DiffEntry diff, KnowledgeElement element) {

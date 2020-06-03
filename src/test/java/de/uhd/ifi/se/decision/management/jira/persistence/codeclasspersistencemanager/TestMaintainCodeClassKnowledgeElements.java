@@ -16,7 +16,7 @@ import org.mockito.Mock;
 
 import static junit.framework.Assert.assertEquals;
 
-public class TestMaintainCodeClassKnowledgeElements extends TestSetUpGit {
+public class TestMaintainCodeClassKnowledgeElements extends TestSetUp {
 
 	private CodeClassPersistenceManager ccManager;
 	@Mock
@@ -27,13 +27,13 @@ public class TestMaintainCodeClassKnowledgeElements extends TestSetUpGit {
 	@Before
 	public void setUp() {
 		init();
-		TestSetUp.init();
+		TestSetUpGit.init();
 		ccManager = new CodeClassPersistenceManager("Test");
 	}
 
 	@Test
 	public void testMaintainCodeClassKnowledgeElementsWithoutClasses() {
-		ccManager.maintainCodeClassKnowledgeElements(GIT_URI, null, null);
+		ccManager.maintainCodeClassKnowledgeElements(TestSetUpGit.GIT_URI, null, null);
 		assertEquals(ccManager.getKnowledgeElements().size(), 0);
 	}
 
@@ -46,8 +46,7 @@ public class TestMaintainCodeClassKnowledgeElements extends TestSetUpGit {
 		classElement.setDescription("TEST-1;");
 		classElement.setSummary("TestClass.java");
 		KnowledgeElement newElement = ccManager.insertKnowledgeElement(classElement, JiraUsers.SYS_ADMIN.getApplicationUser());
-		System.out.println("Elements: " + ccManager.getKnowledgeElements());
-		ccManager.maintainCodeClassKnowledgeElements(GIT_URI, null, null);
+		ccManager.maintainCodeClassKnowledgeElements(TestSetUpGit.GIT_URI, null, null);
 		assertEquals(ccManager.getKnowledgeElements().size(), 0);
 	}
 
