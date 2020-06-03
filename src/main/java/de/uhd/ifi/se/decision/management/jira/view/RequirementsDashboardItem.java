@@ -204,7 +204,7 @@ public class RequirementsDashboardItem implements ContextProvider {
 				metricCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.DECISION, linkDistance));
 		chartCreator.addChart("#Issues per JIRA Issue", "boxplot-IssuesPerJiraIssue",
 				metricCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE, linkDistance));
-		chartCreator.addChart("#Distribution of Knowledge Types", "piechartInteger-KnowledgeTypeDistribution",
+		chartCreator.addChart("Distribution of Knowledge Types", "piechartInteger-KnowledgeTypeDistribution",
 				metricCalculator.getDistributionOfKnowledgeTypes());
 		chartCreator.addChart("#Requirements and Code Classes", "piechartInteger-ReqCodeSummary",
 				metricCalculator.getReqAndClassSummary());
