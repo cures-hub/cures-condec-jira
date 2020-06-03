@@ -10,16 +10,19 @@ import org.junit.jupiter.api.AfterEach;
 
 import java.util.List;
 
-import static de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper.*;
+import static de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper.addDiscardedSuggestions;
+import static de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper.getDiscardedSuggestions;
+import static de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper.resetDiscardedSuggestions;
 import static org.junit.Assert.assertEquals;
 
-public class TestDiscardSuggestions extends TestSetUp {
+
+public class TestDiscardLinkSuggestions extends TestSetUp implements DiscardSuggestionTester {
 
 	private List<MutableIssue> issues;
 
 	@Before
 	public void setUp() {
-		init();
+		TestSetUp.init();
 		issues = JiraIssues.getTestJiraIssues();
 	}
 
@@ -27,7 +30,7 @@ public class TestDiscardSuggestions extends TestSetUp {
 	public void testInsertAndGetDiscardedSuggestion() {
 		List<Issue> discardedSuggestions = getDiscardedSuggestions(issues.get(0));
 
-		assertEquals("Before insertion one discarded suggestion should exist.", 0, discardedSuggestions.size());
+		assertEquals("Before insertion no discarded suggestion should exist.", 0, discardedSuggestions.size());
 
 		addDiscardedSuggestions(issues.get(0), issues.get(1));
 		discardedSuggestions = getDiscardedSuggestions(issues.get(0));
@@ -37,7 +40,7 @@ public class TestDiscardSuggestions extends TestSetUp {
 	}
 
 	@Test
-	public void testInsertNullAstDiscardedSuggestion() {
+	public void testInsertNullAsDiscardedSuggestion() {
 		List<Issue> discardedSuggestions = getDiscardedSuggestions(issues.get(0));
 		int discardedSuggestionsBeforeNullInsertion = discardedSuggestions.size();
 		addDiscardedSuggestions(issues.get(0), null);

@@ -1,5 +1,6 @@
-package de.uhd.ifi.se.decision.management.jira.eventlistener;
+package de.uhd.ifi.se.decision.management.jira.eventlistener.implementation;
 
+import de.uhd.ifi.se.decision.management.jira.eventlistener.IssueEventListener;
 import org.ofbiz.core.entity.GenericValue;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -17,7 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * Triggers the code summarization when Jira issues are closed. Then, the
  * summary is written into a new comment of the Jira issue.
  */
-public class SummarizationEventListener {
+public class SummarizationEventListener implements IssueEventListener {
 
 	private final ChangeHistoryManager changeManager = ComponentAccessor.getChangeHistoryManager();
 

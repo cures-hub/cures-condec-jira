@@ -1,5 +1,7 @@
-package de.uhd.ifi.se.decision.management.jira.eventlistener;
+package de.uhd.ifi.se.decision.management.jira.eventlistener.implementation;
 
+import de.uhd.ifi.se.decision.management.jira.eventlistener.IssueEventListener;
+import de.uhd.ifi.se.decision.management.jira.eventlistener.LinkEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
  * Triggers the webhook when JIRA issues are created, updated, or deleted or
  * when links between JIRA issues are created or deleted
  */
-public class WebhookEventListener {
+public class WebhookEventListener implements IssueEventListener, LinkEventListener {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(WebhookEventListener.class);
 

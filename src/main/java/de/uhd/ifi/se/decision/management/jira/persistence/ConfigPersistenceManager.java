@@ -1,12 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.atlassian.gzipfilter.org.apache.commons.lang.math.NumberUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -14,11 +8,17 @@ import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
@@ -26,9 +26,9 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
  */
 public class ConfigPersistenceManager {
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentAccessor
-			.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
+		.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
 	private static TransactionTemplate transactionTemplate = ComponentAccessor
-			.getOSGiComponentInstanceOfType(TransactionTemplate.class);
+		.getOSGiComponentInstanceOfType(TransactionTemplate.class);
 
 	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
@@ -209,7 +209,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
-			boolean isKnowledgeTypeEnabled) {
+											   boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
@@ -259,7 +259,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setReleaseNoteMapping(String projectKey, ReleaseNoteCategory category,
-			List<String> selectedIssueNames) {
+											 List<String> selectedIssueNames) {
 		String joinedIssueNames = String.join(",", selectedIssueNames);
 		setValue(projectKey, "releaseNoteMapping" + "." + category, joinedIssueNames);
 	}
@@ -275,11 +275,28 @@ public class ConfigPersistenceManager {
 	/*										*/
 	/* **************************************/
 
-	public static boolean isConsistencyActivated(String projectKey) {
-		return getValue(projectKey, "isConsistencyActivated").equals("true");
+
+	public static void setMinDuplicateLength(String projectKey, int minDuplicateLength) {
+		setValue(projectKey, "minDuplicateLength", Integer.toString(minDuplicateLength));
 	}
 
-	public static void setConsistencyActivated(String projectKey, boolean isActivated) {
-		setValue(projectKey, "isConsistencyActivated", Boolean.toString(isActivated));
+	public static int getMinDuplicateLength(String projectKey) {
+		return NumberUtils.toInt(getValue(projectKey, "minDuplicateLength"), 3);
+	}
+
+	public static void setMinLinkSuggestionScore(String projectKey, double minLinkSuggestionProbability) {
+		setValue(projectKey, "minLinkSuggestionProbability", Double.toString(minLinkSuggestionProbability));
+	}
+
+	public static double getMinLinkSuggestionScore(String projectKey) {
+		return NumberUtils.toDouble(getValue(projectKey, "minLinkSuggestionProbability"), 0.3);
+	}
+
+	public static void setActivationStatusOfConsistencyEvent(String projectKey, String eventKey, boolean isActivated) {
+	setValue(projectKey, eventKey, Boolean.toString(isActivated));
+	}
+
+	public static boolean getActivationStatusOfConsistencyEvent(String projectKey, String eventKey) {
+		return "true".equals(getValue(projectKey, eventKey));
 	}
 }
