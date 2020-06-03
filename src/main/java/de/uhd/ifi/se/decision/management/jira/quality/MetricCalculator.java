@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 
 public class MetricCalculator {
 
-	private String projectKey;
+	private String projectKey = "TEST";
 	private ApplicationUser user;
 	private List<Issue> jiraIssues;
 	private KnowledgeGraph graph;
@@ -67,7 +67,9 @@ public class MetricCalculator {
 	public MetricCalculator(Long projectId, ApplicationUser user, String issueTypeId, boolean ignoreGit,
 							List<String> knowledgeTypes, List<String> knowledgeStatus,
 							List<String> decisionGroups) {
-		this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
+		if (ComponentAccessor.getProjectManager().getProjectObj(projectId) != null) {
+			this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
+		}
 		this.user = user;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 		this.jiraIssues = getJiraIssuesForProject(projectId, user);

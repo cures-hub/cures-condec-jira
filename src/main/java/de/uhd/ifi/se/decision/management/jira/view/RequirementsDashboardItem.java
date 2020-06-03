@@ -90,7 +90,6 @@ public class RequirementsDashboardItem implements ContextProvider {
 			newContext.put("knowledgeTypes", KnowledgeType.getDefaultTypes());
 			newContext.put("status", KnowledgeStatus.getAllKnowledgeStatus());
 			newContext.put("groups", DecisionGroupManager.getAllDecisionGroups(projectKey));
-
 			return newContext;
 		} else if (req != null && req.getParameter("filter") != null) {
 			//newContext = Maps.newHashMap(context);
@@ -189,10 +188,15 @@ public class RequirementsDashboardItem implements ContextProvider {
 											List<String> knowledgeTypes,
 											List<String> knowledgeStatus,
 											List<String> decisionGroups) {
-		Long projectId = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey).getId();
-		String issueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(jiraIssueTypeId);
-		ChartCreator chartCreator = new ChartCreator(
-				ComponentAccessor.getProjectManager().getProjectObj(projectId).getName());
+		Long projectId = (long) 1;
+		String projectName = "";
+		String issueTypeName = "";
+		if (ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey) != null) {
+			projectId = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey).getId();
+			issueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(jiraIssueTypeId);
+			projectName = ComponentAccessor.getProjectManager().getProjectObj(projectId).getName();
+		}
+		ChartCreator chartCreator = new ChartCreator(projectName);
 		MetricCalculator metricCalculator = new MetricCalculator(projectId, loggedUser, jiraIssueTypeId, ignoreGit, knowledgeTypes, knowledgeStatus, decisionGroups);
 		chartCreator.addChart("#Comments per JIRA Issue", "boxplot-CommentsPerJiraIssue",
 				metricCalculator.numberOfCommentsPerIssue());
