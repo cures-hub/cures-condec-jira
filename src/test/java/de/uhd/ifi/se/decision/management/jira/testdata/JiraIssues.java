@@ -14,7 +14,10 @@ import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
@@ -86,9 +89,9 @@ public class JiraIssues {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("{issue} testobject {issue}");
 		PartOfJiraIssueText sentence = comment.get(0);
 		sentence.setJiraIssueId(issue.getId());
-		KnowledgePersistenceManager.getOrCreate("TEST").insertKnowledgeElement(sentence,
+		KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager().insertKnowledgeElement(sentence,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
-
+		GenericLinkManager.insertLink(new Link(new KnowledgeElement(issue), sentence), JiraUsers.SYS_ADMIN.getApplicationUser());
 		return sentence.getJiraIssue();
 	}
 

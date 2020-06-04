@@ -300,10 +300,10 @@ public class MetricCalculator {
 		List<KnowledgeElement> listOfIssues = graph.getElements(linkFrom);
 
 		for (KnowledgeElement issue : listOfIssues) {
+			System.out.println(issue.getId());
 			List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
 					DocumentationLocation.JIRAISSUETEXT);
 			boolean hastOtherElementLinked = false;
-
 			for (Link link : links) {
 				if (link != null && link.getTarget() != null && link.getSource() != null && link.isValid()
 						&& link.getOppositeElement(issue.getId()) instanceof PartOfJiraIssueText
@@ -440,5 +440,17 @@ public class MetricCalculator {
 		for (MutableIssue issue : issues) {
 			jiraIssues.add(issue);
 		}
+	}
+
+	//TODO: Improve test dataset to no longer require this method
+	public void addElementFromGit(KnowledgeElement element, Issue issue) {
+		decisionKnowledgeCodeElements = new ArrayList<>();
+		decisionKnowledgeCodeElements.add(element);
+		decisionKnowledgeCommitElements = new ArrayList<>();
+		decisionKnowledgeCommitElements.add(element);
+		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
+		elements.add(element);
+		extractedIssueRelatedElements = new HashMap<>();
+		extractedIssueRelatedElements.put(issue.getKey(), elements);
 	}
 }
