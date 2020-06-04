@@ -72,11 +72,13 @@ public class TestMetricCalculator extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetNumberOfRelevantComments() {
+		addComment(getTestJiraIssues().get(7));
 		assertEquals(2, calculator.getNumberOfRelevantComments().size());
 	}
 
 	@Test
 	public void testGetDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType() {
+		addComment(getTestJiraIssues().get(6));
 		Map<String, String> calculation = calculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(
 				KnowledgeType.ARGUMENT, KnowledgeType.DECISION);
 

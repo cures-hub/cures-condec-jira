@@ -300,7 +300,6 @@ public class MetricCalculator {
 		List<KnowledgeElement> listOfIssues = graph.getElements(linkFrom);
 
 		for (KnowledgeElement issue : listOfIssues) {
-			System.out.println(issue.getId());
 			List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
 					DocumentationLocation.JIRAISSUETEXT);
 			boolean hastOtherElementLinked = false;
