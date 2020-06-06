@@ -24,6 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,12 +74,15 @@ public class TestMetricCalculator extends TestSetUp {
 	@NonTransactional
 	public void testGetNumberOfRelevantComments() {
 		addComment(getTestJiraIssues().get(7));
+		calculator.setJiraIssues(getTestJiraIssues());
 		assertEquals(2, calculator.getNumberOfRelevantComments().size());
 	}
 
 	@Test
 	public void testGetDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType() {
 		addComment(getTestJiraIssues().get(6));
+		JiraIssueLinks.getTestJiraIssueLinks();
+		calculator.setJiraIssues(getTestJiraIssues());
 		Map<String, String> calculation = calculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(
 				KnowledgeType.ARGUMENT, KnowledgeType.DECISION);
 
@@ -110,6 +114,8 @@ public class TestMetricCalculator extends TestSetUp {
 
 	@Test
 	public void testGetLinksToIssueTypeMapTypeFilled() {
+		addComment(getTestJiraIssues().get(6));
+		calculator.setJiraIssues(getTestJiraIssues());
 		Object map = calculator.getLinksToIssueTypeMap(KnowledgeType.ARGUMENT, 0);
 		assertEquals("{Links from  to Argument=, No links from  to Argument=TEST-1 TEST-14 TEST-30 TEST-2 TEST-12 TEST-3 TEST-4 TEST-5 }", map.toString());
 	}
@@ -131,5 +137,6 @@ public class TestMetricCalculator extends TestSetUp {
 		calculator.setJiraIssues(getTestJiraIssues());
 		assertEquals(4, calculator.getKnowledgeSourceCount().size());
 	}
+
 
 }

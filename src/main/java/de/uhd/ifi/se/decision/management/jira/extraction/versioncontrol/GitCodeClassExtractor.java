@@ -35,6 +35,9 @@ public class GitCodeClassExtractor {
 	private GitClient gitClient;
 
 	public GitCodeClassExtractor(String projectKey) {
+		if (projectKey == null) {
+			return;
+		}
 		this.projectKey = projectKey;
 		codeClassOriginMap = new HashMap<String, String>();
 		treeWalkPath = new HashMap<String, String>();
@@ -51,6 +54,7 @@ public class GitCodeClassExtractor {
 				TreeWalk treeWalk = new TreeWalk(repository);
 				try {
 					if (gitClient.getDefaultBranchCommits(repoUri).size() == 0) {
+						System.out.println("Failed too soon");
 						break;
 					}
 					treeWalk.addTree(gitClient.getDefaultBranchCommits(repoUri).get(0).getTree());
@@ -164,6 +168,9 @@ public class GitCodeClassExtractor {
 	}
 
 	public KnowledgeElement createKnowledgeElementFromFile(File file, List<String> issueKeys) {
+		if (file == null || issueKeys == null || projectKey == null) {
+			return null;
+		}
 		KnowledgeElement element = new KnowledgeElement();
 		String keyString = "";
 		for (String key : issueKeys) {

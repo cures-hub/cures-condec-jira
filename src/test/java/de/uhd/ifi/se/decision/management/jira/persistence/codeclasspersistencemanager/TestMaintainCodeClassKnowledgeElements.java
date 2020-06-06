@@ -3,8 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.persistence.codeclasspersistencem
 import java.util.ArrayList;
 import java.util.List;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.security.JiraAuthenticationContext;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -12,17 +10,12 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 
 import static junit.framework.Assert.assertEquals;
 
 public class TestMaintainCodeClassKnowledgeElements extends TestSetUp {
 
 	private CodeClassPersistenceManager ccManager;
-	@Mock
-	private JiraAuthenticationContext jiraAuthenticationContext;
-	@Mock
-	private ComponentAccessor componentAccessor;
 
 	@Before
 	public void setUp() {
@@ -45,7 +38,7 @@ public class TestMaintainCodeClassKnowledgeElements extends TestSetUp {
 		classElement.setType("Other");
 		classElement.setDescription("TEST-1;");
 		classElement.setSummary("TestClass.java");
-		KnowledgeElement newElement = ccManager.insertKnowledgeElement(classElement, JiraUsers.SYS_ADMIN.getApplicationUser());
+		ccManager.insertKnowledgeElement(classElement, JiraUsers.SYS_ADMIN.getApplicationUser());
 		ccManager.maintainCodeClassKnowledgeElements(TestSetUpGit.GIT_URI, null, null);
 		assertEquals(ccManager.getKnowledgeElements().size(), 0);
 	}

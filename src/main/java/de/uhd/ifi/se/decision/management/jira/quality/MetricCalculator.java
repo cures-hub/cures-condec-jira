@@ -303,6 +303,7 @@ public class MetricCalculator {
 			List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
 					DocumentationLocation.JIRAISSUETEXT);
 			boolean hastOtherElementLinked = false;
+			System.out.println("Links: " + links);
 			for (Link link : links) {
 				if (link != null && link.getTarget() != null && link.getSource() != null && link.isValid()
 						&& link.getOppositeElement(issue.getId()) instanceof PartOfJiraIssueText
@@ -359,7 +360,7 @@ public class MetricCalculator {
 				boolean relevant = false;
 				for (KnowledgeElement currentElement : elements) {
 					if (comment.getBody().contains(currentElement.getDescription())
-							&& currentElement.getTypeAsString() != "OTHER"
+							&& "OTHER".equals(currentElement.getTypeAsString())
 							&& knowledgeTypes.contains(currentElement.getTypeAsString())
 							&& knowledgeStatus.contains(currentElement.getStatusAsString())
 							&& groupsMatch(currentElement)) {
@@ -428,10 +429,8 @@ public class MetricCalculator {
 	}
 
 	private boolean groupsMatch(KnowledgeElement element) {
-		if (decisionGroups == null || (DecisionGroupManager.getGroupsForElement(element) != null && CollectionUtils.containsAny(decisionGroups, DecisionGroupManager.getGroupsForElement(element)))) {
-			return true;
-		}
-		return false;
+		return (decisionGroups == null || DecisionGroupManager.getGroupsForElement(element) != null
+				&& CollectionUtils.containsAny(decisionGroups, DecisionGroupManager.getGroupsForElement(element)));
 	}
 
 	public void setJiraIssues(List<MutableIssue> issues) {
