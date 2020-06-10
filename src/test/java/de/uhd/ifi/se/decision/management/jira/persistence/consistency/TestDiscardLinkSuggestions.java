@@ -32,11 +32,26 @@ public class TestDiscardLinkSuggestions extends TestSetUp implements DiscardSugg
 
 		assertEquals("Before insertion no discarded suggestion should exist.", 0, discardedSuggestions.size());
 
-		addDiscardedSuggestions(issues.get(0), issues.get(1));
+		long id = addDiscardedSuggestions(issues.get(0), issues.get(1));
+
 		discardedSuggestions = getDiscardedSuggestions(issues.get(0));
 		assertEquals("After insertion one discarded suggestion should exist.", 1, discardedSuggestions.size());
 
 		assertEquals("The discarded suggestion should be the inserted issue.", issues.get(1).getKey(), discardedSuggestions.get(0).getKey());
+
+		long sameId = addDiscardedSuggestions(issues.get(0), issues.get(1));
+		assertEquals("Ids should be identical, because it represents the same link suggestion.", id, sameId);
+
+
+		long exceptionId = addDiscardedSuggestions(null, issues.get(1));
+		assertEquals("Id should be -1.", -1, exceptionId);
+
+		exceptionId = addDiscardedSuggestions(issues.get(0), null);
+		assertEquals("Id should be -1.", -1, exceptionId);
+
+
+		exceptionId = addDiscardedSuggestions(null, null);
+		assertEquals("Id should be -1.", -1, exceptionId);
 	}
 
 	@Test
@@ -50,8 +65,19 @@ public class TestDiscardLinkSuggestions extends TestSetUp implements DiscardSugg
 
 	}
 
+	@Override
+	@Test
+	public void testReset() {
+		addDiscardedSuggestions(issues.get(0), issues.get(1));
+		resetDiscardedSuggestions();
+	
+	List<Issue> discardedSuggestions = getDiscardedSuggestions(issues.get(0));
+		assertEquals("No more suggestion should be discarded after reset.", 0, discardedSuggestions.size());
+
+	}
+
 	@AfterEach
-	public void cleanDatabase(){
+	public void cleanDatabase() {
 		resetDiscardedSuggestions();
 	}
 }
