@@ -49,8 +49,17 @@ public class TestDiscardLinkSuggestions extends TestSetUp implements DiscardSugg
 		exceptionId = addDiscardedSuggestions(issues.get(0), null);
 		assertEquals("Id should be -1.", -1, exceptionId);
 
+		exceptionId = addDiscardedSuggestions(null, issues.get(1).getKey(), null);
+		assertEquals("Id should be -1.", -1, exceptionId);
 
-		exceptionId = addDiscardedSuggestions(null, null);
+		exceptionId = addDiscardedSuggestions(issues.get(0).getKey(), null, null);
+		assertEquals("Id should be -1.", -1, exceptionId);
+
+		exceptionId = addDiscardedSuggestions(issues.get(0).getKey(), issues.get(1).getKey(), null);
+		assertEquals("Id should be -1.", -1, exceptionId);
+
+
+		exceptionId = addDiscardedSuggestions(null, null, null);
 		assertEquals("Id should be -1.", -1, exceptionId);
 	}
 
@@ -70,7 +79,7 @@ public class TestDiscardLinkSuggestions extends TestSetUp implements DiscardSugg
 	public void testReset() {
 		addDiscardedSuggestions(issues.get(0), issues.get(1));
 		resetDiscardedSuggestions();
-	
+
 	List<Issue> discardedSuggestions = getDiscardedSuggestions(issues.get(0));
 		assertEquals("No more suggestion should be discarded after reset.", 0, discardedSuggestions.size());
 

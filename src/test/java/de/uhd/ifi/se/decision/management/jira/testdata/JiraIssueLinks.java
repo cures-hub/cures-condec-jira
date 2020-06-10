@@ -1,11 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.testdata;
 
+import com.atlassian.jira.issue.link.IssueLink;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.atlassian.jira.issue.link.IssueLink;
-
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
 
 public class JiraIssueLinks {
 
@@ -37,6 +36,10 @@ public class JiraIssueLinks {
 		issueLink = createJiraIssueLink(3, 1, 9);
 		issueLinks.add(issueLink);
 		issueLink = createJiraIssueLink(1, 5, 10);
+		issueLinks.add(issueLink);
+		issueLink = createJiraIssueLink(1, 14, 11);
+		issueLinks.add(issueLink);
+		issueLink = createJiraIssueLink(14, 30, 11);
 		issueLinks.add(issueLink);
 		return issueLinks;
 	}
