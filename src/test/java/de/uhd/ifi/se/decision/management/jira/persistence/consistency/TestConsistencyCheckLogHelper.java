@@ -3,10 +3,13 @@ package de.uhd.ifi.se.decision.management.jira.persistence.consistency;
 import com.atlassian.jira.issue.MutableIssue;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.ConsistencyCheckLogsInDatabase;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
+
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -57,6 +60,24 @@ public class TestConsistencyCheckLogHelper extends TestSetUp {
 
 		long idOfApprovalIssueNull =ConsistencyCheckLogHelper.approveCheck(null, "TestUser");
 		assertEquals("If the approved check's issue is null, -1 should be the returned id.", -1L, idOfApprovalIssueNull);
+	}
+
+	@Test
+	public void testIsCheckApproved() {
+		//check.getApprover() != null && !check.getApprover().isBlank() && !check.getApprover().isEmpty();
+		assertFalse("Check is null. Therefore it is not approved.", ConsistencyCheckLogHelper.isCheckApproved(null));
+
+		ConsistencyCheckLogHelper.addCheck(issue);
+		Optional<ConsistencyCheckLogsInDatabase> check = ConsistencyCheckLogHelper.getCheck(issue.getKey());
+		assertFalse("Check is new. Therefore it is not approved.", ConsistencyCheckLogHelper.isCheckApproved(check.get()));
+		check.get().setApprover(null);
+		assertFalse("Approver is null. Therefore it is not approved.", ConsistencyCheckLogHelper.isCheckApproved(check.get()));
+		check.get().setApprover("");
+		assertFalse("Approver is blank. Therefore it is not approved.", ConsistencyCheckLogHelper.isCheckApproved(check.get()));
+
+		check.get().setApprover("TESTUSER");
+		assertTrue("Approver is set. Therefore it is approved.", ConsistencyCheckLogHelper.isCheckApproved(check.get()));
+
 	}
 
 	@Test

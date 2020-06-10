@@ -5,4 +5,6 @@ public interface DiscardSuggestionTester {
 	void testInsertAndGetDiscardedSuggestion();
 
 	void testInsertNullAsDiscardedSuggestion();
+
+	void testReset();
 }

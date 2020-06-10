@@ -39,9 +39,7 @@ public class ConsistencyPersistenceHelper {
 		Optional<DiscardedLinkSuggestionsInDatabase[]> discardedLinkSuggestions = Optional.ofNullable(ACTIVE_OBJECTS.find(DiscardedLinkSuggestionsInDatabase.class,
 			Query.select().where("ORIGIN_ISSUE_KEY = ?", baseIssueKey)));
 		for (DiscardedLinkSuggestionsInDatabase discardedLinkSuggestion : discardedLinkSuggestions.orElseGet(() -> new DiscardedLinkSuggestionsInDatabase[0])) {
-			if (discardedLinkSuggestion != null) {
 				discardedSuggestions.add(ISSUE_MANAGER.getIssueObject(discardedLinkSuggestion.getDiscardedIssueKey()));
-			}
 		}
 		return discardedSuggestions;
 	}
@@ -125,9 +123,7 @@ public class ConsistencyPersistenceHelper {
 		Optional<DiscardedDuplicatesInDatabase[]> discardedDuplicatesPresentInDB =  Optional.ofNullable(ACTIVE_OBJECTS.find(DiscardedDuplicatesInDatabase.class,
 			Query.select().where("ORIGIN_ISSUE_KEY = ?", baseIssueKey)));
 		for (DiscardedDuplicatesInDatabase discardedDuplicate : discardedDuplicatesPresentInDB.orElseGet(() -> new DiscardedDuplicatesInDatabase[0])) {
-			if (discardedDuplicate != null) {
 				discardedDuplicates.add(ISSUE_MANAGER.getIssueObject(discardedDuplicate.getDiscardedIssueKey()));
-			}
 		}
 		return discardedDuplicates;
 	}
