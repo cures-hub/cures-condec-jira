@@ -9,6 +9,7 @@ import com.atlassian.jira.issue.status.category.StatusCategoryImpl;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.ConsistencyCheckEventListenerSingleton;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.ConsistencyCheckLogsInDatabase;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -59,10 +60,20 @@ public class TestConsistencyCheckEventListener extends TestSetUp {
 		eventListener.onIssueEvent(generateWorkflowIssueEvent(issue, user, jiraComment, "Done", StatusCategoryImpl.findByKey(StatusCategory.COMPLETE), EventType.ISSUE_GENERICEVENT_ID));
 		check = ConsistencyCheckLogHelper.getCheck(issue.getKey());
 		assertTrue("Now a pending check should exist.", check.isPresent());
+		reset();
+
+		ConfigPersistenceManager.setActivationStatusOfConsistencyEvent(issue.getProjectObject().getKey(), "done", false);
+		eventListener.onIssueEvent(generateWorkflowIssueEvent(issue, user, jiraComment, "Done", StatusCategoryImpl.findByKey(StatusCategory.COMPLETE), EventType.ISSUE_GENERICEVENT_ID));
+		check = ConsistencyCheckLogHelper.getCheck(issue.getKey());
+		assertFalse("No pending check should exist.", check.isPresent());
+		ConfigPersistenceManager.setActivationStatusOfConsistencyEvent(issue.getProjectObject().getKey(), "done", true);
 
 		eventListener.onIssueEvent(generateWorkflowIssueEvent(issue, user, jiraComment, "Open", StatusCategoryImpl.findByKey(StatusCategory.IN_PROGRESS), EventType.ISSUE_GENERICEVENT_ID));
 
 		assertFalse("After resetting the workflow the chock does no longer need approval.", ConsistencyCheckLogHelper.doesIssueNeedApproval(issue));
+
+
+
 	}
 
 	@AfterEach

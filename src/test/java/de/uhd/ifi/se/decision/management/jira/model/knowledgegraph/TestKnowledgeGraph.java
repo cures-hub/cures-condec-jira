@@ -1,15 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.model.knowledgegraph;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -17,9 +7,17 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class TestKnowledgeGraph extends TestSetUp {
 
@@ -40,7 +38,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetEdges() {
-		assertEquals(JiraIssueLinks.getTestJiraIssueLinks().size(), graph.edgeSet().size());
+		assertEquals(10, graph.edgeSet().size());
 	}
 
 	@Test
@@ -56,7 +54,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	public void testRemoveEdge() {
 		Link link = new Link(2, 4, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		assertTrue(graph.removeEdge(link));
-		assertEquals(JiraIssueLinks.getTestJiraIssueLinks().size() - 1, graph.edgeSet().size());
+		assertEquals(9, graph.edgeSet().size());
 		assertTrue(graph.addEdge(link));
 	}
 
@@ -90,12 +88,12 @@ public class TestKnowledgeGraph extends TestSetUp {
 		KnowledgeElement node = graph.vertexSet().iterator().next();
 		assertEquals("WI: Implement feature", node.getSummary());
 		node.setSummary("Updated");
-		assertEquals(2, graph.edgesOf(node).size());
+		assertEquals(3, graph.edgesOf(node).size());
 
 		KnowledgePersistenceManager.getOrCreate("TEST").updateKnowledgeElement(node, null);
 		node = graph.vertexSet().iterator().next();
 		assertEquals("Updated", node.getSummary());
-		assertEquals(2, graph.edgesOf(node).size());
+		assertEquals(3, graph.edgesOf(node).size());
 	}
 
 	@After

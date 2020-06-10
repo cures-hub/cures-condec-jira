@@ -1,19 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.HashSet;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.atlassian.jira.user.ApplicationUser;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.HashSet;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class TestVisGraph extends TestSetUp {
 	private VisGraph visGraph;
@@ -35,7 +33,7 @@ public class TestVisGraph extends TestSetUp {
 
 	@Test
 	public void testGetEdges() {
-		assertEquals(9, visGraph.getEdges().size());
+		assertEquals(10, visGraph.getEdges().size());
 	}
 
 	@Test
