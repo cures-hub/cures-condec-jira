@@ -48,7 +48,7 @@
                                     + '<li> ' + numDuplicates + ' possible duplicates </li>'
                                     + '</ul>'
                                     + '<ul class="aui-nav-actions-list">'
-                                    + '<li><button onclick="approveInconsistencies()" class="aui-button aui-button-link">Approve</button></li>'
+                                    + '<li><button id="consistency-check-dialog-submit-button" onclick="approveInconsistencies()" class="aui-button aui-button-link">Approve</button></li>'
                                     + '</ul>'
                             });
                         }

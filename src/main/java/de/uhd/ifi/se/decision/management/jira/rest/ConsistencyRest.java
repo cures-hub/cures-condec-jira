@@ -158,16 +158,19 @@ public class ConsistencyRest {
 		return response;
 	}
 
-	private Map<String, Object> duplicateToJsonMap(DuplicateFragment duplicateFragment) {
+	public Map<String, Object> duplicateToJsonMap(DuplicateFragment duplicateFragment) {
 		Map<String, Object> jsonMap = new HashMap<>();
-		jsonMap.put("id", duplicateFragment.getI2().getId());
-		jsonMap.put("key", duplicateFragment.getI2().getKey());
-		jsonMap.put("summary", duplicateFragment.getI2().getSummary());
-		jsonMap.put("preprocessedSummary", duplicateFragment.getPreprocessedSummary());
+		if(duplicateFragment != null){
+			jsonMap.put("id", duplicateFragment.getI2().getId());
+			jsonMap.put("key", duplicateFragment.getI2().getKey());
+			jsonMap.put("summary", duplicateFragment.getI2().getSummary());
+			jsonMap.put("preprocessedSummary", duplicateFragment.getPreprocessedSummary());
 
-		jsonMap.put("description", duplicateFragment.getI2().getDescription());
-		jsonMap.put("startDuplicate", duplicateFragment.getStartDuplicate());
-		jsonMap.put("length", duplicateFragment.getLength());
+			jsonMap.put("description", duplicateFragment.getI2().getDescription());
+			jsonMap.put("startDuplicate", duplicateFragment.getStartDuplicate());
+			jsonMap.put("length", duplicateFragment.getLength());
+
+		}
 
 
 		return jsonMap;
