@@ -18,6 +18,7 @@
     ConDecTreant.prototype.buildTreant = function buildTreant(elementKey, isInteractive, searchTerm, showOtherJiraIssues) {
         console.log("conDecTreant buildTreant");
         var depthOfTree = getDepthOfTree();
+        alert(elementKey);
         conDecAPI.getTreant(elementKey, depthOfTree, searchTerm, showOtherJiraIssues, function (treeStructure) {
             document.getElementById(treantid).innerHTML = "";
             treantTree = new Treant(treeStructure);

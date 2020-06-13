@@ -164,7 +164,7 @@
 
 <script>
     $(document).ready(function () {
-        if (!window.conDecReqDashboard) {
+        if (!window.ConDecReqDash) {
             console.error('Could not find required resources!');
             errorNode = document.getElementById("condec-req-dashboard-fatal-error");
             errorNode.classList.remove("hidden");
@@ -177,8 +177,8 @@
                 conDecReqDashboard.init(projectName, event.target.dataset.uid)
             }
 
-            selectNode = document.getElementById("${selectID}");
-            selectNode.addEventListener('change', projectSelectorOnchange);
+            //selectNode = document.getElementById("${selectID}");
+            //selectNode.addEventListener('change', projectSelectorOnchange);
         }
 
     });

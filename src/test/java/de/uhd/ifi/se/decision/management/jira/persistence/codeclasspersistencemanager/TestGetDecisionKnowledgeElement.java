@@ -68,7 +68,6 @@ public class TestGetDecisionKnowledgeElement extends TestSetUp {
 
 	@Test
 	public void testGetDecisionKnowledgeElements() {
-		System.out.println(ccManager.getKnowledgeElements());
 		assertEquals(1, ccManager.getKnowledgeElements().size());
 	}
 

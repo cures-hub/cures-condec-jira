@@ -115,6 +115,7 @@
     function showTreant() {
         console.log("ConDecJiraIssueModule showTreant");
         var showOtherJiraIssues = document.getElementById("show-elements-input").checked;
+        issueKey = conDecAPI.getIssueKey();
         treant.buildTreant(issueKey, true, search, showOtherJiraIssues);
     }
 

@@ -449,6 +449,7 @@
          * external references: condec.treant
          */
         ConDecAPI.prototype.getTreant = function getTreant(elementKey, depthOfTree, searchTerm, showOtherJiraIssues, callback) {
+            alert(elementKey);
             generalApi.getJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey
                 + "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm + "&showOtherJiraIssues=" + showOtherJiraIssues, function (error, treant) {
                 if (error === null) {
@@ -457,9 +458,11 @@
             });
         };
 
-        ConDecAPI.prototype.getClassTreant = function getClassTreant(elementKey, depthOfTree, searchTerm, callback) {
+        ConDecAPI.prototype.getClassTreant = function getClassTreant(elementKey, depthOfTree, searchTerm, checkboxflag,
+                                                                     isIssueView, minLinkNumber, maxLinkNumber, callback) {
             generalApi.getJSON(this.restPrefix + "/view/getClassTreant.json?&elementKey=" + elementKey
-                + "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm, function (error, treant) {
+                + "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm + "&checkboxflag=" + checkboxflag
+                + "&isIssueView=" + isIssueView + "&minLinkNumber=" + minLinkNumber + "&maxLinkNumber=" + maxLinkNumber, function (error, treant) {
                 if (error === null) {
                     callback(treant);
                 }
@@ -819,6 +822,11 @@
                     callback(linkTypes);
                 }
             });
+        };
+
+        ConDecAPI.prototype.getDecisionGroupTable = function getDecisionGroupTable(callback) {
+            var decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey=" + projectKey);
+            callback(decisionGroups, projectKey);
         };
 
         ConDecAPI.prototype.getDecisionGroups = function getDecisionGroups(id, location, inputExistingGroupsField, selectLevelField, callback) {

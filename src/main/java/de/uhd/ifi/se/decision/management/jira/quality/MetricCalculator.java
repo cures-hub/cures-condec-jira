@@ -303,7 +303,6 @@ public class MetricCalculator {
 			List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
 					DocumentationLocation.JIRAISSUETEXT);
 			boolean hastOtherElementLinked = false;
-			System.out.println("Links: " + links);
 			for (Link link : links) {
 				if (link != null && link.getTarget() != null && link.getSource() != null && link.isValid()
 						&& link.getOppositeElement(issue.getId()) instanceof PartOfJiraIssueText

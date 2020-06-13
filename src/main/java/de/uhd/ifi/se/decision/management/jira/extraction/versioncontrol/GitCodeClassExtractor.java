@@ -54,7 +54,6 @@ public class GitCodeClassExtractor {
 				TreeWalk treeWalk = new TreeWalk(repository);
 				try {
 					if (gitClient.getDefaultBranchCommits(repoUri).size() == 0) {
-						System.out.println("Failed too soon");
 						break;
 					}
 					treeWalk.addTree(gitClient.getDefaultBranchCommits(repoUri).get(0).getTree());
