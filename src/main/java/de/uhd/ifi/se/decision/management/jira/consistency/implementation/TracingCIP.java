@@ -2,7 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.consistency.implementation;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.link.LinkCollection;
+import com.atlassian.jira.issue.link.IssueLink;
+import com.atlassian.jira.issue.link.IssueLinkManager;
 import de.uhd.ifi.se.decision.management.jira.consistency.ContextInformationProvider;
 
 import java.util.Collection;
@@ -12,8 +13,16 @@ import java.util.Map;
 import java.util.Set;
 
 public class TracingCIP implements ContextInformationProvider {
-	private String id = "TracingCIP_BFS";
-	private String name = "TracingCIP";
+	private final String id = "TracingCIP_BFS";
+	private final String name = "TracingCIP";
+	private IssueLinkManager issueLinkManager;
+
+	public TracingCIP(IssueLinkManager issueLinkManager) {
+		this.issueLinkManager = issueLinkManager;
+	}
+	public TracingCIP() {
+		this.issueLinkManager = ComponentAccessor.getIssueLinkManager();
+	}
 
 	@Override
 	public String getId() {
@@ -28,26 +37,22 @@ public class TracingCIP implements ContextInformationProvider {
 
 	@Override
 	public double assessRelation(Issue i1, Issue i2) {
-		Map<Issue, Integer> distanceMap = new HashMap<Issue, Integer>();
-		distanceMap.put(i1, 0);
-		Integer distance = searchBreadthFirst(i1, i2, distanceMap).get(i2);
+		Map<String, Integer> distanceMap = new HashMap<String, Integer>();
+		distanceMap.put(i1.getKey(), 0);
+		Integer distance = searchBreadthFirst(i1, i2, distanceMap).get(i2.getKey());
 		// A null value means the nodes are not connected.
 		if (distance == null) {
 			return 0;
 		}
 		// Prevent a division by zero exception.
-		if (distance == 0) {
-			return 1;
-		} else {
-			return 1. / distance;
-		}
+		return 1. / (distance + 1);
 	}
 
-	private boolean wasVisited(Issue node, Map<Issue, ?> distanceMap) {
+	private boolean wasVisited(String node, Map<String, ?> distanceMap) {
 		return distanceMap.keySet().contains(node);
 	}
 
-	private Map<Issue, Integer> searchBreadthFirst(Issue startNode, Issue endNode, Map<Issue, Integer> distanceMap) {
+	private Map<String, Integer> searchBreadthFirst(Issue startNode, Issue endNode, Map<String, Integer> distanceMap) {
 		Set<Issue> currentNodesToCheck = new HashSet<>();
 		currentNodesToCheck.add(startNode);
 		Set<Issue> nextNodesToCheck = new HashSet<>();
@@ -60,18 +65,16 @@ public class TracingCIP implements ContextInformationProvider {
 		// 2.: the end node was already visited
 		// 3.: the maximum iterations are reached.
 		while (!currentNodesToCheck.isEmpty() &&
-			!wasVisited(endNode, distanceMap) &&
+			!wasVisited(endNode.getKey(), distanceMap) &&
 			iteration < maxIterations) {
 			for (Issue nodeToCheck : currentNodesToCheck) {
-				LinkCollection linkCollection = ComponentAccessor.getIssueLinkManager().getLinkCollectionOverrideSecurity(nodeToCheck);
-				if (linkCollection == null){
-					continue;
-				}
-				Collection<Issue> linkedIssues = linkCollection.getAllIssues();
+				Collection<IssueLink> issueLinks = this.issueLinkManager.getIssueLinks(nodeToCheck.getId().longValue());
+
+				Collection<Issue> linkedIssues = getAllIssuesForIssueLinks(issueLinks);
 				for (Issue linkedIssue : linkedIssues) {
-					if (!wasVisited(linkedIssue, distanceMap) && !nextNodesToCheck.contains(linkedIssue)) {
+					if (!wasVisited(linkedIssue.getKey(), distanceMap) && !nextNodesToCheck.contains(linkedIssue)) {
 						nextNodesToCheck.add(linkedIssue);
-						distanceMap.put(linkedIssue, iteration);
+						distanceMap.put(linkedIssue.getKey(), iteration);
 					}
 				}
 			}
@@ -83,6 +86,15 @@ public class TracingCIP implements ContextInformationProvider {
 		}
 
 		return distanceMap;
+	}
+
+	private Set<Issue> getAllIssuesForIssueLinks(Collection<IssueLink> issueLinks) {
+		Set<Issue> issues = new HashSet<>();
+		for (IssueLink issueLink : issueLinks){
+			issues.add(ComponentAccessor.getIssueManager().getIssueObject(issueLink.getSourceId()));
+			issues.add(ComponentAccessor.getIssueManager().getIssueObject(issueLink.getDestinationId()));
+		}
+		return issues;
 	}
 
 }

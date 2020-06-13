@@ -76,8 +76,8 @@ public class ConsistencyCheckLogHelper {
 		return check.isPresent() && !isCheckApproved(check.get());
 	}
 
-	private static boolean isCheckApproved(ConsistencyCheckLogsInDatabase check) {
-		return check.getApprover() != null && !check.getApprover().isBlank() && !check.getApprover().isEmpty();
+	public static boolean isCheckApproved(ConsistencyCheckLogsInDatabase check) {
+		return check != null && check.getApprover() != null && !check.getApprover().isBlank();
 	}
 
 	public static void resetConsistencyCheckLogs() {

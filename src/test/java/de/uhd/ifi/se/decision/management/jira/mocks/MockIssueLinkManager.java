@@ -1,11 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.ofbiz.core.entity.GenericValue;
-
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLink;
@@ -13,9 +7,13 @@ import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.LinkCollection;
 import com.atlassian.jira.user.ApplicationUser;
-
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import org.ofbiz.core.entity.GenericValue;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class MockIssueLinkManager implements IssueLinkManager {
 
@@ -102,7 +100,7 @@ public class MockIssueLinkManager implements IssueLinkManager {
 			return outwardIssueLinks;
 		}
 		for(IssueLink link: JiraIssueLinks.getTestJiraIssueLinks()) {
-			if(link.getDestinationId() == issueId) {
+			if(link.getSourceId() == issueId) {
 				outwardIssueLinks.add(link);
 			}
 		}
