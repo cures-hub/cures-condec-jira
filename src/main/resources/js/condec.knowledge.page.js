@@ -56,7 +56,7 @@
 
     function initializeDecisionKnowledgePage(conDecAPI, treant, treeViewer) {
         console.log("conDecKnowledgePage initializeDecisionKnowledgePage");
-        var knowledgeTypes = conDecAPI.getKnowledgeTypes();
+        var knowledgeTypes = conDecAPI.knowledgeTypes;
         for (var index = 0; index < knowledgeTypes.length; index++) {
             var isSelected = "";
             if (knowledgeTypes[index] === "Issue") {

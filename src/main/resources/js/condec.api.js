@@ -457,6 +457,15 @@
             });
         };
 
+        ConDecAPI.prototype.getClassTreant = function getClassTreant(elementKey, depthOfTree, searchTerm, callback) {
+            generalApi.getJSON(this.restPrefix + "/view/getClassTreant.json?&elementKey=" + elementKey
+                + "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm, function (error, treant) {
+                if (error === null) {
+                    callback(treant);
+                }
+            });
+        };
+
         /*
          * external references: condec.jira.issue.module
          */
@@ -583,6 +592,17 @@
         };
 
         /*
+        * external references: condec.relationshipMatrix.page
+        */
+        ConDecAPI.prototype.getDecisionMatrix = function getDecisionMatrix(callback) {
+            generalApi.getJSON(this.restPrefix + "/view/getDecisionMatrix.json?projectKey=" + projectKey, function (error, matrix) {
+                if (error == null) {
+                    callback(matrix);
+                }
+            });
+        };
+
+        /*
          * external references: condec.relationship.page
          */
         ConDecAPI.prototype.getDecisionGraph = function getDecisionGraph(callback) {
@@ -603,13 +623,13 @@
 
             var filterSettings = {
                 "projectKey": projectKey,
-                "searchString": searchString,
+                "searchString": searchTerm,
                 "createdEarliest": -1,
                 "createdLatest": -1,
                 "documentationLocations": null,
                 "selectedJiraIssueTypes": ["Decision"],
                 "selectedStatus": null,
-                "selectedLinkTypes": selectedLinkTypes,
+                "selectedLinkTypes": linkTypes,
                 "selectedDecGroups": decGroups
             };
 
