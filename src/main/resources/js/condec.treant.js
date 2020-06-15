@@ -176,12 +176,13 @@
         for (i = 0; i < nodes.length; i++) {
             AJS.$("#" + nodes[i].id).tooltip();
         }
-        if (localStorage.getItem("checkbox") == "false") {
-            document.getElementById("show-elements-input").checked = false;
-        } else {
-            document.getElementById("show-elements-input").checked = true;
+        if (document.getElementById("show-elements-input")) {
+            if (localStorage.getItem("checkbox") == "false") {
+                document.getElementById("show-elements-input").checked = false;
+            } else {
+                document.getElementById("show-elements-input").checked = true;
+            }
         }
-
     }
 
     function addContextMenuToTreant() {
