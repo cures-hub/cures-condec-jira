@@ -51,7 +51,7 @@
     });
 
     function checkBoxClicked() {
-        conDecObservable.notify()
+        conDecObservable.notify();
     }
 
 </script>

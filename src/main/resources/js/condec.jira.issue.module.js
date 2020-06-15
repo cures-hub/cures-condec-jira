@@ -30,7 +30,6 @@
                                                          _conDecContextMenu, _treant, _vis) {
 
         console.log("ConDecJiraIssueModule init");
-
         if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
             && isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
             && isConDecTreantType(_treant) && isConDecVisType(_vis)) {
@@ -120,7 +119,8 @@
     }
 
     function showClassTreant() {
-        console.log("ConDecJiraIssueModule showTreant");
+        console.log("ConDecJiraIssueModule showClassTreant");
+        issueKey = conDecAPI.getIssueKey();
         treant.buildClassTreant(issueKey, true, search, true);
     }
 

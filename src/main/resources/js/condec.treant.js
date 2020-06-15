@@ -17,8 +17,8 @@
      */
     ConDecTreant.prototype.buildTreant = function buildTreant(elementKey, isInteractive, searchTerm, showOtherJiraIssues) {
         console.log("conDecTreant buildTreant");
+        treantid = "treant-container";
         var depthOfTree = getDepthOfTree();
-        alert(elementKey);
         conDecAPI.getTreant(elementKey, depthOfTree, searchTerm, showOtherJiraIssues, function (treeStructure) {
             document.getElementById(treantid).innerHTML = "";
             treantTree = new Treant(treeStructure);
@@ -176,6 +176,12 @@
         for (i = 0; i < nodes.length; i++) {
             AJS.$("#" + nodes[i].id).tooltip();
         }
+        if (localStorage.getItem("checkbox") == "false") {
+            document.getElementById("show-elements-input").checked = false;
+        } else {
+            document.getElementById("show-elements-input").checked = true;
+        }
+
     }
 
     function addContextMenuToTreant() {

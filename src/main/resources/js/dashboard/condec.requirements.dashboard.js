@@ -8,6 +8,7 @@
  * decisionKnowledgeReport.vm
  * featureBranchesDashboardItem.vm
  */
+
 (function (global) {
 
     var detailsOverlayClickHandlersSet = false;

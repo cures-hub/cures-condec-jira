@@ -449,7 +449,6 @@
          * external references: condec.treant
          */
         ConDecAPI.prototype.getTreant = function getTreant(elementKey, depthOfTree, searchTerm, showOtherJiraIssues, callback) {
-            alert(elementKey);
             generalApi.getJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey
                 + "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm + "&showOtherJiraIssues=" + showOtherJiraIssues, function (error, treant) {
                 if (error === null) {
