@@ -120,6 +120,7 @@
         <resource type="download" name="condec.tree.viewer.js"
                   location="/js/condec.tree.viewer.js" />
         <resource type="download" name="condec.vis.js" location="/js/condec.vis.js" />
+		<resource type="download" name="condec.decision.table.js" location="/js/condec.decision.table.js"/>
         <resource type="download" name="condec.export.js" location="/js/condec.export.js" />
         <resource type="download" name="condec.evolution.page.js"
                   location="/js/condec.evolution.page.js" />
