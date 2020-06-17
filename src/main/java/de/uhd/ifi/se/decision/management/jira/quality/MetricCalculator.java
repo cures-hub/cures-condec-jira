@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +13,8 @@ import java.util.regex.Pattern;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
-import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.search.SearchException;
 import com.atlassian.jira.issue.search.SearchResults;
@@ -26,7 +25,6 @@ import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -35,10 +33,13 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.ChartCreator;
+import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
@@ -46,7 +47,7 @@ import org.slf4j.LoggerFactory;
 
 public class MetricCalculator {
 
-	private String projectKey;
+	private String projectKey = "TEST";
 	private ApplicationUser user;
 	private List<Issue> jiraIssues;
 	private KnowledgeGraph graph;
@@ -56,15 +57,27 @@ public class MetricCalculator {
 	private String issueTypeId;
 	private GitClient gitClient;
 	private Map<String, List<KnowledgeElement>> extractedIssueRelatedElements;
+	private boolean ignoreGit;
+	private List<String> knowledgeTypes;
+	private List<String> knowledgeStatus;
+	private List<String> decisionGroups;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ChartCreator.class);
 
-	public MetricCalculator(Long projectId, ApplicationUser user, String issueTypeId) {
-		this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
+	public MetricCalculator(Long projectId, ApplicationUser user, String issueTypeId, boolean ignoreGit,
+							List<String> knowledgeTypes, List<String> knowledgeStatus,
+							List<String> decisionGroups) {
+		if (ComponentAccessor.getProjectManager().getProjectObj(projectId) != null) {
+			this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
+		}
 		this.user = user;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 		this.jiraIssues = getJiraIssuesForProject(projectId, user);
-		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+		this.ignoreGit = ignoreGit;
+		this.knowledgeTypes = knowledgeTypes;
+		this.knowledgeStatus = knowledgeStatus;
+		this.decisionGroups = decisionGroups;
+		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey) && !ignoreGit) {
 			this.gitClient = new GitClient(projectKey);
 			extractedIssueRelatedElements = new HashMap<>();
 			Map<String, List<KnowledgeElement>> elementMap = getDecisionKnowledgeElementsFromCode(projectKey);
@@ -77,28 +90,6 @@ public class MetricCalculator {
 			}
 		}
 		this.issueTypeId = issueTypeId;
-	}
-
-	public Map<Integer, List<Issue>> getLinkDistanceIssueMap(Integer linkDistance, Issue jiraIssue) {
-		Map<Integer, List<Issue>> linkDistanceMap = new HashMap<Integer, List<Issue>>();
-		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
-		List<Issue> linkissues = new ArrayList<Issue>();
-		linkissues.add(jiraIssue);
-		linkDistanceMap.put(0, linkissues);
-		List<Issue> inMap = new ArrayList<Issue>();
-		inMap.add(jiraIssue);
-		for (int i = 1; i <= linkDistance; i++) {
-			linkissues = new ArrayList<Issue>();
-			for (Issue issue : linkDistanceMap.get(i - 1)) {
-				Collection<Issue> issueColl = issueLinkManager.getLinkCollection(issue, user).getAllIssues();
-				linkissues.addAll(issueColl);
-				linkissues.removeAll(inMap);
-			}
-			List<Issue> linkissueswithoutduplicate = new ArrayList<>(new HashSet<>(linkissues)); // Remove Duplicates
-			linkDistanceMap.put(i, linkissueswithoutduplicate);
-			inMap.addAll(linkissueswithoutduplicate);
-		}
-		return linkDistanceMap;
 	}
 
 	public static List<Issue> getJiraIssuesForProject(long projectId, ApplicationUser user) {
@@ -144,12 +135,23 @@ public class MetricCalculator {
 						}
 					}
 				}
-				allGatheredCommitElements.addAll(gatheredCommitElements);
+				for (KnowledgeElement element : gatheredCommitElements) {
+					if (knowledgeTypes.contains(element.getTypeAsString())
+							&& knowledgeStatus.contains(element.getStatusAsString())
+							&& groupsMatch(element)) {
+						allGatheredCommitElements.add(element);
+					}
+				}
 				RevCommit baseCommit = defaultfeatureCommits.get(defaultfeatureCommits.size() - 2);
 				RevCommit lastFeatureBranchCommit = defaultfeatureCommits.get(0);
-				gatheredCodeElements
-						.addAll(gitExtract.getElementsFromCode(baseCommit, lastFeatureBranchCommit, defaultBranch));
-				allGatheredCodeElements.addAll(gatheredCodeElements);
+				List<KnowledgeElement> extractedCodeElements = gitExtract.getElementsFromCode(baseCommit, lastFeatureBranchCommit, defaultBranch);
+				for (KnowledgeElement element : extractedCodeElements) {
+					if (knowledgeTypes.contains(element.getTypeAsString())
+							&& knowledgeStatus.contains(element.getStatusAsString())
+							&& groupsMatch(element)) {
+						allGatheredCodeElements.add(element);
+					}
+				}
 			}
 		}
 		resultMap.put("Commit", allGatheredCommitElements);
@@ -184,18 +186,22 @@ public class MetricCalculator {
 			int numberOfElements = 0;
 			List<KnowledgeElement> elements = KnowledgePersistenceManager.getOrCreate(projectKey)
 					.getJiraIssueTextManager().getElementsInJiraIssue(jiraIssue.getId());
-			if (jiraIssue.getIssueType().getName().equals(type.toString())) {
+			if (jiraIssue.getIssueType().getName().equals(type.toString())
+					&& knowledgeStatus.contains(new KnowledgeElement(jiraIssue).getStatusAsString())
+					&& groupsMatch(new KnowledgeElement(jiraIssue))) {
 				numberOfElements++;
 			}
 			for (KnowledgeElement element : elements) {
-				if (element.getType().equals(type)) {
+				if (element.getType().equals(type) && knowledgeStatus.contains(element.getStatusAsString())
+						&& groupsMatch(element)) {
 					numberOfElements++;
 				}
 			}
 			if (linkDistance >= 1 && extractedIssueRelatedElements != null
 					&& extractedIssueRelatedElements.get(jiraIssue.getKey()) != null) {
 				for (KnowledgeElement element : extractedIssueRelatedElements.get(jiraIssue.getKey())) {
-					if (element.getType().equals(type)) {
+					if (element.getType().equals(type) && knowledgeStatus.contains(element.getStatusAsString())
+							&& groupsMatch(element)) {
 						numberOfElements++;
 					}
 				}
@@ -209,16 +215,14 @@ public class MetricCalculator {
 		LOGGER.info("RequirementsDashboard getDistributionOfKnowledgeTypes <1");
 		Map<String, Integer> distributionOfKnowledgeTypes = new HashMap<String, Integer>();
 		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
-			int numberOfElements = graph.getElements(type).size();
-			/*
-			 * for (KnowledgeElement element :
-			 * (Optional.ofNullable(decisionKnowledgeCodeElements)
-			 * .orElse(Collections.emptyList()))) { if (element.getType().equals(type)) {
-			 * numberOfElements++; } } for (KnowledgeElement element :
-			 * (Optional.ofNullable(decisionKnowledgeCommitElements)
-			 * .orElse(Collections.emptyList()))) { if (element.getType().equals(type)) {
-			 * numberOfElements++; } }
-			 */
+			int numberOfElements = 0;
+			List<KnowledgeElement> elements = graph.getElements(type);
+			for (KnowledgeElement element : elements) {
+				if (knowledgeStatus.contains(element.getStatusAsString())
+						&& groupsMatch(element)) {
+					numberOfElements++;
+				}
+			}
 			distributionOfKnowledgeTypes.put(type.toString(), numberOfElements);
 		}
 		return distributionOfKnowledgeTypes;
@@ -240,10 +244,9 @@ public class MetricCalculator {
 			}
 		}
 		summaryMap.put("Requirements", numberOfRequirements);
-		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			GitCodeClassExtractor extract = new GitCodeClassExtractor(projectKey);
-			summaryMap.put("Code Classes", extract.getNumberOfCodeClasses());
-			extract.close();
+		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey) && !ignoreGit) {
+			CodeClassPersistenceManager ccpManager = new CodeClassPersistenceManager(projectKey);
+			summaryMap.put("Code Classes", ccpManager.getKnowledgeElements().size());
 		} else {
 			summaryMap.put("Code Classes", 0);
 		}
@@ -271,9 +274,15 @@ public class MetricCalculator {
 			elements.addAll(graph.getElements(type));
 		}
 		for (KnowledgeElement element : elements) {
-			if (element.getDocumentationLocation().getIdentifier().equals("i")) {
+			if (element.getDocumentationLocation().getIdentifier().equals("i")
+					&& knowledgeTypes.contains(element.getTypeAsString())
+					&& knowledgeStatus.contains(element.getStatusAsString())
+					&& groupsMatch(element)) {
 				numberIssues++;
-			} else if (element.getDocumentationLocation().getIdentifier().equals("s")) {
+			} else if (element.getDocumentationLocation().getIdentifier().equals("s")
+					&& knowledgeTypes.contains(element.getTypeAsString())
+					&& knowledgeStatus.contains(element.getStatusAsString())
+					&& groupsMatch(element)) {
 				numberIssueContent++;
 			}
 		}
@@ -294,11 +303,14 @@ public class MetricCalculator {
 			List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
 					DocumentationLocation.JIRAISSUETEXT);
 			boolean hastOtherElementLinked = false;
-
 			for (Link link : links) {
 				if (link != null && link.getTarget() != null && link.getSource() != null && link.isValid()
 						&& link.getOppositeElement(issue.getId()) instanceof PartOfJiraIssueText
-						&& link.getOppositeElement(issue.getId()).getType().equals(linkTo)) {
+						&& link.getOppositeElement(issue.getId()).getType().equals(linkTo)
+						&& knowledgeStatus.contains(issue.getStatusAsString())
+						&& knowledgeStatus.contains(link.getOppositeElement(issue).getStatusAsString())
+						&& groupsMatch(issue)
+						&& groupsMatch(link.getOppositeElement(issue))) {
 					hastOtherElementLinked = true;
 					data[0] += issue.getKey() + dataStringSeparator;
 				}
@@ -310,11 +322,13 @@ public class MetricCalculator {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		// Elements from Issues
 		for (Issue issue : jiraIssues) {
-			if (issue.getIssueType().getName().equals(linkFrom.toString())) {
+			if (issue.getIssueType().getName().equals(linkFrom.toString()) && issueLinkManager.getLinkCollection(issue, user) != null) {
 				Collection<Issue> issueColl = issueLinkManager.getLinkCollection(issue, user).getAllIssues();
 				boolean hasDecision = false;
 				for (Issue linkedIssue : issueColl) {
-					if (!hasDecision && linkedIssue.getIssueType().getName().equals(linkTo.toString())) {
+					if (!hasDecision && linkedIssue.getIssueType().getName().equals(linkTo.toString())
+							&& knowledgeStatus.contains(new KnowledgeElement(linkedIssue).getStatusAsString())
+							&& groupsMatch(new KnowledgeElement(linkedIssue))) {
 						hasDecision = true;
 						data[0] += issue.getKey() + dataStringSeparator;
 					}
@@ -345,7 +359,10 @@ public class MetricCalculator {
 				boolean relevant = false;
 				for (KnowledgeElement currentElement : elements) {
 					if (comment.getBody().contains(currentElement.getDescription())
-							&& currentElement.getTypeAsString() != "OTHER") {
+							&& "OTHER".equals(currentElement.getTypeAsString())
+							&& knowledgeTypes.contains(currentElement.getTypeAsString())
+							&& knowledgeStatus.contains(currentElement.getStatusAsString())
+							&& groupsMatch(currentElement)) {
 						relevant = true;
 						isRelevant++;
 					}
@@ -383,14 +400,16 @@ public class MetricCalculator {
 				List<KnowledgeElement> elements = KnowledgePersistenceManager.getOrCreate(projectKey)
 						.getJiraIssueTextManager().getElementsInJiraIssue(jiraIssue.getId());
 				for (KnowledgeElement element : elements) {
-					if (element.getType().equals(knowledgeType)) {
+					if (element.getType().equals(knowledgeType) && knowledgeStatus.contains(element.getStatusAsString())
+							&& groupsMatch(element)) {
 						numberOfElements++;
 					}
 				}
 				if (linkDistance >= 1 && extractedIssueRelatedElements != null
 						&& extractedIssueRelatedElements.get(jiraIssue.getKey()) != null) {
 					for (KnowledgeElement element : extractedIssueRelatedElements.get(jiraIssue.getKey())) {
-						if (element.getType().equals(knowledgeType)) {
+						if (element.getType().equals(knowledgeType) && knowledgeStatus.contains(element.getStatusAsString())
+								&& groupsMatch(element)) {
 							numberOfElements++;
 						}
 					}
@@ -408,12 +427,27 @@ public class MetricCalculator {
 		return result;
 	}
 
-	private boolean checkEqualIssueTypeIssue(IssueType issueType2) {
-		if (issueType2 == null) {
-			return false;
-		}
+	private boolean groupsMatch(KnowledgeElement element) {
+		return (decisionGroups == null || DecisionGroupManager.getGroupsForElement(element) != null
+				&& CollectionUtils.containsAny(decisionGroups, DecisionGroupManager.getGroupsForElement(element)));
+	}
 
-		String jiraIssueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(issueTypeId);
-		return issueType2.getName().equalsIgnoreCase(jiraIssueTypeName);
+	public void setJiraIssues(List<MutableIssue> issues) {
+		jiraIssues = new ArrayList<>();
+		for (MutableIssue issue : issues) {
+			jiraIssues.add(issue);
+		}
+	}
+
+	//TODO: Improve test dataset to no longer require this method
+	public void addElementFromGit(KnowledgeElement element, Issue issue) {
+		decisionKnowledgeCodeElements = new ArrayList<>();
+		decisionKnowledgeCodeElements.add(element);
+		decisionKnowledgeCommitElements = new ArrayList<>();
+		decisionKnowledgeCommitElements.add(element);
+		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
+		elements.add(element);
+		extractedIssueRelatedElements = new HashMap<>();
+		extractedIssueRelatedElements.put(issue.getKey(), elements);
 	}
 }

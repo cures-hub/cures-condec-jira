@@ -28,16 +28,15 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
     </ul>
     <div class="tabs-pane active-pane" id="treant">
         <div class="aui-toolbar2" role="toolbar">
-            <div class="aui-toolbar-2-inner" id="class-treant-filter">
+            <div class="aui-toolbar-2-inner" id="treant-filter">
                 <form class="aui">
                     <label for="show-elements-input">Show Linked Jira Issues:</label>
-                    <input class="checked" checked type="checkbox" id="show-elements-input"
+                    <input class="checked" type="checkbox" checked="true" value="true" id="show-elements-input"
                            onclick="applyCheckFilter()"/>
                 </form>
             </div>
         </div>
         <div style="height: auto" id="treant-container"></div>
-        <div style="height: auto" id="treant-container-class"></div>
     </div>
     <div class="tabs-pane" id="vis">
         <div class="aui-toolbar2" role="toolbar">
@@ -133,6 +132,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
     }
 
     function applyCheckFilter() {
+        localStorage.setItem("checkbox", document.getElementById("show-elements-input").checked);
         window.conDecJiraIssueModule.applyTreeVisFilters();
+
     }
+
 </script>
