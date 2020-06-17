@@ -29,10 +29,10 @@
     ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog,
                                                          _conDecContextMenu, _treant, _vis) {
 
-        console.log("ConDecJiraIssueModule init");
-        if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
-            && isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
-            && isConDecTreantType(_treant) && isConDecVisType(_vis)) {
+		console.log("ConDecJiraIssueModule init");
+		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
+			&& isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
+			&& isConDecTreantType(_treant) && isConDecVisType(_vis) && isConDecDecisionTableTyp(_decisionTable)) {
 
             conDecAPI = _conDecAPI;
             conDecObservable = _conDecObservable;
@@ -48,8 +48,8 @@
             addOnClickEventToTab();
             addOnClickEventToFilterButton();
 
-            //initial call to api depending on selected tab!
-            determineSelectedTab(window.location.href);
+			//initial call to api depending on selected tab!
+			determineSelectedTab(window.location.href);
             return true;
         }
         return false;
@@ -73,31 +73,33 @@
     function addOnClickEventToTab() {
         console.log("ConDecJiraIssueModule addOnClickEventVisualizationSelectionTab");
 
-        AJS.$("#visualization-selection-tabs").on("click", function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            determineSelectedTab(event.target.href);
-        });
-        //initial call of active tab
-        determineSelectedTab(AJS.$(".active-tab")[0].firstElementChild.href)
-    }
+		AJS.$("#visualization-selection-tabs").on("click", function (event) {
+			event.preventDefault();
+			event.stopPropagation();
+			determineSelectedTab(event.target.href);
+		});
+		//initial call of active tab
+		determineSelectedTab(AJS.$(".active-tab")[0].firstElementChild.href)
+	}
 
-    function determineSelectedTab(href) {
-        if (href === undefined) {
-            return;
-        }
-        if (href.includes("#treant")) {
-            showTreant();
-        } else if (href.includes("#vis")) {
-            showGraph();
-        } else if (href.includes("#class-treant")) {
-            showClassTreant();
-        } else if (href.includes("#duplicate-issues-tab")) {
-            consistencyTabsModule.loadDuplicateData();
-        } else if (href.includes("#related-issues-tab")) {
-            consistencyTabsModule.loadData();
-        }
-    }
+	function determineSelectedTab(href) {
+		if (href === undefined) {
+			return;
+		}
+		if (href.includes("#treant")) {
+			showTreant();
+		} else if (href.includes("#vis")) {
+			showGraph();
+		} else if (href.includes("#decisionTable")) {
+			showDecisionTable();
+		} else if (href.includes("#class-treant")) {
+			showClassTreant();
+		} else if (href.includes("#duplicate-issues-tab")) {
+			consistencyTabsModule.loadDuplicateData();
+		} else if (href.includes("#related-issues-tab")) {
+			consistencyTabsModule.loadData();
+		}
+	}
 
     function addOnClickEventToFilterButton() {
         console.log("ConDecJiraIssueModule addOnClickEventToFilterButton");
@@ -185,7 +187,6 @@
             }
 
             var linkTypes = conDecAPI.getLinkTypesSync();
-
             conDecFiltering.initDropdown("linktype-dropdown", linkTypes);
         });
     }
