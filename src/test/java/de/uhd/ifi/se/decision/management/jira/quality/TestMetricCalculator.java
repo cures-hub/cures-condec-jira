@@ -1,19 +1,37 @@
 package de.uhd.ifi.se.decision.management.jira.quality;
 
-import java.util.List;
 import java.util.Map;
 
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.mock.issue.MockIssue;
+import com.atlassian.jira.config.ConstantsManager;
+import com.atlassian.jira.config.IssueTypeManager;
+import com.atlassian.jira.issue.IssueManager;
+import com.atlassian.jira.issue.comments.CommentManager;
+import com.atlassian.jira.issue.link.IssueLinkManager;
+import com.atlassian.jira.mock.MockConstantsManager;
+import com.atlassian.jira.mock.MockProjectManager;
+import com.atlassian.jira.mock.component.MockComponentWorker;
+import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.user.util.MockUserManager;
+import com.atlassian.jira.user.util.UserManager;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockCommentManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeManager;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
+import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addComment;
+import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addElementToDataBase;
+import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.getTestJiraIssues;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -21,44 +39,50 @@ import static org.junit.Assert.assertTrue;
 
 public class TestMetricCalculator extends TestSetUp {
 	protected MetricCalculator calculator;
-	private Issue issue;
 
 	@Before
 	public void setUp() {
 		TestSetUpGit.setUpBeforeClass();
 		init();
 		ApplicationUser user = de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers.SYS_ADMIN.getApplicationUser();
-
-		calculator = new MetricCalculator((long) 1, user, "16");
-		de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addElementToDataBase(17, "Issue");
-		de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addElementToDataBase(18, "Decision");
-		de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addElementToDataBase(19, "Argument");
-		issue = new MockIssue();
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetLinkDistanceIssueMap() {
-		Map<Integer, List<Issue>> resultMap = calculator.getLinkDistanceIssueMap(0, issue);
-		assertEquals(1, resultMap.size());
+		calculator = new MetricCalculator((long) 1, user, "alternative", false, KnowledgeType.toStringList(), KnowledgeStatus.toStringList(), null);
+		addElementToDataBase(17, "Issue");
+		addElementToDataBase(18, "Decision");
+		addElementToDataBase(19, "Argument");
+		calculator.setJiraIssues(getTestJiraIssues());
+		KnowledgeElement element = new KnowledgeElement((long) 24, "We should do it similar to something else!",
+				"We should do it similar to something else!", KnowledgeType.DECISION,
+				"TEST", "123", DocumentationLocation.COMMIT, KnowledgeStatus.DECIDED);
+		calculator.addElementFromGit(element, getTestJiraIssues().get(0));
+		new MockComponentWorker().init().addMock(IssueLinkManager.class, new MockIssueLinkManager())
+				.addMock(CommentManager.class, new MockCommentManager())
+				.addMock(ProjectManager.class, new MockProjectManager())
+				.addMock(ConstantsManager.class, new MockConstantsManager())
+				.addMock(IssueManager.class, new MockIssueManager())
+				.addMock(UserManager.class, new MockUserManager())
+				.addMock(IssueTypeManager.class, new MockIssueTypeManager());
 	}
 
 	@Test
 	@NonTransactional
 	public void testNumberOfCommentsPerIssue() {
 		Map<String, Integer> map = calculator.numberOfCommentsPerIssue();
-		// TODO this should be 1
-		assertEquals(0, map.size());
+		assertEquals(8, map.size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetNumberOfRelevantComments() {
+		addComment(getTestJiraIssues().get(7));
+		calculator.setJiraIssues(getTestJiraIssues());
 		assertEquals(2, calculator.getNumberOfRelevantComments().size());
 	}
 
 	@Test
 	public void testGetDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType() {
+		addComment(getTestJiraIssues().get(6));
+		JiraIssueLinks.getTestJiraIssueLinks();
+		calculator.setJiraIssues(getTestJiraIssues());
 		Map<String, String> calculation = calculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(
 				KnowledgeType.ARGUMENT, KnowledgeType.DECISION);
 
@@ -89,32 +113,30 @@ public class TestMetricCalculator extends TestSetUp {
 	}
 
 	@Test
-	@Ignore
 	public void testGetLinksToIssueTypeMapTypeFilled() {
+		addComment(getTestJiraIssues().get(6));
+		calculator.setJiraIssues(getTestJiraIssues());
 		Object map = calculator.getLinksToIssueTypeMap(KnowledgeType.ARGUMENT, 0);
-		assertEquals("{Links from other to Argument=0, No links from other to Argument=0}", map.toString());
+		assertEquals("{Links from  to Argument=, No links from  to Argument=TEST-1 TEST-14 TEST-30 TEST-2 TEST-12 TEST-3 TEST-4 TEST-5 }", map.toString());
 	}
-	/*
-	 * @Test public void testNumberOfCommitsPerIssue() { Map<String, Integer>
-	 * expectedCommits = new HashMap<>(); // TODO: setup some test commits //
-	 * expectedCommits.put(baseIssueKey,0); assertEquals(expectedCommits,
-	 * calculator.numberOfCommitsPerIssue()); }
-	 */
 
 	@Test
 	public void testGetNumberOfDecisionKnowledgeElementsForJiraIssues() {
-		assertEquals(0, calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ARGUMENT, 2).size());
+		assertEquals(8, calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE, 2).size());
 	}
 
 	@Test
-	@Ignore
 	public void testGetReqAndClassSummary() {
 		assertEquals(2, calculator.getReqAndClassSummary().size());
 	}
 
 	@Test
 	public void testGetKnowledgeSourceCount() {
+		addElementToDataBase((long) 24, "Decision");
+		addComment(getTestJiraIssues().get(7));
+		calculator.setJiraIssues(getTestJiraIssues());
 		assertEquals(4, calculator.getKnowledgeSourceCount().size());
 	}
+
 
 }

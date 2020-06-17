@@ -1,16 +1,14 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.codeclassknowledgeelementpersistencemanager;
-
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Before;
-import org.junit.Test;
+package de.uhd.ifi.se.decision.management.jira.persistence.codeclasspersistencemanager;
 
 import com.atlassian.jira.user.ApplicationUser;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestGetDecisionKnowledgeElement extends TestSetUp {
 
@@ -70,7 +68,6 @@ public class TestGetDecisionKnowledgeElement extends TestSetUp {
 
 	@Test
 	public void testGetDecisionKnowledgeElements() {
-		System.out.println(ccManager.getKnowledgeElements());
 		assertEquals(1, ccManager.getKnowledgeElements().size());
 	}
 
@@ -78,5 +75,6 @@ public class TestGetDecisionKnowledgeElement extends TestSetUp {
 	public void testGetDecisionKnowledgeElementsMatchingName() {
 		assertEquals(1, ccManager.getKnowledgeElementsMatchingName(classElement.getSummary()).size());
 	}
+
 
 }

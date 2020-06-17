@@ -225,7 +225,6 @@ public class ViewRest {
 	public Response getTreant(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey,
 							  @QueryParam("depthOfTree") String depthOfTree, @QueryParam("searchTerm") String searchTerm,
 							  @QueryParam("showOtherJiraIssues") Boolean showOtherJiraIssues) {
-
 		if (elementKey == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build();

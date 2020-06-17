@@ -2,6 +2,7 @@
     // initialize
         $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
         $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:requirements-dashboard-resources")
+        $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
     ConDecReqDash.init("$showDiv")
 </script>
 
@@ -31,9 +32,69 @@
             <input class="button submit" type="submit" value="Select" id="select-button">
         </div>
     </form>
+
 </div>
 <div id="condec-req-dashboard-no-project" class="condec-req-dashboard-no-project hidden">
     $i18n.getText("condec.dashboard.featurebranch.project.selection.not.done")
+</div>
+<div class="dynamic-content hidden" id="dynamic-content-filter">
+    <h3>Filter:</h3>
+    <form class="aui" id="configFormIssue">
+        <input type="hidden" name="project" value=$project>
+        <input type="hidden" name="issuetype" value=$issueTypeId>
+        <input type="hidden" name="filter" value="true">
+        <label for="linkDistanceFilter">Link Distance:</label>
+        <input type="number" id="linkDistanceFilter" name="linkDistance" value=$linkDistance min="1"
+               class="text short-field">
+
+        <select id="knowledgeType-select" multiple placeholder="Knowledge Type" class="select medium-field"
+                name="knowledgeTypes" style="vertical-align: bottom">
+            #foreach($type in $knowledgeTypes)
+                #if($selectedKnowledgeTypes.contains($type.toString()))
+                    <option selected value="$type.toString()">$type.toString()</option>
+                #else
+                    <option value="$type.toString()">$type.toString()</option>
+                #end
+
+            #end
+        </select>
+
+        <select id="status-select" multiple placeholder="Status" class="select medium-field"
+                name="status" style="vertical-align: bottom">
+            #foreach($state in $status)
+                #if($selectedStatus.contains($state.toString()))
+                    <option selected value="$state.toString()">$state.toString()</option>
+                #else
+                    <option value="$state.toString()">$state.toString()</option>
+                #end
+
+            #end
+        </select>
+
+        <select id="group-select" multiple placeholder="Decision Group" class="select medium-field"
+                name="group" style="vertical-align: bottom">
+            #foreach($group in $groups)
+                #if($selectedGroups.contains($group))
+                    <option selected value="$group">$group</option>
+                #else
+                    <option value="$group">$group</option>
+                #end
+
+            #end
+        </select>
+
+        <label for="ignore-git">Ignore Knowledge From Git:</label>
+        #if($ignoreGit=="on")
+            <input class="checked" type="checkbox" checked id="ignore-git" name="ignoreGit"/>
+        #else
+            <input class="checked" type="checkbox" id="ignore-git" name="ignoreGit"/>
+        #end
+
+        <input class="button submit" type="submit" value="Filter" id="select-button">
+    </form>
+    <!--
+    Group Filter
+    //-->
 </div>
 <div class="dynamic-content hidden" id="dynamic-content-general">
     <h1>$i18n.getText("condec.jira.project"): $projectName</h1>
@@ -44,6 +105,7 @@
     <div id="piechartInteger-ReqCodeSummary" class="notsetyet piechart"></div>
     <div id="piechartInteger-DecSources" class="notsetyet piechart"></div>
 </div>
+
 
 <div class="dynamic-content hidden" id="dynamic-content-completeness">
     <h3>Rationale Completeness Metrics</h3>
@@ -73,6 +135,9 @@
 
 <script type="text/javascript">
     // initialize charts
+    AJS.$("#knowledgeType-select").auiSelect2();
+    AJS.$("#status-select").auiSelect2();
+    AJS.$("#group-select").auiSelect2();
         #set($title="")
         #foreach ($name in $chartNamesAndPurpose.keySet())
             #set($purpose=$chartNamesAndPurpose.get("$name"))
@@ -99,9 +164,8 @@
 </div>
 
 <script>
-
     $(document).ready(function () {
-        if (!window.conDecReqDashboard) {
+        if (!window.ConDecReqDash) {
             console.error('Could not find required resources!');
             errorNode = document.getElementById("condec-req-dashboard-fatal-error");
             errorNode.classList.remove("hidden");
@@ -111,12 +175,15 @@
                 projectName = event.target.value
                 selectedOptionIndex = event.target.options.selectedIndex
                 selectedOption = event.target.options[selectedOptionIndex]
-                conDecReqDashboard.init(projectName, event.target.dataset.uid)
+                ConDecReqDash.init(projectName, event.target.dataset.uid)
             }
 
-            selectNode = document.getElementById("${selectID}");
-            selectNode.addEventListener('change', projectSelectorOnchange);
+            //selectNode = document.getElementById("${selectID}");
+            //selectNode.addEventListener('change', projectSelectorOnchange);
         }
+
     });
+
+
 </script>
 
