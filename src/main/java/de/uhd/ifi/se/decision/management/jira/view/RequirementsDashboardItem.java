@@ -101,11 +101,8 @@ public class RequirementsDashboardItem implements ContextProvider {
 			newContext.put("linkDistance", linkDistance);
 			boolean ignoreGit = false;
 			List<String> knowledgeTypes = KnowledgeType.toStringList();
-			newContext.put("knowledgeTypes", KnowledgeType.getDefaultTypes());
 			List<String> knowledgeStatus = KnowledgeStatus.toStringList();
-			newContext.put("selectedStatus", knowledgeStatus);
 			List<String> decisionGroups = null;
-			newContext.put("groups", DecisionGroupManager.getAllDecisionGroups(projectKey));
 			if (req != null) {
 				projectKey = req.getParameter("project");
 				issueTypeId = req.getParameter("issueType");
@@ -117,7 +114,9 @@ public class RequirementsDashboardItem implements ContextProvider {
 					ignoreGit = true;
 				}
 				newContext.put("ignoreGit", req.getParameter("ignoreGit"));
+
 				//Knowledge Type Filter
+				newContext.put("knowledgeTypes", KnowledgeType.getDefaultTypes());
 				if (req.getParameterValues("knowledgeTypes") != null && req.getParameterValues("knowledgeTypes").length > 0) {
 					knowledgeTypes = Arrays.asList(req.getParameterValues("knowledgeTypes"));
 					newContext.put("selectedKnowledgeTypes", knowledgeTypes);
@@ -126,9 +125,11 @@ public class RequirementsDashboardItem implements ContextProvider {
 				newContext.put("status", KnowledgeStatus.getAllKnowledgeStatus());
 				if (req.getParameterValues("status") != null && req.getParameterValues("status").length > 0) {
 					knowledgeStatus = Arrays.asList(req.getParameterValues("status"));
+					newContext.put("selectedStatus", knowledgeStatus);
 				}
 
 				//Decision Group Filter
+				newContext.put("groups", DecisionGroupManager.getAllDecisionGroups(projectKey));
 				if (req.getParameterValues("group") != null && req.getParameterValues("group").length > 0) {
 					decisionGroups = new ArrayList<>();
 					decisionGroups = Arrays.asList(req.getParameterValues("group"));
