@@ -12,6 +12,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import org.eclipse.jgit.api.BlameCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.blame.BlameResult;
@@ -19,13 +25,6 @@ import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.TreeWalk;
-
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 
 public class GitCodeClassExtractor {
 
@@ -36,6 +35,9 @@ public class GitCodeClassExtractor {
 	private GitClient gitClient;
 
 	public GitCodeClassExtractor(String projectKey) {
+		if (projectKey == null) {
+			return;
+		}
 		this.projectKey = projectKey;
 		codeClassOriginMap = new HashMap<String, String>();
 		treeWalkPath = new HashMap<String, String>();
@@ -51,6 +53,9 @@ public class GitCodeClassExtractor {
 			if (repository != null) {
 				TreeWalk treeWalk = new TreeWalk(repository);
 				try {
+					if (gitClient.getDefaultBranchCommits(repoUri).size() == 0) {
+						break;
+					}
 					treeWalk.addTree(gitClient.getDefaultBranchCommits(repoUri).get(0).getTree());
 					treeWalk.setRecursive(false);
 					while (treeWalk.next()) {
@@ -59,7 +64,7 @@ public class GitCodeClassExtractor {
 						} else {
 							File file = new File(repository.getWorkTree(), treeWalk.getPathString());
 							ChangedFile chfile = new ChangedFile(file);
-							if (chfile.isExistingJavaClass()) {
+							if (chfile.isExistingJavaClass() && file != null) {
 								codeClassListFull.add(file);
 								codeClassOriginMap.put(file.getAbsolutePath(), repoUri);
 								treeWalkPath.put(file.getAbsolutePath(), treeWalk.getPathString());
@@ -162,6 +167,9 @@ public class GitCodeClassExtractor {
 	}
 
 	public KnowledgeElement createKnowledgeElementFromFile(File file, List<String> issueKeys) {
+		if (file == null || issueKeys == null || projectKey == null) {
+			return null;
+		}
 		KnowledgeElement element = new KnowledgeElement();
 		String keyString = "";
 		for (String key : issueKeys) {
