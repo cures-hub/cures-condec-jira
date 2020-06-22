@@ -17,6 +17,7 @@
 
 	ConsistencyTabsModule.prototype.init = function () {
 		this.issueKey = conDecAPI.getIssueKey();
+		this.issueId = JIRA.Issue.getIssueId();
 
 		// Duplicates
 		this.loadingDuplicateSpinnerElement = document.getElementById("loading-spinner-duplicate");
@@ -32,8 +33,6 @@
 
 
 	ConsistencyTabsModule.prototype.discardDuplicate = function (otherIssueKey) {
-		this.duplicateResultsTableElement.style.visibility = "visible";
-
 		consistencyAPI.discardDuplicateSuggestion(this.issueKey, otherIssueKey, this.projectKey)
 			.then((data) => {
 				displaySuccessMessage("Discarded suggestion sucessfully!");
@@ -43,8 +42,6 @@
 	}
 
 	ConsistencyTabsModule.prototype.discardSuggestion = function (otherIssueKey) {
-		//resultsTableElement.style.visibility = "visible";
-
 		consistencyAPI.discardLinkSuggestion(this.issueKey, otherIssueKey, this.projectKey)
 			.then((data) => {
 				displaySuccessMessage("Discarded suggestion sucessfully!");
@@ -54,7 +51,8 @@
 	}
 
 	ConsistencyTabsModule.prototype.markAsDuplicate = function (otherIssueId) {
-		conDecAPI.createLink(null, this.issueKey, otherIssueId, "i", "i", "duplicates", this.loadDuplicateData);
+		let self = this;
+		conDecAPI.createLink(null, this.issueId, otherIssueId, "i", "i", "duplicates", () => self.loadDuplicateData());
 	}
 
 	//-----------------------------------------
@@ -106,7 +104,8 @@
 	};
 
 	ConsistencyTabsModule.prototype.showDialog = function (targetIssueId) {
-		conDecDialog.showDecisionLinkDialog(this.issueKey, targetIssueId, "i", "i", this.loadData);
+		let self = this;
+		conDecDialog.showDecisionLinkDialog(this.issueId, targetIssueId, "i", "i", () => self.loadData());
 	}
 
 	ConsistencyTabsModule.prototype.processRelatedIssuesResponse = function (response) {
@@ -117,7 +116,7 @@
 	}
 
 	//-----------------------------------------
-	//            Generate table (Dulpicates)
+	//            Generate table (Duplicates)
 	//-----------------------------------------
 	ConsistencyTabsModule.prototype.displayDuplicateIssues = function (duplicates) {
 		if (duplicates.length === 0) {
@@ -204,6 +203,7 @@
 	}
 
 	function startLoadingVisualization(table, spinner) {
+		//console.log(table);
 		table.style.visibility = "hidden";
 		spinner.style.display = "flex";
 	}
