@@ -451,7 +451,7 @@
         ConDecAPI.prototype.getTreant = function getTreant(elementKey, depthOfTree, searchTerm, showOtherJiraIssues, callback) {
             generalApi.getJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey
                 + "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm + "&showOtherJiraIssues=" + showOtherJiraIssues, function (error, treant) {
-                if (error === null) {
+				if (error === null) {
                     callback(treant);
                 }
             });
@@ -859,6 +859,26 @@
             var decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey=" + projectKey);
             callback(selectGroupField, decisionGroups);
         };
+
+		ConDecAPI.prototype.getIssuesForDecisionProblem = function getIssuesForDecisionProblem(elementKey, callback) {
+			generalApi.getJSON(this.restPrefix + "/view/getIssuesForDecisionProblem.json?elementKey="+ elementKey, function (error, issues) {
+				if (error === null) {
+                    callback(issues);
+                }
+			});
+		};
+
+		ConDecAPI.prototype.getDecisionTable = function getDecisionTable(elementKey, callback) {
+			let decisionTableData = {};
+			decisionTableData.qa = ["Options/Alternatives", "Usability", "Interoperability", "Functional suitable"];
+			decisionTableData.description = [
+				["Single Platform", "Cross Platform"], ["+ Lorem ipsum dolor sit amet, consectetur adipiscing elit", "- Lorem ipsum dolor sit amet, consectetur   adipiscing elit"],
+				["- Lorem ipsum dolor sit amet, consectetur   adipiscing elit <br>-  Nulla ac lacus id tortor vulputate sodales a nec libero",
+					"+ Lorem ipsum dolor sit amet, consectetur   adipiscing elit <br>+  Morbi vel erat bibendum, iaculis nunc vitae, pretium quam"],
+				["+ Lorem ipsum dolor sit amet, consectetur   adipiscing elit <br>+  Morbi vel erat bibendum, iaculis nunc vitae, pretium quam",
+					"+ Lorem ipsum dolor sit amet, consectetur   adipiscing elit <br>+  Morbi vel erat bibendum, iaculis nunc vitae, pretium quam"]];
+			callback(decisionTableData);
+		};
 
         /*
          * external references: settingsForSingleProject.vm
