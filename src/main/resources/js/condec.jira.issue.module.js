@@ -18,6 +18,7 @@
     var conDecContextMenu = null;
     var treant = null;
     var vis = null;
+	var decisionTable = null;
 
     var issueKey = "";
     var search = "";
@@ -37,9 +38,10 @@
             conDecAPI = _conDecAPI;
             conDecObservable = _conDecObservable;
             conDecDialog = _conDecDialog;
-            conDecContextMenu = _conDecContextMenu;
+			conDecContextMenu = _conDecContextMenu;
             treant = _treant;
-            vis = _vis;
+			vis = _vis;
+			decisionTable = _decisionTable;
 
             // Register/subscribe this view as an observer
             conDecObservable.subscribe(this);
@@ -140,6 +142,11 @@
         vis.buildVis(issueKey, search);
     }
 
+	function showDecisionTable() {
+		console.log("ConDecJiraIssueModule showDecisionTable");
+		decisionTable.loadDecisionProblems(issueKey);
+	}
+	
     function applyFilters() {
         var issueTypes = conDecFiltering.getSelectedItems("issuetype-dropdown");
         var createdAfter = -1;
@@ -274,8 +281,15 @@
             return false;
         }
         return true;
-    }
-
+	}
+	
+	function isConDecDecisionTableTyp(conDecDecisionTable) {
+		if (!(conDecVis !== undefined && conDecDecisionTable.loadDecisionProblems !== undefined && typeof conDecDecisionTable.loadDecisionProblems === 'function')) {
+			console.warn("ConDecJiraIssueModule: ivalid conDecDecisionTable object received.");
+			return false;
+		};
+		return true;
+	}
     // export ConDecJiraIssueModule
     global.conDecJiraIssueModule = new ConDecJiraIssueModule();
 })(window);
