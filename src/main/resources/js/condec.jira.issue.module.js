@@ -73,7 +73,7 @@
     function addOnClickEventToTab() {
         console.log("ConDecJiraIssueModule addOnClickEventVisualizationSelectionTab");
 
-		AJS.$("#visualization-selection-tabs").on("click", function (event) {
+		AJS.$("#visualization-selection-tabs-menu").on("click", function (event) {
 			event.preventDefault();
 			event.stopPropagation();
 			determineSelectedTab(event.target.href);
