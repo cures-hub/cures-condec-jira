@@ -93,8 +93,6 @@ public class ContextInformation {
 			linkSuggestions.put(otherIssue.getKey(), new LinkSuggestion(this.issue, otherIssue));
 		}
 
-		System.out.println(projectIssues);
-
 		for (ContextInformationProvider cip : this.cips) {
 			Map<String, Double> individualScores = new HashMap<>();
 			for (Issue otherIssue : projectIssues) {
