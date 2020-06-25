@@ -28,11 +28,15 @@
 
             projectKey = getProjectKey();
 
-            // @issue How store settings retrieved from the backend such as knowledge types?
-            // @decision The settings that do not change are stored as global attributes!
+            // @issue How store settings retrieved from the backend such as
+			// knowledge types?
+            // @decision The settings that do not change are stored as global
+			// attributes!
             // @pro This avoids redundant REST calls and improves performance.
-            // @alternative Use getter methods that include the REST calls in their body!
-            // @con REST calls would be redundant, which leads to longer loading times.
+            // @alternative Use getter methods that include the REST calls in
+			// their body!
+            // @con REST calls would be redundant, which leads to longer loading
+			// times.
             this.knowledgeTypes = getKnowledgeTypes(projectKey);
             this.extendedKnowledgeTypes = createExtendedKnowledgeTypes(this.knowledgeTypes);
 
@@ -42,9 +46,9 @@
         };
 
         /*
-         * Replaces argument with pro-argument and con-argument in knowledge
-         * types array.
-         */
+		 * Replaces argument with pro-argument and con-argument in knowledge
+		 * types array.
+		 */
         function createExtendedKnowledgeTypes(knowledgeTypes) {
             var extendedKnowledgeTypes = knowledgeTypes.filter(function (value) {
                 return value.toLowerCase() !== "argument";
@@ -54,10 +58,13 @@
             return extendedKnowledgeTypes;
         }
 
-        // @issue How can we access global attributes of closure objects, e.g. extendedKnowlegdeTypes?
-        // @decision Do not use getters in Javascript but directly call e.g. "conDecAPI.extendedKnowlegdeTypes"!
+        // @issue How can we access global attributes of closure objects, e.g.
+		// extendedKnowlegdeTypes?
+        // @decision Do not use getters in Javascript but directly call e.g.
+		// "conDecAPI.extendedKnowlegdeTypes"!
         // @pro Less code.
-        // @alternative Use getters in Javascript and e.g. call "conDecAPI.getExtendedKnowledgeTypes()"!
+        // @alternative Use getters in Javascript and e.g. call
+		// "conDecAPI.getExtendedKnowledgeTypes()"!
         ConDecAPI.prototype.getExtendedKnowledgeTypes = function () {
             return this.extendedKnowledgeTypes;
         };
@@ -65,17 +72,17 @@
         ConDecAPI.prototype.checkIfProjectKeyIsValid = function checkIfProjectKeyIsValid() {
             if (projectKey === null || projectKey === undefined) {
                 /*
-                 * Some dependencies were missing when the closure object was
-                 * first instantiated. Instantiates the object again.
-                 */
+				 * Some dependencies were missing when the closure object was
+				 * first instantiated. Instantiates the object again.
+				 */
                 global.conDecAPI = new ConDecAPI();
             }
         };
 
         /*
-         * external references: condec.context.menu, condec.dialog,
-         * condec.knowledge.page, condec.jira.issue.module
-         */
+		 * external references: condec.context.menu, condec.dialog,
+		 * condec.knowledge.page, condec.jira.issue.module
+		 */
         ConDecAPI.prototype.getDecisionKnowledgeElement = function getDecisionKnowledgeElement(id, documentationLocation,
                                                                                                callback) {
             generalApi.getJSON(this.restPrefix + "/knowledge/getDecisionKnowledgeElement.json?projectKey="
@@ -97,8 +104,8 @@
         };
 
         /*
-         * external references: condec.dialog
-         */
+		 * external references: condec.dialog
+		 */
         ConDecAPI.prototype.getUnlinkedElements = function getUnlinkedElements(id, documentationLocation, callback) {
             generalApi.getJSON(this.restPrefix + "/knowledge/getUnlinkedElements.json?projectKey="
                 + projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function (error,
@@ -110,12 +117,12 @@
         };
 
         /*
-         * Creates a new decision knowledge element. If the element should be
-         * unlinked the idOfExistingElement must be 0 and the
-         * documentationLocationOfExistingElement must be null
-         *
-         * external references: condec.knowledge.page, condec.dialog
-         */
+		 * Creates a new decision knowledge element. If the element should be
+		 * unlinked the idOfExistingElement must be 0 and the
+		 * documentationLocationOfExistingElement must be null
+		 * 
+		 * external references: condec.knowledge.page, condec.dialog
+		 */
         ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElement(summary, description,
                                                                                                      type, documentationLocation, idOfExistingElement, documentationLocationOfExistingElement, callback) {
             var newElement = {
@@ -215,8 +222,8 @@
         };
 
         /*
-         * external references: condec.dialog
-         */
+		 * external references: condec.dialog
+		 */
         ConDecAPI.prototype.updateDecisionKnowledgeElement = function updateDecisionKnowledgeElement(id, summary,
                                                                                                      description, type, documentationLocation, status, callback) {
             var element = {
@@ -240,8 +247,8 @@
         };
 
         /*
-         * external references: condec.dialog
-         */
+		 * external references: condec.dialog
+		 */
         ConDecAPI.prototype.getSprintsByProject = function getSprintsByProject() {
             // first we need the boards then we can get the Sprints for each
             // board
@@ -291,10 +298,17 @@
                 })
             })
         };
+        
+        /*
+		 * external references: condec.context.menu, condec.dialog
+		 */
+        ConDecAPI.prototype.changeKnowledgeType = function changeKnowledgeType(id, type, documentationLocation, callback) {
+            this.updateDecisionKnowledgeElement(id, null, null, type, documentationLocation, null, callback);
+        };
 
         /*
-         * external references: condec.dialog
-         */
+		 * external references: condec.dialog
+		 */
         ConDecAPI.prototype.deleteDecisionKnowledgeElement = function deleteDecisionKnowledgeElement(id,
                                                                                                      documentationLocation, callback) {
             var element = {
@@ -312,8 +326,8 @@
         };
 
         /*
-         * external references: condec.dialog, condec.treant, condec.tree.viewer
-         */
+		 * external references: condec.dialog, condec.treant, condec.tree.viewer
+		 */
         ConDecAPI.prototype.createLink = function createLink(knowledgeTypeOfChild, idOfParent, idOfChild,
                                                              documentationLocationOfParent, documentationLocationOfChild, linkType, callback) {
             generalApi.postJSON(this.restPrefix + "/knowledge/createLink.json?projectKey=" + projectKey + "&knowledgeTypeOfChild=" + knowledgeTypeOfChild
@@ -327,8 +341,8 @@
         };
 
         /*
-         * external references: condec.dialog, condec.treant, condec.tree.viewer
-         */
+		 * external references: condec.dialog, condec.treant, condec.tree.viewer
+		 */
         ConDecAPI.prototype.deleteLink = function deleteLink(idOfDestinationElement, idOfSourceElement,
                                                              documentationLocationOfDestinationElement, documentationLocationOfSourceElement, callback) {
             var link = {
@@ -347,15 +361,15 @@
         };
 
         /*
-         * external references: condec.dialog
-         */
+		 * external references: condec.dialog
+		 */
         ConDecAPI.prototype.setStatus = function setStatus(id, documentationLocation, type, status, callback) {
             this.updateDecisionKnowledgeElement(id, null, null, type, documentationLocation, status, callback);
         };
 
         /*
-         * external references: condec.dialog
-         */
+		 * external references: condec.dialog
+		 */
         ConDecAPI.prototype.deleteDecisionKnowledgeElement = function deleteDecisionKnowledgeElement(id,
                                                                                                      documentationLocation, callback) {
             var element = {
@@ -373,8 +387,8 @@
         };
 
         /*
-         * external references: condec.export
-         */
+		 * external references: condec.export
+		 */
         ConDecAPI.prototype.getElements = function getElements(query, callback) {
             generalApi.getJSON(this.restPrefix + "/knowledge/getElements.json?projectKey="
                 + projectKey + "&query=" + query, function (error, elements) {
@@ -385,8 +399,8 @@
         };
 
         /*
-         * external references: condec.context.menu
-         */
+		 * external references: condec.context.menu
+		 */
         ConDecAPI.prototype.setSentenceIrrelevant = function setSentenceIrrelevant(id, callback) {
             var jsondata = {
                 "id": id,
@@ -403,8 +417,8 @@
         };
 
         /*
-         * external references: condec.context.menu
-         */
+		 * external references: condec.context.menu
+		 */
         ConDecAPI.prototype.createIssueFromSentence = function createIssueFromSentence(id, callback) {
             var jsondata = {
                 "id": id,
@@ -420,8 +434,8 @@
         };
 
         /*
-         * external references: condec.jira.issue.module
-         */
+		 * external references: condec.jira.issue.module
+		 */
         ConDecAPI.prototype.getSummarizedCode = function getSummarizedCode(id, documentationLocation, probability, callback) {
             // console.log(probability);
             generalApi.getText(this.restPrefix + "/knowledge/getSummarizedCode?projectKey=" + projectKey
@@ -434,8 +448,8 @@
         };
 
         /*
-         * external references: condec.tree.viewer
-         */
+		 * external references: condec.tree.viewer
+		 */
         ConDecAPI.prototype.getTreeViewer = function getTreeViewer(rootElementType, callback) {
             generalApi.getJSON(this.restPrefix + "/view/getTreeViewer.json?projectKey=" + projectKey
                 + "&rootElementType=" + rootElementType, function (error, core) {
@@ -446,8 +460,8 @@
         };
 
         /*
-         * external references: condec.treant
-         */
+		 * external references: condec.treant
+		 */
         ConDecAPI.prototype.getTreant = function getTreant(elementKey, depthOfTree, searchTerm, showOtherJiraIssues, callback) {
             generalApi.getJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey
                 + "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm + "&showOtherJiraIssues=" + showOtherJiraIssues, function (error, treant) {
@@ -469,8 +483,8 @@
         };
 
         /*
-         * external references: condec.jira.issue.module
-         */
+		 * external references: condec.jira.issue.module
+		 */
         ConDecAPI.prototype.getSummarizedCode = function getSummarizedCode(id, documentationLocation, probability, callback) {
             // console.log(probability);
             getText(this.restPrefix + "/knowledge/getSummarizedCode?projectKey=" + projectKey
@@ -483,15 +497,15 @@
         };
 
         /*
-         * external references: condec.vis
-         */
+		 * external references: condec.vis
+		 */
         ConDecAPI.prototype.getVis = function getVis(elementKey, searchTerm, callback) {
             this.getVisFiltered(elementKey, null, null, null, -1, -1, null, null, callback);
         };
 
         /*
-         * external references: condec.vis
-         */
+		 * external references: condec.vis
+		 */
         ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey, searchTerm, jiraIssueTypes, status,
                                                                      createdAfter, createdBefore, linkTypes, documentationLocations, callback) {
             var filterSettings = {
@@ -513,8 +527,8 @@
         };
 
         /*
-         * external reference: condec.evolution.page.js
-         */
+		 * external reference: condec.evolution.page.js
+		 */
         ConDecAPI.prototype.getCompareVis = function getCompareVis(created, closed, searchTerm, knowledgeTypes, status, callback) {
             var filterSettings = {
                 "projectKey": projectKey,
@@ -543,8 +557,8 @@
             });
         };
         /*
-         * external reference: condec.jira.issue.module
-         */
+		 * external reference: condec.jira.issue.module
+		 */
         ConDecAPI.prototype.getFilterSettings = function getFilterSettings(elementKey, searchTerm, callback) {
             generalApi.getJSON(this.restPrefix + "/view/getFilterSettings.json?elementKey=" + elementKey
                 + "&searchTerm=" + searchTerm, function (error, filterSettings) {
@@ -555,8 +569,8 @@
         };
 
         /*
-         * external references: condec.tab.panel
-         */
+		 * external references: condec.tab.panel
+		 */
         ConDecAPI.prototype.getTreeViewerForSingleElement = function getTreeViewerForSingleElement(jiraIssueKey, knowledgeTypes, callback) {
             var filterSettings = {
                 "projectKey": projectKey,
@@ -570,8 +584,8 @@
         };
 
         /*
-         * external references: condec.evolution.page
-         */
+		 * external references: condec.evolution.page
+		 */
         ConDecAPI.prototype.getEvolutionData = function getEvolutionData(searchTerm, created, closed, issueTypes, issueStatus, decGroups,
                                                                          callback) {
 
@@ -594,8 +608,8 @@
         };
 
         /*
-        * external references: condec.relationshipMatrix.page
-        */
+		 * external references: condec.relationshipMatrix.page
+		 */
         ConDecAPI.prototype.getDecisionMatrix = function getDecisionMatrix(callback) {
             generalApi.getJSON(this.restPrefix + "/view/getDecisionMatrix.json?projectKey=" + projectKey, function (error, matrix) {
                 if (error == null) {
@@ -605,22 +619,22 @@
         };
 
         /*
-         * external references: condec.relationship.page
-         */
+		 * external references: condec.relationship.page
+		 */
         ConDecAPI.prototype.getDecisionGraph = function getDecisionGraph(callback) {
             this.getDecisionGraphFiltered(null, "", [], callback);
         };
 
         /*
-         * external references: condec.relationship.page
-         */
+		 * external references: condec.relationship.page
+		 */
         ConDecAPI.prototype.getDecisionGraph = function getDecisionGraph(callback) {
             this.getDecisionGraphFiltered(null, "", null, [], callback);
         };
 
         /*
-         * external references: condec.relationship.page
-         */
+		 * external references: condec.relationship.page
+		 */
         ConDecAPI.prototype.getDecisionGraphFiltered = function getDecisionGraphFiltered(linkTypes, searchTerm, status, decGroups, callback) {
 
             var filterSettings = {
@@ -653,9 +667,9 @@
             });
         };
         /*
-         * external references: settingsForSingleProject.vm,
-         * settingsForAllProjects.vm
-         */
+		 * external references: settingsForSingleProject.vm,
+		 * settingsForAllProjects.vm
+		 */
         ConDecAPI.prototype.setActivated = function setActivated(isActivated, projectKey) {
             generalApi.postJSON(this.restPrefix + "/config/setActivated.json?projectKey=" + projectKey
                 + "&isActivated=" + isActivated, null, function (error, response) {
@@ -666,8 +680,8 @@
         };
 
         /*
-         * external references: condec.text.editor.extension
-         */
+		 * external references: condec.text.editor.extension
+		 */
         ConDecAPI.prototype.isActivated = function isActivated(callback) {
             generalApi.getJSON(this.restPrefix + "/config/isActivated.json?projectKey=" + projectKey,
                 function (error, isActivatedBoolean) {
@@ -678,9 +692,9 @@
         };
 
         /*
-         * external references: settingsForSingleProject.vm,
-         * settingsForAllProjects.vm
-         */
+		 * external references: settingsForSingleProject.vm,
+		 * settingsForAllProjects.vm
+		 */
         ConDecAPI.prototype.setIssueStrategy = function setIssueStrategy(isIssueStrategy, projectKey) {
             generalApi.postJSON(this.restPrefix + "/config/setIssueStrategy.json?projectKey=" + projectKey
                 + "&isIssueStrategy=" + isIssueStrategy, null, function (error, response) {
@@ -691,8 +705,8 @@
         };
 
         /*
-         * external references: condec.dialog, condec.context.menu
-         */
+		 * external references: condec.dialog, condec.context.menu
+		 */
         ConDecAPI.prototype.isIssueStrategy = function isIssueStrategy(callback) {
             generalApi.getJSON(this.restPrefix + "/config/isIssueStrategy.json?projectKey=" + projectKey,
                 function (error, isIssueStrategyBoolean) {
@@ -703,9 +717,9 @@
         };
 
         /*
-         * external references: settingsForSingleProject.vm,
-         * settingsForAllProjects.vm
-         */
+		 * external references: settingsForSingleProject.vm,
+		 * settingsForAllProjects.vm
+		 */
         ConDecAPI.prototype.setKnowledgeExtractedFromGit = function setKnowledgeExtractedFromGit(
             isKnowledgeExtractedFromGit, projectKey) {
             generalApi.postJSON(this.restPrefix + "/config/setKnowledgeExtractedFromGit.json?projectKey="
@@ -719,8 +733,8 @@
         };
 
         /*
-         * external references: settingsForSingleProject.vm
-         */
+		 * external references: settingsForSingleProject.vm
+		 */
         ConDecAPI.prototype.setPostFeatureBranchCommits = function (checked, projectKey) {
             generalApi.postJSON(this.restPrefix + "/config/setPostFeatureBranchCommits.json?projectKey="
                 + projectKey + "&newSetting=" + checked, null, function (error,
@@ -736,8 +750,8 @@
         };
 
         /*
-         * external references: settingsForSingleProject.vm
-         */
+		 * external references: settingsForSingleProject.vm
+		 */
         ConDecAPI.prototype.setPostSquashedCommits = function (checked, projectKey) {
             generalApi.postJSON(this.restPrefix + "/config/setPostSquashedCommits.json?projectKey="
                 + projectKey + "&newSetting=" + checked, null, function (error,
@@ -753,8 +767,8 @@
         };
 
         /*
-         * external references: settingsForSingleProject.vm
-         */
+		 * external references: settingsForSingleProject.vm
+		 */
         ConDecAPI.prototype.setGitUris = function setGitUris(projectKey, gitUris, defaultBranches) {
             generalApi.postJSON(this.restPrefix + "/config/setGitUris.json?projectKey=" + projectKey
                 + "&gitUris=" + gitUris + "&defaultBranches=" + defaultBranches, null, function (error, response) {
@@ -765,8 +779,8 @@
         };
 
         /*
-         * external references: settingsForSingleProject.vm
-         */
+		 * external references: settingsForSingleProject.vm
+		 */
         ConDecAPI.prototype.setKnowledgeTypeEnabled = function setKnowledgeTypeEnabled(isKnowledgeTypeEnabled,
                                                                                        knowledgeType, projectKey) {
             generalApi.postJSON(this.restPrefix + "/config/setKnowledgeTypeEnabled.json?projectKey="
@@ -780,8 +794,8 @@
         };
 
         /*
-         * external references: settingsForSingleProject.vm
-         */
+		 * external references: settingsForSingleProject.vm
+		 */
         ConDecAPI.prototype.isKnowledgeTypeEnabled = function isKnowledgeTypeEnabled(knowledgeType, projectKey, toggle,
                                                                                      callback) {
             generalApi.getJSON(this.restPrefix + "/config/isKnowledgeTypeEnabled.json?knowledgeType="
@@ -793,11 +807,11 @@
         };
 
         /*
-         * Knowledge types are a subset of "Alternative", "Argument",
-         * "Assessment", "Assumption", "Claim", "Constraint", "Context",
-         * "Decision", "Goal", "Implication", "Issue", "Problem", and
-         * "Solution".
-         */
+		 * Knowledge types are a subset of "Alternative", "Argument",
+		 * "Assessment", "Assumption", "Claim", "Constraint", "Context",
+		 * "Decision", "Goal", "Implication", "Issue", "Problem", and
+		 * "Solution".
+		 */
         function getKnowledgeTypes(projectKey) {
             var knowledgeTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getKnowledgeTypes.json?projectKey=" + projectKey);
             return knowledgeTypes;
@@ -881,8 +895,8 @@
 		};
 
         /*
-         * external references: settingsForSingleProject.vm
-         */
+		 * external references: settingsForSingleProject.vm
+		 */
         ConDecAPI.prototype.setUseClassifierForIssueComments = function setUseClassifierForIssueComments(
             isClassifierUsedForIssues, projectKey) {
             generalApi.postJSON(this.restPrefix + "/config/setUseClassifierForIssueComments.json?projectKey="
@@ -897,8 +911,8 @@
         };
 
         /*
-         * external references: consistencySettings.vm
-         */
+		 * external references: consistencySettings.vm
+		 */
         ConDecAPI.prototype.setConsistencyActivated = function (
             isConsistencyActivated, projectKey) {
             generalApi.postJSON(this.restPrefix + "/config/setConsistencyActivated.json?projectKey="
@@ -912,9 +926,9 @@
             });
         };
         /*
-         * external references: settingsForSingleProject.vm,
-         * settingsForAllProjects.vm
-         */
+		 * external references: settingsForSingleProject.vm,
+		 * settingsForAllProjects.vm
+		 */
         ConDecAPI.prototype.setKnowledgeExtractedFromGit = function setKnowledgeExtractedFromGit(
             isKnowledgeExtractedFromGit, projectKey) {
             generalApi.postJSON(this.restPrefix + "/config/setKnowledgeExtractedFromGit.json?projectKey="
@@ -928,8 +942,8 @@
         };
 
         /*
-         * external references: settingsForSingleProject.vm
-         */
+		 * external references: settingsForSingleProject.vm
+		 */
         ConDecAPI.prototype.setWebhookData = function setWebhookData(projectKey, webhookUrl, webhookSecret) {
             generalApi.postJSON(this.restPrefix + "/config/setWebhookData.json?projectKey=" + projectKey
                 + "&webhookUrl=" + webhookUrl + "&webhookSecret=" + webhookSecret, null, function (error, response) {
@@ -940,8 +954,8 @@
         };
 
         /*
-         * external references: settingsForSingleProject.vm
-         */
+		 * external references: settingsForSingleProject.vm
+		 */
         ConDecAPI.prototype.setWebhookEnabled = function setWebhookEnabled(isActivated, projectKey) {
             generalApi.postJSON(this.restPrefix + "/config/setWebhookEnabled.json?projectKey=" + projectKey
                 + "&isActivated=" + isActivated, null, function (error, response) {
@@ -952,8 +966,8 @@
         };
 
         /*
-         * external references: settingsForSingleProject.vm
-         */
+		 * external references: settingsForSingleProject.vm
+		 */
         ConDecAPI.prototype.setWebhookType = function setWebhookType(webhookType, projectKey, isWebhookTypeEnabled) {
             generalApi.postJSON(this.restPrefix + "/config/setWebhookType.json?projectKey=" + projectKey
                 + "&webhookType=" + webhookType + "&isWebhookTypeEnabled=" + isWebhookTypeEnabled, null, function (
@@ -966,8 +980,8 @@
 
 
         /*
-         * external references: settingsForSingleProject.vm
-         */
+		 * external references: settingsForSingleProject.vm
+		 */
         ConDecAPI.prototype.sendTestPost = function sendTestPost(projectKey) {
             generalApi.postJSON(this.restPrefix + "/config/sendTestPost.json?projectKey="
                 + projectKey, null, function (error, response) {
@@ -978,8 +992,8 @@
         };
 
         /*
-         * external references: settingsForSingleProject.vm
-         */
+		 * external references: settingsForSingleProject.vm
+		 */
         ConDecAPI.prototype.setReleaseNoteMapping = function setReleaseNoteMapping(releaseNoteCategory, projectKey, selectedIssueTypes) {
             generalApi.postJSON(this.restPrefix + "/config/setReleaseNoteMapping.json?projectKey=" + projectKey + "&releaseNoteCategory=" + releaseNoteCategory, selectedIssueTypes, function (
                 error, response) {
@@ -990,8 +1004,8 @@
         };
 
         /*
-         * external references: settingsForSingleProject.vm
-         */
+		 * external references: settingsForSingleProject.vm
+		 */
         ConDecAPI.prototype.cleanDatabases = function cleanDatabases(projectKey) {
             generalApi.postJSON(this.restPrefix + "/config/cleanDatabases.json?projectKey="
                 + projectKey, null, function (error, response) {
@@ -1002,8 +1016,8 @@
         };
 
         /*
-         * external references: settingsForSingleProject.vm
-         */
+		 * external references: settingsForSingleProject.vm
+		 */
         ConDecAPI.prototype.setUseClassifierForIssueComments = function setUseClassifierForIssueComments(
             isClassifierUsedForIssues, projectKey) {
             generalApi.postJSON(this.restPrefix + "/config/setUseClassifierForIssueComments.json?projectKey="
@@ -1018,8 +1032,8 @@
         };
 
         /*
-         * external references: classificationSettings.vm
-         */
+		 * external references: classificationSettings.vm
+		 */
         ConDecAPI.prototype.testClassifierWithText = function testClassifierWithText(
             text, projectKey, resultDomElement) {
             generalApi.postJSON(this.restPrefix + "/config/testClassifierWithText?projectKey="
@@ -1045,8 +1059,8 @@
 
 
         /*
-         * external references: settingsForSingleProject.vm
-         */
+		 * external references: settingsForSingleProject.vm
+		 */
         ConDecAPI.prototype.classifyWholeProject = function classifyWholeProject(projectKey, animatedElement) {
             animatedElement.classList.add("aui-progress-indicator-value");
             generalApi.postJSON(this.restPrefix + "/config/classifyWholeProject.json?projectKey=" + projectKey,
@@ -1091,8 +1105,8 @@
         };
 
         /*
-         * external references: settingsForSingleProject.vm
-         */
+		 * external references: settingsForSingleProject.vm
+		 */
         ConDecAPI.prototype.trainClassifier = function trainClassifier(projectKey, arffFileName, animatedElement) {
             animatedElement.classList.add("aui-progress-indicator-value");
             generalApi.postJSON(this.restPrefix + "/config/trainClassifier.json?projectKey=" + projectKey + "&arffFileName="
@@ -1129,8 +1143,8 @@
                 });
         };
         /*
-         * external references: settingsForSingleProject.vm
-         */
+		 * external references: settingsForSingleProject.vm
+		 */
         ConDecAPI.prototype.saveArffFile = function saveArffFile(projectKey, useOnlyValidatedData, callback) {
             generalApi.postJSON(this.restPrefix + "/config/saveArffFile.json?projectKey=" + projectKey + "&useOnlyValidatedData=" + useOnlyValidatedData, null,
                 function (error, response) {
@@ -1144,8 +1158,8 @@
         };
 
         /*
-         * external references: settingsForSingleProject.vm
-         */
+		 * external references: settingsForSingleProject.vm
+		 */
         ConDecAPI.prototype.setIconParsing = function setIconParsing(projectKey, isActivated) {
             generalApi.postJSON(this.restPrefix + "/config/setIconParsing.json?projectKey=" + projectKey
                 + "&isActivatedString=" + isActivated, null, function (error, response) {
@@ -1156,8 +1170,8 @@
         };
 
         /*
-         * external references: condec.context.menu
-         */
+		 * external references: condec.context.menu
+		 */
         ConDecAPI.prototype.openJiraIssue = function openJiraIssue(elementId, documentationLocation) {
             this.getDecisionKnowledgeElement(elementId, documentationLocation, function (knowledgeElement) {
                 global.open(knowledgeElement.url);
@@ -1165,8 +1179,8 @@
         };
 
         /*
-         * external references: condec.release.note.page
-         */
+		 * external references: condec.release.note.page
+		 */
         ConDecAPI.prototype.getReleaseNotes = function getReleaseNotes(callback) {
             var projectKey = getProjectKey();
             generalApi.getJSON(this.restPrefix + "/release-note/getReleaseNotes.json?projectKey="
@@ -1177,8 +1191,8 @@
             });
         };
         /*
-         * external references: condec.dialog
-         */
+		 * external references: condec.dialog
+		 */
         ConDecAPI.prototype.getProposedIssues = function getReleaseNotes(releaseNoteConfiguration) {
             return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/getProposedIssues.json?projectKey="
                 + projectKey, releaseNoteConfiguration);
@@ -1223,16 +1237,16 @@
         }
 
         /*
-         * external references: condec.context.menu
-         */
+		 * external references: condec.context.menu
+		 */
         ConDecAPI.prototype.openJiraIssue = function openJiraIssue(elementId, documentationLocation) {
             this.getDecisionKnowledgeElement(elementId, documentationLocation, function (decisionKnowledgeElement) {
                 global.open(decisionKnowledgeElement.url, '_self');
             });
         };
         /*
-         * external references: condec.release.note.page
-         */
+		 * external references: condec.release.note.page
+		 */
         ConDecAPI.prototype.getReleaseNotes = function getReleaseNotes(callback) {
             var projectKey = getProjectKey();
             generalApi.getJSON(this.restPrefix + "/release-note/getReleaseNotes.json?projectKey="
@@ -1243,8 +1257,8 @@
             });
         };
         /*
-         * external references: condec.dialog
-         */
+		 * external references: condec.dialog
+		 */
         ConDecAPI.prototype.getProposedIssues = function getReleaseNotes(releaseNoteConfiguration) {
             return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/getProposedIssues.json?projectKey="
                 + projectKey, releaseNoteConfiguration);
@@ -1286,9 +1300,9 @@
 
 
         /*
-         * external references: condec.jira.issue.module, condec.export,
-         * condec.gitdiffviewer, relatedIssuesTab.vm
-         */
+		 * external references: condec.jira.issue.module, condec.export,
+		 * condec.gitdiffviewer, relatedIssuesTab.vm
+		 */
         ConDecAPI.prototype.getIssueKey = getIssueKey;
 
         function getProjectKey() {
@@ -1311,8 +1325,8 @@
         }
 
         /*
-         * external references: relatedIssuesTab.vm
-         */
+		 * external references: relatedIssuesTab.vm
+		 */
         ConDecAPI.prototype.getProjectKey = getProjectKey;
 
         var showFlag = function (type, message, status) {
