@@ -28,17 +28,15 @@
 
             projectKey = getProjectKey();
 
-            // @issue How store settings retrieved from the backend such as
-			// knowledge types?
-            // @decision The settings that do not change are stored as global
-			// attributes!
-            // @pro This avoids redundant REST calls and improves performance.
-            // @alternative Use getter methods that include the REST calls in
-			// their body!
-            // @con REST calls would be redundant, which leads to longer loading
-			// times.
-			// TODO: revise decision as it does not work as intended!
-            this.knowledgeTypes = [];
+		/**
+		 * @issue How can we access global attributes of closure objects, e.g. extendedKnowlegdeTypes?
+		 * @alternative Do not use getters in Javascript but directly call e.g. "conDecAPI.extendedKnowlegdeTypes"!
+		 * @pro Less code.
+		 * @con The global attribute might not be initialized. The initialisation cannot be done via direct calls.
+		 * @decision Use getters in Javascript and e.g. call "conDecAPI.getExtendedKnowledgeTypes()"!
+		 * @pro If the global attribute is not initialized, this can be done with the getter function.
+         */
+		 this.knowledgeTypes = [];
             this.extendedKnowledgeTypes = [];
 
             this.optionStatus = ["idea", "discarded", "decided", "rejected", "undefined"];
@@ -67,6 +65,7 @@
         // @alternative Use getters in Javascript and e.g. call
 		// "conDecAPI.getExtendedKnowledgeTypes()"!
         ConDecAPI.prototype.getExtendedKnowledgeTypes = function () {
+        	this.getKnowledgeTypes();
             return this.extendedKnowledgeTypes;
         };
 
@@ -813,9 +812,10 @@
 		 * "Decision", "Goal", "Implication", "Issue", "Problem", and
 		 * "Solution".
 		 */
-		ConDecAPI.prototype.getKnowledgeTypes = function(projectKey) {
-        	if (this.knowledgeTypes === undefined || this.knowledgeTypes.length > 0){
-				this.knowledgeTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getKnowledgeTypes.json?projectKey=" + projectKey);
+		ConDecAPI.prototype.getKnowledgeTypes = function() {
+			//console.log("ProjectKey: " +  getProjectKey());
+			if (this.knowledgeTypes === undefined || this.knowledgeTypes.length === 0){
+				this.knowledgeTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getKnowledgeTypes.json?projectKey=" + getProjectKey());
 				this.extendedKnowledgeTypes = createExtendedKnowledgeTypes(this.knowledgeTypes)
 			}
             return this.knowledgeTypes;
