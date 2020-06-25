@@ -37,8 +37,9 @@
 			// their body!
             // @con REST calls would be redundant, which leads to longer loading
 			// times.
-            this.knowledgeTypes = getKnowledgeTypes(projectKey);
-            this.extendedKnowledgeTypes = createExtendedKnowledgeTypes(this.knowledgeTypes);
+			// TODO: revise decision as it does not work as intended!
+            this.knowledgeTypes = [];
+            this.extendedKnowledgeTypes = [];
 
             this.optionStatus = ["idea", "discarded", "decided", "rejected", "undefined"];
             this.issueStatus = ["resolved", "unresolved"];
@@ -812,9 +813,12 @@
 		 * "Decision", "Goal", "Implication", "Issue", "Problem", and
 		 * "Solution".
 		 */
-        function getKnowledgeTypes(projectKey) {
-            var knowledgeTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getKnowledgeTypes.json?projectKey=" + projectKey);
-            return knowledgeTypes;
+		ConDecAPI.prototype.getKnowledgeTypes = function(projectKey) {
+        	if (this.knowledgeTypes === undefined || this.knowledgeTypes.length > 0){
+				this.knowledgeTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getKnowledgeTypes.json?projectKey=" + projectKey);
+				this.extendedKnowledgeTypes = createExtendedKnowledgeTypes(this.knowledgeTypes)
+			}
+            return this.knowledgeTypes;
         }
 
         ConDecAPI.prototype.getLinkTypesSync = function getLinkTypesSync() {
