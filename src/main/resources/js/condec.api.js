@@ -431,20 +431,6 @@
         };
 
         /*
-		 * external references: condec.jira.issue.module
-		 */
-        ConDecAPI.prototype.getSummarizedCode = function (id, documentationLocation, probability, callback) {
-            // console.log(probability);
-            generalApi.getText(this.restPrefix + "/knowledge/getSummarizedCode?projectKey=" + projectKey
-                + "&id=" + id + "&documentationLocation=" + documentationLocation + "&probability=" + probability,
-                function (error, summary) {
-                    if (error === null) {
-                        callback(summary);
-                    }
-                });
-        };
-
-        /*
 		 * external references: condec.tree.viewer
 		 */
         ConDecAPI.prototype.getTreeViewer = function (rootElementType, callback) {
@@ -478,13 +464,13 @@
                 }
             });
         };
-
+        
         /*
 		 * external references: condec.jira.issue.module
 		 */
         ConDecAPI.prototype.getSummarizedCode = function (id, documentationLocation, probability, callback) {
             // console.log(probability);
-            getText(this.restPrefix + "/knowledge/getSummarizedCode?projectKey=" + projectKey
+            generalApi.getText(this.restPrefix + "/knowledge/getSummarizedCode?projectKey=" + projectKey
                 + "&id=" + id + "&documentationLocation=" + documentationLocation + "&probability=" + probability,
                 function (error, summary) {
                     if (error === null) {
