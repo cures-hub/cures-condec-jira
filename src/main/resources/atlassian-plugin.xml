@@ -85,59 +85,64 @@
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-create-issue</dependency>
 	</web-resource>
 
-    <web-resource key="decision-knowledge-management-resources"
-                  name="ConDec Decision Knowledge Management Resources">
-        <description>
-            Provides the JavaScript files for the management of decision knowledge.
-        </description>
-        <context>jira.view.issue</context>
-        <!-- jquery 1.9.1 for the plug-in (required by jstree) with Sizzle -->
-        <resource type="download" name="jqueryConDec.js" location="/js/lib/jquery/jquery.js" />
-        <!-- jstree -->
-        <resource type="download" name="jstree.js" location="/js/lib/jstree/jstree.js" />
-        <!-- treant -->
-        <resource type="download" name="Treant.js" location="/js/lib/treant/treant.js" />
-        <resource type="download" name="raphael.js" location="/js/lib/treant/raphael.js" />
-        <resource type="download" name="jquery.easing.js"
-                  location="/js/lib/jquery/jquery.easing.js" />
-        <!--Vis -->
-        <resource type="download" name="vis.js" location="/js/lib/vis/dist/vis.js" />
-        <!-- ConDec java script files -->
-        <resource type="download" name="general.api.js" location="/js/general.api.js" />
+	<web-resource key="decision-knowledge-management-resources"
+		name="ConDec Decision Knowledge Management Resources">
+		<description>
+			Provides the JavaScript files for the management of decision knowledge.
+		</description>
+		<context>jira.view.issue</context>
+		<!-- jquery 1.9.1 for the plug-in (required by jstree) with Sizzle -->
+		<resource type="download" name="jqueryConDec.js" location="/js/lib/jquery/jquery.js" />
+		<!-- jstree -->
+		<resource type="download" name="jstree.js" location="/js/lib/jstree/jstree.js" />
+		<!-- treant -->
+		<resource type="download" name="Treant.js" location="/js/lib/treant/treant.js" />
+		<resource type="download" name="raphael.js" location="/js/lib/treant/raphael.js" />
+		<resource type="download" name="jquery.easing.js"
+			location="/js/lib/jquery/jquery.easing.js" />
+		<!--Vis -->
+		<resource type="download" name="vis.js" location="/js/lib/vis/dist/vis.js" />
+		<!-- ConDec java script files -->
+		<resource type="download" name="general.api.js" location="/js/general.api.js" />
 
-        <resource type="download" name="condec.api.js" location="/js/condec.api.js" />
+		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
 
-        <resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />
-        <resource type="download" name="condec.dialog.js" location="/js/condec.dialog.js" />
-        <resource type="download" name="condec.context.menu.js"
-                  location="/js/condec.context.menu.js" />
-        <resource type="download" name="condec.filtering.js" location="/js/condec.filtering.js" />
-        <resource type="download" name="condec.gitdiffviewer.js"
-                  location="/js/condec.gitdiffviewer.js" />
-        <resource type="download" name="condec.git.code.elements.linker.js"
-                  location="/js/condec.git.code.elements.linker.js" />
-        <resource type="download" name="condec.treant.js" location="/js/condec.treant.js" />
-        <resource type="download" name="condec.tree.viewer.js"
-                  location="/js/condec.tree.viewer.js" />
-        <resource type="download" name="condec.vis.js" location="/js/condec.vis.js" />
-		<resource type="download" name="condec.decision.table.js" location="/js/condec.decision.table.js"/>
-        <resource type="download" name="condec.export.js" location="/js/condec.export.js" />
-        <resource type="download" name="condec.evolution.page.js"
-                  location="/js/condec.evolution.page.js" />
-        <resource type="download" name="condec.relationship.page.js"
-                  location="/js/condec.relationship.page.js" />
-        <resource type="download" name="condec.relationshipMatrix.page.js"
-                  location="/js/condec.relationshipMatrix.page.js" />
-        <resource type="download" name="condec.code.class.page.js"
-                  location="/js/condec.code.class.page.js" />
-        <resource type="download" name="condec.decision.group.view.js"
-                  location="/js/condec.decision.group.view.js" />
-        <resource type="download" name="condec.consistency.api.js" location="/js/condec.consistency.api.js" />
-        <resource type="download" name="condec.config.rest.js" location="/js/condec.config.rest.js" />
-        <resource type="download" name="condec.settings.consistency.js" location="/js/condec.settings.consistency.js" />
-        <resource type="download" name="condec.jira.issue.module.consistency.js" location="/js/condec.jira.issue.module.consistency.js" />
+		<resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />
+		<resource type="download" name="condec.dialog.js" location="/js/condec.dialog.js" />
+		<resource type="download" name="condec.context.menu.js"
+			location="/js/condec.context.menu.js" />
+		<resource type="download" name="condec.filtering.js" location="/js/condec.filtering.js" />
+		<resource type="download" name="condec.gitdiffviewer.js"
+			location="/js/condec.gitdiffviewer.js" />
+		<resource type="download" name="condec.git.code.elements.linker.js"
+			location="/js/condec.git.code.elements.linker.js" />
+		<resource type="download" name="condec.treant.js" location="/js/condec.treant.js" />
+		<resource type="download" name="condec.tree.viewer.js"
+			location="/js/condec.tree.viewer.js" />
+		<resource type="download" name="condec.vis.js" location="/js/condec.vis.js" />
+		<resource type="download" name="condec.decision.table.js"
+			location="/js/condec.decision.table.js" />
+		<resource type="download" name="condec.export.js" location="/js/condec.export.js" />
+		<resource type="download" name="condec.evolution.page.js"
+			location="/js/condec.evolution.page.js" />
+		<resource type="download" name="condec.relationship.page.js"
+			location="/js/condec.relationship.page.js" />
+		<resource type="download" name="condec.relationshipMatrix.page.js"
+			location="/js/condec.relationshipMatrix.page.js" />
+		<resource type="download" name="condec.code.class.page.js"
+			location="/js/condec.code.class.page.js" />
+		<resource type="download" name="condec.decision.group.view.js"
+			location="/js/condec.decision.group.view.js" />
+		<resource type="download" name="condec.consistency.api.js"
+			location="/js/condec.consistency.api.js" />
+		<resource type="download" name="condec.config.rest.js"
+			location="/js/condec.config.rest.js" />
+		<resource type="download" name="condec.settings.consistency.js"
+			location="/js/condec.settings.consistency.js" />
+		<resource type="download" name="condec.jira.issue.module.consistency.js"
+			location="/js/condec.jira.issue.module.consistency.js" />
 
-    </web-resource>
+	</web-resource>
 
 	<web-resource key="decision-knowledge-page-resources"
 		name="ConDec Decision Knowledge Page Resources">
@@ -336,15 +341,15 @@
 		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
-    <web-item key="condec-project-settings-menu-item-consistency"
-              name="Menu Item for ConDec Plug-in Project Settings of Consistency"
-              section="atl.jira.proj.config/condec-project-settings-section" weight="21">
-        <description>Adds the "Consistency" menu item.</description>
-        <label key="condec.project.settings.menu.item.consistency" />
-        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=consistency
-        </link>
-        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-    </web-item>
+	<web-item key="condec-project-settings-menu-item-consistency"
+		name="Menu Item for ConDec Plug-in Project Settings of Consistency"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="21">
+		<description>Adds the "Consistency" menu item.</description>
+		<label key="condec.project.settings.menu.item.consistency" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=consistency
+		</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
 	<servlet key="servlet-for-settings-of-single-project"
 		name="Servlet for Settings of Single Project"
 		class="de.uhd.ifi.se.decision.management.jira.config.SettingsOfSingleProject">
@@ -356,37 +361,37 @@
 		</init-param>
 	</servlet>
 
-    <!-- Active Objects -->
-    <ao key="ao-module" name="Active Objects Service">
-        <description>
-            Configures the Active Objects service that is used to persist decision knowledge with
-            object relational mapping.
-        </description>
-        <entity>
-            de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase
-        </entity>
-        <entity>
-            de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupInDatabase
-        </entity>
+	<!-- Active Objects -->
+	<ao key="ao-module" name="Active Objects Service">
+		<description>
+			Configures the Active Objects service that is used to persist decision knowledge with
+			object relational mapping.
+		</description>
+		<entity>
+			de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase
+		</entity>
+		<entity>
+			de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupInDatabase
+		</entity>
 		<entity>
 			de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase
 		</entity>
-        <entity>
-            de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase
-        </entity>
-        <entity>
-            de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInDatabase
-        </entity>
-        <entity>
-            de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedLinkSuggestionsInDatabase
-        </entity>
-        <entity>
-            de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedDuplicatesInDatabase
-        </entity>
-        <entity>
-            de.uhd.ifi.se.decision.management.jira.persistence.tables.ConsistencyCheckLogsInDatabase
-        </entity>
-    </ao>
+		<entity>
+			de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase
+		</entity>
+		<entity>
+			de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInDatabase
+		</entity>
+		<entity>
+			de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedLinkSuggestionsInDatabase
+		</entity>
+		<entity>
+			de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedDuplicatesInDatabase
+		</entity>
+		<entity>
+			de.uhd.ifi.se.decision.management.jira.persistence.tables.ConsistencyCheckLogsInDatabase
+		</entity>
+	</ao>
 
 	<!-- Decision Knowledge Issue Module -->
 	<web-panel key="condec-jira-issue-module" name="Decision Knowledge JIRA Issue Module"
@@ -470,22 +475,20 @@
 			location="js/condec.text.editor.extension.js" />
 	</web-resource>
 
-
-    <web-resource key="dashboard-item-condec-resources"
-                  name="ConDec Dashboard Web Resources">
-        <resource type="download" name="condec.dashboard.css"
-                  location="/css/condec.dashboard.css" />
-        <resource type="download" name="condec.git.branches.dashboard.js"
-                  location="js/dashboard/condec.git.branches.dashboard.js" />
-        <resource type="download" name="condec.requirements.dashboard.js"
-                  location="js/dashboard/condec.requirements.dashboard.js" />
-        <resource type="download" name="condec.git.code.elements.linker.js"
-                  location="/js/condec.git.code.elements.linker.js" />
-        <resource type="download" name="echarts.js" location="/js/lib/echart/echarts.js" />
-        <resource type="download" name="dataTool.js" location="/js/lib/echart/dataTool.js" />
-        <resource type="download" name="condec.api.js" location="/js/condec.api.js" />
-        <resource type="download" name="general.api.js" location="/js/general.api.js" />
-
+	<web-resource key="dashboard-item-condec-resources"
+		name="ConDec Dashboard Web Resources">
+		<resource type="download" name="condec.dashboard.css"
+			location="/css/condec.dashboard.css" />
+		<resource type="download" name="condec.git.branches.dashboard.js"
+			location="js/dashboard/condec.git.branches.dashboard.js" />
+		<resource type="download" name="condec.requirements.dashboard.js"
+			location="js/dashboard/condec.requirements.dashboard.js" />
+		<resource type="download" name="condec.git.code.elements.linker.js"
+			location="/js/condec.git.code.elements.linker.js" />
+		<resource type="download" name="echarts.js" location="/js/lib/echart/echarts.js" />
+		<resource type="download" name="dataTool.js" location="/js/lib/echart/dataTool.js" />
+		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
+		<resource type="download" name="general.api.js" location="/js/general.api.js" />
 		<context>atl.dashboard</context>
 	</web-resource>
 
