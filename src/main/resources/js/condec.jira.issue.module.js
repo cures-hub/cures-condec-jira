@@ -27,12 +27,12 @@
     };
 
     ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog,
-                                                         _conDecContextMenu, _treant, _vis) {
+                                                         _conDecContextMenu, _treant, _vis, _decisionTable) {
 
 		console.log("ConDecJiraIssueModule init");
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
 			&& isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
-			&& isConDecTreantType(_treant) && isConDecVisType(_vis) && isConDecDecisionTableTyp(_decisionTable)) {
+			&& isConDecTreantType(_treant) && isConDecVisType(_vis) ){//&& isConDecDecisionTableTyp(_decisionTable)) {
 
             conDecAPI = _conDecAPI;
             conDecObservable = _conDecObservable;
@@ -84,19 +84,28 @@
 
 	function determineSelectedTab(href) {
 		if (href === undefined) {
-			return;
+			AJS.tabs.change(jQuery('a[href="#treant"]'));
+			showTreant();
 		}
 		if (href.includes("#treant")) {
+			AJS.tabs.change(jQuery('a[href="#treant"]'));
+
 			showTreant();
 		} else if (href.includes("#vis")) {
+			AJS.tabs.change(jQuery('a[href="#vis"]'));
+
 			showGraph();
 		} else if (href.includes("#decisionTable")) {
+			AJS.tabs.change(jQuery('a[href="#decisionTable"]'));
 			showDecisionTable();
 		} else if (href.includes("#class-treant")) {
+			AJS.tabs.change(jQuery('a[href="#class-treant"]'));
 			showClassTreant();
 		} else if (href.includes("#duplicate-issues-tab")) {
+			AJS.tabs.change(jQuery('a[href="#duplicate-issues-tab"]'));
 			consistencyTabsModule.loadDuplicateData();
 		} else if (href.includes("#related-issues-tab")) {
+			AJS.tabs.change(jQuery('a[href="#related-issues-tab"]'));
 			consistencyTabsModule.loadData();
 		}
 	}

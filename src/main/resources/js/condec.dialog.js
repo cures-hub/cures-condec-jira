@@ -301,6 +301,7 @@
                 conDecObservable.notify();
             });
             if (submitCallback !== null){
+				console.log(submitCallback);
 				submitCallback();
 
 			}
