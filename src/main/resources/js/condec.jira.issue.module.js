@@ -28,7 +28,7 @@
     };
 
     ConDecJiraIssueModule.prototype.init = function (_conDecAPI, _conDecObservable, _conDecDialog,
-                                                         _conDecContextMenu, _treant, _vis, _decisionTable) {
+                                                     _conDecContextMenu, _treant, _vis, _decisionTable) {
 
 		console.log("ConDecJiraIssueModule init");
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
