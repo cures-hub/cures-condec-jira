@@ -20,7 +20,7 @@
     var treant = null;
     var treeViewer = null;
 
-    var ConDecKnowledgePage = function ConDecKnowledgePage() {
+    var ConDecKnowledgePage = function () {
     };
 
     ConDecKnowledgePage.prototype.init = function (_conDecAPI, _conDecObservable, _conDecDialog, _conDecContextMenu,

@@ -23,11 +23,11 @@
     var issueKey = "";
     var search = "";
 
-    var ConDecJiraIssueModule = function ConDecJiraIssueModule() {
+    var ConDecJiraIssueModule = function () {
         console.log("conDecJiraIssueModule constructor");
     };
 
-    ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog,
+    ConDecJiraIssueModule.prototype.init = function (_conDecAPI, _conDecObservable, _conDecDialog,
                                                          _conDecContextMenu, _treant, _vis, _decisionTable) {
 
 		console.log("ConDecJiraIssueModule init");
@@ -57,18 +57,18 @@
         return false;
     };
 
-    ConDecJiraIssueModule.prototype.initView = function initView() {
+    ConDecJiraIssueModule.prototype.initView = function () {
         console.log("ConDecJiraIssueModule initView");
         issueKey = conDecAPI.getIssueKey();
         search = getURLsSearch();
         initFilter(issueKey, search);
     };
 
-    ConDecJiraIssueModule.prototype.applyClassViewFilters = function applyClassViewFilters() {
+    ConDecJiraIssueModule.prototype.applyClassViewFilters = function () {
         showClassTreant();
     };
 
-    ConDecJiraIssueModule.prototype.applyTreeVisFilters = function applyTreeVisFilters() {
+    ConDecJiraIssueModule.prototype.applyTreeVisFilters = function () {
         showTreant();
     };
 
