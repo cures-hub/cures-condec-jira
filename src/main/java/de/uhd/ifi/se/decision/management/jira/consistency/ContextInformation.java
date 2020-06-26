@@ -13,6 +13,7 @@ import org.ofbiz.core.entity.GenericEntityException;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -65,7 +66,7 @@ public class ContextInformation {
 
 		//retain scores of filtered issues
 		return linkSuggestionScores
-			.stream()
+			.parallelStream()
 			// issue was not filtered out
 			.filter(linkSuggestion -> filteredIssues.contains(linkSuggestion.getTargetIssue()))
 			// the probability is higher or equal to the minimum probability set by the admin for the project
@@ -88,12 +89,12 @@ public class ContextInformation {
 
 	private Collection<LinkSuggestion> calculateNewCriScores(Set<Issue> projectIssues) {
 		// init the link suggestions
-		Map<String, LinkSuggestion> linkSuggestions = new HashMap<>();
+		Map<String, LinkSuggestion> linkSuggestions = Collections.synchronizedMap(new HashMap<>());
 		for (Issue otherIssue : projectIssues) {
 			linkSuggestions.put(otherIssue.getKey(), new LinkSuggestion(this.issue, otherIssue));
 		}
 
-		for (ContextInformationProvider cip : this.cips) {
+		this.cips.stream().forEach((cip) -> {
 			Map<String, Double> individualScores = new HashMap<>();
 			for (Issue otherIssue : projectIssues) {
 				individualScores.put(otherIssue.getKey(), cip.assessRelation(this.issue, otherIssue));
@@ -122,7 +123,7 @@ public class ContextInformation {
 					LinkSuggestion linkSuggestion = linkSuggestions.get(score.getKey());
 					linkSuggestion.addToScore(score.getValue() / finalMaxOfIndividualScoresForCurrentCip, cip.getName());//sumOfIndividualScoresForCurrentCip);
 				});
-		}
+		});
 
 		return linkSuggestions.values();
 	}
