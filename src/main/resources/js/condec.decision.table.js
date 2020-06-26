@@ -13,9 +13,10 @@
     */
 	ConDecDecisionTable.prototype.loadDecisionProblems = function loadDecisionProblems(elementKey) {
 		console.log("conDecDecisionTable buildDecisionTable");
-		conDecAPI.getIssuesForDecisionProblem(elementKey, function (data) {
+		conDecAPI.getDecisionIssues(elementKey, function (data) {
 			console.log(data);
-			addDropDownItems(data);
+			issues = data;
+			addDropDownItems(data, elementKey);
 		});
 
 		/*conDecAPI.getDecisionTable(elementKey, function (data) {
@@ -50,22 +51,24 @@
 
 		let body = document.getElementById("tblBody");
 
-
-		if (alternatives.length) {
-			for (let i = 0; i < alternatives.length; i++) {
-				body.innerHTML += `<tr id="bodyRowAlternatives${alternatives[i].id}"></tr>`;
-				let rowElement = document.getElementById(`bodyRowAlternatives${alternatives[i].id}`);
-				rowElement.innerHTML += `<td headers="${alternativeClmTitle}">${alternatives[i].title}</td>`;
-			}
-		} else {
+		if (Object.keys(alternatives).length === 0) {
 			body.innerHTML += `<tr id="bodyRowAlternatives"></tr>`;
 			let rowElement = document.getElementById(`bodyRowAlternatives`);
 			rowElement.innerHTML += `<td headers="${alternativeClmTitle}">Please add at least one alternative for this issue</td>`;
+		} else {
+			for (let key in alternatives) {
+				body.innerHTML += `<tr id="bodyRowAlternatives${alternatives[key][0].id}"></tr>`;
+				let rowElement = document.getElementById(`bodyRowAlternatives${alternatives[key][0].id}`);
+				rowElement.innerHTML += `<td headers="${alternativeClmTitle}">${alternatives[key][0].summary}</td>`;
+				if(alternatives[key].length > 1) {
+					addAlternativeBody(table, header);
+				}
+			}
 		}
 	}
 
-	function addTableBody2() {
-
+	function addAlternativeBody(table, header, data) {
+		
 	}
 
 	function addTableHeader(container, headerData) {
@@ -96,21 +99,20 @@
 		}
 	}
 
-	function addDropDownItems(data) {
+	function addDropDownItems(data, elementKey) {
 		let dropDown = document.getElementById(`${dropDownID}`);
 		dropDown.innerHTML = "<aui-section id=\"ddIssueID\">";
 		let dropDownSection = document.getElementById("ddIssueID");
 
-		if (!data.children.length) {
-			dropDownSection.innerHTML += "<aui-item-radio disabled>" + data.text.title + "</aui-item-radio>";
+		if (!data.length) {
+			dropDownSection.innerHTML += "<aui-item-radio disabled>Could not find any issue. Please create new issue!</aui-item-radio>";
 		} else {
-			issues = searchForRelevantIssues(data.children);
-			console.log(issues);
-			for (let i = 0; i < issues.length; i++) {
+			console.log(data);
+			for (let i = 0; i < data.length; i++) {
 				if (i == 0) {
-					dropDownSection.innerHTML += "<aui-item-radio interactive checked>" + issues[i].title + "</aui-item-radio>";
+					dropDownSection.innerHTML += "<aui-item-radio interactive checked>" + data[i].summary + "</aui-item-radio>";
 				} else {
-					dropDownSection.innerHTML += "<aui-item-radio interactive>" + issues[i].title + "</aui-item-radio>";
+					dropDownSection.innerHTML += "<aui-item-radio interactive>" + data[i].summary + "</aui-item-radio>";
 				}
 			}
 		}
@@ -120,9 +122,14 @@
 			var tagName = e.target.tagName.toLowerCase();
 			if (tagName === 'aui-item-radio') {
 				if (e.target.hasAttribute('checked')) {
-					let tmp = issues.find(o => o.title === e.target.textContent);
-					if (typeof tmp !== "undefined" && tmp.hasOwnProperty("alternatives")) {
-						addAlternativesToTable(tmp.alternatives);
+					console.log(e.target.textContent);
+					let tmp = issues.find(o => o.summary === e.target.textContent);
+					if (typeof tmp !== "undefined") {
+						console.log(elementKey.split(":")[0] + ":" + tmp.id);
+						conDecAPI.getDecisionTable(elementKey.split(":")[0] + ":" + tmp.id, function (data) {
+							addAlternativesToTable(data);
+							console.log(data);
+						});
 					} else {
 						addAlternativesToTable([]);
 					}
@@ -132,46 +139,6 @@
 				}
 			}
 		});
-	}
-
-	/**
-	 * this function searches for certain issue types (problems/solutions)
-	 * for further usage in drop down menu and decision table 
-	 * @param {*} data treantNode
-	 */
-	function searchForRelevantIssues(data) {
-		let problems = [];
-		for (let i = 0; i < data.length; i++) {
-			const child = data[i];
-			if (child.HTMLclass === "problem") {
-				problems.push({ id: child.text.desc, title: child.text.title });
-			}
-			if (child.hasOwnProperty("children") && child.children.length) {
-				searchForChildProblems(child, child.children, problems);
-			}
-		}
-		return problems;
-	}
-
-	function searchForChildProblems(parent, children, problems) {
-		for (let i = 0; i < children.length; i++) {
-			const child = children[i];
-			if (child.HTMLclass === "problem") {
-				problems.push({ id: child.text.desc, title: child.text.title });
-			}
-			if (child.HTMLclass === "solution") {
-				let tmp = problems.find(o => o.id === parent.text.desc);
-				if (typeof tmp !== "undefined" && !tmp.hasOwnProperty("alternatives")) {
-					tmp.alternatives = [];
-					tmp.alternatives.push({ id: child.text.desc, title: child.text.title });
-				} else if (typeof tmp !== "undefined") {
-					tmp.alternatives.push({ id: child.text.desc, title: child.text.title });
-				}
-			}
-			if (child.hasOwnProperty("children") && child.children.length) {
-				searchForChildProblems(child, child.children, problems);
-			}
-		}
 	}
 
 	// export ConDecDecisionTable

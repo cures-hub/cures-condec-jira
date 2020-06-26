@@ -34,6 +34,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.view.decisionTable.DecisionTable;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
@@ -219,25 +220,42 @@ public class ViewRest {
 		return Response.ok(timeLine).build();
 	}
 
-	@Path("/getIssuesForDecisionProblem")
+	@Path("/getDecisionIssues")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionTable(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey) {
+	public Response getDecisionIssues(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey) {
 		if (elementKey == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build();
+					.entity(ImmutableMap.of("error", "Decision Issues cannot be shown since element key is invalid.")).build();
 		}
 		String projectKey = getProjectKey(elementKey);
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		int depth = 4; // default value
-
-		Treant treant = new Treant(projectKey, elementKey, depth);
-		return Response.ok(treant.getNodeStructure()).build();
+		DecisionTable dt = new DecisionTable(projectKey, elementKey);
+		dt.setIssues(elementKey);
+		return Response.ok(dt.getIssues()).build();
 	}
 
+	@Path("/getDecisionTable")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getDecisionTable(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey) {
+		if (elementKey == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Decision Table cannot be shown since element key is invalid.")).build();
+		}
+		String projectKey = getProjectKey(elementKey);
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		DecisionTable dt = new DecisionTable(projectKey, elementKey);
+		dt.setDecisionTableForIssue(elementKey);
+		return Response.ok(dt.getDecisionTableData()).build();
+	}
+	
 	@Path("/getTreant")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
