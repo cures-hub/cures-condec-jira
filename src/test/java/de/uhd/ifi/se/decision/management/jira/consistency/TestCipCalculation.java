@@ -90,7 +90,7 @@ public class TestCipCalculation extends TestSetUp {
 
 		i1.setAssignee(null);
 		i1.setCreatorId(null);
-		assertEquals(2., userCIP.assessRelation(i1, i2), 0);
+		assertEquals(0., userCIP.assessRelation(i1, i2), 0);
 
 	}
 
