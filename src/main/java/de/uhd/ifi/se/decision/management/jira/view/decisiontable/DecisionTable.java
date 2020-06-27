@@ -53,18 +53,13 @@ public class DecisionTable {
 
 	public void setIssues(String elementKey) {
 		issues = new ArrayList<>();
-		System.out.println("---- getIssues ----");
 		updatePersistenceManager(elementKey);
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(elementKey);
 		Iterator<KnowledgeElement> iterator = new DepthFirstIterator<>(this.graph, rootElement);
 		while (iterator.hasNext()) {
 			KnowledgeElement elem = iterator.next();
 			if (elem.getType().equals(KnowledgeType.ISSUE)) {
-				System.out.println("---- Found Issues ----");
 				issues.add(elem);
-				System.out.println(elem.getTypeAsString() + " " + String.valueOf(elem.getId()));
-				System.out.println("---- getDecisionTable ----");
-				System.out.println("finished");
 			}
 		}
 	}
@@ -72,30 +67,26 @@ public class DecisionTable {
 	public void setDecisionTableForIssue(String elementKey) {
 		String baseKey = elementKey.substring(0, elementKey.indexOf(":"));
 		updatePersistenceManager(elementKey);
-		System.out.println("---- Issue key: " + elementKey);
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(elementKey);
 		Set<Link> outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
 		decisionTableData = new HashMap<>();
 		for (Link currentLink : outgoingLinks) {
 			KnowledgeElement elem = currentLink.getTarget();
 			if (elem.getType().equals(KnowledgeType.ALTERNATIVE) || elem.getType().equals(KnowledgeType.DECISION)) {
-				System.out.println(elem.getDescription().replace("\n", "") + " " + elem.getTypeAsString() + " "
-						+ String.valueOf(elem.getId()));
-						String tmpKey = getKey(baseKey, elem);
-						decisionTableData.put(tmpKey, new ArrayList<KnowledgeElement>());
-						decisionTableData.get(tmpKey).add(elem);
+				String tmpKey = getKey(baseKey, elem);
+				decisionTableData.put(tmpKey, new ArrayList<KnowledgeElement>());
+				decisionTableData.get(tmpKey).add(elem);
 				getArguments(baseKey + ":" + String.valueOf(elem.getId()), decisionTableData.get(tmpKey));
 			}
 		}
 	}
 
 	private String getKey(String baseKey, KnowledgeElement elem) {
-		return baseKey  + ":" + elem.getId();
+		return baseKey + ":" + elem.getId();
 	}
 
 	private void getArguments(String elementKey, List<KnowledgeElement> arguments) {
 		updatePersistenceManager(elementKey);
-		System.out.println("---- Issue key for arguments: " + elementKey);
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(elementKey);
 		Set<Link> outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
 
@@ -103,8 +94,6 @@ public class DecisionTable {
 			KnowledgeElement elem = currentLink.getTarget();
 			if (elem.getType().equals(KnowledgeType.PRO) || elem.getType().equals(KnowledgeType.CON)) {
 				arguments.add(elem);
-				System.out.println(elem.getDescription().replace("\n", "") + " " + elem.getTypeAsString() + " "
-						+ String.valueOf(elem.getId()));
 			}
 		}
 	}
