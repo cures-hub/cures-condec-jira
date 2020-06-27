@@ -14,41 +14,33 @@
 	ConDecDecisionTable.prototype.loadDecisionProblems = function loadDecisionProblems(elementKey) {
 		console.log("conDecDecisionTable buildDecisionTable");
 		conDecAPI.getDecisionIssues(elementKey, function (data) {
-			console.log(data);
 			issues = data;
 			addDropDownItems(data, elementKey);
 		});
-
-		/*conDecAPI.getDecisionTable(elementKey, function (data) {
-			if (data.qa != undefined) {
-				let container = document.getElementById(decisionTableID);
-				container.innerHTML = "";
-				addTableHeader(container, data.qa);
-				addTableBody(data.qa, data.description);
-			}
-		});*/
 	};
 
-	ConDecDecisionTable.prototype.updateDecisionTable = function updateDecisionTable() {
-
-	}
-
-	/**
-	 * 
-	 * @param {*} alternatives contains alternatives under a certain issue
-	 */
-	function addAlternativesToTable(alternatives) {
+	function buildDecisionTable(data) {
 		let container = document.getElementById(decisionTableID);
 		container.innerHTML = "";
 		container.innerHTML += `<table id="${auiTableID}" class="aui">`;
+
 		let table = document.getElementById(`${auiTableID}`);
 		table.innerHTML += "<thead id=\"tblHeader\"><tr id=\"tblRow\">";
-		let header = document.getElementById("tblRow");
 
+		let header = document.getElementById("tblRow");
 		header.innerHTML += "<th id=\"alternativeClmTitle\">" + alternativeClmTitle + "</th>";
-		table.innerHTML += "<thead id=\"tblHeader\"><tr id=\"tblRow\">";
 		table.innerHTML += "<tbody id=\"tblBody\">";
 
+		addAlternativesToDecisionTable(data);
+		addCriteriaToToDecisionTable(data);
+		addArgumentsToDecisionTable(data);
+	}
+
+	 /**
+	  * 
+	  * @param {Array or empty} alternatives 
+	  */
+	function addAlternativesToDecisionTable(alternatives) {
 		let body = document.getElementById("tblBody");
 
 		if (Object.keys(alternatives).length === 0) {
@@ -60,45 +52,49 @@
 				body.innerHTML += `<tr id="bodyRowAlternatives${alternatives[key][0].id}"></tr>`;
 				let rowElement = document.getElementById(`bodyRowAlternatives${alternatives[key][0].id}`);
 				rowElement.innerHTML += `<td headers="${alternativeClmTitle}">${alternatives[key][0].summary}</td>`;
-				if(alternatives[key].length > 1) {
-					addAlternativeBody(table, header);
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @param {*} data 
+	 */
+	function addCriteriaToToDecisionTable(data) {
+		let header = document.getElementById("tblRow");
+		header.innerHTML += `<th id=\"criteriaClmTitlePro\">Pro</th>`;
+		header.innerHTML += `<th id=\"criteriaClmTitleCon\">Con</th>`;
+
+		for (let key in data) {
+			let rowElement = document.getElementById(`bodyRowAlternatives${data[key][0].id}`);
+			rowElement.innerHTML += `<td id=\"cellPro${data[key][0].id}\" headers=\"Pro\"></td>`;
+			rowElement.innerHTML += `<td id=\"cellCon${data[key][0].id}\" headers=\"Con\"></td>`;
+		}
+	}
+
+	/**
+	 * 
+	 * @param {*} alternatives 
+	 */
+	function addArgumentsToDecisionTable(alternatives) {
+		for (let key in alternatives) {
+			if (alternatives[key].length > 1) {
+				const alternative = alternatives[key];
+				for (let index = 1; index < alternative.length; index++) {
+					const argument = alternative[index];
+					let rowElement = document.getElementById(`cell${argument.type}${alternative[0].id}`);
+					rowElement.setAttribute("style", "white-space: pre;");
+					rowElement.textContent += rowElement.textContent.length ? "\r\n" + argument.summary : argument.summary;
 				}
 			}
 		}
 	}
 
-	function addAlternativeBody(table, header, data) {
-		
-	}
-
-	function addTableHeader(container, headerData) {
-		container.innerHTML += `<table id="${auiTableID}" class="aui">`;
-		let table = document.getElementById(`${auiTableID}`);
-		table.innerHTML += "<thead id=\"tblHeader\"><tr id=\"tblRow\">";
-		let header = document.getElementById("tblRow");
-
-		for (let index = 0; index < headerData.length; index++) {
-			const el = headerData[index];
-			header.innerHTML += "<th id=\"el\">" + el + "</th>";
-		}
-	}
-
-	function addTableBody(headerData, descriptionData) {
-		let table = document.getElementById(`${auiTableID}`);
-		table.innerHTML += "<tbody id=\"tblBody\">";
-		let body = document.getElementById("tblBody");
-
-		for (let headerIndex = 0; headerIndex < headerData.length; headerIndex++) {
-			const headerID = headerData[headerIndex];
-			for (let bodyIndex = 0; bodyIndex < descriptionData[headerIndex].length; bodyIndex++) {
-				const descriptionElement = descriptionData[headerIndex][bodyIndex] != undefined ? descriptionData[headerIndex][bodyIndex] : "";
-				body.innerHTML += `<tr id="bodyRow${bodyIndex}"></tr>`;
-				let rowElement = document.getElementById(`bodyRow${bodyIndex}`);
-				rowElement.innerHTML += `<td headers="${headerID}">${descriptionElement}</td>`;
-			}
-		}
-	}
-
+	/**
+	 * 
+	 * @param {*} data 
+	 * @param {string} elementKey 
+	 */
 	function addDropDownItems(data, elementKey) {
 		let dropDown = document.getElementById(`${dropDownID}`);
 		dropDown.innerHTML = "<aui-section id=\"ddIssueID\">";
@@ -107,7 +103,6 @@
 		if (!data.length) {
 			dropDownSection.innerHTML += "<aui-item-radio disabled>Could not find any issue. Please create new issue!</aui-item-radio>";
 		} else {
-			console.log(data);
 			for (let i = 0; i < data.length; i++) {
 				if (i == 0) {
 					dropDownSection.innerHTML += "<aui-item-radio interactive checked>" + data[i].summary + "</aui-item-radio>";
@@ -122,20 +117,14 @@
 			var tagName = e.target.tagName.toLowerCase();
 			if (tagName === 'aui-item-radio') {
 				if (e.target.hasAttribute('checked')) {
-					console.log(e.target.textContent);
 					let tmp = issues.find(o => o.summary === e.target.textContent);
 					if (typeof tmp !== "undefined") {
-						console.log(elementKey.split(":")[0] + ":" + tmp.id);
 						conDecAPI.getDecisionTable(elementKey.split(":")[0] + ":" + tmp.id, function (data) {
-							addAlternativesToTable(data);
-							console.log(data);
+							buildDecisionTable(data);
 						});
 					} else {
 						addAlternativesToTable([]);
 					}
-					console.log(e.target.textContent, 'was selected.');
-				} else {
-					console.log(e.target.textContent, 'was deselected.');
 				}
 			}
 		});
