@@ -36,10 +36,10 @@
 		addArgumentsToDecisionTable(data);
 	}
 
-	 /**
-	  * 
-	  * @param {Array or empty} alternatives 
-	  */
+	/**
+	 * 
+	 * @param {Array or empty} alternatives 
+	 */
 	function addAlternativesToDecisionTable(alternatives) {
 		let body = document.getElementById("tblBody");
 
@@ -61,14 +61,16 @@
 	 * @param {*} data 
 	 */
 	function addCriteriaToToDecisionTable(data) {
-		let header = document.getElementById("tblRow");
-		header.innerHTML += `<th id=\"criteriaClmTitlePro\">Pro</th>`;
-		header.innerHTML += `<th id=\"criteriaClmTitleCon\">Con</th>`;
+		if (Object.keys(data).length > 0) {
+			let header = document.getElementById("tblRow");
+			header.innerHTML += `<th id=\"criteriaClmTitlePro\">Pro</th>`;
+			header.innerHTML += `<th id=\"criteriaClmTitleCon\">Con</th>`;
 
-		for (let key in data) {
-			let rowElement = document.getElementById(`bodyRowAlternatives${data[key][0].id}`);
-			rowElement.innerHTML += `<td id=\"cellPro${data[key][0].id}\" headers=\"Pro\"></td>`;
-			rowElement.innerHTML += `<td id=\"cellCon${data[key][0].id}\" headers=\"Con\"></td>`;
+			for (let key in data) {
+				let rowElement = document.getElementById(`bodyRowAlternatives${data[key][0].id}`);
+				rowElement.innerHTML += `<td id=\"cellPro${data[key][0].id}\" headers=\"Pro\"></td>`;
+				rowElement.innerHTML += `<td id=\"cellCon${data[key][0].id}\" headers=\"Con\"></td>`;
+			}
 		}
 	}
 
