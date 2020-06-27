@@ -233,9 +233,9 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		DecisionTable dt = new DecisionTable(projectKey, elementKey);
-		dt.setIssues(elementKey);
-		return Response.ok(dt.getIssues()).build();
+		DecisionTable decisionTable = new DecisionTable(projectKey);
+		decisionTable.setIssues(elementKey);
+		return Response.ok(decisionTable.getIssues()).build();
 	}
 
 	@Path("/getDecisionTable")
@@ -251,9 +251,9 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		DecisionTable dt = new DecisionTable(projectKey, elementKey);
-		dt.setDecisionTableForIssue(elementKey);
-		return Response.ok(dt.getDecisionTableData()).build();
+		DecisionTable decisionTable = new DecisionTable(projectKey);
+		decisionTable.setDecisionTableForIssue(elementKey);
+		return Response.ok(decisionTable.getDecisionTableData()).build();
 	}
 	
 	@Path("/getTreant")

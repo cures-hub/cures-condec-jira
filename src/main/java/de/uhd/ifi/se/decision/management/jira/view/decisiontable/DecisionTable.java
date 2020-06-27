@@ -36,7 +36,7 @@ public class DecisionTable {
 	@XmlElement
 	private Map<String, List<KnowledgeElement>> decisionTableData;
 
-	public DecisionTable(String projectKey, String elementKey) {
+	public DecisionTable(String projectKey) {
 		this.projectKey = projectKey;
 		this.graph = KnowledgeGraph.getOrCreate(this.projectKey);
 	}
