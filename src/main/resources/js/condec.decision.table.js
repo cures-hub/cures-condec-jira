@@ -85,10 +85,25 @@
 				for (let index = 1; index < alternative.length; index++) {
 					const argument = alternative[index];
 					let rowElement = document.getElementById(`cell${argument.type}${alternative[0].id}`);
+					rowElement.setAttribute("class", `argument_${key}_${argument.id}`);
 					rowElement.setAttribute("style", "white-space: pre;");
-					rowElement.textContent += rowElement.textContent.length ? "\r\n" + argument.summary : argument.summary;
+					rowElement.innerHTML += rowElement.innerHTML.length ?
+						`<br><div id=\"${argument.id}\" class=\"argument\">${argument.summary}</div>` :
+						`<div class=\"argument\" id=\"${argument.id}\">${argument.summary}</div>`
 				}
 			}
+		}
+		addaddContextMenuToArguments();
+	}
+
+	function addaddContextMenuToArguments() {
+		let arguments = document.getElementsByClassName("argument");
+		for (let index = 0; index < arguments.length; index++) {
+			const argument = arguments[index];
+			argument.addEventListener("contextmenu", function (event) {
+				event.preventDefault();
+				conDecContextMenu.createContextMenu(this.id, "s", event, decisionTableID);
+			});
 		}
 	}
 
