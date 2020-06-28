@@ -102,7 +102,7 @@
 			const argument = arguments[index];
 			argument.addEventListener("contextmenu", function (event) {
 				event.preventDefault();
-				conDecContextMenu.createContextMenu(this.id, "s", event, decisionTableID);
+				conDecContextMenu.createContextMenu(this.id, "s", event, "tbldecisionTable");
 			});
 		}
 	}
