@@ -245,9 +245,6 @@
             document.getElementById("third-context-section").style.display = "none";
 			document.getElementById("fourth-context-section").style.display = "block";
 			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "none";
-			//document.getElementById().style.display = "none";
-			//document.getElementById("condec-context-menu-delete-item").style.display = "initial;"
-
 		} else {
             document.getElementById("condec-context-menu-create-item").style.display = "initial";
             document.getElementById("condec-context-menu-edit-item").style.display = "initial";
