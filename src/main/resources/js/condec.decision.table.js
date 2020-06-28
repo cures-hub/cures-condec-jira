@@ -19,6 +19,10 @@
 		});
 	};
 
+	/**
+	 * 
+	 * @param {Array<KnowledgeElement> or empty object} data 
+	 */
 	function buildDecisionTable(data) {
 		let container = document.getElementById(decisionTableID);
 		container.innerHTML = "";
