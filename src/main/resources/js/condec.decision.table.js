@@ -34,11 +34,13 @@
 		addAlternativesToDecisionTable(data);
 		addCriteriaToToDecisionTable(data);
 		addArgumentsToDecisionTable(data);
+
+		addContextMenuToElements("argument");
 	}
 
 	/**
 	 * 
-	 * @param {Array or empty object} alternatives 
+	 * @param {Array<KnowledgeElement> or empty object} alternatives 
 	 */
 	function addAlternativesToDecisionTable(alternatives) {
 		let body = document.getElementById("tblBody");
@@ -51,32 +53,33 @@
 			for (let key in alternatives) {
 				body.innerHTML += `<tr id="bodyRowAlternatives${alternatives[key][0].id}"></tr>`;
 				let rowElement = document.getElementById(`bodyRowAlternatives${alternatives[key][0].id}`);
-				rowElement.innerHTML += `<td headers="${alternativeClmTitle}">${alternatives[key][0].summary}</td>`;
+				rowElement.innerHTML += `<td headers="${alternativeClmTitle}">
+					<div class="alternatives" id="${alternatives[key][0].id}">${alternatives[key][0].summary}</div></td>`;
 			}
 		}
 	}
 
 	/**
 	 * 
-	 * @param {Array or empty object} data 
+	 * @param {Array<KnowledgeElement> or empty object} data 
 	 */
 	function addCriteriaToToDecisionTable(data) {
 		if (Object.keys(data).length > 0) {
 			let header = document.getElementById("tblRow");
-			header.innerHTML += `<th id=\"criteriaClmTitlePro\">Pro</th>`;
-			header.innerHTML += `<th id=\"criteriaClmTitleCon\">Con</th>`;
+			header.innerHTML += `<th id="criteriaClmTitlePro">Pro</th>`;
+			header.innerHTML += `<th id="criteriaClmTitleCon">Con</th>`;
 
 			for (let key in data) {
 				let rowElement = document.getElementById(`bodyRowAlternatives${data[key][0].id}`);
-				rowElement.innerHTML += `<td id=\"cellPro${data[key][0].id}\" headers=\"Pro\"></td>`;
-				rowElement.innerHTML += `<td id=\"cellCon${data[key][0].id}\" headers=\"Con\"></td>`;
+				rowElement.innerHTML += `<td id="cellPro${data[key][0].id}" headers="Pro"></td>`;
+				rowElement.innerHTML += `<td id="cellCon${data[key][0].id}" headers="Con"></td>`;
 			}
 		}
 	}
 
 	/**
 	 * 
-	 * @param {Array or empty object} alternatives 
+	 * @param {Array<KnowledgeElement> or empty object} alternatives 
 	 */
 	function addArgumentsToDecisionTable(alternatives) {
 		for (let key in alternatives) {
@@ -87,20 +90,25 @@
 					let rowElement = document.getElementById(`cell${argument.type}${alternative[0].id}`);
 					rowElement.setAttribute("class", `argument_${key}_${argument.id}`);
 					rowElement.setAttribute("style", "white-space: pre;");
+					let content = "";
+					if (argument.type === "Pro") {
+						content = "+ " + argument.summary;
+					} else if (argument.type === "Con") {
+						content = "- " + argument.summary;
+					}
 					rowElement.innerHTML += rowElement.innerHTML.length ?
-						`<br><div id=\"${argument.id}\" class=\"argument\">${argument.summary}</div>` :
-						`<div class=\"argument\" id=\"${argument.id}\">${argument.summary}</div>`
+						`<br><div id="${argument.id}" class="argument">${content}</div>` :
+						`<div class="argument" id="${argument.id}">${content}</div>`
 				}
 			}
 		}
-		addaddContextMenuToArguments();
 	}
 
-	function addaddContextMenuToArguments() {
-		let arguments = document.getElementsByClassName("argument");
-		for (let index = 0; index < arguments.length; index++) {
-			const argument = arguments[index];
-			argument.addEventListener("contextmenu", function (event) {
+	function addContextMenuToElements(elementID) {
+		let alternatives = document.getElementsByClassName(elementID);
+		for (let index = 0; index < alternatives.length; index++) {
+			const alternative = alternatives[index];
+			alternative.addEventListener("contextmenu", function (event) {
 				event.preventDefault();
 				conDecContextMenu.createContextMenu(this.id, "s", event, "tbldecisionTable");
 			});
