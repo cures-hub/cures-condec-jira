@@ -859,7 +859,6 @@
 
 		ConDecAPI.prototype.getDecisionIssues = function (elementKey, callback) {
 			generalApi.getJSON(this.restPrefix + "/view/getDecisionIssues.json?elementKey="+ elementKey, function (error, issues) {
-				console.log(elementKey);
 				if (error === null) {
                     callback(issues);
                 }
@@ -868,7 +867,6 @@
 
 		ConDecAPI.prototype.getDecisionTable = function (elementKey, callback) {
 			generalApi.getJSON(this.restPrefix + "/view/getDecisionTable.json?elementKey="+ elementKey, function (error, issues) {
-				console.log(elementKey);
 				if (error === null) {
                     callback(issues);
                 }
