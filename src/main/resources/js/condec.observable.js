@@ -19,17 +19,17 @@
 
 	var observers = null;
 
-	var ConDecObservable = function ConDecObservable() {
+	var ConDecObservable = function () {
 		this.observers = [];
 	};
 
-	ConDecObservable.prototype.notify = function notify() {
+	ConDecObservable.prototype.notify = function () {
 		this.observers.forEach(function(observer) {
 			observer.updateView();
 		});
 	};
 
-	ConDecObservable.prototype.subscribe = function subscribe(observer) {
+	ConDecObservable.prototype.subscribe = function (observer) {
 		this.observers.push(observer);
 	};
 
