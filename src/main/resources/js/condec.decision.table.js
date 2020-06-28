@@ -38,7 +38,7 @@
 
 	/**
 	 * 
-	 * @param {Array or empty} alternatives 
+	 * @param {Array or empty object} alternatives 
 	 */
 	function addAlternativesToDecisionTable(alternatives) {
 		let body = document.getElementById("tblBody");
@@ -58,7 +58,7 @@
 
 	/**
 	 * 
-	 * @param {*} data 
+	 * @param {Array or empty object} data 
 	 */
 	function addCriteriaToToDecisionTable(data) {
 		if (Object.keys(data).length > 0) {
@@ -76,7 +76,7 @@
 
 	/**
 	 * 
-	 * @param {*} alternatives 
+	 * @param {Array or empty object} alternatives 
 	 */
 	function addArgumentsToDecisionTable(alternatives) {
 		for (let key in alternatives) {
@@ -94,7 +94,7 @@
 
 	/**
 	 * 
-	 * @param {*} data 
+	 * @param {Array or empty object} data 
 	 * @param {string} elementKey 
 	 */
 	function addDropDownItems(data, elementKey) {
