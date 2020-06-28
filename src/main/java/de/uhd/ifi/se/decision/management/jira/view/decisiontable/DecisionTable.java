@@ -44,7 +44,7 @@ public class DecisionTable {
 	// is this necessary? are issues keys always xy-1:xyz for subissues?
 	private void updatePersistenceManager(String elementKey) {
 		if (elementKey.contains(":")) {
-			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+			persistenceManager = KnowledgePersistenceManager.getOrCreate(this.projectKey)
 					.getManagerForSingleLocation(DocumentationLocation.JIRAISSUETEXT);
 		} else {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(this.projectKey).getJiraIssueManager();
@@ -76,13 +76,14 @@ public class DecisionTable {
 				String tmpKey = getKey(baseKey, elem);
 				decisionTableData.put(tmpKey, new ArrayList<KnowledgeElement>());
 				decisionTableData.get(tmpKey).add(elem);
-				getArguments(baseKey + ":" + String.valueOf(elem.getId()), decisionTableData.get(tmpKey));
+				getArguments(getKey(baseKey, elem), decisionTableData.get(tmpKey));
 			}
 		}
 	}
 
+	// creates issue key based on base key and current issue id
 	private String getKey(String baseKey, KnowledgeElement elem) {
-		return baseKey + ":" + elem.getId();
+		return String.valueOf(baseKey + ":" + elem.getId());
 	}
 
 	private void getArguments(String elementKey, List<KnowledgeElement> arguments) {
