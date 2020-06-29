@@ -148,7 +148,7 @@
 				if (e.target.hasAttribute('checked')) {
 					let tmp = issues.find(o => o.summary === e.target.textContent);
 					if (typeof tmp !== "undefined") {
-						conDecAPI.getDecisionTable(elementKey.split(":")[0] + ":" + tmp.id, function (data) {
+						conDecAPI.getDecisionTable(elementKey, tmp.id, tmp.documentationLocation, function (data) {
 							buildDecisionTable(data);
 						});
 					} else {
