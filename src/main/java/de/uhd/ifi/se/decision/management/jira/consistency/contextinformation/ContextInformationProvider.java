@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.consistency;
+package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
 
 import com.atlassian.jira.issue.Issue;
 

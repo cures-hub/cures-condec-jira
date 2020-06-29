@@ -1,8 +1,7 @@
-package de.uhd.ifi.se.decision.management.jira.consistency.implementation;
+package de.uhd.ifi.se.decision.management.jira.consistency.checktriggers;
 
 
 import com.atlassian.jira.event.issue.IssueEvent;
-import de.uhd.ifi.se.decision.management.jira.consistency.ConsistencyCheckEventTrigger;
 
 public class WorkflowDoneTrigger implements ConsistencyCheckEventTrigger {
 	@Override

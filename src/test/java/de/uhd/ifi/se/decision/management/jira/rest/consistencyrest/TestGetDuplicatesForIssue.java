@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest.consistencyrest;
 
-import de.uhd.ifi.se.decision.management.jira.consistency.implementation.DuplicateFragment;
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateFragment;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

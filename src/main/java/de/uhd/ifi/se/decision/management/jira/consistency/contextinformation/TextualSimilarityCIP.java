@@ -1,8 +1,8 @@
-package de.uhd.ifi.se.decision.management.jira.consistency.implementation;
+package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
 
 import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
-import de.uhd.ifi.se.decision.management.jira.consistency.ContextInformationProvider;
+import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.ContextInformationProvider;
 
 import java.util.ArrayList;
 import java.util.HashSet;

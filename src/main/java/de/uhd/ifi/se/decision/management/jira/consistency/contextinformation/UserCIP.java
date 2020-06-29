@@ -1,8 +1,7 @@
-package de.uhd.ifi.se.decision.management.jira.consistency.implementation;
+package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
 
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
-import de.uhd.ifi.se.decision.management.jira.consistency.ContextInformationProvider;
 
 public class UserCIP implements ContextInformationProvider {
 	private String id = "UserCIP_equalCreatorOrEqualAssignee";

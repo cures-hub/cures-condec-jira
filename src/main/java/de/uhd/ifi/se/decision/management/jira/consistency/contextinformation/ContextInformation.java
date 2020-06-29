@@ -1,12 +1,9 @@
-package de.uhd.ifi.se.decision.management.jira.consistency;
+package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.LinkCollection;
-import de.uhd.ifi.se.decision.management.jira.consistency.implementation.TextualSimilarityCIP;
-import de.uhd.ifi.se.decision.management.jira.consistency.implementation.TimeCIP;
-import de.uhd.ifi.se.decision.management.jira.consistency.implementation.TracingCIP;
-import de.uhd.ifi.se.decision.management.jira.consistency.implementation.UserCIP;
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import org.ofbiz.core.entity.GenericEntityException;

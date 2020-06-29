@@ -1,10 +1,10 @@
-package de.uhd.ifi.se.decision.management.jira.consistency.implementation;
+package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.issue.link.IssueLinkManager;
-import de.uhd.ifi.se.decision.management.jira.consistency.ContextInformationProvider;
+import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.ContextInformationProvider;
 
 import java.util.Collection;
 import java.util.HashMap;
