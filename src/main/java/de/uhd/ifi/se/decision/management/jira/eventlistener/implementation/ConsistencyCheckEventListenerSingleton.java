@@ -1,9 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.eventlistener.implementation;
 
 import com.atlassian.jira.event.issue.IssueEvent;
-import de.uhd.ifi.se.decision.management.jira.consistency.ConsistencyCheckEventTrigger;
-import de.uhd.ifi.se.decision.management.jira.consistency.implementation.StatusClosedTrigger;
-import de.uhd.ifi.se.decision.management.jira.consistency.implementation.WorkflowDoneTrigger;
+import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.ConsistencyCheckEventTrigger;
+import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.StatusClosedTrigger;
+import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.WorkflowDoneTrigger;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.IssueEventListener;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 

@@ -4,7 +4,7 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.project.Project;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.consistency.implementation.DuplicateFragment;
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateFragment;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import org.junit.Before;

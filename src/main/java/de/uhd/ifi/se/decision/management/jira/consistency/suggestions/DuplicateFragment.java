@@ -1,9 +1,9 @@
-package de.uhd.ifi.se.decision.management.jira.consistency.implementation;
+package de.uhd.ifi.se.decision.management.jira.consistency.suggestions;
 
 import com.atlassian.jira.issue.Issue;
 import org.codehaus.jackson.annotate.JsonProperty;
 
-public class DuplicateFragment {
+public class DuplicateFragment implements Suggestion<Issue> {
 	@JsonProperty
 	private final Issue i1;
 	@JsonProperty
@@ -49,5 +49,10 @@ public class DuplicateFragment {
 
 	public String getPreprocessedSummary() {
 		return preprocessedSummary;
+	}
+
+	@Override
+	public Issue getSuggestion() {
+		return this.i2;
 	}
 }

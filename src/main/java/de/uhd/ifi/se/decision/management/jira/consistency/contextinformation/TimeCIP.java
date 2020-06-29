@@ -1,7 +1,7 @@
-package de.uhd.ifi.se.decision.management.jira.consistency.implementation;
+package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
 
 import com.atlassian.jira.issue.Issue;
-import de.uhd.ifi.se.decision.management.jira.consistency.ContextInformationProvider;
+import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.ContextInformationProvider;
 
 public class TimeCIP implements ContextInformationProvider {
 	private String id = "TimeCIP_ms";

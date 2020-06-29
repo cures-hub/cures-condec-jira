@@ -1,8 +1,8 @@
-package de.uhd.ifi.se.decision.management.jira.consistency.implementation;
+package de.uhd.ifi.se.decision.management.jira.consistency.duplicatedetection;
 
 import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
-import de.uhd.ifi.se.decision.management.jira.consistency.DuplicateDetectionStrategy;
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateFragment;
 
 import java.util.ArrayList;
 import java.util.List;
