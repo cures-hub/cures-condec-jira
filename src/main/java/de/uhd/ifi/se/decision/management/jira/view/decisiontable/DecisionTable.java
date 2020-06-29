@@ -25,7 +25,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 public class DecisionTable {
 
 	private KnowledgeGraph graph;
-	private String projectKey;
 	private KnowledgePersistenceManager persistenceManager;
 
 	@XmlElement
@@ -35,9 +34,8 @@ public class DecisionTable {
 	private Map<Long, List<KnowledgeElement>> decisionTableData;
 
 	public DecisionTable(String projectKey) {
-		this.projectKey = projectKey;
-		this.graph = KnowledgeGraph.getOrCreate(this.projectKey);
-		persistenceManager = KnowledgePersistenceManager.getOrCreate(this.projectKey);
+		this.graph = KnowledgeGraph.getOrCreate(projectKey);
+		persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
 	}
 
 	public void setIssues(String id) {
