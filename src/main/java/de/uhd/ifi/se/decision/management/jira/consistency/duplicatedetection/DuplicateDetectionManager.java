@@ -2,7 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.consistency.duplicatedetection;
 
 import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.ContextInformation;
-import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateFragment;
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateSuggestion;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 
 import java.util.ArrayList;
@@ -20,8 +20,8 @@ public class DuplicateDetectionManager {
 		this.duplicateDetectionStrategy = duplicateDetectionStrategy;
 	}
 
-	public List<DuplicateFragment> findAllDuplicates(Collection<? extends Issue> issuesToCheck) {
-		List<DuplicateFragment> foundDuplicateFragments = Collections.synchronizedList(new ArrayList<>());
+	public List<DuplicateSuggestion> findAllDuplicates(Collection<? extends Issue> issuesToCheck) {
+		List<DuplicateSuggestion> foundDuplicateSuggestions = Collections.synchronizedList(new ArrayList<>());
 
 		if (this.baseIssue != null) {
 			issuesToCheck.remove(this.baseIssue);
@@ -31,10 +31,10 @@ public class DuplicateDetectionManager {
 
 			issuesToCheck.parallelStream().forEach((issueToCheck) -> {
 				try {
-					List<DuplicateFragment> foundDuplicateFragmentsForIssue = duplicateDetectionStrategy.detectDuplicateTextFragments(this.baseIssue, issueToCheck);
-					DuplicateFragment mostLikelyDuplicate = findLongestDuplicate(foundDuplicateFragmentsForIssue);
+					List<DuplicateSuggestion> foundDuplicateFragmentsForIssue = duplicateDetectionStrategy.detectDuplicateTextFragments(this.baseIssue, issueToCheck);
+					DuplicateSuggestion mostLikelyDuplicate = findLongestDuplicate(foundDuplicateFragmentsForIssue);
 					if (mostLikelyDuplicate != null) {
-						foundDuplicateFragments.add(mostLikelyDuplicate);
+						foundDuplicateSuggestions.add(mostLikelyDuplicate);
 
 					}
 				} catch (Exception e) {
@@ -63,14 +63,14 @@ public class DuplicateDetectionManager {
 			}*/
 		}
 
-		return foundDuplicateFragments;
+		return foundDuplicateSuggestions;
 	}
 
-	private DuplicateFragment findLongestDuplicate(List<DuplicateFragment> foundDuplicateFragmentsForIssue) {
-		DuplicateFragment mostLikelyDuplicate = null;
+	private DuplicateSuggestion findLongestDuplicate(List<DuplicateSuggestion> foundDuplicateFragmentsForIssue) {
+		DuplicateSuggestion mostLikelyDuplicate = null;
 
 		//if (foundDuplicateFragmentsForIssue != null && foundDuplicateFragmentsForIssue.size() > 0) {
-		for (DuplicateFragment fragment : foundDuplicateFragmentsForIssue) {
+		for (DuplicateSuggestion fragment : foundDuplicateFragmentsForIssue) {
 			if (mostLikelyDuplicate == null || fragment.getLength() > mostLikelyDuplicate.getLength()) {
 				mostLikelyDuplicate = fragment;
 			}
