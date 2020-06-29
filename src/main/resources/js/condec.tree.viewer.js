@@ -2,7 +2,7 @@
 
     var jstreeId = "#jstree";
 
-    var ConDecTreeViewer = function ConDecTreeViewer() {
+    var ConDecTreeViewer = function () {
     };
 
     /**
@@ -53,7 +53,7 @@
         });
     };
 
-    ConDecTreeViewer.prototype.addContextMenuToTreeViewer = function addContextMenuToTreeViewer(container) {
+    ConDecTreeViewer.prototype.addContextMenuToTreeViewer = function (container) {
         console.log("conDecTreeViewer addContextMenuToTreeViewer");
         jQueryConDec(jstreeId).on("contextmenu.jstree", function (event) {
             event.preventDefault();
@@ -98,7 +98,7 @@
     /**
      * called by view.decision.knowledge.js
      */
-    ConDecTreeViewer.prototype.selectNodeInTreeViewer = function selectNodeInTreeViewer(nodeId) {
+    ConDecTreeViewer.prototype.selectNodeInTreeViewer = function (nodeId) {
         console.log("conDecTreeViewer selectNodeInTreeViewer");
         jQueryConDec(document).ready(function () {
             var treeViewer = jQueryConDec(jstreeId).jstree(true);
@@ -109,7 +109,7 @@
         });
     };
 
-    ConDecTreeViewer.prototype.filterNodesByGroup = function filterNodesByGroup(selectedGroup, treeId) {
+    ConDecTreeViewer.prototype.filterNodesByGroup = function (selectedGroup, treeId) {
         console.log("conDecTreeViewer filterNodesByGroup");
         jQueryConDec(treeId).on("state_ready.jstree", function () {
             var treeViewer = jQueryConDec(treeId).jstree(true);
@@ -136,7 +136,7 @@
         });
     };
 
-    ConDecTreeViewer.prototype.minMaxFilter = function minMaxFilter(treeId) {
+    ConDecTreeViewer.prototype.minMaxFilter = function (treeId) {
         console.log("conDecTreeViewer filterNodesByGroup");
         jQueryConDec(treeId).on("state_ready.jstree", function () {
             var treeViewer = jQueryConDec(treeId).jstree(true);
@@ -161,7 +161,7 @@
     /**
      * called by view.tab.panel.js locally
      */
-    ConDecTreeViewer.prototype.addDragAndDropSupportForTreeViewer = function addDragAndDropSupportForTreeViewer() {
+    ConDecTreeViewer.prototype.addDragAndDropSupportForTreeViewer = function () {
         console.log("conDecTreeViewer addDragAndDropSupportForTreeViewer");
         jQueryConDec(jstreeId).on(
             'move_node.jstree',

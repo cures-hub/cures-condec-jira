@@ -18,16 +18,17 @@
     var conDecContextMenu = null;
     var treant = null;
     var vis = null;
+	var decisionTable = null;
 
     var issueKey = "";
     var search = "";
 
-    var ConDecJiraIssueModule = function ConDecJiraIssueModule() {
+    var ConDecJiraIssueModule = function () {
         console.log("conDecJiraIssueModule constructor");
     };
 
-    ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog,
-                                                         _conDecContextMenu, _treant, _vis, _decisionTable) {
+    ConDecJiraIssueModule.prototype.init = function (_conDecAPI, _conDecObservable, _conDecDialog,
+                                                     _conDecContextMenu, _treant, _vis, _decisionTable) {
 
 		console.log("ConDecJiraIssueModule init");
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
@@ -37,9 +38,10 @@
             conDecAPI = _conDecAPI;
             conDecObservable = _conDecObservable;
             conDecDialog = _conDecDialog;
-            conDecContextMenu = _conDecContextMenu;
+			conDecContextMenu = _conDecContextMenu;
             treant = _treant;
-            vis = _vis;
+			vis = _vis;
+			decisionTable = _decisionTable;
 
             // Register/subscribe this view as an observer
             conDecObservable.subscribe(this);
@@ -55,25 +57,25 @@
         return false;
     };
 
-    ConDecJiraIssueModule.prototype.initView = function initView() {
+    ConDecJiraIssueModule.prototype.initView = function () {
         console.log("ConDecJiraIssueModule initView");
         issueKey = conDecAPI.getIssueKey();
         search = getURLsSearch();
         initFilter(issueKey, search);
     };
 
-    ConDecJiraIssueModule.prototype.applyClassViewFilters = function applyClassViewFilters() {
+    ConDecJiraIssueModule.prototype.applyClassViewFilters = function () {
         showClassTreant();
     };
 
-    ConDecJiraIssueModule.prototype.applyTreeVisFilters = function applyTreeVisFilters() {
+    ConDecJiraIssueModule.prototype.applyTreeVisFilters = function () {
         showTreant();
     };
 
     function addOnClickEventToTab() {
         console.log("ConDecJiraIssueModule addOnClickEventVisualizationSelectionTab");
 
-		AJS.$("#visualization-selection-tabs").on("click", function (event) {
+		AJS.$("#visualization-selection-tabs-menu").on("click", function (event) {
 			event.preventDefault();
 			event.stopPropagation();
 			determineSelectedTab(event.target.href);
@@ -140,6 +142,11 @@
         vis.buildVis(issueKey, search);
     }
 
+	function showDecisionTable() {
+		console.log("ConDecJiraIssueModule showDecisionTable");
+		decisionTable.loadDecisionProblems(issueKey);
+	}
+	
     function applyFilters() {
         var issueTypes = conDecFiltering.getSelectedItems("issuetype-dropdown");
         var createdAfter = -1;
@@ -274,8 +281,15 @@
             return false;
         }
         return true;
-    }
-
+	}
+	
+	function isConDecDecisionTableTyp(conDecDecisionTable) {
+		if (!(conDecVis !== undefined && conDecDecisionTable.loadDecisionProblems !== undefined && typeof conDecDecisionTable.loadDecisionProblems === 'function')) {
+			console.warn("ConDecJiraIssueModule: ivalid conDecDecisionTable object received.");
+			return false;
+		};
+		return true;
+	}
     // export ConDecJiraIssueModule
     global.conDecJiraIssueModule = new ConDecJiraIssueModule();
 })(window);

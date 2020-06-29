@@ -25,10 +25,10 @@
 
     ConDecEvolutionPage.prototype.buildTimeLine = function buildTimeLine() {
         console.log("ConDec build timeline");
-        conDecFiltering.initDropdown("knowledge-type-dropdown-chronology", conDecAPI.knowledgeTypes);
+        conDecFiltering.initDropdown("knowledge-type-dropdown-chronology", conDecAPI.getKnowledgeTypes());
         conDecFiltering.initDropdown("status-dropdown-chronology", conDecAPI.knowledgeStatus);
         conDecAPI.fillDecisionGroupSelect("select2-decision-group-chrono");
-        conDecAPI.getEvolutionData("", -1, -1, conDecAPI.knowledgeTypes, conDecAPI.knowledgeStatus, [], function (
+        conDecAPI.getEvolutionData("", -1, -1, conDecAPI.getKnowledgeTypes(), conDecAPI.knowledgeStatus, [], function (
             evolutionData) {
             var container = document.getElementById('evolution-timeline');
             var data = evolutionData.dataSet;
@@ -59,7 +59,7 @@
 
     ConDecEvolutionPage.prototype.buildCompare = function buildCompare() {
         console.log("ConDec build compare view");
-        conDecFiltering.initDropdown("knowledge-type-dropdown-comparison", conDecAPI.knowledgeTypes);
+        conDecFiltering.initDropdown("knowledge-type-dropdown-comparison", conDecAPI.getKnowledgeTypes());
         conDecFiltering.initDropdown("status-dropdown-comparison", conDecAPI.knowledgeStatus);
 
         var date = new Date();
@@ -70,7 +70,7 @@
         date.setDate(date.getDate() - 7);
         var startTime = date.getTime();
         document.getElementById("start-data-picker-compare-left").value = date.toISOString().substr(0, 10);
-        conDecAPI.getCompareVis(startTime, endTime, "", conDecAPI.knowledgeTypes, conDecAPI.knowledgeStatus,
+        conDecAPI.getCompareVis(startTime, endTime, "", conDecAPI.getKnowledgeTypes(), conDecAPI.knowledgeStatus,
             function (visData) {
                 var containerLeft = document.getElementById('left-network');
                 var dataLeft = {
@@ -92,7 +92,7 @@
         date.setDate(date.getDate() - 7);
         startTime = date.getTime();
         document.getElementById("start-data-picker-compare-right").value = date.toISOString().substr(0, 10);
-        conDecAPI.getCompareVis(startTime, endTime, "", conDecAPI.knowledgeTypes, conDecAPI.knowledgeStatus,
+        conDecAPI.getCompareVis(startTime, endTime, "", conDecAPI.getKnowledgeTypes(), conDecAPI.knowledgeStatus,
             function (visData) {
                 var containerRight = document.getElementById('right-network');
                 var dataRight = {

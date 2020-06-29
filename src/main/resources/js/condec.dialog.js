@@ -16,11 +16,10 @@
  * conDecReleaseNotePage
  */
 (function (global) {
-    var ConDecDialog = function ConDecDialog() {
+    var ConDecDialog = function () {
     };
 
-    ConDecDialog.prototype.showCreateDialog = function showCreateDialog(idOfParentElement,
-                                                                        documentationLocationOfParentElement) {
+    ConDecDialog.prototype.showCreateDialog = function (idOfParentElement, documentationLocationOfParentElement) {
         console.log("conDecDialog showCreateDialog");
         console.log(idOfParentElement);
         console.log(documentationLocationOfParentElement);
@@ -61,7 +60,7 @@
         AJS.dialog2(createDialog).show();
     };
 
-    ConDecDialog.prototype.showAssignDialog = function showAssignDialog(sourceId, documentationLocation) {
+    ConDecDialog.prototype.showAssignDialog = function (sourceId, documentationLocation) {
         console.log("conDecDialog showAssignDialog");
 
         // HTML elements
@@ -73,7 +72,7 @@
         var submitButton = document.getElementById("assign-dialog-submit-button");
         var cancelButton = document.getElementById("assign-dialog-cancel-button");
 
-        //Fill HTML elements
+        // Fill HTML elements
         inputAddGroupField.value = "";
 
         conDecAPI.getDecisionGroups(sourceId, documentationLocation, inputExistingGroupsField, selectLevelField, function (selectLevelField, inputExistingGroupsField, groups) {
@@ -130,7 +129,7 @@
 
     };
 
-    ConDecDialog.prototype.showRenameGroupDialog = function showRenameGroupDialog(groupName) {
+    ConDecDialog.prototype.showRenameGroupDialog = function (groupName) {
         console.log("conDecDialog showRenameGroupDialog");
         // HTML elements
         var renameGroupDialog = document.getElementById("rename-group-dialog");
@@ -162,7 +161,7 @@
         }
     };
 
-    ConDecDialog.prototype.showDeleteGroupDialog = function showDeleteGroupDialog(groupName) {
+    ConDecDialog.prototype.showDeleteGroupDialog = function (groupName) {
         console.log("conDecDialog showDeleteGroupDialog");
         // HTML elements
         var deleteGroupDialog = document.getElementById("delete-group-dialog");
@@ -193,7 +192,7 @@
         }
     };
 
-    ConDecDialog.prototype.showDeleteDialog = function showDeleteDialog(id, documentationLocation) {
+    ConDecDialog.prototype.showDeleteDialog = function (id, documentationLocation) {
         console.log("conDecDialog showDeleteDialog");
 
         // HTML elements
@@ -218,8 +217,7 @@
         AJS.dialog2(deleteDialog).show();
     };
 
-    ConDecDialog.prototype.showDeleteLinkDialog = function showDeleteLinkDialog(id, documentationLocation,
-                                                                                idOfParent, documentationLocationOfParent) {
+    ConDecDialog.prototype.showDeleteLinkDialog = function (id, documentationLocation, idOfParent, documentationLocationOfParent) {
         console.log("conDecDialog showDeleteLinkDialog");
 
         // HTML elements
@@ -250,7 +248,7 @@
         AJS.dialog2(deleteLinkDialog).show();
     };
 
-    ConDecDialog.prototype.showDecisionLinkDialog = function showDecisionLinkDialog(idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, submitCallback) {
+    ConDecDialog.prototype.showDecisionLinkDialog = function (idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, submitCallback) {
         console.log("conDecDialog showDecisionLinkDialog");
 
         // HTML elements
@@ -264,12 +262,15 @@
 
         // Fill HTML elements
         selectElementField.innerHTML = "";
-        /* NOTE!
-         Instead the Jira API could be called using GET "/rest/api/2/issueLinkType".
-         This call "[r]eturns a list of available issue link types, if issue linking is enabled.
-         Each issue link type has an id, a name and a label for the outward and inward link relationship."
-         @see https://docs.atlassian.com/software/jira/docs/api/REST/8.5.4/#api/2/issueLinkType-getIssueLinkTypes
-         */
+        /*
+		 * NOTE! Instead the Jira API could be called using GET
+		 * "/rest/api/2/issueLinkType". This call "[r]eturns a list of available
+		 * issue link types, if issue linking is enabled. Each issue link type
+		 * has an id, a name and a label for the outward and inward link
+		 * relationship."
+		 * 
+		 * @see https://docs.atlassian.com/software/jira/docs/api/REST/8.5.4/#api/2/issueLinkType-getIssueLinkTypes
+		 */
         conDecAPI.getLinkTypes(function (linkTypes) {
             var linkTypeNames = Object.keys(linkTypes);
             var linkTypeColors = Object.values(linkTypes);
@@ -316,7 +317,7 @@
         AJS.dialog2(linkDialog).show();
     };
 
-    ConDecDialog.prototype.showLinkDialog = function showLinkDialog(id, documentationLocation) {
+    ConDecDialog.prototype.showLinkDialog = function (id, documentationLocation) {
         console.log("conDecDialog showLinkDialog");
 
         // HTML elements
@@ -382,7 +383,7 @@
         AJS.$(selectField).auiSelect2();
     }
 
-    ConDecDialog.prototype.showEditDialog = function showEditDialog(id, documentationLocation, type) {
+    ConDecDialog.prototype.showEditDialog = function (id, documentationLocation, type) {
         console.log("conDecDialog showEditDialog");
 
         conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function (decisionKnowledgeElement) {
@@ -518,7 +519,7 @@
         });
     }
 
-    ConDecDialog.prototype.showChangeTypeDialog = function showChangeTypeDialog(id, documentationLocation) {
+    ConDecDialog.prototype.showChangeTypeDialog = function (id, documentationLocation) {
         console.log("conDecDialog showChangeTypeDialog");
 
         // HTML elements
@@ -549,7 +550,7 @@
         AJS.dialog2(changeTypeDialog).show();
     };
 
-    ConDecDialog.prototype.showChangeStatusDialog = function showChangeStatusDialog(id, documentationLocation) {
+    ConDecDialog.prototype.showChangeStatusDialog = function (id, documentationLocation) {
         console.log("conDecDialog showChangeStatusDialog");
 
         // HTML elements
@@ -603,7 +604,7 @@
         AJS.$(selectField).auiSelect2();
     }
 
-    ConDecDialog.prototype.showSummarizedDialog = function showSummarizedDialog(id, documentationLocation) {
+    ConDecDialog.prototype.showSummarizedDialog = function (id, documentationLocation) {
         // HTML elements
         var summarizedDialog = document.getElementById("summarization-dialog");
         var cancelButton = document.getElementById("summarization-dialog-cancel-button");
@@ -627,7 +628,7 @@
         AJS.dialog2(summarizedDialog).show();
     };
 
-    ConDecDialog.prototype.showCreateReleaseNoteDialog = function showCreateReleaseNoteDialog() {
+    ConDecDialog.prototype.showCreateReleaseNoteDialog = function () {
         // HTML elements
         // set button busy before we show the dialog
         var openingButton = document.getElementById("openCreateReleaseNoteDialogButton");
@@ -667,7 +668,6 @@
             {id: "TESTER", title: "Tester", includes: ["include_bug_fixes", "include_test_instructions"]},
             {id: "ENDUSER", title: "Enduser", includes: []}
         ];
-
 
         var softwareTypeMapping =
             [
@@ -766,7 +766,6 @@
         }
 
         function makeAsyncCalls() {
-
             // load sprints
             var sprintPromise = new Promise(function (resolve, reject) {
                 conDecAPI.getSprintsByProject()
@@ -896,7 +895,6 @@
                     bugSelector.append(bugString + '>' + issueType.name + '</option>');
                     featureSelector.append(featureString + '>' + issueType.name + '</option>');
                     improvementSelector.append(improvementString + '>' + issueType.name + '</option>');
-
                 })
             }
         }
@@ -973,7 +971,6 @@
         titleInput.onchange = function () {
             titleWasChanged = titleInput.value;
         };
-
 
         configurationSubmitButton.onclick = function () {
             var startDate = $("#start-range").val();
@@ -1174,6 +1171,7 @@
 
             }
         };
+        
         issueSelectSubmitButton.onclick = function () {
             // set button busy
             setButtonBusyAndDisabled(issueSelectSubmitButton, true);
@@ -1221,9 +1219,8 @@
                 // set button idle
                 setButtonBusyAndDisabled(issueSelectSubmitButton, false);
             });
-
-
         };
+        
         saveContentButton.onclick = function () {
             console.log("editor", editor.codemirror.getValue());
             var content = editor.codemirror.getValue();
@@ -1250,7 +1247,7 @@
         };
     };
 
-    ConDecDialog.prototype.showExportDialog = function showExportDialog(id, documentationLocation) {
+    ConDecDialog.prototype.showExportDialog = function (id, documentationLocation) {
         console.log("conDecDialog showExportDialog");
 
         // HTML elements
@@ -1273,7 +1270,7 @@
         AJS.dialog2(exportDialog).show();
     };
 
-    ConDecDialog.prototype.showEditReleaseNoteDialog = function showEditReleaseNoteDialog(id) {
+    ConDecDialog.prototype.showEditReleaseNoteDialog = function (id) {
         var editDialog = document.getElementById("edit-release-note-dialog");
         var saveButton = document.getElementById("edit-release-note-submit-content");
         var cancelButton = document.getElementById("edit-release-note-dialog-cancel-button");
@@ -1317,7 +1314,6 @@
                 button.setAttribute('aria-disabled', 'false');
             }
         }
-
 
         saveButton.onclick = function () {
             setButtonBusyAndDisabled(saveButton, true);
@@ -1365,6 +1361,7 @@
             var mdString = "data:text/plain;charset=utf-8," + encodeURIComponent(editor.codemirror.getValue());
             downloadFile(mdString, "md")
         };
+        
         exportWordButton.onclick = function () {
             var htmlString = $(".editor-preview").html();
             if (htmlString) {
@@ -1395,7 +1392,6 @@
                 body: message
             });
         }
-
     };
     // export ConDecDialog
     global.conDecDialog = new ConDecDialog();

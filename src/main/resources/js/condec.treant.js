@@ -9,13 +9,13 @@
     var depthId = "depth-of-tree-input";
 
 
-    var ConDecTreant = function ConDecTreant() {
+    var ConDecTreant = function () {
     };
 
     /*
      * external references: condec.jira.issue.module.js, condec.knowledge.page.js
      */
-    ConDecTreant.prototype.buildTreant = function buildTreant(elementKey, isInteractive, searchTerm, showOtherJiraIssues) {
+    ConDecTreant.prototype.buildTreant = function (elementKey, isInteractive, searchTerm, showOtherJiraIssues) {
         console.log("conDecTreant buildTreant");
         treantid = "treant-container";
         var depthOfTree = getDepthOfTree();
@@ -31,7 +31,7 @@
         });
     };
 
-    ConDecTreant.prototype.buildClassTreant = function buildClassTreant(elementKey, isInteractive, searchTerm, isIssueView) {
+    ConDecTreant.prototype.buildClassTreant = function (elementKey, isInteractive, searchTerm, isIssueView) {
         console.log("conDecTreant buildClassTreant");
         var depthOfTree = getDepthOfTree();
         treantid = "treant-container-class";
