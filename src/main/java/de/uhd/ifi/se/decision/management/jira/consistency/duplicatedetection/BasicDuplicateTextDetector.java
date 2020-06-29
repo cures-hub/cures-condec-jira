@@ -2,7 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.consistency.duplicatedetection;
 
 import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
-import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateFragment;
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateSuggestion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +26,10 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 	}
 
 	@Override
-	public List<DuplicateFragment> detectDuplicateTextFragments(Issue i1, Issue i2) throws Exception {
+	public List<DuplicateSuggestion> detectDuplicateTextFragments(Issue i1, Issue i2) throws Exception {
 		String s1 = cleanMarkdown(i1.getDescription());
 		String s2 = cleanMarkdown(i2.getDescription());
-		List<DuplicateFragment> duplicateList = new ArrayList();
+		List<DuplicateSuggestion> duplicateList = new ArrayList();
 		BasicDuplicateTextDetector.preprocessor.preprocess(s1);
 		List<CharSequence> preprocessedS1Tokens = BasicDuplicateTextDetector.preprocessor.getTokens();
 
@@ -54,7 +54,7 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 				if (index + numberOfDuplicateTokens > preprocessedS1Tokens.size()) {
 					break;
 				}
-				stringToSearch = generateStringToSearch(preprocessedS1Tokens, index, numberOfDuplicateTokens);
+				stringToSearch = this.generateStringToSearch(preprocessedS1Tokens, index, numberOfDuplicateTokens);
 				indexOfDuplicate = s2.indexOf(stringToSearch);
 				if (!duplicateFound) {
 					duplicateFound = indexOfDuplicate != -1;
@@ -62,7 +62,7 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 				numberOfDuplicateTokens++;
 			}
 			if (duplicateFound) {
-				duplicateList.add(new DuplicateFragment(i1, i2, s2, lastIndexOfDuplicate, lastStringToSearch.length(), BasicDuplicateTextDetector.fieldUsedForDetection));
+				duplicateList.add(new DuplicateSuggestion(i1, i2, s2, lastIndexOfDuplicate, lastStringToSearch.length(), BasicDuplicateTextDetector.fieldUsedForDetection));
 				index += numberOfDuplicateTokens - 2; // number of duplicate tokens is one more than found tokens
 			}
 
@@ -72,7 +72,7 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 		return duplicateList;
 	}
 
-	private static String generateStringToSearch(List<CharSequence> preprocessedS1Tokens, int index, int numberOfDuplicateTokens) {
+	private String generateStringToSearch(List<CharSequence> preprocessedS1Tokens, int index, int numberOfDuplicateTokens) {
 		StringBuilder stringToSearch = new StringBuilder();
 		for (int i = index; i < preprocessedS1Tokens.size() && i < index + numberOfDuplicateTokens; i++) {
 			stringToSearch.append(preprocessedS1Tokens.get(i)).append(" ");

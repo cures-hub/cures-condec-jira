@@ -4,7 +4,7 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.project.Project;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateFragment;
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateSuggestion;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import org.junit.Before;
@@ -14,7 +14,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class TestDuplicateFragment extends TestSetUp {
+public class TestDuplicateSuggestion extends TestSetUp {
 
 	private List<MutableIssue> testIssues;
 
@@ -33,14 +33,14 @@ public class TestDuplicateFragment extends TestSetUp {
 		String text = "Hello world!";
 		int start = 0;
 		int length = 5;
-		DuplicateFragment duplicateFragment = new DuplicateFragment(i1, i2, text, start, length, field);
+		DuplicateSuggestion duplicateSuggestion = new DuplicateSuggestion(i1, i2, text, start, length, field);
 
-		assertEquals(i1, duplicateFragment.getI1());
-		assertEquals(i2, duplicateFragment.getI2());
-		assertEquals(field, duplicateFragment.getField());
-		assertEquals(text, duplicateFragment.getPreprocessedSummary());
-		assertEquals(start, duplicateFragment.getStartDuplicate());
-		assertEquals(length, duplicateFragment.getLength());
+		assertEquals(i1, duplicateSuggestion.getI1());
+		assertEquals(i2, duplicateSuggestion.getI2());
+		assertEquals(field, duplicateSuggestion.getField());
+		assertEquals(text, duplicateSuggestion.getPreprocessedSummary());
+		assertEquals(start, duplicateSuggestion.getStartDuplicate());
+		assertEquals(length, duplicateSuggestion.getLength());
 
 
 	}

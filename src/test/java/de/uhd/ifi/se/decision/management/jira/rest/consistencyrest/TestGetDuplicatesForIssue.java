@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest.consistencyrest;
 
-import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateFragment;
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateSuggestion;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -21,9 +21,9 @@ public class TestGetDuplicatesForIssue extends TestConsistencyRestSuper {
 
 	@Test
 	public void testDuplicatesToJsonMap() {
-		DuplicateFragment testDuplicate = null;
+		DuplicateSuggestion testDuplicate = null;
 		assertEquals("Request should be valid.", 0, consistencyRest.duplicateToJsonMap(testDuplicate).size());
-		testDuplicate = new DuplicateFragment(issues.get(0), issues.get(1), issues.get(1).getSummary(),0, 12, "description");
+		testDuplicate = new DuplicateSuggestion(issues.get(0), issues.get(1), issues.get(1).getSummary(),0, 12, "description");
 		assertEquals("Request should be valid.",  issues.get(1).getSummary(), consistencyRest.duplicateToJsonMap(testDuplicate).get("summary"));
 
 	}

@@ -5,7 +5,7 @@ import com.atlassian.jira.project.Project;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.consistency.duplicatedetection.BasicDuplicateTextDetector;
 import de.uhd.ifi.se.decision.management.jira.consistency.duplicatedetection.DuplicateDetectionStrategy;
-import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateFragment;
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateSuggestion;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import org.junit.BeforeClass;
@@ -36,7 +36,7 @@ public class TestDuplicateTextDetector extends TestSetUp {
 	public void testBasicDuplicateTextDetectorWithNoDuplicates() {
 		try {
 			basicDuplicateTextDetector = new BasicDuplicateTextDetector(3);
-			List<DuplicateFragment> foundDuplicates = basicDuplicateTextDetector.detectDuplicateTextFragments(baseIssue, otherIssue);
+			List<DuplicateSuggestion> foundDuplicates = basicDuplicateTextDetector.detectDuplicateTextFragments(baseIssue, otherIssue);
 			assertTrue("No duplicates should have been found", foundDuplicates.isEmpty());
 		} catch (Exception e) {
 			assertNull("No exception should be thrown.", e);
@@ -63,7 +63,7 @@ public class TestDuplicateTextDetector extends TestSetUp {
 	public void testBasicDuplicateTextDetectorWithDuplicates() {
 		try {
 			basicDuplicateTextDetector = new BasicDuplicateTextDetector(3);
-			List<DuplicateFragment> foundDuplicates = basicDuplicateTextDetector.detectDuplicateTextFragments(baseIssue, baseIssue);
+			List<DuplicateSuggestion> foundDuplicates = basicDuplicateTextDetector.detectDuplicateTextFragments(baseIssue, baseIssue);
 			assertFalse("One duplicate should have been found", foundDuplicates.isEmpty());
 		} catch (Exception e) {
 			assertNull("No exception should be thrown.", e);
