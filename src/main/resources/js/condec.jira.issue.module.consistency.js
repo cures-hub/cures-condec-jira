@@ -28,9 +28,7 @@
 		this.loadingSpinnerElement = document.getElementById("loading-spinner");
 		this.resultsTableElement = document.getElementById("results-table");
 		this.resultsTableContentElement = document.getElementById("table-content");
-
 	}
-
 
 	ConsistencyTabsModule.prototype.discardDuplicate = function (otherIssueKey) {
 		consistencyAPI.discardDuplicateSuggestion(this.issueKey, otherIssueKey, this.projectKey)

@@ -20,7 +20,7 @@
     var treant = null;
     var treeViewer = null;
 
-    var ConDecKnowledgePage = function ConDecKnowledgePage() {
+    var ConDecKnowledgePage = function () {
     };
 
     ConDecKnowledgePage.prototype.init = function (_conDecAPI, _conDecObservable, _conDecDialog, _conDecContextMenu,
@@ -56,7 +56,7 @@
 
     function initializeDecisionKnowledgePage(conDecAPI, treant, treeViewer) {
         console.log("conDecKnowledgePage initializeDecisionKnowledgePage");
-        var knowledgeTypes = conDecAPI.knowledgeTypes;
+        var knowledgeTypes = conDecAPI.getKnowledgeTypes();
         for (var index = 0; index < knowledgeTypes.length; index++) {
             var isSelected = "";
             if (knowledgeTypes[index] === "Issue") {

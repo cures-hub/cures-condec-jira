@@ -3,7 +3,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira-issue-module-resources")
 
 <div class="aui-tabs horizontal-tabs" id="visualization-selection-tabs" data-aui-persist="username">
-    <ul class="tabs-menu">
+    <ul class="tabs-menu" id="visualization-selection-tabs-menu">
         <li class="menu-item active-tab">
             <a href="#treant">Tree Visualization</a>
         </li>
@@ -72,7 +72,15 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
          <div class="aui-toolbar2" role="toolbar">
              <div class="aui-toolbar-2-inner">
                  <!-- todo make decision table with dummy data -->
-                 <div>Decision Table for issue: xyz</div> 
+				 <div class="aui-buttons pluggable-ops">
+				 	<button class="aui-button aui-dropdown2-trigger" aria-controls="example-dropdown">
+    					Issue
+					</button>
+					<aui-dropdown-menu id="example-dropdown">
+					<aui-section id="ddIssueID">
+					</aui-section>
+					</aui-dropdown-menu>
+				 </div>
              </div>
          </div>
          <div style="height: auto" id="decisionTable-container"></div>
@@ -92,7 +100,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 #parse("templates/dialogs/changeStatusDialog.vm")
 #parse("templates/dialogs/summarizationDialog.vm")
 #parse("templates/dialogs/exportDialog.vm")
-#parse("templates/dialogs/consistencyCheckDialog.vm")
 
 #parse("templates/contextMenu.vm")
 
@@ -134,7 +141,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
     function applyCheckFilter() {
         localStorage.setItem("checkbox", document.getElementById("show-elements-input").checked);
         window.conDecJiraIssueModule.applyTreeVisFilters();
-
     }
 
 </script>
