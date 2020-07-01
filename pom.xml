@@ -28,6 +28,10 @@
             <id>manders</id>
             <name>Michael Anders</name>
         </developer>
+		<developer>
+            <id>cotchere</id>
+            <name>Colin Otchere</name>
+        </developer>
     </developers>
     <packaging>atlassian-plugin</packaging>
 
