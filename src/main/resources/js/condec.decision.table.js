@@ -40,6 +40,7 @@
 		addArgumentsToDecisionTable(data);
 
 		addContextMenuToElements("argument");
+		addContextMenuToElements("alternative");
 	}
 
 	/**
@@ -58,7 +59,7 @@
 				body.innerHTML += `<tr id="bodyRowAlternatives${alternatives[key][0].id}"></tr>`;
 				let rowElement = document.getElementById(`bodyRowAlternatives${alternatives[key][0].id}`);
 				rowElement.innerHTML += `<td headers="${alternativeClmTitle}">
-					<div class="alternatives" id="${alternatives[key][0].id}">${alternatives[key][0].summary}</div></td>`;
+					<div class="alternative" id="${alternatives[key][0].id}">${alternatives[key][0].summary}</div></td>`;
 			}
 		}
 	}
