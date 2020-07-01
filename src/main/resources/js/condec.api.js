@@ -857,6 +857,9 @@
 		callback(selectGroupField, decisionGroups);
 	};
 
+	/*
+	 * external references: condec.decision.table
+	 */
 	ConDecAPI.prototype.getDecisionIssues = function (elementKey, callback) {
 		generalApi.getJSON(this.restPrefix + "/view/getDecisionIssues.json?elementKey=" + elementKey, function (error, issues) {
 			console.log(elementKey);
@@ -866,6 +869,9 @@
 		});
 	};
 
+	/*
+	 * external references: condec.decision.table
+	 */
 	ConDecAPI.prototype.getDecisionTable = function (elementKey, elementId, location, callback) {
 		generalApi.getJSON(this.restPrefix + `/view/getDecisionTable.json?elementKey=${elementKey}&elementId=${elementId}&location=${location}`,
 			function (error, issues) {
