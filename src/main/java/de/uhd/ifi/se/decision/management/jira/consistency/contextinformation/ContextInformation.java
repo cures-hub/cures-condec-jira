@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class ContextInformation {
@@ -92,16 +93,11 @@ public class ContextInformation {
 		}
 
 		this.cips.stream().forEach((cip) -> {
-			Map<String, Double> individualScores = new HashMap<>();
-			for (Issue otherIssue : projectIssues) {
+			Map<String, Double> individualScores = new ConcurrentHashMap<>();
+			projectIssues.parallelStream().forEach((otherIssue) -> {
 				individualScores.put(otherIssue.getKey(), cip.assessRelation(this.issue, otherIssue));
-			}
-			/*
-			Double sumOfIndividualScoresForCurrentCip = individualScores.values()
-				.stream()
-				.mapToDouble(Double::doubleValue)
-				.sum();
-			 */
+			});
+
 			Double maxOfIndividualScoresForCurrentCip = individualScores.values()
 				.stream()
 				.mapToDouble(Double::doubleValue)
@@ -110,12 +106,11 @@ public class ContextInformation {
 			if (maxOfIndividualScoresForCurrentCip == 0) {
 				maxOfIndividualScoresForCurrentCip = 1.;
 			}
+
 			Double finalMaxOfIndividualScoresForCurrentCip = maxOfIndividualScoresForCurrentCip;
-
-
-			// for this purpose it might be better to divide by max value.
+			// Divide each score by the max value to scale it to [0,1]
 			individualScores.entrySet()
-				.stream()
+				.parallelStream()
 				.forEach(score -> {
 					LinkSuggestion linkSuggestion = linkSuggestions.get(score.getKey());
 					linkSuggestion.addToScore(score.getValue() / finalMaxOfIndividualScoresForCurrentCip, cip.getName());//sumOfIndividualScoresForCurrentCip);

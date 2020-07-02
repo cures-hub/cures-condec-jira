@@ -1,22 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
@@ -41,6 +24,22 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * REST resource for plug-in configuration
@@ -74,7 +73,7 @@ public class ConfigRest {
 		}
 		if (!"true".equals(isActivatedString) && !"false".equals(isActivatedString)) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated is invalid"))
-					.build();
+				.build();
 		}
 
 		return null;
@@ -125,7 +124,7 @@ public class ConfigRest {
 		}
 		if (isIssueStrategyString == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isIssueStrategy = null"))
-					.build();
+				.build();
 		}
 		boolean isIssueStrategy = Boolean.valueOf(isIssueStrategyString);
 		ConfigPersistenceManager.setIssueStrategy(projectKey, isIssueStrategy);
@@ -170,7 +169,7 @@ public class ConfigRest {
 		}
 		if (isKnowledgeTypeEnabledString == null || knowledgeType == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isKnowledgeTypeEnabled = null"))
-					.build();
+				.build();
 		}
 		boolean isKnowledgeTypeEnabled = Boolean.valueOf(isKnowledgeTypeEnabledString);
 		ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType, isKnowledgeTypeEnabled);
@@ -210,13 +209,13 @@ public class ConfigRest {
 			return Response.ok(Collections.emptyList()).build();
 		}
 		KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey).getKnowledgeElement(id,
-				location);
+			location);
 		if (element != null) {
 			List<String> groups = element.getDecisionGroups();
 			if (groups != null) {
 				for (String group : groups) {
 					if (("High_Level").equals(group) || ("Medium_Level").equals(group)
-							|| ("Realization_Level").equals(group)) {
+						|| ("Realization_Level").equals(group)) {
 						int index = groups.indexOf(group);
 						if (index != 0) {
 							Collections.swap(groups, 0, index);
@@ -261,7 +260,7 @@ public class ConfigRest {
 			return Response.ok(true).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No Group to Rename found"))
-					.build();
+				.build();
 		}
 	}
 
@@ -273,7 +272,7 @@ public class ConfigRest {
 			return Response.ok(true).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No Group to Rename found"))
-					.build();
+				.build();
 		}
 	}
 
@@ -312,7 +311,7 @@ public class ConfigRest {
 		}
 		if (isActivatedString == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Webhook activation boolean = null")).build();
+				.entity(ImmutableMap.of("error", "Webhook activation boolean = null")).build();
 		}
 		boolean isActivated = Boolean.valueOf(isActivatedString);
 		ConfigPersistenceManager.setWebhookEnabled(projectKey, isActivated);
@@ -356,7 +355,7 @@ public class ConfigRest {
 			return Response.ok(Status.ACCEPTED).build();
 		}
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Test webhook post failed."))
-				.build();
+			.build();
 	}
 
 	@Path("/setReleaseNoteMapping")
@@ -395,7 +394,7 @@ public class ConfigRest {
 		}
 
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
+			.getJiraIssueTextManager();
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		persistenceManager.deleteInvalidElements(user);
 		GenericLinkManager.deleteInvalidLinks();
@@ -451,7 +450,7 @@ public class ConfigRest {
 		if (projectKey == null || projectKey.isBlank()) {
 			LOGGER.error("Project configuration could not be changed since the project key is invalid.");
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project key is invalid."))
-					.build();
+				.build();
 		}
 		return Response.status(Status.OK).build();
 	}
@@ -473,7 +472,7 @@ public class ConfigRest {
 		}
 		if (isKnowledgeExtractedFromGit == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "isKnowledgeExtractedFromGit = null")).build();
+				.entity(ImmutableMap.of("error", "isKnowledgeExtractedFromGit = null")).build();
 		}
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, Boolean.valueOf(isKnowledgeExtractedFromGit));
 		// deactivate other git extraction if false
@@ -494,14 +493,14 @@ public class ConfigRest {
 		}
 		if (checked == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "PostFeatureBranchCommits-checked = null")).build();
+				.entity(ImmutableMap.of("error", "PostFeatureBranchCommits-checked = null")).build();
 		}
 		if (Boolean.parseBoolean(ConfigPersistenceManager.getValue(projectKey, "isKnowledgeExtractedFromGit"))) {
 			ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey, Boolean.valueOf(checked));
 			return Response.ok(Status.ACCEPTED).build();
 		} else {
 			return Response.status(Status.CONFLICT)
-					.entity(ImmutableMap.of("error", "Git Extraction needs to be active!")).build();
+				.entity(ImmutableMap.of("error", "Git Extraction needs to be active!")).build();
 		}
 	}
 
@@ -515,14 +514,14 @@ public class ConfigRest {
 		}
 		if (checked == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "setPostSquashedCommits-checked = null")).build();
+				.entity(ImmutableMap.of("error", "setPostSquashedCommits-checked = null")).build();
 		}
 		if (Boolean.parseBoolean(ConfigPersistenceManager.getValue(projectKey, "isKnowledgeExtractedFromGit"))) {
 			ConfigPersistenceManager.setPostSquashedCommits(projectKey, Boolean.valueOf(checked));
 			return Response.ok(Status.ACCEPTED).build();
 		} else {
 			return Response.status(Status.CONFLICT)
-					.entity(ImmutableMap.of("error", "Git Extraction needs to be active!")).build();
+				.entity(ImmutableMap.of("error", "Git Extraction needs to be active!")).build();
 		}
 	}
 
@@ -536,7 +535,7 @@ public class ConfigRest {
 		}
 		if (gitUris == null || defaultBranches == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Git URI could not be set because it is null.")).build();
+				.entity(ImmutableMap.of("error", "Git URI could not be set because it is null.")).build();
 		}
 		// List<String> gitUriList = Arrays.asList(gitUris.split(";;"));
 		ConfigPersistenceManager.setGitUris(projectKey, gitUris);
@@ -575,7 +574,7 @@ public class ConfigRest {
 			returnResponse = isValidDataResponse;
 		} else if (arffFileName == null || arffFileName.isEmpty()) {
 			returnResponse = Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"The classifier could not be trained since the ARFF file name is invalid.")).build();
+				"The classifier could not be trained since the ARFF file name is invalid.")).build();
 		} else {
 			ConfigPersistenceManager.setArffFileForClassifier(projectKey, arffFileName);
 
@@ -584,10 +583,10 @@ public class ConfigRest {
 
 			if (isTrained) {
 				returnResponse = Response.ok(Response.Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true))
-						.build();
+					.build();
 			} else {
 				returnResponse = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error",
-						"The classifier could not be trained due to an internal server error.")).build();
+					"The classifier could not be trained due to an internal server error.")).build();
 			}
 		}
 
@@ -609,7 +608,7 @@ public class ConfigRest {
 
 			if (evaluationResults.size() == 0) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", "No evaluation results were calculated!")).build();
+					.entity(ImmutableMap.of("error", "No evaluation results were calculated!")).build();
 			}
 
 			String prefix = "";
@@ -617,7 +616,7 @@ public class ConfigRest {
 			prettyMapOutput.append("{");
 			for (Map.Entry<String, Double> e : evaluationResults.entrySet()) {
 				prettyMapOutput
-						.append(prefix + System.lineSeparator() + "\"" + e.getKey() + "\" : \"" + e.getValue() + "\"");
+					.append(prefix + System.lineSeparator() + "\"" + e.getKey() + "\" : \"" + e.getValue() + "\"");
 				prefix = ",";
 			}
 			prettyMapOutput.append(System.lineSeparator() + "}");
@@ -626,7 +625,7 @@ public class ConfigRest {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", e.getMessage()))
-					.build();
+				.build();
 		}
 	}
 
@@ -657,7 +656,7 @@ public class ConfigRest {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", e.getMessage()))
-					.build();
+				.build();
 		}
 	}
 
@@ -674,12 +673,12 @@ public class ConfigRest {
 
 		if (arffFile != null) {
 			return Response.ok(Status.ACCEPTED).entity(
-					ImmutableMap.of("arffFile", arffFile.toString(), "content", trainer.getInstances().toString()))
-					.build();
+				ImmutableMap.of("arffFile", arffFile.toString(), "content", trainer.getInstances().toString()))
+				.build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error", "ARFF file could not be created because of an internal server error."))
-				.build();
+			.entity(ImmutableMap.of("error", "ARFF file could not be created because of an internal server error."))
+			.build();
 	}
 
 	@Path("/classifyWholeProject")
@@ -693,7 +692,7 @@ public class ConfigRest {
 
 		if (!ConfigPersistenceManager.isClassifierEnabled(projectKey)) {
 			return Response.status(Status.FORBIDDEN)
-					.entity(ImmutableMap.of("error", "Automatic classification is disabled for this project.")).build();
+				.entity(ImmutableMap.of("error", "Automatic classification is disabled for this project.")).build();
 		}
 		try {
 			ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
@@ -729,7 +728,7 @@ public class ConfigRest {
 		}
 		if (1. < minLinkSuggestionProbability || minLinkSuggestionProbability < 0.) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "The minimum of the score value is invalid."))
-					.build();
+				.build();
 		}
 
 		ConfigPersistenceManager.setMinLinkSuggestionScore(projectKey, minLinkSuggestionProbability);
@@ -751,7 +750,7 @@ public class ConfigRest {
 		}
 		if (minDuplicateLength < 3) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "The minimum length for the duplicates is invalid."))
-					.build();
+				.build();
 		}
 		ConfigPersistenceManager.setMinDuplicateLength(projectKey, minDuplicateLength);
 		return Response.ok(Status.ACCEPTED).build();
@@ -788,13 +787,13 @@ public class ConfigRest {
 	@Path("/getConsistencyEventTriggerNames")
 	@GET
 	public Response getAllConsistencyCheckEventTriggerNames() {
-		ConsistencyCheckEventListenerSingleton listener = ConsistencyCheckEventListenerSingleton.getInstance();
+		ConsistencyCheckEventListenerSingleton listener = (ConsistencyCheckEventListenerSingleton) ConsistencyCheckEventListenerSingleton.getInstance();
 		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("names", listener.getAllConsistencyCheckEventTriggerNames())).build();
 
 	}
 
 	private boolean checkIfTriggerExists(String triggerName) {
-		return ConsistencyCheckEventListenerSingleton.getInstance().doesConsistencyCheckEventTriggerNameExist(triggerName);
+		return ((ConsistencyCheckEventListenerSingleton) ConsistencyCheckEventListenerSingleton.getInstance()).doesConsistencyCheckEventTriggerNameExist(triggerName);
 	}
 
 	private Response checkIfConsistencyTriggerRequestIsValid(HttpServletRequest request, String projectKey, String eventKey) {
@@ -808,7 +807,7 @@ public class ConfigRest {
 		}
 		if (!this.checkIfTriggerExists(eventKey)) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No trigger exists for this event."))
-					.build();
+				.build();
 		}
 		return Response.status(Status.OK).build();
 	}

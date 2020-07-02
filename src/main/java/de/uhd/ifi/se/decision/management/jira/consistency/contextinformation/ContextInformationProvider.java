@@ -33,7 +33,7 @@ public interface ContextInformationProvider {
 	 *
 	 * @param i1
 	 * @param i2
-	 * @return value of relationship
+	 * @return value of relationship in [0, inf]
 	 */
 	double assessRelation(Issue i1, Issue i2);
 
