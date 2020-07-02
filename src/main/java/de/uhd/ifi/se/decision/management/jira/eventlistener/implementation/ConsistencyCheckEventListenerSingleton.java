@@ -12,17 +12,17 @@ import java.util.List;
 
 public class ConsistencyCheckEventListenerSingleton implements IssueEventListener {
 
-	private final List<ConsistencyCheckEventTrigger> consistencyCheckEventTriggerList;
-	private static ConsistencyCheckEventListenerSingleton instance;
+	private final List<ConsistencyCheckEventTrigger> CHECK_TRIGGER_LIST;
+	private static IssueEventListener instance;
 
 	private ConsistencyCheckEventListenerSingleton() {
-		consistencyCheckEventTriggerList = new ArrayList<>();
-		consistencyCheckEventTriggerList.add(new StatusClosedTrigger());
-		consistencyCheckEventTriggerList.add(new WorkflowDoneTrigger());
+		CHECK_TRIGGER_LIST = new ArrayList<>();
+		CHECK_TRIGGER_LIST.add(new StatusClosedTrigger());
+		CHECK_TRIGGER_LIST.add(new WorkflowDoneTrigger());
 
 	}
 
-	public static ConsistencyCheckEventListenerSingleton getInstance() {
+	public static IssueEventListener getInstance() {
 		if (ConsistencyCheckEventListenerSingleton.instance == null) {
 			ConsistencyCheckEventListenerSingleton.instance = new ConsistencyCheckEventListenerSingleton();
 		}
@@ -32,7 +32,7 @@ public class ConsistencyCheckEventListenerSingleton implements IssueEventListene
 	public void onIssueEvent(IssueEvent issueEvent) {
 		String projectKey = getProjectKeyFromEvent(issueEvent);
 		boolean triggered = false;
-		for (ConsistencyCheckEventTrigger trigger : this.consistencyCheckEventTriggerList) {
+		for (ConsistencyCheckEventTrigger trigger : this.CHECK_TRIGGER_LIST) {
 			if (trigger.isActivated(projectKey) && trigger.isTriggered(issueEvent)) {
 				ConsistencyCheckLogHelper.addCheck(issueEvent.getIssue());
 				triggered = true;
@@ -49,7 +49,7 @@ public class ConsistencyCheckEventListenerSingleton implements IssueEventListene
 	}
 
 	public List<ConsistencyCheckEventTrigger> getAllConsistencyCheckEventTriggerNames() {
-		return this.consistencyCheckEventTriggerList;
+		return this.CHECK_TRIGGER_LIST;
 	}
 
 	public boolean doesConsistencyCheckEventTriggerNameExist(String triggerName) {
