@@ -255,7 +255,8 @@ public class ViewRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		DecisionTable decisionTable = new DecisionTable(projectKey);
-		decisionTable.setDecisionTableForIssue(id, location);
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		decisionTable.setDecisionTableForIssue(id, location, user);
 		return Response.ok(decisionTable.getDecisionTableData()).build();
 	}
 

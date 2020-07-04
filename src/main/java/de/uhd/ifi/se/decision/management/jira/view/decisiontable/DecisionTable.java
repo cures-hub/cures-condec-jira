@@ -12,8 +12,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.user.ApplicationUser;
+
 import org.jgrapht.traverse.DepthFirstIterator;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -33,6 +37,9 @@ public class DecisionTable {
 	@XmlElement
 	private Map<Long, List<KnowledgeElement>> decisionTableData;
 
+	@XmlElement
+	private Map<String, Map<Long, List<KnowledgeElement>>> tmpDecisionTableData;
+
 	public DecisionTable(String projectKey) {
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 		persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
@@ -50,18 +57,34 @@ public class DecisionTable {
 		}
 	}
 
-	public void setDecisionTableForIssue(long id, String location) {
+	private Map<Long, List<KnowledgeElement>> getCriteria(ApplicationUser user, Map<Long, List<KnowledgeElement>> map) {
+		String query = "?jql=project=" + persistenceManager.getProjectKey() + " AND type=\"Non-Functional Requirement\"";
+		JiraQueryHandler queryHandler = new JiraQueryHandler(user, persistenceManager.getProjectKey(), query);
+		for(Issue i : queryHandler.getJiraIssuesFromQuery()) {
+			map.put(i.getId(), new ArrayList<KnowledgeElement>());
+			map.get(i.getId()).add(new KnowledgeElement(i));
+		}
+		return map;
+	}
+	
+	public void setDecisionTableForIssue(long id, String location, ApplicationUser user) {
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(id, location);
 		Set<Link> outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
 		decisionTableData = new HashMap<>();
+		tmpDecisionTableData = new HashMap<>();
+		tmpDecisionTableData.put("alternatives", new HashMap<>());
+		tmpDecisionTableData.put("criteria", new HashMap<>());
 		for (Link currentLink : outgoingLinks) {
 			KnowledgeElement elem = currentLink.getTarget();
 			if (elem.getType().equals(KnowledgeType.ALTERNATIVE) || elem.getType().equals(KnowledgeType.DECISION)) {
 				decisionTableData.put(elem.getId(), new ArrayList<KnowledgeElement>());
+				tmpDecisionTableData.get("alternatives").put(elem.getId(), new ArrayList<KnowledgeElement>());
 				decisionTableData.get(elem.getId()).add(elem);
-				getArguments(elem.getId(), decisionTableData.get(elem.getId()), location);
+				tmpDecisionTableData.get("alternatives").get(elem.getId()).add(elem);
+				getArguments(elem.getId(), tmpDecisionTableData.get("alternatives").get(elem.getId()), location);
 			}
 		}
+		getCriteria(user, tmpDecisionTableData.get("criteria"));
 	}
 
 	private void getArguments(long id, List<KnowledgeElement> arguments, String location) {
@@ -80,7 +103,7 @@ public class DecisionTable {
 		return this.issues;
 	}
 
-	public Map<Long, List<KnowledgeElement>> getDecisionTableData() {
-		return this.decisionTableData;
+	public Map<String, Map<Long, List<KnowledgeElement>>> getDecisionTableData() {
+		return this.tmpDecisionTableData;
 	}
 }
