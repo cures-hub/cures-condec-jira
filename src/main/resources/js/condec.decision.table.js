@@ -35,9 +35,9 @@
 		header.innerHTML += "<th id=\"alternativeClmTitle\">" + alternativeClmTitle + "</th>";
 		table.innerHTML += "<tbody id=\"tblBody\">";
 
-		addAlternativesToDecisionTable(data);
-		addCriteriaToToDecisionTable(data);
-		addArgumentsToDecisionTable(data);
+		addAlternativesToDecisionTable(data["alternatives"], data["criteria"]);
+		addCriteriaToToDecisionTable(data["criteria"]);
+		addArgumentsToDecisionTable(data["alternatives"]);
 
 		addContextMenuToElements("argument");
 		addContextMenuToElements("alternative");
@@ -47,7 +47,7 @@
 	 * 
 	 * @param {Array<KnowledgeElement> or empty object} alternatives 
 	 */
-	function addAlternativesToDecisionTable(alternatives) {
+	function addAlternativesToDecisionTable(alternatives, criteria) {
 		let body = document.getElementById("tblBody");
 
 		if (Object.keys(alternatives).length === 0) {
@@ -60,6 +60,12 @@
 				let rowElement = document.getElementById(`bodyRowAlternatives${alternatives[key][0].id}`);
 				rowElement.innerHTML += `<td headers="${alternativeClmTitle}">
 					<div class="alternative" id="${alternatives[key][0].id}">${alternatives[key][0].summary}</div></td>`;
+				if (Object.keys(criteria).length > 0) {
+					for (key1 in criteria) {
+						rowElement.innerHTML += `<td id="cell${criteria[key1][0].id}" headers="${criteria[key1][0].summary}"></td>`;
+					}
+				}
+				rowElement.innerHTML += `<td id="cellUnknown${alternatives[key][0].id}" headers=criteriaClmTitleUnknown></td>`;
 			}
 		}
 	}
@@ -70,16 +76,12 @@
 	 */
 	function addCriteriaToToDecisionTable(data) {
 		if (Object.keys(data).length > 0) {
-			let header = document.getElementById("tblRow");
-			header.innerHTML += `<th id="criteriaClmTitlePro">Pro</th>`;
-			header.innerHTML += `<th id="criteriaClmTitleCon">Con</th>`;
-
-			for (let key in data) {
-				let rowElement = document.getElementById(`bodyRowAlternatives${data[key][0].id}`);
-				rowElement.innerHTML += `<td id="cellPro${data[key][0].id}" headers="Pro"></td>`;
-				rowElement.innerHTML += `<td id="cellCon${data[key][0].id}" headers="Con"></td>`;
+			for (key1 in data) {
+				let header = document.getElementById("tblRow");
+				header.innerHTML += `<th id="criteriaClmTitle${data[key1][0].id}">${data[key1][0].summary}</th>`;
 			}
 		}
+		header.innerHTML += `<th style="display:none" id="criteriaClmTitleUnknown">Unkown</th>`;
 	}
 
 	/**
@@ -92,7 +94,8 @@
 				const alternative = alternatives[key];
 				for (let index = 1; index < alternative.length; index++) {
 					const argument = alternative[index];
-					let rowElement = document.getElementById(`cell${argument.type}${alternative[0].id}`);
+					let rowElement = document.getElementById(`cell${argument.type}${alternative[0].id}`) ? 
+						document.getElementById(`cell${argument.type}${alternative[0].id}`) : document.getElementById(`cellUnknown${alternative[0].id}`);
 					rowElement.setAttribute("class", `argument_${key}_${argument.id}`);
 					rowElement.setAttribute("style", "white-space: pre;");
 					let content = "";
@@ -150,6 +153,7 @@
 					let tmp = issues.find(o => o.summary === e.target.textContent);
 					if (typeof tmp !== "undefined") {
 						conDecAPI.getDecisionTable(elementKey, tmp.id, tmp.documentationLocation, function (data) {
+							console.log(data);
 							buildDecisionTable(data);
 						});
 					} else {
