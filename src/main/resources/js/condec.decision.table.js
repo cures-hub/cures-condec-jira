@@ -65,7 +65,7 @@
 						rowElement.innerHTML += `<td id="cell${criteria[key1][0].id}" headers="${criteria[key1][0].summary}"></td>`;
 					}
 				}
-				rowElement.innerHTML += `<td id="cellUnknown${alternatives[key][0].id}" headers=criteriaClmTitleUnknown></td>`;
+				rowElement.innerHTML += `<td style="display:none" id="cellUnknown${alternatives[key][0].id}" headers=criteriaClmTitleUnknown></td>`;
 			}
 		}
 	}
@@ -81,6 +81,7 @@
 				header.innerHTML += `<th id="criteriaClmTitle${data[key1][0].id}">${data[key1][0].summary}</th>`;
 			}
 		}
+		let header = document.getElementById("tblRow");
 		header.innerHTML += `<th style="display:none" id="criteriaClmTitleUnknown">Unkown</th>`;
 	}
 
@@ -94,8 +95,11 @@
 				const alternative = alternatives[key];
 				for (let index = 1; index < alternative.length; index++) {
 					const argument = alternative[index];
-					let rowElement = document.getElementById(`cell${argument.type}${alternative[0].id}`) ? 
-						document.getElementById(`cell${argument.type}${alternative[0].id}`) : document.getElementById(`cellUnknown${alternative[0].id}`);
+					let rowElement = document.getElementById(`cell${argument.type}${alternative[0].id}`);
+					if (!rowElement) {
+						rowElement = document.getElementById(`cellUnknown${alternative[0].id}`);
+						document.getElementById("criteriaClmTitleUnknown").setAttribute("style", "display:block");
+					} 
 					rowElement.setAttribute("class", `argument_${key}_${argument.id}`);
 					rowElement.setAttribute("style", "white-space: pre;");
 					let content = "";
