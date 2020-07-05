@@ -2,8 +2,11 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import com.atlassian.jira.project.Project;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -100,11 +103,11 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	public void testGetJiraIssueTypes() {
 		assertEquals(5, project.getJiraIssueTypeNames().size());
 	}
-/*
+
 	@AfterClass
 	public static void tearDown() {
 		// reset plugin settings to default settings
 		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}
-	 */
+
 }

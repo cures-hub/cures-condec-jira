@@ -9,6 +9,7 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -440,10 +441,10 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertFalse("Activated for 'done' of project 'TEST' should still be false.", ConfigPersistenceManager.getActivationStatusOfConsistencyEvent("TEST", consistencyEvent));
 		*/
 	}
-	/*
+
 	@AfterClass
 	public static void tearDown() {
 		// reset plugin settings to default settings
 		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
-	}*/
+	}
 }
