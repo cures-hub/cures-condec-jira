@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.gitcodeclassextractor;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
@@ -25,8 +26,11 @@ public class TestGetIssueKeysForFile extends TestSetUpGit {
 	@NonTransactional
 	public void testGetIssueKeysForFile() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
+
 		List<String> list = new ArrayList<>();
 		list.add("TEST-12");
+		assertFalse(extract.getGitClient().getRemoteUris().isEmpty());
+		assertFalse(extract.getCodeClassFiles().isEmpty());
 		assertEquals(list, extract.getIssuesKeysForFile(extract.getCodeClassFiles().get(0)));
 	}
 }
