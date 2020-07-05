@@ -112,7 +112,6 @@
 						rowElement = document.getElementById(`cellUnknown${alternative[0].id}`);
 						document.getElementById("criteriaClmTitleUnknown").setAttribute("style", "display:block");
 					}
-					rowElement.setAttribute("class", `argument_${key}_${argument.id}`);
 					rowElement.setAttribute("style", "white-space: pre;");
 					let content = "";
 					if (argument.type === "Pro") {
