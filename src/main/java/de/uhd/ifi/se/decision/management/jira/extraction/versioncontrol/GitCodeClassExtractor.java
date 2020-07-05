@@ -102,7 +102,6 @@ public class GitCodeClassExtractor {
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		if (allKeys == null || allKeys.size() == 0) {
@@ -178,8 +177,8 @@ public class GitCodeClassExtractor {
 		}
 		element.setSummary(file.getName());
 		element.setProject(projectKey);
-		element.setDocumentationLocation(DocumentationLocation.getDocumentationLocationFromIdentifier("c"));
-		element.setStatus(KnowledgeStatus.getKnowledgeStatus(null));
+		element.setDocumentationLocation(DocumentationLocation.COMMIT);
+		element.setStatus(KnowledgeStatus.UNDEFINED);
 		element.setType(KnowledgeType.OTHER);
 		element.setDescription(keyString);
 		return element;
