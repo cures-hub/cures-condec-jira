@@ -1,13 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.gitcodeclassextractor;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
-import org.junit.Test;
-
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
 import net.java.ao.test.jdbc.NonTransactional;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class TestGetCodeClassFiles extends TestSetUpGit {
 

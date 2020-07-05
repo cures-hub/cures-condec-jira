@@ -8,8 +8,8 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import org.junit.Before;
 import org.junit.Test;
 
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class TestDeleteDecisionKnowledgeElement extends TestSetUp {
 
@@ -33,6 +33,7 @@ public class TestDeleteDecisionKnowledgeElement extends TestSetUp {
 	public void testDeleteDecisionKnowledgeElementWithIdZero() {
 		assertFalse(ccManager.deleteKnowledgeElement(0, user));
 	}
+
 
 	@Test
 	public void testDeleteDecisionKnowledgeElement() {
