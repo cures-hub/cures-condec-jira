@@ -95,6 +95,19 @@ public class DecisionTable {
 			KnowledgeElement elem = currentLink.getTarget();
 			if (elem.getType().equals(KnowledgeType.PRO) || elem.getType().equals(KnowledgeType.CON)) {
 				arguments.add(elem);
+				getArgumentCriteria(elem);
+			}
+		}
+	}
+
+	private void getArgumentCriteria(KnowledgeElement argument) {
+		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(argument.getId(), argument.getDocumentationLocation());
+		Set<Link> outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
+		
+		for (Link currentLink : outgoingLinks) {
+			KnowledgeElement elem = currentLink.getTarget();
+			if (elem.getType().equals(KnowledgeType.OTHER)) {
+				argument.setCriteria(elem);
 			}
 		}
 	}
