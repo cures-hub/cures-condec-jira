@@ -81,6 +81,8 @@ public class Treant {
 		this.depth = depth;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 		this.setChart(new Chart(treantId));
+		// TODO Filtering should be done on the Knowledge Graph directly and the
+		// FilteringManager should be used
 		Set<Link> usedLinks = new HashSet<>();
 		if (isIssueView) {
 			for (Link link : element.getLinks()) {

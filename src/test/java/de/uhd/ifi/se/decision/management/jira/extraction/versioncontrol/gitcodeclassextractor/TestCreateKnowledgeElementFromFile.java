@@ -10,11 +10,12 @@ import java.util.List;
 
 import org.junit.Test;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestCreateKnowledgeElementFromFile {
+public class TestCreateKnowledgeElementFromFile extends TestSetUpGit {
 
 	@Test
 	@NonTransactional

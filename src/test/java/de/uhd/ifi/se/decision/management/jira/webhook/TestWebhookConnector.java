@@ -31,9 +31,7 @@ public class TestWebhookConnector extends TestSetUp {
 		init();
 		Collection<String> rootTypes = new ArrayList<String>();
 		rootTypes.add("DECISION");
-		webhookConnector = new WebhookConnector("TEST",
-				"https://cuu-staging.ase.in.tum.de/api/v1/projects/ConDecDev/integrations/conDec",
-				"03f90207-73bc-44d9-9848-d3f1f8c8254e", rootTypes);
+		webhookConnector = new WebhookConnector("TEST", "https://CUUSE/conDec", "secret", rootTypes);
 		element = new KnowledgeElement(ComponentAccessor.getIssueManager().getIssueObject((long) 4));
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
@@ -100,7 +98,7 @@ public class TestWebhookConnector extends TestSetUp {
 	public void testSendElementChangesWorks() {
 		// Sending does only work for project key "ConDec". Currently, the project key
 		// is "TEST".
-		assertFalse(webhookConnector.sendElement(element,"changed"));
+		assertFalse(webhookConnector.sendElement(element, "changed"));
 	}
 
 	@Test
@@ -129,7 +127,6 @@ public class TestWebhookConnector extends TestSetUp {
 
 		assertFalse(webhookConnector.sendElement(element, "changed"));
 	}
-
 
 	@Test
 	@NonTransactional
