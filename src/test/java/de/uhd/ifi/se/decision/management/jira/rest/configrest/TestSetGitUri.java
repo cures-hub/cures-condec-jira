@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
+import javax.ws.rs.core.Response;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -48,11 +50,11 @@ public class TestSetGitUri extends TestConfigSuper {
 		assertEquals(getBadRequestResponse(INVALID_GIT_URI).getEntity(),
 				configRest.setGitUris(request, "VALID", null, "default").getEntity());
 	}
-/*
+
 	@Test
 	public void testRequestValidProjectKeyExistsGitUriProvided() {
 		assertEquals(Response.ok().build().getClass(),
 				configRest.setGitUris(request, "VALID", "http://", "default").getClass());
 	}
-*/
+
 }

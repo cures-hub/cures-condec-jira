@@ -67,7 +67,7 @@ public class TestWebhookConnector extends TestSetUp {
 	@NonTransactional
 	public void testConstructorWrongProjectKey() {
 		WebhookConnector connector = new WebhookConnector("NoTest");
-		assertEquals("TEST", connector.getUrl());
+		assertEquals("http://true", connector.getUrl());
 		assertFalse(connector.sendElement(null));
 	}
 
@@ -75,7 +75,7 @@ public class TestWebhookConnector extends TestSetUp {
 	@NonTransactional
 	public void testConstructorCorrectProjectKey() {
 		WebhookConnector connector = new WebhookConnector("TEST");
-		assertEquals("TEST", connector.getUrl());
+		assertEquals("http://true", connector.getUrl());
 		assertFalse(connector.sendElement(null));
 	}
 
