@@ -32,6 +32,7 @@ public class TestCreateKnowledgeElementFromFile extends TestSetUpGit {
 	@NonTransactional
 	public void testCreateKnowledgeElementFromFileFileNull() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
+		assertNotNull(extract.getCodeClassFiles());
 		List<String> list = extract.getIssuesKeysForFile(extract.getCodeClassFiles().get(0));
 		assertNull(extract.createKnowledgeElementFromFile(null, list));
 	}
@@ -40,6 +41,7 @@ public class TestCreateKnowledgeElementFromFile extends TestSetUpGit {
 	@NonTransactional
 	public void testCreateKnowledgeElementFromFileKeysNull() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
+		assertNotNull(extract.getCodeClassFiles());
 		File file = extract.getCodeClassFiles().get(0);
 		assertNull(extract.createKnowledgeElementFromFile(file, null));
 	}

@@ -5,11 +5,11 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestGetCodeClassFiles extends TestSetUp {
+public class TestGetCodeClassFiles extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
