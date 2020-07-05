@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.config.ConstantsManager;
@@ -39,7 +38,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
 import net.java.ao.test.jdbc.NonTransactional;
 
-@Ignore
 public class TestMetricCalculator extends TestSetUpGit {
 	protected MetricCalculator calculator;
 
