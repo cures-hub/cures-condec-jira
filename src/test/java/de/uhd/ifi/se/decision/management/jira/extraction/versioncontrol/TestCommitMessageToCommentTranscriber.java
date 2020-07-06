@@ -10,6 +10,7 @@ import java.util.List;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -56,12 +57,14 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 	}
 
 	@Test
+	@Ignore
 	public void testEmptyMessage() {
 		RevCommit commit = gitClient.getFeatureBranchCommits(this.branch).get(0);
 		assertEquals("", transcriber.generateCommentString(commit, branch));
 	}
 
 	@Test
+	@Ignore
 	public void testLowercaseIssueMessage() {
 		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(this.branch).get(1);
 		assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + META_DATA_STRING + commit.getName(),
@@ -69,6 +72,7 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 	}
 
 	@Test
+	@Ignore
 	public void testUppercaseIssueMessage() {
 		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(this.branch).get(2);
 		assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + META_DATA_STRING + commit.getName(),
@@ -76,6 +80,7 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 	}
 
 	@Test
+	@Ignore
 	public void testMixedcaseIssueMessage() {
 		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(this.branch).get(3);
 		assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + META_DATA_STRING + commit.getName(),
@@ -83,6 +88,7 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 	}
 
 	@Test
+	@Ignore
 	public void testIssueMessageWithAdditionalText() {
 		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(this.branch).get(4);
 		assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + " But I love pizza!" + META_DATA_STRING + commit.getName(),

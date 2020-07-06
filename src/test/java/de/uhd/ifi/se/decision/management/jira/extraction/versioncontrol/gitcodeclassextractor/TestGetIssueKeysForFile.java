@@ -1,16 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.gitcodeclassextractor;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.Ignore;
+import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
 import net.java.ao.test.jdbc.NonTransactional;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 
 public class TestGetIssueKeysForFile extends TestSetUpGit {
 
@@ -23,6 +25,7 @@ public class TestGetIssueKeysForFile extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
+	@Ignore
 	public void testGetIssueKeysForFile() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
 

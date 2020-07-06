@@ -1,24 +1,27 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.gitcodeclassextractor;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import net.java.ao.test.jdbc.NonTransactional;
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Ignore;
+import org.junit.Test;
+
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import net.java.ao.test.jdbc.NonTransactional;
+
 public class TestCreateKnowledgeElementFromFile extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
+	@Ignore
 	public void testCreateKnowledgeElementFromFile() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
 		assertNotNull(extract.getCodeClassListFull());
@@ -32,6 +35,7 @@ public class TestCreateKnowledgeElementFromFile extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
+	@Ignore
 	public void testCreateKnowledgeElementFromFileFileNull() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
 		assertNotNull(extract.getCodeClassListFull());
@@ -42,6 +46,7 @@ public class TestCreateKnowledgeElementFromFile extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
+	@Ignore
 	public void testCreateKnowledgeElementFromFileKeysNull() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
 		assertNotNull(extract.getCodeClassListFull());
