@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -47,18 +48,21 @@ public class Treant {
 		this(projectKey, elementKey, depth, false);
 	}
 
-	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user, boolean showOtherJiraIssues) {
+	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user,
+			boolean showOtherJiraIssues) {
 		this(projectKey, elementKey, depth, query, user, false, showOtherJiraIssues);
 	}
 
 	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user,
-				  boolean isHyperlinked, boolean showOtherJiraIssues) {
+			boolean isHyperlinked, boolean showOtherJiraIssues) {
 		this.traversedLinks = new HashSet<Link>();
 		this.depth = depth;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 		this.showOtherJiraIssues = showOtherJiraIssues;
 
 		AbstractPersistenceManagerForSingleLocation persistenceManager;
+		// TODO this should not be checked in Treant, instead of the elementKey the
+		// entire element should be passed
 		if (elementKey.contains(":")) {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 					.getManagerForSingleLocation(DocumentationLocation.JIRAISSUETEXT);
@@ -72,20 +76,22 @@ public class Treant {
 	}
 
 	public Treant(String projectKey, KnowledgeElement element, int depth, String query, String treantId,
-				  boolean checkboxflag, boolean isIssueView, int minLinkNumber, int maxLinkNumber) {
+			boolean checkboxflag, boolean isIssueView, int minLinkNumber, int maxLinkNumber) {
 		this.traversedLinks = new HashSet<Link>();
 		this.depth = depth;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 		this.setChart(new Chart(treantId));
+		// TODO Filtering should be done on the Knowledge Graph directly and the
+		// FilteringManager should be used
 		Set<Link> usedLinks = new HashSet<>();
 		if (isIssueView) {
 			for (Link link : element.getLinks()) {
 				if ((checkboxflag || !checkboxflag && !link.getSource().getSummary().startsWith("Test"))
 						&& link.getSource() != null && link.getSource().getSummary().contains(".java")
-						&& link.getSource().getDocumentationLocation().getIdentifier().equals("c")
+						&& link.getSource().getDocumentationLocation() == DocumentationLocation.COMMIT
 						&& link.getSource().getLinks().size() >= minLinkNumber
 						&& link.getSource().getLinks().size() <= maxLinkNumber
-						&& ("".equals(query) || " ".equals(query) || link.getSource().getSummary().contains(query))) {
+						&& (query.isBlank() || link.getSource().getSummary().contains(query))) {
 					usedLinks.add(link);
 				}
 			}
@@ -127,7 +133,7 @@ public class Treant {
 	}
 
 	public TreantNode createNodeStructure(KnowledgeElement element, Set<Link> links, int currentDepth,
-										  boolean isIssueView) {
+			boolean isIssueView) {
 		if (element == null || element.getProject() == null || links == null) {
 			return new TreantNode();
 		}
@@ -181,7 +187,8 @@ public class Treant {
 			}
 			KnowledgeElement oppositeElement = currentLink.getOppositeElement(rootElement);
 			if (oppositeElement == null || (oppositeElement.getType() == KnowledgeType.OTHER && !showOtherJiraIssues)
-					|| (showOtherJiraIssues && oppositeElement.getType() == KnowledgeType.OTHER && !"i".equals(oppositeElement.getDocumentationLocation().getIdentifier()))) {
+					|| (showOtherJiraIssues && oppositeElement.getType() == KnowledgeType.OTHER
+							&& oppositeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUE)) {
 				continue;
 			}
 			TreantNode newChildNode = createNodeStructure(oppositeElement, currentLink, currentDepth + 1);
