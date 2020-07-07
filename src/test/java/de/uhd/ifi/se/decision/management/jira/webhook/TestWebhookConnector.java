@@ -1,25 +1,23 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class TestWebhookConnector extends TestSetUp {
 	private WebhookConnector webhookConnector;
@@ -31,9 +29,7 @@ public class TestWebhookConnector extends TestSetUp {
 		init();
 		Collection<String> rootTypes = new ArrayList<String>();
 		rootTypes.add("DECISION");
-		webhookConnector = new WebhookConnector("TEST",
-				"https://cuu-staging.ase.in.tum.de/api/v1/projects/ConDecDev/integrations/conDec",
-				"03f90207-73bc-44d9-9848-d3f1f8c8254e", rootTypes);
+		webhookConnector = new WebhookConnector("TEST", "https://CUUSE/conDec", "secret", rootTypes);
 		element = new KnowledgeElement(ComponentAccessor.getIssueManager().getIssueObject((long) 4));
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
@@ -100,7 +96,7 @@ public class TestWebhookConnector extends TestSetUp {
 	public void testSendElementChangesWorks() {
 		// Sending does only work for project key "ConDec". Currently, the project key
 		// is "TEST".
-		assertFalse(webhookConnector.sendElement(element,"changed"));
+		assertFalse(webhookConnector.sendElement(element, "changed"));
 	}
 
 	@Test
@@ -129,7 +125,6 @@ public class TestWebhookConnector extends TestSetUp {
 
 		assertFalse(webhookConnector.sendElement(element, "changed"));
 	}
-
 
 	@Test
 	@NonTransactional
