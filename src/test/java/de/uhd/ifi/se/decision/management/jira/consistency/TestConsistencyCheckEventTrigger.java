@@ -49,34 +49,42 @@ public class TestConsistencyCheckEventTrigger extends TestSetUp {
 
 	@Test
 	public void testWorkflowDoneTrigger() {
-		trigger = new WorkflowDoneTrigger();
+		trigger = new WorkflowDoneTrigger(null);
 
 		assertEquals("The name should be 'done'.", "done", trigger.getName());
 
 		IssueEvent event = generateWorkflowIssueEvent(issue, user, jiraComment, "Done", StatusCategoryImpl.findByKey(StatusCategory.COMPLETE), EventType.ISSUE_GENERICEVENT_ID);
+		trigger = new WorkflowDoneTrigger( event);
 
-		assertTrue("Trigger should be triggered.", trigger.isTriggered(event));
+		assertTrue("Trigger should be triggered.", trigger.isTriggered());
 
 		event = new IssueEvent(issue, user, jiraComment, null, new MockGenericValue("test"),
 			new HashMap<String, String>(), EventType.ISSUE_DELETED_ID);
-		assertFalse("Trigger should not be triggered.", trigger.isTriggered(event));
+		trigger = new WorkflowDoneTrigger(event);
 
-		assertFalse("Trigger should not be triggered.", trigger.isTriggered(null));
+		assertFalse("Trigger should not be triggered.", trigger.isTriggered());
+		trigger = new WorkflowDoneTrigger(null);
+
+		assertFalse("Trigger should not be triggered.", trigger.isTriggered());
 
 	}
 
 
 	@Test
 	public void testStatusClosedTrigger() {
-		trigger = new StatusClosedTrigger();
+		trigger = new StatusClosedTrigger(null);
 		assertEquals("The name should be 'closed'.", "closed", trigger.getName());
 
 		IssueEvent event = generateWorkflowIssueEvent(issue, user, jiraComment, "Done", StatusCategoryImpl.findByKey(StatusCategory.COMPLETE), EventType.ISSUE_CLOSED_ID);
-		assertTrue("Trigger should be triggered.", trigger.isTriggered(event));
+		trigger = new StatusClosedTrigger( event);
+		assertTrue("Trigger should be triggered.", trigger.isTriggered());
 
 		event = generateWorkflowIssueEvent(issue, user, jiraComment, "Done", StatusCategoryImpl.findByKey(StatusCategory.COMPLETE), EventType.ISSUE_DELETED_ID);
-		assertFalse("Trigger should not be triggered.", trigger.isTriggered(event));
-		assertFalse("Trigger should not be triggered.", trigger.isTriggered(null));
+		trigger = new StatusClosedTrigger(event);
+		assertFalse("Trigger should not be triggered.", trigger.isTriggered());
+
+		trigger = new StatusClosedTrigger(null);
+		assertFalse("Trigger should not be triggered.", trigger.isTriggered());
 
 	}
 }

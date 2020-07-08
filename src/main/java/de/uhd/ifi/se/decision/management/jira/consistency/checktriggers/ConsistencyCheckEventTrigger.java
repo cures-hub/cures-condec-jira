@@ -5,10 +5,14 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 
 public interface ConsistencyCheckEventTrigger {
 
-	boolean isTriggered(IssueEvent issueEvent);
+	boolean isTriggered();
 
-	default boolean isActivated(String projectKey){
-		return ConfigPersistenceManager.getActivationStatusOfConsistencyEvent(projectKey, this.getName());
+	String getCurrentProjectKey();
+
+	public void setIssueEvent(IssueEvent event);
+
+	default boolean isActivated(){
+		return ConfigPersistenceManager.getActivationStatusOfConsistencyEvent(getCurrentProjectKey(), this.getName());
 	}
 
 	String getName();
