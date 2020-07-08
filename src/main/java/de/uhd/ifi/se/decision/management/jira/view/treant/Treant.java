@@ -71,7 +71,7 @@ public class Treant {
 	}
 
 	// TODO Add parameters checkboxflag, minLinkNumber and maxLinkNumber to
-	// FilterSettings (as minDegree and maxDegree)
+	// FilterSettings (as areTestClassesShown, minDegree and maxDegree)
 	public Treant(String projectKey, KnowledgeElement element, int depth, String query, String treantId,
 			boolean checkboxflag, boolean isIssueView, int minLinkNumber, int maxLinkNumber) {
 		this.traversedLinks = new HashSet<Link>();
@@ -105,7 +105,9 @@ public class Treant {
 				usedLinks = new HashSet<>(element.getLinks());
 			}
 		}
-		this.setNodeStructure(this.createNodeStructure(element, usedLinks, 1, isIssueView));
+		if (this.filterSettings.getLinkDistance() > 0) {
+			this.setNodeStructure(this.createNodeStructure(element, usedLinks, 1, isIssueView));
+		}
 		this.setHyperlinked(false);
 	}
 
@@ -115,9 +117,8 @@ public class Treant {
 		}
 
 		Set<Link> linksToTraverse = graph.edgesOf(element);
-		boolean isCollapsed = isNodeCollapsed(linksToTraverse, currentDepth);
 
-		TreantNode node = createTreantNode(element, link, isCollapsed);
+		TreantNode node = createTreantNode(element, link, false);
 
 		if (currentDepth == this.filterSettings.getLinkDistance() + 1) {
 			return node;
@@ -157,14 +158,6 @@ public class Treant {
 			node.setChildren(nodes);
 		}
 		return node;
-	}
-
-	private boolean isNodeCollapsed(Set<Link> linksToTraverse, int currentDepth) {
-		boolean isCollapsed = false;
-		if (currentDepth == this.filterSettings.getLinkDistance() - 1 && !traversedLinks.containsAll(linksToTraverse)) {
-			isCollapsed = true;
-		}
-		return isCollapsed;
 	}
 
 	private TreantNode createTreantNode(KnowledgeElement element, Link link, boolean isCollapsed) {
