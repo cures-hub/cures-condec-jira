@@ -84,15 +84,8 @@
             }
         });
 
-        var depthOfTreeInput = document.getElementById("depth-of-tree-input");
-        depthOfTreeInput.addEventListener("input", function () {
-            var depthOfTreeWarningLabel = document.getElementById("depth-of-tree-warning");
-            if (this.value > 0) {
-                depthOfTreeWarningLabel.style.visibility = "hidden";
-                updateView(null, treant, treeViewer);
-            } else {
-                depthOfTreeWarningLabel.style.visibility = "visible";
-            }
+        conDecFiltering.addEventListenerToLinkDistanceInput("depth-of-tree-input", function() {
+        	updateView(null, treant, treeViewer);
         });
 
         conDecAPI.fillDecisionGroupSelect("select2-decision-group");

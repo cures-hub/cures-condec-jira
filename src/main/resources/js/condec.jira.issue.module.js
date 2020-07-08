@@ -49,7 +49,9 @@
             addOnClickEventToExportAsTable();
             addOnClickEventToTab();
             addOnClickEventToFilterButton();
-            addOnChangeEventToDepthOfTreeInput();
+            conDecFiltering.addEventListenerToLinkDistanceInput("depth-of-tree-input", function() {
+            	showTreant();
+            });
 
 			// initial call to api depending on selected tab!
 			determineSelectedTab(window.location.href);
@@ -122,20 +124,6 @@
             event.preventDefault();
             event.stopPropagation();
             applyFilters();
-        });
-    }
-    
-    function addOnChangeEventToDepthOfTreeInput() {
-        console.log("ConDecJiraIssueModule addOnChangeEventToDepthOfTreeInput");        
-        var depthOfTreeInput = document.getElementById("depth-of-tree-input");
-        depthOfTreeInput.addEventListener("input", function () {
-            var depthOfTreeWarningLabel = document.getElementById("depth-of-tree-warning");
-            if (this.value > 0) {
-                depthOfTreeWarningLabel.style.visibility = "hidden";
-                showTreant();
-            } else {
-                depthOfTreeWarningLabel.style.visibility = "visible";
-            }
         });
     }
 

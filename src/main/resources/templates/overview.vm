@@ -19,6 +19,7 @@
 	#set ($linkDistanceInputId = "depth-of-tree-input")	
 	#parse("templates/filter/linkDistance.vm")
     
+	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
 </form>
 </div>
 <div class="aui-group">

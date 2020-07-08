@@ -33,8 +33,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
                 	#set ($linkDistanceInputId = "depth-of-tree-input")	
                 	#parse("templates/filter/linkDistance.vm")
                 	
-                    <label for="show-elements-input">Decision Knowledge Only:</label>
-                    <input class="checkbox" type="checkbox" id="is-decision-knowledge-only-input" onclick="applyCheckFilter()" /> 
+                    <label for="is-decision-knowledge-only-input">Decision Knowledge Only:</label>
+                    <input class="checkbox" type="checkbox" id="is-decision-knowledge-only-input" 
+                    	onclick="conDecJiraIssueModule.applyTreeVisFilters()" /> 
                 </form>                
             </div>
         </div>
@@ -138,11 +139,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 
     function filter() {
         window.conDecJiraIssueModule.applyClassViewFilters();
-    }
-
-    function applyCheckFilter() {
-        localStorage.setItem("checkbox", document.getElementById("is-decision-knowledge-only-input").checked);
-        window.conDecJiraIssueModule.applyTreeVisFilters();
     }
 
 </script>
