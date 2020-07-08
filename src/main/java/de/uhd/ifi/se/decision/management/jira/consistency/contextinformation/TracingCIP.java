@@ -4,11 +4,13 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.issue.link.IssueLinkManager;
-import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.ContextInformationProvider;
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,12 +18,17 @@ public class TracingCIP implements ContextInformationProvider {
 	private final String id = "TracingCIP_BFS";
 	private final String name = "TracingCIP";
 	private IssueLinkManager issueLinkManager;
+	private Collection<LinkSuggestion> linkSuggestions;
+
 
 	public TracingCIP(IssueLinkManager issueLinkManager) {
 		this.issueLinkManager = issueLinkManager;
+		this.linkSuggestions = new ArrayList<>();
 	}
+
 	public TracingCIP() {
 		this.issueLinkManager = ComponentAccessor.getIssueLinkManager();
+		this.linkSuggestions = new ArrayList<>();
 	}
 
 	@Override
@@ -36,16 +43,24 @@ public class TracingCIP implements ContextInformationProvider {
 
 
 	@Override
-	public double assessRelation(Issue i1, Issue i2) {
-		Map<String, Integer> distanceMap = new HashMap<String, Integer>();
-		distanceMap.put(i1.getKey(), 0);
-		Integer distance = searchBreadthFirst(i1, i2, distanceMap).get(i2.getKey());
-		// A null value means the nodes are not connected.
-		if (distance == null) {
-			return 0;
+	public void assessRelation(Issue baseIssue, List<Issue> issuesToTest) {
+		for (Issue issueToTest : issuesToTest) {
+			LinkSuggestion linkSuggestion = new LinkSuggestion(baseIssue, issueToTest);
+
+			Map<String, Integer> distanceMap = new HashMap<String, Integer>();
+			distanceMap.put(baseIssue.getKey(), 0);
+			Integer distance = searchBreadthFirst(baseIssue, issueToTest, distanceMap).get(issueToTest.getKey());
+			// A null value means the nodes are not connected.
+			Double value = 0.;
+			if (distance != null) {
+				value = 1. / (distance + 1);
+			}
+			// Prevent a division by zero exception.
+			linkSuggestion.addToScore(value, this.getName());
+			this.linkSuggestions.add(linkSuggestion);
+
 		}
-		// Prevent a division by zero exception.
-		return 1. / (distance + 1);
+
 	}
 
 	private boolean wasVisited(String node, Map<String, ?> distanceMap) {
@@ -90,11 +105,15 @@ public class TracingCIP implements ContextInformationProvider {
 
 	private Set<Issue> getAllIssuesForIssueLinks(Collection<IssueLink> issueLinks) {
 		Set<Issue> issues = new HashSet<>();
-		for (IssueLink issueLink : issueLinks){
+		for (IssueLink issueLink : issueLinks) {
 			issues.add(ComponentAccessor.getIssueManager().getIssueObject(issueLink.getSourceId()));
 			issues.add(ComponentAccessor.getIssueManager().getIssueObject(issueLink.getDestinationId()));
 		}
 		return issues;
 	}
 
+	@Override
+	public Collection<LinkSuggestion> getLinkSuggestions() {
+		return linkSuggestions;
+	}
 }

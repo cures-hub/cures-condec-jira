@@ -2,10 +2,20 @@ package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
 
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class UserCIP implements ContextInformationProvider {
 	private String id = "UserCIP_equalCreatorOrEqualAssignee";
 	private String name = "UserCIP";
+	private Collection<LinkSuggestion> linkSuggestions;
+
+	public UserCIP() {
+		this.linkSuggestions = new ArrayList<>();
+	}
 
 	@Override
 	public String getId() {
@@ -19,18 +29,31 @@ public class UserCIP implements ContextInformationProvider {
 
 
 	@Override
-	public double assessRelation(Issue i1, Issue i2) {
-		return this.isApplicationUserEqual(i1.getCreator(), i2.getCreator())
-			+ this.isApplicationUserEqual(i1.getAssignee(), i2.getAssignee())
-			+ this.isApplicationUserEqual(i1.getReporter(), i2.getReporter())
-			+ this.isApplicationUserEqual(i1.getArchivedByUser(), i2.getArchivedByUser());
+	public void assessRelation(Issue baseIssue, List<Issue> issuesToTest) {
+		for (Issue issueToTest : issuesToTest) {
+			LinkSuggestion linkSuggestion = new LinkSuggestion(baseIssue, issueToTest);
+
+			linkSuggestion.addToScore(this.isApplicationUserEqual(baseIssue.getCreator(), issueToTest.getCreator())
+					+ this.isApplicationUserEqual(baseIssue.getAssignee(), issueToTest.getAssignee())
+					+ this.isApplicationUserEqual(baseIssue.getReporter(), issueToTest.getReporter())
+					+ this.isApplicationUserEqual(baseIssue.getArchivedByUser(), issueToTest.getArchivedByUser()),
+				this.getName()
+			);
+			linkSuggestions.add(linkSuggestion);
+
+		}
 	}
 
-	private int isApplicationUserEqual(ApplicationUser user1, ApplicationUser user2) {
+	private Double isApplicationUserEqual(ApplicationUser user1, ApplicationUser user2) {
 		int isUserEqual = 0;
 		if ((user1 != null && user1.equals(user2))) { //|| (user1 == null && user2 == null)) {
 			isUserEqual = 1;
 		}
-		return isUserEqual;
+		return Double.valueOf(isUserEqual);
+	}
+
+	@Override
+	public Collection<LinkSuggestion> getLinkSuggestions() {
+		return linkSuggestions;
 	}
 }

@@ -2,20 +2,22 @@ package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
 
 import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
-import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.ContextInformationProvider;
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
 public class TextualSimilarityCIP implements ContextInformationProvider {
 	private String id = "TextualSimilarityCIP_jaccard";
 	private String name = "TextualSimilarityCIP";
-
+	private Collection<LinkSuggestion> linkSuggestions;
 	private Preprocessor pp;
 
 	public TextualSimilarityCIP() {
 		pp = new Preprocessor();
+		this.linkSuggestions = new ArrayList();
 	}
 
 	@Override
@@ -29,23 +31,37 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 	}
 
 	@Override
-	public double assessRelation(Issue i1, Issue i2) {
-		try {
-			pp.preprocess(i1.getDescription().toLowerCase());
-			List<CharSequence> stemmedI1Description = pp.getTokens();
+	public Collection<LinkSuggestion> getLinkSuggestions() {
+		return this.linkSuggestions;
+	}
 
-			pp.preprocess(i2.getDescription().toLowerCase());
-			List<CharSequence> stemmedI2Description = pp.getTokens();
-			List<CharSequence> concatenatedList = new ArrayList<>();
-			concatenatedList.addAll(stemmedI1Description);
-			concatenatedList.addAll(stemmedI2Description);
+	@Override
+	public void assessRelation(Issue baseIssue, List<Issue> issuesToTest) {
+		for (Issue issueToTest : issuesToTest){
+			LinkSuggestion linkSuggestion = new LinkSuggestion(baseIssue, issueToTest);
 
-			int unionCount = uniqueElements(concatenatedList).length;
+			try {
+				pp.preprocess(baseIssue.getDescription().toLowerCase());
+				List<CharSequence> stemmedI1Description = pp.getTokens();
 
-			// Jaccard similarity: (|A| + |B| - |A u B|) / |A u B|
-			return (uniqueElements(stemmedI1Description).length + uniqueElements(stemmedI2Description).length - unionCount) / (double) unionCount;
-		} catch (Exception e) {
-			return 0;
+				pp.preprocess(issueToTest.getDescription().toLowerCase());
+				List<CharSequence> stemmedI2Description = pp.getTokens();
+				List<CharSequence> concatenatedList = new ArrayList<>();
+				concatenatedList.addAll(stemmedI1Description);
+				concatenatedList.addAll(stemmedI2Description);
+
+				int unionCount = uniqueElements(concatenatedList).length;
+
+				// Jaccard similarity: (|A| + |B| - |A u B|) / |A u B|
+
+				linkSuggestion.addToScore(
+					(uniqueElements(stemmedI1Description).length + uniqueElements(stemmedI2Description).length - unionCount)
+					/ (double) unionCount,
+					this.getName());
+			} catch (Exception e) {
+				linkSuggestion.addToScore(0., this.getName());
+			}
+			this.linkSuggestions.add(linkSuggestion);
 		}
 
 	}
