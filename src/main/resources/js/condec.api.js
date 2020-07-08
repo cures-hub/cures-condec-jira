@@ -449,10 +449,11 @@
 		var filterSettings = {
 				"projectKey": projectKey,
 				"searchTerm": searchTerm,
-				"isOnlyDecisionKnowledgeShown": isOnlyDecisionKnowledgeShown
+				"isOnlyDecisionKnowledgeShown": isOnlyDecisionKnowledgeShown,
+				"linkDistance": depthOfTree
 			};
-		generalApi.postJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey
-			+ "&depthOfTree=" + depthOfTree, filterSettings, function (error, treant) {
+		generalApi.postJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey, 
+				filterSettings, function (error, treant) {
 				if (error === null) {
 					callback(treant);
 				}

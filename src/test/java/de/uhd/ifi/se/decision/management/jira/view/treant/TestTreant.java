@@ -37,7 +37,7 @@ public class TestTreant extends TestSetUp {
 		init();
 		this.chart = new Chart();
 		this.nodeStructure = new TreantNode();
-		this.treant = new Treant("TEST", "TEST-30", 0);
+		this.treant = new Treant("TEST", "TEST-30");
 		this.treant.setChart(chart);
 		this.treant.setNodeStructure(nodeStructure);
 		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueManager();
@@ -78,7 +78,7 @@ public class TestTreant extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testConstructor() {
-		this.treant = new Treant("TEST", "14", 3);
+		this.treant = new Treant("TEST", "14");
 		assertNotNull(this.treant);
 	}
 
@@ -115,7 +115,8 @@ public class TestTreant extends TestSetUp {
 	public void testConstructorFiltered() {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		FilterSettings filterSettings = new FilterSettings("TEST", "?jql=project=TEST");
-		this.treant = new Treant("TEST", "TEST-30", 3, user, filterSettings);
+		filterSettings.setLinkDistance(3);
+		this.treant = new Treant("TEST", "TEST-30", user, filterSettings);
 		assertNotNull(this.treant);
 		assertNotNull(treant.getNodeStructure());
 		// assertEquals("decision", treant.getNodeStructure().getHtmlClass());
@@ -127,7 +128,7 @@ public class TestTreant extends TestSetUp {
 	@NonTransactional
 	public void testConstructorQueryNull() {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		this.treant = new Treant("TEST", "TEST-30", 3, user, null);
+		this.treant = new Treant("TEST", "TEST-30", user, null);
 		assertNotNull(this.treant);
 		assertNotNull(treant.getNodeStructure());
 		assertEquals("WI: Do an interesting task", treant.getNodeStructure().getNodeContent().get("title"));
@@ -189,7 +190,7 @@ public class TestTreant extends TestSetUp {
 		KnowledgeElement element = persistenceManager.getKnowledgeElement(sentences.get(0).getJiraIssueId());
 		TreantNode nodeStructure = treant.createNodeStructure(element, (Link) null, 0);
 		assertEquals(TreantNode.class, nodeStructure.getClass());
-		assertEquals(1, nodeStructure.getChildren().size());
+		assertEquals(0, nodeStructure.getChildren().size());
 	}
 
 	@Test

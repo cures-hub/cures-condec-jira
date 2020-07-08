@@ -28,22 +28,17 @@ public class TestGetTreant extends TestSetUp {
 
 	@Test
 	public void testElementKeyNullDepthNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreant(null, null, null, null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreant(null, null, null).getStatus());
 	}
 
 	@Test
 	public void testElementNotExistsDepthNull() throws GenericEntityException {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreant(null, "NotTEST", null, null).getStatus());
-	}
-
-	@Test
-	public void testElementNotExistsDepthFilled() throws GenericEntityException {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreant(null, "NotTEST", "3", null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreant(null, "NotTEST", null).getStatus());
 	}
 
 	@Test
 	public void testElementExistsDepthNaN() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreant(null, "TEST-12", "test", null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreant(null, "TEST-12", null).getStatus());
 	}
 
 	@Test
@@ -51,6 +46,6 @@ public class TestGetTreant extends TestSetUp {
 		HttpServletRequest request = new MockHttpServletRequest();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
-		assertEquals(Status.OK.getStatusCode(), viewRest.getTreant(request, "TEST-12", "3", null).getStatus());
+		assertEquals(Status.OK.getStatusCode(), viewRest.getTreant(request, "TEST-12", null).getStatus());
 	}
 }

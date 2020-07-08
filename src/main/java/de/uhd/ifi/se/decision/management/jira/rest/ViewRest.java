@@ -268,27 +268,19 @@ public class ViewRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getTreant(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey,
-			@QueryParam("depthOfTree") String depthOfTree, FilterSettings filterSettings) {
-		if (elementKey == null) {
+			FilterSettings filterSettings) {
+		if (request == null || elementKey == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build();
+					.entity(ImmutableMap.of("error", "Treant cannot be shown since request or element key is invalid."))
+					.build();
 		}
 		String projectKey = getProjectKey(elementKey);
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		int depth = 4; // default value
-		try {
-			depth = Integer.parseInt(depthOfTree);
-		} catch (NumberFormatException e) {
-			LOGGER.error(
-					"Depth of tree could not be parsed, the default value of 4 is used. Message: " + e.getMessage());
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Treant cannot be shown since depth of Tree is NaN")).build();
-		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		Treant treant = new Treant(projectKey, elementKey, depth, user, filterSettings);
+		Treant treant = new Treant(projectKey, elementKey, user, filterSettings);
 		return Response.ok(treant).build();
 	}
 

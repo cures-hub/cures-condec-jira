@@ -42,27 +42,26 @@ public class Treant {
 	private Set<Link> traversedLinks;
 	private int depth;
 
-	public Treant(String projectKey, String elementKey, int depth, boolean isHyperlinked) {
-		this(projectKey, elementKey, depth, null, isHyperlinked, new FilterSettings(projectKey, null));
+	public Treant(String projectKey, String elementKey, boolean isHyperlinked) {
+		this(projectKey, elementKey, null, isHyperlinked, new FilterSettings(projectKey, null));
 	}
 
-	public Treant(String projectKey, String elementKey, int depth) {
-		this(projectKey, elementKey, depth, false);
+	public Treant(String projectKey, String elementKey) {
+		this(projectKey, elementKey, false);
 	}
 
-	public Treant(String projectKey, String elementKey, int depth, ApplicationUser user,
-			FilterSettings filterSettings) {
-		this(projectKey, elementKey, depth, user, false, filterSettings);
+	public Treant(String projectKey, String elementKey, ApplicationUser user, FilterSettings filterSettings) {
+		this(projectKey, elementKey, user, false, filterSettings);
 	}
 
-	public Treant(String projectKey, String elementKey, int depth, ApplicationUser user, boolean isHyperlinked,
+	public Treant(String projectKey, String elementKey, ApplicationUser user, boolean isHyperlinked,
 			FilterSettings filterSettings) {
 		this.setFilterSettings(filterSettings);
 		if (filterSettings == null) {
 			this.setFilterSettings(new FilterSettings(projectKey, null));
 		}
 		this.traversedLinks = new HashSet<Link>();
-		this.depth = depth;
+		this.depth = this.filterSettings.getLinkDistance();
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 
 		AbstractPersistenceManagerForSingleLocation persistenceManager;

@@ -36,6 +36,7 @@ public class FilterSettings {
 	private List<String> linkTypes;
 	private List<String> decisionGroups;
 	private boolean isOnlyDecisionKnowledgeShown;
+	private int linkDistance;
 
 	@XmlElement
 	private long startDate;
@@ -54,7 +55,8 @@ public class FilterSettings {
 		this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
 		this.knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
 		this.decisionGroups = DecisionGroupManager.getAllDecisionGroups(projectKey);
-		this.setOnlyDecisionKnowledgeShown(false);
+		this.isOnlyDecisionKnowledgeShown = false;
+		this.linkDistance = 4;
 	}
 
 	public FilterSettings(String projectKey, String query, ApplicationUser user) {
@@ -280,5 +282,24 @@ public class FilterSettings {
 	@JsonProperty("isOnlyDecisionKnowledgeShown")
 	public void setOnlyDecisionKnowledgeShown(boolean isOnlyDecisionKnowledgeShown) {
 		this.isOnlyDecisionKnowledgeShown = isOnlyDecisionKnowledgeShown;
+	}
+
+	/**
+	 * @return maximal distance from the start node to nodes to be included in the
+	 *         filtered graph. All nodes with a greater distance are not included.
+	 */
+	public int getLinkDistance() {
+		return linkDistance;
+	}
+
+	/**
+	 * @param linkDistance
+	 *            nodes within this distance from the start node are included in the
+	 *            filtered graph. All nodes with a greater distance are not
+	 *            included.
+	 */
+	@JsonProperty("linkDistance")
+	public void setLinkDistance(int linkDistance) {
+		this.linkDistance = linkDistance;
 	}
 }
