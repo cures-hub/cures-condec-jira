@@ -15,11 +15,11 @@
     /*
      * external references: condec.jira.issue.module.js, condec.knowledge.page.js
      */
-    ConDecTreant.prototype.buildTreant = function (elementKey, isInteractive, searchTerm, showOtherJiraIssues) {
+    ConDecTreant.prototype.buildTreant = function (elementKey, isInteractive, searchTerm, isOnlyDecisionKnowledgeShown) {
         console.log("conDecTreant buildTreant");
         treantid = "treant-container";
         var depthOfTree = getDepthOfTree();
-        conDecAPI.getTreant(elementKey, depthOfTree, searchTerm, showOtherJiraIssues, function (treeStructure) {
+        conDecAPI.getTreant(elementKey, depthOfTree, searchTerm, isOnlyDecisionKnowledgeShown, function (treeStructure) {
             document.getElementById(treantid).innerHTML = "";
             treantTree = new Treant(treeStructure);
             if (isInteractive !== undefined && isInteractive) {

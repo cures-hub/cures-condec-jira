@@ -445,11 +445,11 @@
 	/*
 	 * external references: condec.treant
 	 */
-	ConDecAPI.prototype.getTreant = function (elementKey, depthOfTree, searchTerm, showOtherJiraIssues, callback) {
+	ConDecAPI.prototype.getTreant = function (elementKey, depthOfTree, searchTerm, isOnlyDecisionKnowledgeShown, callback) {
 		var filterSettings = {
 				"projectKey": projectKey,
 				"searchTerm": searchTerm,
-				"isOnlyDecisionKnowledgeShown": showOtherJiraIssues
+				"isOnlyDecisionKnowledgeShown": isOnlyDecisionKnowledgeShown
 			};
 		generalApi.postJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey
 			+ "&depthOfTree=" + depthOfTree, filterSettings, function (error, treant) {

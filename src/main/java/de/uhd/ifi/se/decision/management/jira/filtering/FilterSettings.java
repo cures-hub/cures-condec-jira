@@ -262,10 +262,21 @@ public class FilterSettings {
 		return decisionGroups;
 	}
 
+	/**
+	 * @return true if only decision knowledge elements are included in the filtered
+	 *         graph. False if also requirements and other knowledge elements are
+	 *         included.
+	 */
 	public boolean isOnlyDecisionKnowledgeShown() {
 		return isOnlyDecisionKnowledgeShown;
 	}
 
+	/**
+	 * @param isOnlyDecisionKnowledgeShown
+	 *            true if only decision knowledge elements should be included in the
+	 *            filtered graph. False if also requirements and other knowledge
+	 *            elements are included.
+	 */
 	@JsonProperty("isOnlyDecisionKnowledgeShown")
 	public void setOnlyDecisionKnowledgeShown(boolean isOnlyDecisionKnowledgeShown) {
 		this.isOnlyDecisionKnowledgeShown = isOnlyDecisionKnowledgeShown;

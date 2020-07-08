@@ -23,8 +23,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 
 /**
- * Creates a tree data structure from the {@link KnowledgeGraph}. Uses the
- * Treant.js framework for visualization of the knowledge tree.
+ * Creates a tree data structure from the {@link KnowledgeGraph} according to
+ * the given {@link FilterSettings}. Uses the Treant.js framework for
+ * visualization of the knowledge tree.
  */
 @XmlRootElement(name = "treant")
 @XmlAccessorType(XmlAccessType.FIELD)

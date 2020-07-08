@@ -49,8 +49,9 @@
             addOnClickEventToExportAsTable();
             addOnClickEventToTab();
             addOnClickEventToFilterButton();
+            addOnChangeEventToDepthOfTreeInput();
 
-			//initial call to api depending on selected tab!
+			// initial call to api depending on selected tab!
 			determineSelectedTab(window.location.href);
             return true;
         }
@@ -123,12 +124,26 @@
             applyFilters();
         });
     }
+    
+    function addOnChangeEventToDepthOfTreeInput() {
+        console.log("ConDecJiraIssueModule addOnChangeEventToDepthOfTreeInput");        
+        var depthOfTreeInput = document.getElementById("depth-of-tree-input");
+        depthOfTreeInput.addEventListener("input", function () {
+            var depthOfTreeWarningLabel = document.getElementById("depth-of-tree-warning");
+            if (this.value > 0) {
+                depthOfTreeWarningLabel.style.visibility = "hidden";
+                showTreant();
+            } else {
+                depthOfTreeWarningLabel.style.visibility = "visible";
+            }
+        });
+    }
 
     function showTreant() {
         console.log("ConDecJiraIssueModule showTreant");
-        var showOtherJiraIssues = document.getElementById("show-elements-input").checked;
+        var isOnlyDecisionKnowledgeShown = document.getElementById("is-decision-knowledge-only-input").checked;
         issueKey = conDecAPI.getIssueKey();
-        treant.buildTreant(issueKey, true, search, showOtherJiraIssues);
+        treant.buildTreant(issueKey, true, search, isOnlyDecisionKnowledgeShown);
     }
 
     function showClassTreant() {
