@@ -37,7 +37,7 @@ public class TestTreant extends TestSetUp {
 		init();
 		this.chart = new Chart();
 		this.nodeStructure = new TreantNode();
-		this.treant = new Treant("TEST", "TEST-30");
+		this.treant = new Treant("TEST", "TEST-30", false);
 		this.treant.setChart(chart);
 		this.treant.setNodeStructure(nodeStructure);
 		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueManager();
@@ -78,7 +78,7 @@ public class TestTreant extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testConstructor() {
-		this.treant = new Treant("TEST", "14");
+		this.treant = new Treant("TEST", "14", false);
 		assertNotNull(this.treant);
 	}
 
@@ -113,10 +113,9 @@ public class TestTreant extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testConstructorFiltered() {
-		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		FilterSettings filterSettings = new FilterSettings("TEST", "?jql=project=TEST");
 		filterSettings.setLinkDistance(3);
-		this.treant = new Treant("TEST", "TEST-30", user, filterSettings);
+		this.treant = new Treant("TEST", "TEST-30", filterSettings);
 		assertNotNull(this.treant);
 		assertNotNull(treant.getNodeStructure());
 		// assertEquals("decision", treant.getNodeStructure().getHtmlClass());
@@ -127,8 +126,7 @@ public class TestTreant extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testConstructorQueryNull() {
-		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		this.treant = new Treant("TEST", "TEST-30", user, null);
+		this.treant = new Treant("TEST", "TEST-30", null);
 		assertNotNull(this.treant);
 		assertNotNull(treant.getNodeStructure());
 		assertEquals("WI: Do an interesting task", treant.getNodeStructure().getNodeContent().get("title"));

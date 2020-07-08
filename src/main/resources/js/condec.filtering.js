@@ -47,7 +47,7 @@
 		var depthOfTreeInput = document.getElementById(inputId);
         depthOfTreeInput.addEventListener("input", function () {
             var depthOfTreeWarningLabel = document.getElementById("depth-of-tree-warning");
-            if (this.value > 0) {
+            if (this.value >= 0) {
                 depthOfTreeWarningLabel.style.display = "none";
                 callback();
             } else {

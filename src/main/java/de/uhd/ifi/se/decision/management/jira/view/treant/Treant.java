@@ -10,8 +10,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.atlassian.jira.user.ApplicationUser;
-
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -40,28 +38,21 @@ public class Treant {
 	private FilterSettings filterSettings;
 	private boolean isHyperlinked;
 	private Set<Link> traversedLinks;
-	private int depth;
 
 	public Treant(String projectKey, String elementKey, boolean isHyperlinked) {
-		this(projectKey, elementKey, null, isHyperlinked, new FilterSettings(projectKey, null));
+		this(projectKey, elementKey, isHyperlinked, new FilterSettings(projectKey, null));
 	}
 
-	public Treant(String projectKey, String elementKey) {
-		this(projectKey, elementKey, false);
+	public Treant(String projectKey, String elementKey, FilterSettings filterSettings) {
+		this(projectKey, elementKey, false, filterSettings);
 	}
 
-	public Treant(String projectKey, String elementKey, ApplicationUser user, FilterSettings filterSettings) {
-		this(projectKey, elementKey, user, false, filterSettings);
-	}
-
-	public Treant(String projectKey, String elementKey, ApplicationUser user, boolean isHyperlinked,
-			FilterSettings filterSettings) {
+	public Treant(String projectKey, String elementKey, boolean isHyperlinked, FilterSettings filterSettings) {
 		this.setFilterSettings(filterSettings);
 		if (filterSettings == null) {
 			this.setFilterSettings(new FilterSettings(projectKey, null));
 		}
 		this.traversedLinks = new HashSet<Link>();
-		this.depth = this.filterSettings.getLinkDistance();
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 
 		AbstractPersistenceManagerForSingleLocation persistenceManager;
@@ -79,10 +70,11 @@ public class Treant {
 		this.setHyperlinked(isHyperlinked);
 	}
 
+	// TODO Add parameters checkboxflag, minLinkNumber and maxLinkNumber to
+	// FilterSettings (as minDegree and maxDegree)
 	public Treant(String projectKey, KnowledgeElement element, int depth, String query, String treantId,
 			boolean checkboxflag, boolean isIssueView, int minLinkNumber, int maxLinkNumber) {
 		this.traversedLinks = new HashSet<Link>();
-		this.depth = depth;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 		this.filterSettings = new FilterSettings(projectKey, query);
 		this.setChart(new Chart(treantId));
@@ -127,7 +119,7 @@ public class Treant {
 
 		TreantNode node = createTreantNode(element, link, isCollapsed);
 
-		if (currentDepth == depth + 1) {
+		if (currentDepth == this.filterSettings.getLinkDistance() + 1) {
 			return node;
 		}
 
@@ -137,6 +129,7 @@ public class Treant {
 		return node;
 	}
 
+	// TODO Remove isIssueView parameter
 	public TreantNode createNodeStructure(KnowledgeElement element, Set<Link> links, int currentDepth,
 			boolean isIssueView) {
 		if (element == null || element.getProject() == null || links == null) {
@@ -144,7 +137,7 @@ public class Treant {
 		}
 		// boolean isCollapsed = isNodeCollapsed(linksToTraverse, currentDepth);
 		TreantNode node = createTreantNode(element, null, false);
-		if (currentDepth == depth + 1) {
+		if (currentDepth == this.filterSettings.getLinkDistance() + 1) {
 			return node;
 		}
 		List<TreantNode> nodes = new ArrayList<TreantNode>();
@@ -168,7 +161,7 @@ public class Treant {
 
 	private boolean isNodeCollapsed(Set<Link> linksToTraverse, int currentDepth) {
 		boolean isCollapsed = false;
-		if (currentDepth == depth && !traversedLinks.containsAll(linksToTraverse)) {
+		if (currentDepth == this.filterSettings.getLinkDistance() - 1 && !traversedLinks.containsAll(linksToTraverse)) {
 			isCollapsed = true;
 		}
 		return isCollapsed;

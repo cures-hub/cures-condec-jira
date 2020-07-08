@@ -279,8 +279,7 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		Treant treant = new Treant(projectKey, elementKey, user, filterSettings);
+		Treant treant = new Treant(projectKey, elementKey, filterSettings);
 		return Response.ok(treant).build();
 	}
 
