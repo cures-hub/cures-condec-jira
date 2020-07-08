@@ -103,6 +103,11 @@
         statusDropdown.addEventListener("change", function (e) {
             conDecKnowledgePage.updateView();
         });
+        
+        var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input");
+        isOnlyDecisionKnowledgeShownInput.addEventListener("change", function (e) {
+            conDecKnowledgePage.updateView();
+        });
 
         updateView(null, treant, treeViewer);
     }
@@ -119,7 +124,8 @@
         }
         jQueryConDec("#jstree").on("select_node.jstree", function (error, tree) {
             var node = tree.node.data;
-            treant.buildTreant(node.key, true, "", false);
+            var isOnlyDecisionKnowledgeShown = document.getElementById("is-decision-knowledge-only-input").checked;
+            treant.buildTreant(node.key, true, "", isOnlyDecisionKnowledgeShown);
         });
 
         var selectedGroupsObj = $('#select2-decision-group').select2('data');
