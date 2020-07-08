@@ -39,6 +39,23 @@
 		}
 		return selectedItems;
 	};
+	
+	/*
+	 * external references: condec.jira.issue.module, condec.knowledge.page
+	 */
+	ConDecFiltering.prototype.addEventListenerToLinkDistanceInput = function (inputId, callback) {
+		var depthOfTreeInput = document.getElementById(inputId);
+        depthOfTreeInput.addEventListener("input", function () {
+            var depthOfTreeWarningLabel = document.getElementById("depth-of-tree-warning");
+            if (this.value >= 0) {
+                depthOfTreeWarningLabel.style.display = "none";
+                callback();
+            } else {
+                depthOfTreeWarningLabel.style.display = "inline";
+                depthOfTreeWarningLabel.style.visibility = "visible";
+            }
+        });
+	};
 
 	// export ConDecFiltering
 	global.conDecFiltering = new ConDecFiltering();

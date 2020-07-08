@@ -445,9 +445,15 @@
 	/*
 	 * external references: condec.treant
 	 */
-	ConDecAPI.prototype.getTreant = function (elementKey, depthOfTree, searchTerm, showOtherJiraIssues, callback) {
-		generalApi.getJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey
-			+ "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm + "&showOtherJiraIssues=" + showOtherJiraIssues, function (error, treant) {
+	ConDecAPI.prototype.getTreant = function (elementKey, depthOfTree, searchTerm, isOnlyDecisionKnowledgeShown, callback) {
+		var filterSettings = {
+				"projectKey": projectKey,
+				"searchTerm": searchTerm,
+				"isOnlyDecisionKnowledgeShown": isOnlyDecisionKnowledgeShown,
+				"linkDistance": depthOfTree
+			};
+		generalApi.postJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey, 
+				filterSettings, function (error, treant) {
 				if (error === null) {
 					callback(treant);
 				}

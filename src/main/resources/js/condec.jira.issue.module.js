@@ -49,8 +49,12 @@
             addOnClickEventToExportAsTable();
             addOnClickEventToTab();
             addOnClickEventToFilterButton();
+            conDecFiltering.addEventListenerToLinkDistanceInput("depth-of-tree-input", showTreant);
+            
+            var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input");
+            isOnlyDecisionKnowledgeShownInput.addEventListener("change", showTreant);
 
-			//initial call to api depending on selected tab!
+			// initial call to api depending on selected tab!
 			determineSelectedTab(window.location.href);
             return true;
         }
@@ -126,9 +130,9 @@
 
     function showTreant() {
         console.log("ConDecJiraIssueModule showTreant");
-        var showOtherJiraIssues = document.getElementById("show-elements-input").checked;
+        var isOnlyDecisionKnowledgeShown = document.getElementById("is-decision-knowledge-only-input").checked;
         issueKey = conDecAPI.getIssueKey();
-        treant.buildTreant(issueKey, true, search, showOtherJiraIssues);
+        treant.buildTreant(issueKey, true, search, isOnlyDecisionKnowledgeShown);
     }
 
     function showClassTreant() {
