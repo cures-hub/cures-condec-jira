@@ -17,6 +17,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.jgit.lib.Ref;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.issue.Issue;
@@ -24,6 +28,7 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
+
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
@@ -41,9 +46,6 @@ import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
-import org.eclipse.jgit.lib.Ref;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * REST resource for view
@@ -151,8 +153,10 @@ public class ViewRest {
 	 * Returns a jstree tree viewer for a list of trees where all root elements have
 	 * a specific {@link KnowledgeType}.
 	 *
-	 * @param projectKey      of a Jira project.
-	 * @param rootElementType {@link KnowledgeType} of the root elements.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param rootElementType
+	 *            {@link KnowledgeType} of the root elements.
 	 */
 	@Path("/getTreeViewer")
 	@GET
@@ -223,7 +227,8 @@ public class ViewRest {
 	@Path("/getDecisionIssues")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionIssues(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey) {
+	public Response getDecisionIssues(@Context HttpServletRequest request,
+			@QueryParam("elementKey") String elementKey) {
 		if (elementKey == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Decision Issues cannot be shown since element key is invalid."))
@@ -245,8 +250,8 @@ public class ViewRest {
 	public Response getDecisionTable(@Context HttpServletRequest request, @QueryParam("elementId") long id,
 			@QueryParam("location") String location, @QueryParam("elementKey") String elementKey) {
 		if (elementKey == null || id == -1 || location == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Decision Table cannot be shown due to missing or invalid parameters."))
+			return Response.status(Status.BAD_REQUEST).entity(
+					ImmutableMap.of("error", "Decision Table cannot be shown due to missing or invalid parameters."))
 					.build();
 		}
 		String projectKey = getProjectKey(elementKey);
@@ -260,11 +265,10 @@ public class ViewRest {
 	}
 
 	@Path("/getTreant")
-	@GET
+	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getTreant(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey,
-			@QueryParam("depthOfTree") String depthOfTree, @QueryParam("searchTerm") String searchTerm,
-			@QueryParam("showOtherJiraIssues") Boolean showOtherJiraIssues) {
+			@QueryParam("depthOfTree") String depthOfTree, FilterSettings filterSettings) {
 		if (elementKey == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build();
@@ -284,7 +288,7 @@ public class ViewRest {
 					.entity(ImmutableMap.of("error", "Treant cannot be shown since depth of Tree is NaN")).build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		Treant treant = new Treant(projectKey, elementKey, depth, searchTerm, user, showOtherJiraIssues);
+		Treant treant = new Treant(projectKey, elementKey, depth, user, filterSettings);
 		return Response.ok(treant).build();
 	}
 

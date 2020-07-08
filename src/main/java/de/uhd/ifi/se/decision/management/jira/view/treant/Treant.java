@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -35,30 +36,33 @@ public class Treant {
 	private TreantNode nodeStructure;
 
 	private KnowledgeGraph graph;
+	private FilterSettings filterSettings;
 	private boolean isHyperlinked;
-	private boolean showOtherJiraIssues;
 	private Set<Link> traversedLinks;
 	private int depth;
 
 	public Treant(String projectKey, String elementKey, int depth, boolean isHyperlinked) {
-		this(projectKey, elementKey, depth, null, null, isHyperlinked, false);
+		this(projectKey, elementKey, depth, null, isHyperlinked, new FilterSettings(projectKey, null));
 	}
 
 	public Treant(String projectKey, String elementKey, int depth) {
 		this(projectKey, elementKey, depth, false);
 	}
 
-	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user,
-			boolean showOtherJiraIssues) {
-		this(projectKey, elementKey, depth, query, user, false, showOtherJiraIssues);
+	public Treant(String projectKey, String elementKey, int depth, ApplicationUser user,
+			FilterSettings filterSettings) {
+		this(projectKey, elementKey, depth, user, false, filterSettings);
 	}
 
-	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user,
-			boolean isHyperlinked, boolean showOtherJiraIssues) {
+	public Treant(String projectKey, String elementKey, int depth, ApplicationUser user, boolean isHyperlinked,
+			FilterSettings filterSettings) {
+		this.setFilterSettings(filterSettings);
+		if (filterSettings == null) {
+			this.setFilterSettings(new FilterSettings(projectKey, null));
+		}
 		this.traversedLinks = new HashSet<Link>();
 		this.depth = depth;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
-		this.showOtherJiraIssues = showOtherJiraIssues;
 
 		AbstractPersistenceManagerForSingleLocation persistenceManager;
 		// TODO this should not be checked in Treant, instead of the elementKey the
@@ -80,6 +84,7 @@ public class Treant {
 		this.traversedLinks = new HashSet<Link>();
 		this.depth = depth;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
+		this.filterSettings = new FilterSettings(projectKey, query);
 		this.setChart(new Chart(treantId));
 		// TODO Filtering should be done on the Knowledge Graph directly and the
 		// FilteringManager should be used
@@ -186,8 +191,11 @@ public class Treant {
 				continue;
 			}
 			KnowledgeElement oppositeElement = currentLink.getOppositeElement(rootElement);
-			if (oppositeElement == null || (oppositeElement.getType() == KnowledgeType.OTHER && !showOtherJiraIssues)
-					|| (showOtherJiraIssues && oppositeElement.getType() == KnowledgeType.OTHER
+			if (oppositeElement == null
+					|| (oppositeElement.getType() == KnowledgeType.OTHER
+							&& filterSettings.isOnlyDecisionKnowledgeShown())
+					|| (!filterSettings.isOnlyDecisionKnowledgeShown()
+							&& oppositeElement.getType() == KnowledgeType.OTHER
 							&& oppositeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUE)) {
 				continue;
 			}
@@ -219,5 +227,13 @@ public class Treant {
 
 	public void setHyperlinked(boolean isHyperlinked) {
 		this.isHyperlinked = isHyperlinked;
+	}
+
+	public FilterSettings getFilterSettings() {
+		return filterSettings;
+	}
+
+	public void setFilterSettings(FilterSettings filterSettings) {
+		this.filterSettings = filterSettings;
 	}
 }

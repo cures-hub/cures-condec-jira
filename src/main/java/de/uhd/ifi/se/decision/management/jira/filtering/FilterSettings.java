@@ -35,6 +35,7 @@ public class FilterSettings {
 	private List<KnowledgeStatus> knowledgeStatus;
 	private List<String> linkTypes;
 	private List<String> decisionGroups;
+	private boolean isOnlyDecisionKnowledgeShown;
 
 	@XmlElement
 	private long startDate;
@@ -53,6 +54,7 @@ public class FilterSettings {
 		this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
 		this.knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
 		this.decisionGroups = DecisionGroupManager.getAllDecisionGroups(projectKey);
+		this.setOnlyDecisionKnowledgeShown(false);
 	}
 
 	public FilterSettings(String projectKey, String query, ApplicationUser user) {
@@ -258,5 +260,14 @@ public class FilterSettings {
 	@XmlElement(name = "groups")
 	public List<String> getDecisionGroups() {
 		return decisionGroups;
+	}
+
+	public boolean isOnlyDecisionKnowledgeShown() {
+		return isOnlyDecisionKnowledgeShown;
+	}
+
+	@JsonProperty("isOnlyDecisionKnowledgeShown")
+	public void setOnlyDecisionKnowledgeShown(boolean isOnlyDecisionKnowledgeShown) {
+		this.isOnlyDecisionKnowledgeShown = isOnlyDecisionKnowledgeShown;
 	}
 }

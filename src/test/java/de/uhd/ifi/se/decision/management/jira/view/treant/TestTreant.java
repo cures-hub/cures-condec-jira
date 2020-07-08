@@ -1,11 +1,19 @@
 package de.uhd.ifi.se.decision.management.jira.view.treant;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -16,11 +24,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class TestTreant extends TestSetUp {
 	private Chart chart;
@@ -38,8 +41,7 @@ public class TestTreant extends TestSetUp {
 		this.treant.setChart(chart);
 		this.treant.setNodeStructure(nodeStructure);
 		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueManager();
-		CodeClassPersistenceManager ccManager
-				= new CodeClassPersistenceManager("Test");
+		CodeClassPersistenceManager ccManager = new CodeClassPersistenceManager("Test");
 		classElement = new KnowledgeElement();
 		classElement.setProject("TEST");
 		classElement.setType("Other");
@@ -112,7 +114,8 @@ public class TestTreant extends TestSetUp {
 	@NonTransactional
 	public void testConstructorFiltered() {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		this.treant = new Treant("TEST", "TEST-30", 3, "?jql=project=TEST", user, false);
+		FilterSettings filterSettings = new FilterSettings("TEST", "?jql=project=TEST");
+		this.treant = new Treant("TEST", "TEST-30", 3, user, filterSettings);
 		assertNotNull(this.treant);
 		assertNotNull(treant.getNodeStructure());
 		// assertEquals("decision", treant.getNodeStructure().getHtmlClass());
@@ -124,7 +127,7 @@ public class TestTreant extends TestSetUp {
 	@NonTransactional
 	public void testConstructorQueryNull() {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		this.treant = new Treant("TEST", "TEST-30", 3, "null", user, false);
+		this.treant = new Treant("TEST", "TEST-30", 3, user, null);
 		assertNotNull(this.treant);
 		assertNotNull(treant.getNodeStructure());
 		assertEquals("WI: Do an interesting task", treant.getNodeStructure().getNodeContent().get("title"));
