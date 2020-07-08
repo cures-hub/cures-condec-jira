@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestLinkType {
 
@@ -13,6 +13,6 @@ public class TestLinkType {
 
 	@Test
 	public void testLinkTypeToList() {
-		assertEquals(10, LinkType.toStringList().size());
+		assertEquals(11, LinkType.toStringList().size());
 	}
 }
