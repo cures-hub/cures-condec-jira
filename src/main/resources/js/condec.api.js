@@ -465,6 +465,7 @@
 				"projectKey": projectKey,
 				"searchTerm": searchTerm,
 				"isOnlyDecisionKnowledgeShown": checkboxflag,
+				"isTestCodeShown": checkboxflag,
 				"linkDistance": linkDistance,
 				"minDegree": minLinkNumber,
 				"maxDegree": maxLinkNumber

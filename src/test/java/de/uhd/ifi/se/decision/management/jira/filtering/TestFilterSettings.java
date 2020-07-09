@@ -169,6 +169,17 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
+	public void testIsTestCodeShown() {
+		assertEquals(false, filterSettings.isTestCodeShown());
+	}
+
+	@Test
+	public void testSetTestCodeShown() {
+		filterSettings.setTestCodeShown(true);
+		assertEquals(true, filterSettings.isTestCodeShown());
+	}
+
+	@Test
 	public void testGetLinkDistance() {
 		assertEquals(3, filterSettings.getLinkDistance());
 	}

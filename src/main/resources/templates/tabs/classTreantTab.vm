@@ -4,8 +4,8 @@
         	#set ($textInputId = "search-code-class-input")
         	#parse("templates/filter/text.vm")
 
-            <label for="show-test-elements-input">Show Test Classes:</label>
-            <input type="checkbox" id="show-test-elements-input" />
+        	#parse("templates/filter/isTestCode.vm")
+            
             #parse("templates/filter/degree.vm")
             
             #set ($filterButtonId = "code-class-filter-button")

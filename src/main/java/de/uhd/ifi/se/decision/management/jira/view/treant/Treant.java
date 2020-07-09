@@ -78,32 +78,11 @@ public class Treant {
 
 		// TODO Filtering should be done on the Knowledge Graph directly and the
 		// FilteringManager should be used
-		boolean checkboxflag = this.filterSettings.isOnlyDecisionKnowledgeShown();
 		Set<Link> usedLinks = new HashSet<>();
 		if (isIssueView) {
-			for (Link link : element.getLinks()) {
-				if ((checkboxflag || !checkboxflag && !link.getSource().getSummary().startsWith("Test"))
-						&& link.getSource() != null && link.getSource().getSummary().contains(".java")
-						&& link.getSource().getDocumentationLocation() == DocumentationLocation.COMMIT
-						&& link.getSource().getLinks().size() >= this.filterSettings.getMinDegree()
-						&& link.getSource().getLinks().size() <= this.filterSettings.getMaxDegree()
-						&& (this.filterSettings.getSearchTerm().isBlank()
-								|| link.getSource().getSummary().contains(this.filterSettings.getSearchTerm()))) {
-					usedLinks.add(link);
-				}
-			}
+			usedLinks = getLinksInJiraIssueView(element);
 		} else {
-			if (!checkboxflag) {
-				for (Link link : element.getLinks()) {
-					KnowledgeElement targetElement = link.getTarget();
-					List<Link> elementLinks = GenericLinkManager.getOutwardLinks(targetElement);
-					if (elementLinks != null && elementLinks.size() > 0) {
-						usedLinks.add(link);
-					}
-				}
-			} else {
-				usedLinks = new HashSet<>(element.getLinks());
-			}
+			usedLinks = getLinks(element);
 		}
 		if (this.filterSettings.getLinkDistance() > 0) {
 			this.setNodeStructure(this.createNodeStructure(element, usedLinks, 1, isIssueView));
@@ -111,22 +90,55 @@ public class Treant {
 		this.setHyperlinked(false);
 	}
 
+	private Set<Link> getLinksInJiraIssueView(KnowledgeElement element) {
+		Set<Link> usedLinks = new HashSet<>();
+		for (Link link : element.getLinks()) {
+			if (link.getSource() == null) {
+				continue;
+			}
+			if (!this.filterSettings.isTestCodeShown() && link.getSource().getSummary().startsWith("Test")) {
+				continue;
+			}
+			if (link.getSource().getSummary().contains(".java")
+					&& link.getSource().getDocumentationLocation() == DocumentationLocation.COMMIT
+					&& link.getSource().getLinks().size() >= this.filterSettings.getMinDegree()
+					&& link.getSource().getLinks().size() <= this.filterSettings.getMaxDegree()
+					&& (this.filterSettings.getSearchTerm().isBlank()
+							|| link.getSource().getSummary().contains(this.filterSettings.getSearchTerm()))) {
+				usedLinks.add(link);
+			}
+		}
+		return usedLinks;
+	}
+
+	private Set<Link> getLinks(KnowledgeElement element) {
+		Set<Link> usedLinks = new HashSet<>();
+		if (!this.filterSettings.isOnlyDecisionKnowledgeShown()) {
+			for (Link link : element.getLinks()) {
+				KnowledgeElement targetElement = link.getTarget();
+				// TODO Get rid of GenericLinkManager
+				List<Link> elementLinks = GenericLinkManager.getOutwardLinks(targetElement);
+				if (elementLinks != null && elementLinks.size() > 0) {
+					usedLinks.add(link);
+				}
+			}
+		} else {
+			usedLinks = new HashSet<>(element.getLinks());
+		}
+		return usedLinks;
+	}
+
 	public TreantNode createNodeStructure(KnowledgeElement element, Link link, int currentDepth) {
 		if (element == null || element.getProject() == null) {
 			return new TreantNode();
 		}
-
 		Set<Link> linksToTraverse = graph.edgesOf(element);
-
 		TreantNode node = createTreantNode(element, link, false);
-
 		if (currentDepth == this.filterSettings.getLinkDistance() + 1) {
 			return node;
 		}
-
 		List<TreantNode> nodes = getChildren(element, linksToTraverse, currentDepth);
 		node.setChildren(nodes);
-
 		return node;
 	}
 
@@ -141,6 +153,7 @@ public class Treant {
 			return node;
 		}
 		List<TreantNode> nodes = new ArrayList<TreantNode>();
+		// TODO Get rid of AbstractPersistenceManagerForSingleLocation here
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(element.getProject()).getJiraIssueManager();
 		for (Link link : links) {
