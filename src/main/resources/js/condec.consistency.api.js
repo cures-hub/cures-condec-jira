@@ -50,33 +50,38 @@
 
 		ConsistencyAPI.prototype.displayConsistencyCheck = function () {
 			let self = this;
-			this.doesIssueNeedApproval(conDecAPI.getIssueKey())
-				.then((response) => {
-				if (response.needsApproval) {
-					Promise.all([this.getDuplicatesForIssue(conDecAPI.getIssueKey()),
-						consistencyAPI.getRelatedIssues(conDecAPI.getIssueKey())]).then(
-						(values) => {
-							let numDuplicates = (values[0].duplicates.length);
-							let numRelated = (values[1].relatedIssues.length);
-							if (numDuplicates + numRelated > 0) {
-								self.consistencyCheckFlag = AJS.flag({
-									type: 'warning',
-									title: 'Possible inconsistencies detected!',
-									body: 'Issue <strong>' + conDecAPI.getIssueKey() + '</strong> contains some detected inconsistencies. <br/>'
-										+ '<ul>'
-										+ '<li> ' + numRelated + ' possibly related issues </li>'
-										+ '<li> ' + numDuplicates + ' possible duplicates </li>'
-										+ '</ul>'
-										+ '<ul class="aui-nav-actions-list">'
-										+ '<li><button id="consistency-check-dialog-submit-button" onclick="consistencyAPI.approveInconsistencies()" class="aui-button aui-button-link">Approve</button></li>'
-										+ '</ul>'
+			let issueKey = conDecAPI.getIssueKey();
+			if(issueKey !== null && issueKey !== undefined){
+				this.doesIssueNeedApproval(issueKey)
+					.then((response) => {
+						if (response.needsApproval) {
+							Promise.all([this.getDuplicatesForIssue(conDecAPI.getIssueKey()),
+								consistencyAPI.getRelatedIssues(conDecAPI.getIssueKey())]).then(
+								(values) => {
+									console.log(values);
+									let numDuplicates = (values[0].duplicates.length);
+									let numRelated = (values[1].relatedIssues.length);
+									if (numDuplicates + numRelated > 0) {
+										self.consistencyCheckFlag = AJS.flag({
+											type: 'warning',
+											title: 'Possible inconsistencies detected!',
+											body: 'Issue <strong>' + conDecAPI.getIssueKey() + '</strong> contains some detected inconsistencies. <br/>'
+												+ '<ul>'
+												+ '<li> ' + numRelated + ' possibly related issues </li>'
+												+ '<li> ' + numDuplicates + ' possible duplicates </li>'
+												+ '</ul>'
+												+ '<ul class="aui-nav-actions-list">'
+												+ '<li><button id="consistency-check-dialog-submit-button" onclick="consistencyAPI.approveInconsistencies()" class="aui-button aui-button-link">Approve</button></li>'
+												+ '</ul>'
+										});
+									}
+
 								});
-							}
 
-						});
+						}
+					});
+			}
 
-				}
-			});
 
 		}
 
