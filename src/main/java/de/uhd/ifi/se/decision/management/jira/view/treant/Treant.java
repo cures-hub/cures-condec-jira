@@ -48,10 +48,7 @@ public class Treant {
 	}
 
 	public Treant(String projectKey, String elementKey, boolean isHyperlinked, FilterSettings filterSettings) {
-		this.setFilterSettings(filterSettings);
-		if (filterSettings == null) {
-			this.setFilterSettings(new FilterSettings(projectKey, null));
-		}
+		this.setFilterSettings(filterSettings == null ? new FilterSettings(projectKey, null) : filterSettings);
 		this.traversedLinks = new HashSet<Link>();
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 
@@ -70,26 +67,28 @@ public class Treant {
 		this.setHyperlinked(isHyperlinked);
 	}
 
-	// TODO Add parameters checkboxflag, minLinkNumber and maxLinkNumber to
-	// FilterSettings (as areTestClassesShown, minDegree and maxDegree)
-	public Treant(String projectKey, KnowledgeElement element, int depth, String query, String treantId,
-			boolean checkboxflag, boolean isIssueView, int minLinkNumber, int maxLinkNumber) {
+	public Treant(String projectKey, KnowledgeElement element, String treantId, boolean isIssueView,
+			FilterSettings filterSettings) {
+		this.setFilterSettings(filterSettings == null ? new FilterSettings(projectKey, null) : filterSettings);
 		this.traversedLinks = new HashSet<Link>();
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
-		this.filterSettings = new FilterSettings(projectKey, query);
-		this.filterSettings.setLinkDistance(depth);
+
+		// TODO Why is the treantId needed?
 		this.setChart(new Chart(treantId));
+
 		// TODO Filtering should be done on the Knowledge Graph directly and the
 		// FilteringManager should be used
+		boolean checkboxflag = this.filterSettings.isOnlyDecisionKnowledgeShown();
 		Set<Link> usedLinks = new HashSet<>();
 		if (isIssueView) {
 			for (Link link : element.getLinks()) {
 				if ((checkboxflag || !checkboxflag && !link.getSource().getSummary().startsWith("Test"))
 						&& link.getSource() != null && link.getSource().getSummary().contains(".java")
 						&& link.getSource().getDocumentationLocation() == DocumentationLocation.COMMIT
-						&& link.getSource().getLinks().size() >= minLinkNumber
-						&& link.getSource().getLinks().size() <= maxLinkNumber
-						&& (query.isBlank() || link.getSource().getSummary().contains(query))) {
+						&& link.getSource().getLinks().size() >= this.filterSettings.getMinDegree()
+						&& link.getSource().getLinks().size() <= this.filterSettings.getMaxDegree()
+						&& (this.filterSettings.getSearchTerm().isBlank()
+								|| link.getSource().getSummary().contains(this.filterSettings.getSearchTerm()))) {
 					usedLinks.add(link);
 				}
 			}

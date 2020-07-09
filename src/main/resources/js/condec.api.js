@@ -23,9 +23,8 @@
 		 * @issue How to store settings retrieved from the backend such as
 		 *        knowledge types?
 		 * @decision The settings that do not change are stored as global
-		 *           attributes (arrays)! The global arrays are filled when
-		 *           the getter method is called but only once, if they are
-		 *           empty!
+		 *           attributes (arrays)! The global arrays are filled when the
+		 *           getter method is called but only once, if they are empty!
 		 * @pro This avoids redundant REST calls and improves performance.
 		 * @alternative Do not use global attributes but make REST calls in
 		 *              every getter-call!
@@ -41,8 +40,8 @@
 	};
 
 	/**
-	 * Replaces argument with pro-argument and con-argument in knowledge
-	 * types array.
+	 * Replaces argument with pro-argument and con-argument in knowledge types
+	 * array.
 	 */
 	function createExtendedKnowledgeTypes(knowledgeTypes) {
 		var extendedKnowledgeTypes = knowledgeTypes.filter(function (value) {
@@ -59,12 +58,12 @@
 	 * @alternative Do not use getters in Javascript but directly call e.g.
 	 *              "conDecAPI.extendedKnowlegdeTypes"!
 	 * @pro Less code.
-	 * @con The global attribute might not be initialized. The
-	 *      initialisation cannot be done via direct calls.
+	 * @con The global attribute might not be initialized. The initialisation
+	 *      cannot be done via direct calls.
 	 * @decision Use getters in Javascript and e.g. call
 	 *           "conDecAPI.getExtendedKnowledgeTypes()"!
-	 * @pro If the global attribute is not initialized, this can be done
-	 *      with the getter function.
+	 * @pro If the global attribute is not initialized, this can be done with
+	 *      the getter function.
 	 */
 	ConDecAPI.prototype.getExtendedKnowledgeTypes = function () {
 		this.getKnowledgeTypes();
@@ -74,8 +73,8 @@
 	ConDecAPI.prototype.checkIfProjectKeyIsValid = function () {
 		if (projectKey === null || projectKey === undefined) {
 			/**
-			 * Some dependencies were missing when the closure object was
-			 * first instantiated. Instantiates the object again.
+			 * Some dependencies were missing when the closure object was first
+			 * instantiated. Instantiates the object again.
 			 */
 			global.conDecAPI = new ConDecAPI();
 		}
@@ -462,9 +461,16 @@
 
 	ConDecAPI.prototype.getClassTreant = function (elementKey, linkDistance, searchTerm, checkboxflag,
 		isIssueView, minLinkNumber, maxLinkNumber, callback) {
-		generalApi.getJSON(this.restPrefix + "/view/getClassTreant.json?&elementKey=" + elementKey
-			+ "&depthOfTree=" + linkDistance + "&searchTerm=" + searchTerm + "&checkboxflag=" + checkboxflag
-			+ "&isIssueView=" + isIssueView + "&minLinkNumber=" + minLinkNumber + "&maxLinkNumber=" + maxLinkNumber, function (error, treant) {
+		var filterSettings = {
+				"projectKey": projectKey,
+				"searchTerm": searchTerm,
+				"isOnlyDecisionKnowledgeShown": checkboxflag,
+				"linkDistance": linkDistance,
+				"minDegree": minLinkNumber,
+				"maxDegree": maxLinkNumber
+			};
+		generalApi.postJSON(this.restPrefix + "/view/getClassTreant.json?&elementKey=" + elementKey + "&isIssueView=" + isIssueView, 
+				filterSettings, function (error, treant) {
 				if (error === null) {
 					callback(treant);
 				}
@@ -792,10 +798,9 @@
 	};
 
 	/*
-	 * Knowledge types are a subset of "Alternative", "Argument",
-	 * "Assessment", "Assumption", "Claim", "Constraint", "Context",
-	 * "Decision", "Goal", "Implication", "Issue", "Problem", and
-	 * "Solution".
+	 * Knowledge types are a subset of "Alternative", "Argument", "Assessment",
+	 * "Assumption", "Claim", "Constraint", "Context", "Decision", "Goal",
+	 * "Implication", "Issue", "Problem", and "Solution".
 	 */
 	ConDecAPI.prototype.getKnowledgeTypes = function () {
 		// console.log("ProjectKey: " + getProjectKey());

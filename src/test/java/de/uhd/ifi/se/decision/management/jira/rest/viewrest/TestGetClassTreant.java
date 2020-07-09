@@ -13,6 +13,7 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
@@ -27,8 +28,7 @@ public class TestGetClassTreant extends TestSetUp {
 		init();
 		viewRest = new ViewRest();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		CodeClassPersistenceManager ccManager
-				= new CodeClassPersistenceManager("Test");
+		CodeClassPersistenceManager ccManager = new CodeClassPersistenceManager("Test");
 		KnowledgeElement element = new KnowledgeElement();
 		element.setProject("Test");
 		element.setType("Other");
@@ -39,22 +39,25 @@ public class TestGetClassTreant extends TestSetUp {
 
 	@Test
 	public void testElementKeyNullDepthNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getClassTreant(null, null, "", null, null, false, 1, 00).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getClassTreant(null, "", false, null).getStatus());
 	}
 
 	@Test
 	public void testElementNotExistsDepthNull() throws GenericEntityException {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getClassTreant(null, "NotTEST", null, "", null, false, 1, 100).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				viewRest.getClassTreant(null, "NotTEST", false, null).getStatus());
 	}
 
 	@Test
 	public void testElementNotExistsDepthFilled() throws GenericEntityException {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getClassTreant(null, "NotTEST", "3", "", true, false, 1, 100).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				viewRest.getClassTreant(null, "NotTEST", false, null).getStatus());
 	}
 
 	@Test
 	public void testElementExistsDepthNaN() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getClassTreant(null, "TEST-12", "test", "", true, false, 1, 100).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				viewRest.getClassTreant(null, "TEST-12", false, null).getStatus());
 	}
 
 	@Test
@@ -62,6 +65,7 @@ public class TestGetClassTreant extends TestSetUp {
 		HttpServletRequest request = new MockHttpServletRequest();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
-		assertEquals(Status.OK.getStatusCode(), viewRest.getClassTreant(request, "TEST-1", "3", "", false, false, 1, 100).getStatus());
+		assertEquals(Status.OK.getStatusCode(),
+				viewRest.getClassTreant(request, "TEST-1", false, new FilterSettings("TEST", "")).getStatus());
 	}
 }
