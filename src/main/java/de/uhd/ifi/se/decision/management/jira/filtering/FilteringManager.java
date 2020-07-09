@@ -223,11 +223,11 @@ public class FilteringManager {
 	 */
 	public boolean isElementMatchingSubStringFilter(KnowledgeElement element) {
 		String searchString = filterSettings.getSearchTerm().toLowerCase();
-		if (JiraQueryType.getJiraQueryType(searchString) != JiraQueryType.OTHER) {
-			// JQL string or filter
+		if (searchString.isBlank()) {
 			return true;
 		}
-		if (searchString.isBlank()) {
+		if (JiraQueryType.getJiraQueryType(searchString) != JiraQueryType.OTHER) {
+			// JQL string or filter
 			return true;
 		}
 		if (element.getDescription() != null && element.getDescription().toLowerCase().contains(searchString)) {
@@ -269,7 +269,26 @@ public class FilteringManager {
 			}
 		}
 		return (matches == selectedGroups.size());
+	}
 
+	/**
+	 * @param element
+	 *            {@link KnowledgeElement} object.
+	 * @return true if the element's degree (i.e. number of links) is in between
+	 *         minDegree and maxDegree in the {@link FilterSetting}s.
+	 */
+	public boolean isElementMatchingDegreeFilter(KnowledgeElement element) {
+		int degree = element.getLinks().size();
+		return degree >= filterSettings.getMinDegree() && degree <= filterSettings.getMaxDegree();
+	}
+
+	/**
+	 * @param element
+	 *            {@link KnowledgeElement} object.
+	 * @return true if the element is a test class.
+	 */
+	public boolean isElementMatchingIsTestCodeFilter(KnowledgeElement element) {
+		return filterSettings.isTestCodeShown() || !element.getSummary().startsWith("Test");
 	}
 
 	/**

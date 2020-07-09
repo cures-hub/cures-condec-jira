@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -93,27 +94,34 @@ public class Treant {
 	private Set<Link> getLinksInJiraIssueView(KnowledgeElement element) {
 		Set<Link> usedLinks = new HashSet<>();
 		for (Link link : element.getLinks()) {
-			if (link.getSource() == null) {
+			KnowledgeElement source = link.getSource();
+			if (source == null) {
 				continue;
 			}
-			if (!this.filterSettings.isTestCodeShown() && link.getSource().getSummary().startsWith("Test")) {
+			if (source.getDocumentationLocation() != DocumentationLocation.COMMIT) {
 				continue;
 			}
-			if (link.getSource().getSummary().contains(".java")
-					&& link.getSource().getDocumentationLocation() == DocumentationLocation.COMMIT
-					&& link.getSource().getLinks().size() >= this.filterSettings.getMinDegree()
-					&& link.getSource().getLinks().size() <= this.filterSettings.getMaxDegree()
-					&& (this.filterSettings.getSearchTerm().isBlank()
-							|| link.getSource().getSummary().contains(this.filterSettings.getSearchTerm()))) {
-				usedLinks.add(link);
+			if (!source.getSummary().contains(".java")) {
+				continue;
 			}
+			FilteringManager filteringManager = new FilteringManager(filterSettings);
+			if (!filteringManager.isElementMatchingIsTestCodeFilter(source)) {
+				continue;
+			}
+			if (!filteringManager.isElementMatchingDegreeFilter(source)) {
+				continue;
+			}
+			if (!filteringManager.isElementMatchingSubStringFilter(source)) {
+				continue;
+			}
+			usedLinks.add(link);
 		}
 		return usedLinks;
 	}
 
 	private Set<Link> getLinks(KnowledgeElement element) {
 		Set<Link> usedLinks = new HashSet<>();
-		if (!this.filterSettings.isOnlyDecisionKnowledgeShown()) {
+		if (!filterSettings.isOnlyDecisionKnowledgeShown()) {
 			for (Link link : element.getLinks()) {
 				KnowledgeElement targetElement = link.getTarget();
 				// TODO Get rid of GenericLinkManager
