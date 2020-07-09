@@ -135,8 +135,4 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
         }
     });
 
-    function filter() {
-        window.conDecJiraIssueModule.applyClassViewFilters();
-    }
-
 </script>
