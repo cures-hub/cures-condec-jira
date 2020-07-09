@@ -136,7 +136,6 @@ public class Treant {
 		if (element == null || element.getProject() == null || links == null) {
 			return new TreantNode();
 		}
-		// boolean isCollapsed = isNodeCollapsed(linksToTraverse, currentDepth);
 		TreantNode node = createTreantNode(element, null, false);
 		if (currentDepth == this.filterSettings.getLinkDistance() + 1) {
 			return node;

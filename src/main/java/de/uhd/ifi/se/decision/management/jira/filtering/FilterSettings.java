@@ -56,7 +56,7 @@ public class FilterSettings {
 		this.knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
 		this.decisionGroups = DecisionGroupManager.getAllDecisionGroups(projectKey);
 		this.isOnlyDecisionKnowledgeShown = false;
-		this.linkDistance = 4;
+		this.linkDistance = 3;
 	}
 
 	public FilterSettings(String projectKey, String query, ApplicationUser user) {
