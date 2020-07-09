@@ -49,7 +49,7 @@
             addOnClickEventToExportAsTable();
             addOnClickEventToTab();
             addOnClickEventToFilterButton();
-            conDecFiltering.addEventListenerToLinkDistanceInput("depth-of-tree-input", showTreant);
+            conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input", showTreant);
             
             var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input");
             isOnlyDecisionKnowledgeShownInput.addEventListener("change", showTreant);
@@ -129,10 +129,11 @@
     }
 
     function showTreant() {
-        console.log("ConDecJiraIssueModule showTreant");
-        var isOnlyDecisionKnowledgeShown = document.getElementById("is-decision-knowledge-only-input").checked;
+        console.log("ConDecJiraIssueModule showTreant");        
         issueKey = conDecAPI.getIssueKey();
-        treant.buildTreant(issueKey, true, search, isOnlyDecisionKnowledgeShown);
+        var isOnlyDecisionKnowledgeShown = document.getElementById("is-decision-knowledge-only-input").checked;
+        var linkDistance = document.getElementById("link-distance-input").value;
+        treant.buildTreant(issueKey, true, search, isOnlyDecisionKnowledgeShown, linkDistance);
     }
 
     function showClassTreant() {

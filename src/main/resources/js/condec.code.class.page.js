@@ -57,15 +57,8 @@
     function initializeDecisionKnowledgePage(conDecAPI, treant, treeViewer) {
         console.log("ConDecCodeClassPage initializeDecisionKnowledgePage");
 
-        var depthOfTreeInput = document.getElementById("depth-of-tree-input-code");
-        depthOfTreeInput.addEventListener("input", function () {
-            var depthOfTreeWarningLabel = document.getElementById("depth-of-tree-warning");
-            if (this.value > 0) {
-                depthOfTreeWarningLabel.style.visibility = "hidden";
-                updateView(null, treant, treeViewer);
-            } else {
-                depthOfTreeWarningLabel.style.visibility = "visible";
-            }
+        conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input-code", function() {
+        	updateView(null, treant, treeViewer);
         });
 
         conDecAPI.fillDecisionGroupSelect("select2-code-decision-group");
@@ -86,7 +79,8 @@
         }
         jQueryConDec("#code-class-tree").on("select_node.jstree", function (error, tree) {
             var node = tree.node.data;
-            treant.buildClassTreant(node.key, true, "", false);
+            var linkDistance = document.getElementById("link-distance-input-code").value;
+            treant.buildClassTreant(node.key, true, "", false, linkDistance);
         });
         var selectedGroupsObj = $('#select2-code-decision-group').select2('data');
         var selectedGroups = [];

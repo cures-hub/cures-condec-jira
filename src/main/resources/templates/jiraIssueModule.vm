@@ -30,7 +30,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
         <div class="aui-toolbar2" role="toolbar">
             <div class="aui-toolbar-2-inner" id="treant-filter">
                 <form class="aui">
-                	#set ($linkDistanceInputId = "depth-of-tree-input")	
+                	#set ($linkDistanceInputId = "link-distance-input")	
                 	#parse("templates/filter/linkDistance.vm")
                 	
                     #parse("templates/filter/isDecisionKnowledgeOnly.vm")

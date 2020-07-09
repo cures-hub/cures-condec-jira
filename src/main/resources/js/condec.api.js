@@ -445,12 +445,12 @@
 	/*
 	 * external references: condec.treant
 	 */
-	ConDecAPI.prototype.getTreant = function (elementKey, depthOfTree, searchTerm, isOnlyDecisionKnowledgeShown, callback) {
+	ConDecAPI.prototype.getTreant = function (elementKey, linkDistance, searchTerm, isOnlyDecisionKnowledgeShown, callback) {
 		var filterSettings = {
 				"projectKey": projectKey,
 				"searchTerm": searchTerm,
 				"isOnlyDecisionKnowledgeShown": isOnlyDecisionKnowledgeShown,
-				"linkDistance": depthOfTree
+				"linkDistance": linkDistance
 			};
 		generalApi.postJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey, 
 				filterSettings, function (error, treant) {
@@ -460,10 +460,10 @@
 			});
 	};
 
-	ConDecAPI.prototype.getClassTreant = function (elementKey, depthOfTree, searchTerm, checkboxflag,
+	ConDecAPI.prototype.getClassTreant = function (elementKey, linkDistance, searchTerm, checkboxflag,
 		isIssueView, minLinkNumber, maxLinkNumber, callback) {
 		generalApi.getJSON(this.restPrefix + "/view/getClassTreant.json?&elementKey=" + elementKey
-			+ "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm + "&checkboxflag=" + checkboxflag
+			+ "&depthOfTree=" + linkDistance + "&searchTerm=" + searchTerm + "&checkboxflag=" + checkboxflag
 			+ "&isIssueView=" + isIssueView + "&minLinkNumber=" + minLinkNumber + "&maxLinkNumber=" + maxLinkNumber, function (error, treant) {
 				if (error === null) {
 					callback(treant);

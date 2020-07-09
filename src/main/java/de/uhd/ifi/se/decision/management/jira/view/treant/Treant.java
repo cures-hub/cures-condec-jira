@@ -77,6 +77,7 @@ public class Treant {
 		this.traversedLinks = new HashSet<Link>();
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 		this.filterSettings = new FilterSettings(projectKey, query);
+		this.filterSettings.setLinkDistance(depth);
 		this.setChart(new Chart(treantId));
 		// TODO Filtering should be done on the Knowledge Graph directly and the
 		// FilteringManager should be used

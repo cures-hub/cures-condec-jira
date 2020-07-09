@@ -170,7 +170,7 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetLinkDistance() {
-		assertEquals(4, filterSettings.getLinkDistance());
+		assertEquals(3, filterSettings.getLinkDistance());
 	}
 
 	@Test
