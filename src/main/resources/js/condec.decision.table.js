@@ -20,12 +20,6 @@
 		});
 	};
 
-	/*
-    * external references: condec.jira.issue.module
-    */
-	ConDecDecisionTable.prototype.updateDecisionTable = function updateDecisionTable() {
-		console.log("called updated");
-	}
 	/**
 	 * 
 	 * @param {Array<KnowledgeElement> or empty object} data 
@@ -91,7 +85,7 @@
 			}
 		}
 		let header = document.getElementById("tblRow");
-		header.innerHTML += `<th style="display:none" id="criteriaClmTitleUnknown">Unkown</th>`;
+		header.innerHTML += `<th style="display:none" id="criteriaClmTitleUnknown">Unknown</th>`;
 	}
 
 	/**
@@ -202,14 +196,14 @@
 	}
 
 	function drag(ev) {
-		ev.dataTransfer.setData("id", ev.target.id);
-		ev.dataTransfer.setData("parentId", ev.target.parentNode.id);
+		ev.dataTransfer.setData("argumentId", ev.target.id);
+		ev.dataTransfer.setData("criteriaId", ev.target.parentNode.id);
 	}
 
 	function drop(ev) {
 		ev.preventDefault();
-		let elemId = ev.dataTransfer.getData("id");
-		let parentNode = ev.dataTransfer.getData("parentId");
+		let elemId = ev.dataTransfer.getData("argumentId");
+		let parentNode = ev.dataTransfer.getData("criteriaId");
 		let elements = document.getElementsByClassName("argument");
 		for (let x = 0; x < elements.length; x++) {
 			const elem = elements[x];
