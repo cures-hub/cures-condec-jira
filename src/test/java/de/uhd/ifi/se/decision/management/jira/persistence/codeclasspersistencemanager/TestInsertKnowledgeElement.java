@@ -16,31 +16,37 @@ import net.java.ao.test.jdbc.NonTransactional;
 public class TestInsertKnowledgeElement extends TestSetUp {
 
 	private KnowledgeElement classElement;
-	private CodeClassPersistenceManager ccManager;
+	private CodeClassPersistenceManager codeClassPersistenceManager;
 	private ApplicationUser user;
+
+	public static KnowledgeElement createTestCodeClass() {
+		KnowledgeElement classElement = new KnowledgeElement();
+		classElement.setProject("TEST");
+		classElement.setDescription("TEST-1;");
+		classElement.setType("Other");
+		classElement.setSummary("TestClass.java");
+		return classElement;
+	}
 
 	@Before
 	public void setUp() {
 		init();
-		ccManager = new CodeClassPersistenceManager("Test");
-		classElement = new KnowledgeElement();
-		classElement.setProject("TEST");
-		classElement.setType("Other");
-		classElement.setSummary("TestClass.java");
+		codeClassPersistenceManager = new CodeClassPersistenceManager("Test");
+		classElement = createTestCodeClass();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 
 	@Test
 	@NonTransactional
-	public void testInsertDecisionKnwoledgeElement() {
+	public void testInsertKnowledgeElement() {
 		classElement.setDescription("TEST-1;");
-		KnowledgeElement newElement = ccManager.insertKnowledgeElement(classElement, user);
+		KnowledgeElement newElement = codeClassPersistenceManager.insertKnowledgeElement(classElement, user);
 		assertEquals(classElement.getSummary(), newElement.getSummary());
 	}
 
 	@Test
 	@NonTransactional
-	public void testInsertDecisionKnwoledgeElementDescLength() {
+	public void testInsertKnowledgeElementDescLength() {
 		classElement.setDescription("TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;"
 				+ "TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;"
 				+ "TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;"
@@ -52,7 +58,7 @@ public class TestInsertKnowledgeElement extends TestSetUp {
 				+ "TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;"
 				+ "TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;"
 				+ "TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;TEST-1;");
-		KnowledgeElement newElement = ccManager.insertKnowledgeElement(classElement, user);
+		KnowledgeElement newElement = codeClassPersistenceManager.insertKnowledgeElement(classElement, user);
 		assertEquals(classElement.getSummary(), newElement.getSummary());
 	}
 }

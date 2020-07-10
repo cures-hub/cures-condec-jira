@@ -18,49 +18,44 @@ import net.java.ao.test.jdbc.NonTransactional;
 public class TestUpdateKnowledgeElement extends TestSetUp {
 
 	private KnowledgeElement classElement;
-	private CodeClassPersistenceManager ccManager;
+	private CodeClassPersistenceManager codeClassPersistenceManager;
 	private ApplicationUser user;
 
 	@Before
 	public void setUp() {
 		init();
-		ccManager = new CodeClassPersistenceManager("Test");
-		classElement = new KnowledgeElement();
-		classElement.setProject("TEST");
-		classElement.setType("Other");
-		classElement.setDescription("TEST-1;");
-		classElement.setSummary("TestClass.java");
+		codeClassPersistenceManager = new CodeClassPersistenceManager("Test");
+		classElement = TestInsertKnowledgeElement.createTestCodeClass();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		classElement = ccManager.insertKnowledgeElement(classElement, user);
+		classElement = codeClassPersistenceManager.insertKnowledgeElement(classElement, user);
 	}
 
 	@Test
 	@NonTransactional
-	public void testUpdateDecisionKnowledgeElementWithElementNull() {
-		assertFalse(ccManager.updateKnowledgeElement(null, user));
+	public void testUpdateKnowledgeElementWithElementNull() {
+		assertFalse(codeClassPersistenceManager.updateKnowledgeElement(null, user));
 	}
 
 	@Test
 	@NonTransactional
-	public void testUpdateDecisionKnowledgeElementWithElementNoProject() {
+	public void testUpdateKnowledgeElementWithElementNoProject() {
 		classElement.setProject((DecisionKnowledgeProject) null);
-		assertFalse(ccManager.updateKnowledgeElement(classElement, user));
+		assertFalse(codeClassPersistenceManager.updateKnowledgeElement(classElement, user));
 		classElement.setProject("TEST");
 	}
 
 	@Test
 	@NonTransactional
-	public void testUpdateDecisionKnowledgeElementWithElementNotInDatabase() {
+	public void testUpdateKnowledgeElementWithElementNotInDatabase() {
 		KnowledgeElement newClassElement = new KnowledgeElement();
 		newClassElement.setProject("TEST");
-		assertFalse(ccManager.updateKnowledgeElement(newClassElement, user));
+		assertFalse(codeClassPersistenceManager.updateKnowledgeElement(newClassElement, user));
 	}
 
 	@Test
 	@NonTransactional
-	public void testUpdateDecisionKnowledgeElement() {
+	public void testUpdateKnowledgeElement() {
 		classElement.setSummary("ChangedTestClass.java");
-		assertTrue(ccManager.updateKnowledgeElement(classElement, user));
-
+		assertTrue(codeClassPersistenceManager.updateKnowledgeElement(classElement, user));
 	}
 }

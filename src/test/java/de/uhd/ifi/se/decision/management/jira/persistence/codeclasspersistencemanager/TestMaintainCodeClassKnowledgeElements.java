@@ -17,33 +17,28 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestMaintainCodeClassKnowledgeElements extends TestSetUp {
 
-	private CodeClassPersistenceManager ccManager;
+	private CodeClassPersistenceManager codeClassPersistenceManager;
 
 	@Before
 	public void setUp() {
 		init();
-		ccManager = new CodeClassPersistenceManager("Test");
+		codeClassPersistenceManager = new CodeClassPersistenceManager("Test");
 	}
 
 	@Test
 	@NonTransactional
 	public void testMaintainCodeClassKnowledgeElementsWithoutClasses() {
-		ccManager.maintainCodeClassKnowledgeElements(TestSetUpGit.GIT_URI, null, null);
-		assertEquals(0, ccManager.getKnowledgeElements().size());
+		codeClassPersistenceManager.maintainCodeClassKnowledgeElements(TestSetUpGit.GIT_URI, null, null);
+		assertEquals(0, codeClassPersistenceManager.getKnowledgeElements().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testMaintainCodeClassKnowledgeElementsWithClasses() {
-		KnowledgeElement classElement;
-		classElement = new KnowledgeElement();
-		classElement.setProject("TEST");
-		classElement.setType("Other");
-		classElement.setDescription("TEST-1;");
-		classElement.setSummary("TestClass.java");
-		ccManager.insertKnowledgeElement(classElement, JiraUsers.SYS_ADMIN.getApplicationUser());
-		ccManager.maintainCodeClassKnowledgeElements(TestSetUpGit.GIT_URI, null, null);
-		assertEquals(0, ccManager.getKnowledgeElements().size());
+		KnowledgeElement classElement = TestInsertKnowledgeElement.createTestCodeClass();
+		codeClassPersistenceManager.insertKnowledgeElement(classElement, JiraUsers.SYS_ADMIN.getApplicationUser());
+		codeClassPersistenceManager.maintainCodeClassKnowledgeElements(TestSetUpGit.GIT_URI, null, null);
+		assertEquals(0, codeClassPersistenceManager.getKnowledgeElements().size());
 	}
 
 	@Test
@@ -52,6 +47,6 @@ public class TestMaintainCodeClassKnowledgeElements extends TestSetUp {
 		List<String> list = new ArrayList<String>();
 		list.add("123");
 		list.add("456");
-		assertEquals(ccManager.getIssueListAsString(list), "123;456;");
+		assertEquals(codeClassPersistenceManager.getIssueListAsString(list), "123;456;");
 	}
 }
