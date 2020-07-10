@@ -40,11 +40,14 @@ class PreTrainedGloveSingleton {
 	}
 
 	public static PreTrainedGloveSingleton getInstance() {
-		File file = new File(Preprocessor.DEFAULT_DIR + "glove.6b.50d.csv");
-		if (!file.exists()) {
-			return null;
+		if (instance == null){
+			File file = new File(Preprocessor.DEFAULT_DIR + "glove.6b.50d.csv");
+			if (!file.exists()) {
+				return null;
+			}
+			return PreTrainedGloveSingleton.getInstance(new File(Preprocessor.DEFAULT_DIR + "glove.6b.50d.csv"));
 		}
-		return PreTrainedGloveSingleton.getInstance(new File(Preprocessor.DEFAULT_DIR + "glove.6b.50d.csv"));
+		return instance;
 	}
 
 	// This method is private because at the moment only the 50D vector is used.

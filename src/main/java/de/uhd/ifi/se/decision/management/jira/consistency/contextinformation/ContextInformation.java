@@ -1,12 +1,9 @@
-package de.uhd.ifi.se.decision.management.jira.consistency;
+package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.LinkCollection;
-import de.uhd.ifi.se.decision.management.jira.consistency.implementation.TextualSimilarityCIP;
-import de.uhd.ifi.se.decision.management.jira.consistency.implementation.TimeCIP;
-import de.uhd.ifi.se.decision.management.jira.consistency.implementation.TracingCIP;
-import de.uhd.ifi.se.decision.management.jira.consistency.implementation.UserCIP;
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import org.ofbiz.core.entity.GenericEntityException;
@@ -20,9 +17,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ContextInformation {
+public class ContextInformation implements ContextInformationProvider {
 	private Issue issue;
 	private List<ContextInformationProvider> cips;
+	private Map<String,LinkSuggestion> linkSuggestions;
 
 
 	public ContextInformation(Issue issue) {
@@ -53,24 +51,33 @@ public class ContextInformation {
 		return ConsistencyPersistenceHelper.getDiscardedSuggestions(this.issue);
 	}
 
-	public Collection<LinkSuggestion> getLinkSuggestions() throws GenericEntityException {
+	public Collection<LinkSuggestion> getLinkSuggestions()  {
 		//Add all issues of project to projectIssues set
-		Set<Issue> projectIssues = new HashSet<>(this.getAllIssuesForProject(this.issue.getProjectId()));
+		Set<Issue> projectIssues = null;
+		try {
+			projectIssues = new HashSet<>(this.getAllIssuesForProject(this.issue.getProjectId()));
+		} catch (GenericEntityException e) {
+			e.printStackTrace();
+		}
 
+		this.assessRelation(issue, new ArrayList<>(projectIssues));
 		//calculate context score
-		Collection<LinkSuggestion> linkSuggestionScores = this.calculateNewCriScores(projectIssues);
 
 		//get filtered issues
 		Set<Issue> filteredIssues = this.filterIssues(projectIssues);
 
 		//retain scores of filtered issues
-		return linkSuggestionScores
+		return this.linkSuggestions.values()
 			.stream()
 			// issue was not filtered out
 			.filter(linkSuggestion -> filteredIssues.contains(linkSuggestion.getTargetIssue()))
 			// the probability is higher or equal to the minimum probability set by the admin for the project
 			.filter(linkSuggestion -> linkSuggestion.getTotalScore() >= ConfigPersistenceManager.getMinLinkSuggestionScore(this.issue.getProjectObject().getKey()))
 			.collect(Collectors.toCollection(ArrayList::new));
+	}
+
+	private Collection<LinkSuggestion> getCalculatedLinkSuggestions() {
+		return this.linkSuggestions.values();
 	}
 
 	private Set<Issue> filterIssues(Set<Issue> projectIssues) {
@@ -86,45 +93,35 @@ public class ContextInformation {
 		return filteredIssues;
 	}
 
-	private Collection<LinkSuggestion> calculateNewCriScores(Set<Issue> projectIssues) {
+	@Override
+	public void assessRelation(Issue baseIssue, List<Issue> issuesToTest) {
 		// init the link suggestions
-		Map<String, LinkSuggestion> linkSuggestions = new HashMap<>();
-		for (Issue otherIssue : projectIssues) {
+		this.linkSuggestions = new HashMap<>();
+		for (Issue otherIssue : issuesToTest) {
 			linkSuggestions.put(otherIssue.getKey(), new LinkSuggestion(this.issue, otherIssue));
 		}
 
-		for (ContextInformationProvider cip : this.cips) {
-			Map<String, Double> individualScores = new HashMap<>();
-			for (Issue otherIssue : projectIssues) {
-				individualScores.put(otherIssue.getKey(), cip.assessRelation(this.issue, otherIssue));
-			}
-			/*
-			Double sumOfIndividualScoresForCurrentCip = individualScores.values()
+		this.cips.forEach((cip) -> {
+			cip.assessRelation(this.issue, new ArrayList<>(issuesToTest));;
+
+			Double maxOfIndividualScoresForCurrentCip = cip.getLinkSuggestions()
 				.stream()
-				.mapToDouble(Double::doubleValue)
-				.sum();
-			 */
-			Double maxOfIndividualScoresForCurrentCip = individualScores.values()
-				.stream()
-				.mapToDouble(Double::doubleValue)
+				.mapToDouble(LinkSuggestion::getTotalScore)
 				.max().orElse(1.0);
 
 			if (maxOfIndividualScoresForCurrentCip == 0) {
 				maxOfIndividualScoresForCurrentCip = 1.;
 			}
+
 			Double finalMaxOfIndividualScoresForCurrentCip = maxOfIndividualScoresForCurrentCip;
-
-
-			// for this purpose it might be better to divide by max value.
-			individualScores.entrySet()
-				.stream()
+			// Divide each score by the max value to scale it to [0,1]
+			cip.getLinkSuggestions()
 				.forEach(score -> {
-					LinkSuggestion linkSuggestion = linkSuggestions.get(score.getKey());
-					linkSuggestion.addToScore(score.getValue() / finalMaxOfIndividualScoresForCurrentCip, cip.getName());//sumOfIndividualScoresForCurrentCip);
+					LinkSuggestion linkSuggestion = this.linkSuggestions.get(score.getTargetIssue().getKey());
+					linkSuggestion.addToScore(score.getTotalScore() / finalMaxOfIndividualScoresForCurrentCip, cip.getName());//sumOfIndividualScoresForCurrentCip);
 				});
-		}
 
-		return linkSuggestions.values();
+		});
 	}
 
 	public Collection<Issue> getAllIssuesForProject(Long projectId) throws GenericEntityException {
@@ -136,4 +133,17 @@ public class ContextInformation {
 		}
 		return issuesOfProject;
 	}
+
+	@Override
+	public String getId() {
+		return "BaseCalculation";
+	}
+
+	@Override
+	public String getName() {
+		return "BaseCalculation";
+	}
+
+
+
 }

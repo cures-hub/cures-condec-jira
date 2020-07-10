@@ -50,7 +50,14 @@ public class Preprocessor {
 		this.nGramN = 3;
 		this.glove = PreTrainedGloveSingleton.getInstance();
 
-		initFiles();
+		if(filesNotInitialized()){
+			initFiles();
+
+		}
+	}
+
+	private boolean filesNotInitialized() {
+		return this.tokenizer == null || this.stemmer == null ||this.tagger == null;
 	}
 
 	private void initFiles() {

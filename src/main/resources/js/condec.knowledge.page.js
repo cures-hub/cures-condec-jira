@@ -84,15 +84,8 @@
             }
         });
 
-        var depthOfTreeInput = document.getElementById("depth-of-tree-input");
-        depthOfTreeInput.addEventListener("input", function () {
-            var depthOfTreeWarningLabel = document.getElementById("depth-of-tree-warning");
-            if (this.value > 0) {
-                depthOfTreeWarningLabel.style.visibility = "hidden";
-                updateView(null, treant, treeViewer);
-            } else {
-                depthOfTreeWarningLabel.style.visibility = "visible";
-            }
+        conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input", function() {
+        	updateView(null, treant, treeViewer);
         });
 
         conDecAPI.fillDecisionGroupSelect("select2-decision-group");
@@ -108,6 +101,11 @@
         conDecFiltering.initDropdown("status-dropdown-overview", conDecAPI.knowledgeStatus);
         var statusDropdown = document.getElementById("status-dropdown-overview");
         statusDropdown.addEventListener("change", function (e) {
+            conDecKnowledgePage.updateView();
+        });
+        
+        var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input");
+        isOnlyDecisionKnowledgeShownInput.addEventListener("change", function (e) {
             conDecKnowledgePage.updateView();
         });
 
@@ -126,7 +124,9 @@
         }
         jQueryConDec("#jstree").on("select_node.jstree", function (error, tree) {
             var node = tree.node.data;
-            treant.buildTreant(node.key, true, "", false);
+            var isOnlyDecisionKnowledgeShown = document.getElementById("is-decision-knowledge-only-input").checked;
+            var linkDistance = document.getElementById("link-distance-input").value;
+            treant.buildTreant(node.key, true, "", isOnlyDecisionKnowledgeShown, linkDistance);
         });
 
         var selectedGroupsObj = $('#select2-decision-group').select2('data');

@@ -1,9 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.eventlistener.implementation;
 
 import com.atlassian.jira.event.issue.IssueEvent;
-import de.uhd.ifi.se.decision.management.jira.consistency.ConsistencyCheckEventTrigger;
-import de.uhd.ifi.se.decision.management.jira.consistency.implementation.StatusClosedTrigger;
-import de.uhd.ifi.se.decision.management.jira.consistency.implementation.WorkflowDoneTrigger;
+import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.ConsistencyCheckEventTrigger;
+import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.StatusClosedTrigger;
+import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.TriggerChain;
+import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.WorkflowDoneTrigger;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.IssueEventListener;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 
@@ -12,17 +13,16 @@ import java.util.List;
 
 public class ConsistencyCheckEventListenerSingleton implements IssueEventListener {
 
-	private final List<ConsistencyCheckEventTrigger> consistencyCheckEventTriggerList;
-	private static ConsistencyCheckEventListenerSingleton instance;
+	private static IssueEventListener instance;
+	private TriggerChain<ConsistencyCheckEventTrigger> chainStart;
 
 	private ConsistencyCheckEventListenerSingleton() {
-		consistencyCheckEventTriggerList = new ArrayList<>();
-		consistencyCheckEventTriggerList.add(new StatusClosedTrigger());
-		consistencyCheckEventTriggerList.add(new WorkflowDoneTrigger());
-
+		this.chainStart = new StatusClosedTrigger();
+		this.chainStart
+			.setNextChain(new WorkflowDoneTrigger());
 	}
 
-	public static ConsistencyCheckEventListenerSingleton getInstance() {
+	public static IssueEventListener getInstance() {
 		if (ConsistencyCheckEventListenerSingleton.instance == null) {
 			ConsistencyCheckEventListenerSingleton.instance = new ConsistencyCheckEventListenerSingleton();
 		}
@@ -30,32 +30,39 @@ public class ConsistencyCheckEventListenerSingleton implements IssueEventListene
 	}
 
 	public void onIssueEvent(IssueEvent issueEvent) {
-		String projectKey = getProjectKeyFromEvent(issueEvent);
-		boolean triggered = false;
-		for (ConsistencyCheckEventTrigger trigger : this.consistencyCheckEventTriggerList) {
-			if (trigger.isActivated(projectKey) && trigger.isTriggered(issueEvent)) {
-				ConsistencyCheckLogHelper.addCheck(issueEvent.getIssue());
-				triggered = true;
-			}
-		}
-		if (! triggered && "workflow".equals(issueEvent.getParams().get("eventsource"))){
+		initChainLinks(issueEvent);
+
+		boolean triggered = this.chainStart.calculate();
+
+		if (triggered) {
+			ConsistencyCheckLogHelper.addCheck(issueEvent.getIssue());
+		} else if ("workflow".equals(issueEvent.getParams().get("eventsource"))) {
 			ConsistencyCheckLogHelper.deleteCheck(issueEvent.getIssue());
 		}
 	}
 
-
-	private String getProjectKeyFromEvent(IssueEvent issueEvent) {
-		return issueEvent.getIssue().getProjectObject().getKey();
+	private void initChainLinks(IssueEvent event) {
+		TriggerChain<ConsistencyCheckEventTrigger> currentChainLink = this.chainStart;
+		while (currentChainLink != null) {
+			currentChainLink.getChainBase().setIssueEvent(event);
+			currentChainLink = currentChainLink.getNextChain();
+		}
 	}
 
-	public List<ConsistencyCheckEventTrigger> getAllConsistencyCheckEventTriggerNames() {
-		return this.consistencyCheckEventTriggerList;
-	}
 
 	public boolean doesConsistencyCheckEventTriggerNameExist(String triggerName) {
-		return this.getAllConsistencyCheckEventTriggerNames()
-			.stream()
-			.anyMatch(trigger -> trigger.getName().equals(triggerName));
+		return getAllConsistencyCheckEventTriggerNames().stream().anyMatch(name -> name.equals(triggerName));
+	}
+
+	public List<String> getAllConsistencyCheckEventTriggerNames() {
+		List<String> names = new ArrayList<String>();
+		TriggerChain<ConsistencyCheckEventTrigger> currentChainLink = this.chainStart;
+		while (currentChainLink != null) {
+			names.add(currentChainLink.getChainBase().getName());
+			currentChainLink = currentChainLink.getNextChain();
+
+		}
+		return names;
 	}
 
 

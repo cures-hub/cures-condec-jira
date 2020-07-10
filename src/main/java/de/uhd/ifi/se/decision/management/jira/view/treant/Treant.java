@@ -10,19 +10,20 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.atlassian.jira.user.ApplicationUser;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 
 /**
- * Creates a tree data structure from the {@link KnowledgeGraph}. Uses the
- * Treant.js framework for visualization of the knowledge tree.
+ * Creates a tree data structure from the {@link KnowledgeGraph} according to
+ * the given {@link FilterSettings}. Uses the Treant.js framework for
+ * visualization of the knowledge tree.
  */
 @XmlRootElement(name = "treant")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -34,31 +35,26 @@ public class Treant {
 	private TreantNode nodeStructure;
 
 	private KnowledgeGraph graph;
+	private FilterSettings filterSettings;
 	private boolean isHyperlinked;
-	private boolean showOtherJiraIssues;
 	private Set<Link> traversedLinks;
-	private int depth;
 
-	public Treant(String projectKey, String elementKey, int depth, boolean isHyperlinked) {
-		this(projectKey, elementKey, depth, null, null, isHyperlinked, false);
+	public Treant(String projectKey, String elementKey, boolean isHyperlinked) {
+		this(projectKey, elementKey, isHyperlinked, new FilterSettings(projectKey, null));
 	}
 
-	public Treant(String projectKey, String elementKey, int depth) {
-		this(projectKey, elementKey, depth, false);
+	public Treant(String projectKey, String elementKey, FilterSettings filterSettings) {
+		this(projectKey, elementKey, false, filterSettings);
 	}
 
-	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user, boolean showOtherJiraIssues) {
-		this(projectKey, elementKey, depth, query, user, false, showOtherJiraIssues);
-	}
-
-	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user,
-				  boolean isHyperlinked, boolean showOtherJiraIssues) {
+	public Treant(String projectKey, String elementKey, boolean isHyperlinked, FilterSettings filterSettings) {
+		this.setFilterSettings(filterSettings == null ? new FilterSettings(projectKey, null) : filterSettings);
 		this.traversedLinks = new HashSet<Link>();
-		this.depth = depth;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
-		this.showOtherJiraIssues = showOtherJiraIssues;
 
 		AbstractPersistenceManagerForSingleLocation persistenceManager;
+		// TODO this should not be checked in Treant, instead of the elementKey the
+		// entire element should be passed
 		if (elementKey.contains(":")) {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 					.getManagerForSingleLocation(DocumentationLocation.JIRAISSUETEXT);
@@ -71,39 +67,54 @@ public class Treant {
 		this.setHyperlinked(isHyperlinked);
 	}
 
-	public Treant(String projectKey, KnowledgeElement element, int depth, String query, String treantId,
-				  boolean checkboxflag, boolean isIssueView, int minLinkNumber, int maxLinkNumber) {
+	public Treant(String projectKey, KnowledgeElement element, String treantId, boolean isIssueView,
+			FilterSettings filterSettings) {
+		this.setFilterSettings(filterSettings == null ? new FilterSettings(projectKey, null) : filterSettings);
 		this.traversedLinks = new HashSet<Link>();
-		this.depth = depth;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
+
+		// TODO Why is the treantId needed?
 		this.setChart(new Chart(treantId));
+
+		// TODO Filtering should be done on the Knowledge Graph directly and the
+		// FilteringManager should be used
 		Set<Link> usedLinks = new HashSet<>();
 		if (isIssueView) {
-			for (Link link : element.getLinks()) {
-				if ((checkboxflag || !checkboxflag && !link.getSource().getSummary().startsWith("Test"))
-						&& link.getSource() != null && link.getSource().getSummary().contains(".java")
-						&& link.getSource().getDocumentationLocation().getIdentifier().equals("c")
-						&& link.getSource().getLinks().size() >= minLinkNumber
-						&& link.getSource().getLinks().size() <= maxLinkNumber
-						&& ("".equals(query) || " ".equals(query) || link.getSource().getSummary().contains(query))) {
-					usedLinks.add(link);
-				}
-			}
+			usedLinks = getLinksToCodeClasses(element);
 		} else {
-			if (!checkboxflag) {
-				for (Link link : element.getLinks()) {
-					KnowledgeElement targetElement = link.getTarget();
-					List<Link> elementLinks = GenericLinkManager.getOutwardLinks(targetElement);
-					if (elementLinks != null && elementLinks.size() > 0) {
-						usedLinks.add(link);
-					}
-				}
-			} else {
-				usedLinks = new HashSet<>(element.getLinks());
-			}
+			usedLinks = new HashSet<>(element.getLinks());
 		}
 		this.setNodeStructure(this.createNodeStructure(element, usedLinks, 1, isIssueView));
 		this.setHyperlinked(false);
+	}
+
+	private Set<Link> getLinksToCodeClasses(KnowledgeElement element) {
+		Set<Link> usedLinks = new HashSet<>();
+		for (Link link : element.getLinks()) {
+			KnowledgeElement source = link.getSource();
+			if (source == null) {
+				continue;
+			}
+			// TODO Make code class recognition more explicit
+			if (source.getDocumentationLocation() != DocumentationLocation.COMMIT) {
+				continue;
+			}
+			if (!source.getSummary().contains(".java")) {
+				continue;
+			}
+			FilteringManager filteringManager = new FilteringManager(filterSettings);
+			if (!filteringManager.isElementMatchingIsTestCodeFilter(source)) {
+				continue;
+			}
+			if (!filteringManager.isElementMatchingDegreeFilter(source)) {
+				continue;
+			}
+			if (!filteringManager.isElementMatchingSubStringFilter(source)) {
+				continue;
+			}
+			usedLinks.add(link);
+		}
+		return usedLinks;
 	}
 
 	public TreantNode createNodeStructure(KnowledgeElement element, Link link, int currentDepth) {
@@ -111,41 +122,38 @@ public class Treant {
 			return new TreantNode();
 		}
 
-		Set<Link> linksToTraverse = graph.edgesOf(element);
-		boolean isCollapsed = isNodeCollapsed(linksToTraverse, currentDepth);
-
-		TreantNode node = createTreantNode(element, link, isCollapsed);
-
-		if (currentDepth == depth + 1) {
+		TreantNode node = createTreantNode(element, link);
+		if (currentDepth == this.filterSettings.getLinkDistance() + 1) {
 			return node;
 		}
 
+		Set<Link> linksToTraverse = graph.edgesOf(element);
 		List<TreantNode> nodes = getChildren(element, linksToTraverse, currentDepth);
 		node.setChildren(nodes);
-
 		return node;
 	}
 
+	// TODO Remove isIssueView parameter
 	public TreantNode createNodeStructure(KnowledgeElement element, Set<Link> links, int currentDepth,
-										  boolean isIssueView) {
+			boolean isIssueView) {
 		if (element == null || element.getProject() == null || links == null) {
 			return new TreantNode();
 		}
-		// boolean isCollapsed = isNodeCollapsed(linksToTraverse, currentDepth);
-		TreantNode node = createTreantNode(element, null, false);
-		if (currentDepth == depth + 1) {
+		TreantNode node = createTreantNode(element, null);
+		if (currentDepth == filterSettings.getLinkDistance() + 1) {
 			return node;
 		}
 		List<TreantNode> nodes = new ArrayList<TreantNode>();
-		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(element.getProject()).getJiraIssueManager();
+
 		for (Link link : links) {
-			if (!isIssueView && persistenceManager.getKnowledgeElement(link.getTarget().getId()) != null) {
-				TreantNode adult = createTreantNode(link.getTarget(), link, false);
-				adult.setChildren(getChildren(link.getTarget(), graph.edgesOf(link.getTarget()), currentDepth));
+			if (!isIssueView && link.getTarget() != null) {
+				TreantNode adult = createTreantNode(link.getTarget(), link);
+				if (filterSettings.getLinkDistance() > 1) {
+					adult.setChildren(getChildren(link.getTarget(), graph.edgesOf(link.getTarget()), currentDepth + 1));
+				}
 				nodes.add(adult);
 			} else if (isIssueView) {
-				TreantNode adult = createTreantNode(link.getSource(), link, false);
+				TreantNode adult = createTreantNode(link.getSource(), link);
 				nodes.add(adult);
 			}
 		}
@@ -155,20 +163,12 @@ public class Treant {
 		return node;
 	}
 
-	private boolean isNodeCollapsed(Set<Link> linksToTraverse, int currentDepth) {
-		boolean isCollapsed = false;
-		if (currentDepth == depth && !traversedLinks.containsAll(linksToTraverse)) {
-			isCollapsed = true;
-		}
-		return isCollapsed;
-	}
-
-	private TreantNode createTreantNode(KnowledgeElement element, Link link, boolean isCollapsed) {
+	private TreantNode createTreantNode(KnowledgeElement element, Link link) {
 		TreantNode node;
 		if (link != null) {
-			node = new TreantNode(element, link, isCollapsed, isHyperlinked);
+			node = new TreantNode(element, link, false, isHyperlinked);
 		} else {
-			node = new TreantNode(element, isCollapsed, isHyperlinked);
+			node = new TreantNode(element, false, isHyperlinked);
 		}
 		return node;
 	}
@@ -180,8 +180,11 @@ public class Treant {
 				continue;
 			}
 			KnowledgeElement oppositeElement = currentLink.getOppositeElement(rootElement);
-			if (oppositeElement == null || (oppositeElement.getType() == KnowledgeType.OTHER && !showOtherJiraIssues)
-					|| (showOtherJiraIssues && oppositeElement.getType() == KnowledgeType.OTHER && !"i".equals(oppositeElement.getDocumentationLocation().getIdentifier()))) {
+			if (oppositeElement == null) {
+				continue;
+			}
+			// TODO Add to FilteringManager
+			if (filterSettings.isOnlyDecisionKnowledgeShown() && oppositeElement.getType() == KnowledgeType.OTHER) {
 				continue;
 			}
 			TreantNode newChildNode = createNodeStructure(oppositeElement, currentLink, currentDepth + 1);
@@ -212,5 +215,13 @@ public class Treant {
 
 	public void setHyperlinked(boolean isHyperlinked) {
 		this.isHyperlinked = isHyperlinked;
+	}
+
+	public FilterSettings getFilterSettings() {
+		return filterSettings;
+	}
+
+	public void setFilterSettings(FilterSettings filterSettings) {
+		this.filterSettings = filterSettings;
 	}
 }

@@ -78,7 +78,7 @@
      * external references: condec.jira.issue.module
      */
     ConDecVis.prototype.buildVisFiltered = function (issueKey, search, nodeDistance, issueTypes, status,
-                                                                     createdAfter, createdBefore, linkTypes, documentationLocation) {
+                                                     createdAfter, createdBefore, linkTypes, documentationLocation) {
         console.log("conDecVis buildVisFiltered");
         conDecAPI.getVisFiltered(issueKey, search, issueTypes, status, createdAfter, createdBefore, linkTypes, documentationLocation,
             function (visData) {

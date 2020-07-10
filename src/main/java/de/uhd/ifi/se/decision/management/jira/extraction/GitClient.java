@@ -733,7 +733,7 @@ public class GitClient {
 		 *      CONDEC-1000) will not be confused.
 		 */
 		Ref branch = getRef(jiraIssueKey, repoUri);
-		List<RevCommit> commits = getCommits(branch);
+		List<RevCommit> commits = getCommits(repoUri, branch, false);
 		for (RevCommit commit : commits) {
 			// TODO Improve identification of jira issue key in commit message
 			String jiraIssueKeyInCommitMessage = getJiraIssueKey(commit.getFullMessage());
@@ -931,7 +931,7 @@ public class GitClient {
 			try {
 				gits.get(repoUri).checkout().setName(checkoutName).call();
 			} catch (GitAPIException | JGitInternalException e) {
-				System.out.println("Could not checkout " + checkoutName);
+				System.out.println("Could not checkout " + checkoutName + e.getMessage());
 				LOGGER.error("Could not checkout " + checkoutName + ". " + e.getMessage());
 				return false;
 			}

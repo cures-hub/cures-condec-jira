@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
@@ -9,9 +12,6 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

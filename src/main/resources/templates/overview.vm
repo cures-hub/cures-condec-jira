@@ -16,9 +16,10 @@
   	#set ($statusDropdownId = "status-dropdown-overview")	
     #parse("templates/filter/status.vm")
   			
-	#set ($linkDistanceInputId = "depth-of-tree-input")	
+	#set ($linkDistanceInputId = "link-distance-input")	
 	#parse("templates/filter/linkDistance.vm")
     
+	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
 </form>
 </div>
 <div class="aui-group">

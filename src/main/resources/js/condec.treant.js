@@ -6,8 +6,6 @@
     var treantTree;
 
     var treantid = "treant-container";
-    var depthId = "depth-of-tree-input";
-
 
     var ConDecTreant = function () {
     };
@@ -15,11 +13,10 @@
     /*
      * external references: condec.jira.issue.module.js, condec.knowledge.page.js
      */
-    ConDecTreant.prototype.buildTreant = function (elementKey, isInteractive, searchTerm, showOtherJiraIssues) {
+    ConDecTreant.prototype.buildTreant = function (elementKey, isInteractive, searchTerm, isOnlyDecisionKnowledgeShown, linkDistance) {
         console.log("conDecTreant buildTreant");
         treantid = "treant-container";
-        var depthOfTree = getDepthOfTree();
-        conDecAPI.getTreant(elementKey, depthOfTree, searchTerm, showOtherJiraIssues, function (treeStructure) {
+        conDecAPI.getTreant(elementKey, linkDistance, searchTerm, isOnlyDecisionKnowledgeShown, function (treeStructure) {
             document.getElementById(treantid).innerHTML = "";
             treantTree = new Treant(treeStructure);
             if (isInteractive !== undefined && isInteractive) {
@@ -31,11 +28,12 @@
         });
     };
 
-    ConDecTreant.prototype.buildClassTreant = function (elementKey, isInteractive, searchTerm, isIssueView) {
+    /*
+     * external references: condec.code.class.page.js
+     */
+    ConDecTreant.prototype.buildClassTreant = function (elementKey, isInteractive, searchTerm, isIssueView, linkDistance) {
         console.log("conDecTreant buildClassTreant");
-        var depthOfTree = getDepthOfTree();
         treantid = "treant-container-class";
-        depthId = "depth-of-tree-input-code";
         var checkboxflag = false;
         var minLinkNumber = 1;
         var maxLinkNumber = 100;
@@ -47,7 +45,7 @@
             checkboxflag = document.getElementById("show-test-elements-input").checked;
             searchTerm = document.getElementById("search-code-class-input").value;
         }
-        conDecAPI.getClassTreant(elementKey, depthOfTree, searchTerm, checkboxflag, isIssueView, minLinkNumber, maxLinkNumber, function (treeStructure) {
+        conDecAPI.getClassTreant(elementKey, linkDistance, searchTerm, checkboxflag, isIssueView, minLinkNumber, maxLinkNumber, function (treeStructure) {
             document.getElementById(treantid).innerHTML = "";
             treantTree = new Treant(treeStructure);
             if (isInteractive !== undefined && isInteractive) {
@@ -58,19 +56,6 @@
             changeColorForNodes();
         });
     };
-
-    function getDepthOfTree() {
-        console.log("conDecTreant getDepthOfTree");
-        var depthOfTreeInput = document.getElementById(depthId);
-        var depthOfTree = 4;
-        if (depthOfTreeInput !== null) {
-            depthOfTree = depthOfTreeInput.value;
-            if (depthId === "depth-of-tree-input-code") {
-                depthOfTree = depthOfTree - 1;
-            }
-        }
-        return depthOfTree;
-    }
 
     function changeColorForNodes() {
         var redStatus = new Array("discarded", "rejected", "unresolved");

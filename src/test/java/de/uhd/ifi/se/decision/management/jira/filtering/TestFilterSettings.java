@@ -1,18 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class TestFilterSettings extends TestSetUp {
 	private FilterSettings filterSettings;
@@ -114,7 +113,7 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetNamesOfLinkTypes() {
-		assertEquals(10, filterSettings.getLinkTypes().size());
+		assertEquals(11, filterSettings.getLinkTypes().size());
 		List<String> selectedLinkTypes = new ArrayList<>();
 		selectedLinkTypes.add("Forbids");
 		selectedLinkTypes.add("Relates");
@@ -125,7 +124,7 @@ public class TestFilterSettings extends TestSetUp {
 	@Test
 	public void testSetLinkTypes() {
 		filterSettings.setJiraIssueTypes(null);
-		assertEquals(10, filterSettings.getLinkTypes().size());
+		assertEquals(11, filterSettings.getLinkTypes().size());
 	}
 
 	@Test
@@ -155,5 +154,52 @@ public class TestFilterSettings extends TestSetUp {
 		groups.add("High Level");
 		filterSettings.setDecisionGroups(groups);
 		assertEquals(1, filterSettings.getDecisionGroups().size());
+	}
+
+	@Test
+	public void testGetIsOnlyDecisionKnowledgeShown() {
+		assertEquals(false, filterSettings.isOnlyDecisionKnowledgeShown());
+	}
+
+	@Test
+	public void testSetOnlyDecisionKnowledgeShown() {
+		filterSettings.setOnlyDecisionKnowledgeShown(true);
+		assertEquals(true, filterSettings.isOnlyDecisionKnowledgeShown());
+	}
+
+	@Test
+	public void testIsTestCodeShown() {
+		assertEquals(false, filterSettings.isTestCodeShown());
+	}
+
+	@Test
+	public void testSetTestCodeShown() {
+		filterSettings.setTestCodeShown(true);
+		assertEquals(true, filterSettings.isTestCodeShown());
+	}
+
+	@Test
+	public void testGetLinkDistance() {
+		assertEquals(3, filterSettings.getLinkDistance());
+	}
+
+	@Test
+	public void testSetLinkDistance() {
+		filterSettings.setLinkDistance(2);
+		assertEquals(2, filterSettings.getLinkDistance());
+	}
+
+	@Test
+	public void testGetMinAndMaxDegree() {
+		assertEquals(0, filterSettings.getMinDegree());
+		assertEquals(50, filterSettings.getMaxDegree());
+	}
+
+	@Test
+	public void testSetMinAndMaxDegree() {
+		filterSettings.setMinDegree(5);
+		filterSettings.setMaxDegree(10);
+		assertEquals(5, filterSettings.getMinDegree());
+		assertEquals(10, filterSettings.getMaxDegree());
 	}
 }
