@@ -9,7 +9,7 @@
             
             #parse("templates/filter/degree.vm")
             
-            <label for="show-without-elements-input">Show Issues without Knowledge Elements:</label>
+            <label for="show-without-elements-input">$i18n.getText('condec.label.is.decision.knowledge.only')</label>
             <input class="checkbox" type="checkbox" id="show-without-elements-input" onclick="checkBoxClicked()"
                    checked/>
             

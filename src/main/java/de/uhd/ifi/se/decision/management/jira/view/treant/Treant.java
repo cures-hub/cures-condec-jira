@@ -17,7 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 
@@ -81,9 +80,9 @@ public class Treant {
 		// FilteringManager should be used
 		Set<Link> usedLinks = new HashSet<>();
 		if (isIssueView) {
-			usedLinks = getLinksInJiraIssueView(element);
+			usedLinks = getLinksToCodeClasses(element);
 		} else {
-			usedLinks = getLinks(element);
+			usedLinks = new HashSet<>(element.getLinks());
 		}
 		if (this.filterSettings.getLinkDistance() > 0) {
 			this.setNodeStructure(this.createNodeStructure(element, usedLinks, 1, isIssueView));
@@ -91,13 +90,14 @@ public class Treant {
 		this.setHyperlinked(false);
 	}
 
-	private Set<Link> getLinksInJiraIssueView(KnowledgeElement element) {
+	private Set<Link> getLinksToCodeClasses(KnowledgeElement element) {
 		Set<Link> usedLinks = new HashSet<>();
 		for (Link link : element.getLinks()) {
 			KnowledgeElement source = link.getSource();
 			if (source == null) {
 				continue;
 			}
+			// TODO Make code class recognition more explicit
 			if (source.getDocumentationLocation() != DocumentationLocation.COMMIT) {
 				continue;
 			}
@@ -115,23 +115,6 @@ public class Treant {
 				continue;
 			}
 			usedLinks.add(link);
-		}
-		return usedLinks;
-	}
-
-	private Set<Link> getLinks(KnowledgeElement element) {
-		Set<Link> usedLinks = new HashSet<>();
-		if (!filterSettings.isOnlyDecisionKnowledgeShown()) {
-			for (Link link : element.getLinks()) {
-				KnowledgeElement targetElement = link.getTarget();
-				// TODO Get rid of GenericLinkManager
-				List<Link> elementLinks = GenericLinkManager.getOutwardLinks(targetElement);
-				if (elementLinks != null && elementLinks.size() > 0) {
-					usedLinks.add(link);
-				}
-			}
-		} else {
-			usedLinks = new HashSet<>(element.getLinks());
 		}
 		return usedLinks;
 	}

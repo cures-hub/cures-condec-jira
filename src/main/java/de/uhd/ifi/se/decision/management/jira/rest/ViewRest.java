@@ -283,6 +283,8 @@ public class ViewRest {
 		return Response.ok(treant).build();
 	}
 
+	// TODO Only use one getTreant method and work with filter settings to
+	// determine, which elements are included
 	@Path("/getClassTreant")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -310,7 +312,7 @@ public class ViewRest {
 			return Response.ok(treant).build();
 		} catch (Exception e) {
 			e.printStackTrace();
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Treant cannot be shown"))
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Treant cannot be shown."))
 					.build();
 		}
 

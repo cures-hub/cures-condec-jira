@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -14,7 +15,9 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestFilteringManager extends TestSetUp {
 
@@ -109,5 +112,12 @@ public class TestFilteringManager extends TestSetUp {
 		assertEquals(8, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
 		// Currently, the mock links all have the "relate" type.
 		assertEquals(0, filteringManager.getSubgraphMatchingFilterSettings().edgeSet().size());
+	}
+
+	@Test
+	public void testIsElementMatchingDegreeFilter() {
+		FilteringManager filteringManager = new FilteringManager(user, new FilterSettings("TEST", ""));
+		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
+		assertTrue(filteringManager.isElementMatchingDegreeFilter(element));
 	}
 }
