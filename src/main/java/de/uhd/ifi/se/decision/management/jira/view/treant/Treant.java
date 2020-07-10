@@ -124,7 +124,7 @@ public class Treant {
 			return new TreantNode();
 		}
 		Set<Link> linksToTraverse = graph.edgesOf(element);
-		TreantNode node = createTreantNode(element, link, false);
+		TreantNode node = createTreantNode(element, link);
 		if (currentDepth == this.filterSettings.getLinkDistance() + 1) {
 			return node;
 		}
@@ -139,7 +139,7 @@ public class Treant {
 		if (element == null || element.getProject() == null || links == null) {
 			return new TreantNode();
 		}
-		TreantNode node = createTreantNode(element, null, false);
+		TreantNode node = createTreantNode(element, null);
 		if (currentDepth == this.filterSettings.getLinkDistance() + 1) {
 			return node;
 		}
@@ -149,11 +149,11 @@ public class Treant {
 				.getOrCreate(element.getProject()).getJiraIssueManager();
 		for (Link link : links) {
 			if (!isIssueView && persistenceManager.getKnowledgeElement(link.getTarget().getId()) != null) {
-				TreantNode adult = createTreantNode(link.getTarget(), link, false);
+				TreantNode adult = createTreantNode(link.getTarget(), link);
 				adult.setChildren(getChildren(link.getTarget(), graph.edgesOf(link.getTarget()), currentDepth));
 				nodes.add(adult);
 			} else if (isIssueView) {
-				TreantNode adult = createTreantNode(link.getSource(), link, false);
+				TreantNode adult = createTreantNode(link.getSource(), link);
 				nodes.add(adult);
 			}
 		}
@@ -163,12 +163,12 @@ public class Treant {
 		return node;
 	}
 
-	private TreantNode createTreantNode(KnowledgeElement element, Link link, boolean isCollapsed) {
+	private TreantNode createTreantNode(KnowledgeElement element, Link link) {
 		TreantNode node;
 		if (link != null) {
-			node = new TreantNode(element, link, isCollapsed, isHyperlinked);
+			node = new TreantNode(element, link, false, isHyperlinked);
 		} else {
-			node = new TreantNode(element, isCollapsed, isHyperlinked);
+			node = new TreantNode(element, false, isHyperlinked);
 		}
 		return node;
 	}
