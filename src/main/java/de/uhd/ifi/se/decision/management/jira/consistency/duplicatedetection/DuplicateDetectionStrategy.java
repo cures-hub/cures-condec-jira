@@ -1,7 +1,7 @@
-package de.uhd.ifi.se.decision.management.jira.consistency;
+package de.uhd.ifi.se.decision.management.jira.consistency.duplicatedetection;
 
 import com.atlassian.jira.issue.Issue;
-import de.uhd.ifi.se.decision.management.jira.consistency.implementation.DuplicateFragment;
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateSuggestion;
 
 import java.util.List;
 
@@ -18,6 +18,6 @@ public interface DuplicateDetectionStrategy {
 	 * @return List of all found duplicate text fragments in i2 of i1
 	 * @throws Exception
 	 */
-	List<DuplicateFragment> detectDuplicateTextFragments(Issue i1, Issue i2) throws Exception;
+	List<DuplicateSuggestion> detectDuplicateTextFragments(Issue i1, Issue i2) throws Exception;
 
 }

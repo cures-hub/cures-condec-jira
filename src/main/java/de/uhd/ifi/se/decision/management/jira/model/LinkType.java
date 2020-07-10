@@ -7,6 +7,7 @@ import java.util.Locale;
 /**
  * Models the types of links between decision knowledge elements according to
  * Kruchten's taxonomy.
+ * The Duplicate relationship was added to be able to model this type of inconsistency.
  */
 public enum LinkType {
 	SUPPORT("Supports", "supports", "is supported by", "contain_style", ""), //
@@ -18,7 +19,8 @@ public enum LinkType {
 	SUBSUME("Subsumes", "subsumes", "is subsumed by", "contain-style", "#00cc00"), //
 	RELATE("Relates", "relates to", "is relates to", "contain-style", "#80c9ff"), //
 	OVERRIDE("Overrides", "overrides", "is overridden by", "contain-style", "#FFFF00"), //
-	REPLACE("Replaces", "replaces", "is replaced by", "contain-style", "#ff8000");
+	REPLACE("Replaces", "replaces", "is replaced by", "contain-style", "#ff8000"), //
+	DUPLICATE("Duplicates", "duplicates", "is duplicated by", "contain-style", "#c0392b"); //
 
 	private String name;
 	private String outwardLink;
