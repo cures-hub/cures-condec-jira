@@ -7,7 +7,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ofbiz.core.entity.GenericEntityException;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
@@ -38,34 +37,36 @@ public class TestGetClassTreant extends TestSetUp {
 	}
 
 	@Test
-	public void testElementKeyNullDepthNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getClassTreant(null, "", false, null).getStatus());
+	public void testRequestNullElementKeyNullFilterSettingsNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getClassTreant(null, null, false, null).getStatus());
 	}
 
 	@Test
-	public void testElementNotExistsDepthNull() throws GenericEntityException {
+	public void testRequestNullElementNotExistsFilterSettingsNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				viewRest.getClassTreant(null, "NotTEST", false, null).getStatus());
 	}
 
 	@Test
-	public void testElementNotExistsDepthFilled() throws GenericEntityException {
+	public void testRequestFilledElementNotExistsFilterSettingsNull() {
+		HttpServletRequest request = new MockHttpServletRequest();
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				viewRest.getClassTreant(null, "NotTEST", false, null).getStatus());
+				viewRest.getClassTreant(request, "NotTEST", false, null).getStatus());
 	}
 
 	@Test
-	public void testElementExistsDepthNaN() {
+	public void testRequestFilledCodeElementNotExistsFilterSettingsNull() {
+		HttpServletRequest request = new MockHttpServletRequest();
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				viewRest.getClassTreant(null, "TEST-12", false, null).getStatus());
+				viewRest.getClassTreant(request, "TEST-12", false, null).getStatus());
 	}
 
 	@Test
-	public void testElemetExistsDepthNumber() {
+	public void testRequestFilledElementExistsFilterSettingsFilled() {
 		HttpServletRequest request = new MockHttpServletRequest();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
 		assertEquals(Status.OK.getStatusCode(),
-				viewRest.getClassTreant(request, "TEST-1", false, new FilterSettings("TEST", "")).getStatus());
+				viewRest.getClassTreant(request, "TEST-1", true, new FilterSettings("TEST", "")).getStatus());
 	}
 }

@@ -290,9 +290,10 @@ public class ViewRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getClassTreant(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey,
 			@QueryParam("isIssueView") boolean isIssueView, FilterSettings filterSettings) {
-		if (elementKey == null) {
+		if (request == null || elementKey == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build();
+					.entity(ImmutableMap.of("error", "Treant cannot be shown since request or element key is invalid."))
+					.build();
 		}
 		String projectKey = getProjectKey(elementKey);
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);

@@ -84,9 +84,7 @@ public class Treant {
 		} else {
 			usedLinks = new HashSet<>(element.getLinks());
 		}
-		if (this.filterSettings.getLinkDistance() > 0) {
-			this.setNodeStructure(this.createNodeStructure(element, usedLinks, 1, isIssueView));
-		}
+		this.setNodeStructure(this.createNodeStructure(element, usedLinks, 1, isIssueView));
 		this.setHyperlinked(false);
 	}
 
@@ -123,11 +121,13 @@ public class Treant {
 		if (element == null || element.getProject() == null) {
 			return new TreantNode();
 		}
-		Set<Link> linksToTraverse = graph.edgesOf(element);
+
 		TreantNode node = createTreantNode(element, link);
 		if (currentDepth == this.filterSettings.getLinkDistance() + 1) {
 			return node;
 		}
+
+		Set<Link> linksToTraverse = graph.edgesOf(element);
 		List<TreantNode> nodes = getChildren(element, linksToTraverse, currentDepth);
 		node.setChildren(nodes);
 		return node;
@@ -140,17 +140,17 @@ public class Treant {
 			return new TreantNode();
 		}
 		TreantNode node = createTreantNode(element, null);
-		if (currentDepth == this.filterSettings.getLinkDistance() + 1) {
+		if (currentDepth == filterSettings.getLinkDistance() + 1) {
 			return node;
 		}
 		List<TreantNode> nodes = new ArrayList<TreantNode>();
-		// TODO Get rid of AbstractPersistenceManagerForSingleLocation here
-		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(element.getProject()).getJiraIssueManager();
+
 		for (Link link : links) {
-			if (!isIssueView && persistenceManager.getKnowledgeElement(link.getTarget().getId()) != null) {
+			if (!isIssueView && link.getTarget() != null) {
 				TreantNode adult = createTreantNode(link.getTarget(), link);
-				adult.setChildren(getChildren(link.getTarget(), graph.edgesOf(link.getTarget()), currentDepth));
+				if (filterSettings.getLinkDistance() > 1) {
+					adult.setChildren(getChildren(link.getTarget(), graph.edgesOf(link.getTarget()), currentDepth + 1));
+				}
 				nodes.add(adult);
 			} else if (isIssueView) {
 				TreantNode adult = createTreantNode(link.getSource(), link);
@@ -180,12 +180,11 @@ public class Treant {
 				continue;
 			}
 			KnowledgeElement oppositeElement = currentLink.getOppositeElement(rootElement);
-			if (oppositeElement == null
-					|| (oppositeElement.getType() == KnowledgeType.OTHER
-							&& filterSettings.isOnlyDecisionKnowledgeShown())
-					|| (!filterSettings.isOnlyDecisionKnowledgeShown()
-							&& oppositeElement.getType() == KnowledgeType.OTHER
-							&& oppositeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUE)) {
+			if (oppositeElement == null) {
+				continue;
+			}
+			// TODO Add to FilteringManager
+			if (filterSettings.isOnlyDecisionKnowledgeShown() && oppositeElement.getType() == KnowledgeType.OTHER) {
 				continue;
 			}
 			TreantNode newChildNode = createNodeStructure(oppositeElement, currentLink, currentDepth + 1);
