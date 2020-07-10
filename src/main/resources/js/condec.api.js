@@ -507,8 +507,8 @@
 		var filterSettings = {
 			"projectKey": projectKey,
 			"searchTerm": searchTerm,
-			"createdEarliest": createdBefore,
-			"createdLatest": createdAfter,
+			"createdEarliest": createdAfter,
+			"createdLatest": createdBefore,
 			"documentationLocations": documentationLocations,
 			"jiraIssueTypes": jiraIssueTypes,
 			"status": status,
