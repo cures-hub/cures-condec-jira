@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestGetDecisionKnowledgeElement extends TestSetUp {
+public class TestGetKnowledgeElement extends TestSetUp {
 
 	private KnowledgeElement classElement;
 	private KnowledgeElement classElement2;

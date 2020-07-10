@@ -15,7 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
+public class TestUpdateKnowledgeElement extends TestSetUp {
 
 	private KnowledgeElement classElement;
 	private CodeClassPersistenceManager ccManager;

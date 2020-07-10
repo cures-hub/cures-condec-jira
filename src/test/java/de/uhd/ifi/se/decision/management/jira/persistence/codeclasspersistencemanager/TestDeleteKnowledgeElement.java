@@ -11,7 +11,7 @@ import org.junit.Test;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
-public class TestDeleteDecisionKnowledgeElement extends TestSetUp {
+public class TestDeleteKnowledgeElement extends TestSetUp {
 
 	private CodeClassPersistenceManager ccManager;
 	private ApplicationUser user;

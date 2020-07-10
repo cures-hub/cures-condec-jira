@@ -31,10 +31,6 @@ public interface CodeClassInDatabase extends RawEntity<Long> {
 
 	void setJiraIssueKeys(String keys);
 
-	String getType();
-
-	void setType(String type);
-
 	String getProjectKey();
 
 	void setProjectKey(String projectKey);

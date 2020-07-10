@@ -5,8 +5,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectReader;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
@@ -19,14 +28,14 @@ import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
 import net.java.ao.Query;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectReader;
-import org.eclipse.jgit.treewalk.CanonicalTreeParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+/**
+ * Extends the abstract class
+ * {@link AbstractPersistenceManagerForSingleLocation}. Responsible for storing
+ * and retrieving code classes related to Jira issues (work items).
+ *
+ * @see AbstractPersistenceManagerForSingleLocation
+ */
 public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSingleLocation {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextPersistenceManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
@@ -195,20 +204,19 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 
 	private static void setParameters(KnowledgeElement element, CodeClassInDatabase databaseEntry) {
 		databaseEntry.setProjectKey(element.getProject().getProjectKey());
-		databaseEntry.setType(element.getTypeAsString());
-		String issuekeys = "";
+		String issueKeys = "";
 		for (String key : element.getDescription().split(";")) {
 			if (key.contains("-")) {
-				issuekeys = issuekeys + key.split("-")[1] + ";";
+				issueKeys = issueKeys + key.split("-")[1] + ";";
 			}
 		}
-		if (issuekeys.length() > 255) {
-			issuekeys = issuekeys.substring(0, 255);
-			while (issuekeys.charAt(issuekeys.length() - 1) != ';') {
-				issuekeys = issuekeys.substring(0, issuekeys.length() - 2);
+		if (issueKeys.length() > 255) {
+			issueKeys = issueKeys.substring(0, 255);
+			while (issueKeys.charAt(issueKeys.length() - 1) != ';') {
+				issueKeys = issueKeys.substring(0, issueKeys.length() - 2);
 			}
 		}
-		databaseEntry.setJiraIssueKeys(issuekeys);
+		databaseEntry.setJiraIssueKeys(issueKeys);
 		databaseEntry.setFileName(element.getSummary());
 	}
 
@@ -254,14 +262,17 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 				newTreeIter.reset(reader, newhead);
 				String gitPath = ccExtractor.getGitClient().getDirectory(repoUri).getAbsolutePath();
 				gitPath = gitPath.substring(0, gitPath.length() - 5);
-				for (DiffEntry diff : gitClient.getGit(repoUri).diff().setNewTree(newTreeIter).setOldTree(oldTreeIter).call()) {
-					if (diff.getChangeType().equals(DiffEntry.ChangeType.DELETE) && diff.getOldPath().contains(".java")) {
+				for (DiffEntry diff : gitClient.getGit(repoUri).diff().setNewTree(newTreeIter).setOldTree(oldTreeIter)
+						.call()) {
+					if (diff.getChangeType().equals(DiffEntry.ChangeType.DELETE)
+							&& diff.getOldPath().contains(".java")) {
 						diffDelete(null, ccExtractor, gitPath, diff);
 					} else if (diff.getNewPath().contains(".java")) {
 						File file = new File(gitPath, diff.getNewPath());
 						if (diff.getChangeType().equals(DiffEntry.ChangeType.RENAME)
 								|| diff.getChangeType().equals(DiffEntry.ChangeType.MODIFY)) {
-							diffModify(null, ccExtractor, gitPath, diff, getKnowledgeElementByNameAndIssueKeys(file.getName(), getIssueListAsString(ccExtractor.getIssuesKeysForFile(file))));
+							diffModify(null, ccExtractor, gitPath, diff, getKnowledgeElementByNameAndIssueKeys(
+									file.getName(), getIssueListAsString(ccExtractor.getIssuesKeysForFile(file))));
 						} else if (diff.getChangeType().equals(DiffEntry.ChangeType.ADD)) {
 							diffAdd(null, ccExtractor, gitPath, diff);
 						}
@@ -279,10 +290,12 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 
 	private void diffAdd(ApplicationUser user, GitCodeClassExtractor ccExtractor, String gitPath, DiffEntry diff) {
 		File newFile = new File(gitPath, diff.getNewPath());
-		insertKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(newFile, ccExtractor.getIssuesKeysForFile(newFile)), user);
+		insertKnowledgeElement(
+				ccExtractor.createKnowledgeElementFromFile(newFile, ccExtractor.getIssuesKeysForFile(newFile)), user);
 	}
 
-	private void diffModify(ApplicationUser user, GitCodeClassExtractor ccExtractor, String gitPath, DiffEntry diff, KnowledgeElement element) {
+	private void diffModify(ApplicationUser user, GitCodeClassExtractor ccExtractor, String gitPath, DiffEntry diff,
+			KnowledgeElement element) {
 		deleteKnowledgeElement(element, user);
 		diffAdd(user, ccExtractor, gitPath, diff);
 	}
