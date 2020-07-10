@@ -36,7 +36,10 @@ public class FilterSettings {
 	private List<String> linkTypes;
 	private List<String> decisionGroups;
 	private boolean isOnlyDecisionKnowledgeShown;
+	private boolean isTestCodeShown;
 	private int linkDistance;
+	private int minDegree;
+	private int maxDegree;
 
 	@XmlElement
 	private long startDate;
@@ -56,7 +59,10 @@ public class FilterSettings {
 		this.knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
 		this.decisionGroups = DecisionGroupManager.getAllDecisionGroups(projectKey);
 		this.isOnlyDecisionKnowledgeShown = false;
-		this.linkDistance = 4;
+		this.isTestCodeShown = false;
+		this.linkDistance = 3;
+		this.minDegree = 0;
+		this.maxDegree = 50;
 	}
 
 	public FilterSettings(String projectKey, String query, ApplicationUser user) {
@@ -298,8 +304,58 @@ public class FilterSettings {
 	 *            filtered graph. All nodes with a greater distance are not
 	 *            included.
 	 */
-	@JsonProperty("linkDistance")
 	public void setLinkDistance(int linkDistance) {
 		this.linkDistance = linkDistance;
+	}
+
+	/**
+	 * @return minimal number of links that a knowledge element (=node) needs to
+	 *         have to be included in the filtered graph.
+	 */
+	public int getMinDegree() {
+		return minDegree;
+	}
+
+	/**
+	 * @param minDegree
+	 *            minimal number of links that a knowledge element (=node) needs to
+	 *            have to be included in the filtered graph.
+	 */
+	public void setMinDegree(int minDegree) {
+		this.minDegree = minDegree;
+	}
+
+	/**
+	 * @return maximal number of links that a knowledge element (=node) needs to
+	 *         have to be included in the filtered graph.
+	 */
+	public int getMaxDegree() {
+		return maxDegree;
+	}
+
+	/**
+	 * @param maxDegree
+	 *            maximal number of links that a knowledge element (=node) needs to
+	 *            have to be included in the filtered graph.
+	 */
+	public void setMaxDegree(int maxDegree) {
+		this.maxDegree = maxDegree;
+	}
+
+	/**
+	 * @return true if code classes for unit tests are shown in the filtered graph.
+	 */
+	public boolean isTestCodeShown() {
+		return isTestCodeShown;
+	}
+
+	/**
+	 * @param isTestCodeShown
+	 *            true if code classes for unit tests are shown in the filtered
+	 *            graph.
+	 */
+	@JsonProperty("isTestCodeShown")
+	public void setTestCodeShown(boolean isTestCodeShown) {
+		this.isTestCodeShown = isTestCodeShown;
 	}
 }

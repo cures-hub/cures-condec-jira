@@ -49,7 +49,7 @@
             addOnClickEventToExportAsTable();
             addOnClickEventToTab();
             addOnClickEventToFilterButton();
-            conDecFiltering.addEventListenerToLinkDistanceInput("depth-of-tree-input", showTreant);
+            conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input", showTreant);
             
             var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input");
             isOnlyDecisionKnowledgeShownInput.addEventListener("change", showTreant);
@@ -95,11 +95,9 @@
 		}
 		if (href.includes("#treant")) {
 			AJS.tabs.change(jQuery('a[href="#treant"]'));
-
 			showTreant();
 		} else if (href.includes("#vis")) {
 			AJS.tabs.change(jQuery('a[href="#vis"]'));
-
 			showGraph();
 		} else if (href.includes("#decisionTable")) {
 			AJS.tabs.change(jQuery('a[href="#decisionTable"]'));
@@ -120,19 +118,26 @@
         console.log("ConDecJiraIssueModule addOnClickEventToFilterButton");
 
         var filterButton = document.getElementById("filter-button");
-
         filterButton.addEventListener("click", function (event) {
             event.preventDefault();
             event.stopPropagation();
             applyFilters();
         });
+        
+        var codeClassFilterButton = document.getElementById("code-class-filter-button");
+        codeClassFilterButton.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            conDecJiraIssueModule.applyClassViewFilters();
+        });
     }
 
     function showTreant() {
-        console.log("ConDecJiraIssueModule showTreant");
-        var isOnlyDecisionKnowledgeShown = document.getElementById("is-decision-knowledge-only-input").checked;
+        console.log("ConDecJiraIssueModule showTreant");        
         issueKey = conDecAPI.getIssueKey();
-        treant.buildTreant(issueKey, true, search, isOnlyDecisionKnowledgeShown);
+        var isOnlyDecisionKnowledgeShown = document.getElementById("is-decision-knowledge-only-input").checked;
+        var linkDistance = document.getElementById("link-distance-input").value;
+        treant.buildTreant(issueKey, true, search, isOnlyDecisionKnowledgeShown, linkDistance);
     }
 
     function showClassTreant() {

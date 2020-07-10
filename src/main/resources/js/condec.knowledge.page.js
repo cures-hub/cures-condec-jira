@@ -84,7 +84,7 @@
             }
         });
 
-        conDecFiltering.addEventListenerToLinkDistanceInput("depth-of-tree-input", function() {
+        conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input", function() {
         	updateView(null, treant, treeViewer);
         });
 
@@ -125,7 +125,8 @@
         jQueryConDec("#jstree").on("select_node.jstree", function (error, tree) {
             var node = tree.node.data;
             var isOnlyDecisionKnowledgeShown = document.getElementById("is-decision-knowledge-only-input").checked;
-            treant.buildTreant(node.key, true, "", isOnlyDecisionKnowledgeShown);
+            var linkDistance = document.getElementById("link-distance-input").value;
+            treant.buildTreant(node.key, true, "", isOnlyDecisionKnowledgeShown, linkDistance);
         });
 
         var selectedGroupsObj = $('#select2-decision-group').select2('data');

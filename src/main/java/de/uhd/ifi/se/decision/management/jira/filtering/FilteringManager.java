@@ -1,7 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.jgrapht.graph.AsSubgraph;
+import org.jgrapht.traverse.BreadthFirstIterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -9,15 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import org.jgrapht.graph.AsSubgraph;
-import org.jgrapht.traverse.BreadthFirstIterator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Filters the {@link KnowledgeGraph}. The filter criteria are specified in the
@@ -204,12 +206,11 @@ public class FilteringManager {
 	public boolean isElementMatchingTimeFilter(KnowledgeElement element) {
 		boolean isMatchingTimeFilter = true;
 		if (filterSettings.getCreatedEarliest() != -1) {
-			//! The earliest an latest date are FLIPPED!!!
-			isMatchingTimeFilter = element.getCreated().getTime() >= filterSettings.getCreatedLatest();
+			isMatchingTimeFilter = element.getCreated().getTime() >= filterSettings.getCreatedEarliest();
 		}
 		if (filterSettings.getCreatedLatest() != -1) {
 			isMatchingTimeFilter = isMatchingTimeFilter
-					&& element.getCreated().getTime() <= filterSettings.getCreatedEarliest() + 86400000;
+					&& element.getCreated().getTime() <= filterSettings.getCreatedLatest() + 86400000;
 		}
 		return isMatchingTimeFilter;
 	}
@@ -222,11 +223,11 @@ public class FilteringManager {
 	 */
 	public boolean isElementMatchingSubStringFilter(KnowledgeElement element) {
 		String searchString = filterSettings.getSearchTerm().toLowerCase();
-		if (JiraQueryType.getJiraQueryType(searchString) != JiraQueryType.OTHER) {
-			// JQL string or filter
+		if (searchString.isBlank()) {
 			return true;
 		}
-		if (searchString.isBlank()) {
+		if (JiraQueryType.getJiraQueryType(searchString) != JiraQueryType.OTHER) {
+			// JQL string or filter
 			return true;
 		}
 		if (element.getDescription() != null && element.getDescription().toLowerCase().contains(searchString)) {
@@ -268,7 +269,26 @@ public class FilteringManager {
 			}
 		}
 		return (matches == selectedGroups.size());
+	}
 
+	/**
+	 * @param element
+	 *            {@link KnowledgeElement} object.
+	 * @return true if the element's degree (i.e. number of links) is in between
+	 *         minDegree and maxDegree in the {@link FilterSetting}s.
+	 */
+	public boolean isElementMatchingDegreeFilter(KnowledgeElement element) {
+		int degree = element.getLinks().size();
+		return degree >= filterSettings.getMinDegree() && degree <= filterSettings.getMaxDegree();
+	}
+
+	/**
+	 * @param element
+	 *            {@link KnowledgeElement} object.
+	 * @return true if the element is a test class.
+	 */
+	public boolean isElementMatchingIsTestCodeFilter(KnowledgeElement element) {
+		return filterSettings.isTestCodeShown() || !element.getSummary().startsWith("Test");
 	}
 
 	/**

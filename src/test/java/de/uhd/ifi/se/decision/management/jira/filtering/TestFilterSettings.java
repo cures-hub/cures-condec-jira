@@ -168,13 +168,38 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
+	public void testIsTestCodeShown() {
+		assertEquals(false, filterSettings.isTestCodeShown());
+	}
+
+	@Test
+	public void testSetTestCodeShown() {
+		filterSettings.setTestCodeShown(true);
+		assertEquals(true, filterSettings.isTestCodeShown());
+	}
+
+	@Test
 	public void testGetLinkDistance() {
-		assertEquals(4, filterSettings.getLinkDistance());
+		assertEquals(3, filterSettings.getLinkDistance());
 	}
 
 	@Test
 	public void testSetLinkDistance() {
 		filterSettings.setLinkDistance(2);
 		assertEquals(2, filterSettings.getLinkDistance());
+	}
+
+	@Test
+	public void testGetMinAndMaxDegree() {
+		assertEquals(0, filterSettings.getMinDegree());
+		assertEquals(50, filterSettings.getMaxDegree());
+	}
+
+	@Test
+	public void testSetMinAndMaxDegree() {
+		filterSettings.setMinDegree(5);
+		filterSettings.setMaxDegree(10);
+		assertEquals(5, filterSettings.getMinDegree());
+		assertEquals(10, filterSettings.getMaxDegree());
 	}
 }

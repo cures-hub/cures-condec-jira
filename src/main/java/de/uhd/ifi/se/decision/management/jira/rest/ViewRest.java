@@ -283,30 +283,22 @@ public class ViewRest {
 		return Response.ok(treant).build();
 	}
 
+	// TODO Only use one getTreant method and work with filter settings to
+	// determine, which elements are included
 	@Path("/getClassTreant")
-	@GET
+	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getClassTreant(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey,
-			@QueryParam("depthOfTree") String depthOfTree, @QueryParam("searchTerm") String searchTerm,
-			@QueryParam("checkboxflag") Boolean checkboxflag, @QueryParam("isIssueView") Boolean isIssueView,
-			@QueryParam("minLinkNumber") int minLinkNumber, @QueryParam("maxLinkNumber") int maxLinkNumber) {
-		if (elementKey == null) {
+			@QueryParam("isIssueView") boolean isIssueView, FilterSettings filterSettings) {
+		if (request == null || elementKey == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build();
+					.entity(ImmutableMap.of("error", "Treant cannot be shown since request or element key is invalid."))
+					.build();
 		}
 		String projectKey = getProjectKey(elementKey);
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
-		}
-		int depth = 4; // default value
-		try {
-			depth = Integer.parseInt(depthOfTree);
-		} catch (NumberFormatException e) {
-			LOGGER.error(
-					"Depth of tree could not be parsed, the default value of 4 is used. Message: " + e.getMessage());
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Treant cannot be shown since depth of Tree is NaN")).build();
 		}
 		try {
 			KnowledgeElement element = new KnowledgeElement();
@@ -317,12 +309,11 @@ public class ViewRest {
 				KnowledgePersistenceManager kpManager = new KnowledgePersistenceManager(projectKey);
 				element = kpManager.getJiraIssueManager().getKnowledgeElement(elementKey);
 			}
-			Treant treant = new Treant(projectKey, element, depth, searchTerm, "treant-container-class", checkboxflag,
-					isIssueView, minLinkNumber, maxLinkNumber);
+			Treant treant = new Treant(projectKey, element, "treant-container-class", isIssueView, filterSettings);
 			return Response.ok(treant).build();
 		} catch (Exception e) {
 			e.printStackTrace();
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Treant cannot be shown"))
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Treant cannot be shown."))
 					.build();
 		}
 

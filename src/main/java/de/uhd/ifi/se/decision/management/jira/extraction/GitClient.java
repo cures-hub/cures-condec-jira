@@ -931,7 +931,7 @@ public class GitClient {
 			try {
 				gits.get(repoUri).checkout().setName(checkoutName).call();
 			} catch (GitAPIException | JGitInternalException e) {
-				System.out.println("Could not checkout " + checkoutName);
+				System.out.println("Could not checkout " + checkoutName + e.getMessage());
 				LOGGER.error("Could not checkout " + checkoutName + ". " + e.getMessage());
 				return false;
 			}

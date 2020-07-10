@@ -85,28 +85,30 @@ public class TestTreant extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSecondConstructorCheckboxFalse() {
-		this.treant = new Treant("TEST", classElement, 3, "", "treantid", false, false, 1, 100);
+		this.treant = new Treant("TEST", classElement, "treantid", false, null);
 		assertNotNull(this.treant);
 	}
 
 	@Test
 	@NonTransactional
 	public void testSecondConstructorWithIssueViewCheckboxFalse() {
-		this.treant = new Treant("TEST", classElement, 3, "", "treantid", false, true, 1, 100);
+		this.treant = new Treant("TEST", classElement, "treantid", true, null);
 		assertNotNull(this.treant);
 	}
 
 	@Test
 	@NonTransactional
 	public void testSecondConstructorCheckboxTrue() {
-		this.treant = new Treant("TEST", classElement, 3, "", "treantid", true, false, 1, 100);
+		// TODO
+		this.treant = new Treant("TEST", classElement, "treantid", false, null);
 		assertNotNull(this.treant);
 	}
 
 	@Test
 	@NonTransactional
 	public void testSecondConstructorWithIssueViewCheckboxTrue() {
-		this.treant = new Treant("TEST", classElement, 3, "", "treantid", true, true, 1, 100);
+		// TODO
+		this.treant = new Treant("TEST", classElement, "treantid", true, null);
 		assertNotNull(this.treant);
 	}
 
