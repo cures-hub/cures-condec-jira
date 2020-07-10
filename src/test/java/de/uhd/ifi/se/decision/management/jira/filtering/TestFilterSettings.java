@@ -155,4 +155,26 @@ public class TestFilterSettings extends TestSetUp {
 		filterSettings.setDecisionGroups(groups);
 		assertEquals(1, filterSettings.getDecisionGroups().size());
 	}
+
+	@Test
+	public void testGetIsOnlyDecisionKnowledgeShown() {
+		assertEquals(false, filterSettings.isOnlyDecisionKnowledgeShown());
+	}
+
+	@Test
+	public void testSetOnlyDecisionKnowledgeShown() {
+		filterSettings.setOnlyDecisionKnowledgeShown(true);
+		assertEquals(true, filterSettings.isOnlyDecisionKnowledgeShown());
+	}
+
+	@Test
+	public void testGetLinkDistance() {
+		assertEquals(4, filterSettings.getLinkDistance());
+	}
+
+	@Test
+	public void testSetLinkDistance() {
+		filterSettings.setLinkDistance(2);
+		assertEquals(2, filterSettings.getLinkDistance());
+	}
 }

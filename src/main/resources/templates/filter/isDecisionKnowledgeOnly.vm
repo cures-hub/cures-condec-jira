@@ -1,0 +1,2 @@
+<label for="is-decision-knowledge-only-input">Decision Knowledge Only:</label>
+<input class="checkbox" type="checkbox" id="is-decision-knowledge-only-input"/> 

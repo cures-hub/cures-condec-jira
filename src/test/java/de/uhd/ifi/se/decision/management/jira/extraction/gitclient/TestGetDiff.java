@@ -37,7 +37,7 @@ public class TestGetDiff extends TestSetUpGit {
 			assertEquals(ChangeType.ADD, diffEntry.getChangeType());
 
 			EditList editList = changedFile.getEditList();
-			assertEquals("EditList[INSERT(0-0,0-2)]", editList.toString());
+			assertEquals("EditList[INSERT(0-0,0-8)]", editList.toString());
 		}
 	}
 
@@ -56,7 +56,7 @@ public class TestGetDiff extends TestSetUpGit {
 	@Test
 	public void testJiraIssueKeyExisting() {
 		Diff diff = gitClient.getDiff(mockJiraIssueForGitTests, GIT_URI);
-		assertEquals(2, diff.getChangedFiles().size());
+		assertEquals(8, diff.getChangedFiles().size()); // TODO used to be 2
 
 		List<ChangedFile> changedFiles = diff.getChangedFiles();
 

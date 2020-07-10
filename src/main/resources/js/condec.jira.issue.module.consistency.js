@@ -43,7 +43,6 @@
 		});
 	}
 
-
 	ConsistencyTabsModule.prototype.discardDuplicate = function (otherIssueKey) {
 		consistencyAPI.discardDuplicateSuggestion(this.issueKey, otherIssueKey, this.projectKey)
 			.then((data) => {

@@ -8,10 +8,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.atlassian.jira.mock.issue.MockIssue;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -24,16 +20,22 @@ import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.mock.issue.MockIssue;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+
 /**
  * @issue Should we have one or more git repositories for testing?
- * @decision We have one mock git repositories for testing!
+ * @decision We have one mock git repository for testing!
  * @pro The mock git repository can be easily accessed using the Plugin Settings
- * (see ConfigPersistenceManager class).
+ *      (see ConfigPersistenceManager class).
  * @pro This is more efficient than recreating the test git repository all the
- * time.
+ *      time.
  * @con Changes to the git repository (e.g. new commits) during testing has an
- * effect on the test cases that follow. The order of test cases is
- * arbitrary.
+ *      effect on the test cases that follow. The order of test cases is
+ *      arbitrary.
  * @alternative We could have more than one mock git repositories for testing!
  * @con we do not have time for it at the moment..
  */
@@ -50,7 +52,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 	@BeforeClass
 	public static void setUpBeforeClass() {
 		if (gitClient != null && gitClient.getDirectory(GIT_URI) != null) {
-
+			// git client already exists
 			return;
 		}
 		ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
@@ -108,10 +110,8 @@ public abstract class TestSetUpGit extends TestSetUp {
 						+ "            }\n" + "        }\n" + "    };\n" + "\n" + "}\n",
 				"TEST-62 add class A");
 		setupBranchWithDecKnowledge();
+		// TODO Remove this method and only use one branch
 		setupBranchForTranscriber();
-
-		gitClient.closeAll();
-		gitClient = new GitClient(uris, DIRECTORY.getAbsolutePath(), "TEST");
 	}
 
 	@Before
@@ -263,7 +263,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 
 	@AfterClass
 	public static void tidyUp() {
-		gitClient.getCommits(GIT_URI); // Temporary fix to Tests being order dependent. No idea why this fixes it.
 		gitClient.deleteRepository(GIT_URI);
 	}
 

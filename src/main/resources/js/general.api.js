@@ -3,7 +3,7 @@
  */
 (function (global) {
 
-    const GeneralAPI = function GeneralAPI() {
+    const GeneralAPI = function () {
     };
 
     function setJsonHeaders(xhr) {
@@ -65,7 +65,6 @@
         })
     };
 
-
     GeneralAPI.prototype.getText = function (url, callback) {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", url, true);
@@ -97,21 +96,6 @@
         xhr.onload = defaultResponseHandler(xhr, callback);
         xhr.send(JSON.stringify(data));
     };
-
-    /*
-    GeneralAPI.prototype.showFlag = function (type, message, status) {
-        if (status === null || status === undefined) {
-            status = "";
-        }
-        AJS.flag({
-            type: type,
-            close: "auto",
-            title: type.charAt(0).toUpperCase() + type.slice(1) + " " + status,
-            body: message
-        });
-    };
-    */
-
 
     GeneralAPI.prototype.deleteJSONReturnPromise = function (url, data) {
         return new Promise(function (resolve, reject) {

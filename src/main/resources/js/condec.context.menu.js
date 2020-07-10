@@ -227,7 +227,7 @@
 
     function showOrHideContextMenuItems(id, documentationLocation, container) {
         document.getElementById("fifth-context-section").style.display = "none";
-        document.getElementById("first-context-section").style.display = "block";
+		document.getElementById("first-context-section").style.display = "block";
         if (documentationLocation === "c") {
             document.getElementById("condec-context-menu-create-item").style.display = "none";
             document.getElementById("condec-context-menu-edit-item").style.display = "none";
@@ -236,7 +236,16 @@
             document.getElementById("second-context-section").style.display = "none";
             document.getElementById("third-context-section").style.display = "none";
             document.getElementById("fourth-context-section").style.display = "none";
-        } else {
+        } else if (documentationLocation === "s" && container === "tbldecisionTable") {
+			document.getElementById("condec-context-menu-create-item").style.display = "initial";
+            document.getElementById("condec-context-menu-edit-item").style.display = "initial";
+            document.getElementById("condec-context-menu-link-item").style.display = "initial";
+			document.getElementById("condec-context-menu-delete-link-item").style.display = "initial";
+            document.getElementById("second-context-section").style.display = "none";
+            document.getElementById("third-context-section").style.display = "none";
+			document.getElementById("fourth-context-section").style.display = "block";
+			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "none";
+		} else {
             document.getElementById("condec-context-menu-create-item").style.display = "initial";
             document.getElementById("condec-context-menu-edit-item").style.display = "initial";
             document.getElementById("condec-context-menu-link-item").style.display = "initial";
@@ -263,7 +272,7 @@
             document.getElementById("condec-context-menu-delete-link-item").style.display = "initial";
         }
 
-        if (documentationLocation === "s") {
+        if (documentationLocation === "s" && container !== "tbldecisionTable") {
             document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "initial";
             conDecAPI.isIssueStrategy(function (isEnabled) {
                 if (isEnabled) {

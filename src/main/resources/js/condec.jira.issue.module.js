@@ -18,16 +18,17 @@
     var conDecContextMenu = null;
     var treant = null;
     var vis = null;
+	var decisionTable = null;
 
     var issueKey = "";
     var search = "";
 
-    var ConDecJiraIssueModule = function ConDecJiraIssueModule() {
+    var ConDecJiraIssueModule = function () {
         console.log("conDecJiraIssueModule constructor");
     };
 
-    ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog,
-                                                         _conDecContextMenu, _treant, _vis, _decisionTable) {
+    ConDecJiraIssueModule.prototype.init = function (_conDecAPI, _conDecObservable, _conDecDialog,
+                                                     _conDecContextMenu, _treant, _vis, _decisionTable) {
 
 		console.log("ConDecJiraIssueModule init");
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
@@ -37,9 +38,10 @@
             conDecAPI = _conDecAPI;
             conDecObservable = _conDecObservable;
             conDecDialog = _conDecDialog;
-            conDecContextMenu = _conDecContextMenu;
+			conDecContextMenu = _conDecContextMenu;
             treant = _treant;
-            vis = _vis;
+			vis = _vis;
+			decisionTable = _decisionTable;
 
             // Register/subscribe this view as an observer
             conDecObservable.subscribe(this);
@@ -47,26 +49,30 @@
             addOnClickEventToExportAsTable();
             addOnClickEventToTab();
             addOnClickEventToFilterButton();
+            conDecFiltering.addEventListenerToLinkDistanceInput("depth-of-tree-input", showTreant);
+            
+            var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input");
+            isOnlyDecisionKnowledgeShownInput.addEventListener("change", showTreant);
 
-			//initial call to api depending on selected tab!
+			// initial call to api depending on selected tab!
 			determineSelectedTab(window.location.href);
             return true;
         }
         return false;
     };
 
-    ConDecJiraIssueModule.prototype.initView = function initView() {
+    ConDecJiraIssueModule.prototype.initView = function () {
         console.log("ConDecJiraIssueModule initView");
         issueKey = conDecAPI.getIssueKey();
         search = getURLsSearch();
         initFilter(issueKey, search);
     };
 
-    ConDecJiraIssueModule.prototype.applyClassViewFilters = function applyClassViewFilters() {
+    ConDecJiraIssueModule.prototype.applyClassViewFilters = function () {
         showClassTreant();
     };
 
-    ConDecJiraIssueModule.prototype.applyTreeVisFilters = function applyTreeVisFilters() {
+    ConDecJiraIssueModule.prototype.applyTreeVisFilters = function () {
         showTreant();
     };
 
@@ -124,9 +130,9 @@
 
     function showTreant() {
         console.log("ConDecJiraIssueModule showTreant");
-        var showOtherJiraIssues = document.getElementById("show-elements-input").checked;
+        var isOnlyDecisionKnowledgeShown = document.getElementById("is-decision-knowledge-only-input").checked;
         issueKey = conDecAPI.getIssueKey();
-        treant.buildTreant(issueKey, true, search, showOtherJiraIssues);
+        treant.buildTreant(issueKey, true, search, isOnlyDecisionKnowledgeShown);
     }
 
     function showClassTreant() {
@@ -140,6 +146,11 @@
         vis.buildVis(issueKey, search);
     }
 
+	function showDecisionTable() {
+		console.log("ConDecJiraIssueModule showDecisionTable");
+		decisionTable.loadDecisionProblems(issueKey);
+	}
+	
     function applyFilters() {
         var issueTypes = conDecFiltering.getSelectedItems("issuetype-dropdown");
         var createdAfter = -1;
@@ -274,8 +285,15 @@
             return false;
         }
         return true;
-    }
-
+	}
+	
+	function isConDecDecisionTableTyp(conDecDecisionTable) {
+		if (!(conDecVis !== undefined && conDecDecisionTable.loadDecisionProblems !== undefined && typeof conDecDecisionTable.loadDecisionProblems === 'function')) {
+			console.warn("ConDecJiraIssueModule: ivalid conDecDecisionTable object received.");
+			return false;
+		};
+		return true;
+	}
     // export ConDecJiraIssueModule
     global.conDecJiraIssueModule = new ConDecJiraIssueModule();
 })(window);

@@ -9,14 +9,15 @@ import java.util.Formatter;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 
 /**
  * Creates the content submitted via the webhook. The content consists of a key
@@ -39,7 +40,7 @@ public class WebhookContentProviderForTreant extends AbstractWebookContentProvid
 	}
 
 	public WebhookContentProviderForTreant(String projectKey, KnowledgeElement knowledgeElement, String secret,
-										   WebhookType type) {
+			WebhookType type) {
 		this.projectKey = projectKey;
 		this.rootElementKey = knowledgeElement.getKey();
 		this.secret = secret;
@@ -90,7 +91,7 @@ public class WebhookContentProviderForTreant extends AbstractWebookContentProvid
 	 * Creates the key value JSON String transmitted via webhook.
 	 *
 	 * @return JSON String with the following pattern: { "issueKey": {String},
-	 * "ConDecTree": {TreantJS JSON config and data} }
+	 *         "ConDecTree": {TreantJS JSON config and data} }
 	 */
 	public String createWebhookDataForTreant() {
 		String treantAsJson = createTreantJsonString();
@@ -103,7 +104,7 @@ public class WebhookContentProviderForTreant extends AbstractWebookContentProvid
 	 * @return TreantJS JSON String including config and data
 	 */
 	private String createTreantJsonString() {
-		Treant treant = new Treant(projectKey, rootElementKey, 4, true);
+		Treant treant = new Treant(projectKey, rootElementKey, true);
 		ObjectMapper objectMapper = new ObjectMapper();
 		String treantAsJson = "";
 		try {
@@ -118,8 +119,10 @@ public class WebhookContentProviderForTreant extends AbstractWebookContentProvid
 	 * Converts the webhook data String to a hexadecimal String using the secret
 	 * key.
 	 *
-	 * @param data String to be hashed
-	 * @param key  secret key
+	 * @param data
+	 *            String to be hashed
+	 * @param key
+	 *            secret key
 	 * @return hexadecimal String
 	 */
 	public static String createHashedPayload(String data, String key) {
@@ -139,7 +142,8 @@ public class WebhookContentProviderForTreant extends AbstractWebookContentProvid
 	/**
 	 * Converts an array of bytes to a hexadecimal String.
 	 *
-	 * @param bytes array of bytes
+	 * @param bytes
+	 *            array of bytes
 	 * @return hexadecimal String
 	 */
 	private static String toHexString(byte[] bytes) {

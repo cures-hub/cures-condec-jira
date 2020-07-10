@@ -17,6 +17,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.jgit.lib.Ref;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.issue.Issue;
@@ -24,6 +28,7 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
+
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
@@ -34,15 +39,13 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.view.decisiontable.DecisionTable;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
-import org.eclipse.jgit.lib.Ref;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * REST resource for view
@@ -150,13 +153,15 @@ public class ViewRest {
 	 * Returns a jstree tree viewer for a list of trees where all root elements have
 	 * a specific {@link KnowledgeType}.
 	 *
-	 * @param projectKey      of a Jira project.
-	 * @param rootElementType {@link KnowledgeType} of the root elements.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param rootElementType
+	 *            {@link KnowledgeType} of the root elements.
 	 */
 	@Path("/getTreeViewer")
 	@GET
 	public Response getTreeViewer(@QueryParam("projectKey") String projectKey,
-								  @QueryParam("rootElementType") String rootElementTypeString) {
+			@QueryParam("rootElementType") String rootElementTypeString) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -181,7 +186,7 @@ public class ViewRest {
 	@Path("/getTreeViewerForSingleElement")
 	@POST
 	public Response getTreeViewerForSingleElement(@Context HttpServletRequest request,
-												  @QueryParam("jiraIssueKey") String jiraIssueKey, FilterSettings filterSettings) {
+			@QueryParam("jiraIssueKey") String jiraIssueKey, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Invalid parameters given. Tree viewer not be created.")).build();
@@ -202,7 +207,7 @@ public class ViewRest {
 
 	@Path("/getEvolutionData")
 	@POST
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getEvolutionData(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST)
@@ -219,42 +224,72 @@ public class ViewRest {
 		return Response.ok(timeLine).build();
 	}
 
-	@Path("/getTreant")
+	@Path("/getDecisionIssues")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
-	public Response getTreant(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey,
-							  @QueryParam("depthOfTree") String depthOfTree, @QueryParam("searchTerm") String searchTerm,
-							  @QueryParam("showOtherJiraIssues") Boolean showOtherJiraIssues) {
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getDecisionIssues(@Context HttpServletRequest request,
+			@QueryParam("elementKey") String elementKey) {
 		if (elementKey == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build();
+					.entity(ImmutableMap.of("error", "Decision Issues cannot be shown since element key is invalid."))
+					.build();
 		}
 		String projectKey = getProjectKey(elementKey);
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		int depth = 4; // default value
-		try {
-			depth = Integer.parseInt(depthOfTree);
-		} catch (NumberFormatException e) {
-			LOGGER.error(
-					"Depth of tree could not be parsed, the default value of 4 is used. Message: " + e.getMessage());
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Treant cannot be shown since depth of Tree is NaN")).build();
+		DecisionTable decisionTable = new DecisionTable(projectKey);
+		decisionTable.setIssues(elementKey);
+		return Response.ok(decisionTable.getIssues()).build();
+	}
+
+	@Path("/getDecisionTable")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getDecisionTable(@Context HttpServletRequest request, @QueryParam("elementId") long id,
+			@QueryParam("location") String location, @QueryParam("elementKey") String elementKey) {
+		if (elementKey == null || id == -1 || location == null) {
+			return Response.status(Status.BAD_REQUEST).entity(
+					ImmutableMap.of("error", "Decision Table cannot be shown due to missing or invalid parameters."))
+					.build();
 		}
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		Treant treant = new Treant(projectKey, elementKey, depth, searchTerm, user, showOtherJiraIssues);
+		String projectKey = getProjectKey(elementKey);
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		DecisionTable decisionTable = new DecisionTable(projectKey);
+		decisionTable.setDecisionTableForIssue(id, location);
+		return Response.ok(decisionTable.getDecisionTableData()).build();
+	}
+
+	@Path("/getTreant")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getTreant(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey,
+			FilterSettings filterSettings) {
+		if (request == null || elementKey == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Treant cannot be shown since request or element key is invalid."))
+					.build();
+		}
+		String projectKey = getProjectKey(elementKey);
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		Treant treant = new Treant(projectKey, elementKey, filterSettings);
 		return Response.ok(treant).build();
 	}
 
 	@Path("/getClassTreant")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getClassTreant(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey,
-								   @QueryParam("depthOfTree") String depthOfTree, @QueryParam("searchTerm") String searchTerm,
-								   @QueryParam("checkboxflag") Boolean checkboxflag, @QueryParam("isIssueView") Boolean isIssueView,
-								   @QueryParam("minLinkNumber") int minLinkNumber, @QueryParam("maxLinkNumber") int maxLinkNumber) {
+			@QueryParam("depthOfTree") String depthOfTree, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("checkboxflag") Boolean checkboxflag, @QueryParam("isIssueView") Boolean isIssueView,
+			@QueryParam("minLinkNumber") int minLinkNumber, @QueryParam("maxLinkNumber") int maxLinkNumber) {
 		if (elementKey == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build();
@@ -295,9 +330,9 @@ public class ViewRest {
 
 	@Path("/getVis")
 	@POST
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getVis(@Context HttpServletRequest request, FilterSettings filterSettings,
-						   @QueryParam("elementKey") String rootElementKey) {
+			@QueryParam("elementKey") String rootElementKey) {
 		if (checkIfElementIsValid(rootElementKey).getStatus() != Status.OK.getStatusCode()) {
 			return checkIfElementIsValid(rootElementKey);
 		}
@@ -318,7 +353,7 @@ public class ViewRest {
 
 	@Path("/getCompareVis")
 	@POST
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getCompareVis(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
@@ -332,9 +367,9 @@ public class ViewRest {
 
 	@Path("/getFilterSettings")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getFilterSettings(@Context HttpServletRequest request, @QueryParam("searchTerm") String searchTerm,
-									  @QueryParam("elementKey") String elementKey) {
+			@QueryParam("elementKey") String elementKey) {
 		String projectKey;
 		if (checkIfProjectKeyIsValid(elementKey).getStatus() == Status.OK.getStatusCode()) {
 			projectKey = elementKey;
@@ -349,9 +384,9 @@ public class ViewRest {
 
 	@Path("/getDecisionMatrix")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionMatrix(@Context HttpServletRequest request,
-									  @QueryParam("projectKey") String projectKey) {
+			@QueryParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -368,7 +403,7 @@ public class ViewRest {
 
 	@Path("/getDecisionGraph")
 	@POST
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionGraph(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST).entity(

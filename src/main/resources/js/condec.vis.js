@@ -1,6 +1,6 @@
 (function (global) {
 
-    var ConDecVis = function ConDecVis() {
+    var ConDecVis = function () {
     };
 
     function build(theNodes, theEdges, rootElementKey, nodeDistance) {
@@ -55,7 +55,7 @@
         return network;
     }
 
-    ConDecVis.prototype.addContextMenu = function addContextMenu(params, network) {
+    ConDecVis.prototype.addContextMenu = function (params, network) {
         params.event.preventDefault();
         var nodeIndices = network.body.nodeIndices;
         var clickedNodeId;
@@ -77,8 +77,8 @@
     /*
      * external references: condec.jira.issue.module
      */
-    ConDecVis.prototype.buildVisFiltered = function buildVisFiltered(issueKey, search, nodeDistance, issueTypes, status,
-                                                                     createdAfter, createdBefore, linkTypes, documentationLocation) {
+    ConDecVis.prototype.buildVisFiltered = function (issueKey, search, nodeDistance, issueTypes, status,
+                                                     createdAfter, createdBefore, linkTypes, documentationLocation) {
         console.log("conDecVis buildVisFiltered");
         conDecAPI.getVisFiltered(issueKey, search, issueTypes, status, createdAfter, createdBefore, linkTypes, documentationLocation,
             function (visData) {
@@ -89,7 +89,7 @@
     /*
      * external references: condec.jira.issue.module
      */
-    ConDecVis.prototype.buildVis = function buildVis(elementKey, searchTerm) {
+    ConDecVis.prototype.buildVis = function (elementKey, searchTerm) {
         console.log("conDecVis buildVis");
         conDecAPI.getVis(elementKey, searchTerm, function (visData) {
             var network = build(visData.nodes, visData.edges, visData.rootElementKey, 10);
@@ -99,7 +99,7 @@
         });
     };
 
-    ConDecVis.prototype.getVisOptions = function getVisOptions(visData) {
+    ConDecVis.prototype.getVisOptions = function (visData) {
         return {
             clickToUse: false,
             nodes: {
@@ -312,7 +312,7 @@
         }
     };
 
-    ConDecVis.prototype.holdFunction = function  holdFunction(params, network) {
+    ConDecVis.prototype.holdFunction = function (params, network) {
         var nodeIndices = network.body.nodeIndices;
         var clickedNodeId;
         for (var i = 0; i < nodeIndices.length; i++) {
@@ -331,7 +331,7 @@
         }
     };
 
-    ConDecVis.prototype.selectNode =  function selectNode(params, network) {
+    ConDecVis.prototype.selectNode =  function (params, network) {
         if (params.nodes.length === 1) {
             if (network.isCluster(params.nodes[0]) === true) {
                 network.openCluster(params.nodes[0]);
@@ -339,14 +339,14 @@
         }
     };
 
-    ConDecVis.prototype.deleteNode =  function deleteNode(data, callback) {
+    ConDecVis.prototype.deleteNode =  function (data, callback) {
         conDecDialog.showDeleteDialog(data.nodes[0].slice(0, -2), data.nodes[0]
             .substr(-1), function() {
             callback(data);
         });
     };
 
-    ConDecVis.prototype.addEdge = function addEdge(data, callback) {
+    ConDecVis.prototype.addEdge = function (data, callback) {
         if (data.from !== data.to) {
             conDecAPI.createLink(null, data.from.slice(0, -2), data.to.slice(0, -2), data.to.substr(-1),
                 data.from.substr(-1), null, function () {
@@ -356,7 +356,7 @@
         }
     };
 
-    ConDecVis.prototype.addEdgeWithType = function addEdge(data, callback) {
+    ConDecVis.prototype.addEdgeWithType = function (data, callback) {
         if (data.from !== data.to) {
             conDecDialog.showDecisionLinkDialog(data.from.slice(0, -2), data.to.slice(0, -2), data.from.substr(-1), data.to.substr(-1), function() {
                 callback(data);
@@ -364,7 +364,7 @@
         }
     };
 
-    ConDecVis.prototype.deleteEdge = function deleteEdge(data, visData, callback) {
+    ConDecVis.prototype.deleteEdge = function (data, visData, callback) {
         var allEdges = new vis.DataSet(visData.edges);
         var edgeToBeDeleted = allEdges.get(data.edges[0]);
         var idOfChild = edgeToBeDeleted.to.slice(0, -2);

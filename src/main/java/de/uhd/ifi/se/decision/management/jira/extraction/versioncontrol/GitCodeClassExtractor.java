@@ -12,12 +12,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import org.eclipse.jgit.api.BlameCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.blame.BlameResult;
@@ -26,10 +20,17 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+
 public class GitCodeClassExtractor {
 
 	private String projectKey;
-	private List<File> codeClassListFull;
+	private List<File> codeClasses;
 	private Map<String, String> codeClassOriginMap;
 	private Map<String, String> treeWalkPath;
 	private GitClient gitClient;
@@ -45,7 +46,7 @@ public class GitCodeClassExtractor {
 	}
 
 	public List<File> getCodeClassFiles() {
-		List<File> codeClassListFull = new ArrayList<File>();
+		List<File> codeClasses = new ArrayList<>();
 
 		gitClient = new GitClient(projectKey);
 		for (String repoUri : gitClient.getRemoteUris()) {
@@ -65,7 +66,7 @@ public class GitCodeClassExtractor {
 							File file = new File(repository.getWorkTree(), treeWalk.getPathString());
 							ChangedFile chfile = new ChangedFile(file);
 							if (chfile.isExistingJavaClass() && file != null) {
-								codeClassListFull.add(file);
+								codeClasses.add(file);
 								codeClassOriginMap.put(file.getAbsolutePath(), repoUri);
 								treeWalkPath.put(file.getAbsolutePath(), treeWalk.getPathString());
 							}
@@ -77,8 +78,8 @@ public class GitCodeClassExtractor {
 				treeWalk.close();
 			}
 		}
-		this.codeClassListFull = codeClassListFull;
-		return codeClassListFull;
+		this.codeClasses = codeClasses;
+		return codeClasses;
 	}
 
 	public List<String> getIssuesKeysForFile(File file) {
@@ -101,7 +102,6 @@ public class GitCodeClassExtractor {
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		if (allKeys == null || allKeys.size() == 0) {
@@ -177,19 +177,19 @@ public class GitCodeClassExtractor {
 		}
 		element.setSummary(file.getName());
 		element.setProject(projectKey);
-		element.setDocumentationLocation(DocumentationLocation.getDocumentationLocationFromIdentifier("c"));
-		element.setStatus(KnowledgeStatus.getKnowledgeStatus(null));
+		element.setDocumentationLocation(DocumentationLocation.COMMIT);
+		element.setStatus(KnowledgeStatus.UNDEFINED);
 		element.setType(KnowledgeType.OTHER);
 		element.setDescription(keyString);
 		return element;
 	}
 
-	public Integer getNumberOfCodeClasses() {
-		return codeClassListFull.size();
+	public int getNumberOfCodeClasses() {
+		return codeClasses.size();
 	}
 
 	public List<File> getCodeClassListFull() {
-		return codeClassListFull;
+		return codeClasses;
 	}
 
 	public void close() {
