@@ -37,7 +37,7 @@ public class TestConsistencyCheckEventListener extends TestSetUp {
 		issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		jiraComment = ComponentAccessor.getCommentManager().create(issue, user, "Test Comment", true);
-		eventListener = ConsistencyCheckEventListenerSingleton.getInstance();
+		eventListener = (ConsistencyCheckEventListenerSingleton) ConsistencyCheckEventListenerSingleton.getInstance();
 	}
 
 

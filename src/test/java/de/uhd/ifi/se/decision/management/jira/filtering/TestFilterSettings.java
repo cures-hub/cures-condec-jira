@@ -1,18 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class TestFilterSettings extends TestSetUp {
 	private FilterSettings filterSettings;
@@ -114,7 +113,7 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetNamesOfLinkTypes() {
-		assertEquals(10, filterSettings.getLinkTypes().size());
+		assertEquals(11, filterSettings.getLinkTypes().size());
 		List<String> selectedLinkTypes = new ArrayList<>();
 		selectedLinkTypes.add("Forbids");
 		selectedLinkTypes.add("Relates");
@@ -125,7 +124,7 @@ public class TestFilterSettings extends TestSetUp {
 	@Test
 	public void testSetLinkTypes() {
 		filterSettings.setJiraIssueTypes(null);
-		assertEquals(10, filterSettings.getLinkTypes().size());
+		assertEquals(11, filterSettings.getLinkTypes().size());
 	}
 
 	@Test

@@ -12,12 +12,18 @@
 	 */
 	let ConsistencyTabsModule = function ConsistencyTabsModule() {
 		this.isInitialized = false;
+
+
+
+
 		this.projectKey = conDecAPI.getProjectKey();
 	};
 
 	ConsistencyTabsModule.prototype.init = function () {
+		let that = this;
 		this.issueKey = conDecAPI.getIssueKey();
 		this.issueId = JIRA.Issue.getIssueId();
+
 
 		// Duplicates
 		this.loadingDuplicateSpinnerElement = document.getElementById("loading-spinner-duplicate");
@@ -28,6 +34,13 @@
 		this.loadingSpinnerElement = document.getElementById("loading-spinner");
 		this.resultsTableElement = document.getElementById("results-table");
 		this.resultsTableContentElement = document.getElementById("table-content");
+
+		$(document).ajaxComplete(function(event, request, settings){
+			if(settings.url.includes("WorkflowUIDispatcher.jspa")){
+				console.log("WorkflowUIDispatcher");
+				consistencyAPI.displayConsistencyCheck()
+			}
+		});
 	}
 
 	ConsistencyTabsModule.prototype.discardDuplicate = function (otherIssueKey) {

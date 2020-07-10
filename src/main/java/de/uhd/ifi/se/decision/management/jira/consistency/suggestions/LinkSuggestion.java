@@ -1,9 +1,8 @@
-package de.uhd.ifi.se.decision.management.jira.consistency;
+package de.uhd.ifi.se.decision.management.jira.consistency.suggestions;
 
 import com.atlassian.jira.issue.Issue;
-import de.uhd.ifi.se.decision.management.jira.consistency.implementation.SimilarityScore;
 
-public class LinkSuggestion implements Comparable<LinkSuggestion> {
+public class LinkSuggestion implements Comparable<LinkSuggestion>, Suggestion<Issue> {
 
 	private Issue baseIssue;
 	private Issue targetIssue;
@@ -49,5 +48,10 @@ public class LinkSuggestion implements Comparable<LinkSuggestion> {
 			compareValue = -1;
 		}
 		return compareValue;
+	}
+
+	@Override
+	public Issue getSuggestion() {
+		return getTargetIssue();
 	}
 }

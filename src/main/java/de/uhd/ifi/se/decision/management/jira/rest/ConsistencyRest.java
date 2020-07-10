@@ -4,11 +4,11 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
-import de.uhd.ifi.se.decision.management.jira.consistency.ContextInformation;
-import de.uhd.ifi.se.decision.management.jira.consistency.DuplicateDetectionManager;
-import de.uhd.ifi.se.decision.management.jira.consistency.LinkSuggestion;
-import de.uhd.ifi.se.decision.management.jira.consistency.implementation.BasicDuplicateTextDetector;
-import de.uhd.ifi.se.decision.management.jira.consistency.implementation.DuplicateFragment;
+import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.ContextInformation;
+import de.uhd.ifi.se.decision.management.jira.consistency.duplicatedetection.DuplicateDetectionManager;
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.consistency.duplicatedetection.BasicDuplicateTextDetector;
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateSuggestion;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
@@ -109,12 +109,12 @@ public class ConsistencyRest {
 					issuesToCheck.add(ComponentAccessor.getIssueManager().getIssueObject(issueId));
 				}
 				// detect duplicates
-				List<DuplicateFragment> foundDuplicateFragments = manager.findAllDuplicates(issuesToCheck);
+				List<DuplicateSuggestion> foundDuplicateSuggestions = manager.findAllDuplicates(issuesToCheck);
 
 				// convert to Json
 				List<Map<String, Object>> jsonifiedIssues = new ArrayList<>();
-				for (DuplicateFragment duplicateFragment : foundDuplicateFragments) {
-					jsonifiedIssues.add(this.duplicateToJsonMap(duplicateFragment));
+				for (DuplicateSuggestion duplicateSuggestion : foundDuplicateSuggestions) {
+					jsonifiedIssues.add(this.duplicateToJsonMap(duplicateSuggestion));
 				}
 				result.put("duplicates", jsonifiedIssues);
 				response = Response.ok(result).build();
@@ -158,17 +158,17 @@ public class ConsistencyRest {
 		return response;
 	}
 
-	public Map<String, Object> duplicateToJsonMap(DuplicateFragment duplicateFragment) {
+	public Map<String, Object> duplicateToJsonMap(DuplicateSuggestion duplicateSuggestion) {
 		Map<String, Object> jsonMap = new HashMap<>();
-		if(duplicateFragment != null){
-			jsonMap.put("id", duplicateFragment.getI2().getId());
-			jsonMap.put("key", duplicateFragment.getI2().getKey());
-			jsonMap.put("summary", duplicateFragment.getI2().getSummary());
-			jsonMap.put("preprocessedSummary", duplicateFragment.getPreprocessedSummary());
+		if(duplicateSuggestion != null){
+			jsonMap.put("id", duplicateSuggestion.getI2().getId());
+			jsonMap.put("key", duplicateSuggestion.getI2().getKey());
+			jsonMap.put("summary", duplicateSuggestion.getI2().getSummary());
+			jsonMap.put("preprocessedSummary", duplicateSuggestion.getPreprocessedSummary());
 
-			jsonMap.put("description", duplicateFragment.getI2().getDescription());
-			jsonMap.put("startDuplicate", duplicateFragment.getStartDuplicate());
-			jsonMap.put("length", duplicateFragment.getLength());
+			jsonMap.put("description", duplicateSuggestion.getI2().getDescription());
+			jsonMap.put("startDuplicate", duplicateSuggestion.getStartDuplicate());
+			jsonMap.put("length", duplicateSuggestion.getLength());
 
 		}
 
