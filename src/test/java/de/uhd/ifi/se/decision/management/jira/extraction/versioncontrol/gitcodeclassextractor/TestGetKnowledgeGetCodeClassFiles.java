@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.gitcodeclassextractor;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -16,7 +16,7 @@ public class TestGetKnowledgeGetCodeClassFiles extends TestSetUpGit {
 	@NonTransactional
 	public void testGetCodeClassFilesProjectKeyNull() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor(null);
-		assertNull(extract.getCodeClassListFull());
+		assertTrue(extract.getCodeClasses().isEmpty());
 	}
 
 	@Test
@@ -24,6 +24,6 @@ public class TestGetKnowledgeGetCodeClassFiles extends TestSetUpGit {
 	@Ignore
 	public void testGetCodeClassFiles() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
-		assertEquals(6, extract.getCodeClassListFull().size());
+		assertEquals(6, extract.getCodeClasses().size());
 	}
 }

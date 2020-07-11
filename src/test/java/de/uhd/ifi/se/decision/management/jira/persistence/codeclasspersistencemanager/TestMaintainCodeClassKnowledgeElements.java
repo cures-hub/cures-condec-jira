@@ -2,8 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.persistence.codeclasspersistencem
 
 import static junit.framework.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +44,7 @@ public class TestMaintainCodeClassKnowledgeElements extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetIssueListAsString() {
-		List<String> list = new ArrayList<String>();
+		Set<String> list = new HashSet<String>();
 		list.add("123");
 		list.add("456");
 		assertEquals(codeClassPersistenceManager.getIssueListAsString(list), "123;456;");

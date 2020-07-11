@@ -11,9 +11,7 @@ import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 public interface CodeCommentParser {
 
 	/**
-	 * Gets all {@link CodeComment}s found in the source file.
-	 *
-	 * @return comments with their positions in the source file.
+	 * @return all {@link CodeComment}s with their positions in the source file.
 	 */
 	List<CodeComment> getComments(File inspectedFile);
 }

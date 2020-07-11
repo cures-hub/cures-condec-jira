@@ -65,7 +65,8 @@ public class GitRepositoryFSManager {
 	 * This method stays public as the developer might intend to release the folder
 	 * and not wait for maintenance strategy to trigger it.
 	 *
-	 * @param branchShortName branch name, Repository Uri for branch
+	 * @param branchShortName
+	 *            branch name, Repository Uri for branch
 	 * @return null on failure, absolute path to new temporary directory
 	 */
 	public String releaseBranchDirectoryNameToTemp(String branchShortName, String repoUri) {
@@ -106,7 +107,8 @@ public class GitRepositoryFSManager {
 	 * be renamed to branch's target folder name. Bad case: branch folder is copied
 	 * in I/O heavy operation from default branch.
 	 *
-	 * @param branchShortName branch name, Repository Uri of branch
+	 * @param branchShortName
+	 *            branch name, Repository Uri of branch
 	 * @return null on failure, absolute path to branch's directory
 	 */
 	public String prepareBranchDirectory(String branchShortName, String repoUri) {
@@ -311,7 +313,7 @@ public class GitRepositoryFSManager {
 				branchFilteredTouchFilesList.addAll(Arrays.asList(branchFilteredTouchFiles));
 				branchMap.put(key, branchFilteredTouchFilesList);
 			} else {
-				branchMap.put(key, Collections.EMPTY_LIST);
+				branchMap.put(key, Collections.emptyList());
 			}
 		}
 		return branchMap;

@@ -6,10 +6,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
@@ -226,11 +228,8 @@ public class GitClient {
 			gits.get(repoUri).pull().call();
 
 			ObjectId head = getRepository(repoUri).resolve("HEAD^{tree}");
-			if (!oldHead.equals(head)
-					&& getRepository(repoUri).getBranch().equals(defaultBranchFolderNames.get(repoUri))) {
-				CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
-				persistenceManager.maintainCodeClassKnowledgeElements(repoUri, oldHead, head);
-			}
+			CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
+			persistenceManager.maintainCodeClassKnowledgeElements(repoUri, oldHead, head);
 		} catch (GitAPIException | IOException e) {
 			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t" + e.getMessage());
 			e.printStackTrace();
@@ -258,13 +257,12 @@ public class GitClient {
 				LOGGER.error("Could not create a file, repositories will be fetched on each request.");
 			}
 			return true;
-		} else {
-			if (isRepoOutdated(file.lastModified())) {
-				updateFileModifyTime(file);
-				return true;
-			}
-			return false;
 		}
+		if (isRepoOutdated(file.lastModified())) {
+			updateFileModifyTime(file);
+			return true;
+		}
+		return false;
 	}
 
 	private boolean isRepoOutdated(long lastModified) {
@@ -350,23 +348,23 @@ public class GitClient {
 		if (jiraIssue == null) {
 			return null;
 		}
-		List<RevCommit> squashcommits = getCommits(jiraIssue, repoUri);
+		List<RevCommit> squashCommits = getCommits(jiraIssue, repoUri);
 		Ref branch = getRef(jiraIssue.getKey(), repoUri);
 		List<RevCommit> commits = getCommits(branch);
-		if (commits != null) {
-			commits.removeAll(getDefaultBranchCommits(repoUri));
-			for (RevCommit com : squashcommits) {
-				if (!commits.contains(com)) {
-					commits.add(com);
-				}
-			}
-			if ((getDefaultBranchCommits(repoUri) == null || getDefaultBranchCommits(repoUri).size() == 0)
-					&& commits.size() - 1 >= 0) {
-				commits.remove(commits.size() - 1);
-			}
-			return getDiff(commits, repoUri);
+		if (commits == null) {
+			return null;
 		}
-		return null;
+		commits.removeAll(getDefaultBranchCommits(repoUri));
+		for (RevCommit com : squashCommits) {
+			if (!commits.contains(com)) {
+				commits.add(com);
+			}
+		}
+		if ((getDefaultBranchCommits(repoUri) == null || getDefaultBranchCommits(repoUri).size() == 0)
+				&& commits.size() - 1 >= 0) {
+			commits.remove(commits.size() - 1);
+		}
+		return getDiff(commits, repoUri);
 	}
 
 	/**
@@ -740,8 +738,26 @@ public class GitClient {
 		if (commitMessage.isEmpty()) {
 			return "";
 		}
-		String[] split = commitMessage.split("[:+ ]");
+		String[] split = commitMessage.split("[\\s,:]+");
 		return split[0].toUpperCase(Locale.ENGLISH);
+	}
+
+	public Set<String> getJiraIssueKeys(String message) {
+		Set<String> keys = new LinkedHashSet<String>();
+		if (projectKey == null) {
+			return keys;
+		}
+		String baseKey = projectKey.toUpperCase(Locale.ENGLISH);
+		String pattern = "(" + baseKey + "-)\\d+";
+
+		String[] words = message.split("[\\s,:]+");
+		for (String word : words) {
+			word = word.toUpperCase(Locale.ENGLISH);
+			if (word.matches(pattern)) {
+				keys.add(word);
+			}
+		}
+		return keys;
 	}
 
 	/**

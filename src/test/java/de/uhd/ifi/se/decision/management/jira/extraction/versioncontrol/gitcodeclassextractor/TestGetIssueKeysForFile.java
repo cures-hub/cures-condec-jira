@@ -2,7 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.gitcode
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGetIssueKeysForFile extends TestSetUpGit {
@@ -20,7 +21,7 @@ public class TestGetIssueKeysForFile extends TestSetUpGit {
 	@NonTransactional
 	public void testGetIssueKeysForFileNull() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
-		assertNull(extract.getIssuesKeysForFile(null));
+		assertTrue(extract.getIssuesKeysForFile((ChangedFile) null).isEmpty());
 	}
 
 	@Test
@@ -32,7 +33,7 @@ public class TestGetIssueKeysForFile extends TestSetUpGit {
 		List<String> list = new ArrayList<>();
 		list.add("TEST-12");
 		assertFalse(extract.getGitClient().getRemoteUris().isEmpty());
-		assertFalse(extract.getCodeClassListFull().isEmpty());
-		assertEquals(list, extract.getIssuesKeysForFile(extract.getCodeClassListFull().get(0)));
+		assertFalse(extract.getCodeClasses().isEmpty());
+		assertEquals(list, extract.getIssuesKeysForFile(extract.getCodeClasses().get(0)));
 	}
 }

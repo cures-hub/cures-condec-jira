@@ -99,10 +99,11 @@ public class CodeSummarizer {
 	 * @return summary as a String.
 	 */
 	public String createSummary(Diff diff) {
-		if (diff == null || diff.getChangedFiles().size() == 0) {
+		if (diff == null || diff.getChangedFiles().isEmpty()) {
 			return "";
 		}
 
+		System.out.println(diff.getChangedFiles());
 		diff.getChangedFiles().removeIf(changedFile -> !changedFile.isExistingJavaClass());
 		TangledChangeDetector tangledCommitDetection = new TangledChangeDetector();
 		tangledCommitDetection.estimateWhetherChangedFilesAreCorrectlyIncludedInDiff(diff);

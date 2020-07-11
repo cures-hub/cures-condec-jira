@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -23,6 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -224,7 +226,8 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		databaseEntry.setFileName(element.getSummary());
 	}
 
-	public String getIssueListAsString(List<String> list) {
+	// TODO Remove this database table column and replace it with generic links
+	public String getIssueListAsString(Set<String> list) {
 		String keys = "";
 		for (String key : list) {
 			keys = keys + key + ";";
@@ -253,6 +256,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 
 	// TODO Refactor, decrease complexity
 	public void maintainCodeClassKnowledgeElements(String repoUri, ObjectId oldHead, ObjectId newhead) {
+		System.out.println("maintainCodeClassKnowledgeElements");
 		List<KnowledgeElement> existingElements = getKnowledgeElements();
 		if (existingElements == null || existingElements.size() == 0) {
 			extractAllCodeClasses(null);
@@ -267,6 +271,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 				newTreeIter.reset(reader, newhead);
 				String gitPath = ccExtractor.getGitClient().getDirectory(repoUri).getAbsolutePath();
 				gitPath = gitPath.substring(0, gitPath.length() - 5);
+				// TODO Work with Diff and ChangedFile model classes
 				for (DiffEntry diff : gitClient.getGit(repoUri).diff().setNewTree(newTreeIter).setOldTree(oldTreeIter)
 						.call()) {
 					if (diff.getChangeType().equals(DiffEntry.ChangeType.DELETE)
@@ -316,12 +321,14 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	private void extractAllCodeClasses(ApplicationUser user) {
+		System.out.println("extractAllCodeClasses");
 		GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
-		List<File> codeClasses = ccExtractor.getCodeClassListFull();
-		for (File file : codeClasses) {
-			List<String> issueKeys = ccExtractor.getIssuesKeysForFile(file);
+		List<ChangedFile> codeClasses = ccExtractor.getCodeClasses();
+		System.out.println(codeClasses.size());
+		for (ChangedFile file : codeClasses) {
+			Set<String> issueKeys = ccExtractor.getIssuesKeysForFile(file);
 			if (issueKeys != null && issueKeys.size() > 0) {
-				insertKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(file, issueKeys), user);
+				insertKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(file.getFile(), issueKeys), user);
 			}
 		}
 		ccExtractor.close();

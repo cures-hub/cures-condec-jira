@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,102 +27,111 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 
+/**
+ * Responsible for getting the commits that changed a certain file.
+ */
 public class GitCodeClassExtractor {
 
-	private String projectKey;
-	private List<File> codeClasses;
-	private Map<String, String> codeClassOriginMap;
-	private Map<String, String> treeWalkPath;
 	private GitClient gitClient;
 
+	// TODO Get rid of this map
+	private Map<String, String> codeClassOriginMap;
+
+	// TODO What is this map for?
+	private Map<String, String> treeWalkPath;
+
 	public GitCodeClassExtractor(String projectKey) {
+		codeClassOriginMap = new HashMap<String, String>();
+		treeWalkPath = new HashMap<String, String>();
 		if (projectKey == null) {
 			return;
 		}
-		this.projectKey = projectKey;
-		codeClassOriginMap = new HashMap<String, String>();
-		treeWalkPath = new HashMap<String, String>();
-		getCodeClassFiles();
+		gitClient = GitClient.getOrCreate(projectKey);
+		getCodeClasses();
 	}
 
-	public List<File> getCodeClassFiles() {
-		List<File> codeClasses = new ArrayList<>();
-
-		gitClient = GitClient.getOrCreate(projectKey);
+	public List<ChangedFile> getCodeClasses() {
+		List<ChangedFile> codeClasses = new ArrayList<>();
+		if (gitClient == null) {
+			return codeClasses;
+		}
 		for (String repoUri : gitClient.getRemoteUris()) {
 			Repository repository = gitClient.getRepository(repoUri);
-			if (repository != null) {
-				TreeWalk treeWalk = new TreeWalk(repository);
-				try {
-					if (gitClient.getDefaultBranchCommits(repoUri).size() == 0) {
-						break;
-					}
-					treeWalk.addTree(gitClient.getDefaultBranchCommits(repoUri).get(0).getTree());
-					treeWalk.setRecursive(false);
-					while (treeWalk.next()) {
-						if (treeWalk.isSubtree()) {
-							treeWalk.enterSubtree();
-						} else {
-							File file = new File(repository.getWorkTree(), treeWalk.getPathString());
-							ChangedFile chfile = new ChangedFile(file);
-							if (chfile.isExistingJavaClass() && file != null) {
-								codeClasses.add(file);
-								codeClassOriginMap.put(file.getAbsolutePath(), repoUri);
-								treeWalkPath.put(file.getAbsolutePath(), treeWalk.getPathString());
-							}
+			if (repository == null) {
+				continue;
+			}
+			TreeWalk treeWalk = new TreeWalk(repository);
+			try {
+				if (gitClient.getDefaultBranchCommits(repoUri).isEmpty()) {
+					break;
+				}
+				treeWalk.addTree(gitClient.getDefaultBranchCommits(repoUri).get(0).getTree());
+				treeWalk.setRecursive(false);
+				while (treeWalk.next()) {
+					if (treeWalk.isSubtree()) {
+						treeWalk.enterSubtree();
+					} else {
+						File file = new File(repository.getWorkTree(), treeWalk.getPathString());
+						ChangedFile changedFile = new ChangedFile(file);
+						if (changedFile.isExistingJavaClass()) {
+							codeClasses.add(changedFile);
+							codeClassOriginMap.put(file.getAbsolutePath(), repoUri);
+							treeWalkPath.put(file.getAbsolutePath(), treeWalk.getPathString());
 						}
 					}
-				} catch (IOException e) {
-					e.printStackTrace();
 				}
-				treeWalk.close();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
+			treeWalk.close();
 		}
-		this.codeClasses = codeClasses;
 		return codeClasses;
 	}
 
-	public List<String> getIssuesKeysForFile(File file) {
+	/**
+	 * TODO Integrate with ChangedFile class.
+	 * 
+	 * @param file
+	 *            in the git repository, e.g. a Java class.
+	 * @return a set of Jira issue keys associated to the file.
+	 */
+	public Set<String> getIssuesKeysForFile(File file) {
+		Set<String> jiraIssueKeysForFile = new LinkedHashSet<String>();
 		BlameResult blameResult = getGitBlameForFile(file);
-		List<String> allKeys = new ArrayList<String>();
 		if (blameResult == null) {
-			return null;
+			return jiraIssueKeysForFile;
 		}
-		try {
-			int lines = countLines(file);
-			for (int line = 0; line < lines; line++) {
-				RevCommit revCommit = blameResult.getSourceCommit(line);
-				if (revCommit != null) {
-					Set<String> returnValue = getJiraIssueKeys(revCommit.getFullMessage());
-					for (String val : returnValue) {
-						if (!allKeys.contains(val)) {
-							allKeys.add(val);
-						}
-					}
-				}
+
+		int lines = countLines(file);
+		for (int line = 0; line < lines; line++) {
+			RevCommit revCommit = blameResult.getSourceCommit(line);
+			if (revCommit != null) {
+				jiraIssueKeysForFile = gitClient.getJiraIssueKeys(revCommit.getFullMessage());
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
-		if (allKeys == null || allKeys.size() == 0) {
-			allKeys.add("");
-		}
-		return allKeys;
+		return jiraIssueKeysForFile;
 	}
 
-	private static int countLines(File aFile) throws IOException {
+	public Set<String> getIssuesKeysForFile(ChangedFile changedFile) {
+		if (changedFile == null || changedFile.getFile() == null) {
+			return new HashSet<>();
+		}
+		return getIssuesKeysForFile(changedFile.getFile());
+	}
+
+	private static int countLines(File file) {
 		LineNumberReader reader = null;
+		int lineNumber = -1;
 		try {
-			reader = new LineNumberReader(new FileReader(aFile));
+			reader = new LineNumberReader(new FileReader(file));
 			while ((reader.readLine()) != null)
 				;
-			return reader.getLineNumber();
-		} catch (Exception ex) {
-			return -1;
-		} finally {
-			if (reader != null)
-				reader.close();
+			lineNumber = reader.getLineNumber();
+			reader.close();
+		} catch (Exception e) {
+
 		}
+		return lineNumber;
 	}
 
 	private BlameResult getGitBlameForFile(File file) {
@@ -140,34 +149,14 @@ public class GitCodeClassExtractor {
 			blamer.setFilePath(treeWalkPath.get(file.getAbsolutePath()));
 			blamer.setStartCommit(gitClient.getDefaultBranchCommits(repoUri).get(0));
 			blameResult = blamer.call();
-			// blameResult =
-			// gitClient.getGit(repoUri).blame().setFilePath(gitFile.getPath()).call();
 		} catch (RevisionSyntaxException | GitAPIException e) {
 			e.printStackTrace();
 		}
 		return blameResult;
 	}
 
-	private Set<String> getJiraIssueKeys(String message) {
-		Set<String> keys = new LinkedHashSet<String>();
-		if (projectKey == null) {
-			return keys;
-		}
-		String baseKey = projectKey.toUpperCase(Locale.ENGLISH);
-		String pattern = "(" + baseKey + "-)\\d+";
-
-		String[] words = message.split("[\\s,:]+");
-		for (String word : words) {
-			word = word.toUpperCase(Locale.ENGLISH);
-			if (word.matches(pattern)) {
-				keys.add(word);
-			}
-		}
-		return keys;
-	}
-
-	public KnowledgeElement createKnowledgeElementFromFile(File file, List<String> issueKeys) {
-		if (file == null || issueKeys == null || projectKey == null) {
+	public KnowledgeElement createKnowledgeElementFromFile(File file, Set<String> issueKeys) {
+		if (file == null || issueKeys == null || gitClient == null) {
 			return null;
 		}
 		KnowledgeElement element = new KnowledgeElement();
@@ -176,20 +165,12 @@ public class GitCodeClassExtractor {
 			keyString = keyString + key + ";";
 		}
 		element.setSummary(file.getName());
-		element.setProject(projectKey);
+		element.setProject(gitClient.getProjectKey());
 		element.setDocumentationLocation(DocumentationLocation.COMMIT);
 		element.setStatus(KnowledgeStatus.UNDEFINED);
 		element.setType(KnowledgeType.OTHER);
 		element.setDescription(keyString);
 		return element;
-	}
-
-	public int getNumberOfCodeClasses() {
-		return codeClasses.size();
-	}
-
-	public List<File> getCodeClassListFull() {
-		return codeClasses;
 	}
 
 	public void close() {
