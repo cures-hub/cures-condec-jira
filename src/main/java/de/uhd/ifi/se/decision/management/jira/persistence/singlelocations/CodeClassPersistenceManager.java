@@ -35,6 +35,9 @@ import net.java.ao.Query;
  * and retrieving code classes related to Jira issues (work items).
  *
  * @see AbstractPersistenceManagerForSingleLocation
+ * @see CodeClassInDatabase
+ * 
+ * @issue Is it really necessary to store the code classes in the database?
  */
 public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSingleLocation {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextPersistenceManager.class);
@@ -138,6 +141,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
+	// TODO Refactor, decrease complexity
 	public KnowledgeElement insertKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		KnowledgeElement existingElement = checkIfElementExistsInDatabase(element);
 		if (existingElement != null) {
@@ -247,6 +251,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return true;
 	}
 
+	// TODO Refactor, decrease complexity
 	public void maintainCodeClassKnowledgeElements(String repoUri, ObjectId oldHead, ObjectId newhead) {
 		List<KnowledgeElement> existingElements = getKnowledgeElements();
 		if (existingElements == null || existingElements.size() == 0) {
