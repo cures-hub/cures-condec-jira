@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,42 +15,36 @@ import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 
 public class TestGetFeatureBranchCommits extends TestSetUpGit {
 
-    private final String repoBaseDirectory;
-    private GitClient testGitClient;
+	private GitClient testGitClient;
 
+	private String featureBranch = "featureBranch";
 
-    private String featureBranch = "featureBranch";
+	@Test
+	public void testGetFeatureBranchCommitsByString() {
+		// fetches the 'default' branch commits. Do not use TestSetUpGit' gitClient
+		List<String> uris = new ArrayList<String>();
+		uris.add(GIT_URI);
+		testGitClient = new GitClient(uris, null, "TEST");
 
-    public TestGetFeatureBranchCommits() {
-	repoBaseDirectory = super.getRepoBaseDirectory();
-    }
+		List<RevCommit> commits = testGitClient.getFeatureBranchCommits(featureBranch, GIT_URI);
+		assertNotNull(commits);
+	}
 
-    @Test
-    public void testGetFeatureBranchCommitsByString() {
-	// fetches the 'default' branch commits. Do not use TestSetUpGit' gitClient
-	List<String> uris = new ArrayList<String>();
-	uris.add(GIT_URI);
-	testGitClient = new GitClient(uris, repoBaseDirectory, "TEST");
+	@Test
+	public void testGetFeatureBranchCommitsByRef() {
+		// fetches the 'default' branch commits. Do not use TestSetUpGit' gitClient
+		List<String> uris = new ArrayList<String>();
+		uris.add(GIT_URI);
+		testGitClient = new GitClient(uris, null, "TEST");
 
-	List<RevCommit> commits = testGitClient.getFeatureBranchCommits(featureBranch, GIT_URI);
-	assertTrue(commits != null);
-    }
+		// get the Ref
+		List<Ref> remoteBranches = testGitClient.getAllRemoteBranches();
+		List<Ref> branchCandidates = remoteBranches.stream().filter(ref -> ref.getName().endsWith(featureBranch))
+				.collect(Collectors.toList());
 
-    @Test
-    public void testGetFeatureBranchCommitsByRef() {
-	// fetches the 'default' branch commits. Do not use TestSetUpGit' gitClient
-	List<String> uris = new ArrayList<String>();
-	uris.add(GIT_URI);
-	testGitClient = new GitClient(uris, repoBaseDirectory, "TEST");
+		assertEquals(1, branchCandidates.size());
 
-	// get the Ref
-	List<Ref> remoteBranches = testGitClient.getAllRemoteBranches();
-	List<Ref> branchCandidates = remoteBranches.stream().filter(ref -> ref.getName().endsWith(featureBranch))
-		.collect(Collectors.toList());
-
-	assertEquals(1, branchCandidates.size());
-
-	List<RevCommit> commits = testGitClient.getFeatureBranchCommits(branchCandidates.get(0));
-	assertTrue(commits != null);
-    }
+		List<RevCommit> commits = testGitClient.getFeatureBranchCommits(branchCandidates.get(0));
+		assertNotNull(commits);
+	}
 }

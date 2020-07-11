@@ -32,9 +32,9 @@ public class GitDecXtract {
 		gitClient = GitClient.getOrCreate(projectKey);
 	}
 
-	public GitDecXtract(String projecKey, List<String> uri) {
+	public GitDecXtract(String projecKey, List<String> uris) {
 		this.projecKey = projecKey;
-		gitClient = new GitClient(uri, projecKey);
+		gitClient = new GitClient(uris, null, projecKey);
 	}
 
 	/// TODO: can this be done better in JAVA?

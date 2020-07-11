@@ -116,6 +116,23 @@ public class GitClient {
 		return gitClient;
 	}
 
+	private GitClient(String projectKey) {
+		this(ConfigPersistenceManager.getGitUris(projectKey), ConfigPersistenceManager.getDefaultBranches(projectKey),
+				projectKey);
+	}
+
+	public GitClient(List<String> uris, Map<String, String> defaultBranches, String projectKey) {
+		this();
+		for (int i = 0; i < uris.size(); i++) {
+			if (defaultBranches != null && !defaultBranches.isEmpty() && defaultBranches.get(uris.get(i)) != null) {
+				defaultBranchFolderNames.put(uris.get(i), defaultBranches.get(uris.get(i)));
+			} else {
+				defaultBranchFolderNames.put(uris.get(i), "master");
+			}
+		}
+		this.repoInitSuccess = pullOrCloneRepositories(projectKey, DEFAULT_DIR, uris, defaultBranchFolderNames);
+	}
+
 	public GitClient() {
 		// TODO Add a GitClientForSingleRepository with one remote URI and default
 		// branch, only contain a list here
@@ -125,32 +142,12 @@ public class GitClient {
 		defaultBranchCommits = new HashMap<Ref, List<RevCommit>>();
 	}
 
-	public GitClient(List<String> uris, String defaultDirectory, String projectKey) {
-		this();
-		Map<String, String> defaultBranches = ConfigPersistenceManager.getDefaultBranches(projectKey);
-		for (int i = 0; i < uris.size(); i++) {
-			if (defaultBranches != null && defaultBranches.size() != 0 && defaultBranches.get(uris.get(i)) != null) {
-				defaultBranchFolderNames.put(uris.get(i), defaultBranches.get(uris.get(i)));
-			} else {
-				defaultBranchFolderNames.put(uris.get(i), "develop");
-			}
-		}
-		this.repoInitSuccess = pullOrCloneRepositories(projectKey, defaultDirectory, uris, defaultBranchFolderNames);
-	}
-
-	public GitClient(List<String> uris, String projectKey) {
-		this(uris, DEFAULT_DIR, projectKey);
-	}
-
+	// TODO Get rid of this constructor
 	public GitClient(GitClient originalClient) {
 		this();
 		this.repoInitSuccess = pullOrCloneRepositories(originalClient.getProjectKey(),
 				originalClient.getDefaultDirectory(), originalClient.getRemoteUris(),
 				originalClient.getDefaultBranchFolderNames());
-	}
-
-	private GitClient(String projectKey) {
-		this(ConfigPersistenceManager.getGitUris(projectKey), projectKey);
 	}
 
 	private boolean pullOrCloneRepositories(String projectKey, String defaultDirectory, List<String> uris,
