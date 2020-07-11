@@ -259,7 +259,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		System.out.println("maintainCodeClassKnowledgeElements");
 		List<KnowledgeElement> existingElements = getKnowledgeElements();
 		if (existingElements == null || existingElements.size() == 0) {
-			extractAllCodeClasses(null);
+			extractAllCodeClasses(repoUri, null);
 		} else {
 			GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
 			GitClient gitClient = GitClient.getOrCreate(projectKey);
@@ -276,15 +276,15 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 						.call()) {
 					if (diff.getChangeType().equals(DiffEntry.ChangeType.DELETE)
 							&& diff.getOldPath().contains(".java")) {
-						diffDelete(null, ccExtractor, gitPath, diff);
+						diffDelete(repoUri, null, ccExtractor, gitPath, diff);
 					} else if (diff.getNewPath().contains(".java")) {
-						File file = new File(gitPath, diff.getNewPath());
+						ChangedFile file = new ChangedFile(new File(gitPath, diff.getNewPath()), repoUri);
 						if (diff.getChangeType().equals(DiffEntry.ChangeType.RENAME)
 								|| diff.getChangeType().equals(DiffEntry.ChangeType.MODIFY)) {
-							diffModify(null, ccExtractor, gitPath, diff, getKnowledgeElementByNameAndIssueKeys(
-									file.getName(), getIssueListAsString(ccExtractor.getIssuesKeysForFile(file))));
+							diffModify(repoUri, null, ccExtractor, gitPath, diff, getKnowledgeElementByNameAndIssueKeys(
+									file.getName(), getIssueListAsString(ccExtractor.getJiraIssueKeysForFile(file))));
 						} else if (diff.getChangeType().equals(DiffEntry.ChangeType.ADD)) {
-							diffAdd(null, ccExtractor, gitPath, diff);
+							diffAdd(repoUri, null, ccExtractor, gitPath, diff);
 						}
 					}
 				}
@@ -298,35 +298,37 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		}
 	}
 
-	private void diffAdd(ApplicationUser user, GitCodeClassExtractor ccExtractor, String gitPath, DiffEntry diff) {
+	private void diffAdd(String repoUri, ApplicationUser user, GitCodeClassExtractor ccExtractor, String gitPath,
+			DiffEntry diff) {
 		File newFile = new File(gitPath, diff.getNewPath());
-		insertKnowledgeElement(
-				ccExtractor.createKnowledgeElementFromFile(newFile, ccExtractor.getIssuesKeysForFile(newFile)), user);
+		insertKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(newFile,
+				ccExtractor.getJiraIssueKeysForFile(new ChangedFile(newFile, repoUri))), user);
 	}
 
-	private void diffModify(ApplicationUser user, GitCodeClassExtractor ccExtractor, String gitPath, DiffEntry diff,
-			KnowledgeElement element) {
+	private void diffModify(String repoUri, ApplicationUser user, GitCodeClassExtractor ccExtractor, String gitPath,
+			DiffEntry diff, KnowledgeElement element) {
 		deleteKnowledgeElement(element, user);
-		diffAdd(user, ccExtractor, gitPath, diff);
+		diffAdd(repoUri, user, ccExtractor, gitPath, diff);
 	}
 
-	private void diffDelete(ApplicationUser user, GitCodeClassExtractor ccExtractor, String gitPath, DiffEntry diff) {
+	private void diffDelete(String repoUri, ApplicationUser user, GitCodeClassExtractor ccExtractor, String gitPath,
+			DiffEntry diff) {
 		File file = new File(gitPath, diff.getOldPath());
 		List<KnowledgeElement> elements = getKnowledgeElementsMatchingName(file.getName());
 		for (KnowledgeElement element : elements) {
-			if (ccExtractor.getIssuesKeysForFile(file) == null) {
+			if (ccExtractor.getJiraIssueKeysForFile(new ChangedFile(file, repoUri)) == null) {
 				deleteKnowledgeElement(element, user);
 			}
 		}
 	}
 
-	private void extractAllCodeClasses(ApplicationUser user) {
+	private void extractAllCodeClasses(String repoUri, ApplicationUser user) {
 		System.out.println("extractAllCodeClasses");
 		GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
 		List<ChangedFile> codeClasses = ccExtractor.getCodeClasses();
 		System.out.println(codeClasses.size());
 		for (ChangedFile file : codeClasses) {
-			Set<String> issueKeys = ccExtractor.getIssuesKeysForFile(file);
+			Set<String> issueKeys = ccExtractor.getJiraIssueKeysForFile(file);
 			if (issueKeys != null && issueKeys.size() > 0) {
 				insertKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(file.getFile(), issueKeys), user);
 			}

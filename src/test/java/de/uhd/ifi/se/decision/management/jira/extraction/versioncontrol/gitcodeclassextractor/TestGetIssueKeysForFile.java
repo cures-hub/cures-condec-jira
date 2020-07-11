@@ -21,7 +21,7 @@ public class TestGetIssueKeysForFile extends TestSetUpGit {
 	@NonTransactional
 	public void testGetIssueKeysForFileNull() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
-		assertTrue(extract.getIssuesKeysForFile((ChangedFile) null).isEmpty());
+		assertTrue(extract.getJiraIssueKeysForFile((ChangedFile) null).isEmpty());
 	}
 
 	@Test
@@ -34,6 +34,6 @@ public class TestGetIssueKeysForFile extends TestSetUpGit {
 		list.add("TEST-12");
 		assertFalse(extract.getGitClient().getRemoteUris().isEmpty());
 		assertFalse(extract.getCodeClasses().isEmpty());
-		assertEquals(list, extract.getIssuesKeysForFile(extract.getCodeClasses().get(0)));
+		assertEquals(list, extract.getJiraIssueKeysForFile(extract.getCodeClasses().get(0)));
 	}
 }

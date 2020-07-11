@@ -36,6 +36,8 @@ public class ChangedFile {
 	private EditList editList;
 	@JsonIgnore
 	private File file;
+	@JsonIgnore
+	private String repoUri;
 
 	private Set<String> methodDeclarations;
 	private float probabilityOfCorrectness;
@@ -62,10 +64,14 @@ public class ChangedFile {
 		this.setCorrect(true);
 	}
 
-	public ChangedFile(File file) {
-		this();
+	public ChangedFile(File file, String uri) {
 		this.file = file;
 		this.methodDeclarations = parseMethods();
+		this.repoUri = uri;
+	}
+
+	public ChangedFile(File file) {
+		this(file, "");
 	}
 
 	public ChangedFile(DiffEntry diffEntry, EditList editList, String baseDirectory) {
@@ -246,5 +252,13 @@ public class ChangedFile {
 			LOGGER.error(e.getMessage());
 		}
 		return packageDeclaration;
+	}
+
+	public String getRepoUri() {
+		return repoUri;
+	}
+
+	public void setRepoUri(String repoUri) {
+		this.repoUri = repoUri;
 	}
 }

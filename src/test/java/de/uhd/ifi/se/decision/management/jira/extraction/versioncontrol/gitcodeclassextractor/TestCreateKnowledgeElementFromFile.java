@@ -28,7 +28,7 @@ public class TestCreateKnowledgeElementFromFile extends TestSetUpGit {
 		assertNotNull(extract.getCodeClasses());
 		assertFalse(extract.getCodeClasses().isEmpty());
 		ChangedFile file = extract.getCodeClasses().get(0);
-		Set<String> list = extract.getIssuesKeysForFile(file);
+		Set<String> list = extract.getJiraIssueKeysForFile(file);
 		KnowledgeElement element = extract.createKnowledgeElementFromFile(file.getFile(), list);
 		assertNotNull(element);
 		assertEquals(element.getSummary(), file.getName());
@@ -41,7 +41,7 @@ public class TestCreateKnowledgeElementFromFile extends TestSetUpGit {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
 		assertNotNull(extract.getCodeClasses());
 		assertFalse(extract.getCodeClasses().isEmpty());
-		Set<String> list = extract.getIssuesKeysForFile(extract.getCodeClasses().get(0));
+		Set<String> list = extract.getJiraIssueKeysForFile(extract.getCodeClasses().get(0));
 		assertNull(extract.createKnowledgeElementFromFile(null, list));
 	}
 

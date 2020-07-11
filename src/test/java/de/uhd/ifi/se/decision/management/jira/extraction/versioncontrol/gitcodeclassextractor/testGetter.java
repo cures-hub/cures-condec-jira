@@ -9,6 +9,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
 import net.java.ao.test.jdbc.NonTransactional;
 
+// TODO Start with capital letter
 public class testGetter extends TestSetUpGit {
 
 	@Test
@@ -23,13 +24,6 @@ public class testGetter extends TestSetUpGit {
 	public void testGetCodeClassListFull() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
 		assertEquals(6, extract.getCodeClasses().size());
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetCodeClassOriginMap() {
-		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
-		assertNotNull(extract.getCodeClassOriginMap());
 	}
 
 	@Test
