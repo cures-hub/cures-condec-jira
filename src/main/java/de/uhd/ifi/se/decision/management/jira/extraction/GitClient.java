@@ -117,24 +117,16 @@ public class GitClient {
 	}
 
 	public GitClient() {
-	}
-
-	public GitClient(List<File> directories) {
-		initMaps();
-		List<String> uris = ConfigPersistenceManager.getGitUris(projectKey);
-		if (directories.size() == uris.size()) {
-			boolean success = true;
-			for (int i = 0; i < directories.size(); i++) {
-				success = initRepository(uris.get(i), directories.get(i));
-				if (!success) {
-					this.repoInitSuccess = false;
-				}
-			}
-		}
+		// TODO Add a GitClientForSingleRepository with one remote URI and default
+		// branch, only contain a list here
+		gits = new HashMap<String, Git>();
+		defaultBranchFolderNames = new HashMap<String, String>();
+		defaultBranches = new HashMap<String, Ref>();
+		defaultBranchCommits = new HashMap<Ref, List<RevCommit>>();
 	}
 
 	public GitClient(List<String> uris, String defaultDirectory, String projectKey) {
-		initMaps();
+		this();
 		Map<String, String> defaultBranches = ConfigPersistenceManager.getDefaultBranches(projectKey);
 		for (int i = 0; i < uris.size(); i++) {
 			if (defaultBranches != null && defaultBranches.size() != 0 && defaultBranches.get(uris.get(i)) != null) {
@@ -151,7 +143,7 @@ public class GitClient {
 	}
 
 	public GitClient(GitClient originalClient) {
-		initMaps();
+		this();
 		this.repoInitSuccess = pullOrCloneRepositories(originalClient.getProjectKey(),
 				originalClient.getDefaultDirectory(), originalClient.getRemoteUris(),
 				originalClient.getDefaultBranchFolderNames());
@@ -159,13 +151,6 @@ public class GitClient {
 
 	private GitClient(String projectKey) {
 		this(ConfigPersistenceManager.getGitUris(projectKey), projectKey);
-	}
-
-	private void initMaps() {
-		gits = new HashMap<String, Git>();
-		defaultBranchFolderNames = new HashMap<String, String>();
-		defaultBranches = new HashMap<String, Ref>();
-		defaultBranchCommits = new HashMap<Ref, List<RevCommit>>();
 	}
 
 	private boolean pullOrCloneRepositories(String projectKey, String defaultDirectory, List<String> uris,
@@ -314,17 +299,6 @@ public class GitClient {
 			return false;
 		}
 		// TODO checkoutDefault branch
-		return true;
-	}
-
-	private boolean initRepository(String repoUri, File directory) {
-		try {
-			Git git = Git.init().setDirectory(directory).call();
-			gits.put(repoUri, git);
-		} catch (IllegalStateException | GitAPIException e) {
-			LOGGER.error("Bare git repository could not be initiated: " + directory.getAbsolutePath());
-			return false;
-		}
 		return true;
 	}
 
