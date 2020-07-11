@@ -33,7 +33,7 @@ public class CodeSummarizer {
 	private boolean formatForComments;
 
 	public CodeSummarizer(String projectKey) {
-		this.gitClient = new GitClient(projectKey);
+		this.gitClient = GitClient.getOrCreate(projectKey);
 	}
 
 	public CodeSummarizer(GitClient gitClient) {

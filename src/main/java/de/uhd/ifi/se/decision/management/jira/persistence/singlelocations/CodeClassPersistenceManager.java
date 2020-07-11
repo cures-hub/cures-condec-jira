@@ -258,7 +258,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 			extractAllCodeClasses(null);
 		} else {
 			GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
-			GitClient gitClient = new GitClient(projectKey);
+			GitClient gitClient = GitClient.getOrCreate(projectKey);
 			ObjectReader reader = gitClient.getRepository(repoUri).newObjectReader();
 			CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
 			try {

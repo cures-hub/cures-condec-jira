@@ -89,6 +89,33 @@ public class GitClient {
 	private GitRepositoryFSManager fsManager;
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitClient.class);
 
+	/**
+	 * Instances of {@link GitClient}s that are identified by the project key (uses
+	 * the multiton pattern).
+	 */
+	public static Map<String, GitClient> instances = new HashMap<String, GitClient>();
+
+	/**
+	 * Retrieves an existing {@link GitClient} instance or creates a new instance if
+	 * there is no instance for the given project key.
+	 * 
+	 * @param projectKey
+	 *            of the Jira project.
+	 * @return either a new or already existing {@link GitClient} instance.
+	 */
+	public static GitClient getOrCreate(String projectKey) {
+		if (projectKey == null || projectKey.isBlank()) {
+			return null;
+		}
+		if (instances.containsKey(projectKey)) {
+			// return instances.get(projectKey);
+			instances.remove(projectKey);
+		}
+		GitClient gitClient = new GitClient(projectKey);
+		instances.put(projectKey, gitClient);
+		return gitClient;
+	}
+
 	public GitClient() {
 	}
 
@@ -139,7 +166,7 @@ public class GitClient {
 				originalClient.getDefaultBranchFolderNames());
 	}
 
-	public GitClient(String projectKey) {
+	private GitClient(String projectKey) {
 		initMaps();
 		List<String> uris = ConfigPersistenceManager.getGitUris(projectKey);
 		Map<String, String> defaultBranches = ConfigPersistenceManager.getDefaultBranches(projectKey);

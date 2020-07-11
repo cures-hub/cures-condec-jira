@@ -1,5 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.atlassian.gzipfilter.org.apache.commons.lang.math.NumberUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
@@ -8,17 +15,11 @@ import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
@@ -26,9 +27,9 @@ import java.util.Map;
  */
 public class ConfigPersistenceManager {
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentAccessor
-		.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
+			.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
 	private static TransactionTemplate transactionTemplate = ComponentAccessor
-		.getOSGiComponentInstanceOfType(TransactionTemplate.class);
+			.getOSGiComponentInstanceOfType(TransactionTemplate.class);
 
 	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
@@ -155,7 +156,8 @@ public class ConfigPersistenceManager {
 	public static void setKnowledgeExtractedFromGit(String projectKey, boolean isKnowledgeExtractedFromGit) {
 		setValue(projectKey, "isKnowledgeExtractedFromGit", Boolean.toString(isKnowledgeExtractedFromGit));
 		if (isKnowledgeExtractedFromGit) {
-			new GitClient(projectKey);
+			// TODO Pull Repo
+			GitClient.getOrCreate(projectKey);
 		}
 	}
 
@@ -209,7 +211,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
-											   boolean isKnowledgeTypeEnabled) {
+			boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
@@ -259,7 +261,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setReleaseNoteMapping(String projectKey, ReleaseNoteCategory category,
-											 List<String> selectedIssueNames) {
+			List<String> selectedIssueNames) {
 		String joinedIssueNames = String.join(",", selectedIssueNames);
 		setValue(projectKey, "releaseNoteMapping" + "." + category, joinedIssueNames);
 	}
@@ -271,10 +273,9 @@ public class ConfigPersistenceManager {
 
 	/* **************************************/
 	/*										*/
-	/* Configuration for Consistency		*/
+	/* Configuration for Consistency */
 	/*										*/
 	/* **************************************/
-
 
 	public static void setMinDuplicateLength(String projectKey, int minDuplicateLength) {
 		setValue(projectKey, "minDuplicateLength", Integer.toString(minDuplicateLength));
@@ -293,7 +294,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setActivationStatusOfConsistencyEvent(String projectKey, String eventKey, boolean isActivated) {
-	setValue(projectKey, eventKey, Boolean.toString(isActivated));
+		setValue(projectKey, eventKey, Boolean.toString(isActivated));
 	}
 
 	public static boolean getActivationStatusOfConsistencyEvent(String projectKey, String eventKey) {

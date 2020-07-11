@@ -102,7 +102,7 @@ public class ViewRest {
 		// get current branch name
 		// iterate over commits to get all messages and post each one as a comment
 		// make sure to not post duplicates
-		gitClient = new GitClient(projectKey);
+		gitClient = GitClient.getOrCreate(projectKey);
 		for (String repoUri : gitClient.getRemoteUris()) {
 			List<Ref> branches = gitClient.getRemoteBranches(repoUri);
 			for (Ref branch : branches) {
@@ -118,7 +118,7 @@ public class ViewRest {
 	}
 
 	private Response getDiffViewerResponse(String projectKey, String filter) {
-		gitClient = new GitClient(projectKey);
+		gitClient = GitClient.getOrCreate(projectKey);
 		Response resp = null;
 		List<Ref> branches = gitClient.getAllRemoteBranches();
 		Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);

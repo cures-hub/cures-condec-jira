@@ -48,7 +48,7 @@ public class GitCodeClassExtractor {
 	public List<File> getCodeClassFiles() {
 		List<File> codeClasses = new ArrayList<>();
 
-		gitClient = new GitClient(projectKey);
+		gitClient = GitClient.getOrCreate(projectKey);
 		for (String repoUri : gitClient.getRemoteUris()) {
 			Repository repository = gitClient.getRepository(repoUri);
 			if (repository != null) {
