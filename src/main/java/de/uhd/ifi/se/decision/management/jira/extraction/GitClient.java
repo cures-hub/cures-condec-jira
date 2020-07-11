@@ -147,16 +147,7 @@ public class GitClient {
 	}
 
 	public GitClient(List<String> uris, String projectKey) {
-		initMaps();
-		Map<String, String> defaultBranches = ConfigPersistenceManager.getDefaultBranches(projectKey);
-		for (int i = 0; i < uris.size(); i++) {
-			if (defaultBranches.get(uris.get(i)) != null) {
-				defaultBranchFolderNames.put(uris.get(i), defaultBranches.get(uris.get(i)));
-			} else {
-				defaultBranchFolderNames.put(uris.get(i), "develop");
-			}
-		}
-		this.repoInitSuccess = pullOrCloneRepositories(projectKey, DEFAULT_DIR, uris, defaultBranchFolderNames);
+		this(uris, DEFAULT_DIR, projectKey);
 	}
 
 	public GitClient(GitClient originalClient) {
@@ -167,17 +158,7 @@ public class GitClient {
 	}
 
 	private GitClient(String projectKey) {
-		initMaps();
-		List<String> uris = ConfigPersistenceManager.getGitUris(projectKey);
-		Map<String, String> defaultBranches = ConfigPersistenceManager.getDefaultBranches(projectKey);
-		for (int i = 0; i < uris.size(); i++) {
-			if (defaultBranches.get(uris.get(i)) != null) {
-				defaultBranchFolderNames.put(uris.get(i), defaultBranches.get(uris.get(i)));
-			} else {
-				defaultBranchFolderNames.put(uris.get(i), "develop");
-			}
-		}
-		this.repoInitSuccess = pullOrCloneRepositories(projectKey, DEFAULT_DIR, uris, defaultBranchFolderNames);
+		this(ConfigPersistenceManager.getGitUris(projectKey), projectKey);
 	}
 
 	private void initMaps() {
@@ -550,8 +531,8 @@ public class GitClient {
 			 *      valid input parameter or because of an invalid parameter.
 			 * @alternative Methods with an invalid input parameter return null!
 			 * @con null values might be intended as result.
-			 * @decision Return emtpyList to compensate for branch being in another
-			 *           repository
+			 * @decision Return an emtpy list to compensate for branch being in another
+			 *           repository!
 			 */
 			return Collections.emptyList();
 		}
