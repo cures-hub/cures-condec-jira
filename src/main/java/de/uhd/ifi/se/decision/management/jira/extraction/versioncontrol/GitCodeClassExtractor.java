@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jgit.api.BlameCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.blame.BlameResult;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
@@ -37,12 +36,8 @@ public class GitCodeClassExtractor {
 	// TODO Get rid of this map
 	private Map<String, String> codeClassOriginMap;
 
-	// TODO What is this map for?
-	private Map<String, String> treeWalkPath;
-
 	public GitCodeClassExtractor(String projectKey) {
 		codeClassOriginMap = new HashMap<String, String>();
-		treeWalkPath = new HashMap<String, String>();
 		if (projectKey == null) {
 			return;
 		}
@@ -55,36 +50,43 @@ public class GitCodeClassExtractor {
 		if (gitClient == null) {
 			return codeClasses;
 		}
+
 		for (String repoUri : gitClient.getRemoteUris()) {
-			Repository repository = gitClient.getRepository(repoUri);
-			if (repository == null) {
-				continue;
-			}
-			TreeWalk treeWalk = new TreeWalk(repository);
-			try {
-				if (gitClient.getDefaultBranchCommits(repoUri).isEmpty()) {
-					break;
-				}
-				treeWalk.addTree(gitClient.getDefaultBranchCommits(repoUri).get(0).getTree());
-				treeWalk.setRecursive(false);
-				while (treeWalk.next()) {
-					if (treeWalk.isSubtree()) {
-						treeWalk.enterSubtree();
-					} else {
-						File file = new File(repository.getWorkTree(), treeWalk.getPathString());
-						ChangedFile changedFile = new ChangedFile(file);
-						if (changedFile.isExistingJavaClass()) {
-							codeClasses.add(changedFile);
-							codeClassOriginMap.put(file.getAbsolutePath(), repoUri);
-							treeWalkPath.put(file.getAbsolutePath(), treeWalk.getPathString());
-						}
+			codeClasses.addAll(getCodeClasses(repoUri));
+		}
+		return codeClasses;
+	}
+
+	public List<ChangedFile> getCodeClasses(String uri) {
+		List<ChangedFile> codeClasses = new ArrayList<>();
+		Repository repository = gitClient.getRepository(uri);
+		if (repository == null) {
+			return codeClasses;
+		}
+		if (gitClient.getDefaultBranchCommits(uri).isEmpty()) {
+			return codeClasses;
+		}
+		TreeWalk treeWalk = new TreeWalk(repository);
+		try {
+			treeWalk.addTree(gitClient.getDefaultBranchCommits(uri).get(0).getTree());
+			treeWalk.setRecursive(false);
+			while (treeWalk.next()) {
+				if (treeWalk.isSubtree()) {
+					treeWalk.enterSubtree();
+				} else {
+					File file = new File(repository.getWorkTree(), treeWalk.getPathString());
+					ChangedFile changedFile = new ChangedFile(file);
+					if (changedFile.isExistingJavaClass()) {
+						codeClasses.add(changedFile);
+						codeClassOriginMap.put(file.getAbsolutePath(), uri);
 					}
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
-			treeWalk.close();
+		} catch (IOException e) {
+			// TODO Use Logger instead
+			e.printStackTrace();
 		}
+		treeWalk.close();
 		return codeClasses;
 	}
 
@@ -144,11 +146,7 @@ public class GitCodeClassExtractor {
 			if (repoUri == null) {
 				return null;
 			}
-			Repository repository = gitClient.getGit(repoUri).getRepository();
-			BlameCommand blamer = new BlameCommand(repository);
-			blamer.setFilePath(treeWalkPath.get(file.getAbsolutePath()));
-			blamer.setStartCommit(gitClient.getDefaultBranchCommits(repoUri).get(0));
-			blameResult = blamer.call();
+			blameResult = gitClient.getGit(repoUri).blame().setFilePath(file.getAbsolutePath()).call();
 		} catch (RevisionSyntaxException | GitAPIException e) {
 			e.printStackTrace();
 		}
