@@ -22,6 +22,6 @@ public class TestGetCodeClasses extends TestSetUpGit {
 	@NonTransactional
 	public void testGetCodeClasses() {
 		GitCodeClassExtractor extractor = new GitCodeClassExtractor("TEST");
-		assertEquals(7, extractor.getCodeClasses().size());
+		assertEquals(6, extractor.getCodeClasses().size());
 	}
 }

@@ -18,6 +18,6 @@ public class TestGetCommits extends TestSetUpGit {
 		int expectedOnDefaultBranch = 8;
 		int expectedOnFeatureBranch = 22; /* all = unique to the branch + parent branch's commits */
 		int expectedAllCommitsNumber = expectedOnDefaultBranch + expectedOnFeatureBranch;
-		assertEquals(46, allCommits.size()); // used to be 30
+		assertEquals(expectedAllCommitsNumber, allCommits.size()); // expects 30
 	}
 }
