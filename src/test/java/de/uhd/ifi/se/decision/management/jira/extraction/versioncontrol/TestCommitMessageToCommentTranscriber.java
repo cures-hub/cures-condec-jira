@@ -10,6 +10,7 @@ import java.util.List;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -19,6 +20,7 @@ import com.atlassian.jira.issue.comments.Comment;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 
+@Ignore
 public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 
 	private CommitMessageToCommentTranscriber transcriber;

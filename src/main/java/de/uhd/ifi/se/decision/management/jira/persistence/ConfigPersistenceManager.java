@@ -188,12 +188,12 @@ public class ConfigPersistenceManager {
 	public static Map<String, String> getDefaultBranches(String projectKey) {
 		Map<String, String> defaultBranches = new HashMap<String, String>();
 		String value = getValue(projectKey, "gitUris");
-		if (value == null || value.equals("")) {
+		if (value == null || value.isBlank()) {
 			return null;
 		}
 		List<String> uris = Arrays.asList(value.split(";;"));
 		value = getValue(projectKey, "defaultBranches");
-		if (value == null || "".contentEquals(value)) {
+		if (value == null || value.isBlank()) {
 			for (String uri : uris) {
 				defaultBranches.put(uri, "develop");
 			}
