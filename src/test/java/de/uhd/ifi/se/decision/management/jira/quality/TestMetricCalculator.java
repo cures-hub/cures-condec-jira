@@ -16,8 +16,6 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
@@ -33,16 +31,7 @@ public class TestMetricCalculator extends TestSetUpGit {
 		ApplicationUser user = de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers.SYS_ADMIN.getApplicationUser();
 		calculator = new MetricCalculator((long) 1, user, "alternative", false, KnowledgeType.toStringList(),
 				KnowledgeStatus.toStringList(), null);
-
-		// TODO Remove test data generation here and use testdata package instead
-		addElementToDataBase(17, "Issue");
-		addElementToDataBase(18, "Decision");
-		addElementToDataBase(19, "Argument");
 		calculator.setJiraIssues(getTestJiraIssues());
-		KnowledgeElement element = new KnowledgeElement(24, "We should do it similar to something else!",
-				"We should do it similar to something else!", KnowledgeType.DECISION, "TEST", "123",
-				DocumentationLocation.COMMIT, KnowledgeStatus.DECIDED);
-		calculator.addElementFromGit(element, getTestJiraIssues().get(0));
 	}
 
 	@Test
@@ -61,6 +50,7 @@ public class TestMetricCalculator extends TestSetUpGit {
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType() {
 		addComment(getTestJiraIssues().get(6));
 		JiraIssueLinks.getTestJiraIssueLinks();
@@ -85,16 +75,19 @@ public class TestMetricCalculator extends TestSetUpGit {
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetDistributionOfKnowledgeTypes() {
 		assertEquals(4, calculator.getDistributionOfKnowledgeTypes().size());
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetLinksToIssueTypeMapTypeNull() {
 		assertNull(calculator.getLinksToIssueTypeMap(null, 0));
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetLinksToIssueTypeMapTypeFilled() {
 		addComment(getTestJiraIssues().get(6));
 		calculator.setJiraIssues(getTestJiraIssues());
@@ -105,16 +98,19 @@ public class TestMetricCalculator extends TestSetUpGit {
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetNumberOfDecisionKnowledgeElementsForJiraIssues() {
 		assertEquals(8, calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE, 2).size());
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetReqAndClassSummary() {
 		assertEquals(2, calculator.getReqAndClassSummary().size());
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetKnowledgeSourceCount() {
 		addElementToDataBase(24, "Decision");
 		addComment(getTestJiraIssues().get(7));
