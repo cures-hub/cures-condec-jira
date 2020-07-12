@@ -85,10 +85,8 @@ public class GitCodeClassExtractor {
 	}
 
 	/**
-	 * TODO Integrate with ChangedFile class.
-	 * 
-	 * @param file
-	 *            in the git repository, e.g. a Java class.
+	 * @param changedFile
+	 *            {@link ChangedFile} in the git repository, e.g. a Java class.
 	 * @return a set of Jira issue keys associated to the file.
 	 */
 	public Set<String> getJiraIssueKeysForFile(ChangedFile changedFile) {
@@ -105,7 +103,9 @@ public class GitCodeClassExtractor {
 		for (int line = 0; line < lines; line++) {
 			RevCommit revCommit = blameResult.getSourceCommit(line);
 			if (revCommit != null) {
-				jiraIssueKeysForFile = gitClient.getJiraIssueKeys(revCommit.getFullMessage());
+				String commitMessageForLine = revCommit.getFullMessage();
+				Set<String> jiraIssueKeysForLine = gitClient.getJiraIssueKeys(commitMessageForLine);
+				jiraIssueKeysForFile.addAll(jiraIssueKeysForLine);
 			}
 		}
 		return jiraIssueKeysForFile;
@@ -126,6 +126,11 @@ public class GitCodeClassExtractor {
 		return lineNumber;
 	}
 
+	/**
+	 * @issue Why does git blame return different commits to the commit view?
+	 * @param changedFile
+	 * @return
+	 */
 	private BlameResult getGitBlameForFile(ChangedFile changedFile) {
 		BlameResult blameResult = null;
 		if (changedFile == null || changedFile == null) {
@@ -136,6 +141,8 @@ public class GitCodeClassExtractor {
 			if (repoUri == null) {
 				return blameResult;
 			}
+			// TODO Remove getTreeWalkPath() method from ChangedFile class and replace it
+			// with a method to calculate the relative path.
 			blameResult = gitClient.getGit(repoUri).blame().setFilePath(changedFile.getTreeWalkPath()).call();
 		} catch (RevisionSyntaxException | GitAPIException e) {
 			System.out.println(e);

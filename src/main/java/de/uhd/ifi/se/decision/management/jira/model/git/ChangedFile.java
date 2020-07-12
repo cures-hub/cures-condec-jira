@@ -31,9 +31,11 @@ public class ChangedFile extends File {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChangedFile.class);
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * @issue Can we use the repository object instead of a simple String to codify
+	 *        URI?
+	 */
 	@JsonIgnore
-	// @issue Can we use the repository object instead of a simple String to codify
-	// URI?
 	private String repoUri;
 	@JsonIgnore
 	private DiffEntry diffEntry;

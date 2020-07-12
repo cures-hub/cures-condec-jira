@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
@@ -140,6 +141,31 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	@Override
 	public List<Link> getOutwardLinks(KnowledgeElement element) {
 		return GenericLinkManager.getOutwardLinks(element);
+	}
+
+	/**
+	 * @param changedFile
+	 *            {@link ChangedFile} in the git repository, e.g. a Java class.
+	 * @param jiraIssueKeys
+	 *            all keys of the Jira issues that the file was changed in.
+	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}.
+	 * @return {@link KnowledgeElement} that is now filled with an internal database
+	 *         id and key. Returns null if insertion failed. Establishes links to
+	 *         all Jira issues.
+	 */
+	public KnowledgeElement insertKnowledgeElement(ChangedFile changedFile, Set<String> jiraIssueKeys,
+			ApplicationUser user) {
+		GitCodeClassExtractor codeClassExtractor = new GitCodeClassExtractor(projectKey);
+		KnowledgeElement element = codeClassExtractor.createKnowledgeElementFromFile(changedFile, jiraIssueKeys);
+		if (jiraIssueKeys != null && !jiraIssueKeys.isEmpty()) {
+			for (String key : jiraIssueKeys) {
+				Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(key);
+				KnowledgeElement parentElement = new KnowledgeElement(jiraIssue);
+				insertKnowledgeElement(element, user, parentElement);
+			}
+		}
+		return insertKnowledgeElement(element, user);
 	}
 
 	@Override
@@ -324,17 +350,17 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 
 	private void extractAllCodeClasses(ApplicationUser user) {
 		System.out.println("extractAllCodeClasses");
-		GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
-		List<ChangedFile> codeClasses = ccExtractor.getCodeClasses();
+		GitCodeClassExtractor codeClassExtractor = new GitCodeClassExtractor(projectKey);
+		List<ChangedFile> codeClasses = codeClassExtractor.getCodeClasses();
 		System.out.println(codeClasses.size());
-		for (ChangedFile file : codeClasses) {
-			Set<String> issueKeys = ccExtractor.getJiraIssueKeysForFile(file);
+		for (ChangedFile codeClass : codeClasses) {
+			Set<String> issueKeys = codeClassExtractor.getJiraIssueKeysForFile(codeClass);
 			System.out.println(issueKeys);
-			if (issueKeys != null && issueKeys.size() > 0) {
-				insertKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(file, issueKeys), user);
+			if (issueKeys != null && !issueKeys.isEmpty()) {
+				insertKnowledgeElement(codeClass, issueKeys, user);
 			}
 		}
-		ccExtractor.close();
+		codeClassExtractor.close();
 	}
 
 }
