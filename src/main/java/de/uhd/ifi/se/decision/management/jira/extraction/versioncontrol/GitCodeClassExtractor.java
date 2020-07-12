@@ -16,6 +16,8 @@ import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -29,6 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
  */
 public class GitCodeClassExtractor {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(GitCodeClassExtractor.class);
 	private GitClient gitClient;
 
 	public GitCodeClassExtractor(String projectKey) {
@@ -77,8 +80,7 @@ public class GitCodeClassExtractor {
 				}
 			}
 		} catch (IOException e) {
-			// TODO Use Logger instead
-			e.printStackTrace();
+			LOGGER.error("Code classes could not be retrieved. " + e.getMessage());
 		}
 		treeWalk.close();
 		return codeClasses;
@@ -121,15 +123,19 @@ public class GitCodeClassExtractor {
 			lineNumber = reader.getLineNumber();
 			reader.close();
 		} catch (Exception e) {
-			// TODO Logger
+			LOGGER.error("Lines of file could not be counted. " + e.getMessage());
 		}
 		return lineNumber;
 	}
 
 	/**
-	 * @issue Why does git blame return different commits to the commit view?
+	 * Shows who (author) and what commit last modified each line of a file.
+	 * 
+	 * @issue Why does git blame return different commits than the commit view?
+	 * 
 	 * @param changedFile
-	 * @return
+	 *            {@link ChangedFile} in the git repository, e.g. a Java class.
+	 * @return git blame result for the given file.
 	 */
 	private BlameResult getGitBlameForFile(ChangedFile changedFile) {
 		BlameResult blameResult = null;
@@ -145,8 +151,7 @@ public class GitCodeClassExtractor {
 			// with a method to calculate the relative path.
 			blameResult = gitClient.getGit(repoUri).blame().setFilePath(changedFile.getTreeWalkPath()).call();
 		} catch (RevisionSyntaxException | GitAPIException e) {
-			System.out.println(e);
-			// TODO Logger
+			LOGGER.error("Git blame could not be called for the file. " + e.getMessage());
 		}
 		return blameResult;
 	}

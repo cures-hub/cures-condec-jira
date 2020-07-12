@@ -282,7 +282,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	// TODO Refactor, decrease complexity
-	public void maintainCodeClassKnowledgeElements(String repoUri, ObjectId oldHead, ObjectId newhead) {
+	public void maintainCodeClassKnowledgeElements(String repoUri, ObjectId oldHead, ObjectId newHead) {
 		System.out.println("maintainCodeClassKnowledgeElements");
 		List<KnowledgeElement> existingElements = getKnowledgeElements();
 		if (existingElements == null || existingElements.isEmpty()) {
@@ -291,12 +291,12 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		}
 		GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
 		GitClient gitClient = GitClient.getOrCreate(projectKey);
-		Diff diff = gitClient.getDiff(repoUri, oldHead, newhead);
+		Diff diff = gitClient.getDiff(repoUri, oldHead, newHead);
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			DiffEntry diffEntry = changedFile.getDiffEntry();
 			// work with switch case
 			if (diffEntry.getChangeType() == DiffEntry.ChangeType.DELETE && diffEntry.getOldPath().contains(".java")) {
-				diffDelete(repoUri, null, ccExtractor, changedFile);
+				diffDelete(null, ccExtractor, changedFile);
 				break;
 			}
 			if (!diffEntry.getNewPath().contains(".java")) {
@@ -304,32 +304,30 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 			}
 			if (diffEntry.getChangeType() == DiffEntry.ChangeType.RENAME
 					|| diffEntry.getChangeType() == DiffEntry.ChangeType.MODIFY) {
-				diffModify(repoUri, null, ccExtractor, changedFile, getKnowledgeElementByNameAndIssueKeys(
-						changedFile.getName(), getIssueListAsString(ccExtractor.getJiraIssueKeysForFile(changedFile))));
+				diffModify(null, ccExtractor, changedFile, getKnowledgeElementByNameAndIssueKeys(changedFile.getName(),
+						getIssueListAsString(ccExtractor.getJiraIssueKeysForFile(changedFile))));
 				break;
 			}
 			if (diffEntry.getChangeType() == DiffEntry.ChangeType.ADD) {
-				diffAdd(repoUri, null, ccExtractor, changedFile);
+				diffAdd(null, ccExtractor, changedFile);
 			}
 		}
 		gitClient.closeAll();
 		ccExtractor.close();
 	}
 
-	private void diffAdd(String repoUri, ApplicationUser user, GitCodeClassExtractor ccExtractor,
-			ChangedFile changedFile) {
+	private void diffAdd(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
 		Set<String> jiraIssueKeys = ccExtractor.getJiraIssueKeysForFile(changedFile);
 		insertKnowledgeElement(changedFile, jiraIssueKeys, user);
 	}
 
-	private void diffModify(String repoUri, ApplicationUser user, GitCodeClassExtractor ccExtractor,
-			ChangedFile changedFile, KnowledgeElement element) {
+	private void diffModify(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile,
+			KnowledgeElement element) {
 		deleteKnowledgeElement(element, user);
-		diffAdd(repoUri, user, ccExtractor, changedFile);
+		diffAdd(user, ccExtractor, changedFile);
 	}
 
-	private void diffDelete(String repoUri, ApplicationUser user, GitCodeClassExtractor ccExtractor,
-			ChangedFile changedFile) {
+	private void diffDelete(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
 		List<KnowledgeElement> elements = getKnowledgeElementsMatchingName(changedFile.getOldName());
 		for (KnowledgeElement element : elements) {
 			if (ccExtractor.getJiraIssueKeysForFile(changedFile) == null) {
