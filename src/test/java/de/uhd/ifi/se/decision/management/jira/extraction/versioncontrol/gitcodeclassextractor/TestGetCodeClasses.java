@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.gitcodeclassextractor;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -9,19 +9,19 @@ import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestGetter extends TestSetUpGit {
+public class TestGetCodeClasses extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
-	public void testGetCodeClasses() {
-		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
-		assertEquals(7, extract.getCodeClasses().size());
+	public void testGetCodeClassesProjectKeyNull() {
+		GitCodeClassExtractor extractor = new GitCodeClassExtractor(null);
+		assertTrue(extractor.getCodeClasses().isEmpty());
 	}
 
 	@Test
 	@NonTransactional
-	public void testGetGitClient() {
-		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
-		assertNotNull(extract.getGitClient());
+	public void testGetCodeClasses() {
+		GitCodeClassExtractor extractor = new GitCodeClassExtractor("TEST");
+		assertEquals(7, extractor.getCodeClasses().size());
 	}
 }

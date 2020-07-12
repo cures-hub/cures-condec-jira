@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeC
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestGetIssueKeysForFile extends TestSetUpGit {
+public class TestGetJiraIssueKeysForFile extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
@@ -27,7 +27,6 @@ public class TestGetIssueKeysForFile extends TestSetUpGit {
 	@NonTransactional
 	public void testGetIssueKeysForFile() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
-
 		Set<String> list = new LinkedHashSet<>();
 		list.add("TEST-12");
 		assertFalse(extract.getGitClient().getRemoteUris().isEmpty());
