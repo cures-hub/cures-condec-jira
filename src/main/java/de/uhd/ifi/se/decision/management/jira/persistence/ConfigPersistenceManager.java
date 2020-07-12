@@ -195,14 +195,14 @@ public class ConfigPersistenceManager {
 		value = getValue(projectKey, "defaultBranches");
 		if (value == null || value.isBlank()) {
 			for (String uri : uris) {
-				defaultBranches.put(uri, "develop");
+				defaultBranches.put(uri, "master");
 			}
 			return defaultBranches;
 		}
 		List<String> branches = Arrays.asList(value.split(";;"));
 		for (int i = 0; i < uris.size(); i++) {
 			if (branches.size() <= i) {
-				defaultBranches.put(uris.get(i), "develop");
+				defaultBranches.put(uris.get(i), "master");
 			} else {
 				defaultBranches.put(uris.get(i), branches.get(i));
 			}
