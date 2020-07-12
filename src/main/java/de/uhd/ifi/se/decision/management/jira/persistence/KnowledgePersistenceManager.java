@@ -355,7 +355,6 @@ public class KnowledgePersistenceManager {
 		KnowledgeGraph.getOrCreate(projectKey).removeEdge(formerLink);
 
 		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
-		KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
 
 		return this.insertLink(link, user);
 	}
