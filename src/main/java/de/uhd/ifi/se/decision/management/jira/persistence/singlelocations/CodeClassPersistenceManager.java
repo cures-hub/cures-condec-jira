@@ -1,16 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectReader;
-import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -41,6 +37,9 @@ import net.java.ao.Query;
  * @see CodeClassInDatabase
  * 
  * @issue Is it really necessary to store the code classes in the database?
+ * @decision We store code classes in the database to establish links to them.
+ * @pro When storing code classes they get a unique id that is used for linking.
+ *      With this id, links can also be changed by the user.
  */
 public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSingleLocation {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextPersistenceManager.class);
@@ -183,31 +182,33 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 			e.printStackTrace();
 		}
 		KnowledgeElement newElement = new KnowledgeElement(databaseEntry);
-		if (newElement.getId() > 0) {
-			KnowledgeGraph.getOrCreate(projectKey).addVertex(newElement);
-			AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-					.getOrCreate(projectKey).getJiraIssueManager();
-			List<String> groupsToAssign = new ArrayList<String>();
-			for (String key : element.getDescription().split(";")) {
-				if (!key.isBlank()) {
-					KnowledgeElement issueElement = persistenceManager.getKnowledgeElement(key);
-					if (issueElement != null) {
-						if (issueElement.getDecisionGroups() != null) {
-							groupsToAssign.addAll(issueElement.getDecisionGroups());
-						}
-						Link link = new Link(newElement, issueElement);
-						long databaseId = GenericLinkManager.insertLink(link, null);
-						if (databaseId > 0) {
-							link.setId(databaseId);
-							KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
-						}
+		if (newElement.getId() <= 0) {
+			return newElement;
+		}
+		KnowledgeGraph.getOrCreate(projectKey).addVertex(newElement);
+		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(projectKey).getJiraIssueManager();
+		List<String> groupsToAssign = new ArrayList<String>();
+		for (String key : element.getDescription().split(";")) {
+			if (!key.isBlank()) {
+				KnowledgeElement issueElement = persistenceManager.getKnowledgeElement(key);
+				if (issueElement != null) {
+					if (issueElement.getDecisionGroups() != null) {
+						groupsToAssign.addAll(issueElement.getDecisionGroups());
+					}
+					Link link = new Link(newElement, issueElement);
+					long databaseId = GenericLinkManager.insertLink(link, null);
+					if (databaseId > 0) {
+						link.setId(databaseId);
+						KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
 					}
 				}
 			}
-			for (String group : groupsToAssign) {
-				DecisionGroupManager.insertGroup(group, newElement);
-			}
 		}
+		for (String group : groupsToAssign) {
+			DecisionGroupManager.insertGroup(group, newElement);
+		}
+
 		return newElement;
 	}
 
@@ -284,65 +285,54 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	public void maintainCodeClassKnowledgeElements(String repoUri, ObjectId oldHead, ObjectId newhead) {
 		System.out.println("maintainCodeClassKnowledgeElements");
 		List<KnowledgeElement> existingElements = getKnowledgeElements();
-		if (existingElements == null || existingElements.size() == 0) {
+		if (existingElements == null || existingElements.isEmpty()) {
 			extractAllCodeClasses(null);
-		} else {
-			GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
-			GitClient gitClient = GitClient.getOrCreate(projectKey);
-			ObjectReader reader = gitClient.getRepository(repoUri).newObjectReader();
-			CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
-			try {
-				oldTreeIter.reset(reader, oldHead);
-				CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
-				newTreeIter.reset(reader, newhead);
-				String gitPath = ccExtractor.getGitClient().getDirectory(repoUri).getAbsolutePath();
-				gitPath = gitPath.substring(0, gitPath.length() - 5);
-				// TODO Work with Diff and ChangedFile model classes
-				for (DiffEntry diff : gitClient.getGit(repoUri).diff().setNewTree(newTreeIter).setOldTree(oldTreeIter)
-						.call()) {
-					if (diff.getChangeType().equals(DiffEntry.ChangeType.DELETE)
-							&& diff.getOldPath().contains(".java")) {
-						diffDelete(repoUri, null, ccExtractor, gitPath, diff);
-					} else if (diff.getNewPath().contains(".java")) {
-						ChangedFile file = new ChangedFile(new File(gitPath, diff.getNewPath()), repoUri);
-						if (diff.getChangeType().equals(DiffEntry.ChangeType.RENAME)
-								|| diff.getChangeType().equals(DiffEntry.ChangeType.MODIFY)) {
-							diffModify(repoUri, null, ccExtractor, gitPath, diff, getKnowledgeElementByNameAndIssueKeys(
-									file.getName(), getIssueListAsString(ccExtractor.getJiraIssueKeysForFile(file))));
-						} else if (diff.getChangeType().equals(DiffEntry.ChangeType.ADD)) {
-							diffAdd(repoUri, null, ccExtractor, gitPath, diff);
-						}
-					}
-				}
-			} catch (IOException | GitAPIException e) {
-				e.printStackTrace();
-				gitClient.closeAll();
-				ccExtractor.close();
-			}
-			gitClient.closeAll();
-			ccExtractor.close();
+			return;
 		}
+		GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
+		GitClient gitClient = GitClient.getOrCreate(projectKey);
+		Diff diff = gitClient.getDiff(repoUri, oldHead, newhead);
+		for (ChangedFile changedFile : diff.getChangedFiles()) {
+			DiffEntry diffEntry = changedFile.getDiffEntry();
+			// work with switch case
+			if (diffEntry.getChangeType() == DiffEntry.ChangeType.DELETE && diffEntry.getOldPath().contains(".java")) {
+				diffDelete(repoUri, null, ccExtractor, changedFile);
+				break;
+			}
+			if (!diffEntry.getNewPath().contains(".java")) {
+				break;
+			}
+			if (diffEntry.getChangeType() == DiffEntry.ChangeType.RENAME
+					|| diffEntry.getChangeType() == DiffEntry.ChangeType.MODIFY) {
+				diffModify(repoUri, null, ccExtractor, changedFile, getKnowledgeElementByNameAndIssueKeys(
+						changedFile.getName(), getIssueListAsString(ccExtractor.getJiraIssueKeysForFile(changedFile))));
+				break;
+			}
+			if (diffEntry.getChangeType() == DiffEntry.ChangeType.ADD) {
+				diffAdd(repoUri, null, ccExtractor, changedFile);
+			}
+		}
+		gitClient.closeAll();
+		ccExtractor.close();
 	}
 
-	private void diffAdd(String repoUri, ApplicationUser user, GitCodeClassExtractor ccExtractor, String gitPath,
-			DiffEntry diff) {
-		File newFile = new File(gitPath, diff.getNewPath());
-		insertKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(newFile,
-				ccExtractor.getJiraIssueKeysForFile(new ChangedFile(newFile, repoUri))), user);
+	private void diffAdd(String repoUri, ApplicationUser user, GitCodeClassExtractor ccExtractor,
+			ChangedFile changedFile) {
+		Set<String> jiraIssueKeys = ccExtractor.getJiraIssueKeysForFile(changedFile);
+		insertKnowledgeElement(changedFile, jiraIssueKeys, user);
 	}
 
-	private void diffModify(String repoUri, ApplicationUser user, GitCodeClassExtractor ccExtractor, String gitPath,
-			DiffEntry diff, KnowledgeElement element) {
+	private void diffModify(String repoUri, ApplicationUser user, GitCodeClassExtractor ccExtractor,
+			ChangedFile changedFile, KnowledgeElement element) {
 		deleteKnowledgeElement(element, user);
-		diffAdd(repoUri, user, ccExtractor, gitPath, diff);
+		diffAdd(repoUri, user, ccExtractor, changedFile);
 	}
 
-	private void diffDelete(String repoUri, ApplicationUser user, GitCodeClassExtractor ccExtractor, String gitPath,
-			DiffEntry diff) {
-		File file = new File(gitPath, diff.getOldPath());
-		List<KnowledgeElement> elements = getKnowledgeElementsMatchingName(file.getName());
+	private void diffDelete(String repoUri, ApplicationUser user, GitCodeClassExtractor ccExtractor,
+			ChangedFile changedFile) {
+		List<KnowledgeElement> elements = getKnowledgeElementsMatchingName(changedFile.getOldName());
 		for (KnowledgeElement element : elements) {
-			if (ccExtractor.getJiraIssueKeysForFile(new ChangedFile(file, repoUri)) == null) {
+			if (ccExtractor.getJiraIssueKeysForFile(changedFile) == null) {
 				deleteKnowledgeElement(element, user);
 			}
 		}
@@ -355,7 +345,6 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		System.out.println(codeClasses.size());
 		for (ChangedFile codeClass : codeClasses) {
 			Set<String> issueKeys = codeClassExtractor.getJiraIssueKeysForFile(codeClass);
-			System.out.println(issueKeys);
 			if (issueKeys != null && !issueKeys.isEmpty()) {
 				insertKnowledgeElement(codeClass, issueKeys, user);
 			}

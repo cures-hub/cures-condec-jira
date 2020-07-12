@@ -264,4 +264,8 @@ public class ChangedFile extends File {
 	public void setTreeWalkPath(String treeWalkPath) {
 		this.treeWalkPath = treeWalkPath;
 	}
+
+	public String getOldName() {
+		return getDiffEntry().getOldPath();
+	}
 }

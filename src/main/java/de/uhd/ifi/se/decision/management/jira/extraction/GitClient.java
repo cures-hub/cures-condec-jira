@@ -27,12 +27,14 @@ import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.RemoteConfig;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -214,11 +216,15 @@ public class GitClient {
 
 	private boolean pull(String repoUri) {
 		LOGGER.info("Pulling Repository: " + repoUri);
+		System.out.println("Pulling Repository: " + repoUri);
 		if (!isPullNeeded(repoUri)) {
+			LOGGER.info("Repository is up to date: " + repoUri);
+			System.out.println("Repository is up to date: " + repoUri);
 			return true;
 		}
 		try {
 			ObjectId oldHead = getRepository(repoUri).resolve("HEAD^{tree}");
+			System.out.println(oldHead);
 			List<RemoteConfig> remotes = gits.get(repoUri).remoteList().call();
 			for (RemoteConfig remote : remotes) {
 				gits.get(repoUri).fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
@@ -231,8 +237,8 @@ public class GitClient {
 			CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
 			persistenceManager.maintainCodeClassKnowledgeElements(repoUri, oldHead, head);
 		} catch (GitAPIException | IOException e) {
-			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t" + e.getMessage());
-			e.printStackTrace();
+			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t " + e.getMessage());
+			System.out.println(e);
 			return false;
 		}
 		LOGGER.info("Pulled from remote in " + gits.get(repoUri).getRepository().getDirectory());
@@ -378,9 +384,7 @@ public class GitClient {
 	 *         the respective edit list.
 	 */
 	public Diff getDiff(RevCommit firstCommit, RevCommit lastCommit, String repoUri) {
-		Diff diff = new Diff();
 		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
-
 		DiffFormatter diffFormatter = getDiffFormater(repoUri);
 		try {
 			RevCommit parentCommit = getParent(firstCommit, repoUri);
@@ -390,6 +394,13 @@ public class GitClient {
 		} catch (IOException e) {
 			LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
 		}
+		Diff diff = getDiffWithChangedFiles(diffEntries, diffFormatter, repoUri);
+		diffFormatter.close();
+		return diff;
+	}
+
+	private Diff getDiffWithChangedFiles(List<DiffEntry> diffEntries, DiffFormatter diffFormatter, String repoUri) {
+		Diff diff = new Diff();
 		File directory = getDirectory(repoUri);
 		String baseDirectory = "";
 		if (directory != null) {
@@ -398,13 +409,14 @@ public class GitClient {
 		for (DiffEntry diffEntry : diffEntries) {
 			try {
 				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
-				diff.addChangedFile(new ChangedFile(diffEntry, editList, baseDirectory));
+				ChangedFile changedFile = new ChangedFile(diffEntry, editList, baseDirectory);
+				changedFile.setRepoUri(repoUri);
+				diff.addChangedFile(changedFile);
 			} catch (IOException e) {
 				LOGGER.error("Git diff for the file " + diffEntry.getNewPath() + " could not be retrieved. Message: "
 						+ e.getMessage());
 			}
 		}
-		diffFormatter.close();
 		return diff;
 	}
 
@@ -417,6 +429,31 @@ public class GitClient {
 	 */
 	public Diff getDiff(RevCommit revCommit, String repoUri) {
 		return getDiff(revCommit, revCommit, repoUri);
+	}
+
+	/**
+	 * @return {@link Diff} object containing the {@link ChangedFile}s. Each
+	 *         {@link ChangedFile} is created from a diff entry and contains the
+	 *         respective edit list.
+	 */
+	public Diff getDiff(String repoUri, ObjectId oldHead, ObjectId newHead) {
+		ObjectReader reader = this.getRepository(repoUri).newObjectReader();
+		CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
+		String gitPath = "";
+		List<DiffEntry> diffEntries = new ArrayList<>();
+		try {
+			oldTreeIter.reset(reader, oldHead);
+			CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
+			newTreeIter.reset(reader, newHead);
+			gitPath = this.getDirectory(repoUri).getAbsolutePath();
+			gitPath = gitPath.substring(0, gitPath.length() - 5);
+			diffEntries = this.getGit(repoUri).diff().setNewTree(newTreeIter).setOldTree(oldTreeIter).call();
+		} catch (IOException | GitAPIException e) {
+			e.printStackTrace();
+			closeAll();
+		}
+		DiffFormatter diffFormatter = getDiffFormater(repoUri);
+		return getDiffWithChangedFiles(diffEntries, diffFormatter, repoUri);
 	}
 
 	/**
