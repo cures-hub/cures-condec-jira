@@ -9,7 +9,6 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
@@ -22,7 +21,6 @@ public class TestCreateKnowledgeElementFromFile extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testCreateKnowledgeElementFromFile() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
 		assertNotNull(extract.getCodeClasses());
@@ -36,7 +34,6 @@ public class TestCreateKnowledgeElementFromFile extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testCreateKnowledgeElementFromFileFileNull() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
 		assertNotNull(extract.getCodeClasses());
@@ -47,7 +44,6 @@ public class TestCreateKnowledgeElementFromFile extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testCreateKnowledgeElementFromFileKeysNull() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
 		assertNotNull(extract.getCodeClasses());

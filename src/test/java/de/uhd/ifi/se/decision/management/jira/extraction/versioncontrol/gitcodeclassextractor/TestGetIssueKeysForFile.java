@@ -4,10 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
@@ -26,11 +25,10 @@ public class TestGetIssueKeysForFile extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testGetIssueKeysForFile() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
 
-		List<String> list = new ArrayList<>();
+		Set<String> list = new LinkedHashSet<>();
 		list.add("TEST-12");
 		assertFalse(extract.getGitClient().getRemoteUris().isEmpty());
 		assertFalse(extract.getCodeClasses().isEmpty());
