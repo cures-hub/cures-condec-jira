@@ -31,13 +31,17 @@ public class ChangedFile {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChangedFile.class);
 
 	@JsonIgnore
+	// @issue Can we use the repository object instead of a simple String to codify
+	// URI?
+	private String repoUri;
+	@JsonIgnore
 	private DiffEntry diffEntry;
 	@JsonIgnore
 	private EditList editList;
 	@JsonIgnore
 	private File file;
 	@JsonIgnore
-	private String repoUri;
+	private String treeWalkPath;
 
 	private Set<String> methodDeclarations;
 	private float probabilityOfCorrectness;
@@ -62,9 +66,11 @@ public class ChangedFile {
 	public ChangedFile() {
 		this.packageDistance = 0;
 		this.setCorrect(true);
+		this.treeWalkPath = "";
 	}
 
 	public ChangedFile(File file, String uri) {
+		this();
 		this.file = file;
 		this.methodDeclarations = parseMethods();
 		this.repoUri = uri;
@@ -260,5 +266,17 @@ public class ChangedFile {
 
 	public void setRepoUri(String repoUri) {
 		this.repoUri = repoUri;
+	}
+
+	/**
+	 * @return relative path starting from "src" folder. Is needed for git blame
+	 *         call.
+	 */
+	public String getTreeWalkPath() {
+		return treeWalkPath;
+	}
+
+	public void setTreeWalkPath(String treeWalkPath) {
+		this.treeWalkPath = treeWalkPath;
 	}
 }

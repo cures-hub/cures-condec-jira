@@ -259,7 +259,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		System.out.println("maintainCodeClassKnowledgeElements");
 		List<KnowledgeElement> existingElements = getKnowledgeElements();
 		if (existingElements == null || existingElements.size() == 0) {
-			extractAllCodeClasses(repoUri, null);
+			extractAllCodeClasses(null);
 		} else {
 			GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
 			GitClient gitClient = GitClient.getOrCreate(projectKey);
@@ -322,13 +322,14 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		}
 	}
 
-	private void extractAllCodeClasses(String repoUri, ApplicationUser user) {
+	private void extractAllCodeClasses(ApplicationUser user) {
 		System.out.println("extractAllCodeClasses");
 		GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
 		List<ChangedFile> codeClasses = ccExtractor.getCodeClasses();
 		System.out.println(codeClasses.size());
 		for (ChangedFile file : codeClasses) {
 			Set<String> issueKeys = ccExtractor.getJiraIssueKeysForFile(file);
+			System.out.println(issueKeys);
 			if (issueKeys != null && issueKeys.size() > 0) {
 				insertKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(file.getFile(), issueKeys), user);
 			}

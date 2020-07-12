@@ -70,6 +70,7 @@ public class GitCodeClassExtractor {
 				} else {
 					File file = new File(repository.getWorkTree(), treeWalk.getPathString());
 					ChangedFile changedFile = new ChangedFile(file, uri);
+					changedFile.setTreeWalkPath(treeWalk.getPathString());
 					if (changedFile.isExistingJavaClass()) {
 						codeClasses.add(changedFile);
 					}
@@ -135,10 +136,10 @@ public class GitCodeClassExtractor {
 			if (repoUri == null) {
 				return blameResult;
 			}
-			blameResult = gitClient.getGit(repoUri).blame().setFilePath(changedFile.getFile().getAbsolutePath()).call();
+			blameResult = gitClient.getGit(repoUri).blame().setFilePath(changedFile.getTreeWalkPath()).call();
 		} catch (RevisionSyntaxException | GitAPIException e) {
+			System.out.println(e);
 			// TODO Logger
-			e.printStackTrace();
 		}
 		return blameResult;
 	}
