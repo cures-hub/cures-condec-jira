@@ -28,6 +28,7 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 
 		List<RevCommit> commits = testGitClient.getFeatureBranchCommits(featureBranch, GIT_URI);
 		assertNotNull(commits);
+		testGitClient.deleteRepository(GIT_URI);
 	}
 
 	@Test
@@ -45,6 +46,7 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 		assertEquals(1, branchCandidates.size());
 
 		List<RevCommit> commits = testGitClient.getFeatureBranchCommits(branchCandidates.get(0));
-		assertNotNull(commits);
+		assertEquals(4, commits.size());
+		testGitClient.deleteRepository(GIT_URI);
 	}
 }

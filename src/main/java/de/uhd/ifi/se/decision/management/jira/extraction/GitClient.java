@@ -216,15 +216,14 @@ public class GitClient {
 
 	private boolean pull(String repoUri) {
 		LOGGER.info("Pulling Repository: " + repoUri);
-		System.out.println("Pulling Repository: " + repoUri);
+		// System.out.println("Pulling Repository: " + repoUri);
 		if (!isPullNeeded(repoUri)) {
-			LOGGER.info("Repository is up to date: " + repoUri);
-			System.out.println("Repository is up to date: " + repoUri);
+			// LOGGER.info("Repository is up to date: " + repoUri);
+			// System.out.println("Repository is up to date: " + repoUri);
 			return true;
 		}
 		try {
 			ObjectId oldHead = getRepository(repoUri).resolve("HEAD^{tree}");
-			System.out.println(oldHead);
 			List<RemoteConfig> remotes = gits.get(repoUri).remoteList().call();
 			for (RemoteConfig remote : remotes) {
 				gits.get(repoUri).fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
@@ -238,7 +237,6 @@ public class GitClient {
 			persistenceManager.maintainCodeClassKnowledgeElements(repoUri, oldHead, head);
 		} catch (GitAPIException | IOException e) {
 			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t " + e.getMessage());
-			System.out.println(e);
 			return false;
 		}
 		LOGGER.info("Pulled from remote in " + gits.get(repoUri).getRepository().getDirectory());

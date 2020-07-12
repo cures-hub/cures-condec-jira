@@ -283,7 +283,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 
 	// TODO Refactor, decrease complexity
 	public void maintainCodeClassKnowledgeElements(String repoUri, ObjectId oldHead, ObjectId newHead) {
-		System.out.println("maintainCodeClassKnowledgeElements");
+		// System.out.println("maintainCodeClassKnowledgeElements");
 		List<KnowledgeElement> existingElements = getKnowledgeElements();
 		if (existingElements == null || existingElements.isEmpty()) {
 			extractAllCodeClasses(null);
@@ -337,7 +337,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	private void extractAllCodeClasses(ApplicationUser user) {
-		System.out.println("extractAllCodeClasses");
+		// System.out.println("extractAllCodeClasses");
 		GitCodeClassExtractor codeClassExtractor = new GitCodeClassExtractor(projectKey);
 		List<ChangedFile> codeClasses = codeClassExtractor.getCodeClasses();
 		System.out.println(codeClasses.size());
