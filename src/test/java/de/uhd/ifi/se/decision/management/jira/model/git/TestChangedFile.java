@@ -79,4 +79,10 @@ public class TestChangedFile extends TestSetUpGit {
 		assertEquals("EditList[INSERT(0-0,0-29)]", changedFile.getEditList().toString());
 	}
 
+	@Test
+	public void testGetOldName() {
+		// since change type is "ADD", the file did not exist before
+		assertEquals("null", changedFile.getOldName());
+	}
+
 }

@@ -115,21 +115,21 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 
 	@Override
 	public List<KnowledgeElement> getKnowledgeElements() {
-		List<KnowledgeElement> decisionKnowledgeElements = new ArrayList<KnowledgeElement>();
+		List<KnowledgeElement> knowledgeElements = new ArrayList<KnowledgeElement>();
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			decisionKnowledgeElements.add(new KnowledgeElement(databaseEntry));
+			knowledgeElements.add(new KnowledgeElement(databaseEntry));
 		}
-		return decisionKnowledgeElements;
+		return knowledgeElements;
 	}
 
 	public List<KnowledgeElement> getKnowledgeElementsMatchingName(String fileName) {
-		List<KnowledgeElement> decisionKnowledgeElements = new ArrayList<KnowledgeElement>();
+		List<KnowledgeElement> knowledgeElements = new ArrayList<KnowledgeElement>();
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND FILE_NAME = ?", projectKey, fileName))) {
-			decisionKnowledgeElements.add(new KnowledgeElement(databaseEntry));
+			knowledgeElements.add(new KnowledgeElement(databaseEntry));
 		}
-		return decisionKnowledgeElements;
+		return knowledgeElements;
 	}
 
 	@Override

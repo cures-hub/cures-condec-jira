@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.model.git;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -68,7 +70,6 @@ public class ChangedFile extends File {
 		super(file.getPath());
 		this.packageDistance = 0;
 		this.setCorrect(true);
-		this.treeWalkPath = "";
 		this.methodDeclarations = parseMethods();
 		this.repoUri = uri;
 	}
@@ -250,6 +251,14 @@ public class ChangedFile extends File {
 	}
 
 	/**
+	 * @return name of the file before it was changed.
+	 */
+	public String getOldName() {
+		Path oldPath = Paths.get(getDiffEntry().getOldPath());
+		return oldPath.getFileName().toString();
+	}
+
+	/**
 	 * @issue How can we get a path String that can be understood by git.blame()
 	 *        method?
 	 * @decision Save treeWalk path for now!
@@ -258,14 +267,13 @@ public class ChangedFile extends File {
 	 *         call.
 	 */
 	public String getTreeWalkPath() {
+		if (treeWalkPath == null) {
+			return this.getAbsolutePath();
+		}
 		return treeWalkPath;
 	}
 
 	public void setTreeWalkPath(String treeWalkPath) {
 		this.treeWalkPath = treeWalkPath;
-	}
-
-	public String getOldName() {
-		return getDiffEntry().getOldPath();
 	}
 }
