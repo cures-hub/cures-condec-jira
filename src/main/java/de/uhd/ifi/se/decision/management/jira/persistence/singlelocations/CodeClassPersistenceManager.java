@@ -331,7 +331,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 			Set<String> issueKeys = ccExtractor.getJiraIssueKeysForFile(file);
 			System.out.println(issueKeys);
 			if (issueKeys != null && issueKeys.size() > 0) {
-				insertKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(file.getFile(), issueKeys), user);
+				insertKnowledgeElement(ccExtractor.createKnowledgeElementFromFile(file, issueKeys), user);
 			}
 		}
 		ccExtractor.close();

@@ -31,7 +31,7 @@ public class TestChangedFile extends TestSetUpGit {
 
 	@Test
 	public void testGetFile() {
-		assertNotNull(changedFile.getFile());
+		assertNotNull(changedFile);
 		assertEquals("Tangled2.java", changedFile.getName());
 	}
 

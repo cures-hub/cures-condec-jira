@@ -92,7 +92,7 @@ public class GitCodeClassExtractor {
 	 * @return a set of Jira issue keys associated to the file.
 	 */
 	public Set<String> getJiraIssueKeysForFile(ChangedFile changedFile) {
-		if (changedFile == null || changedFile.getFile() == null) {
+		if (changedFile == null || changedFile == null) {
 			return new HashSet<>();
 		}
 		Set<String> jiraIssueKeysForFile = new LinkedHashSet<String>();
@@ -101,7 +101,7 @@ public class GitCodeClassExtractor {
 			return jiraIssueKeysForFile;
 		}
 
-		int lines = countLines(changedFile.getFile());
+		int lines = countLines(changedFile);
 		for (int line = 0; line < lines; line++) {
 			RevCommit revCommit = blameResult.getSourceCommit(line);
 			if (revCommit != null) {
@@ -128,7 +128,7 @@ public class GitCodeClassExtractor {
 
 	private BlameResult getGitBlameForFile(ChangedFile changedFile) {
 		BlameResult blameResult = null;
-		if (changedFile == null || changedFile.getFile() == null) {
+		if (changedFile == null || changedFile == null) {
 			return blameResult;
 		}
 		try {

@@ -26,9 +26,10 @@ import de.uhd.ifi.se.decision.management.jira.extraction.parser.MethodVisitor;
 /**
  * Models a changed file as part of a {@link Diff}.
  */
-public class ChangedFile {
+public class ChangedFile extends File {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChangedFile.class);
+	private static final long serialVersionUID = 1L;
 
 	@JsonIgnore
 	// @issue Can we use the repository object instead of a simple String to codify
@@ -38,8 +39,6 @@ public class ChangedFile {
 	private DiffEntry diffEntry;
 	@JsonIgnore
 	private EditList editList;
-	@JsonIgnore
-	private File file;
 	@JsonIgnore
 	private String treeWalkPath;
 
@@ -63,15 +62,11 @@ public class ChangedFile {
 	@JsonIgnore
 	private CompilationUnit compilationUnit;
 
-	public ChangedFile() {
+	public ChangedFile(File file, String uri) {
+		super(file.getPath());
 		this.packageDistance = 0;
 		this.setCorrect(true);
 		this.treeWalkPath = "";
-	}
-
-	public ChangedFile(File file, String uri) {
-		this();
-		this.file = file;
 		this.methodDeclarations = parseMethods();
 		this.repoUri = uri;
 	}
@@ -103,9 +98,10 @@ public class ChangedFile {
 	/**
 	 * @return name of the file as a String.
 	 */
+	@Override
 	@JsonProperty("className")
 	public String getName() {
-		return this.file.getName();
+		return super.getName();
 	}
 
 	/**
@@ -166,19 +162,11 @@ public class ChangedFile {
 	}
 
 	private MethodVisitor getMethodVisitor() {
-		ParseResult<CompilationUnit> parseResult = JavaCodeCommentParser.parseJavaFile(file);
+		ParseResult<CompilationUnit> parseResult = JavaCodeCommentParser.parseJavaFile(this);
 		this.compilationUnit = parseResult.getResult().get();
 		MethodVisitor methodVistor = new MethodVisitor();
 		compilationUnit.accept(methodVistor, null);
 		return methodVistor;
-	}
-
-	/**
-	 * @return {@link File}, an abstract representation of a file and is also a
-	 *         directory path-name.
-	 */
-	public File getFile() {
-		return file;
 	}
 
 	/**
@@ -200,19 +188,10 @@ public class ChangedFile {
 	}
 
 	/**
-	 * @return true if the file exists in currently checked out version of the git
-	 *         repository. False means that the file could have been deleted or that
-	 *         its name has been changed or it has been moved.
-	 */
-	public boolean exists() {
-		return file.exists();
-	}
-
-	/**
 	 * @return true if the file is a Java class.
 	 */
 	public boolean isJavaClass() {
-		return file.getName().endsWith("java");
+		return getName().endsWith("java");
 	}
 
 	public boolean isCorrect() {
@@ -269,6 +248,10 @@ public class ChangedFile {
 	}
 
 	/**
+	 * @issue How can we get a path String that can be understood by git.blame()
+	 *        method?
+	 * @decision Save treeWalk path for now!
+	 * 
 	 * @return relative path starting from "src" folder. Is needed for git blame
 	 *         call.
 	 */

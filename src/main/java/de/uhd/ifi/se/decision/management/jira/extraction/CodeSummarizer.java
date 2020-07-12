@@ -126,7 +126,7 @@ public class CodeSummarizer {
 		String rows = "";
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			if (changedFile.getProbabilityOfCorrectness() >= this.minProbabilityOfCorrectness) {
-				rows += this.addRow(this.addTableItem(FilenameUtils.removeExtension(changedFile.getFile().getName()),
+				rows += this.addRow(this.addTableItem(FilenameUtils.removeExtension(changedFile.getName()),
 						this.summarizeMethods(changedFile),
 						String.format("%.2f", changedFile.getProbabilityOfCorrectness())));
 			}
