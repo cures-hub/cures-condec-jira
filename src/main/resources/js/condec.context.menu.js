@@ -239,17 +239,11 @@
 		} else if (documentationLocation === "s" && container === "tbldecisionTable") {
 			document.getElementById("condec-context-menu-link-item").style.display = "none";
 			document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
-			document.getElementById("second-context-section").style.display = "none";
 			document.getElementById("third-context-section").style.display = "none";
 			document.getElementById("condec-context-menu-export").style.display = "none";
 			document.getElementById("condec-context-menu-assign-decision-group-item").style.display = "none";
 			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "none";
 			document.getElementById("condec-context-menu-set-root-item").style.display = "none";
-			// document.getElementById("condec-context-menu-create-item").style.display = "initial";
-			// document.getElementById("condec-context-menu-edit-item").style.display = "initial";
-			// 
-			// 
-			// document.getElementById("fourth-context-section").style.display = "block";
 		} else {
 			document.getElementById("condec-context-menu-create-item").style.display = "initial";
 			document.getElementById("condec-context-menu-edit-item").style.display = "initial";
