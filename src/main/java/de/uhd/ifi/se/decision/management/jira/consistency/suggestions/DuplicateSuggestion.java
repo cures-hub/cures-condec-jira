@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.consistency.suggestions;
 
 import com.atlassian.jira.issue.Issue;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 public class DuplicateSuggestion implements Suggestion<Issue> {
@@ -24,6 +25,10 @@ public class DuplicateSuggestion implements Suggestion<Issue> {
 		this.length = length;
 		this.field = field;
 		this.preprocessedSummary = preprocessedSummary;
+	}
+
+	public DuplicateSuggestion(KnowledgeElement i1, KnowledgeElement i2, String preprocessedSummary, int startDuplicate, int length, String field) {
+		this(i1.getJiraIssue(), i2.getJiraIssue(), preprocessedSummary, startDuplicate, length, field);
 	}
 
 

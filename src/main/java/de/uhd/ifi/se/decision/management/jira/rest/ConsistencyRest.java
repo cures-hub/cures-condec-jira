@@ -5,10 +5,11 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.ContextInformation;
-import de.uhd.ifi.se.decision.management.jira.consistency.duplicatedetection.DuplicateDetectionManager;
-import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.consistency.duplicatedetection.BasicDuplicateTextDetector;
+import de.uhd.ifi.se.decision.management.jira.consistency.duplicatedetection.DuplicateDetectionManager;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateSuggestion;
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
@@ -27,6 +28,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * REST resource for consistency functionality.
@@ -74,9 +76,9 @@ public class ConsistencyRest {
 
 	private Map<String, Object> suggestionToJsonMap(LinkSuggestion linkSuggestion) {
 		Map<String, Object> jsonMap = new HashMap<>();
-		jsonMap.put("key", linkSuggestion.getTargetIssue().getKey());
-		jsonMap.put("summary", linkSuggestion.getTargetIssue().getSummary());
-		jsonMap.put("id", linkSuggestion.getTargetIssue().getId());
+		jsonMap.put("key", linkSuggestion.getTargetElement().getKey());
+		jsonMap.put("summary", linkSuggestion.getTargetElement().getSummary());
+		jsonMap.put("id", linkSuggestion.getTargetElement().getId());
 		jsonMap.put("score", linkSuggestion.getTotalScore());
 		jsonMap.put("results", linkSuggestion.getScore());
 
@@ -109,7 +111,7 @@ public class ConsistencyRest {
 					issuesToCheck.add(ComponentAccessor.getIssueManager().getIssueObject(issueId));
 				}
 				// detect duplicates
-				List<DuplicateSuggestion> foundDuplicateSuggestions = manager.findAllDuplicates(issuesToCheck);
+				List<DuplicateSuggestion> foundDuplicateSuggestions = manager.findAllDuplicates(issuesToCheck.stream().map(KnowledgeElement::new).collect(Collectors.toList()));
 
 				// convert to Json
 				List<Map<String, Object>> jsonifiedIssues = new ArrayList<>();

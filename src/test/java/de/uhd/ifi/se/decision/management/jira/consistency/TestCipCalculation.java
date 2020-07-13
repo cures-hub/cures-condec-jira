@@ -12,10 +12,11 @@ import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.Tra
 import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.UserCIP;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -30,12 +31,15 @@ import static org.junit.Assert.assertNull;
 public class TestCipCalculation extends TestSetUp {
 
 	private static List<MutableIssue> testIssues;
+	private Project project;
 
-	@BeforeClass
-	public static void setUp() {
+	@Before
+	public void setUp() {
 		TestSetUp.init();
 		Project project = JiraProjects.getTestProject();
 		TestCipCalculation.testIssues = JiraIssues.createJiraIssues(project);
+		this.project = JiraProjects.getTestProject();
+
 	}
 
 	@Test
@@ -49,8 +53,8 @@ public class TestCipCalculation extends TestSetUp {
 				.sorted((LinkSuggestion::compareTo))
 				.collect(Collectors.toList());
 			LinkSuggestion identicalIssueSuggestion = sortedLinkSuggestions.get(sortedLinkSuggestions.size() - 1);
-			assertEquals("The baseIssue should be the most similar to itself.", baseIssue.getKey(),
-				identicalIssueSuggestion.getTargetIssue().getKey());
+			assertEquals("The baseIssue should be the most similar to Issue TEST-14. Not to itself as it is filtered out!.", "TEST-14",
+				identicalIssueSuggestion.getTargetElement().getJiraIssue().getKey());
 			assertNotNull(identicalIssueSuggestion.getScore().getScores());
 
 			assertEquals("The baseIssue should be set correctly.", baseIssue.getKey(),
@@ -68,44 +72,47 @@ public class TestCipCalculation extends TestSetUp {
 		ContextInformationProvider userCIP = new UserCIP();
 		assertEquals("UserCIP_equalCreatorOrEqualAssignee", userCIP.getId());
 
-		MockIssue i1 = new MockIssue(999, "TST-999");
+		MockIssue i1 = (MockIssue) JiraIssues.createJiraIssues(project).get(0);
+		KnowledgeElement e1 = new KnowledgeElement(i1);
 		i1.setCreatorId(JiraUsers.SYS_ADMIN.createApplicationUser().getKey());
 		i1.setAssignee(new MockApplicationUser("TESTUSER"));
 
-		MockIssue i2 = new MockIssue(9999, "TST-9999");
+		MockIssue i2 = (MockIssue) JiraIssues.createJiraIssues(project).get(1);
 		i2.setCreatorId(JiraUsers.SYS_ADMIN.createApplicationUser().getKey());
 		i2.setAssignee(new MockApplicationUser("TESTUSER"));
-		List<Issue> testIssueList = Collections.singletonList(i2);
-		userCIP.assessRelation(i1, testIssueList);
-		assertEquals(2., userCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0);
+		List<KnowledgeElement> testIssueList = Collections.singletonList(new KnowledgeElement(i2));
+		userCIP.assessRelation(e1, testIssueList);
+		assertEquals(1., userCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0);
 		userCIP = new UserCIP();
 
 		i2.setAssignee(new MockApplicationUser("NOT_TESTUSER"));
-		userCIP.assessRelation(i1, testIssueList);
+		userCIP.assessRelation(e1, testIssueList);
 		assertEquals(1., userCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0);
 		userCIP = new UserCIP();
 
 		i2.setAssignee(new MockApplicationUser("TESTUSER"));
 		i2.setCreatorId(JiraUsers.BLACK_HEAD.createApplicationUser().getKey());
-		userCIP.assessRelation(i1, testIssueList);
+		userCIP.assessRelation(e1, testIssueList);
 		assertEquals(1., userCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0);
 		userCIP = new UserCIP();
 
 		i2.setAssignee(new MockApplicationUser("NOT_TESTUSER"));
-		userCIP.assessRelation(i1, testIssueList);
-		assertEquals(0., userCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0);
+		userCIP.assessRelation(e1, testIssueList);
+		assertEquals(1., userCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0);
 		userCIP = new UserCIP();
 
 		i2.setAssignee(null);
 		i2.setCreatorId(null);
-		userCIP.assessRelation(i1, testIssueList);
-		assertEquals(0., userCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0);
+		i2.setReporter(null);
+		testIssueList = Collections.singletonList(new KnowledgeElement(i2));
+		userCIP.assessRelation(e1, testIssueList);
+		assertEquals(1., userCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0);
 		userCIP = new UserCIP();
 
 		i1.setAssignee(null);
 		i1.setCreatorId(null);
-		userCIP.assessRelation(i1, testIssueList);
-		assertEquals(0., userCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal()
+		userCIP.assessRelation(e1, testIssueList);
+		assertEquals(1., userCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal()
 			, 0);
 
 	}
@@ -121,14 +128,16 @@ public class TestCipCalculation extends TestSetUp {
 		Issue i1 = testIssues.get(1);
 		Issue i2 = testIssues.get(2);
 
-		List<Issue> testIssueList = Collections.singletonList(i1);
-		tracingCIP.assessRelation(i0, testIssueList);
+		KnowledgeElement e0 = new KnowledgeElement(i0);
+
+		List<KnowledgeElement> testIssueList = Collections.singletonList(new KnowledgeElement(i1));
+		tracingCIP.assessRelation(e0, testIssueList);
 		assertEquals(0.5, tracingCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0);
 		//Score is 1/3
 		tracingCIP = new TracingCIP(MockComponentAccessor.getIssueLinkManager());
 
-		testIssueList = Collections.singletonList(i2);
-		tracingCIP.assessRelation(i0, testIssueList);
+		testIssueList = Collections.singletonList(new KnowledgeElement(i2));
+		tracingCIP.assessRelation(e0, testIssueList);
 		assertEquals(0.33, tracingCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0.01);
 
 
@@ -136,12 +145,19 @@ public class TestCipCalculation extends TestSetUp {
 
 	@Test
 	public void testLinkSuggestion() {
-		LinkSuggestion linkSuggestion1 = new LinkSuggestion(testIssues.get(0), testIssues.get(1));
+		LinkSuggestion linkSuggestion1 = new LinkSuggestion(
+			new KnowledgeElement(testIssues.get(0)),
+			new KnowledgeElement(testIssues.get(1))
+		);
+
 		linkSuggestion1.addToScore(0.5, "test");
 		assertEquals(-1, linkSuggestion1.compareTo(null));
 
 
-		LinkSuggestion linkSuggestion2 = new LinkSuggestion(testIssues.get(0), testIssues.get(1));
+		LinkSuggestion linkSuggestion2 = new LinkSuggestion(
+			new KnowledgeElement(testIssues.get(0)),
+			new KnowledgeElement(testIssues.get(1))
+		);
 		linkSuggestion2.addToScore(0.5, "test");
 		assertEquals(-1, linkSuggestion1.compareTo(linkSuggestion2));
 

@@ -5,6 +5,7 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,13 +44,13 @@ public class TracingCIP implements ContextInformationProvider {
 
 
 	@Override
-	public void assessRelation(Issue baseIssue, List<Issue> issuesToTest) {
-		for (Issue issueToTest : issuesToTest) {
-			LinkSuggestion linkSuggestion = new LinkSuggestion(baseIssue, issueToTest);
+	public void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
+		for (KnowledgeElement issueToTest : knowledgeElements) {
+			LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, issueToTest);
 
 			Map<String, Integer> distanceMap = new HashMap<String, Integer>();
-			distanceMap.put(baseIssue.getKey(), 0);
-			Integer distance = searchBreadthFirst(baseIssue, issueToTest, distanceMap).get(issueToTest.getKey());
+			distanceMap.put(baseElement.getKey(), 0);
+			Integer distance = searchBreadthFirst(baseElement, issueToTest, distanceMap).get(issueToTest.getKey());
 			// A null value means the nodes are not connected.
 			Double value = 0.;
 			if (distance != null) {
@@ -67,10 +68,10 @@ public class TracingCIP implements ContextInformationProvider {
 		return distanceMap.keySet().contains(node);
 	}
 
-	private Map<String, Integer> searchBreadthFirst(Issue startNode, Issue endNode, Map<String, Integer> distanceMap) {
-		Set<Issue> currentNodesToCheck = new HashSet<>();
+	private Map<String, Integer> searchBreadthFirst(KnowledgeElement startNode, KnowledgeElement endNode, Map<String, Integer> distanceMap) {
+		Set<KnowledgeElement> currentNodesToCheck = new HashSet<>();
 		currentNodesToCheck.add(startNode);
-		Set<Issue> nextNodesToCheck = new HashSet<>();
+		Set<KnowledgeElement> nextNodesToCheck = new HashSet<>();
 
 		int maxIterations = 7;
 		int iteration = 1;
@@ -82,13 +83,13 @@ public class TracingCIP implements ContextInformationProvider {
 		while (!currentNodesToCheck.isEmpty() &&
 			!wasVisited(endNode.getKey(), distanceMap) &&
 			iteration < maxIterations) {
-			for (Issue nodeToCheck : currentNodesToCheck) {
-				Collection<IssueLink> issueLinks = this.issueLinkManager.getIssueLinks(nodeToCheck.getId().longValue());
+			for (KnowledgeElement nodeToCheck : currentNodesToCheck) {
+				Collection<IssueLink> issueLinks = this.issueLinkManager.getIssueLinks(nodeToCheck.getId());
 
 				Collection<Issue> linkedIssues = getAllIssuesForIssueLinks(issueLinks);
 				for (Issue linkedIssue : linkedIssues) {
 					if (!wasVisited(linkedIssue.getKey(), distanceMap) && !nextNodesToCheck.contains(linkedIssue)) {
-						nextNodesToCheck.add(linkedIssue);
+						nextNodesToCheck.add(new KnowledgeElement(linkedIssue));
 						distanceMap.put(linkedIssue.getKey(), iteration);
 					}
 				}

@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
 import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,12 +37,12 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 	}
 
 	@Override
-	public void assessRelation(Issue baseIssue, List<Issue> issuesToTest) {
-		for (Issue issueToTest : issuesToTest){
-			LinkSuggestion linkSuggestion = new LinkSuggestion(baseIssue, issueToTest);
+	public void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
+		for (KnowledgeElement issueToTest : knowledgeElements){
+			LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, issueToTest);
 
 			try {
-				pp.preprocess(baseIssue.getDescription().toLowerCase());
+				pp.preprocess(baseElement.getDescription().toLowerCase());
 				List<CharSequence> stemmedI1Description = pp.getTokens();
 
 				pp.preprocess(issueToTest.getDescription().toLowerCase());

@@ -4,6 +4,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.LinkCollection;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import org.ofbiz.core.entity.GenericEntityException;
@@ -18,13 +19,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ContextInformation implements ContextInformationProvider {
-	private Issue issue;
+	private KnowledgeElement element;
 	private List<ContextInformationProvider> cips;
 	private Map<String,LinkSuggestion> linkSuggestions;
 
 
-	public ContextInformation(Issue issue) {
-		this.issue = issue;
+	public ContextInformation(Issue element) {
+		this(new KnowledgeElement(element));
+	}
+
+	public ContextInformation(KnowledgeElement element) {
+		this.element = element;
 		// Add context information providers
 		this.cips = new ArrayList<>();
 		this.cips.add(new TextualSimilarityCIP());
@@ -34,45 +39,52 @@ public class ContextInformation implements ContextInformationProvider {
 
 	}
 
+
 	public ContextInformation(String issueKey) {
 		this(ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey));
 	}
 
-	public Collection<Issue> getLinkedIssues() {
-		Collection<Issue> linkedIssues = new ArrayList<>();
-		LinkCollection linkCollection = ComponentAccessor.getIssueLinkManager().getLinkCollectionOverrideSecurity(this.issue);
+	public Collection<KnowledgeElement> getLinkedIssues() {
+		Collection<KnowledgeElement> linkedKnowledgeElements = new ArrayList<>();
+		LinkCollection linkCollection = ComponentAccessor.getIssueLinkManager().getLinkCollectionOverrideSecurity(this.element.getJiraIssue());
 		if (linkCollection != null) {
-			linkedIssues = linkCollection.getAllIssues();
+			for (Issue i : linkCollection.getAllIssues()){
+				linkedKnowledgeElements.add(new KnowledgeElement(i));
+			}
 		}
-		return linkedIssues;
+		return linkedKnowledgeElements;
 	}
 
-	public Collection<Issue> getDiscardedSuggestionIssues() {
-		return ConsistencyPersistenceHelper.getDiscardedSuggestions(this.issue);
+	public Collection<KnowledgeElement> getDiscardedSuggestionIssues() {
+		return ConsistencyPersistenceHelper
+			.getDiscardedSuggestions(this.element.getJiraIssue())
+			.stream()
+			.map(KnowledgeElement::new)
+			.collect(Collectors.toList());
 	}
 
 	public Collection<LinkSuggestion> getLinkSuggestions()  {
 		//Add all issues of project to projectIssues set
-		Set<Issue> projectIssues = null;
+		Set<KnowledgeElement> projectIssues = null;
 		try {
-			projectIssues = new HashSet<>(this.getAllIssuesForProject(this.issue.getProjectId()));
+			projectIssues = new HashSet<>(this.getAllIssuesForProject(this.element.getJiraIssue().getProjectId()));
 		} catch (GenericEntityException e) {
 			e.printStackTrace();
 		}
 
-		this.assessRelation(issue, new ArrayList<>(projectIssues));
+		this.assessRelation(element, new ArrayList<>(projectIssues));
 		//calculate context score
 
 		//get filtered issues
-		Set<Issue> filteredIssues = this.filterIssues(projectIssues);
+		Set<KnowledgeElement> filteredIssues = this.filterIssues(projectIssues);
 
 		//retain scores of filtered issues
 		return this.linkSuggestions.values()
 			.stream()
 			// issue was not filtered out
-			.filter(linkSuggestion -> filteredIssues.contains(linkSuggestion.getTargetIssue()))
+			.filter(linkSuggestion -> filteredIssues.contains(linkSuggestion.getTargetElement()))
 			// the probability is higher or equal to the minimum probability set by the admin for the project
-			.filter(linkSuggestion -> linkSuggestion.getTotalScore() >= ConfigPersistenceManager.getMinLinkSuggestionScore(this.issue.getProjectObject().getKey()))
+			.filter(linkSuggestion -> linkSuggestion.getTotalScore() >= ConfigPersistenceManager.getMinLinkSuggestionScore(this.element.getProject().getProjectKey()))
 			.collect(Collectors.toCollection(ArrayList::new));
 	}
 
@@ -80,12 +92,12 @@ public class ContextInformation implements ContextInformationProvider {
 		return this.linkSuggestions.values();
 	}
 
-	private Set<Issue> filterIssues(Set<Issue> projectIssues) {
+	private Set<KnowledgeElement> filterIssues(Set<KnowledgeElement> projectIssues) {
 		//Create union of all issues to be filtered out.
-		Set<Issue> filteredIssues = new HashSet<>(projectIssues);
-		Set<Issue> filterOutIssues = new HashSet<>(this.getLinkedIssues());
+		Set<KnowledgeElement> filteredIssues = new HashSet<>(projectIssues);
+		Set<KnowledgeElement> filterOutIssues = new HashSet<>(this.getLinkedIssues());
 		filterOutIssues.addAll(this.getDiscardedSuggestionIssues());
-		filterOutIssues.add(this.issue);
+		filterOutIssues.add(this.element);
 
 		//Calculate difference between all issues of project and the issues that need to be filtered out.
 		filteredIssues.removeAll(filterOutIssues);
@@ -94,15 +106,15 @@ public class ContextInformation implements ContextInformationProvider {
 	}
 
 	@Override
-	public void assessRelation(Issue baseIssue, List<Issue> issuesToTest) {
+	public void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
 		// init the link suggestions
 		this.linkSuggestions = new HashMap<>();
-		for (Issue otherIssue : issuesToTest) {
-			linkSuggestions.put(otherIssue.getKey(), new LinkSuggestion(this.issue, otherIssue));
+		for (KnowledgeElement otherIssue : knowledgeElements) {
+			linkSuggestions.put(otherIssue.getKey(), new LinkSuggestion(this.element, otherIssue));
 		}
 
 		this.cips.forEach((cip) -> {
-			cip.assessRelation(this.issue, new ArrayList<>(issuesToTest));;
+			cip.assessRelation(this.element, new ArrayList<>(knowledgeElements));;
 
 			Double maxOfIndividualScoresForCurrentCip = cip.getLinkSuggestions()
 				.stream()
@@ -117,19 +129,19 @@ public class ContextInformation implements ContextInformationProvider {
 			// Divide each score by the max value to scale it to [0,1]
 			cip.getLinkSuggestions()
 				.forEach(score -> {
-					LinkSuggestion linkSuggestion = this.linkSuggestions.get(score.getTargetIssue().getKey());
+					LinkSuggestion linkSuggestion = this.linkSuggestions.get(score.getTargetElement().getKey());
 					linkSuggestion.addToScore(score.getTotalScore() / finalMaxOfIndividualScoresForCurrentCip, cip.getName());//sumOfIndividualScoresForCurrentCip);
 				});
 
 		});
 	}
 
-	public Collection<Issue> getAllIssuesForProject(Long projectId) throws GenericEntityException {
-		Collection<Issue> issuesOfProject = new ArrayList<>();
+	public Collection<KnowledgeElement> getAllIssuesForProject(Long projectId) throws GenericEntityException {
+		Collection<KnowledgeElement> issuesOfProject = new ArrayList<>();
 		Collection<Long> issueIds = ComponentAccessor.getIssueManager().getIssueIdsForProject(projectId);
 
 		for (Long issueId : issueIds) {
-			issuesOfProject.add(ComponentAccessor.getIssueManager().getIssueObject(issueId));
+			issuesOfProject.add(new KnowledgeElement(ComponentAccessor.getIssueManager().getIssueObject(issueId)));
 		}
 		return issuesOfProject;
 	}

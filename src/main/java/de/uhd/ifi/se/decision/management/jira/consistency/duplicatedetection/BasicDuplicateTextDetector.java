@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.consistency.duplicatedetection;
 
-import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateSuggestion;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +26,9 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 	}
 
 	@Override
-	public List<DuplicateSuggestion> detectDuplicateTextFragments(Issue i1, Issue i2) throws Exception {
-		String s1 = i1.getDescription();
-		String s2 = i2.getDescription();
+	public List<DuplicateSuggestion> detectDuplicateTextFragments(KnowledgeElement baseElement, KnowledgeElement compareElement) throws Exception {
+		String s1 = baseElement.getDescription();
+		String s2 = compareElement.getDescription();
 		List<DuplicateSuggestion> duplicateList = new ArrayList();
 		if (s1 != null && s2 != null) {
 			s1 = cleanMarkdown(s1);
@@ -65,7 +65,7 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 					numberOfDuplicateTokens++;
 				}
 				if (duplicateFound) {
-					duplicateList.add(new DuplicateSuggestion(i1, i2, s2, lastIndexOfDuplicate, lastStringToSearch.length(), BasicDuplicateTextDetector.fieldUsedForDetection));
+					duplicateList.add(new DuplicateSuggestion(baseElement, compareElement, s2, lastIndexOfDuplicate, lastStringToSearch.length(), BasicDuplicateTextDetector.fieldUsedForDetection));
 					index += numberOfDuplicateTokens - 2; // number of duplicate tokens is one more than found tokens
 				}
 

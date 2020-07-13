@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
 
-import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 import java.util.Collection;
 import java.util.List;
@@ -38,10 +38,10 @@ public interface ContextInformationProvider {
 	 * Calculates the relationship between the issues i1 and i2. Higher values indicate a higher similarity.
 	 * The value is called Context Relationship Indicator in the paper.
 	 *
-	 * @param baseIssue
-	 * @param issuesToTest
+	 * @param baseElement
+	 * @param knowledgeElements
 	 * @return value of relationship in [0, inf]
 	 */
-	void assessRelation(Issue baseIssue, List<Issue> issuesToTest);
+	void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements);
 
 }
