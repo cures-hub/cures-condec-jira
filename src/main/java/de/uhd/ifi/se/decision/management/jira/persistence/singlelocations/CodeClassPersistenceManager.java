@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.lib.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -281,9 +280,11 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return true;
 	}
 
-	// TODO Refactor, decrease complexity
-	public void maintainCodeClassKnowledgeElements(String repoUri, ObjectId oldHead, ObjectId newHead) {
+	public void maintainCodeClassKnowledgeElements(Diff diff) {
 		// System.out.println("maintainCodeClassKnowledgeElements");
+		if (diff == null || diff.getChangedFiles().isEmpty()) {
+			return;
+		}
 		List<KnowledgeElement> existingElements = getKnowledgeElements();
 		if (existingElements == null || existingElements.isEmpty()) {
 			extractAllCodeClasses(null);
@@ -291,29 +292,33 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		}
 		GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
 		GitClient gitClient = GitClient.getOrCreate(projectKey);
-		Diff diff = gitClient.getDiff(repoUri, oldHead, newHead);
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			DiffEntry diffEntry = changedFile.getDiffEntry();
-			// work with switch case
-			if (diffEntry.getChangeType() == DiffEntry.ChangeType.DELETE && diffEntry.getOldPath().contains(".java")) {
-				diffDelete(null, ccExtractor, changedFile);
-				break;
-			}
-			if (!diffEntry.getNewPath().contains(".java")) {
-				break;
-			}
-			if (diffEntry.getChangeType() == DiffEntry.ChangeType.RENAME
-					|| diffEntry.getChangeType() == DiffEntry.ChangeType.MODIFY) {
-				diffModify(null, ccExtractor, changedFile, getKnowledgeElementByNameAndIssueKeys(changedFile.getName(),
-						getIssueListAsString(ccExtractor.getJiraIssueKeysForFile(changedFile))));
-				break;
-			}
-			if (diffEntry.getChangeType() == DiffEntry.ChangeType.ADD) {
-				diffAdd(null, ccExtractor, changedFile);
-			}
+			updateCodeClassInDatabase(ccExtractor, changedFile);
 		}
 		gitClient.closeAll();
 		ccExtractor.close();
+	}
+
+	private void updateCodeClassInDatabase(GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
+		if (!changedFile.isJavaClass()) {
+			return;
+		}
+		DiffEntry diffEntry = changedFile.getDiffEntry();
+		switch (diffEntry.getChangeType()) {
+		case ADD:
+			diffAdd(null, ccExtractor, changedFile);
+			break;
+		case DELETE:
+			diffDelete(null, ccExtractor, changedFile);
+			break;
+		case MODIFY:
+			diffModify(null, ccExtractor, changedFile);
+		case RENAME:
+			// same as modify, thus, no break after modify to fall through
+			break;
+		default:
+			break;
+		}
 	}
 
 	private void diffAdd(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
@@ -321,8 +326,9 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		insertKnowledgeElement(changedFile, jiraIssueKeys, user);
 	}
 
-	private void diffModify(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile,
-			KnowledgeElement element) {
+	private void diffModify(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
+		KnowledgeElement element = getKnowledgeElementByNameAndIssueKeys(changedFile.getName(),
+				getIssueListAsString(ccExtractor.getJiraIssueKeysForFile(changedFile)));
 		deleteKnowledgeElement(element, user);
 		diffAdd(user, ccExtractor, changedFile);
 	}

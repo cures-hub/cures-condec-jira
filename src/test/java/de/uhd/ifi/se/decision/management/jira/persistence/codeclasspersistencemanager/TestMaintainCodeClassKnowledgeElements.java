@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -28,7 +27,7 @@ public class TestMaintainCodeClassKnowledgeElements extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testMaintainCodeClassKnowledgeElementsWithoutClasses() {
-		codeClassPersistenceManager.maintainCodeClassKnowledgeElements(TestSetUpGit.GIT_URI, null, null);
+		codeClassPersistenceManager.maintainCodeClassKnowledgeElements(null);
 		assertEquals(0, codeClassPersistenceManager.getKnowledgeElements().size());
 	}
 
@@ -37,7 +36,7 @@ public class TestMaintainCodeClassKnowledgeElements extends TestSetUp {
 	public void testMaintainCodeClassKnowledgeElementsWithClasses() {
 		KnowledgeElement classElement = TestInsertKnowledgeElement.createTestCodeClass();
 		codeClassPersistenceManager.insertKnowledgeElement(classElement, JiraUsers.SYS_ADMIN.getApplicationUser());
-		codeClassPersistenceManager.maintainCodeClassKnowledgeElements(TestSetUpGit.GIT_URI, null, null);
+		codeClassPersistenceManager.maintainCodeClassKnowledgeElements(null);
 		assertEquals(0, codeClassPersistenceManager.getKnowledgeElements().size());
 	}
 

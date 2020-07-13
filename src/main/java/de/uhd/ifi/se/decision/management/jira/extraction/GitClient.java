@@ -232,9 +232,10 @@ public class GitClient {
 			}
 			gits.get(repoUri).pull().call();
 
-			ObjectId head = getRepository(repoUri).resolve("HEAD^{tree}");
+			ObjectId newHead = getRepository(repoUri).resolve("HEAD^{tree}");
+			Diff diffSinceLastPull = getDiff(repoUri, oldHead, newHead);
 			CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
-			persistenceManager.maintainCodeClassKnowledgeElements(repoUri, oldHead, head);
+			persistenceManager.maintainCodeClassKnowledgeElements(diffSinceLastPull);
 		} catch (GitAPIException | IOException e) {
 			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t " + e.getMessage());
 			return false;
