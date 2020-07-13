@@ -220,26 +220,36 @@
 		if (source.toLowerCase().includes("unknown")) {
 			const sourceAlternative = getElementObj(source);
 			const targetInformation = getElementObj(target)
-			let targetAlternative = targetInformation[0];
-			let criteria = targetInformation[1];
+			const targetAlternative = targetInformation[0];
+			const criteria = targetInformation[1];
 			const argument = decisionTableData["alternatives"][sourceAlternative.id].find(argument => argument.id == elemId);
 			createLink(argument, criteria);
 			// moved arg. from criteria column to unknown column
 		} else if (target.toLowerCase().includes("unknown")) {
 			const sourceInformation = getElementObj(source);
-			let sourceAlternative = sourceInformation[0];
-			let criteria = sourceInformation[1];
+			const sourceAlternative = sourceInformation[0];
+			const criteria = sourceInformation[1];
 			const argument = decisionTableData["alternatives"][sourceAlternative.id].find(argument => argument.id == elemId);
+			if (sourceAlternative.id !== targetAlternative.id) {
+				console.log("will delete link between: " + sourceAlternative.summary + " and " + targetAlternative.summary);
+				deleteLink(sourceAlternative, argument);
+				createLink(targetAlternative, argument);
+			}
 			deleteLink(argument, criteria);
 			// moved arg. from one criteria column to another criteria column
 		} else {
 			const sourceInformation = getElementObj(source);
 			const targetInformation = getElementObj(target);
-			let sourceAlternative = sourceInformation[0];
-			let sourceCriteria = sourceInformation[1];
-			let targetAlternative = targetInformation[0];
-			let targetCriteria = targetInformation[1];
+			const sourceAlternative = sourceInformation[0];
+			const sourceCriteria = sourceInformation[1];
+			const targetAlternative = targetInformation[0];
+			const targetCriteria = targetInformation[1];
 			const argument = decisionTableData["alternatives"][sourceAlternative.id].find(argument => argument.id == elemId);
+			if (sourceAlternative.id !== targetAlternative.id) {
+				deleteLink(sourceAlternative, argument);
+				createLink(targetAlternative, argument);
+			}
+			console.log(sourceAlternative, targetAlternative);
 			deleteLink(argument, sourceCriteria);
 			createLink(argument, targetCriteria);
 		}
@@ -258,13 +268,13 @@
 	}
 
 	function createLink(parentObj, childObj) {
-		console.log(parentObj, childObj);
 		conDecAPI.createLink(null, parentObj.id, childObj.id, parentObj.documentationLocation, childObj.documentationLocation, null, function (data) {
 			console.log(data);
 		});
 	}
 
 	function deleteLink(parentObj, childObj) {
+		console.log(parentObj, childObj);
 		conDecAPI.deleteLink(childObj.id, parentObj.id, childObj.documentationLocation, parentObj.documentationLocation, function (data) {
 			console.log(data);
 		});
