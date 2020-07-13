@@ -49,7 +49,7 @@ public class JavaCodeCommentParser implements CodeCommentParser {
 	}
 
 	private List<CodeComment> getComments(CompilationUnit compilationUnit) {
-		List<Comment> comments = compilationUnit.getComments();
+		List<Comment> comments = compilationUnit.getAllComments();
 		List<CodeComment> positionedComments = comments.stream()
 				.filter(comment -> (comment.getBegin().isPresent() && comment.getEnd().isPresent())).map(comment -> {
 					Position begin = comment.getBegin().get();

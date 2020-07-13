@@ -101,7 +101,7 @@ public class ComponentGetter {
 		if (gitClients.containsKey(projectKey)) {
 			return gitClients.get(projectKey);
 		}
-		GitClient gitClient = new GitClient(projectKey);
+		GitClient gitClient = GitClient.getOrCreate(projectKey);
 		gitClients.put(projectKey, gitClient);
 		return gitClient;
 	}

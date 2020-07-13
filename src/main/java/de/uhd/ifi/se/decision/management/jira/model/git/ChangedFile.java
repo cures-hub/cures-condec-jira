@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.model.git;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -26,16 +28,23 @@ import de.uhd.ifi.se.decision.management.jira.extraction.parser.MethodVisitor;
 /**
  * Models a changed file as part of a {@link Diff}.
  */
-public class ChangedFile {
+public class ChangedFile extends File {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChangedFile.class);
+	private static final long serialVersionUID = 1L;
 
+	/**
+	 * @issue Can we use the repository object instead of a simple String to codify
+	 *        URI?
+	 */
+	@JsonIgnore
+	private String repoUri;
 	@JsonIgnore
 	private DiffEntry diffEntry;
 	@JsonIgnore
 	private EditList editList;
 	@JsonIgnore
-	private File file;
+	private String treeWalkPath;
 
 	private Set<String> methodDeclarations;
 	private float probabilityOfCorrectness;
@@ -57,15 +66,16 @@ public class ChangedFile {
 	@JsonIgnore
 	private CompilationUnit compilationUnit;
 
-	public ChangedFile() {
+	public ChangedFile(File file, String uri) {
+		super(file.getPath());
 		this.packageDistance = 0;
 		this.setCorrect(true);
+		this.methodDeclarations = parseMethods();
+		this.repoUri = uri;
 	}
 
 	public ChangedFile(File file) {
-		this();
-		this.file = file;
-		this.methodDeclarations = parseMethods();
+		this(file, "");
 	}
 
 	public ChangedFile(DiffEntry diffEntry, EditList editList, String baseDirectory) {
@@ -91,9 +101,10 @@ public class ChangedFile {
 	/**
 	 * @return name of the file as a String.
 	 */
+	@Override
 	@JsonProperty("className")
 	public String getName() {
-		return this.file.getName();
+		return super.getName();
 	}
 
 	/**
@@ -154,19 +165,11 @@ public class ChangedFile {
 	}
 
 	private MethodVisitor getMethodVisitor() {
-		ParseResult<CompilationUnit> parseResult = JavaCodeCommentParser.parseJavaFile(file);
+		ParseResult<CompilationUnit> parseResult = JavaCodeCommentParser.parseJavaFile(this);
 		this.compilationUnit = parseResult.getResult().get();
 		MethodVisitor methodVistor = new MethodVisitor();
 		compilationUnit.accept(methodVistor, null);
 		return methodVistor;
-	}
-
-	/**
-	 * @return {@link File}, an abstract representation of a file and is also a
-	 *         directory path-name.
-	 */
-	public File getFile() {
-		return file;
 	}
 
 	/**
@@ -188,19 +191,10 @@ public class ChangedFile {
 	}
 
 	/**
-	 * @return true if the file exists in currently checked out version of the git
-	 *         repository. False means that the file could have been deleted or that
-	 *         its name has been changed or it has been moved.
-	 */
-	public boolean exists() {
-		return file.exists();
-	}
-
-	/**
 	 * @return true if the file is a Java class.
 	 */
 	public boolean isJavaClass() {
-		return file.getName().endsWith("java");
+		return getName().endsWith("java");
 	}
 
 	public boolean isCorrect() {
@@ -246,5 +240,40 @@ public class ChangedFile {
 			LOGGER.error(e.getMessage());
 		}
 		return packageDeclaration;
+	}
+
+	public String getRepoUri() {
+		return repoUri;
+	}
+
+	public void setRepoUri(String repoUri) {
+		this.repoUri = repoUri;
+	}
+
+	/**
+	 * @return name of the file before it was changed.
+	 */
+	public String getOldName() {
+		Path oldPath = Paths.get(getDiffEntry().getOldPath());
+		return oldPath.getFileName().toString();
+	}
+
+	/**
+	 * @issue How can we get a path String that can be understood by git.blame()
+	 *        method?
+	 * @decision Save treeWalk path for now!
+	 * 
+	 * @return relative path starting from "src" folder. Is needed for git blame
+	 *         call.
+	 */
+	public String getTreeWalkPath() {
+		if (treeWalkPath == null) {
+			return this.getAbsolutePath();
+		}
+		return treeWalkPath;
+	}
+
+	public void setTreeWalkPath(String treeWalkPath) {
+		this.treeWalkPath = treeWalkPath;
 	}
 }

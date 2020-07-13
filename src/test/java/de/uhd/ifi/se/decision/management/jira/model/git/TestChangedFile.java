@@ -31,7 +31,7 @@ public class TestChangedFile extends TestSetUpGit {
 
 	@Test
 	public void testGetFile() {
-		assertNotNull(changedFile.getFile());
+		assertNotNull(changedFile);
 		assertEquals("Tangled2.java", changedFile.getName());
 	}
 
@@ -77,6 +77,12 @@ public class TestChangedFile extends TestSetUpGit {
 	@Test
 	public void testGetEditList() {
 		assertEquals("EditList[INSERT(0-0,0-29)]", changedFile.getEditList().toString());
+	}
+
+	@Test
+	public void testGetOldName() {
+		// since change type is "ADD", the file did not exist before
+		assertEquals("null", changedFile.getOldName());
 	}
 
 }

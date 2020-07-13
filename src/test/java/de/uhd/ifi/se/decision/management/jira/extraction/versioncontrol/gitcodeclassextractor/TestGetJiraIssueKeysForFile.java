@@ -2,37 +2,35 @@ package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.gitcode
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestGetIssueKeysForFile extends TestSetUpGit {
+public class TestGetJiraIssueKeysForFile extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
 	public void testGetIssueKeysForFileNull() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
-		assertNull(extract.getIssuesKeysForFile(null));
+		assertTrue(extract.getJiraIssueKeysForFile((ChangedFile) null).isEmpty());
 	}
 
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testGetIssueKeysForFile() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
-
-		List<String> list = new ArrayList<>();
+		Set<String> list = new LinkedHashSet<>();
 		list.add("TEST-12");
 		assertFalse(extract.getGitClient().getRemoteUris().isEmpty());
-		assertFalse(extract.getCodeClassListFull().isEmpty());
-		assertEquals(list, extract.getIssuesKeysForFile(extract.getCodeClassListFull().get(0)));
+		assertFalse(extract.getCodeClasses().isEmpty());
+		assertEquals(list, extract.getJiraIssueKeysForFile(extract.getCodeClasses().get(0)));
 	}
 }
