@@ -37,9 +37,9 @@
 		header.innerHTML += "<th id=\"alternativeClmTitle\">" + alternativeClmTitle + "</th>";
 		table.innerHTML += "<tbody id=\"tblBody\">";
 
-		addAlternativesToDecisionTable(data["alternatives"], data["criteria"]);
 		addCriteriaToToDecisionTable(data["criteria"]);
-		addArgumentsToDecisionTable(data["alternatives"]);
+		addAlternativesToDecisionTable(data["alternatives"], data["criteria"]);
+		//addArgumentsToDecisionTable(data["alternatives"]);
 		addDragAndDropSupportForArguments();
 
 		addContextMenuToElements("argument");
@@ -58,17 +58,18 @@
 			let rowElement = document.getElementById(`bodyRowAlternatives`);
 			rowElement.innerHTML += `<td headers="${alternativeClmTitle}">Please add at least one alternative for this issue</td>`;
 		} else {
-			for (let key in alternatives) {
-				body.innerHTML += `<tr id="bodyRowAlternatives${alternatives[key][0].id}"></tr>`;
-				let rowElement = document.getElementById(`bodyRowAlternatives${alternatives[key][0].id}`);
+			for (let i in alternatives) {
+				body.innerHTML += `<tr id="bodyRowAlternatives${alternatives[i].id}"></tr>`;
+				let rowElement = document.getElementById(`bodyRowAlternatives${alternatives[i].id}`);
 				rowElement.innerHTML += `<td headers="${alternativeClmTitle}">
-					<div class="alternative" id="${alternatives[key][0].id}">${alternatives[key][0].summary}</div></td>`;
+					<div class="alternative" id="${alternatives[i].id}">${alternatives[i].summary}</div></td>`;
 				if (Object.keys(criteria).length > 0) {
-					for (key1 in criteria) {
-						rowElement.innerHTML += `<td id="cell${alternatives[key][0].id}:${criteria[key1][0].id}" headers="${criteria[key1][0].summary}" class="droppable"></td>`;
+					for (x in criteria) {
+						rowElement.innerHTML += `<td id="cell${alternatives[i].id}:${criteria[x].id}" headers="${criteria[x].summary}" class="droppable"></td>`;
 					}
 				}
-				rowElement.innerHTML += `<td id="cellUnknown${alternatives[key][0].id}" headers="criteriaClmTitleUnknown" class="droppable" style="display:none"></td>`;
+				rowElement.innerHTML += `<td id="cellUnknown${alternatives[i].id}" headers="criteriaClmTitleUnknown" class="droppable" style="display:none"></td>`;
+				addArgumentsToDecisionTable(alternatives[i]);
 			}
 		}
 	}
@@ -79,9 +80,9 @@
 	 */
 	function addCriteriaToToDecisionTable(data) {
 		if (Object.keys(data).length > 0) {
-			for (key1 in data) {
+			for (x in data) {
 				let header = document.getElementById("tblRow");
-				header.innerHTML += `<th id="criteriaClmTitle${data[key1][0].id}">${data[key1][0].summary}</th>`;
+				header.innerHTML += `<th id="criteriaClmTitle${data[x].id}">${data[x].summary}</th>`;
 			}
 		}
 		let header = document.getElementById("tblRow");
@@ -92,32 +93,27 @@
 	 * 
 	 * @param {Array<KnowledgeElement> or empty object} alternatives 
 	 */
-	function addArgumentsToDecisionTable(alternatives) {
-		for (let key in alternatives) {
-			if (alternatives[key].length > 1) {
-				const alternative = alternatives[key];
-				for (let index = 1; index < alternative.length; index++) {
-					const argument = alternative[index];
-					let rowElement;
-					if (argument.hasOwnProperty("criteria")) {
-						rowElement = document.getElementById(`cell${alternative[0].id}:${argument.criteria.id}`);
-					}
-					if (!rowElement) {
-						rowElement = document.getElementById(`cellUnknown${alternative[0].id}`);
-						document.getElementById("criteriaClmTitleUnknown").setAttribute("style", "display:block");
-					}
-					rowElement.setAttribute("style", "white-space: pre;");
-					let content = "";
-					if (argument.type === "Pro") {
-						content = "+ " + argument.summary;
-					} else if (argument.type === "Con") {
-						content = "- " + argument.summary;
-					}
-					rowElement.innerHTML += rowElement.innerHTML.length ?
-						`<br><div id="${argument.id}" class="argument draggable" draggable="true">${content}</div>` :
-						`<div class="argument draggable" id="${argument.id}" draggable="true">${content}</div>`
-				}
+	function addArgumentsToDecisionTable(alternative) {
+		for (let index = 0; index < alternative.arguments.length; index++) {
+			const argument = alternative.arguments[index];
+			let rowElement;
+			if (argument.hasOwnProperty("criteria")) {
+				rowElement = document.getElementById(`cell${alternative.id}:${argument.criteria.id}`);
 			}
+			if (!rowElement) {
+				rowElement = document.getElementById(`cellUnknown${alternative.id}`);
+				document.getElementById("criteriaClmTitleUnknown").setAttribute("style", "display:block");
+			}
+			rowElement.setAttribute("style", "white-space: pre;");
+			let content = "";
+			if (argument.type === "Pro") {
+				content = "+ " + argument.summary;
+			} else if (argument.type === "Con") {
+				content = "- " + argument.summary;
+			}
+			rowElement.innerHTML += rowElement.innerHTML.length ?
+				`<br><div id="${argument.id}" class="argument draggable" draggable="true">${content}</div>` :
+				`<div class="argument draggable" id="${argument.id}" draggable="true">${content}</div>`
 		}
 	}
 
@@ -231,7 +227,6 @@
 			const criteria = sourceInformation[1];
 			const argument = decisionTableData["alternatives"][sourceAlternative.id].find(argument => argument.id == elemId);
 			if (sourceAlternative.id !== targetAlternative.id) {
-				console.log("will delete link between: " + sourceAlternative.summary + " and " + targetAlternative.summary);
 				deleteLink(sourceAlternative, argument);
 				createLink(targetAlternative, argument);
 			}
@@ -244,7 +239,9 @@
 			const sourceCriteria = sourceInformation[1];
 			const targetAlternative = targetInformation[0];
 			const targetCriteria = targetInformation[1];
-			const argument = decisionTableData["alternatives"][sourceAlternative.id].find(argument => argument.id == elemId);
+			const argument = decisionTableData["alternatives"]
+				.find(alternative => alternative.id == sourceAlternative.id).arguments
+				.find(argument => argument.id == elemId);
 			if (sourceAlternative.id !== targetAlternative.id) {
 				deleteLink(sourceAlternative, argument);
 				createLink(targetAlternative, argument);
@@ -256,14 +253,17 @@
 	}
 
 	function getElementObj(obj) {
+		console.log(decisionTableData);
+		console.log(obj);
 		if (obj.toLowerCase().includes("unknown")) {
 			let alternativeId = obj.replace("cellUnknown", "");
-			return decisionTableData["alternatives"][alternativeId][0];
+			return decisionTableData["alternatives"][alternativeId];
 		} else if (obj.includes("cell")) {
 			let concatinated = obj.replace("cell", "").split(":");
 			let alternativeId = concatinated[0];
 			let criteriaId = concatinated[1];
-			return [decisionTableData["alternatives"][alternativeId][0], decisionTableData["criteria"][criteriaId][0]];
+			return [decisionTableData["alternatives"].find(alternative => alternative.id == alternativeId), 
+				decisionTableData["criteria"].find(criteria => criteria.id == criteriaId)];
 		}
 	}
 
