@@ -10,6 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.implementation.Onli
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.ConsistencyCheckEventListenerSingleton;
+import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -201,6 +202,46 @@ public class ConfigRest {
 		return Response.ok(knowledgeTypes).build();
 	}
 
+	@Path("/getDecisionTableCriteriaQuery")
+	@GET
+	public Response getDesionTabelCriteriaQuery(@QueryParam("projectKey") String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		System.out.println(projectKey);
+		String query = ConfigPersistenceManager.getDecisionTableCriteriaQuery(projectKey);
+		System.out.println(query);
+		return Response.ok(Status.OK).entity(ImmutableMap.of("query", query)).build();
+	}
+	
+	@Path("/setDecisionTableCriteriaQuery")
+	@POST
+	public Response setDesionTabelCriteriaQuery(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey,
+			@QueryParam("query") String query) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		ConfigPersistenceManager.setDecisionTableCriteriaQuery(projectKey, query);
+		return Response.ok(Status.OK).build();
+	}
+	
+	@Path("/testDecisionTableCriteriaQuery")
+	@POST
+	public Response testDecisionTableCriteriaQuery(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, 
+			@QueryParam("query") String query) {
+		Map<Long, List<KnowledgeElement>> map = new HashMap<Long, List<KnowledgeElement>>();
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, "?jql=" + query);
+		for(Issue i : queryHandler.getJiraIssuesFromQuery()) {
+			map.put(i.getId(), new ArrayList<KnowledgeElement>());
+			map.get(i.getId()).add(new KnowledgeElement(i));
+		}
+		return Response.ok(map).build();
+	}
+	
 	@Path("/getDecisionGroups")
 	@GET
 	public Response getDecisionGroups(@QueryParam("elementId") long id, @QueryParam("location") String location,

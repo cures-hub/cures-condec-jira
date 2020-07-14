@@ -893,6 +893,44 @@
 	};
 
 	/*
+	 * external reference: rationaleModelSettings.vm
+	 */
+	ConDecAPI.prototype.testDecisionTableCriteriaQuery = function(projectKey, query, callback) {
+		generalApi.postJSON(this.restPrefix + `/config/testDecisionTableCriteriaQuery.json?projectKey=${projectKey}&query=${query}`, 
+			null, function (error, issues) {
+				if (error === null) {
+					callback(issues);
+				}
+			});
+	};
+	
+	/*
+	 * external reference: rationalModelSettings.vm
+	 */
+	ConDecAPI.prototype.setDecisionTableCriteriaQuery = function(projectKey, query, callback) {
+		generalApi.postJSON(this.restPrefix + `/config/setDecisionTableCriteriaQuery.json?projectKey=${projectKey}&query=${query}`,
+			null, function (error, status) {
+				if (error === null) {
+					callback(status);
+				}
+			});
+	};
+	 
+	/*
+	 * external reference: rationaleModelSettings.vm
+	 */
+	ConDecAPI.prototype.getDecisionTableCriteriaQuery = function(projectKey, callback) {
+		generalApi.getJSON(this.restPrefix + `/config/getDecisionTableCriteriaQuery.json?projectKey=${projectKey}`, 
+			function (error, query) {
+				if (error === null) {
+					callback(query);
+				} else {
+					console.log(error);
+				}
+			});
+	};
+	
+	/*
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setUseClassifierForIssueComments = function (isClassifierUsedForIssues, projectKey) {
