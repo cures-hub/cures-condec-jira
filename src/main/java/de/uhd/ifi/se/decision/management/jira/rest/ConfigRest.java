@@ -209,9 +209,7 @@ public class ConfigRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		System.out.println(projectKey);
 		String query = ConfigPersistenceManager.getDecisionTableCriteriaQuery(projectKey);
-		System.out.println(query);
 		return Response.ok(Status.OK).entity(ImmutableMap.of("query", query)).build();
 	}
 	
