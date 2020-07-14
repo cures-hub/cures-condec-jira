@@ -42,7 +42,6 @@ public class KnowledgeElement {
 	private Date closed;
 	protected DocumentationLocation documentationLocation;
 	protected KnowledgeStatus status;
-	private KnowledgeElement criteria;
 
 	public KnowledgeElement() {
 		this.description = "";
@@ -225,7 +224,7 @@ public class KnowledgeElement {
 		KnowledgeType type = KnowledgeType.getKnowledgeType(typeAsString);
 		this.setType(type);
 	}
-
+	
 	/**
 	 * TODO Address issue
 	 *
@@ -322,14 +321,6 @@ public class KnowledgeElement {
 		this.key = key;
 	}
 
-	@XmlElement(name = "criteria")
-	public KnowledgeElement getCriteria() {
-		return this.criteria;
-	}
-
-	public void setCriteria(KnowledgeElement criteria) {
-		this.criteria = criteria;
-	}
 	/**
 	 * @see DocumentationLocation
 	 * @return documentation location of the knowledge element. For example,
