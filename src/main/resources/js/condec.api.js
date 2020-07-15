@@ -893,6 +893,18 @@
 	};
 
 	/*
+	 * external references: condec.decision.table
+	 */
+	ConDecAPI.prototype.getDecisionTableCriteria = function (elementKey, callback) {
+		generalApi.getJSON(this.restPrefix + `/view/getDecisionTableCriteria.json?elementKey=${elementKey}`,
+			function (error, query) {
+				if (error === null) {
+					callback(query);
+				}
+			});
+	};
+	
+	/*
 	 * external reference: rationaleModelSettings.vm
 	 */
 	ConDecAPI.prototype.testDecisionTableCriteriaQuery = function(projectKey, query, callback) {
@@ -924,8 +936,6 @@
 			function (error, query) {
 				if (error === null) {
 					callback(query);
-				} else {
-					console.log(error);
 				}
 			});
 	};
