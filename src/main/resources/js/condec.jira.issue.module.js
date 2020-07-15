@@ -49,6 +49,7 @@
             addOnClickEventToExportAsTable();
             addOnClickEventToTab();
             addOnClickEventToFilterButton();
+            addOnClickEventToDecisionTableButtons();
             conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input", showTreant);
             
             var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input");
@@ -76,6 +77,12 @@
 		showTreant();
 	};
 
+	function addOnClickEventToDecisionTableButtons() {		
+		document.getElementById("btnAddCriterion").addEventListener("click", function() {
+				conDecDecisionTable.showAddCriteriaToDecisionTableDialog(issueKey);		
+		});
+	}
+	
 	function addOnClickEventToTab() {
 		console.log("ConDecJiraIssueModule addOnClickEventVisualizationSelectionTab");
 
