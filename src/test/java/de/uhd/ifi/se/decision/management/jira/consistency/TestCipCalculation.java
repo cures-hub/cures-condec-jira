@@ -133,12 +133,12 @@ public class TestCipCalculation extends TestSetUp {
 		List<KnowledgeElement> testIssueList = Collections.singletonList(new KnowledgeElement(i1));
 		tracingCIP.assessRelation(e0, testIssueList);
 		assertEquals(0.5, tracingCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0);
-		//Score is 1/3
+		//Score is 1/4
 		tracingCIP = new TracingCIP(MockComponentAccessor.getIssueLinkManager());
 
 		testIssueList = Collections.singletonList(new KnowledgeElement(i2));
 		tracingCIP.assessRelation(e0, testIssueList);
-		assertEquals(0.33, tracingCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0.01);
+		assertEquals(0.25, tracingCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0.01);
 
 
 	}

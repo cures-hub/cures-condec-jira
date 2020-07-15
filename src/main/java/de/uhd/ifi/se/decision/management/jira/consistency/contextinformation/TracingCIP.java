@@ -1,11 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -84,13 +83,14 @@ public class TracingCIP implements ContextInformationProvider {
 			!wasVisited(endNode.getKey(), distanceMap) &&
 			iteration < maxIterations) {
 			for (KnowledgeElement nodeToCheck : currentNodesToCheck) {
-				Collection<IssueLink> issueLinks = this.issueLinkManager.getIssueLinks(nodeToCheck.getId());
+				List<Link> links =  nodeToCheck.getLinks();
+				//Collection<IssueLink> issueLinks = this.issueLinkManager.getIssueLinks(nodeToCheck.getId());
 
-				Collection<Issue> linkedIssues = getAllIssuesForIssueLinks(issueLinks);
-				for (Issue linkedIssue : linkedIssues) {
-					if (!wasVisited(linkedIssue.getKey(), distanceMap) && !nextNodesToCheck.contains(linkedIssue)) {
-						nextNodesToCheck.add(new KnowledgeElement(linkedIssue));
-						distanceMap.put(linkedIssue.getKey(), iteration);
+				Collection<KnowledgeElement> linkedKnowledge = getElementsForLinks(links);
+				for (KnowledgeElement knowledgeElement : linkedKnowledge) {
+					if (!wasVisited(knowledgeElement.getKey(), distanceMap) && !nextNodesToCheck.contains(knowledgeElement)) {
+						nextNodesToCheck.add(knowledgeElement);
+						distanceMap.put(knowledgeElement.getKey(), iteration);
 					}
 				}
 			}
@@ -104,11 +104,10 @@ public class TracingCIP implements ContextInformationProvider {
 		return distanceMap;
 	}
 
-	private Set<Issue> getAllIssuesForIssueLinks(Collection<IssueLink> issueLinks) {
-		Set<Issue> issues = new HashSet<>();
-		for (IssueLink issueLink : issueLinks) {
-			issues.add(ComponentAccessor.getIssueManager().getIssueObject(issueLink.getSourceId()));
-			issues.add(ComponentAccessor.getIssueManager().getIssueObject(issueLink.getDestinationId()));
+	private Set<KnowledgeElement> getElementsForLinks(Collection<Link> issueLinks) {
+		Set<KnowledgeElement> issues = new HashSet<>();
+		for (Link issueLink : issueLinks) {
+			issues.addAll(issueLink.getBothElements());
 		}
 		return issues;
 	}
