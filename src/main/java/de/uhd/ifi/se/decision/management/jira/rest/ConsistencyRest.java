@@ -66,7 +66,7 @@ public class ConsistencyRest {
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response discardLinkSuggestion(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 										  @QueryParam("originIssueKey") String originIssueKey, @QueryParam("targetIssueKey") String targetIssueKey) {
-		long databaseId = ConsistencyPersistenceHelper.addDiscardedSuggestions(originIssueKey, targetIssueKey, projectKey);
+		long databaseId = ConsistencyPersistenceHelper.addDiscardedLinkSuggestions(originIssueKey, targetIssueKey, projectKey);
 		Response response = Response.status(200).build();
 		if (databaseId == -1) {
 			response = Response.status(500).build();

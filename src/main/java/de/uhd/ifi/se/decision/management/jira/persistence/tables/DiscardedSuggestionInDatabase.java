@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.tables;
 
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.SuggestionType;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
 import net.java.ao.schema.PrimaryKey;
@@ -7,8 +8,8 @@ import net.java.ao.schema.Table;
 
 import java.sql.SQLException;
 
-@Table("DiscDup")
-public interface DiscardedDuplicatesInDatabase extends RawEntity<Long> {
+@Table("DiscSug")
+public interface DiscardedSuggestionInDatabase extends RawEntity<Long> {
 
 	@AutoIncrement
 	@PrimaryKey("ID")
@@ -28,7 +29,11 @@ public interface DiscardedDuplicatesInDatabase extends RawEntity<Long> {
 
 	void setProjectKey(String key);
 
-	static boolean deleteDiscardedDuplicate(DiscardedDuplicatesInDatabase elementToDelete) {
+	SuggestionType getType();
+
+	void setType(SuggestionType type);
+
+	static boolean deleteDiscardedDuplicate(DiscardedSuggestionInDatabase elementToDelete) {
 		try {
 			elementToDelete.getEntityManager().delete(elementToDelete);
 			return true;

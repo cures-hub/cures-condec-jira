@@ -12,7 +12,7 @@ import java.util.List;
 
 import static de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper.addDiscardedDuplicate;
 import static de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper.getDiscardedDuplicates;
-import static de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper.resetDiscardedDuplicates;
+import static de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper.resetDiscardedSuggestions;
 import static org.junit.Assert.assertEquals;
 
 public class TestDiscardDuplicateSuggestion extends TestSetUp implements DiscardSuggestionTester {
@@ -72,13 +72,13 @@ public class TestDiscardDuplicateSuggestion extends TestSetUp implements Discard
 	@Test
 	public void testReset() {
 		addDiscardedDuplicate(issues.get(0).getKey(), issues.get(1).getKey(), projectKey);
-		resetDiscardedDuplicates();
+		resetDiscardedSuggestions();
 		List<Issue> discardedDuplicateSuggestions = getDiscardedDuplicates(issues.get(0).getKey());
 		assertEquals("No more suggestion should be discarded after reset.", 0, discardedDuplicateSuggestions.size());
 	}
 
 	@AfterEach
 	public void cleanDatabase(){
-		resetDiscardedDuplicates();
+		resetDiscardedSuggestions();
 	}
 }

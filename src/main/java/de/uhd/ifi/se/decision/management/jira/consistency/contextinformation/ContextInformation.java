@@ -57,7 +57,7 @@ public class ContextInformation implements ContextInformationProvider {
 
 	public Collection<KnowledgeElement> getDiscardedSuggestionIssues() {
 		return ConsistencyPersistenceHelper
-			.getDiscardedSuggestions(this.element.getJiraIssue())
+			.getDiscardedLinkSuggestions(this.element.getJiraIssue())
 			.stream()
 			.map(KnowledgeElement::new)
 			.collect(Collectors.toList());
