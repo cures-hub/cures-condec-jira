@@ -23,7 +23,7 @@ public class Argument extends DecisionTableElement {
 	private String type;
 	
 	@XmlElement
-	private Criteria criteria;
+	private Criterion criterion;
 	
 	public Argument(KnowledgeElement argument) {
 		this.id = argument.getId();
@@ -50,17 +50,17 @@ public class Argument extends DecisionTableElement {
 		this.summary = summary;
 	}
 
-	public void setCriteria(Criteria criteria) {
-		this.criteria = criteria;
+	public void setCriterion(Criterion criterion) {
+		this.criterion = criterion;
 	}
 
-	@XmlElement(name = "criteria")
-	public Criteria getCriteria() {
-		return this.criteria;
+	@XmlElement(name = "criterion")
+	public Criterion getCriterion() {
+		return this.criterion;
 	}
 
-	public void setCriteria(KnowledgeElement criteria) {
-		this.criteria = new Criteria(criteria);
+	public void setCriterion(KnowledgeElement criterion) {
+		this.criterion = new Criterion(criterion);
 	}
 	
 	@XmlElement(name = "documentationLocation")

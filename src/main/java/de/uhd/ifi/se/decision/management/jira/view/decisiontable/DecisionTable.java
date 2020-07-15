@@ -65,14 +65,14 @@ public class DecisionTable {
 	 * @param map
 	 * @return
 	 */
-	private Map<Long, List<KnowledgeElement>> getCriteria(ApplicationUser user, Map<Long, List<KnowledgeElement>> map) {
+	public List<Criterion> getDecisionTableCriteria(ApplicationUser user) {
+		List<Criterion> criteria = new ArrayList<>();
 		String query = ConfigPersistenceManager.getDecisionTableCriteriaQuery(persistenceManager.getProjectKey());
-		JiraQueryHandler queryHandler = new JiraQueryHandler(user, persistenceManager.getProjectKey(), query);
+		JiraQueryHandler queryHandler = new JiraQueryHandler(user, persistenceManager.getProjectKey(), "?jql=" + query);
 		for(Issue i : queryHandler.getJiraIssuesFromQuery()) {
-			map.put(i.getId(), new ArrayList<KnowledgeElement>());
-			map.get(i.getId()).add(new KnowledgeElement(i));
+			criteria.add(new Criterion(new KnowledgeElement(i)));
 		}
-		return map;
+		return criteria;
 	}
 	
 	/**
@@ -125,9 +125,9 @@ public class DecisionTable {
 		for (Link currentLink : outgoingLinks) {
 			KnowledgeElement elem = currentLink.getTarget();
 			if (elem.getType().equals(KnowledgeType.OTHER)) {
-				argument.setCriteria(elem);
-				if (!criteria.contains(new Criteria(elem))) {
-					criteria.add(new Criteria(elem));
+				argument.setCriterion(elem);
+				if (!criteria.contains(new Criterion(elem))) {
+					criteria.add(new Criterion(elem));
 				}
 			}
 		}

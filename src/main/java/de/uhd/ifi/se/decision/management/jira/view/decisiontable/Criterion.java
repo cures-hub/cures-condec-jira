@@ -9,7 +9,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 @XmlRootElement(name = "Criteria")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Criteria extends DecisionTableElement {
+public class Criterion extends DecisionTableElement {
 	
 	@XmlElement
 	private long id;
@@ -20,7 +20,7 @@ public class Criteria extends DecisionTableElement {
 	@XmlElement
 	private String documentationLocation;
 	
-	public Criteria(KnowledgeElement criteria) {
+	public Criterion(KnowledgeElement criteria) {
 		this.id = criteria.getId();
 		this.summary = criteria.getSummary();
 		this.documentationLocation = criteria.getDocumentationLocationAsString();
@@ -58,7 +58,7 @@ public class Criteria extends DecisionTableElement {
 
 	@Override
 	public boolean equals(Object obj) {
-		Criteria tmp = (Criteria)obj;
+		Criterion tmp = (Criterion)obj;
 		if (obj == null) {
 			return false;
 		}
