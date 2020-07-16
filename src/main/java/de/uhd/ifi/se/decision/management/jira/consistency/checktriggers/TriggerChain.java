@@ -4,18 +4,25 @@ package de.uhd.ifi.se.decision.management.jira.consistency.checktriggers;
 /**
  * Implementation of the chain of responsibility pattern.
  */
-public interface TriggerChain<T extends ConsistencyCheckEventTrigger> {
+public abstract class TriggerChain implements ConsistencyCheckEventTrigger {
 
+	private TriggerChain nextChainLink;
 
-	TriggerChain<T> setNextChain(TriggerChain<T> chain);
-
-	TriggerChain<T> getNextChain();
-
-	T getChainBase();
-
-	public default boolean hasNextChain(){
-		return getNextChain() != null;
+	public TriggerChain setNextChain(TriggerChain chain) {
+		this.nextChainLink = chain;
+		return chain;
 	}
 
-	boolean calculate();
+	public TriggerChain getNextChain() {
+		return this.nextChainLink;
+	}
+
+	public boolean calculate() {
+		boolean activated = this.isTriggered() && this.isActivated();
+		if (!activated && getNextChain() != null) {
+			activated = getNextChain().calculate();
+		}
+		return activated;
+	}
+
 }

@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.eventlistener.implementation;
 
 import com.atlassian.jira.event.issue.IssueEvent;
-import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.ConsistencyCheckEventTrigger;
 import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.StatusClosedTrigger;
 import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.TriggerChain;
 import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.WorkflowDoneTrigger;
@@ -14,7 +13,7 @@ import java.util.List;
 public class ConsistencyCheckEventListenerSingleton implements IssueEventListener {
 
 	private static IssueEventListener instance;
-	private TriggerChain<ConsistencyCheckEventTrigger> chainStart;
+	private TriggerChain chainStart;
 
 	private ConsistencyCheckEventListenerSingleton() {
 		this.chainStart = new StatusClosedTrigger();
@@ -42,9 +41,9 @@ public class ConsistencyCheckEventListenerSingleton implements IssueEventListene
 	}
 
 	private void initChainLinks(IssueEvent event) {
-		TriggerChain<ConsistencyCheckEventTrigger> currentChainLink = this.chainStart;
+		TriggerChain currentChainLink = this.chainStart;
 		while (currentChainLink != null) {
-			currentChainLink.getChainBase().setIssueEvent(event);
+			currentChainLink.setIssueEvent(event);
 			currentChainLink = currentChainLink.getNextChain();
 		}
 	}
@@ -56,9 +55,9 @@ public class ConsistencyCheckEventListenerSingleton implements IssueEventListene
 
 	public List<String> getAllConsistencyCheckEventTriggerNames() {
 		List<String> names = new ArrayList<String>();
-		TriggerChain<ConsistencyCheckEventTrigger> currentChainLink = this.chainStart;
+		TriggerChain currentChainLink = this.chainStart;
 		while (currentChainLink != null) {
-			names.add(currentChainLink.getChainBase().getName());
+			names.add(currentChainLink.getName());
 			currentChainLink = currentChainLink.getNextChain();
 
 		}
