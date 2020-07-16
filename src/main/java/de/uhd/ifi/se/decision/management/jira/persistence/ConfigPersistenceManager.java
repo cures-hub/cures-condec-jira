@@ -19,7 +19,10 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+
+import java.util.*;
 
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
@@ -87,7 +90,7 @@ public class ConfigPersistenceManager {
 	public static String getDecisionTableCriteriaQuery(String projectKey) {
 		return getValue(projectKey, "criteriaQuery");
 	}
-	
+
 	public static boolean isActivated(String projectKey) {
 		String isActivated = getValue(projectKey, "isActivated");
 		return "true".equals(isActivated);
@@ -126,6 +129,16 @@ public class ConfigPersistenceManager {
 	public static boolean isKnowledgeTypeEnabled(String projectKey, String knowledgeType) {
 		String isKnowledgeTypeEnabled = getValue(projectKey, knowledgeType);
 		return "true".equals(isKnowledgeTypeEnabled);
+	}
+
+	// TODO Testing
+	public static boolean isLinkTypeEnabled(String projectKey, LinkType linkType) {
+		return isLinkTypeEnabled(projectKey, linkType.toString());
+	}
+
+	public static boolean isLinkTypeEnabled(String projectKey, String linkType) {
+		String isLinkTypeEnabled = getValue(projectKey, linkType);
+		return "true".equals(isLinkTypeEnabled);
 	}
 
 	public static boolean isClassifierEnabled(String projectKey) {
@@ -168,7 +181,7 @@ public class ConfigPersistenceManager {
 	public static void setDecisionTableCriteriaQuery(String projectKey, String query) {
 		setValue(projectKey, "criteriaQuery", query);
 	}
-	
+
 	// TODO Testing
 	public static void setPostSquashedCommits(String projectKey, Boolean checked) {
 		setValue(projectKey, "isPostSquashedCommitsActivated", Boolean.toString(checked));
@@ -221,6 +234,11 @@ public class ConfigPersistenceManager {
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
 			boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
+	}
+
+	public static void setLinkTypeEnabled(String projectKey, String linkType,
+										  boolean isLinkTypeEnabled) {
+		setValue(projectKey, linkType, Boolean.toString(isLinkTypeEnabled));
 	}
 
 	// TODO Testing

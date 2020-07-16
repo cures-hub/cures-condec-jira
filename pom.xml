@@ -213,26 +213,26 @@
 		</dependency>
 		<dependency>
 			<groupId>com.atlassian.jira</groupId>
-			<artifactId>jira-tests</artifactId>
-			<version>8.6.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.atlassian.jira</groupId>
-			<artifactId>jira-func-tests</artifactId>
-			<version>8.5.2</version>
-			<scope>test</scope>
-		</dependency>
-		<!-- Classification of text as decision knowledge -->
-		<dependency>
-			<groupId>nz.ac.waikato.cms.weka</groupId>
-			<artifactId>weka-dev</artifactId>
-			<version>3.9.3</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.meka</groupId>
-			<artifactId>meka</artifactId>
-			<version>1.9.2</version>
+            <artifactId>jira-tests</artifactId>
+            <version>8.6.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-func-tests</artifactId>
+            <version>8.5.2</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Classification of text as decision knowledge -->
+        <dependency>
+            <groupId>nz.ac.waikato.cms.weka</groupId>
+            <artifactId>weka-dev</artifactId>
+            <version>3.9.3</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.meka</groupId>
+            <artifactId>meka</artifactId>
+            <version>1.9.2</version>
 		</dependency>
 		<!-- Git -->
 		<dependency>

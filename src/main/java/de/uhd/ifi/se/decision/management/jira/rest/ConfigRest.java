@@ -1,30 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.link.IssueLinkType;
+import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
-
 import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
@@ -36,7 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -46,6 +26,19 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.File;
+import java.util.*;
 
 /**
  * REST resource for plug-in configuration
@@ -256,6 +249,60 @@ public class ConfigRest {
 		return Response.ok(map).build();
 	}
 
+	@Path("/isLinkTypeEnabled")
+	@GET
+	public Response isLinkTypeEnabled(@QueryParam("projectKey") String projectKey,
+									  @QueryParam("linkType") String linkType) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
+		Boolean isLinkTypeEnabled =
+			issueLinkTypeManager.getIssueLinkTypes().stream().map(IssueLinkType::getName).anyMatch(e -> e.equals(linkType));
+		return Response.ok().entity(isLinkTypeEnabled).build();
+	}
+
+	@Path("/setLinkTypeEnabled")
+	@POST
+	public Response setLinkTypeEnabled(@Context HttpServletRequest request,
+									   @QueryParam("projectKey") String projectKey,
+									   @QueryParam("isLinkTypeEnabled") String isLinkTypeEnabledString,
+									   @QueryParam("linkType") String linkType) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if (isLinkTypeEnabledString == null || linkType == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isLinkTypeEnabled = null"))
+				.build();
+		}
+		boolean isLinkTypeEnabled = Boolean.valueOf(isLinkTypeEnabledString);
+		if (isLinkTypeEnabled) {
+			PluginInitializer.createLinkType(linkType);
+			PluginInitializer.addLinkTypeToScheme(linkType, projectKey);
+		} else {
+			PluginInitializer.removeLinkTypeFromScheme(linkType, projectKey);
+		}
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
+	@Path("/getLinkTypes")
+	@GET
+	public Response getLinkTypes(@QueryParam("projectKey") String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		Map<String, String> linkTypes = new HashMap<>();
+		IssueLinkTypeManager linkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
+		Collection<IssueLinkType> types = linkTypeManager.getIssueLinkTypes();
+		for (IssueLinkType linkType : types) {
+			linkTypes.put(linkType.getName(), linkType.getStyle());
+		}
+		return Response.ok(linkTypes).build();
+	}
+
 	@Path("/getDecisionGroups")
 	@GET
 	public Response getDecisionGroups(@QueryParam("elementId") long id, @QueryParam("location") String location,
@@ -264,7 +311,7 @@ public class ConfigRest {
 			return Response.ok(Collections.emptyList()).build();
 		}
 		KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey).getKnowledgeElement(id,
-				location);
+			location);
 		if (element != null) {
 			List<String> groups = element.getDecisionGroups();
 			if (groups != null) {
@@ -340,20 +387,6 @@ public class ConfigRest {
 		} else {
 			return Response.ok(groups).build();
 		}
-	}
-
-	@Path("/getLinkTypes")
-	@GET
-	public Response getLinkTypes(@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		Map<String, String> linkTypes = new HashMap<>();
-		for (LinkType linkType : LinkType.values()) {
-			linkTypes.put(linkType.getName(), linkType.getColor());
-		}
-		return Response.ok(linkTypes).build();
 	}
 
 	@Path("/setWebhookEnabled")

@@ -1,25 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.link.IssueLinkType;
+import com.atlassian.jira.issue.link.IssueLinkTypeManager;
+import com.atlassian.jira.user.ApplicationUser;
+import de.uhd.ifi.se.decision.management.jira.model.*;
 import org.jgrapht.graph.AsSubgraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.user.ApplicationUser;
-
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import java.util.*;
 
 /**
  * Filters the {@link KnowledgeGraph}. The filter criteria are specified in the
@@ -72,9 +64,11 @@ public class FilteringManager {
 			LOGGER.error("FilteringManager misses important attributes.");
 			return null;
 		}
-		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>(getElementsMatchingFilterSettings());
-		AsSubgraph<KnowledgeElement, Link> subgraph = new AsSubgraph<KnowledgeElement, Link>(graph, elements);
-		if (filterSettings.getLinkTypes().size() < LinkType.toStringList().size()) {
+		Set<KnowledgeElement> elements = new HashSet<>(getElementsMatchingFilterSettings());
+		AsSubgraph<KnowledgeElement, Link> subgraph = new AsSubgraph<>(graph, elements);
+		IssueLinkTypeManager linkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
+		Collection<IssueLinkType> types = linkTypeManager.getIssueLinkTypes(false);
+		if (filterSettings.getLinkTypes().size() < types.size()) {
 			Set<Link> linksNotMatchingFilterSettings = getLinksNotMatchingFilterSettings(subgraph.edgeSet());
 			subgraph.removeAllEdges(linksNotMatchingFilterSettings);
 		}

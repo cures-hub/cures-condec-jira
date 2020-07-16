@@ -39,14 +39,14 @@
 		conDecAPI.isKnowledgeTypeEnabled(typeToggles[j].value, "$projectKey", typeToggles[j], function(isTypeEnabled, toggle) {
 	    	toggle.checked = isTypeEnabled;
 		});
-		
+
 	    typeToggles[j].addEventListener("change", function (error) {
 	        this.busy = true;
 	        conDecAPI.setKnowledgeTypeEnabled(this.checked, this.value, "$projectKey");
 	        this.busy = false;
-	    });           
+	    });
 	}
-	
+
 	conDecAPI.getDecisionTableCriteriaQuery("$projectKey", function(query) {
 		document.getElementById("criteria-query").value = query.query;
 	});
@@ -56,6 +56,47 @@
 		const query = document.getElementById("criteria-query").value;
 		conDecAPI.setDecisionTableCriteriaQuery("$projectKey", query);
 	}
-	
+
 	window.onbeforeunload = null;
+</script>
+
+<h2 id="additionale-link-types-header">Additional Decision Link Types</h2>
+
+<script>
+    html = "<p id='additionale-link-types-text'> The default decision link types are:";
+    var defaultLinkTypes = ["attack", "support"]
+    for (i in defaultLinkTypes) {
+        html += " <span class='aui-lozenge'>" + defaultLinkTypes[i] + "</span>";
+    }
+    html += ". If you enable additional decision knowledge link types, you need to add them to the ";
+    html += "current link type scheme (when using the link strategy).<br/><br/></p>";
+    document.getElementById("additionale-link-types-header").insertAdjacentHTML('afterend', html);
+
+    var additionalLinkTypes = ["Supports", "Attacks", "Forbids", "Constraints", "Enables",
+        "Comprises", "Subsumes", "Relates", "Overrides", "Replaces"];
+    var typeLinkToggles = [];
+    for (i in additionalLinkTypes) {
+        var toggleName = additionalLinkTypes[i] + "-toggle";
+        html = "<div class='field-group'>";
+        html += "<label for=" + toggleName + ">" + additionalLinkTypes[i] + "</label>";
+        html += "<aui-toggle id='" + toggleName + "' value='" + additionalLinkTypes[i] + "' label='" + additionalLinkTypes[i] + "'></aui-toggle>";
+        html += "<div class='description'>Enables the " + additionalLinkTypes[i] + " element for this project.</div>";
+        html += "</div>";
+        document.getElementById("additionale-link-types-text").insertAdjacentHTML('afterend', html);
+        typeLinkToggles.push(document.getElementById(toggleName));
+    }
+</script>
+
+<script>
+    for (j in additionalLinkTypes) {
+        conDecAPI.isLinkTypeEnabled(typeLinkToggles[j].value, "$projectKey", typeLinkToggles[j], function (isTypeEnabled, toggle) {
+            toggle.checked = isTypeEnabled;
+        });
+
+        typeLinkToggles[j].addEventListener("change", function (error) {
+            this.busy = true;
+            conDecAPI.setLinkTypeEnabled(this.checked, this.value, "$projectKey");
+            this.busy = false;
+        });
+    }
 </script>

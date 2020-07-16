@@ -451,7 +451,7 @@
 				"isOnlyDecisionKnowledgeShown": isOnlyDecisionKnowledgeShown,
 				"linkDistance": linkDistance
 			};
-		generalApi.postJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey, 
+		generalApi.postJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey,
 				filterSettings, function (error, treant) {
 				if (error === null) {
 					callback(treant);
@@ -470,7 +470,7 @@
 				"minDegree": minLinkNumber,
 				"maxDegree": maxLinkNumber
 			};
-		generalApi.postJSON(this.restPrefix + "/view/getClassTreant.json?&elementKey=" + elementKey + "&isIssueView=" + isIssueView, 
+		generalApi.postJSON(this.restPrefix + "/view/getClassTreant.json?&elementKey=" + elementKey + "&isIssueView=" + isIssueView,
 				filterSettings, function (error, treant) {
 				if (error === null) {
 					callback(treant);
@@ -800,17 +800,43 @@
 			});
 	};
 
-	/*
-	 * external references: settingsForSingleProject.vm
-	 */
-	ConDecAPI.prototype.isKnowledgeTypeEnabled = function (knowledgeType, projectKey, toggle, callback) {
-		generalApi.getJSON(this.restPrefix + "/config/isKnowledgeTypeEnabled.json?knowledgeType="
-			+ knowledgeType + "&projectKey=" + projectKey, function (error, isKnowledgeTypeEnabled) {
+		/*
+		 * external references: settingsForSingleProject.vm
+		 */
+		ConDecAPI.prototype.isKnowledgeTypeEnabled = function (knowledgeType, projectKey, toggle, callback) {
+			generalApi.getJSON(this.restPrefix + "/config/isKnowledgeTypeEnabled.json?knowledgeType="
+				+ knowledgeType + "&projectKey=" + projectKey, function (error, isKnowledgeTypeEnabled) {
 				if (error === null) {
 					callback(isKnowledgeTypeEnabled, toggle);
 				}
 			});
-	};
+		};
+
+		/*
+		 * external references: settingsForSingleProject.vm
+		 */
+		ConDecAPI.prototype.setLinkTypeEnabled = function (isLinkTypeEnabled, linkType, projectKey) {
+			generalApi.postJSON(this.restPrefix + "/config/setLinkTypeEnabled.json?projectKey="
+				+ projectKey + "&linkType=" + linkType + "&isLinkTypeEnabled=" + isLinkTypeEnabled,
+				null, function (error, response) {
+					if (error === null) {
+						showFlag("success", "The activation of the " + linkType
+							+ " link type for this project has been set to " + isLinkTypeEnabled + ".");
+					}
+				});
+		};
+
+		/*
+		 * external references: settingsForSingleProject.vm
+		 */
+		ConDecAPI.prototype.isLinkTypeEnabled = function (linkType, projectKey, toggle, callback) {
+			generalApi.getJSON(this.restPrefix + "/config/isLinkTypeEnabled.json?linkType="
+				+ linkType + "&projectKey=" + projectKey, function (error, isLinkTypeEnabled) {
+				if (error === null) {
+					callback(isLinkTypeEnabled, toggle);
+				}
+			});
+		};
 
 	/*
 	 * Knowledge types are a subset of "Alternative", "Argument", "Assessment",
@@ -917,19 +943,19 @@
 				}
 			});
 	};
-	
+
 	/*
 	 * external reference: rationaleModelSettings.vm
 	 */
 	ConDecAPI.prototype.testDecisionTableCriteriaQuery = function(projectKey, query, callback) {
-		generalApi.postJSON(this.restPrefix + `/config/testDecisionTableCriteriaQuery.json?projectKey=${projectKey}&query=${query}`, 
+		generalApi.postJSON(this.restPrefix + `/config/testDecisionTableCriteriaQuery.json?projectKey=${projectKey}&query=${query}`,
 			null, function (error, issues) {
 				if (error === null) {
 					callback(issues);
 				}
 			});
 	};
-	
+
 	/*
 	 * external reference: rationalModelSettings.vm
 	 */
@@ -950,19 +976,19 @@
 				}
 			});
 	};
-	 
+
 	/*
 	 * external reference: rationaleModelSettings.vm
 	 */
 	ConDecAPI.prototype.getDecisionTableCriteriaQuery = function(projectKey, callback) {
-		generalApi.getJSON(this.restPrefix + `/config/getDecisionTableCriteriaQuery.json?projectKey=${projectKey}`, 
+		generalApi.getJSON(this.restPrefix + `/config/getDecisionTableCriteriaQuery.json?projectKey=${projectKey}`,
 			function (error, query) {
 				if (error === null) {
 					callback(query);
 				}
 			});
 	};
-	
+
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
