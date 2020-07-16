@@ -61,14 +61,18 @@ public class TestGenericLink extends TestSetUp {
 		assertTrue(link.getSource().getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT);
 	}
 
+	/*
+	The constructor was removed!
+	 */
 	@Test
+	@Ignore
 	@NonTransactional
 	public void testThirdConstructor() {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
 		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.insertPartsOfComment(comment);
 		KnowledgeElement element = new KnowledgeElement(issue);
 		PartOfJiraIssueText sentence = sentences.get(0);
-		Link link = new Link(sentence, element, "contain");
+		Link link = new Link(sentence, element, LinkType.getDefaultLinkType());
 		assertTrue(link.getTarget().getId() == issue.getId());
 		assertTrue(link.getSource().getId() == sentence.getId());
 

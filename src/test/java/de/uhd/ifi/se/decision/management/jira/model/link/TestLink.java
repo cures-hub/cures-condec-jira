@@ -39,7 +39,7 @@ public class TestLink extends TestSetUp {
 	@Test
 	public void testSetType() {
 		link.setType(LinkType.RELATE.toString() + "New");
-		assertEquals(LinkType.RELATE.toString() + "New", link.getType());
+		assertEquals("The LinkType has to be in the Enum LinkType. Otherwise the default \"RELATE\" LinkType is used.",LinkType.RELATE, link.getType());
 		link.setType(LinkType.RELATE);
 	}
 
