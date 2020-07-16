@@ -30,25 +30,15 @@ public class Criterion extends DecisionTableElement {
 	public long getId() {
 		return id;
 	}
-	public void setId(long id) {
-		this.id = id;
-	}
 	
 	@XmlElement(name = "summary")
 	public String getSummary() {
 		return summary;
 	}
-	public void setSummary(String description) {
-		this.summary = description;
-	}
 	
 	@XmlElement(name = "documentationLocation")
 	public String getDocumentationLocation() {
 		return documentationLocation;
-	}
-
-	public void setDocumentationLocation(String documentationLocation) {
-		this.documentationLocation = documentationLocation;
 	}
 
 	@Override

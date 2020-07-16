@@ -37,21 +37,9 @@ public class Argument extends DecisionTableElement {
 		return id;
 	}
 
-	public void setId(long id) {
-		this.id = id;
-	}
-
 	@XmlElement(name = "summary")
 	public String getSummary() {
 		return summary;
-	}
-
-	public void setSummary(String summary) {
-		this.summary = summary;
-	}
-
-	public void setCriterion(Criterion criterion) {
-		this.criterion = criterion;
 	}
 
 	@XmlElement(name = "criterion")
@@ -68,18 +56,8 @@ public class Argument extends DecisionTableElement {
 		return documentationLocation;
 	}
 
-	public void setDocumentationLocation(String documentationLocation) {
-		this.documentationLocation = documentationLocation;
-	}
-
 	@XmlElement(name = "type")
 	public String getType() {
 		return type;
 	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-	
-	
 }

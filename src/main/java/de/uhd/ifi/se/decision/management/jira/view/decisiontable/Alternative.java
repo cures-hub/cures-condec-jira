@@ -43,28 +43,16 @@ public class Alternative extends DecisionTableElement {
 
 	@XmlElement(name = "id")
 	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
+		return this.id;
 	}
 
 	@XmlElement(name = "summary")
 	public String getSummary() {
-		return summary;
-	}
-
-	public void setSummary(String summary) {
-		this.summary = summary;
+		return this.summary;
 	}
 
 	@XmlElement(name = "documentationLocation")
 	public String getDocumentationLocation() {
-		return documentationLocation;
-	}
-
-	public void setDocumentationLocation(String documentationLocation) {
-		this.documentationLocation = documentationLocation;
+		return this.documentationLocation;
 	}
 }
