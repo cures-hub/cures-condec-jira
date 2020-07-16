@@ -1,21 +1,27 @@
 package de.uhd.ifi.se.decision.management.jira.consistency.checktriggers;
 
 
+import com.atlassian.jira.event.issue.IssueEvent;
+
 /**
- * Implementation of the chain of responsibility pattern.
+ * Implementation of the next of responsibility pattern.
  */
 public abstract class TriggerChain implements ConsistencyCheckEventTrigger {
 
 	private TriggerChain nextChainLink;
+	private IssueEvent issueEvent;
 
-	public TriggerChain setNextChain(TriggerChain chain) {
-		this.nextChainLink = chain;
-		return chain;
-	}
+	public void setNextChain(TriggerChain next) {
+		this.nextChainLink = next; }
 
 	public TriggerChain getNextChain() {
 		return this.nextChainLink;
 	}
+
+	public void setIssueEvent(IssueEvent event) {
+		this.issueEvent = event;
+	}
+
 
 	public boolean calculate() {
 		boolean activated = this.isTriggered() && this.isActivated();
@@ -25,4 +31,12 @@ public abstract class TriggerChain implements ConsistencyCheckEventTrigger {
 		return activated;
 	}
 
+	protected IssueEvent getIssueEvent(){
+		return this.issueEvent;
+	}
+
+	@Override
+	public String getCurrentProjectKey() {
+		return getIssueEvent().getProject().getKey();
+	}
 }

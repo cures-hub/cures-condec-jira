@@ -5,32 +5,22 @@ import com.atlassian.jira.event.issue.IssueEvent;
 
 public class WorkflowDoneTrigger extends TriggerChain {
 
-	private IssueEvent issueEvent;
-
 	public WorkflowDoneTrigger(IssueEvent issueEvent) {
-		this.issueEvent = issueEvent;
+		super.setIssueEvent(issueEvent);
 	}
 
 	public WorkflowDoneTrigger() {
 	}
 
 
-	public void setIssueEvent(IssueEvent event) {
-		this.issueEvent = event;
-	}
-
 	@Override
 	public boolean isTriggered() {
-		return issueEvent != null &&
-			"workflow".equals(issueEvent.getParams().get("eventsource"))
-			&& "done".equals(issueEvent.getIssue().getStatus().getStatusCategory().getKey());
+		return super.getIssueEvent() != null &&
+			"workflow".equals(super.getIssueEvent().getParams().get("eventsource"))
+			&& "done".equals(super.getIssueEvent().getIssue().getStatus().getStatusCategory().getKey());
 	}
 
 
-	@Override
-	public String getCurrentProjectKey() {
-		return this.issueEvent.getProject().getKey();
-	}
 
 	@Override
 	public String getName() {
