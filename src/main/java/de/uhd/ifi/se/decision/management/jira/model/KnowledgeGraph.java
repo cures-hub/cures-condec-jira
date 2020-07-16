@@ -43,14 +43,12 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	public static Map<String, KnowledgeGraph> instances = new HashMap<String, KnowledgeGraph>();
 
 	/**
-	 * Retrieves an existing KnowledgeGraph instance or creates a new instance if
-	 * there is no instance for the given project key.
+	 * Retrieves an existing {@link KnowledgeGraph} instance or creates a new
+	 * instance if there is no instance for the given project key.
 	 * 
 	 * @param projectKey
 	 *            of the Jira project.
-	 * @return either a new or already existing KnowledgeGraph instance.
-	 * 
-	 * @see KnowledgeGraph
+	 * @return either a new or already existing {@link KnowledgeGraph} instance.
 	 */
 	public static KnowledgeGraph getOrCreate(String projectKey) {
 		if (projectKey == null || projectKey.isBlank()) {

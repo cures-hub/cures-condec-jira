@@ -27,13 +27,11 @@ public interface CodeClassInDatabase extends RawEntity<Long> {
 
 	void setFileName(String fileName);
 
+	// TODO Remove this database table column and replace it with generic links
 	String getJiraIssueKeys();
 
+	// TODO Remove this database table column and replace it with generic links
 	void setJiraIssueKeys(String keys);
-
-	String getType();
-
-	void setType(String type);
 
 	String getProjectKey();
 

@@ -6,10 +6,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
@@ -25,12 +27,14 @@ import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.RemoteConfig;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,75 +93,65 @@ public class GitClient {
 	private GitRepositoryFSManager fsManager;
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitClient.class);
 
+	/**
+	 * Instances of {@link GitClient}s that are identified by the project key (uses
+	 * the multiton pattern).
+	 */
+	public static Map<String, GitClient> instances = new HashMap<String, GitClient>();
+
+	/**
+	 * Retrieves an existing {@link GitClient} instance or creates a new instance if
+	 * there is no instance for the given project key.
+	 * 
+	 * @param projectKey
+	 *            of the Jira project.
+	 * @return either a new or already existing {@link GitClient} instance.
+	 */
+	public static GitClient getOrCreate(String projectKey) {
+		if (projectKey == null || projectKey.isBlank()) {
+			return null;
+		}
+		if (instances.containsKey(projectKey)) {
+			// return instances.get(projectKey);
+			instances.remove(projectKey);
+		}
+		GitClient gitClient = new GitClient(projectKey);
+		instances.put(projectKey, gitClient);
+		return gitClient;
+	}
+
+	private GitClient(String projectKey) {
+		this(ConfigPersistenceManager.getGitUris(projectKey), ConfigPersistenceManager.getDefaultBranches(projectKey),
+				projectKey);
+	}
+
+	public GitClient(List<String> uris, Map<String, String> defaultBranches, String projectKey) {
+		this();
+		for (int i = 0; i < uris.size(); i++) {
+			if (defaultBranches != null && !defaultBranches.isEmpty() && defaultBranches.get(uris.get(i)) != null) {
+				defaultBranchFolderNames.put(uris.get(i), defaultBranches.get(uris.get(i)));
+			} else {
+				defaultBranchFolderNames.put(uris.get(i), "master");
+			}
+		}
+		this.repoInitSuccess = pullOrCloneRepositories(projectKey, DEFAULT_DIR, uris, defaultBranchFolderNames);
+	}
+
 	public GitClient() {
-	}
-
-	public GitClient(List<File> directories) {
-		initMaps();
-		List<String> uris = ConfigPersistenceManager.getGitUris(projectKey);
-		if (directories.size() == uris.size()) {
-			boolean success = true;
-			for (int i = 0; i < directories.size(); i++) {
-				success = initRepository(uris.get(i), directories.get(i));
-				if (!success) {
-					this.repoInitSuccess = false;
-				}
-			}
-		}
-	}
-
-	public GitClient(List<String> uris, String defaultDirectory, String projectKey) {
-		initMaps();
-		Map<String, String> defaultBranches = ConfigPersistenceManager.getDefaultBranches(projectKey);
-		for (int i = 0; i < uris.size(); i++) {
-			if (defaultBranches != null && defaultBranches.size() != 0 && defaultBranches.get(uris.get(i)) != null) {
-				defaultBranchFolderNames.put(uris.get(i), defaultBranches.get(uris.get(i)));
-			} else {
-				defaultBranchFolderNames.put(uris.get(i), "develop");
-			}
-		}
-		this.repoInitSuccess = pullOrCloneRepositories(projectKey, defaultDirectory, uris, defaultBranchFolderNames);
-	}
-
-	public GitClient(List<String> uris, String projectKey) {
-		initMaps();
-		Map<String, String> defaultBranches = ConfigPersistenceManager.getDefaultBranches(projectKey);
-		for (int i = 0; i < uris.size(); i++) {
-			if (defaultBranches.get(uris.get(i)) != null) {
-				defaultBranchFolderNames.put(uris.get(i), defaultBranches.get(uris.get(i)));
-			} else {
-				defaultBranchFolderNames.put(uris.get(i), "develop");
-			}
-		}
-		this.repoInitSuccess = pullOrCloneRepositories(projectKey, DEFAULT_DIR, uris, defaultBranchFolderNames);
-	}
-
-	public GitClient(GitClient originalClient) {
-		initMaps();
-		this.repoInitSuccess = pullOrCloneRepositories(originalClient.getProjectKey(),
-				originalClient.getDefaultDirectory(), originalClient.getRemoteUris(),
-				originalClient.getDefaultBranchFolderNames());
-	}
-
-	public GitClient(String projectKey) {
-		initMaps();
-		List<String> uris = ConfigPersistenceManager.getGitUris(projectKey);
-		Map<String, String> defaultBranches = ConfigPersistenceManager.getDefaultBranches(projectKey);
-		for (int i = 0; i < uris.size(); i++) {
-			if (defaultBranches.get(uris.get(i)) != null) {
-				defaultBranchFolderNames.put(uris.get(i), defaultBranches.get(uris.get(i)));
-			} else {
-				defaultBranchFolderNames.put(uris.get(i), "develop");
-			}
-		}
-		this.repoInitSuccess = pullOrCloneRepositories(projectKey, DEFAULT_DIR, uris, defaultBranchFolderNames);
-	}
-
-	private void initMaps() {
+		// TODO Add a GitClientForSingleRepository with one remote URI and default
+		// branch, only contain a list here
 		gits = new HashMap<String, Git>();
 		defaultBranchFolderNames = new HashMap<String, String>();
 		defaultBranches = new HashMap<String, Ref>();
 		defaultBranchCommits = new HashMap<Ref, List<RevCommit>>();
+	}
+
+	// TODO Get rid of this constructor
+	public GitClient(GitClient originalClient) {
+		this();
+		this.repoInitSuccess = pullOrCloneRepositories(originalClient.getProjectKey(),
+				originalClient.getDefaultDirectory(), originalClient.getRemoteUris(),
+				originalClient.getDefaultBranchFolderNames());
 	}
 
 	private boolean pullOrCloneRepositories(String projectKey, String defaultDirectory, List<String> uris,
@@ -222,7 +216,10 @@ public class GitClient {
 
 	private boolean pull(String repoUri) {
 		LOGGER.info("Pulling Repository: " + repoUri);
+		// System.out.println("Pulling Repository: " + repoUri);
 		if (!isPullNeeded(repoUri)) {
+			// LOGGER.info("Repository is up to date: " + repoUri);
+			// System.out.println("Repository is up to date: " + repoUri);
 			return true;
 		}
 		try {
@@ -235,15 +232,12 @@ public class GitClient {
 			}
 			gits.get(repoUri).pull().call();
 
-			ObjectId head = getRepository(repoUri).resolve("HEAD^{tree}");
-			if (!oldHead.equals(head)
-					&& getRepository(repoUri).getBranch().equals(defaultBranchFolderNames.get(repoUri))) {
-				CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
-				persistenceManager.maintainCodeClassKnowledgeElements(repoUri, oldHead, head);
-			}
+			ObjectId newHead = getRepository(repoUri).resolve("HEAD^{tree}");
+			Diff diffSinceLastPull = getDiff(repoUri, oldHead, newHead);
+			CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
+			persistenceManager.maintainCodeClassKnowledgeElements(diffSinceLastPull);
 		} catch (GitAPIException | IOException e) {
-			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t" + e.getMessage());
-			e.printStackTrace();
+			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t " + e.getMessage());
 			return false;
 		}
 		LOGGER.info("Pulled from remote in " + gits.get(repoUri).getRepository().getDirectory());
@@ -268,13 +262,12 @@ public class GitClient {
 				LOGGER.error("Could not create a file, repositories will be fetched on each request.");
 			}
 			return true;
-		} else {
-			if (isRepoOutdated(file.lastModified())) {
-				updateFileModifyTime(file);
-				return true;
-			}
-			return false;
 		}
+		if (isRepoOutdated(file.lastModified())) {
+			updateFileModifyTime(file);
+			return true;
+		}
+		return false;
 	}
 
 	private boolean isRepoOutdated(long lastModified) {
@@ -306,17 +299,6 @@ public class GitClient {
 			return false;
 		}
 		// TODO checkoutDefault branch
-		return true;
-	}
-
-	private boolean initRepository(String repoUri, File directory) {
-		try {
-			Git git = Git.init().setDirectory(directory).call();
-			gits.put(repoUri, git);
-		} catch (IllegalStateException | GitAPIException e) {
-			LOGGER.error("Bare git repository could not be initiated: " + directory.getAbsolutePath());
-			return false;
-		}
 		return true;
 	}
 
@@ -371,23 +353,23 @@ public class GitClient {
 		if (jiraIssue == null) {
 			return null;
 		}
-		List<RevCommit> squashcommits = getCommits(jiraIssue, repoUri);
+		List<RevCommit> squashCommits = getCommits(jiraIssue, repoUri);
 		Ref branch = getRef(jiraIssue.getKey(), repoUri);
 		List<RevCommit> commits = getCommits(branch);
-		if (commits != null) {
-			commits.removeAll(getDefaultBranchCommits(repoUri));
-			for (RevCommit com : squashcommits) {
-				if (!commits.contains(com)) {
-					commits.add(com);
-				}
-			}
-			if ((getDefaultBranchCommits(repoUri) == null || getDefaultBranchCommits(repoUri).size() == 0)
-					&& commits.size() - 1 >= 0) {
-				commits.remove(commits.size() - 1);
-			}
-			return getDiff(commits, repoUri);
+		if (commits == null) {
+			return null;
 		}
-		return null;
+		commits.removeAll(getDefaultBranchCommits(repoUri));
+		for (RevCommit com : squashCommits) {
+			if (!commits.contains(com)) {
+				commits.add(com);
+			}
+		}
+		if ((getDefaultBranchCommits(repoUri) == null || getDefaultBranchCommits(repoUri).size() == 0)
+				&& commits.size() - 1 >= 0) {
+			commits.remove(commits.size() - 1);
+		}
+		return getDiff(commits, repoUri);
 	}
 
 	/**
@@ -401,9 +383,7 @@ public class GitClient {
 	 *         the respective edit list.
 	 */
 	public Diff getDiff(RevCommit firstCommit, RevCommit lastCommit, String repoUri) {
-		Diff diff = new Diff();
 		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
-
 		DiffFormatter diffFormatter = getDiffFormater(repoUri);
 		try {
 			RevCommit parentCommit = getParent(firstCommit, repoUri);
@@ -413,6 +393,13 @@ public class GitClient {
 		} catch (IOException e) {
 			LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
 		}
+		Diff diff = getDiffWithChangedFiles(diffEntries, diffFormatter, repoUri);
+		diffFormatter.close();
+		return diff;
+	}
+
+	private Diff getDiffWithChangedFiles(List<DiffEntry> diffEntries, DiffFormatter diffFormatter, String repoUri) {
+		Diff diff = new Diff();
 		File directory = getDirectory(repoUri);
 		String baseDirectory = "";
 		if (directory != null) {
@@ -421,13 +408,14 @@ public class GitClient {
 		for (DiffEntry diffEntry : diffEntries) {
 			try {
 				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
-				diff.addChangedFile(new ChangedFile(diffEntry, editList, baseDirectory));
+				ChangedFile changedFile = new ChangedFile(diffEntry, editList, baseDirectory);
+				changedFile.setRepoUri(repoUri);
+				diff.addChangedFile(changedFile);
 			} catch (IOException e) {
 				LOGGER.error("Git diff for the file " + diffEntry.getNewPath() + " could not be retrieved. Message: "
 						+ e.getMessage());
 			}
 		}
-		diffFormatter.close();
 		return diff;
 	}
 
@@ -440,6 +428,31 @@ public class GitClient {
 	 */
 	public Diff getDiff(RevCommit revCommit, String repoUri) {
 		return getDiff(revCommit, revCommit, repoUri);
+	}
+
+	/**
+	 * @return {@link Diff} object containing the {@link ChangedFile}s. Each
+	 *         {@link ChangedFile} is created from a diff entry and contains the
+	 *         respective edit list.
+	 */
+	public Diff getDiff(String repoUri, ObjectId oldHead, ObjectId newHead) {
+		ObjectReader reader = this.getRepository(repoUri).newObjectReader();
+		CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
+		String gitPath = "";
+		List<DiffEntry> diffEntries = new ArrayList<>();
+		try {
+			oldTreeIter.reset(reader, oldHead);
+			CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
+			newTreeIter.reset(reader, newHead);
+			gitPath = this.getDirectory(repoUri).getAbsolutePath();
+			gitPath = gitPath.substring(0, gitPath.length() - 5);
+			diffEntries = this.getGit(repoUri).diff().setNewTree(newTreeIter).setOldTree(oldTreeIter).call();
+		} catch (IOException | GitAPIException e) {
+			e.printStackTrace();
+			closeAll();
+		}
+		DiffFormatter diffFormatter = getDiffFormater(repoUri);
+		return getDiffWithChangedFiles(diffEntries, diffFormatter, repoUri);
 	}
 
 	/**
@@ -523,8 +536,8 @@ public class GitClient {
 			 *      valid input parameter or because of an invalid parameter.
 			 * @alternative Methods with an invalid input parameter return null!
 			 * @con null values might be intended as result.
-			 * @decision Return emtpyList to compensate for branch being in another
-			 *           repository
+			 * @decision Return an emtpy list to compensate for branch being in another
+			 *           repository!
 			 */
 			return Collections.emptyList();
 		}
@@ -761,8 +774,26 @@ public class GitClient {
 		if (commitMessage.isEmpty()) {
 			return "";
 		}
-		String[] split = commitMessage.split("[:+ ]");
+		String[] split = commitMessage.split("[\\s,:]+");
 		return split[0].toUpperCase(Locale.ENGLISH);
+	}
+
+	public Set<String> getJiraIssueKeys(String message) {
+		Set<String> keys = new LinkedHashSet<String>();
+		if (projectKey == null) {
+			return keys;
+		}
+		String baseKey = projectKey.toUpperCase(Locale.ENGLISH);
+		String pattern = "(" + baseKey + "-)\\d+";
+
+		String[] words = message.split("[\\s,:]+");
+		for (String word : words) {
+			word = word.toUpperCase(Locale.ENGLISH);
+			if (word.matches(pattern)) {
+				keys.add(word);
+			}
+		}
+		return keys;
 	}
 
 	/**

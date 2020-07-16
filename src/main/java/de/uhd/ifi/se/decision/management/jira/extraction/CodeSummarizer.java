@@ -33,7 +33,7 @@ public class CodeSummarizer {
 	private boolean formatForComments;
 
 	public CodeSummarizer(String projectKey) {
-		this.gitClient = new GitClient(projectKey);
+		this.gitClient = GitClient.getOrCreate(projectKey);
 	}
 
 	public CodeSummarizer(GitClient gitClient) {
@@ -99,10 +99,11 @@ public class CodeSummarizer {
 	 * @return summary as a String.
 	 */
 	public String createSummary(Diff diff) {
-		if (diff == null || diff.getChangedFiles().size() == 0) {
+		if (diff == null || diff.getChangedFiles().isEmpty()) {
 			return "";
 		}
 
+		System.out.println(diff.getChangedFiles());
 		diff.getChangedFiles().removeIf(changedFile -> !changedFile.isExistingJavaClass());
 		TangledChangeDetector tangledCommitDetection = new TangledChangeDetector();
 		tangledCommitDetection.estimateWhetherChangedFilesAreCorrectlyIncludedInDiff(diff);
@@ -125,7 +126,7 @@ public class CodeSummarizer {
 		String rows = "";
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			if (changedFile.getProbabilityOfCorrectness() >= this.minProbabilityOfCorrectness) {
-				rows += this.addRow(this.addTableItem(FilenameUtils.removeExtension(changedFile.getFile().getName()),
+				rows += this.addRow(this.addTableItem(FilenameUtils.removeExtension(changedFile.getName()),
 						this.summarizeMethods(changedFile),
 						String.format("%.2f", changedFile.getProbabilityOfCorrectness())));
 			}

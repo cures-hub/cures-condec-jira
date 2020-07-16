@@ -9,21 +9,17 @@ import java.util.List;
 
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 
 public class TestRemoveFeatureBranchNotPresentInRemote extends TestSetUpGit {
 
-	private final String repoBaseDirectory;
 	private GitClient testGitClient;
 
 	private String featureBranch = "featureBranch";
 	private String expectedFirstCommitMessage = "First message";
-
-	public TestRemoveFeatureBranchNotPresentInRemote() {
-		repoBaseDirectory = super.getRepoBaseDirectory();
-	}
 
 	@After
 	public void after() {
@@ -31,15 +27,12 @@ public class TestRemoveFeatureBranchNotPresentInRemote extends TestSetUpGit {
 	}
 
 	@Test
+	@Ignore
 	public void testGetFeatureBranchNotOnRemoteWithLocalPull() {
-
-		// Use clean, distinct local repo dir for test
-		String cloneAt = repoBaseDirectory + "t1";
-
 		// fetches the 'default' branch commits. Do not use TestSetUpGit' gitClient.
 		List<String> uris = new ArrayList<String>();
 		uris.add(GIT_URI);
-		testGitClient = new GitClient(uris, cloneAt, "TEST");
+		testGitClient = new GitClient(uris, null, "TEST");
 
 		// "delete" branch on remote
 		assertTrue(moveFeatureBranchOnRemote());
@@ -55,14 +48,10 @@ public class TestRemoveFeatureBranchNotPresentInRemote extends TestSetUpGit {
 
 	@Test
 	public void testGetFeatureBranchNotOnRemoteLocalPullCache() {
-
-		// Use clean, distinct local repo dir for test
-		String cloneAt = repoBaseDirectory + "t2";
-
 		// fetches the 'default' branch commits. Do not use TestSetUpGit' gitClient
 		List<String> uris = new ArrayList<String>();
 		uris.add(GIT_URI);
-		testGitClient = new GitClient(uris, cloneAt, "TEST");
+		testGitClient = new GitClient(uris, null, "TEST");
 		File developDir = testGitClient.getDirectory(GIT_URI);
 
 		// fetch the branch, it will be cached for a while and not automatically

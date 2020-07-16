@@ -764,6 +764,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setGitUris = function (projectKey, gitUris, defaultBranches) {
+		// TODO Pass gitUris and branches as the JSON payload. Do not pass concatenated strings separated with ;;
 		generalApi.postJSON(this.restPrefix + "/config/setGitUris.json?projectKey=" + projectKey
 			+ "&gitUris=" + gitUris + "&defaultBranches=" + defaultBranches, null, function (error, response) {
 				if (error === null) {

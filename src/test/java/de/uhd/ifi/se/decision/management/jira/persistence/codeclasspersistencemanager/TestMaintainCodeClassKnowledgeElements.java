@@ -2,56 +2,62 @@ package de.uhd.ifi.se.decision.management.jira.persistence.codeclasspersistencem
 
 import static junit.framework.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import de.uhd.ifi.se.decision.management.jira.model.git.TestDiff;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestMaintainCodeClassKnowledgeElements extends TestSetUp {
+public class TestMaintainCodeClassKnowledgeElements extends TestSetUpGit {
 
-	private CodeClassPersistenceManager ccManager;
+	private CodeClassPersistenceManager codeClassPersistenceManager;
+	private Diff diff;
 
+	@Override
 	@Before
 	public void setUp() {
-		init();
-		ccManager = new CodeClassPersistenceManager("Test");
+		super.setUp();
+		codeClassPersistenceManager = new CodeClassPersistenceManager("TEST");
+		diff = TestDiff.createDiff(mockJiraIssueForGitTestsTangled);
 	}
 
 	@Test
 	@NonTransactional
 	public void testMaintainCodeClassKnowledgeElementsWithoutClasses() {
-		ccManager.maintainCodeClassKnowledgeElements(TestSetUpGit.GIT_URI, null, null);
-		assertEquals(0, ccManager.getKnowledgeElements().size());
+		codeClassPersistenceManager.maintainCodeClassKnowledgeElements(null);
+		assertEquals(0, codeClassPersistenceManager.getKnowledgeElements().size());
+	}
+
+	@Test
+	@NonTransactional
+	public void testMaintainCodeClassKnowledgeElementsWithOutClasses() {
+		codeClassPersistenceManager.maintainCodeClassKnowledgeElements(diff);
+		assertEquals(6, codeClassPersistenceManager.getKnowledgeElements().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testMaintainCodeClassKnowledgeElementsWithClasses() {
-		KnowledgeElement classElement;
-		classElement = new KnowledgeElement();
-		classElement.setProject("TEST");
-		classElement.setType("Other");
-		classElement.setDescription("TEST-1;");
-		classElement.setSummary("TestClass.java");
-		ccManager.insertKnowledgeElement(classElement, JiraUsers.SYS_ADMIN.getApplicationUser());
-		ccManager.maintainCodeClassKnowledgeElements(TestSetUpGit.GIT_URI, null, null);
-		assertEquals(0, ccManager.getKnowledgeElements().size());
+		KnowledgeElement classElement = TestInsertKnowledgeElement.createTestCodeClass();
+		codeClassPersistenceManager.insertKnowledgeElement(classElement, JiraUsers.SYS_ADMIN.getApplicationUser());
+		codeClassPersistenceManager.maintainCodeClassKnowledgeElements(diff);
+		assertEquals(4, codeClassPersistenceManager.getKnowledgeElements().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetIssueListAsString() {
-		List<String> list = new ArrayList<String>();
+		Set<String> list = new HashSet<String>();
 		list.add("123");
 		list.add("456");
-		assertEquals(ccManager.getIssueListAsString(list), "123;456;");
+		assertEquals(codeClassPersistenceManager.getIssueListAsString(list), "123;456;");
 	}
 }

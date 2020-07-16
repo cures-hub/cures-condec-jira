@@ -79,7 +79,7 @@ public class MetricCalculator {
 		this.knowledgeStatus = knowledgeStatus;
 		this.decisionGroups = decisionGroups;
 		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey) && !ignoreGit) {
-			this.gitClient = new GitClient(projectKey);
+			this.gitClient = GitClient.getOrCreate(projectKey);
 			extractedIssueRelatedElements = new HashMap<>();
 			Map<String, List<KnowledgeElement>> elementMap = getDecisionKnowledgeElementsFromCode(projectKey);
 			if (elementMap != null) {
