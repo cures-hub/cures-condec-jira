@@ -1,18 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.link.IssueLink;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.link.IssueLink;
-
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Models links (=edges) between knowledge elements. The links are directed,
@@ -22,7 +20,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 public class Link extends DefaultWeightedEdge {
 
 	private long id;
-	private String type; // TODO Use LinkType instead of String
+	private LinkType type;
 	private KnowledgeElement source;
 	private KnowledgeElement target;
 
@@ -39,13 +37,11 @@ public class Link extends DefaultWeightedEdge {
 		this.target = destinationElement;
 	}
 
-	public Link(KnowledgeElement sourceElement, KnowledgeElement destinationElement, String linkType) {
-		this(sourceElement, destinationElement);
-		this.type = linkType;
-	}
 
 	public Link(KnowledgeElement sourceElement, KnowledgeElement destinationElement, LinkType linkType) {
-		this(sourceElement, destinationElement, linkType.toString());
+		this(sourceElement, destinationElement);
+		this.type = linkType;
+
 	}
 
 	public Link(long idOfSourceElement, long idOfDestinationElement, DocumentationLocation sourceDocumentationLocation,
@@ -58,7 +54,7 @@ public class Link extends DefaultWeightedEdge {
 	public Link(IssueLink jiraIssueLink) {
 		super();
 		this.id = jiraIssueLink.getId();
-		this.type = jiraIssueLink.getIssueLinkType().getName();
+		this.type = LinkType.getLinkType(jiraIssueLink.getIssueLinkType().getName());
 		Issue sourceJiraIssue = jiraIssueLink.getSourceObject();
 		if (sourceJiraIssue != null) {
 			this.source = new KnowledgeElement(sourceJiraIssue);
@@ -79,7 +75,7 @@ public class Link extends DefaultWeightedEdge {
 					linkInDatabase.getDestDocumentationLocation());
 		}
 		this.id = linkInDatabase.getId();
-		this.type = linkInDatabase.getType();
+		this.type = LinkType.getLinkType(linkInDatabase.getType());
 	}
 
 	/**
@@ -103,13 +99,23 @@ public class Link extends DefaultWeightedEdge {
 	}
 
 	/**
+	 * This method was kept for compatibility.
+	 *
 	 * @see LinkType
-	 * @return type of the link. TODO Return LinkType instead of String
+	 * @return type of the link.
 	 */
 	public String getType() {
-		if (type == null || type.isBlank()) {
+		if (type == null) {
 			return "Relates";
 		}
+		return type.toString();
+	}
+
+	/**
+	 * @see LinkType
+	 * @return type of the link.
+	 */
+	public LinkType getLinkType() {
 		return type;
 	}
 
@@ -121,7 +127,7 @@ public class Link extends DefaultWeightedEdge {
 	 *            of the link.
 	 */
 	public void setType(LinkType type) {
-		this.type = type.toString();
+		this.type = type;
 	}
 
 	/**
@@ -133,7 +139,7 @@ public class Link extends DefaultWeightedEdge {
 	 */
 	@JsonProperty("type")
 	public void setType(String type) {
-		this.type = type;
+		this.type = LinkType.getLinkType(type);
 	}
 
 	/**
@@ -143,7 +149,7 @@ public class Link extends DefaultWeightedEdge {
 	 * @see DocumentationLocation
 	 * @param id
 	 *            of the source element of this link.
-	 * @param documenationLocation
+	 * @param documentationLocation
 	 *            of the decision knowledge element.
 	 */
 	public void setSourceElement(long id, DocumentationLocation documentationLocation) {
@@ -165,7 +171,7 @@ public class Link extends DefaultWeightedEdge {
 	 * @see DocumentationLocation
 	 * @param id
 	 *            of the source element of this link.
-	 * @param documenationLocation
+	 * @param documentationLocation
 	 *            of the decision knowledge element as a String, e.g. "i" for JIRA
 	 *            issue.
 	 */
@@ -204,7 +210,7 @@ public class Link extends DefaultWeightedEdge {
 	 * @see DocumentationLocation
 	 * @param id
 	 *            of the destination element of this link.
-	 * @param documenationLocation
+	 * @param documentationLocation
 	 *            of the decision knowledge element.
 	 */
 	public void setDestinationElement(long id, DocumentationLocation documentationLocation) {
@@ -227,7 +233,7 @@ public class Link extends DefaultWeightedEdge {
 	 * @see DocumentationLocation
 	 * @param id
 	 *            of the destination element of this link.
-	 * @param documenationLocation
+	 * @param documentationLocation
 	 *            of the decision knowledge element as a String, e.g. "i" for JIRA
 	 *            issue.
 	 */
@@ -380,7 +386,7 @@ public class Link extends DefaultWeightedEdge {
 	 *
 	 * @see KnowledgeElement
 	 * @see DocumentationLocation
-	 * @param documentationLocation
+	 * @param documentationLocationIdentifier
 	 *            of the source element of this link, e.g., "i" for JIRA issue.
 	 */
 	@JsonProperty("documentationLocationOfSourceElement")
@@ -397,7 +403,7 @@ public class Link extends DefaultWeightedEdge {
 	 *
 	 * @see KnowledgeElement
 	 * @see DocumentationLocation
-	 * @param documentationLocation
+	 * @param documentationLocationIdentifier
 	 *            of the destination element of this link, e.g., "i" for JIRA issue.
 	 */
 	@JsonProperty("documentationLocationOfDestinationElement")
@@ -470,7 +476,7 @@ public class Link extends DefaultWeightedEdge {
 	 */
 	public static Link instantiateDirectedLink(KnowledgeElement parentElement, KnowledgeElement childElement,
 			LinkType linkType) {
-		return new Link(parentElement, childElement, linkType.getName());
+		return new Link(parentElement, childElement, linkType);
 	}
 
 	/**
