@@ -11,7 +11,6 @@ import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.Con
 import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.TracingCIP;
 import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.UserCIP;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
@@ -25,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -53,7 +53,7 @@ public class TestCipCalculation extends TestSetUp {
 				.sorted((LinkSuggestion::compareTo))
 				.collect(Collectors.toList());
 			LinkSuggestion identicalIssueSuggestion = sortedLinkSuggestions.get(sortedLinkSuggestions.size() - 1);
-			assertEquals("The baseIssue should be the most similar to Issue TEST-14. Not to itself as it is filtered out!.", "TEST-14",
+			assertNotEquals("The baseElement should not be most similar to itself, as it is filtered out!.", baseIssue.getKey(),
 				identicalIssueSuggestion.getTargetElement().getJiraIssue().getKey());
 			assertNotNull(identicalIssueSuggestion.getScore().getScores());
 
@@ -120,7 +120,7 @@ public class TestCipCalculation extends TestSetUp {
 
 	@Test
 	public void testTracingCIP() {
-		ContextInformationProvider tracingCIP = new TracingCIP(MockComponentAccessor.getIssueLinkManager());
+		ContextInformationProvider tracingCIP = new TracingCIP();
 		assertEquals("TracingCIP_BFS", tracingCIP.getId());
 
 
@@ -134,7 +134,7 @@ public class TestCipCalculation extends TestSetUp {
 		tracingCIP.assessRelation(e0, testIssueList);
 		assertEquals(0.5, tracingCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0);
 		//Score is 1/4
-		tracingCIP = new TracingCIP(MockComponentAccessor.getIssueLinkManager());
+		tracingCIP = new TracingCIP();
 
 		testIssueList = Collections.singletonList(new KnowledgeElement(i2));
 		tracingCIP.assessRelation(e0, testIssueList);

@@ -2,9 +2,9 @@ package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.link.LinkCollection;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import org.ofbiz.core.entity.GenericEntityException;
@@ -44,73 +44,69 @@ public class ContextInformation implements ContextInformationProvider {
 		this(ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey));
 	}
 
-	public Collection<KnowledgeElement> getLinkedIssues() {
-		Collection<KnowledgeElement> linkedKnowledgeElements = new ArrayList<>();
-		LinkCollection linkCollection = ComponentAccessor.getIssueLinkManager().getLinkCollectionOverrideSecurity(this.element.getJiraIssue());
+	public Collection<KnowledgeElement> getLinkedKnowledgeElements() {
+		Set<KnowledgeElement> linkedKnowledgeElements = new HashSet<>();
+		List<Link> linkCollection = this.element.getLinks();
 		if (linkCollection != null) {
-			for (Issue i : linkCollection.getAllIssues()){
-				linkedKnowledgeElements.add(new KnowledgeElement(i));
+			for (Link link : linkCollection){
+				linkedKnowledgeElements.add(link.getSource());
+				linkedKnowledgeElements.add(link.getTarget());
+
 			}
 		}
 		return linkedKnowledgeElements;
 	}
 
-	public Collection<KnowledgeElement> getDiscardedSuggestionIssues() {
+	public Collection<KnowledgeElement> getDiscardedSuggestionKnowledgeElements() {
 		return ConsistencyPersistenceHelper
-			.getDiscardedLinkSuggestions(this.element.getJiraIssue())
-			.stream()
-			.map(KnowledgeElement::new)
-			.collect(Collectors.toList());
+			.getDiscardedLinkSuggestions(this.element);
+
 	}
 
 	public Collection<LinkSuggestion> getLinkSuggestions()  {
-		//Add all issues of project to projectIssues set
-		Set<KnowledgeElement> projectIssues = null;
+		//Add all issues of project to projectKnowledgeElements set
+		Set<KnowledgeElement> projectKnowledgeElements = null;
 		try {
-			projectIssues = new HashSet<>(this.getAllIssuesForProject(this.element.getJiraIssue().getProjectId()));
+			projectKnowledgeElements = new HashSet<>(this.getAllKnowledgeElementsForProject(this.element.getProject().getJiraProject().getId()));
 		} catch (GenericEntityException e) {
 			e.printStackTrace();
 		}
 
-		this.assessRelation(element, new ArrayList<>(projectIssues));
+		this.assessRelation(element, new ArrayList<>(projectKnowledgeElements));
 		//calculate context score
 
 		//get filtered issues
-		Set<KnowledgeElement> filteredIssues = this.filterIssues(projectIssues);
+		Set<KnowledgeElement> filteredElements = this.filterKnowledgeElements(projectKnowledgeElements);
 
 		//retain scores of filtered issues
 		return this.linkSuggestions.values()
 			.stream()
 			// issue was not filtered out
-			.filter(linkSuggestion -> filteredIssues.contains(linkSuggestion.getTargetElement()))
+			.filter(linkSuggestion -> filteredElements.contains(linkSuggestion.getTargetElement()))
 			// the probability is higher or equal to the minimum probability set by the admin for the project
 			.filter(linkSuggestion -> linkSuggestion.getTotalScore() >= ConfigPersistenceManager.getMinLinkSuggestionScore(this.element.getProject().getProjectKey()))
 			.collect(Collectors.toCollection(ArrayList::new));
 	}
 
-	private Collection<LinkSuggestion> getCalculatedLinkSuggestions() {
-		return this.linkSuggestions.values();
-	}
-
-	private Set<KnowledgeElement> filterIssues(Set<KnowledgeElement> projectIssues) {
+	private Set<KnowledgeElement> filterKnowledgeElements(Set<KnowledgeElement> projectKnowledgeElements) {
 		//Create union of all issues to be filtered out.
-		Set<KnowledgeElement> filteredIssues = new HashSet<>(projectIssues);
-		Set<KnowledgeElement> filterOutIssues = new HashSet<>(this.getLinkedIssues());
-		filterOutIssues.addAll(this.getDiscardedSuggestionIssues());
-		filterOutIssues.add(this.element);
+		Set<KnowledgeElement> filteredKnowledgeElements = new HashSet<>(projectKnowledgeElements);
+		Set<KnowledgeElement> filterOutElements = new HashSet<>(this.getLinkedKnowledgeElements());
+		filterOutElements.addAll(this.getDiscardedSuggestionKnowledgeElements());
+		filterOutElements.add(this.element);
 
 		//Calculate difference between all issues of project and the issues that need to be filtered out.
-		filteredIssues.removeAll(filterOutIssues);
+		filteredKnowledgeElements.removeAll(filterOutElements);
 
-		return filteredIssues;
+		return filteredKnowledgeElements;
 	}
 
 	@Override
 	public void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
 		// init the link suggestions
 		this.linkSuggestions = new HashMap<>();
-		for (KnowledgeElement otherIssue : knowledgeElements) {
-			linkSuggestions.put(otherIssue.getKey(), new LinkSuggestion(this.element, otherIssue));
+		for (KnowledgeElement otherElement : knowledgeElements) {
+			linkSuggestions.put(otherElement.getKey(), new LinkSuggestion(this.element, otherElement));
 		}
 
 		this.cips.forEach((cip) -> {
@@ -136,7 +132,13 @@ public class ContextInformation implements ContextInformationProvider {
 		});
 	}
 
-	public Collection<KnowledgeElement> getAllIssuesForProject(Long projectId) throws GenericEntityException {
+	/**
+	 * TODO: rework to get KnowledgeElements not Issues
+	 * @param projectId
+	 * @return
+	 * @throws GenericEntityException
+	 */
+	public Collection<KnowledgeElement> getAllKnowledgeElementsForProject(Long projectId) throws GenericEntityException {
 		Collection<KnowledgeElement> issuesOfProject = new ArrayList<>();
 		Collection<Long> issueIds = ComponentAccessor.getIssueManager().getIssueIdsForProject(projectId);
 
@@ -155,7 +157,5 @@ public class ContextInformation implements ContextInformationProvider {
 	public String getName() {
 		return "BaseCalculation";
 	}
-
-
 
 }

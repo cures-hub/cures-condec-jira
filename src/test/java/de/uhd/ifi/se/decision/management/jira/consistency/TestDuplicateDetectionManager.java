@@ -73,7 +73,6 @@ public class TestDuplicateDetectionManager extends TestSetUp {
 		//No Duplicate Exists
 		assertTrue("No duplicates can be found.", detectionManager.findAllDuplicates(transformIssuesToKnowledgeElements(testIssues)).isEmpty());
 
-
 		detectionManager = new DuplicateDetectionManager(issue, null);
 
 		assertTrue("No duplicates can be found.", detectionManager.findAllDuplicates(transformIssuesToKnowledgeElements(testIssues)).isEmpty());

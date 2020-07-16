@@ -17,17 +17,25 @@ public interface DiscardedSuggestionInDatabase extends RawEntity<Long> {
 
 	void setId(long id);
 
-	String getOriginIssueKey();
+	long getOriginId();
 
-	void setOriginIssueKey(String key);
+	void setOriginId(long key);
 
-	String getDiscardedIssueKey();
+	long getDiscardedElementId();
 
-	void setDiscardedIssueKey(String key);
+	void setDiscardedElementId(long key);
 
 	String getProjectKey();
 
 	void setProjectKey(String key);
+
+	String getOriginDocumentationLocation();
+
+	void setOriginDocumentationLocation(String locationIdentifier);
+
+	String getDiscElDocumentationLocation();
+
+	void setDiscElDocumentationLocation(String locationIdentifier);
 
 	SuggestionType getType();
 

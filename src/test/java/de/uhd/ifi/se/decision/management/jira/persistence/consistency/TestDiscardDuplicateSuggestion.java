@@ -1,12 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.consistency;
 
-import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import org.junit.Before;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 
 import java.util.List;
 
@@ -17,41 +17,38 @@ import static org.junit.Assert.assertEquals;
 
 public class TestDiscardDuplicateSuggestion extends TestSetUp implements DiscardSuggestionTester {
 	private List<MutableIssue> issues;
-	private String projectKey;
 
 	@Before
 	public void setUp() {
 		TestSetUp.init();
 		issues = JiraIssues.getTestJiraIssues();
-		projectKey = issues.get(0).getProjectObject().getKey();
 	}
 
 	@Override
 	@Test
 	public void testInsertAndGetDiscardedSuggestion() {
-		List<Issue> discardedDuplicateSuggestions = getDiscardedDuplicates(issues.get(0).getKey());
+		KnowledgeElement knowledgeElement0 = new KnowledgeElement(issues.get(0));
+		KnowledgeElement knowledgeElement1 = new KnowledgeElement(issues.get(1));
+		List<KnowledgeElement> discardedDuplicateSuggestions = getDiscardedDuplicates(knowledgeElement0);
 
 		assertEquals("Before insertion no discarded suggestion should exist.", 0, discardedDuplicateSuggestions.size());
 
-		long id = addDiscardedDuplicate(issues.get(0).getKey(), issues.get(1).getKey(), projectKey);
-		discardedDuplicateSuggestions = getDiscardedDuplicates(issues.get(0).getKey());
+		long id = addDiscardedDuplicate(knowledgeElement0, knowledgeElement1);
+		discardedDuplicateSuggestions = getDiscardedDuplicates(knowledgeElement0);
 		assertEquals("After insertion one discarded suggestion should exist.", 1, discardedDuplicateSuggestions.size());
 
-		assertEquals("The discarded suggestion should be the inserted issue.", issues.get(1).getKey(), discardedDuplicateSuggestions.get(0).getKey());
+		assertEquals("The discarded suggestion should be the inserted issue.", knowledgeElement1, discardedDuplicateSuggestions.get(0));
 
-		long sameId = addDiscardedDuplicate(issues.get(0).getKey(), issues.get(1).getKey(), projectKey);
+		long sameId = addDiscardedDuplicate(knowledgeElement0, knowledgeElement1);
 		assertEquals("Ids should be identical, because it represents the same link suggestion.", id, sameId);
 
-		long exceptionId = addDiscardedDuplicate(null, issues.get(1).getKey(), projectKey);
+		long exceptionId = addDiscardedDuplicate(null, knowledgeElement1);
 		assertEquals("Id should be -1.", -1, exceptionId);
 
-		exceptionId = addDiscardedDuplicate(issues.get(0).getKey(), null, projectKey);
+		exceptionId = addDiscardedDuplicate(knowledgeElement0, null);
 		assertEquals("Id should be -1.", -1, exceptionId);
 
-		exceptionId = addDiscardedDuplicate(issues.get(0).getKey(), issues.get(1).getKey(), null);
-		assertEquals("Id should be -1.", -1, exceptionId);
-
-		exceptionId = addDiscardedDuplicate(null, null, null);
+		exceptionId = addDiscardedDuplicate(null, null);
 		assertEquals("Id should be -1.", -1, exceptionId);
 
 	}
@@ -59,10 +56,11 @@ public class TestDiscardDuplicateSuggestion extends TestSetUp implements Discard
 	@Override
 	@Test
 	public void testInsertNullAsDiscardedSuggestion() {
-		List<Issue> discardedDuplicateSuggestions = getDiscardedDuplicates(issues.get(0).getKey());
+		KnowledgeElement knowledgeElement0 = new KnowledgeElement(issues.get(0));
+		List<KnowledgeElement> discardedDuplicateSuggestions = getDiscardedDuplicates(knowledgeElement0);
 		int discardedSuggestionsBeforeNullInsertion = discardedDuplicateSuggestions.size();
-		addDiscardedDuplicate(issues.get(0).getKey(), null, projectKey);
-		discardedDuplicateSuggestions = getDiscardedDuplicates(issues.get(0).getKey());
+		addDiscardedDuplicate(knowledgeElement0, null);
+		discardedDuplicateSuggestions = getDiscardedDuplicates(knowledgeElement0);
 		assertEquals("After insertion of null as a discarded suggestion, no additional discarded issue should exist.",
 			discardedSuggestionsBeforeNullInsertion, discardedDuplicateSuggestions.size());
 
@@ -71,14 +69,16 @@ public class TestDiscardDuplicateSuggestion extends TestSetUp implements Discard
 	@Override
 	@Test
 	public void testReset() {
-		addDiscardedDuplicate(issues.get(0).getKey(), issues.get(1).getKey(), projectKey);
+		KnowledgeElement knowledgeElement0 = new KnowledgeElement(issues.get(0));
+		KnowledgeElement knowledgeElement1 = new KnowledgeElement(issues.get(1));
+		addDiscardedDuplicate(knowledgeElement0, knowledgeElement1);
 		resetDiscardedSuggestions();
-		List<Issue> discardedDuplicateSuggestions = getDiscardedDuplicates(issues.get(0).getKey());
+		List<KnowledgeElement> discardedDuplicateSuggestions = getDiscardedDuplicates(knowledgeElement0);
 		assertEquals("No more suggestion should be discarded after reset.", 0, discardedDuplicateSuggestions.size());
 	}
 
 	@AfterEach
-	public void cleanDatabase(){
+	public void cleanDatabase() {
 		resetDiscardedSuggestions();
 	}
 }

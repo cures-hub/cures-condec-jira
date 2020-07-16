@@ -2,11 +2,9 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 
 
 import com.atlassian.activeobjects.external.ActiveObjects;
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.IssueManager;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.SuggestionType;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedSuggestionInDatabase;
 import net.java.ao.Query;
 
@@ -25,24 +23,24 @@ import java.util.Optional;
 public class ConsistencyPersistenceHelper {
 
 	public static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
-	public static final IssueManager ISSUE_MANAGER = ComponentAccessor.getIssueManager();
+	public static KnowledgePersistenceManager persistenceManager;
 
 	//------------------
 	// Link suggestions
 	//------------------
-	public static List<Issue> getDiscardedLinkSuggestions(Issue baseIssue) {
-		return ConsistencyPersistenceHelper.getDiscardedSuggestions(baseIssue.getKey(), SuggestionType.LINK);
+	public static List<KnowledgeElement> getDiscardedLinkSuggestions(KnowledgeElement baseElement) {
+		if (baseElement == null || baseElement.getProject() == null){
+			return new ArrayList<>();
+		}
+		return ConsistencyPersistenceHelper.getDiscardedSuggestions(baseElement, SuggestionType.LINK);
 	}
 
-	public static long addDiscardedLinkSuggestions(String originIssueKey, String discardedSuggestionKey, String projectKey) {
-		return addDiscardedSuggestions(originIssueKey, discardedSuggestionKey, projectKey, SuggestionType.LINK);
-	}
 
-	public static long addDiscardedLinkSuggestions(Issue originIssue, Issue discardedSuggestion) {
-		if (originIssue == null || discardedSuggestion == null) {
+	public static long addDiscardedLinkSuggestions(KnowledgeElement origin, KnowledgeElement discarded) {
+		if (origin == null || discarded == null) {
 			return -1;
 		}
-		return addDiscardedSuggestions(originIssue.getKey(), discardedSuggestion.getKey(), originIssue.getProjectObject().getKey(), SuggestionType.LINK);
+		return addDiscardedSuggestions(origin, discarded, SuggestionType.LINK);
 	}
 
 
@@ -51,53 +49,61 @@ public class ConsistencyPersistenceHelper {
 	//------------------
 
 
-	public static List<Issue> getDiscardedDuplicates(String baseIssueKey) {
-		return getDiscardedSuggestions(baseIssueKey, SuggestionType.DUPLICATE);
+	public static List<KnowledgeElement> getDiscardedDuplicates(KnowledgeElement base) {
+		if (base == null || base.getProject() == null){
+			return new ArrayList<>();
+		}
+		return getDiscardedSuggestions(base, SuggestionType.DUPLICATE);
 	}
 
-	public static long addDiscardedDuplicate(String originIssueKey, String targetIssueKey, String projectKey) {
-		return addDiscardedSuggestions(originIssueKey, targetIssueKey, projectKey, SuggestionType.DUPLICATE);
+	public static long addDiscardedDuplicate(KnowledgeElement origin, KnowledgeElement target) {
+		return addDiscardedSuggestions(origin, target, SuggestionType.DUPLICATE);
 	}
 
 	//------------------
 	// General Suggestion
 	//------------------
 
-	public static List<Issue> getDiscardedSuggestions(String baseIssueKey, SuggestionType type) {
-		List<Issue> discardedSuggestions = new ArrayList<>();
+	private static List<KnowledgeElement> getDiscardedSuggestions(KnowledgeElement base, SuggestionType type) {
+		List<KnowledgeElement> discardedSuggestions = new ArrayList<>();
 		Optional<DiscardedSuggestionInDatabase[]> discardedLinkSuggestions = Optional.ofNullable(ACTIVE_OBJECTS.find(DiscardedSuggestionInDatabase.class,
-			Query.select().where("ORIGIN_ISSUE_KEY = ? AND TYPE = ?", baseIssueKey, type)));
+			Query.select().where("PROJECT_KEY = ? AND ORIGIN_ID = ? AND TYPE = ?", base.getProject().getProjectKey(), base.getId(), type)));
+		persistenceManager = KnowledgePersistenceManager.getOrCreate(base.getProject().getProjectKey());
+
 		for (DiscardedSuggestionInDatabase discardedLinkSuggestion : discardedLinkSuggestions.orElseGet(() -> new DiscardedSuggestionInDatabase[0])) {
-			discardedSuggestions.add(ISSUE_MANAGER.getIssueObject(discardedLinkSuggestion.getDiscardedIssueKey()));
+			discardedSuggestions.add(persistenceManager.getKnowledgeElement(discardedLinkSuggestion.getDiscardedElementId(), discardedLinkSuggestion.getDiscElDocumentationLocation()));
 		}
 		return discardedSuggestions;
 	}
 
-	private static DiscardedSuggestionInDatabase[] getDiscardedSuggestion(String baseIssueKey, String targetIssueKey, SuggestionType type) {
+	private static DiscardedSuggestionInDatabase[] getDiscardedSuggestion(KnowledgeElement base, KnowledgeElement target, SuggestionType type) {
 		DiscardedSuggestionInDatabase[] discardedLinkSuggestions = ACTIVE_OBJECTS.find(DiscardedSuggestionInDatabase.class,
-			Query.select().where("ORIGIN_ISSUE_KEY = ? AND DISCARDED_ISSUE_KEY = ? AND TYPE = ?", baseIssueKey, targetIssueKey, type));
+			Query.select().where("PROJECT_KEY = ? AND ORIGIN_ID = ? AND DISCARDED_ELEMENT_ID = ? AND TYPE = ?", base.getProject().getProjectKey(), base.getId(), target.getId(), type));
 
 		return discardedLinkSuggestions;
 	}
 
-	public static long addDiscardedSuggestions(String originIssueKey, String discardedSuggestionKey, String projectKey, SuggestionType type) {
+	public static long addDiscardedSuggestions(KnowledgeElement origin, KnowledgeElement discardedElement, SuggestionType type) {
 		long id;
 		//null checks
-		if (originIssueKey == null || discardedSuggestionKey == null || projectKey == null) {
+		if (origin == null || origin.getProject() == null|| discardedElement == null || type == null) {
 			id = -1;
 		} else {
 			// if null check passes
 			// exists check
-			DiscardedSuggestionInDatabase[] discardedLinkSuggestionsInDatabase = getDiscardedSuggestion(originIssueKey, discardedSuggestionKey, type);
+			DiscardedSuggestionInDatabase[] discardedLinkSuggestionsInDatabase = getDiscardedSuggestion(origin, discardedElement, type);
 			if (discardedLinkSuggestionsInDatabase.length > 0) {
 				id = discardedLinkSuggestionsInDatabase[0].getId();
 			} else {
 				//not null parameter and does not already exist -> create new
 				final DiscardedSuggestionInDatabase discardedLinkSuggestionInDatabase = ACTIVE_OBJECTS.create(DiscardedSuggestionInDatabase.class);
-				discardedLinkSuggestionInDatabase.setOriginIssueKey(originIssueKey);
-				discardedLinkSuggestionInDatabase.setDiscardedIssueKey(discardedSuggestionKey);
-				discardedLinkSuggestionInDatabase.setProjectKey(projectKey);
+				discardedLinkSuggestionInDatabase.setOriginId(origin.getId());
+				discardedLinkSuggestionInDatabase.setDiscardedElementId(discardedElement.getId());
 				discardedLinkSuggestionInDatabase.setType(type);
+				discardedLinkSuggestionInDatabase.setProjectKey(origin.getProject().getProjectKey());
+				discardedLinkSuggestionInDatabase.setOriginDocumentationLocation(origin.getDocumentationLocationAsString());
+				discardedLinkSuggestionInDatabase.setDiscElDocumentationLocation(discardedElement.getDocumentationLocationAsString());
+
 				discardedLinkSuggestionInDatabase.save();
 				id = discardedLinkSuggestionInDatabase.getId();
 			}

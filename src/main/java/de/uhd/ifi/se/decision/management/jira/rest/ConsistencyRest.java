@@ -9,10 +9,12 @@ import de.uhd.ifi.se.decision.management.jira.consistency.duplicatedetection.Bas
 import de.uhd.ifi.se.decision.management.jira.consistency.duplicatedetection.DuplicateDetectionManager;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateSuggestion;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.SuggestionType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -28,7 +30,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * REST resource for consistency functionality.
@@ -64,15 +65,12 @@ public class ConsistencyRest {
 	@Path("/discardLinkSuggestion")
 	@POST
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response discardLinkSuggestion(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-										  @QueryParam("originIssueKey") String originIssueKey, @QueryParam("targetIssueKey") String targetIssueKey) {
-		long databaseId = ConsistencyPersistenceHelper.addDiscardedLinkSuggestions(originIssueKey, targetIssueKey, projectKey);
-		Response response = Response.status(200).build();
-		if (databaseId == -1) {
-			response = Response.status(500).build();
-		}
-		return response;
+	public Response discardLinkSuggestion(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("originElementId") Long originIssueId, @QueryParam("originLocation") String originLocation,
+										  @QueryParam("targetElementId") Long targetIssueId, @QueryParam("targetLocation") String targetLocation) {
+		return this.discardSuggestion(projectKey, originIssueId, originLocation, targetIssueId, targetLocation, SuggestionType.LINK);
+
 	}
+
 
 	private Map<String, Object> suggestionToJsonMap(LinkSuggestion linkSuggestion) {
 		Map<String, Object> jsonMap = new HashMap<>();
@@ -93,7 +91,8 @@ public class ConsistencyRest {
 	@Path("/getDuplicatesForIssue")
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response getDuplicatesForIssue(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey) {
+	public Response getDuplicatesForIssue(@Context HttpServletRequest request, @QueryParam("issueKey") String
+		issueKey) {
 		boolean areIssueKeysValid;
 		Response response;
 		try {
@@ -104,14 +103,11 @@ public class ConsistencyRest {
 				HashMap<String, Object> result = new HashMap<>();
 				DuplicateDetectionManager manager = new DuplicateDetectionManager(baseIssue, new BasicDuplicateTextDetector(ConfigPersistenceManager.getMinDuplicateLength(baseIssue.getProjectObject().getKey())));
 
-				// get Issues of project
-				Collection<Long> issueKeysToCheck = ComponentAccessor.getIssueManager().getIssueIdsForProject(baseIssue.getProjectId());
-				Collection<Issue> issuesToCheck = new ArrayList<>();
-				for (Long issueId : issueKeysToCheck) {
-					issuesToCheck.add(ComponentAccessor.getIssueManager().getIssueObject(issueId));
-				}
+				// get KnowledgeElements of project
+				KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(baseIssue.getProjectObject().getKey());
+
 				// detect duplicates
-				List<DuplicateSuggestion> foundDuplicateSuggestions = manager.findAllDuplicates(issuesToCheck.stream().map(KnowledgeElement::new).collect(Collectors.toList()));
+				List<DuplicateSuggestion> foundDuplicateSuggestions = manager.findAllDuplicates(persistenceManager.getKnowledgeElements());
 
 				// convert to Json
 				List<Map<String, Object>> jsonifiedIssues = new ArrayList<>();
@@ -122,7 +118,7 @@ public class ConsistencyRest {
 				response = Response.ok(result).build();
 			} else {
 				response = Response.status(400).entity(
-					ImmutableMap.of("error", "No issue with the given key exists!")).build();
+					ImmutableMap.of("error", "No such element exists!")).build();
 			}
 		} catch (Exception e) {
 			//e.printStackTrace();
@@ -135,45 +131,24 @@ public class ConsistencyRest {
 	@Path("/discardDuplicate")
 	@POST
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response discardDetectedDuplicate(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("originIssueKey") String originIssueKey, @QueryParam("targetIssueKey") String targetIssueKey) {
-		Response response;
-		//check if issue keys exist
-		boolean areIssueKeysValid;
-		try {
-			areIssueKeysValid = ComponentAccessor.getIssueManager().isExistingIssueKey(originIssueKey) && ComponentAccessor.getIssueManager().isExistingIssueKey(originIssueKey);
-			if (areIssueKeysValid) {
-				long databaseId = ConsistencyPersistenceHelper.addDiscardedDuplicate(originIssueKey, targetIssueKey, projectKey);
-				response = Response.status(200).build();
-				if (databaseId == -1) {
-					response = Response.status(500).build();
-				}
-			} else {
-				response = Response.status(400).entity(
-					ImmutableMap.of("error", "No issues with the given key exists!")).build();
-			}
-		} catch (Exception e) {
-			//e.printStackTrace();
-			response = Response.status(500).entity(
-				ImmutableMap.of("error", e.toString())).build();
-		}
+	public Response discardDetectedDuplicate(@Context HttpServletRequest
+												 request, @QueryParam("projectKey") String projectKey, @QueryParam("originElementId") Long
+												 originIssueId, @QueryParam("originLocation") String originLocation, @QueryParam("targetElementId") Long targetIssueId,
+											 @QueryParam("targetLocation") String targetLocation) {
+		return this.discardSuggestion(projectKey, originIssueId, originLocation, targetIssueId, targetLocation, SuggestionType.DUPLICATE);
 
-		return response;
 	}
 
 	public Map<String, Object> duplicateToJsonMap(DuplicateSuggestion duplicateSuggestion) {
 		Map<String, Object> jsonMap = new HashMap<>();
-		if(duplicateSuggestion != null){
-			jsonMap.put("id", duplicateSuggestion.getI2().getId());
-			jsonMap.put("key", duplicateSuggestion.getI2().getKey());
-			jsonMap.put("summary", duplicateSuggestion.getI2().getSummary());
+		if (duplicateSuggestion != null) {
+			jsonMap.put("baseElement", duplicateSuggestion.getBaseElement());
+			jsonMap.put("suggestion", duplicateSuggestion.getSuggestion());
 			jsonMap.put("preprocessedSummary", duplicateSuggestion.getPreprocessedSummary());
-
-			jsonMap.put("description", duplicateSuggestion.getI2().getDescription());
 			jsonMap.put("startDuplicate", duplicateSuggestion.getStartDuplicate());
 			jsonMap.put("length", duplicateSuggestion.getLength());
 
 		}
-
 
 		return jsonMap;
 	}
@@ -182,7 +157,8 @@ public class ConsistencyRest {
 	@Path("/doesIssueNeedApproval")
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response doesIssueNeedApproval(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey) {
+	public Response doesIssueNeedApproval(@Context HttpServletRequest request, @QueryParam("issueKey") String
+		issueKey) {
 		boolean isIssueKeyValid;
 		Response response;
 		try {
@@ -207,7 +183,8 @@ public class ConsistencyRest {
 	@Path("/approveCheck")
 	@POST
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response approveCheck(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey, @QueryParam("user") String user) {
+	public Response approveCheck(@Context HttpServletRequest request, @QueryParam("issueKey") String
+		issueKey, @QueryParam("user") String user) {
 		boolean isIssueKeyValid;
 		ApplicationUser doesUserExist;
 		Response response;
@@ -227,6 +204,46 @@ public class ConsistencyRest {
 			//e.printStackTrace();
 			response = Response.status(500).entity(e).build();
 		}
+		return response;
+	}
+
+	private Response discardSuggestion(String projectKey, Long originIssueId, String originLocation, Long targetIssueId, String targetLocation, SuggestionType type) {
+		Response response;
+		//check if issue keys exist
+		try {
+
+			KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+			KnowledgeElement origin = persistenceManager.getKnowledgeElement(originIssueId, originLocation);
+			KnowledgeElement target = persistenceManager.getKnowledgeElement(targetIssueId, targetLocation);
+			if (origin == null || target == null) {
+				response = Response.status(400).entity(
+					ImmutableMap.of("error", "No such element exists!")).build();
+			} else {
+				try {
+					long databaseId;
+
+					databaseId = ConsistencyPersistenceHelper.addDiscardedSuggestions(origin, target, type);
+
+
+					response = Response.status(200).build();
+					if (databaseId == -1) {
+						response = Response.status(500).build();
+					}
+
+				} catch (Exception e) {
+					//e.printStackTrace();
+					response = Response.status(500).entity(
+						ImmutableMap.of("error", e.toString())).build();
+				}
+			}
+
+		} catch (Exception e) {
+			//e.printStackTrace();
+			response = Response.status(400).entity(
+				ImmutableMap.of("error", "No such element exists!")).build();
+		}
+
+
 		return response;
 	}
 

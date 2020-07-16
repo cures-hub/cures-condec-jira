@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.link.IssueLinkManager;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -17,17 +15,9 @@ import java.util.Set;
 public class TracingCIP implements ContextInformationProvider {
 	private final String id = "TracingCIP_BFS";
 	private final String name = "TracingCIP";
-	private IssueLinkManager issueLinkManager;
 	private Collection<LinkSuggestion> linkSuggestions;
 
-
-	public TracingCIP(IssueLinkManager issueLinkManager) {
-		this.issueLinkManager = issueLinkManager;
-		this.linkSuggestions = new ArrayList<>();
-	}
-
 	public TracingCIP() {
-		this.issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		this.linkSuggestions = new ArrayList<>();
 	}
 
@@ -104,9 +94,9 @@ public class TracingCIP implements ContextInformationProvider {
 		return distanceMap;
 	}
 
-	private Set<KnowledgeElement> getElementsForLinks(Collection<Link> issueLinks) {
+	private Set<KnowledgeElement> getElementsForLinks(Collection<Link> elementLinks) {
 		Set<KnowledgeElement> issues = new HashSet<>();
-		for (Link issueLink : issueLinks) {
+		for (Link issueLink : elementLinks) {
 			issues.addAll(issueLink.getBothElements());
 		}
 		return issues;
