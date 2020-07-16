@@ -1,9 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.consistency.suggestions;
 
-import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
-public class LinkSuggestion implements Comparable<LinkSuggestion>, Suggestion<Issue> {
+public class LinkSuggestion implements Comparable<LinkSuggestion>, Suggestion<KnowledgeElement> {
 
 	private KnowledgeElement baseElement;
 	private KnowledgeElement targetElement;
@@ -52,7 +51,12 @@ public class LinkSuggestion implements Comparable<LinkSuggestion>, Suggestion<Is
 	}
 
 	@Override
-	public Issue getSuggestion() {
-		return getTargetElement().getJiraIssue();
+	public KnowledgeElement getSuggestion() {
+		return getTargetElement();
+	}
+
+	@Override
+	public SuggestionType getType() {
+		return SuggestionType.LINK;
 	}
 }

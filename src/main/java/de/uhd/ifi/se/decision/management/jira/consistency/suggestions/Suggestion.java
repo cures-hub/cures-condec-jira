@@ -8,4 +8,11 @@ public interface Suggestion<T> {
 	 */
 	T getSuggestion();
 
+
+	/**
+	 *
+	 * @return suggestion type of suggestion
+	 */
+	SuggestionType getType();
+
 }

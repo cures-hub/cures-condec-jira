@@ -4,7 +4,7 @@ import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import org.codehaus.jackson.annotate.JsonProperty;
 
-public class DuplicateSuggestion implements Suggestion<Issue> {
+public class DuplicateSuggestion implements Suggestion<KnowledgeElement> {
 	@JsonProperty
 	private final Issue i1;
 	@JsonProperty
@@ -57,7 +57,12 @@ public class DuplicateSuggestion implements Suggestion<Issue> {
 	}
 
 	@Override
-	public Issue getSuggestion() {
-		return this.i2;
+	public KnowledgeElement getSuggestion() {
+		return new KnowledgeElement(this.i2);
+	}
+
+	@Override
+	public SuggestionType getType() {
+		return SuggestionType.DUPLICATE;
 	}
 }
