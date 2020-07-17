@@ -2,15 +2,12 @@ package de.uhd.ifi.se.decision.management.jira.view.decisiontable;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
@@ -53,19 +50,16 @@ public class TestDecisionTable extends TestSetUp {
 		decisionTable.setDecisionTableForIssue(2, DocumentationLocation.JIRAISSUE.getIdentifier(), user);
 		Map<String, List<DecisionTableElement>> decisionTableData = decisionTable.getDecisionTableData();
 
-		assertEquals(3, decisionTableData.get("alternatives").size());
+		assertEquals(2, decisionTableData.get("alternatives").size());
 		
 		Alternative alternative1 = (Alternative) decisionTableData.get("alternatives").get(0);
 		Alternative alternative2 = (Alternative) decisionTableData.get("alternatives").get(1);
-		Alternative alternative3 = (Alternative) decisionTableData.get("alternatives").get(2);
 
 		assertNotNull(alternative1);
 		assertNotNull(alternative2);
-		assertNotNull(alternative3);
 
 		assertEquals(1, alternative1.getArguments().size());
 		assertEquals(0, alternative2.getArguments().size());
-		assertEquals(0, alternative3.getArguments().size());
 
 		Argument argument = (Argument) alternative1.getArguments().get(0);
 		assertNotNull(argument);
@@ -77,18 +71,19 @@ public class TestDecisionTable extends TestSetUp {
 		KnowledgeElement knowledgeElement;
 		Map<String, List<DecisionTableElement>> decisionTableData = new HashMap<>();
 		decisionTableData.put("alternatives", new ArrayList<>());
+		decisionTableData.put("criteria", new ArrayList<>());
 
 		knowledgeElement = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
-				.getKnowledgeElement(2);
+				.getKnowledgeElement(3);
 		decisionTableData.get("alternatives").add(new Alternative(knowledgeElement));
-		decisionTable.getArguments(2, decisionTableData, DocumentationLocation.JIRAISSUE.getIdentifier());
+		decisionTable.getArguments(3, decisionTableData, DocumentationLocation.JIRAISSUE.getIdentifier());
 		Alternative alternative1 = (Alternative) decisionTableData.get("alternatives").get(0);
-		assertEquals(1, alternative1.getArguments().size());
-
+		assertEquals(0, alternative1.getArguments().size());
+		
 		knowledgeElement = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
-				.getKnowledgeElement(12);
+				.getKnowledgeElement(4);
 		decisionTableData.get("alternatives").add(new Alternative(knowledgeElement));
-		decisionTable.getArguments(12, decisionTableData, DocumentationLocation.JIRAISSUE.getIdentifier());
+		decisionTable.getArguments(4, decisionTableData, DocumentationLocation.JIRAISSUE.getIdentifier());
 		Alternative alternative2 = (Alternative) decisionTableData.get("alternatives").get(1);
 		assertEquals(1, alternative2.getArguments().size());
 	}
