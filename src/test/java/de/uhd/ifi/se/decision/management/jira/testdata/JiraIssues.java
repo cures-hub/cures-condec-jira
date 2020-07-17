@@ -63,6 +63,9 @@ public class JiraIssues {
 		// Pro-Argument for the decision
 		issue = createJiraIssue(5, jiraIssueTypes.get(4), project, "This is a great solution.", user);
 		jiraIssues.add(issue);
+		
+		issue = createJiraIssue(6, jiraIssueTypes.get(5), project, "NFR: Usabililty", user);
+		jiraIssues.add(issue);
 
 		// Consistency
 		//issue = createJiraIssue(101, jiraIssueTypes.get(4), project, "This is a great solution.", user);
