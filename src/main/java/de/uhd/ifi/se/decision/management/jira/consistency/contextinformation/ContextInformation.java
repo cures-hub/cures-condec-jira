@@ -62,7 +62,7 @@ public class ContextInformation implements ContextInformationProvider {
 		} catch (GenericEntityException e) {
 			e.printStackTrace();
 		}
-
+		projectKnowledgeElements.remove(this.element);
 		this.assessRelation(element, new ArrayList<>(projectKnowledgeElements));
 		//calculate context score
 
