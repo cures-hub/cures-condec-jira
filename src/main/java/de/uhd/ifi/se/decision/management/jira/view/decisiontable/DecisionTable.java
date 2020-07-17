@@ -89,17 +89,11 @@ public class DecisionTable {
 		decisionTableData.put("criteria", new ArrayList<DecisionTableElement>());
 		for (Link currentLink : outgoingLinks) {
 			KnowledgeElement elem = currentLink.getTarget();
-			if (elem.getType().equals(KnowledgeType.ALTERNATIVE) || elem.getType().equals(KnowledgeType.DECISION)) {
+			if (elem.getType() == KnowledgeType.ALTERNATIVE || elem.getType() == KnowledgeType.DECISION) {
 				decisionTableData.get("alternatives").add(new Alternative(elem));
 				getArguments(elem.getId(), decisionTableData, location);
 			}
 		}
-	}
-
-	public List<KnowledgeElement> getSolutionOptions(List<Link> links) {
-		List<KnowledgeElement> alternatives = new ArrayList<>();
-
-		return alternatives;
 	}
 
 	/**
@@ -109,13 +103,13 @@ public class DecisionTable {
 	 * @param criteria
 	 * @param location
 	 */
-	private void getArguments(long id, Map<String, List<DecisionTableElement>> decisionTableData, String location) {
+	public void getArguments(long id, Map<String, List<DecisionTableElement>> decisionTableData, String location) {
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(id, location);
 		Set<Link> outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
-
+		
 		for (Link currentLink : outgoingLinks) {
 			KnowledgeElement elem = currentLink.getTarget();
-			if (elem.getType().equals(KnowledgeType.PRO) || elem.getType().equals(KnowledgeType.CON)) {
+			if (elem.getType() == KnowledgeType.PRO || elem.getType() == KnowledgeType.CON) {
 				Alternative alternative = (Alternative) decisionTableData.get("alternatives")
 						.get(decisionTableData.get("alternatives").size() - 1);
 				Argument argument = new Argument(elem);
@@ -125,14 +119,14 @@ public class DecisionTable {
 		}
 	}
 
-	private void getArgumentCriteria(Argument argument, List<DecisionTableElement> criteria) {
+	public void getArgumentCriteria(Argument argument, List<DecisionTableElement> criteria) {
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(argument.getId(),
 				argument.getDocumentationLocation());
 		Set<Link> outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
 
 		for (Link currentLink : outgoingLinks) {
 			KnowledgeElement elem = currentLink.getTarget();
-			if (elem.getType().equals(KnowledgeType.OTHER)) {
+			if (elem.getType() == KnowledgeType.OTHER) {
 				argument.setCriterion(elem);
 				if (!criteria.contains(new Criterion(elem))) {
 					criteria.add(new Criterion(elem));
