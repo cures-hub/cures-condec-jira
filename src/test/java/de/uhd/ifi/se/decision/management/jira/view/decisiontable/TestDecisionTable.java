@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
@@ -19,7 +18,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-@Ignore
 public class TestDecisionTable extends TestSetUp {
 
 	private DecisionTable decisionTable;
@@ -34,7 +32,7 @@ public class TestDecisionTable extends TestSetUp {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
 		JiraIssuePersistenceManager pm = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager();
-		
+
 		KnowledgeElement jiraIssue = new KnowledgeElement();
 		jiraIssue.setProject(projectKey);
 		jiraIssue.setType(KnowledgeType.OTHER);
@@ -42,26 +40,32 @@ public class TestDecisionTable extends TestSetUp {
 		KnowledgeElement decisionProblem = new KnowledgeElement();
 		decisionProblem.setProject(projectKey);
 		decisionProblem.setType(KnowledgeType.ISSUE);
-		
+
 		KnowledgeElement alternative = new KnowledgeElement();
 		alternative.setProject(projectKey);
 		alternative.setType(KnowledgeType.ALTERNATIVE);
-		
+
 		KnowledgeElement argument = new KnowledgeElement();
 		argument.setProject(projectKey);
 		argument.setType(KnowledgeType.PRO);
-		
+
 		pm.insertKnowledgeElement(jiraIssue, user);
 		pm.insertKnowledgeElement(decisionProblem, user);
 		pm.insertKnowledgeElement(alternative, user);
 		pm.insertKnowledgeElement(argument, user);
-		
-		this.decisionTable = new DecisionTable(projectKey);	
+
+		this.decisionTable = new DecisionTable(projectKey);
 	}
-	
+
 	@Test
-	public void getEmptyDecisionIssues() {
+	public void testGetEmptyDecisionIssues() {
 		decisionTable.setIssues("TEST-1");
-		assertEquals(decisionTable.getIssues().size(), 0);
+		assertEquals(0, decisionTable.getIssues().size());
+	}
+
+	@Test
+	public void testGetDecisionIssueOnIssueDirectly() {
+		decisionTable.setIssues("TEST-2");
+		assertEquals(1, decisionTable.getIssues().size());
 	}
 }
