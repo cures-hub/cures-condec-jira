@@ -920,11 +920,16 @@
 	/*
 	 * external reference: rationalModelSettings.vm
 	 */
-	ConDecAPI.prototype.setDecisionTableCriteriaQuery = function(projectKey, query, callback) {
+	ConDecAPI.prototype.setDecisionTableCriteriaQuery = function(projectKey, query) {
+		if (!query.length > 0) {
+			return showFlag("error", "Query length must be greater than 0");
+		}
 		generalApi.postJSON(this.restPrefix + `/config/setDecisionTableCriteriaQuery.json?projectKey=${projectKey}&query=${query}`,
 			null, function (error, status) {
 				if (error === null) {
-					callback(status);
+					showFlag("success", "Query was saved");
+				} else {
+					showFlag("error", "Query could not be saved.");
 				}
 			});
 	};
