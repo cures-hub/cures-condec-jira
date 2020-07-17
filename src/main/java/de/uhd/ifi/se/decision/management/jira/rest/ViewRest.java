@@ -227,8 +227,7 @@ public class ViewRest {
 	@Path("/getDecisionIssues")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionIssues(@Context HttpServletRequest request,
-			@QueryParam("elementKey") String elementKey) {
+	public Response getDecisionIssues(@QueryParam("elementKey") String elementKey) {
 		if (elementKey == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Decision Issues cannot be shown since element key is invalid."))
@@ -269,7 +268,7 @@ public class ViewRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionTableCriteria(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey) {
-		if (elementKey == null) {
+		if (request == null || elementKey == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "Decision Table cannot be shown due to missing or invalid parameters."))
 					.build();
