@@ -232,6 +232,10 @@ public class ConfigRest {
 	@POST
 	public Response testDecisionTableCriteriaQuery(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, 
 			@QueryParam("query") String query) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
 		Map<Long, List<KnowledgeElement>> map = new HashMap<Long, List<KnowledgeElement>>();
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, "?jql=" + query);
