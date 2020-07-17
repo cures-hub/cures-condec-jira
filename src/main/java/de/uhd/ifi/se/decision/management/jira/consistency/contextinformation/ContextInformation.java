@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -24,10 +23,6 @@ public class ContextInformation implements ContextInformationProvider {
 	private Map<String,LinkSuggestion> linkSuggestions;
 
 
-	public ContextInformation(Issue element) {
-		this(new KnowledgeElement(element));
-	}
-
 	public ContextInformation(KnowledgeElement element) {
 		this.element = element;
 		// Add context information providers
@@ -39,10 +34,6 @@ public class ContextInformation implements ContextInformationProvider {
 
 	}
 
-
-	public ContextInformation(String issueKey) {
-		this(ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey));
-	}
 
 	public Collection<KnowledgeElement> getLinkedKnowledgeElements() {
 		Set<KnowledgeElement> linkedKnowledgeElements = new HashSet<>();
@@ -112,16 +103,16 @@ public class ContextInformation implements ContextInformationProvider {
 		this.cips.forEach((cip) -> {
 			cip.assessRelation(this.element, new ArrayList<>(knowledgeElements));;
 
-			Double maxOfIndividualScoresForCurrentCip = cip.getLinkSuggestions()
+			Double sumOfIndividualScoresForCurrentCip = cip.getLinkSuggestions()
 				.stream()
 				.mapToDouble(LinkSuggestion::getTotalScore)
-				.max().orElse(1.0);
+				.sum();
 
-			if (maxOfIndividualScoresForCurrentCip == 0) {
-				maxOfIndividualScoresForCurrentCip = 1.;
+			if (sumOfIndividualScoresForCurrentCip == 0) {
+				sumOfIndividualScoresForCurrentCip = 1.;
 			}
 
-			Double finalMaxOfIndividualScoresForCurrentCip = maxOfIndividualScoresForCurrentCip;
+			Double finalMaxOfIndividualScoresForCurrentCip = sumOfIndividualScoresForCurrentCip;
 			// Divide each score by the max value to scale it to [0,1]
 			cip.getLinkSuggestions()
 				.forEach(score -> {

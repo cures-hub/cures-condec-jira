@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.Tra
 import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.UserCIP;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -39,13 +40,14 @@ public class TestCipCalculation extends TestSetUp {
 		Project project = JiraProjects.getTestProject();
 		TestCipCalculation.testIssues = JiraIssues.createJiraIssues(project);
 		this.project = JiraProjects.getTestProject();
+		ConfigPersistenceManager.setMinLinkSuggestionScore(this.project.getKey(), 0.0);
 
 	}
 
 	@Test
 	public void testCIP() {
 		Issue baseIssue = TestCipCalculation.testIssues.get(0);
-		ContextInformation contextInformation = new ContextInformation(baseIssue);
+		ContextInformation contextInformation = new ContextInformation(new KnowledgeElement(baseIssue));
 		try {
 			Collection<LinkSuggestion> linkSuggestions = contextInformation.getLinkSuggestions();
 			List<LinkSuggestion> sortedLinkSuggestions = linkSuggestions
