@@ -44,6 +44,7 @@ public class ConsistencyRest {
 
 	@Path("/getRelatedKnowledgeElements")
 	@GET
+	@Produces({MediaType.APPLICATION_JSON})
 	public Response getRelatedKnowledgeElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("elementId") Long elementId, @QueryParam("elementLocation") String elementLocation) {
 		Response response;
 		try {
@@ -75,8 +76,8 @@ public class ConsistencyRest {
 	@Path("/discardLinkSuggestion")
 	@POST
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response discardLinkSuggestion(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("originElementId") Long originId, @QueryParam("elementLocation") String originLocation,
-										  @QueryParam("targetElementId") Long targetId, @QueryParam("targetLocation") String targetLocation) {
+	public Response discardLinkSuggestion(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("originElementId") Long originId, @QueryParam("originElementLocation") String originLocation,
+										  @QueryParam("targetElementId") Long targetId, @QueryParam("targetElementLocation") String targetLocation) {
 		return this.discardSuggestion(projectKey, originId, originLocation, targetId, targetLocation, SuggestionType.LINK);
 
 	}
@@ -86,6 +87,7 @@ public class ConsistencyRest {
 		Map<String, Object> jsonMap = new HashMap<>();
 		jsonMap.put("key", linkSuggestion.getTargetElement().getKey());
 		jsonMap.put("summary", linkSuggestion.getTargetElement().getSummary());
+		jsonMap.put("relatedElement", linkSuggestion.getTargetElement());
 		jsonMap.put("id", linkSuggestion.getTargetElement().getId());
 		jsonMap.put("score", linkSuggestion.getTotalScore());
 		jsonMap.put("results", linkSuggestion.getScore());
@@ -101,7 +103,7 @@ public class ConsistencyRest {
 	@Path("/getDuplicateKnowledgeElement")
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response getDuplicatesKnowledgeElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("elementId") Long elementId, @QueryParam("location") String elementLocation) {
+	public Response getDuplicateKnowledgeElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("elementId") Long elementId, @QueryParam("location") String elementLocation) {
 		Optional<KnowledgeElement> knowledgeElement;
 		Response response;
 		try {
@@ -139,10 +141,10 @@ public class ConsistencyRest {
 	@Path("/discardDuplicate")
 	@POST
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response discardDetectedDuplicate(@Context HttpServletRequest
-												 request, @QueryParam("projectKey") String projectKey, @QueryParam("originElementId") Long
-												 originIssueId, @QueryParam("elementLocation") String originLocation, @QueryParam("targetElementId") Long targetIssueId,
-											 @QueryParam("targetLocation") String targetLocation) {
+	public Response discardDetectedDuplicate
+		(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("originElementId") Long
+			originIssueId, @QueryParam("originElementLocation") String originLocation, @QueryParam("targetElementId") Long targetIssueId,
+		 @QueryParam("targetElementLocation") String targetLocation) {
 		return this.discardSuggestion(projectKey, originIssueId, originLocation, targetIssueId, targetLocation, SuggestionType.DUPLICATE);
 
 	}
@@ -151,7 +153,7 @@ public class ConsistencyRest {
 		Map<String, Object> jsonMap = new HashMap<>();
 		if (duplicateSuggestion != null) {
 			jsonMap.put("baseElement", duplicateSuggestion.getBaseElement());
-			jsonMap.put("suggestion", duplicateSuggestion.getSuggestion());
+			jsonMap.put("duplicateElement", duplicateSuggestion.getSuggestion());
 			jsonMap.put("preprocessedSummary", duplicateSuggestion.getPreprocessedSummary());
 			jsonMap.put("startDuplicate", duplicateSuggestion.getStartDuplicate());
 			jsonMap.put("length", duplicateSuggestion.getLength());
@@ -168,7 +170,7 @@ public class ConsistencyRest {
 	@Path("/doesElementNeedApproval")
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response doesElementNeedApproval(@Context HttpServletRequest request, @QueryParam("issueKey") String
+	public Response doesElementNeedApproval(@Context HttpServletRequest request, @QueryParam("projectKey") String
 		projectKey, @QueryParam("elementId") Long elementId, @QueryParam("elementLocation") String documentationLocation) {
 		Optional<KnowledgeElement> knowledgeElement;
 		Response response;
@@ -192,7 +194,7 @@ public class ConsistencyRest {
 	@Path("/approveCheck")
 	@POST
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response approveCheck(@Context HttpServletRequest request, @QueryParam("issueKey") String
+	public Response approveCheck(@Context HttpServletRequest request, @QueryParam("projectKey") String
 		projectKey, @QueryParam("elementId") Long elementId, @QueryParam("elementLocation") String documentationLocation, @QueryParam("user") String user) {
 
 		Optional<KnowledgeElement> knowledgeElement;
@@ -260,7 +262,7 @@ public class ConsistencyRest {
 		KnowledgeElement knowledgeElement = null;
 		try {
 			// we do not want to create a new project here!
-			if (KnowledgePersistenceManager.instances.containsKey(projectKey)) {
+			if (ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey) != null) {
 				KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
 				knowledgeElement = persistenceManager.getKnowledgeElement(elementId, elementLocation);
 			}
