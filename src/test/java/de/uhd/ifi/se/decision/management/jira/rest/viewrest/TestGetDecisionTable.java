@@ -19,7 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 public class TestGetDecisionTable extends TestSetUp {
 
 	private ViewRest viewRest;
-	HttpServletRequest request;
+	private HttpServletRequest request;
 
 	@Before
 	public void setUp() {
