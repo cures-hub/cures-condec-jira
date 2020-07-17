@@ -49,15 +49,15 @@ public class JiraIssueLinks {
 		issueLinks.add(issueLink);
 
 		// link between issue and and alternative/decision
-		issueLink = createJiraIssueLink(2, 3, 14);
+		issueLink = createJiraIssueLink(12, 4, 14);
 		issueLinks.add(issueLink);
-		issueLink = createJiraIssueLink(12, 4, 15);
-		issueLinks.add(issueLink);
-
-		// link between alternative/decision and arguments
-		issueLink = createJiraIssueLink(3, 5, 16);
+		issueLink = createJiraIssueLink(12, 3, 15);
 		issueLinks.add(issueLink);
 
+		// link between argument and criteria
+		issueLink = createJiraIssueLink(5, 6, 16);
+		issueLinks.add(issueLink);
+				
 		return issueLinks;
 	}
 
