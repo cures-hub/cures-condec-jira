@@ -67,14 +67,14 @@ public class ContextInformation implements ContextInformationProvider {
 		//calculate context score
 
 		//get filtered issues
-		Set<KnowledgeElement> filteredElements = this.filterKnowledgeElements(projectKnowledgeElements);
+		Set<KnowledgeElement> elementsToKeep = this.filterKnowledgeElements(projectKnowledgeElements);
 
 		//retain scores of filtered issues
 		return this.linkSuggestions.values()
 			.stream()
 			// issue was not filtered out
-			.filter(linkSuggestion -> filteredElements.contains(linkSuggestion.getTargetElement()))
-			// the probability is higher or equal to the minimum probability set by the admin for the project
+			.filter(linkSuggestion -> elementsToKeep.contains(linkSuggestion.getTargetElement()))
+			// the score is higher or equal to the minimum probability set by the admin for the project
 			.filter(linkSuggestion -> linkSuggestion.getTotalScore() >= ConfigPersistenceManager.getMinLinkSuggestionScore(this.element.getProject().getProjectKey()))
 			.collect(Collectors.toCollection(ArrayList::new));
 	}
@@ -102,22 +102,26 @@ public class ContextInformation implements ContextInformationProvider {
 
 		this.cips.forEach((cip) -> {
 			cip.assessRelation(this.element, new ArrayList<>(knowledgeElements));;
+			double nullCompensation = 0.;
 
-			Double sumOfIndividualScoresForCurrentCip = cip.getLinkSuggestions()
+			Collection<LinkSuggestion> suggestions = cip.getLinkSuggestions();
+			Double sumOfIndividualScoresForCurrentCip = suggestions
 				.stream()
 				.mapToDouble(LinkSuggestion::getTotalScore)
 				.sum();
 
 			if (sumOfIndividualScoresForCurrentCip == 0) {
 				sumOfIndividualScoresForCurrentCip = 1.;
+				nullCompensation = 1. / suggestions.size();
 			}
 
-			Double finalMaxOfIndividualScoresForCurrentCip = sumOfIndividualScoresForCurrentCip;
+			final Double finalSumOfIndividualScoresForCurrentCip = sumOfIndividualScoresForCurrentCip;
 			// Divide each score by the max value to scale it to [0,1]
-			cip.getLinkSuggestions()
+			double finalNullCompensation = nullCompensation;
+			suggestions
 				.forEach(score -> {
 					LinkSuggestion linkSuggestion = this.linkSuggestions.get(score.getTargetElement().getKey());
-					linkSuggestion.addToScore(score.getTotalScore() / finalMaxOfIndividualScoresForCurrentCip, cip.getName());//sumOfIndividualScoresForCurrentCip);
+					linkSuggestion.addToScore(score.getTotalScore() + finalNullCompensation / (finalSumOfIndividualScoresForCurrentCip * this.cips.size()), cip.getName());//sumOfIndividualScoresForCurrentCip);
 				});
 
 		});
