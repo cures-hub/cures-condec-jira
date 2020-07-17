@@ -32,13 +32,13 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetNodes() {
-		assertEquals(8, graph.vertexSet().size());
+		assertEquals(9, graph.vertexSet().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetEdges() {
-		assertEquals(10, graph.edgeSet().size());
+		assertEquals(14, graph.edgeSet().size());
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	public void testRemoveEdge() {
 		Link link = new Link(2, 4, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		assertTrue(graph.removeEdge(link));
-		assertEquals(9, graph.edgeSet().size());
+		assertEquals(13, graph.edgeSet().size());
 		assertTrue(graph.addEdge(link));
 	}
 
@@ -88,12 +88,12 @@ public class TestKnowledgeGraph extends TestSetUp {
 		KnowledgeElement node = graph.vertexSet().iterator().next();
 		assertEquals("WI: Implement feature", node.getSummary());
 		node.setSummary("Updated");
-		assertEquals(3, graph.edgesOf(node).size());
+		assertEquals(5, graph.edgesOf(node).size());
 
 		KnowledgePersistenceManager.getOrCreate("TEST").updateKnowledgeElement(node, null);
 		node = graph.vertexSet().iterator().next();
 		assertEquals("Updated", node.getSummary());
-		assertEquals(3, graph.edgesOf(node).size());
+		assertEquals(5, graph.edgesOf(node).size());
 	}
 
 	@After

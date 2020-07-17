@@ -12,6 +12,7 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -38,22 +39,23 @@ public class TestGetDecisionTable extends TestSetUp {
 	public void testGetDesicionIssues() {
 		assertEquals(Status.OK.getStatusCode(), viewRest.getDecisionIssues("TEST-1").getStatus());
 	}
-	
+
 	@Test
 	public void testGetDesicionTableDataRequestNullLocationNullElementKeyNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionTable(null, 0, null, null).getStatus());
 	}
-	
+
 	@Test
 	public void testGetDesicionTableData() {
-		assertEquals(Status.OK.getStatusCode(), viewRest.getDecisionTable(request, 0, "s", "TEST").getStatus());
+		assertEquals(Status.OK.getStatusCode(), viewRest
+				.getDecisionTable(request, 2, DocumentationLocation.JIRAISSUE.getIdentifier(), "TEST").getStatus());
 	}
-	
+
 	@Test
 	public void testDecisionTableCriteriaRequestNullElementKeyNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionTableCriteria(null, null).getStatus());
 	}
-	
+
 	@Test
 	public void testDecisionTableCriteria() {
 		assertEquals(Status.OK.getStatusCode(), viewRest.getDecisionTableCriteria(request, "TEST").getStatus());

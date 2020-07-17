@@ -38,7 +38,7 @@ public class TestMetricCalculator extends TestSetUpGit {
 	@NonTransactional
 	public void testNumberOfCommentsPerIssue() {
 		Map<String, Integer> map = calculator.numberOfCommentsPerIssue();
-		assertEquals(8, map.size());
+		assertEquals(9, map.size());
 	}
 
 	@Test
@@ -92,15 +92,16 @@ public class TestMetricCalculator extends TestSetUpGit {
 		addComment(getTestJiraIssues().get(6));
 		calculator.setJiraIssues(getTestJiraIssues());
 		Object map = calculator.getLinksToIssueTypeMap(KnowledgeType.ARGUMENT, 0);
+		System.out.println(map.toString());
 		assertEquals(
-				"{Links from  to Argument=, No links from  to Argument=TEST-1 TEST-14 TEST-30 TEST-2 TEST-12 TEST-3 TEST-4 TEST-5 }",
+				"{Links from  to Argument=, No links from  to Argument=TEST-1 TEST-14 TEST-30 TEST-2 TEST-12 TEST-3 TEST-4 TEST-5 TEST-6 }",
 				map.toString());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetNumberOfDecisionKnowledgeElementsForJiraIssues() {
-		assertEquals(8, calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE, 2).size());
+		assertEquals(9, calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE, 2).size());
 	}
 
 	@Test
