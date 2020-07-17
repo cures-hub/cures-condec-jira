@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.consistency;
 
-import com.atlassian.jira.issue.MutableIssue;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.ConsistencyCheckLogsInDatabase;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
@@ -18,24 +18,24 @@ import static org.junit.Assert.assertTrue;
 
 public class TestConsistencyCheckLogHelper extends TestSetUp {
 
-	private MutableIssue issue;
-	private MutableIssue otherIssue;
+	private KnowledgeElement ke;
+	private KnowledgeElement otherKe;
 
 	@Before
 	public void setUp() {
 		TestSetUp.init();
-		issue = JiraIssues.getTestJiraIssues().get(0);
-		otherIssue = JiraIssues.getTestJiraIssues().get(1);
+		ke = new KnowledgeElement(JiraIssues.getTestJiraIssues().get(0));
+		otherKe = new KnowledgeElement(JiraIssues.getTestJiraIssues().get(1));
 		ConsistencyCheckLogHelper.resetConsistencyCheckLogs();
 
 	}
 
 	@Test
 	public void testAddCheck() {
-		assertTrue("Initially no check should exist.", ConsistencyCheckLogHelper.getCheck(issue.getKey()).isEmpty());
-		long idOfCheck = ConsistencyCheckLogHelper.addCheck(issue);
-		assertTrue("A pending check should exist.", ConsistencyCheckLogHelper.getCheck(issue.getKey()).isPresent());
-		assertEquals("If the added check already exist, the ids should be equal.", ConsistencyCheckLogHelper.addCheck(issue), idOfCheck);
+		assertTrue("Initially no check should exist.", ConsistencyCheckLogHelper.getCheck(ke).isEmpty());
+		long idOfCheck = ConsistencyCheckLogHelper.addCheck(ke);
+		assertTrue("A pending check should exist.", ConsistencyCheckLogHelper.getCheck(ke).isPresent());
+		assertEquals("If the added check already exist, the ids should be equal.", ConsistencyCheckLogHelper.addCheck(ke), idOfCheck);
 
 		long idOfNull = ConsistencyCheckLogHelper.addCheck(null);
 		assertEquals("If the added check is null, -1 should be the returned id.", -1L, idOfNull);
@@ -43,23 +43,23 @@ public class TestConsistencyCheckLogHelper extends TestSetUp {
 
 	@Test
 	public void testGetCheck() {
-		ConsistencyCheckLogHelper.addCheck(issue);
-		assertTrue("A pending check should exist.", ConsistencyCheckLogHelper.getCheck(issue.getKey()).isPresent());
+		ConsistencyCheckLogHelper.addCheck(ke);
+		assertTrue("A pending check should exist.", ConsistencyCheckLogHelper.getCheck(ke).isPresent());
 
-		assertTrue("No pending check should exist.", ConsistencyCheckLogHelper.getCheck(otherIssue.getKey()).isEmpty());
+		assertTrue("No pending check should exist.", ConsistencyCheckLogHelper.getCheck(otherKe).isEmpty());
 
 	}
 
 	@Test
 	public void testApproval() {
-		ConsistencyCheckLogHelper.addCheck(issue);
-		assertTrue("Issue is not approved yet. Therefore it needs approval.", ConsistencyCheckLogHelper.doesIssueNeedApproval(issue));
+		ConsistencyCheckLogHelper.addCheck(ke);
+		assertTrue("Issue is not approved yet. Therefore it needs approval.", ConsistencyCheckLogHelper.doesKnowledgeElementNeedApproval(ke));
 
-		ConsistencyCheckLogHelper.approveCheck(issue, "TestUser");
-		assertFalse("Issue is approved. Therefore it does not need approval.", ConsistencyCheckLogHelper.doesIssueNeedApproval(issue));
+		ConsistencyCheckLogHelper.approveCheck(ke, "TestUser");
+		assertFalse("Issue is approved. Therefore it does not need approval.", ConsistencyCheckLogHelper.doesKnowledgeElementNeedApproval(ke));
 
-		long idOfApprovalIssueNull =ConsistencyCheckLogHelper.approveCheck(null, "TestUser");
-		assertEquals("If the approved check's issue is null, -1 should be the returned id.", -1L, idOfApprovalIssueNull);
+		long idOfApprovalIssueNull = ConsistencyCheckLogHelper.approveCheck(null, "TestUser");
+		assertEquals("If the approved check's ke is null, -1 should be the returned id.", -1L, idOfApprovalIssueNull);
 	}
 
 	@Test
@@ -67,8 +67,8 @@ public class TestConsistencyCheckLogHelper extends TestSetUp {
 		//check.getApprover() != null && !check.getApprover().isBlank() && !check.getApprover().isEmpty();
 		assertFalse("Check is null. Therefore it is not approved.", ConsistencyCheckLogHelper.isCheckApproved(null));
 
-		ConsistencyCheckLogHelper.addCheck(issue);
-		Optional<ConsistencyCheckLogsInDatabase> check = ConsistencyCheckLogHelper.getCheck(issue.getKey());
+		ConsistencyCheckLogHelper.addCheck(ke);
+		Optional<ConsistencyCheckLogsInDatabase> check = ConsistencyCheckLogHelper.getCheck(ke);
 		assertFalse("Check is new. Therefore it is not approved.", ConsistencyCheckLogHelper.isCheckApproved(check.get()));
 		check.get().setApprover(null);
 		assertFalse("Approver is null. Therefore it is not approved.", ConsistencyCheckLogHelper.isCheckApproved(check.get()));
@@ -82,17 +82,17 @@ public class TestConsistencyCheckLogHelper extends TestSetUp {
 
 	@Test
 	public void testDeleteCheck() {
-		ConsistencyCheckLogHelper.addCheck(issue);
-		assertTrue("A pending check should exist.", ConsistencyCheckLogHelper.getCheck(issue.getKey()).isPresent());
-		ConsistencyCheckLogHelper.deleteCheck(issue);
-		assertTrue("Issue should no longer exist.", ConsistencyCheckLogHelper.getCheck(issue.getKey()).isEmpty());
+		ConsistencyCheckLogHelper.addCheck(ke);
+		assertTrue("A pending check should exist.", ConsistencyCheckLogHelper.getCheck(ke).isPresent());
+		ConsistencyCheckLogHelper.deleteCheck(ke);
+		assertTrue("Issue should no longer exist.", ConsistencyCheckLogHelper.getCheck(ke).isEmpty());
 
-		ConsistencyCheckLogHelper.deleteCheck(issue);
-		assertTrue("Issue should no longer exist.", ConsistencyCheckLogHelper.getCheck(issue.getKey()).isEmpty());
+		ConsistencyCheckLogHelper.deleteCheck(ke);
+		assertTrue("Issue should no longer exist.", ConsistencyCheckLogHelper.getCheck(ke).isEmpty());
 		try {
 			ConsistencyCheckLogHelper.deleteCheck(null);
 
-		}catch (Exception e){
+		} catch (Exception e) {
 			assertNotNull("No exception should be thrown", e);
 		}
 

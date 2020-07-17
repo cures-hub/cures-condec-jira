@@ -5,6 +5,7 @@ import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.StatusCl
 import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.TriggerChain;
 import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.WorkflowDoneTrigger;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.IssueEventListener;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 
 import java.util.ArrayList;
@@ -34,9 +35,9 @@ public class ConsistencyCheckEventListenerSingleton implements IssueEventListene
 		boolean triggered = this.chainStart.calculate();
 
 		if (triggered) {
-			ConsistencyCheckLogHelper.addCheck(issueEvent.getIssue());
+			ConsistencyCheckLogHelper.addCheck(new KnowledgeElement(issueEvent.getIssue()));
 		} else if ("workflow".equals(issueEvent.getParams().get("eventsource"))) {
-			ConsistencyCheckLogHelper.deleteCheck(issueEvent.getIssue());
+			ConsistencyCheckLogHelper.deleteCheck(new KnowledgeElement(issueEvent.getIssue()));
 		}
 	}
 
