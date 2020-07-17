@@ -86,10 +86,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 				    <span class="aui-icon aui-icon-small aui-iconfont-new-edit">Insert meaningful text here for accessibility</span>
 				    	Criterion
 				    </button>
-				    <button class="aui-button" title="Adds a new alternative row to decision table">
-				    <span class="aui-icon aui-icon-small aui-iconfont-add">Insert meaningful text here for accessibility</span>
-				    	Alternative
-				    </button>
 				</div>
              </div>
          </div>
