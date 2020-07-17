@@ -6,7 +6,6 @@
 
 		<div class="aui-buttons">
 		    <button type="button" class="aui-button" id="btn_save_query" onclick="saveQuery()">Save</button>
-		    <button type="button" class="aui-button" id="btn_test_query" onclick="testQuery()">Test</button>
 		</div>
 </div>
 <script>
@@ -53,25 +52,8 @@
 		document.getElementById("criteria-query").value = query.query;
 	});
 		
-	function testQuery() {
-		const query = document.getElementById("criteria-query").value;
-		if (query.length > 0) {
-			conDecAPI.testDecisionTableCriteriaQuery("$projectKey", query, function(issues) {
-				console.log(issues);
-			});
-		} else {
-			console.log("query length must be greater than 0");
-		}
-	}
-	
 	function saveQuery() {
 		const query = document.getElementById("criteria-query").value;
-		if (query.length > 0) {
-			conDecAPI.setDecisionTableCriteriaQuery("$projectKey", query, function(status) {
-				console.log(status);
-			});
-		} else {
-			console.log("query length must be greater than 0");
-		}
+		conDecAPI.setDecisionTableCriteriaQuery("$projectKey", query);
 	}
 </script>
