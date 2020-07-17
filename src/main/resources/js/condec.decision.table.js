@@ -24,8 +24,8 @@
 		});
 	};
 
-	ConDecDecisionTable.prototype.showAddCriteriaToDecisionTableDialog = function showAddCriteriaToDecisionTableDialog(elementKey) {
-		conDecDialog.showAddCriterionToDecisionTableDialog(elementKey, decisionTableData["criteria"], function (data) {		
+	ConDecDecisionTable.prototype.showAddCriteriaToDecisionTableDialog = function showAddCriteriaToDecisionTableDialog(projectKey) {
+		conDecDialog.showAddCriterionToDecisionTableDialog(projectKey, decisionTableData["criteria"], function (data) {		
 			for (key of data.keys()) {
 				const tmpCriterion = data.get(key).criterion;
 				if(data.get(key).status) {

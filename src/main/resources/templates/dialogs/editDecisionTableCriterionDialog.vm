@@ -15,7 +15,8 @@
 	    </thead>
 	    <tbody id="table-body">
 	    </tbody>
-	</table>   
+	</table>
+	<div id="decisionTableCriteriaQueryReference"></div>  
  <footer class="aui-dialog2-footer">
         <div class="aui-dialog2-footer-actions">
             <button id="dialog-close-button" class="aui-button aui-button-primary">Close</button>

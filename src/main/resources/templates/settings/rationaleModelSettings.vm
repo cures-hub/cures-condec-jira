@@ -51,7 +51,7 @@
 	conDecAPI.getDecisionTableCriteriaQuery("$projectKey", function(query) {
 		document.getElementById("criteria-query").value = query.query;
 	});
-		
+
 	function saveQuery() {
 		const query = document.getElementById("criteria-query").value;
 		conDecAPI.setDecisionTableCriteriaQuery("$projectKey", query);

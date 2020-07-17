@@ -640,12 +640,14 @@
 		conDecAPI.getDecisionTableCriteria(projectKey, function (criteria) {
 			allCriteria = criteria.concat(currentCriteria);
 			uniqueCriteria = new Set(allCriteria.map(item => item.id));
-			createDialogContent(criteria, currentCriteria);
+			createDialogContent(criteria, currentCriteria, projectKey);
 		});
         
-        function createDialogContent(criteria, currentCriteria) {
+        function createDialogContent(criteria, currentCriteria, projectKey) {
         	let tableBody = document.getElementById("table-body");
+        	let queryReference = document.getElementById("decisionTableCriteriaQueryReference");
         	tableBody.innerHTML = "";
+        	queryReference.innerHTML = "";
         	
         	for (let criterion of uniqueCriteria) {
         		tableBody.innerHTML += `<tr id="bodyRowCriteria${criterion}"></tr>`;
@@ -659,6 +661,11 @@
         			</td>
         			<td headers="basic-fname">${allCriteria.find(item => item.id === criterion).summary}</td>`;
         	}
+        	
+        	queryReference.innerHTML = `<div>Available criteria are fetched from decision table criteria query from 
+        		<a href="../../../plugins/servlet/condec/settings?projectKey=${projectKey}&category=rationaleModel">
+        		Ration model settings page</a>.</div>`;
+        	
         	addCheckboxEventListener();
         }
         
@@ -696,10 +703,6 @@
 			callback(changes);
 			AJS.dialog2(addCriterionDialog).hide();
 		}
-		
-		/*AJS.dialog2("#decisionTableCriteriaDialog").on("hide", function() {
-		    callback(changes);
-		});*/
 	}
 	
     ConDecDialog.prototype.showCreateReleaseNoteDialog = function () {
