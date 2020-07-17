@@ -42,9 +42,10 @@ public class TestCriterion extends TestSetUp {
 	
 	@Test
 	public void compareCriteria() {
+		Criterion tmpCriterion = null;
 		assertEquals(this.criterion1.equals(criterion1), true);
 		assertEquals(this.criterion1.equals(this.criterion2), false);
-		assertEquals(this.criterion1.equals(null), false);
+		assertEquals(this.criterion1.equals(tmpCriterion), false);
 	}
 	
 }
