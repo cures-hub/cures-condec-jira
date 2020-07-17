@@ -121,7 +121,7 @@ public class ContextInformation implements ContextInformationProvider {
 			suggestions
 				.forEach(score -> {
 					LinkSuggestion linkSuggestion = this.linkSuggestions.get(score.getTargetElement().getKey());
-					linkSuggestion.addToScore(score.getTotalScore() + finalNullCompensation / (finalSumOfIndividualScoresForCurrentCip * this.cips.size()), cip.getName());//sumOfIndividualScoresForCurrentCip);
+					linkSuggestion.addToScore((score.getTotalScore() + finalNullCompensation) / (finalSumOfIndividualScoresForCurrentCip * this.cips.size()), cip.getName());//sumOfIndividualScoresForCurrentCip);
 				});
 
 		});
