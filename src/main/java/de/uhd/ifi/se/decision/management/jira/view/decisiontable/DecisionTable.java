@@ -106,10 +106,10 @@ public class DecisionTable {
 	public void getArguments(long id, Map<String, List<DecisionTableElement>> decisionTableData, String location) {
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(id, location);
 		Set<Link> outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
-		
+
 		for (Link currentLink : outgoingLinks) {
 			KnowledgeElement elem = currentLink.getTarget();
-			if (elem.getType() == KnowledgeType.PRO || elem.getType() == KnowledgeType.CON) {
+			if (KnowledgeType.replaceProAndConWithArgument(elem.getType()) == KnowledgeType.ARGUMENT) {
 				Alternative alternative = (Alternative) decisionTableData.get("alternatives")
 						.get(decisionTableData.get("alternatives").size() - 1);
 				Argument argument = new Argument(elem);
@@ -123,7 +123,7 @@ public class DecisionTable {
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(argument.getId(),
 				argument.getDocumentationLocation());
 		Set<Link> outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
-
+		
 		for (Link currentLink : outgoingLinks) {
 			KnowledgeElement elem = currentLink.getTarget();
 			if (elem.getType() == KnowledgeType.OTHER) {
