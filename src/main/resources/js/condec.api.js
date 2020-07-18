@@ -764,6 +764,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setGitUris = function (projectKey, gitUris, defaultBranches) {
+		// TODO Pass gitUris and branches as the JSON payload. Do not pass concatenated strings separated with ;;
 		generalApi.postJSON(this.restPrefix + "/config/setGitUris.json?projectKey=" + projectKey
 			+ "&gitUris=" + gitUris + "&defaultBranches=" + defaultBranches, null, function (error, response) {
 				if (error === null) {
@@ -874,7 +875,6 @@
 	 */
 	ConDecAPI.prototype.getDecisionIssues = function (elementKey, callback) {
 		generalApi.getJSON(this.restPrefix + "/view/getDecisionIssues.json?elementKey=" + elementKey, function (error, issues) {
-			console.log(elementKey);
 			if (error === null) {
 				callback(issues);
 			}
@@ -887,13 +887,65 @@
 	ConDecAPI.prototype.getDecisionTable = function (elementKey, elementId, location, callback) {
 		generalApi.getJSON(this.restPrefix + `/view/getDecisionTable.json?elementKey=${elementKey}&elementId=${elementId}&location=${location}`,
 			function (error, issues) {
-				console.log(elementKey);
 				if (error === null) {
 					callback(issues);
 				}
 			});
 	};
 
+	/*
+	 * external references: condec.decision.table
+	 */
+	ConDecAPI.prototype.getDecisionTableCriteria = function (elementKey, callback) {
+		generalApi.getJSON(this.restPrefix + `/view/getDecisionTableCriteria.json?elementKey=${elementKey}`,
+			function (error, query) {
+				if (error === null) {
+					callback(query);
+				}
+			});
+	};
+	
+	/*
+	 * external reference: rationaleModelSettings.vm
+	 */
+	ConDecAPI.prototype.testDecisionTableCriteriaQuery = function(projectKey, query, callback) {
+		generalApi.postJSON(this.restPrefix + `/config/testDecisionTableCriteriaQuery.json?projectKey=${projectKey}&query=${query}`, 
+			null, function (error, issues) {
+				if (error === null) {
+					callback(issues);
+				}
+			});
+	};
+	
+	/*
+	 * external reference: rationalModelSettings.vm
+	 */
+	ConDecAPI.prototype.setDecisionTableCriteriaQuery = function(projectKey, query) {
+		if (!query.length > 0) {
+			return showFlag("error", "Query length must be greater than 0");
+		}
+		generalApi.postJSON(this.restPrefix + `/config/setDecisionTableCriteriaQuery.json?projectKey=${projectKey}&query=${query}`,
+			null, function (error, status) {
+				if (error === null) {
+					showFlag("success", "Query was saved");
+				} else {
+					showFlag("error", "Query could not be saved.");
+				}
+			});
+	};
+	 
+	/*
+	 * external reference: rationaleModelSettings.vm
+	 */
+	ConDecAPI.prototype.getDecisionTableCriteriaQuery = function(projectKey, callback) {
+		generalApi.getJSON(this.restPrefix + `/config/getDecisionTableCriteriaQuery.json?projectKey=${projectKey}`, 
+			function (error, query) {
+				if (error === null) {
+					callback(query);
+				}
+			});
+	};
+	
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */

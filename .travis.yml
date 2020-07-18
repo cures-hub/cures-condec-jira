@@ -23,7 +23,7 @@ deploy:
   file: $TRAVIS_BUILD_DIR/target/cures-condec-jira.jar
   skip_cleanup: true
   on:
-    tags: true
+      tags: true
   overwrite: true
 after_success:
   - bash <(curl -s https://codecov.io/bash) -f $TRAVIS_BUILD_DIR/target/site/jacoco/jacoco.xml

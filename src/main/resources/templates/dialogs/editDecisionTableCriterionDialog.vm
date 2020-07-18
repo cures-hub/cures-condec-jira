@@ -1,0 +1,25 @@
+<section id="decisionTableCriteriaDialog" class="aui-dialog2 aui-dialog2-small aui-layer" role="dialog" aria-hidden="true">
+    <header class="aui-dialog2-header">
+        <h2 class="aui-dialog2-header-main">Edit Criteria</h2>
+        <button id="dialog-exit-button" class="aui-dialog2-header-close" aria-label="close">
+            <span class="aui-icon aui-icon-small aui-iconfont-close-dialog"></span>
+        </button>
+    </header>
+    <div class="aui-dialog2-content">
+	<table id="dialog-table-content" class="aui">
+	    <thead>
+	        <tr>
+	            <th id="basic-number">Enabled</th>
+	            <th id="basic-fname">Cirterion</th>
+	        </tr>
+	    </thead>
+	    <tbody id="table-body">
+	    </tbody>
+	</table>
+	<div id="decisionTableCriteriaQueryReference"></div>  
+ <footer class="aui-dialog2-footer">
+        <div class="aui-dialog2-footer-actions">
+            <button id="dialog-close-button" class="aui-button aui-button-primary">Close</button>
+        </div>
+    </footer>
+</section>

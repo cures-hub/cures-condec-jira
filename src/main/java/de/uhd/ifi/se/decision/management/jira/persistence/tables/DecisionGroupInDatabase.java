@@ -2,18 +2,18 @@ package de.uhd.ifi.se.decision.management.jira.persistence.tables;
 
 import java.sql.SQLException;
 
-import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
 import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
 
 /**
- * Interface for groups of decisison and solution options (alternatives).
- * Determines which table columns are used for object relational mapping of link
- * objects to the database.
+ * Interface for groups of decisions and solution options (alternatives).
+ * Determines which table columns are used for object relational mapping to the
+ * database.
  * 
- * @see Link
+ * @see KnowledgeElement
  */
 @Table("CondecDecGroup")
 public interface DecisionGroupInDatabase extends RawEntity<Integer> {

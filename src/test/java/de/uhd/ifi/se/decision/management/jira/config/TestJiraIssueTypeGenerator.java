@@ -57,17 +57,17 @@ public class TestJiraIssueTypeGenerator {
 		Map<String, GenericValue> paramMap = new HashMap<String, GenericValue>();
 		GenericValue value = new MockGenericValue("TEST", (long) 1);
 		paramMap.put("project", value);
-		assertEquals(5, generator.getValues(paramMap).size());
+		assertEquals(6, generator.getValues(paramMap).size());
 	}
 
 	@Test
 	public void testGetJiraIssueTypesZero() {
-		assertEquals(5, JiraIssueTypeGenerator.getJiraIssueTypes(1).size());
+		assertEquals(6, JiraIssueTypeGenerator.getJiraIssueTypes(1).size());
 	}
 	
 	@Test
 	public void testGetJiraIssueTypesByProjectKeyValid() {
-		assertEquals(5, JiraIssueTypeGenerator.getJiraIssueTypes("TEST").size());
+		assertEquals(6, JiraIssueTypeGenerator.getJiraIssueTypes("TEST").size());
 	}
 	
 	@Test
@@ -77,7 +77,7 @@ public class TestJiraIssueTypeGenerator {
 
 	@Test
 	public void testGetJiraIssueTypesOk() {
-		assertEquals(5, JiraIssueTypeGenerator.getJiraIssueTypes(1).size());
+		assertEquals(6, JiraIssueTypeGenerator.getJiraIssueTypes(1).size());
 	}
 
 	@Test

@@ -9,11 +9,12 @@ import org.junit.Test;
 
 public class TestCheckoutCommits extends TestSetUpGit {
 
-    @Test
-    public void testCommitCheckout() {
-	List<RevCommit> allCommits = gitClient.getCommits(GIT_URI);
-	assertTrue(2 < allCommits.size());
-	assertTrue(gitClient.checkoutCommit(allCommits.get(allCommits.size() - 2), GIT_URI));
-	assertTrue(gitClient.checkoutCommit(allCommits.get(0), GIT_URI));
-    }
+	@Test
+	public void testCommitCheckout() {
+		List<RevCommit> allCommits = gitClient.getCommits(GIT_URI);
+		assertTrue(2 < allCommits.size());
+		assertTrue(gitClient.checkoutCommit(allCommits.get(allCommits.size() - 2), GIT_URI));
+		assertTrue(gitClient.checkoutCommit(allCommits.get(0), GIT_URI));
+		gitClient.deleteRepository(GIT_URI);
+	}
 }

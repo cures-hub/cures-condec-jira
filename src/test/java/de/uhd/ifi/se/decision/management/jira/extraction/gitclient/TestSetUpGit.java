@@ -51,6 +51,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 
 	@BeforeClass
 	public static void setUpBeforeClass() {
+		init();
 		if (gitClient != null && gitClient.getDirectory(GIT_URI) != null) {
 			// git client already exists
 			return;
@@ -65,7 +66,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		uris.add(GIT_URI);
 		ConfigPersistenceManager.setGitUris("TEST", GIT_URI);
 		ConfigPersistenceManager.setDefaultBranches("TEST", "master");
-		gitClient = new GitClient(uris, DIRECTORY.getAbsolutePath(), "TEST");
+		gitClient = new GitClient(uris, null, "TEST");
 		// above line will log errors for pulling from still empty remote repositry.
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
 		makeExampleCommit(fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
@@ -264,23 +265,5 @@ public abstract class TestSetUpGit extends TestSetUp {
 	@AfterClass
 	public static void tidyUp() {
 		gitClient.deleteRepository(GIT_URI);
-	}
-
-	// helpers
-
-	protected String getRepoBaseDirectory() {
-		Repository repo = gitClient.getGit(GIT_URI).getRepository();
-		File dir = repo.getDirectory();
-		String projectUriSomeBranchPath = dir.getAbsolutePath();
-		String regExSplit = File.separator;
-		if (("\\").equals(regExSplit)) {
-			regExSplit = "\\\\";
-		}
-		String[] projectUriSomeBranchPathComponents = projectUriSomeBranchPath.split(regExSplit);
-		String[] projectUriPathComponents = new String[projectUriSomeBranchPathComponents.length - 4];
-		for (int i = 0; i < projectUriPathComponents.length; i++) {
-			projectUriPathComponents[i] = projectUriSomeBranchPathComponents[i];
-		}
-		return String.join(File.separator, projectUriPathComponents);
 	}
 }

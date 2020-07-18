@@ -31,6 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
  * @alternative Use the decorator design pattern to integrate persistence
  *              managers for different documentation locations!
  * @alternative Manually implement methods such as getDecisionKnowledgeElements!
+ * 
  * @see AbstractPersistenceManagerForSingleLocation
  * @see JiraIssuePersistenceManager
  * @see JiraIssueTextPersistenceManager
@@ -41,7 +42,7 @@ public class KnowledgePersistenceManager {
 	private String projectKey;
 	private JiraIssuePersistenceManager jiraIssuePersistenceManager;
 	private JiraIssueTextPersistenceManager jiraIssueTextPersistenceManager;
-	private CodeClassPersistenceManager codeClassKnowledgeElementPersistenceManager;
+	private CodeClassPersistenceManager codeClassPersistenceManager;
 	private List<AbstractPersistenceManagerForSingleLocation> activePersistenceManagersForSingleLocations;
 
 	/**
@@ -91,11 +92,11 @@ public class KnowledgePersistenceManager {
 		this.projectKey = projectKey;
 		this.jiraIssuePersistenceManager = new JiraIssuePersistenceManager(projectKey);
 		this.jiraIssueTextPersistenceManager = new JiraIssueTextPersistenceManager(projectKey);
-		this.codeClassKnowledgeElementPersistenceManager = new CodeClassPersistenceManager(projectKey);
-		this.activePersistenceManagersForSingleLocations = initActivePersistenceManagersForSinleLocations();
+		this.codeClassPersistenceManager = new CodeClassPersistenceManager(projectKey);
+		this.activePersistenceManagersForSingleLocations = initActivePersistenceManagersForSingleLocations();
 	}
 
-	private List<AbstractPersistenceManagerForSingleLocation> initActivePersistenceManagersForSinleLocations() {
+	private List<AbstractPersistenceManagerForSingleLocation> initActivePersistenceManagersForSingleLocations() {
 		List<AbstractPersistenceManagerForSingleLocation> activePersistenceManagersForSinleLocations = new ArrayList<AbstractPersistenceManagerForSingleLocation>();
 		activePersistenceManagersForSinleLocations.add(jiraIssueTextPersistenceManager);
 		activePersistenceManagersForSinleLocations.add(jiraIssuePersistenceManager);
@@ -198,7 +199,7 @@ public class KnowledgePersistenceManager {
 		case JIRAISSUETEXT:
 			return jiraIssueTextPersistenceManager;
 		case COMMIT:
-			return codeClassKnowledgeElementPersistenceManager;
+			return codeClassPersistenceManager;
 		default:
 			return null;
 		}
@@ -355,7 +356,6 @@ public class KnowledgePersistenceManager {
 		KnowledgeGraph.getOrCreate(projectKey).removeEdge(formerLink);
 
 		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
-		KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
 
 		return this.insertLink(link, user);
 	}

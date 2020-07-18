@@ -20,12 +20,12 @@ import com.atlassian.jira.issue.comments.Comment;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 
+@Ignore
 public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 
 	private CommitMessageToCommentTranscriber transcriber;
 	private Issue issue;
 	private Ref branch;
-	// private GitClient gitClient;
 
 	private static String DEFAULT_EXPECTED_COMMENT_MESSAGE = "{issue}This is an issue!{issue}";
 
@@ -41,8 +41,6 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 		this.issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(testIssueKey);
 		List<String> uris = new ArrayList<String>();
 		uris.add(GIT_URI);
-		// this.gitClient = new GitClient(uris, super.getRepoBaseDirectory(),
-		// "TEST");// ComponentGetter.getGitClient(issue.getProjectObject().getKey());//
 		this.branch = null;
 		Iterator<Ref> it = gitClient.getAllRemoteBranches().iterator();
 		while (it.hasNext()) {
@@ -57,14 +55,12 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 	}
 
 	@Test
-	@Ignore
 	public void testEmptyMessage() {
 		RevCommit commit = gitClient.getFeatureBranchCommits(this.branch).get(0);
 		assertEquals("", transcriber.generateCommentString(commit, branch));
 	}
 
 	@Test
-	@Ignore
 	public void testLowercaseIssueMessage() {
 		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(this.branch).get(1);
 		assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + META_DATA_STRING + commit.getName(),
@@ -72,7 +68,6 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 	}
 
 	@Test
-	@Ignore
 	public void testUppercaseIssueMessage() {
 		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(this.branch).get(2);
 		assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + META_DATA_STRING + commit.getName(),
@@ -80,7 +75,6 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 	}
 
 	@Test
-	@Ignore
 	public void testMixedcaseIssueMessage() {
 		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(this.branch).get(3);
 		assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + META_DATA_STRING + commit.getName(),
@@ -88,7 +82,6 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 	}
 
 	@Test
-	@Ignore
 	public void testIssueMessageWithAdditionalText() {
 		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(this.branch).get(4);
 		assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + " But I love pizza!" + META_DATA_STRING + commit.getName(),

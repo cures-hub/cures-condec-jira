@@ -1,5 +1,13 @@
 <h2 id="additionale-types-header">Additional Decision Knowledge	Types</h2>
+<div class="field-group">
+        <label for="text-input">Decision table<span class="aui-icon icon-required">required</span></label>
+        <input class="text" type="text" id="criteria-query" name="text-input" title="JQL input">
+        <div class="description">Enables to configure which kind of criteria can be used</div>
 
+		<div class="aui-buttons">
+		    <button type="button" class="aui-button" id="btn_save_query" onclick="saveQuery()">Save</button>
+		</div>
+</div>
 <script>
 	html = "<p id='additionale-types-text'> The default decision knowledge types are:";
 	var defaultKnowledgeTypes = [ "Decision", "Issue", "Alternative", "Argument" ]
@@ -29,7 +37,7 @@
 
 <script>
 	for (j in additionalKnowledgeTypes) {
-		conDecAPI.isKnowledgeTypeEnabled(typeToggles[j].value, "$projectKey", typeToggles[j], function(isTypeEnabled, toggle) {	
+		conDecAPI.isKnowledgeTypeEnabled(typeToggles[j].value, "$projectKey", typeToggles[j], function(isTypeEnabled, toggle) {
 	    	toggle.checked = isTypeEnabled;
 		});
 		
@@ -38,5 +46,14 @@
 	        conDecAPI.setKnowledgeTypeEnabled(this.checked, this.value, "$projectKey");
 	        this.busy = false;
 	    });           
+	}
+	
+	conDecAPI.getDecisionTableCriteriaQuery("$projectKey", function(query) {
+		document.getElementById("criteria-query").value = query.query;
+	});
+
+	function saveQuery() {
+		const query = document.getElementById("criteria-query").value;
+		conDecAPI.setDecisionTableCriteriaQuery("$projectKey", query);
 	}
 </script>

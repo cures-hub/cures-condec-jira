@@ -27,6 +27,7 @@ public class JiraIssueTypes {
 			jiraIssueTypes.add(new MockIssueType(2, "Alternative"));
 			jiraIssueTypes.add(new MockIssueType(3, "Decision"));
 			jiraIssueTypes.add(new MockIssueType(4, "Argument"));
+			jiraIssueTypes.add(new MockIssueType(5, "Non functional requirement"));
 		}
 		return jiraIssueTypes;
 	}
