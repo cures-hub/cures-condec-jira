@@ -1,12 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
 
-import com.atlassian.jira.component.ComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
-import org.ofbiz.core.entity.GenericEntityException;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
 public class ContextInformation implements ContextInformationProvider {
 	private KnowledgeElement element;
 	private List<ContextInformationProvider> cips;
-	private Map<String,LinkSuggestion> linkSuggestions;
+	private Map<String, LinkSuggestion> linkSuggestions;
 
 
 	public ContextInformation(KnowledgeElement element) {
@@ -39,7 +38,7 @@ public class ContextInformation implements ContextInformationProvider {
 		Set<KnowledgeElement> linkedKnowledgeElements = new HashSet<>();
 		List<Link> linkCollection = this.element.getLinks();
 		if (linkCollection != null) {
-			for (Link link : linkCollection){
+			for (Link link : linkCollection) {
 				linkedKnowledgeElements.add(link.getSource());
 				linkedKnowledgeElements.add(link.getTarget());
 
@@ -48,20 +47,15 @@ public class ContextInformation implements ContextInformationProvider {
 		return linkedKnowledgeElements;
 	}
 
-	public Collection<KnowledgeElement> getDiscardedSuggestionKnowledgeElements() {
-		return ConsistencyPersistenceHelper
-			.getDiscardedLinkSuggestions(this.element);
 
-	}
-
-	public Collection<LinkSuggestion> getLinkSuggestions()  {
+	public Collection<LinkSuggestion> getLinkSuggestions() {
 		//Add all issues of project to projectKnowledgeElements set
-		Set<KnowledgeElement> projectKnowledgeElements = null;
-		try {
-			projectKnowledgeElements = new HashSet<>(this.getAllKnowledgeElementsForProject(this.element.getProject().getJiraProject().getId()));
-		} catch (GenericEntityException e) {
-			e.printStackTrace();
-		}
+		Set<KnowledgeElement> projectKnowledgeElements = new HashSet<>(
+			KnowledgePersistenceManager
+				.getOrCreate(element.getProject().getProjectKey())
+				.getKnowledgeElements()
+		);
+
 		projectKnowledgeElements.remove(this.element);
 		this.assessRelation(element, new ArrayList<>(projectKnowledgeElements));
 		//calculate context score
@@ -83,7 +77,8 @@ public class ContextInformation implements ContextInformationProvider {
 		//Create union of all issues to be filtered out.
 		Set<KnowledgeElement> filteredKnowledgeElements = new HashSet<>(projectKnowledgeElements);
 		Set<KnowledgeElement> filterOutElements = new HashSet<>(this.getLinkedKnowledgeElements());
-		filterOutElements.addAll(this.getDiscardedSuggestionKnowledgeElements());
+		filterOutElements.addAll(ConsistencyPersistenceHelper
+			.getDiscardedLinkSuggestions(this.element));
 		filterOutElements.add(this.element);
 
 		//Calculate difference between all issues of project and the issues that need to be filtered out.
@@ -101,11 +96,12 @@ public class ContextInformation implements ContextInformationProvider {
 		}
 
 		this.cips.forEach((cip) -> {
-			cip.assessRelation(this.element, new ArrayList<>(knowledgeElements));;
+			cip.assessRelation(this.element, new ArrayList<>(knowledgeElements));
+
 			double nullCompensation = 0.;
 
 			Collection<LinkSuggestion> suggestions = cip.getLinkSuggestions();
-			Double sumOfIndividualScoresForCurrentCip = suggestions
+			double sumOfIndividualScoresForCurrentCip = suggestions
 				.stream()
 				.mapToDouble(LinkSuggestion::getTotalScore)
 				.sum();
@@ -115,7 +111,7 @@ public class ContextInformation implements ContextInformationProvider {
 				nullCompensation = 1. / suggestions.size();
 			}
 
-			final Double finalSumOfIndividualScoresForCurrentCip = sumOfIndividualScoresForCurrentCip;
+			final double finalSumOfIndividualScoresForCurrentCip = sumOfIndividualScoresForCurrentCip;
 			// Divide each score by the max value to scale it to [0,1]
 			double finalNullCompensation = nullCompensation;
 			suggestions
@@ -127,21 +123,6 @@ public class ContextInformation implements ContextInformationProvider {
 		});
 	}
 
-	/**
-	 * TODO: rework to get KnowledgeElements not Issues
-	 * @param projectId
-	 * @return
-	 * @throws GenericEntityException
-	 */
-	public Collection<KnowledgeElement> getAllKnowledgeElementsForProject(Long projectId) throws GenericEntityException {
-		Collection<KnowledgeElement> issuesOfProject = new ArrayList<>();
-		Collection<Long> issueIds = ComponentAccessor.getIssueManager().getIssueIdsForProject(projectId);
-
-		for (Long issueId : issueIds) {
-			issuesOfProject.add(new KnowledgeElement(ComponentAccessor.getIssueManager().getIssueObject(issueId)));
-		}
-		return issuesOfProject;
-	}
 
 	@Override
 	public String getId() {

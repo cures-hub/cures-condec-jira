@@ -37,9 +37,7 @@ public class TracingCIP implements ContextInformationProvider {
 		for (KnowledgeElement issueToTest : knowledgeElements) {
 			LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, issueToTest);
 
-			Map<String, Integer> distanceMap = new HashMap<String, Integer>();
-			distanceMap.put(baseElement.getKey(), 0);
-			Integer distance = searchBreadthFirst(baseElement, issueToTest, distanceMap).get(issueToTest.getKey());
+			Integer distance = search(baseElement, issueToTest);
 			// A null value means the nodes are not connected.
 			Double value = 0.;
 			if (distance != null) {
@@ -57,7 +55,16 @@ public class TracingCIP implements ContextInformationProvider {
 		return distanceMap.keySet().contains(node);
 	}
 
-	private Map<String, Integer> searchBreadthFirst(KnowledgeElement startNode, KnowledgeElement endNode, Map<String, Integer> distanceMap) {
+	/**
+	 * This method uses the breadth first algorithm to search for the shortest path between 2 nodes
+	 *
+	 * @param startNode
+	 * @param endNode
+	 * @return
+	 */
+	private Integer search(KnowledgeElement startNode, KnowledgeElement endNode) {
+		Map<String, Integer> distanceMap = new HashMap<String, Integer>();
+		distanceMap.put(startNode.getKey(), 0);
 		Set<KnowledgeElement> currentNodesToCheck = new HashSet<>();
 		currentNodesToCheck.add(startNode);
 		Set<KnowledgeElement> nextNodesToCheck = new HashSet<>();
@@ -73,7 +80,7 @@ public class TracingCIP implements ContextInformationProvider {
 			!wasVisited(endNode.getKey(), distanceMap) &&
 			iteration < maxIterations) {
 			for (KnowledgeElement nodeToCheck : currentNodesToCheck) {
-				List<Link> links =  nodeToCheck.getLinks();
+				List<Link> links = nodeToCheck.getLinks();
 				//Collection<IssueLink> issueLinks = this.issueLinkManager.getIssueLinks(nodeToCheck.getId());
 
 				Collection<KnowledgeElement> linkedKnowledge = getElementsForLinks(links);
@@ -91,15 +98,15 @@ public class TracingCIP implements ContextInformationProvider {
 
 		}
 
-		return distanceMap;
+		return distanceMap.get(endNode.getKey());
 	}
 
 	private Set<KnowledgeElement> getElementsForLinks(Collection<Link> elementLinks) {
-		Set<KnowledgeElement> issues = new HashSet<>();
+		Set<KnowledgeElement> knowledgeElements = new HashSet<>();
 		for (Link issueLink : elementLinks) {
-			issues.addAll(issueLink.getBothElements());
+			knowledgeElements.addAll(issueLink.getBothElements());
 		}
-		return issues;
+		return knowledgeElements;
 	}
 
 	@Override

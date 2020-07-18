@@ -40,7 +40,7 @@ public class DuplicateDetectionManager {
 
 			elementsToCheck.parallelStream().forEach((issueToCheck) -> {
 				try {
-					List<DuplicateSuggestion> foundDuplicateFragmentsForIssue = duplicateDetectionStrategy.detectDuplicateTextFragments(this.knowledgeElement, issueToCheck);
+					List<DuplicateSuggestion> foundDuplicateFragmentsForIssue = duplicateDetectionStrategy.detectDuplicates(this.knowledgeElement, issueToCheck);
 					DuplicateSuggestion mostLikelyDuplicate = findLongestDuplicate(foundDuplicateFragmentsForIssue);
 					if (mostLikelyDuplicate != null) {
 						foundDuplicateSuggestions.add(mostLikelyDuplicate);

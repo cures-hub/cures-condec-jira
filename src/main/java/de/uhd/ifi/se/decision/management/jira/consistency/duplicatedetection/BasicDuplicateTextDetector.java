@@ -26,7 +26,7 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 	}
 
 	@Override
-	public List<DuplicateSuggestion> detectDuplicateTextFragments(KnowledgeElement baseElement, KnowledgeElement compareElement) throws Exception {
+	public List<DuplicateSuggestion> detectDuplicates(KnowledgeElement baseElement, KnowledgeElement compareElement) throws Exception {
 		String s1 = baseElement.getDescription();
 		String s2 = compareElement.getDescription();
 		List<DuplicateSuggestion> duplicateList = new ArrayList();
@@ -76,10 +76,10 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 		return duplicateList;
 	}
 
-	private String generateStringToSearch(List<CharSequence> preprocessedS1Tokens, int index, int numberOfDuplicateTokens) {
+	private String generateStringToSearch(List<CharSequence> tokens, int index, int numberOfDuplicateTokens) {
 		StringBuilder stringToSearch = new StringBuilder();
-		for (int i = index; i < preprocessedS1Tokens.size() && i < index + numberOfDuplicateTokens; i++) {
-			stringToSearch.append(preprocessedS1Tokens.get(i)).append(" ");
+		for (int i = index; i < tokens.size() && i < index + numberOfDuplicateTokens; i++) {
+			stringToSearch.append(tokens.get(i)).append(" ");
 		}
 		return stringToSearch.toString().trim();
 	}

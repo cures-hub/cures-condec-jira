@@ -18,7 +18,7 @@ public interface DuplicateDetectionStrategy {
 	 * @return List of all found duplicate text fragments in i2 of i1
 	 * @throws Exception
 	 */
-	List<DuplicateSuggestion> detectDuplicateTextFragments(KnowledgeElement baseElement, KnowledgeElement compareElement) throws Exception;
+	List<DuplicateSuggestion> detectDuplicates(KnowledgeElement baseElement, KnowledgeElement compareElement) throws Exception;
 
 }
 

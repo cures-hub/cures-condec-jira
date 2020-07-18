@@ -64,11 +64,11 @@ public class ConsistencyPersistenceHelper {
 	// General Suggestion
 	//------------------
 
-	private static List<KnowledgeElement> getDiscardedSuggestions(KnowledgeElement base, SuggestionType type) {
+	private static List<KnowledgeElement> getDiscardedSuggestions(KnowledgeElement origin, SuggestionType type) {
 		List<KnowledgeElement> discardedSuggestions = new ArrayList<>();
 		Optional<DiscardedSuggestionInDatabase[]> discardedLinkSuggestions = Optional.ofNullable(ACTIVE_OBJECTS.find(DiscardedSuggestionInDatabase.class,
-			Query.select().where("PROJECT_KEY = ? AND ORIGIN_ID = ? AND TYPE = ?", base.getProject().getProjectKey(), base.getId(), type)));
-		persistenceManager = KnowledgePersistenceManager.getOrCreate(base.getProject().getProjectKey());
+			Query.select().where("PROJECT_KEY = ? AND ORIGIN_ID = ? AND TYPE = ?", origin.getProject().getProjectKey(), origin.getId(), type)));
+		persistenceManager = KnowledgePersistenceManager.getOrCreate(origin.getProject().getProjectKey());
 
 		for (DiscardedSuggestionInDatabase discardedLinkSuggestion : discardedLinkSuggestions.orElseGet(() -> new DiscardedSuggestionInDatabase[0])) {
 			discardedSuggestions.add(persistenceManager.getKnowledgeElement(discardedLinkSuggestion.getDiscardedElementId(), discardedLinkSuggestion.getDiscElDocumentationLocation()));
@@ -76,9 +76,9 @@ public class ConsistencyPersistenceHelper {
 		return discardedSuggestions;
 	}
 
-	private static DiscardedSuggestionInDatabase[] getDiscardedSuggestion(KnowledgeElement base, KnowledgeElement target, SuggestionType type) {
+	private static DiscardedSuggestionInDatabase[] getDiscardedSuggestion(KnowledgeElement origin, KnowledgeElement target, SuggestionType type) {
 		DiscardedSuggestionInDatabase[] discardedLinkSuggestions = ACTIVE_OBJECTS.find(DiscardedSuggestionInDatabase.class,
-			Query.select().where("PROJECT_KEY = ? AND ORIGIN_ID = ? AND DISCARDED_ELEMENT_ID = ? AND TYPE = ?", base.getProject().getProjectKey(), base.getId(), target.getId(), type));
+			Query.select().where("PROJECT_KEY = ? AND ORIGIN_ID = ? AND DISCARDED_ELEMENT_ID = ? AND TYPE = ?", origin.getProject().getProjectKey(), origin.getId(), target.getId(), type));
 
 		return discardedLinkSuggestions;
 	}
