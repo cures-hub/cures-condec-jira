@@ -15,10 +15,16 @@
 
 		this.projectKey = conDecAPI.getProjectKey();
 		this.currentSuggestions = [];
+
+		$(document).ajaxComplete(function (event, request, settings) {
+			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
+				console.log("WorkflowUIDispatcher");
+				consistencyAPI.displayConsistencyCheck();
+			}
+		});
 	};
 
 	ConsistencyTabsModule.prototype.init = function () {
-		let that = this;
 		this.issueId = JIRA.Issue.getIssueId();
 
 
@@ -32,12 +38,6 @@
 		this.resultsTableElement = document.getElementById("results-table");
 		this.resultsTableContentElement = document.getElementById("table-content");
 
-		$(document).ajaxComplete(function (event, request, settings) {
-			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
-				console.log("WorkflowUIDispatcher");
-				consistencyAPI.displayConsistencyCheck()
-			}
-		});
 	}
 
 	ConsistencyTabsModule.prototype.discardDuplicate = function (index) {

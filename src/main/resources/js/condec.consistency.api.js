@@ -3,10 +3,12 @@
 		const ConsistencyAPI = function ConsistencyAPI() {
 			this.restPrefix = AJS.contextPath() + "/rest/condec/latest/consistency";
 			this.projectKey = conDecAPI.getProjectKey();
-			this.issueId = JIRA.Issue.getIssueId();
-
 			this.consistencyCheckFlag = undefined;
-			this.displayConsistencyCheck();
+			let that = this;
+			global.onload = (ev) => {
+				that.displayConsistencyCheck()
+			};
+
 
 		};
 
@@ -72,27 +74,30 @@
 		};
 
 		ConsistencyAPI.prototype.approveInconsistencies = function () {
-			consistencyAPI.approveCheck(this.projectKey, this.issueId, "i",JIRA.Users.LoggedInUser.userName());
+			consistencyAPI.approveCheck(this.projectKey, this.issueId, "i", JIRA.Users.LoggedInUser.userName());
 			this.consistencyCheckFlag.close();
 		}
 
 		ConsistencyAPI.prototype.displayConsistencyCheck = function () {
 			let that = this;
-			let issueKey = conDecAPI.getIssueKey();
-			if (issueKey !== null && issueKey !== undefined) {
+			this.issueId = JIRA.Issue.getIssueId();
+
+			console.log("displayConsistencyCheck: " + this.issueId);
+
+			if (that.issueId !== null && that.issueId !== undefined) {
 				this.doesElementNeedApproval(that.projectKey, that.issueId, "i")
 					.then((response) => {
 						if (response.needsApproval) {
 							Promise.all([this.getDuplicateKnowledgeElement(that.projectKey, that.issueId, "i"),
 								consistencyAPI.getRelatedKnowledgeElements(that.projectKey, that.issueId, "i")]).then(
 								(values) => {
-									console.log(values);
 									let numDuplicates = (values[0].duplicates.length);
 									let numRelated = (values[1].relatedIssues.length);
 									if (numDuplicates + numRelated > 0) {
 										that.consistencyCheckFlag = AJS.flag({
 											type: 'warning',
 											title: 'Possible inconsistencies detected!',
+											close: 'manual',
 											body: 'Issue <strong>' + conDecAPI.getIssueKey() + '</strong> contains some detected inconsistencies. <br/>'
 												+ '<ul>'
 												+ '<li> ' + numRelated + ' possibly related issues </li>'
