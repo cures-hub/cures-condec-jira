@@ -227,8 +227,7 @@ public class ViewRest {
 	@Path("/getDecisionIssues")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionIssues(@Context HttpServletRequest request,
-			@QueryParam("elementKey") String elementKey) {
+	public Response getDecisionIssues(@QueryParam("elementKey") String elementKey) {
 		if (elementKey == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Decision Issues cannot be shown since element key is invalid."))
@@ -260,10 +259,30 @@ public class ViewRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		DecisionTable decisionTable = new DecisionTable(projectKey);
-		decisionTable.setDecisionTableForIssue(id, location);
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		decisionTable.setDecisionTableForIssue(id, location, user);
 		return Response.ok(decisionTable.getDecisionTableData()).build();
 	}
 
+	@Path("/getDecisionTableCriteria")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getDecisionTableCriteria(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey) {
+		if (request == null || elementKey == null) {
+			return Response.status(Status.BAD_REQUEST).entity(
+					ImmutableMap.of("error", "Decision Table cannot be shown due to missing or invalid parameters."))
+					.build();
+		}
+		String projectKey = getProjectKey(elementKey);
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		DecisionTable decisionTable = new DecisionTable(projectKey);
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		return Response.ok(decisionTable.getDecisionTableCriteria(user)).build();
+	}
+	
 	@Path("/getTreant")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })

@@ -628,6 +628,83 @@
         AJS.dialog2(summarizedDialog).show();
     };
 
+	ConDecDialog.prototype.showAddCriterionToDecisionTableDialog = function (projectKey, currentCriteria, callback) {
+		let addCriterionDialog = document.getElementById("decisionTableCriteriaDialog");
+		let closeButton = document.getElementById("dialog-close-button");
+		let exitButton = document.getElementById("dialog-exit-button");
+		
+        let changes = new Map();
+		let allCriteria;
+        let uniqueCriteria;
+
+		conDecAPI.getDecisionTableCriteria(projectKey, function (criteria) {
+			allCriteria = criteria.concat(currentCriteria);
+			uniqueCriteria = new Set(allCriteria.map(item => item.id));
+			createDialogContent(criteria, currentCriteria, projectKey);
+		});
+        
+        function createDialogContent(criteria, currentCriteria, projectKey) {
+        	let tableBody = document.getElementById("table-body");
+        	let queryReference = document.getElementById("decisionTableCriteriaQueryReference");
+        	tableBody.innerHTML = "";
+        	queryReference.innerHTML = "";
+        	
+        	for (let criterion of uniqueCriteria) {
+        		tableBody.innerHTML += `<tr id="bodyRowCriteria${criterion}"></tr>`;
+        		let rowElement = document.getElementById(`bodyRowCriteria${criterion}`);
+           		let checked = currentCriteria.find(item => item.id === criterion) ? "checked" : "";
+   
+        		rowElement.innerHTML += `<td headers="basic-number">
+        			<div class="checkbox">
+        				<input id="ckb${criterion}" class="checkbox" type="checkbox" name="ckbCriterion" id="checkBoxOne" ${checked}>
+        			</div>
+        			</td>
+        			<td headers="basic-fname">${allCriteria.find(item => item.id === criterion).summary}</td>`;
+        	}
+        	
+        	queryReference.innerHTML = `<div>Available criteria are fetched from decision table criteria query from 
+        		<a href="../../../plugins/servlet/condec/settings?projectKey=${projectKey}&category=rationaleModel">
+        		Ration model settings page</a>.</div>`;
+        	
+        	addCheckboxEventListener();
+        }
+        
+        function addCheckboxEventListener() {
+        	let checkboxes = document.querySelectorAll("input[type=checkbox][class=checkbox][name=ckbCriterion]");
+        	for (let checkbox of checkboxes) {
+        		checkbox.addEventListener("change", function () {
+        			let tmpCriterionId = this.id.replace("ckb", "");
+        			let isInCurrentCriteria = currentCriteria.find(item => item.id == tmpCriterionId) ? true : false;
+        			
+        			if (!this.checked && isInCurrentCriteria) {
+        				changes.set(tmpCriterionId, 
+        				{"status": this.checked, "criterion": allCriteria.find(item => item.id == tmpCriterionId)});
+        			} else if (this.checked && isInCurrentCriteria && changes.has(tmpCriterionId)) {
+        				changes.delete(tmpCriterionId);
+        			} else if (changes.has(tmpCriterionId)) {
+        				changes.delete(tmpCriterionId);
+        			} else {
+        				changes.set(tmpCriterionId, 
+        				{"status": this.checked, "criterion": allCriteria.find(item => item.id == tmpCriterionId)});
+        			}
+        		});
+        	}
+        }
+        
+        // Show dialog
+        AJS.dialog2(addCriterionDialog).show();
+        
+        exitButton.onclick = function () {
+        	callback(changes);
+			AJS.dialog2(addCriterionDialog).hide();
+        }
+        
+		closeButton.onclick = function () {
+			callback(changes);
+			AJS.dialog2(addCriterionDialog).hide();
+		}
+	}
+	
     ConDecDialog.prototype.showCreateReleaseNoteDialog = function () {
         // HTML elements
         // set button busy before we show the dialog

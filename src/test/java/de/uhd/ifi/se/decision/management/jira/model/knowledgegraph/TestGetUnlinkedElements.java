@@ -22,13 +22,13 @@ public class TestGetUnlinkedElements extends TestSetUp {
 
 	@Test
 	public void testElementNull() {
-		assertEquals(8, graph.getUnlinkedElements(null).size());
+		assertEquals(9, graph.getUnlinkedElements(null).size());
 	}
 
 	@Test
 	public void testElementValid() {
 		Issue issue = JiraIssues.getTestJiraIssues().get(0);
 		KnowledgeElement element = new KnowledgeElement(issue);
-		assertEquals(4, graph.getUnlinkedElements(element).size());
+		assertEquals(3, graph.getUnlinkedElements(element).size());
 	}
 }

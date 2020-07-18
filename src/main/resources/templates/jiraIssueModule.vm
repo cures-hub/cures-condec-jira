@@ -72,7 +72,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
     <div class="tabs-pane" id="decisionTable">
          <div class="aui-toolbar2" role="toolbar">
              <div class="aui-toolbar-2-inner">
-                 <!-- todo make decision table with dummy data -->
 				 <div class="aui-buttons pluggable-ops">
 				 	<button class="aui-button aui-dropdown2-trigger" aria-controls="example-dropdown">
     					Issue
@@ -82,9 +81,15 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 					</aui-section>
 					</aui-dropdown-menu>
 				 </div>
+				 <div class="aui-buttons">
+				    <button class="aui-button" id="btnAddCriterion" title="Adds a new criterion column to decision table">
+				    <span class="aui-icon aui-icon-small aui-iconfont-new-edit">Insert meaningful text here for accessibility</span>
+				    	Criterion
+				    </button>
+				</div>
              </div>
          </div>
-         <div style="height: auto" id="decisionTable-container"></div>
+         <div style="height: auto; overflow-x: auto;" id="decisionTable-container"></div>
      </div>
     <div class="tabs-pane" id="duplicate-issues-tab">
         #parse("templates/tabs/duplicatesTab.vm")
@@ -101,6 +106,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 #parse("templates/dialogs/changeStatusDialog.vm")
 #parse("templates/dialogs/summarizationDialog.vm")
 #parse("templates/dialogs/exportDialog.vm")
+#parse("templates/dialogs/editDecisionTableCriterionDialog.vm")
 
 #parse("templates/contextMenu.vm")
 

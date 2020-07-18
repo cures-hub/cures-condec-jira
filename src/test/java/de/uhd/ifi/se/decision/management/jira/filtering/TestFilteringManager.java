@@ -45,19 +45,19 @@ public class TestFilteringManager extends TestSetUp {
 	@Test
 	public void testConstructorValidQueryEmpty() {
 		FilteringManager filteringManager = new FilteringManager("TEST", user, "");
-		assertEquals(8, filteringManager.getElementsMatchingFilterSettings().size());
+		assertEquals(9, filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	public void testConstructorWithFilterSettingsValidQueryEmpty() {
 		FilteringManager extractor = new FilteringManager(user, new FilterSettings("TEST", ""));
-		assertEquals(8, extractor.getElementsMatchingFilterSettings().size());
+		assertEquals(9, extractor.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	public void testConstructorValidQueryFilter() {
 		FilteringManager filteringManager = new FilteringManager("TEST", user, "?filter=allopenissues");
-		assertEquals(8, filteringManager.getElementsMatchingFilterSettings().size());
+		assertEquals(9, filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
@@ -65,7 +65,7 @@ public class TestFilteringManager extends TestSetUp {
 	public void testConstructorValidQueryJQL() {
 		FilteringManager filteringManager = new FilteringManager("TEST", user, "?jql=project=TEST");
 		assertEquals("?jql=project=TEST", filteringManager.getFilterSettings().getSearchTerm());
-		assertEquals(8, filteringManager.getElementsMatchingFilterSettings().size());
+		assertEquals(9, filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
@@ -109,7 +109,7 @@ public class TestFilteringManager extends TestSetUp {
 		settings.setLinkTypes(linkTypes);
 
 		FilteringManager filteringManager = new FilteringManager(user, settings);
-		assertEquals(8, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
+		assertEquals(9, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
 		// Currently, the mock links all have the "relate" type.
 		assertEquals(0, filteringManager.getSubgraphMatchingFilterSettings().edgeSet().size());
 	}

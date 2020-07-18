@@ -84,6 +84,10 @@ public class ConfigPersistenceManager {
 		return getValue(projectKey, "webhookUrl");
 	}
 
+	public static String getDecisionTableCriteriaQuery(String projectKey) {
+		return getValue(projectKey, "criteriaQuery");
+	}
+	
 	public static boolean isActivated(String projectKey) {
 		String isActivated = getValue(projectKey, "isActivated");
 		return "true".equals(isActivated);
@@ -161,6 +165,10 @@ public class ConfigPersistenceManager {
 		}
 	}
 
+	public static void setDecisionTableCriteriaQuery(String projectKey, String query) {
+		setValue(projectKey, "criteriaQuery", query);
+	}
+	
 	// TODO Testing
 	public static void setPostSquashedCommits(String projectKey, Boolean checked) {
 		setValue(projectKey, "isPostSquashedCommitsActivated", Boolean.toString(checked));
