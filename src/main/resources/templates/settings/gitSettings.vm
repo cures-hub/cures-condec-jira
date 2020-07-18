@@ -32,22 +32,33 @@
 </div>
 
 <div class="field-group">
-    <label for="isPostFeatureBranchCommitsActivated-toggle">Post singular feature branch commit messages as
-        comment?</label>
+    <label for="isPostFeatureBranchCommitsActivated-toggle">Post Feature Branch Commit Messages as
+        Comment?</label>
     <aui-toggle id="isPostFeatureBranchCommitsActivated-toggle"
                 value="$projectKey" label="Post feature branch commits?"></aui-toggle>
-    <div class="description">Enables or disables whether singular feature branch commit messages are posted
-        as comment under the corresponding issue for this project.
+    <div class="description">Enables or disables whether every feature branch commit message is posted
+        as a comment under the corresponding Jira issue for this project.
     </div>
 </div>
 
 <div class="field-group">
-    <label for="isPostSquashedCommitsActivated-toggle">Post squashed commit messages as comment?</label>
+    <label for="isPostSquashedCommitsActivated-toggle">Post Commit Messages on Default Branch as Comment?</label>
     <aui-toggle id="isPostSquashedCommitsActivated-toggle"
                 value="$projectKey" label="Post squashed commits?"></aui-toggle>
-    <div class="description">Enables or disables whether squashed commit messages are posted
-        as comment under the corresponding issue for this project.
+    <div class="description">Enables or disables whether commit messages on the default branch are posted
+        as a comment under the corresponding Jira issue for this project.
     </div>
+</div>
+
+<div class="field-group">
+<label for="delete-repos-button">Delete Git Repositories?</label>
+<input type="button" class="aui-button" id="delete-repos-button" value="Delete Git Repositories"/>
+<div class="description">Removes all git repositories for this project from file system. 
+	Deletes all linked code classes from the knowledge graph.<br/>
+	<span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> 
+	Please note that you need to disable git extraction for a permanent removal of the repositories.
+	Otherwise they will be cloned again.
+</div>
 </div>
 
 <script>
@@ -144,5 +155,12 @@
             isPostFeatureBranchCommitsActivatedToggle.checked = false;
         }
         this.busy = false;
+    });
+    
+    const deleteRepositoriesButton = document.getElementById("delete-repos-button");
+    deleteRepositoriesButton.addEventListener("click", function () {
+        if (confirm("Are you sure you want to delete the git repositories in file system? This cannot be reverted (only by cloning them again).")) {
+            conDecAPI.deleteGitRepos("$projectKey");
+        }
     });
 </script>

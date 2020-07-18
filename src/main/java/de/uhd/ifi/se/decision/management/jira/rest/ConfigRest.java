@@ -31,6 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.implementation.Onli
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.ConsistencyCheckEventListenerSingleton;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -40,6 +41,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
@@ -214,12 +216,11 @@ public class ConfigRest {
 		String query = ConfigPersistenceManager.getDecisionTableCriteriaQuery(projectKey);
 		return Response.ok(Status.OK).entity(ImmutableMap.of("query", query)).build();
 	}
-	
+
 	@Path("/setDecisionTableCriteriaQuery")
 	@POST
 	public Response setDesionTabelCriteriaQuery(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("query") String query) {
+			@QueryParam("projectKey") String projectKey, @QueryParam("query") String query) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -227,11 +228,11 @@ public class ConfigRest {
 		ConfigPersistenceManager.setDecisionTableCriteriaQuery(projectKey, query);
 		return Response.ok(Status.OK).build();
 	}
-	
+
 	@Path("/testDecisionTableCriteriaQuery")
 	@POST
-	public Response testDecisionTableCriteriaQuery(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, 
-			@QueryParam("query") String query) {
+	public Response testDecisionTableCriteriaQuery(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, @QueryParam("query") String query) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -239,13 +240,13 @@ public class ConfigRest {
 		Map<Long, List<KnowledgeElement>> map = new HashMap<Long, List<KnowledgeElement>>();
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, "?jql=" + query);
-		for(Issue i : queryHandler.getJiraIssuesFromQuery()) {
+		for (Issue i : queryHandler.getJiraIssuesFromQuery()) {
 			map.put(i.getId(), new ArrayList<KnowledgeElement>());
 			map.get(i.getId()).add(new KnowledgeElement(i));
 		}
 		return Response.ok(map).build();
 	}
-	
+
 	@Path("/getDecisionGroups")
 	@GET
 	public Response getDecisionGroups(@QueryParam("elementId") long id, @QueryParam("location") String location,
@@ -587,6 +588,19 @@ public class ConfigRest {
 		// List<String> gitUriList = Arrays.asList(gitUris.split(";;"));
 		ConfigPersistenceManager.setGitUris(projectKey, gitUris);
 		ConfigPersistenceManager.setDefaultBranches(projectKey, defaultBranches);
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
+	@Path("/deleteGitRepos")
+	@POST
+	public Response deleteGitRepos(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		GitClient gitClient = GitClient.getOrCreate(projectKey);
+		gitClient.deleteRepositories();
+		new CodeClassPersistenceManager(projectKey).deleteKnowledgeElements();
 		return Response.ok(Status.ACCEPTED).build();
 	}
 

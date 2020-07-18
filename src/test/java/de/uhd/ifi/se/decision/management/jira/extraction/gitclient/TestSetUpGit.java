@@ -52,7 +52,8 @@ public abstract class TestSetUpGit extends TestSetUp {
 	@BeforeClass
 	public static void setUpBeforeClass() {
 		init();
-		if (gitClient != null && gitClient.getDirectory(GIT_URI) != null) {
+		if (gitClient != null && gitClient.getDirectory(GIT_URI) != null
+				&& gitClient.getDirectory(GIT_URI).getParent() != null) {
 			// git client already exists
 			return;
 		}

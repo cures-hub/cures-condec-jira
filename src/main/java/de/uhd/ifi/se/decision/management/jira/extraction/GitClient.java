@@ -1097,4 +1097,8 @@ public class GitClient {
 		return getCommitsFromDefaultBranch(repoUri);
 	}
 
+	public void deleteRepositories() {
+		remoteUris.forEach(uri -> deleteRepository(uri));
+	}
+
 }

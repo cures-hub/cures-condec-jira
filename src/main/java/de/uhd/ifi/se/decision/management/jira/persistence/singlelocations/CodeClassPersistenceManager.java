@@ -66,6 +66,21 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return isDeleted;
 	}
 
+	public boolean deleteKnowledgeElements() {
+		if (projectKey == null || projectKey.isBlank()) {
+			LOGGER.error("Elements cannot be deleted since the project key is invalid.");
+			return false;
+		}
+		boolean isDeleted = false;
+		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
+				Query.select().where("PROJECT_KEY = ?", projectKey))) {
+			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.COMMIT);
+			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new KnowledgeElement(databaseEntry));
+			isDeleted = CodeClassInDatabase.deleteElement(databaseEntry);
+		}
+		return isDeleted;
+	}
+
 	@Override
 	public KnowledgeElement getKnowledgeElement(long id) {
 		KnowledgeElement element = null;

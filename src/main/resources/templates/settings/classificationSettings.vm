@@ -114,9 +114,8 @@
     <input type="button" class="aui-button" id="trainClassifier-button" value="Train Classifier"/>
     <div class="description">
         Trains the classifier on the selected Attribute-Relation File Format (ARFF) file. <br/>
-        <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span>Please note that this initial
-        training is
-        very resource expensive!
+        <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> Please note that this initial
+        training is very resource expensive!
     </div>
     <div class="aui-progress-indicator">
         <span id="train-classifier-progress"></span>
@@ -176,7 +175,6 @@
         conDecAPI.saveArffFile("$projectKey", false, saveToFile("AllClassifierTrainingData.arff"));
     });
 
-    //AJS.progressBars.update("#progress-bar", 0.0);
     const classifyAllIssuesInProjectButton = document.getElementById("classifyAllIssuesInProject");
     classifyAllIssuesInProjectButton.addEventListener("click", function () {
         if (confirm("Are you sure you want to classify all Jira issue comments and descriptions? This might take a long time if the project is big.")) {
