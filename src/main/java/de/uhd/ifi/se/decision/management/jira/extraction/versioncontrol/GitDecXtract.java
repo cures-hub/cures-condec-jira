@@ -62,7 +62,6 @@ public class GitDecXtract {
 
 	public List<KnowledgeElement> getElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd, Ref branch) {
 		List<KnowledgeElement> elementsFromCode = new ArrayList<>();
-		String repoUri = gitClient.getRepoUriFromBranch(branch);
 		// git client which has access to correct version of files (revCommitEnd)
 		Diff diff = gitClient.getDiff(revCommitStart, revCommitEnd);
 		GitDiffedCodeExtractionManager diffCodeManager = new GitDiffedCodeExtractionManager(diff);

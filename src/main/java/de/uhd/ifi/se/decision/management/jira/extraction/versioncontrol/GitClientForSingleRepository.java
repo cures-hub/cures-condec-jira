@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction;
+package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.Lists;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
@@ -105,7 +105,7 @@ public class GitClientForSingleRepository {
 
 	private boolean pull() {
 		LOGGER.info("Pulling Repository: " + repoUri);
-		if (!isPullNeeded(repoUri)) {
+		if (!isPullNeeded()) {
 			// LOGGER.info("Repository is up to date: " + repoUri);
 			// System.out.println("Repository is up to date: " + repoUri);
 			return true;
@@ -137,7 +137,7 @@ public class GitClientForSingleRepository {
 	 *
 	 * @return decision whether to make or not make the git pull call.
 	 */
-	private boolean isPullNeeded(String repoUri) {
+	private boolean isPullNeeded() {
 		String trackerFilename = "condec.pullstamp.";
 		Repository repository = this.getRepository();
 		File file = new File(repository.getDirectory(), trackerFilename);

@@ -22,6 +22,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.util.JiraHome;
 import com.atlassian.jira.issue.Issue;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -54,7 +55,7 @@ public class GitClient {
 	public static String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
 			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "git" + File.separator;
 
-	static final long REPO_OUTDATED_AFTER = 10 * 60 * 1000; // ex. 10 minutes = 10 minutes * 60 seconds * 1000
+	public static final long REPO_OUTDATED_AFTER = 10 * 60 * 1000; // ex. 10 minutes = 10 minutes * 60 seconds * 1000
 	// miliseconds
 	private List<GitClientForSingleRepository> gitClientsForSingleRepos;
 
