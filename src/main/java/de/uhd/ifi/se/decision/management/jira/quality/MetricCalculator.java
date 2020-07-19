@@ -11,7 +11,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,41 +117,41 @@ public class MetricCalculator {
 		List<KnowledgeElement> allGatheredCodeElements = new ArrayList<>();
 		String filter = "(" + projectKey + "-)\\d+";
 		Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
-		for (String repoUri : gitClient.getRemoteUris()) {
-			Ref defaultBranch = gitClient.getDefaultBranch(repoUri);
-			List<KnowledgeElement> gatheredCommitElements = new ArrayList<>();
-			List<RevCommit> defaultfeatureCommits = gitClient.getDefaultBranchCommits(repoUri);
-			if (defaultfeatureCommits == null || defaultfeatureCommits.size() == 0) {
-				return resultMap;
-			} else {
-				for (RevCommit commit : defaultfeatureCommits) {
-					List<KnowledgeElement> extractedCommitElements = gitExtract.getElementsFromMessage(commit);
-					gatheredCommitElements.addAll(extractedCommitElements);
-					if (extractedCommitElements != null && extractedCommitElements.size() > 0) {
-						Matcher matcher = filterPattern.matcher(commit.getFullMessage());
-						if (matcher.find()) {
-							this.extractedIssueRelatedElements.put(matcher.group(), extractedCommitElements);
-						}
-					}
-				}
-				for (KnowledgeElement element : gatheredCommitElements) {
-					if (knowledgeTypes.contains(element.getTypeAsString())
-							&& knowledgeStatus.contains(element.getStatusAsString()) && groupsMatch(element)) {
-						allGatheredCommitElements.add(element);
-					}
-				}
-				RevCommit baseCommit = defaultfeatureCommits.get(defaultfeatureCommits.size() - 2);
-				RevCommit lastFeatureBranchCommit = defaultfeatureCommits.get(0);
-				List<KnowledgeElement> extractedCodeElements = gitExtract.getElementsFromCode(baseCommit,
-						lastFeatureBranchCommit, defaultBranch);
-				for (KnowledgeElement element : extractedCodeElements) {
-					if (knowledgeTypes.contains(element.getTypeAsString())
-							&& knowledgeStatus.contains(element.getStatusAsString()) && groupsMatch(element)) {
-						allGatheredCodeElements.add(element);
+
+		List<KnowledgeElement> gatheredCommitElements = new ArrayList<>();
+		List<RevCommit> defaultfeatureCommits = gitClient.getDefaultBranchCommits();
+		if (defaultfeatureCommits == null || defaultfeatureCommits.size() == 0) {
+			return resultMap;
+		} else {
+			for (RevCommit commit : defaultfeatureCommits) {
+				List<KnowledgeElement> extractedCommitElements = gitExtract.getElementsFromMessage(commit);
+				gatheredCommitElements.addAll(extractedCommitElements);
+				if (extractedCommitElements != null && extractedCommitElements.size() > 0) {
+					Matcher matcher = filterPattern.matcher(commit.getFullMessage());
+					if (matcher.find()) {
+						this.extractedIssueRelatedElements.put(matcher.group(), extractedCommitElements);
 					}
 				}
 			}
+			for (KnowledgeElement element : gatheredCommitElements) {
+				if (knowledgeTypes.contains(element.getTypeAsString())
+						&& knowledgeStatus.contains(element.getStatusAsString()) && groupsMatch(element)) {
+					allGatheredCommitElements.add(element);
+				}
+			}
+			RevCommit baseCommit = defaultfeatureCommits.get(defaultfeatureCommits.size() - 2);
+			RevCommit lastFeatureBranchCommit = defaultfeatureCommits.get(0);
+			// TODO default branch
+			List<KnowledgeElement> extractedCodeElements = gitExtract.getElementsFromCode(baseCommit,
+					lastFeatureBranchCommit, gitClient.getAllRemoteBranches().get(0));
+			for (KnowledgeElement element : extractedCodeElements) {
+				if (knowledgeTypes.contains(element.getTypeAsString())
+						&& knowledgeStatus.contains(element.getStatusAsString()) && groupsMatch(element)) {
+					allGatheredCodeElements.add(element);
+				}
+			}
 		}
+
 		resultMap.put("Commit", allGatheredCommitElements);
 		resultMap.put("Code", allGatheredCodeElements);
 		return resultMap;

@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -16,7 +17,6 @@ import org.junit.Test;
 
 import com.atlassian.jira.issue.Issue;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
@@ -24,14 +24,15 @@ public class TestGetDiff extends TestSetUpGit {
 
 	@Test
 	public void testRevCommitNull() {
-		Diff diff = gitClient.getDiff((RevCommit) null, GIT_URI);
+		Diff diff = gitClient.getDiff((RevCommit) null);
 		assertEquals(0, diff.getChangedFiles().size());
 	}
 
 	@Test
 	public void testRevCommitExisting() {
-		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests, GIT_URI);
-		Diff diff = gitClient.getDiff(commits.get(0), GIT_URI);
+		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
+		assertFalse(commits.isEmpty());
+		Diff diff = gitClient.getDiff(commits.get(0));
 		assertEquals(1, diff.getChangedFiles().size());
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			DiffEntry diffEntry = changedFile.getDiffEntry();
@@ -44,20 +45,20 @@ public class TestGetDiff extends TestSetUpGit {
 
 	@Test
 	public void testListOfRevCommitsNull() {
-		Diff diff = gitClient.getDiff((List<RevCommit>) null, GIT_URI);
+		Diff diff = gitClient.getDiff((List<RevCommit>) null);
 		assertNull(diff);
 	}
 
 	@Test
 	public void testJiraIssueNull() {
-		Diff diff = gitClient.getDiff((Issue) null, GIT_URI);
+		Diff diff = gitClient.getDiff((Issue) null);
 		assertNull(diff);
 	}
 
 	@Test
 	@Ignore
 	public void testJiraIssueKeyExisting() {
-		Diff diff = gitClient.getDiff(mockJiraIssueForGitTests, GIT_URI);
+		Diff diff = gitClient.getDiff(mockJiraIssueForGitTests);
 		assertEquals(2, diff.getChangedFiles().size());
 
 		List<ChangedFile> changedFiles = diff.getChangedFiles();
@@ -73,17 +74,8 @@ public class TestGetDiff extends TestSetUpGit {
 	}
 
 	@Test
-	public void testGitNull() {
-		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests, GIT_URI);
-
-		GitClient newGitClient = new GitClient();
-		Diff diff = newGitClient.getDiff(commits.get(0), GIT_URI);
-		assertEquals(0, diff.getChangedFiles().size());
-	}
-
-	@Test
 	public void testMasterBranchExists() {
-		Git git = gitClient.getGit(GIT_URI);
+		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
 		String currentBranch = null;
 		try {
 			currentBranch = git.getRepository().getBranch();

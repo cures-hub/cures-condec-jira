@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
@@ -48,31 +49,31 @@ public class GitCodeClassExtractor {
 			return codeClasses;
 		}
 
-		for (String repoUri : gitClient.getRemoteUris()) {
-			codeClasses.addAll(getCodeClasses(repoUri));
+		for (GitClientForSingleRepository gitClientForSingleRepo : gitClient.getGitClientsForSingleRepos()) {
+			codeClasses.addAll(getCodeClasses(gitClientForSingleRepo));
 		}
 		return codeClasses;
 	}
 
-	public List<ChangedFile> getCodeClasses(String uri) {
+	public List<ChangedFile> getCodeClasses(GitClientForSingleRepository gitClient) {
 		List<ChangedFile> codeClasses = new ArrayList<>();
-		Repository repository = gitClient.getRepository(uri);
+		Repository repository = gitClient.getRepository();
 		if (repository == null) {
 			return codeClasses;
 		}
-		if (gitClient.getDefaultBranchCommits(uri).isEmpty()) {
+		if (gitClient.getCommitsFromDefaultBranch().isEmpty()) {
 			return codeClasses;
 		}
 		TreeWalk treeWalk = new TreeWalk(repository);
 		try {
-			treeWalk.addTree(gitClient.getDefaultBranchCommits(uri).get(0).getTree());
+			treeWalk.addTree(gitClient.getCommitsFromDefaultBranch().get(0).getTree());
 			treeWalk.setRecursive(false);
 			while (treeWalk.next()) {
 				if (treeWalk.isSubtree()) {
 					treeWalk.enterSubtree();
 				} else {
 					File file = new File(repository.getWorkTree(), treeWalk.getPathString());
-					ChangedFile changedFile = new ChangedFile(file, uri);
+					ChangedFile changedFile = new ChangedFile(file, gitClient.getRemoteUri());
 					changedFile.setTreeWalkPath(treeWalk.getPathString());
 					if (changedFile.isExistingJavaClass()) {
 						codeClasses.add(changedFile);
@@ -149,7 +150,8 @@ public class GitCodeClassExtractor {
 			}
 			// TODO Remove getTreeWalkPath() method from ChangedFile class and replace it
 			// with a method to calculate the relative path.
-			blameResult = gitClient.getGit(repoUri).blame().setFilePath(changedFile.getTreeWalkPath()).call();
+			blameResult = gitClient.getGitClientsForSingleRepo(repoUri).getGit().blame()
+					.setFilePath(changedFile.getTreeWalkPath()).call();
 		} catch (RevisionSyntaxException | GitAPIException e) {
 			LOGGER.error("Git blame could not be called for the file. " + e.getMessage());
 		}

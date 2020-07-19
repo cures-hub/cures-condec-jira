@@ -27,8 +27,8 @@ public class TestDiff extends TestSetUpGit {
 	}
 
 	public static Diff createDiff(Issue jiraIssue) {
-		List<RevCommit> commits = gitClient.getCommits(jiraIssue, GIT_URI);
-		return gitClient.getDiff(commits, GIT_URI);
+		List<RevCommit> commits = gitClient.getCommits(jiraIssue);
+		return gitClient.getDiff(commits);
 	}
 
 	@Test

@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,42 +10,44 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-
 public class TestGetFeatureBranchCommits extends TestSetUpGit {
-
-	private GitClient testGitClient;
 
 	private String featureBranch = "featureBranch";
 
 	@Test
-	public void testGetFeatureBranchCommitsByString() {
-		// fetches the 'default' branch commits. Do not use TestSetUpGit' gitClient
-		List<String> uris = new ArrayList<String>();
-		uris.add(GIT_URI);
-		testGitClient = new GitClient(uris, null, "TEST");
+	public void testGetRemoteBranches() {
+		List<Ref> remoteBranches = gitClient.getAllRemoteBranches();
+		assertEquals(3, remoteBranches.size());
 
-		List<RevCommit> commits = testGitClient.getFeatureBranchCommits(featureBranch, GIT_URI);
+		remoteBranches = gitClient.getGitClientsForSingleRepos().get(0).getRemoteBranches();
+		assertEquals(3, remoteBranches.size());
+	}
+
+	@Test
+	public void testGetMasterBranch() {
+		Ref remoteBranch = gitClient.getGitClientsForSingleRepos().get(0).getBranch("master");
+		assertEquals("refs/remotes/origin/master", remoteBranch.getName());
+	}
+
+	@Test
+	public void testGetFeatureBranchCommitsByString() {
+		List<RevCommit> commits = gitClient.getFeatureBranchCommits(featureBranch);
 		assertNotNull(commits);
-		testGitClient.deleteRepository(GIT_URI);
+		// assertEquals(4, commits.size());
 	}
 
 	@Test
 	public void testGetFeatureBranchCommitsByRef() {
-		// fetches the 'default' branch commits. Do not use TestSetUpGit' gitClient
-		List<String> uris = new ArrayList<String>();
-		uris.add(GIT_URI);
-		testGitClient = new GitClient(uris, null, "TEST");
-
 		// get the Ref
-		List<Ref> remoteBranches = testGitClient.getAllRemoteBranches();
+		List<Ref> remoteBranches = gitClient.getAllRemoteBranches();
 		List<Ref> branchCandidates = remoteBranches.stream().filter(ref -> ref.getName().endsWith(featureBranch))
 				.collect(Collectors.toList());
 
 		assertEquals(1, branchCandidates.size());
 
-		List<RevCommit> commits = testGitClient.getFeatureBranchCommits(branchCandidates.get(0));
+		Ref featureBranch = branchCandidates.get(0);
+
+		List<RevCommit> commits = gitClient.getFeatureBranchCommits(featureBranch);
 		assertEquals(4, commits.size());
-		testGitClient.deleteRepository(GIT_URI);
 	}
 }

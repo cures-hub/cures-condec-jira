@@ -29,7 +29,7 @@ public class TestCloseAndDeleteRepository extends TestSetUpGit {
 	@Test
 	public void testDeleteGitNull() {
 		GitClient gitClient = new GitClient();
-		gitClient.deleteRepository(GIT_URI);
+		gitClient.deleteRepositories();
 		assertNotNull(gitClient);
 	}
 
@@ -38,7 +38,7 @@ public class TestCloseAndDeleteRepository extends TestSetUpGit {
 		List<String> uris = new ArrayList<String>();
 		uris.add(GIT_URI);
 		GitClient gitClient = new GitClient(uris, null, "TEST");
-		gitClient.deleteRepository(GIT_URI);
+		gitClient.deleteRepositories();
 		assertNotNull(gitClient);
 	}
 }

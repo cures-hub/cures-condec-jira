@@ -94,7 +94,8 @@ public class CommitMessageToCommentTranscriber {
 			return;
 		}
 		String repoUri = gitClient.getRepoUriFromBranch(branch);
-		if (branch.getName().contains("/" + gitClient.getDefaultBranchFolderNames().get(repoUri))) {
+		if (branch.getName()
+				.contains("/" + gitClient.getGitClientsForSingleRepo(repoUri).getDefaultBranchFolderNames())) {
 			if (Boolean.parseBoolean(ConfigPersistenceManager.getValue(projectKey, "isPostSquashedCommitsActivated"))) {
 				Optional.ofNullable(gitClient.getAllRelatedCommits(this.issue)).ifPresent(squashedCommits::addAll);
 				for (RevCommit commit : this.squashedCommits) {

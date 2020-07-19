@@ -55,19 +55,11 @@ public class CodeSummarizer {
 			return "";
 		}
 		this.minProbabilityOfCorrectness = minProbabilityOfCorrectness;
-		Diff completeDiff = new Diff();
-		if (gitClient.getRemoteUris() == null) {
+		if (gitClient == null) {
 			return "";
 		}
-		for (String repoUri : gitClient.getRemoteUris()) {
-			Diff diff = gitClient.getDiff(jiraIssue, repoUri);
-			if (diff != null) {
-				for (ChangedFile file : diff.getChangedFiles()) {
-					completeDiff.addChangedFile(file);
-				}
-			}
-		}
-		return createSummary(completeDiff);
+		Diff diff = gitClient.getDiff(jiraIssue);
+		return createSummary(diff);
 	}
 
 	/**
@@ -81,14 +73,8 @@ public class CodeSummarizer {
 		if (commit == null) {
 			return "";
 		}
-		Diff completeDiff = new Diff();
-		for (String repoUri : gitClient.getRemoteUris()) {
-			Diff diff = gitClient.getDiff(commit, repoUri);
-			for (ChangedFile file : diff.getChangedFiles()) {
-				completeDiff.addChangedFile(file);
-			}
-		}
-		return createSummary(completeDiff);
+		Diff diff = gitClient.getDiff(commit);
+		return createSummary(diff);
 	}
 
 	/**

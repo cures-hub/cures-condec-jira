@@ -34,7 +34,7 @@ public class GitDecXtract {
 
 	public GitDecXtract(String projecKey, List<String> uris) {
 		this.projecKey = projecKey;
-		gitClient = new GitClient(uris, null, projecKey);
+		gitClient = new GitClient(uris, projecKey);
 	}
 
 	/// TODO: can this be done better in JAVA?
@@ -64,22 +64,10 @@ public class GitDecXtract {
 		List<KnowledgeElement> elementsFromCode = new ArrayList<>();
 		String repoUri = gitClient.getRepoUriFromBranch(branch);
 		// git client which has access to correct version of files (revCommitEnd)
-		GitClient endAnchoredGitClient = new GitClient(gitClient);
-		if (branch != null) {
-			endAnchoredGitClient.checkoutFeatureBranch(branch);
-		}
-		GitClient startAnchoredGitClient = new GitClient(gitClient);
-		if (branch != null) {
-			startAnchoredGitClient.checkoutCommit(revCommitStart.getParent(0), repoUri);
-		}
-		Diff diff = gitClient.getDiff(revCommitStart, revCommitEnd, repoUri);
-		GitDiffedCodeExtractionManager diffCodeManager = new GitDiffedCodeExtractionManager(diff, endAnchoredGitClient,
-				startAnchoredGitClient, repoUri);
+		Diff diff = gitClient.getDiff(revCommitStart, revCommitEnd);
+		GitDiffedCodeExtractionManager diffCodeManager = new GitDiffedCodeExtractionManager(diff);
 		elementsFromCode = diffCodeManager.getNewDecisionKnowledgeElements();
 		elementsFromCode.addAll(diffCodeManager.getOldDecisionKnowledgeElements());
-
-		startAnchoredGitClient.closeAll();
-		endAnchoredGitClient.closeAll();
 
 		return elementsFromCode.stream().map(element -> {
 			element.setProject(projecKey);

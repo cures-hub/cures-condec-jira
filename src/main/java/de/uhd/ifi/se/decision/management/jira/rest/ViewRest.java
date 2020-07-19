@@ -103,16 +103,14 @@ public class ViewRest {
 		// iterate over commits to get all messages and post each one as a comment
 		// make sure to not post duplicates
 		gitClient = GitClient.getOrCreate(projectKey);
-		for (String repoUri : gitClient.getRemoteUris()) {
-			List<Ref> branches = gitClient.getRemoteBranches(repoUri);
-			for (Ref branch : branches) {
-				Matcher branchMatcher = filterPattern.matcher(branch.getName());
-				if (branchMatcher.find()
-						|| branch.getName().contains("/" + gitClient.getDefaultBranchFolderNames().get(repoUri))) {
-					transcriber.postComments(branch);
-				}
+		List<Ref> branches = gitClient.getAllRemoteBranches();
+		for (Ref branch : branches) {
+			Matcher branchMatcher = filterPattern.matcher(branch.getName());
+			if (branchMatcher.find()) {
+				transcriber.postComments(branch);
 			}
 		}
+
 		gitClient.closeAll();
 		return resp;
 	}
@@ -267,7 +265,8 @@ public class ViewRest {
 	@Path("/getDecisionTableCriteria")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionTableCriteria(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey) {
+	public Response getDecisionTableCriteria(@Context HttpServletRequest request,
+			@QueryParam("elementKey") String elementKey) {
 		if (request == null || elementKey == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "Decision Table cannot be shown due to missing or invalid parameters."))
@@ -282,7 +281,7 @@ public class ViewRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		return Response.ok(decisionTable.getDecisionTableCriteria(user)).build();
 	}
-	
+
 	@Path("/getTreant")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
