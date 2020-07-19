@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.TangledChangeDetector;
@@ -33,7 +32,6 @@ public class TestTangledChangeDetector extends TestSetUpGit {
 	}
 
 	@Test
-	@Ignore
 	public void testCalculatePackageDistances() {
 		Diff diffForJiraIssue = TestDiff.createDiff(mockJiraIssueForGitTestsTangled);
 
@@ -90,7 +88,6 @@ public class TestTangledChangeDetector extends TestSetUpGit {
 	}
 
 	@Test
-	@Ignore
 	public void testCalculatePackageDistanceRightBiggerLeft() {
 		Diff diffForJiraIssue = TestDiff.createDiff(mockJiraIssueForGitTestsTangled);
 		Diff diff = new Diff();

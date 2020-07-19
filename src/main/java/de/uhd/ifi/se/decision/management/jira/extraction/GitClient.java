@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
@@ -182,19 +181,6 @@ public class GitClient {
 	}
 
 	/**
-	 * @return {@link Diff} object containing the {@link ChangedFile}s. Each
-	 *         {@link ChangedFile} is created from a diff entry and contains the
-	 *         respective edit list.
-	 */
-	public Diff getDiff(ObjectId oldHead, ObjectId newHead) {
-		Diff diff = new Diff();
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			diff.getChangedFiles().addAll(gitClientForSingleRepo.getDiff(oldHead, newHead).getChangedFiles());
-		}
-		return diff;
-	}
-
-	/**
 	 * @param featureBranch
 	 * @return String of Remote Repository Uri containing the given Branch or null
 	 *         if branch not contained in any Repo.
@@ -323,21 +309,6 @@ public class GitClient {
 			commits.addAll(gitClientForSingleRepo.getCommits());
 		}
 		return commits;
-	}
-
-	/**
-	 * @param jiraIssue
-	 *            Jira issue. Its key is searched for in commit messages.
-	 * @return commits with the Jira issue key in their commit message as a list of
-	 *         {@link RevCommits}.
-	 */
-	public List<RevCommit> getAllRelatedCommits(Issue jiraIssue) {
-		List<RevCommit> allCommits = new ArrayList<RevCommit>();
-		for (GitClientForSingleRepository gitClientForSingleRepo : gitClientsForSingleRepos) {
-			List<RevCommit> com = gitClientForSingleRepo.getCommits(jiraIssue);
-			allCommits.addAll(com);
-		}
-		return allCommits;
 	}
 
 	/**

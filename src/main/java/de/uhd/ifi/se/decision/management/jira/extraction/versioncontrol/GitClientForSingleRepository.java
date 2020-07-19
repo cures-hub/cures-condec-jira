@@ -792,19 +792,6 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * @param jiraIssue
-	 *            Jira issue. Its key is searched for in commit messages.
-	 * @return number of commits with the Jira issue key in their commit message.
-	 */
-	public int getNumberOfCommits(Issue jiraIssue) {
-		if (jiraIssue == null) {
-			return 0;
-		}
-		List<RevCommit> commits = getCommits(jiraIssue);
-		return commits.size();
-	}
-
-	/**
 	 * @return git object.
 	 */
 	public Git getGit() {
@@ -812,32 +799,16 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * @param git
-	 *            object.
-	 */
-	public void setGit(Git git) {
-		this.git = git;
-	}
-
-	/**
-	 * @return String remoteUris.
+	 * @return remote URI as a String.
 	 */
 	public String getRemoteUri() {
 		return repoUri;
 	}
 
 	/**
-	 * @return map of DefaultBranchFolderNames with RepoUri as key.
+	 * @return name of the default branch (e.g. master).
 	 */
-	public String getDefaultBranchFolderNames() {
+	public String getDefaultBranchName() {
 		return defaultBranchName;
-	}
-
-	/**
-	 * @param repoUri
-	 * @return default branch for the give Repository Uri as a Ref object.
-	 */
-	public Ref getDefaultBranch() {
-		return defaultBranch;
 	}
 }
