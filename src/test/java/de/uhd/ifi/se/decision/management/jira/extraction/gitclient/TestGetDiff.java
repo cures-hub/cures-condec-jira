@@ -12,7 +12,6 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.issue.Issue;
@@ -56,7 +55,6 @@ public class TestGetDiff extends TestSetUpGit {
 	}
 
 	@Test
-	@Ignore
 	public void testJiraIssueKeyExisting() {
 		Diff diff = gitClient.getDiff(mockJiraIssueForGitTests);
 		assertEquals(2, diff.getChangedFiles().size());
