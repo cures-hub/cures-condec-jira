@@ -24,6 +24,7 @@ import com.atlassian.jira.mock.issue.MockIssue;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
  * @issue Should we have one or more git repositories for testing?
@@ -63,6 +64,8 @@ public abstract class TestSetUpGit extends TestSetUp {
 		File fileA = new File(classLoader.getResource(pathToExtractionVCSTestFile).getFile());
 		List<String> uris = new ArrayList<String>();
 		uris.add(GIT_URI);
+		ConfigPersistenceManager.setGitUris("TEST", GIT_URI);
+		ConfigPersistenceManager.setDefaultBranches("TEST", "master");
 		gitClient = new GitClient(uris, "TEST");
 		// above line will log errors for pulling from still empty remote repositry.
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");

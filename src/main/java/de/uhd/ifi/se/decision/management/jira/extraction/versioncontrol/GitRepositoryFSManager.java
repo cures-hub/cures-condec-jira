@@ -17,6 +17,12 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * File system manager for git repositories.
+ * 
+ * Each git repository is stored in
+ * JiraHome/data/condec-plugin/git/<project-key>/<MD5 hash of URI>.
+ */
 public class GitRepositoryFSManager {
 	private static final String TEMP_DIR_PREFIX = "TEMP";
 	private static final long BRANCH_OUTDATED_AFTER = 60 * 60 * 1000; // ex. 1 day = 24 hours * 60 minutes * 60 seconds
@@ -26,21 +32,12 @@ public class GitRepositoryFSManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitRepositoryFSManager.class);
 
-	public GitRepositoryFSManager(String home, String project, String repoUri, String defaultBranchName) {
-		String baseProjectPath = home + File.separator + project;
+	public GitRepositoryFSManager(String home, String projectKey, String repoUri, String defaultBranchName) {
+		String baseProjectPath = home + File.separator + projectKey;
 		baseProjectUriPath = baseProjectPath + File.separator + getShortHash(repoUri);
 		baseProjectUriDefaultPath = baseProjectUriPath + File.separator + defaultBranchName;
 		// clean up if possible after previous requests.
 		maintainNotUsedBranchPaths();
-	}
-
-	/**
-	 * Returns target directory paths for the default branch of the repositories.
-	 *
-	 * @return absolute path to directories of the default branch
-	 */
-	public String getDefaultBranchPath() {
-		return baseProjectUriDefaultPath;
 	}
 
 	/**
@@ -57,32 +54,30 @@ public class GitRepositoryFSManager {
 	 */
 	public String releaseBranchDirectoryNameToTemp(String branchShortName) {
 		String checkoutPath = getCheckoutPath(branchShortName);
-		if (!checkoutPath.isBlank()) {
-			File oldDir = new File(getCheckoutPath(branchShortName));
-			if (!oldDir.isDirectory()) {
-				return null;
-			} else {
-				Date date = new Date();
-				long time = date.getTime();
-				String tempDirString = baseProjectUriPath + File.separator + TEMP_DIR_PREFIX + time;
-				File tempDir = new File(tempDirString);
-				boolean renameResult = false;
-				try {
-					renameResult = oldDir.renameTo(tempDir);
-				} catch (Exception e) {
-					LOGGER.error("Could not rename " + oldDir + " to " + tempDirString + ". " + e.getMessage());
-					return null;
-				}
-				if (!renameResult) {
-					LOGGER.error("Could not rename " + oldDir + " to " + tempDirString + ". The reason is not known.");
-					return null;
-				}
-				removeBranchPathMarker(branchShortName);
-				return tempDirString;
-			}
-
+		if (checkoutPath.isBlank()) {
+			return null;
 		}
-		return null;
+		File oldDir = new File(getCheckoutPath(branchShortName));
+		if (!oldDir.isDirectory()) {
+			return null;
+		}
+		Date date = new Date();
+		long time = date.getTime();
+		String tempDirString = baseProjectUriPath + File.separator + TEMP_DIR_PREFIX + time;
+		File tempDir = new File(tempDirString);
+		boolean renameResult = false;
+		try {
+			renameResult = oldDir.renameTo(tempDir);
+		} catch (Exception e) {
+			LOGGER.error("Could not rename " + oldDir + " to " + tempDirString + ". " + e.getMessage());
+			return null;
+		}
+		if (!renameResult) {
+			LOGGER.error("Could not rename " + oldDir + " to " + tempDirString + ". The reason is not known.");
+			return null;
+		}
+		removeBranchPathMarker(branchShortName);
+		return tempDirString;
 	}
 
 	/**
@@ -107,11 +102,10 @@ public class GitRepositoryFSManager {
 	}
 
 	/**
-	 * @issue:file system does not allow all characters for folder and file name,
-	 *             therefore md5 can be used to get unique strings for inputs like
-	 *             uris etc. But md5 hashes can produce too long paths and corrupt
-	 *             the filesystem, especially for java projects. How can this be
-	 *             overcome?
+	 * @issue File system does not allow all characters for folder and file name,
+	 *        therefore md5 can be used to get unique strings for inputs like uris
+	 *        etc. But md5 hashes can produce too long paths and corrupt the
+	 *        filesystem, especially for java projects. How can this be overcome?
 	 *
 	 * @alternative use full length of the hash! the project structure should never
 	 *              be that big.
@@ -124,14 +118,22 @@ public class GitRepositoryFSManager {
 	 */
 	private String getShortHash(String text) {
 		try {
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			md.update(text.getBytes());
-			byte[] digest = md.digest();
+			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+			messageDigest.update(text.getBytes());
+			byte[] digest = messageDigest.digest();
 			return DatatypeConverter.printHexBinary(digest).toUpperCase().substring(0, 5);
 		} catch (NoSuchAlgorithmException e) {
 			LOGGER.error("MD5 does not exist??");
 			return "";
 		}
+	}
+
+	/**
+	 * @return absolute path to the directory of the default branch of a git
+	 *         repository.
+	 */
+	public String getDefaultBranchPath() {
+		return baseProjectUriDefaultPath;
 	}
 
 	/*
@@ -152,13 +154,13 @@ public class GitRepositoryFSManager {
 		}
 
 		List<String> notUsedBranchPaths = findOutdatedBranchPaths();
-		if (notUsedBranchPaths != null) {
-			for (String branch : notUsedBranchPaths) {
-				releaseBranchDirectoryNameToTemp(branch);
-				LOGGER.info("Returned " + branch + " to temporary directory pool.");
-			}
+		if (notUsedBranchPaths == null) {
+			return;
 		}
-
+		for (String branch : notUsedBranchPaths) {
+			releaseBranchDirectoryNameToTemp(branch);
+			LOGGER.info("Returned " + branch + " to temporary directory pool.");
+		}
 	}
 
 	/*
@@ -245,7 +247,7 @@ public class GitRepositoryFSManager {
 	}
 
 	/*
-	 * Searches for files inside baseProjectUriPaths and looks at their creation
+	 * Searches for files inside baseProjectUriPath and looks at their creation
 	 * dates
 	 */
 	private List<String> findOutdatedBranchPaths() {

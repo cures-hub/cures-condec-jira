@@ -50,7 +50,6 @@ public class GitClientForSingleRepository {
 	private String repoUri;
 	private Git git;
 	private String defaultBranchName;
-	private Ref defaultBranch;
 	private List<RevCommit> defaultBranchCommits;
 	private String projectKey;
 	private GitRepositoryFSManager fsManager;
@@ -62,12 +61,12 @@ public class GitClientForSingleRepository {
 		this.repoUri = uri;
 		this.defaultBranchName = defaultBranchName;
 		fsManager = new GitRepositoryFSManager(GitClient.DEFAULT_DIR, projectKey, uri, defaultBranchName);
-		pullOrClone(new File(fsManager.getDefaultBranchPath()));
-		defaultBranch = getBranch(defaultBranchName);
+		pullOrClone();
 		defaultBranchCommits = getCommitsFromDefaultBranch();
 	}
 
-	public boolean pullOrClone(File directory) {
+	public boolean pullOrClone() {
+		File directory = new File(fsManager.getDefaultBranchPath());
 		if (isGitDirectory(directory)) {
 			if (openRepository(directory)) {
 				if (!pull()) {
@@ -668,9 +667,7 @@ public class GitClientForSingleRepository {
 	}
 
 	public List<RevCommit> getCommitsFromDefaultBranch() {
-		if (defaultBranch == null) {
-			defaultBranch = getBranch(defaultBranchName);
-		}
+		Ref defaultBranch = getBranch(defaultBranchName);
 		return getCommits(defaultBranch, true);
 	}
 
@@ -799,7 +796,8 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * @return remote URI as a String.
+	 * @return remote Uniform Resource Identifier (URI) of the git repository as a
+	 *         String.
 	 */
 	public String getRemoteUri() {
 		return repoUri;

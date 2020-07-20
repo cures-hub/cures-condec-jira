@@ -65,7 +65,7 @@ public class GitClient {
 	 * Instances of {@link GitClient}s that are identified by the project key (uses
 	 * the multiton pattern).
 	 */
-	public static Map<String, GitClient> instances = new HashMap<String, GitClient>();
+	private static Map<String, GitClient> instances = new HashMap<String, GitClient>();
 
 	/**
 	 * Retrieves an existing {@link GitClient} instance or creates a new instance if
@@ -79,12 +79,15 @@ public class GitClient {
 		if (projectKey == null || projectKey.isBlank()) {
 			return null;
 		}
+		GitClient gitClient;
 		if (instances.containsKey(projectKey)) {
-			// return instances.get(projectKey);
-			instances.remove(projectKey);
+			gitClient = instances.get(projectKey);
+
+		} else {
+			gitClient = new GitClient(projectKey);
+			instances.put(projectKey, gitClient);
 		}
-		GitClient gitClient = new GitClient(projectKey);
-		instances.put(projectKey, gitClient);
+		gitClient.pullOrCloneRepositories();
 		return gitClient;
 	}
 
@@ -102,17 +105,18 @@ public class GitClient {
 		this.projectKey = projectKey;
 		uris.forEach(uri -> gitClientsForSingleRepos
 				.add(new GitClientForSingleRepository(uri, defaultBranches.get(uri), projectKey)));
-		// pullOrCloneRepositories(projectKey, DEFAULT_DIR);
 	}
 
 	public GitClient() {
 		gitClientsForSingleRepos = new ArrayList<GitClientForSingleRepository>();
 	}
 
-	private boolean pullOrCloneRepositories(String projectKey) {
-		gitClientsForSingleRepos
-				.forEach(gitClientForSingleRepo -> gitClientForSingleRepo.pullOrClone(new File(DEFAULT_DIR)));
-		return true;
+	private boolean pullOrCloneRepositories() {
+		boolean isEverythingUpToDate = true;
+		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
+			isEverythingUpToDate = isEverythingUpToDate && gitClientForSingleRepo.pullOrClone();
+		}
+		return isEverythingUpToDate;
 	}
 
 	/**
@@ -340,14 +344,25 @@ public class GitClient {
 		return commits;
 	}
 
+	/**
+	 * Closes all repositories and deletes all local files.
+	 */
 	public void deleteRepositories() {
 		gitClientsForSingleRepos.forEach(gitClientForSingleRepo -> gitClientForSingleRepo.deleteRepository());
 	}
 
+	/**
+	 * @return all {@link GitClientForSingleRepository} for a project.
+	 */
 	public List<GitClientForSingleRepository> getGitClientsForSingleRepos() {
 		return gitClientsForSingleRepos;
 	}
 
+	/**
+	 * @param uri
+	 *            Uniform Resource Identifier (URI) of the remote git repository.
+	 * @return {@link GitClientForSingleRepository} for the given URI.
+	 */
 	public GitClientForSingleRepository getGitClientsForSingleRepo(String uri) {
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			if (gitClientForSingleRepo.getRemoteUri().equals(uri)) {
@@ -359,9 +374,8 @@ public class GitClient {
 
 	public List<Ref> getAllRemoteBranches() {
 		List<Ref> allRemoteBranches = new ArrayList<>();
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			allRemoteBranches.addAll(gitClientForSingleRepo.getRemoteBranches());
-		}
+		getGitClientsForSingleRepos().forEach(
+				gitClientForSingleRepo -> allRemoteBranches.addAll(gitClientForSingleRepo.getRemoteBranches()));
 		return allRemoteBranches;
 	}
 

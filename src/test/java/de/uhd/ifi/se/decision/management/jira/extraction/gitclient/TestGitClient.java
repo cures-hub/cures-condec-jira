@@ -34,4 +34,10 @@ public class TestGitClient extends TestSetUpGit {
 		assertEquals(GitClient.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data" + File.separator
 				+ "condec-plugin" + File.separator + "git" + File.separator);
 	}
+
+	@Test
+	public void testGetOrCreateProjectKeyInvalid() {
+		assertNull(GitClient.getOrCreate(""));
+		assertNull(GitClient.getOrCreate(null));
+	}
 }
