@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.eventlistener.implementation;
 
 import com.atlassian.jira.event.issue.IssueEvent;
-import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.StatusClosedTrigger;
+import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.IssueClosedTrigger;
 import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.TriggerChain;
 import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.WorkflowDoneTrigger;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.IssueEventListener;
@@ -17,7 +17,7 @@ public class ConsistencyCheckEventListenerSingleton implements IssueEventListene
 	private TriggerChain chainStart;
 
 	private ConsistencyCheckEventListenerSingleton() {
-		this.chainStart = new StatusClosedTrigger();
+		this.chainStart = new IssueClosedTrigger();
 		this.chainStart
 			.setNextChain(new WorkflowDoneTrigger());
 	}

@@ -4,13 +4,13 @@ import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
 
 
-public class StatusClosedTrigger extends TriggerChain {
+public class IssueClosedTrigger extends TriggerChain {
 
-	public StatusClosedTrigger(IssueEvent issueEvent) {
+	public IssueClosedTrigger(IssueEvent issueEvent) {
 		super.setIssueEvent(issueEvent);
 	}
 
-	public StatusClosedTrigger() {
+	public IssueClosedTrigger() {
 	}
 
 	@Override
