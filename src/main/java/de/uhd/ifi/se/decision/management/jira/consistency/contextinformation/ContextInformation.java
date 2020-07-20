@@ -9,11 +9,11 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class ContextInformation implements ContextInformationProvider {
@@ -65,7 +65,7 @@ public class ContextInformation implements ContextInformationProvider {
 
 		//retain scores of filtered issues
 		return this.linkSuggestions.values()
-			.stream()
+			.parallelStream()
 			// issue was not filtered out
 			.filter(linkSuggestion -> elementsToKeep.contains(linkSuggestion.getTargetElement()))
 			// the score is higher or equal to the minimum probability set by the admin for the project
@@ -90,19 +90,19 @@ public class ContextInformation implements ContextInformationProvider {
 	@Override
 	public void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
 		// init the link suggestions
-		this.linkSuggestions = new HashMap<>();
+		this.linkSuggestions = new ConcurrentHashMap<>();
 		for (KnowledgeElement otherElement : knowledgeElements) {
 			linkSuggestions.put(otherElement.getKey(), new LinkSuggestion(this.element, otherElement));
 		}
 
-		this.cips.forEach((cip) -> {
+		this.cips.parallelStream().forEach((cip) -> {
 			cip.assessRelation(this.element, new ArrayList<>(knowledgeElements));
 
 			double nullCompensation = 0.;
 
 			Collection<LinkSuggestion> suggestions = cip.getLinkSuggestions();
 			double sumOfIndividualScoresForCurrentCip = suggestions
-				.stream()
+				.parallelStream()
 				.mapToDouble(LinkSuggestion::getTotalScore)
 				.sum();
 
@@ -115,6 +115,7 @@ public class ContextInformation implements ContextInformationProvider {
 			// Divide each score by the max value to scale it to [0,1]
 			double finalNullCompensation = nullCompensation;
 			suggestions
+				.parallelStream()
 				.forEach(score -> {
 					LinkSuggestion linkSuggestion = this.linkSuggestions.get(score.getTargetElement().getKey());
 					linkSuggestion.addToScore((score.getTotalScore() + finalNullCompensation) / (finalSumOfIndividualScoresForCurrentCip * this.cips.size()), cip.getName());//sumOfIndividualScoresForCurrentCip);
