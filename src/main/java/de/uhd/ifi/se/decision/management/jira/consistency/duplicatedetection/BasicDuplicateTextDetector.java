@@ -22,7 +22,15 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 	}
 
 	private String cleanMarkdown(String markdown) {
-		return markdown.replaceAll("[\\|\\[\\]]+", " ").replaceAll("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", "").replaceAll("h[0-9]+", "").replaceAll("[;\\/:*?\"<>&.{},'#!+@-]+", " ").replaceAll("[\n\r]+", " ").replaceAll("[0-9]+", " ");
+		return markdown
+			.replaceAll("[{(color)]+[:#0-9]*}", "")
+			.replaceAll("(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", "URL")
+			.replaceAll("[|\\[\\]]+", " ")
+			.replaceAll("h[0-9]+", "")
+			.replaceAll("[;/:*?\"<>&.{},'#!+@-]+", " ")
+			.replaceAll("[\n\r]+", " ")
+			.replaceAll("[0-9]+", "NUMBER")
+			.replaceAll("(-){2,}", "");
 	}
 
 	@Override
