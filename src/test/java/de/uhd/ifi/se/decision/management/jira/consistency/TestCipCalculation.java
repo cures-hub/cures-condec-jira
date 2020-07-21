@@ -84,23 +84,23 @@ public class TestCipCalculation extends TestSetUp {
 		i2.setAssignee(new MockApplicationUser("TESTUSER"));
 		List<KnowledgeElement> testIssueList = Collections.singletonList(new KnowledgeElement(i2));
 		userCIP.assessRelation(e1, testIssueList);
-		assertEquals(1., userCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0);
+		assertEquals(1., findFirst(userCIP.getLinkSuggestions()).getScore().getTotal(), 0);
 		userCIP = new UserCIP();
 
 		i2.setAssignee(new MockApplicationUser("NOT_TESTUSER"));
 		userCIP.assessRelation(e1, testIssueList);
-		assertEquals(1., userCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0);
+		assertEquals(1., findFirst(userCIP.getLinkSuggestions()).getScore().getTotal(), 0);
 		userCIP = new UserCIP();
 
 		i2.setAssignee(new MockApplicationUser("TESTUSER"));
 		i2.setCreatorId(JiraUsers.BLACK_HEAD.createApplicationUser().getKey());
 		userCIP.assessRelation(e1, testIssueList);
-		assertEquals(1., userCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0);
+		assertEquals(1., findFirst(userCIP.getLinkSuggestions()).getScore().getTotal(), 0);
 		userCIP = new UserCIP();
 
 		i2.setAssignee(new MockApplicationUser("NOT_TESTUSER"));
 		userCIP.assessRelation(e1, testIssueList);
-		assertEquals(1., userCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0);
+		assertEquals(1., findFirst(userCIP.getLinkSuggestions()).getScore().getTotal(), 0);
 		userCIP = new UserCIP();
 
 		i2.setAssignee(null);
@@ -108,15 +108,18 @@ public class TestCipCalculation extends TestSetUp {
 		i2.setReporter(null);
 		testIssueList = Collections.singletonList(new KnowledgeElement(i2));
 		userCIP.assessRelation(e1, testIssueList);
-		assertEquals(1., userCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0);
+		assertEquals(1., findFirst(userCIP.getLinkSuggestions()).getScore().getTotal(), 0);
 		userCIP = new UserCIP();
 
 		i1.setAssignee(null);
 		i1.setCreatorId(null);
 		userCIP.assessRelation(e1, testIssueList);
-		assertEquals(1., userCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal()
-			, 0);
+		assertEquals(1., findFirst(userCIP.getLinkSuggestions()).getScore().getTotal(), 0);
 
+	}
+
+	private LinkSuggestion findFirst(Collection<LinkSuggestion> collection) {
+		return collection.stream().findFirst().get();
 	}
 
 
@@ -134,13 +137,13 @@ public class TestCipCalculation extends TestSetUp {
 
 		List<KnowledgeElement> testIssueList = Collections.singletonList(new KnowledgeElement(i1));
 		tracingCIP.assessRelation(e0, testIssueList);
-		assertEquals(0.5, tracingCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0);
+		assertEquals(0.5, findFirst(tracingCIP.getLinkSuggestions()).getScore().getTotal(), 0);
 		//Score is 1/4
 		tracingCIP = new TracingCIP();
 
 		testIssueList = Collections.singletonList(new KnowledgeElement(i2));
 		tracingCIP.assessRelation(e0, testIssueList);
-		assertEquals(0.25, tracingCIP.getLinkSuggestions().stream().findFirst().get().getScore().getTotal(), 0.01);
+		assertEquals(0.25, findFirst(tracingCIP.getLinkSuggestions()).getScore().getTotal(), 0.01);
 
 
 	}

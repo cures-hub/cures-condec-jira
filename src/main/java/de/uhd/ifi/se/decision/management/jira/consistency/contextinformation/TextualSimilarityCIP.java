@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
 
-import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
