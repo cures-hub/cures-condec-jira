@@ -14,6 +14,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -37,6 +39,7 @@ import java.util.Optional;
 
 @Path("/consistency")
 public class ConsistencyRest {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConsistencyRest.class);
 
 	//--------------------
 	// Related issue detection
@@ -268,7 +271,7 @@ public class ConsistencyRest {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+				LOGGER.error(e.getMessage());
 		}
 
 		return Optional.ofNullable(knowledgeElement);

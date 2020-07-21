@@ -6,6 +6,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,6 +17,8 @@ import java.util.List;
 import java.util.Set;
 
 public class DuplicateDetectionManager {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DuplicateDetectionManager.class);
+
 
 	private KnowledgeElement knowledgeElement;
 
@@ -47,7 +51,7 @@ public class DuplicateDetectionManager {
 
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					LOGGER.error(e.getMessage());
 				}
 			});
 		}

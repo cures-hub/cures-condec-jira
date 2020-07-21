@@ -18,6 +18,8 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -30,7 +32,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public class TestCipCalculation extends TestSetUp {
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(TestCipCalculation.class);
 	private static List<MutableIssue> testIssues;
 	private Project project;
 
@@ -63,8 +65,7 @@ public class TestCipCalculation extends TestSetUp {
 				identicalIssueSuggestion.getBaseIssue().getKey());
 
 		} catch (NullPointerException e) {
-			System.err.println("ERROR:");
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 			assertNull(e);
 		}
 	}
