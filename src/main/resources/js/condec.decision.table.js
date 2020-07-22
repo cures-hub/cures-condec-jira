@@ -5,7 +5,7 @@
 
 	const decisionTableID = "decisionTable-container";
 	const auiTableID = "tbldecisionTable";
-	const dropDownID = "example-dropdown";
+	const dropDownID = "selectDesionProblem";
 	const alternativeClmTitle = "Options/Alternatives";
 	let issues = [];
 	let decisionTableData = [];
@@ -13,13 +13,14 @@
 	let currentIssue;
 	
  	/*
-     * external references: condec.jira.issue.module
-     */
+	 * external references: condec.jira.issue.module
+	 */
 	ConDecDecisionTable.prototype.loadDecisionProblems = function loadDecisionProblems(elementKey) {
 		console.log("conDecDecisionTable buildDecisionTable");
 		projectKey = elementKey;
 		conDecAPI.getDecisionIssues(elementKey, function (data) {
 			issues = data;
+			console.log(issues);
 			addDropDownItems(data, elementKey);
 		});
 	};
@@ -47,9 +48,15 @@
 		});
 	}
 	
+	ConDecDecisionTable.prototype.showCreateDialogForIssue = function showCreateDialogForIssue() {
+		if (currentIssue) {
+			conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation);		
+		}
+	}
 	/**
 	 * 
-	 * @param {Array<KnowledgeElement> or empty object} data 
+	 * @param {Array
+	 *            <KnowledgeElement> or empty object} data
 	 */
 	function buildDecisionTable(data) {
 		decisionTableData = data;
@@ -67,14 +74,31 @@
 		addCriteriaToToDecisionTable(data["criteria"]);
 		addAlternativesToDecisionTable(data["alternatives"], data["criteria"]);
 		addDragAndDropSupportForArguments();
+		buildCreateArgumentsButton(data["alternatives"]);
 
 		addContextMenuToElements("argument");
 		addContextMenuToElements("alternative");
 	}
 
+	function buildCreateArgumentsButton(alternatives) {
+		let dropDownMenu = document.getElementById("split-container-dropdown");
+		dropDownMenu.innerHTML = "";
+		for (i in alternatives) {
+			dropDownMenu.innerHTML +=  `<aui-item-link id="${alternatives[i].id}" class="">${alternatives[i].summary}</aui-item-link>`;
+		}
+		
+		document.getElementById("split-container-dropdown").addEventListener("click", function (event) {
+			const alternative = getElementObj(event.target.parentNode.id);
+			if (alternative) {
+				conDecDialog.showCreateDialog(alternative.id, alternative.documentationLocation);	
+			}
+		});
+	}
+	
 	/**
 	 * 
-	 * @param {Array<KnowledgeElement> or empty object} alternatives 
+	 * @param {Array
+	 *            <KnowledgeElement> or empty object} alternatives
 	 */
 	function addAlternativesToDecisionTable(alternatives, criteria) {
 		let body = document.getElementById("tblBody");
@@ -102,7 +126,8 @@
 
 	/**
 	 * 
-	 * @param {Array<KnowledgeElement> or empty object} data 
+	 * @param {Array
+	 *            <KnowledgeElement> or empty object} data
 	 */
 	function addCriteriaToToDecisionTable(data) {
 		if (Object.keys(data).length > 0) {
@@ -117,7 +142,8 @@
 
 	/**
 	 * 
-	 * @param {Array<KnowledgeElement> or empty object} alternatives 
+	 * @param {Array
+	 *            <KnowledgeElement> or empty object} alternatives
 	 */
 	function addArgumentsToDecisionTable(alternative) {
 		for (let index = 0; index < alternative.arguments.length; index++) {
@@ -138,58 +164,71 @@
 				content = "- " + argument.summary;
 			}
 			rowElement.innerHTML += rowElement.innerHTML.length ?
-				`<br><div id="${argument.id}" class="argument draggable" draggable="true">${content}</div>` :
-				`<div class="argument draggable" id="${argument.id}" draggable="true">${content}</div>`
+				`<br><div id="${alternative.id}:${argument.id}" class="argument draggable" draggable="true">${content}</div>` :
+				`<div id="${alternative.id}:${argument.id}" class="argument draggable" draggable="true">${content}</div>`
 		}
 	}
 
-	function addContextMenuToElements(elementID) {
-		let alternatives = document.getElementsByClassName(elementID);
-		for (let index = 0; index < alternatives.length; index++) {
-			const alternative = alternatives[index];
-			alternative.addEventListener("contextmenu", function (event) {
+	function addContextMenuToElements(className) {
+		let elements = document.getElementsByClassName(className);
+		for (let index = 0; index < elements.length; index++) {
+			const element = elements[index];
+			element.addEventListener("contextmenu", function (event) {
 				event.preventDefault();
-				conDecContextMenu.createContextMenu(this.id, "s", event, "tbldecisionTable");
+				let object;
+				if (className === "argument") {
+					let tmpIDs = this.id.split(":");
+					let argumentID = tmpIDs[1];
+					let alternativeID = tmpIDs[0];
+					object = decisionTableData["alternatives"].find(alternative => alternative.id == alternativeID).arguments.find(
+							argument => argument.id == argumentID);
+				} else {
+					object = getElementObj(this.id);
+				}
+				object = Array.isArray(object) ? object[0] : object;
+				if (object) {
+					conDecContextMenu.createContextMenu(object.id, object.documentationLocation, event, "tbldecisionTable-"+ className);
+				}
 			});
 		}
 	}
 
 	/**
 	 * 
-	 * @param {Array or empty object} data 
-	 * @param {string} elementKey 
+	 * @param {Array
+	 *            or empty object} data
+	 * @param {string}
+	 *            elementKey
 	 */
 	function addDropDownItems(data, elementKey) {
 		let dropDown = document.getElementById(`${dropDownID}`);
-		dropDown.innerHTML = "<aui-section id=\"ddIssueID\">";
-		let dropDownSection = document.getElementById("ddIssueID");
-
+		dropDown.innerHTML = "";
 		if (!data.length) {
-			dropDownSection.innerHTML += "<aui-item-radio disabled>Could not find any issue. Please create new issue!</aui-item-radio>";
+			dropDown.innerHTML += "<option disabled>Could not find any issue. Please create new issue!></otpion>";
+			return;
 		} else {
 			for (let i = 0; i < data.length; i++) {
 				if (i == 0) {
-					dropDownSection.innerHTML += "<aui-item-radio interactive checked>" + data[i].summary + "</aui-item-radio>";
+					dropDown.innerHTML += "<option value=\"" + data[i].id + "\" checked>" + data[i].summary + "</option>";
+					currentIssue = data[i];
+					conDecAPI.getDecisionTable(elementKey, data[i].id, data[i].documentationLocation, function (data) {
+						buildDecisionTable(data);
+					});
 				} else {
-					dropDownSection.innerHTML += "<aui-item-radio interactive>" + data[i].summary + "</aui-item-radio>";
+					dropDown.innerHTML += "<option value=\"" + data[i].id + "\">" + data[i].summary + "</option>";
 				}
 			}
 		}
 
-		let section = document.querySelector('aui-section#ddIssueID');
+		let section = document.querySelector(`#${dropDownID}`);
 		section.addEventListener('change', function (e) {
-			let tagName = e.target.tagName.toLowerCase();
-			if (tagName === "aui-item-radio") {
-				if (e.target.hasAttribute('checked')) {
-					currentIssue = issues.find(o => o.summary === e.target.textContent);
-					if (typeof currentIssue !== "undefined") {
-						conDecAPI.getDecisionTable(elementKey, currentIssue.id, currentIssue.documentationLocation, function (data) {
-							buildDecisionTable(data);
-						});
-					} else {
-						addAlternativesToTable([]);
-					}
-				}
+		currentIssue = issues.find(o => o.id == document.getElementById(dropDownID).value);
+		if (typeof currentIssue !== "undefined") {
+			conDecAPI.getDecisionTable(elementKey, currentIssue.id, currentIssue.documentationLocation, function (data) {
+					buildDecisionTable(data);
+			});
+		} else {
+			addAlternativesToDecisionTable([], []);
 			}
 		});
 	}
@@ -231,11 +270,11 @@
 			if (argument.id === argumentId) {
 				if (!event.target.id.includes("cell")) {
 					ev.target.parentNode.appendChild(argument);
-					updateArgumentCriteriaLink(criteriaId, ev.target.parentNode.id, argumentId);
+					updateArgumentCriteriaLink(criteriaId, ev.target.parentNode.id, argumentId.split(":")[1]);
 					break;
 				} else {
 					ev.target.appendChild(argument);
-					updateArgumentCriteriaLink(criteriaId, ev.target.id, argumentId);
+					updateArgumentCriteriaLink(criteriaId, ev.target.id, argumentId.split(":")[1]);
 					break;
 				}
 			}
@@ -299,16 +338,18 @@
 		}
 	}
 
-	function getElementObj(obj) {
-		if (obj.toLowerCase().includes("unknown")) {
-			let alternativeId = obj.replace("cellUnknown", "");
+	function getElementObj(element) {
+		if (element.toLowerCase().includes("unknown")) {
+			let alternativeId = element.replace("cellUnknown", "");
 			return decisionTableData["alternatives"].find(alternative => alternative.id == alternativeId);
-		} else if (obj.includes("cell")) {
-			let concatinated = obj.replace("cell", "").split(":");
+		} else if (element.includes("cell")) {
+			let concatinated = element.replace("cell", "").split(":");
 			let alternativeId = concatinated[0];
 			let criteriaId = concatinated[1];
 			return [decisionTableData["alternatives"].find(alternative => alternative.id == alternativeId), 
 				decisionTableData["criteria"].find(criteria => criteria.id == criteriaId)];
+		} else {
+			return decisionTableData["alternatives"].find(object => object.id == element);
 		}
 	}
 
