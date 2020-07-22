@@ -1,9 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import static de.uhd.ifi.se.decision.management.jira.classification.TestOnlineTrainer.getTrainingData;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import net.java.ao.test.jdbc.NonTransactional;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -15,17 +21,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import net.java.ao.test.jdbc.NonTransactional;
+import static de.uhd.ifi.se.decision.management.jira.classification.TestOnlineTrainer.getTrainingData;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class TestOnlineFileTrainerImpl extends TestSetUp {
+	private static final Logger LOGGER = LoggerFactory.getLogger(TestOnlineFileTrainerImpl.class);
 
 	private OnlineFileTrainerImpl trainer;
 	private static final List<String> TEST_SENTENCES = Arrays.asList("Pizza is preferred", "I have an issue");
@@ -162,7 +164,7 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
 			reader.close();
 			return trimmedDefaultFile;
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 		}
 		return fullDefaultFile;
 	}

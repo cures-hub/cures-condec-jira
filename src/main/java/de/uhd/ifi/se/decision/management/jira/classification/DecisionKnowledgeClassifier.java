@@ -1,5 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
+import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.util.JiraHome;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.BinaryClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.FineGrainedClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,18 +20,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.util.JiraHome;
-
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.BinaryClassifier;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.FineGrainedClassifier;
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
  * Tries to identify decision knowledge in natural language texts using a binary
@@ -66,7 +64,7 @@ public class DecisionKnowledgeClassifier {
 		this.binaryClassifier = new BinaryClassifier();
 		/*
 		 * try { //this.binaryClassifier.loadFromFile(); } catch (Exception e) {
-		 * System.err.println("Could not load a binary classifier from File."); }
+		 *LOGGER.error("Could not load a binary classifier from File."); }
 		 */
 	}
 
@@ -125,7 +123,7 @@ public class DecisionKnowledgeClassifier {
 					try {
 						makeBinaryPrediction(stringsToBeClassified.get(finalI), binaryPredictionResults, finalI);
 					} catch (Exception e) {
-						e.printStackTrace();
+						LOGGER.error(e.getMessage());
 					}
 				});
 			}
@@ -204,7 +202,7 @@ public class DecisionKnowledgeClassifier {
 						makeFineGrainedPrediction(stringsToBeClassified.get(finalI), fineGrainedPredictionResults,
 								finalI);
 					} catch (Exception e) {
-						e.printStackTrace();
+						LOGGER.error(e.getMessage());
 					}
 				});
 			}

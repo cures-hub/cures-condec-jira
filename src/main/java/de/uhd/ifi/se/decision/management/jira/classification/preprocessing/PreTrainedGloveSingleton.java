@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.classification.preprocessing;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -12,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 class PreTrainedGloveSingleton {
+	private static final Logger LOGGER = LoggerFactory.getLogger(PreTrainedGloveSingleton.class);
 
 	private static PreTrainedGloveSingleton instance;
 	private Map<String, Double[]> map;
@@ -34,7 +38,7 @@ class PreTrainedGloveSingleton {
 				line = br.readLine();
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 		}
 
 	}
