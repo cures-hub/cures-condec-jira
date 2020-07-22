@@ -9,6 +9,7 @@ import com.atlassian.jira.issue.status.category.StatusCategoryImpl;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.ConsistencyCheckEventListenerSingleton;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.ConsistencyCheckLogsInDatabase;
@@ -27,16 +28,16 @@ import static org.junit.Assert.assertTrue;
 public class TestConsistencyCheckEventListener extends TestSetUp {
 
 	private ConsistencyCheckEventListenerSingleton eventListener;
-	private MutableIssue issue;
+	private KnowledgeElement knowledgeElement;
 	private ApplicationUser user;
 	private Comment jiraComment;
 
 	@Before
 	public void setUp() {
 		TestSetUp.init();
-		issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
+		knowledgeElement = new KnowledgeElement(ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4"));
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		jiraComment = ComponentAccessor.getCommentManager().create(issue, user, "Test Comment", true);
+		jiraComment = ComponentAccessor.getCommentManager().create(knowledgeElement.getJiraIssue(), user, "Test Comment", true);
 		eventListener = (ConsistencyCheckEventListenerSingleton) ConsistencyCheckEventListenerSingleton.getInstance();
 	}
 
@@ -54,23 +55,23 @@ public class TestConsistencyCheckEventListener extends TestSetUp {
 
 	@Test
 	public void testOnIssueEvent() {
-		Optional<ConsistencyCheckLogsInDatabase> check = ConsistencyCheckLogHelper.getCheck(issue.getKey());
+		Optional<ConsistencyCheckLogsInDatabase> check = ConsistencyCheckLogHelper.getCheck(knowledgeElement);
 		assertTrue("No pending check should exist.", check.isEmpty());
 
-		eventListener.onIssueEvent(generateWorkflowIssueEvent(issue, user, jiraComment, "Done", StatusCategoryImpl.findByKey(StatusCategory.COMPLETE), EventType.ISSUE_GENERICEVENT_ID));
-		check = ConsistencyCheckLogHelper.getCheck(issue.getKey());
+		eventListener.onIssueEvent(generateWorkflowIssueEvent((MutableIssue) knowledgeElement.getJiraIssue(), user, jiraComment, "Done", StatusCategoryImpl.findByKey(StatusCategory.COMPLETE), EventType.ISSUE_GENERICEVENT_ID));
+		check = ConsistencyCheckLogHelper.getCheck(knowledgeElement);
 		assertTrue("Now a pending check should exist.", check.isPresent());
 		reset();
 
-		ConfigPersistenceManager.setActivationStatusOfConsistencyEvent(issue.getProjectObject().getKey(), "done", false);
-		eventListener.onIssueEvent(generateWorkflowIssueEvent(issue, user, jiraComment, "Done", StatusCategoryImpl.findByKey(StatusCategory.COMPLETE), EventType.ISSUE_GENERICEVENT_ID));
-		check = ConsistencyCheckLogHelper.getCheck(issue.getKey());
+		ConfigPersistenceManager.setActivationStatusOfConsistencyEvent(knowledgeElement.getProject().getProjectKey(), "done", false);
+		eventListener.onIssueEvent(generateWorkflowIssueEvent((MutableIssue) knowledgeElement.getJiraIssue(), user, jiraComment, "Done", StatusCategoryImpl.findByKey(StatusCategory.COMPLETE), EventType.ISSUE_GENERICEVENT_ID));
+		check = ConsistencyCheckLogHelper.getCheck(knowledgeElement);
 		assertFalse("No pending check should exist.", check.isPresent());
-		ConfigPersistenceManager.setActivationStatusOfConsistencyEvent(issue.getProjectObject().getKey(), "done", true);
+		ConfigPersistenceManager.setActivationStatusOfConsistencyEvent(knowledgeElement.getProject().getProjectKey(), "done", true);
 
-		eventListener.onIssueEvent(generateWorkflowIssueEvent(issue, user, jiraComment, "Open", StatusCategoryImpl.findByKey(StatusCategory.IN_PROGRESS), EventType.ISSUE_GENERICEVENT_ID));
+		eventListener.onIssueEvent(generateWorkflowIssueEvent((MutableIssue) knowledgeElement.getJiraIssue(), user, jiraComment, "Open", StatusCategoryImpl.findByKey(StatusCategory.IN_PROGRESS), EventType.ISSUE_GENERICEVENT_ID));
 
-		assertFalse("After resetting the workflow the chock does no longer need approval.", ConsistencyCheckLogHelper.doesIssueNeedApproval(issue));
+		assertFalse("After resetting the workflow the chock does no longer need approval.", ConsistencyCheckLogHelper.doesKnowledgeElementNeedApproval(knowledgeElement));
 
 
 
@@ -78,7 +79,7 @@ public class TestConsistencyCheckEventListener extends TestSetUp {
 
 	@AfterEach
 	public void reset() {
-		ConsistencyCheckLogHelper.deleteCheck(issue);
+		ConsistencyCheckLogHelper.deleteCheck(knowledgeElement);
 	}
 
 

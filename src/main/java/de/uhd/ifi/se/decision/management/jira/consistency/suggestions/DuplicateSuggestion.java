@@ -1,13 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.consistency.suggestions;
 
-import com.atlassian.jira.issue.Issue;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import org.codehaus.jackson.annotate.JsonProperty;
 
-public class DuplicateSuggestion implements Suggestion<Issue> {
+public class DuplicateSuggestion implements Suggestion<KnowledgeElement> {
 	@JsonProperty
-	private final Issue i1;
+	private final KnowledgeElement baseElement;
 	@JsonProperty
-	private final Issue i2;
+	private final KnowledgeElement targetElement;
 	@JsonProperty
 	private final int startDuplicate;    //of Issue i2
 	@JsonProperty
@@ -17,23 +17,15 @@ public class DuplicateSuggestion implements Suggestion<Issue> {
 	@JsonProperty
 	private final String field;
 
-	public DuplicateSuggestion(Issue i1, Issue i2, String preprocessedSummary, int startDuplicate, int length, String field) {
-		this.i1 = i1;
-		this.i2 = i2;
+
+	public DuplicateSuggestion(KnowledgeElement baseElement, KnowledgeElement targetElement, String preprocessedSummary, int startDuplicate, int length, String field) {
+		this.baseElement = baseElement;
+		this.targetElement = targetElement;
 		this.startDuplicate = startDuplicate;
 		this.length = length;
 		this.field = field;
-		this.preprocessedSummary = preprocessedSummary;
-	}
+		this.preprocessedSummary = preprocessedSummary;	}
 
-
-	public Issue getI1() {
-		return i1;
-	}
-
-	public Issue getI2() {
-		return i2;
-	}
 
 	public int getStartDuplicate() {
 		return startDuplicate;
@@ -51,8 +43,18 @@ public class DuplicateSuggestion implements Suggestion<Issue> {
 		return preprocessedSummary;
 	}
 
+	public KnowledgeElement getBaseElement() {
+		return baseElement;
+	}
+
 	@Override
-	public Issue getSuggestion() {
-		return this.i2;
+	public KnowledgeElement getSuggestion() {
+		return targetElement;
+	}
+
+
+	@Override
+	public SuggestionType getType() {
+		return SuggestionType.DUPLICATE;
 	}
 }

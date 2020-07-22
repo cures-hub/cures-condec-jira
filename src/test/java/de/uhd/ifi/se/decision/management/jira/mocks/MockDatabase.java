@@ -5,8 +5,7 @@ import java.sql.SQLException;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.ConsistencyCheckLogsInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupInDatabase;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedDuplicatesInDatabase;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedLinkSuggestionsInDatabase;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedSuggestionInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInDatabase;
@@ -28,8 +27,7 @@ public class MockDatabase implements DatabaseUpdater {
 			entityManager.migrate(DecisionGroupInDatabase.class);
 			entityManager.migrate(CodeClassInDatabase.class);
 			entityManager.migrate(ReleaseNotesInDatabase.class);
-			entityManager.migrate(DiscardedLinkSuggestionsInDatabase.class);
-			entityManager.migrate(DiscardedDuplicatesInDatabase.class);
+			entityManager.migrate(DiscardedSuggestionInDatabase.class);
 			entityManager.migrate(ConsistencyCheckLogsInDatabase.class);
 
 		} catch (SQLException | NullPointerException e) {

@@ -9,7 +9,7 @@ public interface ConsistencyCheckEventTrigger {
 
 	String getCurrentProjectKey();
 
-	public void setIssueEvent(IssueEvent event);
+	void setIssueEvent(IssueEvent event);
 
 	default boolean isActivated(){
 		return ConfigPersistenceManager.getActivationStatusOfConsistencyEvent(getCurrentProjectKey(), this.getName());

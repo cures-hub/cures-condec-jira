@@ -12,7 +12,7 @@ import com.atlassian.jira.mock.ofbiz.MockGenericValue;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.ConsistencyCheckEventTrigger;
-import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.StatusClosedTrigger;
+import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.IssueClosedTrigger;
 import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.WorkflowDoneTrigger;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import org.junit.Before;
@@ -72,18 +72,18 @@ public class TestConsistencyCheckEventTrigger extends TestSetUp {
 
 	@Test
 	public void testStatusClosedTrigger() {
-		trigger = new StatusClosedTrigger(null);
+		trigger = new IssueClosedTrigger(null);
 		assertEquals("The name should be 'closed'.", "closed", trigger.getName());
 
 		IssueEvent event = generateWorkflowIssueEvent(issue, user, jiraComment, "Done", StatusCategoryImpl.findByKey(StatusCategory.COMPLETE), EventType.ISSUE_CLOSED_ID);
-		trigger = new StatusClosedTrigger( event);
+		trigger = new IssueClosedTrigger( event);
 		assertTrue("Trigger should be triggered.", trigger.isTriggered());
 
 		event = generateWorkflowIssueEvent(issue, user, jiraComment, "Done", StatusCategoryImpl.findByKey(StatusCategory.COMPLETE), EventType.ISSUE_DELETED_ID);
-		trigger = new StatusClosedTrigger(event);
+		trigger = new IssueClosedTrigger(event);
 		assertFalse("Trigger should not be triggered.", trigger.isTriggered());
 
-		trigger = new StatusClosedTrigger(null);
+		trigger = new IssueClosedTrigger(null);
 		assertFalse("Trigger should not be triggered.", trigger.isTriggered());
 
 	}

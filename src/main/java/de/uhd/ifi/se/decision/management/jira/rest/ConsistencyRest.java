@@ -1,17 +1,21 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.ContextInformation;
-import de.uhd.ifi.se.decision.management.jira.consistency.duplicatedetection.DuplicateDetectionManager;
-import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.consistency.duplicatedetection.BasicDuplicateTextDetector;
+import de.uhd.ifi.se.decision.management.jira.consistency.duplicatedetection.DuplicateDetectionManager;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateSuggestion;
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.SuggestionType;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -27,6 +31,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * REST resource for consistency functionality.
@@ -34,49 +39,59 @@ import java.util.Map;
 
 @Path("/consistency")
 public class ConsistencyRest {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConsistencyRest.class);
 
 	//--------------------
 	// Related issue detection
 	//--------------------
 
-	@Path("/getRelatedIssues")
+	@Path("/getRelatedKnowledgeElements")
 	@GET
-	public Response getRelatedIssues(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey) {
-		try {
-			ContextInformation ci = new ContextInformation(issueKey);
-			Collection<LinkSuggestion> linkSuggestions = ci.getLinkSuggestions();
-			HashMap<String, Object> result = new HashMap<>();
-
-			List<Map<String, Object>> jsonifiedIssues = new ArrayList<>();
-			for (LinkSuggestion linkSuggestion : linkSuggestions) {
-				jsonifiedIssues.add(this.suggestionToJsonMap(linkSuggestion));
-			}
-			result.put("relatedIssues", jsonifiedIssues);
-
-			return Response.ok(result).build();
-		} catch (Exception e) {
-			return Response.status(500).build();
-		}
-	}
-
-	@Path("/discardLinkSuggestion")
-	@POST
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response discardLinkSuggestion(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-										  @QueryParam("originIssueKey") String originIssueKey, @QueryParam("targetIssueKey") String targetIssueKey) {
-		long databaseId = ConsistencyPersistenceHelper.addDiscardedSuggestions(originIssueKey, targetIssueKey, projectKey);
-		Response response = Response.status(200).build();
-		if (databaseId == -1) {
+	public Response getRelatedKnowledgeElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("elementId") Long elementId, @QueryParam("elementLocation") String elementLocation) {
+		Response response;
+		try {
+			Optional<KnowledgeElement> knowledgeElement = isKnowledgeElementValid(projectKey, elementId, elementLocation);
+			if (knowledgeElement.isPresent()) {
+				ContextInformation ci = new ContextInformation(knowledgeElement.get());
+				Collection<LinkSuggestion> linkSuggestions = ci.getLinkSuggestions();
+				HashMap<String, Object> result = new HashMap<>();
+
+				List<Map<String, Object>> jsonifiedIssues = new ArrayList<>();
+				for (LinkSuggestion linkSuggestion : linkSuggestions) {
+					jsonifiedIssues.add(this.suggestionToJsonMap(linkSuggestion));
+				}
+				result.put("relatedIssues", jsonifiedIssues);
+
+				response = Response.ok(result).build();
+			} else {
+				response = Response.status(400).entity(
+					ImmutableMap.of("error", "No such element exists!")).build();
+
+			}
+
+		} catch (Exception e) {
 			response = Response.status(500).build();
 		}
 		return response;
 	}
 
+	@Path("/discardLinkSuggestion")
+	@POST
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response discardLinkSuggestion(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("originElementId") Long originId, @QueryParam("originElementLocation") String originLocation,
+										  @QueryParam("targetElementId") Long targetId, @QueryParam("targetElementLocation") String targetLocation) {
+		return this.discardSuggestion(projectKey, originId, originLocation, targetId, targetLocation, SuggestionType.LINK);
+
+	}
+
+
 	private Map<String, Object> suggestionToJsonMap(LinkSuggestion linkSuggestion) {
 		Map<String, Object> jsonMap = new HashMap<>();
-		jsonMap.put("key", linkSuggestion.getTargetIssue().getKey());
-		jsonMap.put("summary", linkSuggestion.getTargetIssue().getSummary());
-		jsonMap.put("id", linkSuggestion.getTargetIssue().getId());
+		jsonMap.put("key", linkSuggestion.getTargetElement().getKey());
+		jsonMap.put("summary", linkSuggestion.getTargetElement().getSummary());
+		jsonMap.put("relatedElement", linkSuggestion.getTargetElement());
+		jsonMap.put("id", linkSuggestion.getTargetElement().getId());
 		jsonMap.put("score", linkSuggestion.getTotalScore());
 		jsonMap.put("results", linkSuggestion.getScore());
 
@@ -88,28 +103,24 @@ public class ConsistencyRest {
 	// Duplicate issue detection
 	//--------------------
 
-	@Path("/getDuplicatesForIssue")
+	@Path("/getDuplicateKnowledgeElement")
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response getDuplicatesForIssue(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey) {
-		boolean areIssueKeysValid;
+	public Response getDuplicateKnowledgeElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("elementId") Long elementId, @QueryParam("location") String elementLocation) {
+		Optional<KnowledgeElement> knowledgeElement;
 		Response response;
 		try {
-			areIssueKeysValid = ComponentAccessor.getIssueManager().isExistingIssueKey(issueKey);
+			knowledgeElement = isKnowledgeElementValid(projectKey, elementId, elementLocation);
 
-			if (areIssueKeysValid) {
-				Issue baseIssue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey);
+			if (knowledgeElement.isPresent()) {
 				HashMap<String, Object> result = new HashMap<>();
-				DuplicateDetectionManager manager = new DuplicateDetectionManager(baseIssue, new BasicDuplicateTextDetector(ConfigPersistenceManager.getMinDuplicateLength(baseIssue.getProjectObject().getKey())));
+				DuplicateDetectionManager manager = new DuplicateDetectionManager(knowledgeElement.get(), new BasicDuplicateTextDetector(ConfigPersistenceManager.getMinDuplicateLength(projectKey)));
 
-				// get Issues of project
-				Collection<Long> issueKeysToCheck = ComponentAccessor.getIssueManager().getIssueIdsForProject(baseIssue.getProjectId());
-				Collection<Issue> issuesToCheck = new ArrayList<>();
-				for (Long issueId : issueKeysToCheck) {
-					issuesToCheck.add(ComponentAccessor.getIssueManager().getIssueObject(issueId));
-				}
+				// get KnowledgeElements of project
+				KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+
 				// detect duplicates
-				List<DuplicateSuggestion> foundDuplicateSuggestions = manager.findAllDuplicates(issuesToCheck);
+				List<DuplicateSuggestion> foundDuplicateSuggestions = manager.findAllDuplicates(persistenceManager.getKnowledgeElements());
 
 				// convert to Json
 				List<Map<String, Object>> jsonifiedIssues = new ArrayList<>();
@@ -120,7 +131,7 @@ public class ConsistencyRest {
 				response = Response.ok(result).build();
 			} else {
 				response = Response.status(400).entity(
-					ImmutableMap.of("error", "No issue with the given key exists!")).build();
+					ImmutableMap.of("error", "No such element exists!")).build();
 			}
 		} catch (Exception e) {
 			//e.printStackTrace();
@@ -133,63 +144,44 @@ public class ConsistencyRest {
 	@Path("/discardDuplicate")
 	@POST
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response discardDetectedDuplicate(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("originIssueKey") String originIssueKey, @QueryParam("targetIssueKey") String targetIssueKey) {
-		Response response;
-		//check if issue keys exist
-		boolean areIssueKeysValid;
-		try {
-			areIssueKeysValid = ComponentAccessor.getIssueManager().isExistingIssueKey(originIssueKey) && ComponentAccessor.getIssueManager().isExistingIssueKey(originIssueKey);
-			if (areIssueKeysValid) {
-				long databaseId = ConsistencyPersistenceHelper.addDiscardedDuplicate(originIssueKey, targetIssueKey, projectKey);
-				response = Response.status(200).build();
-				if (databaseId == -1) {
-					response = Response.status(500).build();
-				}
-			} else {
-				response = Response.status(400).entity(
-					ImmutableMap.of("error", "No issues with the given key exists!")).build();
-			}
-		} catch (Exception e) {
-			//e.printStackTrace();
-			response = Response.status(500).entity(
-				ImmutableMap.of("error", e.toString())).build();
-		}
+	public Response discardDetectedDuplicate
+		(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("originElementId") Long
+			originIssueId, @QueryParam("originElementLocation") String originLocation, @QueryParam("targetElementId") Long targetIssueId,
+		 @QueryParam("targetElementLocation") String targetLocation) {
+		return this.discardSuggestion(projectKey, originIssueId, originLocation, targetIssueId, targetLocation, SuggestionType.DUPLICATE);
 
-		return response;
 	}
 
 	public Map<String, Object> duplicateToJsonMap(DuplicateSuggestion duplicateSuggestion) {
 		Map<String, Object> jsonMap = new HashMap<>();
-		if(duplicateSuggestion != null){
-			jsonMap.put("id", duplicateSuggestion.getI2().getId());
-			jsonMap.put("key", duplicateSuggestion.getI2().getKey());
-			jsonMap.put("summary", duplicateSuggestion.getI2().getSummary());
+		if (duplicateSuggestion != null) {
+			jsonMap.put("baseElement", duplicateSuggestion.getBaseElement());
+			jsonMap.put("duplicateElement", duplicateSuggestion.getSuggestion());
 			jsonMap.put("preprocessedSummary", duplicateSuggestion.getPreprocessedSummary());
-
-			jsonMap.put("description", duplicateSuggestion.getI2().getDescription());
 			jsonMap.put("startDuplicate", duplicateSuggestion.getStartDuplicate());
 			jsonMap.put("length", duplicateSuggestion.getLength());
 
 		}
 
-
 		return jsonMap;
 	}
 
+	//--------------------
+	// Consistency checks
+	//--------------------
 
-	@Path("/doesIssueNeedApproval")
+	@Path("/doesElementNeedApproval")
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response doesIssueNeedApproval(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey) {
-		boolean isIssueKeyValid;
+	public Response doesElementNeedApproval(@Context HttpServletRequest request, @QueryParam("projectKey") String
+		projectKey, @QueryParam("elementId") Long elementId, @QueryParam("elementLocation") String documentationLocation) {
+		Optional<KnowledgeElement> knowledgeElement;
 		Response response;
 		try {
-			isIssueKeyValid = ComponentAccessor.getIssueManager().isExistingIssueKey(issueKey);
+			knowledgeElement = isKnowledgeElementValid(projectKey, elementId, documentationLocation);
 
-			if (isIssueKeyValid) {
-				Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey);
-
-				boolean doesIssueNeedApproval = ConsistencyCheckLogHelper.doesIssueNeedApproval(issue);
+			if (knowledgeElement.isPresent()) {
+				boolean doesIssueNeedApproval = ConsistencyCheckLogHelper.doesKnowledgeElementNeedApproval(knowledgeElement.get());
 				response = Response.ok().entity(ImmutableMap.of("needsApproval", doesIssueNeedApproval)).build();
 			} else {
 				response = Response.status(400).entity(
@@ -205,17 +197,18 @@ public class ConsistencyRest {
 	@Path("/approveCheck")
 	@POST
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response approveCheck(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey, @QueryParam("user") String user) {
-		boolean isIssueKeyValid;
+	public Response approveCheck(@Context HttpServletRequest request, @QueryParam("projectKey") String
+		projectKey, @QueryParam("elementId") Long elementId, @QueryParam("elementLocation") String documentationLocation, @QueryParam("user") String user) {
+
+		Optional<KnowledgeElement> knowledgeElement;
 		ApplicationUser doesUserExist;
 		Response response;
 		try {
-			isIssueKeyValid = ComponentAccessor.getIssueManager().isExistingIssueKey(issueKey);
+			knowledgeElement = isKnowledgeElementValid(projectKey, elementId, documentationLocation);
 			doesUserExist = ComponentAccessor.getUserManager().getUserByName(user);
-			if (isIssueKeyValid && doesUserExist != null) {
-				Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey);
+			if (knowledgeElement.isPresent() && doesUserExist != null) {
 
-				ConsistencyCheckLogHelper.approveCheck(issue, user);
+				ConsistencyCheckLogHelper.approveCheck(knowledgeElement.get(), user);
 				response = Response.ok().build();
 			} else {
 				response = Response.status(400).entity(
@@ -228,5 +221,60 @@ public class ConsistencyRest {
 		return response;
 	}
 
+	private Response discardSuggestion(String projectKey, Long originIssueId, String originLocation, Long targetIssueId, String targetLocation, SuggestionType type) {
+		Response response;
+		//check if issue keys exist
+		try {
+
+			KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+			KnowledgeElement origin = persistenceManager.getKnowledgeElement(originIssueId, originLocation);
+			KnowledgeElement target = persistenceManager.getKnowledgeElement(targetIssueId, targetLocation);
+			if (origin == null || target == null) {
+				response = Response.status(400).entity(
+					ImmutableMap.of("error", "No such element exists!")).build();
+			} else {
+				try {
+					long databaseId;
+
+					databaseId = ConsistencyPersistenceHelper.addDiscardedSuggestions(origin, target, type);
+
+
+					response = Response.status(200).build();
+					if (databaseId == -1) {
+						response = Response.status(500).build();
+					}
+
+				} catch (Exception e) {
+					//e.printStackTrace();
+					response = Response.status(500).entity(
+						ImmutableMap.of("error", e.toString())).build();
+				}
+			}
+
+		} catch (Exception e) {
+			//e.printStackTrace();
+			response = Response.status(400).entity(
+				ImmutableMap.of("error", "No such element exists!")).build();
+		}
+
+
+		return response;
+	}
+
+	private Optional<KnowledgeElement> isKnowledgeElementValid(String projectKey, Long elementId, String elementLocation) {
+		KnowledgeElement knowledgeElement = null;
+		try {
+			// we do not want to create a new project here!
+			if (ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey) != null) {
+				KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+				knowledgeElement = persistenceManager.getKnowledgeElement(elementId, elementLocation);
+			}
+
+		} catch (Exception e) {
+				LOGGER.error(e.getMessage());
+		}
+
+		return Optional.ofNullable(knowledgeElement);
+	}
 
 }

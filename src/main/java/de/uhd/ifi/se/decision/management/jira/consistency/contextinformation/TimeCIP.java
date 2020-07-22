@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
 
-import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,11 +32,12 @@ public class TimeCIP implements ContextInformationProvider {
 	}
 
 	@Override
-	public void assessRelation(Issue baseIssue, List<Issue> issuesToTest) {
-		for (Issue issueToTest : issuesToTest) {
-			LinkSuggestion linkSuggestion = new LinkSuggestion(baseIssue, issueToTest);
-			long differenceInHours = baseIssue.getCreated().getTime() - issueToTest.getCreated().getTime() / (1000 * 60 * 60);
-			linkSuggestion.addToScore((1. / Math.abs(differenceInHours + 1)), this.getName());
+	public void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
+		for (KnowledgeElement elementToTest : knowledgeElements) {
+			LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, elementToTest);
+			double differenceInWeeks = (baseElement.getCreated().getTime() - elementToTest.getCreated().getTime()) / (1000 * 60 * 60 * 24. * 7.);
+			double score = (1. / (Math.abs(differenceInWeeks )+ 1.));
+			linkSuggestion.addToScore(score, this.getName());
 			this.linkSuggestions.add(linkSuggestion);
 
 		}

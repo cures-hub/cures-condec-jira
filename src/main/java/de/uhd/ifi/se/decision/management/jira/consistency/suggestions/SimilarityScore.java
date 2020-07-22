@@ -4,7 +4,6 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class SimilarityScore {
 	@JsonProperty
@@ -25,20 +24,6 @@ public class SimilarityScore {
 
 	public void put(String key, Double score) {
 		this.scores.put(key, score);
-		this.normalizeScores(key);
 	}
 
-	private void normalizeScores(String newKey) {
-		Set<String> keys = this.scores.keySet();
-		if (keys.size() == 1) {
-			return;
-		}
-		for (String key : keys) {
-			Double oldValue = scores.get(key);
-			if (!key.equals(newKey)){
-				oldValue = oldValue * (keys.size() - 1);
-			}
-			scores.put(key, oldValue / keys.size());
-		}
-	}
 }

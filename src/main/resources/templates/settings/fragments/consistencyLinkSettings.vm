@@ -1,4 +1,4 @@
-<h4>Settings for the suggested related issues</h4>
+<h4>Settings for the suggested related knowledge elements</h4>
 
 <div class="field-group top-label">
     <label for="min-probability-link">Minimum score for link suggestion</label>
@@ -13,7 +13,7 @@
     <button id="save-min-probability-link-btn" class='aui-button aui-button-primary aui-button-compact'>
         Save
     </button>
-    <div class="description">To calculate the link suggestions the issues of a project are used as a basis. Currently four context indicators are used for the calculation: User, Time, Links and Text.
+    <div class="description">To calculate the link suggestions, the knowledge elements of a project are used as a basis. Currently four context indicators are used for the calculation: User, Time, Links and Text.
         <br/>
         For each indicator the values are scaled from 0.0 to 1.0 with 1.0 indication the most similar with regards to the current context.
         Lastly the values are divided by the number of examined contexts to get scores between 0.0 and 1.0.

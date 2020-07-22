@@ -1,26 +1,26 @@
 package de.uhd.ifi.se.decision.management.jira.consistency.suggestions;
 
-import com.atlassian.jira.issue.Issue;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
-public class LinkSuggestion implements Comparable<LinkSuggestion>, Suggestion<Issue> {
+public class LinkSuggestion implements Comparable<LinkSuggestion>, Suggestion<KnowledgeElement> {
 
-	private Issue baseIssue;
-	private Issue targetIssue;
+	private KnowledgeElement baseElement;
+	private KnowledgeElement targetElement;
 	private SimilarityScore score;
 
-	public LinkSuggestion(Issue baseIssue, Issue targetIssue) {
-		this.baseIssue = baseIssue;
-		this.targetIssue = targetIssue;
+	public LinkSuggestion(KnowledgeElement baseElement, KnowledgeElement targetElement) {
+		this.baseElement = baseElement;
+		this.targetElement = targetElement;
 		this.score = new SimilarityScore();
 	}
 
 
-	public Issue getBaseIssue() {
-		return baseIssue;
+	public KnowledgeElement getBaseIssue() {
+		return baseElement;
 	}
 
-	public Issue getTargetIssue() {
-		return targetIssue;
+	public KnowledgeElement getTargetElement() {
+		return targetElement;
 	}
 
 	public Double getTotalScore() {
@@ -51,7 +51,12 @@ public class LinkSuggestion implements Comparable<LinkSuggestion>, Suggestion<Is
 	}
 
 	@Override
-	public Issue getSuggestion() {
-		return getTargetIssue();
+	public KnowledgeElement getSuggestion() {
+		return getTargetElement();
+	}
+
+	@Override
+	public SuggestionType getType() {
+		return SuggestionType.LINK;
 	}
 }

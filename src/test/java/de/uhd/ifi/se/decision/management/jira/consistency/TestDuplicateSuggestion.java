@@ -5,6 +5,7 @@ import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.project.Project;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateSuggestion;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import org.junit.Before;
@@ -33,10 +34,10 @@ public class TestDuplicateSuggestion extends TestSetUp {
 		String text = "Hello world!";
 		int start = 0;
 		int length = 5;
-		DuplicateSuggestion duplicateSuggestion = new DuplicateSuggestion(i1, i2, text, start, length, field);
+		DuplicateSuggestion duplicateSuggestion = new DuplicateSuggestion(new KnowledgeElement(i1), new KnowledgeElement(i2), text, start, length, field);
 
-		assertEquals(i1, duplicateSuggestion.getI1());
-		assertEquals(i2, duplicateSuggestion.getI2());
+		assertEquals(i1.getId().longValue(), duplicateSuggestion.getBaseElement().getId());
+		assertEquals(i2.getId().longValue(), duplicateSuggestion.getSuggestion().getId());
 		assertEquals(field, duplicateSuggestion.getField());
 		assertEquals(text, duplicateSuggestion.getPreprocessedSummary());
 		assertEquals(start, duplicateSuggestion.getStartDuplicate());
