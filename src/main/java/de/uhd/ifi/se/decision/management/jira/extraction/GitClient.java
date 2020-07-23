@@ -1,18 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.util.JiraHome;
+import com.atlassian.jira.issue.Issue;
+import com.google.common.collect.Lists;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -39,16 +35,18 @@ import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.util.JiraHome;
-import com.atlassian.jira.issue.Issue;
-import com.google.common.collect.Lists;
-
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
-import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Retrieves commits and code changes (diffs) from one or more git repositories.
@@ -216,10 +214,10 @@ public class GitClient {
 
 	private boolean pull(String repoUri) {
 		LOGGER.info("Pulling Repository: " + repoUri);
-		// System.out.println("Pulling Repository: " + repoUri);
+		// LOGGER.info(("Pulling Repository: " + repoUri);
 		if (!isPullNeeded(repoUri)) {
 			// LOGGER.info("Repository is up to date: " + repoUri);
-			// System.out.println("Repository is up to date: " + repoUri);
+			// LOGGER.info(("Repository is up to date: " + repoUri);
 			return true;
 		}
 		try {
@@ -448,7 +446,7 @@ public class GitClient {
 			gitPath = gitPath.substring(0, gitPath.length() - 5);
 			diffEntries = this.getGit(repoUri).diff().setNewTree(newTreeIter).setOldTree(oldTreeIter).call();
 		} catch (IOException | GitAPIException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 			closeAll();
 		}
 		DiffFormatter diffFormatter = getDiffFormater(repoUri);
@@ -471,7 +469,7 @@ public class GitClient {
 					}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOGGER.error(e.getMessage());
 				}
 			}
 		}
@@ -962,7 +960,7 @@ public class GitClient {
 			try {
 				gits.get(repoUri).checkout().setName(checkoutName).call();
 			} catch (GitAPIException | JGitInternalException e) {
-				System.out.println("Could not checkout " + checkoutName + e.getMessage());
+				LOGGER.info("Could not checkout " + checkoutName + e.getMessage());
 				LOGGER.error("Could not checkout " + checkoutName + ". " + e.getMessage());
 				return false;
 			}

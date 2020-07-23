@@ -670,7 +670,7 @@ public class ConfigRest {
 
 			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("content", prettyMapOutput.toString())).build();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", e.getMessage()))
 					.build();
 		}
@@ -701,7 +701,7 @@ public class ConfigRest {
 			}
 			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("content", builder.toString())).build();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", e.getMessage()))
 					.build();
 		}

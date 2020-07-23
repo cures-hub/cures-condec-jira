@@ -1,18 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.issue.search.SearchService.ParseResult;
 import com.atlassian.jira.component.ComponentAccessor;
@@ -22,6 +9,18 @@ import com.atlassian.jira.issue.search.SearchResults;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Handles queries in Jira, either written in Jira Query Language (JQL) or as a
@@ -174,7 +173,7 @@ public class JiraQueryHandler {
 			Date date = simple.parse(dateAsString);
 			dateAsLong = date.getTime();
 		} catch (ParseException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 		}
 		return dateAsLong;
 	}

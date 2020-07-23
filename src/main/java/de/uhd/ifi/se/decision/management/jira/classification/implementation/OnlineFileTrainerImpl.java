@@ -1,7 +1,24 @@
 package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
-import static java.lang.Math.round;
-import static java.util.stream.Collectors.toList;
+import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
+import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.EvaluableClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.FileTrainer;
+import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import smile.validation.ClassificationMeasure;
+import smile.validation.FMeasure;
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.converters.ConverterUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,33 +38,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
-
-import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
-import de.uhd.ifi.se.decision.management.jira.classification.EvaluableClassifier;
-import de.uhd.ifi.se.decision.management.jira.classification.FileTrainer;
-import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
-import smile.validation.ClassificationMeasure;
-import smile.validation.FMeasure;
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.converters.ConverterUtils;
+import static java.lang.Math.round;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Class responsible to train the supervised text classifier. For this purpose,
  * the project admin needs to create and select an ARFF file.
  */
 public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer, FileTrainer {
+	protected static final Logger LOGGER = LoggerFactory.getLogger(OnlineFileTrainerImpl.class);
 
 	private DecisionKnowledgeClassifier classifier;
 	protected File directory;
@@ -57,7 +56,6 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	//public static File DEFAULT_TRAINING_DATA = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff");
 	// private static OnlineClassificationTrainerImpl instance;
 
-	protected static final Logger LOGGER = LoggerFactory.getLogger(OnlineFileTrainerImpl.class);
 
 	public OnlineFileTrainerImpl() {
 		this.classifier = DecisionKnowledgeClassifier.getInstance();
@@ -93,7 +91,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 				try {
 					trainBinaryClassifier();
 				} catch (Exception e) {
-					e.printStackTrace();
+					LOGGER.error(e.getMessage());
 					isTrained.set(false);
 				}
 			});
@@ -101,7 +99,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 				try {
 					trainFineGrainedClassifier();
 				} catch (Exception e) {
-					e.printStackTrace();
+					LOGGER.error(e.getMessage());
 					isTrained.set(false);
 				}
 			});
@@ -486,7 +484,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		Integer[] binaryPredictions = this.classifier.makeBinaryPredictions(sentences).stream().map(x -> x ? 1 : 0)
 			.collect(toList()).toArray(new Integer[sentences.size()]);
 
-		//System.out.println("Time for binary prediction on " +  sentences.size() + " sentences took " + (end-start) + " ms.");
+		//LOGGER.info(("Time for binary prediction on " +  sentences.size() + " sentences took " + (end-start) + " ms.");
 
 
 		Integer[] fineGrainedPredictions = this.classifier.makeFineGrainedPredictions(relevantSentences).stream()
@@ -494,7 +492,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 			.toArray(new Integer[relevantSentences.size()]);
 		long end = System.currentTimeMillis();
 
-		System.out.println("Time for prediction on " + sentences.size() + " sentences took " + (end - start) + " ms.");
+		LOGGER.info("Time for prediction on " + sentences.size() + " sentences took " + (end - start) + " ms.");
 
 		// calculate measurements for each ClassificationMeasure in measurements
 		for (ClassificationMeasure measurement : measurements) {
