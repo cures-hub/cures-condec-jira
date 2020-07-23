@@ -1,17 +1,19 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.mock.MockConstantsManager;
-
 import de.uhd.ifi.se.decision.management.jira.config.TestPluginInitializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class MockIssueTypeManager implements IssueTypeManager {
+	private static final Logger LOGGER = LoggerFactory.getLogger(MockIssueTypeManager.class);
 
 	private Collection<IssueType> types;
 
@@ -26,7 +28,7 @@ public class MockIssueTypeManager implements IssueTypeManager {
 		try {
 			TestPluginInitializer.addAllIssueTypesToConstantsManager(constManager);
 		} catch (CreateException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 		}
 		types.addAll(constManager.getAllIssueTypeObjects());
 	}
