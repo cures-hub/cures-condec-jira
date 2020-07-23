@@ -4,6 +4,8 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +13,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class TestPreprocessor extends TestSetUp {
+	private static final Logger LOGGER = LoggerFactory.getLogger(TestPreprocessor.class);
 
 	private static final String testSentence = "The quick brown fox jumps over the lazy dog.";
 
@@ -49,7 +52,7 @@ public class TestPreprocessor extends TestSetUp {
 		try {
 			testTokenizedSize = pp.preprocess(TestPreprocessor.testSentence).size();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 		}
 		assertEquals(testTokenizedSize, 8);
 	}

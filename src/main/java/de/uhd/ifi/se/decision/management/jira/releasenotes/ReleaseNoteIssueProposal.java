@@ -1,12 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-
-import javax.xml.bind.annotation.XmlElement;
-
-import org.codehaus.jackson.annotate.JsonProperty;
-
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -15,14 +8,21 @@ import com.atlassian.jira.issue.priority.Priority;
 import com.atlassian.jira.issue.search.SearchException;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
-
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.EnumMap;
+import java.util.HashMap;
 
 /**
  * Model class for the release notes Jira issue proposal. It saves the knowledge
  * element, the final rating and the issue metrics.
  */
 public class ReleaseNoteIssueProposal {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseNoteIssueProposal.class);
 
 	private KnowledgeElement decisionKnowledgeElement;
 
@@ -189,7 +189,7 @@ public class ReleaseNoteIssueProposal {
 			try {
 				countReporter = Math.toIntExact(searchProvider.searchCount(user, builder.buildQuery()));
 			} catch (SearchException e) {
-				e.printStackTrace();
+				LOGGER.error(e.getMessage());
 			}
 			existingReporterCount.put(reporterId, countReporter);
 		}
@@ -234,7 +234,7 @@ public class ReleaseNoteIssueProposal {
 			try {
 				countResolver = Math.toIntExact(searchProvider.searchCount(user, builderResolver.buildQuery()));
 			} catch (SearchException e) {
-				e.printStackTrace();
+				LOGGER.error(e.getMessage());
 			}
 			existingResolverCount.put(assigneeId, countResolver);
 		}

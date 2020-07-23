@@ -1,26 +1,27 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.DatatypeConverter;
-
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.revwalk.RevCommit;
-
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-
 /**
  * Extract decision knowledge elements stored in git repository. Out-of-scope:
  * linking decision knowledge elements among each other.
  */
 public class GitDecXtract {
+	private static final Logger LOGGER = LoggerFactory.getLogger(GitDecXtract.class);
 
 	public static final String RAT_KEY_COMPONENTS_SEPARATOR = " ";
 	public static final String RAT_KEY_NOEDIT = "-";
@@ -134,7 +135,7 @@ public class GitDecXtract {
 			byte[] digest = md.digest();
 			return DatatypeConverter.printHexBinary(digest).toUpperCase().substring(0, 8);
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 			return "";
 		}
 	}

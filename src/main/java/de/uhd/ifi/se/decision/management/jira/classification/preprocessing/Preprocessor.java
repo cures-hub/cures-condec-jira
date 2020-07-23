@@ -12,6 +12,8 @@ import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.tokenize.Tokenizer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Preprocessor {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Preprocessor.class);
 
 	public static String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
 		.getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "classifier" + File.separator;
@@ -88,7 +91,7 @@ public class Preprocessor {
 			// TokenNameFinderModel model = new TokenNameFinderModel(modelIn);
 			// this.nameFinder = new NameFinderME(model);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 		}
 	}
 
@@ -208,7 +211,7 @@ public class Preprocessor {
 
 			return this.generateNGram(numberTokens, this.nGramN);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.info(e.getMessage());
 			//initFiles();
 			throw new FileNotFoundException(e.getMessage());
 		}

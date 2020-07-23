@@ -331,7 +331,7 @@ public class ViewRest {
 			Treant treant = new Treant(projectKey, element, "treant-container-class", isIssueView, filterSettings);
 			return Response.ok(treant).build();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Treant cannot be shown."))
 					.build();
 		}

@@ -134,7 +134,7 @@ public class ConsistencyRest {
 					ImmutableMap.of("error", "No such element exists!")).build();
 			}
 		} catch (Exception e) {
-			//e.printStackTrace();
+			//LOGGER.error(e.getMessage());
 			response = Response.status(500).entity(e).build();
 		}
 		return response;
@@ -188,7 +188,7 @@ public class ConsistencyRest {
 					ImmutableMap.of("error", "No issue with the given key exists!")).build();
 			}
 		} catch (Exception e) {
-			//e.printStackTrace();
+			//LOGGER.error(e.getMessage());
 			response = Response.status(500).entity(e).build();
 		}
 		return response;
@@ -215,7 +215,7 @@ public class ConsistencyRest {
 					ImmutableMap.of("error", "No issue with the given key exists!")).build();
 			}
 		} catch (Exception e) {
-			//e.printStackTrace();
+			//LOGGER.error(e.getMessage());
 			response = Response.status(500).entity(e).build();
 		}
 		return response;
@@ -245,14 +245,14 @@ public class ConsistencyRest {
 					}
 
 				} catch (Exception e) {
-					//e.printStackTrace();
+					//LOGGER.error(e.getMessage());
 					response = Response.status(500).entity(
 						ImmutableMap.of("error", e.toString())).build();
 				}
 			}
 
 		} catch (Exception e) {
-			//e.printStackTrace();
+			//LOGGER.error(e.getMessage());
 			response = Response.status(400).entity(
 				ImmutableMap.of("error", "No such element exists!")).build();
 		}

@@ -7,6 +7,8 @@ import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Creates a summary of code changes linked to Jira issues (e.g. to work items).
@@ -27,6 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
  *        script side?
  */
 public class CodeSummarizer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CodeSummarizer.class);
 
 	private GitClient gitClient;
 	private int minProbabilityOfCorrectness;
@@ -45,7 +48,7 @@ public class CodeSummarizer {
 	 * 
 	 * @param jiraIssue
 	 *            Jira issue. Its key is searched for in commit messages.
-	 * @param probabilityOfCorrectness
+	 * @param minProbabilityOfCorrectness
 	 *            probabilityOfCorrectness. Integer value for filter over
 	 *            correctness
 	 * @return summary as a String.
@@ -103,7 +106,7 @@ public class CodeSummarizer {
 			return "";
 		}
 
-		System.out.println(diff.getChangedFiles());
+		LOGGER.info(String.valueOf(diff.getChangedFiles()));
 		diff.getChangedFiles().removeIf(changedFile -> !changedFile.isExistingJavaClass());
 		TangledChangeDetector tangledCommitDetection = new TangledChangeDetector();
 		tangledCommitDetection.estimateWhetherChangedFilesAreCorrectlyIncludedInDiff(diff);

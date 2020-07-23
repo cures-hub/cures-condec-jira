@@ -1,11 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -15,12 +15,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.DatatypeConverter;
-
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class TestGitRepositoryFSManager {
+	private static final Logger LOGGER = LoggerFactory.getLogger(TestGitRepositoryFSManager.class);
 
     private List<String> baseProjectUriDir;
     private List<String> baseProjectUriDefaultDir;
@@ -198,7 +200,7 @@ public class TestGitRepositoryFSManager {
 	    directory.delete();
 	    directory.mkdirs();
 	} catch (IOException e) {
-	    e.printStackTrace();
+	    LOGGER.error(e.getMessage());
 	}
 	return directory;
     }
@@ -210,7 +212,7 @@ public class TestGitRepositoryFSManager {
 	    byte[] digest = md.digest();
 	    return DatatypeConverter.printHexBinary(digest).toUpperCase().substring(0, 5);
 	} catch (NoSuchAlgorithmException e) {
-	    e.printStackTrace();
+	    LOGGER.error(e.getMessage());
 	    return null;
 	}
     }
@@ -232,7 +234,7 @@ public class TestGitRepositoryFSManager {
 	    dir.mkdirs();
 	    touchFile.createNewFile();
 	} catch (Exception e) {
-	    e.printStackTrace();
+	    LOGGER.error(e.getMessage());
 	}
     }
 
@@ -270,7 +272,7 @@ public class TestGitRepositoryFSManager {
 	    dir.mkdirs();
 	    file.createNewFile();
 	} catch (Exception e) {
-	    e.printStackTrace();
+	    LOGGER.error(e.getMessage());
 	    return false;
 	}
 	return true;
