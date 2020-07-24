@@ -128,7 +128,7 @@ public class GitClient {
 	 */
 	public Diff getDiff(List<RevCommit> commits) {
 		if (commits == null || commits.size() == 0) {
-			return null;
+			return new Diff();
 		}
 		Diff diff = new Diff();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
@@ -146,7 +146,7 @@ public class GitClient {
 	 */
 	public Diff getDiff(Issue jiraIssue) {
 		if (jiraIssue == null) {
-			return null;
+			return new Diff();
 		}
 		Diff diff = new Diff();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
@@ -191,7 +191,7 @@ public class GitClient {
 	 */
 	public String getRepoUriFromBranch(Ref featureBranch) {
 		if (featureBranch == null) {
-			return null;
+			return "";
 		}
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			Git git = gitClientForSingleRepo.getGit();

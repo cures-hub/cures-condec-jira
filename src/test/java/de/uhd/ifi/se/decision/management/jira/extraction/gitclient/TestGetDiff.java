@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -45,13 +44,13 @@ public class TestGetDiff extends TestSetUpGit {
 	@Test
 	public void testListOfRevCommitsNull() {
 		Diff diff = gitClient.getDiff((List<RevCommit>) null);
-		assertNull(diff);
+		assertTrue(diff.getChangedFiles().isEmpty());
 	}
 
 	@Test
 	public void testJiraIssueNull() {
 		Diff diff = gitClient.getDiff((Issue) null);
-		assertNull(diff);
+		assertTrue(diff.getChangedFiles().isEmpty());
 	}
 
 	@Test

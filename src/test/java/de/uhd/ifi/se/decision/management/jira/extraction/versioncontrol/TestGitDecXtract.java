@@ -18,7 +18,7 @@ public class TestGitDecXtract extends TestSetUpGit {
 	public void nullOrEmptyFeatureBranchCommits() {
 		// git repository is setup already
 		List<String> uris = new ArrayList<String>();
-		uris.add(getExampleUri());
+		uris.add(GIT_URI);
 		gitDecX = new GitDecXtract("TEST", uris);
 		int numberExpectedElements = 0;
 		List<KnowledgeElement> gotElements = gitDecX.getElements(null);
@@ -29,7 +29,7 @@ public class TestGitDecXtract extends TestSetUpGit {
 	public void fromFeatureBranchCommits() {
 		// git repository is setup already
 		List<String> uris = new ArrayList<String>();
-		uris.add(getExampleUri());
+		uris.add(GIT_URI);
 		gitDecX = new GitDecXtract("TEST", uris);
 		int numberExpectedElements = 14;
 
@@ -52,7 +52,7 @@ public class TestGitDecXtract extends TestSetUpGit {
 	@Test
 	public void fromFeatureBranchCommitsNullInput() {
 		List<String> uris = new ArrayList<String>();
-		uris.add(getExampleUri());
+		uris.add(GIT_URI);
 		gitDecX = new GitDecXtract("TEST", uris);
 
 		List<KnowledgeElement> gotElements = gitDecX.getElements(null);

@@ -478,10 +478,10 @@ public class GitClientForSingleRepository {
 	 * Closes the repository and deletes its local files.
 	 */
 	public void deleteRepository() {
-		if (git == null || this.getDirectory() != null) {
+		if (git == null || !this.getDirectory().exists() || this.getDirectory() == null) {
 			return;
 		}
-		File directory = this.getDirectory().getParentFile();
+		File directory = this.getDirectory().getParentFile().getParentFile();
 		deleteFolder(directory);
 		close();
 	}
