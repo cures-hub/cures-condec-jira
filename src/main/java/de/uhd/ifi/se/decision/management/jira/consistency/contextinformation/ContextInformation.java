@@ -39,9 +39,7 @@ public class ContextInformation implements ContextInformationProvider {
 		List<Link> linkCollection = this.element.getLinks();
 		if (linkCollection != null) {
 			for (Link link : linkCollection) {
-				linkedKnowledgeElements.add(link.getSource());
-				linkedKnowledgeElements.add(link.getTarget());
-
+				linkedKnowledgeElements.addAll(link.getBothElements());
 			}
 		}
 		return linkedKnowledgeElements;
@@ -65,7 +63,7 @@ public class ContextInformation implements ContextInformationProvider {
 
 		//retain scores of filtered issues
 		return this.linkSuggestions.values()
-			.parallelStream()
+			.stream()
 			// issue was not filtered out
 			.filter(linkSuggestion -> elementsToKeep.contains(linkSuggestion.getTargetElement()))
 			// the score is higher or equal to the minimum probability set by the admin for the project
@@ -80,6 +78,10 @@ public class ContextInformation implements ContextInformationProvider {
 		filterOutElements.addAll(ConsistencyPersistenceHelper
 			.getDiscardedLinkSuggestions(this.element));
 		filterOutElements.add(this.element);
+		filterOutElements.addAll(filteredKnowledgeElements
+			.stream()
+			.filter(e -> e.getJiraIssue().getKey().equals(this.element.getJiraIssue().getKey()))
+			.collect(Collectors.toList()));
 
 		//Calculate difference between all issues of project and the issues that need to be filtered out.
 		filteredKnowledgeElements.removeAll(filterOutElements);
@@ -95,14 +97,14 @@ public class ContextInformation implements ContextInformationProvider {
 			linkSuggestions.put(otherElement.getKey(), new LinkSuggestion(this.element, otherElement));
 		}
 
-		this.cips.parallelStream().forEach((cip) -> {
+		this.cips.stream().forEach((cip) -> {
 			cip.assessRelation(this.element, new ArrayList<>(knowledgeElements));
 
 			double nullCompensation = 0.;
 
 			Collection<LinkSuggestion> suggestions = cip.getLinkSuggestions();
 			double sumOfIndividualScoresForCurrentCip = suggestions
-				.parallelStream()
+				.stream()
 				.mapToDouble(LinkSuggestion::getTotalScore)
 				.sum();
 
@@ -115,7 +117,7 @@ public class ContextInformation implements ContextInformationProvider {
 			// Divide each score by the max value to scale it to [0,1]
 			double finalNullCompensation = nullCompensation;
 			suggestions
-				.parallelStream()
+				.stream()
 				.forEach(score -> {
 					LinkSuggestion linkSuggestion = this.linkSuggestions.get(score.getTargetElement().getKey());
 					linkSuggestion.addToScore((score.getTotalScore() + finalNullCompensation) / (finalSumOfIndividualScoresForCurrentCip * this.cips.size()), cip.getName());//sumOfIndividualScoresForCurrentCip);

@@ -16,7 +16,7 @@
 		this.projectKey = conDecAPI.getProjectKey();
 		this.currentSuggestions = [];
 
-		$(document).ajaxComplete(function (event, request, settings) {
+		jQuery(document).ajaxComplete(function (event, request, settings) {
 			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
 				console.log("WorkflowUIDispatcher");
 				consistencyAPI.displayConsistencyCheck();
@@ -41,7 +41,7 @@
 	}
 
 	ConsistencyTabsModule.prototype.discardDuplicate = function (index) {
-		let suggestionElement = this.currentSuggestions[index].duplicateElement;
+		let suggestionElement = this.currentSuggestions[index].targetElement;
 		consistencyAPI.discardDuplicateSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
 			.then((data) => {
 				displaySuccessMessage("Discarded suggestion sucessfully!");
@@ -51,7 +51,7 @@
 	}
 
 	ConsistencyTabsModule.prototype.discardSuggestion = function (index) {
-		let suggestionElement = this.currentSuggestions[index].relatedElement;
+		let suggestionElement = this.currentSuggestions[index].targetElement;
 
 		consistencyAPI.discardLinkSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
 			.then((data) => {
@@ -62,10 +62,10 @@
 	}
 
 	ConsistencyTabsModule.prototype.markAsDuplicate = function (index) {
-		let duplicatElement = this.currentSuggestions[index].duplicateElement;
+		let duplicateElement = this.currentSuggestions[index].targetElement;
 
 		let self = this;
-		conDecAPI.createLink(duplicatElement.knowledgeType, this.issueId, duplicatElement.id, "i", duplicatElement.documentationLocation, "duplicates", () => self.loadDuplicateData());
+		conDecAPI.createLink(duplicateElement.knowledgeType, this.issueId, duplicateElement.id, "i", duplicateElement.documentationLocation, "duplicates", () => self.loadDuplicateData());
 	}
 
 	//-----------------------------------------
@@ -91,9 +91,9 @@
 
 	let generateTableRow = function (suggestion, index) {
 		let row = document.createElement("tr");
-		row.appendChild(generateTableCell(`<a href="${suggestion.key}">${suggestion.key}</a>`, "th-key"));
-		row.appendChild(generateTableCell(suggestion.summary, "th-name", {}));
-		let scoreCell = (generateTableCell(suggestion.score, "th-score", {"title": suggestion.results.scores}));
+		row.appendChild(generateTableCell(`<a href="${suggestion.targetElement.url}">${suggestion.targetElement.key}</a>`, "th-key"));
+		row.appendChild(generateTableCell(suggestion.targetElement.summary, "th-name", {}));
+		let scoreCell = (generateTableCell(suggestion.totalScore, "th-score", {"title": suggestion.score}));
 		AJS.$(scoreCell).tooltip();
 		row.appendChild(scoreCell);
 
@@ -118,7 +118,7 @@
 	};
 
 	ConsistencyTabsModule.prototype.showDialog = function (index) {
-		let targetElement = this.currentSuggestions[index].relatedElement;
+		let targetElement = this.currentSuggestions[index].targetElement;
 		console.dir(targetElement);
 		let self = this;
 		conDecDialog.showDecisionLinkDialog(this.issueId, targetElement.id, "i", targetElement.documentationLocation, () => self.loadData());
@@ -126,9 +126,9 @@
 
 	ConsistencyTabsModule.prototype.processRelatedIssuesResponse = function (response) {
 		return response.relatedIssues.map(suggestion => {
-			suggestion.score = Math.round(suggestion.score * 1000) / 1000.;
+			suggestion.totalScore = Math.round(suggestion.totalScore * 1000) / 1000.;
 			return suggestion;
-		}).sort((a, b) => b.score - a.score);
+		}).sort((a, b) => b.totalScore - a.totalScore);
 	}
 
 	//-----------------------------------------
@@ -154,7 +154,7 @@
 
 	let generateDuplicateTableRow = function (duplicate, index) {
 		let row = document.createElement("tr");
-		row.appendChild(generateDuplicateTableCell(`<a href="${duplicate.duplicateElement.key}">${duplicate.duplicateElement.key}</a>`, "th-key-duplicate", {}));
+		row.appendChild(generateDuplicateTableCell(`<a href="${duplicate.targetElement.url}">${duplicate.targetElement.key}</a>`, "th-key-duplicate", {}));
 
 		//TODO: visualize the duplicate fragment
 		let scoreCell = generateDuplicateTableCell(duplicate.preprocessedSummary.slice(duplicate.startDuplicate, duplicate.startDuplicate + duplicate.length), "th-text-fragment-duplicate", {title: "Length:" + duplicate.length});

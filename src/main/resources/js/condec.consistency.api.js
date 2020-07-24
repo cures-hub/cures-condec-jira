@@ -65,7 +65,7 @@
 
 		ConsistencyAPI.prototype.approveCheck = function (projectKey, elementId, elementLocation, user) {
 			return generalApi.postJSONReturnPromise(
-				`${this.restPrefix}/approveCheck.json
+				`${this.restPrefix}/approveCheck.jsond
 				?projectKey=${projectKey}
 				&elementId=${elementId}
 				&elementLocation=${elementLocation}
@@ -98,13 +98,20 @@
 											type: 'warning',
 											title: 'Possible inconsistencies detected!',
 											close: 'manual',
-											body: 'Issue <strong>' + conDecAPI.getIssueKey() + '</strong> contains some detected inconsistencies. <br/>'
+											body: 'Issue <strong>'
+												+ conDecAPI.getIssueKey()
+												+ '</strong> contains some detected inconsistencies. <br/>'
 												+ '<ul>'
 												+ '<li> ' + numRelated + ' possibly related issues </li>'
 												+ '<li> ' + numDuplicates + ' possible duplicates </li>'
 												+ '</ul>'
 												+ '<ul class="aui-nav-actions-list">'
-												+ '<li><button id="consistency-check-dialog-submit-button" onclick="consistencyAPI.approveInconsistencies()" class="aui-button aui-button-link">Approve</button></li>'
+												+ '<li>'
+												+ '<button id="consistency-check-dialog-submit-button" '
+												+ 'onclick="consistencyAPI.approveInconsistencies()" class="aui-button aui-button-link">'
+												+ 'I approve the consistency of this knowledge element!'
+												+ '</button>'
+												+ '</li>'
 												+ '</ul>'
 										});
 									}

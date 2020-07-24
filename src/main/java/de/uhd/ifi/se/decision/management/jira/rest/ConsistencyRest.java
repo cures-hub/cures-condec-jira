@@ -26,11 +26,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -57,11 +55,7 @@ public class ConsistencyRest {
 				Collection<LinkSuggestion> linkSuggestions = ci.getLinkSuggestions();
 				HashMap<String, Object> result = new HashMap<>();
 
-				List<Map<String, Object>> jsonifiedIssues = new ArrayList<>();
-				for (LinkSuggestion linkSuggestion : linkSuggestions) {
-					jsonifiedIssues.add(this.suggestionToJsonMap(linkSuggestion));
-				}
-				result.put("relatedIssues", jsonifiedIssues);
+				result.put("relatedIssues", linkSuggestions);
 
 				response = Response.ok(result).build();
 			} else {
@@ -83,19 +77,6 @@ public class ConsistencyRest {
 										  @QueryParam("targetElementId") Long targetId, @QueryParam("targetElementLocation") String targetLocation) {
 		return this.discardSuggestion(projectKey, originId, originLocation, targetId, targetLocation, SuggestionType.LINK);
 
-	}
-
-
-	private Map<String, Object> suggestionToJsonMap(LinkSuggestion linkSuggestion) {
-		Map<String, Object> jsonMap = new HashMap<>();
-		jsonMap.put("key", linkSuggestion.getTargetElement().getKey());
-		jsonMap.put("summary", linkSuggestion.getTargetElement().getSummary());
-		jsonMap.put("relatedElement", linkSuggestion.getTargetElement());
-		jsonMap.put("id", linkSuggestion.getTargetElement().getId());
-		jsonMap.put("score", linkSuggestion.getTotalScore());
-		jsonMap.put("results", linkSuggestion.getScore());
-
-		return jsonMap;
 	}
 
 
@@ -122,12 +103,7 @@ public class ConsistencyRest {
 				// detect duplicates
 				List<DuplicateSuggestion> foundDuplicateSuggestions = manager.findAllDuplicates(persistenceManager.getKnowledgeElements());
 
-				// convert to Json
-				List<Map<String, Object>> jsonifiedIssues = new ArrayList<>();
-				for (DuplicateSuggestion duplicateSuggestion : foundDuplicateSuggestions) {
-					jsonifiedIssues.add(this.duplicateToJsonMap(duplicateSuggestion));
-				}
-				result.put("duplicates", jsonifiedIssues);
+				result.put("duplicates", foundDuplicateSuggestions);
 				response = Response.ok(result).build();
 			} else {
 				response = Response.status(400).entity(
@@ -152,19 +128,6 @@ public class ConsistencyRest {
 
 	}
 
-	public Map<String, Object> duplicateToJsonMap(DuplicateSuggestion duplicateSuggestion) {
-		Map<String, Object> jsonMap = new HashMap<>();
-		if (duplicateSuggestion != null) {
-			jsonMap.put("baseElement", duplicateSuggestion.getBaseElement());
-			jsonMap.put("duplicateElement", duplicateSuggestion.getSuggestion());
-			jsonMap.put("preprocessedSummary", duplicateSuggestion.getPreprocessedSummary());
-			jsonMap.put("startDuplicate", duplicateSuggestion.getStartDuplicate());
-			jsonMap.put("length", duplicateSuggestion.getLength());
-
-		}
-
-		return jsonMap;
-	}
 
 	//--------------------
 	// Consistency checks

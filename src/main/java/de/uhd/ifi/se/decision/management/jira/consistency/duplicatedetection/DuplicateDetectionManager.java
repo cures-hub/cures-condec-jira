@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DuplicateDetectionManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DuplicateDetectionManager.class);
@@ -34,15 +35,27 @@ public class DuplicateDetectionManager {
 	}
 
 	public List<DuplicateSuggestion> findAllDuplicates(Collection<? extends KnowledgeElement> elementsToCheck) {
+
 		List<DuplicateSuggestion> foundDuplicateSuggestions = Collections.synchronizedList(new ArrayList<>());
 
 		if (this.knowledgeElement != null) {
+			elementsToCheck = elementsToCheck
+				.stream()
+				.filter((element -> {
+					if(element.getJiraIssue() == null || this.knowledgeElement.getJiraIssue() == null){
+						return true;
+					}
+					return ! element.getJiraIssue().getKey().equals(this.knowledgeElement.getJiraIssue().getKey());
+				}))
+				.collect(Collectors.toList());
+
+
 			elementsToCheck.remove(this.knowledgeElement);
 			elementsToCheck.removeAll(ConsistencyPersistenceHelper.getDiscardedDuplicates(this.knowledgeElement));// remove discareded suggestions;
 			elementsToCheck.removeAll(this.alreadyLinkedAsDuplicates());// remove linked elements;
 
 
-			elementsToCheck.parallelStream().forEach((issueToCheck) -> {
+			elementsToCheck.stream().forEach((issueToCheck) -> {
 				try {
 					List<DuplicateSuggestion> foundDuplicateFragmentsForIssue = duplicateDetectionStrategy.detectDuplicates(this.knowledgeElement, issueToCheck);
 					DuplicateSuggestion mostLikelyDuplicate = findLongestDuplicate(foundDuplicateFragmentsForIssue);
@@ -62,8 +75,8 @@ public class DuplicateDetectionManager {
 	private Collection<? extends KnowledgeElement> alreadyLinkedAsDuplicates() {
 		Set<KnowledgeElement> elements = new HashSet<>();
 		List<Link> links = this.knowledgeElement.getLinks();
-		for (Link link : links){
-			if(link.getLinkType().equals(LinkType.DUPLICATE)){
+		for (Link link : links) {
+			if (link.getLinkType().equals(LinkType.DUPLICATE)) {
 				elements.add(link.getTarget());
 				elements.add(link.getSource());
 			}

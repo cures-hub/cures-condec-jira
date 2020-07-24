@@ -32,7 +32,7 @@ public class TestDuplicateDetectionManager extends TestSetUp {
 	@Before
 	public void setUp() {
 		TestSetUp.init();
-		project = JiraProjects.getTestProject();
+		project = JiraProjects.TEST.createJiraProject(1);//JiraProjects.getTestProject();
 		testIssues = JiraIssues.createJiraIssues(project);
 		issue = testIssues.get(0);
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
@@ -57,11 +57,11 @@ public class TestDuplicateDetectionManager extends TestSetUp {
 		//No Duplicate Exists
 		assertEquals("The base issue should be set correctly.", 0, detectionManager.findAllDuplicates(transformIssuesToKnowledgeElements(testIssues)).size());
 
-		List<MutableIssue> duplicateIssues = generateDuplicates("This text should be detected as a Duplicate.");
-		testIssues.addAll(duplicateIssues);
+		List<KnowledgeElement> duplicateIssues = generateDuplicates("This text should be detected as a Duplicate.");
 		detectionManager = new DuplicateDetectionManager(duplicateIssues.get(0), new BasicDuplicateTextDetector(3));
-
-		assertEquals("The duplicate issue should be found.", 1, detectionManager.findAllDuplicates(transformIssuesToKnowledgeElements(testIssues)).size());
+		List<KnowledgeElement> list = transformIssuesToKnowledgeElements(testIssues);
+		list.addAll(duplicateIssues);
+		assertEquals("The duplicate issue should be found.", 1, detectionManager.findAllDuplicates(list).size());
 
 	}
 
@@ -80,10 +80,11 @@ public class TestDuplicateDetectionManager extends TestSetUp {
 	}
 
 
-	private List<MutableIssue> generateDuplicates(String text) {
-		List<MutableIssue> issues = new ArrayList<>();
-		issues.add(JiraIssues.createJiraIssue(99, JiraIssueTypes.getTestTypes().get(0), project, text, user));
-		issues.add(JiraIssues.createJiraIssue(999, JiraIssueTypes.getTestTypes().get(0), project, text, user));
+	private List<KnowledgeElement> generateDuplicates(String text) {
+		List<KnowledgeElement> issues = new ArrayList<>();
+		issues.add(new KnowledgeElement(JiraIssues.createJiraIssue(99, JiraIssueTypes.getTestTypes().get(0), project, text, user)));
+		issues.add(new KnowledgeElement(JiraIssues.createJiraIssue(999, JiraIssueTypes.getTestTypes().get(0), project, text, user)));
+
 
 		return issues;
 

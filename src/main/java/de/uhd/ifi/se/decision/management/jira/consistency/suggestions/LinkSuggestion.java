@@ -1,11 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.consistency.suggestions;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 public class LinkSuggestion implements Comparable<LinkSuggestion>, Suggestion<KnowledgeElement> {
-
+	@JsonProperty
 	private KnowledgeElement baseElement;
+	@JsonProperty
 	private KnowledgeElement targetElement;
+	@JsonProperty
 	private SimilarityScore score;
 
 	public LinkSuggestion(KnowledgeElement baseElement, KnowledgeElement targetElement) {
@@ -23,6 +26,7 @@ public class LinkSuggestion implements Comparable<LinkSuggestion>, Suggestion<Kn
 		return targetElement;
 	}
 
+	@JsonProperty("totalScore")
 	public Double getTotalScore() {
 		return score.getTotal();
 	}
