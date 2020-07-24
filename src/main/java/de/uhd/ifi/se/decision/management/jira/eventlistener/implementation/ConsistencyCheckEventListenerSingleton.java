@@ -1,11 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.eventlistener.implementation;
 
 import com.atlassian.jira.event.issue.IssueEvent;
-import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.ConsistencyCheckEventTrigger;
-import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.StatusClosedTrigger;
+import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.IssueClosedTrigger;
 import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.TriggerChain;
 import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.WorkflowDoneTrigger;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.IssueEventListener;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 
 import java.util.ArrayList;
@@ -14,10 +14,10 @@ import java.util.List;
 public class ConsistencyCheckEventListenerSingleton implements IssueEventListener {
 
 	private static IssueEventListener instance;
-	private TriggerChain<ConsistencyCheckEventTrigger> chainStart;
+	private TriggerChain chainStart;
 
 	private ConsistencyCheckEventListenerSingleton() {
-		this.chainStart = new StatusClosedTrigger();
+		this.chainStart = new IssueClosedTrigger();
 		this.chainStart
 			.setNextChain(new WorkflowDoneTrigger());
 	}
@@ -35,16 +35,16 @@ public class ConsistencyCheckEventListenerSingleton implements IssueEventListene
 		boolean triggered = this.chainStart.calculate();
 
 		if (triggered) {
-			ConsistencyCheckLogHelper.addCheck(issueEvent.getIssue());
+			ConsistencyCheckLogHelper.addCheck(new KnowledgeElement(issueEvent.getIssue()));
 		} else if ("workflow".equals(issueEvent.getParams().get("eventsource"))) {
-			ConsistencyCheckLogHelper.deleteCheck(issueEvent.getIssue());
+			ConsistencyCheckLogHelper.deleteCheck(new KnowledgeElement(issueEvent.getIssue()));
 		}
 	}
 
 	private void initChainLinks(IssueEvent event) {
-		TriggerChain<ConsistencyCheckEventTrigger> currentChainLink = this.chainStart;
+		TriggerChain currentChainLink = this.chainStart;
 		while (currentChainLink != null) {
-			currentChainLink.getChainBase().setIssueEvent(event);
+			currentChainLink.setIssueEvent(event);
 			currentChainLink = currentChainLink.getNextChain();
 		}
 	}
@@ -56,9 +56,9 @@ public class ConsistencyCheckEventListenerSingleton implements IssueEventListene
 
 	public List<String> getAllConsistencyCheckEventTriggerNames() {
 		List<String> names = new ArrayList<String>();
-		TriggerChain<ConsistencyCheckEventTrigger> currentChainLink = this.chainStart;
+		TriggerChain currentChainLink = this.chainStart;
 		while (currentChainLink != null) {
-			names.add(currentChainLink.getChainBase().getName());
+			names.add(currentChainLink.getName());
 			currentChainLink = currentChainLink.getNextChain();
 
 		}

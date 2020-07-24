@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
 
-import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,16 +29,19 @@ public class UserCIP implements ContextInformationProvider {
 
 
 	@Override
-	public void assessRelation(Issue baseIssue, List<Issue> issuesToTest) {
-		for (Issue issueToTest : issuesToTest) {
-			LinkSuggestion linkSuggestion = new LinkSuggestion(baseIssue, issueToTest);
+	public void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
+		for (KnowledgeElement elementToTest : knowledgeElements) {
+			LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, elementToTest);
 
-			linkSuggestion.addToScore(this.isApplicationUserEqual(baseIssue.getCreator(), issueToTest.getCreator())
-					+ this.isApplicationUserEqual(baseIssue.getAssignee(), issueToTest.getAssignee())
-					+ this.isApplicationUserEqual(baseIssue.getReporter(), issueToTest.getReporter())
-					+ this.isApplicationUserEqual(baseIssue.getArchivedByUser(), issueToTest.getArchivedByUser()),
-				this.getName()
-			);
+			Double score = 0.;
+			if (baseElement.getJiraIssue() != null && elementToTest.getJiraIssue() != null) {
+				score = this.isApplicationUserEqual(baseElement.getJiraIssue().getCreator(), elementToTest.getJiraIssue().getCreator());
+				score += this.isApplicationUserEqual(baseElement.getJiraIssue().getAssignee(), elementToTest.getJiraIssue().getAssignee())
+					+ this.isApplicationUserEqual(baseElement.getJiraIssue().getReporter(), elementToTest.getJiraIssue().getReporter())
+					+ this.isApplicationUserEqual(baseElement.getJiraIssue().getArchivedByUser(), elementToTest.getJiraIssue().getArchivedByUser());
+			}
+			linkSuggestion.addToScore(score, this.getName());
+
 			linkSuggestions.add(linkSuggestion);
 
 		}

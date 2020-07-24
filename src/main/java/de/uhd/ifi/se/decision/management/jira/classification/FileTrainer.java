@@ -129,11 +129,11 @@ public interface FileTrainer {
 				fos.flush();
 				fos.close();
 
-				// System.out.println("Copied default preprocessing data to file. Message: " +
+				// LOGGER.info(("Copied default preprocessing data to file. Message: " +
 				// file.getName());
 			}
 		} catch (Exception e) {
-			//System.out.println("Path: " + path + ", filename: " + filename + ", url: " + url);
+			//LOGGER.info(("Path: " + path + ", filename: " + filename + ", url: " + url);
 			//System.err.println("Failed to copy data to file. Message: " + e.getMessage());
 		}
 		return file;

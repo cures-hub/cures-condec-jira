@@ -1,13 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.atlassian.jira.mock.issue.MockIssue;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -20,11 +16,13 @@ import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.mock.issue.MockIssue;
-
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @issue Should we have one or more git repositories for testing?
@@ -76,7 +74,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		makeExampleCommit("Untangled.java",
 				"package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" + "\n" + "public class Main {\n"
 						+ "    public static void  main(String[] args) {\n"
-						+ "        System.out.println(\"Hello World!\");\n" + "    }\n" + "}\n",
+						+ "        LOGGER.info((\"Hello World!\");\n" + "    }\n" + "}\n",
 				"TEST-26 add main");
 		makeExampleCommit("Untangled2.java",
 				"package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" + "\n" + "public class D {\n" + "\n"
@@ -84,7 +82,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 						+ "    public d(){\n" + "        this.a = 18;\n" + "        this.b = 64;\n"
 						+ "        this.c = \"world\";\n" + "    };\n" + "    public void printSomeThing(){\n"
 						+ "        for(int i =0; i < b; i ++){\n" + "            for(int j =0; j < a; j++){\n"
-						+ "                System.out.println(c);\n" + "            }\n" + "        }\n" + "    };\n"
+						+ "                LOGGER.info((c);\n" + "            }\n" + "        }\n" + "    };\n"
 						+ "\n" + "\n" + "}\n",
 				"TEST-26 add class d");
 
@@ -95,7 +93,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 						+ "        this.c = \"mouse\";\n" + "    };\n" + "    public int sum(){\n"
 						+ "        return a + b +c.length();\n" + "    };\n" + "\n"
 						+ "    public void printSomeThing(){\n" + "        for(int i =0; i < b; i ++){\n"
-						+ "            for(int j =0; j < a; j++){\n" + "                System.out.println(c);\n"
+						+ "            for(int j =0; j < a; j++){\n" + "                LOGGER.info((c);\n"
 						+ "            }\n" + "        }\n" + "    };\n" + "\n" + "\n" + "}\n",
 				"TEST-26 add class e");
 
@@ -105,9 +103,9 @@ public abstract class TestSetUpGit extends TestSetUp {
 						+ "    public A(int x, int y, String z){\n" + "        this.x = x;\n" + "        this.y = y;\n"
 						+ "        this.z = z;\n" + "    };\n" + "    public void doSomething(){\n"
 						+ "        for(int i =0; i < 10; i ++){\n" + "            for(int j =0; j < 20; j++){\n"
-						+ "                System.out.println(i+j);\n" + "            }\n" + "        }\n" + "    };\n"
+						+ "                LOGGER.info((i+j);\n" + "            }\n" + "        }\n" + "    };\n"
 						+ "    public void doOtherthing(){\n" + "        for(int i =0; i < 10; i ++){\n"
-						+ "            for(int j =0; j < 20; j++){\n" + "                System.out.println(i+j);\n"
+						+ "            for(int j =0; j < 20; j++){\n" + "                LOGGER.info((i+j);\n"
 						+ "            }\n" + "        }\n" + "    };\n" + "\n" + "}\n",
 				"TEST-62 add class A");
 		setupBranchWithDecKnowledge();
@@ -136,7 +134,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 			directory.delete();
 			directory.mkdirs();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 		}
 		DIRECTORY = directory;
 		return directory;
@@ -156,7 +154,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 			remoteRepo.create(true);
 			uri = remoteRepo.getDirectory().getAbsolutePath();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 		}
 		GIT_URI = uri;
 		return uri;

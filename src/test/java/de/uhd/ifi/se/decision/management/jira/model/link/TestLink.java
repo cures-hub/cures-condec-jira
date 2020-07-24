@@ -1,15 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model.link;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.atlassian.jira.issue.link.IssueLink;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -17,6 +8,13 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.testdata.Links;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
 
 /**
  * Test class for links between decision knowledge elements
@@ -39,7 +37,7 @@ public class TestLink extends TestSetUp {
 	@Test
 	public void testSetType() {
 		link.setType(LinkType.RELATE.toString() + "New");
-		assertEquals(LinkType.RELATE.toString() + "New", link.getType());
+		assertEquals("The LinkType has to be in the Enum LinkType. Otherwise the default \"RELATE\" LinkType is used.", LinkType.RELATE.toString(), link.getType());
 		link.setType(LinkType.RELATE);
 	}
 

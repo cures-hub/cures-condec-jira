@@ -1,16 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import net.java.ao.test.jdbc.NonTransactional;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import net.java.ao.test.jdbc.NonTransactional;
-
 public class TestWebhookContentProviderForTreant extends TestSetUp {
+	protected static final Logger LOGGER = LoggerFactory.getLogger(TestWebhookContentProviderForTreant.class);
 
 	@Before
 	public void setUp() {
@@ -52,7 +54,7 @@ public class TestWebhookContentProviderForTreant extends TestSetUp {
 
 	@Test
 	public void testCreateHashedPayload() {
-		System.out.println("testCreateHashedPayload()");
+		LOGGER.info("testCreateHashedPayload()");
 		assertEquals(
 				WebhookContentProviderForTreant.createHashedPayload("{\"issueKey\": \"CONDEC-1234\", \"ConDecTree\": "
 						+ "{\"nodeStructure\":{\"children\":[],\"text\":{\"title\":\"Test Send\","

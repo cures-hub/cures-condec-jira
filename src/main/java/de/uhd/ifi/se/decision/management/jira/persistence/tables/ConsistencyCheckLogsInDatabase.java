@@ -16,9 +16,13 @@ public interface ConsistencyCheckLogsInDatabase extends RawEntity<Long> {
 
 	void setId(long id);
 
-	String getIssueKey();
+	long getKnowledgeId();
 
-	void setIssueKey(String keys);
+	void setKnowledgeId(long id);
+
+	String getLocation();
+
+	void setLocation(String location);
 
 	String getProjectKey();
 

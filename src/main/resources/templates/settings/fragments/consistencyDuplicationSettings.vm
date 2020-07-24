@@ -13,8 +13,8 @@
     <button id="save-min-length-duplicate-btn" class='aui-button aui-button-primary aui-button-compact'>
         Save
     </button>
-    <div class="description">To calculate duplicates, the description of two issues is preprocessed an then compared.
-        If both issues have at least one fragment of text that has at least X identical words in the same order, they are shown as duplicates.
+    <div class="description">To calculate duplicates, the description of two knowledge elements is preprocessed an then compared.
+        If both knowledge elements have at least one fragment of text that has at least X identical words in the same order, they are shown as duplicates.
     </div>
 
 

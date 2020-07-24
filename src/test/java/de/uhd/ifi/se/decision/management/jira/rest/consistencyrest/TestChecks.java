@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest.consistencyrest;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
@@ -8,41 +9,45 @@ import javax.ws.rs.core.Response;
 
 import static org.junit.Assert.assertEquals;
 
-public class TestChecks extends TestConsistencyRestSuper  {
+public class TestChecks extends TestConsistencyRestSuper {
 
 
 	@Test
 	public void testDoesIssueNeedApproval() {
-		Response response = consistencyRest.doesIssueNeedApproval(request, issues.get(0).getKey());
+		KnowledgeElement knowledgeElement = new KnowledgeElement(issues.get(0));
+		Response response = consistencyRest.doesElementNeedApproval(request, knowledgeElement.getProject().getProjectKey(), knowledgeElement.getId(), knowledgeElement.getDocumentationLocationAsString());
 		assertEquals("Response should be OK (200).", 200, response.getStatus());
-		response = consistencyRest.doesIssueNeedApproval(request, "InvalidKey");
+		response = consistencyRest.doesElementNeedApproval(request, "InvalidKey", null, null);
 		assertEquals("Response should be 400.", 400, response.getStatus());
-		response = consistencyRest.doesIssueNeedApproval(request, null);
-		assertEquals("Response should be 500.", 500, response.getStatus());
+		response = consistencyRest.doesElementNeedApproval(request, null, null, null);
+		assertEquals("Response should be 500.", 400, response.getStatus());
 
 	}
 
 
 	@Test
 	public void testApproveIssue() {
-		Response response = consistencyRest.approveCheck(request, issues.get(0).getKey(), "User");
+		KnowledgeElement knowledgeElement = new KnowledgeElement(issues.get(0));
+
+		Response response = consistencyRest.approveCheck(request, knowledgeElement.getProject().getProjectKey(), knowledgeElement.getId(), knowledgeElement.getDocumentationLocationAsString(), "User");
 		assertEquals("Response should be 400, because the check was not yet added.", 400, response.getStatus());
-		ConsistencyCheckLogHelper.addCheck(issues.get(0));
-		response = consistencyRest.approveCheck(request, issues.get(0).getKey(), "sysadmin");
+		ConsistencyCheckLogHelper.addCheck(knowledgeElement);
+
+		response = consistencyRest.approveCheck(request, knowledgeElement.getProject().getProjectKey(), knowledgeElement.getId(), knowledgeElement.getDocumentationLocationAsString(), "sysadmin");
 		assertEquals("Response should be OK (200).", 200, response.getStatus());
 
-		response = consistencyRest.approveCheck(request, "InvalidKey", "sysadmin");
+		response = consistencyRest.approveCheck(request, "InvalidKey", null, null, "sysadmin");
 		assertEquals("Response should be 400.", 400, response.getStatus());
-		response = consistencyRest.approveCheck(request, "InvalidKey", null);
+		response = consistencyRest.approveCheck(request, "InvalidKey", null, null, null);
 		assertEquals("Response should be 400.", 400, response.getStatus());
-		response = consistencyRest.approveCheck(request, null, "sysadmin");
-		assertEquals("Response should be 500.", 500, response.getStatus());
-		response = consistencyRest.approveCheck(request, null, null);
-		assertEquals("Response should be 500.", 500, response.getStatus());
+		response = consistencyRest.approveCheck(request, null, null, null, "sysadmin");
+		assertEquals("Response should be 500.", 400, response.getStatus());
+		response = consistencyRest.approveCheck(request, null, null, null, null);
+		assertEquals("Response should be 500.", 400, response.getStatus());
 	}
 
 	@AfterEach
-	public void reset(){
+	public void reset() {
 		ConsistencyCheckLogHelper.resetConsistencyCheckLogs();
 	}
 

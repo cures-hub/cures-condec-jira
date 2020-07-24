@@ -2,69 +2,102 @@
 
 		const ConsistencyAPI = function ConsistencyAPI() {
 			this.restPrefix = AJS.contextPath() + "/rest/condec/latest/consistency";
+			this.projectKey = conDecAPI.getProjectKey();
 			this.consistencyCheckFlag = undefined;
-			this.displayConsistencyCheck();
+			let that = this;
+			global.onload = (ev) => {
+				that.displayConsistencyCheck()
+			};
+
+
 		};
 
-		ConsistencyAPI.prototype.getRelatedIssues = function (issueKey) {
-			return generalApi.getJSONReturnPromise(this.restPrefix + "/getRelatedIssues.json?issueKey=" + issueKey);
-		};
-
-
-		ConsistencyAPI.prototype.discardLinkSuggestion = function discardLinkSuggestion(baseIssueKey, otherIssueKey, projectKey) {
-			return generalApi.postJSONReturnPromise(
-				`${this.restPrefix}/discardLinkSuggestion.json?projectKey=${projectKey}
-				&originIssueKey=${baseIssueKey}&targetIssueKey=${otherIssueKey}`
-			);
-		};
-
-		ConsistencyAPI.prototype.discardDuplicateSuggestion = function discardDuplicateSuggestion(baseIssueKey, otherIssueKey, projectKey) {
-			return generalApi.postJSONReturnPromise(
-				`${this.restPrefix}/discardDuplicate.json?projectKey=${projectKey}
-				&originIssueKey=${baseIssueKey}&targetIssueKey=${otherIssueKey}`
-			);
-		};
-
-		ConsistencyAPI.prototype.getDuplicatesForIssue = function getDuplicatesForIssue(issueKey) {
+		ConsistencyAPI.prototype.getRelatedKnowledgeElements = function (projectKey, elementId, elementLocation) {
 			return generalApi.getJSONReturnPromise(
-				`${this.restPrefix}/getDuplicatesForIssue.json?issueKey=${issueKey}`
-			);
+				`${this.restPrefix}/getRelatedKnowledgeElements.json
+				?projectKey=${projectKey}
+				&elementId=${elementId}
+				&elementLocation=${elementLocation}`);
 		};
 
-		ConsistencyAPI.prototype.doesIssueNeedApproval = function doesIssueNeedApproval(issueKey) {
-			return generalApi.getJSONReturnPromise(
-				`${this.restPrefix}/doesIssueNeedApproval.json?issueKey=${issueKey}`
-			);
-		};
 
-		ConsistencyAPI.prototype.approveCheck = function approveCheck(issueKey, user) {
+		ConsistencyAPI.prototype.discardLinkSuggestion = function
+			(projectKey, originElementId, originElementLocation, targetElementId, targetElementLocation) {
 			return generalApi.postJSONReturnPromise(
-				`${this.restPrefix}/approveCheck.json?issueKey=${issueKey}&user=${user}`
+				`${this.restPrefix}/discardLinkSuggestion.json
+				?projectKey=${projectKey}
+				&originElementId=${originElementId}
+				&originElementLocation=${originElementLocation}
+				&targetElementId=${targetElementId}
+				&targetElementLocation=${targetElementLocation}`
+			);
+		};
+
+		ConsistencyAPI.prototype.discardDuplicateSuggestion = function
+			(projectKey, originElementId, originElementLocation, targetElementId, targetElementLocation) {
+			return generalApi.postJSONReturnPromise(
+				`${this.restPrefix}/discardDuplicate.json
+				?projectKey=${projectKey}
+				&originElementId=${originElementId}
+				&originElementLocation=${originElementLocation}
+				&targetElementId=${targetElementId}
+				&targetElementLocation=${targetElementLocation}`
+			);
+		};
+
+		ConsistencyAPI.prototype.getDuplicateKnowledgeElement = function (projectKey, elementId, location) {
+			return generalApi.getJSONReturnPromise(
+				`${this.restPrefix}/getDuplicateKnowledgeElement.json
+				?projectKey=${projectKey}
+				&elementId=${elementId}
+				&location=${location}`
+			);
+		};
+
+		ConsistencyAPI.prototype.doesElementNeedApproval = function (projectKey, elementId, elementLocation) {
+			return generalApi.getJSONReturnPromise(
+				`${this.restPrefix}/doesElementNeedApproval.json
+				?projectKey=${projectKey}
+				&elementId=${elementId}
+				&elementLocation=${elementLocation}`
+			);
+		};
+
+		ConsistencyAPI.prototype.approveCheck = function (projectKey, elementId, elementLocation, user) {
+			return generalApi.postJSONReturnPromise(
+				`${this.restPrefix}/approveCheck.json
+				?projectKey=${projectKey}
+				&elementId=${elementId}
+				&elementLocation=${elementLocation}
+				&user=${user}`
 			);
 		};
 
 		ConsistencyAPI.prototype.approveInconsistencies = function () {
-			consistencyAPI.approveCheck(conDecAPI.getIssueKey(), JIRA.Users.LoggedInUser.userName());
+			consistencyAPI.approveCheck(this.projectKey, this.issueId, "i", JIRA.Users.LoggedInUser.userName());
 			this.consistencyCheckFlag.close();
 		}
 
 		ConsistencyAPI.prototype.displayConsistencyCheck = function () {
-			let self = this;
-			let issueKey = conDecAPI.getIssueKey();
-			if(issueKey !== null && issueKey !== undefined){
-				this.doesIssueNeedApproval(issueKey)
+			let that = this;
+			this.issueId = JIRA.Issue.getIssueId();
+
+			console.log("displayConsistencyCheck: " + this.issueId);
+
+			if (that.issueId !== null && that.issueId !== undefined) {
+				this.doesElementNeedApproval(that.projectKey, that.issueId, "i")
 					.then((response) => {
 						if (response.needsApproval) {
-							Promise.all([this.getDuplicatesForIssue(conDecAPI.getIssueKey()),
-								consistencyAPI.getRelatedIssues(conDecAPI.getIssueKey())]).then(
+							Promise.all([this.getDuplicateKnowledgeElement(that.projectKey, that.issueId, "i"),
+								consistencyAPI.getRelatedKnowledgeElements(that.projectKey, that.issueId, "i")]).then(
 								(values) => {
-									console.log(values);
 									let numDuplicates = (values[0].duplicates.length);
 									let numRelated = (values[1].relatedIssues.length);
 									if (numDuplicates + numRelated > 0) {
-										self.consistencyCheckFlag = AJS.flag({
+										that.consistencyCheckFlag = AJS.flag({
 											type: 'warning',
 											title: 'Possible inconsistencies detected!',
+											close: 'manual',
 											body: 'Issue <strong>' + conDecAPI.getIssueKey() + '</strong> contains some detected inconsistencies. <br/>'
 												+ '<ul>'
 												+ '<li> ' + numRelated + ' possibly related issues </li>'
