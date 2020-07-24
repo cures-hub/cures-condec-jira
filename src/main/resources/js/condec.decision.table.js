@@ -20,7 +20,6 @@
 		projectKey = elementKey;
 		conDecAPI.getDecisionIssues(elementKey, function (data) {
 			issues = data;
-			console.log(issues);
 			addDropDownItems(data, elementKey);
 		});
 	};
