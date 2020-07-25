@@ -359,7 +359,7 @@ public class GitClient {
 	 * Closes all repositories and deletes all local files.
 	 */
 	public boolean deleteRepositories() {
-		boolean isDeleted = false;
+		boolean isDeleted = true;
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			isDeleted = isDeleted && gitClientForSingleRepo.deleteRepository();
 		}

@@ -485,20 +485,22 @@ public class GitClientForSingleRepository {
 		if (git == null || this.getDirectory() == null) {
 			return false;
 		}
+		close();
 		File directory = this.getDirectory().getParentFile().getParentFile().getParentFile();
 		return deleteFolder(directory);
 	}
 
 	private static boolean deleteFolder(File directory) {
-		boolean isDeleted = false;
 		if (directory.listFiles() == null) {
-			return isDeleted;
+			return false;
 		}
+		boolean isDeleted = true;
 		for (File file : directory.listFiles()) {
 			if (file.isDirectory()) {
-				isDeleted = isDeleted && deleteFolder(file);
+				deleteFolder(file);
+			} else {
+				isDeleted = isDeleted && file.delete();
 			}
-			isDeleted = isDeleted && file.delete();
 		}
 		return isDeleted && directory.delete();
 	}
@@ -556,7 +558,7 @@ public class GitClientForSingleRepository {
 		String branchShortNameWithPrefix = featureBranch.getName().replaceFirst("refs/remotes/origin/", "");
 		File directory = new File(fsManager.prepareBranchDirectory(branchShortName));
 
-		return switchGitDirectory(directory) && checkout(branchShortNameWithPrefix);
+		return switchGitDirectory(directory) && pull() && checkout(branchShortNameWithPrefix);
 	}
 
 	/**
@@ -700,7 +702,7 @@ public class GitClientForSingleRepository {
 			directory = new File(fsManager.prepareBranchDirectory(branchShortName));
 		}
 
-		if (switchGitDirectory(directory) && checkout(branchShortNameWithPrefix)) {
+		if (switchGitDirectory(directory) && pull() && checkout(branchShortNameWithPrefix)) {
 			Iterable<RevCommit> iterable = null;
 			try {
 				iterable = git.log().call();
