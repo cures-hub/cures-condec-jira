@@ -223,9 +223,18 @@ public class ConfigRest {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
+		}		
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, "?jql=" + query);
+		HashMap<String, Integer> map = new HashMap<>();
+		if (queryHandler.getJiraIssuesFromQuery().size() > 0) {
+			map.put("criteriaCount", queryHandler.getJiraIssuesFromQuery().size());
+			ConfigPersistenceManager.setDecisionTableCriteriaQuery(projectKey, query);
+			return Response.ok(map).build();
+		} else {
+			map.put("criteriaCount", 0);
+			return Response.ok(map).build();
 		}
-		ConfigPersistenceManager.setDecisionTableCriteriaQuery(projectKey, query);
-		return Response.ok(Status.OK).build();
 	}
 	
 	@Path("/testDecisionTableCriteriaQuery")
