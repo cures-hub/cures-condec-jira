@@ -276,23 +276,16 @@ public class GitDiffedCodeExtractionManager {
 
 	private List<CodeComment> getCommentsFromFile(String inspectedFileRelativePath, boolean fromNewerFile) {
 		File resultingFile = getInspectedFileAbsolutePath(inspectedFileRelativePath, fromNewerFile);
-		if (!resultingFile.isFile()) {
-			// LOGGER.error("Expected file " + resultingFile.getAbsolutePath() + " to
-			// exist!");
-			return null;
-		} else if (!resultingFile.canRead()) {
-			// LOGGER.error("Expected file " + resultingFile.getAbsolutePath() + " to be
-			// readable!");
-			return null;
-		} else {
+		if (resultingFile.isFile() && resultingFile.canRead()) {
 			CodeCommentParser commentParser = getCodeCommentParser(inspectedFileRelativePath);
-			if (commentParser == null) {
-				LOGGER.info("No parser could be found for file " + resultingFile.getName());
-				return null;
-			} else {
+			if (commentParser != null) {
 				return commentParser.getComments(resultingFile);
 			}
 		}
+		LOGGER.info("File or parser could not be found for file name " + resultingFile.getName());
+		// TODO Replace returning null with Optional<> everywhere to avoid
+		// NullPointerExceptions
+		return null;
 	}
 
 	private File getInspectedFileAbsolutePath(String inspectedFileRelativePath, boolean fromNewerFile) {

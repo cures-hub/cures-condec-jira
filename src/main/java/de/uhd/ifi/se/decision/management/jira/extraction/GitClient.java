@@ -82,7 +82,6 @@ public class GitClient {
 		GitClient gitClient;
 		if (instances.containsKey(projectKey)) {
 			gitClient = instances.get(projectKey);
-
 		} else {
 			gitClient = new GitClient(projectKey);
 			instances.put(projectKey, gitClient);

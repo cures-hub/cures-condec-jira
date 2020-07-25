@@ -67,8 +67,9 @@ public class GitClientForSingleRepository {
 
 	public boolean pullOrClone() {
 		File directory = new File(fsManager.getDefaultBranchPath());
-		if (isGitDirectory(directory)) {
-			if (openRepository(directory)) {
+		File gitDirectory = new File(directory, ".git/");
+		if (isGitDirectory(gitDirectory)) {
+			if (openRepository(gitDirectory)) {
 				if (!pull()) {
 					LOGGER.error("Failed Git pull " + directory);
 					return false;
@@ -87,8 +88,7 @@ public class GitClientForSingleRepository {
 	}
 
 	private boolean isGitDirectory(File directory) {
-		File gitDir = new File(directory, ".git/");
-		return directory.exists() && gitDir.isDirectory();
+		return directory.exists();
 	}
 
 	private boolean openRepository(File directory) {
@@ -106,7 +106,6 @@ public class GitClientForSingleRepository {
 		LOGGER.info("Pulling Repository: " + repoUri);
 		if (!isPullNeeded()) {
 			// LOGGER.info("Repository is up to date: " + repoUri);
-			// System.out.println("Repository is up to date: " + repoUri);
 			return true;
 		}
 		try {
@@ -434,6 +433,7 @@ public class GitClientForSingleRepository {
 	 */
 	public Repository getRepository() {
 		if (git == null) {
+			// TODO Avoid returning null. Use Optional<> instead
 			return null;
 		}
 		return git.getRepository();
@@ -478,12 +478,12 @@ public class GitClientForSingleRepository {
 	 * Closes the repository and deletes its local files.
 	 */
 	public void deleteRepository() {
-		if (git == null || !this.getDirectory().exists() || this.getDirectory() == null) {
+		if (git == null || this.getDirectory() == null) {
 			return;
 		}
-		File directory = this.getDirectory().getParentFile().getParentFile();
-		deleteFolder(directory);
 		close();
+		File directory = this.getDirectory().getParentFile().getParentFile().getParentFile();
+		deleteFolder(directory);
 	}
 
 	private static void deleteFolder(File directory) {
@@ -727,7 +727,6 @@ public class GitClientForSingleRepository {
 			try {
 				git.checkout().setName(checkoutName).call();
 			} catch (GitAPIException | JGitInternalException e) {
-				System.out.println("Could not checkout " + checkoutName + e.getMessage());
 				LOGGER.error("Could not checkout " + checkoutName + ". " + e.getMessage());
 				return false;
 			}
