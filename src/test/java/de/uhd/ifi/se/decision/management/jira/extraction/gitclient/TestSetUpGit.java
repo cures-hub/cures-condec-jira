@@ -66,7 +66,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		uris.add(GIT_URI);
 		ConfigPersistenceManager.setGitUris("TEST", GIT_URI);
 		ConfigPersistenceManager.setDefaultBranches("TEST", "master");
-		gitClient = new GitClient(uris, "TEST");
+		gitClient = GitClient.getOrCreate("TEST");
 		if (!gitClient.getCommits().isEmpty()) {
 			return;
 		}

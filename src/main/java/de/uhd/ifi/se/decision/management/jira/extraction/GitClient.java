@@ -71,6 +71,18 @@ public class GitClient {
 	 * Retrieves an existing {@link GitClient} instance or creates a new instance if
 	 * there is no instance for the given project key.
 	 * 
+	 * @issue How to access knowledge extracted from commits?
+	 * @decision Hold cached commits and their knowledge in a globally accessible
+	 *           class!
+	 * @pro consistency: git repositories are another knowledge source like
+	 *      activeObjects or issueService
+	 * @con resources: consumes more memory, risk of resource starving with poor
+	 *      implementation
+	 * @alternative Instantiate classes for commit knowledge extraction only when
+	 *              needed!
+	 * @con performance: IO access is costly and requires more CPU time
+	 * @pro resources: consumes less memory, CPU time costs are low
+	 *
 	 * @param projectKey
 	 *            of the Jira project.
 	 * @return either a new or already existing {@link GitClient} instance.
@@ -95,11 +107,11 @@ public class GitClient {
 				projectKey);
 	}
 
-	public GitClient(List<String> uris, String projectKey) {
+	private GitClient(List<String> uris, String projectKey) {
 		this(uris, ConfigPersistenceManager.getDefaultBranches(projectKey), projectKey);
 	}
 
-	public GitClient(List<String> uris, Map<String, String> defaultBranches, String projectKey) {
+	private GitClient(List<String> uris, Map<String, String> defaultBranches, String projectKey) {
 		this();
 		this.projectKey = projectKey;
 		uris.forEach(uri -> gitClientsForSingleRepos
@@ -110,7 +122,7 @@ public class GitClient {
 		gitClientsForSingleRepos = new ArrayList<GitClientForSingleRepository>();
 	}
 
-	private boolean pullOrCloneRepositories() {
+	public boolean pullOrCloneRepositories() {
 		boolean isEverythingUpToDate = true;
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			isEverythingUpToDate = isEverythingUpToDate && gitClientForSingleRepo.pullOrClone();
@@ -346,8 +358,12 @@ public class GitClient {
 	/**
 	 * Closes all repositories and deletes all local files.
 	 */
-	public void deleteRepositories() {
-		gitClientsForSingleRepos.forEach(gitClientForSingleRepo -> gitClientForSingleRepo.deleteRepository());
+	public boolean deleteRepositories() {
+		boolean isDeleted = false;
+		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
+			isDeleted = isDeleted && gitClientForSingleRepo.deleteRepository();
+		}
+		return isDeleted;
 	}
 
 	/**

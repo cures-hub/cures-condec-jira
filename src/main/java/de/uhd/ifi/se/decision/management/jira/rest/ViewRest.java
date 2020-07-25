@@ -132,7 +132,7 @@ public class ViewRest {
 				ratBranchList.put(branch, extractor.getElements(branch));
 			}
 		}
-		extractor.close();
+		gitClient.closeAll();
 		DiffViewer diffView = new DiffViewer(ratBranchList);
 		try {
 			Response.ResponseBuilder respBuilder = Response.ok(diffView);

@@ -20,7 +20,10 @@
 		#end
 	</div>
     <div class="aui-group">
-		<button class="aui-button" id="add-repo-button">Add New Repository +</button>
+		<button class="aui-button" id="add-repo-button">
+    		<span class="aui-icon aui-icon-small aui-iconfont-add">Enables to add a new git repository</span> 
+    		Add New Repository
+    	</button>
 		<input type="button" id="git-uris-button" class="aui-button aui-button-primary" value="Save Addresses"/>
 	</div>
 	<div class="description">

@@ -2,13 +2,13 @@ package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Creates a summary of code changes linked to Jira issues (e.g. to work items).

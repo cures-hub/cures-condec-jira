@@ -39,7 +39,6 @@ public class GitCodeClassExtractor {
 			return;
 		}
 		gitClient = GitClient.getOrCreate(projectKey);
-		getCodeClasses();
 	}
 
 	public List<ChangedFile> getCodeClasses() {
@@ -173,10 +172,6 @@ public class GitCodeClassExtractor {
 		element.setType(KnowledgeType.OTHER);
 		element.setDescription(keyString);
 		return element;
-	}
-
-	public void close() {
-		gitClient.closeAll();
 	}
 
 	public GitClient getGitClient() {

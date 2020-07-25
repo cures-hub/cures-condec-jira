@@ -1,20 +1,22 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.xml.bind.DatatypeConverter;
+
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.DatatypeConverter;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 /**
  * Extract decision knowledge elements stored in git repository. Out-of-scope:
@@ -31,17 +33,6 @@ public class GitDecXtract {
 	public GitDecXtract(String projectKey) {
 		this.projecKey = projectKey;
 		gitClient = GitClient.getOrCreate(projectKey);
-	}
-
-	public GitDecXtract(String projecKey, List<String> uris) {
-		this.projecKey = projecKey;
-		gitClient = new GitClient(uris, projecKey);
-	}
-
-	/// TODO: can this be done better in JAVA?
-	/// Release git client.
-	public void close() {
-		gitClient.closeAll();
 	}
 
 	// TODO: below method signature will further improve

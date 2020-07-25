@@ -224,7 +224,7 @@ public class ConfigRest {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
-		}		
+		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, "?jql=" + query);
 		HashMap<String, Integer> map = new HashMap<>();
@@ -608,7 +608,10 @@ public class ConfigRest {
 			return isValidDataResponse;
 		}
 		GitClient gitClient = GitClient.getOrCreate(projectKey);
-		gitClient.deleteRepositories();
+		if (!gitClient.deleteRepositories()) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Git repositories could not be deleted.")).build();
+		}
 		new CodeClassPersistenceManager(projectKey).deleteKnowledgeElements();
 		return Response.ok(Status.ACCEPTED).build();
 	}

@@ -71,6 +71,7 @@ public class GitClientForSingleRepository {
 		if (isGitDirectory(gitDirectory)) {
 			if (openRepository(gitDirectory)) {
 				if (!pull()) {
+					System.out.println("Failed Git pull " + directory);
 					LOGGER.error("Failed Git pull " + directory);
 					return false;
 				}
@@ -98,11 +99,14 @@ public class GitClientForSingleRepository {
 			LOGGER.error(
 					"Git repository could not be opened: " + directory.getAbsolutePath() + "\n\t" + e.getMessage());
 			return false;
+		} finally {
+			close();
 		}
 		return true;
 	}
 
 	private boolean pull() {
+		System.out.println("git pull");
 		LOGGER.info("Pulling Repository: " + repoUri);
 		if (!isPullNeeded()) {
 			// LOGGER.info("Repository is up to date: " + repoUri);
@@ -117,7 +121,7 @@ public class GitClientForSingleRepository {
 				LOGGER.info("Fetched branches in " + git.getRepository().getDirectory());
 			}
 			git.pull().call();
-
+			System.out.println("pulled");
 			ObjectId newHead = getRepository().resolve("HEAD^{tree}");
 			Diff diffSinceLastPull = getDiff(oldHead, newHead);
 			CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
@@ -477,26 +481,26 @@ public class GitClientForSingleRepository {
 	/**
 	 * Closes the repository and deletes its local files.
 	 */
-	public void deleteRepository() {
+	public boolean deleteRepository() {
 		if (git == null || this.getDirectory() == null) {
-			return;
+			return false;
 		}
-		close();
 		File directory = this.getDirectory().getParentFile().getParentFile().getParentFile();
-		deleteFolder(directory);
+		return deleteFolder(directory);
 	}
 
-	private static void deleteFolder(File directory) {
+	private static boolean deleteFolder(File directory) {
+		boolean isDeleted = false;
 		if (directory.listFiles() == null) {
-			return;
+			return isDeleted;
 		}
 		for (File file : directory.listFiles()) {
 			if (file.isDirectory()) {
-				deleteFolder(file);
+				isDeleted = isDeleted && deleteFolder(file);
 			}
-			file.delete();
+			isDeleted = isDeleted && file.delete();
 		}
-		directory.delete();
+		return isDeleted && directory.delete();
 	}
 
 	/**
@@ -552,7 +556,7 @@ public class GitClientForSingleRepository {
 		String branchShortNameWithPrefix = featureBranch.getName().replaceFirst("refs/remotes/origin/", "");
 		File directory = new File(fsManager.prepareBranchDirectory(branchShortName));
 
-		return (switchGitDirectory(directory) && pull() && checkout(branchShortNameWithPrefix));
+		return switchGitDirectory(directory) && checkout(branchShortNameWithPrefix);
 	}
 
 	/**
@@ -696,7 +700,7 @@ public class GitClientForSingleRepository {
 			directory = new File(fsManager.prepareBranchDirectory(branchShortName));
 		}
 
-		if (switchGitDirectory(directory) && pull() && checkout(branchShortNameWithPrefix)) {
+		if (switchGitDirectory(directory) && checkout(branchShortNameWithPrefix)) {
 			Iterable<RevCommit> iterable = null;
 			try {
 				iterable = git.log().call();
