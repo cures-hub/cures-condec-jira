@@ -354,13 +354,11 @@
 
 	function createLink(parentObj, childObj) {
 		conDecAPI.createLink(null, parentObj.id, childObj.id, parentObj.documentationLocation, childObj.documentationLocation, null, function (data) {
-			console.log(data);
 		});
 	}
 
 	function deleteLink(parentObj, childObj) {
 		conDecAPI.deleteLink(childObj.id, parentObj.id, childObj.documentationLocation, parentObj.documentationLocation, function (data) {
-			console.log(data);
 		});
 	}
 	
