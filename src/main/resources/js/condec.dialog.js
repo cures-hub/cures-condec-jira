@@ -630,13 +630,13 @@
 
 	ConDecDialog.prototype.showAddCriterionToDecisionTableDialog = function (projectKey, currentCriteria, callback) {
 		let addCriterionDialog = document.getElementById("decisionTableCriteriaDialog");
-		let closeButton = document.getElementById("dialog-close-button");
+		let closeButton = document.getElementById("dialog-apply-button");
 		let exitButton = document.getElementById("dialog-exit-button");
 		
         let changes = new Map();
 		let allCriteria;
         let uniqueCriteria;
-
+        
 		conDecAPI.getDecisionTableCriteria(projectKey, function (criteria) {
 			allCriteria = criteria.concat(currentCriteria);
 			uniqueCriteria = new Set(allCriteria.map(item => item.id));
@@ -694,14 +694,26 @@
         // Show dialog
         AJS.dialog2(addCriterionDialog).show();
         
+        // send callback when dialog was closed not via apply or close button
+		AJS.dialog2(addCriterionDialog).on("hide", removeDialogHideListener());
+
         exitButton.onclick = function () {
-        	callback(changes);
+        	applyChanges([]);
 			AJS.dialog2(addCriterionDialog).hide();
         }
         
 		closeButton.onclick = function () {
-			callback(changes);
+			applyChanges(changes);
 			AJS.dialog2(addCriterionDialog).hide();
+		}
+				
+		function removeDialogHideListener() {
+			applyChanges([]);
+        	addCriterionDialog.removeEventListener("hide", removeDialogHideListener);
+		}
+		
+		function applyChanges(changes) {
+			callback(changes);
 		}
 	}
 	

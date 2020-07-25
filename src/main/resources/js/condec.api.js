@@ -939,10 +939,14 @@
 		}
 		generalApi.postJSON(this.restPrefix + `/config/setDecisionTableCriteriaQuery.json?projectKey=${projectKey}&query=${query}`,
 			null, function (error, status) {
-				if (error === null) {
-					showFlag("success", "Query was saved");
+				if (error === null && status.hasOwnProperty("criteriaCount")) {
+					if (status.criteriaCount > 0) {
+						showFlag("success", "Query was successfully saved. \nEnabled: " + status.criteriaCount + " criteria for decision table");
+					} else {
+						showFlag("error", "Query could not be saved due to no criteria were found.");
+					}
 				} else {
-					showFlag("error", "Query could not be saved.");
+					showFlag("error", "Query could not be saved due to an error.");
 				}
 			});
 	};

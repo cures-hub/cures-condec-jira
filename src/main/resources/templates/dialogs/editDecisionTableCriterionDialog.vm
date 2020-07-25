@@ -19,7 +19,7 @@
 	<div id="decisionTableCriteriaQueryReference"></div>  
  <footer class="aui-dialog2-footer">
         <div class="aui-dialog2-footer-actions">
-            <button id="dialog-close-button" class="aui-button aui-button-primary">Close</button>
+            <button id="dialog-apply-button" class="aui-button aui-button-primary">Apply</button>
         </div>
     </footer>
 </section>
