@@ -81,6 +81,10 @@
 		document.getElementById("btnAddCriterion").addEventListener("click", function() {
 				conDecDecisionTable.showAddCriteriaToDecisionTableDialog(conDecAPI.getProjectKey());		
 		});
+		
+		document.getElementById("btnAddAlternative").addEventListener("click", function() {
+			conDecDecisionTable.showCreateDialogForIssue();		
+		});
 	}
 	
 	function addOnClickEventToTab() {
