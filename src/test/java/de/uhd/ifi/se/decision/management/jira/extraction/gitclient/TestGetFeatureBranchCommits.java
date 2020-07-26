@@ -33,7 +33,7 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 	public void testGetFeatureBranchCommitsByString() {
 		List<RevCommit> commits = gitClient.getFeatureBranchCommits(featureBranch);
 		assertNotNull(commits);
-		// assertEquals(4, commits.size());
+		assertEquals(4, commits.size());
 	}
 
 	@Test

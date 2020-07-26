@@ -56,15 +56,53 @@ public class GitDiffedCodeExtractionManager {
 	 * @con frequent checkouts take time
 	 * @con requires implementation of another special mode in the client
 	 */
-	private Diff diff;
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitDiffedCodeExtractionManager.class);
 
 	// may include null values for keys!
 	private Map<ChangedFile, CodeExtractionResult> changedElementsPerFiles = new HashMap<>();
 
 	public GitDiffedCodeExtractionManager(Diff diff) {
-		this.diff = diff;
-		processEntries();
+		if (diff == null) {
+			return;
+		}
+		int entrySequenceNumber = 0;
+		for (ChangedFile changedFile : diff.getChangedFiles()) {
+			CodeExtractionResult entryResults = processEntry(changedFile);
+			if (entryResults == null) {
+				return;
+			}
+			entryResults.sequence = entrySequenceNumber;
+			changedElementsPerFiles.put(changedFile, entryResults);
+			entrySequenceNumber++;
+		}
+	}
+
+	private CodeExtractionResult processEntry(ChangedFile changedFile) {
+		CodeExtractionResult codeExtractionResult = null;
+
+		switch (changedFile.getDiffEntry().getChangeType()) {
+		/**
+		 * ADD and DELETE are easiest to implement others are more complex.
+		 */
+		case ADD:
+			codeExtractionResult = processAddEntryEdits(changedFile);
+			break;
+		case MODIFY:
+			codeExtractionResult = processModifyEntryEdits(changedFile);
+			break;
+		case DELETE:
+			codeExtractionResult = processDeleteEntryEdits(changedFile);
+			break;
+		case RENAME: // behaves like MODIFY ?
+		case COPY: // ??
+		default:
+			LOGGER.info(
+					"Diff change type is not implemented: " + changedFile.getDiffEntry().getChangeType().toString());
+			return codeExtractionResult;
+		}
+		// TODO: gather all elements in newer version of the file
+
+		return codeExtractionResult;
 	}
 
 	public List<KnowledgeElement> getNewDecisionKnowledgeElements() {
@@ -73,7 +111,8 @@ public class GitDiffedCodeExtractionManager {
 		}
 		List<KnowledgeElement> resultValues = new ArrayList<>();
 
-		for (Map.Entry<ChangedFile, CodeExtractionResult> changedKnowledgeElementsPerFile : changedElementsPerFiles.entrySet()) {
+		for (Map.Entry<ChangedFile, CodeExtractionResult> changedKnowledgeElementsPerFile : changedElementsPerFiles
+				.entrySet()) {
 			CodeExtractionResult codeExtractionResult = changedKnowledgeElementsPerFile.getValue();
 			if (codeExtractionResult == null) {
 				continue;
@@ -94,7 +133,8 @@ public class GitDiffedCodeExtractionManager {
 			return new ArrayList<>();
 		}
 		List<KnowledgeElement> resultValues = new ArrayList<>();
-		for (Map.Entry<ChangedFile, CodeExtractionResult> changedKnowledgeElementsPerFile : changedElementsPerFiles.entrySet()) {
+		for (Map.Entry<ChangedFile, CodeExtractionResult> changedKnowledgeElementsPerFile : changedElementsPerFiles
+				.entrySet()) {
 			CodeExtractionResult codeExtractionResult = changedKnowledgeElementsPerFile.getValue();
 			if (codeExtractionResult == null) {
 				continue;
@@ -138,47 +178,6 @@ public class GitDiffedCodeExtractionManager {
 		}).collect(Collectors.toList()));
 
 		return knowledgeElements;
-	}
-
-	private void processEntries() {
-		int entrySequenceNumber = 0;
-		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			CodeExtractionResult entryResults = processEntry(changedFile);
-			if (entryResults == null) {
-				return;
-			}
-			entryResults.sequence = entrySequenceNumber;
-			changedElementsPerFiles.put(changedFile, entryResults);
-			entrySequenceNumber++;
-		}
-	}
-
-	private CodeExtractionResult processEntry(ChangedFile changedFile) {
-		CodeExtractionResult codeExtractionResult = null;
-
-		switch (changedFile.getDiffEntry().getChangeType()) {
-		/**
-		 * ADD and DELETE are easiest to implement others are more complex.
-		 */
-		case ADD:
-			codeExtractionResult = processAddEntryEdits(changedFile);
-			break;
-		case MODIFY:
-			codeExtractionResult = processModifyEntryEdits(changedFile);
-			break;
-		case DELETE:
-			codeExtractionResult = processDeleteEntryEdits(changedFile);
-			break;
-		case RENAME: // behaves like MODIFY ?
-		case COPY: // ??
-		default:
-			LOGGER.info(
-					"Diff change type is not implemented: " + changedFile.getDiffEntry().getChangeType().toString());
-			return codeExtractionResult;
-		}
-		// TODO: gather all elements in newer version of the file
-
-		return codeExtractionResult;
 	}
 
 	/* ADD does not require gitClientCheckedOutAtDiffStart */
