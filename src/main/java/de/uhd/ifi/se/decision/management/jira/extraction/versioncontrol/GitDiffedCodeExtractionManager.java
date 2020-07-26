@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +46,7 @@ public class GitDiffedCodeExtractionManager {
 	 *        rationale on modified files, their contents from the base and changed
 	 *        versions are required. How should both versions of affected files be
 	 *        accessed?
-	 * @decision Work with ChangedFile objects.
+	 * @decision Work with ChangedFile objects!
 	 * @alternative Use two GitClient instances each checked out at different commit
 	 *              of the diff range!
 	 * @pro no additional checkouts need to be performed by the GitClient
@@ -249,14 +248,6 @@ public class GitDiffedCodeExtractionManager {
 		// TODO Replace returning null with Optional<> everywhere to avoid
 		// NullPointerExceptions
 		return null;
-	}
-
-	/* Windows vs. Unix, is this method needed for diff entry paths? */
-	private String adjustOSsPathSeparator(String filePath) {
-		if (!"/".equals(File.separator) && filePath.indexOf("/") > -1) {
-			return filePath.replaceAll("/", "\\\\");
-		}
-		return filePath;
 	}
 
 	/**
