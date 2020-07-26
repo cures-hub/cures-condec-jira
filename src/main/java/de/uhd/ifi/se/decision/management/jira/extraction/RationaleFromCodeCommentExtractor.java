@@ -65,7 +65,7 @@ public class RationaleFromCodeCommentExtractor {
 	}
 
 	public ArrayList<KnowledgeElement> getElements() {
-		if (comment.commentContent == null || comment.commentContent.trim().equals("")) {
+		if (comment.commentContent == null || comment.commentContent.isBlank()) {
 			return elements;
 		}
 		Matcher tagMatcher = TAGS_SEARCH_PATTERN.matcher(comment.commentContent);

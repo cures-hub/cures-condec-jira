@@ -74,12 +74,12 @@ public abstract class TestSetUpGit extends TestSetUp {
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
 		makeExampleCommit(fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
 		makeExampleCommit("GodClass.java",
-				"public class GodClass {" + "//@issue:Small code issue in GodClass, it does nothing." + "\r\n}",
+				"public class GodClass {" + "//@issue Small code issue in GodClass, it does nothing." + "\r\n}",
 				"TEST-12: Develop great software");
 		makeExampleCommit("Untangled.java",
 				"package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" + "\n" + "public class Main {\n"
-						+ "    public static void  main(String[] args) {\n"
-						+ "        LOGGER.info((\"Hello World!\");\n" + "    }\n" + "}\n",
+						+ "    public static void main(String[] args) {\n" + "        LOGGER.info((\"Hello World!\");\n"
+						+ "    }\n" + "}\n",
 				"TEST-26 add main");
 		makeExampleCommit("Untangled2.java",
 				"package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" + "\n" + "public class D {\n" + "\n"

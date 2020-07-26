@@ -10,13 +10,14 @@ import org.eclipse.jgit.diff.EditList;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.RationaleFromCodeCommentExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 
 /**
- * Extracts decision knowledge elements in the list of comments of one source
- * file associated with the diff change. Extracted decision knowledge elements
- * contain the notion about their source within the source file. Extracted
- * rationale from comments is matched against diff entries.
+ * Extracts decision knowledge elements in the list of comments of one
+ * {@link ChangedFile} associated with the diff change. Extracted decision
+ * knowledge elements contain the notion about their source within the source
+ * file. Extracted rationale from comments is matched against diff entries.
  */
 public class RationaleFromDiffCodeCommentExtractor {
 
@@ -24,8 +25,8 @@ public class RationaleFromDiffCodeCommentExtractor {
 	private List<CodeComment> commentsInFile;
 	private int fileCursor = -1;
 
-	public RationaleFromDiffCodeCommentExtractor(List<CodeComment> commentsInOlderFile, EditList editList) {
-		this.commentsInFile = commentsInOlderFile;
+	public RationaleFromDiffCodeCommentExtractor(List<CodeComment> comments, EditList editList) {
+		this.commentsInFile = comments;
 		this.editList = editList;
 	}
 
@@ -54,35 +55,29 @@ public class RationaleFromDiffCodeCommentExtractor {
 		List<CodeComment> comments = commentsInFile;
 		if ((cursor + 1) <= comments.size()) {
 			CodeComment currentComment = comments.get(cursor);
-
-			/*
-			 * @issue: A problem was observed within changes of branch
-			 * refs/remotes/origin/CONDEC-503.rest.API.feature.branch.rationale for change
-			 * on old JAVA file
-			 * src/main/java/de/uhd/../jira/extraction/impl/GitClient.java
-			 * https://github.com/cures-hub/cures-condec-jira/pull/147/
-			 * commits/847c56aaa0e71ee4c2bdf9d8e674f9dd92bf77b9
-			 * #diff-1e393b83bbc1e0b69baddee0f2897586L473 at lines 472 and 473. The DECISION
-			 * rationale was written on two single line comments, but only text on the 1st
-			 * line was taken over. 2nd line will not be classified as part of the
-			 * rationale.
+			/**
+			 * @issue A problem was observed within changes of branch
+			 *        refs/remotes/origin/CONDEC-503.rest.API.feature.branch.rationale for
+			 *        change on old JAVA file
+			 *        src/main/java/de/uhd/../jira/extraction/impl/GitClient.java
+			 *        https://github.com/cures-hub/cures-condec-jira/pull/147/
+			 *        commits/847c56aaa0e71ee4c2bdf9d8e674f9dd92bf77b9
+			 *        #diff-1e393b83bbc1e0b69baddee0f2897586L473 at lines 472 and 473. The
+			 *        DECISION rationale was written on two single line comments, but only
+			 *        text on the 1st line was taken over. 2nd line will not be classified
+			 *        as part of the rationale.
 			 * 
-			 * @alternative: Merge neighboured single line comments into commit blocks! Only
-			 * when they start at the same column and their line distance is 1.
+			 * @alternative Merge neighboured single line comments into commit blocks! Only
+			 *              when they start at the same column and their line distance is 1.
+			 * @pro less intrusive, tolerates developers' "mistakes" in comment usage *
+			 * @con propagates bad habits
 			 * 
-			 * @pro: less intrusive, tolerates developers' "mistakes" in comment usage
-			 * 
-			 * @con: propagates bad habits
-			 * 
-			 * @decision: It is expected that multi line comments should be used for storing
-			 * rationale with multi line texts! No actions should be taken.
-			 * 
-			 * @pro: teaches developers a lesson to use comments correctly.
-			 * 
-			 * @con: not user friendly. Cannot assume every developer is using the comment
-			 * options of a language as intended.
+			 * @decision It is expected that multi line comments should be used for storing
+			 *           rationale with multi line texts! No actions should be taken. *
+			 * @pro teaches developers a lesson to use comments correctly. *
+			 * @con not user friendly. Cannot assume every developer is using the comment
+			 *      options of a language as intended.
 			 */
-
 			RationaleFromCodeCommentExtractor rationaleFromCodeComment = new RationaleFromCodeCommentExtractor(
 					currentComment);
 			List<KnowledgeElement> commentRationaleElements = rationaleFromCodeComment.getElements();
@@ -119,8 +114,8 @@ public class RationaleFromDiffCodeCommentExtractor {
 		return elementsInSingleComment;
 	}
 
-	private List<KnowledgeElement> getRationaleIntersectingEdit(Edit edit,
-			List<KnowledgeElement> rationaleElements, boolean newerFile) {
+	private List<KnowledgeElement> getRationaleIntersectingEdit(Edit edit, List<KnowledgeElement> rationaleElements,
+			boolean newerFile) {
 		List<KnowledgeElement> filteredRationaleElements = new ArrayList<>();
 		for (KnowledgeElement rationaleElement : rationaleElements) {
 			if (doesRationaleIntersectWithEdit(rationaleElement, edit, newerFile)) {
@@ -130,8 +125,7 @@ public class RationaleFromDiffCodeCommentExtractor {
 		return filteredRationaleElements;
 	}
 
-	private boolean doesRationaleIntersectWithEdit(KnowledgeElement rationaleElement, Edit edit,
-			boolean newerFile) {
+	private boolean doesRationaleIntersectWithEdit(KnowledgeElement rationaleElement, Edit edit, boolean newerFile) {
 		int rationaleStart = RationaleFromCodeCommentExtractor.getRationaleStartLineInCode(rationaleElement);
 		int rationaleEnd = RationaleFromCodeCommentExtractor.getRationaleEndLineInCode(rationaleElement);
 
@@ -161,8 +155,8 @@ public class RationaleFromDiffCodeCommentExtractor {
 			return true;
 		}
 		// edit overlaps rationale
-        return editBegin <= rationaleStart && editEnd >= rationaleEnd;
-    }
+		return editBegin <= rationaleStart && editEnd >= rationaleEnd;
+	}
 
 	/* fetches list of edits which affected the comment */
 	private List<Edit> getEditsOnComment(CodeComment comment, boolean newerFile) {
