@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public class TestGitDiffedCodeExtractionManager extends TestSetUpGit {
 		Diff diff = gitClient.getDiff(commits);
 		GitDiffedCodeExtractionManager manager = new GitDiffedCodeExtractionManager(diff);
 		assertTrue(manager.getOldDecisionKnowledgeElements().isEmpty());
-		assertTrue(manager.getNewDecisionKnowledgeElements().isEmpty());
+		assertEquals(6, manager.getNewDecisionKnowledgeElements().size());
 	}
 
 	@Test
@@ -42,6 +43,6 @@ public class TestGitDiffedCodeExtractionManager extends TestSetUpGit {
 		Diff diff = gitClient.getDiff(mockJiraIssueForGitTests);
 		GitDiffedCodeExtractionManager manager = new GitDiffedCodeExtractionManager(diff);
 		assertTrue(manager.getOldDecisionKnowledgeElements().isEmpty());
-		assertTrue(manager.getNewDecisionKnowledgeElements().isEmpty());
+		assertEquals(6, manager.getNewDecisionKnowledgeElements().size());
 	}
 }

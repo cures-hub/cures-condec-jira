@@ -1,43 +1,4 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.impl;
-/*
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.ListBranchCommand;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRefNameException;
-import org.eclipse.jgit.api.errors.JGitInternalException;
-import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
-import org.eclipse.jgit.api.errors.RefNotFoundException;
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.DiffFormatter;
-import org.eclipse.jgit.diff.EditList;
-import org.eclipse.jgit.diff.RawTextComparator;
-import org.eclipse.jgit.lib.ConfigConstants;
-import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
-import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.lib.StoredConfig;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.transport.RemoteConfig;
-import org.eclipse.jgit.util.io.DisabledOutputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.atlassian.jira.issue.Issue;
-import com.google.common.collect.Lists;
-
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;*/
 
 /**
  * @issue How to access commits related to a JIRA issue?
@@ -53,6 +14,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  *      branch folders and can be read, modifing files is not safe and not
  *      supported.
  */
-public class GitClientImpl implements GitClient {
+public GitClient {
 
 }

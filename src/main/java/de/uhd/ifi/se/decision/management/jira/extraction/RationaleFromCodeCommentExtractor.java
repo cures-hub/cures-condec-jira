@@ -12,8 +12,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 
 /**
- * purpose: extract decision knowledge elements from single comment. Codes
- * rationale source within the source file/comment.
+ * Extracts decision knowledge elements from a single comment. Stores the source
+ * of the element within the source file/comment in its key.
  */
 public class RationaleFromCodeCommentExtractor {
 	private ArrayList<KnowledgeElement> elements;
@@ -101,38 +101,37 @@ public class RationaleFromCodeCommentExtractor {
 				"");
 	}
 
+	/**
+	 * @issue what information the dec. know. key encapsulate regarding its position
+	 *        in a source code file and the rationale itself?
+	 *
+	 *        KEY := POSITION_TEXTHASH
+	 *
+	 *        POSITION := lineBegin,columnBegin:lineEnd,columnEnd
+	 * @alternative the key must include the start POINT and end POINT in source
+	 *              code andthe hash of the rationale text!
+	 * @pro with start point(line,column) and end point the order of rationale
+	 *      within source file can be easily read.
+	 * @pro with start point(line,column) and end point intersections with diff
+	 *      entries can be calculated
+	 * @con calculating start and end column is complicated
+	 * @con end column information is not useful for diff intersections nor
+	 *      rationale order calculation.
+	 *
+	 * @decision the key must include the start LINE, end LINE in source code, tje
+	 *           cursor position within comment and the hash of the rationale text!
+	 *
+	 *           KEY := POSITION_TEXTHASH
+	 *
+	 *           POSITION := lineBegin:lineEnd:cursorInComment
+	 *
+	 * @pro start line, end line in source code and the cursor position within
+	 *      comment is sufficient to get the order of rationale within the source
+	 *      code
+	 * @pro with start line, end line and cursor position intersections with diff
+	 *      entries can be calculated
+	 */
 	private String calculateAndCodeRationalePositionInSourceFile(int start, String rationaleText) {
-		/**
-		 * @issue what information the dec. know. key encapsulate regarding its position
-		 *        in a source code file and the rationale itself?
-		 *
-		 *        KEY := POSITION_TEXTHASH
-		 *
-		 *        POSITION := lineBegin,columnBegin:lineEnd,columnEnd
-		 * @alternative the key must include the start POINT and end POINT in source
-		 *              code andthe hash of the rationale text!
-		 * @pro with start point(line,column) and end point the order of rationale
-		 *      within source file can be easily read.
-		 * @pro with start point(line,column) and end point intersections with diff
-		 *      entries can be calculated
-		 * @con calculating start and end column is complicated
-		 * @con end column information is not useful for diff intersections nor
-		 *      rationale order calculation.
-		 *
-		 * @decision the key must include the start LINE, end LINE in source code, tje
-		 *           cursor position within comment and the hash of the rationale text!
-		 *
-		 *           KEY := POSITION_TEXTHASH
-		 *
-		 *           POSITION := lineBegin:lineEnd:cursorInComment
-		 *
-		 * @pro start line, end line in source code and the cursor position within
-		 *      comment is sufficient to get the order of rationale within the source
-		 *      code
-		 * @pro with start line, end line and cursor position intersections with diff
-		 *      entries can be calculated
-		 */
-
 		String fullCommentText = comment.commentContent;
 		// calculate rationale start line in source code
 		int absoluteFileStartLine = comment.beginLine;

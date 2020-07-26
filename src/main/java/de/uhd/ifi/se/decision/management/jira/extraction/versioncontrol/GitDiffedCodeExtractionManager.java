@@ -171,9 +171,7 @@ public class GitDiffedCodeExtractionManager {
 	private CodeExtractionResult processAddEntryEdits(ChangedFile changedFile) {
 		CodeExtractionResult codeExtractionResult = new CodeExtractionResult();
 		boolean fromNewerFile = true;
-
-		String fileBRelativePath = adjustOSsPathSeparator(changedFile.getDiffEntry().getNewPath());
-		List<CodeComment> commentsInFile = getCommentsFromFile(fileBRelativePath, fromNewerFile);
+		List<CodeComment> commentsInFile = getCommentsFromFile(changedFile, fromNewerFile);
 
 		Map<Edit, List<KnowledgeElement>> elementsByEdit = getRationaleFromComments(fromNewerFile, commentsInFile,
 				changedFile);
@@ -186,9 +184,7 @@ public class GitDiffedCodeExtractionManager {
 	private CodeExtractionResult processDeleteEntryEdits(ChangedFile changedFile) {
 		CodeExtractionResult codeExtractionResult = new CodeExtractionResult();
 		boolean fromNewerFile = false;
-
-		String fileARelativePath = adjustOSsPathSeparator(changedFile.getDiffEntry().getNewPath());
-		List<CodeComment> commentsInFile = getCommentsFromFile(fileARelativePath, fromNewerFile);
+		List<CodeComment> commentsInFile = getCommentsFromFile(changedFile, fromNewerFile);
 
 		Map<Edit, List<KnowledgeElement>> elementsByEdit = getRationaleFromComments(fromNewerFile, commentsInFile,
 				changedFile);
@@ -201,11 +197,9 @@ public class GitDiffedCodeExtractionManager {
 	private CodeExtractionResult processModifyEntryEdits(ChangedFile changedFile) {
 		CodeExtractionResult codeExtractionResult = new CodeExtractionResult();
 
-		String fileARelativePath = adjustOSsPathSeparator(changedFile.getDiffEntry().getOldPath());
-		List<CodeComment> commentsInFileA = getCommentsFromFile(fileARelativePath, false);
-
-		String fileBRelativePath = adjustOSsPathSeparator(changedFile.getDiffEntry().getNewPath());
-		List<CodeComment> commentsInFileB = getCommentsFromFile(fileBRelativePath, true);
+		List<CodeComment> commentsInFileA = getCommentsFromFile(changedFile, false);
+		// TODO Get deleted file from history
+		List<CodeComment> commentsInFileB = getCommentsFromFile(changedFile, true);
 
 		Map<Edit, List<KnowledgeElement>> elementsByEditNew = getRationaleFromComments(true, commentsInFileB,
 				changedFile);
@@ -234,25 +228,17 @@ public class GitDiffedCodeExtractionManager {
 		return knowledgeElementsInComments;
 	}
 
-	private List<CodeComment> getCommentsFromFile(String inspectedFileRelativePath, boolean fromNewerFile) {
-		File resultingFile = getInspectedFileAbsolutePath(inspectedFileRelativePath, fromNewerFile);
-		if (resultingFile.isFile() && resultingFile.canRead()) {
-			CodeCommentParser commentParser = getCodeCommentParser(inspectedFileRelativePath);
+	private List<CodeComment> getCommentsFromFile(ChangedFile changedFile, boolean fromNewerFile) {
+		if (changedFile.isFile() && changedFile.exists()) {
+			CodeCommentParser commentParser = getCodeCommentParser(changedFile.getPath());
 			if (commentParser != null) {
-				return commentParser.getComments(resultingFile);
+				return commentParser.getComments(changedFile);
 			}
 		}
-		LOGGER.info("File or parser could not be found for file name " + resultingFile.getName());
+		LOGGER.info("File or parser could not be found for file name " + changedFile.getName());
 		// TODO Replace returning null with Optional<> everywhere to avoid
 		// NullPointerExceptions
 		return null;
-	}
-
-	private File getInspectedFileAbsolutePath(String inspectedFileRelativePath, boolean fromNewerFile) {
-		String filePathRelativeOutOfGitFolder = ".." // .. gets us out of .git folder.
-				+ File.separator + inspectedFileRelativePath;
-
-		return new File(filePathRelativeOutOfGitFolder);
 	}
 
 	/* Currently only Java parser is available. */

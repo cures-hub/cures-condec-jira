@@ -90,6 +90,16 @@ public class TestRationaleFromCodeCommentExtractor {
 	}
 
 	@Test
+	public void testOneRationaleElementWithinCode() {
+		codeComment.commentContent = "public class GodClass {"
+				+ "//@issue Small code issue in GodClass, it does nothing. \t \n \t \n \t \n}";
+		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
+		elementsFound = rationaleFromCodeCommentExtractor.getElements();
+		assertEquals(1, elementsFound.size());
+		assertEquals("Small code issue in GodClass, it does nothing.", elementsFound.get(0).getSummary());
+	}
+
+	@Test
 	public void testTwoRationaleElements() {
 		codeComment.commentContent = "@issue Hi @alternative rationale\n\n\nnot rat. text anymore";
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
