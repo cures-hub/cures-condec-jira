@@ -60,9 +60,7 @@ public class GitDiffedCodeExtractionManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitDiffedCodeExtractionManager.class);
 
 	// may include null values for keys!
-	// TODO Consider changing to Map<ChangedFile, CodeExtractionResult> or add
-	// CodeExtractionResult as an attribute to the ChangedFile class
-	private Map<DiffEntry, CodeExtractionResult> results = new HashMap<>();
+	private Map<ChangedFile, CodeExtractionResult> changedElementsPerFiles = new HashMap<>();
 
 	public GitDiffedCodeExtractionManager(Diff diff) {
 		this.diff = diff;
@@ -70,41 +68,44 @@ public class GitDiffedCodeExtractionManager {
 	}
 
 	public List<KnowledgeElement> getNewDecisionKnowledgeElements() {
-		if (results.isEmpty()) {
+		if (changedElementsPerFiles.isEmpty()) {
 			return new ArrayList<>();
 		}
 		List<KnowledgeElement> resultValues = new ArrayList<>();
 
-		for (Map.Entry<DiffEntry, CodeExtractionResult> dEntry : results.entrySet()) {
-			if (dEntry.getValue() == null) {
+		for (Map.Entry<ChangedFile, CodeExtractionResult> changedKnowledgeElementsPerFile : changedElementsPerFiles.entrySet()) {
+			CodeExtractionResult codeExtractionResult = changedKnowledgeElementsPerFile.getValue();
+			if (codeExtractionResult == null) {
 				continue;
 			}
-			String newPath = dEntry.getKey().getNewPath();
-			Map<Edit, List<KnowledgeElement>> codeExtractionResult;
-			codeExtractionResult = dEntry.getValue().diffedElementsInNewerVersion;
-			if (codeExtractionResult.isEmpty()) {
+			DiffEntry diffEntry = changedKnowledgeElementsPerFile.getKey().getDiffEntry();
+			String newPath = diffEntry.getNewPath();
+			Map<Edit, List<KnowledgeElement>> elementsPerEdit = codeExtractionResult.elementsInNewerVersion;
+			if (elementsPerEdit.isEmpty()) {
 				continue;
 			}
-			resultValues.addAll(getKnowledgeElements(codeExtractionResult, newPath, dEntry.getValue().sequence));
+			resultValues.addAll(getKnowledgeElements(elementsPerEdit, newPath, codeExtractionResult.sequence));
 		}
 		return resultValues;
 	}
 
 	public List<KnowledgeElement> getOldDecisionKnowledgeElements() {
-		if (results.isEmpty()) {
+		if (changedElementsPerFiles.isEmpty()) {
 			return new ArrayList<>();
 		}
 		List<KnowledgeElement> resultValues = new ArrayList<>();
-		for (Map.Entry<DiffEntry, CodeExtractionResult> dEntry : results.entrySet()) {
-			if (dEntry.getValue() == null) {
+		for (Map.Entry<ChangedFile, CodeExtractionResult> changedKnowledgeElementsPerFile : changedElementsPerFiles.entrySet()) {
+			CodeExtractionResult codeExtractionResult = changedKnowledgeElementsPerFile.getValue();
+			if (codeExtractionResult == null) {
 				continue;
 			}
-			String newPath = OLD_FILE_SYMBOL_PREPENDER + dEntry.getKey().getOldPath();
-			Map<Edit, List<KnowledgeElement>> codeExtractionResult = dEntry.getValue().diffedElementsInOlderVersion;
-			if (codeExtractionResult.isEmpty()) {
+			DiffEntry diffEntry = changedKnowledgeElementsPerFile.getKey().getDiffEntry();
+			String newPath = OLD_FILE_SYMBOL_PREPENDER + diffEntry.getOldPath();
+			Map<Edit, List<KnowledgeElement>> elementsPerEdit = codeExtractionResult.elementsInOlderVersion;
+			if (elementsPerEdit.isEmpty()) {
 				continue;
 			}
-			resultValues.addAll(getKnowledgeElements(codeExtractionResult, newPath, dEntry.getValue().sequence));
+			resultValues.addAll(getKnowledgeElements(elementsPerEdit, newPath, codeExtractionResult.sequence));
 		}
 		return resultValues;
 	}
@@ -121,26 +122,21 @@ public class GitDiffedCodeExtractionManager {
 	private List<KnowledgeElement> getKnowledgeElements(Map.Entry<Edit, List<KnowledgeElement>> editListEntry,
 			String path, int sequence) {
 		List<KnowledgeElement> knowledgeElements = new ArrayList<>();
-		if (editListEntry.getKey() != null) {
-			knowledgeElements.addAll(editListEntry.getValue().stream().map(d -> {
-				KnowledgeElement element = d;
-				String newKey = path + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + sequence
-						+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + editListEntry.getKey().toString()
-						+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + d.getKey();
-				element.setKey(newKey);
-				return element;
-			}).collect(Collectors.toList()));
-		} else {
-			knowledgeElements.addAll(editListEntry.getValue().stream().map(d -> {
-				KnowledgeElement element = d;
-				String newKey = path + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + sequence
-						+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + GitDecXtract.RAT_KEY_NOEDIT
-						+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + d.getKey();
 
-				element.setKey(newKey);
-				return element;
-			}).collect(Collectors.toList()));
-		}
+		knowledgeElements.addAll(editListEntry.getValue().stream().map(element -> {
+			String newKey = path + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + sequence
+					+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR;
+
+			if (editListEntry.getKey() != null) {
+				newKey += editListEntry.getKey().toString() + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
+						+ element.getKey();
+			} else {
+				newKey += GitDecXtract.RAT_KEY_NOEDIT + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + element.getKey();
+			}
+			element.setKey(newKey);
+			return element;
+		}).collect(Collectors.toList()));
+
 		return knowledgeElements;
 	}
 
@@ -152,43 +148,42 @@ public class GitDiffedCodeExtractionManager {
 				return;
 			}
 			entryResults.sequence = entrySequenceNumber;
-			results.put(changedFile.getDiffEntry(), entryResults);
+			changedElementsPerFiles.put(changedFile, entryResults);
 			entrySequenceNumber++;
 		}
 	}
 
 	private CodeExtractionResult processEntry(ChangedFile changedFile) {
-		CodeExtractionResult returnResult = null;
+		CodeExtractionResult codeExtractionResult = null;
 
 		switch (changedFile.getDiffEntry().getChangeType()) {
-		/*
-		 * ADD and DELETE are easiest to implement others are more complex. Begin
-		 * implementation with ADD.
+		/**
+		 * ADD and DELETE are easiest to implement others are more complex.
 		 */
 		case ADD:
-			returnResult = processAddEntryEdits(changedFile);
+			codeExtractionResult = processAddEntryEdits(changedFile);
 			break;
 		case MODIFY:
-			returnResult = processModifyEntryEdits(changedFile);
+			codeExtractionResult = processModifyEntryEdits(changedFile);
 			break;
 		case DELETE:
-			returnResult = processDeleteEntryEdits(changedFile);
+			codeExtractionResult = processDeleteEntryEdits(changedFile);
 			break;
 		case RENAME: // behaves like MODIFY ?
 		case COPY: // ??
 		default:
 			LOGGER.info(
 					"Diff change type is not implemented: " + changedFile.getDiffEntry().getChangeType().toString());
-			return returnResult;
+			return codeExtractionResult;
 		}
 		// TODO: gather all elements in newer version of the file
 
-		return returnResult;
+		return codeExtractionResult;
 	}
 
 	/* ADD does not require gitClientCheckedOutAtDiffStart */
 	private CodeExtractionResult processAddEntryEdits(ChangedFile changedFile) {
-		CodeExtractionResult returnCodeExtractionResult = new CodeExtractionResult();
+		CodeExtractionResult codeExtractionResult = new CodeExtractionResult();
 		boolean fromNewerFile = true;
 
 		String fileBRelativePath = adjustOSsPathSeparator(changedFile.getDiffEntry().getNewPath());
@@ -197,14 +192,14 @@ public class GitDiffedCodeExtractionManager {
 		Map<Edit, List<KnowledgeElement>> elementsByEdit = getRationaleFromComments(fromNewerFile, commentsInFile,
 				changedFile);
 
-		returnCodeExtractionResult.diffedElementsInNewerVersion = elementsByEdit;
+		codeExtractionResult.elementsInNewerVersion = elementsByEdit;
 
-		return returnCodeExtractionResult;
+		return codeExtractionResult;
 	}
 
 	/* DELETE does not require gitClientCheckedOutAtDiffEnd */
 	private CodeExtractionResult processDeleteEntryEdits(ChangedFile changedFile) {
-		CodeExtractionResult returnCodeExtractionResult = new CodeExtractionResult();
+		CodeExtractionResult codeExtractionResult = new CodeExtractionResult();
 		boolean fromNewerFile = false;
 
 		String fileARelativePath = adjustOSsPathSeparator(changedFile.getDiffEntry().getNewPath());
@@ -213,13 +208,13 @@ public class GitDiffedCodeExtractionManager {
 		Map<Edit, List<KnowledgeElement>> elementsByEdit = getRationaleFromComments(fromNewerFile, commentsInFile,
 				changedFile);
 
-		returnCodeExtractionResult.diffedElementsInOlderVersion = elementsByEdit;
+		codeExtractionResult.elementsInOlderVersion = elementsByEdit;
 
-		return returnCodeExtractionResult;
+		return codeExtractionResult;
 	}
 
 	private CodeExtractionResult processModifyEntryEdits(ChangedFile changedFile) {
-		CodeExtractionResult returnCodeExtractionResult = new CodeExtractionResult();
+		CodeExtractionResult codeExtractionResult = new CodeExtractionResult();
 
 		String fileARelativePath = adjustOSsPathSeparator(changedFile.getDiffEntry().getOldPath());
 		List<CodeComment> commentsInFileA = getCommentsFromFile(fileARelativePath, false);
@@ -233,25 +228,26 @@ public class GitDiffedCodeExtractionManager {
 		Map<Edit, List<KnowledgeElement>> elementsByEditOld = getRationaleFromComments(false, commentsInFileA,
 				changedFile);
 
-		returnCodeExtractionResult.diffedElementsInNewerVersion = elementsByEditNew;
-		returnCodeExtractionResult.diffedElementsInOlderVersion = elementsByEditOld;
+		codeExtractionResult.elementsInNewerVersion = elementsByEditNew;
+		codeExtractionResult.elementsInOlderVersion = elementsByEditOld;
 
-		return returnCodeExtractionResult;
+		return codeExtractionResult;
 	}
 
 	private Map<Edit, List<KnowledgeElement>> getRationaleFromComments(boolean newerFile,
 			List<CodeComment> commentsInFile, ChangedFile changedFile) {
 
-		Map<Edit, List<KnowledgeElement>> returnMap = new HashMap<>();
+		Map<Edit, List<KnowledgeElement>> knowledgeElementsInComments = new HashMap<>();
 
 		RationaleFromDiffCodeCommentExtractor rationaleFromDiffCodeCommentExtractor = new RationaleFromDiffCodeCommentExtractor(
 				commentsInFile, changedFile.getEditList());
 
 		while (rationaleFromDiffCodeCommentExtractor.next()) {
-			returnMap.putAll(rationaleFromDiffCodeCommentExtractor.getRationaleFromComment(newerFile, returnMap));
+			knowledgeElementsInComments.putAll(rationaleFromDiffCodeCommentExtractor.getRationaleFromComment(newerFile,
+					knowledgeElementsInComments));
 		}
 
-		return returnMap;
+		return knowledgeElementsInComments;
 	}
 
 	private List<CodeComment> getCommentsFromFile(String inspectedFileRelativePath, boolean fromNewerFile) {
@@ -269,7 +265,6 @@ public class GitDiffedCodeExtractionManager {
 	}
 
 	private File getInspectedFileAbsolutePath(String inspectedFileRelativePath, boolean fromNewerFile) {
-
 		String filePathRelativeOutOfGitFolder = ".." // .. gets us out of .git folder.
 				+ File.separator + inspectedFileRelativePath;
 
@@ -280,9 +275,10 @@ public class GitDiffedCodeExtractionManager {
 	private CodeCommentParser getCodeCommentParser(String resultingFileName) {
 		if (resultingFileName.toLowerCase().endsWith(".java")) {
 			return new JavaCodeCommentParser();
-		} else {
-			return null;
 		}
+		// TODO Replace returning null with Optional<> everywhere to avoid
+		// NullPointerExceptions
+		return null;
 	}
 
 	/* Windows vs. Unix, is this method needed for diff entry paths? */
@@ -323,9 +319,11 @@ public class GitDiffedCodeExtractionManager {
 	 */
 	private class CodeExtractionResult {
 		public int sequence = -1;
+
 		/* list of elements modified/created with diff in a file */
-		public Map<Edit, List<KnowledgeElement>> diffedElementsInNewerVersion = new HashMap<>();
-		/* list of old elements somehow affected by the diff in a file */
-		public Map<Edit, List<KnowledgeElement>> diffedElementsInOlderVersion = new HashMap<>();
+		public Map<Edit, List<KnowledgeElement>> elementsInNewerVersion = new HashMap<>();
+
+		/* list of old elements affected by the diff in a file */
+		public Map<Edit, List<KnowledgeElement>> elementsInOlderVersion = new HashMap<>();
 	}
 }

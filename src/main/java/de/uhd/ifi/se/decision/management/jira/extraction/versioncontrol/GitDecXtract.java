@@ -54,7 +54,6 @@ public class GitDecXtract {
 
 	public List<KnowledgeElement> getElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd, Ref branch) {
 		List<KnowledgeElement> elementsFromCode = new ArrayList<>();
-		// git client which has access to correct version of files (revCommitEnd)
 		Diff diff = gitClient.getDiff(revCommitStart, revCommitEnd);
 		GitDiffedCodeExtractionManager diffCodeManager = new GitDiffedCodeExtractionManager(diff);
 		elementsFromCode = diffCodeManager.getNewDecisionKnowledgeElements();
@@ -108,9 +107,9 @@ public class GitDecXtract {
 
 	private String calculateRationaleTextHash(String rationaleText) {
 		try {
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			md.update(rationaleText.getBytes());
-			byte[] digest = md.digest();
+			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+			messageDigest.update(rationaleText.getBytes());
+			byte[] digest = messageDigest.digest();
 			return DatatypeConverter.printHexBinary(digest).toUpperCase().substring(0, 8);
 		} catch (NoSuchAlgorithmException e) {
 			LOGGER.error(e.getMessage());
