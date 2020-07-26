@@ -321,6 +321,9 @@ public class GitClientForSingleRepository {
 	 *         respective edit list.
 	 */
 	public Diff getDiff(ObjectId oldHead, ObjectId newHead) {
+		if (oldHead.equals(newHead)) {
+			return new Diff();
+		}
 		ObjectReader reader = this.getRepository().newObjectReader();
 		CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
 		String gitPath = "";

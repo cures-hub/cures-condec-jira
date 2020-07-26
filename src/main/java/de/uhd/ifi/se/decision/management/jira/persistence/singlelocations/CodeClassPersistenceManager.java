@@ -296,15 +296,12 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 
 	public void maintainCodeClassKnowledgeElements(Diff diff) {
 		System.out.println("maintainCodeClassKnowledgeElements");
-		if (diff == null) {
-			return;
-		}
 		List<KnowledgeElement> existingElements = getKnowledgeElements();
 		if (existingElements == null || existingElements.isEmpty()) {
 			extractAllCodeClasses(null);
 			return;
 		}
-		if (diff.getChangedFiles().isEmpty()) {
+		if (diff == null || diff.getChangedFiles().isEmpty()) {
 			return;
 		}
 		// LOGGER.info(("maintainCodeClassKnowledgeElements");

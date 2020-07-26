@@ -28,7 +28,7 @@ import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
  * source code comment:
  *
  * <p>
- * <b>@decKnowledgeTag: knowledge summary text</b>
+ * <b>@decKnowledgeTag knowledge summary text</b>
  * <p>
  * where [decKnowledgeTag] belongs to set of {@link KnowledgeType}s, for example
  * issue, alternative, decision, pro, and con. Empty two lines denote the end of
@@ -41,15 +41,17 @@ import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
  */
 public class GitDiffedCodeExtractionManager {
 	private static final String OLD_FILE_SYMBOL_PREPENDER = "~";
+
 	/**
 	 * @issue Modified files may add, modify, or delete rationale. For extraction of
-	 *        rationale on modified files their contents from the base and changed
+	 *        rationale on modified files, their contents from the base and changed
 	 *        versions are required. How should both versions of affected files be
 	 *        accessed?
-	 * @decision Use two gitClientImpl instances each checked out at different
-	 *           commit of the diff range!
-	 * @pro no additional checkouts need to be performed by the gitClientImpl
-	 * @con requires on more gitClientImpl object in the memory
+	 * @decision Work with ChangedFile objects.
+	 * @alternative Use two GitClient instances each checked out at different commit
+	 *              of the diff range!
+	 * @pro no additional checkouts need to be performed by the GitClient
+	 * @con requires on more GitClient object in the memory
 	 * @alternative Switch between commits using one gitClientImpl instance!
 	 * @con frequent checkouts take time
 	 * @con requires implementation of another special mode in the client
@@ -75,93 +77,92 @@ public class GitDiffedCodeExtractionManager {
 		return getNewOrOldDecisionKnowledgeElements(false);
 	}
 
+	/**
+	 * @issue One rationale element can be modified by more than one edit line.
+	 *        Problem was found in
+	 *        refs/remotes/origin/CONDEC-534.branch.filtering.improvements.RC2 An
+	 *        old rationale located at(108:112:13) in file
+	 *        ..extraction/versioncontrol/GitRepositoryFSManager.java was linked
+	 *        with two change entries REPLACE(106-108,106-108) and
+	 *        REPLACE(109-114,109-120)
+	 * 
+	 *        Such rationale would be touched twice in below streams, making its key
+	 *        unusable. How to deal with this?
+	 * @alternative Streams will return reference rationale, but should some how try
+	 *              not to modify the rationale key more than once!
+	 * @con It would not be possible to see that many edits changed rationale.
+	 * 
+	 * @alternative Streams will return new origin objects in case of detected
+	 *              repetition new object will be created!
+	 * @con More code needs to be changed.
+	 * @pro Information about change by more than one edit will be preserved.
+	 * 
+	 * @decision Streams will return new rationale objects and never use origin
+	 *           references!
+	 * @pro Information about change by more than one edit will be preserved.
+	 */
 	private List<KnowledgeElement> getNewOrOldDecisionKnowledgeElements(boolean getNew) {
+		if (results.isEmpty()) {
+			return new ArrayList<>();
+		}
 		List<KnowledgeElement> resultValues = new ArrayList<>();
-		/*
-		 * @issue: one rationale modified by more than one edit line. Problem was found
-		 * in refs/remotes/origin/CONDEC-534.branch.filtering.improvements.RC2 An old
-		 * rationale located at(108:112:13) in file
-		 * ..extraction/versioncontrol/GitRepositoryFSManager.java was linked with two
-		 * change entries REPLACE(106-108,106-108) and REPLACE(109-114,109-120)
-		 * 
-		 * Such rationale would be touched twice in below streams, making its key
-		 * unusable.
-		 * 
-		 * @alternative: streams will return reference rationale, but should somehow try
-		 * not to modify the rationale key more than once!
-		 * 
-		 * @con: it would not be possible to see that many edits changed rationale.
-		 * 
-		 * @alternative: streams will return new origin objects in case of detected
-		 * repetition new object will be created!
-		 * 
-		 * @con: more code needs to be changed.
-		 * 
-		 * @pro: information about change by more than one edit will be preserved.
-		 * 
-		 * @decision: streams will return new rationale objects and never use origin
-		 * references!
-		 * 
-		 * @pro: information about change by more than one edit will be preserved.
-		 * 
-		 */
-		if (results.size() > 0) {
-			for (Map.Entry<DiffEntry, CodeExtractionResult> dEntry : results.entrySet()) {
-				String newPath;
+
+		for (Map.Entry<DiffEntry, CodeExtractionResult> dEntry : results.entrySet()) {
+			String newPath;
+			if (getNew) {
+				newPath = dEntry.getKey().getNewPath();
+			} else {
+				newPath = OLD_FILE_SYMBOL_PREPENDER + dEntry.getKey().getOldPath();
+			}
+			if (dEntry.getValue() != null) {
+				Map<Edit, List<KnowledgeElement>> codeExtractionResult;
 				if (getNew) {
-					newPath = dEntry.getKey().getNewPath();
+					codeExtractionResult = dEntry.getValue().diffedElementsInNewerVersion;
 				} else {
-					newPath = OLD_FILE_SYMBOL_PREPENDER + dEntry.getKey().getOldPath();
+					codeExtractionResult = dEntry.getValue().diffedElementsInOlderVersion;
 				}
-				if (dEntry.getValue() != null) {
-					Map<Edit, List<KnowledgeElement>> codeExtractionResult;
-					if (getNew) {
-						codeExtractionResult = dEntry.getValue().diffedElementsInNewerVersion;
-					} else {
-						codeExtractionResult = dEntry.getValue().diffedElementsInOlderVersion;
-					}
-					if (codeExtractionResult.size() > 0) {
-						for (Map.Entry<Edit, List<KnowledgeElement>> editListEntry : codeExtractionResult.entrySet()) {
-							if (editListEntry.getKey() != null) {
-								resultValues.addAll(editListEntry.getValue().stream().map(d -> {
-									KnowledgeElement n = new KnowledgeElement();
-									n.setDocumentationLocation(d.getDocumentationLocation());
-									n.setDescription(d.getDescription());
-									n.setId(d.getId());
-									n.setSummary(d.getSummary());
-									n.setType(d.getType());
+				if (codeExtractionResult.size() > 0) {
+					for (Map.Entry<Edit, List<KnowledgeElement>> editListEntry : codeExtractionResult.entrySet()) {
+						if (editListEntry.getKey() != null) {
+							resultValues.addAll(editListEntry.getValue().stream().map(d -> {
+								KnowledgeElement n = new KnowledgeElement();
+								n.setDocumentationLocation(d.getDocumentationLocation());
+								n.setDescription(d.getDescription());
+								n.setId(d.getId());
+								n.setSummary(d.getSummary());
+								n.setType(d.getType());
 
-									String newKey = newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
-											+ dEntry.getValue().sequence + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
-											+ editListEntry.getKey().toString()
-											+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + d.getKey();
+								String newKey = newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
+										+ dEntry.getValue().sequence + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
+										+ editListEntry.getKey().toString() + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
+										+ d.getKey();
 
-									n.setKey(newKey);
-									return n;
-								}).collect(Collectors.toList()));
-							} else {
-								resultValues.addAll(editListEntry.getValue().stream().map(d -> {
-									KnowledgeElement n = new KnowledgeElement();
-									n.setDocumentationLocation(d.getDocumentationLocation());
-									n.setDescription(d.getDescription());
-									n.setId(d.getId());
-									n.setSummary(d.getSummary());
-									n.setType(d.getType());
+								n.setKey(newKey);
+								return n;
+							}).collect(Collectors.toList()));
+						} else {
+							resultValues.addAll(editListEntry.getValue().stream().map(d -> {
+								KnowledgeElement n = new KnowledgeElement();
+								n.setDocumentationLocation(d.getDocumentationLocation());
+								n.setDescription(d.getDescription());
+								n.setId(d.getId());
+								n.setSummary(d.getSummary());
+								n.setType(d.getType());
 
-									String newKey = newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
-											+ dEntry.getValue().sequence + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
-											+ GitDecXtract.RAT_KEY_NOEDIT + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
-											+ d.getKey();
+								String newKey = newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
+										+ dEntry.getValue().sequence + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
+										+ GitDecXtract.RAT_KEY_NOEDIT + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
+										+ d.getKey();
 
-									n.setKey(newKey);
-									return n;
-								}).collect(Collectors.toList()));
-							}
+								n.setKey(newKey);
+								return n;
+							}).collect(Collectors.toList()));
 						}
 					}
 				}
 			}
 		}
+
 		return resultValues;
 	}
 
@@ -169,11 +170,12 @@ public class GitDiffedCodeExtractionManager {
 		int entrySequenceNumber = 0;
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			CodeExtractionResult entryResults = processEntry(changedFile);
-			if (entryResults != null) {
-				entryResults.sequence = entrySequenceNumber;
-				results.put(changedFile.getDiffEntry(), entryResults);
-				entrySequenceNumber++;
+			if (entryResults == null) {
+				return;
 			}
+			entryResults.sequence = entrySequenceNumber;
+			results.put(changedFile.getDiffEntry(), entryResults);
+			entrySequenceNumber++;
 		}
 	}
 
@@ -313,17 +315,15 @@ public class GitDiffedCodeExtractionManager {
 		return filePath;
 	}
 
-	/*
-	 * Stores old and new rationale elements in maps with edits as key, If the old
-	 * and new rationale can be found under the same edit, possibility of conflict
-	 * exists
+	/**
+	 * Stores old and new rationale elements in maps with edits as key. If the old
+	 * and new rationale element can be found under the same edit, conflicts may
+	 * exist.
 	 */
 	private class CodeExtractionResult {
 		public int sequence = -1;
 		/* list of elements modified/created with diff in a file */
 		public Map<Edit, List<KnowledgeElement>> diffedElementsInNewerVersion = new HashMap<>();
-		/* list of all elements present in file after diff */
-		public Map<DiffEntry, List<KnowledgeElement>> allElementsInNewerVersion = new HashMap<>();
 		/* list of old elements somehow affected by the diff in a file */
 		public Map<Edit, List<KnowledgeElement>> diffedElementsInOlderVersion = new HashMap<>();
 	}
