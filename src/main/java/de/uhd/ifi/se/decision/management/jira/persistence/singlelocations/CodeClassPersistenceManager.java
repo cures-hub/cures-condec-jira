@@ -1,10 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import org.eclipse.jgit.diff.DiffEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -17,13 +25,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
 import net.java.ao.Query;
-import org.eclipse.jgit.diff.DiffEntry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Extends the abstract class
@@ -58,6 +59,21 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("ID = ?", id))) {
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.COMMIT);
+			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new KnowledgeElement(databaseEntry));
+			isDeleted = CodeClassInDatabase.deleteElement(databaseEntry);
+		}
+		return isDeleted;
+	}
+
+	public boolean deleteKnowledgeElements() {
+		if (projectKey == null || projectKey.isBlank()) {
+			LOGGER.error("Elements cannot be deleted since the project key is invalid.");
+			return false;
+		}
+		boolean isDeleted = false;
+		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
+				Query.select().where("PROJECT_KEY = ?", projectKey))) {
+			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.COMMIT);
 			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new KnowledgeElement(databaseEntry));
 			isDeleted = CodeClassInDatabase.deleteElement(databaseEntry);
 		}
@@ -279,22 +295,21 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	public void maintainCodeClassKnowledgeElements(Diff diff) {
-		// LOGGER.info(("maintainCodeClassKnowledgeElements");
-		if (diff == null || diff.getChangedFiles().isEmpty()) {
-			return;
-		}
+		System.out.println("maintainCodeClassKnowledgeElements");
 		List<KnowledgeElement> existingElements = getKnowledgeElements();
 		if (existingElements == null || existingElements.isEmpty()) {
 			extractAllCodeClasses(null);
 			return;
 		}
+		if (diff == null || diff.getChangedFiles().isEmpty()) {
+			return;
+		}
+		// LOGGER.info(("maintainCodeClassKnowledgeElements");
+
 		GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
-		GitClient gitClient = GitClient.getOrCreate(projectKey);
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			updateCodeClassInDatabase(ccExtractor, changedFile);
 		}
-		gitClient.closeAll();
-		ccExtractor.close();
 	}
 
 	private void updateCodeClassInDatabase(GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
@@ -341,17 +356,16 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	private void extractAllCodeClasses(ApplicationUser user) {
-		// LOGGER.info(("extractAllCodeClasses");
+		System.out.println("extractAllCodeClasses");
 		GitCodeClassExtractor codeClassExtractor = new GitCodeClassExtractor(projectKey);
 		List<ChangedFile> codeClasses = codeClassExtractor.getCodeClasses();
-		LOGGER.info(String.valueOf(codeClasses.size()));
+		System.out.println(String.valueOf(codeClasses.size()));
 		for (ChangedFile codeClass : codeClasses) {
 			Set<String> issueKeys = codeClassExtractor.getJiraIssueKeysForFile(codeClass);
 			if (issueKeys != null && !issueKeys.isEmpty()) {
 				insertKnowledgeElement(codeClass, issueKeys, user);
 			}
 		}
-		codeClassExtractor.close();
 	}
 
 }

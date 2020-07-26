@@ -1,8 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 
 import org.junit.Before;
@@ -11,7 +9,6 @@ import org.junit.Test;
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.sal.api.user.UserManager;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 
@@ -57,13 +54,5 @@ public class TestComponentGetter {
 	public void testGetUrlOfClassifierFolder() {
 		assertEquals("null/download/resources/de.uhd.ifi.se.decision.management.jira:classifier-resources/",
 				ComponentGetter.getUrlOfClassifierFolder());
-	}
-
-	@Test
-	public void testGetGitClient() {
-		assertNull(ComponentGetter.getGitClient(null));
-		GitClient gitClient = ComponentGetter.getGitClient("TEST");
-		assertNotNull(gitClient);
-		assertEquals(gitClient, ComponentGetter.getGitClient("TEST"));
 	}
 }

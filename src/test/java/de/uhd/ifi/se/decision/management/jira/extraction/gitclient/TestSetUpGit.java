@@ -1,9 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
-import com.atlassian.jira.mock.issue.MockIssue;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -16,13 +20,11 @@ import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+import com.atlassian.jira.mock.issue.MockIssue;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
  * @issue Should we have one or more git repositories for testing?
@@ -41,7 +43,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestSetUpGit.class);
 	public static String GIT_URI = getExampleUri();
-	public static File DIRECTORY = getExampleDirectory();
 	protected static GitClient gitClient;
 	protected MockIssue mockJiraIssueForGitTests;
 	protected MockIssue mockJiraIssueForGitTestsTangled;
@@ -50,7 +51,8 @@ public abstract class TestSetUpGit extends TestSetUp {
 	@BeforeClass
 	public static void setUpBeforeClass() {
 		init();
-		if (gitClient != null && gitClient.getDirectory(GIT_URI) != null) {
+		if (gitClient != null && gitClient.getGitClientsForSingleRepo(GIT_URI) != null
+				&& gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory().exists()) {
 			// git client already exists
 			return;
 		}
@@ -64,17 +66,21 @@ public abstract class TestSetUpGit extends TestSetUp {
 		uris.add(GIT_URI);
 		ConfigPersistenceManager.setGitUris("TEST", GIT_URI);
 		ConfigPersistenceManager.setDefaultBranches("TEST", "master");
-		gitClient = new GitClient(uris, null, "TEST");
+		gitClient = GitClient.getOrCreate("TEST");
+		if (!gitClient.getCommits().isEmpty()) {
+			return;
+		}
 		// above line will log errors for pulling from still empty remote repositry.
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
 		makeExampleCommit(fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
 		makeExampleCommit("GodClass.java",
-				"public class GodClass {" + "//@issue:Small code issue in GodClass, it does nothing." + "\r\n}",
+				"public class GodClass {"
+						+ "//@issue Small code issue in GodClass, it does nothing. \t \n \t \n \t \n}",
 				"TEST-12: Develop great software");
 		makeExampleCommit("Untangled.java",
 				"package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" + "\n" + "public class Main {\n"
-						+ "    public static void  main(String[] args) {\n"
-						+ "        LOGGER.info((\"Hello World!\");\n" + "    }\n" + "}\n",
+						+ "    public static void main(String[] args) {\n" + "        LOGGER.info((\"Hello World!\");\n"
+						+ "    }\n" + "}\n",
 				"TEST-26 add main");
 		makeExampleCommit("Untangled2.java",
 				"package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" + "\n" + "public class D {\n" + "\n"
@@ -82,8 +88,8 @@ public abstract class TestSetUpGit extends TestSetUp {
 						+ "    public d(){\n" + "        this.a = 18;\n" + "        this.b = 64;\n"
 						+ "        this.c = \"world\";\n" + "    };\n" + "    public void printSomeThing(){\n"
 						+ "        for(int i =0; i < b; i ++){\n" + "            for(int j =0; j < a; j++){\n"
-						+ "                LOGGER.info((c);\n" + "            }\n" + "        }\n" + "    };\n"
-						+ "\n" + "\n" + "}\n",
+						+ "                LOGGER.info((c);\n" + "            }\n" + "        }\n" + "    };\n" + "\n"
+						+ "\n" + "}\n",
 				"TEST-26 add class d");
 
 		makeExampleCommit("Tangled1.java",
@@ -124,23 +130,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		mockJiraIssueForGitTestsTangledSingleCommit.setKey("TEST-62");
 	}
 
-	private static File getExampleDirectory() {
-		if (DIRECTORY != null) {
-			return DIRECTORY;
-		}
-		File directory = null;
-		try {
-			directory = File.createTempFile("clone", "");
-			directory.delete();
-			directory.mkdirs();
-		} catch (IOException e) {
-			LOGGER.error(e.getMessage());
-		}
-		DIRECTORY = directory;
-		return directory;
-	}
-
-	public static String getExampleUri() {
+	private static String getExampleUri() {
 		if (GIT_URI != null) {
 			return GIT_URI;
 		}
@@ -161,8 +151,8 @@ public abstract class TestSetUpGit extends TestSetUp {
 	}
 
 	protected static void makeExampleCommit(File inputFile, String targetName, String commitMessage) {
-		Git git = gitClient.getGit(GIT_URI);
-		File gitFile = new File(gitClient.getDirectory(GIT_URI).getParent(), targetName);
+		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
+		File gitFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory().getParent(), targetName);
 		try {
 			FileUtils.copyFile(inputFile, gitFile);
 			git.add().addFilepattern(gitFile.getName()).call();
@@ -174,9 +164,10 @@ public abstract class TestSetUpGit extends TestSetUp {
 	}
 
 	protected static void makeExampleCommit(String filename, String content, String commitMessage) {
-		Git git = gitClient.getGit(GIT_URI);
+		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
 		try {
-			File inputFile = new File(gitClient.getDirectory(GIT_URI).getParent(), filename);
+			File inputFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory().getParent(),
+					filename);
 			PrintWriter writer = new PrintWriter(inputFile, "UTF-8");
 			writer.println(content);
 			writer.close();
@@ -191,7 +182,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 	private static void setupBranchWithDecKnowledge() {
 		String featureBranch = "featureBranch";
 		String firstCommitMessage = "First message";
-		Git git = gitClient.getGit(GIT_URI);
+		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
 		String currentBranch = null;
 
 		ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
@@ -228,7 +219,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 
 	private static void setupBranchForTranscriber() {
 		String featureBranch = "TEST-4.transcriberBranch";
-		Git git = gitClient.getGit(GIT_URI);
+		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
 		String currentBranch = null;
 
 		try {
@@ -262,6 +253,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 
 	@AfterClass
 	public static void tidyUp() {
-		gitClient.deleteRepository(GIT_URI);
+		// gitClient.closeAll();
+		// gitClient.deleteRepositories();
 	}
 }

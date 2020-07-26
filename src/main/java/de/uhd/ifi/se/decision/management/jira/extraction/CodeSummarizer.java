@@ -2,13 +2,13 @@ package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Creates a summary of code changes linked to Jira issues (e.g. to work items).
@@ -58,19 +58,11 @@ public class CodeSummarizer {
 			return "";
 		}
 		this.minProbabilityOfCorrectness = minProbabilityOfCorrectness;
-		Diff completeDiff = new Diff();
-		if (gitClient.getRemoteUris() == null) {
+		if (gitClient == null) {
 			return "";
 		}
-		for (String repoUri : gitClient.getRemoteUris()) {
-			Diff diff = gitClient.getDiff(jiraIssue, repoUri);
-			if (diff != null) {
-				for (ChangedFile file : diff.getChangedFiles()) {
-					completeDiff.addChangedFile(file);
-				}
-			}
-		}
-		return createSummary(completeDiff);
+		Diff diff = gitClient.getDiff(jiraIssue);
+		return createSummary(diff);
 	}
 
 	/**
@@ -84,14 +76,8 @@ public class CodeSummarizer {
 		if (commit == null) {
 			return "";
 		}
-		Diff completeDiff = new Diff();
-		for (String repoUri : gitClient.getRemoteUris()) {
-			Diff diff = gitClient.getDiff(commit, repoUri);
-			for (ChangedFile file : diff.getChangedFiles()) {
-				completeDiff.addChangedFile(file);
-			}
-		}
-		return createSummary(completeDiff);
+		Diff diff = gitClient.getDiff(commit);
+		return createSummary(diff);
 	}
 
 	/**

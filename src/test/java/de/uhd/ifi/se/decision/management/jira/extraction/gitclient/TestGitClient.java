@@ -15,36 +15,29 @@ public class TestGitClient extends TestSetUpGit {
 
 	@Test
 	public void testGitObjectExisting() {
-		assertNotNull(gitClient.getGit(GIT_URI));
+		assertNotNull(gitClient.getGitClientsForSingleRepo(GIT_URI).getGit());
 	}
 
 	@Test
 	public void testClonedRepoExisting() {
-		assertTrue(gitClient.getDirectory(GIT_URI).exists());
+		assertTrue(gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory().exists());
 	}
 
 	@Test
-	public void testGetRepositoryGitNull() {
+	public void testGetGitNull() {
 		GitClient gitClient = new GitClient();
-		assertNull(gitClient.getRepository(GIT_URI));
-	}
-
-	@Test
-	public void testGetDirectoryGitNull() {
-		GitClient gitClient = new GitClient();
-		assertNull(gitClient.getDirectory(GIT_URI));
-	}
-
-	@Test
-	public void testSetGit() {
-		GitClient newGitClient = new GitClient(gitClient);
-		newGitClient.setGit(gitClient.getGit(GIT_URI), GIT_URI);
-		assertEquals(gitClient.getGit(GIT_URI), newGitClient.getGit(GIT_URI));
+		assertNull(gitClient.getGitClientsForSingleRepo(GIT_URI));
 	}
 
 	@Test
 	public void testMockingOfGitDirectoryWorks() {
 		assertEquals(GitClient.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data" + File.separator
 				+ "condec-plugin" + File.separator + "git" + File.separator);
+	}
+
+	@Test
+	public void testGetOrCreateProjectKeyInvalid() {
+		assertNull(GitClient.getOrCreate(""));
+		assertNull(GitClient.getOrCreate(null));
 	}
 }

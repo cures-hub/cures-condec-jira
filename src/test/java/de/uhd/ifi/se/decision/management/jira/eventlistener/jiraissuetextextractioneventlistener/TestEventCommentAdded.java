@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
@@ -34,13 +33,10 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testNoCommentContained() {
 		Comment comment = createCommentAndTestWhetherExistent("");
 		KnowledgeElement element = getFirstElementInComment(comment);
-		//This assert statement is correct when the test is executed using atlas.
 		assertNull(element);
-		//assertEquals("",element.getDescription());
 	}
 
 	@Test
@@ -64,7 +60,7 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 	@Test
 	@NonTransactional
 	public void testRationaleIcon() {
-		//Delete the element that was still in the Database
+		// Delete the element that was still in the Database
 		// FIXME: there should be a more elegant way.
 		ActiveObjects ao = ComponentGetter.getActiveObjects();
 		ao.deleteWithSQL(PartOfJiraIssueTextInDatabase.class, "ID = 1");

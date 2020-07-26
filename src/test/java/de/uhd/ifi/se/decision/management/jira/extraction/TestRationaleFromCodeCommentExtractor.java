@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 
@@ -17,12 +18,11 @@ public class TestRationaleFromCodeCommentExtractor {
 	private int commitBeginLine = 10;
 	private int commitBeginColumn = 20;
 	private List<KnowledgeElement> elementsFound;
-	private String expectedRationaleText;
 
 	@Before
 	public void setUp() {
 		codeComment = new CodeComment("", commitBeginColumn, commitBeginLine, commitBeginColumn + 1, commitBeginLine + 1
-		/*
+		/**
 		 * end point could be recalculated given contents number of lines and last lines
 		 * length, but it does not really matter for testing
 		 * RationaleFromCodeCommentExtractor class
@@ -31,14 +31,14 @@ public class TestRationaleFromCodeCommentExtractor {
 	}
 
 	@Test
-	public void emptyComment() {
+	public void testEmptyComment() {
 		codeComment.commentContent = "";
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		assertEquals(new ArrayList<KnowledgeElement>(), rationaleFromCodeCommentExtractor.getElements());
 	}
 
 	@Test
-	public void commentWithoutRationale() {
+	public void testCommentWithoutRationaleElement() {
 		codeComment.commentContent = "Text without rationale";
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
@@ -46,76 +46,81 @@ public class TestRationaleFromCodeCommentExtractor {
 	}
 
 	@Test
-	public void oneRationale() {
-		codeComment.commentContent = "Text @issue:with rationale";
-		expectedRationaleText = "with rationale";
+	public void testOneRationaleElement() {
+		codeComment.commentContent = "Text @issue with rationale";
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
 		assertEquals(1, elementsFound.size());
-		assertEquals(expectedRationaleText, elementsFound.get(0).getSummary());
+		assertEquals("with rationale", elementsFound.get(0).getSummary());
 	}
 
 	@Test
-	public void oneRationaleAndRestTextSeparetedByNewLinesOnly() {
-		codeComment.commentContent = "Text @issue:with rationale\n\n\nnot rat. text anymore";
-		expectedRationaleText = "with rationale";
+	public void testOneRationaleElementAndRestTextSeparetedByNewLinesOnly() {
+		codeComment.commentContent = "Text @issue with rationale\n\n\nnot rat. text anymore";
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
 		assertEquals(1, elementsFound.size());
-		assertEquals(expectedRationaleText, elementsFound.get(0).getSummary());
+		assertEquals("with rationale", elementsFound.get(0).getSummary());
 	}
 
 	@Test
-	public void oneRationaleAndRestTextSeparetedByLinesWithSpaces() {
-		codeComment.commentContent = "Text @issue:with rationale  \n  \n  \nnot rat. text anymore";
-		expectedRationaleText = "with rationale";
-		String expectedKey = commitBeginLine + ":" + commitBeginLine + ":12";
+	public void testOneRationaleElementAndRestTextSeparetedByLinesWithSpaces() {
+		codeComment.commentContent = "Text @issue with rationale  \n  \n  \nnot rat. text anymore";
+		String expectedKey = commitBeginLine + ":" + commitBeginLine + ":11";
 
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
 
 		assertEquals(1, elementsFound.size());
-		assertEquals(expectedRationaleText, elementsFound.get(0).getSummary());
-		assertEquals(expectedKey, elementsFound.get(0).getKey());
+		KnowledgeElement element = elementsFound.get(0);
+		assertEquals("with rationale", element.getSummary());
+		assertEquals(expectedKey, element.getKey());
+		assertEquals(10, RationaleFromCodeCommentExtractor.getRationaleStartLineInCode(element));
+		assertEquals(10, RationaleFromCodeCommentExtractor.getRationaleEndLineInCode(element));
+		assertEquals(11, RationaleFromCodeCommentExtractor.getRationaleCursorInCodeComment(element));
 	}
 
 	@Test
-	public void oneRationaleAndRestTextSeparetedByLinesWithSpacesAndTabs() {
-		codeComment.commentContent = "Text @issue:with rationale \t \n \t \n \t \nnot rat. text anymore";
-		expectedRationaleText = "with rationale";
+	public void testOneRationaleElementAndRestTextSeparatedByLinesWithSpacesAndTabs() {
+		codeComment.commentContent = "Text @issue with rationale \t \n \t \n \t \nnot rat. text anymore";
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
 		assertEquals(1, elementsFound.size());
-		assertEquals(expectedRationaleText, elementsFound.get(0).getSummary());
+		assertEquals("with rationale", elementsFound.get(0).getSummary());
 	}
 
 	@Test
-	public void twoRationale() {
-		codeComment.commentContent = "@issue:Hi @alternative:rationale\n\n\nnot rat. text anymore";
-		expectedRationaleText = "Hi";
+	public void testOneRationaleElementWithinCode() {
+		codeComment.commentContent = "public class GodClass {"
+				+ "//@issue Small code issue in GodClass, it does nothing. \t \n \t \n \t \n}";
+		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
+		elementsFound = rationaleFromCodeCommentExtractor.getElements();
+		assertEquals(1, elementsFound.size());
+		assertEquals("Small code issue in GodClass, it does nothing.", elementsFound.get(0).getSummary());
+	}
+
+	@Test
+	public void testTwoRationaleElements() {
+		codeComment.commentContent = "@issue Hi @alternative rationale\n\n\nnot rat. text anymore";
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
 		assertEquals(2, elementsFound.size());
-		assertEquals(expectedRationaleText, elementsFound.get(0).getSummary());
-		expectedRationaleText = "rationale";
-		assertEquals(expectedRationaleText, elementsFound.get(1).getSummary());
+		assertEquals("Hi", elementsFound.get(0).getSummary());
+		assertEquals("rationale", elementsFound.get(1).getSummary());
 	}
 
 	@Test
-	public void twoRationaleSeparatedByNotRationaleText() {
-		codeComment.commentContent = "@issue:#1\n\n\nnot rat. text anymore @issue: #2";
-		expectedRationaleText = "#1";
+	public void testTwoRationaleElementsSeparatedByNotRationaleText() {
+		codeComment.commentContent = "@issue #1\n\n\nnot rat. text anymore @issue #2";
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
 		assertEquals(2, elementsFound.size());
-		assertEquals(expectedRationaleText, elementsFound.get(0).getSummary());
-
-		expectedRationaleText = "#2";
-		assertEquals(expectedRationaleText, elementsFound.get(1).getSummary());
+		assertEquals("#1", elementsFound.get(0).getSummary());
+		assertEquals("#2", elementsFound.get(1).getSummary());
 	}
 
 	@Test
-	public void twoRationaleCheckDecKnowledgeElementKeys() {
+	public void testTwoRationaleElementsCheckDecKnowledgeElementKeys() {
 		codeComment.commentContent = "@issue #1\n\n\nnot rat. text anymore @issue #2\n\npart2";
 		String expectedKeyEnd = String.valueOf(codeComment.beginLine + 0) + ":"
 				+ String.valueOf(codeComment.beginLine + 0) + ":" + "6";
@@ -130,5 +135,14 @@ public class TestRationaleFromCodeCommentExtractor {
 				+ ":" + "40";
 		foundElementKey = elementsFound.get(1).getKey();
 		assertEquals(foundElementKey, expectedKeyEnd);
+	}
+
+	@Test
+	public void testWrongDocumentationLocation() {
+		KnowledgeElement element = new KnowledgeElement();
+		element.setDocumentationLocation(DocumentationLocation.JIRAISSUE);
+		assertEquals(-1, RationaleFromCodeCommentExtractor.getRationaleStartLineInCode(element));
+		assertEquals(-1, RationaleFromCodeCommentExtractor.getRationaleEndLineInCode(element));
+		assertEquals(-1, RationaleFromCodeCommentExtractor.getRationaleCursorInCodeComment(element));
 	}
 }

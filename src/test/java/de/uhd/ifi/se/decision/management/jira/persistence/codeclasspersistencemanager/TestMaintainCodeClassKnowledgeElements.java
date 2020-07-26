@@ -33,7 +33,7 @@ public class TestMaintainCodeClassKnowledgeElements extends TestSetUpGit {
 	@NonTransactional
 	public void testMaintainCodeClassKnowledgeElementsWithoutClasses() {
 		codeClassPersistenceManager.maintainCodeClassKnowledgeElements(null);
-		assertEquals(0, codeClassPersistenceManager.getKnowledgeElements().size());
+		assertEquals(6, codeClassPersistenceManager.getKnowledgeElements().size());
 	}
 
 	@Test

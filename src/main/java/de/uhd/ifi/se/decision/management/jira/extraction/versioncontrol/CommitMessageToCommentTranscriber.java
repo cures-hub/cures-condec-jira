@@ -15,7 +15,6 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.UserDetails;
 
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -32,7 +31,7 @@ public class CommitMessageToCommentTranscriber {
 			DEFAULT_COMMIT_COMMENTATOR_USR_NAME, DEFAULT_COMMIT_COMMENTATOR_USR_NAME);
 
 	public CommitMessageToCommentTranscriber(Issue issue) {
-		this(issue, ComponentGetter.getGitClient(issue.getProjectObject().getKey()));
+		this(issue, GitClient.getOrCreate(issue.getProjectObject().getKey()));
 	}
 
 	public CommitMessageToCommentTranscriber(Issue issue, GitClient gitClient) {
@@ -94,9 +93,9 @@ public class CommitMessageToCommentTranscriber {
 			return;
 		}
 		String repoUri = gitClient.getRepoUriFromBranch(branch);
-		if (branch.getName().contains("/" + gitClient.getDefaultBranchFolderNames().get(repoUri))) {
+		if (branch.getName().contains("/" + gitClient.getGitClientsForSingleRepo(repoUri).getDefaultBranchName())) {
 			if (Boolean.parseBoolean(ConfigPersistenceManager.getValue(projectKey, "isPostSquashedCommitsActivated"))) {
-				Optional.ofNullable(gitClient.getAllRelatedCommits(this.issue)).ifPresent(squashedCommits::addAll);
+				Optional.ofNullable(gitClient.getCommits(this.issue)).ifPresent(squashedCommits::addAll);
 				for (RevCommit commit : this.squashedCommits) {
 					this.postComment(defaultUser, commit, branch);
 				}

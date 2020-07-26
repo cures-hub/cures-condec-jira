@@ -16,7 +16,7 @@
 		this.projectKey = conDecAPI.getProjectKey();
 		this.currentSuggestions = [];
 
-		$(document).ajaxComplete(function (event, request, settings) {
+		jQueryConDec(document).ajaxComplete(function (event, request, settings) {
 			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
 				console.log("WorkflowUIDispatcher");
 				consistencyAPI.displayConsistencyCheck();

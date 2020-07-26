@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.issue.Issue;
@@ -27,8 +26,8 @@ public class TestDiff extends TestSetUpGit {
 	}
 
 	public static Diff createDiff(Issue jiraIssue) {
-		List<RevCommit> commits = gitClient.getCommits(jiraIssue, GIT_URI);
-		return gitClient.getDiff(commits, GIT_URI);
+		List<RevCommit> commits = gitClient.getCommits(jiraIssue);
+		return gitClient.getDiff(commits);
 	}
 
 	@Test
@@ -38,7 +37,6 @@ public class TestDiff extends TestSetUpGit {
 	}
 
 	@Test
-	@Ignore
 	public void testGetChangedFilesWithMoreThanOneCommit() {
 		List<ChangedFile> changedFiles = diffForJiraIssue.getChangedFiles();
 		assertEquals(3, diffForJiraIssue.getChangedFiles().size());

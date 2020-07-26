@@ -103,16 +103,14 @@ public class ViewRest {
 		// iterate over commits to get all messages and post each one as a comment
 		// make sure to not post duplicates
 		gitClient = GitClient.getOrCreate(projectKey);
-		for (String repoUri : gitClient.getRemoteUris()) {
-			List<Ref> branches = gitClient.getRemoteBranches(repoUri);
-			for (Ref branch : branches) {
-				Matcher branchMatcher = filterPattern.matcher(branch.getName());
-				if (branchMatcher.find()
-						|| branch.getName().contains("/" + gitClient.getDefaultBranchFolderNames().get(repoUri))) {
-					transcriber.postComments(branch);
-				}
+		List<Ref> branches = gitClient.getAllRemoteBranches();
+		for (Ref branch : branches) {
+			Matcher branchMatcher = filterPattern.matcher(branch.getName());
+			if (branchMatcher.find()) {
+				transcriber.postComments(branch);
 			}
 		}
+
 		gitClient.closeAll();
 		return resp;
 	}
@@ -134,7 +132,7 @@ public class ViewRest {
 				ratBranchList.put(branch, extractor.getElements(branch));
 			}
 		}
-		extractor.close();
+		gitClient.closeAll();
 		DiffViewer diffView = new DiffViewer(ratBranchList);
 		try {
 			Response.ResponseBuilder respBuilder = Response.ok(diffView);
@@ -267,7 +265,8 @@ public class ViewRest {
 	@Path("/getDecisionTableCriteria")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionTableCriteria(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey) {
+	public Response getDecisionTableCriteria(@Context HttpServletRequest request,
+			@QueryParam("elementKey") String elementKey) {
 		if (request == null || elementKey == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "Decision Table cannot be shown due to missing or invalid parameters."))
@@ -282,7 +281,7 @@ public class ViewRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		return Response.ok(decisionTable.getDecisionTableCriteria(user)).build();
 	}
-	
+
 	@Path("/getTreant")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -331,7 +330,6 @@ public class ViewRest {
 			Treant treant = new Treant(projectKey, element, "treant-container-class", isIssueView, filterSettings);
 			return Response.ok(treant).build();
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Treant cannot be shown."))
 					.build();
 		}

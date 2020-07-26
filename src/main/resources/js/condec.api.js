@@ -764,11 +764,24 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setGitUris = function (projectKey, gitUris, defaultBranches) {
-		// TODO Pass gitUris and branches as the JSON payload. Do not pass concatenated strings separated with ;;
+		// TODO Pass gitUris and branches as the JSON payload. Do not pass
+		// concatenated strings separated with ;;
 		generalApi.postJSON(this.restPrefix + "/config/setGitUris.json?projectKey=" + projectKey
 			+ "&gitUris=" + gitUris + "&defaultBranches=" + defaultBranches, null, function (error, response) {
 				if (error === null) {
 					showFlag("success", "The git URIs for this project have been set.");
+				}
+			});
+	};
+	
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.deleteGitRepos = function (projectKey) {
+		generalApi.postJSON(this.restPrefix + "/config/deleteGitRepos.json?projectKey=" + projectKey, null, 
+			function (error, response) {
+				if (error === null) {
+					showFlag("success", "The git repos for this project were deleted.");
 				}
 			});
 	};

@@ -16,10 +16,7 @@ public class TestGitDecXtract extends TestSetUpGit {
 
 	@Test
 	public void nullOrEmptyFeatureBranchCommits() {
-		// git repository is setup already
-		List<String> uris = new ArrayList<String>();
-		uris.add(getExampleUri());
-		gitDecX = new GitDecXtract("TEST", uris);
+		gitDecX = new GitDecXtract("TEST");
 		int numberExpectedElements = 0;
 		List<KnowledgeElement> gotElements = gitDecX.getElements(null);
 		Assert.assertEquals(numberExpectedElements, gotElements.size());
@@ -29,8 +26,8 @@ public class TestGitDecXtract extends TestSetUpGit {
 	public void fromFeatureBranchCommits() {
 		// git repository is setup already
 		List<String> uris = new ArrayList<String>();
-		uris.add(getExampleUri());
-		gitDecX = new GitDecXtract("TEST", uris);
+		uris.add(GIT_URI);
+		gitDecX = new GitDecXtract("TEST");
 		int numberExpectedElements = 14;
 
 		// by Ref, find Ref first
@@ -51,9 +48,7 @@ public class TestGitDecXtract extends TestSetUpGit {
 
 	@Test
 	public void fromFeatureBranchCommitsNullInput() {
-		List<String> uris = new ArrayList<String>();
-		uris.add(getExampleUri());
-		gitDecX = new GitDecXtract("TEST", uris);
+		gitDecX = new GitDecXtract("TEST");
 
 		List<KnowledgeElement> gotElements = gitDecX.getElements(null);
 		Assert.assertNotNull(gotElements);

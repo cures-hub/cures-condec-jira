@@ -34,7 +34,7 @@ public class TestPluginInitializer {
 	public static void setUpBeforeClass() {
 		TestSetUp.init();
 	}
-	
+
 	@Before
 	public void setUp() {
 		pluginInitializer = new PluginInitializer();
