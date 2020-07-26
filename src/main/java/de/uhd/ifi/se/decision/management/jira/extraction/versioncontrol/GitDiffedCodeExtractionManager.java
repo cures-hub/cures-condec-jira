@@ -70,100 +70,78 @@ public class GitDiffedCodeExtractionManager {
 	}
 
 	public List<KnowledgeElement> getNewDecisionKnowledgeElements() {
-		return getNewOrOldDecisionKnowledgeElements(true);
-	}
-
-	public List<KnowledgeElement> getOldDecisionKnowledgeElements() {
-		return getNewOrOldDecisionKnowledgeElements(false);
-	}
-
-	/**
-	 * @issue One rationale element can be modified by more than one edit line.
-	 *        Problem was found in
-	 *        refs/remotes/origin/CONDEC-534.branch.filtering.improvements.RC2 An
-	 *        old rationale located at(108:112:13) in file
-	 *        ..extraction/versioncontrol/GitRepositoryFSManager.java was linked
-	 *        with two change entries REPLACE(106-108,106-108) and
-	 *        REPLACE(109-114,109-120)
-	 * 
-	 *        Such rationale would be touched twice in below streams, making its key
-	 *        unusable. How to deal with this?
-	 * @alternative Streams will return reference rationale, but should some how try
-	 *              not to modify the rationale key more than once!
-	 * @con It would not be possible to see that many edits changed rationale.
-	 * 
-	 * @alternative Streams will return new origin objects in case of detected
-	 *              repetition new object will be created!
-	 * @con More code needs to be changed.
-	 * @pro Information about change by more than one edit will be preserved.
-	 * 
-	 * @decision Streams will return new rationale objects and never use origin
-	 *           references!
-	 * @pro Information about change by more than one edit will be preserved.
-	 */
-	private List<KnowledgeElement> getNewOrOldDecisionKnowledgeElements(boolean getNew) {
 		if (results.isEmpty()) {
 			return new ArrayList<>();
 		}
 		List<KnowledgeElement> resultValues = new ArrayList<>();
 
 		for (Map.Entry<DiffEntry, CodeExtractionResult> dEntry : results.entrySet()) {
-			String newPath;
-			if (getNew) {
-				newPath = dEntry.getKey().getNewPath();
-			} else {
-				newPath = OLD_FILE_SYMBOL_PREPENDER + dEntry.getKey().getOldPath();
+			if (dEntry.getValue() == null) {
+				continue;
 			}
-			if (dEntry.getValue() != null) {
-				Map<Edit, List<KnowledgeElement>> codeExtractionResult;
-				if (getNew) {
-					codeExtractionResult = dEntry.getValue().diffedElementsInNewerVersion;
-				} else {
-					codeExtractionResult = dEntry.getValue().diffedElementsInOlderVersion;
-				}
-				if (codeExtractionResult.size() > 0) {
-					for (Map.Entry<Edit, List<KnowledgeElement>> editListEntry : codeExtractionResult.entrySet()) {
-						if (editListEntry.getKey() != null) {
-							resultValues.addAll(editListEntry.getValue().stream().map(d -> {
-								KnowledgeElement n = new KnowledgeElement();
-								n.setDocumentationLocation(d.getDocumentationLocation());
-								n.setDescription(d.getDescription());
-								n.setId(d.getId());
-								n.setSummary(d.getSummary());
-								n.setType(d.getType());
-
-								String newKey = newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
-										+ dEntry.getValue().sequence + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
-										+ editListEntry.getKey().toString() + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
-										+ d.getKey();
-
-								n.setKey(newKey);
-								return n;
-							}).collect(Collectors.toList()));
-						} else {
-							resultValues.addAll(editListEntry.getValue().stream().map(d -> {
-								KnowledgeElement n = new KnowledgeElement();
-								n.setDocumentationLocation(d.getDocumentationLocation());
-								n.setDescription(d.getDescription());
-								n.setId(d.getId());
-								n.setSummary(d.getSummary());
-								n.setType(d.getType());
-
-								String newKey = newPath + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
-										+ dEntry.getValue().sequence + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
-										+ GitDecXtract.RAT_KEY_NOEDIT + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR
-										+ d.getKey();
-
-								n.setKey(newKey);
-								return n;
-							}).collect(Collectors.toList()));
-						}
-					}
-				}
+			String newPath = dEntry.getKey().getNewPath();
+			Map<Edit, List<KnowledgeElement>> codeExtractionResult;
+			codeExtractionResult = dEntry.getValue().diffedElementsInNewerVersion;
+			if (codeExtractionResult.isEmpty()) {
+				continue;
 			}
+			resultValues.addAll(getKnowledgeElements(codeExtractionResult, newPath, dEntry.getValue().sequence));
 		}
-
 		return resultValues;
+	}
+
+	public List<KnowledgeElement> getOldDecisionKnowledgeElements() {
+		if (results.isEmpty()) {
+			return new ArrayList<>();
+		}
+		List<KnowledgeElement> resultValues = new ArrayList<>();
+		for (Map.Entry<DiffEntry, CodeExtractionResult> dEntry : results.entrySet()) {
+			if (dEntry.getValue() == null) {
+				continue;
+			}
+			String newPath = OLD_FILE_SYMBOL_PREPENDER + dEntry.getKey().getOldPath();
+			Map<Edit, List<KnowledgeElement>> codeExtractionResult = dEntry.getValue().diffedElementsInOlderVersion;
+			if (codeExtractionResult.isEmpty()) {
+				continue;
+			}
+			resultValues.addAll(getKnowledgeElements(codeExtractionResult, newPath, dEntry.getValue().sequence));
+		}
+		return resultValues;
+	}
+
+	private List<KnowledgeElement> getKnowledgeElements(Map<Edit, List<KnowledgeElement>> codeExtractionResult,
+			String path, int sequence) {
+		List<KnowledgeElement> knowledgeElements = new ArrayList<>();
+		for (Map.Entry<Edit, List<KnowledgeElement>> editListEntry : codeExtractionResult.entrySet()) {
+			knowledgeElements.addAll(getKnowledgeElements(editListEntry, path, sequence));
+		}
+		return knowledgeElements;
+	}
+
+	private List<KnowledgeElement> getKnowledgeElements(Map.Entry<Edit, List<KnowledgeElement>> editListEntry,
+			String path, int sequence) {
+		List<KnowledgeElement> knowledgeElements = new ArrayList<>();
+		if (editListEntry.getKey() != null) {
+			knowledgeElements.addAll(editListEntry.getValue().stream().map(d -> {
+				KnowledgeElement element = d;
+				String newKey = path + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + sequence
+						+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + editListEntry.getKey().toString()
+						+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + d.getKey();
+				element.setKey(newKey);
+				return element;
+			}).collect(Collectors.toList()));
+		} else {
+			knowledgeElements.addAll(editListEntry.getValue().stream().map(d -> {
+				KnowledgeElement element = d;
+				String newKey = path + GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + sequence
+						+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + GitDecXtract.RAT_KEY_NOEDIT
+						+ GitDecXtract.RAT_KEY_COMPONENTS_SEPARATOR + d.getKey();
+
+				element.setKey(newKey);
+				return element;
+			}).collect(Collectors.toList()));
+		}
+		return knowledgeElements;
 	}
 
 	private void processEntries() {
@@ -319,6 +297,29 @@ public class GitDiffedCodeExtractionManager {
 	 * Stores old and new rationale elements in maps with edits as key. If the old
 	 * and new rationale element can be found under the same edit, conflicts may
 	 * exist.
+	 * 
+	 * @issue One rationale element can be modified by more than one edit line.
+	 *        Problem was found in
+	 *        refs/remotes/origin/CONDEC-534.branch.filtering.improvements.RC2 An
+	 *        old rationale located at(108:112:13) in file
+	 *        ..extraction/versioncontrol/GitRepositoryFSManager.java was linked
+	 *        with two change entries REPLACE(106-108,106-108) and
+	 *        REPLACE(109-114,109-120)
+	 * 
+	 *        Such rationale would be touched twice in below streams, making its key
+	 *        unusable. How to deal with this?
+	 * @alternative Streams will return reference rationale, but should some how try
+	 *              not to modify the rationale key more than once!
+	 * @con It would not be possible to see that many edits changed rationale.
+	 * 
+	 * @alternative Streams will return new origin objects in case of detected
+	 *              repetition new object will be created!
+	 * @con More code needs to be changed.
+	 * @pro Information about change by more than one edit will be preserved.
+	 * 
+	 * @decision Streams will return new rationale objects and never use origin
+	 *           references!
+	 * @pro Information about change by more than one edit will be preserved.
 	 */
 	private class CodeExtractionResult {
 		public int sequence = -1;
