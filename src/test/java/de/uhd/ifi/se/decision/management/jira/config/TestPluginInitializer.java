@@ -141,4 +141,45 @@ public class TestPluginInitializer {
 	public void testRemoveIssueTypeToSchemeIssueTypeFilledProjectKeyFilled() {
 		PluginInitializer.removeIssueTypeFromScheme("Decision", "TEST");
 	}
+
+	@Test
+	public void testRemoveLinkTypeFromSchemeLinkTypeNullProjectKeyNull() {
+		PluginInitializer.removeLinkTypeFromScheme(null, null);
+	}
+
+	@Test
+	public void testRemoveLinkTypeFromSchemeLinkTypeNullProjectKeyFilled() {
+		PluginInitializer.removeLinkTypeFromScheme(null, "TEST");
+	}
+
+	@Test
+	public void testRemoveLinkTypeFromSchemeLinkTypeFilledProjectKeyNull() {
+		PluginInitializer.removeLinkTypeFromScheme("Decision", null);
+	}
+
+	@Test
+	public void testRemoveLinkTypeFromSchemeLinkTypeFilledProjectKeyFilled() {
+		PluginInitializer.removeLinkTypeFromScheme("Decision", "TEST");
+	}
+
+	@Test
+	public void testAddLinkTypeToSchemeLinkTypeNullProjectKeyNull() {
+		PluginInitializer.addLinkTypeToScheme(null, null);
+	}
+
+	@Test
+	public void testAddLinkTypeToSchemeLinkTypeNullProjectKeyFilled() {
+		PluginInitializer.addLinkTypeToScheme(null, "TEST");
+	}
+
+	@Test
+	public void testAddLinkTypeToSchemeLinkTypeFilledProjectKeyNull() {
+		PluginInitializer.addLinkTypeToScheme("Decision", null);
+	}
+
+	@Test
+	public void testAddLinkTypeToSchemeLinkTypeFilledProjectKeyFilled() {
+		PluginInitializer.addLinkTypeToScheme("Decision", "TEST");
+	}
+
 }

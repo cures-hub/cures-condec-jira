@@ -1,12 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.atlassian.gzipfilter.org.apache.commons.lang.math.NumberUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
@@ -15,11 +8,9 @@ import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 
 import java.util.*;
@@ -131,16 +122,6 @@ public class ConfigPersistenceManager {
 		return "true".equals(isKnowledgeTypeEnabled);
 	}
 
-	// TODO Testing
-	public static boolean isLinkTypeEnabled(String projectKey, LinkType linkType) {
-		return isLinkTypeEnabled(projectKey, linkType.toString());
-	}
-
-	public static boolean isLinkTypeEnabled(String projectKey, String linkType) {
-		String isLinkTypeEnabled = getValue(projectKey, linkType);
-		return "true".equals(isLinkTypeEnabled);
-	}
-
 	public static boolean isClassifierEnabled(String projectKey) {
 		return getValue(projectKey, "setClassiferForIssueComments").equals("true");
 	}
@@ -234,11 +215,6 @@ public class ConfigPersistenceManager {
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
 			boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
-	}
-
-	public static void setLinkTypeEnabled(String projectKey, String linkType,
-										  boolean isLinkTypeEnabled) {
-		setValue(projectKey, linkType, Boolean.toString(isLinkTypeEnabled));
 	}
 
 	// TODO Testing
