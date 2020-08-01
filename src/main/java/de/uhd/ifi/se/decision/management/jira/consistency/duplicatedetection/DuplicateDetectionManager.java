@@ -5,23 +5,22 @@ import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateS
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DuplicateDetectionManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DuplicateDetectionManager.class);
 
-
 	private KnowledgeElement knowledgeElement;
+
+	private volatile List<DuplicateSuggestion> foundDuplicateSuggestions;
+
+	private int minDuplicateLength;
 
 	private DuplicateDetectionStrategy duplicateDetectionStrategy;
 
@@ -32,20 +31,21 @@ public class DuplicateDetectionManager {
 	public DuplicateDetectionManager(KnowledgeElement knowledgeElement, DuplicateDetectionStrategy duplicateDetectionStrategy) {
 		this.knowledgeElement = knowledgeElement;
 		this.duplicateDetectionStrategy = duplicateDetectionStrategy;
+		this.minDuplicateLength = ConfigPersistenceManager.getMinDuplicateLength(this.knowledgeElement.getProject().getProjectKey());
 	}
 
 	public List<DuplicateSuggestion> findAllDuplicates(Collection<? extends KnowledgeElement> elementsToCheck) {
 
-		List<DuplicateSuggestion> foundDuplicateSuggestions = Collections.synchronizedList(new ArrayList<>());
+		foundDuplicateSuggestions = new ArrayList<>();
 
 		if (this.knowledgeElement != null) {
 			elementsToCheck = elementsToCheck
 				.stream()
 				.filter((element -> {
-					if(element.getJiraIssue() == null || this.knowledgeElement.getJiraIssue() == null){
+					if (element.getJiraIssue() == null || this.knowledgeElement.getJiraIssue() == null) {
 						return true;
 					}
-					return ! element.getJiraIssue().getKey().equals(this.knowledgeElement.getJiraIssue().getKey());
+					return !element.getJiraIssue().getKey().equals(this.knowledgeElement.getJiraIssue().getKey());
 				}))
 				.collect(Collectors.toList());
 
@@ -55,32 +55,39 @@ public class DuplicateDetectionManager {
 			elementsToCheck.removeAll(this.alreadyLinkedAsDuplicates());// remove linked elements;
 
 
-			elementsToCheck.stream().forEach((issueToCheck) -> {
-				try {
-					List<DuplicateSuggestion> foundDuplicateFragmentsForIssue = duplicateDetectionStrategy.detectDuplicates(this.knowledgeElement, issueToCheck);
-					DuplicateSuggestion mostLikelyDuplicate = findLongestDuplicate(foundDuplicateFragmentsForIssue);
-					if (mostLikelyDuplicate != null) {
-						foundDuplicateSuggestions.add(mostLikelyDuplicate);
-
+			foundDuplicateSuggestions = elementsToCheck
+				.parallelStream()
+				.map((element) -> {
+					//System.out.println("Thread : " + Thread.currentThread().getName() + ", value: " + element.getKey());
+					DuplicateSuggestion mostLikelyDuplicate = null;
+					try {
+						List<DuplicateSuggestion> foundDuplicateFragmentsForIssue = new BasicDuplicateTextDetector(minDuplicateLength)
+							.detectDuplicates(this.knowledgeElement, element);
+						mostLikelyDuplicate = findLongestDuplicate(foundDuplicateFragmentsForIssue);
+					} catch (Exception e) {
+						LOGGER.error(e.getMessage());
 					}
-				} catch (Exception e) {
-					LOGGER.error(e.getMessage());
-				}
-			});
+					return mostLikelyDuplicate;
+				}).collect(Collectors.toList());
 		}
 
-		return foundDuplicateSuggestions;
+		return foundDuplicateSuggestions
+			.parallelStream()
+			.filter(Objects::nonNull)
+			.collect(Collectors.toList());
 	}
 
 	private Collection<? extends KnowledgeElement> alreadyLinkedAsDuplicates() {
-		Set<KnowledgeElement> elements = new HashSet<>();
+		Set<KnowledgeElement> elements = Collections.synchronizedSet(new HashSet<>());
 		List<Link> links = this.knowledgeElement.getLinks();
-		for (Link link : links) {
-			if (link.getLinkType().equals(LinkType.DUPLICATE)) {
-				elements.add(link.getTarget());
-				elements.add(link.getSource());
-			}
-		}
+		links
+			.parallelStream()
+			.forEach(link -> {
+				if (link.getLinkType().equals(LinkType.DUPLICATE)) {
+					elements.add(link.getTarget());
+					elements.add(link.getSource());
+				}
+			});
 		return elements;
 	}
 

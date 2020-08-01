@@ -6,20 +6,20 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class ContextInformation implements ContextInformationProvider {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ContextInformation.class);
+
+
 	private KnowledgeElement element;
 	private List<ContextInformationProvider> cips;
-	private Map<String, LinkSuggestion> linkSuggestions;
+	private volatile Map<String, LinkSuggestion> linkSuggestions;
 
 
 	public ContextInformation(KnowledgeElement element) {
@@ -63,7 +63,7 @@ public class ContextInformation implements ContextInformationProvider {
 
 		//retain scores of filtered issues
 		return this.linkSuggestions.values()
-			.stream()
+			.parallelStream()
 			// issue was not filtered out
 			.filter(linkSuggestion -> elementsToKeep.contains(linkSuggestion.getTargetElement()))
 			// the score is higher or equal to the minimum probability set by the admin for the project
@@ -92,19 +92,23 @@ public class ContextInformation implements ContextInformationProvider {
 	@Override
 	public void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
 		// init the link suggestions
-		this.linkSuggestions = new ConcurrentHashMap<>();
-		for (KnowledgeElement otherElement : knowledgeElements) {
-			linkSuggestions.put(otherElement.getKey(), new LinkSuggestion(this.element, otherElement));
-		}
+		this.linkSuggestions = new ConcurrentHashMap<String, LinkSuggestion>();//Collections.synchronizedMap(new HashMap<String, LinkSuggestion>());
+		knowledgeElements
+			.parallelStream()
+			.forEach(otherElement -> linkSuggestions.put(otherElement.getKey(), new LinkSuggestion(this.element, otherElement)));
 
-		this.cips.stream().forEach((cip) -> {
+
+		this.cips.parallelStream().forEach((cip) -> {
+			//System.out.println("Thread : " + Thread.currentThread().getName() + ", value: " + cip.getName());
+			long start = System.nanoTime();
 			cip.assessRelation(this.element, new ArrayList<>(knowledgeElements));
+			LOGGER.info("Time for " + cip.getName() + ": \t" + Math.round((System.nanoTime() - start)/10000.)/100. + "( ms)");
 
 			double nullCompensation = 0.;
 
 			Collection<LinkSuggestion> suggestions = cip.getLinkSuggestions();
 			double sumOfIndividualScoresForCurrentCip = suggestions
-				.stream()
+				.parallelStream()
 				.mapToDouble(LinkSuggestion::getTotalScore)
 				.sum();
 
@@ -117,8 +121,9 @@ public class ContextInformation implements ContextInformationProvider {
 			// Divide each score by the max value to scale it to [0,1]
 			double finalNullCompensation = nullCompensation;
 			suggestions
-				.stream()
+				.parallelStream()
 				.forEach(score -> {
+					//System.out.println("Thread : " + Thread.currentThread().getName() + ", value: " + score.getTargetElement().getKey());
 					LinkSuggestion linkSuggestion = this.linkSuggestions.get(score.getTargetElement().getKey());
 					linkSuggestion.addToScore((score.getTotalScore() + finalNullCompensation) / (finalSumOfIndividualScoresForCurrentCip * this.cips.size()), cip.getName());//sumOfIndividualScoresForCurrentCip);
 				});
