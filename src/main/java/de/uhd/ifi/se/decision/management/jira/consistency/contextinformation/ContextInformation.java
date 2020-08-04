@@ -30,6 +30,7 @@ public class ContextInformation implements ContextInformationProvider {
 		this.cips.add(new TracingCIP());
 		this.cips.add(new TimeCIP());
 		this.cips.add(new UserCIP());
+		this.cips.add(new ActiveCIP());
 
 	}
 

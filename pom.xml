@@ -217,7 +217,12 @@
 			<version>8.6.1</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
+     <dependency>
+         <groupId>com.atlassian.jira.plugins</groupId>
+         <artifactId>jira-greenhopper-plugin</artifactId>
+         <version>6.3.12</version>
+         <scope>provided</scope>
+     </dependency>
 			<groupId>com.atlassian.jira</groupId>
 			<artifactId>jira-func-tests</artifactId>
 			<version>8.5.2</version>
