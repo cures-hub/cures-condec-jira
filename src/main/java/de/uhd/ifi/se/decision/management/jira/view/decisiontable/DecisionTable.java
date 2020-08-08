@@ -12,11 +12,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.jgrapht.graph.AsSubgraph;
 import org.jgrapht.traverse.DepthFirstIterator;
 
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -37,7 +39,7 @@ public class DecisionTable {
 
 	@XmlElement
 	private Map<String, List<DecisionTableElement>> decisionTableData;
-
+	
 	public DecisionTable(String projectKey) {
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 		persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
@@ -47,10 +49,13 @@ public class DecisionTable {
 	 * 
 	 * @param key
 	 */
-	public void setIssues(String key) {
+	public void setIssues(String key, FilteringManager filterManager) {
 		issues = new ArrayList<>();
 		KnowledgeElement rootElement = persistenceManager.getJiraIssueManager().getKnowledgeElement(key);
-		Iterator<KnowledgeElement> iterator = new DepthFirstIterator<>(this.graph, rootElement);
+		
+		AsSubgraph<KnowledgeElement, Link> subGraph = filterManager
+				.getSubgraphMatchingFilterSettings(rootElement, filterManager.getFilterSettings().getLinkDistance());
+		Iterator<KnowledgeElement> iterator = new DepthFirstIterator<>(subGraph, rootElement);
 		while (iterator.hasNext()) {
 			KnowledgeElement elem = iterator.next();
 			if (elem.getType() == KnowledgeType.ISSUE) {

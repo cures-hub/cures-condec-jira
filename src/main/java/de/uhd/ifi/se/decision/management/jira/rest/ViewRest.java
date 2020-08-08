@@ -34,6 +34,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -223,9 +224,10 @@ public class ViewRest {
 	}
 
 	@Path("/getDecisionIssues")
-	@GET
+	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionIssues(@QueryParam("elementKey") String elementKey) {
+	public Response getDecisionIssues(@Context HttpServletRequest request, 
+			@QueryParam("elementKey") String elementKey, FilterSettings filterSettings) {
 		if (elementKey == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Decision Issues cannot be shown since element key is invalid."))
@@ -236,8 +238,11 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		FilteringManager filterManager = new FilteringManager(user, filterSettings);
 		DecisionTable decisionTable = new DecisionTable(projectKey);
-		decisionTable.setIssues(elementKey);
+		decisionTable.setIssues(elementKey, filterManager);
+
 		return Response.ok(decisionTable.getIssues()).build();
 	}
 
