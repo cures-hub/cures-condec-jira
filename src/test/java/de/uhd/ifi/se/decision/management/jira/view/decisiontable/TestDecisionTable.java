@@ -14,6 +14,8 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -23,28 +25,34 @@ public class TestDecisionTable extends TestSetUp {
 
 	private DecisionTable decisionTable;
 	final private String projectKey = "TEST";
-
+	final FilterSettings filterSettings = new FilterSettings("TEST", null);
+	ApplicationUser user;
+	FilteringManager filteringManager;
+	
 	@Before
 	public void setUp() {
 		init();
 		this.decisionTable = new DecisionTable(projectKey);
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		filterSettings.setLinkDistance(3);
+		filteringManager = new FilteringManager(user, filterSettings);
 	}
 
 	@Test
 	public void testGetEmptyDecisionIssues() {
-		decisionTable.setIssues("TEST-30");
+		decisionTable.setIssues("TEST-30", filteringManager);
 		assertEquals(0, decisionTable.getIssues().size());
 	}
 
 	@Test
 	public void testGetDecisionIssueOnIssueDirectly() {
-		decisionTable.setIssues("TEST-1");
+		decisionTable.setIssues("TEST-1", filteringManager);
 		assertEquals(2, decisionTable.getIssues().size());
 	}
 
 	@Test
 	public void testGetAlternativesOnIssueDirectly() {
-		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("user", user);
 		decisionTable.setDecisionTableForIssue(2, DocumentationLocation.JIRAISSUE.getIdentifier(), user);

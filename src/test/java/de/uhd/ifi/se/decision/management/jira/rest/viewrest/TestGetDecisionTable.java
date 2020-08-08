@@ -12,6 +12,7 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -32,12 +33,13 @@ public class TestGetDecisionTable extends TestSetUp {
 
 	@Test
 	public void testGetDesicionIssuesElementKeyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionIssues(null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionIssues(null, null, null).getStatus());
 	}
 
 	@Test
 	public void testGetDesicionIssues() {
-		assertEquals(Status.OK.getStatusCode(), viewRest.getDecisionIssues("TEST-1").getStatus());
+		FilterSettings filterSettings = new FilterSettings("TEST","");
+		assertEquals(Status.OK.getStatusCode(), viewRest.getDecisionIssues(request, "TEST-1", filterSettings).getStatus());
 	}
 
 	@Test
