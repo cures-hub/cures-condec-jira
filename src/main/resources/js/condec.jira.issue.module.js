@@ -164,6 +164,7 @@
 
 	function showDecisionTable() {
 		console.log("ConDecJiraIssueModule showDecisionTable");
+		issueKey = conDecAPI.getIssueKey();
 		decisionTable.loadDecisionProblems(issueKey);
 	}
 
