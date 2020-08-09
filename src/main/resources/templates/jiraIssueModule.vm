@@ -73,9 +73,11 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
          <div class="aui-toolbar-2-inner">
             <form class="aui">
                <div>
-                  <label for="selectDesionProblem">Decision Issue: </label>
+                  <label for="selectDesionProblem">Issues: </label>
                   <select class="select" id="selectDesionProblem" name="selectDesionProblem">
                   </select>
+                   	#set ($linkDistanceInputId = "link-distance-input-decision-table")	
+               		#parse("templates/filter/linkDistance.vm")
                </div>
             </form>
 				

@@ -886,16 +886,14 @@
 	/*
 	 * external references: condec.decision.table
 	 */
-	ConDecAPI.prototype.getDecisionIssues = function (elementKey, callback) {
+	ConDecAPI.prototype.getDecisionIssues = function (elementKey, linkDistance, callback) {
 		const filterSettings = {
 				"projectKey": projectKey,
-				"linkDistance": 3
+				"linkDistance": linkDistance
 		};
-		console.log(filterSettings);
 		generalApi.postJSON(this.restPrefix + "/view/getDecisionIssues.json?elementKey=" + elementKey, filterSettings, 
 				function (error, issues) {
 			if (error === null) {
-				console.log(issues);
 				callback(issues);
 			} 
 		});
