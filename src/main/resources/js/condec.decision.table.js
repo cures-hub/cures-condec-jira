@@ -89,13 +89,13 @@
 	}
 
 	function buildCreateArgumentsButton(alternatives) {
-		let dropDownMenu = document.getElementById("split-container-dropdown");
+		let dropDownMenu = document.getElementById("alternative-dropdown-items");
 		dropDownMenu.innerHTML = "";
 		for (i in alternatives) {
-			dropDownMenu.innerHTML +=  `<aui-item-link id="${alternatives[i].id}" class="">${alternatives[i].summary}</aui-item-link>`;
+			dropDownMenu.innerHTML +=  `<li id="${alternatives[i].id}" class=""><a>${alternatives[i].summary}</a></li>`;
 		}
 		
-		document.getElementById("split-container-dropdown").addEventListener("click", function (event) {
+		document.getElementById("alternative-dropdown-items").addEventListener("click", function (event) {
 			const alternative = getElementObj(event.target.parentNode.id);
 			if (alternative) {
 				conDecDialog.showCreateDialog(alternative.id, alternative.documentationLocation);	
