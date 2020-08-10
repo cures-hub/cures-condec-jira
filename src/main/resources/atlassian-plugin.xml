@@ -353,6 +353,15 @@
 		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
+    <web-item key="condec-project-settings-menu-item-decisionguidance"
+        name="Menu Item for ConDec Plug-in Project Settings of decision guidance"
+        section="atl.jira.proj.config/condec-project-settings-section" weight="22">
+        <description>Adds the "Decision Guidance" menu item.</description>
+        <label key="condec.project.settings.menu.item.decisionguidance" />
+        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=decisionGuidance
+        </link>
+        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+    </web-item>
 	<servlet key="servlet-for-settings-of-single-project"
 		name="Servlet for Settings of Single Project"
 		class="de.uhd.ifi.se.decision.management.jira.config.SettingsOfSingleProject">
