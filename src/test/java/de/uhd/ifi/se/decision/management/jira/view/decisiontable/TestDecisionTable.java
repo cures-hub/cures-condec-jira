@@ -25,7 +25,6 @@ public class TestDecisionTable extends TestSetUp {
 
 	private DecisionTable decisionTable;
 	private String projectKey = "TEST";
-	private FilterSettings filterSettings;
 	private ApplicationUser user;
 	private FilteringManager filteringManager;
 	
@@ -34,7 +33,7 @@ public class TestDecisionTable extends TestSetUp {
 		init();
 		this.decisionTable = new DecisionTable(projectKey);
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		filterSettings = new FilterSettings("TEST", null);
+		FilterSettings filterSettings = new FilterSettings("TEST", null);
 		filterSettings.setLinkDistance(3);
 		filteringManager = new FilteringManager(user, filterSettings);
 	}
