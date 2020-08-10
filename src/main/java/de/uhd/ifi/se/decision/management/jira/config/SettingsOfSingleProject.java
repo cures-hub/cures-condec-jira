@@ -65,17 +65,20 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("isClassifierTrained", trainer.getClassifier().isTrained());
 
 		velocityParameters.put("releaseNoteMapping_improvements",
-				ConfigPersistenceManager.getReleaseNoteMapping(projectKey, ReleaseNoteCategory.IMPROVEMENTS));
+			ConfigPersistenceManager.getReleaseNoteMapping(projectKey, ReleaseNoteCategory.IMPROVEMENTS));
 		velocityParameters.put("releaseNoteMapping_bug_fixes",
-				ConfigPersistenceManager.getReleaseNoteMapping(projectKey, ReleaseNoteCategory.BUG_FIXES));
+			ConfigPersistenceManager.getReleaseNoteMapping(projectKey, ReleaseNoteCategory.BUG_FIXES));
 		velocityParameters.put("releaseNoteMapping_new_features",
-				ConfigPersistenceManager.getReleaseNoteMapping(projectKey, ReleaseNoteCategory.NEW_FEATURES));
+			ConfigPersistenceManager.getReleaseNoteMapping(projectKey, ReleaseNoteCategory.NEW_FEATURES));
 
 
-	velocityParameters.put("minLengthDuplicate",
+		velocityParameters.put("minLengthDuplicate",
 			ConfigPersistenceManager.getMinDuplicateLength(projectKey));
-	velocityParameters.put("minProbabilityLink",
+		velocityParameters.put("minProbabilityLink",
 			ConfigPersistenceManager.getMinLinkSuggestionScore(projectKey));
+
+		velocityParameters.put("maxNumberRecommendations",
+			ConfigPersistenceManager.getMaxNumberRecommendations(projectKey));
 
 		return velocityParameters;
 	}

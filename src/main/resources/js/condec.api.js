@@ -1245,6 +1245,18 @@
 	};
 
 	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setMaxNumberRecommendations = function (projectKey, maxNumberRecommendations) {
+		generalApi.postJSON(this.restPrefix + "/config/setMaxNumberRecommendations.json?projectKey=" + projectKey + "&maxNumberRecommendations=" + maxNumberRecommendations, null, function (
+			error, response) {
+			if (error === null) {
+				showFlag("success", "Maximum number of results are updated to: " + maxNumberRecommendations );
+			}
+		});
+	};
+
+	/*
 	 * external references: condec.context.menu
 	 */
 	ConDecAPI.prototype.openJiraIssue = function (elementId, documentationLocation) {

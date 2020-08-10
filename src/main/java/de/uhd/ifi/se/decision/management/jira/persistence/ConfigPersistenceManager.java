@@ -308,4 +308,12 @@ public class ConfigPersistenceManager {
 	public static boolean getActivationStatusOfConsistencyEvent(String projectKey, String eventKey) {
 		return "true".equals(getValue(projectKey, eventKey));
 	}
+
+	public static void setMaxNumberRecommendations(String projectKey, int minLinkSuggestionProbability) {
+		setValue(projectKey, "maxNumberRecommendations", Integer.toString(minLinkSuggestionProbability));
+	}
+
+	public static double getMaxNumberRecommendations(String projectKey) {
+		return NumberUtils.toInt(getValue(projectKey, "maxNumberRecommendations"), 100);
+	}
 }
