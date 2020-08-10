@@ -24,10 +24,10 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 public class TestDecisionTable extends TestSetUp {
 
 	private DecisionTable decisionTable;
-	final private String projectKey = "TEST";
-	final FilterSettings filterSettings = new FilterSettings("TEST", null);
-	ApplicationUser user;
-	FilteringManager filteringManager;
+	private String projectKey = "TEST";
+	private FilterSettings filterSettings;
+	private ApplicationUser user;
+	private FilteringManager filteringManager;
 	
 	@Before
 	public void setUp() {
@@ -84,14 +84,14 @@ public class TestDecisionTable extends TestSetUp {
 		knowledgeElement = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
 				.getKnowledgeElement(3);
 		decisionTableData.get("alternatives").add(new Alternative(knowledgeElement));
-		decisionTable.getArguments(3, decisionTableData, DocumentationLocation.JIRAISSUE.getIdentifier());
+		decisionTable.getArguments(3, null, decisionTableData, DocumentationLocation.JIRAISSUE.getIdentifier());
 		Alternative alternative1 = (Alternative) decisionTableData.get("alternatives").get(0);
 		assertEquals(0, alternative1.getArguments().size());
 		
 		knowledgeElement = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
 				.getKnowledgeElement(4);
 		decisionTableData.get("alternatives").add(new Alternative(knowledgeElement));
-		decisionTable.getArguments(4, decisionTableData, DocumentationLocation.JIRAISSUE.getIdentifier());
+		decisionTable.getArguments(4, null, decisionTableData, DocumentationLocation.JIRAISSUE.getIdentifier());
 		Alternative alternative2 = (Alternative) decisionTableData.get("alternatives").get(1);
 		assertEquals(1, alternative2.getArguments().size());
 	}
