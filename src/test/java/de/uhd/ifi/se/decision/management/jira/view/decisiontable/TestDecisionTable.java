@@ -14,6 +14,8 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -22,29 +24,35 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 public class TestDecisionTable extends TestSetUp {
 
 	private DecisionTable decisionTable;
-	final private String projectKey = "TEST";
-
+	private String projectKey = "TEST";
+	private ApplicationUser user;
+	private FilteringManager filteringManager;
+	
 	@Before
 	public void setUp() {
 		init();
 		this.decisionTable = new DecisionTable(projectKey);
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		FilterSettings filterSettings = new FilterSettings("TEST", null);
+		filterSettings.setLinkDistance(3);
+		filteringManager = new FilteringManager(user, filterSettings);
 	}
 
 	@Test
 	public void testGetEmptyDecisionIssues() {
-		decisionTable.setIssues("TEST-30");
+		decisionTable.setIssues("TEST-30", filteringManager);
 		assertEquals(0, decisionTable.getIssues().size());
 	}
 
 	@Test
 	public void testGetDecisionIssueOnIssueDirectly() {
-		decisionTable.setIssues("TEST-1");
+		decisionTable.setIssues("TEST-1", filteringManager);
 		assertEquals(2, decisionTable.getIssues().size());
 	}
 
 	@Test
 	public void testGetAlternativesOnIssueDirectly() {
-		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("user", user);
 		decisionTable.setDecisionTableForIssue(2, DocumentationLocation.JIRAISSUE.getIdentifier(), user);
@@ -76,14 +84,14 @@ public class TestDecisionTable extends TestSetUp {
 		knowledgeElement = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
 				.getKnowledgeElement(3);
 		decisionTableData.get("alternatives").add(new Alternative(knowledgeElement));
-		decisionTable.getArguments(3, decisionTableData, DocumentationLocation.JIRAISSUE.getIdentifier());
+		decisionTable.getArguments(3, null, decisionTableData, DocumentationLocation.JIRAISSUE.getIdentifier());
 		Alternative alternative1 = (Alternative) decisionTableData.get("alternatives").get(0);
 		assertEquals(0, alternative1.getArguments().size());
 		
 		knowledgeElement = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
 				.getKnowledgeElement(4);
 		decisionTableData.get("alternatives").add(new Alternative(knowledgeElement));
-		decisionTable.getArguments(4, decisionTableData, DocumentationLocation.JIRAISSUE.getIdentifier());
+		decisionTable.getArguments(4, null, decisionTableData, DocumentationLocation.JIRAISSUE.getIdentifier());
 		Alternative alternative2 = (Alternative) decisionTableData.get("alternatives").get(1);
 		assertEquals(1, alternative2.getArguments().size());
 	}

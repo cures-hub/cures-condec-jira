@@ -664,7 +664,7 @@
         	
         	queryReference.innerHTML = `<div>Available criteria are fetched from decision table criteria query from 
         		<a href="../../../plugins/servlet/condec/settings?projectKey=${projectKey}&category=rationaleModel">
-        		Ration model settings page</a>.</div>`;
+        		rational model settings page</a>.</div>`;
         	
         	addCheckboxEventListener();
         }

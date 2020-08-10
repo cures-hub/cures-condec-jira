@@ -9,7 +9,6 @@
 	const alternativeClmTitle = "Options/Alternatives";
 	let issues = [];
 	let decisionTableData = [];
-	let projectKey;
 	let currentIssue;
 	
  	/*
@@ -17,10 +16,20 @@
 	 */
 	ConDecDecisionTable.prototype.loadDecisionProblems = function loadDecisionProblems(elementKey) {
 		console.log("conDecDecisionTable buildDecisionTable");
-		projectKey = elementKey;
-		conDecAPI.getDecisionIssues(elementKey, function (data) {
+		const linkDistance = document.getElementById("link-distance-input").value;
+
+		
+		conDecAPI.getDecisionIssues(elementKey, linkDistance, function (data) {
 			issues = data;
 			addDropDownItems(data, elementKey);
+		});
+		
+		document.getElementById("link-distance-input-decision-table").addEventListener("change", function (event){
+			const linkDistance = event.target.value;
+			conDecAPI.getDecisionIssues(elementKey, linkDistance, function (data) {
+				issues = data;
+				addDropDownItems(data, elementKey);
+			});
 		});
 	};
 
@@ -80,13 +89,13 @@
 	}
 
 	function buildCreateArgumentsButton(alternatives) {
-		let dropDownMenu = document.getElementById("split-container-dropdown");
+		let dropDownMenu = document.getElementById("alternative-dropdown-items");
 		dropDownMenu.innerHTML = "";
 		for (i in alternatives) {
-			dropDownMenu.innerHTML +=  `<aui-item-link id="${alternatives[i].id}" class="">${alternatives[i].summary}</aui-item-link>`;
+			dropDownMenu.innerHTML +=  `<li id="${alternatives[i].id}" class=""><a>${alternatives[i].summary}</a></li>`;
 		}
 		
-		document.getElementById("split-container-dropdown").addEventListener("click", function (event) {
+		document.getElementById("alternative-dropdown-items").addEventListener("click", function (event) {
 			const alternative = getElementObj(event.target.parentNode.id);
 			if (alternative) {
 				conDecDialog.showCreateDialog(alternative.id, alternative.documentationLocation);	
@@ -289,7 +298,7 @@
 				.find(alternative => alternative.id == sourceAlternative.id).arguments
 				.find(argument => argument.id == elemId);
 			deleteLink(sourceAlternative, argument);
-			createLink(targetAlternative, argument);
+			createLink(argument, targetAlternative);
 		} else if (source.toLowerCase().includes("unknown")) {
 			const sourceAlternative = getElementObj(source);
 			const targetInformation = getElementObj(target);
@@ -300,7 +309,7 @@
 				.find(argument => argument.id == elemId);
 			if (sourceAlternative.id !== targetAlternative.id) {
 				deleteLink(sourceAlternative, argument);
-				createLink(targetAlternative, argument);
+				createLink(argument, targetAlternative);
 			} else {
 				createLink(argument, criteria);
 			}
@@ -314,7 +323,7 @@
 				.find(argument => argument.id == elemId);
 			if (sourceAlternative.id !== targetAlternative.id) {
 				deleteLink(sourceAlternative, argument);
-				createLink(targetAlternative, argument);
+				createLink(argument, targetAlternative);
 			}
 			deleteLink(argument, criteria);
 			// moved arg. from one criteria column to another criteria column
@@ -330,10 +339,10 @@
 				.find(argument => argument.id == elemId);
 			if (sourceAlternative.id !== targetAlternative.id) {
 				deleteLink(sourceAlternative, argument);
-				createLink(targetAlternative, argument);
+				createLink(argument, targetAlternative);
 			}
 			deleteLink(argument, sourceCriteria);
-			createLink(argument, targetCriteria);
+			createLink(targetCriteria, argument);
 		}
 	}
 
