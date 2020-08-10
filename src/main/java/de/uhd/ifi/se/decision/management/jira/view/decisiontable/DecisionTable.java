@@ -20,6 +20,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -92,11 +93,12 @@ public class DecisionTable {
 		decisionTableData = new HashMap<>();
 		decisionTableData.put("alternatives", new ArrayList<DecisionTableElement>());
 		decisionTableData.put("criteria", new ArrayList<DecisionTableElement>());
+		
 		for (Link currentLink : outgoingLinks) {
 			KnowledgeElement elem = currentLink.getTarget();
 			if (elem.getType() == KnowledgeType.ALTERNATIVE || elem.getType() == KnowledgeType.DECISION) {
 				decisionTableData.get("alternatives").add(new Alternative(elem));
-				getArguments(elem.getId(), decisionTableData, location);
+				getArguments(elem.getId(), elem.getKey(), decisionTableData, location);
 			}
 		}
 	}
@@ -108,9 +110,17 @@ public class DecisionTable {
 	 * @param criteria
 	 * @param location
 	 */
-	public void getArguments(long id, Map<String, List<DecisionTableElement>> decisionTableData, String location) {
+	public void getArguments(long id, String key, Map<String, List<DecisionTableElement>> decisionTableData, String location) {
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(id, location);
-		Set<Link> outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
+
+		Set<Link> outgoingLinks;
+		if (rootElement == null) {
+			KnowledgeElement issue = persistenceManager
+					.getManagerForSingleLocation(DocumentationLocation.JIRAISSUETEXT).getKnowledgeElement(key);
+			outgoingLinks = this.graph.outgoingEdgesOf(issue);
+		} else {
+			outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
+		}
 
 		for (Link currentLink : outgoingLinks) {
 			KnowledgeElement elem = currentLink.getTarget();
