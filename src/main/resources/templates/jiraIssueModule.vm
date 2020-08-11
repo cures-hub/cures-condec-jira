@@ -93,7 +93,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
                </button>
                
 			    <button class="aui-button aui-dropdown2-trigger" aria-owns="dropdown2-more" aria-haspopup="true">
-			    Create argument
+			    Create argument for solution option
 			    </button>
 			    
 			    <div id="dropdown2-more" class="aui-dropdown2 aui-style-default">
