@@ -15,6 +15,9 @@ public class Criterion extends DecisionTableElement {
 	private long id;
 	
 	@XmlElement
+	private String url;
+	
+	@XmlElement
 	private String summary;
 	
 	@XmlElement
@@ -22,6 +25,7 @@ public class Criterion extends DecisionTableElement {
 	
 	public Criterion(KnowledgeElement criteria) {
 		this.id = criteria.getId();
+		this.url = criteria.getUrl();
 		this.summary = criteria.getSummary();
 		this.documentationLocation = criteria.getDocumentationLocationAsString();
 	}

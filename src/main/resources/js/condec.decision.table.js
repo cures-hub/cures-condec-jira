@@ -6,7 +6,7 @@
 	const decisionTableID = "decisionTable-container";
 	const auiTableID = "tbldecisionTable";
 	const dropDownID = "selectDesionProblem";
-	const alternativeClmTitle = "Options/Alternatives";
+	const alternativeClmTitle = "Solution otions (Alternative and Decision)";
 	let issues = [];
 	let decisionTableData = [];
 	let currentIssue;
@@ -18,7 +18,6 @@
 		console.log("conDecDecisionTable buildDecisionTable");
 		const linkDistance = document.getElementById("link-distance-input").value;
 
-		
 		conDecAPI.getDecisionIssues(elementKey, linkDistance, function (data) {
 			issues = data;
 			addDropDownItems(data, elementKey);
@@ -33,8 +32,8 @@
 		});
 	};
 
-	ConDecDecisionTable.prototype.showAddCriteriaToDecisionTableDialog = function showAddCriteriaToDecisionTableDialog(projectKey) {
-		conDecDialog.showAddCriterionToDecisionTableDialog(projectKey, decisionTableData["criteria"], function (data) {		
+	ConDecDecisionTable.prototype.showAddCriteriaToDecisionTableDialog = function showAddCriteriaToDecisionTableDialog() {
+		conDecDialog.showAddCriterionToDecisionTableDialog(conDecAPI.getProjectKey(), decisionTableData["criteria"], function (data) {		
 			for (key of data.keys()) {
 				const tmpCriterion = data.get(key).criterion;
 				if(data.get(key).status) {
@@ -58,7 +57,7 @@
 	
 	ConDecDecisionTable.prototype.showCreateDialogForIssue = function showCreateDialogForIssue() {
 		if (currentIssue) {
-			conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation);		
+			conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative");		
 		}
 	}
 	/**
@@ -92,13 +91,17 @@
 		let dropDownMenu = document.getElementById("alternative-dropdown-items");
 		dropDownMenu.innerHTML = "";
 		for (i in alternatives) {
-			dropDownMenu.innerHTML +=  `<li id="${alternatives[i].id}" class=""><a>${alternatives[i].summary}</a></li>`;
+			const alternative = alternatives[i];
+			dropDownMenu.innerHTML +=  `<li id="${alternative.id}" class="">
+			<a style="float: left; margin:0% 5%;"><img src="${alternative.image}"</img>
+			${alternative.summary}	
+			</a></li>`;
 		}
 		
 		document.getElementById("alternative-dropdown-items").addEventListener("click", function (event) {
 			const alternative = getElementObj(event.target.parentNode.id);
 			if (alternative) {
-				conDecDialog.showCreateDialog(alternative.id, alternative.documentationLocation);	
+				conDecDialog.showCreateDialog(alternative.id, alternative.documentationLocation, "Pro-argument");
 			}
 		});
 	}
@@ -127,8 +130,8 @@
 				}
 				
 				let content = `<div style="clear: left;">
-					<p style="float: left;">${image}</p>
-					    <p>${alternative.summary}</p>
+					<p style="float: left; margin:0% 1%;">${image}</p>
+					    <p> ${alternative.summary}</p>
 					</div>`;
 				
 				rowElement.innerHTML += `<td headers="${alternativeClmTitle}">
@@ -151,9 +154,12 @@
 	 */
 	function addCriteriaToToDecisionTable(data) {
 		if (Object.keys(data).length > 0) {
-			for (x in data) {
+			for (criterion in data) {
+				console.log(data[criterion].url);
 				let header = document.getElementById("tblRow");
-				header.innerHTML += `<th id="criteriaClmTitle${data[x].id}">${data[x].summary}</th>`;
+				const currentUrl = window.location;
+				header.innerHTML += `<th id="criteriaClmTitle${data[criterion].id}">
+					<a href="${data[criterion].url}">${data[criterion].summary}</a></th>`;
 			}
 		}
 		let header = document.getElementById("tblRow");
@@ -185,8 +191,8 @@
 			
 			let content = `<div id="${alternative.id}:${argument.id}" class="argument draggable" draggable="true" 
 				style="clear: left;">
-				<p style="float: left;">${image}</p>
-				    <p>${argument.summary}</p>
+				<p style="float: left; margin:0% 5%;">${image}</p>
+				    <p> ${argument.summary}</p>
 				</div>`;
 			rowElement.innerHTML += rowElement.innerHTML.length ?
 				`<br>${content}` : content;
