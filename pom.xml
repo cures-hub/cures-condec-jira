@@ -270,6 +270,11 @@
 			<artifactId>jgrapht-core</artifactId>
 			<version>1.4.0</version>
 		</dependency>
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-arq</artifactId>
+            <version>3.16.0</version>
+        </dependency>
 	</dependencies>
 	<build>
 		<finalName>cures-condec-jira</finalName>
