@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 @XmlRootElement(name = "Alternative")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -26,10 +27,14 @@ public class Alternative extends DecisionTableElement {
 	@XmlElement
 	private List<Argument> arguments = new ArrayList<>();
 
+	@XmlElement
+	private String image;
+	
 	public Alternative(KnowledgeElement alternative) {
 		this.id = alternative.getId();
 		this.summary = alternative.getSummary();
 		this.documentationLocation = alternative.getDocumentationLocationAsString();
+		this.image = KnowledgeType.getIconUrl(alternative);
 	}
 
 	@XmlElement(name = "arguments")

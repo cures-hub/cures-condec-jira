@@ -117,16 +117,28 @@
 			rowElement.innerHTML += `<td headers="${alternativeClmTitle}">Please add at least one alternative for this issue</td>`;
 		} else {
 			for (let i in alternatives) {
-				body.innerHTML += `<tr id="bodyRowAlternatives${alternatives[i].id}"></tr>`;
-				let rowElement = document.getElementById(`bodyRowAlternatives${alternatives[i].id}`);
+				const alternative = alternatives[i];
+				body.innerHTML += `<tr id="bodyRowAlternatives${alternative.id}"></tr>`;
+				let rowElement = document.getElementById(`bodyRowAlternatives${alternative.id}`);
+				
+				let image = "";
+				if (alternatives[i].image) {
+					image = `<img src="${alternative.image}"</img>`;
+				}
+				
+				let content = `<div style="clear: left;">
+					<p style="float: left;">${image}</p>
+					    <p>${alternative.summary}</p>
+					</div>`;
+				
 				rowElement.innerHTML += `<td headers="${alternativeClmTitle}">
-					<div class="alternative" id="${alternatives[i].id}">${alternatives[i].summary}</div></td>`;
+					<div class="alternative" id="${alternative.id}">${content}</div></td>`;
 				if (Object.keys(criteria).length > 0) {
 					for (x in criteria) {
-						rowElement.innerHTML += `<td id="cell${alternatives[i].id}:${criteria[x].id}" headers="${criteria[x].summary}" class="droppable"></td>`;
+						rowElement.innerHTML += `<td id="cell${alternative.id}:${criteria[x].id}" headers="${criteria[x].summary}" class="droppable"></td>`;
 					}
 				}
-				rowElement.innerHTML += `<td id="cellUnknown${alternatives[i].id}" headers="criteriaClmTitleUnknown" class="droppable"></td>`;
+				rowElement.innerHTML += `<td id="cellUnknown${alternative.id}" headers="criteriaClmTitleUnknown" class="droppable"></td>`;
 				addArgumentsToDecisionTable(alternatives[i]);
 			}
 		}
@@ -164,16 +176,20 @@
 				rowElement = document.getElementById(`cellUnknown${alternative.id}`);
 				document.getElementById("criteriaClmTitleUnknown").setAttribute("style", "display:block");
 			}
-			rowElement.setAttribute("style", "white-space: pre;");
-			let content = "";
-			if (argument.type === "Pro") {
-				content = "+ " + argument.summary;
-			} else if (argument.type === "Con") {
-				content = "- " + argument.summary;
+			//rowElement.setAttribute("style", "white-space: pre;");
+			
+			let image = "";
+			if (argument.image) {
+				image = `<img src="${argument.image}"</img>`;
 			}
+			
+			let content = `<div id="${alternative.id}:${argument.id}" class="argument draggable" draggable="true" 
+				style="clear: left;">
+				<p style="float: left;">${image}</p>
+				    <p>${argument.summary}</p>
+				</div>`;
 			rowElement.innerHTML += rowElement.innerHTML.length ?
-				`<br><div id="${alternative.id}:${argument.id}" class="argument draggable" draggable="true">${content}</div>` :
-				`<div id="${alternative.id}:${argument.id}" class="argument draggable" draggable="true">${content}</div>`
+				`<br>${content}` : content;
 		}
 	}
 
@@ -298,7 +314,7 @@
 				.find(alternative => alternative.id == sourceAlternative.id).arguments
 				.find(argument => argument.id == elemId);
 			deleteLink(sourceAlternative, argument);
-			createLink(argument, targetAlternative);
+			createLink(targetAlternative, argument);
 		} else if (source.toLowerCase().includes("unknown")) {
 			const sourceAlternative = getElementObj(source);
 			const targetInformation = getElementObj(target);
@@ -309,7 +325,7 @@
 				.find(argument => argument.id == elemId);
 			if (sourceAlternative.id !== targetAlternative.id) {
 				deleteLink(sourceAlternative, argument);
-				createLink(argument, targetAlternative);
+				createLink(targetAlternative, argument);
 			} else {
 				createLink(argument, criteria);
 			}
@@ -317,13 +333,14 @@
 		} else if (target.toLowerCase().includes("unknown")) {
 			const sourceInformation = getElementObj(source);
 			const sourceAlternative = sourceInformation[0];
+			const targetAlternative = getElementObj(target);
 			const criteria = sourceInformation[1];
 			const argument = decisionTableData["alternatives"]
 				.find(alternative => alternative.id == sourceAlternative.id).arguments
 				.find(argument => argument.id == elemId);
 			if (sourceAlternative.id !== targetAlternative.id) {
 				deleteLink(sourceAlternative, argument);
-				createLink(argument, targetAlternative);
+				createLink(targetAlternative, argument);
 			}
 			deleteLink(argument, criteria);
 			// moved arg. from one criteria column to another criteria column
@@ -339,10 +356,10 @@
 				.find(argument => argument.id == elemId);
 			if (sourceAlternative.id !== targetAlternative.id) {
 				deleteLink(sourceAlternative, argument);
-				createLink(argument, targetAlternative);
+				createLink(targetAlternative, argument);
 			}
 			deleteLink(argument, sourceCriteria);
-			createLink(targetCriteria, argument);
+			createLink(argument, targetCriteria);
 		}
 	}
 

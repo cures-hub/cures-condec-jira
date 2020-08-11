@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 @XmlRootElement(name = "Argument")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -25,11 +26,15 @@ public class Argument extends DecisionTableElement {
 	@XmlElement
 	private Criterion criterion;
 	
+	@XmlElement
+	private String image;
+	
 	public Argument(KnowledgeElement argument) {
 		this.id = argument.getId();
 		this.summary = argument.getSummary();
 		this.documentationLocation = argument.getDocumentationLocationAsString();
 		this.type = argument.getTypeAsString();
+		this.image = KnowledgeType.getIconUrl(argument);
 	}
 	
 	@XmlElement(name = "id")
