@@ -91,7 +91,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
                <span class="aui-icon aui-icon-small aui-iconfont-add">Adds a new solution option to decision table</span>
                Solution option
                </button>
-               
 			    <button class="aui-button aui-dropdown2-trigger" id="btnAddArgument" aria-owns="dropdown2-more" aria-haspopup="true">
 			    Create argument for solution option
 			    </button>
