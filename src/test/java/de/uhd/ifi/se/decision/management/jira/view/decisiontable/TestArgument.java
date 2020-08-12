@@ -22,11 +22,11 @@ public class TestArgument extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		KnowledgeElement keArgument = new KnowledgeElement();
-		keArgument.setType(KnowledgeType.PRO);
-		keArgument.setSummary(summary);
-		keArgument.setDocumentationLocation(documentationLocation);
-		this.argument = new Argument(keArgument);	
+		KnowledgeElement knowledgeElement = new KnowledgeElement();
+		knowledgeElement.setType(KnowledgeType.PRO);
+		knowledgeElement.setSummary(summary);
+		knowledgeElement.setDocumentationLocation(documentationLocation);
+		this.argument = new Argument(knowledgeElement);	
 	}
 	
 	@Test
@@ -35,6 +35,7 @@ public class TestArgument extends TestSetUp {
 		assertEquals(this.argument.getSummary(), summary);
 		assertEquals(this.argument.getDocumentationLocation(), documentationLocation.getIdentifier());
 		assertEquals(this.argument.getType(), KnowledgeType.PRO.toString());
+		assertEquals(this.argument.getImage(), KnowledgeType.PRO.getIconUrl());
 	}
 	
 	@Test
@@ -44,14 +45,16 @@ public class TestArgument extends TestSetUp {
 	
 	@Test
 	public void testGetCriterion() {
-		KnowledgeElement keCriterion = new KnowledgeElement();
-		keCriterion.setProject(projectKey);
-		keCriterion.setType(KnowledgeType.OTHER);
-		keCriterion.setSummary(criterionSummary);
-		keCriterion.setDocumentationLocation(criterionDocumentationLocation);
-		this.argument.setCriterion(keCriterion);
-		assertEquals(this.argument.getCriterion().getId(), keCriterion.getId());
-		assertEquals(this.argument.getCriterion().getSummary(), keCriterion.getSummary());
-		assertEquals(this.argument.getCriterion().getDocumentationLocation(), keCriterion.getDocumentationLocationAsString());
+		KnowledgeElement knowledgeElement = new KnowledgeElement();
+		knowledgeElement.setProject(projectKey);
+		knowledgeElement.setType(KnowledgeType.OTHER);
+		knowledgeElement.setSummary(criterionSummary);
+		knowledgeElement.setDocumentationLocation(criterionDocumentationLocation);
+		
+		this.argument.setCriterion(knowledgeElement);
+		
+		assertEquals(this.argument.getCriterion().getId(), knowledgeElement.getId());
+		assertEquals(this.argument.getCriterion().getSummary(), knowledgeElement.getSummary());
+		assertEquals(this.argument.getCriterion().getDocumentationLocation(), knowledgeElement.getDocumentationLocationAsString());
 	}
 }

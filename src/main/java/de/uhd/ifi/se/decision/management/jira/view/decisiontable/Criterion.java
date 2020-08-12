@@ -15,6 +15,9 @@ public class Criterion extends DecisionTableElement {
 	private long id;
 	
 	@XmlElement
+	private String url;
+	
+	@XmlElement
 	private String summary;
 	
 	@XmlElement
@@ -22,25 +25,27 @@ public class Criterion extends DecisionTableElement {
 	
 	public Criterion(KnowledgeElement criteria) {
 		this.id = criteria.getId();
+		this.url = criteria.getUrl();
 		this.summary = criteria.getSummary();
 		this.documentationLocation = criteria.getDocumentationLocationAsString();
 	}
 	
-	@XmlElement(name = "id")
 	public long getId() {
 		return id;
 	}
 	
-	@XmlElement(name = "summary")
 	public String getSummary() {
 		return summary;
 	}
 	
-	@XmlElement(name = "documentationLocation")
 	public String getDocumentationLocation() {
 		return documentationLocation;
 	}
 
+	public String getUrl() {
+		return this.url;
+	}
+	
 	@Override
 	public int hashCode() {
 		return super.hashCode();

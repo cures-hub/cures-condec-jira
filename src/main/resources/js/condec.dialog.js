@@ -19,11 +19,12 @@
     var ConDecDialog = function () {
     };
 
-    ConDecDialog.prototype.showCreateDialog = function (idOfParentElement, documentationLocationOfParentElement) {
+    ConDecDialog.prototype.showCreateDialog = function (idOfParentElement, documentationLocationOfParentElement, defaultSelectTypeField = "Alternative") {
         console.log("conDecDialog showCreateDialog");
         console.log(idOfParentElement);
         console.log(documentationLocationOfParentElement);
-
+        console.log(defaultSelectTypeField);
+        
         // HTML elements
         var createDialog = document.getElementById("create-dialog");
         var inputSummaryField = document.getElementById("create-form-input-summary");
@@ -36,7 +37,7 @@
         // Fill HTML elements
         inputSummaryField.value = "";
         inputDescriptionField.value = "";
-        fillSelectTypeField(selectTypeField, "Alternative");
+        fillSelectTypeField(selectTypeField, defaultSelectTypeField);
         fillSelectLocationField(selectLocationField, documentationLocationOfParentElement);
 
         // Set onclick listener on buttons
@@ -489,6 +490,7 @@
         }
         selectField.innerHTML = "";
         var extendedKnowledgeTypes = conDecAPI.getExtendedKnowledgeTypes();
+        console.log(extendedKnowledgeTypes, selectedKnowledgeType);
         for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
             var isSelected = "";
             if (isKnowledgeTypeLocatedAtIndex(selectedKnowledgeType, extendedKnowledgeTypes, index)) {
@@ -501,7 +503,7 @@
 
     function isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index) {
         console.log("conDecDialog isKnowledgeTypeLocatedAtIndex");
-        return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase().split("-")[0];
+        return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase();
     }
 
     function fillSelectLocationField(selectField, documentationLocationOfParentElement) {
@@ -664,7 +666,7 @@
         	
         	queryReference.innerHTML = `<div>Available criteria are fetched from decision table criteria query from 
         		<a href="../../../plugins/servlet/condec/settings?projectKey=${projectKey}&category=rationaleModel">
-        		rational model settings page</a>.</div>`;
+        		rationale model settings page</a>.</div>`;
         	
         	addCheckboxEventListener();
         }

@@ -79,7 +79,7 @@
 
 	function addOnClickEventToDecisionTableButtons() {		
 		document.getElementById("btnAddCriterion").addEventListener("click", function() {
-				conDecDecisionTable.showAddCriteriaToDecisionTableDialog(conDecAPI.getProjectKey());		
+				conDecDecisionTable.showAddCriteriaToDecisionTableDialog();		
 		});
 		
 		document.getElementById("btnAddAlternative").addEventListener("click", function() {

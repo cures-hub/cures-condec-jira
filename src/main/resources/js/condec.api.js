@@ -1308,8 +1308,9 @@
 	 * external references: condec.context.menu
 	 */
 	ConDecAPI.prototype.openJiraIssue = function (elementId, documentationLocation) {
+		let newTab = window.open();
 		this.getDecisionKnowledgeElement(elementId, documentationLocation, function (decisionKnowledgeElement) {
-			global.open(decisionKnowledgeElement.url, '_self');
+			newTab.location.href = decisionKnowledgeElement.url;
 		});
 	};
 	/*
