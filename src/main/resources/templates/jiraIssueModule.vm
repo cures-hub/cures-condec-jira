@@ -74,7 +74,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
             <form class="aui">
                <div>
                   <label for="selectDesionProblem">Issues: </label>
-                  <select class="select medium-field" id="selectDesionProblem" name="selectDesionProblem">
+                  <select class="select medium-long-field" id="selectDesionProblem" name="selectDesionProblem">
                   </select>
                    	#set ($linkDistanceInputId = "link-distance-input-decision-table")	
                		#parse("templates/filter/linkDistance.vm")
@@ -92,7 +92,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
                Solution option
                </button>
                
-			    <button class="aui-button aui-dropdown2-trigger" aria-owns="dropdown2-more" aria-haspopup="true">
+			    <button class="aui-button aui-dropdown2-trigger" id="btnAddArgument" aria-owns="dropdown2-more" aria-haspopup="true">
 			    Create argument for solution option
 			    </button>
 			    
@@ -101,11 +101,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 		            </ul>
 		        </div>
 			</div>
-			<!-- Be sure to put your dropdown markup outside the button group...
-			     otherwise the buttons will get jaggy edges! -->
-			<aui-dropdown-menu id="split-container-dropdown">
-			   
-			</aui-dropdown-menu>
          </div>
       </div>
       <div style="height: auto; overflow-x: auto;" id="decisionTable-container"></div>
