@@ -889,9 +889,10 @@
 	ConDecAPI.prototype.getDecisionIssues = function (elementKey, linkDistance, callback) {
 		const filterSettings = {
 				"projectKey": projectKey,
-				"linkDistance": linkDistance
+				"linkDistance": linkDistance,
+				"selectedElement": elementKey
 		};
-		generalApi.postJSON(this.restPrefix + "/view/getDecisionIssues.json?elementKey=" + elementKey, filterSettings, 
+		generalApi.postJSON(this.restPrefix + "/view/getDecisionIssues.json", filterSettings, 
 				function (error, issues) {
 			if (error === null) {
 				callback(issues);

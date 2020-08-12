@@ -81,27 +81,29 @@ public class FilteringManager {
 		return subgraph;
 	}
 
-	public AsSubgraph<KnowledgeElement, Link> getSubgraphMatchingFilterSettings(KnowledgeElement selectedElement, int linkDistance) {
-		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null || selectedElement == null) {
+	public AsSubgraph<KnowledgeElement, Link> getSubgraphMatchingFilterSettings(KnowledgeElement selectedElement,
+			int linkDistance) {
+		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null
+				|| selectedElement == null) {
 			LOGGER.error("FilteringManager missing filterSettings attribute or selectedElement");
 		}
 
 		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>();
 		elements.add(selectedElement);
-		for (Link l : selectedElement.getLinks()) {
-			KnowledgeElement tmpKnowledgeElement = l.getTarget();
+		for (Link link : selectedElement.getLinks()) {
+			KnowledgeElement tmpKnowledgeElement = link.getTarget();
 			elements.add(tmpKnowledgeElement);
-			getParentSubgraph(tmpKnowledgeElement, linkDistance -1, elements);
+			getParentSubgraph(tmpKnowledgeElement, linkDistance - 1, elements);
 		}
 		return new AsSubgraph<KnowledgeElement, Link>(graph, elements);
 	}
 
 	private void getParentSubgraph(KnowledgeElement parent, int distance, Set<KnowledgeElement> elements) {
-		for (Link l : parent.getLinks()) {
-			KnowledgeElement tmpKnowledgeElement = l.getTarget();
+		for (Link link : parent.getLinks()) {
+			KnowledgeElement tmpKnowledgeElement = link.getTarget();
 			elements.add(tmpKnowledgeElement);
-			if (distance > 0) 
-				getParentSubgraph(tmpKnowledgeElement, distance -1, elements);
+			if (distance > 0)
+				getParentSubgraph(tmpKnowledgeElement, distance - 1, elements);
 		}
 	}
 

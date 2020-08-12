@@ -15,9 +15,11 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 /**
  * Represents the filter criteria. The filter settings cover the key of the
@@ -40,6 +42,7 @@ public class FilterSettings {
 	private int linkDistance;
 	private int minDegree;
 	private int maxDegree;
+	private KnowledgeElement selectedElement;
 
 	@XmlElement
 	private long startDate;
@@ -357,5 +360,37 @@ public class FilterSettings {
 	@JsonProperty("isTestCodeShown")
 	public void setTestCodeShown(boolean isTestCodeShown) {
 		this.isTestCodeShown = isTestCodeShown;
+	}
+
+	/**
+	 * @return {@link KnowledgeElement} that is currently selected (e.g. as root
+	 *         element in the knowlegde tree view). For example, this can be a Jira
+	 *         issue such as a work item, bug report or requirement.
+	 */
+	public KnowledgeElement getSelectedElement() {
+		return selectedElement;
+	}
+
+	/**
+	 * @param selectedElement
+	 *            {@link KnowledgeElement} that is currently selected (e.g. as root
+	 *            element in the knowlegde tree view). For example, this can be a
+	 *            Jira issue such as a work item, bug report or requirement.
+	 */
+	public void setSelectedElement(KnowledgeElement selectedElement) {
+		this.selectedElement = selectedElement;
+	}
+
+	/**
+	 * @param selectedElementKey
+	 *            key of the {@link KnowledgeElement} that is currently selected
+	 *            (e.g. as root element in the knowlegde tree view). For example,
+	 *            this can be the key of a Jira issue such as a work item, bug
+	 *            report or requirement, e.g. CONDEC-123.
+	 */
+	@JsonProperty("selectedElement")
+	public void setSelectedElement(String selectedElementKey) {
+		this.selectedElement = KnowledgePersistenceManager.getOrCreate(project).getJiraIssueManager()
+				.getKnowledgeElement(selectedElementKey);
 	}
 }
