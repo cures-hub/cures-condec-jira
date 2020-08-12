@@ -37,17 +37,14 @@ public class Argument extends DecisionTableElement {
 		this.image = KnowledgeType.getIconUrl(argument);
 	}
 	
-	@XmlElement(name = "id")
 	public long getId() {
 		return id;
 	}
 
-	@XmlElement(name = "summary")
 	public String getSummary() {
 		return summary;
 	}
 
-	@XmlElement(name = "criterion")
 	public Criterion getCriterion() {
 		return this.criterion;
 	}
@@ -56,13 +53,15 @@ public class Argument extends DecisionTableElement {
 		this.criterion = new Criterion(criterion);
 	}
 	
-	@XmlElement(name = "documentationLocation")
 	public String getDocumentationLocation() {
 		return documentationLocation;
 	}
 
-	@XmlElement(name = "type")
 	public String getType() {
 		return type;
+	}
+	
+	public String getImage() {
+		return this.image;
 	}
 }

@@ -30,21 +30,22 @@ public class Criterion extends DecisionTableElement {
 		this.documentationLocation = criteria.getDocumentationLocationAsString();
 	}
 	
-	@XmlElement(name = "id")
 	public long getId() {
 		return id;
 	}
 	
-	@XmlElement(name = "summary")
 	public String getSummary() {
 		return summary;
 	}
 	
-	@XmlElement(name = "documentationLocation")
 	public String getDocumentationLocation() {
 		return documentationLocation;
 	}
 
+	public String getUrl() {
+		return this.url;
+	}
+	
 	@Override
 	public int hashCode() {
 		return super.hashCode();

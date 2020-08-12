@@ -37,7 +37,6 @@ public class Alternative extends DecisionTableElement {
 		this.image = KnowledgeType.getIconUrl(alternative);
 	}
 
-	@XmlElement(name = "arguments")
 	public List<Argument> getArguments() {
 		return arguments;
 	}
@@ -46,18 +45,19 @@ public class Alternative extends DecisionTableElement {
 		this.arguments.add(argument);
 	}
 
-	@XmlElement(name = "id")
 	public long getId() {
 		return this.id;
 	}
 
-	@XmlElement(name = "summary")
 	public String getSummary() {
 		return this.summary;
 	}
 
-	@XmlElement(name = "documentationLocation")
 	public String getDocumentationLocation() {
 		return this.documentationLocation;
+	}
+	
+	public String getImage() {
+		return this.image;
 	}
 }
