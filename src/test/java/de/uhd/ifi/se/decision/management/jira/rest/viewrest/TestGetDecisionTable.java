@@ -37,6 +37,21 @@ public class TestGetDecisionTable extends TestSetUp {
 	}
 
 	@Test
+	public void testGetDecisionIssuesRequestNullProjectKeyInFilterSettingsNull() {
+		FilterSettings filterSettings = new FilterSettings(null, "");
+		filterSettings.setSelectedElement("TEST-1");
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				viewRest.getDecisionIssues(request, filterSettings).getStatus());
+	}
+
+	@Test
+	public void testGetDecisionIssuesRequestNullSelectedElementInFilterSettingsNull() {
+		FilterSettings filterSettings = new FilterSettings("TEST", "");
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				viewRest.getDecisionIssues(request, filterSettings).getStatus());
+	}
+
+	@Test
 	public void testGetDecisionIssues() {
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
 		filterSettings.setSelectedElement("TEST-1");
