@@ -6,7 +6,7 @@
 	const decisionTableID = "decisionTable-container";
 	const auiTableID = "tbldecisionTable";
 	const dropDownID = "selectDesionProblem";
-	const alternativeClmTitle = "Solution otions (Alternative and Decision)";
+	const alternativeClmTitle = "Solution options (Alternative and Decision)";
 	let issues = [];
 	let decisionTableData = [];
 	let currentIssue;
@@ -92,10 +92,9 @@
 		dropDownMenu.innerHTML = "";
 		for (i in alternatives) {
 			const alternative = alternatives[i];
-			dropDownMenu.innerHTML +=  `<li id="${alternative.id}" class="">
-			<a style="float: left; margin:0% 5%;"><img src="${alternative.image}"</img>
-			${alternative.summary}	
-			</a></li>`;
+			dropDownMenu.innerHTML +=  `<li id="${alternative.id}">
+			<a><div style="float: left; margin-right: 8px;"><img src="${alternative.image}"</img></div>
+			${alternative.summary}</a></li>`;
 		}
 		
 		document.getElementById("alternative-dropdown-items").addEventListener("click", function (event) {
@@ -113,11 +112,11 @@
 	 */
 	function addAlternativesToDecisionTable(alternatives, criteria) {
 		let body = document.getElementById("tblBody");
-
+		
 		if (Object.keys(alternatives).length === 0) {
 			body.innerHTML += `<tr id="bodyRowAlternatives"></tr>`;
 			let rowElement = document.getElementById(`bodyRowAlternatives`);
-			rowElement.innerHTML += `<td headers="${alternativeClmTitle}">Please add at least one alternative for this issue</td>`;
+			rowElement.innerHTML += `<td headers="${alternativeClmTitle}">Please add at least one solution option for this issue</td>`;
 		} else {
 			for (let i in alternatives) {
 				const alternative = alternatives[i];
@@ -130,7 +129,7 @@
 				}
 				
 				let content = `<div style="clear: left;">
-					<p style="float: left; margin:0% 1%;">${image}</p>
+					<p style="float: left; margin-right: 8px;">${image}</p>
 					    <p> ${alternative.summary}</p>
 					</div>`;
 				
@@ -191,7 +190,7 @@
 			
 			let content = `<div id="${alternative.id}:${argument.id}" class="argument draggable" draggable="true" 
 				style="clear: left;">
-				<p style="float: left; margin:0% 5%;">${image}</p>
+				<p style="float: left; margin-right: 8px;">${image}</p>
 				    <p> ${argument.summary}</p>
 				</div>`;
 			rowElement.innerHTML += rowElement.innerHTML.length ?
@@ -232,11 +231,21 @@
 	 */
 	function addDropDownItems(data, elementKey) {
 		let dropDown = document.getElementById(`${dropDownID}`);
+		let btnAddCriterion = document.getElementById("btnAddCriterion");
+		let btnAddAlternative = document.getElementById("btnAddAlternative");
+		let btnAddArgument = document.getElementById("btnAddArgument");
+		
 		dropDown.innerHTML = "";
 		if (!data.length) {
+			btnAddCriterion.disabled = true;
+			btnAddAlternative.disabled = true;
+			btnAddArgument.disabled = true;
 			dropDown.innerHTML += "<option disabled>Could not find any issue. Please create new issue!></otpion>";
 			return;
 		} else {
+			btnAddCriterion.disabled = false;
+			btnAddAlternative.disabled = false;
+			btnAddArgument.disabled = false;
 			for (let i = 0; i < data.length; i++) {
 				if (i == 0) {
 					dropDown.innerHTML += "<option value=\"" + data[i].id + "\" checked>" + data[i].summary + "</option>";
