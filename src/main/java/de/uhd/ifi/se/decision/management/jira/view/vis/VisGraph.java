@@ -18,7 +18,6 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 @XmlRootElement(name = "vis")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -60,14 +59,11 @@ public class VisGraph {
 		if (subgraph == null || subgraph.vertexSet().isEmpty()) {
 			return;
 		}
-		rootElementKey = filterSettings.getSelectedElement().getKey();
-		if (rootElementKey == null || rootElementKey.isBlank()) {
+		KnowledgeElement rootElement = filterSettings.getSelectedElement();
+		if (rootElement == null || rootElement.getKey() == null) {
 			addNodesAndEdges(null, subgraph);
 			return;
 		}
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(filterSettings.getProjectKey());
-		KnowledgeElement rootElement = persistenceManager.getJiraIssueManager().getKnowledgeElement(rootElementKey);
 
 		// TODO This is not a key but id_documentationLocation
 		this.rootElementKey = rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString();
