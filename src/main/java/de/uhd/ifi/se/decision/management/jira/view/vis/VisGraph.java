@@ -51,10 +51,6 @@ public class VisGraph {
 	}
 
 	public VisGraph(ApplicationUser user, FilterSettings filterSettings) {
-		this(user, filterSettings, null);
-	}
-
-	public VisGraph(ApplicationUser user, FilterSettings filterSettings, String rootElementKey) {
 		this(filterSettings);
 		if (user == null || filterSettings == null) {
 			return;

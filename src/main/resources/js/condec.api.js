@@ -512,10 +512,10 @@
 				"documentationLocations": documentationLocations,
 				"jiraIssueTypes": jiraIssueTypes,
 				"status": status,
-				"linkTypes": linkTypes
+				"linkTypes": linkTypes,
+				"selectedElement": elementKey
 		};
-		generalApi.postJSON(this.restPrefix + "/view/getVis.json?elementKey=" + elementKey,
-				filterSettings, function (error, vis) {
+		generalApi.postJSON(this.restPrefix + "/view/getVis.json", filterSettings, function (error, vis) {
 			if (error === null) {
 				callback(vis);
 			}

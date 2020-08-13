@@ -1,17 +1,19 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.HashSet;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.HashSet;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class TestVisGraph extends TestSetUp {
 	private VisGraph visGraph;
@@ -77,6 +79,7 @@ public class TestVisGraph extends TestSetUp {
 
 	@Test
 	public void testConstructorUserNullFilterSettingsFilledRootElementExisting() {
-		assertNotNull(new VisGraph(user, filterSettings, "TEST-1"));
+		filterSettings.setSelectedElement("TEST-1");
+		assertNotNull(new VisGraph(user, filterSettings));
 	}
 }

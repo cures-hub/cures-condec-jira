@@ -343,23 +343,24 @@ public class ViewRest {
 	@Path("/getVis")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getVis(@Context HttpServletRequest request, FilterSettings filterSettings,
-			@QueryParam("elementKey") String rootElementKey) {
-		if (checkIfElementIsValid(rootElementKey).getStatus() != Status.OK.getStatusCode()) {
-			return checkIfElementIsValid(rootElementKey);
-		}
-		if (filterSettings == null) {
+	public Response getVis(@Context HttpServletRequest request, FilterSettings filterSettings) {
+		if (filterSettings == null || filterSettings.getSelectedElement() == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
 					.build();
 		}
+		KnowledgeElement selectedElement = filterSettings.getSelectedElement();
+		if (checkIfElementIsValid(selectedElement.getKey()).getStatus() != Status.OK.getStatusCode()) {
+			return checkIfElementIsValid(selectedElement.getKey());
+		}
+
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
 					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisGraph visGraph = new VisGraph(user, filterSettings, rootElementKey);
+		VisGraph visGraph = new VisGraph(user, filterSettings);
 		return Response.ok(visGraph).build();
 	}
 
