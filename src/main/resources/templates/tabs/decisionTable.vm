@@ -1,12 +1,10 @@
 <div class="aui-toolbar2" role="toolbar">
 	<div class="aui-toolbar-2-inner">
 		<form class="aui">
-			<div>
-				<label for="selectDecisionProblem">Issues: </label>
-				<select class="select medium-long-field" id="selectDecisionProblem" name="selectDecisionProblem"></select>
-				#set ($linkDistanceInputId = "link-distance-input-decision-table")	
-				#parse("templates/filter/linkDistance.vm")
-			</div>
+			<label for="selectDecisionProblem">Issues: </label>
+			<select class="select medium-long-field" id="selectDecisionProblem" name="selectDecisionProblem"></select>
+			#set ($linkDistanceInputId = "link-distance-input-decision-table")	
+			#parse("templates/filter/linkDistance.vm")
 		</form>		
 		<div class="aui-buttons">
 			<button class="aui-button" id="btnAddCriterion" title="Adds a new criterion column to decision table">

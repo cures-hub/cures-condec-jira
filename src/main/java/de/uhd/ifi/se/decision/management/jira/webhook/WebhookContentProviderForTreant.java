@@ -105,7 +105,7 @@ public class WebhookContentProviderForTreant extends AbstractWebookContentProvid
 	 * @return TreantJS JSON String including config and data
 	 */
 	private String createTreantJsonString() {
-		FilterSettings filterSettings = new FilterSettings(secret, null);
+		FilterSettings filterSettings = new FilterSettings(projectKey, null);
 		filterSettings.setSelectedElement(rootElementKey);
 		Treant treant = new Treant(filterSettings, true);
 		ObjectMapper objectMapper = new ObjectMapper();

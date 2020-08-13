@@ -289,7 +289,8 @@ public class ViewRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getTreant(@Context HttpServletRequest request, FilterSettings filterSettings) {
-		if (request == null || filterSettings == null || filterSettings.getSelectedElement() == null) {
+		if (request == null || filterSettings == null || filterSettings.getSelectedElement() == null
+				|| filterSettings.getSelectedElement().getKey() == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Treant cannot be shown since request or element key is invalid."))
 					.build();
