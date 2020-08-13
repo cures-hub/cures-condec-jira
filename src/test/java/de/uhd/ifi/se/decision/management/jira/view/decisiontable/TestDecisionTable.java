@@ -61,7 +61,6 @@ public class TestDecisionTable extends TestSetUp {
 
 	@Test
 	public void testGetAlternativesOnIssueDirectly() {
-
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("user", user);
 		decisionTable.setDecisionTableForIssue(2, DocumentationLocation.JIRAISSUE.getIdentifier(), user);

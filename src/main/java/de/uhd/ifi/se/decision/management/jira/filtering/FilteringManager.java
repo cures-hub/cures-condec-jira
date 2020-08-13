@@ -30,6 +30,7 @@ public class FilteringManager {
 	private ApplicationUser user;
 	private FilterSettings filterSettings;
 	private KnowledgeGraph graph;
+	public Set<Link> traversedLinks;
 
 	public FilteringManager(FilterSettings filterSettings) {
 		this(null, filterSettings);
@@ -41,6 +42,7 @@ public class FilteringManager {
 		if (filterSettings != null) {
 			this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
 		}
+		this.traversedLinks = new HashSet<Link>();
 	}
 
 	public FilteringManager(String projectKey, ApplicationUser user, String query) {
@@ -88,26 +90,29 @@ public class FilteringManager {
 		KnowledgeElement selectedElement = filterSettings.getSelectedElement();
 		int linkDistance = filterSettings.getLinkDistance();
 		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>();
-		elements.add(selectedElement);
-		if (linkDistance == 0) {
-			return new AsSubgraph<KnowledgeElement, Link>(graph, elements);
-		}
-		for (Link link : selectedElement.getLinks()) {
-			KnowledgeElement element = link.getTarget();
-			elements.add(element);
-			getParentSubgraph(element, linkDistance - 1, elements);
-		}
+		elements.addAll(getChildren(selectedElement, linkDistance));
 		return new AsSubgraph<KnowledgeElement, Link>(graph, elements);
 	}
 
-	private void getParentSubgraph(KnowledgeElement parent, int currentDistance, Set<KnowledgeElement> elements) {
-		for (Link link : parent.getLinks()) {
-			KnowledgeElement element = link.getTarget();
-			elements.add(element);
-			if (currentDistance > 0) {
-				getParentSubgraph(element, currentDistance - 1, elements);
-			}
+	private Set<KnowledgeElement> getChildren(KnowledgeElement currentElement, int currentDistance) {
+		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>();
+		elements.add(currentElement);
+
+		if (currentDistance == 0) {
+			return elements;
 		}
+
+		for (Link link : currentElement.getLinks()) {
+			if (!traversedLinks.add(link)) {
+				continue;
+			}
+			KnowledgeElement oppositeElement = link.getOppositeElement(currentElement);
+			if (oppositeElement == null) {
+				continue;
+			}
+			elements.addAll(getChildren(oppositeElement, currentDistance - 1));
+		}
+		return elements;
 	}
 
 	private Set<Link> getLinksNotMatchingFilterSettings(Set<Link> links) {

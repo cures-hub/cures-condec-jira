@@ -10,6 +10,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.jgrapht.graph.AsSubgraph;
+
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -34,9 +37,13 @@ public class Treant {
 	@XmlElement
 	private TreantNode nodeStructure;
 
-	private KnowledgeGraph graph;
+	@JsonIgnore
+	private AsSubgraph<KnowledgeElement, Link> graph;
+	@JsonIgnore
 	private FilterSettings filterSettings;
+	@JsonIgnore
 	private boolean isHyperlinked;
+	@JsonIgnore
 	private Set<Link> traversedLinks;
 
 	public Treant(String projectKey, String elementKey, boolean isHyperlinked) {
@@ -48,10 +55,7 @@ public class Treant {
 	}
 
 	public Treant(String projectKey, String elementKey, boolean isHyperlinked, FilterSettings filterSettings) {
-		this.setFilterSettings(filterSettings == null ? new FilterSettings(projectKey, null) : filterSettings);
 		this.traversedLinks = new HashSet<Link>();
-		this.graph = KnowledgeGraph.getOrCreate(projectKey);
-
 		AbstractPersistenceManagerForSingleLocation persistenceManager;
 		// TODO this should not be checked in Treant, instead of the elementKey the
 		// entire element should be passed
@@ -62,6 +66,10 @@ public class Treant {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager();
 		}
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(elementKey);
+		this.setFilterSettings(filterSettings == null ? new FilterSettings(projectKey, null) : filterSettings);
+		this.filterSettings.setSelectedElement(rootElement);
+		FilteringManager filteringManager = new FilteringManager(this.filterSettings);
+		this.graph = filteringManager.getSubgraphMatchingFilterSettings();
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, (Link) null, 1));
 		this.setHyperlinked(isHyperlinked);
@@ -70,8 +78,10 @@ public class Treant {
 	public Treant(String projectKey, KnowledgeElement element, String treantId, boolean isIssueView,
 			FilterSettings filterSettings) {
 		this.setFilterSettings(filterSettings == null ? new FilterSettings(projectKey, null) : filterSettings);
+		this.filterSettings.setSelectedElement(element);
 		this.traversedLinks = new HashSet<Link>();
-		this.graph = KnowledgeGraph.getOrCreate(projectKey);
+		FilteringManager filteringManager = new FilteringManager(this.filterSettings);
+		this.graph = filteringManager.getSubgraphMatchingFilterSettings();
 
 		// TODO Why is the treantId needed?
 		this.setChart(new Chart(treantId));
