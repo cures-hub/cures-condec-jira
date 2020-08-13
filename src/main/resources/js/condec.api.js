@@ -449,10 +449,10 @@
 				"projectKey": projectKey,
 				"searchTerm": searchTerm,
 				"isOnlyDecisionKnowledgeShown": isOnlyDecisionKnowledgeShown,
-				"linkDistance": linkDistance
+				"linkDistance": linkDistance,
+				"selectedElement": elementKey
 		};
-		generalApi.postJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey, 
-				filterSettings, function (error, treant) {
+		generalApi.postJSON(this.restPrefix + "/view/getTreant.json", filterSettings, function (error, treant) {
 			if (error === null) {
 				callback(treant);
 			}

@@ -20,34 +20,41 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 public class TestGetTreant extends TestSetUp {
 
 	private ViewRest viewRest;
+	private FilterSettings filterSettings;
 
 	@Before
 	public void setUp() {
 		init();
 		viewRest = new ViewRest();
+		filterSettings = new FilterSettings("TEST", null);
 	}
 
 	@Test
 	public void testRequestNullElementKeyNullFilterSettingsNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreant(null, null, null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreant(null, null).getStatus());
 	}
 
 	@Test
-	public void testRequestNullElementNotExistsFilterSettingsNull() throws GenericEntityException {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreant(null, "NotTEST-123", null).getStatus());
+	public void testRequestNullElementNotExists() throws GenericEntityException {
+		filterSettings.setSelectedElement("NotTEST-123");
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreant(null, filterSettings).getStatus());
 	}
 
 	@Test
-	public void testRequestNullElementExistsFilterSettingsNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreant(null, "TEST-12", null).getStatus());
-	}
-
-	@Test
-	public void testRequestFilledElementNotExistsFilterSettingsNull() {
+	public void testRequestValidFilterSettingsNull() {
 		HttpServletRequest request = new MockHttpServletRequest();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreant(request, "NotTEST-12", null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreant(request, null).getStatus());
+	}
+
+	@Test
+	public void testRequestFilledElementNotExists() {
+		HttpServletRequest request = new MockHttpServletRequest();
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		request.setAttribute("user", user);
+		filterSettings.setSelectedElement("NotTEST-123");
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreant(request, filterSettings).getStatus());
 	}
 
 	@Test
@@ -55,7 +62,8 @@ public class TestGetTreant extends TestSetUp {
 		HttpServletRequest request = new MockHttpServletRequest();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
-		assertEquals(Status.OK.getStatusCode(), viewRest.getTreant(request, "TEST-12", null).getStatus());
+		filterSettings.setSelectedElement("TEST-12");
+		assertEquals(Status.OK.getStatusCode(), viewRest.getTreant(request, filterSettings).getStatus());
 	}
 
 	@Test
@@ -65,6 +73,7 @@ public class TestGetTreant extends TestSetUp {
 		request.setAttribute("user", user);
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
 		filterSettings.setLinkDistance(2);
-		assertEquals(Status.OK.getStatusCode(), viewRest.getTreant(request, "TEST-12", filterSettings).getStatus());
+		filterSettings.setSelectedElement("TEST-12");
+		assertEquals(Status.OK.getStatusCode(), viewRest.getTreant(request, filterSettings).getStatus());
 	}
 }

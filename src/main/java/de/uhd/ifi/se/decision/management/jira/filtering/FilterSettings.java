@@ -20,6 +20,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 
 /**
  * Represents the filter criteria. For example, the filter settings cover the
@@ -382,15 +383,21 @@ public class FilterSettings {
 	}
 
 	/**
-	 * @param selectedElementKey
+	 * @param elementKey
 	 *            key of the {@link KnowledgeElement} that is currently selected
 	 *            (e.g. as root element in the knowlegde tree view). For example,
 	 *            this can be the key of a Jira issue such as a work item, bug
 	 *            report or requirement, e.g. CONDEC-123.
 	 */
 	@JsonProperty("selectedElement")
-	public void setSelectedElement(String selectedElementKey) {
-		this.selectedElement = KnowledgePersistenceManager.getOrCreate(project).getJiraIssueManager()
-				.getKnowledgeElement(selectedElementKey);
+	public void setSelectedElement(String elementKey) {
+		AbstractPersistenceManagerForSingleLocation persistenceManager;
+		if (elementKey.contains(":")) {
+			persistenceManager = KnowledgePersistenceManager.getOrCreate(project)
+					.getManagerForSingleLocation(DocumentationLocation.JIRAISSUETEXT);
+		} else {
+			persistenceManager = KnowledgePersistenceManager.getOrCreate(project).getJiraIssueManager();
+		}
+		this.selectedElement = persistenceManager.getKnowledgeElement(elementKey);
 	}
 }

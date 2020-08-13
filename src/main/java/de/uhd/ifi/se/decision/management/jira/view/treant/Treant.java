@@ -20,8 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 
 /**
  * Creates a tree data structure from the {@link KnowledgeGraph} according to
@@ -46,39 +44,30 @@ public class Treant {
 	@JsonIgnore
 	private Set<Link> traversedLinks;
 
-	public Treant(String projectKey, String elementKey, boolean isHyperlinked) {
-		this(projectKey, elementKey, isHyperlinked, new FilterSettings(projectKey, null));
+	public Treant(FilterSettings filterSettings) {
+		this(filterSettings, false);
 	}
 
-	public Treant(String projectKey, String elementKey, FilterSettings filterSettings) {
-		this(projectKey, elementKey, false, filterSettings);
-	}
-
-	public Treant(String projectKey, String elementKey, boolean isHyperlinked, FilterSettings filterSettings) {
+	public Treant(FilterSettings filterSettings, boolean isHyperlinked) {
 		this.traversedLinks = new HashSet<Link>();
-		AbstractPersistenceManagerForSingleLocation persistenceManager;
-		// TODO this should not be checked in Treant, instead of the elementKey the
-		// entire element should be passed
-		if (elementKey.contains(":")) {
-			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-					.getManagerForSingleLocation(DocumentationLocation.JIRAISSUETEXT);
-		} else {
-			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager();
+		if (filterSettings == null) {
+			return;
 		}
-		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(elementKey);
-		this.setFilterSettings(filterSettings == null ? new FilterSettings(projectKey, null) : filterSettings);
-		this.filterSettings.setSelectedElement(rootElement);
-		FilteringManager filteringManager = new FilteringManager(this.filterSettings);
+		this.filterSettings = filterSettings;
+
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		this.graph = filteringManager.getSubgraphMatchingFilterSettings();
 		this.setChart(new Chart());
-		this.setNodeStructure(this.createNodeStructure(rootElement, (Link) null, 1));
+		this.setNodeStructure(this.createNodeStructure(filterSettings.getSelectedElement(), (Link) null, 1));
 		this.setHyperlinked(isHyperlinked);
 	}
 
-	public Treant(String projectKey, KnowledgeElement element, String treantId, boolean isIssueView,
-			FilterSettings filterSettings) {
-		this.setFilterSettings(filterSettings == null ? new FilterSettings(projectKey, null) : filterSettings);
-		this.filterSettings.setSelectedElement(element);
+	public Treant(String treantId, boolean isIssueView, FilterSettings filterSettings) {
+		this.setFilterSettings(filterSettings);
+		if (filterSettings == null) {
+			return;
+		}
+		KnowledgeElement element = filterSettings.getSelectedElement();
 		this.traversedLinks = new HashSet<Link>();
 		FilteringManager filteringManager = new FilteringManager(this.filterSettings);
 		this.graph = filteringManager.getSubgraphMatchingFilterSettings();

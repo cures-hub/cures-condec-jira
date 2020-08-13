@@ -16,6 +16,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 
@@ -104,7 +105,9 @@ public class WebhookContentProviderForTreant extends AbstractWebookContentProvid
 	 * @return TreantJS JSON String including config and data
 	 */
 	private String createTreantJsonString() {
-		Treant treant = new Treant(projectKey, rootElementKey, true);
+		FilterSettings filterSettings = new FilterSettings(secret, null);
+		filterSettings.setSelectedElement(rootElementKey);
+		Treant treant = new Treant(filterSettings, true);
 		ObjectMapper objectMapper = new ObjectMapper();
 		String treantAsJson = "";
 		try {

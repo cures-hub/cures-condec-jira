@@ -288,19 +288,18 @@ public class ViewRest {
 	@Path("/getTreant")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getTreant(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey,
-			FilterSettings filterSettings) {
-		if (request == null || elementKey == null) {
+	public Response getTreant(@Context HttpServletRequest request, FilterSettings filterSettings) {
+		if (request == null || filterSettings == null || filterSettings.getSelectedElement() == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Treant cannot be shown since request or element key is invalid."))
 					.build();
 		}
-		String projectKey = getProjectKey(elementKey);
+		String projectKey = filterSettings.getProjectKey();
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		Treant treant = new Treant(projectKey, elementKey, filterSettings);
+		Treant treant = new Treant(filterSettings);
 		return Response.ok(treant).build();
 	}
 
@@ -330,7 +329,8 @@ public class ViewRest {
 				KnowledgePersistenceManager kpManager = new KnowledgePersistenceManager(projectKey);
 				element = kpManager.getJiraIssueManager().getKnowledgeElement(elementKey);
 			}
-			Treant treant = new Treant(projectKey, element, "treant-container-class", isIssueView, filterSettings);
+			filterSettings.setSelectedElement(element);
+			Treant treant = new Treant("treant-container-class", isIssueView, filterSettings);
 			return Response.ok(treant).build();
 		} catch (Exception e) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Treant cannot be shown."))
