@@ -74,6 +74,9 @@ public class FilteringManager {
 		}
 		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>(getElementsMatchingFilterSettings());
 		AsSubgraph<KnowledgeElement, Link> subgraph = new AsSubgraph<KnowledgeElement, Link>(graph, elements);
+		if (filterSettings.getSelectedElement() != null) {
+			subgraph = getSubgraphMatchingLinkDistance();
+		}
 		if (filterSettings.getLinkTypes().size() < LinkType.toStringList().size()) {
 			Set<Link> linksNotMatchingFilterSettings = getLinksNotMatchingFilterSettings(subgraph.edgeSet());
 			subgraph.removeAllEdges(linksNotMatchingFilterSettings);
@@ -81,29 +84,29 @@ public class FilteringManager {
 		return subgraph;
 	}
 
-	public AsSubgraph<KnowledgeElement, Link> getSubgraphMatchingFilterSettings(KnowledgeElement selectedElement,
-			int linkDistance) {
-		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null
-				|| selectedElement == null) {
-			LOGGER.error("FilteringManager missing filterSettings attribute or selectedElement");
-		}
-
+	public AsSubgraph<KnowledgeElement, Link> getSubgraphMatchingLinkDistance() {
+		KnowledgeElement selectedElement = filterSettings.getSelectedElement();
+		int linkDistance = filterSettings.getLinkDistance();
 		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>();
 		elements.add(selectedElement);
+		if (linkDistance == 0) {
+			return new AsSubgraph<KnowledgeElement, Link>(graph, elements);
+		}
 		for (Link link : selectedElement.getLinks()) {
-			KnowledgeElement tmpKnowledgeElement = link.getTarget();
-			elements.add(tmpKnowledgeElement);
-			getParentSubgraph(tmpKnowledgeElement, linkDistance - 1, elements);
+			KnowledgeElement element = link.getTarget();
+			elements.add(element);
+			getParentSubgraph(element, linkDistance - 1, elements);
 		}
 		return new AsSubgraph<KnowledgeElement, Link>(graph, elements);
 	}
 
-	private void getParentSubgraph(KnowledgeElement parent, int distance, Set<KnowledgeElement> elements) {
+	private void getParentSubgraph(KnowledgeElement parent, int currentDistance, Set<KnowledgeElement> elements) {
 		for (Link link : parent.getLinks()) {
-			KnowledgeElement tmpKnowledgeElement = link.getTarget();
-			elements.add(tmpKnowledgeElement);
-			if (distance > 0)
-				getParentSubgraph(tmpKnowledgeElement, distance - 1, elements);
+			KnowledgeElement element = link.getTarget();
+			elements.add(element);
+			if (currentDistance > 0) {
+				getParentSubgraph(element, currentDistance - 1, elements);
+			}
 		}
 	}
 

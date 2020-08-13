@@ -31,6 +31,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 
 @XmlRootElement(name = "decisiontable")
 @XmlAccessorType(XmlAccessType.FIELD)
+// TODO Improve JavaDoc (not only parameter names should be given but a short
+// explanation)
 public class DecisionTable {
 
 	private KnowledgeGraph graph;
@@ -48,30 +50,31 @@ public class DecisionTable {
 	}
 
 	/**
-	 * 
-	 * @param key
+	 * @param filterSettings
+	 *            filter criteria such as selected knowledge element and maximal
+	 *            link distance in the {@link KnowledgeGraph}.
 	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}.
 	 */
 	public void setIssues(FilterSettings filterSettings, ApplicationUser user) {
 		issues = new ArrayList<>();
-		KnowledgeElement rootElement = filterSettings.getSelectedElement();
 
 		FilteringManager filterManager = new FilteringManager(user, filterSettings);
-		AsSubgraph<KnowledgeElement, Link> subGraph = filterManager.getSubgraphMatchingFilterSettings(rootElement,
-				filterManager.getFilterSettings().getLinkDistance());
-		Iterator<KnowledgeElement> iterator = new DepthFirstIterator<>(subGraph, rootElement);
+		AsSubgraph<KnowledgeElement, Link> subgraph = filterManager.getSubgraphMatchingFilterSettings();
+
+		KnowledgeElement rootElement = filterSettings.getSelectedElement();
+		Iterator<KnowledgeElement> iterator = new DepthFirstIterator<>(subgraph, rootElement);
 		while (iterator.hasNext()) {
-			KnowledgeElement elem = iterator.next();
-			if (elem.getType() == KnowledgeType.ISSUE) {
-				issues.add(elem);
+			KnowledgeElement element = iterator.next();
+			if (element.getType() == KnowledgeType.ISSUE) {
+				issues.add(element);
 			}
 		}
 	}
 
 	/**
-	 * 
 	 * @param user
-	 * @param map
+	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return
 	 */
 	public List<Criterion> getDecisionTableCriteria(ApplicationUser user) {
@@ -89,6 +92,7 @@ public class DecisionTable {
 	 * @param id
 	 * @param location
 	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}.
 	 */
 	public void setDecisionTableForIssue(long id, String location, ApplicationUser user) {
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(id, location);

@@ -52,6 +52,14 @@ public class TestDecisionTable extends TestSetUp {
 	}
 
 	@Test
+	public void testGetDecisionIssueLinkDistanceZero() {
+		filterSettings.setSelectedElement("TEST-1");
+		filterSettings.setLinkDistance(0);
+		decisionTable.setIssues(filterSettings, user);
+		assertEquals(0, decisionTable.getIssues().size());
+	}
+
+	@Test
 	public void testGetAlternativesOnIssueDirectly() {
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
