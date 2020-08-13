@@ -183,13 +183,12 @@ public class ViewRest {
 	 */
 	@Path("/getTreeViewerForSingleElement")
 	@POST
-	public Response getTreeViewerForSingleElement(@Context HttpServletRequest request,
-			@QueryParam("jiraIssueKey") String jiraIssueKey, FilterSettings filterSettings) {
+	public Response getTreeViewerForSingleElement(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Invalid parameters given. Tree viewer not be created.")).build();
 		}
-		if (jiraIssueKey == null || !jiraIssueKey.contains("-")) {
+		if (filterSettings.getSelectedElement() == null || filterSettings.getSelectedElement().getKey() == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Jira issue key is not valid."))
 					.build();
 		}
@@ -199,7 +198,7 @@ public class ViewRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 
-		TreeViewer treeViewer = new TreeViewer(jiraIssueKey, filterSettings);
+		TreeViewer treeViewer = new TreeViewer(filterSettings);
 		return Response.ok(treeViewer).build();
 	}
 

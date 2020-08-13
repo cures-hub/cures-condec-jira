@@ -1,5 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -7,11 +11,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -24,12 +32,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class TestTreeViewer extends TestSetUp {
 	private AbstractPersistenceManagerForSingleLocation persistenceManager;
@@ -165,7 +167,8 @@ public class TestTreeViewer extends TestSetUp {
 	public void testTreeViewerCalledFromTabpanel() {
 		// 1) Check if Tree Element has no Children - Important!
 		KnowledgeElement element = persistenceManager.getKnowledgeElement(14);
-		TreeViewer tv = new TreeViewer(element.getKey(), filterSettings);
+		filterSettings.setSelectedElement(element);
+		TreeViewer tv = new TreeViewer(filterSettings);
 		assertNotNull(tv);
 		assertEquals(0, tv.getDataStructure(element).getChildren().size());
 
@@ -182,7 +185,8 @@ public class TestTreeViewer extends TestSetUp {
 		sentences.get(0).setRelevant(true);
 		sentences.get(0).setType(KnowledgeType.ALTERNATIVE);
 		element = persistenceManager.getKnowledgeElement(14);
-		tv = new TreeViewer(element.getKey(), filterSettings);
+		filterSettings.setSelectedElement(element);
+		tv = new TreeViewer(filterSettings);
 
 		// 4) Check if TreeViewer has one element
 		assertNotNull(tv);
@@ -194,7 +198,7 @@ public class TestTreeViewer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testTreeViewerCalledFromTabpanelNullData() {
-		TreeViewer tv = new TreeViewer(null, filterSettings);
+		TreeViewer tv = new TreeViewer(filterSettings);
 		assertNotNull(tv);
 		assertEquals(tv.getData(), null);
 	}
@@ -202,21 +206,21 @@ public class TestTreeViewer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testTreeViewerCalledFromTabpanelEmptyData() {
-		TreeViewer tv = new TreeViewer("", filterSettings);
+		filterSettings.setSelectedElement("");
+		TreeViewer tv = new TreeViewer(filterSettings);
 		assertNotNull(tv);
 	}
 
 	@Test
 	public void testSecondConstructorWithProjectKeyNull() {
-		TreeViewer newTreeViewer = new TreeViewer(null);
+		TreeViewer newTreeViewer = new TreeViewer((String) null);
 		assertNotNull(newTreeViewer);
 	}
 
 	@Test
 	public void testSecondConstructorWithProjectKeyValid() {
 		KnowledgeElement classElement;
-		CodeClassPersistenceManager ccManager
-				= new CodeClassPersistenceManager("Test");
+		CodeClassPersistenceManager ccManager = new CodeClassPersistenceManager("Test");
 		classElement = new KnowledgeElement();
 		classElement.setProject("TEST");
 		classElement.setType("Other");
@@ -228,6 +232,5 @@ public class TestTreeViewer extends TestSetUp {
 		assertNotNull(newTreeViewer);
 		assertNotNull(newTreeViewer.data);
 	}
-
 
 }

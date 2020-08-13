@@ -570,9 +570,10 @@
 	ConDecAPI.prototype.getTreeViewerForSingleElement = function (jiraIssueKey, knowledgeTypes, callback) {
 		var filterSettings = {
 				"projectKey": projectKey,
-				"jiraIssueTypes": knowledgeTypes
+				"jiraIssueTypes": knowledgeTypes,
+				"selectedElement": jiraIssueKey
 		};
-		generalApi.postJSON(this.restPrefix + "/view/getTreeViewerForSingleElement.json?jiraIssueKey=" + jiraIssueKey, filterSettings, function (error, core) {
+		generalApi.postJSON(this.restPrefix + "/view/getTreeViewerForSingleElement.json", filterSettings, function (error, core) {
 			if (error === null) {
 				callback(core);
 			}

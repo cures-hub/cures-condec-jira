@@ -35,25 +35,27 @@ public class TestGetTreeViewerForSingleElement extends TestSetUp {
 	@Test
 	public void testRequestNullJiraIssueKeyNullFilterSettingsNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				viewRest.getTreeViewerForSingleElement(null, null, null).getStatus());
+				viewRest.getTreeViewerForSingleElement(null, null).getStatus());
 	}
 
 	@Test
 	public void testRequestValidJiraIssueKeyNullFilterSettingsValid() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				viewRest.getTreeViewerForSingleElement(request, null, filterSettings).getStatus());
+				viewRest.getTreeViewerForSingleElement(request, filterSettings).getStatus());
 	}
 
 	@Test
 	public void testRequestValidJiraIssueKeyValidFilterSettingsValid() {
+		filterSettings.setSelectedElement("TEST-1");
 		assertEquals(Status.OK.getStatusCode(),
-				viewRest.getTreeViewerForSingleElement(request, "TEST-1", filterSettings).getStatus());
+				viewRest.getTreeViewerForSingleElement(request, filterSettings).getStatus());
 	}
 
 	@Test
 	public void testRequestValidJiraIssueKeyValidFilterSettingsInvalid() {
 		FilterSettings filterSettings = new FilterSettings("NOTEXISTINGPROJECTKEY", "");
+		filterSettings.setSelectedElement("NOTEXISTINGPROJECTKEY-5");
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				viewRest.getTreeViewerForSingleElement(request, "NOTEXISTINGPROJECTKEY-5", filterSettings).getStatus());
+				viewRest.getTreeViewerForSingleElement(request, filterSettings).getStatus());
 	}
 }

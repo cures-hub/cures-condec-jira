@@ -12,7 +12,6 @@ import javax.xml.bind.annotation.XmlElement;
 
 import org.jgrapht.traverse.BreadthFirstIterator;
 
-import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
@@ -25,7 +24,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 
 /**
  * Creates tree viewer content. The tree viewer is rendered with the jstree
@@ -66,8 +64,10 @@ public class TreeViewer {
 	 * Constructor for a jstree tree viewer for a list of trees where all root
 	 * elements have a specific {@link KnowledgeType}.
 	 *
-	 * @param projectKey      of a Jira project.
-	 * @param rootElementType {@link KnowledgeType} of the root elements.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param rootElementType
+	 *            {@link KnowledgeType} of the root elements.
 	 */
 	public TreeViewer(String projectKey, KnowledgeType rootElementType) {
 		this();
@@ -89,24 +89,26 @@ public class TreeViewer {
 	 * Constructor for a jstree tree viewer for a single knowledge element as the
 	 * root element. The tree viewer comprises only one tree.
 	 *
-	 * @param jiraIssueKey   the issue id
-	 * @param filterSettings {@link FilterSettings} object. The filter settings
-	 *                       cover the decision knowledge types to be shown.
+	 * @param jiraIssueKey
+	 *            the issue id
+	 * @param filterSettings
+	 *            {@link FilterSettings} object. The filter settings cover the
+	 *            decision knowledge types to be shown.
 	 */
-	public TreeViewer(String jiraIssueKey, FilterSettings filterSettings) {
+	public TreeViewer(FilterSettings filterSettings) {
 		this();
-		Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(jiraIssueKey);
-		if (jiraIssue == null) {
+		if (filterSettings == null || filterSettings.getSelectedElement() == null
+				|| filterSettings.getSelectedElement().getKey() == null) {
 			return;
 		}
-		KnowledgeElement rootElement = new KnowledgeElement(jiraIssue);
+		KnowledgeElement rootElement = filterSettings.getSelectedElement();
 		graph = KnowledgeGraph.getOrCreate(rootElement.getProject().getProjectKey());
 
 		Data rootNode = this.getDataStructure(rootElement);
 
 		// Match irrelevant sentences back to list
-		for (Link link : GenericLinkManager.getLinksForElement(jiraIssue.getId(), DocumentationLocation.JIRAISSUE)) {
-			KnowledgeElement opposite = link.getOppositeElement(jiraIssue.getId());
+		for (Link link : GenericLinkManager.getLinksForElement(rootElement.getId(), DocumentationLocation.JIRAISSUE)) {
+			KnowledgeElement opposite = link.getOppositeElement(rootElement.getId());
 			if (opposite instanceof PartOfJiraIssueText && isSentenceShown(opposite)) {
 				rootNode.getChildren().add(new Data(opposite));
 			}
@@ -198,7 +200,7 @@ public class TreeViewer {
 			Data dataChild = new Data(nodeElement, edge);
 			if (((KnowledgeElement) dataChild.getElement()).getProject() == null
 					|| !((KnowledgeElement) dataChild.getElement()).getProject().getProjectKey()
-					.equals(decisionKnowledgeElement.getProject().getProjectKey())) {
+							.equals(decisionKnowledgeElement.getProject().getProjectKey())) {
 				continue;
 			}
 			dataChild = this.makeIdUnique(dataChild);

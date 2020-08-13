@@ -60,6 +60,7 @@ public class VisGraph {
 		if (subgraph == null || subgraph.vertexSet().isEmpty()) {
 			return;
 		}
+		rootElementKey = filterSettings.getSelectedElement().getKey();
 		if (rootElementKey == null || rootElementKey.isBlank()) {
 			addNodesAndEdges(null, subgraph);
 			return;
@@ -95,11 +96,6 @@ public class VisGraph {
 			}
 		}
 	}
-
-	// private boolean isCollapsed(KnowledgeElement element, Set<KnowledgeElement>
-	// elements) {
-	// return !elements.contains(element);
-	// }
 
 	private boolean containsEdge(Link link) {
 		for (VisEdge visEdge : edges) {
