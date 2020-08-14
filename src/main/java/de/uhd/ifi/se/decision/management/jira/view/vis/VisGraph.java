@@ -33,8 +33,6 @@ public class VisGraph {
 	private KnowledgeElement rootElement;
 	@JsonIgnore
 	private AsSubgraph<KnowledgeElement, Link> graph;
-	@JsonIgnore
-	private int cid = 0;
 
 	public VisGraph() {
 		this.nodes = new HashSet<VisNode>();
@@ -69,8 +67,7 @@ public class VisGraph {
 
 		while (iterator.hasNext()) {
 			KnowledgeElement element = iterator.next();
-			nodes.add(new VisNode(element, false, 50 + iterator.getDepth(element), cid));
-			cid++;
+			nodes.add(new VisNode(element, false, iterator.getDepth(element)));
 
 			for (Link link : graph.edgesOf(element)) {
 				if (containsEdge(link)) {
