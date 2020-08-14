@@ -31,10 +31,18 @@ public class DuplicateDetectionManager {
 	public DuplicateDetectionManager(KnowledgeElement knowledgeElement, DuplicateDetectionStrategy duplicateDetectionStrategy) {
 		this.knowledgeElement = knowledgeElement;
 		this.duplicateDetectionStrategy = duplicateDetectionStrategy;
-		if(this.knowledgeElement == null)
+		if (this.knowledgeElement == null) {
 			this.fragmentLength = ConfigPersistenceManager.getFragmentLength(this.knowledgeElement.getProject().getProjectKey());
-		else
-			fragmentLength = 3;
+
+		} else {
+			this.fragmentLength = 21;
+		}
+	}
+
+	public DuplicateDetectionManager(KnowledgeElement knowledgeElement, DuplicateDetectionStrategy duplicateDetectionStrategy, int fragmentLength) {
+		this.knowledgeElement = knowledgeElement;
+		this.duplicateDetectionStrategy = duplicateDetectionStrategy;
+		this.fragmentLength = fragmentLength;
 	}
 
 	public List<DuplicateSuggestion> findAllDuplicates(Collection<? extends KnowledgeElement> elementsToCheck) {
@@ -65,7 +73,7 @@ public class DuplicateDetectionManager {
 					//System.out.println("Thread : " + Thread.currentThread().getName() + ", value: " + element.getKey());
 					DuplicateSuggestion mostLikelyDuplicate = null;
 					try {
-						List<DuplicateSuggestion> foundDuplicateFragmentsForIssue = new BasicDuplicateTextDetector(fragmentLength)
+						List<DuplicateSuggestion> foundDuplicateFragmentsForIssue = new BasicDuplicateTextDetector(this.fragmentLength)
 							.detectDuplicates(this.knowledgeElement, element);
 						mostLikelyDuplicate = findLongestDuplicate(foundDuplicateFragmentsForIssue);
 					} catch (Exception e) {

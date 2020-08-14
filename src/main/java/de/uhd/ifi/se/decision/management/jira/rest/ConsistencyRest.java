@@ -95,7 +95,7 @@ public class ConsistencyRest {
 
 			if (knowledgeElement.isPresent()) {
 				HashMap<String, Object> result = new HashMap<>();
-				DuplicateDetectionManager manager = new DuplicateDetectionManager(knowledgeElement.get(), new BasicDuplicateTextDetector(ConfigPersistenceManager.getFragmentLength(projectKey)));
+				DuplicateDetectionManager manager = new DuplicateDetectionManager(knowledgeElement.get(), new BasicDuplicateTextDetector(ConfigPersistenceManager.getFragmentLength(projectKey)), ConfigPersistenceManager.getFragmentLength(projectKey));
 
 				// get KnowledgeElements of project
 				KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);

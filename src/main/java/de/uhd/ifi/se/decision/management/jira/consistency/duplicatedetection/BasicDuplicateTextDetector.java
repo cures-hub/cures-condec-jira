@@ -9,16 +9,14 @@ import java.util.List;
 
 public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 
-	private static Preprocessor preprocessor;
+	private Preprocessor preprocessor;
 	private static final String fieldUsedForDetection = "DESCRIPTION";
 	private int fragmentLength;
 	private static final double MIN_SIMILARITY = 0.85;
 
 	public BasicDuplicateTextDetector(int fragmentLength) {
-		if (preprocessor == null) {
-			preprocessor = new Preprocessor();
+		preprocessor = new Preprocessor();
 
-		}
 		this.fragmentLength = fragmentLength;
 	}
 
@@ -42,11 +40,11 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 		if (s1 != null && s2 != null) {
 			s1 = cleanMarkdown(s1);
 			s2 = cleanMarkdown(s2);
-			BasicDuplicateTextDetector.preprocessor.preprocess(s1);
-			List<CharSequence> preprocessedS1Tokens = BasicDuplicateTextDetector.preprocessor.getTokens();
+			this.preprocessor.preprocess(s1);
+			List<CharSequence> preprocessedS1Tokens = this.preprocessor.getTokens();
 
-			BasicDuplicateTextDetector.preprocessor.preprocess(s2);
-			List<CharSequence> preprocessedS2Tokens = BasicDuplicateTextDetector.preprocessor.getTokens();
+			this.preprocessor.preprocess(s2);
+			List<CharSequence> preprocessedS2Tokens = this.preprocessor.getTokens();
 
 			int index = 0;
 			// Iterate over text.
@@ -64,12 +62,13 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 
 				if (calculateScore(sequenceToCheck, sequenceToCheckAgainst) >= MIN_SIMILARITY) {
 					// sequenceToCheck.remove(sequenceToCheck.size()-1);
+					String preprocessedDuplicateSummary = String.join(" ", sequenceToCheckAgainst);
 					duplicateList.add(new DuplicateSuggestion(
 						baseElement,
 						compareElement,
-						sequenceToCheckAgainst.toString(),
+						preprocessedDuplicateSummary,
 						0,
-						sequenceToCheckAgainst.size(),
+						preprocessedDuplicateSummary.length(),
 						//calculateScore(sequenceToCheck, sequenceToCheckAgainst),
 						fieldUsedForDetection));
 					return duplicateList;
