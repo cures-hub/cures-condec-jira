@@ -53,13 +53,13 @@ public class VisGraph {
 		}
 		rootElement = filterSettings.getSelectedElement();
 		if (rootElement == null || rootElement.getKey() == null) {
-			addNodesAndEdges(null);
+			addNodesAndEdges();
 			return;
 		}
-		addNodesAndEdges(rootElement);
+		addNodesAndEdges();
 	}
 
-	private void addNodesAndEdges(KnowledgeElement startElement) {
+	private void addNodesAndEdges() {
 		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<>(subgraph);
 
 		Set<Link> allEdges = new HashSet<>();

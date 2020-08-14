@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.view.decisiontable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,8 +12,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.jgrapht.Graph;
-import org.jgrapht.graph.AsUndirectedGraph;
-import org.jgrapht.traverse.DepthFirstIterator;
 
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
@@ -62,12 +59,7 @@ public class DecisionTable {
 
 		FilteringManager filterManager = new FilteringManager(user, filterSettings);
 		Graph<KnowledgeElement, Link> subgraph = filterManager.getSubgraphMatchingFilterSettings();
-		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<>(subgraph);
-
-		KnowledgeElement rootElement = filterSettings.getSelectedElement();
-		Iterator<KnowledgeElement> iterator = new DepthFirstIterator<>(undirectedGraph, rootElement);
-		while (iterator.hasNext()) {
-			KnowledgeElement element = iterator.next();
+		for (KnowledgeElement element : subgraph.vertexSet()) {
 			if (element.getType() == KnowledgeType.ISSUE) {
 				issues.add(element);
 			}
