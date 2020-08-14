@@ -3,7 +3,7 @@
     var ConDecVis = function () {
     };
 
-    function build(theNodes, theEdges, rootElementKey, nodeDistance) {
+    function build(theNodes, theEdges, rootElementKey) {
         console.log("ConDecVis build");
         var nodes = new vis.DataSet(theNodes);
         var edges = new vis.DataSet(theEdges);
@@ -40,14 +40,14 @@
         });
         var clusterOptionsByData = {
             joinCondition: function (childOptions) {
-                return ((childOptions.level <= 50 - nodeDistance) || (childOptions.level >= 50 + nodeDistance) || (childOptions.cid >= nodeDistance));
+                return false;
             },
             clusterNodeProperties: {
                 allowSingleNodeCluster: false,
                 id: 'distanceCluster',
                 shape: 'ellipse',
                 label: 'clusteredNodes',
-                level: ((50 * 1) + (nodeDistance * 1))
+                level: 50
             }
 
         };
@@ -77,12 +77,13 @@
     /*
      * external references: condec.jira.issue.module
      */
-    ConDecVis.prototype.buildVisFiltered = function (issueKey, search, nodeDistance, issueTypes, status,
+    ConDecVis.prototype.buildVisFiltered = function (issueKey, search, linkDistance, issueTypes, status,
                                                      createdAfter, createdBefore, linkTypes, documentationLocation) {
         console.log("conDecVis buildVisFiltered");
-        conDecAPI.getVisFiltered(issueKey, search, issueTypes, status, createdAfter, createdBefore, linkTypes, documentationLocation,
+        conDecAPI.getVisFiltered(issueKey, search, issueTypes, status, createdAfter, createdBefore, linkTypes, 
+        		documentationLocation, linkDistance,
             function (visData) {
-                build(visData.nodes, visData.edges, visData.rootElementKey, nodeDistance);
+                build(visData.nodes, visData.edges, visData.rootElementKey);
             });
     };
 
@@ -92,7 +93,7 @@
     ConDecVis.prototype.buildVis = function (elementKey, searchTerm) {
         console.log("conDecVis buildVis");
         conDecAPI.getVis(elementKey, searchTerm, function (visData) {
-            var network = build(visData.nodes, visData.edges, visData.rootElementKey, 10);
+            var network = build(visData.nodes, visData.edges, visData.rootElementKey);
             network.focus(visData.rootElementKey, {
                 scale: 0.9
             });

@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.jgrapht.graph.AsSubgraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
@@ -16,7 +17,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 @XmlRootElement(name = "vis")
@@ -32,7 +32,9 @@ public class VisGraph {
 	@XmlElement
 	private String rootElementKey;
 
-	private KnowledgeGraph graph;
+	@JsonIgnore
+	private AsSubgraph<KnowledgeElement, Link> graph;
+	@JsonIgnore
 	private int cid = 0;
 
 	public VisGraph() {
@@ -41,50 +43,41 @@ public class VisGraph {
 		this.rootElementKey = "";
 	}
 
-	public VisGraph(FilterSettings filterSettings) {
-		this();
-		if (filterSettings == null || filterSettings.getProjectKey() == null) {
-			return;
-		}
-		this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
-	}
-
 	public VisGraph(ApplicationUser user, FilterSettings filterSettings) {
-		this(filterSettings);
-		if (user == null || filterSettings == null) {
+		this();
+		if (user == null || filterSettings == null || filterSettings.getProjectKey() == null) {
 			return;
 		}
 		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
-		AsSubgraph<KnowledgeElement, Link> subgraph = filteringManager.getSubgraphMatchingFilterSettings();
-		if (subgraph == null || subgraph.vertexSet().isEmpty()) {
+		graph = filteringManager.getSubgraphMatchingFilterSettings();
+		if (graph == null || graph.vertexSet().isEmpty()) {
 			return;
 		}
 		KnowledgeElement rootElement = filterSettings.getSelectedElement();
 		if (rootElement == null || rootElement.getKey() == null) {
-			addNodesAndEdges(null, subgraph);
+			addNodesAndEdges(null);
 			return;
 		}
 
 		// TODO This is not a key but id_documentationLocation
 		this.rootElementKey = rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString();
-		addNodesAndEdges(rootElement, subgraph);
+		addNodesAndEdges(rootElement);
 	}
 
-	private void addNodesAndEdges(KnowledgeElement startElement, AsSubgraph<KnowledgeElement, Link> subgraph) {
+	private void addNodesAndEdges(KnowledgeElement startElement) {
 		if (startElement != null) {
 			graph.addVertex(startElement);
-			subgraph.addVertex(startElement);
 		}
 
-		BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<KnowledgeElement, Link>(
-				subgraph, startElement);
+		BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<KnowledgeElement, Link>(graph,
+				startElement);
 
 		while (iterator.hasNext()) {
 			KnowledgeElement element = iterator.next();
 			nodes.add(new VisNode(element, false, 50 + iterator.getDepth(element), cid));
 			cid++;
 
-			for (Link link : subgraph.edgesOf(element)) {
+			for (Link link : graph.edgesOf(element)) {
 				if (containsEdge(link)) {
 					continue;
 				}
@@ -118,7 +111,7 @@ public class VisGraph {
 		return edges;
 	}
 
-	public KnowledgeGraph getGraph() {
+	public AsSubgraph<KnowledgeElement, Link> getGraph() {
 		return graph;
 	}
 

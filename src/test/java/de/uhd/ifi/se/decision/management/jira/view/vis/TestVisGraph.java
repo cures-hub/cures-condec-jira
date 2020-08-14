@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 
@@ -59,7 +60,8 @@ public class TestVisGraph extends TestSetUp {
 
 	@Test
 	public void testGetGraph() {
-		assertEquals(KnowledgeGraph.getOrCreate("TEST"), visGraph.getGraph());
+		assertEquals(KnowledgeGraph.getOrCreate("TEST").vertexSet().size(), visGraph.getGraph().vertexSet().size());
+		assertEquals(KnowledgeGraph.getOrCreate("TEST").edgeSet().size(), visGraph.getGraph().edgeSet().size());
 	}
 
 	@Test
@@ -78,8 +80,11 @@ public class TestVisGraph extends TestSetUp {
 	}
 
 	@Test
-	public void testConstructorUserNullFilterSettingsFilledRootElementExisting() {
+	public void testConstructorUserValidFilterSettingsFilledRootElementExisting() {
 		filterSettings.setSelectedElement("TEST-1");
-		assertNotNull(new VisGraph(user, filterSettings));
+		filterSettings.setLinkDistance(1);
+		visGraph = new VisGraph(user, filterSettings);
+		assertTrue(KnowledgeGraph.getOrCreate("TEST").vertexSet().size() > visGraph.getGraph().vertexSet().size());
+		assertTrue(KnowledgeGraph.getOrCreate("TEST").edgeSet().size() > visGraph.getGraph().edgeSet().size());
 	}
 }
