@@ -73,7 +73,7 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 
 
 	velocityParameters.put("minLengthDuplicate",
-			ConfigPersistenceManager.getMinDuplicateLength(projectKey));
+			ConfigPersistenceManager.getFragmentLength(projectKey));
 	velocityParameters.put("minProbabilityLink",
 			ConfigPersistenceManager.getMinLinkSuggestionScore(projectKey));
 

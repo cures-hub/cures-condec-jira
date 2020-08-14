@@ -52,7 +52,7 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 			// Iterate over text.
 			while (index < preprocessedS1Tokens.size() - fragmentLength + 1) {
 				int internalIndex = 0;
-				// Get Lists of text based on the minDuplicateLength
+				// Get Lists of text based on the fragmentLength
 				List<CharSequence> sequenceToCheck = preprocessedS1Tokens.subList(index, index + fragmentLength);
 				List<CharSequence> sequenceToCheckAgainst = preprocessedS2Tokens.subList(internalIndex, Math.min(internalIndex + fragmentLength, preprocessedS2Tokens.size()));
 

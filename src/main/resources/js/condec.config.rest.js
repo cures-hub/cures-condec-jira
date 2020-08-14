@@ -5,9 +5,9 @@
 
 		};
 
-		ConfigAPI.prototype.setMinimumDuplicateLength = function(projectKey, minDuplicateLength){
+		ConfigAPI.prototype.setMinimumDuplicateLength = function(projectKey, fragmentLength){
 			return generalApi.postJSONReturnPromise(this.restPrefix + `/setMinimumDuplicateLength.json?
-			projectKey=${projectKey}&minDuplicateLength=${minDuplicateLength}`, null);
+			projectKey=${projectKey}&fragmentLength=${fragmentLength}`, null);
 		}
 
 		ConfigAPI.prototype.setMinimumLinkSuggestionProbability = function(projectKey, minLinkSuggestionProbability){

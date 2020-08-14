@@ -391,15 +391,15 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
-	public void testSetAndGetMinDuplicateLength() {
+	public void testSetAndGetFragmentLength() {
 		int input = 4;
-		ConfigPersistenceManager.setMinDuplicateLength("TEST", input);
-		assertEquals("Activated should be 4.", 4, ConfigPersistenceManager.getMinDuplicateLength("TEST"));
+		ConfigPersistenceManager.setFragmentLength("TEST", input);
+		assertEquals("Activated should be 4.", 4, ConfigPersistenceManager.getFragmentLength("TEST"));
 		// Cannot be tested because the MockPluginSettingsFactory does not support multiple projects
 		/*
 		input = 3;
-		ConfigPersistenceManager.setMinDuplicateLength("NOTTEST", input);
-		assertEquals("Activated should still be 4.", 4, ConfigPersistenceManager.getMinDuplicateLength("TEST"));
+		ConfigPersistenceManager.setFragmentLength("NOTTEST", input);
+		assertEquals("Activated should still be 4.", 4, ConfigPersistenceManager.getFragmentLength("TEST"));
 
 		 */
 	}

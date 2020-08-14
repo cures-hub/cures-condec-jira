@@ -20,7 +20,7 @@ public class DuplicateDetectionManager {
 
 	private volatile List<DuplicateSuggestion> foundDuplicateSuggestions;
 
-	private int minDuplicateLength;
+	private int fragmentLength;
 
 	private DuplicateDetectionStrategy duplicateDetectionStrategy;
 
@@ -32,9 +32,9 @@ public class DuplicateDetectionManager {
 		this.knowledgeElement = knowledgeElement;
 		this.duplicateDetectionStrategy = duplicateDetectionStrategy;
 		if(this.knowledgeElement == null)
-			this.minDuplicateLength = ConfigPersistenceManager.getMinDuplicateLength(this.knowledgeElement.getProject().getProjectKey());
+			this.fragmentLength = ConfigPersistenceManager.getFragmentLength(this.knowledgeElement.getProject().getProjectKey());
 		else
-			minDuplicateLength = 3;
+			fragmentLength = 3;
 	}
 
 	public List<DuplicateSuggestion> findAllDuplicates(Collection<? extends KnowledgeElement> elementsToCheck) {
@@ -65,7 +65,7 @@ public class DuplicateDetectionManager {
 					//System.out.println("Thread : " + Thread.currentThread().getName() + ", value: " + element.getKey());
 					DuplicateSuggestion mostLikelyDuplicate = null;
 					try {
-						List<DuplicateSuggestion> foundDuplicateFragmentsForIssue = new BasicDuplicateTextDetector(minDuplicateLength)
+						List<DuplicateSuggestion> foundDuplicateFragmentsForIssue = new BasicDuplicateTextDetector(fragmentLength)
 							.detectDuplicates(this.knowledgeElement, element);
 						mostLikelyDuplicate = findLongestDuplicate(foundDuplicateFragmentsForIssue);
 					} catch (Exception e) {

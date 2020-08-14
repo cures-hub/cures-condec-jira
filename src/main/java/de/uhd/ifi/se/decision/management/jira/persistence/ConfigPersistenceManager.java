@@ -1,12 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.atlassian.gzipfilter.org.apache.commons.lang.math.NumberUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
@@ -15,11 +8,12 @@ import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+
+import java.util.*;
 
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
@@ -285,12 +279,12 @@ public class ConfigPersistenceManager {
 	/*										*/
 	/* **************************************/
 
-	public static void setMinDuplicateLength(String projectKey, int minDuplicateLength) {
-		setValue(projectKey, "minDuplicateLength", Integer.toString(minDuplicateLength));
+	public static void setFragmentLength(String projectKey, int fragmentLength) {
+		setValue(projectKey, "fragmentLength", Integer.toString(fragmentLength));
 	}
 
-	public static int getMinDuplicateLength(String projectKey) {
-		return NumberUtils.toInt(getValue(projectKey, "minDuplicateLength"), 3);
+	public static int getFragmentLength(String projectKey) {
+		return NumberUtils.toInt(getValue(projectKey, "fragmentLength"), 21);
 	}
 
 	public static void setMinLinkSuggestionScore(String projectKey, double minLinkSuggestionProbability) {
