@@ -12,7 +12,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.jgrapht.graph.AsSubgraph;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.AsUndirectedGraph;
 import org.jgrapht.traverse.DepthFirstIterator;
 
 import com.atlassian.jira.issue.Issue;
@@ -60,10 +61,11 @@ public class DecisionTable {
 		issues = new ArrayList<>();
 
 		FilteringManager filterManager = new FilteringManager(user, filterSettings);
-		AsSubgraph<KnowledgeElement, Link> subgraph = filterManager.getSubgraphMatchingFilterSettings();
+		Graph<KnowledgeElement, Link> subgraph = filterManager.getSubgraphMatchingFilterSettings();
+		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<>(subgraph);
 
 		KnowledgeElement rootElement = filterSettings.getSelectedElement();
-		Iterator<KnowledgeElement> iterator = new DepthFirstIterator<>(subgraph, rootElement);
+		Iterator<KnowledgeElement> iterator = new DepthFirstIterator<>(undirectedGraph, rootElement);
 		while (iterator.hasNext()) {
 			KnowledgeElement element = iterator.next();
 			if (element.getType() == KnowledgeType.ISSUE) {

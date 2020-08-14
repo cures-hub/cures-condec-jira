@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.jgrapht.graph.AsSubgraph;
+import org.jgrapht.Graph;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
@@ -36,7 +36,7 @@ public class Treant {
 	private TreantNode nodeStructure;
 
 	@JsonIgnore
-	private AsSubgraph<KnowledgeElement, Link> graph;
+	private Graph<KnowledgeElement, Link> graph;
 	@JsonIgnore
 	private FilterSettings filterSettings;
 	@JsonIgnore
@@ -147,7 +147,7 @@ public class Treant {
 		for (Link link : links) {
 			if (!isIssueView && link.getTarget() != null) {
 				TreantNode adult = createTreantNode(link.getTarget(), link);
-				if (filterSettings.getLinkDistance() > 1) {
+				if (filterSettings.getLinkDistance() > 1 && graph.containsVertex(link.getTarget())) {
 					adult.setChildren(getChildren(link.getTarget(), graph.edgesOf(link.getTarget()), currentDepth + 1));
 				}
 				nodes.add(adult);

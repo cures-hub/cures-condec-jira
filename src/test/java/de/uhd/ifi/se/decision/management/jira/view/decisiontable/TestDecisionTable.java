@@ -40,6 +40,7 @@ public class TestDecisionTable extends TestSetUp {
 	@Test
 	public void testGetEmptyDecisionIssues() {
 		filterSettings.setSelectedElement("TEST-30");
+		filterSettings.setLinkDistance(0);
 		decisionTable.setIssues(filterSettings, user);
 		assertEquals(0, decisionTable.getIssues().size());
 	}

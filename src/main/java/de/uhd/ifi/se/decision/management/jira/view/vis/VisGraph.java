@@ -60,29 +60,21 @@ public class VisGraph {
 	}
 
 	private void addNodesAndEdges(KnowledgeElement startElement) {
-		if (startElement != null) {
-			subgraph.addVertex(startElement);
-		}
-
 		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<>(subgraph);
-		Set<Link> allEdges = traverseGraph(undirectedGraph, startElement);
 
-		for (Link link : allEdges) {
-			edges.add(new VisEdge(link));
-		}
-	}
-
-	private Set<Link> traverseGraph(Graph<KnowledgeElement, Link> graph, KnowledgeElement rootElement) {
 		Set<Link> allEdges = new HashSet<>();
-		BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<>(graph, rootElement);
+		BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<>(undirectedGraph,
+				rootElement);
 
 		while (iterator.hasNext()) {
 			KnowledgeElement element = iterator.next();
 			nodes.add(new VisNode(element, iterator.getDepth(element)));
-			allEdges.addAll(graph.edgesOf(element));
+			allEdges.addAll(undirectedGraph.edgesOf(element));
 		}
 
-		return allEdges;
+		for (Link link : allEdges) {
+			edges.add(new VisEdge(link));
+		}
 	}
 
 	public void setNodes(Set<VisNode> nodes) {

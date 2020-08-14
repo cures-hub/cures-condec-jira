@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jgrapht.Graph;
 import org.jgrapht.graph.AsSubgraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
 import org.slf4j.Logger;
@@ -69,13 +70,13 @@ public class FilteringManager {
 	 * @return subgraph of the {@link KnowledgeGraph} that matches the
 	 *         {@link FilterSetting}s.
 	 */
-	public AsSubgraph<KnowledgeElement, Link> getSubgraphMatchingFilterSettings() {
+	public Graph<KnowledgeElement, Link> getSubgraphMatchingFilterSettings() {
 		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null) {
 			LOGGER.error("FilteringManager misses important attributes.");
 			return null;
 		}
 		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>(getElementsMatchingFilterSettings());
-		AsSubgraph<KnowledgeElement, Link> subgraph = new AsSubgraph<KnowledgeElement, Link>(graph, elements);
+		Graph<KnowledgeElement, Link> subgraph = new AsSubgraph<KnowledgeElement, Link>(graph, elements);
 		if (filterSettings.getSelectedElement() != null) {
 			subgraph = getSubgraphMatchingLinkDistance();
 		}
