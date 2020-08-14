@@ -32,6 +32,10 @@ public class VisNode {
 	@XmlElement
 	private Map<String, String> font;
 
+	public VisNode(KnowledgeElement element, int level) {
+		this(element, false, level);
+	}
+
 	public VisNode(KnowledgeElement element, boolean isCollapsed, int level) {
 		// TODO Add two attributes for id and docuLocu or even provide the whole
 		// knowledge element

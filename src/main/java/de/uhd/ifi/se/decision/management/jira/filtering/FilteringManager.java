@@ -90,19 +90,18 @@ public class FilteringManager {
 		KnowledgeElement selectedElement = filterSettings.getSelectedElement();
 		int linkDistance = filterSettings.getLinkDistance();
 		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>();
-		elements.addAll(getChildren(selectedElement, linkDistance));
+		elements.addAll(getLinkedElements(selectedElement, linkDistance));
 		return new AsSubgraph<KnowledgeElement, Link>(graph, elements);
 	}
 
-	private Set<KnowledgeElement> getChildren(KnowledgeElement currentElement, int currentDistance) {
+	private Set<KnowledgeElement> getLinkedElements(KnowledgeElement currentElement, int currentDistance) {
 		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>();
 		elements.add(currentElement);
 
 		if (currentDistance == 0) {
 			return elements;
 		}
-
-		for (Link link : currentElement.getLinks()) {
+		for (Link link : graph.edgesOf(currentElement)) {
 			if (!traversedLinks.add(link)) {
 				continue;
 			}
@@ -110,7 +109,7 @@ public class FilteringManager {
 			if (oppositeElement == null) {
 				continue;
 			}
-			elements.addAll(getChildren(oppositeElement, currentDistance - 1));
+			elements.addAll(getLinkedElements(oppositeElement, currentDistance - 1));
 		}
 		return elements;
 	}

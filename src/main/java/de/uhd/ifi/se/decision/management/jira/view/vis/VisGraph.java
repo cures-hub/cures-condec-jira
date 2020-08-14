@@ -9,7 +9,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.jgrapht.graph.AsSubgraph;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.AsUndirectedGraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
 import com.atlassian.jira.user.ApplicationUser;
@@ -31,12 +32,13 @@ public class VisGraph {
 
 	@JsonIgnore
 	private KnowledgeElement rootElement;
+
 	@JsonIgnore
-	private AsSubgraph<KnowledgeElement, Link> graph;
+	private Graph<KnowledgeElement, Link> subgraph;
 
 	public VisGraph() {
-		this.nodes = new HashSet<VisNode>();
-		this.edges = new HashSet<VisEdge>();
+		this.nodes = new HashSet<>();
+		this.edges = new HashSet<>();
 	}
 
 	public VisGraph(ApplicationUser user, FilterSettings filterSettings) {
@@ -45,8 +47,8 @@ public class VisGraph {
 			return;
 		}
 		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
-		graph = filteringManager.getSubgraphMatchingFilterSettings();
-		if (graph == null || graph.vertexSet().isEmpty()) {
+		subgraph = filteringManager.getSubgraphMatchingFilterSettings();
+		if (subgraph == null || subgraph.vertexSet().isEmpty()) {
 			return;
 		}
 		rootElement = filterSettings.getSelectedElement();
@@ -59,32 +61,28 @@ public class VisGraph {
 
 	private void addNodesAndEdges(KnowledgeElement startElement) {
 		if (startElement != null) {
-			graph.addVertex(startElement);
+			subgraph.addVertex(startElement);
 		}
 
-		BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<KnowledgeElement, Link>(graph,
-				startElement);
+		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<>(subgraph);
+		Set<Link> allEdges = traverseGraph(undirectedGraph, startElement);
 
-		while (iterator.hasNext()) {
-			KnowledgeElement element = iterator.next();
-			nodes.add(new VisNode(element, false, iterator.getDepth(element)));
-
-			for (Link link : graph.edgesOf(element)) {
-				if (containsEdge(link)) {
-					continue;
-				}
-				edges.add(new VisEdge(link));
-			}
+		for (Link link : allEdges) {
+			edges.add(new VisEdge(link));
 		}
 	}
 
-	private boolean containsEdge(Link link) {
-		for (VisEdge visEdge : edges) {
-			if (visEdge.getId() == link.getId()) {
-				return true;
-			}
+	private Set<Link> traverseGraph(Graph<KnowledgeElement, Link> graph, KnowledgeElement rootElement) {
+		Set<Link> allEdges = new HashSet<>();
+		BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<>(graph, rootElement);
+
+		while (iterator.hasNext()) {
+			KnowledgeElement element = iterator.next();
+			nodes.add(new VisNode(element, iterator.getDepth(element)));
+			allEdges.addAll(graph.edgesOf(element));
 		}
-		return false;
+
+		return allEdges;
 	}
 
 	public void setNodes(Set<VisNode> nodes) {
@@ -103,8 +101,8 @@ public class VisGraph {
 		return edges;
 	}
 
-	public AsSubgraph<KnowledgeElement, Link> getGraph() {
-		return graph;
+	public Graph<KnowledgeElement, Link> getGraph() {
+		return subgraph;
 	}
 
 	@XmlElement(name = "rootElementId")

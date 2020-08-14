@@ -43,6 +43,7 @@ public class TreeViewer {
 	@XmlElement
 	protected Set<Data> data;
 
+	// TODO Replace with AsSubgraph
 	protected KnowledgeGraph graph;
 	private List<String> ids;
 	private long index;
