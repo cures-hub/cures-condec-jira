@@ -60,9 +60,9 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 					linkSuggestion.addToScore(
 						(uniqueE1Elements + uniqueElements(stemmedI2Description).length - unionCount)
 							/ (double) unionCount,
-						this.getName());
+						this.getName() + ": " + getId());
 				} catch (Exception e) {
-					linkSuggestion.addToScore(0., this.getName());
+					linkSuggestion.addToScore(0., this.getName() + ": " + getId());
 				}
 				return linkSuggestion;
 

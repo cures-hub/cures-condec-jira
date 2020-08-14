@@ -31,14 +31,18 @@ public class DuplicateDetectionManager {
 	public DuplicateDetectionManager(KnowledgeElement knowledgeElement, DuplicateDetectionStrategy duplicateDetectionStrategy) {
 		this.knowledgeElement = knowledgeElement;
 		this.duplicateDetectionStrategy = duplicateDetectionStrategy;
-		this.minDuplicateLength = ConfigPersistenceManager.getMinDuplicateLength(this.knowledgeElement.getProject().getProjectKey());
+		if(this.knowledgeElement == null)
+			this.minDuplicateLength = ConfigPersistenceManager.getMinDuplicateLength(this.knowledgeElement.getProject().getProjectKey());
+		else
+			minDuplicateLength = 3;
 	}
 
 	public List<DuplicateSuggestion> findAllDuplicates(Collection<? extends KnowledgeElement> elementsToCheck) {
 
 		foundDuplicateSuggestions = new ArrayList<>();
 
-		if (this.knowledgeElement != null) {
+
+		if (this.knowledgeElement != null && this.duplicateDetectionStrategy != null) {
 			elementsToCheck = elementsToCheck
 				.stream()
 				.filter((element -> {

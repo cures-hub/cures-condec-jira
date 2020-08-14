@@ -36,8 +36,8 @@ public class TimeCIP implements ContextInformationProvider {
 		for (KnowledgeElement elementToTest : knowledgeElements) {
 			LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, elementToTest);
 			double differenceInWeeks = (baseElement.getCreated().getTime() - elementToTest.getCreated().getTime()) / (1000 * 60 * 60 * 24. * 7.);
-			double score = (1. / (Math.abs(differenceInWeeks )+ 1.));
-			linkSuggestion.addToScore(score, this.getName());
+			double score = (1. / (Math.abs(differenceInWeeks) + 1.));
+			linkSuggestion.addToScore(score, this.getName() + ": " + this.getId());
 			this.linkSuggestions.add(linkSuggestion);
 
 		}
