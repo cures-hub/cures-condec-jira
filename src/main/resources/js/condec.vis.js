@@ -38,20 +38,6 @@
         network.on("selectNode", function (params) {
             conDecVis.selectNode(params, network);
         });
-        var clusterOptionsByData = {
-            joinCondition: function (childOptions) {
-                return false;
-            },
-            clusterNodeProperties: {
-                allowSingleNodeCluster: false,
-                id: 'distanceCluster',
-                shape: 'ellipse',
-                label: 'clusteredNodes',
-                level: 50
-            }
-
-        };
-        network.cluster(clusterOptionsByData);
         return network;
     }
 
@@ -68,15 +54,15 @@
                 clickedNodeId = nodeId;
             }
         }
-        if (clickedNodeId !== undefined && clickedNodeId !== 'distanceCluster') {
-            conDecContextMenu.createContextMenu(clickedNodeId.toString().slice(0, -2),
-                getDocumentationLocationFromId(clickedNodeId), params.event, "vis-container");
-        }
+        if (clickedNodeId === undefined) {
+        	return;
+        conDecContextMenu.createContextMenu(clickedNodeId.toString().slice(0, -2),
+        		getDocumentationLocationFromId(clickedNodeId), params.event, "vis-container");
     };
 
     /*
-     * external references: condec.jira.issue.module
-     */
+	 * external references: condec.jira.issue.module
+	 */
     ConDecVis.prototype.buildVisFiltered = function (issueKey, search, linkDistance, issueTypes, status,
                                                      createdAfter, createdBefore, linkTypes, documentationLocation) {
         console.log("conDecVis buildVisFiltered");
@@ -88,8 +74,8 @@
     };
 
     /*
-     * external references: condec.jira.issue.module
-     */
+	 * external references: condec.jira.issue.module
+	 */
     ConDecVis.prototype.buildVis = function (elementKey, searchTerm) {
         console.log("conDecVis buildVis");
         conDecAPI.getVis(elementKey, searchTerm, function (visData) {
@@ -325,14 +311,15 @@
                 clickedNodeId = nodeId;
             }
         }
-        if (clickedNodeId !== undefined && clickedNodeId !== 'distanceCluster') {
-            params.event.preventDefault();
-            conDecDialog.showEditDialog(clickedNodeId.toString().slice(0, -2),
-                getDocumentationLocationFromId(clickedNodeId));
+        if (clickedNodeId === undefined) {
+        	return;
         }
+        params.event.preventDefault();
+        conDecDialog.showEditDialog(clickedNodeId.toString().slice(0, -2),
+            getDocumentationLocationFromId(clickedNodeId));
     };
 
-    ConDecVis.prototype.selectNode =  function (params, network) {
+    ConDecVis.prototype.selectNode = function (params, network) {
         if (params.nodes.length === 1) {
             if (network.isCluster(params.nodes[0]) === true) {
                 network.openCluster(params.nodes[0]);
