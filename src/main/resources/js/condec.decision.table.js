@@ -5,27 +5,35 @@
 
 	const decisionTableID = "decisionTable-container";
 	const auiTableID = "tbldecisionTable";
-	const dropDownID = "example-dropdown";
-	const alternativeClmTitle = "Options/Alternatives";
+	const dropDownID = "selectDesionProblem";
+	const alternativeClmTitle = "Solution options (Alternative and Decision)";
 	let issues = [];
 	let decisionTableData = [];
-	let projectKey;
 	let currentIssue;
 	
  	/*
-     * external references: condec.jira.issue.module
-     */
+	 * external references: condec.jira.issue.module
+	 */
 	ConDecDecisionTable.prototype.loadDecisionProblems = function loadDecisionProblems(elementKey) {
 		console.log("conDecDecisionTable buildDecisionTable");
-		projectKey = elementKey;
-		conDecAPI.getDecisionIssues(elementKey, function (data) {
+		const linkDistance = document.getElementById("link-distance-input").value;
+
+		conDecAPI.getDecisionIssues(elementKey, linkDistance, function (data) {
 			issues = data;
 			addDropDownItems(data, elementKey);
 		});
+		
+		document.getElementById("link-distance-input-decision-table").addEventListener("change", function (event){
+			const linkDistance = event.target.value;
+			conDecAPI.getDecisionIssues(elementKey, linkDistance, function (data) {
+				issues = data;
+				addDropDownItems(data, elementKey);
+			});
+		});
 	};
 
-	ConDecDecisionTable.prototype.showAddCriteriaToDecisionTableDialog = function showAddCriteriaToDecisionTableDialog(projectKey) {
-		conDecDialog.showAddCriterionToDecisionTableDialog(projectKey, decisionTableData["criteria"], function (data) {		
+	ConDecDecisionTable.prototype.showAddCriteriaToDecisionTableDialog = function showAddCriteriaToDecisionTableDialog() {
+		conDecDialog.showAddCriterionToDecisionTableDialog(conDecAPI.getProjectKey(), decisionTableData["criteria"], function (data) {		
 			for (key of data.keys()) {
 				const tmpCriterion = data.get(key).criterion;
 				if(data.get(key).status) {
@@ -47,9 +55,15 @@
 		});
 	}
 	
+	ConDecDecisionTable.prototype.showCreateDialogForIssue = function showCreateDialogForIssue() {
+		if (currentIssue) {
+			conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative");		
+		}
+	}
 	/**
 	 * 
-	 * @param {Array<KnowledgeElement> or empty object} data 
+	 * @param {Array
+	 *            <KnowledgeElement> or empty object} data
 	 */
 	function buildDecisionTable(data) {
 		decisionTableData = data;
@@ -67,34 +81,66 @@
 		addCriteriaToToDecisionTable(data["criteria"]);
 		addAlternativesToDecisionTable(data["alternatives"], data["criteria"]);
 		addDragAndDropSupportForArguments();
+		buildCreateArgumentsButton(data["alternatives"]);
 
 		addContextMenuToElements("argument");
 		addContextMenuToElements("alternative");
 	}
 
+	function buildCreateArgumentsButton(alternatives) {
+		let dropDownMenu = document.getElementById("alternative-dropdown-items");
+		dropDownMenu.innerHTML = "";
+		for (i in alternatives) {
+			const alternative = alternatives[i];
+			dropDownMenu.innerHTML +=  `<li id="${alternative.id}">
+			<a><div style="float: left; margin-right: 8px;"><img src="${alternative.image}"</img></div>
+			${alternative.summary}</a></li>`;
+		}
+		
+		document.getElementById("alternative-dropdown-items").addEventListener("click", function (event) {
+			const alternative = getElementObj(event.target.parentNode.id);
+			if (alternative) {
+				conDecDialog.showCreateDialog(alternative.id, alternative.documentationLocation, "Pro-argument");
+			}
+		});
+	}
+	
 	/**
 	 * 
-	 * @param {Array<KnowledgeElement> or empty object} alternatives 
+	 * @param {Array
+	 *            <KnowledgeElement> or empty object} alternatives
 	 */
 	function addAlternativesToDecisionTable(alternatives, criteria) {
 		let body = document.getElementById("tblBody");
-
+		
 		if (Object.keys(alternatives).length === 0) {
 			body.innerHTML += `<tr id="bodyRowAlternatives"></tr>`;
 			let rowElement = document.getElementById(`bodyRowAlternatives`);
-			rowElement.innerHTML += `<td headers="${alternativeClmTitle}">Please add at least one alternative for this issue</td>`;
+			rowElement.innerHTML += `<td headers="${alternativeClmTitle}">Please add at least one solution option for this issue</td>`;
 		} else {
 			for (let i in alternatives) {
-				body.innerHTML += `<tr id="bodyRowAlternatives${alternatives[i].id}"></tr>`;
-				let rowElement = document.getElementById(`bodyRowAlternatives${alternatives[i].id}`);
+				const alternative = alternatives[i];
+				body.innerHTML += `<tr id="bodyRowAlternatives${alternative.id}"></tr>`;
+				let rowElement = document.getElementById(`bodyRowAlternatives${alternative.id}`);
+				
+				let image = "";
+				if (alternatives[i].image) {
+					image = `<img src="${alternative.image}"</img>`;
+				}
+				
+				let content = `<div style="clear: left;">
+					<p style="float: left; margin-right: 8px;">${image}</p>
+					    <p> ${alternative.summary}</p>
+					</div>`;
+				
 				rowElement.innerHTML += `<td headers="${alternativeClmTitle}">
-					<div class="alternative" id="${alternatives[i].id}">${alternatives[i].summary}</div></td>`;
+					<div class="alternative" id="${alternative.id}">${content}</div></td>`;
 				if (Object.keys(criteria).length > 0) {
 					for (x in criteria) {
-						rowElement.innerHTML += `<td id="cell${alternatives[i].id}:${criteria[x].id}" headers="${criteria[x].summary}" class="droppable"></td>`;
+						rowElement.innerHTML += `<td id="cell${alternative.id}:${criteria[x].id}" headers="${criteria[x].summary}" class="droppable"></td>`;
 					}
 				}
-				rowElement.innerHTML += `<td id="cellUnknown${alternatives[i].id}" headers="criteriaClmTitleUnknown" class="droppable"></td>`;
+				rowElement.innerHTML += `<td id="cellUnknown${alternative.id}" headers="criteriaClmTitleUnknown" class="droppable"></td>`;
 				addArgumentsToDecisionTable(alternatives[i]);
 			}
 		}
@@ -102,13 +148,17 @@
 
 	/**
 	 * 
-	 * @param {Array<KnowledgeElement> or empty object} data 
+	 * @param {Array
+	 *            <KnowledgeElement> or empty object} data
 	 */
 	function addCriteriaToToDecisionTable(data) {
 		if (Object.keys(data).length > 0) {
-			for (x in data) {
+			for (criterion in data) {
+				console.log(data[criterion].url);
 				let header = document.getElementById("tblRow");
-				header.innerHTML += `<th id="criteriaClmTitle${data[x].id}">${data[x].summary}</th>`;
+				const currentUrl = window.location;
+				header.innerHTML += `<th id="criteriaClmTitle${data[criterion].id}">
+					<a href="${data[criterion].url}">${data[criterion].summary}</a></th>`;
 			}
 		}
 		let header = document.getElementById("tblRow");
@@ -117,7 +167,8 @@
 
 	/**
 	 * 
-	 * @param {Array<KnowledgeElement> or empty object} alternatives 
+	 * @param {Array
+	 *            <KnowledgeElement> or empty object} alternatives
 	 */
 	function addArgumentsToDecisionTable(alternative) {
 		for (let index = 0; index < alternative.arguments.length; index++) {
@@ -130,66 +181,93 @@
 				rowElement = document.getElementById(`cellUnknown${alternative.id}`);
 				document.getElementById("criteriaClmTitleUnknown").setAttribute("style", "display:block");
 			}
-			rowElement.setAttribute("style", "white-space: pre;");
-			let content = "";
-			if (argument.type === "Pro") {
-				content = "+ " + argument.summary;
-			} else if (argument.type === "Con") {
-				content = "- " + argument.summary;
+			//rowElement.setAttribute("style", "white-space: pre;");
+			
+			let image = "";
+			if (argument.image) {
+				image = `<img src="${argument.image}"</img>`;
 			}
+			
+			let content = `<div id="${alternative.id}:${argument.id}" class="argument draggable" draggable="true" 
+				style="clear: left;">
+				<p style="float: left; margin-right: 8px;">${image}</p>
+				    <p> ${argument.summary}</p>
+				</div>`;
 			rowElement.innerHTML += rowElement.innerHTML.length ?
-				`<br><div id="${argument.id}" class="argument draggable" draggable="true">${content}</div>` :
-				`<div class="argument draggable" id="${argument.id}" draggable="true">${content}</div>`
+				`<br>${content}` : content;
 		}
 	}
 
-	function addContextMenuToElements(elementID) {
-		let alternatives = document.getElementsByClassName(elementID);
-		for (let index = 0; index < alternatives.length; index++) {
-			const alternative = alternatives[index];
-			alternative.addEventListener("contextmenu", function (event) {
+	function addContextMenuToElements(className) {
+		let elements = document.getElementsByClassName(className);
+		for (let index = 0; index < elements.length; index++) {
+			const element = elements[index];
+			element.addEventListener("contextmenu", function (event) {
 				event.preventDefault();
-				conDecContextMenu.createContextMenu(this.id, "s", event, "tbldecisionTable");
+				let object;
+				if (className === "argument") {
+					let tmpIDs = this.id.split(":");
+					let argumentID = tmpIDs[1];
+					let alternativeID = tmpIDs[0];
+					object = decisionTableData["alternatives"].find(alternative => alternative.id == alternativeID).arguments.find(
+							argument => argument.id == argumentID);
+				} else {
+					object = getElementObj(this.id);
+				}
+				object = Array.isArray(object) ? object[0] : object;
+				if (object) {
+					conDecContextMenu.createContextMenu(object.id, object.documentationLocation, event, "tbldecisionTable-"+ className);
+				}
 			});
 		}
 	}
 
 	/**
 	 * 
-	 * @param {Array or empty object} data 
-	 * @param {string} elementKey 
+	 * @param {Array
+	 *            or empty object} data
+	 * @param {string}
+	 *            elementKey
 	 */
 	function addDropDownItems(data, elementKey) {
 		let dropDown = document.getElementById(`${dropDownID}`);
-		dropDown.innerHTML = "<aui-section id=\"ddIssueID\">";
-		let dropDownSection = document.getElementById("ddIssueID");
-
+		let btnAddCriterion = document.getElementById("btnAddCriterion");
+		let btnAddAlternative = document.getElementById("btnAddAlternative");
+		let btnAddArgument = document.getElementById("btnAddArgument");
+		
+		dropDown.innerHTML = "";
 		if (!data.length) {
-			dropDownSection.innerHTML += "<aui-item-radio disabled>Could not find any issue. Please create new issue!</aui-item-radio>";
+			btnAddCriterion.disabled = true;
+			btnAddAlternative.disabled = true;
+			btnAddArgument.disabled = true;
+			dropDown.innerHTML += "<option disabled>Could not find any issue. Please create new issue!></otpion>";
+			return;
 		} else {
+			btnAddCriterion.disabled = false;
+			btnAddAlternative.disabled = false;
+			btnAddArgument.disabled = false;
 			for (let i = 0; i < data.length; i++) {
 				if (i == 0) {
-					dropDownSection.innerHTML += "<aui-item-radio interactive checked>" + data[i].summary + "</aui-item-radio>";
+					dropDown.innerHTML += "<option value=\"" + data[i].id + "\" checked>" + data[i].summary + "</option>";
+					currentIssue = data[i];
+					conDecAPI.getDecisionTable(elementKey, data[i].id, data[i].documentationLocation, function (data) {
+						buildDecisionTable(data);
+					});
 				} else {
-					dropDownSection.innerHTML += "<aui-item-radio interactive>" + data[i].summary + "</aui-item-radio>";
+					dropDown.innerHTML += "<option value=\"" + data[i].id + "\">" + data[i].summary + "</option>";
 				}
 			}
 		}
 
-		let section = document.querySelector('aui-section#ddIssueID');
+		let section = document.querySelector(`#${dropDownID}`);
 		section.addEventListener('change', function (e) {
-			let tagName = e.target.tagName.toLowerCase();
-			if (tagName === "aui-item-radio") {
-				if (e.target.hasAttribute('checked')) {
-					currentIssue = issues.find(o => o.summary === e.target.textContent);
-					if (typeof currentIssue !== "undefined") {
-						conDecAPI.getDecisionTable(elementKey, currentIssue.id, currentIssue.documentationLocation, function (data) {
-							buildDecisionTable(data);
-						});
-					} else {
-						addAlternativesToTable([]);
-					}
-				}
+		currentIssue = issues.find(o => o.id == document.getElementById(dropDownID).value);
+		if (typeof currentIssue !== "undefined") {
+			conDecAPI.getDecisionTable(elementKey, currentIssue.id, currentIssue.documentationLocation, function (data) {
+					buildDecisionTable(data);
+			});
+		} else {
+			addAlternativesToDecisionTable([], []);
 			}
 		});
 	}
@@ -231,11 +309,11 @@
 			if (argument.id === argumentId) {
 				if (!event.target.id.includes("cell")) {
 					ev.target.parentNode.appendChild(argument);
-					updateArgumentCriteriaLink(criteriaId, ev.target.parentNode.id, argumentId);
+					updateArgumentCriteriaLink(criteriaId, ev.target.parentNode.id, argumentId.split(":")[1]);
 					break;
 				} else {
 					ev.target.appendChild(argument);
-					updateArgumentCriteriaLink(criteriaId, ev.target.id, argumentId);
+					updateArgumentCriteriaLink(criteriaId, ev.target.id, argumentId.split(":")[1]);
 					break;
 				}
 			}
@@ -270,6 +348,7 @@
 		} else if (target.toLowerCase().includes("unknown")) {
 			const sourceInformation = getElementObj(source);
 			const sourceAlternative = sourceInformation[0];
+			const targetAlternative = getElementObj(target);
 			const criteria = sourceInformation[1];
 			const argument = decisionTableData["alternatives"]
 				.find(alternative => alternative.id == sourceAlternative.id).arguments
@@ -299,28 +378,28 @@
 		}
 	}
 
-	function getElementObj(obj) {
-		if (obj.toLowerCase().includes("unknown")) {
-			let alternativeId = obj.replace("cellUnknown", "");
+	function getElementObj(element) {
+		if (element.toLowerCase().includes("unknown")) {
+			let alternativeId = element.replace("cellUnknown", "");
 			return decisionTableData["alternatives"].find(alternative => alternative.id == alternativeId);
-		} else if (obj.includes("cell")) {
-			let concatinated = obj.replace("cell", "").split(":");
+		} else if (element.includes("cell")) {
+			let concatinated = element.replace("cell", "").split(":");
 			let alternativeId = concatinated[0];
 			let criteriaId = concatinated[1];
 			return [decisionTableData["alternatives"].find(alternative => alternative.id == alternativeId), 
 				decisionTableData["criteria"].find(criteria => criteria.id == criteriaId)];
+		} else {
+			return decisionTableData["alternatives"].find(object => object.id == element);
 		}
 	}
 
 	function createLink(parentObj, childObj) {
 		conDecAPI.createLink(null, parentObj.id, childObj.id, parentObj.documentationLocation, childObj.documentationLocation, null, function (data) {
-			console.log(data);
 		});
 	}
 
 	function deleteLink(parentObj, childObj) {
 		conDecAPI.deleteLink(childObj.id, parentObj.id, childObj.documentationLocation, parentObj.documentationLocation, function (data) {
-			console.log(data);
 		});
 	}
 	

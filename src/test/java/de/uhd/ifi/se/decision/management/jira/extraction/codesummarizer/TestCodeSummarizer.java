@@ -1,17 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.codesummarizer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 public class TestCodeSummarizer extends TestSetUpGit {
 
@@ -60,7 +61,7 @@ public class TestCodeSummarizer extends TestSetUpGit {
 
 	@Test
 	public void testRevCommitExisting() {
-		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests, GIT_URI);
+		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
 		assertNotNull(summarizer.createSummary(commits.get(0)));
 	}
 

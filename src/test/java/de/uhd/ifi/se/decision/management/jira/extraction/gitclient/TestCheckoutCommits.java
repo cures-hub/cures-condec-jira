@@ -11,10 +11,9 @@ public class TestCheckoutCommits extends TestSetUpGit {
 
 	@Test
 	public void testCommitCheckout() {
-		List<RevCommit> allCommits = gitClient.getCommits(GIT_URI);
+		List<RevCommit> allCommits = gitClient.getCommits();
 		assertTrue(2 < allCommits.size());
-		assertTrue(gitClient.checkoutCommit(allCommits.get(allCommits.size() - 2), GIT_URI));
-		assertTrue(gitClient.checkoutCommit(allCommits.get(0), GIT_URI));
-		gitClient.deleteRepository(GIT_URI);
+		assertTrue(gitClient.getGitClientsForSingleRepo(GIT_URI).checkoutCommit(allCommits.get(allCommits.size() - 2)));
+		assertTrue(gitClient.getGitClientsForSingleRepo(GIT_URI).checkoutCommit(allCommits.get(0)));
 	}
 }

@@ -9,7 +9,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
@@ -58,8 +57,6 @@ public class TestCreateLink extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	@Ignore
-	// TODO Why does this lead to other failing tests?
 	public void testRequestFilledProjectKeyFilledChildElementFilledParentElementFilledDocumentationLocationJiraIssueCommentsLinkTypeNull() {
 		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("{issue} testobject {issue} {decision} testobject {decision}");
@@ -75,8 +72,6 @@ public class TestCreateLink extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	@Ignore
-	// TODO Why does this lead to other failing tests?
 	public void testRequestFilledProjectKeyFilledChildElementFilledParentElementFilledDocumentationLocationDifferLinkTypeNull() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("{issue} testobject {issue}");
 		PartOfJiraIssueText sentence = comment.get(0);

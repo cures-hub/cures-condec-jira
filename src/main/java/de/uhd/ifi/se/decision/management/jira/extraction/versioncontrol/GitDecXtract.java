@@ -1,20 +1,22 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.xml.bind.DatatypeConverter;
+
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.DatatypeConverter;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 /**
  * Extract decision knowledge elements stored in git repository. Out-of-scope:
@@ -31,17 +33,6 @@ public class GitDecXtract {
 	public GitDecXtract(String projectKey) {
 		this.projecKey = projectKey;
 		gitClient = GitClient.getOrCreate(projectKey);
-	}
-
-	public GitDecXtract(String projecKey, List<String> uris) {
-		this.projecKey = projecKey;
-		gitClient = new GitClient(uris, null, projecKey);
-	}
-
-	/// TODO: can this be done better in JAVA?
-	/// Release git client.
-	public void close() {
-		gitClient.closeAll();
 	}
 
 	// TODO: below method signature will further improve
@@ -63,24 +54,10 @@ public class GitDecXtract {
 
 	public List<KnowledgeElement> getElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd, Ref branch) {
 		List<KnowledgeElement> elementsFromCode = new ArrayList<>();
-		String repoUri = gitClient.getRepoUriFromBranch(branch);
-		// git client which has access to correct version of files (revCommitEnd)
-		GitClient endAnchoredGitClient = new GitClient(gitClient);
-		if (branch != null) {
-			endAnchoredGitClient.checkoutFeatureBranch(branch);
-		}
-		GitClient startAnchoredGitClient = new GitClient(gitClient);
-		if (branch != null) {
-			startAnchoredGitClient.checkoutCommit(revCommitStart.getParent(0), repoUri);
-		}
-		Diff diff = gitClient.getDiff(revCommitStart, revCommitEnd, repoUri);
-		GitDiffedCodeExtractionManager diffCodeManager = new GitDiffedCodeExtractionManager(diff, endAnchoredGitClient,
-				startAnchoredGitClient, repoUri);
+		Diff diff = gitClient.getDiff(revCommitStart, revCommitEnd);
+		GitDiffedCodeExtractionManager diffCodeManager = new GitDiffedCodeExtractionManager(diff);
 		elementsFromCode = diffCodeManager.getNewDecisionKnowledgeElements();
 		elementsFromCode.addAll(diffCodeManager.getOldDecisionKnowledgeElements());
-
-		startAnchoredGitClient.closeAll();
-		endAnchoredGitClient.closeAll();
 
 		return elementsFromCode.stream().map(element -> {
 			element.setProject(projecKey);
@@ -130,9 +107,9 @@ public class GitDecXtract {
 
 	private String calculateRationaleTextHash(String rationaleText) {
 		try {
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			md.update(rationaleText.getBytes());
-			byte[] digest = md.digest();
+			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+			messageDigest.update(rationaleText.getBytes());
+			byte[] digest = messageDigest.digest();
 			return DatatypeConverter.printHexBinary(digest).toUpperCase().substring(0, 8);
 		} catch (NoSuchAlgorithmException e) {
 			LOGGER.error(e.getMessage());

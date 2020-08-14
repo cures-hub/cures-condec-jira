@@ -79,7 +79,11 @@
 
 	function addOnClickEventToDecisionTableButtons() {		
 		document.getElementById("btnAddCriterion").addEventListener("click", function() {
-				conDecDecisionTable.showAddCriteriaToDecisionTableDialog(conDecAPI.getProjectKey());		
+				conDecDecisionTable.showAddCriteriaToDecisionTableDialog();		
+		});
+		
+		document.getElementById("btnAddAlternative").addEventListener("click", function() {
+			conDecDecisionTable.showCreateDialogForIssue();		
 		});
 	}
 	
@@ -160,6 +164,7 @@
 
 	function showDecisionTable() {
 		console.log("ConDecJiraIssueModule showDecisionTable");
+		issueKey = conDecAPI.getIssueKey();
 		decisionTable.loadDecisionProblems(issueKey);
 	}
 

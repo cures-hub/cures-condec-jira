@@ -19,27 +19,32 @@ public class TestAlternative extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		KnowledgeElement keAlternative = new KnowledgeElement();
-		keAlternative.setProject(projectKey);
-		keAlternative.setType(KnowledgeType.ALTERNATIVE);
-		keAlternative.setSummary(summary);
-		keAlternative.setDocumentationLocation(documentationLocation);
-		this.alternative = new Alternative(keAlternative);	
+		KnowledgeElement knowledgeElement = new KnowledgeElement();
+		knowledgeElement.setProject(projectKey);
+		knowledgeElement.setType(KnowledgeType.ALTERNATIVE);
+		knowledgeElement.setSummary(summary);
+		knowledgeElement.setDocumentationLocation(documentationLocation);
+		this.alternative = new Alternative(knowledgeElement);	
 	}
 	
 	@Test
 	public void testGetEmptyArguments() {
 		assertEquals(this.alternative.getArguments().size(), 0);
+		assertEquals(this.alternative.getImage(), KnowledgeType.ALTERNATIVE.getIconUrl());
 	}
 	
 	@Test
 	public void testGetArguments() {
-		KnowledgeElement keArgument = new KnowledgeElement();
-		keArgument.setProject(projectKey);
-		keArgument.setType(KnowledgeType.PRO);
-		Argument argument = new Argument(keArgument);
+		KnowledgeElement knowledgeElement = new KnowledgeElement();
+		knowledgeElement.setProject(projectKey);
+		knowledgeElement.setType(KnowledgeType.PRO);
+		
+		Argument argument = new Argument(knowledgeElement);
 		this.alternative.addArgument(argument);
 		assertEquals(this.alternative.getArguments().size(), 1);
+		assertEquals(this.alternative.getImage(), KnowledgeType.ALTERNATIVE.getIconUrl());
+		assertEquals(this.alternative.getArguments().get(0).getImage(), KnowledgeType.PRO.getIconUrl());
+
 	}
 	
 	@Test
