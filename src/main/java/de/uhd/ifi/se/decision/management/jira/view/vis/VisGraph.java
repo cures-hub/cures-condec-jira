@@ -29,9 +29,8 @@ public class VisGraph {
 	@XmlElement
 	private Set<VisEdge> edges;
 
-	@XmlElement
-	private String rootElementKey;
-
+	@JsonIgnore
+	private KnowledgeElement rootElement;
 	@JsonIgnore
 	private AsSubgraph<KnowledgeElement, Link> graph;
 	@JsonIgnore
@@ -40,7 +39,6 @@ public class VisGraph {
 	public VisGraph() {
 		this.nodes = new HashSet<VisNode>();
 		this.edges = new HashSet<VisEdge>();
-		this.rootElementKey = "";
 	}
 
 	public VisGraph(ApplicationUser user, FilterSettings filterSettings) {
@@ -53,14 +51,11 @@ public class VisGraph {
 		if (graph == null || graph.vertexSet().isEmpty()) {
 			return;
 		}
-		KnowledgeElement rootElement = filterSettings.getSelectedElement();
+		rootElement = filterSettings.getSelectedElement();
 		if (rootElement == null || rootElement.getKey() == null) {
 			addNodesAndEdges(null);
 			return;
 		}
-
-		// TODO This is not a key but id_documentationLocation
-		this.rootElementKey = rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString();
 		addNodesAndEdges(rootElement);
 	}
 
@@ -115,7 +110,8 @@ public class VisGraph {
 		return graph;
 	}
 
-	public String getRootElementKey() {
-		return rootElementKey;
+	@XmlElement(name = "rootElementId")
+	public String getRootElementId() {
+		return rootElement == null ? "" : rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString();
 	}
 }

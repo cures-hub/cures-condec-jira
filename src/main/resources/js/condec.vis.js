@@ -3,17 +3,17 @@
     var ConDecVis = function () {
     };
 
-    function build(theNodes, theEdges, rootElementKey) {
+    function build(theNodes, theEdges, rootElementId) {
         console.log("ConDecVis build");
         var nodes = new vis.DataSet(theNodes);
         var edges = new vis.DataSet(theEdges);
         var container = document.getElementById('vis-container');
         nodes.update([{
-            id: rootElementKey,
+            id: rootElementId,
             borderWidth: 3
         }]);
         nodes.update([{
-            id: rootElementKey,
+            id: rootElementId,
             shadow: {
                 enabled: true
             }
@@ -83,7 +83,7 @@
         conDecAPI.getVisFiltered(issueKey, search, issueTypes, status, createdAfter, createdBefore, linkTypes, 
         		documentationLocation, linkDistance,
             function (visData) {
-                build(visData.nodes, visData.edges, visData.rootElementKey);
+                build(visData.nodes, visData.edges, visData.rootElementId);
             });
     };
 
@@ -93,8 +93,8 @@
     ConDecVis.prototype.buildVis = function (elementKey, searchTerm) {
         console.log("conDecVis buildVis");
         conDecAPI.getVis(elementKey, searchTerm, function (visData) {
-            var network = build(visData.nodes, visData.edges, visData.rootElementKey);
-            network.focus(visData.rootElementKey, {
+            var network = build(visData.nodes, visData.edges, visData.rootElementId);
+            network.focus(visData.rootElementId, {
                 scale: 0.9
             });
         });
