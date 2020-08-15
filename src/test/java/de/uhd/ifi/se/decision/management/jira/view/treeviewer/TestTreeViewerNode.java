@@ -15,29 +15,29 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import de.uhd.ifi.se.decision.management.jira.testdata.Links;
 
-public class TestData extends TestSetUp {
+public class TestTreeViewerNode extends TestSetUp {
 
 	private KnowledgeElement element;
-	private Data data;
+	private TreeViewerNode data;
 
 	@Before
 	public void setUp() {
 		init();
 		element = KnowledgeElements.getTestKnowledgeElement();
-		data = new Data(element);
+		data = new TreeViewerNode(element);
 	}
 
 	@Test
 	public void testConstructorWithElementAndLink() {
 		Link link = Links.getTestLink();
-		Data data = new Data(element, link);
+		TreeViewerNode data = new TreeViewerNode(element, link);
 		assertEquals("tv1", data.getId());
 	}
 
 	@Test
 	public void testConstructorWithDescNull() {
 		element.setDescription(null);
-		Data data = new Data(element);
+		TreeViewerNode data = new TreeViewerNode(element);
 		assertNotNull(data);
 		element.setDescription("TestDescription");
 	}
@@ -45,7 +45,7 @@ public class TestData extends TestSetUp {
 	@Test
 	public void testConstructorWithDescBlank() {
 		element.setDescription("");
-		Data data = new Data(element);
+		TreeViewerNode data = new TreeViewerNode(element);
 		assertNotNull(data);
 		element.setDescription("TestDescription");
 	}
@@ -53,7 +53,7 @@ public class TestData extends TestSetUp {
 	@Test
 	public void testConstructorWithDescUndefined() {
 		element.setDescription("undefined");
-		Data data = new Data(element);
+		TreeViewerNode data = new TreeViewerNode(element);
 		assertNotNull(data);
 		element.setDescription("TestDescription");
 	}
@@ -86,7 +86,7 @@ public class TestData extends TestSetUp {
 
 	@Test
 	public void testSetChildren() {
-		List<Data> newChilden = new ArrayList<>();
+		List<TreeViewerNode> newChilden = new ArrayList<>();
 		data.setChildren(newChilden);
 		assertEquals(newChilden, data.getChildren());
 	}

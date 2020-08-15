@@ -126,8 +126,7 @@ public class Treant {
 			return node;
 		}
 
-		Set<Link> linksToTraverse = graph.edgesOf(element);
-		List<TreantNode> nodes = getChildren(element, linksToTraverse, currentDepth);
+		List<TreantNode> nodes = getChildren(element, currentDepth);
 		node.setChildren(nodes);
 		return node;
 	}
@@ -148,7 +147,7 @@ public class Treant {
 			if (!isIssueView && link.getTarget() != null) {
 				TreantNode adult = createTreantNode(link.getTarget(), link);
 				if (filterSettings.getLinkDistance() > 1) {
-					adult.setChildren(getChildren(link.getTarget(), graph.edgesOf(link.getTarget()), currentDepth + 1));
+					adult.setChildren(getChildren(link.getTarget(), currentDepth + 1));
 				}
 				nodes.add(adult);
 			} else if (isIssueView) {
@@ -172,24 +171,31 @@ public class Treant {
 		return node;
 	}
 
-	private List<TreantNode> getChildren(KnowledgeElement rootElement, Set<Link> linksToTraverse, int currentDepth) {
+	private List<TreantNode> getChildren(KnowledgeElement parentElement, int currentDepth) {
 		List<TreantNode> nodes = new ArrayList<TreantNode>();
-		for (Link currentLink : linksToTraverse) {
-			if (!traversedLinks.add(currentLink)) {
-				continue;
+		for (Link currentLink : graph.edgesOf(parentElement)) {
+			TreantNode childNode = getChild(parentElement, currentLink, currentDepth);
+			if (childNode != null) {
+				nodes.add(childNode);
 			}
-			KnowledgeElement oppositeElement = currentLink.getOppositeElement(rootElement);
-			if (oppositeElement == null) {
-				continue;
-			}
-			// TODO Add to FilteringManager
-			if (filterSettings.isOnlyDecisionKnowledgeShown() && oppositeElement.getType() == KnowledgeType.OTHER) {
-				continue;
-			}
-			TreantNode newChildNode = createNodeStructure(oppositeElement, currentLink, currentDepth + 1);
-			nodes.add(newChildNode);
 		}
 		return nodes;
+	}
+
+	private TreantNode getChild(KnowledgeElement parentElement, Link link, int currentDepth) {
+		if (!traversedLinks.add(link)) {
+			return null;
+		}
+		KnowledgeElement oppositeElement = link.getOppositeElement(parentElement);
+		if (oppositeElement == null) {
+			return null;
+		}
+		// TODO Add to FilteringManager
+		if (filterSettings.isOnlyDecisionKnowledgeShown() && oppositeElement.getType() == KnowledgeType.OTHER) {
+			return null;
+		}
+		TreantNode childNode = createNodeStructure(oppositeElement, link, currentDepth + 1);
+		return childNode;
 	}
 
 	public Chart getChart() {

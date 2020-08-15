@@ -45,8 +45,8 @@ public class TreeViewer {
 	@XmlElement
 	private Map<String, Boolean> themes;
 
-	@XmlElement
-	private Set<Data> data;
+	@XmlElement(name = "data")
+	private Set<TreeViewerNode> nodes;
 
 	@JsonIgnore
 	private Graph<KnowledgeElement, Link> graph;
@@ -55,7 +55,6 @@ public class TreeViewer {
 	@JsonIgnore
 	private long index;
 	@JsonIgnore
-	// TODO Remove
 	private List<Long> alreadyVisitedEdges;
 
 	public TreeViewer() {
@@ -84,9 +83,9 @@ public class TreeViewer {
 		graph = KnowledgeGraph.getOrCreate(projectKey);
 		List<KnowledgeElement> elements = ((KnowledgeGraph) graph).getElements(rootElementType);
 
-		data = new HashSet<Data>();
+		nodes = new HashSet<TreeViewerNode>();
 		for (KnowledgeElement element : elements) {
-			data.add(this.makeIdUnique(new Data(element)));
+			nodes.add(this.makeIdUnique(new TreeViewerNode(element)));
 		}
 	}
 
@@ -107,17 +106,17 @@ public class TreeViewer {
 		KnowledgeElement rootElement = filterSettings.getSelectedElement();
 		FilteringManager filteringManager = new FilteringManager(null, filterSettings);
 		graph = filteringManager.getSubgraphMatchingFilterSettings();
-		Data rootNode = getDataStructure(rootElement);
+		TreeViewerNode rootNode = getDataStructure(rootElement);
 
 		// Match irrelevant sentences back to list
 		for (Link link : GenericLinkManager.getLinksForElement(rootElement.getId(), DocumentationLocation.JIRAISSUE)) {
 			KnowledgeElement opposite = link.getOppositeElement(rootElement.getId());
 			if (opposite instanceof PartOfJiraIssueText && isSentenceShown(opposite)) {
-				rootNode.getChildren().add(new Data(opposite));
+				rootNode.getChildren().add(new TreeViewerNode(opposite));
 			}
 		}
 
-		data = new HashSet<Data>(Arrays.asList(rootNode));
+		nodes = new HashSet<TreeViewerNode>(Arrays.asList(rootNode));
 	}
 
 	/**
@@ -127,11 +126,11 @@ public class TreeViewer {
 	public TreeViewer(String projectKey) {
 		this();
 		if (projectKey != null) {
-			data = new HashSet<Data>();
+			nodes = new HashSet<TreeViewerNode>();
 			CodeClassPersistenceManager manager = new CodeClassPersistenceManager(projectKey);
 			List<KnowledgeElement> elementList = manager.getKnowledgeElements();
 			for (KnowledgeElement element : elementList) {
-				data.add(this.makeIdUnique(new Data(element)));
+				nodes.add(this.makeIdUnique(new TreeViewerNode(element)));
 			}
 		}
 	}
@@ -148,9 +147,9 @@ public class TreeViewer {
 	 * @decision Convert the directed graph into an undirected graph for graph
 	 *           iteration!
 	 */
-	public Data getDataStructure(KnowledgeElement knowledgeElement) {
+	public TreeViewerNode getDataStructure(KnowledgeElement knowledgeElement) {
 		if (knowledgeElement == null) {
-			return new Data();
+			return new TreeViewerNode();
 		}
 		try {
 			graph = new AsUndirectedGraph<KnowledgeElement, Link>(graph);
@@ -158,59 +157,58 @@ public class TreeViewer {
 
 		}
 
-		Data data = new Data(knowledgeElement);
-		data = this.makeIdUnique(data);
-		List<Data> children = this.getChildren(knowledgeElement);
-		data.setChildren(children);
-		return data;
+		TreeViewerNode rootNode = new TreeViewerNode(knowledgeElement);
+		rootNode = this.makeIdUnique(rootNode);
+		List<TreeViewerNode> childNodes = this.getChildren(knowledgeElement);
+		rootNode.setChildren(childNodes);
+		return rootNode;
 	}
 
-	protected List<Data> getChildren(KnowledgeElement knowledgeElement) {
-		List<Data> children = new ArrayList<Data>();
+	protected List<TreeViewerNode> getChildren(KnowledgeElement element) {
+		List<TreeViewerNode> children = new ArrayList<TreeViewerNode>();
 		BreadthFirstIterator<KnowledgeElement, Link> iterator;
 		try {
-			iterator = new BreadthFirstIterator<>(graph, knowledgeElement);
+			iterator = new BreadthFirstIterator<>(graph, element);
 		} catch (IllegalArgumentException e) {
-			graph.addVertex(knowledgeElement);
-			iterator = new BreadthFirstIterator<>(graph, knowledgeElement);
+			graph.addVertex(element);
+			iterator = new BreadthFirstIterator<>(graph, element);
 		}
 		while (iterator.hasNext()) {
-			KnowledgeElement iterNode = iterator.next();
-			KnowledgeElement parentNode = iterator.getParent(iterNode);
-			if (parentNode == null || parentNode.getId() != knowledgeElement.getId()) {
+			KnowledgeElement childElement = iterator.next();
+			KnowledgeElement parentElement = iterator.getParent(childElement);
+			if (parentElement == null || parentElement.getId() != element.getId()) {
 				continue;
 			}
-			if (!(iterNode instanceof KnowledgeElement)) {
+			if (!(childElement instanceof KnowledgeElement)) {
 				continue;
 			}
-			KnowledgeElement nodeElement = iterNode;
-			Link edge = graph.getEdge(parentNode, nodeElement);
+			Link edge = graph.getEdge(parentElement, childElement);
 			if (alreadyVisitedEdges.contains(edge.getId())) {
 				continue;
 			}
 			this.alreadyVisitedEdges.add(edge.getId());
-			Data dataChild = new Data(nodeElement, edge);
-			if (((KnowledgeElement) dataChild.getElement()).getProject() == null
-					|| !((KnowledgeElement) dataChild.getElement()).getProject().getProjectKey()
-							.equals(knowledgeElement.getProject().getProjectKey())) {
+			TreeViewerNode childNode = new TreeViewerNode(childElement, edge);
+			if (((KnowledgeElement) childNode.getElement()).getProject() == null
+					|| !((KnowledgeElement) childNode.getElement()).getProject().getProjectKey()
+							.equals(element.getProject().getProjectKey())) {
 				continue;
 			}
-			dataChild = this.makeIdUnique(dataChild);
-			List<Data> childrenOfElement = this.getChildren(nodeElement);
-			dataChild.setChildren(childrenOfElement);
-			children.add(dataChild);
+			childNode = this.makeIdUnique(childNode);
+			List<TreeViewerNode> childrenOfElement = this.getChildren(childElement);
+			childNode.setChildren(childrenOfElement);
+			children.add(childNode);
 		}
 		return children;
 	}
 
-	protected Data makeIdUnique(Data data) {
-		if (!ids.contains(data.getId())) {
-			ids.add(data.getId());
+	protected TreeViewerNode makeIdUnique(TreeViewerNode node) {
+		if (!ids.contains(node.getId())) {
+			ids.add(node.getId());
 		} else {
-			data.setId(index + data.getId());
+			node.setId(index + node.getId());
 			index++;
 		}
-		return data;
+		return node;
 	}
 
 	public boolean isMultiple() {
@@ -237,12 +235,12 @@ public class TreeViewer {
 		this.themes = themes;
 	}
 
-	public Set<Data> getData() {
-		return data;
+	public Set<TreeViewerNode> getData() {
+		return nodes;
 	}
 
-	public void setData(Set<Data> data) {
-		this.data = data;
+	public void setData(Set<TreeViewerNode> data) {
+		this.nodes = data;
 	}
 
 	public List<String> getIds() {

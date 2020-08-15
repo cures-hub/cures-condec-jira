@@ -39,7 +39,7 @@ public class TestTreeViewer extends TestSetUp {
 	private boolean multiple;
 	private boolean checkCallback;
 	private Map<String, Boolean> themes;
-	private Set<Data> data;
+	private Set<TreeViewerNode> data;
 	private TreeViewer treeViewer;
 	private FilterSettings filterSettings;
 
@@ -51,7 +51,7 @@ public class TestTreeViewer extends TestSetUp {
 		themes = new HashMap<>();
 		themes.put("Test", false);
 		data = new HashSet<>();
-		data.add(new Data());
+		data.add(new TreeViewerNode());
 		treeViewer = new TreeViewer("TEST", KnowledgeType.DECISION);
 		treeViewer.setMultiple(multiple);
 		treeViewer.setCheckCallback(checkCallback);
@@ -110,7 +110,7 @@ public class TestTreeViewer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSetData() {
-		HashSet<Data> newData = new HashSet<Data>();
+		HashSet<TreeViewerNode> newData = new HashSet<TreeViewerNode>();
 		treeViewer.setData(newData);
 		assertEquals(treeViewer.getData(), newData);
 	}
@@ -118,7 +118,7 @@ public class TestTreeViewer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetDataStructureNull() {
-		assertEquals(Data.class, treeViewer.getDataStructure(null).getClass());
+		assertEquals(TreeViewerNode.class, treeViewer.getDataStructure(null).getClass());
 	}
 
 	@Test(expected = NullPointerException.class)
