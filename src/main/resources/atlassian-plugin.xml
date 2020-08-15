@@ -155,16 +155,6 @@
 			location="/js/condec.knowledge.page.js" />
 	</web-resource>
 
-    <web-resource key="rationale-backlog-page-resources"
-                  name="ConDec Rationale Backlog Page Resources">
-        <description>
-            Provides the JavaScript files for the separate rationale backlog page of this
-            plug-in.
-        </description>
-        <resource type="download" name="condec.rationale.backlog.page.js"
-                  location="/js/condec.rationale.backlog.page.js" />
-    </web-resource>
-
 	<web-resource key="release-note-page-resources"
 		name="ConDec Release Notes Page Resources">
 		<description>
@@ -237,14 +227,6 @@
 		</description>
 		<resource name="view" type="velocity" location="templates/decisionKnowledgePage.vm" />
 	</web-panel>
-
-    <web-panel name="Rationale Backlog Page" key="rationale-backlog-page"
-               location="rationale-backlog-page" weight="1000">
-        <description>
-            Provides the rationale backlog that developers use to manage decision knowledge.
-        </description>
-        <resource name="view" type="velocity" location="templates/rationaleBacklogView.vm" />
-    </web-panel>
 
 	<!-- Release Notes Page -->
 	<web-item name="Link to the Release Note Page in Side Bar" key="sidebar-link-release-note"
