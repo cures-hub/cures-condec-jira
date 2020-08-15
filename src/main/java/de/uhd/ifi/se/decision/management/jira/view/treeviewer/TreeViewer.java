@@ -55,6 +55,7 @@ public class TreeViewer {
 	@JsonIgnore
 	private long index;
 	@JsonIgnore
+	// TODO Remove
 	private List<Long> alreadyVisitedEdges;
 
 	public TreeViewer() {
@@ -95,7 +96,7 @@ public class TreeViewer {
 	 *
 	 * @param filterSettings
 	 *            For example, the {@link FilterSettings}s cover the selected
-	 *            element and the decision knowledge types to be shown.
+	 *            element and the knowledge types to be shown.
 	 */
 	public TreeViewer(FilterSettings filterSettings) {
 		this();
@@ -151,7 +152,12 @@ public class TreeViewer {
 		if (knowledgeElement == null) {
 			return new Data();
 		}
-		graph = new AsUndirectedGraph<KnowledgeElement, Link>(graph);
+		try {
+			graph = new AsUndirectedGraph<KnowledgeElement, Link>(graph);
+		} catch (Exception e) {
+
+		}
+
 		Data data = new Data(knowledgeElement);
 		data = this.makeIdUnique(data);
 		List<Data> children = this.getChildren(knowledgeElement);

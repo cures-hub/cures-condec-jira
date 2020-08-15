@@ -146,10 +146,9 @@ public class TestTreeViewer extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testEmptyGraphGetDataStructure() {
+	public void testEmptyTreeViewer() {
 		TreeViewer tree = new TreeViewer();
-		KnowledgeElement element = persistenceManager.getKnowledgeElement(14);
-		assertEquals("tv14", tree.getDataStructure(element).getId());
+		assertNotNull(tree);
 	}
 
 	@Test
@@ -164,13 +163,13 @@ public class TestTreeViewer extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testTreeViewerCalledFromTabpanel() {
+	public void testTreeViewerForSingleKnowledgeElement() {
 		// 1) Check if Tree Element has no Children - Important!
-		KnowledgeElement element = persistenceManager.getKnowledgeElement(14);
+		KnowledgeElement element = persistenceManager.getKnowledgeElement("TEST-14");
 		filterSettings.setSelectedElement(element);
-		TreeViewer tv = new TreeViewer(filterSettings);
-		assertNotNull(tv);
-		assertEquals(0, tv.getDataStructure(element).getChildren().size());
+		TreeViewer treeViewer = new TreeViewer(filterSettings);
+		assertNotNull(treeViewer);
+		assertEquals(0, treeViewer.getDataStructure(element).getChildren().size());
 
 		// 2) Add comment to issue
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-14");
@@ -186,11 +185,11 @@ public class TestTreeViewer extends TestSetUp {
 		sentences.get(0).setType(KnowledgeType.ALTERNATIVE);
 		element = persistenceManager.getKnowledgeElement(14);
 		filterSettings.setSelectedElement(element);
-		tv = new TreeViewer(filterSettings);
+		treeViewer = new TreeViewer(filterSettings);
 
 		// 4) Check if TreeViewer has one element
-		assertNotNull(tv);
-		assertEquals(1, tv.getData().size());
+		assertNotNull(treeViewer);
+		assertEquals(1, treeViewer.getData().size());
 
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 	}
