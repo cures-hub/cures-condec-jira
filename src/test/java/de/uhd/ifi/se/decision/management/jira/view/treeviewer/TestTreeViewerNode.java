@@ -18,81 +18,81 @@ import de.uhd.ifi.se.decision.management.jira.testdata.Links;
 public class TestTreeViewerNode extends TestSetUp {
 
 	private KnowledgeElement element;
-	private TreeViewerNode data;
+	private TreeViewerNode node;
 
 	@Before
 	public void setUp() {
 		init();
 		element = KnowledgeElements.getTestKnowledgeElement();
-		data = new TreeViewerNode(element);
+		node = new TreeViewerNode(element);
 	}
 
 	@Test
 	public void testConstructorWithElementAndLink() {
 		Link link = Links.getTestLink();
-		TreeViewerNode data = new TreeViewerNode(element, link);
-		assertEquals("tv1", data.getId());
+		TreeViewerNode node = new TreeViewerNode(element, link);
+		assertEquals("tv1", node.getId());
 	}
 
 	@Test
 	public void testConstructorWithDescNull() {
 		element.setDescription(null);
-		TreeViewerNode data = new TreeViewerNode(element);
-		assertNotNull(data);
+		TreeViewerNode node = new TreeViewerNode(element);
+		assertNotNull(node);
 		element.setDescription("TestDescription");
 	}
 
 	@Test
 	public void testConstructorWithDescBlank() {
 		element.setDescription("");
-		TreeViewerNode data = new TreeViewerNode(element);
-		assertNotNull(data);
+		TreeViewerNode node = new TreeViewerNode(element);
+		assertNotNull(node);
 		element.setDescription("TestDescription");
 	}
 
 	@Test
 	public void testConstructorWithDescUndefined() {
 		element.setDescription("undefined");
-		TreeViewerNode data = new TreeViewerNode(element);
-		assertNotNull(data);
+		TreeViewerNode node = new TreeViewerNode(element);
+		assertNotNull(node);
 		element.setDescription("TestDescription");
 	}
 
 	@Test
 	public void testGetId() {
-		assertEquals("tv1", data.getId());
+		assertEquals("tv1", node.getId());
 	}
 
 	@Test
 	public void testGetText() {
-		assertEquals("WI: Implement feature", data.getText());
+		assertEquals("WI: Implement feature", node.getText());
 	}
 
 	@Test
 	public void testGetChildren() {
-		assertEquals(new ArrayList<>(), data.getChildren());
+		assertEquals(new ArrayList<>(), node.getChildren());
 	}
 
 	@Test
 	public void testGetElement() {
-		assertEquals(element, data.getElement());
+		assertEquals(element, node.getElement());
 	}
 
 	@Test
 	public void testSetId() {
-		data.setId("New");
-		assertEquals("New", data.getId());
+		node.setId("New");
+		assertEquals("New", node.getId());
 	}
 
 	@Test
 	public void testSetChildren() {
 		List<TreeViewerNode> newChilden = new ArrayList<>();
-		data.setChildren(newChilden);
-		assertEquals(newChilden, data.getChildren());
+		node.setChildren(newChilden);
+		assertEquals(newChilden, node.getChildren());
 	}
 
 	@Test
 	public void testGetIcon() {
-		assertEquals(null, data.getIcon());
+		assertEquals(null, node.getIcon());
 	}
 }

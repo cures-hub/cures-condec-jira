@@ -38,7 +38,7 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testConstructorWithFilterSettingsInvalid() {
-		FilteringManager filteringManager = new FilteringManager(null, (FilterSettings) null);
+		FilteringManager filteringManager = new FilteringManager((FilterSettings) null);
 		assertNull(filteringManager.getFilterSettings());
 	}
 
@@ -76,6 +76,7 @@ public class TestFilteringManager extends TestSetUp {
 		assertEquals("TEST", filteringManager.getFilterSettings().getSearchTerm());
 	}
 
+	@Test
 	public void testFilterSettingsEmpty() {
 		FilteringManager filteringManager = new FilteringManager(user, new FilterSettings(null, null));
 		assertEquals(0, filteringManager.getElementsMatchingFilterSettings().size());

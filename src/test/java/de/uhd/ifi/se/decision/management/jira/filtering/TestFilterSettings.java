@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -217,6 +218,9 @@ public class TestFilterSettings extends TestSetUp {
 
 		filterSettings.setSelectedElement(KnowledgeElements.getTestKnowledgeElement());
 		assertEquals("TEST-1", filterSettings.getSelectedElement().getKey());
+
+		filterSettings.setSelectedElement("TEST-1:123");
+		assertNull(filterSettings.getSelectedElement());
 	}
 
 }
