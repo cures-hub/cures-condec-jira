@@ -126,6 +126,7 @@ public class Treant {
 			return node;
 		}
 
+		graph.addVertex(element);
 		Set<Link> linksToTraverse = graph.edgesOf(element);
 		List<TreantNode> nodes = getChildren(element, linksToTraverse, currentDepth);
 		node.setChildren(nodes);
@@ -138,6 +139,7 @@ public class Treant {
 		if (element == null || element.getProject() == null || links == null) {
 			return new TreantNode();
 		}
+		graph.addVertex(element);
 		TreantNode node = createTreantNode(element, null);
 		if (currentDepth == filterSettings.getLinkDistance() + 1) {
 			return node;
@@ -147,7 +149,7 @@ public class Treant {
 		for (Link link : links) {
 			if (!isIssueView && link.getTarget() != null) {
 				TreantNode adult = createTreantNode(link.getTarget(), link);
-				if (filterSettings.getLinkDistance() > 1 && graph.containsVertex(link.getTarget())) {
+				if (filterSettings.getLinkDistance() > 1) {
 					adult.setChildren(getChildren(link.getTarget(), graph.edgesOf(link.getTarget()), currentDepth + 1));
 				}
 				nodes.add(adult);

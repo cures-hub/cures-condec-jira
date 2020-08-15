@@ -58,12 +58,18 @@ public class FilteringManager {
 			LOGGER.error("FilteringManager misses important attributes.");
 			return new ArrayList<KnowledgeElement>();
 		}
-		String searchString = filterSettings.getSearchTerm().toLowerCase();
-		if (JiraQueryType.getJiraQueryType(searchString) == JiraQueryType.OTHER) {
-			Set<KnowledgeElement> elements = graph.vertexSet();
-			return filterElements(elements);
+		// String searchString = filterSettings.getSearchTerm().toLowerCase();
+		Set<KnowledgeElement> elements = new HashSet<>();
+		if (filterSettings.getSelectedElement() != null) {
+			elements = getElementsInLinkDistance();
+		} else {
+			elements = graph.vertexSet();
 		}
-		return getAllElementsMatchingQuery();
+		// if (JiraQueryType.getJiraQueryType(searchString) == JiraQueryType.OTHER) {
+		return filterElements(elements);
+		// }
+		// elements.retainAll(getAllElementsMatchingQuery());
+		// return new ArrayList<>(elements);
 	}
 
 	/**
@@ -77,9 +83,6 @@ public class FilteringManager {
 		}
 		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>(getElementsMatchingFilterSettings());
 		Graph<KnowledgeElement, Link> subgraph = new AsSubgraph<KnowledgeElement, Link>(graph, elements);
-		if (filterSettings.getSelectedElement() != null) {
-			subgraph = getSubgraphMatchingLinkDistance();
-		}
 		if (filterSettings.getLinkTypes().size() < LinkType.toStringList().size()) {
 			Set<Link> linksNotMatchingFilterSettings = getLinksNotMatchingFilterSettings(subgraph.edgeSet());
 			subgraph.removeAllEdges(linksNotMatchingFilterSettings);
@@ -87,12 +90,12 @@ public class FilteringManager {
 		return subgraph;
 	}
 
-	public AsSubgraph<KnowledgeElement, Link> getSubgraphMatchingLinkDistance() {
+	private Set<KnowledgeElement> getElementsInLinkDistance() {
 		KnowledgeElement selectedElement = filterSettings.getSelectedElement();
 		int linkDistance = filterSettings.getLinkDistance();
 		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>();
 		elements.addAll(getLinkedElements(selectedElement, linkDistance));
-		return new AsSubgraph<KnowledgeElement, Link>(graph, elements);
+		return elements;
 	}
 
 	private Set<KnowledgeElement> getLinkedElements(KnowledgeElement currentElement, int currentDistance) {

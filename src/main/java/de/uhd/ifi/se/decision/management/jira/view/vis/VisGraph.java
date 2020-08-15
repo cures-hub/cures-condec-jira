@@ -60,6 +60,9 @@ public class VisGraph {
 	}
 
 	private void addNodesAndEdges() {
+		if (rootElement != null) {
+			subgraph.addVertex(rootElement);
+		}
 		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<>(subgraph);
 
 		Set<Link> allEdges = new HashSet<>();
