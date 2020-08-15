@@ -59,10 +59,17 @@ public class VisGraph {
 		addNodesAndEdges();
 	}
 
+	/**
+	 * @issue How can graph iteration be done over both outgoing and incoming edges
+	 *        of a knowledge element (=node)?
+	 * @decision Convert the directed graph into an undirected graph for graph
+	 *           iteration!
+	 */
 	private void addNodesAndEdges() {
 		if (rootElement != null) {
 			subgraph.addVertex(rootElement);
 		}
+
 		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<>(subgraph);
 
 		Set<Link> allEdges = new HashSet<>();

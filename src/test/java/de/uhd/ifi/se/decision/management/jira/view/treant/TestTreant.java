@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.user.ApplicationUser;
@@ -88,6 +89,7 @@ public class TestTreant extends TestSetUp {
 
 	@Test
 	@NonTransactional
+	@Ignore
 	public void testSecondConstructorCheckboxFalse() {
 		FilterSettings filterSettings = new FilterSettings("TEST", null);
 		filterSettings.setSelectedElement(classElement);
