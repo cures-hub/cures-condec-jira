@@ -128,6 +128,7 @@ public class Treant {
 
 		List<TreantNode> nodes = getChildren(element, currentDepth);
 		node.setChildren(nodes);
+
 		return node;
 	}
 
@@ -172,6 +173,9 @@ public class Treant {
 	}
 
 	private List<TreantNode> getChildren(KnowledgeElement parentElement, int currentDepth) {
+		if (parentElement == null || !graph.containsVertex(parentElement)) {
+			return new ArrayList<TreantNode>();
+		}
 		List<TreantNode> nodes = new ArrayList<TreantNode>();
 		for (Link currentLink : graph.edgesOf(parentElement)) {
 			TreantNode childNode = getChild(parentElement, currentLink, currentDepth);

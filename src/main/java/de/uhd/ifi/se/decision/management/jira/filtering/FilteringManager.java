@@ -61,6 +61,7 @@ public class FilteringManager {
 		// String searchString = filterSettings.getSearchTerm().toLowerCase();
 		Set<KnowledgeElement> elements = new HashSet<>();
 		if (filterSettings.getSelectedElement() != null) {
+			graph.addVertex(filterSettings.getSelectedElement());
 			elements = getElementsInLinkDistance();
 		} else {
 			elements = graph.vertexSet();
@@ -293,19 +294,24 @@ public class FilteringManager {
 	/**
 	 * @param element
 	 *            {@link KnowledgeElement} object.
-	 * @return true if the element's group equals one of the given groups in the
+	 * @return true if the element's groups are equal to the given groups in the
 	 *         {@link FilterSetting}s.
 	 */
 	public boolean isElementMatchingDecisionGroupFilter(KnowledgeElement element) {
-		List<String> groups = element.getDecisionGroups();
 		List<String> selectedGroups = filterSettings.getDecisionGroups();
+		if (selectedGroups.isEmpty()) {
+			return true;
+		}
+
+		List<String> groups = element.getDecisionGroups();
+
 		int matches = 0;
 		for (String group : selectedGroups) {
 			if (groups.contains(group)) {
 				matches++;
 			}
 		}
-		return (matches == selectedGroups.size());
+		return matches == selectedGroups.size();
 	}
 
 	/**

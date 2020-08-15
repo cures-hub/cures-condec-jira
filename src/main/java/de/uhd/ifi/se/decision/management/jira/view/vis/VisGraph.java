@@ -49,10 +49,6 @@ public class VisGraph {
 		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
 		subgraph = filteringManager.getSubgraphMatchingFilterSettings();
 		rootElement = filterSettings.getSelectedElement();
-		if (rootElement == null || rootElement.getKey() == null) {
-			addNodesAndEdges();
-			return;
-		}
 		addNodesAndEdges();
 	}
 
