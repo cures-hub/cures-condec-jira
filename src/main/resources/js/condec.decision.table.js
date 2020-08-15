@@ -5,8 +5,8 @@
 
 	const decisionTableID = "decisionTable-container";
 	const auiTableID = "tbldecisionTable";
-	const dropDownID = "selectDesionProblem";
-	const alternativeClmTitle = "Solution options (Alternative and Decision)";
+	const dropDownID = "selectDecisionProblem";
+	const alternativeClmTitle = "Solution options (Alternatives and Decision)";
 	let issues = [];
 	let decisionTableData = [];
 	let currentIssue;
@@ -16,7 +16,7 @@
 	 */
 	ConDecDecisionTable.prototype.loadDecisionProblems = function loadDecisionProblems(elementKey) {
 		console.log("conDecDecisionTable buildDecisionTable");
-		const linkDistance = document.getElementById("link-distance-input").value;
+		const linkDistance = document.getElementById("link-distance-input-decision-table").value;
 
 		conDecAPI.getDecisionIssues(elementKey, linkDistance, function (data) {
 			issues = data;

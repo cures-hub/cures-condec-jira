@@ -38,7 +38,7 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testConstructorWithFilterSettingsInvalid() {
-		FilteringManager filteringManager = new FilteringManager(null, (FilterSettings) null);
+		FilteringManager filteringManager = new FilteringManager((FilterSettings) null);
 		assertNull(filteringManager.getFilterSettings());
 	}
 
@@ -76,6 +76,7 @@ public class TestFilteringManager extends TestSetUp {
 		assertEquals("TEST", filteringManager.getFilterSettings().getSearchTerm());
 	}
 
+	@Test
 	public void testFilterSettingsEmpty() {
 		FilteringManager filteringManager = new FilteringManager(user, new FilterSettings(null, null));
 		assertEquals(0, filteringManager.getElementsMatchingFilterSettings().size());
@@ -112,6 +113,47 @@ public class TestFilteringManager extends TestSetUp {
 		assertEquals(9, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
 		// Currently, the mock links all have the "relate" type.
 		assertEquals(0, filteringManager.getSubgraphMatchingFilterSettings().edgeSet().size());
+	}
+
+	@Test
+	public void testGetSubgraphForLinkDistanceZero() {
+		FilterSettings settings = new FilterSettings("TEST", "TEST");
+		settings.setSelectedElement("TEST-1");
+		settings.setLinkDistance(0);
+
+		FilteringManager filteringManager = new FilteringManager(user, settings);
+		assertEquals(1, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
+		assertEquals(0, filteringManager.getSubgraphMatchingFilterSettings().edgeSet().size());
+	}
+
+	@Test
+	public void testGetSubgraphForLinkDistanceOne() {
+		FilterSettings settings = new FilterSettings("TEST", "TEST");
+		settings.setSelectedElement("TEST-1");
+		settings.setLinkDistance(1);
+
+		FilteringManager filteringManager = new FilteringManager(user, settings);
+		assertEquals(6, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
+	}
+
+	@Test
+	public void testGetSubgraphForLinkDistanceTwo() {
+		FilterSettings settings = new FilterSettings("TEST", "TEST");
+		settings.setSelectedElement("TEST-1");
+		settings.setLinkDistance(2);
+
+		FilteringManager filteringManager = new FilteringManager(user, settings);
+		assertEquals(8, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
+	}
+
+	@Test
+	public void testGetSubgraphForLinkDistanceThree() {
+		FilterSettings settings = new FilterSettings("TEST", "TEST");
+		settings.setSelectedElement("TEST-1");
+		settings.setLinkDistance(3);
+
+		FilteringManager filteringManager = new FilteringManager(user, settings);
+		assertEquals(9, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
 	}
 
 	@Test

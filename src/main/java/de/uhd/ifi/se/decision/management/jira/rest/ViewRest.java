@@ -34,7 +34,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -184,13 +183,12 @@ public class ViewRest {
 	 */
 	@Path("/getTreeViewerForSingleElement")
 	@POST
-	public Response getTreeViewerForSingleElement(@Context HttpServletRequest request,
-			@QueryParam("jiraIssueKey") String jiraIssueKey, FilterSettings filterSettings) {
+	public Response getTreeViewerForSingleElement(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Invalid parameters given. Tree viewer not be created.")).build();
 		}
-		if (jiraIssueKey == null || !jiraIssueKey.contains("-")) {
+		if (filterSettings.getSelectedElement() == null || filterSettings.getSelectedElement().getKey() == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Jira issue key is not valid."))
 					.build();
 		}
@@ -200,7 +198,7 @@ public class ViewRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 
-		TreeViewer treeViewer = new TreeViewer(jiraIssueKey, filterSettings);
+		TreeViewer treeViewer = new TreeViewer(filterSettings);
 		return Response.ok(treeViewer).build();
 	}
 
@@ -226,22 +224,21 @@ public class ViewRest {
 	@Path("/getDecisionIssues")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionIssues(@Context HttpServletRequest request, 
-			@QueryParam("elementKey") String elementKey, FilterSettings filterSettings) {
-		if (elementKey == null) {
+	public Response getDecisionIssues(@Context HttpServletRequest request, FilterSettings filterSettings) {
+		if (filterSettings == null || filterSettings.getSelectedElement() == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Decision Issues cannot be shown since element key is invalid."))
+					.entity(ImmutableMap.of("error",
+							"Decision problems cannot be shown since filter settings or element key are invalid."))
 					.build();
 		}
-		String projectKey = getProjectKey(elementKey);
+		String projectKey = filterSettings.getProjectKey();
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		FilteringManager filterManager = new FilteringManager(user, filterSettings);
 		DecisionTable decisionTable = new DecisionTable(projectKey);
-		decisionTable.setIssues(elementKey, filterManager);
+		decisionTable.setIssues(filterSettings, user);
 
 		return Response.ok(decisionTable.getIssues()).build();
 	}
@@ -290,19 +287,19 @@ public class ViewRest {
 	@Path("/getTreant")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getTreant(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey,
-			FilterSettings filterSettings) {
-		if (request == null || elementKey == null) {
+	public Response getTreant(@Context HttpServletRequest request, FilterSettings filterSettings) {
+		if (request == null || filterSettings == null || filterSettings.getSelectedElement() == null
+				|| filterSettings.getSelectedElement().getKey() == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Treant cannot be shown since request or element key is invalid."))
 					.build();
 		}
-		String projectKey = getProjectKey(elementKey);
+		String projectKey = filterSettings.getProjectKey();
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		Treant treant = new Treant(projectKey, elementKey, filterSettings);
+		Treant treant = new Treant(filterSettings);
 		return Response.ok(treant).build();
 	}
 
@@ -332,7 +329,8 @@ public class ViewRest {
 				KnowledgePersistenceManager kpManager = new KnowledgePersistenceManager(projectKey);
 				element = kpManager.getJiraIssueManager().getKnowledgeElement(elementKey);
 			}
-			Treant treant = new Treant(projectKey, element, "treant-container-class", isIssueView, filterSettings);
+			filterSettings.setSelectedElement(element);
+			Treant treant = new Treant("treant-container-class", isIssueView, filterSettings);
 			return Response.ok(treant).build();
 		} catch (Exception e) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Treant cannot be shown."))
@@ -344,23 +342,24 @@ public class ViewRest {
 	@Path("/getVis")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getVis(@Context HttpServletRequest request, FilterSettings filterSettings,
-			@QueryParam("elementKey") String rootElementKey) {
-		if (checkIfElementIsValid(rootElementKey).getStatus() != Status.OK.getStatusCode()) {
-			return checkIfElementIsValid(rootElementKey);
-		}
-		if (filterSettings == null) {
+	public Response getVis(@Context HttpServletRequest request, FilterSettings filterSettings) {
+		if (filterSettings == null || filterSettings.getSelectedElement() == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
 					.build();
 		}
+		KnowledgeElement selectedElement = filterSettings.getSelectedElement();
+		if (checkIfElementIsValid(selectedElement.getKey()).getStatus() != Status.OK.getStatusCode()) {
+			return checkIfElementIsValid(selectedElement.getKey());
+		}
+
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
 					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisGraph visGraph = new VisGraph(user, filterSettings, rootElementKey);
+		VisGraph visGraph = new VisGraph(user, filterSettings);
 		return Response.ok(visGraph).build();
 	}
 

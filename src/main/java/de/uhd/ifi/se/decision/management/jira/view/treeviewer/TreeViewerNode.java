@@ -16,7 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 /**
  * Model class for Tree Viewer nodes
  */
-public class Data {
+public class TreeViewerNode {
 
 	@XmlElement
 	private String id;
@@ -25,7 +25,7 @@ public class Data {
 	private String text;
 
 	@XmlElement
-	private List<Data> children;
+	private List<TreeViewerNode> children;
 
 	@XmlElement(name = "data")
 	private KnowledgeElement element;
@@ -39,10 +39,12 @@ public class Data {
 	@XmlElement(name = "li_attr")
 	private Map<String, String> li_attr;
 
-	public Data() {
+	public TreeViewerNode() {
+		children = new ArrayList<TreeViewerNode>();
 	}
 
-	public Data(KnowledgeElement knowledgeElement) {
+	public TreeViewerNode(KnowledgeElement knowledgeElement) {
+		this();
 		this.id = "tv" + String.valueOf(knowledgeElement.getId());
 		this.text = knowledgeElement.getSummary();
 		this.icon = KnowledgeType.getIconUrl(knowledgeElement);
@@ -66,7 +68,7 @@ public class Data {
 		}
 	}
 
-	public Data(KnowledgeElement knowledgeElement, Link link) {
+	public TreeViewerNode(KnowledgeElement knowledgeElement, Link link) {
 		this(knowledgeElement);
 		this.icon = KnowledgeType.getIconUrl(knowledgeElement, link.getType());
 	}
@@ -83,14 +85,11 @@ public class Data {
 		return text;
 	}
 
-	public List<Data> getChildren() {
-		if (children == null) {
-			return new ArrayList<Data>();
-		}
+	public List<TreeViewerNode> getChildren() {
 		return children;
 	}
 
-	public void setChildren(List<Data> children) {
+	public void setChildren(List<TreeViewerNode> children) {
 		this.children = children;
 	}
 

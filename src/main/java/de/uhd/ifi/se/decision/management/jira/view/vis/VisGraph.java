@@ -8,7 +8,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.jgrapht.graph.AsSubgraph;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.AsUndirectedGraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
 import com.atlassian.jira.user.ApplicationUser;
@@ -16,9 +18,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 @XmlRootElement(name = "vis")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -30,88 +30,58 @@ public class VisGraph {
 	@XmlElement
 	private Set<VisEdge> edges;
 
-	@XmlElement
-	private String rootElementKey;
+	@JsonIgnore
+	private KnowledgeElement rootElement;
 
-	private KnowledgeGraph graph;
-	private int cid = 0;
+	@JsonIgnore
+	private Graph<KnowledgeElement, Link> subgraph;
 
 	public VisGraph() {
-		this.nodes = new HashSet<VisNode>();
-		this.edges = new HashSet<VisEdge>();
-		this.rootElementKey = "";
-	}
-
-	public VisGraph(FilterSettings filterSettings) {
-		this();
-		if (filterSettings == null || filterSettings.getProjectKey() == null) {
-			return;
-		}
-		this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
+		this.nodes = new HashSet<>();
+		this.edges = new HashSet<>();
 	}
 
 	public VisGraph(ApplicationUser user, FilterSettings filterSettings) {
-		this(user, filterSettings, null);
-	}
-
-	public VisGraph(ApplicationUser user, FilterSettings filterSettings, String rootElementKey) {
-		this(filterSettings);
-		if (user == null || filterSettings == null) {
+		this();
+		if (user == null || filterSettings == null || filterSettings.getProjectKey() == null) {
 			return;
 		}
 		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
-		AsSubgraph<KnowledgeElement, Link> subgraph = filteringManager.getSubgraphMatchingFilterSettings();
-		if (subgraph == null || subgraph.vertexSet().isEmpty()) {
+		subgraph = filteringManager.getSubgraphMatchingFilterSettings();
+		rootElement = filterSettings.getSelectedElement();
+		if (rootElement == null || rootElement.getKey() == null) {
+			addNodesAndEdges();
 			return;
 		}
-		if (rootElementKey == null || rootElementKey.isBlank()) {
-			addNodesAndEdges(null, subgraph);
-			return;
-		}
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(filterSettings.getProjectKey());
-		KnowledgeElement rootElement = persistenceManager.getJiraIssueManager().getKnowledgeElement(rootElementKey);
-
-		// TODO This is not a key but id_documentationLocation
-		this.rootElementKey = rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString();
-		addNodesAndEdges(rootElement, subgraph);
+		addNodesAndEdges();
 	}
 
-	private void addNodesAndEdges(KnowledgeElement startElement, AsSubgraph<KnowledgeElement, Link> subgraph) {
-		if (startElement != null) {
-			graph.addVertex(startElement);
-			subgraph.addVertex(startElement);
+	/**
+	 * @issue How can graph iteration be done over both outgoing and incoming edges
+	 *        of a knowledge element (=node)?
+	 * @decision Convert the directed graph into an undirected graph for graph
+	 *           iteration!
+	 */
+	private void addNodesAndEdges() {
+		if (rootElement != null) {
+			subgraph.addVertex(rootElement);
 		}
 
-		BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<KnowledgeElement, Link>(
-				subgraph, startElement);
+		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<>(subgraph);
+
+		Set<Link> allEdges = new HashSet<>();
+		BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<>(undirectedGraph,
+				rootElement);
 
 		while (iterator.hasNext()) {
 			KnowledgeElement element = iterator.next();
-			nodes.add(new VisNode(element, false, 50 + iterator.getDepth(element), cid));
-			cid++;
-
-			for (Link link : subgraph.edgesOf(element)) {
-				if (containsEdge(link)) {
-					continue;
-				}
-				edges.add(new VisEdge(link));
-			}
+			nodes.add(new VisNode(element, iterator.getDepth(element)));
+			allEdges.addAll(undirectedGraph.edgesOf(element));
 		}
-	}
 
-	// private boolean isCollapsed(KnowledgeElement element, Set<KnowledgeElement>
-	// elements) {
-	// return !elements.contains(element);
-	// }
-
-	private boolean containsEdge(Link link) {
-		for (VisEdge visEdge : edges) {
-			if (visEdge.getId() == link.getId()) {
-				return true;
-			}
+		for (Link link : allEdges) {
+			edges.add(new VisEdge(link));
 		}
-		return false;
 	}
 
 	public void setNodes(Set<VisNode> nodes) {
@@ -130,11 +100,12 @@ public class VisGraph {
 		return edges;
 	}
 
-	public KnowledgeGraph getGraph() {
-		return graph;
+	public Graph<KnowledgeElement, Link> getGraph() {
+		return subgraph;
 	}
 
-	public String getRootElementKey() {
-		return rootElementKey;
+	@XmlElement(name = "rootElementId")
+	public String getRootElementId() {
+		return rootElement == null ? "" : rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString();
 	}
 }

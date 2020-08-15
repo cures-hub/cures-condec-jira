@@ -3,16 +3,19 @@ package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.AsUndirectedGraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
-import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
@@ -25,12 +28,12 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 
 /**
  * Creates tree viewer content. The tree viewer is rendered with the jstree
  * library.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public class TreeViewer {
 
 	@XmlElement
@@ -42,16 +45,17 @@ public class TreeViewer {
 	@XmlElement
 	private Map<String, Boolean> themes;
 
-	@XmlElement
-	protected Set<Data> data;
+	@XmlElement(name = "data")
+	private Set<TreeViewerNode> nodes;
 
-	protected KnowledgeGraph graph;
+	@JsonIgnore
+	private Graph<KnowledgeElement, Link> graph;
+	@JsonIgnore
 	private List<String> ids;
+	@JsonIgnore
 	private long index;
-
+	@JsonIgnore
 	private List<Long> alreadyVisitedEdges;
-
-	private FilteringManager filteringManager;
 
 	public TreeViewer() {
 		this.multiple = false;
@@ -66,8 +70,10 @@ public class TreeViewer {
 	 * Constructor for a jstree tree viewer for a list of trees where all root
 	 * elements have a specific {@link KnowledgeType}.
 	 *
-	 * @param projectKey      of a Jira project.
-	 * @param rootElementType {@link KnowledgeType} of the root elements.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param rootElementType
+	 *            {@link KnowledgeType} of the root elements.
 	 */
 	public TreeViewer(String projectKey, KnowledgeType rootElementType) {
 		this();
@@ -75,51 +81,42 @@ public class TreeViewer {
 			return;
 		}
 		graph = KnowledgeGraph.getOrCreate(projectKey);
-		List<KnowledgeElement> elements = graph.getElements(rootElementType);
+		List<KnowledgeElement> elements = ((KnowledgeGraph) graph).getElements(rootElementType);
 
-		Set<Data> dataSet = new HashSet<Data>();
+		nodes = new HashSet<TreeViewerNode>();
 		for (KnowledgeElement element : elements) {
-			dataSet.add(this.makeIdUnique(new Data(element)));
+			nodes.add(this.makeIdUnique(new TreeViewerNode(element)));
 		}
-
-		this.data = dataSet;
 	}
 
 	/**
 	 * Constructor for a jstree tree viewer for a single knowledge element as the
 	 * root element. The tree viewer comprises only one tree.
 	 *
-	 * @param jiraIssueKey   the issue id
-	 * @param filterSettings {@link FilterSettings} object. The filter settings
-	 *                       cover the decision knowledge types to be shown.
+	 * @param filterSettings
+	 *            For example, the {@link FilterSettings}s cover the selected
+	 *            element and the knowledge types to be shown.
 	 */
-	public TreeViewer(String jiraIssueKey, FilterSettings filterSettings) {
+	public TreeViewer(FilterSettings filterSettings) {
 		this();
-		Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(jiraIssueKey);
-		if (jiraIssue == null) {
+		if (filterSettings == null || filterSettings.getSelectedElement() == null
+				|| filterSettings.getSelectedElement().getKey() == null) {
 			return;
 		}
-		KnowledgeElement rootElement = new KnowledgeElement(jiraIssue);
-		graph = KnowledgeGraph.getOrCreate(rootElement.getProject().getProjectKey());
-
-		Data rootNode = this.getDataStructure(rootElement);
+		KnowledgeElement rootElement = filterSettings.getSelectedElement();
+		FilteringManager filteringManager = new FilteringManager(null, filterSettings);
+		graph = filteringManager.getSubgraphMatchingFilterSettings();
+		TreeViewerNode rootNode = getDataStructure(rootElement);
 
 		// Match irrelevant sentences back to list
-		for (Link link : GenericLinkManager.getLinksForElement(jiraIssue.getId(), DocumentationLocation.JIRAISSUE)) {
-			KnowledgeElement opposite = link.getOppositeElement(jiraIssue.getId());
+		for (Link link : GenericLinkManager.getLinksForElement(rootElement.getId(), DocumentationLocation.JIRAISSUE)) {
+			KnowledgeElement opposite = link.getOppositeElement(rootElement.getId());
 			if (opposite instanceof PartOfJiraIssueText && isSentenceShown(opposite)) {
-				rootNode.getChildren().add(new Data(opposite));
+				rootNode.getChildren().add(new TreeViewerNode(opposite));
 			}
 		}
 
-		filteringManager = new FilteringManager(filterSettings);
-		data = new HashSet<Data>(Arrays.asList(rootNode));
-		for (Data node : this.data) {
-			Iterator<Data> iterator = node.getChildren().iterator();
-			while (iterator.hasNext()) {
-				removeChildrenWithType(iterator);
-			}
-		}
+		nodes = new HashSet<TreeViewerNode>(Arrays.asList(rootNode));
 	}
 
 	/**
@@ -129,94 +126,89 @@ public class TreeViewer {
 	public TreeViewer(String projectKey) {
 		this();
 		if (projectKey != null) {
-			Set<Data> dataSet = new HashSet<Data>();
+			nodes = new HashSet<TreeViewerNode>();
 			CodeClassPersistenceManager manager = new CodeClassPersistenceManager(projectKey);
 			List<KnowledgeElement> elementList = manager.getKnowledgeElements();
 			for (KnowledgeElement element : elementList) {
-				dataSet.add(this.makeIdUnique(new Data(element)));
-			}
-			this.data = dataSet;
-		}
-	}
-
-	private void removeChildrenWithType(Iterator<Data> iterator) {
-		Data currentNode = iterator.next();
-		if (!filteringManager.isElementMatchingKnowledgeTypeFilter((KnowledgeElement) currentNode.getElement())) {
-			iterator.remove();
-			return;
-		} else {
-			Iterator<Data> it = currentNode.getChildren().iterator();
-			while (it.hasNext()) {
-				removeChildrenWithType(it);
+				nodes.add(this.makeIdUnique(new TreeViewerNode(element)));
 			}
 		}
 	}
 
+	// TODO Add this to FilterSettings and FilteringManager
 	private boolean isSentenceShown(KnowledgeElement element) {
 		return !((PartOfJiraIssueText) element).isRelevant()
 				&& ((PartOfJiraIssueText) element).getDescription().length() > 0;
 	}
 
-	public Data getDataStructure(KnowledgeElement decisionKnowledgeElement) {
-		if (decisionKnowledgeElement == null) {
-			return new Data();
+	/**
+	 * @issue How can graph iteration be done over both outgoing and incoming edges
+	 *        of a knowledge element (=node)?
+	 * @decision Convert the directed graph into an undirected graph for graph
+	 *           iteration!
+	 */
+	public TreeViewerNode getDataStructure(KnowledgeElement knowledgeElement) {
+		if (knowledgeElement == null) {
+			return new TreeViewerNode();
 		}
-		if (graph == null) {
-			graph = KnowledgeGraph.getOrCreate(decisionKnowledgeElement.getKey());
+		try {
+			graph = new AsUndirectedGraph<KnowledgeElement, Link>(graph);
+		} catch (Exception e) {
+
 		}
-		Data data = new Data(decisionKnowledgeElement);
-		data = this.makeIdUnique(data);
-		List<Data> children = this.getChildren(decisionKnowledgeElement);
-		data.setChildren(children);
-		return data;
+
+		TreeViewerNode rootNode = new TreeViewerNode(knowledgeElement);
+		rootNode = this.makeIdUnique(rootNode);
+		List<TreeViewerNode> childNodes = this.getChildren(knowledgeElement);
+		rootNode.setChildren(childNodes);
+		return rootNode;
 	}
 
-	protected List<Data> getChildren(KnowledgeElement decisionKnowledgeElement) {
-		List<Data> children = new ArrayList<Data>();
+	protected List<TreeViewerNode> getChildren(KnowledgeElement element) {
+		List<TreeViewerNode> children = new ArrayList<TreeViewerNode>();
 		BreadthFirstIterator<KnowledgeElement, Link> iterator;
 		try {
-			iterator = new BreadthFirstIterator<>(graph, decisionKnowledgeElement);
+			iterator = new BreadthFirstIterator<>(graph, element);
 		} catch (IllegalArgumentException e) {
-			graph.addVertex(decisionKnowledgeElement);
-			iterator = new BreadthFirstIterator<>(graph, decisionKnowledgeElement);
+			graph.addVertex(element);
+			iterator = new BreadthFirstIterator<>(graph, element);
 		}
 		while (iterator.hasNext()) {
-			KnowledgeElement iterNode = iterator.next();
-			KnowledgeElement parentNode = iterator.getParent(iterNode);
-			if (parentNode == null || parentNode.getId() != decisionKnowledgeElement.getId()) {
+			KnowledgeElement childElement = iterator.next();
+			KnowledgeElement parentElement = iterator.getParent(childElement);
+			if (parentElement == null || parentElement.getId() != element.getId()) {
 				continue;
 			}
-			if (!(iterNode instanceof KnowledgeElement)) {
+			if (!(childElement instanceof KnowledgeElement)) {
 				continue;
 			}
-			KnowledgeElement nodeElement = iterNode;
-			Link edge = this.graph.getEdge(parentNode, nodeElement);
-			if (this.alreadyVisitedEdges.contains(edge.getId())) {
+			Link edge = graph.getEdge(parentElement, childElement);
+			if (alreadyVisitedEdges.contains(edge.getId())) {
 				continue;
 			}
 			this.alreadyVisitedEdges.add(edge.getId());
-			Data dataChild = new Data(nodeElement, edge);
-			if (((KnowledgeElement) dataChild.getElement()).getProject() == null
-					|| !((KnowledgeElement) dataChild.getElement()).getProject().getProjectKey()
-					.equals(decisionKnowledgeElement.getProject().getProjectKey())) {
+			TreeViewerNode childNode = new TreeViewerNode(childElement, edge);
+			if (((KnowledgeElement) childNode.getElement()).getProject() == null
+					|| !((KnowledgeElement) childNode.getElement()).getProject().getProjectKey()
+							.equals(element.getProject().getProjectKey())) {
 				continue;
 			}
-			dataChild = this.makeIdUnique(dataChild);
-			List<Data> childrenOfElement = this.getChildren(nodeElement);
-			dataChild.setChildren(childrenOfElement);
-			children.add(dataChild);
+			childNode = this.makeIdUnique(childNode);
+			List<TreeViewerNode> childrenOfElement = this.getChildren(childElement);
+			childNode.setChildren(childrenOfElement);
+			children.add(childNode);
 		}
 		return children;
 	}
 
-	protected Data makeIdUnique(Data data) {
-		if (!ids.contains(data.getId())) {
-			ids.add(data.getId());
+	protected TreeViewerNode makeIdUnique(TreeViewerNode node) {
+		if (!ids.contains(node.getId())) {
+			ids.add(node.getId());
 		} else {
-			data.setId(index + data.getId());
+			node.setId(index + node.getId());
 			index++;
 		}
-		return data;
+		return node;
 	}
 
 	public boolean isMultiple() {
@@ -243,12 +235,12 @@ public class TreeViewer {
 		this.themes = themes;
 	}
 
-	public Set<Data> getData() {
-		return data;
+	public Set<TreeViewerNode> getData() {
+		return nodes;
 	}
 
-	public void setData(Set<Data> data) {
-		this.data = data;
+	public void setData(Set<TreeViewerNode> data) {
+		this.nodes = data;
 	}
 
 	public List<String> getIds() {

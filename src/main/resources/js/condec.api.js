@@ -449,10 +449,10 @@
 				"projectKey": projectKey,
 				"searchTerm": searchTerm,
 				"isOnlyDecisionKnowledgeShown": isOnlyDecisionKnowledgeShown,
-				"linkDistance": linkDistance
+				"linkDistance": linkDistance,
+				"selectedElement": elementKey
 		};
-		generalApi.postJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey, 
-				filterSettings, function (error, treant) {
+		generalApi.postJSON(this.restPrefix + "/view/getTreant.json", filterSettings, function (error, treant) {
 			if (error === null) {
 				callback(treant);
 			}
@@ -496,14 +496,14 @@
 	 * external references: condec.vis
 	 */
 	ConDecAPI.prototype.getVis = function (elementKey, searchTerm, callback) {
-		this.getVisFiltered(elementKey, null, null, null, -1, -1, null, null, callback);
+		this.getVisFiltered(elementKey, null, null, null, -1, -1, null, null, 3, callback);
 	};
 
 	/*
 	 * external references: condec.vis
 	 */
 	ConDecAPI.prototype.getVisFiltered = function (elementKey, searchTerm, jiraIssueTypes, status,
-			createdAfter, createdBefore, linkTypes, documentationLocations, callback) {
+			createdAfter, createdBefore, linkTypes, documentationLocations, linkDistance, callback) {
 		var filterSettings = {
 				"projectKey": projectKey,
 				"searchTerm": searchTerm,
@@ -512,10 +512,11 @@
 				"documentationLocations": documentationLocations,
 				"jiraIssueTypes": jiraIssueTypes,
 				"status": status,
-				"linkTypes": linkTypes
+				"linkTypes": linkTypes,
+				"selectedElement": elementKey,
+				"linkDistance": linkDistance
 		};
-		generalApi.postJSON(this.restPrefix + "/view/getVis.json?elementKey=" + elementKey,
-				filterSettings, function (error, vis) {
+		generalApi.postJSON(this.restPrefix + "/view/getVis.json", filterSettings, function (error, vis) {
 			if (error === null) {
 				callback(vis);
 			}
@@ -570,9 +571,10 @@
 	ConDecAPI.prototype.getTreeViewerForSingleElement = function (jiraIssueKey, knowledgeTypes, callback) {
 		var filterSettings = {
 				"projectKey": projectKey,
-				"jiraIssueTypes": knowledgeTypes
+				"jiraIssueTypes": knowledgeTypes,
+				"selectedElement": jiraIssueKey
 		};
-		generalApi.postJSON(this.restPrefix + "/view/getTreeViewerForSingleElement.json?jiraIssueKey=" + jiraIssueKey, filterSettings, function (error, core) {
+		generalApi.postJSON(this.restPrefix + "/view/getTreeViewerForSingleElement.json", filterSettings, function (error, core) {
 			if (error === null) {
 				callback(core);
 			}
@@ -889,9 +891,10 @@
 	ConDecAPI.prototype.getDecisionIssues = function (elementKey, linkDistance, callback) {
 		const filterSettings = {
 				"projectKey": projectKey,
-				"linkDistance": linkDistance
+				"linkDistance": linkDistance,
+				"selectedElement": elementKey
 		};
-		generalApi.postJSON(this.restPrefix + "/view/getDecisionIssues.json?elementKey=" + elementKey, filterSettings, 
+		generalApi.postJSON(this.restPrefix + "/view/getDecisionIssues.json", filterSettings, 
 				function (error, issues) {
 			if (error === null) {
 				callback(issues);

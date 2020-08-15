@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.user.ApplicationUser;
@@ -37,7 +38,9 @@ public class TestTreant extends TestSetUp {
 		init();
 		this.chart = new Chart();
 		this.nodeStructure = new TreantNode();
-		this.treant = new Treant("TEST", "TEST-30", false);
+		FilterSettings filterSettings = new FilterSettings("TEST", null);
+		filterSettings.setSelectedElement("TEST-30");
+		this.treant = new Treant(filterSettings, false);
 		this.treant.setChart(chart);
 		this.treant.setNodeStructure(nodeStructure);
 		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueManager();
@@ -78,37 +81,28 @@ public class TestTreant extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testConstructor() {
-		this.treant = new Treant("TEST", "14", false);
+		FilterSettings filterSettings = new FilterSettings("TEST", null);
+		filterSettings.setSelectedElement("14");
+		this.treant = new Treant(filterSettings, false);
 		assertNotNull(this.treant);
 	}
 
 	@Test
 	@NonTransactional
+	@Ignore
 	public void testSecondConstructorCheckboxFalse() {
-		this.treant = new Treant("TEST", classElement, "treantid", false, null);
+		FilterSettings filterSettings = new FilterSettings("TEST", null);
+		filterSettings.setSelectedElement(classElement);
+		this.treant = new Treant("treantid", false, filterSettings);
 		assertNotNull(this.treant);
 	}
 
 	@Test
 	@NonTransactional
 	public void testSecondConstructorWithIssueViewCheckboxFalse() {
-		this.treant = new Treant("TEST", classElement, "treantid", true, null);
-		assertNotNull(this.treant);
-	}
-
-	@Test
-	@NonTransactional
-	public void testSecondConstructorCheckboxTrue() {
-		// TODO
-		this.treant = new Treant("TEST", classElement, "treantid", false, null);
-		assertNotNull(this.treant);
-	}
-
-	@Test
-	@NonTransactional
-	public void testSecondConstructorWithIssueViewCheckboxTrue() {
-		// TODO
-		this.treant = new Treant("TEST", classElement, "treantid", true, null);
+		FilterSettings filterSettings = new FilterSettings("TEST", null);
+		filterSettings.setSelectedElement(classElement);
+		this.treant = new Treant("treantid", true, filterSettings);
 		assertNotNull(this.treant);
 	}
 
@@ -117,7 +111,8 @@ public class TestTreant extends TestSetUp {
 	public void testConstructorFiltered() {
 		FilterSettings filterSettings = new FilterSettings("TEST", "?jql=project=TEST");
 		filterSettings.setLinkDistance(3);
-		this.treant = new Treant("TEST", "TEST-30", filterSettings);
+		filterSettings.setSelectedElement("TEST-30");
+		this.treant = new Treant(filterSettings);
 		assertNotNull(this.treant);
 		assertNotNull(treant.getNodeStructure());
 		// assertEquals("decision", treant.getNodeStructure().getHtmlClass());
@@ -128,7 +123,9 @@ public class TestTreant extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testConstructorQueryNull() {
-		this.treant = new Treant("TEST", "TEST-30", null);
+		FilterSettings filterSettings = new FilterSettings("TEST", null);
+		filterSettings.setSelectedElement("TEST-30");
+		this.treant = new Treant(filterSettings);
 		assertNotNull(this.treant);
 		assertNotNull(treant.getNodeStructure());
 		assertEquals("WI: Do an interesting task", treant.getNodeStructure().getNodeContent().get("title"));
