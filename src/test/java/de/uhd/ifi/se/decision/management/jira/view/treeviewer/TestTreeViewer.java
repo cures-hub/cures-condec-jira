@@ -50,7 +50,7 @@ public class TestTreeViewer extends TestSetUp {
 		checkCallback = true;
 		themes = new HashMap<>();
 		themes.put("Test", false);
-		data = new HashSet<Data>();
+		data = new HashSet<>();
 		data.add(new Data());
 		treeViewer = new TreeViewer("TEST", KnowledgeType.DECISION);
 		treeViewer.setMultiple(multiple);
@@ -230,7 +230,7 @@ public class TestTreeViewer extends TestSetUp {
 		classElement = ccManager.insertKnowledgeElement(classElement, user);
 		TreeViewer newTreeViewer = new TreeViewer("TEST");
 		assertNotNull(newTreeViewer);
-		assertNotNull(newTreeViewer.data);
+		assertNotNull(newTreeViewer.getData());
 	}
 
 }
