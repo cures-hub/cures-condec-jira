@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jgrapht.Graph;
 import org.jgrapht.graph.AsSubgraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
 import org.slf4j.Logger;
@@ -48,32 +49,43 @@ public class FilteringManager {
 	}
 
 	/**
-	 * @return list of all knowledge elements that match the {@link FilterSetting}s.
+	 * @return all knowledge elements that match the {@link FilterSetting}s.
 	 */
-	public List<KnowledgeElement> getElementsMatchingFilterSettings() {
+	public Set<KnowledgeElement> getElementsMatchingFilterSettings() {
 		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null) {
 			LOGGER.error("FilteringManager misses important attributes.");
-			return new ArrayList<KnowledgeElement>();
+			return new HashSet<KnowledgeElement>();
 		}
-		String searchString = filterSettings.getSearchTerm().toLowerCase();
-		if (JiraQueryType.getJiraQueryType(searchString) == JiraQueryType.OTHER) {
-			Set<KnowledgeElement> elements = graph.vertexSet();
-			return filterElements(elements);
+		// String searchString = filterSettings.getSearchTerm().toLowerCase();
+		Set<KnowledgeElement> elements = new HashSet<>();
+		if (filterSettings.getSelectedElement() != null) {
+			graph.addVertex(filterSettings.getSelectedElement());
+			elements = getElementsInLinkDistance();
+		} else {
+			elements = graph.vertexSet();
 		}
-		return getAllElementsMatchingQuery();
+		elements = filterElements(elements);
+		if (filterSettings.getSelectedElement() != null) {
+			elements.add(filterSettings.getSelectedElement());
+		}
+		// if (JiraQueryType.getJiraQueryType(searchString) == JiraQueryType.OTHER) {
+		return elements;
+		// }
+		// elements.retainAll(getAllElementsMatchingQuery());
+		// return new ArrayList<>(elements);
 	}
 
 	/**
 	 * @return subgraph of the {@link KnowledgeGraph} that matches the
 	 *         {@link FilterSetting}s.
 	 */
-	public AsSubgraph<KnowledgeElement, Link> getSubgraphMatchingFilterSettings() {
+	public Graph<KnowledgeElement, Link> getSubgraphMatchingFilterSettings() {
 		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null) {
 			LOGGER.error("FilteringManager misses important attributes.");
 			return null;
 		}
-		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>(getElementsMatchingFilterSettings());
-		AsSubgraph<KnowledgeElement, Link> subgraph = new AsSubgraph<KnowledgeElement, Link>(graph, elements);
+		Set<KnowledgeElement> elements = getElementsMatchingFilterSettings();
+		Graph<KnowledgeElement, Link> subgraph = new AsSubgraph<KnowledgeElement, Link>(graph, elements);
 		if (filterSettings.getLinkTypes().size() < LinkType.toStringList().size()) {
 			Set<Link> linksNotMatchingFilterSettings = getLinksNotMatchingFilterSettings(subgraph.edgeSet());
 			subgraph.removeAllEdges(linksNotMatchingFilterSettings);
@@ -81,28 +93,33 @@ public class FilteringManager {
 		return subgraph;
 	}
 
-	public AsSubgraph<KnowledgeElement, Link> getSubgraphMatchingFilterSettings(KnowledgeElement selectedElement, int linkDistance) {
-		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null || selectedElement == null) {
-			LOGGER.error("FilteringManager missing filterSettings attribute or selectedElement");
-		}
-
+	private Set<KnowledgeElement> getElementsInLinkDistance() {
+		KnowledgeElement selectedElement = filterSettings.getSelectedElement();
+		int linkDistance = filterSettings.getLinkDistance();
 		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>();
-		elements.add(selectedElement);
-		for (Link l : selectedElement.getLinks()) {
-			KnowledgeElement tmpKnowledgeElement = l.getTarget();
-			elements.add(tmpKnowledgeElement);
-			getParentSubgraph(tmpKnowledgeElement, linkDistance -1, elements);
-		}
-		return new AsSubgraph<KnowledgeElement, Link>(graph, elements);
+		elements.addAll(getLinkedElements(selectedElement, linkDistance));
+		return elements;
 	}
 
-	private void getParentSubgraph(KnowledgeElement parent, int distance, Set<KnowledgeElement> elements) {
-		for (Link l : parent.getLinks()) {
-			KnowledgeElement tmpKnowledgeElement = l.getTarget();
-			elements.add(tmpKnowledgeElement);
-			if (distance > 0) 
-				getParentSubgraph(tmpKnowledgeElement, distance -1, elements);
+	private Set<KnowledgeElement> getLinkedElements(KnowledgeElement currentElement, int currentDistance) {
+		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>();
+		Set<Link> traversedLinks = new HashSet<>();
+		elements.add(currentElement);
+
+		if (currentDistance == 0) {
+			return elements;
 		}
+		for (Link link : graph.edgesOf(currentElement)) {
+			if (!traversedLinks.add(link)) {
+				continue;
+			}
+			KnowledgeElement oppositeElement = link.getOppositeElement(currentElement);
+			if (oppositeElement == null) {
+				continue;
+			}
+			elements.addAll(getLinkedElements(oppositeElement, currentDistance - 1));
+		}
+		return elements;
 	}
 
 	private Set<Link> getLinksNotMatchingFilterSettings(Set<Link> links) {
@@ -163,8 +180,8 @@ public class FilteringManager {
 		return elements;
 	}
 
-	private List<KnowledgeElement> filterElements(Set<KnowledgeElement> elements) {
-		List<KnowledgeElement> filteredElements = new ArrayList<KnowledgeElement>();
+	private Set<KnowledgeElement> filterElements(Set<KnowledgeElement> elements) {
+		Set<KnowledgeElement> filteredElements = new HashSet<KnowledgeElement>();
 		if (elements == null || elements.isEmpty()) {
 			return filteredElements;
 		}
@@ -196,6 +213,12 @@ public class FilteringManager {
 			return false;
 		}
 		if (!isElementMatchingDecisionGroupFilter(element)) {
+			return false;
+		}
+		if (!isElementMatchingIsTestCodeFilter(element)) {
+			return false;
+		}
+		if (!isElementMatchingDegreeFilter(element)) {
 			return false;
 		}
 		return isElementMatchingSubStringFilter(element);
@@ -272,6 +295,9 @@ public class FilteringManager {
 	public boolean isElementMatchingKnowledgeTypeFilter(KnowledgeElement element) {
 		String type = element.getType().replaceProAndConWithArgument().toString();
 		if (element.getType() == KnowledgeType.OTHER) {
+			if (filterSettings.isOnlyDecisionKnowledgeShown()) {
+				return false;
+			}
 			type = element.getTypeAsString();
 		}
 		return filterSettings.getJiraIssueTypes().contains(type);
@@ -280,19 +306,24 @@ public class FilteringManager {
 	/**
 	 * @param element
 	 *            {@link KnowledgeElement} object.
-	 * @return true if the element's group equals one of the given groups in the
+	 * @return true if the element's groups are equal to the given groups in the
 	 *         {@link FilterSetting}s.
 	 */
 	public boolean isElementMatchingDecisionGroupFilter(KnowledgeElement element) {
-		List<String> groups = element.getDecisionGroups();
 		List<String> selectedGroups = filterSettings.getDecisionGroups();
+		if (selectedGroups.isEmpty()) {
+			return true;
+		}
+
+		List<String> groups = element.getDecisionGroups();
+
 		int matches = 0;
 		for (String group : selectedGroups) {
 			if (groups.contains(group)) {
 				matches++;
 			}
 		}
-		return (matches == selectedGroups.size());
+		return matches == selectedGroups.size();
 	}
 
 	/**
@@ -312,6 +343,13 @@ public class FilteringManager {
 	 * @return true if the element is a test class.
 	 */
 	public boolean isElementMatchingIsTestCodeFilter(KnowledgeElement element) {
+		// TODO Make code class recognition more explicit
+		if (element.getDocumentationLocation() != DocumentationLocation.COMMIT) {
+			return true;
+		}
+		if (!element.getSummary().contains(".java")) {
+			return true;
+		}
 		return filterSettings.isTestCodeShown() || !element.getSummary().startsWith("Test");
 	}
 

@@ -30,7 +30,7 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
  * @issue How can we integrate knowledge from different documentation locations?
  * @alternative Use the decorator design pattern to integrate persistence
  *              managers for different documentation locations!
- * @alternative Manually implement methods such as getDecisionKnowledgeElements!
+ * @alternative Manually implement methods such as getKnowledgeElements!
  * 
  * @see AbstractPersistenceManagerForSingleLocation
  * @see JiraIssuePersistenceManager
@@ -52,10 +52,10 @@ public class KnowledgePersistenceManager {
 	 *
 	 * @issue How can we reuse existing objects instead of recreating them all the
 	 *        time?
-	 * @decision Use a map of project keys and respective objects to reuse existing
-	 *           objects instead of recreating them all the time! Use the
-	 *           getOrCreate() method to either create or retrieve an existing
-	 *           object!
+	 * @decision Use the multiton design pattern, i.e. a map of project keys and
+	 *           respective objects to reuse existing objects instead of recreating
+	 *           them all the time! Use the getOrCreate() method to either create or
+	 *           retrieve an existing object!
 	 */
 	public static Map<String, KnowledgePersistenceManager> instances = new HashMap<String, KnowledgePersistenceManager>();
 
@@ -100,6 +100,7 @@ public class KnowledgePersistenceManager {
 		List<AbstractPersistenceManagerForSingleLocation> activePersistenceManagersForSinleLocations = new ArrayList<AbstractPersistenceManagerForSingleLocation>();
 		activePersistenceManagersForSinleLocations.add(jiraIssueTextPersistenceManager);
 		activePersistenceManagersForSinleLocations.add(jiraIssuePersistenceManager);
+		activePersistenceManagersForSinleLocations.add(codeClassPersistenceManager);
 		return activePersistenceManagersForSinleLocations;
 	}
 

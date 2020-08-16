@@ -37,27 +37,25 @@ public class TestGetVis extends TestSetUp {
 
 	@Test
 	public void testRequestNullFilterDataSettingsElementNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getVis(null, null, null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getVis(null, null).getStatus());
 	}
 
 	@Test
 	public void testRequestNullFilerSettingsNullElementNotExisting() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getVis(null, null, "NotTEST").getStatus());
+		filterSettings.setSelectedElement("NotTEST");
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getVis(null, filterSettings).getStatus());
 	}
 
 	@Test
-	public void testRequestNullFilterSettingsNullElementExisting() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getVis(null, null, "TEST-14").getStatus());
-	}
-
-	@Test
-	public void testRequestNullFilterSettingsFilledElementFilled() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getVis(null, filterSettings, "TEST-14").getStatus());
+	public void testRequestNullFilterSettingsElementExisting() {
+		filterSettings.setSelectedElement("TEST-14");
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getVis(null, filterSettings).getStatus());
 	}
 
 	@Test
 	public void testRequestFilledFilterSettingsFilledElementFilled() {
 		assertNotNull(AuthenticationManager.getUser(request));
-		assertEquals(Status.OK.getStatusCode(), viewRest.getVis(request, filterSettings, "TEST-1").getStatus());
+		filterSettings.setSelectedElement("TEST-1");
+		assertEquals(Status.OK.getStatusCode(), viewRest.getVis(request, filterSettings).getStatus());
 	}
 }

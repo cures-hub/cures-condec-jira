@@ -3,25 +3,16 @@ package de.uhd.ifi.se.decision.management.jira.view.treant;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -29,7 +20,6 @@ public class TestTreant extends TestSetUp {
 	private Chart chart;
 	private TreantNode nodeStructure;
 	private Treant treant;
-	private AbstractPersistenceManagerForSingleLocation persistenceManager;
 	private KnowledgeElement classElement;
 
 	@Before
@@ -37,10 +27,11 @@ public class TestTreant extends TestSetUp {
 		init();
 		this.chart = new Chart();
 		this.nodeStructure = new TreantNode();
-		this.treant = new Treant("TEST", "TEST-30", false);
+		FilterSettings filterSettings = new FilterSettings("TEST", null);
+		filterSettings.setSelectedElement("TEST-30");
+		this.treant = new Treant(filterSettings, false);
 		this.treant.setChart(chart);
 		this.treant.setNodeStructure(nodeStructure);
-		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueManager();
 		CodeClassPersistenceManager ccManager = new CodeClassPersistenceManager("Test");
 		classElement = new KnowledgeElement();
 		classElement.setProject("TEST");
@@ -78,37 +69,19 @@ public class TestTreant extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testConstructor() {
-		this.treant = new Treant("TEST", "14", false);
+		FilterSettings filterSettings = new FilterSettings("TEST", null);
+		filterSettings.setSelectedElement("14");
+		this.treant = new Treant(filterSettings, false);
 		assertNotNull(this.treant);
 	}
 
 	@Test
 	@NonTransactional
-	public void testSecondConstructorCheckboxFalse() {
-		this.treant = new Treant("TEST", classElement, "treantid", false, null);
-		assertNotNull(this.treant);
-	}
-
-	@Test
-	@NonTransactional
-	public void testSecondConstructorWithIssueViewCheckboxFalse() {
-		this.treant = new Treant("TEST", classElement, "treantid", true, null);
-		assertNotNull(this.treant);
-	}
-
-	@Test
-	@NonTransactional
-	public void testSecondConstructorCheckboxTrue() {
-		// TODO
-		this.treant = new Treant("TEST", classElement, "treantid", false, null);
-		assertNotNull(this.treant);
-	}
-
-	@Test
-	@NonTransactional
-	public void testSecondConstructorWithIssueViewCheckboxTrue() {
-		// TODO
-		this.treant = new Treant("TEST", classElement, "treantid", true, null);
+	@Ignore
+	public void testSecondConstructor() {
+		FilterSettings filterSettings = new FilterSettings("TEST", null);
+		filterSettings.setSelectedElement(classElement);
+		this.treant = new Treant("treantid", filterSettings);
 		assertNotNull(this.treant);
 	}
 
@@ -117,7 +90,8 @@ public class TestTreant extends TestSetUp {
 	public void testConstructorFiltered() {
 		FilterSettings filterSettings = new FilterSettings("TEST", "?jql=project=TEST");
 		filterSettings.setLinkDistance(3);
-		this.treant = new Treant("TEST", "TEST-30", filterSettings);
+		filterSettings.setSelectedElement("TEST-30");
+		this.treant = new Treant(filterSettings);
 		assertNotNull(this.treant);
 		assertNotNull(treant.getNodeStructure());
 		// assertEquals("decision", treant.getNodeStructure().getHtmlClass());
@@ -128,103 +102,12 @@ public class TestTreant extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testConstructorQueryNull() {
-		this.treant = new Treant("TEST", "TEST-30", null);
+		FilterSettings filterSettings = new FilterSettings("TEST", null);
+		filterSettings.setSelectedElement("TEST-30");
+		this.treant = new Treant(filterSettings);
 		assertNotNull(this.treant);
 		assertNotNull(treant.getNodeStructure());
 		assertEquals("WI: Do an interesting task", treant.getNodeStructure().getNodeContent().get("title"));
 		assertEquals(1, treant.getNodeStructure().getChildren().size());
-	}
-
-	@Test
-	public void testCreateNodeStructureNullNullZeroZero() {
-		assertEquals(TreantNode.class, treant.createNodeStructure(null, (Link) null, 0).getClass());
-	}
-
-	@Test
-	public void testCreateNodeStructureEmptyNullZeroZero() {
-		KnowledgeElement element = new KnowledgeElement();
-		assertEquals(TreantNode.class, treant.createNodeStructure(element, (Link) null, 0).getClass());
-	}
-
-	@Test
-	@NonTransactional
-	public void testCreateNodeStructureFilledNullZeroZero() {
-		KnowledgeElement element = persistenceManager.getKnowledgeElement(14);
-		assertEquals(TreantNode.class, treant.createNodeStructure(element, (Link) null, 0).getClass());
-	}
-
-	@Test
-	public void testCreateNodeStructureNullNullFilledFilled() {
-		assertEquals(TreantNode.class, treant.createNodeStructure(null, (Link) null, 0).getClass());
-	}
-
-	public void testCreateNodeStructureEmptyNullFilledFilled() {
-		KnowledgeElement element = new KnowledgeElement();
-		assertEquals(TreantNode.class, treant.createNodeStructure(element, (Link) null, 0).getClass());
-	}
-
-	@Test
-	@NonTransactional
-	public void testCreateNodeStructureFilledNullFilledFilled() {
-		KnowledgeElement element = persistenceManager.getKnowledgeElement(14);
-		assertEquals(TreantNode.class, treant.createNodeStructure(element, (Link) null, 0).getClass());
-	}
-
-	@Test
-	@NonTransactional
-	public void testCreateNodeStructureFilledFilledFilledFilled() {
-		KnowledgeElement element = persistenceManager.getKnowledgeElement(14);
-		Link link = new Link(1, 14, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
-		link.setType("support");
-		link.setDestinationElement(persistenceManager.getKnowledgeElement(14));
-		link.setSourceElement(persistenceManager.getKnowledgeElement(1));
-		link.setId(23);
-		assertEquals(TreantNode.class, treant.createNodeStructure(element, link, 0).getClass());
-	}
-
-	@Test
-	@NonTransactional
-	public void testCreateNodeStructureWithSentenceInIssue() {
-		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText("This is a testsentence");
-		sentences.get(0).setRelevant(true);
-		KnowledgeElement element = persistenceManager.getKnowledgeElement(sentences.get(0).getJiraIssueId());
-		TreantNode nodeStructure = treant.createNodeStructure(element, (Link) null, 0);
-		assertEquals(TreantNode.class, nodeStructure.getClass());
-		assertEquals(0, nodeStructure.getChildren().size());
-	}
-
-	@Test
-	public void testSecondCreateNodeStructureWithElementNull() {
-		Set<Link> links = new HashSet<>();
-		Link link = new Link(classElement, persistenceManager.getKnowledgeElement("TEST-1"));
-		links.add(link);
-		TreantNode nodeStructure = treant.createNodeStructure(null, links, 0, false);
-		assertEquals(TreantNode.class, nodeStructure.getClass());
-	}
-
-	@Test
-	public void testSecondCreateNodeStructureWithWithLinksNull() {
-		TreantNode nodeStructure = treant.createNodeStructure(classElement, (Set<Link>) null, 0, false);
-		assertEquals(TreantNode.class, nodeStructure.getClass());
-	}
-
-	@Test
-	public void testSecondCreateNodeStructureWithAllFilled() {
-		Set<Link> links = new HashSet<>();
-		Link link = new Link(classElement, persistenceManager.getKnowledgeElement("TEST-1"));
-		links.add(link);
-		TreantNode nodeStructure = treant.createNodeStructure(classElement, links, 0, false);
-		assertEquals(TreantNode.class, nodeStructure.getClass());
-		assertEquals(1, nodeStructure.getChildren().size());
-	}
-
-	@Test
-	public void testSecondCreateNodeStructureWithAllFilledAndIssueView() {
-		Set<Link> links = new HashSet<>();
-		Link link = new Link(classElement, persistenceManager.getKnowledgeElement("TEST-1"));
-		links.add(link);
-		TreantNode nodeStructure = treant.createNodeStructure(classElement, links, 0, true);
-		assertEquals(TreantNode.class, nodeStructure.getClass());
-		assertEquals(1, nodeStructure.getChildren().size());
 	}
 }
