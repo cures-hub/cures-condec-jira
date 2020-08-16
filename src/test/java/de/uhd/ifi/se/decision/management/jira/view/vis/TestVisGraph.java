@@ -26,6 +26,7 @@ public class TestVisGraph extends TestSetUp {
 		init();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		filterSettings = new FilterSettings("TEST", "");
+		filterSettings.setLinkDistance(6);
 		visGraph = new VisGraph(user, filterSettings);
 	}
 
