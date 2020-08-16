@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
 /**
  * Creates tree viewer content. The tree viewer is rendered with the jstree
  * library.
+ * 
+ * Iterates over the filtered {@link KnowledgeGraph} provided by the
+ * {@link FilteringManager}.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TreeViewer {
@@ -54,15 +58,11 @@ public class TreeViewer {
 	private List<String> ids;
 	@JsonIgnore
 	private long index;
-	@JsonIgnore
-	private List<Long> alreadyVisitedEdges;
 
 	public TreeViewer() {
 		this.multiple = false;
 		this.checkCallback = true;
 		this.themes = ImmutableMap.of("icons", true);
-
-		this.alreadyVisitedEdges = new ArrayList<Long>();
 		this.ids = new ArrayList<String>();
 	}
 
@@ -106,7 +106,7 @@ public class TreeViewer {
 		KnowledgeElement rootElement = filterSettings.getSelectedElement();
 		FilteringManager filteringManager = new FilteringManager(null, filterSettings);
 		graph = filteringManager.getSubgraphMatchingFilterSettings();
-		TreeViewerNode rootNode = getDataStructure(rootElement);
+		TreeViewerNode rootNode = getTreeViewerNodeWithChildren(rootElement);
 
 		// Match irrelevant sentences back to list
 		for (Link link : GenericLinkManager.getLinksForElement(rootElement.getId(), DocumentationLocation.JIRAISSUE)) {
@@ -119,26 +119,27 @@ public class TreeViewer {
 		nodes = new HashSet<TreeViewerNode>(Arrays.asList(rootNode));
 	}
 
+	// TODO Add this to FilterSettings and FilteringManager
+	private boolean isSentenceShown(KnowledgeElement element) {
+		return !((PartOfJiraIssueText) element).isRelevant()
+				&& ((PartOfJiraIssueText) element).getDescription().length() > 0;
+	}
+
 	/**
 	 * Constructor for a jstree tree viewer for a code class as the root element.
 	 * The tree viewer comprises only one tree.
 	 */
 	public TreeViewer(String projectKey) {
 		this();
-		if (projectKey != null) {
-			nodes = new HashSet<TreeViewerNode>();
-			CodeClassPersistenceManager manager = new CodeClassPersistenceManager(projectKey);
-			List<KnowledgeElement> elementList = manager.getKnowledgeElements();
-			for (KnowledgeElement element : elementList) {
-				nodes.add(this.makeIdUnique(new TreeViewerNode(element)));
-			}
+		if (projectKey == null) {
+			return;
 		}
-	}
-
-	// TODO Add this to FilterSettings and FilteringManager
-	private boolean isSentenceShown(KnowledgeElement element) {
-		return !((PartOfJiraIssueText) element).isRelevant()
-				&& ((PartOfJiraIssueText) element).getDescription().length() > 0;
+		nodes = new HashSet<TreeViewerNode>();
+		CodeClassPersistenceManager manager = new CodeClassPersistenceManager(projectKey);
+		List<KnowledgeElement> codeClasses = manager.getKnowledgeElements();
+		for (KnowledgeElement element : codeClasses) {
+			nodes.add(this.makeIdUnique(new TreeViewerNode(element)));
+		}
 	}
 
 	/**
@@ -147,58 +148,42 @@ public class TreeViewer {
 	 * @decision Convert the directed graph into an undirected graph for graph
 	 *           iteration!
 	 */
-	public TreeViewerNode getDataStructure(KnowledgeElement knowledgeElement) {
-		if (knowledgeElement == null) {
+	public TreeViewerNode getTreeViewerNodeWithChildren(KnowledgeElement rootElement) {
+		if (rootElement == null) {
 			return new TreeViewerNode();
 		}
-		try {
-			graph = new AsUndirectedGraph<KnowledgeElement, Link>(graph);
-		} catch (Exception e) {
+		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<KnowledgeElement, Link>(graph);
 
-		}
+		Map<KnowledgeElement, TreeViewerNode> elementToTreeViewerNodeMap = new HashMap<>();
 
-		TreeViewerNode rootNode = new TreeViewerNode(knowledgeElement);
+		TreeViewerNode rootNode = new TreeViewerNode(rootElement);
 		rootNode = this.makeIdUnique(rootNode);
-		List<TreeViewerNode> childNodes = this.getChildren(knowledgeElement);
-		rootNode.setChildren(childNodes);
-		return rootNode;
-	}
 
-	protected List<TreeViewerNode> getChildren(KnowledgeElement element) {
-		List<TreeViewerNode> children = new ArrayList<TreeViewerNode>();
-		BreadthFirstIterator<KnowledgeElement, Link> iterator;
-		try {
-			iterator = new BreadthFirstIterator<>(graph, element);
-		} catch (IllegalArgumentException e) {
-			graph.addVertex(element);
-			iterator = new BreadthFirstIterator<>(graph, element);
-		}
+		elementToTreeViewerNodeMap.put(rootElement, rootNode);
+
+		BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<>(undirectedGraph,
+				rootElement);
+
 		while (iterator.hasNext()) {
 			KnowledgeElement childElement = iterator.next();
 			KnowledgeElement parentElement = iterator.getParent(childElement);
-			if (parentElement == null || parentElement.getId() != element.getId()) {
+			if (parentElement == null) {
 				continue;
 			}
-			if (!(childElement instanceof KnowledgeElement)) {
-				continue;
-			}
-			Link edge = graph.getEdge(parentElement, childElement);
-			if (alreadyVisitedEdges.contains(edge.getId())) {
-				continue;
-			}
-			this.alreadyVisitedEdges.add(edge.getId());
+			Link edge = undirectedGraph.getEdge(childElement, parentElement);
 			TreeViewerNode childNode = new TreeViewerNode(childElement, edge);
-			if (((KnowledgeElement) childNode.getElement()).getProject() == null
-					|| !((KnowledgeElement) childNode.getElement()).getProject().getProjectKey()
-							.equals(element.getProject().getProjectKey())) {
+			childNode = this.makeIdUnique(childNode);
+			elementToTreeViewerNodeMap.put(childElement, childNode);
+
+			TreeViewerNode parentNode = elementToTreeViewerNodeMap.get(parentElement);
+			if (parentNode == null) {
 				continue;
 			}
-			childNode = this.makeIdUnique(childNode);
-			List<TreeViewerNode> childrenOfElement = this.getChildren(childElement);
-			childNode.setChildren(childrenOfElement);
-			children.add(childNode);
+
+			parentNode.getChildren().add(childNode);
 		}
-		return children;
+
+		return rootNode;
 	}
 
 	protected TreeViewerNode makeIdUnique(TreeViewerNode node) {

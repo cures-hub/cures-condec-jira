@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -28,7 +27,7 @@ public class VisTimeLine {
 		this.applicationUserIds = new HashSet<Long>();
 	}
 
-	public VisTimeLine(List<KnowledgeElement> elements) {
+	public VisTimeLine(Set<KnowledgeElement> elements) {
 		this();
 		addElements(elements);
 	}
@@ -39,11 +38,11 @@ public class VisTimeLine {
 			return;
 		}
 		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
-		List<KnowledgeElement> elements = filteringManager.getElementsMatchingFilterSettings();
+		Set<KnowledgeElement> elements = filteringManager.getElementsMatchingFilterSettings();
 		addElements(elements);
 	}
 
-	public void addElements(List<KnowledgeElement> elements) {
+	public void addElements(Set<KnowledgeElement> elements) {
 		if (elements == null) {
 			return;
 		}

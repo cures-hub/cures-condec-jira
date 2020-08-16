@@ -18,7 +18,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 
@@ -61,7 +60,7 @@ public class FilterSettings {
 		this.endDate = -1;
 		this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
 		this.knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
-		this.decisionGroups = DecisionGroupManager.getAllDecisionGroups(projectKey);
+		this.decisionGroups = Collections.emptyList();
 		this.isOnlyDecisionKnowledgeShown = false;
 		this.isTestCodeShown = false;
 		this.linkDistance = 3;

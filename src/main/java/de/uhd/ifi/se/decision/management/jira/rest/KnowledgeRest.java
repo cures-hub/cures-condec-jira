@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -21,6 +22,7 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
+
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
@@ -48,9 +50,9 @@ public class KnowledgeRest {
 
 	@Path("/getDecisionKnowledgeElement")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionKnowledgeElement(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
-												@QueryParam("documentationLocation") String documentationLocationIdentifier) {
+			@QueryParam("documentationLocation") String documentationLocationIdentifier) {
 		if (projectKey == null || id <= 0) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Decision knowledge element could not be received due to a bad request (element id or project key was missing)."))
@@ -69,20 +71,23 @@ public class KnowledgeRest {
 	/**
 	 * TODO Sorting according to the likelihood that they should be linked.
 	 *
-	 * @param id                    of the {@link KnowledgeElement} in database.
-	 * @param documentationLocation of the {@link KnowledgeElement}, e.g. "i" for Jira issue, see
-	 *                              {@link DocumentationLocation}.
-	 * @param projectKey            of the Jira project, see {@link DecisionKnowledgeProject}.
+	 * @param id
+	 *            of the {@link KnowledgeElement} in database.
+	 * @param documentationLocation
+	 *            of the {@link KnowledgeElement}, e.g. "i" for Jira issue, see
+	 *            {@link DocumentationLocation}.
+	 * @param projectKey
+	 *            of the Jira project, see {@link DecisionKnowledgeProject}.
 	 * @return list of unlinked elements of the knowledge element for a project.
-	 * Sorts the elements according to their similarity and their likelihood
-	 * that they should be linked.
+	 *         Sorts the elements according to their similarity and their likelihood
+	 *         that they should be linked.
 	 * @issue How can the sorting be implemented?
 	 */
 	@Path("/getUnlinkedElements")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getUnlinkedElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
-										@QueryParam("documentationLocation") String documentationLocation) {
+			@QueryParam("documentationLocation") String documentationLocation) {
 		if (projectKey == null || id <= 0) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Unlinked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
@@ -101,28 +106,33 @@ public class KnowledgeRest {
 	 * in the description/a comment of an existing Jira issue (documentation
 	 * location "s").
 	 *
-	 * @param request                                HttpServletRequest with an authorized Jira
-	 *                                               {@link ApplicationUser}.
-	 * @param element                                {@link KnowledgeElement} object with attributes, such as summary,
-	 *                                               description (optional), {@link DocumentationLocation}, and
-	 *                                               {@link KnowledgeType}.
-	 * @param idOfExistingElement                    optional parameter. Identifier of a parent element that the new
-	 *                                               element should be linked with. Either the id or the key needs to
-	 *                                               be passed, not both.
-	 * @param documentationLocationOfExistingElement optional parameter. Documentation location of a parent element
-	 *                                               that the new element should be linked with.
-	 * @param keyOfExistingElement                   optional parameter. Key of a parent element that the new element
-	 *                                               should be linked with. Either the id or the key needs to be
-	 *                                               passed, not both.
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param element
+	 *            {@link KnowledgeElement} object with attributes, such as summary,
+	 *            description (optional), {@link DocumentationLocation}, and
+	 *            {@link KnowledgeType}.
+	 * @param idOfExistingElement
+	 *            optional parameter. Identifier of a parent element that the new
+	 *            element should be linked with. Either the id or the key needs to
+	 *            be passed, not both.
+	 * @param documentationLocationOfExistingElement
+	 *            optional parameter. Documentation location of a parent element
+	 *            that the new element should be linked with.
+	 * @param keyOfExistingElement
+	 *            optional parameter. Key of a parent element that the new element
+	 *            should be linked with. Either the id or the key needs to be
+	 *            passed, not both.
 	 * @return new {@link KnowledgeElement} with its internal database id set.
 	 */
 	@Path("/createDecisionKnowledgeElement")
 	@POST
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createDecisionKnowledgeElement(@Context HttpServletRequest request, KnowledgeElement element,
-												   @QueryParam("idOfExistingElement") long idOfExistingElement,
-												   @QueryParam("documentationLocationOfExistingElement") String documentationLocationOfExistingElement,
-												   @QueryParam("keyOfExistingElement") String keyOfExistingElement) {
+			@QueryParam("idOfExistingElement") long idOfExistingElement,
+			@QueryParam("documentationLocationOfExistingElement") String documentationLocationOfExistingElement,
+			@QueryParam("keyOfExistingElement") String keyOfExistingElement) {
 		if (element == null || request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Creation of decision knowledge element failed due to a bad request (element or request is null)."))
@@ -169,10 +179,10 @@ public class KnowledgeRest {
 
 	@Path("/updateDecisionKnowledgeElement")
 	@POST
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response updateDecisionKnowledgeElement(@Context HttpServletRequest request, KnowledgeElement element,
-												   @QueryParam("idOfParentElement") long idOfParentElement,
-												   @QueryParam("documentationLocationOfParentElement") String documentationLocationOfParentElement) {
+			@QueryParam("idOfParentElement") long idOfParentElement,
+			@QueryParam("documentationLocationOfParentElement") String documentationLocationOfParentElement) {
 		if (request == null || element == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Element could not be updated due to a bad request.")).build();
@@ -217,9 +227,9 @@ public class KnowledgeRest {
 
 	@Path("/deleteDecisionKnowledgeElement")
 	@DELETE
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response deleteDecisionKnowledgeElement(@Context HttpServletRequest request,
-												   KnowledgeElement decisionKnowledgeElement) {
+			KnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement == null || request == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
@@ -238,11 +248,11 @@ public class KnowledgeRest {
 
 	@Path("/assignDecisionGroup")
 	@POST
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response assignDecisionGroup(@Context HttpServletRequest request, @QueryParam("sourceId") long sourceId,
-										@QueryParam("documentationLocation") String location, @QueryParam("level") String level,
-										@QueryParam("existingGroups") String existingGroups, @QueryParam("addGroup") String addGroup,
-										@QueryParam("projectKey") String projectKey) {
+			@QueryParam("documentationLocation") String location, @QueryParam("level") String level,
+			@QueryParam("existingGroups") String existingGroups, @QueryParam("addGroup") String addGroup,
+			@QueryParam("projectKey") String projectKey) {
 		List<String> groupsToAssign = new ArrayList<String>();
 		groupsToAssign.add(level);
 		if (!"".equals(existingGroups)) {
@@ -314,13 +324,13 @@ public class KnowledgeRest {
 
 	@Path("/createLink")
 	@POST
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createLink(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-							   @QueryParam("knowledgeTypeOfChild") String knowledgeTypeOfChild, @QueryParam("idOfParent") long idOfParent,
-							   @QueryParam("documentationLocationOfParent") String documentationLocationOfParent,
-							   @QueryParam("idOfChild") long idOfChild,
-							   @QueryParam("documentationLocationOfChild") String documentationLocationOfChild,
-							   @QueryParam("linkTypeName") String linkTypeName) {
+			@QueryParam("knowledgeTypeOfChild") String knowledgeTypeOfChild, @QueryParam("idOfParent") long idOfParent,
+			@QueryParam("documentationLocationOfParent") String documentationLocationOfParent,
+			@QueryParam("idOfChild") long idOfChild,
+			@QueryParam("documentationLocationOfChild") String documentationLocationOfChild,
+			@QueryParam("linkTypeName") String linkTypeName) {
 		if (request == null || projectKey == null || idOfChild <= 0 || idOfParent <= 0) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Link could not be created due to a bad request.")).build();
@@ -357,9 +367,9 @@ public class KnowledgeRest {
 
 	@Path("/deleteLink")
 	@DELETE
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response deleteLink(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-							   Link link) {
+			Link link) {
 		if (projectKey == null || request == null || link == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
 					.build();
@@ -376,18 +386,21 @@ public class KnowledgeRest {
 	}
 
 	/**
-	 * @param request    HttpServletRequest with an authorized Jira
-	 *                   {@link ApplicationUser}.
-	 * @param projectKey of a Jira project.
-	 * @param query      either in in Jira Query Language (JQL) or a predefinded
-	 *                   {@link JiraFilter}.
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param query
+	 *            either in in Jira Query Language (JQL) or a predefinded
+	 *            {@link JiraFilter}.
 	 * @return list of all elements that match the query.
 	 */
 	@Path("/getElements")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-								@DefaultValue("") @QueryParam("query") String query) {
+			@DefaultValue("") @QueryParam("query") String query) {
 		if (request == null || projectKey == null || projectKey.isBlank() || query == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error",
@@ -397,15 +410,15 @@ public class KnowledgeRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		FilteringManager filteringManager = new FilteringManager(projectKey, user, query);
-		List<KnowledgeElement> elementsMatchingQuery = filteringManager.getElementsMatchingFilterSettings();
+		Set<KnowledgeElement> elementsMatchingQuery = filteringManager.getElementsMatchingFilterSettings();
 		return Response.ok(elementsMatchingQuery).build();
 	}
 
 	@Path("/createIssueFromSentence")
 	@POST
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createIssueFromSentence(@Context HttpServletRequest request,
-											KnowledgeElement decisionKnowledgeElement) {
+			KnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement == null || request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "The documentation location could not be changed due to a bad request."))
@@ -427,9 +440,9 @@ public class KnowledgeRest {
 
 	@Path("/setSentenceIrrelevant")
 	@POST
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response setSentenceIrrelevant(@Context HttpServletRequest request,
-										  KnowledgeElement decisionKnowledgeElement) {
+			KnowledgeElement decisionKnowledgeElement) {
 		if (request == null || decisionKnowledgeElement == null || decisionKnowledgeElement.getId() <= 0) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Setting element irrelevant failed due to a bad request."))
@@ -464,10 +477,10 @@ public class KnowledgeRest {
 
 	@Path("/getSummarizedCode")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getSummarizedCode(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
-									  @QueryParam("documentationLocation") String documentationLocation,
-									  @QueryParam("probability") int probability) {
+			@QueryParam("documentationLocation") String documentationLocation,
+			@QueryParam("probability") int probability) {
 		if (projectKey == null || id <= 0) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Getting summarized code failed due to a bad request.")).build();

@@ -159,6 +159,7 @@
 
 	function showGraph() {
 		console.log("ConDecJiraIssueModule showGraph");
+		issueKey = conDecAPI.getIssueKey();
 		vis.buildVis(issueKey, search);
 	}
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import com.atlassian.jira.user.ApplicationUser;
 
@@ -32,17 +33,16 @@ public class MarkdownCreator {
 	}
 
 	public String getMarkdownString() {
-		List<KnowledgeElement> list = getIssuesFromIssueKeys();
+		Set<KnowledgeElement> list = getIssuesFromIssueKeys();
 		return generateMarkdownString(list);
 	}
 
-	private List<KnowledgeElement> getIssuesFromIssueKeys() {
+	private Set<KnowledgeElement> getIssuesFromIssueKeys() {
 		String issueQuery = buildQueryFromIssueKeys(keysForContent);
 		// make one jql request and later seperate by bugs, features and improvements
 		String query = "?jql=project=" + projectKey + "&& key in(" + issueQuery + ")";
 		FilteringManager extractor = new FilteringManager(projectKey, user, query);
-		List<KnowledgeElement> elementsQueryLinked = new ArrayList<KnowledgeElement>();
-		elementsQueryLinked = extractor.getElementsMatchingFilterSettings();
+		Set<KnowledgeElement> elementsQueryLinked = extractor.getElementsMatchingFilterSettings();
 		return elementsQueryLinked;
 	}
 
@@ -83,7 +83,7 @@ public class MarkdownCreator {
 	 *            jira issues
 	 * @return markdownString
 	 */
-	private String generateMarkdownString(List<KnowledgeElement> issues) {
+	private String generateMarkdownString(Set<KnowledgeElement> issues) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("# ").append(title).append(" \n");
 		EnumMap<ReleaseNoteCategory, Boolean> containsTitle = ReleaseNoteCategory.toBooleanMap();
