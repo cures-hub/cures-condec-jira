@@ -24,6 +24,9 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  * Creates a tree data structure from the {@link KnowledgeGraph} according to
  * the given {@link FilterSettings}. Uses the Treant.js framework for
  * visualization of the knowledge tree.
+ * 
+ * Iterates over the filtered {@link KnowledgeGraph} provided by the
+ * {@link FilteringManager}.
  */
 @XmlRootElement(name = "treant")
 @XmlAccessorType(XmlAccessType.FIELD)

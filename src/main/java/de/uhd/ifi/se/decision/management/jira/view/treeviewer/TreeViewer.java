@@ -33,6 +33,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
 /**
  * Creates tree viewer content. The tree viewer is rendered with the jstree
  * library.
+ * 
+ * Iterates over the filtered {@link KnowledgeGraph} provided by the
+ * {@link FilteringManager}.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TreeViewer {
@@ -116,26 +119,27 @@ public class TreeViewer {
 		nodes = new HashSet<TreeViewerNode>(Arrays.asList(rootNode));
 	}
 
+	// TODO Add this to FilterSettings and FilteringManager
+	private boolean isSentenceShown(KnowledgeElement element) {
+		return !((PartOfJiraIssueText) element).isRelevant()
+				&& ((PartOfJiraIssueText) element).getDescription().length() > 0;
+	}
+
 	/**
 	 * Constructor for a jstree tree viewer for a code class as the root element.
 	 * The tree viewer comprises only one tree.
 	 */
 	public TreeViewer(String projectKey) {
 		this();
-		if (projectKey != null) {
-			nodes = new HashSet<TreeViewerNode>();
-			CodeClassPersistenceManager manager = new CodeClassPersistenceManager(projectKey);
-			List<KnowledgeElement> elementList = manager.getKnowledgeElements();
-			for (KnowledgeElement element : elementList) {
-				nodes.add(this.makeIdUnique(new TreeViewerNode(element)));
-			}
+		if (projectKey == null) {
+			return;
 		}
-	}
-
-	// TODO Add this to FilterSettings and FilteringManager
-	private boolean isSentenceShown(KnowledgeElement element) {
-		return !((PartOfJiraIssueText) element).isRelevant()
-				&& ((PartOfJiraIssueText) element).getDescription().length() > 0;
+		nodes = new HashSet<TreeViewerNode>();
+		CodeClassPersistenceManager manager = new CodeClassPersistenceManager(projectKey);
+		List<KnowledgeElement> codeClasses = manager.getKnowledgeElements();
+		for (KnowledgeElement element : codeClasses) {
+			nodes.add(this.makeIdUnique(new TreeViewerNode(element)));
+		}
 	}
 
 	/**

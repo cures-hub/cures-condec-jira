@@ -31,7 +31,6 @@ public class FilteringManager {
 	private ApplicationUser user;
 	private FilterSettings filterSettings;
 	private KnowledgeGraph graph;
-	public Set<Link> traversedLinks;
 
 	public FilteringManager(FilterSettings filterSettings) {
 		this(null, filterSettings);
@@ -43,7 +42,6 @@ public class FilteringManager {
 		if (filterSettings != null) {
 			this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
 		}
-		this.traversedLinks = new HashSet<Link>();
 	}
 
 	public FilteringManager(String projectKey, ApplicationUser user, String query) {
@@ -51,14 +49,12 @@ public class FilteringManager {
 	}
 
 	/**
-	 * @return list of all knowledge elements that match the {@link FilterSetting}s.
-	 * 
-	 *         TODO Return Set instead of List
+	 * @return all knowledge elements that match the {@link FilterSetting}s.
 	 */
-	public List<KnowledgeElement> getElementsMatchingFilterSettings() {
+	public Set<KnowledgeElement> getElementsMatchingFilterSettings() {
 		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null) {
 			LOGGER.error("FilteringManager misses important attributes.");
-			return new ArrayList<KnowledgeElement>();
+			return new HashSet<KnowledgeElement>();
 		}
 		// String searchString = filterSettings.getSearchTerm().toLowerCase();
 		Set<KnowledgeElement> elements = new HashSet<>();
@@ -68,12 +64,12 @@ public class FilteringManager {
 		} else {
 			elements = graph.vertexSet();
 		}
-		List<KnowledgeElement> elementsMatchingFilterSettings = filterElements(elements);
+		elements = filterElements(elements);
 		if (filterSettings.getSelectedElement() != null) {
-			elementsMatchingFilterSettings.add(filterSettings.getSelectedElement());
+			elements.add(filterSettings.getSelectedElement());
 		}
 		// if (JiraQueryType.getJiraQueryType(searchString) == JiraQueryType.OTHER) {
-		return elementsMatchingFilterSettings;
+		return elements;
 		// }
 		// elements.retainAll(getAllElementsMatchingQuery());
 		// return new ArrayList<>(elements);
@@ -88,7 +84,7 @@ public class FilteringManager {
 			LOGGER.error("FilteringManager misses important attributes.");
 			return null;
 		}
-		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>(getElementsMatchingFilterSettings());
+		Set<KnowledgeElement> elements = getElementsMatchingFilterSettings();
 		Graph<KnowledgeElement, Link> subgraph = new AsSubgraph<KnowledgeElement, Link>(graph, elements);
 		if (filterSettings.getLinkTypes().size() < LinkType.toStringList().size()) {
 			Set<Link> linksNotMatchingFilterSettings = getLinksNotMatchingFilterSettings(subgraph.edgeSet());
@@ -107,6 +103,7 @@ public class FilteringManager {
 
 	private Set<KnowledgeElement> getLinkedElements(KnowledgeElement currentElement, int currentDistance) {
 		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>();
+		Set<Link> traversedLinks = new HashSet<>();
 		elements.add(currentElement);
 
 		if (currentDistance == 0) {
@@ -183,8 +180,8 @@ public class FilteringManager {
 		return elements;
 	}
 
-	private List<KnowledgeElement> filterElements(Set<KnowledgeElement> elements) {
-		List<KnowledgeElement> filteredElements = new ArrayList<KnowledgeElement>();
+	private Set<KnowledgeElement> filterElements(Set<KnowledgeElement> elements) {
+		Set<KnowledgeElement> filteredElements = new HashSet<KnowledgeElement>();
 		if (elements == null || elements.isEmpty()) {
 			return filteredElements;
 		}

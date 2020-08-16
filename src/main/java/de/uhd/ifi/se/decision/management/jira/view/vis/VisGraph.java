@@ -18,8 +18,16 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
+/**
+ * Creates the vis graph content. The vis graph is rendered with the vis.js
+ * library.
+ * 
+ * Iterates over the filtered {@link KnowledgeGraph} provided by the
+ * {@link FilteringManager}.
+ */
 @XmlRootElement(name = "vis")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class VisGraph {
