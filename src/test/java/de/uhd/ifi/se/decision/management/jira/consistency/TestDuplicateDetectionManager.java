@@ -52,7 +52,7 @@ public class TestDuplicateDetectionManager extends TestSetUp {
 
 	@Test
 	public void testFindAllDuplicatesWithWithValidData() {
-		DuplicateDetectionManager detectionManager = new DuplicateDetectionManager(issue, new BasicDuplicateTextDetector(3), 3);
+		DuplicateDetectionManager detectionManager = new DuplicateDetectionManager(transformIssuesToKnowledgeElement(issue), new BasicDuplicateTextDetector(3), 3);
 
 		//No Duplicate Exists
 		assertEquals("The base issue should be set correctly.", 0, detectionManager.findAllDuplicates(transformIssuesToKnowledgeElements(testIssues)).size());
@@ -92,6 +92,10 @@ public class TestDuplicateDetectionManager extends TestSetUp {
 
 	private List<KnowledgeElement> transformIssuesToKnowledgeElements(List<? extends Issue> issues) {
 		return issues.stream().map(KnowledgeElement::new).collect(Collectors.toList());
+	}
+
+	private KnowledgeElement transformIssuesToKnowledgeElement(Issue issue) {
+		return  new KnowledgeElement(issue);
 	}
 
 
