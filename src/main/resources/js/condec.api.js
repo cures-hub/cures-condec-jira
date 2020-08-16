@@ -36,7 +36,8 @@
 
 		this.optionStatus = ["idea", "discarded", "decided", "rejected", "undefined"];
 		this.issueStatus = ["resolved", "unresolved"];
-		this.knowledgeStatus = this.optionStatus.concat(this.issueStatus);
+		this.knowledgeStatus = this.optionStatus.concat(this.issueStatus)
+		this.rationaleBacklogItemStatus = ["challenged", "unresolved", "incomplete"];
 	};
 
 	/**
