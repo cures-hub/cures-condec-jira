@@ -60,7 +60,6 @@ public class TreeViewer {
 		this.multiple = false;
 		this.checkCallback = true;
 		this.themes = ImmutableMap.of("icons", true);
-
 		this.ids = new ArrayList<String>();
 	}
 

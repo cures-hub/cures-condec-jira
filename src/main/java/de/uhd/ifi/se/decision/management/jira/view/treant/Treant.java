@@ -1,9 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.treant;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -42,15 +40,12 @@ public class Treant {
 	private FilterSettings filterSettings;
 	@JsonIgnore
 	private boolean isHyperlinked;
-	@JsonIgnore
-	private Set<Link> traversedLinks;
 
 	public Treant(FilterSettings filterSettings) {
 		this(filterSettings, false);
 	}
 
 	public Treant(FilterSettings filterSettings, boolean isHyperlinked) {
-		this.traversedLinks = new HashSet<Link>();
 		if (filterSettings == null) {
 			return;
 		}
@@ -63,7 +58,7 @@ public class Treant {
 		this.setHyperlinked(isHyperlinked);
 	}
 
-	public Treant(String treantId, boolean isIssueView, FilterSettings filterSettings) {
+	public Treant(String treantId, FilterSettings filterSettings) {
 		this(filterSettings, false);
 		// TODO Why is the treantId needed?
 		this.setChart(new Chart(treantId));
@@ -74,10 +69,10 @@ public class Treant {
 			return new TreantNode();
 		}
 
-		Map<KnowledgeElement, TreantNode> elementToTreeViewerNodeMap = new HashMap<>();
+		Map<KnowledgeElement, TreantNode> elementToTreantNodeMap = new HashMap<>();
 
 		TreantNode rootNode = new TreantNode(rootElement, false, isHyperlinked);
-		elementToTreeViewerNodeMap.put(rootElement, rootNode);
+		elementToTreantNodeMap.put(rootElement, rootNode);
 
 		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<KnowledgeElement, Link>(graph);
 
@@ -99,9 +94,9 @@ public class Treant {
 			Link edge = undirectedGraph.getEdge(childElement, parentElement);
 
 			TreantNode childNode = new TreantNode(childElement, edge, false, isHyperlinked);
-			elementToTreeViewerNodeMap.put(childElement, childNode);
+			elementToTreantNodeMap.put(childElement, childNode);
 
-			TreantNode parentNode = elementToTreeViewerNodeMap.get(parentElement);
+			TreantNode parentNode = elementToTreantNodeMap.get(parentElement);
 			if (parentNode == null) {
 				continue;
 			}

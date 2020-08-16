@@ -326,11 +326,11 @@ public class ViewRest {
 				CodeClassPersistenceManager ccManager = new CodeClassPersistenceManager(projectKey);
 				element = ccManager.getKnowledgeElement(elementKey);
 			} else {
-				KnowledgePersistenceManager kpManager = new KnowledgePersistenceManager(projectKey);
+				KnowledgePersistenceManager kpManager = KnowledgePersistenceManager.getOrCreate(projectKey);
 				element = kpManager.getJiraIssueManager().getKnowledgeElement(elementKey);
 			}
 			filterSettings.setSelectedElement(element);
-			Treant treant = new Treant("treant-container-class", isIssueView, filterSettings);
+			Treant treant = new Treant("treant-container-class", filterSettings);
 			return Response.ok(treant).build();
 		} catch (Exception e) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Treant cannot be shown."))

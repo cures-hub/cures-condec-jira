@@ -78,19 +78,10 @@ public class TestTreant extends TestSetUp {
 	@Test
 	@NonTransactional
 	@Ignore
-	public void testSecondConstructorCheckboxFalse() {
+	public void testSecondConstructor() {
 		FilterSettings filterSettings = new FilterSettings("TEST", null);
 		filterSettings.setSelectedElement(classElement);
-		this.treant = new Treant("treantid", false, filterSettings);
-		assertNotNull(this.treant);
-	}
-
-	@Test
-	@NonTransactional
-	public void testSecondConstructorWithIssueViewCheckboxFalse() {
-		FilterSettings filterSettings = new FilterSettings("TEST", null);
-		filterSettings.setSelectedElement(classElement);
-		this.treant = new Treant("treantid", true, filterSettings);
+		this.treant = new Treant("treantid", filterSettings);
 		assertNotNull(this.treant);
 	}
 
