@@ -17,7 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
@@ -40,8 +39,6 @@ public class Treant {
 	@JsonIgnore
 	private Graph<KnowledgeElement, Link> graph;
 	@JsonIgnore
-	private FilterSettings filterSettings;
-	@JsonIgnore
 	private boolean isHyperlinked;
 
 	public Treant(FilterSettings filterSettings) {
@@ -52,7 +49,6 @@ public class Treant {
 		if (filterSettings == null) {
 			return;
 		}
-		this.filterSettings = filterSettings;
 
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		this.graph = filteringManager.getSubgraphMatchingFilterSettings();
@@ -67,6 +63,12 @@ public class Treant {
 		this.setChart(new Chart(treantId));
 	}
 
+	/**
+	 * @issue How can graph iteration be done over both outgoing and incoming edges
+	 *        of a knowledge element (=node)?
+	 * @decision Convert the directed graph into an undirected graph for graph
+	 *           iteration!
+	 */
 	public TreantNode getTreantNodeWithChildren(KnowledgeElement rootElement) {
 		if (rootElement == null || rootElement.getProject() == null) {
 			return new TreantNode();
@@ -84,11 +86,6 @@ public class Treant {
 
 		while (iterator.hasNext()) {
 			KnowledgeElement childElement = iterator.next();
-
-			// TODO Add to FilteringManager
-			if (filterSettings.isOnlyDecisionKnowledgeShown() && childElement.getType() == KnowledgeType.OTHER) {
-				continue;
-			}
 
 			KnowledgeElement parentElement = iterator.getParent(childElement);
 			if (parentElement == null) {
@@ -132,13 +129,5 @@ public class Treant {
 
 	public void setHyperlinked(boolean isHyperlinked) {
 		this.isHyperlinked = isHyperlinked;
-	}
-
-	public FilterSettings getFilterSettings() {
-		return filterSettings;
-	}
-
-	public void setFilterSettings(FilterSettings filterSettings) {
-		this.filterSettings = filterSettings;
 	}
 }

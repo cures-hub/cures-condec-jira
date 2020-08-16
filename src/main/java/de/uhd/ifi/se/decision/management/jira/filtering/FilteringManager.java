@@ -295,6 +295,9 @@ public class FilteringManager {
 	public boolean isElementMatchingKnowledgeTypeFilter(KnowledgeElement element) {
 		String type = element.getType().replaceProAndConWithArgument().toString();
 		if (element.getType() == KnowledgeType.OTHER) {
+			if (filterSettings.isOnlyDecisionKnowledgeShown()) {
+				return false;
+			}
 			type = element.getTypeAsString();
 		}
 		return filterSettings.getJiraIssueTypes().contains(type);
