@@ -37,7 +37,6 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.DecisionTable;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
@@ -320,23 +319,24 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		try {
-			KnowledgeElement element = new KnowledgeElement();
-			if (!isIssueView) {
-				CodeClassPersistenceManager ccManager = new CodeClassPersistenceManager(projectKey);
-				element = ccManager.getKnowledgeElement(elementKey);
-			} else {
-				KnowledgePersistenceManager kpManager = KnowledgePersistenceManager.getOrCreate(projectKey);
-				element = kpManager.getJiraIssueManager().getKnowledgeElement(elementKey);
-			}
+
+		if (!isIssueView) {
+			/**
+			 * TODO Improve matching of elementKey to code class knowledge element, it
+			 * should be done in FilterSettings.setSelectedElement method
+			 * 
+			 * @issue How can we identify knowledge elements from different documentation
+			 *        locations?
+			 */
+			CodeClassPersistenceManager ccManager = new CodeClassPersistenceManager(projectKey);
+			KnowledgeElement element = ccManager.getKnowledgeElement(elementKey);
 			filterSettings.setSelectedElement(element);
-			Treant treant = new Treant("treant-container-class", filterSettings);
-			return Response.ok(treant).build();
-		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Treant cannot be shown."))
-					.build();
+		} else {
+			filterSettings.setLinkDistance(1);
 		}
 
+		Treant treant = new Treant("treant-container-class", filterSettings);
+		return Response.ok(treant).build();
 	}
 
 	@Path("/getVis")

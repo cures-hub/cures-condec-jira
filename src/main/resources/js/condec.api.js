@@ -460,6 +460,7 @@
 		});
 	};
 
+	// TODO Improve matching of elementKey to code class knowledge element
 	ConDecAPI.prototype.getClassTreant = function (elementKey, linkDistance, searchTerm, checkboxflag,
 			isIssueView, minLinkNumber, maxLinkNumber, callback) {
 		var filterSettings = {
@@ -470,7 +471,7 @@
 				"linkDistance": linkDistance,
 				"minDegree": minLinkNumber,
 				"maxDegree": maxLinkNumber,
-				"groups": null
+				"selectedElement": elementKey
 		};
 		generalApi.postJSON(this.restPrefix + "/view/getClassTreant.json?&elementKey=" + elementKey + "&isIssueView=" + isIssueView, 
 				filterSettings, function (error, treant) {
