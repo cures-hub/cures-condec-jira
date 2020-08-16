@@ -480,7 +480,11 @@ public class KnowledgeElement {
 	 * @see GenericLinkManager
 	 */
 	public List<Link> getLinks() {
-		return new ArrayList<>(KnowledgeGraph.getOrCreate(project).edgesOf(this));
+		List<Link> links = GenericLinkManager.getLinksForElement(this);
+		if (documentationLocation == DocumentationLocation.JIRAISSUE) {
+			links.addAll(KnowledgeGraph.getOrCreate(project).edgesOf(this));
+		}
+		return links;
 	}
 
 	/**
