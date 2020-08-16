@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.treant;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -54,6 +55,7 @@ public class TreantNode {
 
 	public TreantNode() {
 		this.connectors = ImmutableMap.of("style", ImmutableMap.of("stroke", "#000000"));
+		this.children = new ArrayList<>();
 	}
 
 	public TreantNode(KnowledgeElement decisionKnowledgeElement, boolean isCollapsed, boolean isHyperlinked) {
@@ -93,22 +95,22 @@ public class TreantNode {
 	}
 
 	public TreantNode(KnowledgeElement decisionKnowledgeElement, Link link, boolean isCollapsed,
-					  boolean isHyperlinked) {
+			boolean isHyperlinked) {
 		this(decisionKnowledgeElement, isCollapsed, isHyperlinked);
 		this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement, link.getType());
 		switch (link.getType()) {
-			case "support":
-				if (decisionKnowledgeElement.getId() == link.getSource().getId()) {
-					this.htmlClass = "pro";
-				}
-				break;
-			case "attack":
-				if (decisionKnowledgeElement.getId() == link.getSource().getId()) {
-					this.htmlClass = "con";
-				}
-				break;
-			default:
-				break;
+		case "support":
+			if (decisionKnowledgeElement.getId() == link.getSource().getId()) {
+				this.htmlClass = "pro";
+			}
+			break;
+		case "attack":
+			if (decisionKnowledgeElement.getId() == link.getSource().getId()) {
+				this.htmlClass = "con";
+			}
+			break;
+		default:
+			break;
 		}
 	}
 

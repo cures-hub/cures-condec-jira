@@ -52,6 +52,8 @@ public class FilteringManager {
 
 	/**
 	 * @return list of all knowledge elements that match the {@link FilterSetting}s.
+	 * 
+	 *         TODO Return Set instead of List
 	 */
 	public List<KnowledgeElement> getElementsMatchingFilterSettings() {
 		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null) {
@@ -66,8 +68,12 @@ public class FilteringManager {
 		} else {
 			elements = graph.vertexSet();
 		}
+		List<KnowledgeElement> elementsMatchingFilterSettings = filterElements(elements);
+		if (filterSettings.getSelectedElement() != null) {
+			elementsMatchingFilterSettings.add(filterSettings.getSelectedElement());
+		}
 		// if (JiraQueryType.getJiraQueryType(searchString) == JiraQueryType.OTHER) {
-		return filterElements(elements);
+		return elementsMatchingFilterSettings;
 		// }
 		// elements.retainAll(getAllElementsMatchingQuery());
 		// return new ArrayList<>(elements);
@@ -212,6 +218,12 @@ public class FilteringManager {
 		if (!isElementMatchingDecisionGroupFilter(element)) {
 			return false;
 		}
+		if (!isElementMatchingIsTestCodeFilter(element)) {
+			return false;
+		}
+		if (!isElementMatchingDegreeFilter(element)) {
+			return false;
+		}
 		return isElementMatchingSubStringFilter(element);
 	}
 
@@ -331,6 +343,13 @@ public class FilteringManager {
 	 * @return true if the element is a test class.
 	 */
 	public boolean isElementMatchingIsTestCodeFilter(KnowledgeElement element) {
+		// TODO Make code class recognition more explicit
+		if (element.getDocumentationLocation() != DocumentationLocation.COMMIT) {
+			return true;
+		}
+		if (!element.getSummary().contains(".java")) {
+			return true;
+		}
 		return filterSettings.isTestCodeShown() || !element.getSummary().startsWith("Test");
 	}
 

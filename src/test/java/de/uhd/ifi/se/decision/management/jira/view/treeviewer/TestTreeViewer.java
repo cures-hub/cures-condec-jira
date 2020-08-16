@@ -118,14 +118,14 @@ public class TestTreeViewer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetDataStructureNull() {
-		assertEquals(TreeViewerNode.class, treeViewer.getDataStructure(null).getClass());
+		assertEquals(TreeViewerNode.class, treeViewer.getTreeViewerNodeWithChildren(null).getClass());
 	}
 
 	@Test(expected = NullPointerException.class)
 	@NonTransactional
 	public void testGetDataStructureEmpty() {
 		KnowledgeElement element = new KnowledgeElement();
-		assertNotNull(treeViewer.getDataStructure(element));
+		assertNotNull(treeViewer.getTreeViewerNodeWithChildren(element));
 	}
 
 	@Test
@@ -135,7 +135,7 @@ public class TestTreeViewer extends TestSetUp {
 		assertNotNull(element);
 		assertEquals(14, element.getId());
 		assertEquals("TEST-14", element.getKey());
-		assertTrue(treeViewer.getDataStructure(element).getId().endsWith("tv14"));
+		assertTrue(treeViewer.getTreeViewerNodeWithChildren(element).getId().endsWith("tv14"));
 	}
 
 	@Test
@@ -158,7 +158,7 @@ public class TestTreeViewer extends TestSetUp {
 				.getSentencesForCommentText("{alternative} This would be a great solution option! {alternative}");
 		PartOfJiraIssueText sentence = comment.get(0);
 		TreeViewer tree = new TreeViewer(sentence.getProject().getProjectKey(), KnowledgeType.DECISION);
-		assertNotNull(tree.getDataStructure(sentence));
+		assertNotNull(tree.getTreeViewerNodeWithChildren(sentence));
 	}
 
 	@Test
@@ -169,7 +169,7 @@ public class TestTreeViewer extends TestSetUp {
 		filterSettings.setSelectedElement(element);
 		TreeViewer treeViewer = new TreeViewer(filterSettings);
 		assertNotNull(treeViewer);
-		assertEquals(3, treeViewer.getDataStructure(element).getChildren().size());
+		assertEquals(3, treeViewer.getTreeViewerNodeWithChildren(element).getChildren().size());
 
 		// 2) Add comment to issue
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-14");

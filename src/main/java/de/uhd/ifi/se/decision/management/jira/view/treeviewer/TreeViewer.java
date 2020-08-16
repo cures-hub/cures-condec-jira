@@ -104,7 +104,7 @@ public class TreeViewer {
 		KnowledgeElement rootElement = filterSettings.getSelectedElement();
 		FilteringManager filteringManager = new FilteringManager(null, filterSettings);
 		graph = filteringManager.getSubgraphMatchingFilterSettings();
-		TreeViewerNode rootNode = getDataStructure(rootElement);
+		TreeViewerNode rootNode = getTreeViewerNodeWithChildren(rootElement);
 
 		// Match irrelevant sentences back to list
 		for (Link link : GenericLinkManager.getLinksForElement(rootElement.getId(), DocumentationLocation.JIRAISSUE)) {
@@ -145,7 +145,7 @@ public class TreeViewer {
 	 * @decision Convert the directed graph into an undirected graph for graph
 	 *           iteration!
 	 */
-	public TreeViewerNode getDataStructure(KnowledgeElement rootElement) {
+	public TreeViewerNode getTreeViewerNodeWithChildren(KnowledgeElement rootElement) {
 		if (rootElement == null) {
 			return new TreeViewerNode();
 		}
