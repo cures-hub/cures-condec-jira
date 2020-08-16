@@ -39,6 +39,7 @@ public class DuplicateDetectionManager {
 		}
 	}
 
+
 	public DuplicateDetectionManager(KnowledgeElement knowledgeElement, DuplicateDetectionStrategy duplicateDetectionStrategy, int fragmentLength) {
 		this.knowledgeElement = knowledgeElement;
 		this.duplicateDetectionStrategy = duplicateDetectionStrategy;

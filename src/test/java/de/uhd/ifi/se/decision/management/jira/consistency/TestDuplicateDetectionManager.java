@@ -52,13 +52,13 @@ public class TestDuplicateDetectionManager extends TestSetUp {
 
 	@Test
 	public void testFindAllDuplicatesWithWithValidData() {
-		DuplicateDetectionManager detectionManager = new DuplicateDetectionManager(issue, new BasicDuplicateTextDetector(3));
+		DuplicateDetectionManager detectionManager = new DuplicateDetectionManager(issue, new BasicDuplicateTextDetector(3), 3);
 
 		//No Duplicate Exists
 		assertEquals("The base issue should be set correctly.", 0, detectionManager.findAllDuplicates(transformIssuesToKnowledgeElements(testIssues)).size());
 
 		List<KnowledgeElement> duplicateIssues = generateDuplicates("This text should be detected as a Duplicate.");
-		detectionManager = new DuplicateDetectionManager(duplicateIssues.get(0), new BasicDuplicateTextDetector(3));
+		detectionManager = new DuplicateDetectionManager(duplicateIssues.get(0), new BasicDuplicateTextDetector(3), 3);
 		List<KnowledgeElement> list = transformIssuesToKnowledgeElements(testIssues);
 		list.addAll(duplicateIssues);
 		assertEquals("The duplicate issue should be found.", 1, detectionManager.findAllDuplicates(list).size());
