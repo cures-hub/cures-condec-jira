@@ -169,7 +169,7 @@ public class TestTreeViewer extends TestSetUp {
 		filterSettings.setSelectedElement(element);
 		TreeViewer treeViewer = new TreeViewer(filterSettings);
 		assertNotNull(treeViewer);
-		assertEquals(0, treeViewer.getDataStructure(element).getChildren().size());
+		assertEquals(3, treeViewer.getDataStructure(element).getChildren().size());
 
 		// 2) Add comment to issue
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-14");

@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -54,15 +55,12 @@ public class TreeViewer {
 	private List<String> ids;
 	@JsonIgnore
 	private long index;
-	@JsonIgnore
-	private List<Long> alreadyVisitedEdges;
 
 	public TreeViewer() {
 		this.multiple = false;
 		this.checkCallback = true;
 		this.themes = ImmutableMap.of("icons", true);
 
-		this.alreadyVisitedEdges = new ArrayList<Long>();
 		this.ids = new ArrayList<String>();
 	}
 
@@ -147,58 +145,42 @@ public class TreeViewer {
 	 * @decision Convert the directed graph into an undirected graph for graph
 	 *           iteration!
 	 */
-	public TreeViewerNode getDataStructure(KnowledgeElement knowledgeElement) {
-		if (knowledgeElement == null) {
+	public TreeViewerNode getDataStructure(KnowledgeElement rootElement) {
+		if (rootElement == null) {
 			return new TreeViewerNode();
 		}
-		try {
-			graph = new AsUndirectedGraph<KnowledgeElement, Link>(graph);
-		} catch (Exception e) {
+		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<KnowledgeElement, Link>(graph);
 
-		}
+		Map<KnowledgeElement, TreeViewerNode> elementToTreeViewerNodeMap = new HashMap<>();
 
-		TreeViewerNode rootNode = new TreeViewerNode(knowledgeElement);
+		TreeViewerNode rootNode = new TreeViewerNode(rootElement);
 		rootNode = this.makeIdUnique(rootNode);
-		List<TreeViewerNode> childNodes = this.getChildren(knowledgeElement);
-		rootNode.setChildren(childNodes);
-		return rootNode;
-	}
 
-	protected List<TreeViewerNode> getChildren(KnowledgeElement element) {
-		List<TreeViewerNode> children = new ArrayList<TreeViewerNode>();
-		BreadthFirstIterator<KnowledgeElement, Link> iterator;
-		try {
-			iterator = new BreadthFirstIterator<>(graph, element);
-		} catch (IllegalArgumentException e) {
-			graph.addVertex(element);
-			iterator = new BreadthFirstIterator<>(graph, element);
-		}
+		elementToTreeViewerNodeMap.put(rootElement, rootNode);
+
+		BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<>(undirectedGraph,
+				rootElement);
+
 		while (iterator.hasNext()) {
 			KnowledgeElement childElement = iterator.next();
 			KnowledgeElement parentElement = iterator.getParent(childElement);
-			if (parentElement == null || parentElement.getId() != element.getId()) {
+			if (parentElement == null) {
 				continue;
 			}
-			if (!(childElement instanceof KnowledgeElement)) {
-				continue;
-			}
-			Link edge = graph.getEdge(parentElement, childElement);
-			if (alreadyVisitedEdges.contains(edge.getId())) {
-				continue;
-			}
-			this.alreadyVisitedEdges.add(edge.getId());
+			Link edge = undirectedGraph.getEdge(childElement, parentElement);
 			TreeViewerNode childNode = new TreeViewerNode(childElement, edge);
-			if (((KnowledgeElement) childNode.getElement()).getProject() == null
-					|| !((KnowledgeElement) childNode.getElement()).getProject().getProjectKey()
-							.equals(element.getProject().getProjectKey())) {
+			childNode = this.makeIdUnique(childNode);
+			elementToTreeViewerNodeMap.put(childElement, childNode);
+
+			TreeViewerNode parentNode = elementToTreeViewerNodeMap.get(parentElement);
+			if (parentNode == null) {
 				continue;
 			}
-			childNode = this.makeIdUnique(childNode);
-			List<TreeViewerNode> childrenOfElement = this.getChildren(childElement);
-			childNode.setChildren(childrenOfElement);
-			children.add(childNode);
+
+			parentNode.getChildren().add(childNode);
 		}
-		return children;
+
+		return rootNode;
 	}
 
 	protected TreeViewerNode makeIdUnique(TreeViewerNode node) {
