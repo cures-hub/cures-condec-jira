@@ -461,18 +461,23 @@
 	};
 
 	// TODO Improve matching of elementKey to code class knowledge element
+	// TODO Get rid of this method and use getTreant and filterSettings
 	ConDecAPI.prototype.getClassTreant = function (elementKey, linkDistance, searchTerm, checkboxflag,
 			isIssueView, minLinkNumber, maxLinkNumber, callback) {
 		var filterSettings = {
 				"projectKey": projectKey,
 				"searchTerm": searchTerm,
-				"isOnlyDecisionKnowledgeShown": checkboxflag,
-				"isTestCodeShown": checkboxflag,
 				"linkDistance": linkDistance,
 				"minDegree": minLinkNumber,
 				"maxDegree": maxLinkNumber,
 				"selectedElement": elementKey
 		};
+		if (isIssueView) {
+			filterSettings["isTestCodeShown"] = checkboxflag;
+		} else {
+			filterSettings["isOnlyDecisionKnowledgeShown"] = checkboxflag;
+		}
+		
 		generalApi.postJSON(this.restPrefix + "/view/getClassTreant.json?&elementKey=" + elementKey + "&isIssueView=" + isIssueView, 
 				filterSettings, function (error, treant) {
 			if (error === null) {
