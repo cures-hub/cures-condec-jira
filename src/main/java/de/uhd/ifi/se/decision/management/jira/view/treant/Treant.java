@@ -26,6 +26,9 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  * 
  * Iterates over the filtered {@link KnowledgeGraph} provided by the
  * {@link FilteringManager}.
+ * 
+ * If you want to change the shown (sub-)graph, do not change this class but
+ * change the {@link FilteringManager} and/or the {@link KnowledgeGraph}.
  */
 @XmlRootElement(name = "treant")
 @XmlAccessorType(XmlAccessType.FIELD)

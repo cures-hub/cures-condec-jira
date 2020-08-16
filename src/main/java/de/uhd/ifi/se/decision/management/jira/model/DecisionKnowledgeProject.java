@@ -196,6 +196,7 @@ public class DecisionKnowledgeProject {
 		for (IssueType type : getJiraIssueTypes()) {
 			issueTypes.add(type.getNameTranslation());
 		}
+		issueTypes.add("Other");
 		return issueTypes;
 	}
 }
