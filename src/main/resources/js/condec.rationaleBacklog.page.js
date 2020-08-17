@@ -43,6 +43,10 @@
 		initializeRationaleBacklogPage(conDecAPI, treant, treeViewer);
 	}
 
+	ConDecRationaleBacklogPage.prototype.updateView = function () {
+		updateView(null, treant, treeViewer);
+	};
+
 	function initializeRationaleBacklogPage(conDecAPI, treant, treeViewer) {
 		console.log("conDecRationaleBacklogPage initializeRationaleBacklogPage");
 
@@ -63,7 +67,7 @@
 
 
 
-	function updateView(nodeID, treant, treeViewer) {
+	function updateView(nodeId, treant, treeViewer) {
 		treeViewer.buildRationaleBacklogTreeViewer();
 		if (nodeId === undefined) {
 			var rootElement = treant.getCurrentRootElement();
@@ -75,7 +79,7 @@
 		}
 		jQueryConDec("#rationale-backlog-tree").on("select_node.jstree", function (error, tree) {
 			var node = tree.node.data;
-			var linkDistance = document.getElementById("link-distance-input-code").value;
+			var linkDistance = document.getElementById("link-distance-input-rb").value;
 			treant.buildRationaleBacklogTreant(node.key, true, "", linkDistance);
 		});
 			var selectedGroupsObj = $('#select2-code-decision-group-rb').select2('data');

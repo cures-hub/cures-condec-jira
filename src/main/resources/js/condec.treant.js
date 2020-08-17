@@ -63,6 +63,7 @@
 	ConDecTreant.prototype.buildRationaleBacklogTreant = function (elementKey, isInteractive, searchTerm, linkDistance) {
 		console.log("conDecTreant buildRationaleBacklogTreant");
 		treantid = "treant-rationale-backlog";
+		var checkboxflag = false;
 		conDecAPI.getRationaleBacklogTreant(elementKey, linkDistance, searchTerm, checkboxflag, function (treeStructure) {
 			document.getElementById(treantid).innerHTML = "";
 			treantTree = new Treant(treeStructure);

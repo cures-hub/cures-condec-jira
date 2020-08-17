@@ -161,6 +161,27 @@
         });
     };
 
+	// ConDecTreeViewer.prototype.filterNodesByStatus = function filterNodesByStatus(selectedStatus, treeId) {
+	// 	console.log("conDecTreeViewer filterNodesByStatus");
+	// 	jQueryConDec(treeId).on("state_ready.jstree", function() {
+	// 		var treeViewer = jQueryConDec(treeId).jstree(true);
+	// 		if (treeViewer) {
+	// 			var jsonNodes = treeViewer.get_json('#', {
+	// 				flat : true
+	// 			});
+	// 			$.each(jsonNodes, function(i, val) {
+	// 				var matches = 0;
+	// 				var kElement = $(val).attr("data");
+	// 				var elementStatus = $(kElement).attr("status");
+	// 				if (!selectedStatus.includes(elementStatus)) {
+	// 					var treeNode = document.getElementById($(val).attr("id"));
+	// 					$(treeNode).hide();
+	// 				}
+	// 			});
+	// 		}
+	// 	});
+	// };
+
     ConDecTreeViewer.prototype.minMaxFilter = function (treeId) {
         console.log("conDecTreeViewer filterNodesByGroup");
         jQueryConDec(treeId).on("state_ready.jstree", function () {
