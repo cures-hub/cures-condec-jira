@@ -103,20 +103,29 @@ public class TreeViewer {
 				|| filterSettings.getSelectedElement().getKey() == null) {
 			return;
 		}
-		KnowledgeElement rootElement = filterSettings.getSelectedElement();
 		FilteringManager filteringManager = new FilteringManager(null, filterSettings);
 		graph = filteringManager.getSubgraphMatchingFilterSettings();
-		TreeViewerNode rootNode = getTreeViewerNodeWithChildren(rootElement);
+		KnowledgeElement rootElement = filterSettings.getSelectedElement();
+		if (rootElement == null) {
+			nodes = new HashSet<TreeViewerNode>();
+			for (KnowledgeElement element : graph.vertexSet()) {
+				nodes.add(this.makeIdUnique(new TreeViewerNode(element)));
+			}
+		} else {
+			TreeViewerNode rootNode = getTreeViewerNodeWithChildren(rootElement);
+			nodes = new HashSet<TreeViewerNode>(Arrays.asList(rootNode));
+		}
+
 
 		// Match irrelevant sentences back to list
-		for (Link link : GenericLinkManager.getLinksForElement(rootElement.getId(), DocumentationLocation.JIRAISSUE)) {
+		/*for (Link link : GenericLinkManager.getLinksForElement(rootElement.getId(), DocumentationLocation.JIRAISSUE)) {
 			KnowledgeElement opposite = link.getOppositeElement(rootElement.getId());
 			if (opposite instanceof PartOfJiraIssueText && isSentenceShown(opposite)) {
 				rootNode.getChildren().add(new TreeViewerNode(opposite));
 			}
-		}
+		}*/
 
-		nodes = new HashSet<TreeViewerNode>(Arrays.asList(rootNode));
+
 	}
 
 	// TODO Add this to FilterSettings and FilteringManager

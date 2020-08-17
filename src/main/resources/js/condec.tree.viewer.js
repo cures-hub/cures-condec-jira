@@ -60,8 +60,8 @@
 		console.log("conDecTreeViewer buildRationaleBacklogTreeViewer");
 		jstreeId = "#rationale-backlog-tree";
 		this.resetTreeViewer();
-		var rootElementType = "Issue";
-		conDecAPI.getTreeViewer(rootElementType, function (core) {
+		var rootElementTypes = ["Issue", "Alternative", "Decision", "Pro", "Con"];
+		conDecAPI.getTreeViewerForRationaleBacklog(rootElementTypes, function (core) {
 			jQueryConDec("#rationale-backlog-tree").jstree({
 				"core": core,
 				"plugins": ["dnd", "wholerow", "sort", "search", "state"],

@@ -187,10 +187,6 @@ public class ViewRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Invalid parameters given. Tree viewer not be created.")).build();
 		}
-		if (filterSettings.getSelectedElement() == null || filterSettings.getSelectedElement().getKey() == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Jira issue key is not valid."))
-					.build();
-		}
 		String projectKey = filterSettings.getProjectKey();
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {

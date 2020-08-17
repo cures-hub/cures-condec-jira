@@ -609,6 +609,22 @@
 		});
 	};
 
+		/*
+		 * external references: condec.tab.panel
+		 */
+		ConDecAPI.prototype.getTreeViewerForRationaleBacklog = function (knowledgeTypes, callback) {
+			var filterSettings = {
+				"projectKey": projectKey,
+				"jiraIssueTypes": knowledgeTypes,
+				"linkDistance" : 0
+			};
+			generalApi.postJSON(this.restPrefix + "/view/getTreeViewerForSingleElement.json", filterSettings, function (error, core) {
+				if (error === null) {
+					callback(core);
+				}
+			});
+		};
+
 	/*
 	 * external references: condec.evolution.page
 	 */
