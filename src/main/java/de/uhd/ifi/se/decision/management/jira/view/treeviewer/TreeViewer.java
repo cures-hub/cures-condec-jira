@@ -20,10 +20,12 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 
 /**
@@ -66,7 +68,7 @@ public class TreeViewer {
 	 * Constructor for a jstree tree viewer that matches the {@link FilterSettings}.
 	 * If a knowledge element is selected in the {@link FilterSettings}, the tree
 	 * viewer comprises only one tree with the selected element as the root element.
-	 * If no element is selected, the tree viewer conatains a list of trees.
+	 * If no element is selected, the tree viewer contains a list of trees.
 	 *
 	 * @param filterSettings
 	 *            For example, the {@link FilterSettings} cover the selected element
@@ -75,8 +77,7 @@ public class TreeViewer {
 	 */
 	public TreeViewer(FilterSettings filterSettings) {
 		this();
-		if (filterSettings == null || filterSettings.getSelectedElement() == null
-				|| filterSettings.getSelectedElement().getKey() == null) {
+		if (filterSettings == null) {
 			return;
 		}
 		nodes = new HashSet<TreeViewerNode>();
@@ -86,32 +87,35 @@ public class TreeViewer {
 
 		KnowledgeElement rootElement = filterSettings.getSelectedElement();
 
-		if (filterSettings.getLinkDistance() == 0) {
-			if ("codeClass".equals(filterSettings.getJiraIssueTypes().iterator().next())) {
-				CodeClassPersistenceManager manager = new CodeClassPersistenceManager(filterSettings.getProjectKey());
-				List<KnowledgeElement> codeClasses = manager.getKnowledgeElements();
-				for (KnowledgeElement element : codeClasses) {
-					nodes.add(this.makeIdUnique(new TreeViewerNode(element)));
+		if (rootElement != null) {
+			if (rootElement.getKey() == null) {
+				return;
+			}
+			TreeViewerNode rootNode = getTreeViewerNodeWithChildren(rootElement);
+			// Match irrelevant sentences back to list
+			for (Link link : GenericLinkManager.getLinksForElement(rootElement.getId(),
+					DocumentationLocation.JIRAISSUE)) {
+				KnowledgeElement opposite = link.getOppositeElement(rootElement.getId());
+				if (opposite instanceof PartOfJiraIssueText && isSentenceShown(opposite)) {
+					rootNode.getChildren().add(new TreeViewerNode(opposite));
 				}
 			}
-		}
-		if (rootElement == null) {
-			for (KnowledgeElement element : graph.vertexSet()) {
-				nodes.add(this.makeIdUnique(new TreeViewerNode(element)));
-			}
-		} else {
-			TreeViewerNode rootNode = getTreeViewerNodeWithChildren(rootElement);
 			nodes.add(rootNode);
+			return;
 		}
 
-		// Match irrelevant sentences back to list
-		/*
-		 * for (Link link : GenericLinkManager.getLinksForElement(rootElement.getId(),
-		 * DocumentationLocation.JIRAISSUE)) { KnowledgeElement opposite =
-		 * link.getOppositeElement(rootElement.getId()); if (opposite instanceof
-		 * PartOfJiraIssueText && isSentenceShown(opposite)) {
-		 * rootNode.getChildren().add(new TreeViewerNode(opposite)); } }
-		 */
+		List<KnowledgeElement> knowledgeElements = new ArrayList<>();
+
+		if ("codeClass".equals(filterSettings.getJiraIssueTypes().iterator().next())) {
+			CodeClassPersistenceManager manager = new CodeClassPersistenceManager(filterSettings.getProjectKey());
+			knowledgeElements = manager.getKnowledgeElements();
+		} else {
+			knowledgeElements.addAll(graph.vertexSet());
+		}
+
+		for (KnowledgeElement element : knowledgeElements) {
+			nodes.add(makeIdUnique(new TreeViewerNode(element)));
+		}
 	}
 
 	// TODO Add this to FilterSettings and FilteringManager

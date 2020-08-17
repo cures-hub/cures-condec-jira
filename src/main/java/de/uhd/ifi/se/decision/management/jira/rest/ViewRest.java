@@ -150,7 +150,7 @@ public class ViewRest {
 	 * Returns a jstree tree viewer that matches the {@link FilterSettings}. If a
 	 * knowledge element is selected in the {@link FilterSettings}, the tree viewer
 	 * comprises only one tree with the selected element as the root element. If no
-	 * element is selected, the tree viewer conatains a list of trees.
+	 * element is selected, the tree viewer contains a list of trees.
 	 * 
 	 * @param filterSettings
 	 *            For example, the {@link FilterSettings} cover the selected element
