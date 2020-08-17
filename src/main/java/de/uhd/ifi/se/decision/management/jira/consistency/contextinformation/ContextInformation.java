@@ -30,7 +30,7 @@ public class ContextInformation implements ContextInformationProvider {
 		this.cips.add(new TracingCIP());
 		this.cips.add(new TimeCIP());
 		this.cips.add(new UserCIP());
-		this.cips.add(new ActiveCIP());
+		//this.cips.add(new ActiveCIP());
 
 	}
 
@@ -101,9 +101,7 @@ public class ContextInformation implements ContextInformationProvider {
 
 		this.cips.parallelStream().forEach((cip) -> {
 			//System.out.println("Thread : " + Thread.currentThread().getName() + ", value: " + cip.getName());
-			long start = System.nanoTime();
 			cip.assessRelation(this.element, new ArrayList<>(knowledgeElements));
-			LOGGER.info("Time for " + cip.getName() + ": \t" + Math.round((System.nanoTime() - start)/10000.)/100. + "( ms)");
 
 			double nullCompensation = 0.;
 

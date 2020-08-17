@@ -16,17 +16,18 @@
 		this.projectKey = conDecAPI.getProjectKey();
 		this.currentSuggestions = [];
 
-		jQueryConDec(document).ajaxComplete(function (event, request, settings) {
-			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
-				console.log("WorkflowUIDispatcher");
-				consistencyAPI.displayConsistencyCheck();
-			}
-		});
+
 	};
 
 	ConsistencyTabsModule.prototype.init = function () {
 		this.issueId = JIRA.Issue.getIssueId();
 
+		jQuery(document).ajaxComplete(function (event, request, settings) {
+			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
+				console.log("WorkflowUIDispatcher");
+				consistencyAPI.displayConsistencyCheck();
+			}
+		});
 
 		// Duplicates
 		this.loadingDuplicateSpinnerElement = document.getElementById("loading-spinner-duplicate");

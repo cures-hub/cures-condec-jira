@@ -5,9 +5,10 @@
 			this.projectKey = conDecAPI.getProjectKey();
 			this.consistencyCheckFlag = undefined;
 			let that = this;
-			global.onload = (ev) => {
-				that.displayConsistencyCheck()
-			};
+			global.addEventListener("DOMContentLoaded", (ev) => {
+				that.displayConsistencyCheck();
+			});
+
 
 
 		};
@@ -65,7 +66,7 @@
 
 		ConsistencyAPI.prototype.approveCheck = function (projectKey, elementId, elementLocation, user) {
 			return generalApi.postJSONReturnPromise(
-				`${this.restPrefix}/approveCheck.jsond
+				`${this.restPrefix}/approveCheck.json
 				?projectKey=${projectKey}
 				&elementId=${elementId}
 				&elementLocation=${elementLocation}
