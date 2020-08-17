@@ -57,6 +57,24 @@
         });
     };
 
+	/*
+ 	* external references: condec.rationaleBacklog.page.js
+ 	*/
+	ConDecTreant.prototype.buildRationaleBacklogTreant = function (elementKey, isInteractive, searchTerm, linkDistance) {
+		console.log("conDecTreant buildRationaleBacklogTreant");
+		treantid = "treant-rationale-backlog";
+		conDecAPI.getRationaleBacklogTreant(elementKey, linkDistance, searchTerm, checkboxflag, function (treeStructure) {
+			document.getElementById(treantid).innerHTML = "";
+			treantTree = new Treant(treeStructure);
+			if (isInteractive !== undefined && isInteractive) {
+				addDragAndDropSupportForTreant();
+				addContextMenuToTreant();
+				addTooltip();
+			}
+			changeColorForNodes();
+		});
+	};
+
     function changeColorForNodes() {
         var redStatus = new Array("discarded", "rejected", "unresolved");
         var treantNodes = document.getElementsByClassName("node");

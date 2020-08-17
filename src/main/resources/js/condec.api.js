@@ -1,13 +1,13 @@
 /**
  * This module implements the communication with the ConDec Java REST API and
  * the JIRA API.
- * 
+ *
  * Requires conDecTreant.findParentElement
- * 
+ *
  * Is required by conDecContextMenu conDecDialog conDecEvolutionPage
  * conDecTreant conDecTreeViewer conDecJiraIssueModule conDecKnowledgePage
  * conDecTabPanel conDecVis
- * 
+ *
  * Is referenced in HTML by settingsForAllProjects.vm
  * settingsForSingleProject.vm
  */
@@ -120,7 +120,7 @@
 	 * Creates a new decision knowledge element. If the element should be
 	 * unlinked the idOfExistingElement must be 0 and the
 	 * documentationLocationOfExistingElement must be null
-	 * 
+	 *
 	 * external references: condec.knowledge.page, condec.dialog
 	 */
 	ConDecAPI.prototype.createDecisionKnowledgeElement = function (summary, description, type, documentationLocation, idOfExistingElement, documentationLocationOfExistingElement, callback) {
@@ -452,7 +452,7 @@
 				"isOnlyDecisionKnowledgeShown": isOnlyDecisionKnowledgeShown,
 				"linkDistance": linkDistance
 		};
-		generalApi.postJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey, 
+		generalApi.postJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey,
 				filterSettings, function (error, treant) {
 			if (error === null) {
 				callback(treant);
@@ -471,13 +471,28 @@
 				"minDegree": minLinkNumber,
 				"maxDegree": maxLinkNumber
 		};
-		generalApi.postJSON(this.restPrefix + "/view/getClassTreant.json?&elementKey=" + elementKey + "&isIssueView=" + isIssueView, 
+		generalApi.postJSON(this.restPrefix + "/view/getClassTreant.json?&elementKey=" + elementKey + "&isIssueView=" + isIssueView,
 				filterSettings, function (error, treant) {
 			if (error === null) {
 				callback(treant);
 			}
 		});
 	};
+
+		ConDecAPI.prototype.getRationaleBacklogTreant = function (elementKey, linkDistance, searchTerm, checkboxflag, callback) {
+			var filterSettings = {
+				"projectKey": projectKey,
+				"searchTerm": searchTerm,
+				"isOnlyDecisionKnowledgeShown": checkboxflag,
+				"linkDistance": linkDistance
+			};
+			generalApi.postJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey,
+				filterSettings, function (error, treant) {
+					if (error === null) {
+						callback(treant);
+					}
+				});
+		};
 
 	/*
 	 * external references: condec.jira.issue.module
@@ -779,7 +794,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.deleteGitRepos = function (projectKey) {
-		generalApi.postJSON(this.restPrefix + "/config/deleteGitRepos.json?projectKey=" + projectKey, null, 
+		generalApi.postJSON(this.restPrefix + "/config/deleteGitRepos.json?projectKey=" + projectKey, null,
 				function (error, response) {
 			if (error === null) {
 				showFlag("success", "The git repos for this project were deleted.");
@@ -892,11 +907,11 @@
 				"projectKey": projectKey,
 				"linkDistance": linkDistance
 		};
-		generalApi.postJSON(this.restPrefix + "/view/getDecisionIssues.json?elementKey=" + elementKey, filterSettings, 
+		generalApi.postJSON(this.restPrefix + "/view/getDecisionIssues.json?elementKey=" + elementKey, filterSettings,
 				function (error, issues) {
 			if (error === null) {
 				callback(issues);
-			} 
+			}
 		});
 	};
 
@@ -928,7 +943,7 @@
 	 * external reference: rationaleModelSettings.vm
 	 */
 	ConDecAPI.prototype.testDecisionTableCriteriaQuery = function(projectKey, query, callback) {
-		generalApi.postJSON(this.restPrefix + `/config/testDecisionTableCriteriaQuery.json?projectKey=${projectKey}&query=${query}`, 
+		generalApi.postJSON(this.restPrefix + `/config/testDecisionTableCriteriaQuery.json?projectKey=${projectKey}&query=${query}`,
 				null, function (error, issues) {
 			if (error === null) {
 				callback(issues);
@@ -961,7 +976,7 @@
 	 * external reference: rationaleModelSettings.vm
 	 */
 	ConDecAPI.prototype.getDecisionTableCriteriaQuery = function(projectKey, callback) {
-		generalApi.getJSON(this.restPrefix + `/config/getDecisionTableCriteriaQuery.json?projectKey=${projectKey}`, 
+		generalApi.getJSON(this.restPrefix + `/config/getDecisionTableCriteriaQuery.json?projectKey=${projectKey}`,
 				function (error, query) {
 			if (error === null) {
 				callback(query);

@@ -53,6 +53,31 @@
         });
     };
 
+	/**
+	 * called by view.decision.rationaleBacklog.page.js
+	 */
+	ConDecTreeViewer.prototype.buildRationaleBacklogTreeViewer = function buildRationaleBacklogTreeViewer() {
+		console.log("conDecTreeViewer buildRationaleBacklogTreeViewer");
+		jstreeId = "#rationale-backlog-tree";
+		this.resetTreeViewer();
+		var rootElementType = "Issue";
+		conDecAPI.getTreeViewer(rootElementType, function (core) {
+			jQueryConDec("#rationale-backlog-tree").jstree({
+				"core": core,
+				"plugins": ["dnd", "wholerow", "sort", "search", "state"],
+				"search": {
+					"show_only_matches": true
+				}
+			});
+			$("#text-search-input-rb").keyup(function () {
+				var searchString = $(this).val();
+				jQueryConDec("#rationale-backlog-tree").jstree(true).search(searchString);
+			});
+		});
+		this.addDragAndDropSupportForTreeViewer();
+		this.addContextMenuToTreeViewer(null);
+	};
+
     ConDecTreeViewer.prototype.addContextMenuToTreeViewer = function (container) {
         console.log("conDecTreeViewer addContextMenuToTreeViewer");
         jQueryConDec(jstreeId).on("contextmenu.jstree", function (event) {

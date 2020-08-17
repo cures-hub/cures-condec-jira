@@ -16,20 +16,23 @@
     #set ($textInputId = "text-search-input-rb")
     #parse("templates/filter/text.vm")
 
+    #set ($linkDistanceInputId = "link-distance-input-rb")
+    #parse("templates/filter/linkDistance.vm")
+
     #set ($filterButtonId = "filter-button-rb")
     #parse("templates/filter/filterButton.vm")
 </form>
 </div>
 <div class="aui-group">
     <div id="resizable" class="left">
-        <div id="jstree"></div>
+        <div id="rationale-backlog-tree"></div>
     </div>
-    <div id="treant-container" class="right"></div>
+    <div id="treant-rationale-backlog" class="right"></div>
 </div>
 <script>
     $(document).ready(function() {
         conDecAPI.checkIfProjectKeyIsValid();
-       if (window.conDecRationaleBacklogPage.init(conDecAPI, conDecTreant, conDecTreeViewer){
+       if (window.conDecRationaleBacklogPage.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant, conDecTreeViewer)){
            conDecAPI.checkIfProjectKeyIsValid();
            window.conDecRationaleBacklogPage.fetchAndRender();
        }
@@ -37,4 +40,13 @@
            console.error("ConDecRationaleBacklogPage could not get its dependencies.");
        }
     });
+
+    $("#select2-decision-group-rb").on("change.select2", function (e) {
+        conDecObservable.notify();
+    });
+
+    function checkBoxClicked() {
+        conDecObservable.notify();
+    }
+
 </script>
