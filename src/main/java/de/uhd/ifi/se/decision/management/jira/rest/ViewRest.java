@@ -1,10 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -149,47 +147,19 @@ public class ViewRest {
 	}
 
 	/**
-	 * Returns a jstree tree viewer for a list of trees where all root elements have
-	 * a specific {@link KnowledgeType}.
-	 *
-	 * @param projectKey
-	 *            of a Jira project.
-	 * @param rootElementType
-	 *            {@link KnowledgeType} of the root elements.
+	 * Returns a jstree tree viewer that matches the {@link FilterSettings}. If a
+	 * knowledge element is selected in the {@link FilterSettings}, the tree viewer
+	 * comprises only one tree with the selected element as the root element. If no
+	 * element is selected, the tree viewer conatains a list of trees.
+	 * 
+	 * @param filterSettings
+	 *            For example, the {@link FilterSettings} cover the selected element
+	 *            and the knowledge types to be shown. The selected element can be
+	 *            null.
 	 */
 	@Path("/getTreeViewer")
-	@GET
-	public Response getTreeViewer(@QueryParam("projectKey") String projectKey,
-			@QueryParam("rootElementType") String rootElementTypeString) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		if ("codeClass".equals(rootElementTypeString)) {
-			TreeViewer treeViewer = new TreeViewer(projectKey);
-			return Response.ok(treeViewer).build();
-		}
-		KnowledgeType rootType = KnowledgeType.getKnowledgeType(rootElementTypeString);
-		if (rootType == KnowledgeType.OTHER) {
-			rootType = KnowledgeType.DECISION;
-		}
-		FilterSettings filterSettings = new FilterSettings(projectKey, "");
-		filterSettings.setLinkDistance(0);
-		Set<String> types = new HashSet<>();
-		types.add(rootType.toString());
-		filterSettings.setJiraIssueTypes(types);
-		TreeViewer treeViewer = new TreeViewer(filterSettings);
-		return Response.ok(treeViewer).build();
-
-	}
-
-	/**
-	 * Returns a jstree tree viewer for a single knowledge element as the root
-	 * element. The tree viewer comprises only one tree.
-	 */
-	@Path("/getTreeViewerForSingleElement")
 	@POST
-	public Response getTreeViewerForSingleElement(@Context HttpServletRequest request, FilterSettings filterSettings) {
+	public Response getTreeViewer(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Invalid parameters given. Tree viewer not be created.")).build();
@@ -199,7 +169,6 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-
 		TreeViewer treeViewer = new TreeViewer(filterSettings);
 		return Response.ok(treeViewer).build();
 	}

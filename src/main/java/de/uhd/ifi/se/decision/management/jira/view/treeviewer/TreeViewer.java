@@ -70,7 +70,8 @@ public class TreeViewer {
 	 *
 	 * @param filterSettings
 	 *            For example, the {@link FilterSettings} cover the selected element
-	 *            and the knowledge types to be shown.
+	 *            and the knowledge types to be shown. The selected element can be
+	 *            null.
 	 */
 	public TreeViewer(FilterSettings filterSettings) {
 		this();
@@ -82,6 +83,15 @@ public class TreeViewer {
 		graph = filteringManager.getSubgraphMatchingFilterSettings();
 		KnowledgeElement rootElement = filterSettings.getSelectedElement();
 		nodes = new HashSet<TreeViewerNode>();
+		if (filterSettings.getLinkDistance() == 0) {
+			if ("codeClass".equals(filterSettings.getJiraIssueTypes().iterator().next())) {
+				CodeClassPersistenceManager manager = new CodeClassPersistenceManager(filterSettings.getProjectKey());
+				List<KnowledgeElement> codeClasses = manager.getKnowledgeElements();
+				for (KnowledgeElement element : codeClasses) {
+					nodes.add(this.makeIdUnique(new TreeViewerNode(element)));
+				}
+			}
+		}
 		if (rootElement == null) {
 			for (KnowledgeElement element : graph.vertexSet()) {
 				nodes.add(this.makeIdUnique(new TreeViewerNode(element)));
@@ -99,30 +109,12 @@ public class TreeViewer {
 		 * PartOfJiraIssueText && isSentenceShown(opposite)) {
 		 * rootNode.getChildren().add(new TreeViewerNode(opposite)); } }
 		 */
-
 	}
 
 	// TODO Add this to FilterSettings and FilteringManager
 	private boolean isSentenceShown(KnowledgeElement element) {
 		return !((PartOfJiraIssueText) element).isRelevant()
 				&& ((PartOfJiraIssueText) element).getDescription().length() > 0;
-	}
-
-	/**
-	 * Constructor for a jstree tree viewer for a code class as the root element.
-	 * The tree viewer comprises only one tree.
-	 */
-	public TreeViewer(String projectKey) {
-		this();
-		if (projectKey == null) {
-			return;
-		}
-		nodes = new HashSet<TreeViewerNode>();
-		CodeClassPersistenceManager manager = new CodeClassPersistenceManager(projectKey);
-		List<KnowledgeElement> codeClasses = manager.getKnowledgeElements();
-		for (KnowledgeElement element : codeClasses) {
-			nodes.add(this.makeIdUnique(new TreeViewerNode(element)));
-		}
 	}
 
 	/**

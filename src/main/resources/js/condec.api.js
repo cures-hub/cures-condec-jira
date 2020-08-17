@@ -1,13 +1,13 @@
 /**
  * This module implements the communication with the ConDec Java REST API and
  * the JIRA API.
- *
+ * 
  * Requires conDecTreant.findParentElement
- *
+ * 
  * Is required by conDecContextMenu conDecDialog conDecEvolutionPage
  * conDecTreant conDecTreeViewer conDecJiraIssueModule conDecKnowledgePage
  * conDecTabPanel conDecVis
- *
+ * 
  * Is referenced in HTML by settingsForAllProjects.vm
  * settingsForSingleProject.vm
  */
@@ -120,7 +120,7 @@
 	 * Creates a new decision knowledge element. If the element should be
 	 * unlinked the idOfExistingElement must be 0 and the
 	 * documentationLocationOfExistingElement must be null
-	 *
+	 * 
 	 * external references: condec.knowledge.page, condec.dialog
 	 */
 	ConDecAPI.prototype.createDecisionKnowledgeElement = function (summary, description, type, documentationLocation, idOfExistingElement, documentationLocationOfExistingElement, callback) {
@@ -434,8 +434,45 @@
 	 * external references: condec.tree.viewer
 	 */
 	ConDecAPI.prototype.getTreeViewer = function (rootElementType, callback) {
-		generalApi.getJSON(this.restPrefix + "/view/getTreeViewer.json?projectKey=" + projectKey
-				+ "&rootElementType=" + rootElementType, function (error, core) {
+		var knowledgeTypes = [rootElementType];
+		var filterSettings = {
+				"projectKey": projectKey,
+				"jiraIssueTypes": knowledgeTypes,
+				"linkDistance": 0
+		};
+		generalApi.postJSON(this.restPrefix + "/view/getTreeViewer.json", filterSettings, function (error, core) {
+			if (error === null) {
+				callback(core);
+			}
+		});
+	};
+	
+	/*
+	 * external references: condec.tab.panel
+	 */
+	ConDecAPI.prototype.getTreeViewerForSingleElement = function (jiraIssueKey, knowledgeTypes, callback) {
+		var filterSettings = {
+				"projectKey": projectKey,
+				"jiraIssueTypes": knowledgeTypes,
+				"selectedElement": jiraIssueKey
+		};
+		generalApi.postJSON(this.restPrefix + "/view/getTreeViewer.json", filterSettings, function (error, core) {
+			if (error === null) {
+				callback(core);
+			}
+		});
+	};
+
+	/*
+	 * external references: condec.tab.panel
+	 */
+	ConDecAPI.prototype.getTreeViewerForRationaleBacklog = function (knowledgeTypes, callback) {
+		var filterSettings = {
+			"projectKey": projectKey,
+			"jiraIssueTypes": knowledgeTypes,
+			"linkDistance" : 0
+		};
+		generalApi.postJSON(this.restPrefix + "/view/getTreeViewer.json", filterSettings, function (error, core) {
 			if (error === null) {
 				callback(core);
 			}
@@ -591,39 +628,6 @@
 			}
 		});
 	};
-
-	/*
-	 * external references: condec.tab.panel
-	 */
-	ConDecAPI.prototype.getTreeViewerForSingleElement = function (jiraIssueKey, knowledgeTypes, callback) {
-		var filterSettings = {
-				"projectKey": projectKey,
-				"jiraIssueTypes": knowledgeTypes,
-				"selectedElement": jiraIssueKey,
-				"groups": null
-		};
-		generalApi.postJSON(this.restPrefix + "/view/getTreeViewerForSingleElement.json", filterSettings, function (error, core) {
-			if (error === null) {
-				callback(core);
-			}
-		});
-	};
-
-		/*
-		 * external references: condec.tab.panel
-		 */
-		ConDecAPI.prototype.getTreeViewerForRationaleBacklog = function (knowledgeTypes, callback) {
-			var filterSettings = {
-				"projectKey": projectKey,
-				"jiraIssueTypes": knowledgeTypes,
-				"linkDistance" : 0
-			};
-			generalApi.postJSON(this.restPrefix + "/view/getTreeViewerForSingleElement.json", filterSettings, function (error, core) {
-				if (error === null) {
-					callback(core);
-				}
-			});
-		};
 
 	/*
 	 * external references: condec.evolution.page
