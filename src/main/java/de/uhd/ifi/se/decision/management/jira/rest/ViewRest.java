@@ -1,8 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -166,14 +168,19 @@ public class ViewRest {
 		if ("codeClass".equals(rootElementTypeString)) {
 			TreeViewer treeViewer = new TreeViewer(projectKey);
 			return Response.ok(treeViewer).build();
-		} else {
-			KnowledgeType rootType = KnowledgeType.getKnowledgeType(rootElementTypeString);
-			if (rootType == KnowledgeType.OTHER) {
-				rootType = KnowledgeType.DECISION;
-			}
-			TreeViewer treeViewer = new TreeViewer(projectKey, rootType);
-			return Response.ok(treeViewer).build();
 		}
+		KnowledgeType rootType = KnowledgeType.getKnowledgeType(rootElementTypeString);
+		if (rootType == KnowledgeType.OTHER) {
+			rootType = KnowledgeType.DECISION;
+		}
+		FilterSettings filterSettings = new FilterSettings(projectKey, "");
+		filterSettings.setLinkDistance(0);
+		Set<String> types = new HashSet<>();
+		types.add(rootType.toString());
+		filterSettings.setJiraIssueTypes(types);
+		TreeViewer treeViewer = new TreeViewer(filterSettings);
+		return Response.ok(treeViewer).build();
+
 	}
 
 	/**

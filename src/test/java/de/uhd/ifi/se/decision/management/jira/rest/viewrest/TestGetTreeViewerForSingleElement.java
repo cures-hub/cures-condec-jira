@@ -39,8 +39,8 @@ public class TestGetTreeViewerForSingleElement extends TestSetUp {
 	}
 
 	@Test
-	public void testRequestValidJiraIssueKeyNullFilterSettingsValid() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+	public void testRequestValidFilterSettingsValid() {
+		assertEquals(Status.OK.getStatusCode(),
 				viewRest.getTreeViewerForSingleElement(request, filterSettings).getStatus());
 	}
 
