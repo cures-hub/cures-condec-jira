@@ -1,11 +1,105 @@
 <h2>Decision Guidance</h2>
 
-<div class="field-group">
-	<label for="isActivated-toggle">DBPedia activated?</label>
-	<aui-toggle id="isActivated-toggle" value="$projectKey"	label="ConDec Activated?"></aui-toggle>
-	<div class="description">Enables or disables the knowledge source for alternative recommendations for this project.
-	</div>
+<h2>Create RDF Sources</h2>
+<div id="source-wrapper">
+    <div>
+        <form class="aui">
+            <!--RDF SOURCE FORM -->
+            <div class="field-group">
+                <label for="name-knowledgesource">Name*</label>
+                <input class="name-knowledgesource" name="name-knowledgesource" value=""></input>
+                <div class="description">Name your knowledge source.
+                </div>
+            </div>
+            <div class="field-group">
+                <label for="uri-knowledgesource">RDF-Service</label>
+                <input class="uri-knowledgesource" name="uri-knowledgesource"
+                       placeholder="http://dbpedia.org/sparql" value=""></input>
+                <div class="description">Enter an RDF-Graph URI. The default location is DPPedia.
+                </div>
+            </div>
+            <div class="field-group">
+                <label for="query-knowledgesource">SPARQL-QuerySPARQL-Query</label>
+                <textarea class="query-knowledgesource"
+                          placeholder=$i18n.getText("condec.label.description") class="textarea
+                          full-width-field"></textarea>
+                <div class="description">Enter a SPARQL-Query.
+                </div>
+            </div>
+            <div class="field-group">
+                <label for="param-knowledgesource">Timeout</label>
+                <input type="number" class="param-knowledgesource" name="param-knowledgesource"
+                       value=""></input>
+                <div class="description">Enter the timeout in milliseconds.
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
+
+
+<h2>Configured RDF Sources</h2>
+<div>
+    #foreach ($rdfSource in $rdfSources)
+
+    <div id="source-wrapper-existing">
+        <div>
+            <form class="aui">
+                <!--RDF SOURCE FORM -->
+                <div class="field-group">
+                    <label for="name-knowledgesource">Name*</label>
+                    <input class="name-knowledgesource" name="name-knowledgesource"
+                           value="$rdfSource.getName()"></input>
+                    <div class="description">Name your knowledge source.
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label for="uri-knowledgesource">RDF-Service</label>
+                    <input class="uri-knowledgesource" name="uri-knowledgesource"
+                           placeholder="http://dbpedia.org/sparql" value="$rdfSource.getService()"></input>
+                    <div class="description">Enter an RDF-Graph URI. The default location is DPPedia.
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label for="query-knowledgesource">SPARQL-Query</label>
+                    <textarea class="query-knowledgesource"
+                              placeholder=$i18n.getText("condec.label.description") class="textarea
+                          full-width-field">$rdfSource.getQueryString()</textarea>
+                    <div class="description">Enter a SPARQL-Query.
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label for="param-knowledgesource">Timeout</label>
+                    <input class="param-knowledgesource" name="param-knowledgesource"
+                           value="$rdfSource.getTimeout()"></input>
+                    <div class="description">Enter the timeout in milliseconds.
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label for="isActivated-toggle2">$rdfSource.getName() activated?</label>
+                    <aui-toggle class="activation-knowledgesource" name="isActivated-toggle2"
+                                #if ($rdfSource.isActivated())
+                                    checked
+                                #end
+                                label="$rdfSource.getName() activated?"></aui-toggle>
+                    <div class="description">Enables or disables the knowledge source for alternative recommendations
+                        for this
+                        project.
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    #end
+</div>
+
+<div class="field-group">
+    <label for="create-rdf-source">Add or Update RDF Sources</label>
+    <button class="aui-button-primary aui-button" id="create-rdf-source" label="ConDec Activated?">Add</button>
+    <div class="description">Enables or disables the knowledge source for alternative recommendations for this project.
+    </div>
+</div>
+
 
 <div class="field-group top-label">
     <label for="max-recommendation">Maximum number of results</label>
@@ -19,26 +113,27 @@
     <button id="save-max-recommendation-btn" class='aui-button aui-button-primary aui-button-compact'>
         Save
     </button>
-    <div class="description">Set the maximum number of results of recommendations that should be displayed in the jira issue view.
+    <div class="description">Set the maximum number of results of recommendations that should be displayed in the
+        jira
+        issue view.
     </div>
 </div>
-
 
 
 <h4>Evaluation of Knowledge sources</h4>
 
 <div class="field-group">
-    <label for="trainClassifier-button">Train the Classifier</label>
+    <label for="trainClassifier-button">Type of Source</label>
     <select id="select-arff-file-train" name="select-arff-file-train" class="select medium-field">
         #foreach ($arffFile in $arffFiles)
-         <!--   <option value="$arffFile"
-                #if ($arffFile.toString().contains($selectedArffFile))
-                    selected
-                #end
-            >
-                $arffFile</option>-->
+        <!--   <option value="$arffFile"
+               #if ($arffFile.toString().contains($selectedArffFile))
+                   selected
+               #end
+           >
+               $arffFile</option>-->
         #end
-        <option>DBPedia</option>
+        <option>RDF</option>
     </select>
     <input type="button" class="aui-button" id="trainClassifier-button" value="Evaluate"/>
     <div class="description">
@@ -48,16 +143,79 @@
         <span id="evaluate-knowledgesource-progress"></span>
     </div>
 </div>
-	
+
+#parse("templates/dialogs/createKnowledgeSourceDialog.vm")
+
+
 <script>
 
 
     $(document).ready(function() {
+        var createKnowledgeSourceDialog = document.getElementById("knowledgesource-dialog");
+
         $("#save-max-recommendation-btn").click((event) => {
            event.preventDefault();
-           const query = $("#max-recommendation").val();
+            const query = $("#max-recommendation").val();
            conDecAPI.setMaxNumberRecommendations("$projectKey", query);
+
         })
+
+
+        $("#create-rdf-source").click((event) => {
+           event.preventDefault();
+           const names = $(".name-knowledgesource");
+           const uris = $(".uri-knowledgesource");
+           const queries = $(".query-knowledgesource");
+           const params = $(".param-knowledgesource");
+           const activations = $(".activation-knowledgesource");
+
+           let name = "";
+           let uri = "";
+           let query = "";
+           let param = "";
+           let isActivated = "";
+
+           names.each(function() {
+                if($(this).val() !== "") {
+                    name += $(this).val() + ";;";
+                }
+           });
+            uris.each(function() {
+             if($(this).val() !== "") {
+                uri +=$(this).val() + ";;" ;
+              }
+           });
+            queries.each(function() {
+            if($(this).val() !== "") {
+                query += $(this).val() + ";;";
+            }
+           });
+            params.each(function() {
+            if($(this).val() !== "") {
+                param += $(this).val() + ";;";
+            }
+           });
+           activations.each(function() {
+             isActivated += $(this).prop('checked') + ";;";
+           });
+
+
+           alert(isActivated)
+           conDecAPI.setRDFKnowledgeSource("$projectKey", name, escape(query), escape(uri), param, isActivated);
+        });
+
+        $("#create-knowledgesource-dialog-submit-button").click((event) => {
+            event.preventDefault();
+            AJS.dialog2(createKnowledgeSourceDialog).hide();
+        });
+
+        $("#create-knowledgesource-dialog-cancel-button").click((event) => {
+            event.preventDefault();
+            AJS.dialog2(createKnowledgeSourceDialog).hide();
+        });
+
+
+
     });
 
 	var activationToggle = document.getElementById("isActivated-toggle");
@@ -79,15 +237,18 @@
 	} else {
 		strategyToggle.checked = false;
 	}
-	
-	strategyToggle.addEventListener("change", function(error) {
-		this.busy = true;
-		conDecAPI.setIssueStrategy(this.checked, this.value);
-		this.busy = false;
-	});
-	
-    var cleanDatabasesButton = document.getElementById("cleanDatabases");
-    cleanDatabasesButton.addEventListener("click", function () {
-        conDecAPI.cleanDatabases("$projectKey");
-    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </script>

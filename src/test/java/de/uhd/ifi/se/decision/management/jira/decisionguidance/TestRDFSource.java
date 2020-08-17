@@ -19,7 +19,7 @@ public class TestRDFSource extends TestSetUp {
 
 	@Test
 	public void testDBPediaSource() {
-		DBPediaSource source = new DBPediaSource();
+		DBPediaSource source = new DBPediaSource("Test");
 		List<KnowledgeElement> recommendations = source.getResults(null);
 		assertEquals(recommendations.size(), 10);
 	}

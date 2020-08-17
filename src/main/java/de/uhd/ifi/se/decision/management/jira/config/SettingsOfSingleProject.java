@@ -80,6 +80,8 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("maxNumberRecommendations",
 			ConfigPersistenceManager.getMaxNumberRecommendations(projectKey));
 
+		velocityParameters.put("rdfSources", ConfigPersistenceManager.getRDFKnowledgeSource(projectKey));
+
 		return velocityParameters;
 	}
 }

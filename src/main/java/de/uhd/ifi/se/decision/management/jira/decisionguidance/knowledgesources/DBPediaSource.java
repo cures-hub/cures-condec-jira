@@ -13,23 +13,22 @@ import java.util.List;
 
 public class DBPediaSource extends RDFSource {
 
-	private String projectKey;
 	private List<KnowledgeElement> recommendations;
-	private static final String SERIVCE = "http://dbpedia.org/sparql";
-	private static final String PREFIX = "PREFIX dbo: <http://dbpedia.org/ontology/>" +
-		"PREFIX dbr: <http://dbpedia.org/resource/>";
-	private static final String QUERYSTRING = PREFIX +
-		"SELECT ?country ?capital WHERE { ?country a dbo:Country.	?country dbo:capital ?capital } LIMIT 10";
+
+
+	public DBPediaSource(String projectKey) {
+		super(projectKey);
+	}
 
 	@Override
 	public List<KnowledgeElement> getResults(String inputs) {
 
-		ResultSet resultSet = this.queryDatabase(this.QUERYSTRING, this.SERIVCE, Params.Pair.create("timeout", "10000"));
+		ResultSet resultSet = this.queryDatabase(this.queryString, this.service, Params.Pair.create("timeout", this.timeout));
 
 		this.recommendations = new ArrayList<>();
 		while (resultSet.hasNext()) {
 			QuerySolution row = resultSet.nextSolution();
-			KnowledgeElement alternative = new KnowledgeElement(10L, row.get("?country").toString(), "blabla", KnowledgeType.ALTERNATIVE, projectKey, "KEY", DocumentationLocation.JIRAISSUETEXT, KnowledgeStatus.IDEA);
+			KnowledgeElement alternative = new KnowledgeElement(10L, row.get("?country").toString(), "blabla", KnowledgeType.ALTERNATIVE, this.projectKey, "KEY", DocumentationLocation.JIRAISSUETEXT, KnowledgeStatus.IDEA);
 			this.recommendations.add(alternative);
 
 		}

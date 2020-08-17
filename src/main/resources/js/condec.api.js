@@ -1257,6 +1257,18 @@
 	};
 
 	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setRDFKnowledgeSource = function (projectKey, name, query, service, timeout, isActivated) {
+		generalApi.postJSON(this.restPrefix + "/config/setRDFKnowledgeSource.json?projectKey=" + projectKey + "&name=" + name + "&query=" + query + "&service=" + service + "&timeout=" + timeout + "&isActivated=" + isActivated, null, function (
+			error, response) {
+			if (error === null) {
+				showFlag("success", "The Knowledgesource is updated " );
+			}
+		});
+	};
+
+	/*
 	 * external references: condec.context.menu
 	 */
 	ConDecAPI.prototype.openJiraIssue = function (elementId, documentationLocation) {

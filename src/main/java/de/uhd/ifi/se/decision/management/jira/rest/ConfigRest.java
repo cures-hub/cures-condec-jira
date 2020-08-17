@@ -17,6 +17,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -911,6 +912,29 @@ public class ConfigRest {
 		}
 
 		ConfigPersistenceManager.setMaxNumberRecommendations(projectKey, maxNumberRecommendations);
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
+	@Path("/setRDFKnowledgeSource")
+	@POST
+	public Response setRDFKnowledgeSource(@Context HttpServletRequest request,
+										  @QueryParam("projectKey") String projectKey,
+										  @QueryParam("name") String name, @QueryParam("query") String query, @QueryParam("service") String service, @QueryParam("timeout") String timeout) {
+		Response response = this.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+		response = checkIfProjectKeyIsValid(projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+		if (name.isBlank() || query.isBlank() || service.isBlank() || timeout.isBlank()) {
+			return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
+		}
+
+		RDFSource rdfSource = new RDFSource(projectKey, service, query, name, timeout, true);
+		ConfigPersistenceManager.setRDFKnowledgeSource(projectKey, rdfSource);
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
