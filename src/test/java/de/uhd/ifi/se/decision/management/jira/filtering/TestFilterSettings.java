@@ -1,17 +1,20 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import org.junit.Before;
+import org.junit.Test;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestFilterSettings extends TestSetUp {
 	private FilterSettings filterSettings;
@@ -100,7 +103,7 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetNamesOfJiraIssueTypes() {
-		assertEquals(6, filterSettings.getJiraIssueTypes().size());
+		assertEquals(7, filterSettings.getJiraIssueTypes().size());
 		filterSettings = new FilterSettings("TEST", "?jql=issuetype in (Decision, Issue)", null);
 		assertEquals(2, filterSettings.getJiraIssueTypes().size());
 	}
@@ -108,7 +111,7 @@ public class TestFilterSettings extends TestSetUp {
 	@Test
 	public void testSetJiraIssueTypes() {
 		filterSettings.setJiraIssueTypes(null);
-		assertEquals(6, filterSettings.getJiraIssueTypes().size());
+		assertEquals(7, filterSettings.getJiraIssueTypes().size());
 	}
 
 	@Test
@@ -202,4 +205,22 @@ public class TestFilterSettings extends TestSetUp {
 		assertEquals(5, filterSettings.getMinDegree());
 		assertEquals(10, filterSettings.getMaxDegree());
 	}
+
+	@Test
+	public void testGetSelectedElement() {
+		assertEquals(null, filterSettings.getSelectedElement());
+	}
+
+	@Test
+	public void testSetSelectedElement() {
+		filterSettings.setSelectedElement("TEST-1");
+		assertEquals("TEST-1", filterSettings.getSelectedElement().getKey());
+
+		filterSettings.setSelectedElement(KnowledgeElements.getTestKnowledgeElement());
+		assertEquals("TEST-1", filterSettings.getSelectedElement().getKey());
+
+		filterSettings.setSelectedElement("TEST-1:123");
+		assertNull(filterSettings.getSelectedElement());
+	}
+
 }

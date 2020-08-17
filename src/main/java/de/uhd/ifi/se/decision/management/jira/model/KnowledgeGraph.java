@@ -217,7 +217,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		Set<Link> edges = new HashSet<Link>();
 		try {
 			edges = super.edgesOf(element);
-		} catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException | NullPointerException e) {
 			LOGGER.error("Edges for node could not be returned. " + e);
 		}
 		return edges;

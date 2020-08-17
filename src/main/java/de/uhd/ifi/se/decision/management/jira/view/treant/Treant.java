@@ -1,29 +1,34 @@
 package de.uhd.ifi.se.decision.management.jira.view.treant;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.AsUndirectedGraph;
+import org.jgrapht.traverse.BreadthFirstIterator;
+
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 
 /**
  * Creates a tree data structure from the {@link KnowledgeGraph} according to
  * the given {@link FilterSettings}. Uses the Treant.js framework for
  * visualization of the knowledge tree.
+ * 
+ * Iterates over the filtered {@link KnowledgeGraph} provided by the
+ * {@link FilteringManager}.
+ * 
+ * If you want to change the shown (sub-)graph, do not change this class but
+ * change the {@link FilteringManager} and/or the {@link KnowledgeGraph}.
  */
 @XmlRootElement(name = "treant")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -34,163 +39,75 @@ public class Treant {
 	@XmlElement
 	private TreantNode nodeStructure;
 
-	private KnowledgeGraph graph;
-	private FilterSettings filterSettings;
+	@JsonIgnore
+	private Graph<KnowledgeElement, Link> graph;
+	@JsonIgnore
 	private boolean isHyperlinked;
-	private Set<Link> traversedLinks;
 
-	public Treant(String projectKey, String elementKey, boolean isHyperlinked) {
-		this(projectKey, elementKey, isHyperlinked, new FilterSettings(projectKey, null));
+	public Treant(FilterSettings filterSettings) {
+		this(filterSettings, false);
 	}
 
-	public Treant(String projectKey, String elementKey, FilterSettings filterSettings) {
-		this(projectKey, elementKey, false, filterSettings);
-	}
-
-	public Treant(String projectKey, String elementKey, boolean isHyperlinked, FilterSettings filterSettings) {
-		this.setFilterSettings(filterSettings == null ? new FilterSettings(projectKey, null) : filterSettings);
-		this.traversedLinks = new HashSet<Link>();
-		this.graph = KnowledgeGraph.getOrCreate(projectKey);
-
-		AbstractPersistenceManagerForSingleLocation persistenceManager;
-		// TODO this should not be checked in Treant, instead of the elementKey the
-		// entire element should be passed
-		if (elementKey.contains(":")) {
-			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-					.getManagerForSingleLocation(DocumentationLocation.JIRAISSUETEXT);
-		} else {
-			persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager();
+	public Treant(FilterSettings filterSettings, boolean isHyperlinked) {
+		if (filterSettings == null) {
+			return;
 		}
-		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(elementKey);
+
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
+		this.graph = filteringManager.getSubgraphMatchingFilterSettings();
 		this.setChart(new Chart());
-		this.setNodeStructure(this.createNodeStructure(rootElement, (Link) null, 1));
+		nodeStructure = getTreantNodeWithChildren(filterSettings.getSelectedElement());
 		this.setHyperlinked(isHyperlinked);
 	}
 
-	public Treant(String projectKey, KnowledgeElement element, String treantId, boolean isIssueView,
-			FilterSettings filterSettings) {
-		this.setFilterSettings(filterSettings == null ? new FilterSettings(projectKey, null) : filterSettings);
-		this.traversedLinks = new HashSet<Link>();
-		this.graph = KnowledgeGraph.getOrCreate(projectKey);
-
+	public Treant(String treantId, FilterSettings filterSettings) {
+		this(filterSettings, false);
 		// TODO Why is the treantId needed?
 		this.setChart(new Chart(treantId));
-
-		// TODO Filtering should be done on the Knowledge Graph directly and the
-		// FilteringManager should be used
-		Set<Link> usedLinks = new HashSet<>();
-		if (isIssueView) {
-			usedLinks = getLinksToCodeClasses(element);
-		} else {
-			usedLinks = new HashSet<>(element.getLinks());
-		}
-		this.setNodeStructure(this.createNodeStructure(element, usedLinks, 1, isIssueView));
-		this.setHyperlinked(false);
 	}
 
-	private Set<Link> getLinksToCodeClasses(KnowledgeElement element) {
-		Set<Link> usedLinks = new HashSet<>();
-		for (Link link : element.getLinks()) {
-			KnowledgeElement source = link.getSource();
-			if (source == null) {
-				continue;
-			}
-			// TODO Make code class recognition more explicit
-			if (source.getDocumentationLocation() != DocumentationLocation.COMMIT) {
-				continue;
-			}
-			if (!source.getSummary().contains(".java")) {
-				continue;
-			}
-			FilteringManager filteringManager = new FilteringManager(filterSettings);
-			if (!filteringManager.isElementMatchingIsTestCodeFilter(source)) {
-				continue;
-			}
-			if (!filteringManager.isElementMatchingDegreeFilter(source)) {
-				continue;
-			}
-			if (!filteringManager.isElementMatchingSubStringFilter(source)) {
-				continue;
-			}
-			usedLinks.add(link);
-		}
-		return usedLinks;
-	}
-
-	public TreantNode createNodeStructure(KnowledgeElement element, Link link, int currentDepth) {
-		if (element == null || element.getProject() == null) {
+	/**
+	 * @issue How can graph iteration be done over both outgoing and incoming edges
+	 *        of a knowledge element (=node)?
+	 * @decision Convert the directed graph into an undirected graph for graph
+	 *           iteration!
+	 */
+	public TreantNode getTreantNodeWithChildren(KnowledgeElement rootElement) {
+		if (rootElement == null || rootElement.getProject() == null) {
 			return new TreantNode();
 		}
 
-		TreantNode node = createTreantNode(element, link);
-		if (currentDepth == this.filterSettings.getLinkDistance() + 1) {
-			return node;
-		}
+		Map<KnowledgeElement, TreantNode> elementToTreantNodeMap = new HashMap<>();
 
-		Set<Link> linksToTraverse = graph.edgesOf(element);
-		List<TreantNode> nodes = getChildren(element, linksToTraverse, currentDepth);
-		node.setChildren(nodes);
-		return node;
-	}
+		TreantNode rootNode = new TreantNode(rootElement, false, isHyperlinked);
+		elementToTreantNodeMap.put(rootElement, rootNode);
 
-	// TODO Remove isIssueView parameter
-	public TreantNode createNodeStructure(KnowledgeElement element, Set<Link> links, int currentDepth,
-			boolean isIssueView) {
-		if (element == null || element.getProject() == null || links == null) {
-			return new TreantNode();
-		}
-		TreantNode node = createTreantNode(element, null);
-		if (currentDepth == filterSettings.getLinkDistance() + 1) {
-			return node;
-		}
-		List<TreantNode> nodes = new ArrayList<TreantNode>();
+		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<KnowledgeElement, Link>(graph);
 
-		for (Link link : links) {
-			if (!isIssueView && link.getTarget() != null) {
-				TreantNode adult = createTreantNode(link.getTarget(), link);
-				if (filterSettings.getLinkDistance() > 1) {
-					adult.setChildren(getChildren(link.getTarget(), graph.edgesOf(link.getTarget()), currentDepth + 1));
-				}
-				nodes.add(adult);
-			} else if (isIssueView) {
-				TreantNode adult = createTreantNode(link.getSource(), link);
-				nodes.add(adult);
-			}
-		}
-		if (nodes != null) {
-			node.setChildren(nodes);
-		}
-		return node;
-	}
+		BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<>(undirectedGraph,
+				rootElement);
 
-	private TreantNode createTreantNode(KnowledgeElement element, Link link) {
-		TreantNode node;
-		if (link != null) {
-			node = new TreantNode(element, link, false, isHyperlinked);
-		} else {
-			node = new TreantNode(element, false, isHyperlinked);
-		}
-		return node;
-	}
+		while (iterator.hasNext()) {
+			KnowledgeElement childElement = iterator.next();
 
-	private List<TreantNode> getChildren(KnowledgeElement rootElement, Set<Link> linksToTraverse, int currentDepth) {
-		List<TreantNode> nodes = new ArrayList<TreantNode>();
-		for (Link currentLink : linksToTraverse) {
-			if (!traversedLinks.add(currentLink)) {
+			KnowledgeElement parentElement = iterator.getParent(childElement);
+			if (parentElement == null) {
 				continue;
 			}
-			KnowledgeElement oppositeElement = currentLink.getOppositeElement(rootElement);
-			if (oppositeElement == null) {
+			Link edge = undirectedGraph.getEdge(childElement, parentElement);
+
+			TreantNode childNode = new TreantNode(childElement, edge, false, isHyperlinked);
+			elementToTreantNodeMap.put(childElement, childNode);
+
+			TreantNode parentNode = elementToTreantNodeMap.get(parentElement);
+			if (parentNode == null) {
 				continue;
 			}
-			// TODO Add to FilteringManager
-			if (filterSettings.isOnlyDecisionKnowledgeShown() && oppositeElement.getType() == KnowledgeType.OTHER) {
-				continue;
-			}
-			TreantNode newChildNode = createNodeStructure(oppositeElement, currentLink, currentDepth + 1);
-			nodes.add(newChildNode);
+
+			parentNode.getChildren().add(childNode);
 		}
-		return nodes;
+
+		return rootNode;
 	}
 
 	public Chart getChart() {
@@ -215,13 +132,5 @@ public class Treant {
 
 	public void setHyperlinked(boolean isHyperlinked) {
 		this.isHyperlinked = isHyperlinked;
-	}
-
-	public FilterSettings getFilterSettings() {
-		return filterSettings;
-	}
-
-	public void setFilterSettings(FilterSettings filterSettings) {
-		this.filterSettings = filterSettings;
 	}
 }

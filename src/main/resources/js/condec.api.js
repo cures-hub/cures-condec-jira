@@ -450,27 +450,36 @@
 				"projectKey": projectKey,
 				"searchTerm": searchTerm,
 				"isOnlyDecisionKnowledgeShown": isOnlyDecisionKnowledgeShown,
-				"linkDistance": linkDistance
+				"linkDistance": linkDistance,
+				"selectedElement": elementKey,
+				"groups": null
 		};
-		generalApi.postJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey,
-				filterSettings, function (error, treant) {
+
+		generalApi.postJSON(this.restPrefix + "/view/getTreant.json", filterSettings, function (error, treant) {
 			if (error === null) {
 				callback(treant);
 			}
 		});
 	};
 
+	// TODO Improve matching of elementKey to code class knowledge element
+	// TODO Get rid of this method and use getTreant and filterSettings
 	ConDecAPI.prototype.getClassTreant = function (elementKey, linkDistance, searchTerm, checkboxflag,
 			isIssueView, minLinkNumber, maxLinkNumber, callback) {
 		var filterSettings = {
 				"projectKey": projectKey,
 				"searchTerm": searchTerm,
-				"isOnlyDecisionKnowledgeShown": checkboxflag,
-				"isTestCodeShown": checkboxflag,
 				"linkDistance": linkDistance,
 				"minDegree": minLinkNumber,
-				"maxDegree": maxLinkNumber
+				"maxDegree": maxLinkNumber,
+				"selectedElement": elementKey
 		};
+		if (isIssueView) {
+			filterSettings["isTestCodeShown"] = checkboxflag;
+		} else {
+			filterSettings["isOnlyDecisionKnowledgeShown"] = checkboxflag;
+		}
+		
 		generalApi.postJSON(this.restPrefix + "/view/getClassTreant.json?&elementKey=" + elementKey + "&isIssueView=" + isIssueView,
 				filterSettings, function (error, treant) {
 			if (error === null) {
@@ -512,14 +521,14 @@
 	 * external references: condec.vis
 	 */
 	ConDecAPI.prototype.getVis = function (elementKey, searchTerm, callback) {
-		this.getVisFiltered(elementKey, null, null, null, -1, -1, null, null, callback);
+		this.getVisFiltered(elementKey, null, null, null, -1, -1, null, null, 3, callback);
 	};
 
 	/*
 	 * external references: condec.vis
 	 */
 	ConDecAPI.prototype.getVisFiltered = function (elementKey, searchTerm, jiraIssueTypes, status,
-			createdAfter, createdBefore, linkTypes, documentationLocations, callback) {
+			createdAfter, createdBefore, linkTypes, documentationLocations, linkDistance, callback) {
 		var filterSettings = {
 				"projectKey": projectKey,
 				"searchTerm": searchTerm,
@@ -528,10 +537,12 @@
 				"documentationLocations": documentationLocations,
 				"jiraIssueTypes": jiraIssueTypes,
 				"status": status,
-				"linkTypes": linkTypes
+				"linkTypes": linkTypes,
+				"selectedElement": elementKey,
+				"linkDistance": linkDistance,
+				"groups": null
 		};
-		generalApi.postJSON(this.restPrefix + "/view/getVis.json?elementKey=" + elementKey,
-				filterSettings, function (error, vis) {
+		generalApi.postJSON(this.restPrefix + "/view/getVis.json", filterSettings, function (error, vis) {
 			if (error === null) {
 				callback(vis);
 			}
@@ -549,7 +560,8 @@
 				"createdLatest": closed,
 				"documentationLocations": null,
 				"jiraIssueTypes": knowledgeTypes,
-				"status": status
+				"status": status,
+				"groups": null
 		};
 
 		generalApi.postJSON(this.restPrefix + "/view/getCompareVis.json", filterSettings, function (error,
@@ -586,9 +598,11 @@
 	ConDecAPI.prototype.getTreeViewerForSingleElement = function (jiraIssueKey, knowledgeTypes, callback) {
 		var filterSettings = {
 				"projectKey": projectKey,
-				"jiraIssueTypes": knowledgeTypes
+				"jiraIssueTypes": knowledgeTypes,
+				"selectedElement": jiraIssueKey,
+				"groups": null
 		};
-		generalApi.postJSON(this.restPrefix + "/view/getTreeViewerForSingleElement.json?jiraIssueKey=" + jiraIssueKey, filterSettings, function (error, core) {
+		generalApi.postJSON(this.restPrefix + "/view/getTreeViewerForSingleElement.json", filterSettings, function (error, core) {
 			if (error === null) {
 				callback(core);
 			}
@@ -867,32 +881,6 @@
 		callback(decisionGroups, projectKey);
 	};
 
-	ConDecAPI.prototype.getDecisionGroups = function (id, location, inputExistingGroupsField, selectLevelField, callback) {
-		var projectKey = getProjectKey();
-		var decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getDecisionGroups.json?elementId=" + id
-				+ "&location=" + location + "&projectKey=" + projectKey);
-		callback(selectLevelField, inputExistingGroupsField, decisionGroups);
-	};
-
-	ConDecAPI.prototype.fillDecisionGroupSelect = function (elementId) {
-		var selectGroupField = document.getElementById(elementId);
-		getAllDecisionGroups(selectGroupField, function (selectGroupField, groups) {
-			if (!(groups === null) && groups.length > 0) {
-				selectGroupField.innerHTML = "";
-				selectGroupField.insertAdjacentHTML("beforeend", "<option value='High_Level'>High_Level</option>"
-						+ "<option value='Medium_Level'>Medium_Level</option>"
-						+ "<option value='Realization_Level'>Realization_Level</option>");
-				for (var i = 0; i < groups.length; i++) {
-					if (groups[i] !== "High_Level" && groups[i] !== "Medium_Level" && groups[i] !== "Realization_Level") {
-						selectGroupField.insertAdjacentHTML("beforeend", "<option value='" + groups[i] + "'>" + groups[i] + "</option>");
-					}
-				}
-			} else {
-				selectGroupField.innerHTML = "";
-			}
-		});
-	};
-
 	function getAllDecisionGroups(selectGroupField, callback) {
 		var projectKey = getProjectKey();
 		var decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey=" + projectKey);
@@ -905,9 +893,12 @@
 	ConDecAPI.prototype.getDecisionIssues = function (elementKey, linkDistance, callback) {
 		const filterSettings = {
 				"projectKey": projectKey,
-				"linkDistance": linkDistance
+				"linkDistance": linkDistance,
+				"selectedElement": elementKey,
+				"groups": null
 		};
-		generalApi.postJSON(this.restPrefix + "/view/getDecisionIssues.json?elementKey=" + elementKey, filterSettings,
+
+		generalApi.postJSON(this.restPrefix + "/view/getDecisionIssues.json", filterSettings, 
 				function (error, issues) {
 			if (error === null) {
 				callback(issues);
@@ -1167,7 +1158,6 @@
 				+ "&location=" + location + "&projectKey=" + projectKey);
 		callback(selectLevelField, inputExistingGroupsField, decisionGroups);
 	};
-
 
 	ConDecAPI.prototype.fillDecisionGroupSelect = function (elementId) {
 		var selectGroupField = document.getElementById(elementId);

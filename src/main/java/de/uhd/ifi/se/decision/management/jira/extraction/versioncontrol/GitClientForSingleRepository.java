@@ -71,7 +71,6 @@ public class GitClientForSingleRepository {
 		if (isGitDirectory(gitDirectory)) {
 			if (openRepository(gitDirectory)) {
 				if (!pull()) {
-					System.out.println("Failed Git pull " + directory);
 					LOGGER.error("Failed Git pull " + directory);
 					return false;
 				}
@@ -106,7 +105,6 @@ public class GitClientForSingleRepository {
 	}
 
 	private boolean pull() {
-		System.out.println("git pull");
 		LOGGER.info("Pulling Repository: " + repoUri);
 		if (!isPullNeeded()) {
 			// LOGGER.info("Repository is up to date: " + repoUri);
@@ -121,7 +119,6 @@ public class GitClientForSingleRepository {
 				LOGGER.info("Fetched branches in " + git.getRepository().getDirectory());
 			}
 			git.pull().call();
-			System.out.println("pulled");
 			ObjectId newHead = getRepository().resolve("HEAD^{tree}");
 			Diff diffSinceLastPull = getDiff(oldHead, newHead);
 			CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
