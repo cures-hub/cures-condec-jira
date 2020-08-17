@@ -17,6 +17,7 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
@@ -313,7 +314,37 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, "maxNumberRecommendations", Integer.toString(minLinkSuggestionProbability));
 	}
 
-	public static double getMaxNumberRecommendations(String projectKey) {
+	public static int getMaxNumberRecommendations(String projectKey) {
 		return NumberUtils.toInt(getValue(projectKey, "maxNumberRecommendations"), 100);
 	}
+
+	public static void setRDFKnowledgeSource(String projectKey, RDFSource rdfSource) {
+		setValue(projectKey, "rdfsource.name", rdfSource.getName());
+		setValue(projectKey, "rdfsource.query", rdfSource.getQueryString());
+		setValue(projectKey, "rdfsource.service", rdfSource.getService());
+		setValue(projectKey, "rdfsource.timeout", rdfSource.getTimeout());
+		setValue(projectKey, "rdfsource.isActivated", Boolean.toString(rdfSource.isActivated()));
+	}
+
+	public static List<RDFSource> getRDFKnowledgeSource(String projectKey) {
+		List<String> names = Arrays.asList(getValue(projectKey, "rdfsource.name").split(";;"));
+		List<String> queries = Arrays.asList(getValue(projectKey, "rdfsource.query").split(";;"));
+		List<String> services = Arrays.asList(getValue(projectKey, "rdfsource.service").split(";;"));
+		List<String> params = Arrays.asList(getValue(projectKey, "rdfsource.timeout").split(";;"));
+		List<String> activation = Arrays.asList(getValue(projectKey, "rdfsource.isActivated").split(";;"));
+
+		List<RDFSource> rdfSources = new ArrayList<>();
+
+		try {
+			for (int i = 0; i < names.size(); ++i) {
+				RDFSource rdfSource = new RDFSource(projectKey, services.get(i), queries.get(i), names.get(i), params.get(i), true);
+				rdfSources.add(rdfSource);
+			}
+		} catch (IndexOutOfBoundsException e) {
+			e.printStackTrace();
+		}
+
+		return rdfSources;
+	}
+
 }
