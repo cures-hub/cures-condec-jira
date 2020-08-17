@@ -15,6 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGetTreeViewer extends TestSetUp {
 	private ViewRest viewRest;
@@ -31,60 +32,45 @@ public class TestGetTreeViewer extends TestSetUp {
 		filterSettings = new FilterSettings("TEST", "");
 	}
 
-	// @Test
-	// @NonTransactional
-	// public void testProjectKeyNullKnowledgeTypeNull() {
-	// assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreeViewer(null,
-	// null).getStatus());
-	// }
-	//
-	// @Test
-	// @NonTransactional
-	// public void testProjectKeyNonExistentKnowledgeTypeNull() {
-	// assertEquals(Status.BAD_REQUEST.getStatusCode(),
-	// viewRest.getTreeViewer("NotExistingProjectKey", null).getStatus());
-	// }
-	//
-	// @Test
-	// @NonTransactional
-	// public void testProjectKeyExistentKnowledgeTypeNull() {
-	// assertEquals(200, viewRest.getTreeViewer("TEST", null).getStatus());
-	// }
-	//
-	// @Test
-	// public void testProjectKeyExistentKnowledgeTypeEmpty() {
-	// assertEquals(200, viewRest.getTreeViewer("TEST", "").getStatus());
-	// }
-	//
-	// @Test
-	// public void testProjectKeyExistentKnowledgeTypeFilled() {
-	// assertEquals(200, viewRest.getTreeViewer("TEST", "Issue").getStatus());
-	// }
+	@Test
+	@NonTransactional
+	public void testRequestNullFilterSettingsNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreeViewer(null, null).getStatus());
+	}
 
 	@Test
-	public void testRequestNullJiraIssueKeyNullFilterSettingsNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				viewRest.getTreeViewer(null, null).getStatus());
+	@NonTransactional
+	public void testRequestValidFilterSettingsNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreeViewer(request, null).getStatus());
+	}
+
+	@Test
+	@NonTransactional
+	public void testRequestNullFilterSettingsValid() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreeViewer(null, filterSettings).getStatus());
+	}
+
+	@Test
+	public void testRequestValidProjectKeyNullInFilterSettings() {
+		filterSettings.setProjectKey(null);
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreeViewer(request, filterSettings).getStatus());
 	}
 
 	@Test
 	public void testRequestValidFilterSettingsValid() {
-		assertEquals(Status.OK.getStatusCode(),
-				viewRest.getTreeViewer(request, filterSettings).getStatus());
+		assertEquals(Status.OK.getStatusCode(), viewRest.getTreeViewer(request, filterSettings).getStatus());
 	}
 
 	@Test
 	public void testRequestValidJiraIssueKeyValidFilterSettingsValid() {
 		filterSettings.setSelectedElement("TEST-1");
-		assertEquals(Status.OK.getStatusCode(),
-				viewRest.getTreeViewer(request, filterSettings).getStatus());
+		assertEquals(Status.OK.getStatusCode(), viewRest.getTreeViewer(request, filterSettings).getStatus());
 	}
 
 	@Test
 	public void testRequestValidJiraIssueKeyValidFilterSettingsInvalid() {
 		FilterSettings filterSettings = new FilterSettings("NOTEXISTINGPROJECTKEY", "");
 		filterSettings.setSelectedElement("NOTEXISTINGPROJECTKEY-5");
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				viewRest.getTreeViewer(request, filterSettings).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getTreeViewer(request, filterSettings).getStatus());
 	}
 }

@@ -79,10 +79,13 @@ public class TreeViewer {
 				|| filterSettings.getSelectedElement().getKey() == null) {
 			return;
 		}
+		nodes = new HashSet<TreeViewerNode>();
+
 		FilteringManager filteringManager = new FilteringManager(null, filterSettings);
 		graph = filteringManager.getSubgraphMatchingFilterSettings();
+
 		KnowledgeElement rootElement = filterSettings.getSelectedElement();
-		nodes = new HashSet<TreeViewerNode>();
+
 		if (filterSettings.getLinkDistance() == 0) {
 			if ("codeClass".equals(filterSettings.getJiraIssueTypes().iterator().next())) {
 				CodeClassPersistenceManager manager = new CodeClassPersistenceManager(filterSettings.getProjectKey());
