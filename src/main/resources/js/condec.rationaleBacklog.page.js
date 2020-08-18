@@ -68,7 +68,16 @@
 
 
 	function updateView(nodeId, treant, treeViewer) {
-		treeViewer.buildRationaleBacklogTreeViewer();
+		var knowledgeTypes = ["Issue", "Alternative", "Decision", "Pro", "Con"];
+		var projectKey = conDecAPI.getProjectKey();
+		var issueStatus = conDecAPI.issueStatus[1];
+		var filterSettings = {
+			"projectKey": projectKey,
+			"jiraIssueTypes": knowledgeTypes,
+			"linkDistance": 0,
+			"status" : [issueStatus]
+		};
+		treeViewer.buildTreeViewer(filterSettings, "#rationale-backlog-tree");
 		if (nodeId === undefined) {
 			var rootElement = treant.getCurrentRootElement();
 			if (rootElement) {
@@ -94,7 +103,7 @@
 			}
 		var selectedStatus = conDecFiltering.getSelectedItems("status-dropdown-rb");
 		if (selectedStatus !== undefined && selectedStatus.length < conDecAPI.knowledgeStatus.length) {
-			treeViewer.filterNodesByStatus(selectedStatus, "#rationale-backlog-tree");
+			//treeViewer.filterNodesByStatus(selectedStatus, "#rationale-backlog-tree");
 		}
 
 	}

@@ -8,12 +8,11 @@
     /**
      * called by view.decision.knowledge.page.js
      */
-    ConDecTreeViewer.prototype.buildTreeViewer = function buildTreeViewer() {
+    ConDecTreeViewer.prototype.buildTreeViewer = function buildTreeViewer(filterSettings, jstreeId) {
         console.log("conDecTreeViewer buildTreeViewer");
-        jstreeId = "#jstree";
+        this.jstreeId = jstreeId;
         this.resetTreeViewer();
-        var rootElementType = $("select[name='select-root-element-type']").val();
-        conDecAPI.getTreeViewer(rootElementType, function (core) {
+        conDecAPI.getTreeViewer(filterSettings, function (core) {
             jQueryConDec("#jstree").jstree({
                 "core": core,
                 "plugins": ["dnd", "wholerow", "sort", "search", "state"],
@@ -23,60 +22,13 @@
             });
             $("#jstree-search-input").keyup(function () {
                 var searchString = $(this).val();
-                jQueryConDec("#jstree").jstree(true).search(searchString);
+                jQueryConDec(jstreeId).jstree(true).search(searchString);
             });
         });
         this.addDragAndDropSupportForTreeViewer();
         this.addContextMenuToTreeViewer(null);
     };
 
-    /**
-     * called by condec.code.class.page.js
-     */
-    ConDecTreeViewer.prototype.buildClassTreeViewer = function buildClassTreeViewer() {
-        console.log("conDecTreeViewer buildClassTreeViewer");
-        jstreeId = "#code-class-tree";
-        this.resetTreeViewer();
-        var rootElementType = "codeClass";
-        conDecAPI.getTreeViewer(rootElementType, function (core) {
-            jQueryConDec("#code-class-tree").jstree({
-                "core": core,
-                "plugins": ["dnd", "wholerow", "sort", "search", "state"],
-                "search": {
-                    "show_only_matches": true
-                }
-            });
-            $("#jstree-search-input-code").keyup(function () {
-                var searchString = $(this).val();
-                jQueryConDec("#code-class-tree").jstree(true).search(searchString);
-            });
-        });
-    };
-
-	/**
-	 * called by view.decision.rationaleBacklog.page.js
-	 */
-	ConDecTreeViewer.prototype.buildRationaleBacklogTreeViewer = function buildRationaleBacklogTreeViewer() {
-		console.log("conDecTreeViewer buildRationaleBacklogTreeViewer");
-		jstreeId = "#rationale-backlog-tree";
-		this.resetTreeViewer();
-		var rootElementTypes = ["Issue", "Alternative", "Decision", "Pro", "Con"];
-		conDecAPI.getTreeViewerForRationaleBacklog(rootElementTypes, function (core) {
-			jQueryConDec("#rationale-backlog-tree").jstree({
-				"core": core,
-				"plugins": ["dnd", "wholerow", "sort", "search", "state"],
-				"search": {
-					"show_only_matches": true
-				}
-			});
-			$("#text-search-input-rb").keyup(function () {
-				var searchString = $(this).val();
-				jQueryConDec("#rationale-backlog-tree").jstree(true).search(searchString);
-			});
-		});
-		this.addDragAndDropSupportForTreeViewer();
-		this.addContextMenuToTreeViewer(null);
-	};
 
     ConDecTreeViewer.prototype.addContextMenuToTreeViewer = function (container) {
         console.log("conDecTreeViewer addContextMenuToTreeViewer");

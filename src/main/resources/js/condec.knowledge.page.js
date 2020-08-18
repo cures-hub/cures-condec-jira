@@ -113,7 +113,15 @@
     }
 
     function updateView(nodeId, treant, treeViewer) {
-        treeViewer.buildTreeViewer();
+		var rootElementType = $("select[name='select-root-element-type']").val();
+		var knowledgeTypes = [rootElementType];
+		var projectKey = conDecAPI.getProjectKey();
+		var filterSettings = {
+			"projectKey": projectKey,
+			"jiraIssueTypes": knowledgeTypes,
+			"linkDistance": 0
+		};
+        treeViewer.buildTreeViewer(filterSettings, "#jstree");
         if (nodeId === undefined) {
             var rootElement = treant.getCurrentRootElement();
             if (rootElement) {
@@ -142,7 +150,7 @@
 
         var selectedStatus = conDecFiltering.getSelectedItems("status-dropdown-overview");
         if (selectedStatus !== undefined && selectedStatus.length < conDecAPI.knowledgeStatus.length) {
-            treeViewer.filterNodesByStatus(selectedStatus, "#jstree");
+            //treeViewer.filterNodesByStatus(selectedStatus, "#jstree");
         }
     }
 
