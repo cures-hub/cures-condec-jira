@@ -13,7 +13,7 @@
         this.jstreeId = jstreeId;
         this.resetTreeViewer();
         conDecAPI.getTreeViewer(filterSettings, function (core) {
-            jQueryConDec("#jstree").jstree({
+            jQueryConDec(jstreeId).jstree({
                 "core": core,
                 "plugins": ["dnd", "wholerow", "sort", "search", "state"],
                 "search": {
