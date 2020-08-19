@@ -69,9 +69,17 @@
     function updateView(nodeId, treant, treeViewer) {
         /* get cache or server data? */
 		var knowledgeTypes = ["codeClass"];
+		var selectedGroupsObj = $('#select2-code-decision-group').select2('data');
+        var selectedGroups = [];
+        for (var i = 0; i <= selectedGroupsObj.length; i++) {
+            if (selectedGroupsObj[i]) {
+                selectedGroups[i] = selectedGroupsObj[i].text;
+            }
+        }
 		var filterSettings = {
-			"jiraIssueTypes": knowledgeTypes,
-			"linkDistance": 0
+			"jiraIssueTypes" : knowledgeTypes,
+			"linkDistance" : 0,
+			"groups" : selectedGroups
 		};
         treeViewer.buildTreeViewer(filterSettings, "#code-class-tree", "#jstree-search-input-code", "code-class-tree");
         if (nodeId === undefined) {
@@ -87,16 +95,6 @@
             var linkDistance = document.getElementById("link-distance-input-code").value;
             treant.buildClassTreant(node.key, true, "", false, linkDistance);
         });
-        var selectedGroupsObj = $('#select2-code-decision-group').select2('data');
-        var selectedGroups = [];
-        for (var i = 0; i <= selectedGroupsObj.length; i++) {
-            if (selectedGroupsObj[i]) {
-                selectedGroups[i] = selectedGroupsObj[i].text;
-            }
-        }
-        if (!selectedGroups === undefined || selectedGroups.length > 0) {
-            treeViewer.filterNodesByGroup(selectedGroups, "#code-class-tree");
-        }
 
         treeViewer.minMaxFilter("#code-class-tree");
     }
