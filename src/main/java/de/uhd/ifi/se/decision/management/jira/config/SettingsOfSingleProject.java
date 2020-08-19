@@ -7,6 +7,7 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.FileTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
@@ -85,18 +86,22 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 			ConfigPersistenceManager.getMaxNumberRecommendations(projectKey));
 
 		velocityParameters.put("rdfSources", ConfigPersistenceManager.getRDFKnowledgeSource(projectKey));
-
-		velocityParameters.put("projects", getActivatedProjects());
+		velocityParameters.put("projectSources", getProjectSources(projectKey));
 
 		return velocityParameters;
 	}
 
-	public static List<DecisionKnowledgeProject> getActivatedProjects() {
-		List<DecisionKnowledgeProject> projects = new ArrayList<>();
+	//TODO wohin damit? ConfigPersistanceManager?
+	public static List<ProjectSource> getProjectSources(String projectKey) {
+		List<ProjectSource> projectSources = new ArrayList<>();
 		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 			DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
-			if (jiraProject.isActivated()) projects.add(jiraProject);
+			boolean projectSourceActivation = ConfigPersistenceManager.getProjectSource(projectKey, jiraProject.getProjectKey());
+			if (jiraProject.isActivated()) {
+				ProjectSource projectSource = new ProjectSource(projectKey, jiraProject.getProjectKey(), projectSourceActivation);
+				projectSources.add(projectSource);
+			}
 		}
-		return projects;
+		return projectSources;
 	}
 }

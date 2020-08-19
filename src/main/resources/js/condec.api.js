@@ -1265,6 +1265,20 @@
 		});
 	};
 
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setProjectSource = function (projectKey, projectSourceKey, isActivated) {
+		generalApi.postJSON(this.restPrefix + "/config/setProjectSource.json?projectKey=" + projectKey + "&projectSourceKey=" + projectSourceKey + "&isActivated=" + isActivated ,null, function (
+			error, response) {
+			if (error === null) {
+				showFlag("success", "The Knowledge Source successfully is saved!");
+			}
+		});
+	};
+
+
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */

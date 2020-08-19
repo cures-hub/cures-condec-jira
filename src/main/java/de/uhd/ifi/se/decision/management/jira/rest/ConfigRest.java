@@ -984,4 +984,24 @@ public class ConfigRest {
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
+	@Path("/setProjectSource")
+	@POST
+	public Response setProjectSource(@Context HttpServletRequest request,
+									 @QueryParam("projectKey") String projectKey, @QueryParam("projectSourceKey") String projectSourceKey, @QueryParam("isActivated") boolean isActivated) {
+		Response response = this.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+		response = checkIfProjectKeyIsValid(projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+		if (projectSourceKey.isBlank()) {
+			return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "The Project Source must not be empty.")).build();
+		}
+		ConfigPersistenceManager.setProjectSource(projectKey, projectSourceKey, isActivated);
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
 }

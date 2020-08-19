@@ -370,19 +370,10 @@ public class ConfigPersistenceManager {
 
 	public static void deleteKnowledgeSource(String projectKey, String knowledgeSourceName) {
 		List<RDFSource> rdfSourceList = getRDFKnowledgeSource(projectKey);
-		int index = -1;
-		for (int i = 0; i < rdfSourceList.size(); ++i) {
-			if (knowledgeSourceName.equals(rdfSourceList.get(i).getName())) {
-				index = i;
-				break;
-			}
-		}
-		if (index != -1) {
-			rdfSourceList.remove(index);
-			Type listType = new TypeToken<List<RDFSource>>() {
-			}.getType();
-			setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, listType);
-		}
+		rdfSourceList.removeIf(rdfSource -> knowledgeSourceName.equals(rdfSource.getName()));
+		Type listType = new TypeToken<List<RDFSource>>() {
+		}.getType();
+		setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, listType);
 	}
 
 	public static void setRDFKnowledgeSourceActivation(String projectKey, String rdfSourceName, boolean isActivated) {
@@ -398,5 +389,13 @@ public class ConfigPersistenceManager {
 		}
 
 		setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, listType);
+	}
+
+	public static void setProjectSource(String projectKey, String projectSourceKey, boolean isActivated) {
+		setValue(projectKey, "projectSource." + projectSourceKey, Boolean.toString(isActivated));
+	}
+
+	public static boolean getProjectSource(String projectKey, String projectSourceKey) {
+		return Boolean.valueOf(getValue(projectKey, "projectSource." + projectSourceKey));
 	}
 }

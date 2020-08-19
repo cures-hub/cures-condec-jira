@@ -52,23 +52,29 @@
             Create a Project Source
         </div>
         <div class="field-group">
-            <label for="select-projects">Project</label>
-            <select id="select-projects" name="select-knowledgeSources" class="select medium-field">
-                #foreach ($projectSource in $projects)
-                <option value="$projectSource">
-                    $projectSource.getProjectName()
-                </option>
+            <table id="project-source-table" class="aui aui-table-list">
+
+                <thead>
+                <tr>
+                    <th>Project</th>
+                    <th>Activate?</th>
+                </tr>
+                </thead>
+                <tbody>
+                #foreach($projectSource in $projectSources)
+                <tr>
+                    <td>$projectSource.getName()</td>
+                    <td>
+                        <aui-toggle class="activation-knowledgesource-project" name="$projectSource.getName()"
+                                    #if ($projectSource.isActivated())
+                                    checked
+                                    #end
+                                    label="$projectSource.getName() activated?"></aui-toggle>
+                    </td>
+                </tr>
                 #end
-            </select>
-            <button type="button" class="aui-button aui-button-primary" id="add-project-source"/>
-            Add
-            </button>
-            <div class="description">
-                Select a project for recommendations. <br/>
-            </div>
-            <div class="aui-progress-indicator">
-                <span id="evaluate-knowledgesource-progress"></span>
-            </div>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -234,8 +240,47 @@
             })
          });
 
+         $("#add-project-source").click((event) => {
+            event.preventDefault();
+            const projectSourceKey = $("#select-projects").val();
+            conDecAPI.setProjectSource("$projectKey", projectSourceKey);
+            $("#project-source-table tbody").append(
+            "<tr>"+
+                "<td>" + projectSourceKey + "</td>"+
+               " <td><aui-toggle></aui-toggle>"+
+            "</tr>"
+
+            );
+         });
+
+         const activationsProjects = $(".activation-knowledgesource-project");
+
+         activationsProjects.each(function() {
+
+            $(this).change(function() {
+                const projectKey =  $(this).attr("name");
+                const isActivated = $(this).prop("checked");
+                conDecAPI.setProjectSource("$projectKey", projectKey, isActivated);
+            })
+
+         });
+
 
     });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
