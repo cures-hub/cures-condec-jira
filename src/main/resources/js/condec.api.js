@@ -366,24 +366,6 @@
 	};
 
 	/*
-	 * external references: condec.dialog
-	 */
-	ConDecAPI.prototype.deleteDecisionKnowledgeElement = function (id, documentationLocation, callback) {
-		var element = {
-				"id": id,
-				"projectKey": projectKey,
-				"documentationLocation": documentationLocation
-		};
-		generalApi.deleteJSON(this.restPrefix + "/knowledge/deleteDecisionKnowledgeElement.json", element,
-				function (error, isDeleted) {
-			if (error === null) {
-				showFlag("success", "Decision knowledge element has been deleted.");
-				callback();
-			}
-		});
-	};
-
-	/*
 	 * external references: condec.export
 	 */
 	ConDecAPI.prototype.getElements = function (query, callback) {
