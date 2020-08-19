@@ -39,18 +39,19 @@
 		}
 		return selectedItems;
 	};
-	
+
 	/*
-	 * external references: condec.knowledge.page, condec.evolution.page, condec.relationship.page
+	 * external references: condec.knowledge.page, condec.evolution.page, condec.relationship.page, 
+	 * condec.rationale.backlog, condec.code.class.page
 	 */
 	ConDecFiltering.prototype.getSelectedGroups = function(selectId) {
 		var selectedGroupsObj = AJS.$("#" + selectId).select2("data");
-        var selectedGroups = [];
-        for (var i = 0; i <= selectedGroupsObj.length; i++) {
-            if (selectedGroupsObj[i]) {
-                selectedGroups[i] = selectedGroupsObj[i].text;
-            }
-        }
+		var selectedGroups = [];
+		for (var i = 0; i <= selectedGroupsObj.length; i++) {
+			if (selectedGroupsObj[i]) {
+				selectedGroups[i] = selectedGroupsObj[i].text;
+			}
+		}
 		return selectedGroups;
 	};
 

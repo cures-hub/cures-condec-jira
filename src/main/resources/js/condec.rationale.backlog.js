@@ -67,11 +67,13 @@
 
 	function updateView(nodeId, treant, treeViewer) {
 		var knowledgeTypes = ["Issue", "Alternative", "Decision", "Pro", "Con"];
-		var issueStatus = conDecAPI.issueStatus[1];
+		var selectedStatus = conDecFiltering.getSelectedItems("status-dropdown-rb");
+		var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-rb");
 		var filterSettings = {
 			"jiraIssueTypes": knowledgeTypes,
 			"linkDistance": 0,
-			"status" : [issueStatus]
+			"status" : selectedStatus,
+			"groups" : selectedGroups
 		};
 		treeViewer.buildTreeViewer(filterSettings, "#rationale-backlog-tree", "#text-search-input-rb", "rationale-backlog-tree");
 		// if (nodeId === undefined) {
@@ -86,22 +88,7 @@
 		// 	var node = tree.node.data;
 		// 	var linkDistance = document.getElementById("link-distance-input-rb").value;
 		// 	treant.buildRationaleBacklogTreant(node.key, true, "", linkDistance);
-		// });
-		// var selectedGroupsObj = $('#select2-code-decision-group-rb').select2('data');
-		// var selectedGroups = [];
-		// for (var i = 0; i <= selectedGroupsObj.length; i++) {
-		// 	if (selectedGroupsObj[i]) {
-		// 		selectedGroups[i] = selectedGroupsObj[i].text;
-		// 	}
-		// }
-		// if (!selectedGroups === undefined || selectedGroups.length > 0) {
-		// 	treeViewer.filterNodesByGroup(selectedGroups, "#rationale-backlog-tree");
-		// }
-		var selectedStatus = conDecFiltering.getSelectedItems("status-dropdown-rb");
-		if (selectedStatus !== undefined && selectedStatus.length < conDecAPI.knowledgeStatus.length) {
-			//treeViewer.filterNodesByStatus(selectedStatus, "#rationale-backlog-tree");
-		}
-
+		// });		
 	}
 
 
