@@ -456,6 +456,10 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		//Test deactivation
 		ConfigPersistenceManager.setRDFKnowledgeSourceActivation("TEST", "RDF Name", false);
 		assertEquals("The knowledge source should be dectivated!", false, ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).isActivated());
+
+		//Delete KnowledgeSource
+		ConfigPersistenceManager.deleteKnowledgeSource("TEST", "RDF Name");
+		assertEquals("The knowledge source should be 0!", 0, ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
 	}
 
 
