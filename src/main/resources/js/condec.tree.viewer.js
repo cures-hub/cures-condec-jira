@@ -1,38 +1,35 @@
 (function (global) {
 
-    var jstreeId = "#jstree";
-
     var ConDecTreeViewer = function () {
     };
 
     /**
      * called by view.decision.knowledge.page.js
      */
-    ConDecTreeViewer.prototype.buildTreeViewer = function buildTreeViewer(filterSettings, jstreeId) {
+    ConDecTreeViewer.prototype.buildTreeViewer = function buildTreeViewer(filterSettings, treeIdParam, searchInputId) {
         console.log("conDecTreeViewer buildTreeViewer");
-        this.jstreeId = jstreeId;
-        this.resetTreeViewer();
+        this.resetTreeViewer(treeIdParam);
         conDecAPI.getTreeViewer(filterSettings, function (core) {
-            jQueryConDec(jstreeId).jstree({
+            jQueryConDec(treeIdParam).jstree({
                 "core": core,
                 "plugins": ["dnd", "wholerow", "sort", "search", "state"],
                 "search": {
                     "show_only_matches": true
                 }
             });
-            $("#jstree-search-input").keyup(function () {
+            $(searchInputId).keyup(function () {
                 var searchString = $(this).val();
-                jQueryConDec(jstreeId).jstree(true).search(searchString);
+                jQueryConDec(treeIdParam).jstree(true).search(searchString);
             });
         });
-        this.addDragAndDropSupportForTreeViewer();
-        this.addContextMenuToTreeViewer(null);
+        this.addDragAndDropSupportForTreeViewer(treeIdParam);
+        this.addContextMenuToTreeViewer(null, treeIdParam);
     };
 
 
-    ConDecTreeViewer.prototype.addContextMenuToTreeViewer = function (container) {
+    ConDecTreeViewer.prototype.addContextMenuToTreeViewer = function (container, treeIdParam) {
         console.log("conDecTreeViewer addContextMenuToTreeViewer");
-        jQueryConDec(jstreeId).on("contextmenu.jstree", function (event) {
+        jQueryConDec(treeIdParam).on("contextmenu.jstree", function (event) {
             event.preventDefault();
 
             var nodeId = event.target.parentNode.id;
@@ -41,11 +38,8 @@
 
             if (event.target.parentNode.classList.contains("sentence")) {
                 conDecContextMenu.createContextMenu(id, "s", event, container);
-            } else {
-                if (jstreeId !== "#code-class-tree") {
-                    conDecContextMenu.createContextMenu(id, "i", event, container);
-                }
-
+            } else if (treeIdParam !== "#code-class-tree") {
+            	conDecContextMenu.createContextMenu(id, "i", event, container);
             }
         });
     }
@@ -53,9 +47,9 @@
     /**
      * called by condec.tab.panel.js and locally
      */
-    ConDecTreeViewer.prototype.resetTreeViewer = function resetTreeViewer() {
+    ConDecTreeViewer.prototype.resetTreeViewer = function resetTreeViewer(treeIdParam) {
         console.log("conDecTreeViewer resetTreeViewer");
-        var treeViewer = jQueryConDec(jstreeId).jstree(true);
+        var treeViewer = jQueryConDec(treeIdParam).jstree(true);
         if (treeViewer) {
             treeViewer.destroy();
         }
@@ -75,10 +69,10 @@
     /**
      * called by view.decision.knowledge.js
      */
-    ConDecTreeViewer.prototype.selectNodeInTreeViewer = function (nodeId) {
+    ConDecTreeViewer.prototype.selectNodeInTreeViewer = function (nodeId, treeIdParam) {
         console.log("conDecTreeViewer selectNodeInTreeViewer");
         jQueryConDec(document).ready(function () {
-            var treeViewer = jQueryConDec(jstreeId).jstree(true);
+            var treeViewer = jQueryConDec(treeIdParam).jstree(true);
             if (treeViewer) {
                 treeViewer.deselect_all(true);
                 treeViewer.select_node(nodeId);
@@ -113,27 +107,6 @@
         });
     };
 
-	// ConDecTreeViewer.prototype.filterNodesByStatus = function filterNodesByStatus(selectedStatus, treeId) {
-	// 	console.log("conDecTreeViewer filterNodesByStatus");
-	// 	jQueryConDec(treeId).on("state_ready.jstree", function() {
-	// 		var treeViewer = jQueryConDec(treeId).jstree(true);
-	// 		if (treeViewer) {
-	// 			var jsonNodes = treeViewer.get_json('#', {
-	// 				flat : true
-	// 			});
-	// 			$.each(jsonNodes, function(i, val) {
-	// 				var matches = 0;
-	// 				var kElement = $(val).attr("data");
-	// 				var elementStatus = $(kElement).attr("status");
-	// 				if (!selectedStatus.includes(elementStatus)) {
-	// 					var treeNode = document.getElementById($(val).attr("id"));
-	// 					$(treeNode).hide();
-	// 				}
-	// 			});
-	// 		}
-	// 	});
-	// };
-
     ConDecTreeViewer.prototype.minMaxFilter = function (treeId) {
         console.log("conDecTreeViewer filterNodesByGroup");
         jQueryConDec(treeId).on("state_ready.jstree", function () {
@@ -159,9 +132,9 @@
     /**
      * called by view.tab.panel.js locally
      */
-    ConDecTreeViewer.prototype.addDragAndDropSupportForTreeViewer = function () {
+    ConDecTreeViewer.prototype.addDragAndDropSupportForTreeViewer = function (treeIdParam) {
         console.log("conDecTreeViewer addDragAndDropSupportForTreeViewer");
-        jQueryConDec(jstreeId).on(
+        jQueryConDec(treeIdParam).on(
             'move_node.jstree',
             function (object, nodeInContext) {
                 var node = nodeInContext.node;

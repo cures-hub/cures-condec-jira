@@ -42,7 +42,7 @@
 	/* triggered by onchange event in tabPanel.vm */
 	ConDecIssueTab.prototype.updateView = function updateView() {
 		console.log("conDecIssueTab updateView");
-		treeViewer.resetTreeViewer();
+		treeViewer.resetTreeViewer("#jstree");
 		var selectedKnowledgeTypes = getSelectedKnowledgeTypes();
 		buildTreeViewer(selectedKnowledgeTypes);
 	};
@@ -84,8 +84,8 @@
 				var searchString = $(this).val();
 				jQueryConDec("#jstree").jstree(true).search(searchString);
 			});
-			treeViewer.addDragAndDropSupportForTreeViewer();
-			treeViewer.addContextMenuToTreeViewer("issue-container");
+			treeViewer.addDragAndDropSupportForTreeViewer("#jstree");
+			treeViewer.addContextMenuToTreeViewer("issue-container", "#jstree");
 		});
 	}
 

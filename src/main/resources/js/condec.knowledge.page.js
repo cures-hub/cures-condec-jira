@@ -40,7 +40,6 @@
 
             // Register/subscribe this view as an observer
             conDecObservable.subscribe(this);
-
             return true;
         }
         return false;
@@ -113,22 +112,24 @@
     }
 
     function updateView(nodeId, treant, treeViewer) {
-		var rootElementType = $("select[name='select-root-element-type']").val();
-		var knowledgeTypes = [rootElementType];
+		var knowledgeType = jQueryConDec("select[name='select-root-element-type']").val();
+		var selectedStatus = conDecFiltering.getSelectedItems("status-dropdown-overview");
+		var knowledgeTypes = [knowledgeType];
 		var projectKey = conDecAPI.getProjectKey();
 		var filterSettings = {
 			"projectKey": projectKey,
 			"jiraIssueTypes": knowledgeTypes,
-			"linkDistance": 0
+			"linkDistance": 0,
+			"status": selectedStatus
 		};
-        treeViewer.buildTreeViewer(filterSettings, "#jstree");
+        treeViewer.buildTreeViewer(filterSettings, "#jstree", "#jstree-search-input");
         if (nodeId === undefined) {
             var rootElement = treant.getCurrentRootElement();
             if (rootElement) {
-                treeViewer.selectNodeInTreeViewer(rootElement.id);
+                treeViewer.selectNodeInTreeViewer(rootElement.id, "#jstree");
             }
         } else {
-            treeViewer.selectNodeInTreeViewer(nodeId);
+            treeViewer.selectNodeInTreeViewer(nodeId, "#jstree");
         }
         jQueryConDec("#jstree").on("select_node.jstree", function (error, tree) {
             var node = tree.node.data;
@@ -148,7 +149,7 @@
             treeViewer.filterNodesByGroup(selectedGroups, "#jstree");
         }
 
-        var selectedStatus = conDecFiltering.getSelectedItems("status-dropdown-overview");
+
         if (selectedStatus !== undefined && selectedStatus.length < conDecAPI.knowledgeStatus.length) {
             //treeViewer.filterNodesByStatus(selectedStatus, "#jstree");
         }

@@ -75,14 +75,14 @@
 			"jiraIssueTypes": knowledgeTypes,
 			"linkDistance": 0
 		};
-        treeViewer.buildTreeViewer(filterSettings, "#code-class-tree");
+        treeViewer.buildTreeViewer(filterSettings, "#code-class-tree", "#jstree-search-input-code");
         if (nodeId === undefined) {
             var rootElement = treant.getCurrentRootElement();
             if (rootElement) {
-                treeViewer.selectNodeInTreeViewer(rootElement.id);
+                treeViewer.selectNodeInTreeViewer(rootElement.id, "#code-class-tree");
             }
         } else {
-            treeViewer.selectNodeInTreeViewer(nodeId);
+            treeViewer.selectNodeInTreeViewer(nodeId, "#code-class-tree");
         }
         jQueryConDec("#code-class-tree").on("select_node.jstree", function (error, tree) {
             var node = tree.node.data;
