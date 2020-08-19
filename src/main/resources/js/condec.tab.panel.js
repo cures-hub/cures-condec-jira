@@ -66,8 +66,12 @@
 		console.log("conDecIssueTab buildTreeViewer");
 
 		var jiraIssueKey = conDecAPI.getIssueKey();
-		conDecAPI.getTreeViewerForSingleElement(jiraIssueKey, selectedKnowledgeTypes, function(core) {
-			console.log("conDecTabPanel getTreeViewerWithoutRootElement callback");
+		var filterSettings = {
+				"jiraIssueTypes": selectedKnowledgeTypes,
+				"selectedElement": jiraIssueKey
+		};
+		conDecAPI.getTreeViewer(filterSettings, function(core) {
+			console.log("conDecTabPanel getTreeViewer callback");
 
 			jQueryConDec("#jstree").jstree({
 			    "core" : core,

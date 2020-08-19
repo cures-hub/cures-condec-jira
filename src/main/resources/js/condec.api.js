@@ -434,30 +434,13 @@
 	 * external references: condec.tree.viewer
 	 */
 	ConDecAPI.prototype.getTreeViewer = function (filterSettings, callback) {
+		filterSettings["projectKey"] = projectKey;
 		generalApi.postJSON(this.restPrefix + "/view/getTreeViewer.json", filterSettings, function (error, core) {
 			if (error === null) {
 				callback(core);
 			}
 		});
 	};
-
-	/*
-	 * external references: condec.tab.panel
-	 */
-
-	ConDecAPI.prototype.getTreeViewerForSingleElement = function (jiraIssueKey, knowledgeTypes, callback) {
-		var filterSettings = {
-				"projectKey": projectKey,
-				"jiraIssueTypes": knowledgeTypes,
-				"selectedElement": jiraIssueKey
-		};
-		generalApi.postJSON(this.restPrefix + "/view/getTreeViewer.json", filterSettings, function (error, core) {
-			if (error === null) {
-				callback(core);
-			}
-		});
-	};
-
 
 	/*
 	 * external references: condec.treant

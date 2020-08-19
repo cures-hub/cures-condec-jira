@@ -4,7 +4,7 @@
     };
 
     /**
-     * called by view.decision.knowledge.page.js
+     * called by condec.knowledge.page.js, condec.rationale.backlog.js
      */
     ConDecTreeViewer.prototype.buildTreeViewer = function buildTreeViewer(filterSettings, treeId, searchInputId) {
         console.log("conDecTreeViewer buildTreeViewer");

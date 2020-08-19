@@ -36,7 +36,7 @@
 			return true;
 		}
 		return false;
-	}
+	};
 
 
 	ConDecRationaleBacklog.prototype.fetchAndRender = function () {
@@ -62,14 +62,13 @@
 		});
 		conDecAPI.fillDecisionGroupSelect("select2-decision-group-rb");
 
-		updateView(null, treant, treeViewer)
+		updateView(null, treant, treeViewer);
 	}
 
 
 
 	function updateView(nodeId, treant, treeViewer) {
 		var knowledgeTypes = ["Issue", "Alternative", "Decision", "Pro", "Con"];
-		var projectKey = conDecAPI.getProjectKey();
 		var issueStatus = conDecAPI.issueStatus[1];
 		var filterSettings = {
 			"projectKey": projectKey,
