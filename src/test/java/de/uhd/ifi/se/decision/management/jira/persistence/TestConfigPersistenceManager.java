@@ -462,6 +462,14 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertEquals("The knowledge source should be 0!", 0, ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
 	}
 
+	@Test
+	public void testSetAndGetProjectKnowledgeSources() {
+		ConfigPersistenceManager.setProjectSource("TEST", "OTHERPRORJECT", true);
+		assertEquals(true, ConfigPersistenceManager.getProjectSource("TEST", "OTHERPRORJECT"));
+		ConfigPersistenceManager.setProjectSource("TEST", "OTHERPRORJECT", false);
+		assertEquals(false, ConfigPersistenceManager.getProjectSource("TEST", "OTHERPRORJECT"));
+	}
+
 
 	@AfterClass
 	public static void tearDown() {
