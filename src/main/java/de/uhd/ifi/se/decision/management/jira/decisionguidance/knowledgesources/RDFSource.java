@@ -6,6 +6,7 @@ import org.apache.jena.query.*;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
 import java.util.List;
+import java.util.Objects;
 
 public class RDFSource implements KnowledgeSource {
 
@@ -15,7 +16,7 @@ public class RDFSource implements KnowledgeSource {
 	protected String service;
 	protected String queryString;
 	protected String timeout;
-	protected boolean isActivated;
+	protected boolean isActivated = true;
 
 
 	/**
@@ -38,13 +39,13 @@ public class RDFSource implements KnowledgeSource {
 	 * @param name
 	 * @param timeout
 	 */
-	public RDFSource(String projectKey, String service, String queryString, String name, String timeout, boolean isActivated) {
+	public RDFSource(String projectKey, String service, String queryString, String name, String timeout) {
 		this.projectKey = projectKey;
 		this.service = service;
 		this.queryString = queryString;
 		this.name = name;
 		this.timeout = timeout;
-		this.isActivated = isActivated;
+		this.isActivated = true;
 	}
 
 	/**
@@ -124,5 +125,18 @@ public class RDFSource implements KnowledgeSource {
 
 	public void setActivated(boolean activated) {
 		isActivated = activated;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		RDFSource rdfSource = (RDFSource) o;
+		return name.equals(rdfSource.name);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(name);
 	}
 }
