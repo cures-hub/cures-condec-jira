@@ -103,10 +103,12 @@ public class RDFSource implements KnowledgeSource {
 		this.queryString = queryString;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -119,13 +121,17 @@ public class RDFSource implements KnowledgeSource {
 		this.timeout = timeout;
 	}
 
+	@Override
 	public boolean isActivated() {
 		return isActivated;
 	}
 
+	@Override
 	public void setActivated(boolean activated) {
 		isActivated = activated;
 	}
+
+
 
 	@Override
 	public boolean equals(Object o) {

@@ -7,4 +7,12 @@ import java.util.List;
 public interface KnowledgeSource {
 
 	List<KnowledgeElement> getResults(String inputs);
+
+	String getName();
+
+	void setName(String name);
+
+	boolean isActivated();
+
+	void setActivated(boolean activated);
 }

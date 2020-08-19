@@ -2,8 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 import java.util.ArrayList;
@@ -13,6 +11,8 @@ import java.util.stream.Collectors;
 public class ProjectSource implements KnowledgeSource {
 
 	private String projectKey;
+	private String name;
+	private boolean isActivated;
 	KnowledgePersistenceManager knowledgePersistenceManager;
 
 	public ProjectSource(String projectKey) {
@@ -24,8 +24,38 @@ public class ProjectSource implements KnowledgeSource {
 		}
 	}
 
+	public ProjectSource(String projectKey, String name, boolean isActivated) {
+		this.projectKey = projectKey;
+		this.name = name;
+		this.isActivated = isActivated;
+		try {
+			this.knowledgePersistenceManager = KnowledgePersistenceManager.getOrCreate(this.projectKey);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		}
+	}
+
 	protected List<KnowledgeElement> queryDatabase() {
 		return this.knowledgePersistenceManager != null ? this.knowledgePersistenceManager.getKnowledgeElements() : null;
+	}
+
+	@Override
+	public String getName() {
+		return this.name;
+	}
+
+	@Override
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public boolean isActivated() {
+		return this.isActivated;
+	}
+
+	@Override
+	public void setActivated(boolean activated) {
 	}
 
 	@Override
