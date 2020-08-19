@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.project.Project;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.FileTrainer;
@@ -11,6 +13,8 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -82,6 +86,17 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 
 		velocityParameters.put("rdfSources", ConfigPersistenceManager.getRDFKnowledgeSource(projectKey));
 
+		velocityParameters.put("projects", getActivatedProjects());
+
 		return velocityParameters;
+	}
+
+	public static List<DecisionKnowledgeProject> getActivatedProjects() {
+		List<DecisionKnowledgeProject> projects = new ArrayList<>();
+		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
+			DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
+			if (jiraProject.isActivated()) projects.add(jiraProject);
+		}
+		return projects;
 	}
 }
