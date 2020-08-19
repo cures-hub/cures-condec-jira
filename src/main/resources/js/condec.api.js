@@ -1,13 +1,13 @@
 /**
  * This module implements the communication with the ConDec Java REST API and
  * the JIRA API.
- *
+ * 
  * Requires conDecTreant.findParentElement
- *
+ * 
  * Is required by conDecContextMenu conDecDialog conDecEvolutionPage
  * conDecTreant conDecTreeViewer conDecJiraIssueModule conDecKnowledgePage
  * conDecTabPanel conDecVis
- *
+ * 
  * Is referenced in HTML by settingsForAllProjects.vm
  * settingsForSingleProject.vm
  */
@@ -120,7 +120,7 @@
 	 * Creates a new decision knowledge element. If the element should be
 	 * unlinked the idOfExistingElement must be 0 and the
 	 * documentationLocationOfExistingElement must be null
-	 *
+	 * 
 	 * external references: condec.knowledge.page, condec.dialog
 	 */
 	ConDecAPI.prototype.createDecisionKnowledgeElement = function (summary, description, type, documentationLocation, idOfExistingElement, documentationLocationOfExistingElement, callback) {
@@ -440,7 +440,6 @@
 			}
 		});
 	};
-
 
 	/*
 	 * external references: condec.tab.panel

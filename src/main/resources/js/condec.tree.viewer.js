@@ -6,11 +6,11 @@
     /**
      * called by view.decision.knowledge.page.js
      */
-    ConDecTreeViewer.prototype.buildTreeViewer = function buildTreeViewer(filterSettings, treeIdParam, searchInputId) {
+    ConDecTreeViewer.prototype.buildTreeViewer = function buildTreeViewer(filterSettings, treeId, searchInputId) {
         console.log("conDecTreeViewer buildTreeViewer");
-        this.resetTreeViewer(treeIdParam);
+        this.resetTreeViewer(treeId);
         conDecAPI.getTreeViewer(filterSettings, function (core) {
-            jQueryConDec(treeIdParam).jstree({
+            jQueryConDec(treeId).jstree({
                 "core": core,
                 "plugins": ["dnd", "wholerow", "sort", "search", "state"],
                 "search": {
@@ -19,17 +19,16 @@
             });
             $(searchInputId).keyup(function () {
                 var searchString = $(this).val();
-                jQueryConDec(treeIdParam).jstree(true).search(searchString);
+                jQueryConDec(treeId).jstree(true).search(searchString);
             });
         });
-        this.addDragAndDropSupportForTreeViewer(treeIdParam);
-        this.addContextMenuToTreeViewer(null, treeIdParam);
+        this.addDragAndDropSupportForTreeViewer(treeId);
+        this.addContextMenuToTreeViewer(null, treeId);
     };
 
-
-    ConDecTreeViewer.prototype.addContextMenuToTreeViewer = function (container, treeIdParam) {
+    ConDecTreeViewer.prototype.addContextMenuToTreeViewer = function (container, treeId) {
         console.log("conDecTreeViewer addContextMenuToTreeViewer");
-        jQueryConDec(treeIdParam).on("contextmenu.jstree", function (event) {
+        jQueryConDec(treeId).on("contextmenu.jstree", function (event) {
             event.preventDefault();
 
             var nodeId = event.target.parentNode.id;
@@ -38,7 +37,7 @@
 
             if (event.target.parentNode.classList.contains("sentence")) {
                 conDecContextMenu.createContextMenu(id, "s", event, container);
-            } else if (treeIdParam !== "#code-class-tree") {
+            } else if (treeId !== "#code-class-tree") {
             	conDecContextMenu.createContextMenu(id, "i", event, container);
             }
         });
@@ -47,9 +46,9 @@
     /**
      * called by condec.tab.panel.js and locally
      */
-    ConDecTreeViewer.prototype.resetTreeViewer = function resetTreeViewer(treeIdParam) {
+    ConDecTreeViewer.prototype.resetTreeViewer = function resetTreeViewer(treeId) {
         console.log("conDecTreeViewer resetTreeViewer");
-        var treeViewer = jQueryConDec(treeIdParam).jstree(true);
+        var treeViewer = jQueryConDec(treeId).jstree(true);
         if (treeViewer) {
             treeViewer.destroy();
         }
@@ -69,10 +68,10 @@
     /**
      * called by view.decision.knowledge.js
      */
-    ConDecTreeViewer.prototype.selectNodeInTreeViewer = function (nodeId, treeIdParam) {
+    ConDecTreeViewer.prototype.selectNodeInTreeViewer = function (nodeId, treeId) {
         console.log("conDecTreeViewer selectNodeInTreeViewer");
         jQueryConDec(document).ready(function () {
-            var treeViewer = jQueryConDec(treeIdParam).jstree(true);
+            var treeViewer = jQueryConDec(treeId).jstree(true);
             if (treeViewer) {
                 treeViewer.deselect_all(true);
                 treeViewer.select_node(nodeId);
@@ -132,9 +131,9 @@
     /**
      * called by view.tab.panel.js locally
      */
-    ConDecTreeViewer.prototype.addDragAndDropSupportForTreeViewer = function (treeIdParam) {
+    ConDecTreeViewer.prototype.addDragAndDropSupportForTreeViewer = function (treeId) {
         console.log("conDecTreeViewer addDragAndDropSupportForTreeViewer");
-        jQueryConDec(treeIdParam).on(
+        jQueryConDec(treeId).on(
             'move_node.jstree',
             function (object, nodeInContext) {
                 var node = nodeInContext.node;

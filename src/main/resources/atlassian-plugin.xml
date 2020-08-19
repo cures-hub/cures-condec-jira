@@ -138,8 +138,8 @@
 			location="/js/condec.decision.group.view.js" />
 		<resource type="download" name="condec.consistency.api.js"
 			location="/js/condec.consistency.api.js" />
-        <resource type="download" name="condec.rationaleBacklog.page.js"
-                  location="/js/condec.rationaleBacklog.page.js" />
+        <resource type="download" name="condec.rationale.backlog.js"
+                  location="/js/condec.rationale.backlog.js" />
 		<resource type="download" name="condec.config.rest.js"
 			location="/js/condec.config.rest.js" />
 		<resource type="download" name="condec.settings.consistency.js"

@@ -32,12 +32,12 @@
 <script>
     $(document).ready(function() {
         conDecAPI.checkIfProjectKeyIsValid();
-       if (window.conDecRationaleBacklogPage.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant, conDecTreeViewer)){
+       if (window.conDecRationaleBacklog.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant, conDecTreeViewer)){
            conDecAPI.checkIfProjectKeyIsValid();
-           window.conDecRationaleBacklogPage.fetchAndRender();
+           window.conDecRationaleBacklog.fetchAndRender();
        }
        else {
-           console.error("ConDecRationaleBacklogPage could not get its dependencies.");
+           console.error("ConDecRationaleBacklog could not get its dependencies.");
        }
     });
 

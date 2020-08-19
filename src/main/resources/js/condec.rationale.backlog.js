@@ -12,12 +12,12 @@
 	var treeViewer = null;
 	var treant = null;
 
-	var ConDecRationaleBacklogPage = function ConDecRationaleBacklogPage() {
+	var ConDecRationaleBacklog = function ConDecRationaleBacklog() {
 	};
 
-	ConDecRationaleBacklogPage.prototype.init = function (_conDecAPI, _conDecObservable, _conDecDialog, _conDecContextMenu,
+	ConDecRationaleBacklog.prototype.init = function (_conDecAPI, _conDecObservable, _conDecDialog, _conDecContextMenu,
 														  _treant, _treeViewer) {
-		console.log("conDecRationaleBacklogPage init");
+		console.log("conDecRationaleBacklog init");
 
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
 			&& isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
@@ -39,16 +39,16 @@
 	}
 
 
-	ConDecRationaleBacklogPage.prototype.fetchAndRender = function () {
-		initializeRationaleBacklogPage(conDecAPI, treant, treeViewer);
+	ConDecRationaleBacklog.prototype.fetchAndRender = function () {
+		initializeRationaleBacklog(conDecAPI, treant, treeViewer);
 	}
 
-	ConDecRationaleBacklogPage.prototype.updateView = function () {
+	ConDecRationaleBacklog.prototype.updateView = function () {
 		updateView(null, treant, treeViewer);
 	};
 
-	function initializeRationaleBacklogPage(conDecAPI, treant, treeViewer) {
-		console.log("conDecRationaleBacklogPage initializeRationaleBacklogPage");
+	function initializeRationaleBacklog(conDecAPI, treant, treeViewer) {
+		console.log("conDecRationaleBacklog initializeRationaleBacklog");
 
 		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input-rb", function() {
 			updateView(null, treant, treeViewer);
@@ -58,7 +58,7 @@
 		conDecFiltering.initDropdown("status-dropdown-rb", conDecAPI.rationaleBacklogItemStatus);
 		var statusDropdown = document.getElementById("status-dropdown-rb");
 		statusDropdown.addEventListener("change", function (e) {
-			conDecRationaleBacklogPage.updateView();
+			conDecRationaleBacklog.updateView();
 		});
 		conDecAPI.fillDecisionGroupSelect("select2-decision-group-rb");
 
@@ -161,6 +161,6 @@
 		return true;
 	}
 
-	// export ConDecRationaleBacklogPage
-	global.conDecRationaleBacklogPage = new ConDecRationaleBacklogPage();
+	// export ConDecRationaleBacklog
+	global.conDecRationaleBacklog = new ConDecRationaleBacklog();
 })(window);
