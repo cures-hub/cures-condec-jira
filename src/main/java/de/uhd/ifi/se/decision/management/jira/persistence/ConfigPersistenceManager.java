@@ -1,12 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.atlassian.gzipfilter.org.apache.commons.lang.math.NumberUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
@@ -15,12 +8,17 @@ import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
-
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+
+import java.lang.reflect.Type;
+import java.util.*;
 
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
@@ -28,9 +26,9 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
  */
 public class ConfigPersistenceManager {
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentAccessor
-			.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
+		.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
 	private static TransactionTemplate transactionTemplate = ComponentAccessor
-			.getOSGiComponentInstanceOfType(TransactionTemplate.class);
+		.getOSGiComponentInstanceOfType(TransactionTemplate.class);
 
 	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
@@ -77,6 +75,11 @@ public class ConfigPersistenceManager {
 		return "";
 	}
 
+	public static Object getValueAsObject(String projectKey, String parameter, Type type) {
+		Gson gson = new Gson();
+		return gson.fromJson(getValue(projectKey, parameter), type);
+	}
+
 	public static String getWebhookSecret(String projectKey) {
 		return getValue(projectKey, "webhookSecret");
 	}
@@ -88,7 +91,7 @@ public class ConfigPersistenceManager {
 	public static String getDecisionTableCriteriaQuery(String projectKey) {
 		return getValue(projectKey, "criteriaQuery");
 	}
-	
+
 	public static boolean isActivated(String projectKey) {
 		String isActivated = getValue(projectKey, "isActivated");
 		return "true".equals(isActivated);
@@ -169,7 +172,7 @@ public class ConfigPersistenceManager {
 	public static void setDecisionTableCriteriaQuery(String projectKey, String query) {
 		setValue(projectKey, "criteriaQuery", query);
 	}
-	
+
 	// TODO Testing
 	public static void setPostSquashedCommits(String projectKey, Boolean checked) {
 		setValue(projectKey, "isPostSquashedCommitsActivated", Boolean.toString(checked));
@@ -220,7 +223,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
-			boolean isKnowledgeTypeEnabled) {
+											   boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
@@ -234,6 +237,14 @@ public class ConfigPersistenceManager {
 		settings.put(ComponentGetter.PLUGIN_KEY + "." + parameter, value);
 	}
 
+	public static void setValue(String projectKey, String parameter, Object value) {
+		if (projectKey == null || value == null) {
+			return;
+		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(ComponentGetter.PLUGIN_KEY + "." + parameter, value);
+	}
+
 	public static void setValue(String projectKey, String parameter, String value) {
 		if (projectKey == null || value == null) {
 			return;
@@ -241,6 +252,12 @@ public class ConfigPersistenceManager {
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 		settings.put(ComponentGetter.PLUGIN_KEY + "." + parameter, value);
 	}
+
+	public static void setValueAsObject(String projectKey, String parameter, Object value, Type type) {
+		Gson gson = new Gson();
+		setValue(projectKey, parameter, gson.toJson(value, type));
+	}
+
 
 	public static void setWebhookEnabled(String projectKey, boolean isWebhookEnabled) {
 		setValue(projectKey, "isWebhookEnabled", Boolean.toString(isWebhookEnabled));
@@ -270,7 +287,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setReleaseNoteMapping(String projectKey, ReleaseNoteCategory category,
-			List<String> selectedIssueNames) {
+											 List<String> selectedIssueNames) {
 		String joinedIssueNames = String.join(",", selectedIssueNames);
 		setValue(projectKey, "releaseNoteMapping" + "." + category, joinedIssueNames);
 	}
@@ -319,32 +336,67 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setRDFKnowledgeSource(String projectKey, RDFSource rdfSource) {
-		setValue(projectKey, "rdfsource.name", rdfSource.getName());
-		setValue(projectKey, "rdfsource.query", rdfSource.getQueryString());
-		setValue(projectKey, "rdfsource.service", rdfSource.getService());
-		setValue(projectKey, "rdfsource.timeout", rdfSource.getTimeout());
-		setValue(projectKey, "rdfsource.isActivated", Boolean.toString(rdfSource.isActivated()));
+		List<RDFSource> rdfSourceList;
+		Type type = new TypeToken<List<RDFSource>>() {
+		}.getType();
+		if (rdfSource != null) {
+			try {
+				rdfSourceList = (List<RDFSource>) getValueAsObject(projectKey, "rdfsource.list", type);
+			} catch (JsonSyntaxException e) {
+				rdfSourceList = new ArrayList<>();
+				setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, type);
+			}
+
+			rdfSource.setActivated(true); //default:  activated
+			rdfSourceList.add(rdfSource);
+
+			setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, type);
+
+		}
+
 	}
 
 	public static List<RDFSource> getRDFKnowledgeSource(String projectKey) {
-		List<String> names = Arrays.asList(getValue(projectKey, "rdfsource.name").split(";;"));
-		List<String> queries = Arrays.asList(getValue(projectKey, "rdfsource.query").split(";;"));
-		List<String> services = Arrays.asList(getValue(projectKey, "rdfsource.service").split(";;"));
-		List<String> params = Arrays.asList(getValue(projectKey, "rdfsource.timeout").split(";;"));
-		List<String> activation = Arrays.asList(getValue(projectKey, "rdfsource.isActivated").split(";;"));
-
-		List<RDFSource> rdfSources = new ArrayList<>();
-
+		List<RDFSource> rdfSourceList = new ArrayList<>();
+		Type type = new TypeToken<List<RDFSource>>() {
+		}.getType();
 		try {
-			for (int i = 0; i < names.size(); ++i) {
-				RDFSource rdfSource = new RDFSource(projectKey, services.get(i), queries.get(i), names.get(i), params.get(i), true);
-				rdfSources.add(rdfSource);
-			}
-		} catch (IndexOutOfBoundsException e) {
-			e.printStackTrace();
+			rdfSourceList = (List<RDFSource>) getValueAsObject(projectKey, "rdfsource.list", type);
+		} catch (JsonSyntaxException e) {
+		} finally {
+			return rdfSourceList == null ? new ArrayList<>() : rdfSourceList;
 		}
-
-		return rdfSources;
 	}
 
+	public static void deleteKnowledgeSource(String projectKey, String knowledgeSourceName) {
+		List<RDFSource> rdfSourceList = getRDFKnowledgeSource(projectKey);
+		int index = -1;
+		for (int i = 0; i < rdfSourceList.size(); ++i) {
+			if (knowledgeSourceName.equals(rdfSourceList.get(i).getName())) {
+				index = i;
+				break;
+			}
+		}
+		if (index != -1) {
+			rdfSourceList.remove(index);
+			Type listType = new TypeToken<List<RDFSource>>() {
+			}.getType();
+			setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, listType);
+		}
+	}
+
+	public static void setRDFKnowledgeSourceActivation(String projectKey, String rdfSourceName, boolean isActivated) {
+		List<RDFSource> rdfSourceList = getRDFKnowledgeSource(projectKey);
+		Type listType = new TypeToken<List<RDFSource>>() {
+		}.getType();
+
+		for (int i = 0; i < rdfSourceList.size(); ++i) {
+			if (rdfSourceName.equals(rdfSourceList.get(i).getName())) {
+				rdfSourceList.get(i).setActivated(isActivated);
+				break;
+			}
+		}
+
+		setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, listType);
+	}
 }

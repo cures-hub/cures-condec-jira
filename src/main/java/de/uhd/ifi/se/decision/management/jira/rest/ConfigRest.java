@@ -1,36 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
-
+import com.google.gson.Gson;
 import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.ConsistencyCheckEventListenerSingleton;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
@@ -47,6 +27,19 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.File;
+import java.util.*;
 
 /**
  * REST resource for plug-in configuration
@@ -919,7 +912,8 @@ public class ConfigRest {
 	@POST
 	public Response setRDFKnowledgeSource(@Context HttpServletRequest request,
 										  @QueryParam("projectKey") String projectKey,
-										  @QueryParam("name") String name, @QueryParam("query") String query, @QueryParam("service") String service, @QueryParam("timeout") String timeout) {
+										  String rdfSourceJSON) {
+
 		Response response = this.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
@@ -928,13 +922,65 @@ public class ConfigRest {
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
-		if (name.isBlank() || query.isBlank() || service.isBlank() || timeout.isBlank()) {
+
+		Gson gson = new Gson();
+		RDFSource rdfSource = gson.fromJson(rdfSourceJSON, RDFSource.class);
+
+		if (rdfSource == null || rdfSource.getName().isBlank()) {
 			return Response.status(Status.BAD_REQUEST)
 				.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
 		}
 
-		RDFSource rdfSource = new RDFSource(projectKey, service, query, name, timeout, true);
+		for (RDFSource rdfSourceCheck : ConfigPersistenceManager.getRDFKnowledgeSource(projectKey)) {
+			if (rdfSourceCheck.getName().equals(rdfSource.getName())) return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "The name of the knowledge already exists.")).build();
+		}
+
 		ConfigPersistenceManager.setRDFKnowledgeSource(projectKey, rdfSource);
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
+	@Path("/deleteKnowledgeSource")
+	@POST
+	public Response deleteKnowledgeSource(@Context HttpServletRequest request,
+										  @QueryParam("projectKey") String projectKey,
+										  @QueryParam("knowledgeSourceName") String knowledgeSourceName) {
+		Response response = this.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+		response = checkIfProjectKeyIsValid(projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+		if (knowledgeSourceName.isBlank()) {
+			return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "The knowledge source must not be empty.")).build();
+		}
+
+		ConfigPersistenceManager.deleteKnowledgeSource(projectKey, knowledgeSourceName);
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
+	@Path("/setKnowledgeSourceActivated")
+	@POST
+	public Response setKnowledgeSourceActivated(@Context HttpServletRequest request,
+												@QueryParam("projectKey") String projectKey,
+												@QueryParam("knowledgeSourceName") String knowledgeSourceName, @QueryParam("isActivated") boolean isActivated) {
+		Response response = this.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+		response = checkIfProjectKeyIsValid(projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+		if (knowledgeSourceName.isBlank()) {
+			return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "The knowledge source must not be empty.")).build();
+		}
+
+		ConfigPersistenceManager.setRDFKnowledgeSourceActivation(projectKey, knowledgeSourceName, isActivated);
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
