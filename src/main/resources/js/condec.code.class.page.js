@@ -39,7 +39,7 @@
             treeViewer = _treeViewer;
 
             // Register/subscribe this view as an observer
-            conDecObservable.subscribe(this);
+            // conDecObservable.subscribe(this);
 
             return true;
         }
@@ -58,8 +58,13 @@
         console.log("ConDecCodeClassPage initializeDecisionKnowledgePage");
 
         conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input-code", function() {
-        	updateView(null, treant, treeViewer);
+        	conDecCodeClassPage.updateView(null, treant, treeViewer);
         });
+        
+        var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input-code");
+		isOnlyDecisionKnowledgeShownInput.addEventListener("change", function(e) {
+			conDecCodeClassPage.updateView();
+		});
 
         conDecAPI.fillDecisionGroupSelect("select2-code-decision-group");
 
@@ -70,10 +75,14 @@
         /* get cache or server data? */
 		var knowledgeTypes = ["codeClass"];
         var selectedGroups = conDecFiltering.getSelectedGroups("select2-code-decision-group");
+        var minLinkNumber = document.getElementById("min-number-linked-issues-input").value;
+		var maxLinkNumber = document.getElementById("max-number-linked-issues-input").value;
 		var filterSettings = {
 			"jiraIssueTypes" : knowledgeTypes,
 			"linkDistance" : 0,
-			"groups" : selectedGroups
+			"groups" : selectedGroups,
+			"minDegree" : minLinkNumber,
+			"maxDegree" : maxLinkNumber
 		};
         treeViewer.buildTreeViewer(filterSettings, "#code-class-tree", "#jstree-search-input-code", "code-class-tree");
         if (nodeId === undefined) {
@@ -89,8 +98,6 @@
             var linkDistance = document.getElementById("link-distance-input-code").value;
             treant.buildClassTreant(node.key, true, "", false, linkDistance);
         });
-
-        treeViewer.minMaxFilter("#code-class-tree");
     }
 
     /*
@@ -145,5 +152,5 @@
     }
 
     // export ConDecCodeClassPage
-    global.ConDecCodeClassPage = new ConDecCodeClassPage();
+    global.conDecCodeClassPage = new ConDecCodeClassPage();
 })(window);

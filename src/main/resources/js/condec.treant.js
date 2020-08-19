@@ -30,6 +30,7 @@
 
     /*
      * external references: condec.code.class.page.js
+     * TODO Remove this method and replace it by "buildTreant"
      */
     ConDecTreant.prototype.buildClassTreant = function (elementKey, isInteractive, searchTerm, isIssueView, linkDistance) {
         console.log("conDecTreant buildClassTreant");
@@ -38,7 +39,7 @@
         var minLinkNumber = 1;
         var maxLinkNumber = 100;
         if (!isIssueView) {
-            checkboxflag = document.getElementById("show-without-elements-input").checked;
+            checkboxflag = document.getElementById("is-decision-knowledge-only-input-code").checked;
         } else {
             minLinkNumber = document.getElementById("min-number-linked-issues-input").value;
             maxLinkNumber = document.getElementById("max-number-linked-issues-input").value;
