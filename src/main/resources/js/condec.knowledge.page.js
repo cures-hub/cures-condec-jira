@@ -115,14 +115,12 @@
 		var knowledgeType = jQueryConDec("select[name='select-root-element-type']").val();
 		var selectedStatus = conDecFiltering.getSelectedItems("status-dropdown-overview");
 		var knowledgeTypes = [knowledgeType];
-		var projectKey = conDecAPI.getProjectKey();
 		var filterSettings = {
-			"projectKey": projectKey,
 			"jiraIssueTypes": knowledgeTypes,
 			"linkDistance": 0,
 			"status": selectedStatus
 		};
-        treeViewer.buildTreeViewer(filterSettings, "#jstree", "#jstree-search-input");
+        treeViewer.buildTreeViewer(filterSettings, "#jstree", "#jstree-search-input", "jstree");
         if (nodeId === undefined) {
             var rootElement = treant.getCurrentRootElement();
             if (rootElement) {

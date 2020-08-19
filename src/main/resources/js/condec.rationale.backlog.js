@@ -69,12 +69,11 @@
 		var knowledgeTypes = ["Issue", "Alternative", "Decision", "Pro", "Con"];
 		var issueStatus = conDecAPI.issueStatus[1];
 		var filterSettings = {
-			"projectKey": projectKey,
 			"jiraIssueTypes": knowledgeTypes,
 			"linkDistance": 0,
 			"status" : [issueStatus]
 		};
-		treeViewer.buildTreeViewer(filterSettings, "#rationale-backlog-tree", "#text-search-input-rb");
+		treeViewer.buildTreeViewer(filterSettings, "#rationale-backlog-tree", "#text-search-input-rb", "rationale-backlog-tree");
 		// if (nodeId === undefined) {
 		// 	var rootElement = treant.getCurrentRootElement();
 		// 	if (rootElement) {

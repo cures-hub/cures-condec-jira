@@ -69,13 +69,11 @@
     function updateView(nodeId, treant, treeViewer) {
         /* get cache or server data? */
 		var knowledgeTypes = ["codeClass"];
-		var projectKey = conDecAPI.getProjectKey();
 		var filterSettings = {
-			"projectKey": projectKey,
 			"jiraIssueTypes": knowledgeTypes,
 			"linkDistance": 0
 		};
-        treeViewer.buildTreeViewer(filterSettings, "#code-class-tree", "#jstree-search-input-code");
+        treeViewer.buildTreeViewer(filterSettings, "#code-class-tree", "#jstree-search-input-code", "code-class-tree");
         if (nodeId === undefined) {
             var rootElement = treant.getCurrentRootElement();
             if (rootElement) {

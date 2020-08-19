@@ -4,9 +4,9 @@
     };
 
     /**
-     * called by condec.knowledge.page.js, condec.rationale.backlog.js
+     * called by condec.knowledge.page.js, condec.rationale.backlog.js, condec.code.class.page.js
      */
-    ConDecTreeViewer.prototype.buildTreeViewer = function (filterSettings, treeId, searchInputId) {
+    ConDecTreeViewer.prototype.buildTreeViewer = function (filterSettings, treeId, searchInputId, container) {
         console.log("conDecTreeViewer buildTreeViewer");
         this.resetTreeViewer(treeId);
         conDecAPI.getTreeViewer(filterSettings, function (core) {
@@ -23,10 +23,16 @@
             });
         });
         this.addDragAndDropSupportForTreeViewer(treeId);
-        this.addContextMenuToTreeViewer(null, treeId);
+        this.addContextMenuToTreeViewer(container, treeId);
     };
 
     ConDecTreeViewer.prototype.addContextMenuToTreeViewer = function (container, treeId) {
+    	if (treeId === "#code-class-tree") {
+    		/*
+    		 * @issue Should it be possible to change code classes using the context menu?
+    		 */
+    		return;
+    	}
         console.log("conDecTreeViewer addContextMenuToTreeViewer");
         jQueryConDec(treeId).on("contextmenu.jstree", function (event) {
             event.preventDefault();
@@ -37,7 +43,7 @@
 
             if (event.target.parentNode.classList.contains("sentence")) {
                 conDecContextMenu.createContextMenu(id, "s", event, container);
-            } else if (treeId !== "#code-class-tree") {
+            } else {
             	conDecContextMenu.createContextMenu(id, "i", event, container);
             }
         });

@@ -1,6 +1,6 @@
 /*
  This tab panel view does:
- * show a tree of decision knowledge and other knowledge (requirements, tasks, bug reports, ...)
+ * show a tree of decision knowledge elements and other knowledge elements (requirements, tasks, bug reports, ...)
  * enable to filter the tree of knowledge
 
  Requires
@@ -12,6 +12,7 @@
  * tabPanel.vm 
  */
 (function(global) {
+	
 	/* private vars */
 	var contextMenu = null;
 	var conDecAPI = null;
@@ -30,7 +31,7 @@
 		contextMenu = _contextMenu;
 
 		// Register/subscribe this view as an observer
-		conDecObservable.subscribe(this);
+		// conDecObservable.subscribe(this);
 
 		return true;
 	};
@@ -48,8 +49,7 @@
 				"jiraIssueTypes": selectedKnowledgeTypes,
 				"selectedElement": jiraIssueKey
 		};
-		treeViewer.buildTreeViewer(filterSettings, "#jstree", "#jstree-search-input");
-		// issue-container
+		treeViewer.buildTreeViewer(filterSettings, "#jstree", "#jstree-search-input", "issue-container");
 		jQueryConDec("#jstree").on("loaded.jstree", function() {
 			jQueryConDec("#jstree").jstree("open_all");
 		});
