@@ -35,16 +35,24 @@
 		return true;
 	};
 
-	ConDecIssueTab.prototype.fetchAndRender = function() {
-		buildTreeViewer(null);
+	ConDecIssueTab.prototype.fetchAndRender = function () {
+		this.updateView();
 	};
 
 	/* triggered by onchange event in tabPanel.vm */
-	ConDecIssueTab.prototype.updateView = function updateView() {
+	ConDecIssueTab.prototype.updateView = function () {
 		console.log("conDecIssueTab updateView");
-		treeViewer.resetTreeViewer("#jstree");
 		var selectedKnowledgeTypes = getSelectedKnowledgeTypes();
-		buildTreeViewer(selectedKnowledgeTypes);
+		var jiraIssueKey = conDecAPI.getIssueKey();
+		var filterSettings = {
+				"jiraIssueTypes": selectedKnowledgeTypes,
+				"selectedElement": jiraIssueKey
+		};
+		treeViewer.buildTreeViewer(filterSettings, "#jstree", "#jstree-search-input");
+		// issue-container
+		jQueryConDec("#jstree").on("loaded.jstree", function() {
+			jQueryConDec("#jstree").jstree("open_all");
+		});
 	};
 
 	function getSelectedKnowledgeTypes() {
@@ -60,48 +68,6 @@
 			}
 		}
 		return selectedKnowledgeTypes;
-	}
-
-	function buildTreeViewer(selectedKnowledgeTypes) {
-		console.log("conDecIssueTab buildTreeViewer");
-
-		var jiraIssueKey = conDecAPI.getIssueKey();
-		var filterSettings = {
-				"jiraIssueTypes": selectedKnowledgeTypes,
-				"selectedElement": jiraIssueKey
-		};
-		conDecAPI.getTreeViewer(filterSettings, function(core) {
-			console.log("conDecTabPanel getTreeViewer callback");
-
-			jQueryConDec("#jstree").jstree({
-			    "core" : core,
-			    "plugins" : [ "dnd", "wholerow", "search", "sort", "state" ],
-			    "search" : {
-				    "show_only_matches" : true
-			    },
-			    "sort" : sortfunction
-			});
-			jQueryConDec("#jstree").on("loaded.jstree", function() {
-				jQueryConDec("#jstree").jstree("open_all");
-			});
-			$("#jstree-search-input").keyup(function() {
-				var searchString = $(this).val();
-				jQueryConDec("#jstree").jstree(true).search(searchString);
-			});
-			treeViewer.addDragAndDropSupportForTreeViewer("#jstree");
-			treeViewer.addContextMenuToTreeViewer("issue-container", "#jstree");
-		});
-	}
-
-	/* used by buildTreeViewer */
-	function sortfunction(a, b) {
-		a1 = this.get_node(a);
-		b1 = this.get_node(b);
-		if (a1.id > b1.id) {
-			return 1;
-		} else {
-			return -1;
-		}
 	}
 
 	// export ConDecIssueTab

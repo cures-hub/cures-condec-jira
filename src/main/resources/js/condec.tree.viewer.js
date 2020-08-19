@@ -6,7 +6,7 @@
     /**
      * called by condec.knowledge.page.js, condec.rationale.backlog.js
      */
-    ConDecTreeViewer.prototype.buildTreeViewer = function buildTreeViewer(filterSettings, treeId, searchInputId) {
+    ConDecTreeViewer.prototype.buildTreeViewer = function (filterSettings, treeId, searchInputId) {
         console.log("conDecTreeViewer buildTreeViewer");
         this.resetTreeViewer(treeId);
         conDecAPI.getTreeViewer(filterSettings, function (core) {
@@ -46,7 +46,7 @@
     /**
      * called by condec.tab.panel.js and locally
      */
-    ConDecTreeViewer.prototype.resetTreeViewer = function resetTreeViewer(treeId) {
+    ConDecTreeViewer.prototype.resetTreeViewer = function (treeId) {
         console.log("conDecTreeViewer resetTreeViewer");
         var treeViewer = jQueryConDec(treeId).jstree(true);
         if (treeViewer) {

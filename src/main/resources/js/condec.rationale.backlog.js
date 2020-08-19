@@ -1,8 +1,6 @@
 /*
-	This view provides a backlog for decision knowledge.
+ *	This view provides a backlog for decision knowledge.
  */
-
-
 (function (global) {
 	/* private vars */
 	var conDecObservable = null;
@@ -41,7 +39,7 @@
 
 	ConDecRationaleBacklog.prototype.fetchAndRender = function () {
 		initializeRationaleBacklog(conDecAPI, treant, treeViewer);
-	}
+	};
 
 	ConDecRationaleBacklog.prototype.updateView = function () {
 		updateView(null, treant, treeViewer);
