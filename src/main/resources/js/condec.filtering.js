@@ -23,6 +23,7 @@
 			dropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + "checked" + ">" + items[index]
 			        + "</aui-item-checkbox>");
 		}
+		return dropdown;
 	};
 
 	/*

@@ -97,8 +97,7 @@
 			conDecKnowledgePage.updateView();
 		});
 
-		conDecFiltering.initDropdown("status-dropdown-overview", conDecAPI.knowledgeStatus);
-		var statusDropdown = document.getElementById("status-dropdown-overview");
+		var statusDropdown = conDecFiltering.initDropdown("status-dropdown-overview", conDecAPI.knowledgeStatus);
 		statusDropdown.addEventListener("change", function(e) {
 			conDecKnowledgePage.updateView();
 		});

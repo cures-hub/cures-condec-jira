@@ -49,10 +49,14 @@
 		console.log("conDecRationaleBacklog initializeRationaleBacklog");
 
 		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input-rb", function() {
-			updateView(null, treant, treeViewer);
+			conDecRationaleBacklog.updateView();
 		});
 
-		conDecFiltering.initDropdown("knowledge-type-dropdown-rb", conDecAPI.getKnowledgeTypes());
+		var knowledgeTypeDropdown = conDecFiltering.initDropdown("knowledge-type-dropdown-rb", conDecAPI.getKnowledgeTypes());
+		knowledgeTypeDropdown.addEventListener("change", function(e) {
+			conDecRationaleBacklog.updateView();
+		});
+
 		conDecFiltering.initDropdown("status-dropdown-rb", conDecAPI.rationaleBacklogItemStatus);
 		var statusDropdown = document.getElementById("status-dropdown-rb");
 		statusDropdown.addEventListener("change", function (e) {
@@ -66,7 +70,7 @@
 
 
 	function updateView(nodeId, treant, treeViewer) {
-		var knowledgeTypes = ["Issue", "Alternative", "Decision", "Pro", "Con"];
+		var knowledgeTypes = conDecFiltering.getSelectedItems("knowledge-type-dropdown-rb");
 		var selectedStatus = conDecFiltering.getSelectedItems("status-dropdown-rb");
 		var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-rb");
 		var filterSettings = {
