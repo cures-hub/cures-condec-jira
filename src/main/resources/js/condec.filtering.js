@@ -39,6 +39,20 @@
 		}
 		return selectedItems;
 	};
+	
+	/*
+	 * external references: condec.knowledge.page, condec.evolution.page, condec.relationship.page
+	 */
+	ConDecFiltering.prototype.getSelectedGroups = function(selectId) {
+		var selectedGroupsObj = AJS.$("#" + selectId).select2("data");
+        var selectedGroups = [];
+        for (var i = 0; i <= selectedGroupsObj.length; i++) {
+            if (selectedGroupsObj[i]) {
+                selectedGroups[i] = selectedGroupsObj[i].text;
+            }
+        }
+		return selectedGroups;
+	};
 
 	/*
 	 * external references: condec.jira.issue.module, condec.knowledge.page

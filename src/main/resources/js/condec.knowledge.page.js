@@ -39,7 +39,7 @@
 			treeViewer = _treeViewer;
 
 			// Register/subscribe this view as an observer
-			conDecObservable.subscribe(this);
+			// conDecObservable.subscribe(this);
 			return true;
 		}
 		return false;
@@ -115,13 +115,7 @@
 		var knowledgeType = jQueryConDec("select[name='select-root-element-type']").val();
 		var selectedStatus = conDecFiltering.getSelectedItems("status-dropdown-overview");
 		var knowledgeTypes = [ knowledgeType ];
-		var selectedGroupsObj = $('#select2-decision-group').select2('data');
-		var selectedGroups = [];
-		for (var i = 0; i <= selectedGroupsObj.length; i++) {
-			if (selectedGroupsObj[i]) {
-				selectedGroups[i] = selectedGroupsObj[i].text;
-			}
-		}
+		var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group");
 		var filterSettings = {
 		    "jiraIssueTypes" : knowledgeTypes,
 		    "linkDistance" : 0,

@@ -111,7 +111,6 @@
 		});
 	};
 
-
 	// TODO Replace by backend filtering?
 	ConDecTreeViewer.prototype.minMaxFilter = function (treeId) {
 		console.log("conDecTreeViewer filterNodesByGroup");

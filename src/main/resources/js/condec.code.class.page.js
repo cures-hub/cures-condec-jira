@@ -69,13 +69,7 @@
     function updateView(nodeId, treant, treeViewer) {
         /* get cache or server data? */
 		var knowledgeTypes = ["codeClass"];
-		var selectedGroupsObj = $('#select2-code-decision-group').select2('data');
-        var selectedGroups = [];
-        for (var i = 0; i <= selectedGroupsObj.length; i++) {
-            if (selectedGroupsObj[i]) {
-                selectedGroups[i] = selectedGroupsObj[i].text;
-            }
-        }
+        var selectedGroups = conDecFiltering.getSelectedGroups("select2-code-decision-group");
 		var filterSettings = {
 			"jiraIssueTypes" : knowledgeTypes,
 			"linkDistance" : 0,
