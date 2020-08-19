@@ -198,14 +198,7 @@
                 secondDate = document.getElementById("end-date-picker").valueAsNumber;
             }
             var searchString = document.getElementById("time-search-input").value;
-
-            var selectedGroupsObj = $('#select2-decision-group-chrono').select2('data');
-            var selectedGroups = [];
-            for (var i = 0; i <= selectedGroupsObj.length; i++) {
-                if (selectedGroupsObj[i]) {
-                    selectedGroups[i] = selectedGroupsObj[i].text;
-                }
-            }
+            var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-chrono");
 
             conDecAPI.getEvolutionData(searchString, firstDate, secondDate, knowledgeTypes, issueStatus, selectedGroups, function (visData) {
                 var data = visData.dataSet;

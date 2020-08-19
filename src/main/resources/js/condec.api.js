@@ -36,7 +36,8 @@
 
 		this.optionStatus = ["idea", "discarded", "decided", "rejected", "undefined"];
 		this.issueStatus = ["resolved", "unresolved"];
-		this.knowledgeStatus = this.optionStatus.concat(this.issueStatus);
+		this.knowledgeStatus = this.optionStatus.concat(this.issueStatus)
+		this.rationaleBacklogItemStatus = ["challenged", "unresolved", "incomplete"];
 	};
 
 	/**
@@ -365,24 +366,6 @@
 	};
 
 	/*
-	 * external references: condec.dialog
-	 */
-	ConDecAPI.prototype.deleteDecisionKnowledgeElement = function (id, documentationLocation, callback) {
-		var element = {
-				"id": id,
-				"projectKey": projectKey,
-				"documentationLocation": documentationLocation
-		};
-		generalApi.deleteJSON(this.restPrefix + "/knowledge/deleteDecisionKnowledgeElement.json", element,
-				function (error, isDeleted) {
-			if (error === null) {
-				showFlag("success", "Decision knowledge element has been deleted.");
-				callback();
-			}
-		});
-	};
-
-	/*
 	 * external references: condec.export
 	 */
 	ConDecAPI.prototype.getElements = function (query, callback) {
@@ -432,9 +415,9 @@
 	/*
 	 * external references: condec.tree.viewer
 	 */
-	ConDecAPI.prototype.getTreeViewer = function (rootElementType, callback) {
-		generalApi.getJSON(this.restPrefix + "/view/getTreeViewer.json?projectKey=" + projectKey
-				+ "&rootElementType=" + rootElementType, function (error, core) {
+	ConDecAPI.prototype.getTreeViewer = function (filterSettings, callback) {
+		filterSettings["projectKey"] = projectKey;
+		generalApi.postJSON(this.restPrefix + "/view/getTreeViewer.json", filterSettings, function (error, core) {
 			if (error === null) {
 				callback(core);
 			}
@@ -453,6 +436,7 @@
 				"selectedElement": elementKey,
 				"groups": null
 		};
+
 		generalApi.postJSON(this.restPrefix + "/view/getTreant.json", filterSettings, function (error, treant) {
 			if (error === null) {
 				callback(treant);
@@ -477,14 +461,29 @@
 		} else {
 			filterSettings["isOnlyDecisionKnowledgeShown"] = checkboxflag;
 		}
-		
-		generalApi.postJSON(this.restPrefix + "/view/getClassTreant.json?&elementKey=" + elementKey + "&isIssueView=" + isIssueView, 
+
+		generalApi.postJSON(this.restPrefix + "/view/getClassTreant.json?&elementKey=" + elementKey + "&isIssueView=" + isIssueView,
 				filterSettings, function (error, treant) {
 			if (error === null) {
 				callback(treant);
 			}
 		});
 	};
+
+		ConDecAPI.prototype.getRationaleBacklogTreant = function (elementKey, linkDistance, searchTerm, checkboxflag, callback) {
+			var filterSettings = {
+				"projectKey": projectKey,
+				"searchTerm": searchTerm,
+				"isOnlyDecisionKnowledgeShown": checkboxflag,
+				"linkDistance": linkDistance
+			};
+			generalApi.postJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey,
+				filterSettings, function (error, treant) {
+					if (error === null) {
+						callback(treant);
+					}
+				});
+		};
 
 	/*
 	 * external references: condec.jira.issue.module
@@ -571,23 +570,6 @@
 				+ "&searchTerm=" + searchTerm, function (error, filterSettings) {
 			if (error === null) {
 				callback(filterSettings);
-			}
-		});
-	};
-
-	/*
-	 * external references: condec.tab.panel
-	 */
-	ConDecAPI.prototype.getTreeViewerForSingleElement = function (jiraIssueKey, knowledgeTypes, callback) {
-		var filterSettings = {
-				"projectKey": projectKey,
-				"jiraIssueTypes": knowledgeTypes,
-				"selectedElement": jiraIssueKey,
-				"groups": null
-		};
-		generalApi.postJSON(this.restPrefix + "/view/getTreeViewerForSingleElement.json", filterSettings, function (error, core) {
-			if (error === null) {
-				callback(core);
 			}
 		});
 	};
@@ -791,7 +773,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.deleteGitRepos = function (projectKey) {
-		generalApi.postJSON(this.restPrefix + "/config/deleteGitRepos.json?projectKey=" + projectKey, null, 
+		generalApi.postJSON(this.restPrefix + "/config/deleteGitRepos.json?projectKey=" + projectKey, null,
 				function (error, response) {
 			if (error === null) {
 				showFlag("success", "The git repos for this project were deleted.");
@@ -880,11 +862,12 @@
 				"selectedElement": elementKey,
 				"groups": null
 		};
-		generalApi.postJSON(this.restPrefix + "/view/getDecisionIssues.json", filterSettings, 
+
+		generalApi.postJSON(this.restPrefix + "/view/getDecisionIssues.json", filterSettings,
 				function (error, issues) {
 			if (error === null) {
 				callback(issues);
-			} 
+			}
 		});
 	};
 
@@ -916,7 +899,7 @@
 	 * external reference: rationaleModelSettings.vm
 	 */
 	ConDecAPI.prototype.testDecisionTableCriteriaQuery = function(projectKey, query, callback) {
-		generalApi.postJSON(this.restPrefix + `/config/testDecisionTableCriteriaQuery.json?projectKey=${projectKey}&query=${query}`, 
+		generalApi.postJSON(this.restPrefix + `/config/testDecisionTableCriteriaQuery.json?projectKey=${projectKey}&query=${query}`,
 				null, function (error, issues) {
 			if (error === null) {
 				callback(issues);
@@ -949,7 +932,7 @@
 	 * external reference: rationaleModelSettings.vm
 	 */
 	ConDecAPI.prototype.getDecisionTableCriteriaQuery = function(projectKey, callback) {
-		generalApi.getJSON(this.restPrefix + `/config/getDecisionTableCriteriaQuery.json?projectKey=${projectKey}`, 
+		generalApi.getJSON(this.restPrefix + `/config/getDecisionTableCriteriaQuery.json?projectKey=${projectKey}`,
 				function (error, query) {
 			if (error === null) {
 				callback(query);

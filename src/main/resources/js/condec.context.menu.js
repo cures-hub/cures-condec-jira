@@ -225,6 +225,7 @@
 		};
 	}
 
+	// TODO Simplify, this is too complicated!
 	function showOrHideContextMenuItems(id, documentationLocation, container) {
 		document.getElementById("fifth-context-section").style.display = "none";
 		document.getElementById("first-context-section").style.display = "block";

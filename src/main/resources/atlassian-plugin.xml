@@ -65,7 +65,7 @@
 		<resource type="download" name="matrix.css" location="/css/matrix.css" />
 
 		<resource type="download" name="vis.css" location="/js/lib/vis/dist/vis.css" />
-		<resource type="download" name="gitdiffviewer.css" location="/css/gitdiffviewer.css" />        
+		<resource type="download" name="gitdiffviewer.css" location="/css/gitdiffviewer.css" />
 		<!-- look and feel like Jira -->
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
 		<dependency>com.atlassian.auiplugin:aui-flag</dependency>
@@ -138,6 +138,8 @@
 			location="/js/condec.decision.group.view.js" />
 		<resource type="download" name="condec.consistency.api.js"
 			location="/js/condec.consistency.api.js" />
+        <resource type="download" name="condec.rationale.backlog.js"
+                  location="/js/condec.rationale.backlog.js" />
 		<resource type="download" name="condec.config.rest.js"
 			location="/js/condec.config.rest.js" />
 		<resource type="download" name="condec.settings.consistency.js"
@@ -493,7 +495,7 @@
 	</web-resource>
 
 	<!-- ConDec feature branch dashboard item -->
-	<!-- https://developer.atlassian.com/server/jira/platform/building-a-dashboard-item/ https://developer.atlassian.com/server/jira/platform/writing-a-dashboard-item-app/ 
+	<!-- https://developer.atlassian.com/server/jira/platform/building-a-dashboard-item/ https://developer.atlassian.com/server/jira/platform/writing-a-dashboard-item-app/
 		Dashboard item will eventually replace gadgets: https://developer.atlassian.com/server/jira/platform/dashboard-item-module/ -->
 	<dashboard-item key="condec-feature-branch-dashboard-item"
 		name="ConDec Dashboard for Feature Task Branches">
