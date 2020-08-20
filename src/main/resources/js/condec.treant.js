@@ -16,7 +16,13 @@
     ConDecTreant.prototype.buildTreant = function (elementKey, isInteractive, searchTerm, isOnlyDecisionKnowledgeShown, linkDistance) {
         console.log("conDecTreant buildTreant");
         treantid = "treant-container";
-        conDecAPI.getTreant(elementKey, linkDistance, searchTerm, isOnlyDecisionKnowledgeShown, function (treeStructure) {
+		var filterSettings = {
+				"searchTerm": searchTerm,
+				"isOnlyDecisionKnowledgeShown": isOnlyDecisionKnowledgeShown,
+				"linkDistance": linkDistance,
+				"selectedElement": elementKey
+		};
+        conDecAPI.getTreant(filterSettings, function (treeStructure) {
             document.getElementById(treantid).innerHTML = "";
             treantTree = new Treant(treeStructure);
             if (isInteractive !== undefined && isInteractive) {

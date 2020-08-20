@@ -49,16 +49,7 @@
             addOnClickEventToExportAsTable();
             addOnClickEventToTab();
             addOnClickEventToFilterButton();
-            addOnClickEventToDecisionTableButtons();
-            conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input", showTreant);
-            
-            var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input");
-            isOnlyDecisionKnowledgeShownInput.addEventListener("change", showTreant);
-            
-            var searchInputTreant = document.getElementById("search-treant-input");
-            searchInputTreant.addEventListener("change", showTreant);
-            
-            
+            addOnClickEventToDecisionTableButtons();            
 
 			// initial call to api depending on selected tab!
 			determineSelectedTab(window.location.href);
@@ -140,6 +131,7 @@
         var isOnlyDecisionKnowledgeShown = document.getElementById("is-decision-knowledge-only-input").checked;
         var linkDistance = document.getElementById("link-distance-input").value;
         var search = document.getElementById("search-treant-input").value;
+        var knowledgeTypes = conDecFiltering.getSelectedItems("knowledge-type-dropdown");
         treant.buildTreant(issueKey, true, search, isOnlyDecisionKnowledgeShown, linkDistance);
     }
 
@@ -180,27 +172,29 @@
 
 	function initFilter(issueKey, search) {
 		console.log("ConDecJiraIssueModule initFilter");
-		var issueTypeDropdown = document.getElementById("issuetype-dropdown");
+		// Tree View
+		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input", showTreant);
+        
+        var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input");
+        isOnlyDecisionKnowledgeShownInput.addEventListener("change", showTreant);
+        
+        var searchInputTreant = document.getElementById("search-treant-input");
+        searchInputTreant.addEventListener("change", showTreant);
+        
+        // Graph view
 		var firstDatePicker = document.getElementById("created-after-picker");
 		var secondDatePicker = document.getElementById("created-before-picker");
 
 		conDecAPI.getFilterSettings(issueKey, search, function (filterData) {
 			var allIssueTypes = filterData.jiraIssueTypes;
 			var selectedIssueTypes = filterData.jiraIssueTypes;
-
 			var status = conDecAPI.knowledgeStatus;
-
 			var documentationLocation = filterData.documentationLocations;
-			issueTypeDropdown.innerHTML = "";
-
-			for (var index = 0; index < allIssueTypes.length; index++) {
-				var isSelected = "";
-				if (selectedIssueTypes.includes(allIssueTypes[index])) {
-					isSelected = "checked";
-				}
-				issueTypeDropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + isSelected + ">"
-					+ allIssueTypes[index] + "</aui-item-checkbox>");
-			}
+			
+			var knowledgeTypeDropdown = conDecFiltering.initDropdown("knowledge-type-dropdown", allIssueTypes, selectedIssueTypes); // Tree view
+			knowledgeTypeDropdown.addEventListener("change", showTreant);
+			
+			conDecFiltering.initDropdown("issuetype-dropdown", allIssueTypes, selectedIssueTypes); // graph view
 			conDecFiltering.initDropdown("status-dropdown", status);
 			conDecFiltering.initDropdown("documentation-dropdown", documentationLocation);
 			if (filterData.startDate >= 0) {

@@ -1,8 +1,11 @@
 <div class="aui-toolbar2" role="toolbar">
     <div class="aui-toolbar-2-inner" id="treant-filter">
-        <form class="aui">
+        <form class="aui">      	
         	#set ($textInputId = "search-treant-input")
         	#parse("templates/filter/text.vm")
+        	
+        	#set ($knowledgeTypeDropdownId = "knowledge-type-dropdown")	
+        	#parse("templates/filter/knowledgeType.vm")
         	
         	#set ($linkDistanceInputId = "link-distance-input")	
         	#parse("templates/filter/linkDistance.vm")
