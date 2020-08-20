@@ -5,7 +5,7 @@
 	var oldParentElement;
 	var treantTree;
 
-	var treantid = "treant-container";
+	var treantId = "treant-container";
 
 	var ConDecTreant = function() {
 	};
@@ -13,11 +13,14 @@
 	/*
 	 * external references: condec.jira.issue.module.js, condec.knowledge.page.js
 	 */
-	ConDecTreant.prototype.buildTreant = function(filterSettings, isInteractive) {
-		console.log("conDecTreant buildTreant");
-		treantid = "treant-container";
+	ConDecTreant.prototype.buildTreant = function(filterSettings, isInteractive, treantIdParam) {
+		console.log("conDecTreant buildTreant");		
 		conDecAPI.getTreant(filterSettings, function(treeStructure) {
-			document.getElementById(treantid).innerHTML = "";
+			if (treantIdParam !== undefined) {
+				treantId = treantIdParam;
+				treeStructure.chart.container = "#" + treantIdParam;
+			}
+			document.getElementById(treantId).innerHTML = "";
 			treantTree = new Treant(treeStructure);
 			if (isInteractive !== undefined && isInteractive) {
 				addDragAndDropSupportForTreant();
@@ -26,58 +29,6 @@
 			}
 			changeColorForNodes();
 		});
-	};
-
-	/*
-	 * external references: condec.code.class.page.js
-	 * TODO Remove this method and replace it by "buildTreant"
-	 */
-	ConDecTreant.prototype.buildClassTreant = function(elementKey, isInteractive, searchTerm, isIssueView, linkDistance) {
-		console.log("conDecTreant buildClassTreant");
-		treantid = "treant-container-class";
-		var checkboxflag = false;
-		var minLinkNumber = 1;
-		var maxLinkNumber = 100;
-		if (!isIssueView) {
-			checkboxflag = document.getElementById("is-decision-knowledge-only-input-code").checked;
-		} else {
-			minLinkNumber = document.getElementById("min-number-linked-issues-input").value;
-			maxLinkNumber = document.getElementById("max-number-linked-issues-input").value;
-			checkboxflag = document.getElementById("show-test-elements-input").checked;
-			searchTerm = document.getElementById("search-code-class-input").value;
-		}
-		conDecAPI.getClassTreant(elementKey, linkDistance, searchTerm, checkboxflag, isIssueView, minLinkNumber,
-		        maxLinkNumber, function(treeStructure) {
-			        document.getElementById(treantid).innerHTML = "";
-			        treantTree = new Treant(treeStructure);
-			        if (isInteractive !== undefined && isInteractive) {
-				        addDragAndDropSupportForTreant();
-				        addContextMenuToTreant();
-				        addTooltip();
-			        }
-			        changeColorForNodes();
-		        });
-	};
-
-	/*
-	 * external references: condec.rationaleBacklog.page.js
-	 * TODO Remove this method and replace it by usage of "buildTreant"
-	 */
-	ConDecTreant.prototype.buildRationaleBacklogTreant = function(elementKey, isInteractive, searchTerm, linkDistance) {
-		console.log("conDecTreant buildRationaleBacklogTreant");
-		treantid = "treant-rationale-backlog";
-		var checkboxflag = false;
-		conDecAPI.getRationaleBacklogTreant(elementKey, linkDistance, searchTerm, checkboxflag,
-		        function(treeStructure) {
-			        document.getElementById(treantid).innerHTML = "";
-			        treantTree = new Treant(treeStructure);
-			        if (isInteractive !== undefined && isInteractive) {
-				        addDragAndDropSupportForTreant();
-				        addContextMenuToTreant();
-				        addTooltip();
-			        }
-			        changeColorForNodes();
-		        });
 	};
 
 	function changeColorForNodes() {
@@ -201,11 +152,11 @@
 			treantNodes[i].addEventListener('contextmenu', function(event) {
 				event.preventDefault();
 				if (this.getElementsByClassName("node-desc")[0].innerHTML.includes(":")) {
-					conDecContextMenu.createContextMenu(this.id, "s", event, treantid);
+					conDecContextMenu.createContextMenu(this.id, "s", event, treantId);
 				} else if (this.getElementsByClassName("node-documentationLocation")[0].innerHTML.includes("c")) {
-					conDecContextMenu.createContextMenu(this.id, "c", event, treantid);
+					conDecContextMenu.createContextMenu(this.id, "c", event, treantId);
 				} else if (this.id) {
-					conDecContextMenu.createContextMenu(this.id, "i", event, treantid);
+					conDecContextMenu.createContextMenu(this.id, "i", event, treantId);
 				}
 			});
 		}

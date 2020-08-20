@@ -37,7 +37,6 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.DecisionTable;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
@@ -271,43 +270,6 @@ public class ViewRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		Treant treant = new Treant(filterSettings);
-		return Response.ok(treant).build();
-	}
-
-	// TODO Only use one getTreant method and work with filter settings to
-	// determine, which elements are included
-	@Path("/getClassTreant")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getClassTreant(@Context HttpServletRequest request, @QueryParam("elementKey") String elementKey,
-			@QueryParam("isIssueView") boolean isIssueView, FilterSettings filterSettings) {
-		if (request == null || elementKey == null || filterSettings == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Treant cannot be shown since request or element key is invalid."))
-					.build();
-		}
-		String projectKey = getProjectKey(elementKey);
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-
-		if (!isIssueView) {
-			/**
-			 * TODO Improve matching of elementKey to code class knowledge element, it
-			 * should be done in FilterSettings.setSelectedElement method
-			 * 
-			 * @issue How can we identify knowledge elements from different documentation
-			 *        locations?
-			 */
-			CodeClassPersistenceManager ccManager = new CodeClassPersistenceManager(projectKey);
-			KnowledgeElement element = ccManager.getKnowledgeElement(elementKey);
-			filterSettings.setSelectedElement(element);
-		} else {
-			filterSettings.setLinkDistance(1);
-		}
-
-		Treant treant = new Treant("treant-container-class", filterSettings);
 		return Response.ok(treant).build();
 	}
 

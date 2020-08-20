@@ -96,7 +96,12 @@
         jQueryConDec("#code-class-tree").on("select_node.jstree", function (error, tree) {
             var node = tree.node.data;
             var linkDistance = document.getElementById("link-distance-input-code").value;
-            treant.buildClassTreant(node.key, true, "", false, linkDistance);
+            var isOnlyDecisionKnowledgeShown = document.getElementById("is-decision-knowledge-only-input").checked;
+    		filterSettings["linkDistance"] = linkDistance;
+    		filterSettings["isOnlyDecisionKnowledgeShown"] = isOnlyDecisionKnowledgeShown;
+    		filterSettings["jiraIssueTypes"] = null;
+    		filterSettings["selectedElement"] = node.key;
+    		treant.buildTreant(filterSettings, true, "treant-container-class");
         });
     }
 

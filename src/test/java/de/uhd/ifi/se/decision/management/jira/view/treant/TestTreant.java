@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.user.ApplicationUser;
@@ -72,16 +71,6 @@ public class TestTreant extends TestSetUp {
 		FilterSettings filterSettings = new FilterSettings("TEST", null);
 		filterSettings.setSelectedElement("14");
 		this.treant = new Treant(filterSettings, false);
-		assertNotNull(this.treant);
-	}
-
-	@Test
-	@NonTransactional
-	@Ignore
-	public void testSecondConstructor() {
-		FilterSettings filterSettings = new FilterSettings("TEST", null);
-		filterSettings.setSelectedElement(classElement);
-		this.treant = new Treant("treantid", filterSettings);
 		assertNotNull(this.treant);
 	}
 
