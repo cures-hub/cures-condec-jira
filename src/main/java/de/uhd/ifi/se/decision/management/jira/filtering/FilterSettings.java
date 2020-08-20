@@ -404,7 +404,7 @@ public class FilterSettings {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(project).getJiraIssueManager();
 		}
 		selectedElement = persistenceManager.getKnowledgeElement(elementKey);
-		if (selectedElement == null || selectedElement.getKey() == null) {
+		if (!elementKey.contains(":") && (selectedElement == null || selectedElement.getKey() == null)) {
 			CodeClassPersistenceManager ccManager = new CodeClassPersistenceManager(project.getProjectKey());
 			selectedElement = ccManager.getKnowledgeElement(elementKey);
 		}
