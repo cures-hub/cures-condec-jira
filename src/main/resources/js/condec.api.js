@@ -1198,6 +1198,72 @@
 	};
 
 	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setMaxNumberRecommendations = function (projectKey, maxNumberRecommendations) {
+		generalApi.postJSON(this.restPrefix + "/config/setMaxNumberRecommendations.json?projectKey=" + projectKey + "&maxNumberRecommendations=" + maxNumberRecommendations, null, function (
+			error, response) {
+			if (error === null) {
+				showFlag("success", "Maximum number of results are updated to: " + maxNumberRecommendations );
+			}
+		});
+	};
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setRDFKnowledgeSource = function (projectKey, rdfSource) {
+		generalApi.postJSON(this.restPrefix + "/config/setRDFKnowledgeSource.json?projectKey=" + projectKey , rdfSource, function (
+			error, response) {
+			if (error === null) {
+				showFlag("success", "The Knowledgesource is updated " );
+			}
+		});
+	};
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setKnowledgeSourceActivated = function (projectKey, knowledgeSourceName, isActivated) {
+		generalApi.postJSON(this.restPrefix + "/config/setKnowledgeSourceActivated.json?projectKey=" + projectKey + "&knowledgeSourceName=" + knowledgeSourceName + "&isActivated=" + isActivated ,null, function (
+			error, response) {
+			if (error === null) {
+				if(isActivated)
+					showFlag("success", "The Knowledgesource " + knowledgeSourceName+" is activated." );
+				else {
+					showFlag("success", "The Knowledgesource " + knowledgeSourceName+" is deactivated." );
+				}
+			}
+		});
+	};
+
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setProjectSource = function (projectKey, projectSourceKey, isActivated) {
+		generalApi.postJSON(this.restPrefix + "/config/setProjectSource.json?projectKey=" + projectKey + "&projectSourceKey=" + projectSourceKey + "&isActivated=" + isActivated ,null, function (
+			error, response) {
+			if (error === null) {
+				showFlag("success", "The Knowledge Source successfully is saved!");
+			}
+		});
+	};
+
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.deleteKnowledgeSource = function (projectKey, knowledgeSourceName) {
+		generalApi.postJSON(this.restPrefix + "/config/deleteKnowledgeSource.json?projectKey=" + projectKey + "&knowledgeSourceName=" + knowledgeSourceName  ,null, function (
+			error, response) {
+			if (error === null) {
+				showFlag("success", "The Knowledgesource " + knowledgeSourceName+" was successfully deleted." );
+			}
+		});
+	};
+
+	/*
 	 * external references: condec.context.menu
 	 */
 	ConDecAPI.prototype.openJiraIssue = function (elementId, documentationLocation) {
