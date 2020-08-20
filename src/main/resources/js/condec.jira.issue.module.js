@@ -57,6 +57,8 @@
             
             var searchInputTreant = document.getElementById("search-treant-input");
             searchInputTreant.addEventListener("change", showTreant);
+            
+            
 
 			// initial call to api depending on selected tab!
 			determineSelectedTab(window.location.href);
@@ -70,10 +72,6 @@
 		issueKey = conDecAPI.getIssueKey();
 		search = getURLsSearch();
 		initFilter(issueKey, search);
-	};
-
-	ConDecJiraIssueModule.prototype.applyClassViewFilters = function () {
-		showClassTreant();
 	};
 
 	ConDecJiraIssueModule.prototype.applyTreeVisFilters = function () {
@@ -116,9 +114,6 @@
 		} else if (href.includes("#decisionTable")) {
 			AJS.tabs.change(jQuery('a[href="#decisionTable"]'));
 			showDecisionTable();
-		} else if (href.includes("#class-treant")) {
-			AJS.tabs.change(jQuery('a[href="#class-treant"]'));
-			showClassTreant();
 		} else if (href.includes("#duplicate-issues-tab")) {
 			AJS.tabs.change(jQuery('a[href="#duplicate-issues-tab"]'));
 			consistencyTabsModule.loadDuplicateData();
@@ -137,14 +132,7 @@
             event.stopPropagation();
             applyFilters();
         });
-        
-        var codeClassFilterButton = document.getElementById("code-class-filter-button");
-        codeClassFilterButton.addEventListener("click", function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            conDecJiraIssueModule.applyClassViewFilters();
-        });
-    }
+	}
 
     function showTreant() {
         console.log("ConDecJiraIssueModule showTreant");        
@@ -154,12 +142,6 @@
         var search = document.getElementById("search-treant-input").value;
         treant.buildTreant(issueKey, true, search, isOnlyDecisionKnowledgeShown, linkDistance);
     }
-
-	function showClassTreant() {
-		console.log("ConDecJiraIssueModule showClassTreant");
-		issueKey = conDecAPI.getIssueKey();
-		treant.buildClassTreant(issueKey, true, search, true);
-	}
 
 	function showGraph() {
 		console.log("ConDecJiraIssueModule showGraph");
