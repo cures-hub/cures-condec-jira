@@ -20,6 +20,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 
 /**
  * Represents the filter criteria. For example, the filter settings cover the
@@ -387,6 +388,11 @@ public class FilterSettings {
 	 *            (e.g. as root element in the knowlegde tree view). For example,
 	 *            this can be the key of a Jira issue such as a work item, bug
 	 *            report or requirement, e.g. CONDEC-123.
+	 * 
+	 * @issue How can we identify knowledge elements from different documentation
+	 *        locations?
+	 * 
+	 *        TODO Solve this issue and make code class recognition more explicit
 	 */
 	@JsonProperty("selectedElement")
 	public void setSelectedElement(String elementKey) {
@@ -397,6 +403,10 @@ public class FilterSettings {
 		} else {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(project).getJiraIssueManager();
 		}
-		this.selectedElement = persistenceManager.getKnowledgeElement(elementKey);
+		selectedElement = persistenceManager.getKnowledgeElement(elementKey);
+		if (!elementKey.contains(":") && (selectedElement == null || selectedElement.getKey() == null)) {
+			CodeClassPersistenceManager ccManager = new CodeClassPersistenceManager(project.getProjectKey());
+			selectedElement = ccManager.getKnowledgeElement(elementKey);
+		}
 	}
 }

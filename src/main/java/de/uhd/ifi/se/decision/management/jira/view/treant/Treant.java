@@ -52,18 +52,11 @@ public class Treant {
 		if (filterSettings == null) {
 			return;
 		}
-
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		this.graph = filteringManager.getSubgraphMatchingFilterSettings();
 		this.setChart(new Chart());
 		nodeStructure = getTreantNodeWithChildren(filterSettings.getSelectedElement());
 		this.setHyperlinked(isHyperlinked);
-	}
-
-	public Treant(String treantId, FilterSettings filterSettings) {
-		this(filterSettings, false);
-		// TODO Why is the treantId needed?
-		this.setChart(new Chart(treantId));
 	}
 
 	/**

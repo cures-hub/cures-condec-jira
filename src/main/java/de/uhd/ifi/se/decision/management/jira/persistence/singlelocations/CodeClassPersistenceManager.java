@@ -92,7 +92,11 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 
 	@Override
 	public KnowledgeElement getKnowledgeElement(String key) {
-		String id = key.split("-")[1];
+		String[] split = key.split("-");
+		String id = "0";
+		if (split.length > 1) {
+			id = key.split("-")[1];
+		}
 		return getKnowledgeElement(Long.parseLong(id));
 	}
 

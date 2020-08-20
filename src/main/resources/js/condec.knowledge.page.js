@@ -134,7 +134,13 @@
 			var node = tree.node.data;
 			var isOnlyDecisionKnowledgeShown = document.getElementById("is-decision-knowledge-only-input").checked;
 			var linkDistance = document.getElementById("link-distance-input").value;
-			treant.buildTreant(node.key, true, "", isOnlyDecisionKnowledgeShown, linkDistance);
+			var filterSettings = {
+					"searchTerm": "",
+					"isOnlyDecisionKnowledgeShown": isOnlyDecisionKnowledgeShown,
+					"linkDistance": linkDistance,
+					"selectedElement": node.key
+			};
+	        treant.buildTreant(filterSettings, true);
 		});
 	}
 

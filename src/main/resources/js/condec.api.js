@@ -428,63 +428,14 @@
 	/*
 	 * external references: condec.treant
 	 */
-	ConDecAPI.prototype.getTreant = function (elementKey, linkDistance, searchTerm, isOnlyDecisionKnowledgeShown, callback) {
-		var filterSettings = {
-				"projectKey": projectKey,
-				"searchTerm": searchTerm,
-				"isOnlyDecisionKnowledgeShown": isOnlyDecisionKnowledgeShown,
-				"linkDistance": linkDistance,
-				"selectedElement": elementKey,
-				"groups": null
-		};
-
+	ConDecAPI.prototype.getTreant = function (filterSettings, callback) {
+		filterSettings["projectKey"] = projectKey;
 		generalApi.postJSON(this.restPrefix + "/view/getTreant.json", filterSettings, function (error, treant) {
 			if (error === null) {
 				callback(treant);
 			}
 		});
 	};
-
-	// TODO Improve matching of elementKey to code class knowledge element
-	// TODO Get rid of this method and use getTreant and filterSettings
-	ConDecAPI.prototype.getClassTreant = function (elementKey, linkDistance, searchTerm, checkboxflag,
-			isIssueView, minLinkNumber, maxLinkNumber, callback) {
-		var filterSettings = {
-				"projectKey": projectKey,
-				"searchTerm": searchTerm,
-				"linkDistance": linkDistance,
-				"minDegree": minLinkNumber,
-				"maxDegree": maxLinkNumber,
-				"selectedElement": elementKey
-		};
-		if (isIssueView) {
-			filterSettings["isTestCodeShown"] = checkboxflag;
-		} else {
-			filterSettings["isOnlyDecisionKnowledgeShown"] = checkboxflag;
-		}
-
-		generalApi.postJSON(this.restPrefix + "/view/getClassTreant.json?&elementKey=" + elementKey + "&isIssueView=" + isIssueView,
-				filterSettings, function (error, treant) {
-			if (error === null) {
-				callback(treant);
-			}
-		});
-	};
-
-		ConDecAPI.prototype.getRationaleBacklogTreant = function (elementKey, linkDistance, searchTerm, checkboxflag, callback) {
-			var filterSettings = {
-				"projectKey": projectKey,
-				"searchTerm": searchTerm,
-				"isOnlyDecisionKnowledgeShown": checkboxflag,
-				"linkDistance": linkDistance
-			};
-			generalApi.postJSON(this.restPrefix + "/view/getTreant.json?&elementKey=" + elementKey,
-				filterSettings, function (error, treant) {
-					if (error === null) {
-						callback(treant);
-					}
-				});
-		};
 
 	/*
 	 * external references: condec.jira.issue.module

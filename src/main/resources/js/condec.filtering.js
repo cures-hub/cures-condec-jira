@@ -17,11 +17,18 @@
 	/*
 	 * external references: condec.jira.issue.module, condec.evolution.page, condec.relationship.page
 	 */
-	ConDecFiltering.prototype.initDropdown = function(dropdownId, items) {
+	ConDecFiltering.prototype.initDropdown = function(dropdownId, items, selectedItems) {
 		var dropdown = document.getElementById(dropdownId);
-		for (var index = 0; index < items.length; index++) {
-			dropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + "checked" + ">" + items[index]
-			        + "</aui-item-checkbox>");
+		dropdown.innerHTML = "";
+		var isSelected = "checked";
+		for (var index = 0; index < items.length; index++) {			
+			if (selectedItems !== undefined) {
+				if (!selectedItems.includes(items[index])) {
+					isSelected = "";
+				}
+			}			
+			dropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + isSelected + ">"
+			        + items[index] + "</aui-item-checkbox>");
 		}
 		return dropdown;
 	};
