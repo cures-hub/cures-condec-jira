@@ -470,6 +470,12 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertEquals(false, ConfigPersistenceManager.getProjectSource("TEST", "OTHERPRORJECT"));
 	}
 
+	@Test
+	public void testSetAndGetMaxRecommendations() {
+		ConfigPersistenceManager.setMaxNumberRecommendations("TEST", 10);
+		assertEquals(10, ConfigPersistenceManager.getMaxNumberRecommendations("TEST"));
+	}
+
 
 	@AfterClass
 	public static void tearDown() {

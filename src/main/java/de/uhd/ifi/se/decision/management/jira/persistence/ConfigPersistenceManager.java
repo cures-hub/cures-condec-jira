@@ -327,8 +327,8 @@ public class ConfigPersistenceManager {
 		return "true".equals(getValue(projectKey, eventKey));
 	}
 
-	public static void setMaxNumberRecommendations(String projectKey, int minLinkSuggestionProbability) {
-		setValue(projectKey, "maxNumberRecommendations", Integer.toString(minLinkSuggestionProbability));
+	public static void setMaxNumberRecommendations(String projectKey, int maxNumberRecommendation) {
+		setValue(projectKey, "maxNumberRecommendations", Integer.toString(maxNumberRecommendation));
 	}
 
 	public static int getMaxNumberRecommendations(String projectKey) {

@@ -144,6 +144,24 @@ public class TestDecisionGuidanceConfig extends TestConfigSuper {
 		assertEquals(400, configRest.setKnowledgeSourceActivated(request, INVALID_PROJECT_KEY, INVALID_VALUE, true).getStatus());
 	}
 
+	@Test
+	@DisplayName("Tests the method setMaxRecommendations valid Value")
+	public void testSetMaxRecommendationsValid() {
+		assertEquals(200, configRest.setMaxNumberRecommendations(request, VALID_PROJECT_KEY, 20).getStatus());
+	}
+
+	@Test
+	@DisplayName("Tests the method setMaxRecommendations invalid Value")
+	public void testSetMaxRecommendationsInvalidValue() {
+		assertEquals(400, configRest.setMaxNumberRecommendations(request, VALID_PROJECT_KEY, -20).getStatus());
+	}
+
+	@Test
+	@DisplayName("Tests the method setMaxRecommendations invalid project")
+	public void testSetMaxRecommendationsInvalidProject() {
+		assertEquals(400, configRest.setMaxNumberRecommendations(request, INVALID_PROJECT_KEY, 20).getStatus());
+	}
+
 }
 
 
