@@ -34,10 +34,10 @@
 		this.knowledgeTypes = [];
 		this.extendedKnowledgeTypes = [];
 
-		this.decisionStatus = ["decided", "challenged", "rejected", "undefined"];
-		this.alternativeStatus = ["idea", "discarded", "undefined"];
+		this.decisionStatus = ["decided", "challenged", "rejected"];
+		this.alternativeStatus = ["idea", "discarded"];
 		this.issueStatus = ["resolved", "unresolved"];
-		this.knowledgeStatus = this.decisionStatus.concat(this.issueStatus).concat(this.alternativeStatus);
+		this.knowledgeStatus = this.decisionStatus.concat(this.issueStatus).concat(this.alternativeStatus).concat("undefined");
 		this.rationaleBacklogItemStatus = ["challenged", "unresolved", "incomplete"];
 	};
 
