@@ -19,6 +19,7 @@
 	#set ($linkDistanceInputId = "link-distance-input")	
 	#parse("templates/filter/linkDistance.vm")
     
+	#set ($isDecisionKnowledgeOnlyId = "is-decision-knowledge-only-input")	
 	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
 </form>
 </div>

@@ -39,7 +39,7 @@
             treeViewer = _treeViewer;
 
             // Register/subscribe this view as an observer
-            conDecObservable.subscribe(this);
+            // conDecObservable.subscribe(this);
 
             return true;
         }
@@ -58,8 +58,13 @@
         console.log("ConDecCodeClassPage initializeDecisionKnowledgePage");
 
         conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input-code", function() {
-        	updateView(null, treant, treeViewer);
+        	conDecCodeClassPage.updateView(null, treant, treeViewer);
         });
+        
+        var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input-code");
+		isOnlyDecisionKnowledgeShownInput.addEventListener("change", function(e) {
+			conDecCodeClassPage.updateView();
+		});
 
         conDecAPI.fillDecisionGroupSelect("select2-code-decision-group");
 
@@ -68,32 +73,31 @@
 
     function updateView(nodeId, treant, treeViewer) {
         /* get cache or server data? */
-        treeViewer.buildClassTreeViewer();
+		var knowledgeTypes = ["codeClass"];
+        var selectedGroups = conDecFiltering.getSelectedGroups("select2-code-decision-group");
+        var minLinkNumber = document.getElementById("min-number-linked-issues-input").value;
+		var maxLinkNumber = document.getElementById("max-number-linked-issues-input").value;
+		var filterSettings = {
+			"jiraIssueTypes" : knowledgeTypes,
+			"linkDistance" : 0,
+			"groups" : selectedGroups,
+			"minDegree" : minLinkNumber,
+			"maxDegree" : maxLinkNumber
+		};
+        treeViewer.buildTreeViewer(filterSettings, "#code-class-tree", "#jstree-search-input-code", "code-class-tree");
         if (nodeId === undefined) {
             var rootElement = treant.getCurrentRootElement();
             if (rootElement) {
-                treeViewer.selectNodeInTreeViewer(rootElement.id);
+                treeViewer.selectNodeInTreeViewer(rootElement.id, "#code-class-tree");
             }
         } else {
-            treeViewer.selectNodeInTreeViewer(nodeId);
+            treeViewer.selectNodeInTreeViewer(nodeId, "#code-class-tree");
         }
         jQueryConDec("#code-class-tree").on("select_node.jstree", function (error, tree) {
             var node = tree.node.data;
             var linkDistance = document.getElementById("link-distance-input-code").value;
             treant.buildClassTreant(node.key, true, "", false, linkDistance);
         });
-        var selectedGroupsObj = $('#select2-code-decision-group').select2('data');
-        var selectedGroups = [];
-        for (var i = 0; i <= selectedGroupsObj.length; i++) {
-            if (selectedGroupsObj[i]) {
-                selectedGroups[i] = selectedGroupsObj[i].text;
-            }
-        }
-        if (!selectedGroups === undefined || selectedGroups.length > 0) {
-            treeViewer.filterNodesByGroup(selectedGroups, "#code-class-tree");
-        }
-
-        treeViewer.minMaxFilter("#code-class-tree");
     }
 
     /*
@@ -148,5 +152,5 @@
     }
 
     // export ConDecCodeClassPage
-    global.ConDecCodeClassPage = new ConDecCodeClassPage();
+    global.conDecCodeClassPage = new ConDecCodeClassPage();
 })(window);

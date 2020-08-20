@@ -30,6 +30,7 @@
 
     /*
      * external references: condec.code.class.page.js
+     * TODO Remove this method and replace it by "buildTreant"
      */
     ConDecTreant.prototype.buildClassTreant = function (elementKey, isInteractive, searchTerm, isIssueView, linkDistance) {
         console.log("conDecTreant buildClassTreant");
@@ -38,7 +39,7 @@
         var minLinkNumber = 1;
         var maxLinkNumber = 100;
         if (!isIssueView) {
-            checkboxflag = document.getElementById("show-without-elements-input").checked;
+            checkboxflag = document.getElementById("is-decision-knowledge-only-input-code").checked;
         } else {
             minLinkNumber = document.getElementById("min-number-linked-issues-input").value;
             maxLinkNumber = document.getElementById("max-number-linked-issues-input").value;
@@ -56,6 +57,25 @@
             changeColorForNodes();
         });
     };
+
+	/*
+ 	* external references: condec.rationaleBacklog.page.js
+ 	*/
+	ConDecTreant.prototype.buildRationaleBacklogTreant = function (elementKey, isInteractive, searchTerm, linkDistance) {
+		console.log("conDecTreant buildRationaleBacklogTreant");
+		treantid = "treant-rationale-backlog";
+		var checkboxflag = false;
+		conDecAPI.getRationaleBacklogTreant(elementKey, linkDistance, searchTerm, checkboxflag, function (treeStructure) {
+			document.getElementById(treantid).innerHTML = "";
+			treantTree = new Treant(treeStructure);
+			if (isInteractive !== undefined && isInteractive) {
+				addDragAndDropSupportForTreant();
+				addContextMenuToTreant();
+				addTooltip();
+			}
+			changeColorForNodes();
+		});
+	};
 
     function changeColorForNodes() {
         var redStatus = new Array("discarded", "rejected", "unresolved");

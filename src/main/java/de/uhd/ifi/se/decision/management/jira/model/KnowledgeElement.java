@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -389,6 +388,7 @@ public class KnowledgeElement {
 	@XmlElement(name = "url")
 	public String getUrl() {
 		String key = this.getKey();
+		// TODO Recognize code classes
 		if (this.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
 			key = key.split(":")[0];
 		}
@@ -480,6 +480,7 @@ public class KnowledgeElement {
 	 * @see GenericLinkManager
 	 */
 	public List<Link> getLinks() {
+		// TODO only return KnowledgeGraph.getOrCreate(project).edgesOf(this)
 		List<Link> links = GenericLinkManager.getLinksForElement(this);
 		if (documentationLocation == DocumentationLocation.JIRAISSUE) {
 			links.addAll(KnowledgeGraph.getOrCreate(project).edgesOf(this));
