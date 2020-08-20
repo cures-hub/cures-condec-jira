@@ -54,6 +54,9 @@
             
             var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input");
             isOnlyDecisionKnowledgeShownInput.addEventListener("change", showTreant);
+            
+            var searchInputTreant = document.getElementById("search-treant-input");
+            searchInputTreant.addEventListener("change", showTreant);
 
 			// initial call to api depending on selected tab!
 			determineSelectedTab(window.location.href);
@@ -148,6 +151,7 @@
         issueKey = conDecAPI.getIssueKey();
         var isOnlyDecisionKnowledgeShown = document.getElementById("is-decision-knowledge-only-input").checked;
         var linkDistance = document.getElementById("link-distance-input").value;
+        var search = document.getElementById("search-treant-input").value;
         treant.buildTreant(issueKey, true, search, isOnlyDecisionKnowledgeShown, linkDistance);
     }
 
