@@ -13,15 +13,9 @@
     /*
      * external references: condec.jira.issue.module.js, condec.knowledge.page.js
      */
-    ConDecTreant.prototype.buildTreant = function (elementKey, isInteractive, searchTerm, isOnlyDecisionKnowledgeShown, linkDistance) {
+    ConDecTreant.prototype.buildTreant = function (filterSettings, isInteractive) {
         console.log("conDecTreant buildTreant");
         treantid = "treant-container";
-		var filterSettings = {
-				"searchTerm": searchTerm,
-				"isOnlyDecisionKnowledgeShown": isOnlyDecisionKnowledgeShown,
-				"linkDistance": linkDistance,
-				"selectedElement": elementKey
-		};
         conDecAPI.getTreant(filterSettings, function (treeStructure) {
             document.getElementById(treantid).innerHTML = "";
             treantTree = new Treant(treeStructure);
@@ -66,6 +60,7 @@
 
 	/*
  	* external references: condec.rationaleBacklog.page.js
+ 	* TODO Remove this method and replace it by "buildTreant"
  	*/
 	ConDecTreant.prototype.buildRationaleBacklogTreant = function (elementKey, isInteractive, searchTerm, linkDistance) {
 		console.log("conDecTreant buildRationaleBacklogTreant");

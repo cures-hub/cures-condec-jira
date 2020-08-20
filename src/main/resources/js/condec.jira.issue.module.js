@@ -87,16 +87,13 @@
 			event.stopPropagation();
 			determineSelectedTab(event.target.href);
 		});
+		
 		//initial call of active tab
 		determineSelectedTab(AJS.$(".active-tab")[0].firstElementChild.href)
 	}
 
 	function determineSelectedTab(href) {
-		if (href === undefined) {
-			AJS.tabs.change(jQuery('a[href="#treant"]'));
-			showTreant();
-		}
-		if (href.includes("#treant")) {
+		if (href === undefined || href.includes("#treant")) {
 			AJS.tabs.change(jQuery('a[href="#treant"]'));
 			showTreant();
 		} else if (href.includes("#vis")) {
@@ -132,7 +129,14 @@
         var linkDistance = document.getElementById("link-distance-input").value;
         var search = document.getElementById("search-treant-input").value;
         var knowledgeTypes = conDecFiltering.getSelectedItems("knowledge-type-dropdown");
-        treant.buildTreant(issueKey, true, search, isOnlyDecisionKnowledgeShown, linkDistance);
+        var filterSettings = {
+				"searchTerm": search,
+				"jiraIssueTypes": knowledgeTypes,
+				"isOnlyDecisionKnowledgeShown": isOnlyDecisionKnowledgeShown,
+				"linkDistance": linkDistance,
+				"selectedElement": issueKey
+		};
+        treant.buildTreant(filterSettings, true);
     }
 
 	function showGraph() {
