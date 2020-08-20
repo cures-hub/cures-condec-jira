@@ -590,9 +590,11 @@
         var knowledgeStatus = null;
         if (element.type === "Issue") {
             knowledgeStatus = conDecAPI.issueStatus;
+        } else if (element.type === "Decision") {
+            knowledgeStatus = conDecAPI.decisionStatus;
         } else {
-            knowledgeStatus = conDecAPI.optionStatus;
-        }
+        	knowledgeStatus = conDecAPI.alternativeStatus;
+		}
         selectField.innerHTML = "";
         for (var index = 0; index < knowledgeStatus.length; index++) {
             var isSelected = "";

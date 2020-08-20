@@ -34,9 +34,10 @@
 		this.knowledgeTypes = [];
 		this.extendedKnowledgeTypes = [];
 
-		this.optionStatus = ["idea", "discarded", "decided", "rejected", "undefined"];
+		this.decisionStatus = ["decided", "challenged", "rejected"];
+		this.alternativeStatus = ["idea", "discarded"];
 		this.issueStatus = ["resolved", "unresolved"];
-		this.knowledgeStatus = this.optionStatus.concat(this.issueStatus)
+		this.knowledgeStatus = this.decisionStatus.concat(this.issueStatus).concat(this.alternativeStatus).concat("undefined");
 		this.rationaleBacklogItemStatus = ["challenged", "unresolved", "incomplete"];
 	};
 
@@ -577,18 +578,6 @@
 	 * external references: condec.relationship.page
 	 */
 	ConDecAPI.prototype.getDecisionGraphFiltered = function (linkTypes, searchTerm, status, decGroups, callback) {
-
-		var filterSettings = {
-				"projectKey": projectKey,
-				"searchString": searchTerm,
-				"createdEarliest": -1,
-				"createdLatest": -1,
-				"documentationLocations": null,
-				"selectedJiraIssueTypes": ["Decision"],
-				"selectedStatus": null,
-				"selectedLinkTypes": linkTypes,
-				"selectedDecGroups": decGroups
-		};
 
 		var filterSettings = {
 				"projectKey": projectKey,
@@ -1155,6 +1144,72 @@
 				+ "&isActivatedString=" + isActivated, null, function (error, response) {
 			if (error === null) {
 				showFlag("success", "Using icons to tag issue comments has been set to " + isActivated + ".");
+			}
+		});
+	};
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setMaxNumberRecommendations = function (projectKey, maxNumberRecommendations) {
+		generalApi.postJSON(this.restPrefix + "/config/setMaxNumberRecommendations.json?projectKey=" + projectKey + "&maxNumberRecommendations=" + maxNumberRecommendations, null, function (
+			error, response) {
+			if (error === null) {
+				showFlag("success", "Maximum number of results are updated to: " + maxNumberRecommendations );
+			}
+		});
+	};
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setRDFKnowledgeSource = function (projectKey, rdfSource) {
+		generalApi.postJSON(this.restPrefix + "/config/setRDFKnowledgeSource.json?projectKey=" + projectKey , rdfSource, function (
+			error, response) {
+			if (error === null) {
+				showFlag("success", "The Knowledgesource is updated " );
+			}
+		});
+	};
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setKnowledgeSourceActivated = function (projectKey, knowledgeSourceName, isActivated) {
+		generalApi.postJSON(this.restPrefix + "/config/setKnowledgeSourceActivated.json?projectKey=" + projectKey + "&knowledgeSourceName=" + knowledgeSourceName + "&isActivated=" + isActivated ,null, function (
+			error, response) {
+			if (error === null) {
+				if(isActivated)
+					showFlag("success", "The Knowledgesource " + knowledgeSourceName+" is activated." );
+				else {
+					showFlag("success", "The Knowledgesource " + knowledgeSourceName+" is deactivated." );
+				}
+			}
+		});
+	};
+
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setProjectSource = function (projectKey, projectSourceKey, isActivated) {
+		generalApi.postJSON(this.restPrefix + "/config/setProjectSource.json?projectKey=" + projectKey + "&projectSourceKey=" + projectSourceKey + "&isActivated=" + isActivated ,null, function (
+			error, response) {
+			if (error === null) {
+				showFlag("success", "The Knowledge Source successfully is saved!");
+			}
+		});
+	};
+
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.deleteKnowledgeSource = function (projectKey, knowledgeSourceName) {
+		generalApi.postJSON(this.restPrefix + "/config/deleteKnowledgeSource.json?projectKey=" + projectKey + "&knowledgeSourceName=" + knowledgeSourceName  ,null, function (
+			error, response) {
+			if (error === null) {
+				showFlag("success", "The Knowledgesource " + knowledgeSourceName+" was successfully deleted." );
 			}
 		});
 	};

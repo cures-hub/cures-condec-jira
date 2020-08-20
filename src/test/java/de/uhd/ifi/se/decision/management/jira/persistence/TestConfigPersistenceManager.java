@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
@@ -441,6 +442,40 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertFalse("Activated for 'done' of project 'TEST' should still be false.", ConfigPersistenceManager.getActivationStatusOfConsistencyEvent("TEST", consistencyEvent));
 		*/
 	}
+
+	@Test
+	public void testSetAndGetRDFKnowledgeSource() {
+		RDFSource rdfSource = new RDFSource("TEST", "service", "query", "RDF Name", "30000");
+		ConfigPersistenceManager.setRDFKnowledgeSource("TEST", rdfSource);
+		assertEquals("Number of Knowledge sources should be 1", 1, ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
+
+		//Test invalid Source
+		ConfigPersistenceManager.setRDFKnowledgeSource("TEST", null);
+		assertEquals("Size of existing Knowledge sources should be 1: No error!", 1, ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
+
+		//Test deactivation
+		ConfigPersistenceManager.setRDFKnowledgeSourceActivation("TEST", "RDF Name", false);
+		assertEquals("The knowledge source should be dectivated!", false, ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).isActivated());
+
+		//Delete KnowledgeSource
+		ConfigPersistenceManager.deleteKnowledgeSource("TEST", "RDF Name");
+		assertEquals("The knowledge source should be 0!", 0, ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
+	}
+
+	@Test
+	public void testSetAndGetProjectKnowledgeSources() {
+		ConfigPersistenceManager.setProjectSource("TEST", "OTHERPRORJECT", true);
+		assertEquals(true, ConfigPersistenceManager.getProjectSource("TEST", "OTHERPRORJECT"));
+		ConfigPersistenceManager.setProjectSource("TEST", "OTHERPRORJECT", false);
+		assertEquals(false, ConfigPersistenceManager.getProjectSource("TEST", "OTHERPRORJECT"));
+	}
+
+	@Test
+	public void testSetAndGetMaxRecommendations() {
+		ConfigPersistenceManager.setMaxNumberRecommendations("TEST", 10);
+		assertEquals(10, ConfigPersistenceManager.getMaxNumberRecommendations("TEST"));
+	}
+
 
 	@AfterClass
 	public static void tearDown() {
