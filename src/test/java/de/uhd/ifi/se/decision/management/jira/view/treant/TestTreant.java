@@ -1,7 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.view.treant;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -76,6 +78,13 @@ public class TestTreant extends TestSetUp {
 
 	@Test
 	@NonTransactional
+	public void testConstructorFilterSettingsNull() {
+		treant = new Treant(null);
+		assertNull(treant.getNodeStructure());
+	}
+
+	@Test
+	@NonTransactional
 	public void testConstructorFiltered() {
 		FilterSettings filterSettings = new FilterSettings("TEST", "?jql=project=TEST");
 		filterSettings.setLinkDistance(3);
@@ -98,5 +107,11 @@ public class TestTreant extends TestSetUp {
 		assertNotNull(treant.getNodeStructure());
 		assertEquals("WI: Do an interesting task", treant.getNodeStructure().getNodeContent().get("title"));
 		assertEquals(1, treant.getNodeStructure().getChildren().size());
+	}
+
+	@Test
+	@NonTransactional
+	public void testIsHyperlinked() {
+		assertFalse(treant.isHyperlinked());
 	}
 }
