@@ -629,18 +629,6 @@
 
 		var filterSettings = {
 				"projectKey": projectKey,
-				"searchString": searchTerm,
-				"createdEarliest": -1,
-				"createdLatest": -1,
-				"documentationLocations": null,
-				"selectedJiraIssueTypes": ["Decision"],
-				"selectedStatus": null,
-				"selectedLinkTypes": linkTypes,
-				"selectedDecGroups": decGroups
-		};
-
-		var filterSettings = {
-				"projectKey": projectKey,
 				"searchTerm": searchTerm,
 				"createdEarliest": -1,
 				"createdLatest": -1,
