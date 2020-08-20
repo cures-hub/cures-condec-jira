@@ -34,9 +34,10 @@
 		this.knowledgeTypes = [];
 		this.extendedKnowledgeTypes = [];
 
-		this.optionStatus = ["idea", "discarded", "decided", "rejected", "undefined"];
+		this.decisionStatus = ["decided", "challenged", "rejected"];
+		this.alternativeStatus = ["idea", "discarded"];
 		this.issueStatus = ["resolved", "unresolved"];
-		this.knowledgeStatus = this.optionStatus.concat(this.issueStatus)
+		this.knowledgeStatus = this.decisionStatus.concat(this.issueStatus).concat(this.alternativeStatus).concat("undefined");
 		this.rationaleBacklogItemStatus = ["challenged", "unresolved", "incomplete"];
 	};
 
@@ -626,18 +627,6 @@
 	 * external references: condec.relationship.page
 	 */
 	ConDecAPI.prototype.getDecisionGraphFiltered = function (linkTypes, searchTerm, status, decGroups, callback) {
-
-		var filterSettings = {
-				"projectKey": projectKey,
-				"searchString": searchTerm,
-				"createdEarliest": -1,
-				"createdLatest": -1,
-				"documentationLocations": null,
-				"selectedJiraIssueTypes": ["Decision"],
-				"selectedStatus": null,
-				"selectedLinkTypes": linkTypes,
-				"selectedDecGroups": decGroups
-		};
 
 		var filterSettings = {
 				"projectKey": projectKey,

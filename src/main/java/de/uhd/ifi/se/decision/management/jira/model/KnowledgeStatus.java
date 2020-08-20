@@ -9,7 +9,7 @@ import java.util.Locale;
  * alternatives). Issues can have the state "resolved" or "unresolved".
  */
 public enum KnowledgeStatus {
-	IDEA, DISCARDED, DECIDED, REJECTED, RESOLVED, UNRESOLVED, UNDEFINED;
+	IDEA, DISCARDED, DECIDED, CHALLENGED, REJECTED, RESOLVED, UNRESOLVED, UNDEFINED;
 
 	/**
 	 * Converts a string to a knowledge status.
@@ -101,13 +101,13 @@ public enum KnowledgeStatus {
 	 * example, when the status of an alternative is changed to "decided", the
 	 * alternative becomes a decision.
 	 *
-	 * @param newElement
+	 * @param element
 	 *            {@link KnowledgeElement} after it was updated.
 	 * @return new {@link KnowledgeType} after the change of the
 	 *         {@link KnowledgeStatus}.
 	 */
-	public static KnowledgeType getNewKnowledgeTypeForStatus(KnowledgeElement newElement) {
-		return getNewKnowledgeTypeForStatus(newElement.getStatus(), newElement.getType());
+	public static KnowledgeType getNewKnowledgeTypeForStatus(KnowledgeElement element) {
+		return getNewKnowledgeTypeForStatus(element.getStatus(), element.getType());
 	}
 
 	public static KnowledgeType getNewKnowledgeTypeForStatus(KnowledgeStatus newStatus, KnowledgeType formerType) {
@@ -143,6 +143,8 @@ public enum KnowledgeStatus {
 		switch (this) {
 		case UNRESOLVED:
 			return "red";
+		case CHALLENGED:
+			return "blue";
 		case DISCARDED:
 		case REJECTED:
 			return "gray";
