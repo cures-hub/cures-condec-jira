@@ -42,6 +42,7 @@ public class KnowledgeElement {
 	private Date closed;
 	protected DocumentationLocation documentationLocation;
 	protected KnowledgeStatus status;
+	private boolean isComplete;
 
 	public KnowledgeElement() {
 		this.description = "";
@@ -563,5 +564,13 @@ public class KnowledgeElement {
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, getDocumentationLocation());
+	}
+
+	public boolean isComplete() {
+		return isComplete;
+	}
+
+	public void setComplete(boolean complete) {
+		isComplete = complete;
 	}
 }

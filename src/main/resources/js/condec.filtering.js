@@ -20,8 +20,8 @@
 	ConDecFiltering.prototype.initDropdown = function(dropdownId, items, selectedItems) {
 		var dropdown = document.getElementById(dropdownId);
 		dropdown.innerHTML = "";
-		var isSelected = "checked";
-		for (var index = 0; index < items.length; index++) {			
+		for (var index = 0; index < items.length; index++) {
+			var isSelected = "checked";
 			if (selectedItems !== undefined) {
 				if (!selectedItems.includes(items[index])) {
 					isSelected = "";

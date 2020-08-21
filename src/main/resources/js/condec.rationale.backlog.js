@@ -47,12 +47,7 @@
 
 	function initializeRationaleBacklog(conDecAPI, treant, treeViewer) {
 		console.log("conDecRationaleBacklog initializeRationaleBacklog");
-
-		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input-rb", function() {
-			conDecRationaleBacklog.updateView();
-		});
-
-		var knowledgeTypeDropdown = conDecFiltering.initDropdown("knowledge-type-dropdown-rb", conDecAPI.getKnowledgeTypes());
+		var knowledgeTypeDropdown = conDecFiltering.initDropdown("knowledge-type-dropdown-rb", conDecAPI.getKnowledgeTypes(), ["Alternative", "Decision", "Issue"]);
 		knowledgeTypeDropdown.addEventListener("change", function(e) {
 			conDecRationaleBacklog.updateView();
 		});
@@ -64,6 +59,21 @@
 		});
 		conDecAPI.fillDecisionGroupSelect("select2-decision-group-rb");
 
+		var date = new Date();
+		var endDatePicker = document.getElementById("end-date-picker-rb");
+		endDatePicker.value = date.toISOString().substr(0, 10);
+		var endTime = date.toDateString();
+		date.setDate(date.getDate() - 7);
+		endDatePicker.addEventListener("change", function (e) {
+			conDecRationaleBacklog.updateView();
+		})
+		var startDatePicker =document.getElementById("start-date-picker-rb")
+		startDatePicker.value = date.toISOString().substr(0, 10);
+		var startTime = date.toDateString();
+		startDatePicker.addEventListener("change", function (e) {
+			conDecRationaleBacklog.updateView();
+		})
+
 		updateView(null, treant, treeViewer);
 	}
 
@@ -73,28 +83,20 @@
 		var knowledgeTypes = conDecFiltering.getSelectedItems("knowledge-type-dropdown-rb");
 		var selectedStatus = conDecFiltering.getSelectedItems("status-dropdown-rb");
 		var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-rb");
+		var startDateString = document.getElementById("start-date-picker-rb").value;
+		var startDateLong = new Date(startDateString).getTime();
+		var endDateString = document.getElementById("end-date-picker-rb").value;
+		var endDateLong = new Date(endDateString).getTime();
 		var filterSettings = {
 			"jiraIssueTypes": knowledgeTypes,
 			"linkDistance": 0,
 			"status" : selectedStatus,
-			"groups" : selectedGroups
+			"groups" : selectedGroups,
+			"startDate" : startDateLong,
+			"endDate" : endDateLong
 		};
 		treeViewer.buildTreeViewer(filterSettings, "#rationale-backlog-tree", "#text-search-input-rb", "rationale-backlog-tree");
-		// if (nodeId === undefined) {
-		// 	var rootElement = treant.getCurrentRootElement();
-		// 	if (rootElement) {
-		// 		treeViewer.selectNodeInTreeViewer(rootElement.id);
-		// 	}
-		// } else {
-		// 	treeViewer.selectNodeInTreeViewer(nodeId);
-		// }
-		// jQueryConDec("#rationale-backlog-tree").on("select_node.jstree", function (error, tree) {
-		// 	var node = tree.node.data;
-		// 	var linkDistance = document.getElementById("link-distance-input-rb").value;
-		// 	treant.buildRationaleBacklogTreant(node.key, true, "", linkDistance);
-		// });		
 	}
-
 
 
 	/*
