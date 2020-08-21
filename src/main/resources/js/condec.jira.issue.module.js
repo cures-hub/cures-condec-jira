@@ -50,6 +50,7 @@
 			addOnClickEventToTab();
 			addOnClickEventToFilterButton();
 			addOnClickEventToDecisionTableButtons();
+			addOnClickEventToTreantFilters();
 
 			// initial call to api depending on selected tab!
 			determineSelectedTab(window.location.href);
@@ -140,7 +141,7 @@
 		    "selectedElement" : issueKey,
 		    "isTestCodeShown" : isTestCodeShown,
 		    "minDegree" : minLinkNumber,
-			"maxDegree" : maxLinkNumber
+		    "maxDegree" : maxLinkNumber
 		};
 		treant.buildTreant(filterSettings, true);
 	}
@@ -182,23 +183,6 @@
 
 	function initFilter(issueKey, search) {
 		console.log("ConDecJiraIssueModule initFilter");
-		// Tree View
-		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input", showTreant);
-
-		var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input");
-		isOnlyDecisionKnowledgeShownInput.addEventListener("change", showTreant);
-		
-		var isTestCodeShownInput = document.getElementById("show-test-elements-input");
-		isTestCodeShownInput.addEventListener("change", showTreant);
-		
-		var minLinkNumberInput = document.getElementById("min-number-linked-issues-input");
-		minLinkNumberInput.addEventListener("change", showTreant);
-		
-		var maxLinkNumberInput = document.getElementById("max-number-linked-issues-input");	
-		minLinkNumberInput.addEventListener("change", showTreant);
-
-		var searchInputTreant = document.getElementById("search-treant-input");
-		searchInputTreant.addEventListener("change", showTreant);
 
 		// Graph view
 		var firstDatePicker = document.getElementById("created-after-picker");
@@ -206,15 +190,17 @@
 
 		conDecAPI.getFilterSettings(issueKey, search, function(filterData) {
 			var allIssueTypes = filterData.jiraIssueTypes;
+			var knowledgeTypes = conDecAPI.getKnowledgeTypes().concat(allIssueTypes);
 			var selectedIssueTypes = filterData.jiraIssueTypes;
+			var selectedKnowledgeTypes = conDecAPI.getKnowledgeTypes().concat(selectedIssueTypes);
 			var status = conDecAPI.knowledgeStatus;
 			var documentationLocation = filterData.documentationLocations;
 
-			var knowledgeTypeDropdown = conDecFiltering.initDropdown("knowledge-type-dropdown", allIssueTypes,
-			        selectedIssueTypes); // Tree view
+			var knowledgeTypeDropdown = conDecFiltering.initDropdown("knowledge-type-dropdown", knowledgeTypes,
+			        selectedKnowledgeTypes); // Tree view
 			knowledgeTypeDropdown.addEventListener("change", showTreant);
 
-			conDecFiltering.initDropdown("issuetype-dropdown", allIssueTypes, selectedIssueTypes); // graph view
+			conDecFiltering.initDropdown("issuetype-dropdown", knowledgeTypes, selectedKnowledgeTypes); // graph view
 			conDecFiltering.initDropdown("status-dropdown", status);
 			conDecFiltering.initDropdown("documentation-dropdown", documentationLocation);
 			if (filterData.startDate >= 0) {
@@ -226,7 +212,26 @@
 
 			var linkTypes = conDecAPI.getLinkTypesSync();
 			conDecFiltering.initDropdown("linktype-dropdown", linkTypes);
-		});
+		});		
+	}
+	
+	function addOnClickEventToTreantFilters() {
+		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input", showTreant);
+
+		var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input");
+		isOnlyDecisionKnowledgeShownInput.addEventListener("change", showTreant);
+
+		var isTestCodeShownInput = document.getElementById("show-test-elements-input");
+		isTestCodeShownInput.addEventListener("change", showTreant);
+
+		var minLinkNumberInput = document.getElementById("min-number-linked-issues-input");
+		minLinkNumberInput.addEventListener("change", showTreant);
+
+		var maxLinkNumberInput = document.getElementById("max-number-linked-issues-input");
+		minLinkNumberInput.addEventListener("change", showTreant);
+
+		var searchInputTreant = document.getElementById("search-treant-input");
+		searchInputTreant.addEventListener("change", showTreant);
 	}
 
 	function getURLsSearch() {
