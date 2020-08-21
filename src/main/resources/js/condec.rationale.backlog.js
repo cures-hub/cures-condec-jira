@@ -48,13 +48,13 @@
 	function initializeRationaleBacklog(conDecAPI, treant, treeViewer) {
 		console.log("conDecRationaleBacklog initializeRationaleBacklog");
 		var knowledgeTypeDropdown = conDecFiltering.initDropdown("knowledge-type-dropdown-rb", conDecAPI.getKnowledgeTypes(), ["Alternative", "Decision", "Issue"]);
-		knowledgeTypeDropdown.addEventListener("change", function(e) {
+		knowledgeTypeDropdown.addEventListener("change", function() {
 			conDecRationaleBacklog.updateView();
 		});
 
 		conDecFiltering.initDropdown("status-dropdown-rb", conDecAPI.rationaleBacklogItemStatus);
 		var statusDropdown = document.getElementById("status-dropdown-rb");
-		statusDropdown.addEventListener("change", function (e) {
+		statusDropdown.addEventListener("change", function () {
 			conDecRationaleBacklog.updateView();
 		});
 		conDecAPI.fillDecisionGroupSelect("select2-decision-group-rb");
@@ -62,15 +62,13 @@
 		var date = new Date();
 		var endDatePicker = document.getElementById("end-date-picker-rb");
 		endDatePicker.value = date.toISOString().substr(0, 10);
-		var endTime = date.toDateString();
 		date.setDate(date.getDate() - 7);
-		endDatePicker.addEventListener("change", function (e) {
+		endDatePicker.addEventListener("change", function () {
 			conDecRationaleBacklog.updateView();
 		})
 		var startDatePicker =document.getElementById("start-date-picker-rb")
 		startDatePicker.value = date.toISOString().substr(0, 10);
-		var startTime = date.toDateString();
-		startDatePicker.addEventListener("change", function (e) {
+		startDatePicker.addEventListener("change", function () {
 			conDecRationaleBacklog.updateView();
 		})
 

@@ -106,11 +106,11 @@ public class KnowledgeElement {
 		if (entry != null) {
 			this.id = entry.getId();
 			this.summary = entry.getFileName();
-			String issueKeys = "";
+			StringBuilder issueKeys = new StringBuilder();
 			for (String key : entry.getJiraIssueKeys().split(";")) {
-				issueKeys = issueKeys + entry.getProjectKey() + "-" + key + ";";
+				issueKeys.append(entry.getProjectKey()).append("-").append(key).append(";");
 			}
-			this.description = issueKeys;
+			this.description = issueKeys.toString();
 			this.type = KnowledgeType.getKnowledgeType(null);
 			this.project = new DecisionKnowledgeProject(entry.getProjectKey());
 			this.key = entry.getProjectKey() + "-" + entry.getId();
@@ -201,7 +201,7 @@ public class KnowledgeElement {
 				&& this.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
 			IssueManager issueManager = ComponentAccessor.getIssueManager();
 			Issue issue = issueManager.getIssueByCurrentKey(this.getKey());
-			return issue.getIssueType().getName();
+			return Objects.requireNonNull(issue.getIssueType()).getName();
 		}
 		return this.getType().toString();
 	}
@@ -221,7 +221,7 @@ public class KnowledgeElement {
 
 	/**
 	 * @see KnowledgeType
-	 * @param type
+	 * @param typeAsString
 	 *            of the knowledge element. For example, types are decision,
 	 *            alternative, issue, and argument.
 	 */
@@ -242,14 +242,13 @@ public class KnowledgeElement {
 	 */
 	@XmlElement(name = "groups")
 	public List<String> getDecisionGroups() {
-		List<String> groups = DecisionGroupManager.getGroupsForElement(this);
-		return groups;
+		return DecisionGroupManager.getGroupsForElement(this);
 	}
 
 	/**
 	 * Add a list of groups assigned to this decision
 	 *
-	 * @param List<String>
+	 * @param decisionGroup
 	 *            of groups
 	 */
 	public void addDecisionGroups(List<String> decisionGroup) {

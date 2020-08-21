@@ -40,6 +40,7 @@ public class FilterSettings {
 	private List<String> decisionGroups;
 	private boolean isOnlyDecisionKnowledgeShown;
 	private boolean isTestCodeShown;
+	private boolean isComplete;
 	private int linkDistance;
 	private int minDegree;
 	private int maxDegree;
@@ -177,7 +178,7 @@ public class FilterSettings {
 	}
 
 	/**
-	 * @param documentationLocations
+	 * @param namesOfDocumentationLocations
 	 *            {@link DocumentationLocation}s to be shown in the knowledge graph
 	 *            as Strings.
 	 */
