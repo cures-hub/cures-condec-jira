@@ -106,6 +106,11 @@ public class TreeViewer {
 
 		List<KnowledgeElement> knowledgeElements = new ArrayList<>();
 
+		if (filterSettings.getJiraIssueTypes().isEmpty()) {
+			return;
+		}
+
+		// TODO Improve code class handling
 		if ("codeClass".equals(filterSettings.getJiraIssueTypes().iterator().next())) {
 			CodeClassPersistenceManager manager = new CodeClassPersistenceManager(filterSettings.getProjectKey());
 			knowledgeElements = manager.getKnowledgeElements();
