@@ -40,7 +40,7 @@ public class FilterSettings {
 	private List<String> decisionGroups;
 	private boolean isOnlyDecisionKnowledgeShown;
 	private boolean isTestCodeShown;
-	private boolean isComplete;
+	private boolean isCompleteKnowledgeShown;
 	private int linkDistance;
 	private int minDegree;
 	private int maxDegree;
@@ -65,6 +65,7 @@ public class FilterSettings {
 		this.decisionGroups = Collections.emptyList();
 		this.isOnlyDecisionKnowledgeShown = false;
 		this.isTestCodeShown = false;
+		this.isCompleteKnowledgeShown = false;
 		this.linkDistance = 3;
 		this.minDegree = 0;
 		this.maxDegree = 50;
@@ -363,6 +364,19 @@ public class FilterSettings {
 	public void setTestCodeShown(boolean isTestCodeShown) {
 		this.isTestCodeShown = isTestCodeShown;
 	}
+
+	/**
+	 * @return true if completely documented knowledge elements are shown in the filtered graph.
+	 */
+	public boolean isCompleteElementsShown() {return isCompleteKnowledgeShown; }
+
+	/**
+	 * @param isCompleteKnowledgeShown
+	 * 				true if completely documented knowledge elements should be shown in
+	 * 				filtered graph.
+	 */
+	@JsonProperty("isCompleteKnowledgeShown")
+	public void setCompleteKnowledgeShown(boolean isCompleteKnowledgeShown) {this.isCompleteKnowledgeShown = isCompleteKnowledgeShown; }
 
 	/**
 	 * @return {@link KnowledgeElement} that is currently selected (e.g. as root

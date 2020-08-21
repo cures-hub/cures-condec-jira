@@ -147,6 +147,17 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
+	public void testIsCompleteElementsShown() {
+		assertEquals(false, filterSettings.isCompleteElementsShown());
+	}
+
+	@Test
+	public void testSetCompleteElementsShown() {
+		filterSettings.setCompleteKnowledgeShown(true);
+		assertEquals(true, filterSettings.isCompleteElementsShown());
+	}
+
+	@Test
 	public void testGetGroups() {
 		assertEquals(0, filterSettings.getDecisionGroups().size());
 	}

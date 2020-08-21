@@ -49,15 +49,15 @@ public class FilteringManager {
 	}
 
 	/**
-	 * @return all knowledge elements that match the {@link FilterSetting}s.
+	 * @return all knowledge elements that match the {@link FilterSettings}.
 	 */
 	public Set<KnowledgeElement> getElementsMatchingFilterSettings() {
 		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null) {
 			LOGGER.error("FilteringManager misses important attributes.");
-			return new HashSet<KnowledgeElement>();
+			return new HashSet<>();
 		}
 		// String searchString = filterSettings.getSearchTerm().toLowerCase();
-		Set<KnowledgeElement> elements = new HashSet<>();
+		Set<KnowledgeElement> elements;
 		if (filterSettings.getSelectedElement() != null) {
 			graph.addVertex(filterSettings.getSelectedElement());
 			elements = getElementsInLinkDistance();
@@ -77,7 +77,7 @@ public class FilteringManager {
 
 	/**
 	 * @return subgraph of the {@link KnowledgeGraph} that matches the
-	 *         {@link FilterSetting}s.
+	 *         {@link FilterSettings}.
 	 */
 	public Graph<KnowledgeElement, Link> getSubgraphMatchingFilterSettings() {
 		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null) {
@@ -85,7 +85,7 @@ public class FilteringManager {
 			return null;
 		}
 		Set<KnowledgeElement> elements = getElementsMatchingFilterSettings();
-		Graph<KnowledgeElement, Link> subgraph = new AsSubgraph<KnowledgeElement, Link>(graph, elements);
+		Graph<KnowledgeElement, Link> subgraph = new AsSubgraph<>(graph, elements);
 		if (filterSettings.getLinkTypes().size() < LinkType.toStringList().size()) {
 			Set<Link> linksNotMatchingFilterSettings = getLinksNotMatchingFilterSettings(subgraph.edgeSet());
 			subgraph.removeAllEdges(linksNotMatchingFilterSettings);
@@ -96,13 +96,13 @@ public class FilteringManager {
 	private Set<KnowledgeElement> getElementsInLinkDistance() {
 		KnowledgeElement selectedElement = filterSettings.getSelectedElement();
 		int linkDistance = filterSettings.getLinkDistance();
-		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>();
+		Set<KnowledgeElement> elements = new HashSet<>();
 		elements.addAll(getLinkedElements(selectedElement, linkDistance));
 		return elements;
 	}
 
 	private Set<KnowledgeElement> getLinkedElements(KnowledgeElement currentElement, int currentDistance) {
-		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>();
+		Set<KnowledgeElement> elements = new HashSet<>();
 		Set<Link> traversedLinks = new HashSet<>();
 		elements.add(currentElement);
 
@@ -123,7 +123,7 @@ public class FilteringManager {
 	}
 
 	private Set<Link> getLinksNotMatchingFilterSettings(Set<Link> links) {
-		Set<Link> linksNotMatchingFilterSettings = new HashSet<Link>();
+		Set<Link> linksNotMatchingFilterSettings = new HashSet<>();
 		for (Link link : links) {
 			if (!filterSettings.getLinkTypes().contains(link.getType())) {
 				linksNotMatchingFilterSettings.add(link);
@@ -143,7 +143,7 @@ public class FilteringManager {
 		}
 		JiraQueryHandler queryHandler = new JiraQueryHandler(user, filterSettings.getProjectKey(),
 				filterSettings.getSearchTerm());
-		if (queryHandler == null || queryHandler.getQueryType() == JiraQueryType.OTHER) {
+		if (queryHandler.getQueryType() == JiraQueryType.OTHER) {
 			return null;
 		}
 		return queryHandler.getJiraIssuesFromQuery();
@@ -153,7 +153,7 @@ public class FilteringManager {
 		if (graph == null) {
 			return null;
 		}
-		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
+		List<KnowledgeElement> elements = new ArrayList<>();
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
 
 		for (Issue jiraIssue : jiraIssues) {
@@ -168,8 +168,8 @@ public class FilteringManager {
 				graph.addVertex(element);
 			}
 
-			BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<KnowledgeElement, Link>(
-					graph, element);
+			BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<>(
+				graph, element);
 			while (iterator.hasNext()) {
 				KnowledgeElement node = iterator.next();
 				if (!elements.contains(node) && isElementMatchingFilterSettings(node)) {
@@ -181,7 +181,7 @@ public class FilteringManager {
 	}
 
 	private Set<KnowledgeElement> filterElements(Set<KnowledgeElement> elements) {
-		Set<KnowledgeElement> filteredElements = new HashSet<KnowledgeElement>();
+		Set<KnowledgeElement> filteredElements = new HashSet<>();
 		if (elements == null || elements.isEmpty()) {
 			return filteredElements;
 		}
@@ -197,7 +197,7 @@ public class FilteringManager {
 	 * @param element
 	 *            {@link KnowledgeElement} object.
 	 * @return true if the element matches the specified filter criteria in the
-	 *         {@link FilterSetting}s.
+	 *         {@link FilterSettings}.
 	 */
 	public boolean isElementMatchingFilterSettings(KnowledgeElement element) {
 		if (!isElementMatchingKnowledgeTypeFilter(element)) {
@@ -218,6 +218,9 @@ public class FilteringManager {
 		if (!isElementMatchingIsTestCodeFilter(element)) {
 			return false;
 		}
+		if (!isElementMatchingIsCompleteFilter(element)){
+			return false;
+		}
 		if (!isElementMatchingDegreeFilter(element)) {
 			return false;
 		}
@@ -228,7 +231,7 @@ public class FilteringManager {
 	 * @param element
 	 *            {@link KnowledgeElement} object.
 	 * @return true if the element is documented in one of the given
-	 *         {@link DocumentationLocation}s in the {@link FilterSetting}s.
+	 *         {@link DocumentationLocation}s in the {@link FilterSettings}.
 	 */
 	public boolean isElementMatchingDocumentationLocationFilter(KnowledgeElement element) {
 		return filterSettings.getDocumentationLocations().contains(element.getDocumentationLocation());
@@ -238,7 +241,7 @@ public class FilteringManager {
 	 * @param element
 	 *            {@link KnowledgeElement} object.
 	 * @return true if the element's status equals one of the given
-	 *         {@link KnowledgeStatus} in the {@link FilterSetting}s.
+	 *         {@link KnowledgeStatus} in the {@link FilterSettings}.
 	 */
 	public boolean isElementMatchingStatusFilter(KnowledgeElement element) {
 		return filterSettings.getStatus().contains(element.getStatus());
@@ -248,7 +251,7 @@ public class FilteringManager {
 	 * @param element
 	 *            {@link KnowledgeElement} object.
 	 * @return true if the element is created in the given time frame in the
-	 *         {@link FilterSetting}s. See {@link KnowledgeElement#getCreated()}.
+	 *         {@link FilterSettings}. See {@link KnowledgeElement#getCreated()}.
 	 */
 	public boolean isElementMatchingTimeFilter(KnowledgeElement element) {
 		boolean isMatchingTimeFilter = true;
@@ -266,7 +269,7 @@ public class FilteringManager {
 	 * @param element
 	 *            {@link KnowledgeElement} object.
 	 * @return true if the element's description, summary, or key contains the given
-	 *         substring in the {@link FilterSetting}s.
+	 *         substring in the {@link FilterSettings}.
 	 */
 	public boolean isElementMatchingSubStringFilter(KnowledgeElement element) {
 		String searchString = filterSettings.getSearchTerm().toLowerCase();
@@ -290,7 +293,7 @@ public class FilteringManager {
 	 * @param element
 	 *            {@link KnowledgeElement} object.
 	 * @return true if the element's type equals one of the given
-	 *         {@link KnowledgeType}s in the {@link FilterSetting}s.
+	 *         {@link KnowledgeType}s in the {@link FilterSettings}.
 	 */
 	public boolean isElementMatchingKnowledgeTypeFilter(KnowledgeElement element) {
 		String type = element.getType().replaceProAndConWithArgument().toString();
@@ -307,7 +310,7 @@ public class FilteringManager {
 	 * @param element
 	 *            {@link KnowledgeElement} object.
 	 * @return true if the element's groups are equal to the given groups in the
-	 *         {@link FilterSetting}s.
+	 *         {@link FilterSettings}.
 	 */
 	public boolean isElementMatchingDecisionGroupFilter(KnowledgeElement element) {
 		List<String> selectedGroups = filterSettings.getDecisionGroups();
@@ -330,7 +333,7 @@ public class FilteringManager {
 	 * @param element
 	 *            {@link KnowledgeElement} object.
 	 * @return true if the element's degree (i.e. number of links) is in between
-	 *         minDegree and maxDegree in the {@link FilterSetting}s.
+	 *         minDegree and maxDegree in the {@link FilterSettings}.
 	 */
 	public boolean isElementMatchingDegreeFilter(KnowledgeElement element) {
 		int degree = element.getLinks().size();
@@ -351,6 +354,16 @@ public class FilteringManager {
 			return true;
 		}
 		return filterSettings.isTestCodeShown() || !element.getSummary().startsWith("Test");
+	}
+
+	/**
+	 *
+	 * @param element
+	 * 			{@link KnowledgeElement} object.
+	 * @return true if the element complete value matches the filter settings complete value.
+	 */
+	public boolean isElementMatchingIsCompleteFilter(KnowledgeElement element) {
+		return filterSettings.isCompleteElementsShown() == element.isComplete();
 	}
 
 	/**

@@ -1,9 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,6 +14,8 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+
+import static org.junit.Assert.*;
 
 public class TestFilteringManager extends TestSetUp {
 
@@ -161,5 +159,15 @@ public class TestFilteringManager extends TestSetUp {
 		FilteringManager filteringManager = new FilteringManager(user, new FilterSettings("TEST", ""));
 		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
 		assertTrue(filteringManager.isElementMatchingDegreeFilter(element));
+	}
+
+	@Test
+	public void testIsElementMatchingCompleteFilter() {
+		FilterSettings filterSettings = new FilterSettings("TEST", "");
+		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
+		KnowledgeElement testKnowledgeElement = KnowledgeElements.getTestKnowledgeElement();
+		assertTrue(filteringManager.isElementMatchingIsCompleteFilter(testKnowledgeElement));
+		filterSettings.setCompleteKnowledgeShown(true);
+		assertFalse(filteringManager.isElementMatchingIsCompleteFilter(testKnowledgeElement));
 	}
 }
