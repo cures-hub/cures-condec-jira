@@ -53,7 +53,6 @@ public class FilteringManager {
 			LOGGER.error("FilteringManager misses important attributes.");
 			return new HashSet<KnowledgeElement>();
 		}
-		// String searchString = filterSettings.getSearchTerm().toLowerCase();
 		Set<KnowledgeElement> elements = new HashSet<>();
 		if (filterSettings.getSelectedElement() != null) {
 			graph.addVertex(filterSettings.getSelectedElement());
