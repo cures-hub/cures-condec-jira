@@ -218,7 +218,7 @@ public class FilteringManager {
 		if (!isElementMatchingIsTestCodeFilter(element)) {
 			return false;
 		}
-		if (!isElementMatchingIsCompleteFilter(element)){
+		if (!isElementMatchingIncompleteFilter(element)){
 			return false;
 		}
 		if (!isElementMatchingDegreeFilter(element)) {
@@ -362,8 +362,11 @@ public class FilteringManager {
 	 * 			{@link KnowledgeElement} object.
 	 * @return true if the element complete value matches the filter settings complete value.
 	 */
-	public boolean isElementMatchingIsCompleteFilter(KnowledgeElement element) {
-		return filterSettings.isCompleteElementsShown() == element.isComplete();
+	public boolean isElementMatchingIncompleteFilter(KnowledgeElement element) {
+		if (filterSettings.isOnlyIncompleteKnowledgeShown()) {
+			return element.isIncomplete();
+		}
+		return true;
 	}
 
 	/**

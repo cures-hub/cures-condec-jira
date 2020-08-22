@@ -21,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.Abstra
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.rationale.backlog.RationaleBacklog;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
@@ -39,15 +40,15 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
  */
 public class KnowledgePersistenceManager {
 
-	private String projectKey;
-	private JiraIssuePersistenceManager jiraIssuePersistenceManager;
-	private JiraIssueTextPersistenceManager jiraIssueTextPersistenceManager;
-	private CodeClassPersistenceManager codeClassPersistenceManager;
-	private List<AbstractPersistenceManagerForSingleLocation> activePersistenceManagersForSingleLocations;
+	private final String projectKey;
+	private final JiraIssuePersistenceManager jiraIssuePersistenceManager;
+	private final JiraIssueTextPersistenceManager jiraIssueTextPersistenceManager;
+	private final CodeClassPersistenceManager codeClassPersistenceManager;
+	private final List<AbstractPersistenceManagerForSingleLocation> activePersistenceManagersForSingleLocations;
 
 	/**
 	 * Map of persistence manager instances that are identified by the project key.
-	 * Use the {@link KnowledgePersistenceManager#getOrCreate()} method to either
+	 * Use the {@link #getOrCreate(String) getOrCreate} method to either
 	 * create or retrieve an existing object
 	 *
 	 * @issue How can we reuse existing objects instead of recreating them all the
@@ -57,7 +58,7 @@ public class KnowledgePersistenceManager {
 	 *           them all the time! Use the getOrCreate() method to either create or
 	 *           retrieve an existing object!
 	 */
-	public static Map<String, KnowledgePersistenceManager> instances = new HashMap<String, KnowledgePersistenceManager>();
+	public static Map<String, KnowledgePersistenceManager> instances = new HashMap<>();
 
 	/**
 	 * Retrieves an existing PersistenceManager instance or creates a new instance
@@ -97,7 +98,7 @@ public class KnowledgePersistenceManager {
 	}
 
 	private List<AbstractPersistenceManagerForSingleLocation> initActivePersistenceManagersForSingleLocations() {
-		List<AbstractPersistenceManagerForSingleLocation> activePersistenceManagersForSinleLocations = new ArrayList<AbstractPersistenceManagerForSingleLocation>();
+		List<AbstractPersistenceManagerForSingleLocation> activePersistenceManagersForSinleLocations = new ArrayList<>();
 		activePersistenceManagersForSinleLocations.add(jiraIssueTextPersistenceManager);
 		activePersistenceManagersForSinleLocations.add(jiraIssuePersistenceManager);
 		activePersistenceManagersForSinleLocations.add(codeClassPersistenceManager);
@@ -108,7 +109,7 @@ public class KnowledgePersistenceManager {
 	 * @return list of all {@link KnowledgeElement}s for a Jira project.
 	 */
 	public List<KnowledgeElement> getKnowledgeElements() {
-		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
+		List<KnowledgeElement> elements = new ArrayList<>();
 		activePersistenceManagersForSingleLocations.forEach(manager -> elements.addAll(manager.getKnowledgeElements()));
 
 		// remove irrelevant sentences from graph
@@ -222,7 +223,7 @@ public class KnowledgePersistenceManager {
 			return 0;
 		}
 
-		long databaseId = 0;
+		long databaseId;
 
 		if (link.isIssueLink()) {
 			databaseId = JiraIssuePersistenceManager.insertLink(link, user);
@@ -255,6 +256,15 @@ public class KnowledgePersistenceManager {
 		return false;
 	}
 
+	public boolean updateCompleteStatus(KnowledgeElement parentElement, KnowledgeElement childElement, ApplicationUser user) {
+		if (RationaleBacklog.isElementComplete(parentElement, childElement)) {
+			parentElement.setIncomplete(false);
+			updateKnowledgeElement(parentElement, user);
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Inserts a new link into database.
 	 *
@@ -272,8 +282,7 @@ public class KnowledgePersistenceManager {
 			return 0;
 		}
 		Link link = Link.instantiateDirectedLink(parentElement, childElement);
-		long linkId = insertLink(link, user);
-		return linkId;
+		return insertLink(link, user);
 	}
 
 	/**
@@ -294,7 +303,7 @@ public class KnowledgePersistenceManager {
 
 		KnowledgeGraph.getOrCreate(projectKey).removeEdge(link);
 
-		boolean isDeleted = false;
+		boolean isDeleted;
 		if (link.isIssueLink()) {
 			isDeleted = JiraIssuePersistenceManager.deleteLink(link, user);
 			if (!isDeleted) {
@@ -459,7 +468,7 @@ public class KnowledgePersistenceManager {
 	/**
 	 * @param id
 	 *            id of the {@link KnowledgeElement} in database.
-	 * @param documentationLocation
+	 * @param documentationLocationIdentifier
 	 *            identifier of the {@link DocumentationLocation} of the element,
 	 *            e.g., "i" for Jira issue.
 	 * @return {@link KnowledgeElement} or null if it is not found.
@@ -477,7 +486,7 @@ public class KnowledgePersistenceManager {
 	 *         source or the destination element.
 	 */
 	public List<Link> getLinks(KnowledgeElement element) {
-		List<Link> links = new ArrayList<Link>();
+		List<Link> links = new ArrayList<>();
 		activePersistenceManagersForSingleLocations.forEach(manager -> links.addAll(manager.getInwardLinks(element)));
 		activePersistenceManagersForSingleLocations.forEach(manager -> links.addAll(manager.getOutwardLinks(element)));
 		return links;
@@ -492,7 +501,7 @@ public class KnowledgePersistenceManager {
 	 * @see GenericLinkManager
 	 */
 	public static long getLinkId(Link link) {
-		long linkId = -1;
+		long linkId;
 		if (link.isIssueLink()) {
 			linkId = JiraIssuePersistenceManager.getLinkId(link);
 			return linkId;

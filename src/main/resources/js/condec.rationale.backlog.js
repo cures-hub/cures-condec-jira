@@ -80,6 +80,12 @@
 	function updateView(nodeId, treant, treeViewer) {
 		var knowledgeTypes = conDecFiltering.getSelectedItems("knowledge-type-dropdown-rb");
 		var selectedStatus = conDecFiltering.getSelectedItems("status-dropdown-rb");
+		var indexOfIncomplete = selectedStatus.indexOf("incomplete");
+		var onlyIncomplete = false;
+		if (indexOfIncomplete !== -1) {
+			selectedStatus.splice(indexOfIncomplete, 1);
+			onlyIncomplete = true;
+		}
 		var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-rb");
 		var startDateString = document.getElementById("start-date-picker-rb").value;
 		var startDateLong = new Date(startDateString).getTime();
@@ -91,11 +97,11 @@
 			"status" : selectedStatus,
 			"groups" : selectedGroups,
 			"startDate" : startDateLong,
-			"endDate" : endDateLong
+			"endDate" : endDateLong,
+			"isOnlyIncompleteKnowledgeShown" : onlyIncomplete
 		};
 		treeViewer.buildTreeViewer(filterSettings, "#rationale-backlog-tree", "#text-search-input-rb", "rationale-backlog-tree");
 	}
-
 
 	/*
 	* Init Helpers

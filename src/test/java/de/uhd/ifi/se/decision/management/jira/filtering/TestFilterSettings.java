@@ -1,9 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,6 +11,8 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+
+import static org.junit.Assert.*;
 
 public class TestFilterSettings extends TestSetUp {
 	private FilterSettings filterSettings;
@@ -147,14 +145,14 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
-	public void testIsCompleteElementsShown() {
-		assertEquals(false, filterSettings.isCompleteElementsShown());
+	public void testIsIncompleteElementsShown() {
+		assertFalse(filterSettings.isOnlyIncompleteKnowledgeShown());
 	}
 
 	@Test
-	public void testSetCompleteElementsShown() {
-		filterSettings.setCompleteKnowledgeShown(true);
-		assertEquals(true, filterSettings.isCompleteElementsShown());
+	public void testSetIncompleteElementsShown() {
+		filterSettings.setOnlyIncompleteKnowledgeShown(true);
+		assertTrue(filterSettings.isOnlyIncompleteKnowledgeShown());
 	}
 
 	@Test
@@ -172,13 +170,13 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetIsOnlyDecisionKnowledgeShown() {
-		assertEquals(false, filterSettings.isOnlyDecisionKnowledgeShown());
+		assertEquals(false, filterSettings.isOnlyIncompleteKnowledgeShown());
 	}
 
 	@Test
 	public void testSetOnlyDecisionKnowledgeShown() {
-		filterSettings.setOnlyDecisionKnowledgeShown(true);
-		assertEquals(true, filterSettings.isOnlyDecisionKnowledgeShown());
+		filterSettings.setOnlyIncompleteKnowledgeShown(true);
+		assertEquals(true, filterSettings.isOnlyIncompleteKnowledgeShown());
 	}
 
 	@Test

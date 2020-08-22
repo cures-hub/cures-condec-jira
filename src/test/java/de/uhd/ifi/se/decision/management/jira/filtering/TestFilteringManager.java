@@ -162,12 +162,16 @@ public class TestFilteringManager extends TestSetUp {
 	}
 
 	@Test
-	public void testIsElementMatchingCompleteFilter() {
+	public void testIsElementMatchingIncompleteFilter() {
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
 		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
 		KnowledgeElement testKnowledgeElement = KnowledgeElements.getTestKnowledgeElement();
-		assertTrue(filteringManager.isElementMatchingIsCompleteFilter(testKnowledgeElement));
-		filterSettings.setCompleteKnowledgeShown(true);
-		assertFalse(filteringManager.isElementMatchingIsCompleteFilter(testKnowledgeElement));
+		assertTrue(filteringManager.isElementMatchingIncompleteFilter(testKnowledgeElement));
+		testKnowledgeElement.setIncomplete(false);
+		assertTrue(filteringManager.isElementMatchingIncompleteFilter(testKnowledgeElement));
+		filterSettings.setOnlyIncompleteKnowledgeShown(true);
+		assertFalse(filteringManager.isElementMatchingIncompleteFilter(testKnowledgeElement));
+		testKnowledgeElement.setIncomplete(true);
+		assertTrue(filteringManager.isElementMatchingIncompleteFilter(testKnowledgeElement));
 	}
 }

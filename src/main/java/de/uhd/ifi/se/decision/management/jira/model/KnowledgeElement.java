@@ -42,7 +42,7 @@ public class KnowledgeElement {
 	private Date closed;
 	protected DocumentationLocation documentationLocation;
 	protected KnowledgeStatus status;
-	private boolean isComplete;
+	private boolean isIncomplete = true;
 
 	public KnowledgeElement() {
 		this.description = "";
@@ -565,11 +565,11 @@ public class KnowledgeElement {
 		return Objects.hash(id, getDocumentationLocation());
 	}
 
-	public boolean isComplete() {
-		return isComplete;
+	public boolean isIncomplete() {
+		return isIncomplete;
 	}
 
-	public void setComplete(boolean complete) {
-		isComplete = complete;
+	public void setIncomplete(boolean isIncomplete) {
+		this.isIncomplete = isIncomplete;
 	}
 }
