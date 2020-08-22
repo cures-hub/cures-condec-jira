@@ -1,17 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.AsSubgraph;
-import org.jgrapht.traverse.BreadthFirstIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -68,11 +65,7 @@ public class FilteringManager {
 		if (filterSettings.getSelectedElement() != null) {
 			elements.add(filterSettings.getSelectedElement());
 		}
-		// if (JiraQueryType.getJiraQueryType(searchString) == JiraQueryType.OTHER) {
 		return elements;
-		// }
-		// elements.retainAll(getAllElementsMatchingQuery());
-		// return new ArrayList<>(elements);
 	}
 
 	/**
@@ -130,54 +123,6 @@ public class FilteringManager {
 			}
 		}
 		return linksNotMatchingFilterSettings;
-	}
-
-	private List<KnowledgeElement> getAllElementsMatchingQuery() {
-		List<Issue> jiraIssues = getJiraIssuesFromQuery();
-		return getElementsInJiraIssuesMatchingFilterSettings(jiraIssues);
-	}
-
-	private List<Issue> getJiraIssuesFromQuery() {
-		if (filterSettings == null) {
-			return null;
-		}
-		JiraQueryHandler queryHandler = new JiraQueryHandler(user, filterSettings.getProjectKey(),
-				filterSettings.getSearchTerm());
-		if (queryHandler == null || queryHandler.getQueryType() == JiraQueryType.OTHER) {
-			return null;
-		}
-		return queryHandler.getJiraIssuesFromQuery();
-	}
-
-	private List<KnowledgeElement> getElementsInJiraIssuesMatchingFilterSettings(List<Issue> jiraIssues) {
-		if (graph == null) {
-			return null;
-		}
-		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
-
-		for (Issue jiraIssue : jiraIssues) {
-			KnowledgeElement element = new KnowledgeElement(jiraIssue);
-			if (elements.contains(element)) {
-				continue;
-			}
-
-			elements.add(element);
-
-			if (!graph.vertexSet().contains(element)) {
-				graph.addVertex(element);
-			}
-
-			BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<KnowledgeElement, Link>(
-					graph, element);
-			while (iterator.hasNext()) {
-				KnowledgeElement node = iterator.next();
-				if (!elements.contains(node) && isElementMatchingFilterSettings(node)) {
-					elements.add(node);
-				}
-			}
-		}
-		return elements;
 	}
 
 	private Set<KnowledgeElement> filterElements(Set<KnowledgeElement> elements) {
