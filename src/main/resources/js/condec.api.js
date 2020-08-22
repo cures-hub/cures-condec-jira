@@ -97,15 +97,6 @@
 	};
 
 	/*
-	 */
-	ConDecAPI.prototype.discardLinkSuggestion = function (baseIssueKey, otherIssueKey, projectKey) {
-		return generalApi.postJSONReturnPromise(
-				`${this.restPrefix}/consistency/discardLinkSuggestion.json?projectKey=${projectKey}
-				&originIssueKey=${baseIssueKey}&targetIssueKey=${otherIssueKey}`
-		);
-	};
-
-	/*
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.getUnlinkedElements = function (id, documentationLocation, callback) {
@@ -271,30 +262,6 @@
 				}
 			}).catch(function (err) {
 				reject(err);
-			})
-		})
-	};
-
-	ConDecAPI.prototype.getIssueTypes = function () {
-		// first we need the boards then we can get the Sprints for each
-		// board
-		return new Promise(function (resolve, reject) {
-			var issueTypeUrl = "/rest/api/2/issue/createmeta?expand=projects.issuetypes";
-			var issuePromise = generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
-			issuePromise.then(function (result) {
-				if (result && result.projects && result.projects.length) {
-					var correctIssueTypes = result.projects.filter(function (project) {
-						return project.key === projectKey;
-					});
-					correctIssueTypes = correctIssueTypes[0].issuetypes;
-					if (correctIssueTypes && correctIssueTypes.length) {
-						resolve(correctIssueTypes);
-					} else {
-						reject("No issue-types could be found for this project");
-					}
-				} else {
-					reject("No Projects were found.");
-				}
 			})
 		})
 	};
