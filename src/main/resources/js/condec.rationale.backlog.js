@@ -65,8 +65,8 @@
 		date.setDate(date.getDate() - 7);
 		endDatePicker.addEventListener("change", function () {
 			conDecRationaleBacklog.updateView();
-		})
-		var startDatePicker =document.getElementById("start-date-picker-rb")
+		});
+		var startDatePicker =document.getElementById("start-date-picker-rb");
 		startDatePicker.value = date.toISOString().substr(0, 10);
 		startDatePicker.addEventListener("change", function () {
 			conDecRationaleBacklog.updateView();
