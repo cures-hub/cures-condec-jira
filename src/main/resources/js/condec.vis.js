@@ -3,7 +3,7 @@
 	var ConDecVis = function() {
 	};
 
-	function build(theNodes, theEdges, rootElementId) {
+	function build (theNodes, theEdges, rootElementId) {
 		console.log("ConDecVis build");
 		var nodes = new vis.DataSet(theNodes);
 		var edges = new vis.DataSet(theEdges);
@@ -41,7 +41,7 @@
 		return network;
 	}
 
-	ConDecVis.prototype.addContextMenu = function(params, network) {
+	ConDecVis.prototype.addContextMenu = function (params, network) {
 		params.event.preventDefault();
 		var nodeIndices = network.body.nodeIndices;
 		var clickedNodeId;
@@ -63,36 +63,10 @@
 	/*
 	 * external references: condec.jira.issue.module
 	 */
-	ConDecVis.prototype.buildVisFiltered = function(issueKey, searchTerm, linkDistance, jiraIssueTypes, status, createdAfter,
-	        createdBefore, linkTypes, documentationLocations) {
-		console.log("conDecVis buildVisFiltered");
-		var filterSettings = {
-				"searchTerm": searchTerm,
-				"createdEarliest": createdAfter,
-				"createdLatest": createdBefore,
-				"documentationLocations": documentationLocations,
-				"jiraIssueTypes": jiraIssueTypes,
-				"status": status,
-				"linkTypes": linkTypes,
-				"selectedElement": issueKey,
-				"linkDistance": linkDistance
-		};
-		conDecAPI.getVis(filterSettings, function(visData) {
-			        build(visData.nodes, visData.edges, visData.rootElementId);
-		        });
-	};
-
-	/*
-	 * external references: condec.jira.issue.module
-	 */
-	ConDecVis.prototype.buildVis = function(elementKey, searchTerm) {
+	ConDecVis.prototype.buildVis = function (filterSettings) {
 		console.log("conDecVis buildVis");
-		var filterSettings = {
-				"searchTerm": searchTerm,
-				"selectedElement": elementKey
-		};
 		conDecAPI.getVis(filterSettings, function(visData) {
-			var network = build(visData.nodes, visData.edges, visData.rootElementId);
+			build(visData.nodes, visData.edges, visData.rootElementId);
 			network.focus(visData.rootElementId, {
 				scale : 0.9
 			});

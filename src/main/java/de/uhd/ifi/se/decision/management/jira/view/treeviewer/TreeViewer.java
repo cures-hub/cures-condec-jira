@@ -113,7 +113,7 @@ public class TreeViewer {
 			return;
 		}
 
-		// TODO Improve code class handling
+		// TODO Improve code class handling and remove this case handling
 		if ("codeClass".equals(filterSettings.getJiraIssueTypes().iterator().next())) {
 			CodeClassPersistenceManager manager = new CodeClassPersistenceManager(filterSettings.getProjectKey());
 			knowledgeElements = manager.getKnowledgeElements();

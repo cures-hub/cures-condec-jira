@@ -149,7 +149,11 @@
 	function showGraph() {
 		console.log("ConDecJiraIssueModule showGraph");
 		issueKey = conDecAPI.getIssueKey();
-		vis.buildVis(issueKey, search);
+		var filterSettings = {
+				"searchTerm": search,
+				"selectedElement": issueKey
+		};
+		vis.buildVis(filterSettings);
 	}
 
 	function showDecisionTable() {
@@ -177,8 +181,18 @@
 		if (nodeDistanceInput !== null) {
 			nodeDistance = nodeDistanceInput.value;
 		}
-		vis.buildVisFiltered(issueKey, search, nodeDistance, issueTypes, status, createdAfter, createdBefore,
-		        linkTypes, documentationLocations);
+		var filterSettings = {
+				"searchTerm": search,
+				"createdEarliest": createdAfter,
+				"createdLatest": createdBefore,
+				"documentationLocations": documentationLocations,
+				"jiraIssueTypes": issueTypes,
+				"status": status,
+				"linkTypes": linkTypes,
+				"selectedElement": issueKey,
+				"linkDistance": nodeDistance
+		};
+		vis.buildVis(filterSettings);
 	}
 
 	function initFilter(issueKey, search) {
