@@ -74,7 +74,7 @@
 		var selectedStatus = conDecFiltering.getSelectedItems("status-dropdown-rb");
 		var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-rb");
 		var filterSettings = {
-			"jiraIssueTypes": knowledgeTypes,
+			"knowledgeTypes": knowledgeTypes,
 			"linkDistance": 0,
 			"status" : selectedStatus,
 			"groups" : selectedGroups

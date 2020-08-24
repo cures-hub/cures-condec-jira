@@ -191,6 +191,7 @@ public class ViewRest {
 		return Response.ok(timeLine).build();
 	}
 
+	// TODO Rename to "getDecisionProblems"
 	@Path("/getDecisionIssues")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -213,6 +214,7 @@ public class ViewRest {
 		return Response.ok(decisionTable.getIssues()).build();
 	}
 
+	// TODO Pass FilterSettings
 	@Path("/getDecisionTable")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })

@@ -42,19 +42,6 @@
 	};
 
 	/**
-	 * Replaces argument with pro-argument and con-argument in knowledge types
-	 * array.
-	 */
-	function createExtendedKnowledgeTypes(knowledgeTypes) {
-		var extendedKnowledgeTypes = knowledgeTypes.filter(function (value) {
-			return value.toLowerCase() !== "argument";
-		});
-		extendedKnowledgeTypes.push("Pro-argument");
-		extendedKnowledgeTypes.push("Con-argument");
-		return extendedKnowledgeTypes;
-	}
-
-	/**
 	 * @issue How can we access global attributes of closure objects, e.g.
 	 *        extendedKnowlegdeTypes?
 	 * @alternative Do not use getters in Javascript but directly call e.g.
@@ -68,9 +55,25 @@
 	 *      the getter function.
 	 */
 	ConDecAPI.prototype.getExtendedKnowledgeTypes = function () {
-		this.getKnowledgeTypes();
+		if (this.extendedKnowledgeTypes === undefined || this.extendedKnowledgeTypes.length === 0) {
+			this.extendedKnowledgeTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getDecisionKnowledgeTypes.json?projectKey=" + getProjectKey());
+			this.extendedKnowledgeTypes = createExtendedKnowledgeTypes(this.extendedKnowledgeTypes);
+		}
 		return this.extendedKnowledgeTypes;
 	};
+	
+	/**
+	 * Replaces argument with pro-argument and con-argument in knowledge types
+	 * array.
+	 */
+	function createExtendedKnowledgeTypes(knowledgeTypes) {
+		var extendedKnowledgeTypes = knowledgeTypes.filter(function (value) {
+			return value.toLowerCase() !== "argument";
+		});
+		extendedKnowledgeTypes.push("Pro-argument");
+		extendedKnowledgeTypes.push("Con-argument");
+		return extendedKnowledgeTypes;
+	}
 
 	ConDecAPI.prototype.checkIfProjectKeyIsValid = function () {
 		if (projectKey === null || projectKey === undefined) {
@@ -94,15 +97,6 @@
 				callback(decisionKnowledgeElement);
 			}
 		});
-	};
-
-	/*
-	 */
-	ConDecAPI.prototype.discardLinkSuggestion = function (baseIssueKey, otherIssueKey, projectKey) {
-		return generalApi.postJSONReturnPromise(
-				`${this.restPrefix}/consistency/discardLinkSuggestion.json?projectKey=${projectKey}
-				&originIssueKey=${baseIssueKey}&targetIssueKey=${otherIssueKey}`
-		);
 	};
 
 	/*
@@ -275,30 +269,6 @@
 		})
 	};
 
-	ConDecAPI.prototype.getIssueTypes = function () {
-		// first we need the boards then we can get the Sprints for each
-		// board
-		return new Promise(function (resolve, reject) {
-			var issueTypeUrl = "/rest/api/2/issue/createmeta?expand=projects.issuetypes";
-			var issuePromise = generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
-			issuePromise.then(function (result) {
-				if (result && result.projects && result.projects.length) {
-					var correctIssueTypes = result.projects.filter(function (project) {
-						return project.key === projectKey;
-					});
-					correctIssueTypes = correctIssueTypes[0].issuetypes;
-					if (correctIssueTypes && correctIssueTypes.length) {
-						resolve(correctIssueTypes);
-					} else {
-						reject("No issue-types could be found for this project");
-					}
-				} else {
-					reject("No Projects were found.");
-				}
-			})
-		})
-	};
-
 	/*
 	 * external references: condec.context.menu, condec.dialog
 	 */
@@ -454,28 +424,8 @@
 	/*
 	 * external references: condec.vis
 	 */
-	ConDecAPI.prototype.getVis = function (elementKey, searchTerm, callback) {
-		this.getVisFiltered(elementKey, null, null, null, -1, -1, null, null, 3, callback);
-	};
-
-	/*
-	 * external references: condec.vis
-	 */
-	ConDecAPI.prototype.getVisFiltered = function (elementKey, searchTerm, jiraIssueTypes, status,
-			createdAfter, createdBefore, linkTypes, documentationLocations, linkDistance, callback) {
-		var filterSettings = {
-				"projectKey": projectKey,
-				"searchTerm": searchTerm,
-				"createdEarliest": createdAfter,
-				"createdLatest": createdBefore,
-				"documentationLocations": documentationLocations,
-				"jiraIssueTypes": jiraIssueTypes,
-				"status": status,
-				"linkTypes": linkTypes,
-				"selectedElement": elementKey,
-				"linkDistance": linkDistance,
-				"groups": null
-		};
+	ConDecAPI.prototype.getVis = function (filterSettings, callback) {
+		filterSettings["projectKey"] = projectKey;
 		generalApi.postJSON(this.restPrefix + "/view/getVis.json", filterSettings, function (error, vis) {
 			if (error === null) {
 				callback(vis);
@@ -493,7 +443,7 @@
 				"createdEarliest": created,
 				"createdLatest": closed,
 				"documentationLocations": null,
-				"jiraIssueTypes": knowledgeTypes,
+				"knowledgeTypes": knowledgeTypes,
 				"status": status,
 				"groups": null
 		};
@@ -514,6 +464,7 @@
 			}
 		});
 	};
+	
 	/*
 	 * external reference: condec.jira.issue.module
 	 */
@@ -537,7 +488,7 @@
 				"createdEarliest": created,
 				"createdLatest": closed,
 				"documentationLocations": null,
-				"jiraIssueTypes": issueTypes,
+				"knowledgeTypes": issueTypes,
 				"status": issueStatus,
 				"groups": decGroups
 		};
@@ -585,7 +536,7 @@
 				"createdEarliest": -1,
 				"createdLatest": -1,
 				"documentationLocations": null,
-				"jiraIssueTypes": ["Decision"],
+				"knowledgeTypes": ["Decision"],
 				"status": status,
 				"linkTypes": linkTypes,
 				"groups": decGroups
@@ -753,10 +704,8 @@
 	 * "Implication", "Issue", "Problem", and "Solution".
 	 */
 	ConDecAPI.prototype.getKnowledgeTypes = function () {
-		// console.log("ProjectKey: " + getProjectKey());
 		if (this.knowledgeTypes === undefined || this.knowledgeTypes.length === 0) {
 			this.knowledgeTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getKnowledgeTypes.json?projectKey=" + getProjectKey());
-			this.extendedKnowledgeTypes = createExtendedKnowledgeTypes(this.knowledgeTypes)
 		}
 		return this.knowledgeTypes;
 	}
@@ -909,6 +858,7 @@
 			}
 		});
 	};
+	
 	/*
 	 * external references: settingsForSingleProject.vm,
 	 * settingsForAllProjects.vm

@@ -87,7 +87,7 @@ public class TestFilteringManager extends TestSetUp {
 		Set<String> knowledgeTypes = new HashSet<String>();
 		knowledgeTypes.add("Decision");
 		FilterSettings settings = new FilterSettings("TEST", "TEST");
-		settings.setJiraIssueTypes(knowledgeTypes);
+		settings.setKnowledgeTypes(knowledgeTypes);
 
 		FilteringManager filteringManager = new FilteringManager(user, settings);
 		assertEquals(1, filteringManager.getElementsMatchingFilterSettings().size());

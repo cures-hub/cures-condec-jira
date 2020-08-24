@@ -46,7 +46,7 @@
 		var selectedKnowledgeTypes = getSelectedKnowledgeTypes();
 		var jiraIssueKey = conDecAPI.getIssueKey();
 		var filterSettings = {
-				"jiraIssueTypes": selectedKnowledgeTypes,
+				"knowledgeTypes": selectedKnowledgeTypes,
 				"selectedElement": jiraIssueKey
 		};
 		treeViewer.buildTreeViewer(filterSettings, "#jstree", "#jstree-search-input", "issue-container");

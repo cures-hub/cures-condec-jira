@@ -1,5 +1,5 @@
 /*
- This view provides trees of decision knowledge.
+ This view provides trees of knowledge elements.
  
  Requires
  * conDecAPI
@@ -9,7 +9,7 @@
  * conDecTreeViewer
 
  Is referenced in HTML by
- * decisionKnowledgePage.vm
+ * overview.vm
  */
 (function(global) {
 	/* private vars */
@@ -83,29 +83,27 @@
 			}
 		});
 
-		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input", function() {
-			updateView(null, treant, treeViewer);
-		});
+		// @issue Should filters change all views or only the current view?
+		// @decision Filters are only applied in the current view using updateView()!
+		// @alternative We update all views using conDecObservable.notify()!
+		// @pro The user could reuse the filter settings, which is more useable.
+		// @con This would need more computation and decreases performance.
+		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input", conDecKnowledgePage.updateView);
 
 		conDecAPI.fillDecisionGroupSelect("select2-decision-group");
-		$("#select2-decision-group").on("change.select2", function(e) {
-			// @issue Should filters change all views or only the current view?
-			// @decision Filters are only applied in the current view using updateView()!
-			// @alternative We update all views using conDecObservable.notify()!
-			// @pro The user could reuse the filter settings, which is more useable.
-			// @con This would need more computation and decreases performance.
-			conDecKnowledgePage.updateView();
-		});
+		$("#select2-decision-group").on("change.select2", conDecKnowledgePage.updateView);
 
 		var statusDropdown = conDecFiltering.initDropdown("status-dropdown-overview", conDecAPI.knowledgeStatus);
-		statusDropdown.addEventListener("change", function(e) {
-			conDecKnowledgePage.updateView();
-		});
+		statusDropdown.addEventListener("change", conDecKnowledgePage.updateView);
 
 		var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input");
-		isOnlyDecisionKnowledgeShownInput.addEventListener("change", function(e) {
-			conDecKnowledgePage.updateView();
-		});
+		isOnlyDecisionKnowledgeShownInput.addEventListener("change", conDecKnowledgePage.updateView);
+		
+		var minLinkNumberInput = document.getElementById("min-number-linked-issues-input");
+		minLinkNumberInput.addEventListener("change", conDecKnowledgePage.updateView);
+
+		var maxLinkNumberInput = document.getElementById("max-number-linked-issues-input");
+		minLinkNumberInput.addEventListener("change", conDecKnowledgePage.updateView);
 
 		updateView(null, treant, treeViewer);
 	}
@@ -115,11 +113,15 @@
 		var selectedStatus = conDecFiltering.getSelectedItems("status-dropdown-overview");
 		var knowledgeTypes = [ knowledgeType ];
 		var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group");
+        var minLinkNumber = document.getElementById("min-number-linked-issues-input").value;
+		var maxLinkNumber = document.getElementById("max-number-linked-issues-input").value;
 		var filterSettings = {
-		    "jiraIssueTypes" : knowledgeTypes,
-		    "linkDistance" : 0,
-		    "status" : selectedStatus,
-		    "groups" : selectedGroups
+			"knowledgeTypes" : knowledgeTypes,
+			"status" : selectedStatus,
+			"linkDistance" : 0,
+			"groups" : selectedGroups,
+			"minDegree" : minLinkNumber,
+			"maxDegree" : maxLinkNumber
 		};
 		treeViewer.buildTreeViewer(filterSettings, "#jstree", "#jstree-search-input", "jstree");
 		if (nodeId === undefined) {
@@ -134,12 +136,10 @@
 			var node = tree.node.data;
 			var isOnlyDecisionKnowledgeShown = document.getElementById("is-decision-knowledge-only-input").checked;
 			var linkDistance = document.getElementById("link-distance-input").value;
-			var filterSettings = {
-					"searchTerm": "",
-					"isOnlyDecisionKnowledgeShown": isOnlyDecisionKnowledgeShown,
-					"linkDistance": linkDistance,
-					"selectedElement": node.key
-			};
+			filterSettings["linkDistance"] = linkDistance;
+    		filterSettings["isOnlyDecisionKnowledgeShown"] = isOnlyDecisionKnowledgeShown;
+    		filterSettings["knowledgeTypes"] = null;
+    		filterSettings["selectedElement"] = node.key;
 	        treant.buildTreant(filterSettings, true);
 		});
 	}
