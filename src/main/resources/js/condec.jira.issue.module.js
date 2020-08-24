@@ -202,6 +202,7 @@
 		var firstDatePicker = document.getElementById("created-after-picker");
 		var secondDatePicker = document.getElementById("created-before-picker");
 
+		// TODO Move filterSettingsFromJQL to conDecAPI
 		conDecAPI.getFilterSettings(issueKey, search, function(filterData) {
 			var allIssueTypes = filterData.jiraIssueTypes;
 			var knowledgeTypes = conDecAPI.getKnowledgeTypes().concat(allIssueTypes);

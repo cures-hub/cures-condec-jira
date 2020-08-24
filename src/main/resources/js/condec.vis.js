@@ -2,6 +2,19 @@
 
 	var ConDecVis = function() {
 	};
+	
+	/*
+	 * external references: condec.jira.issue.module
+	 */
+	ConDecVis.prototype.buildVis = function (filterSettings) {
+		console.log("conDecVis buildVis");
+		conDecAPI.getVis(filterSettings, function(visData) {
+			build(visData.nodes, visData.edges, visData.rootElementId);
+			network.focus(visData.rootElementId, {
+				scale : 0.9
+			});
+		});
+	};
 
 	function build (theNodes, theEdges, rootElementId) {
 		console.log("ConDecVis build");
@@ -58,19 +71,6 @@
 		}
 		conDecContextMenu.createContextMenu(clickedNodeId.toString().slice(0, -2),
 		        getDocumentationLocationFromId(clickedNodeId), params.event, "vis-container");
-	};
-
-	/*
-	 * external references: condec.jira.issue.module
-	 */
-	ConDecVis.prototype.buildVis = function (filterSettings) {
-		console.log("conDecVis buildVis");
-		conDecAPI.getVis(filterSettings, function(visData) {
-			build(visData.nodes, visData.edges, visData.rootElementId);
-			network.focus(visData.rootElementId, {
-				scale : 0.9
-			});
-		});
 	};
 
 	ConDecVis.prototype.getVisOptions = function(visData) {
