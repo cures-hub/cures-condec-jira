@@ -42,19 +42,6 @@
 	};
 
 	/**
-	 * Replaces argument with pro-argument and con-argument in knowledge types
-	 * array.
-	 */
-	function createExtendedKnowledgeTypes(knowledgeTypes) {
-		var extendedKnowledgeTypes = knowledgeTypes.filter(function (value) {
-			return value.toLowerCase() !== "argument";
-		});
-		extendedKnowledgeTypes.push("Pro-argument");
-		extendedKnowledgeTypes.push("Con-argument");
-		return extendedKnowledgeTypes;
-	}
-
-	/**
 	 * @issue How can we access global attributes of closure objects, e.g.
 	 *        extendedKnowlegdeTypes?
 	 * @alternative Do not use getters in Javascript but directly call e.g.
@@ -68,9 +55,25 @@
 	 *      the getter function.
 	 */
 	ConDecAPI.prototype.getExtendedKnowledgeTypes = function () {
-		this.getKnowledgeTypes();
+		if (this.extendedKnowledgeTypes === undefined || this.extendedKnowledgeTypes.length === 0) {
+			this.extendedKnowledgeTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getDecisionKnowledgeTypes.json?projectKey=" + getProjectKey());
+			this.extendedKnowledgeTypes = createExtendedKnowledgeTypes(this.extendedKnowledgeTypes);
+		}
 		return this.extendedKnowledgeTypes;
 	};
+	
+	/**
+	 * Replaces argument with pro-argument and con-argument in knowledge types
+	 * array.
+	 */
+	function createExtendedKnowledgeTypes(knowledgeTypes) {
+		var extendedKnowledgeTypes = knowledgeTypes.filter(function (value) {
+			return value.toLowerCase() !== "argument";
+		});
+		extendedKnowledgeTypes.push("Pro-argument");
+		extendedKnowledgeTypes.push("Con-argument");
+		return extendedKnowledgeTypes;
+	}
 
 	ConDecAPI.prototype.checkIfProjectKeyIsValid = function () {
 		if (projectKey === null || projectKey === undefined) {
@@ -701,10 +704,8 @@
 	 * "Implication", "Issue", "Problem", and "Solution".
 	 */
 	ConDecAPI.prototype.getKnowledgeTypes = function () {
-		// console.log("ProjectKey: " + getProjectKey());
 		if (this.knowledgeTypes === undefined || this.knowledgeTypes.length === 0) {
 			this.knowledgeTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getKnowledgeTypes.json?projectKey=" + getProjectKey());
-			this.extendedKnowledgeTypes = createExtendedKnowledgeTypes(this.knowledgeTypes)
 		}
 		return this.knowledgeTypes;
 	}

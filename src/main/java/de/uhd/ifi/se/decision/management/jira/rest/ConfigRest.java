@@ -192,8 +192,12 @@ public class ConfigRest {
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
-	// TODO At the moment, only decision knowledge types are returned, no work
-	// items, code and so on.
+	/**
+	 * @param projectKey
+	 *            of the Jira project.
+	 * @return all knowledge types including Jira issue types such as work items
+	 *         (tasks) or requirements.
+	 */
 	@Path("/getKnowledgeTypes")
 	@GET
 	public Response getKnowledgeTypes(@QueryParam("projectKey") String projectKey) {
@@ -203,6 +207,24 @@ public class ConfigRest {
 		}
 		Set<String> knowledgeTypesAsString = new DecisionKnowledgeProject(projectKey).getNamesOfKnowledgeTypes();
 		return Response.ok(knowledgeTypesAsString).build();
+	}
+
+	/**
+	 * @param projectKey
+	 *            of the Jira project.
+	 * @return all decision knowledge (=rationale) types such as issue (=decision
+	 *         problem), alternative, decision, and argument.
+	 */
+	@Path("/getDecisionKnowledgeTypes")
+	@GET
+	public Response getDecisionKnowledgeTypes(@QueryParam("projectKey") String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		Set<String> rationaleTypesAsString = new DecisionKnowledgeProject(projectKey)
+				.getNamesOfDecisionKnowledgeTypes();
+		return Response.ok(rationaleTypesAsString).build();
 	}
 
 	@Path("/getDecisionTableCriteriaQuery")
