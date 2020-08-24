@@ -440,7 +440,7 @@
 				"createdEarliest": created,
 				"createdLatest": closed,
 				"documentationLocations": null,
-				"jiraIssueTypes": knowledgeTypes,
+				"knowledgeTypes": knowledgeTypes,
 				"status": status,
 				"groups": null
 		};
@@ -485,7 +485,7 @@
 				"createdEarliest": created,
 				"createdLatest": closed,
 				"documentationLocations": null,
-				"jiraIssueTypes": issueTypes,
+				"knowledgeTypes": issueTypes,
 				"status": issueStatus,
 				"groups": decGroups
 		};
@@ -533,7 +533,7 @@
 				"createdEarliest": -1,
 				"createdLatest": -1,
 				"documentationLocations": null,
-				"jiraIssueTypes": ["Decision"],
+				"knowledgeTypes": ["Decision"],
 				"status": status,
 				"linkTypes": linkTypes,
 				"groups": decGroups

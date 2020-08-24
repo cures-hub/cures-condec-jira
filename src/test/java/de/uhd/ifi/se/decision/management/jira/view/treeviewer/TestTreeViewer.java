@@ -57,7 +57,7 @@ public class TestTreeViewer extends TestSetUp {
 		filterSettings.setLinkDistance(0);
 		Set<String> types = new HashSet<>();
 		types.add("Decision");
-		filterSettings.setJiraIssueTypes(types);
+		filterSettings.setKnowledgeTypes(types);
 		treeViewer = new TreeViewer(filterSettings);
 		treeViewer.setMultiple(multiple);
 		treeViewer.setCheckCallback(checkCallback);
@@ -228,9 +228,9 @@ public class TestTreeViewer extends TestSetUp {
 
 		Set<String> types = new HashSet<>();
 		types.add("codeClass");
-		filterSettings.setJiraIssueTypes(types);
-		assertEquals(1, filterSettings.getJiraIssueTypes().size());
-		assertEquals("codeClass", filterSettings.getJiraIssueTypes().iterator().next());
+		filterSettings.setKnowledgeTypes(types);
+		assertEquals(1, filterSettings.getKnowledgeTypes().size());
+		assertEquals("codeClass", filterSettings.getKnowledgeTypes().iterator().next());
 		filterSettings.setLinkDistance(0);
 		TreeViewer newTreeViewer = new TreeViewer(filterSettings);
 		assertNotNull(newTreeViewer);

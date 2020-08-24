@@ -133,8 +133,6 @@
 			location="/js/condec.relationship.page.js" />
 		<resource type="download" name="condec.relationshipMatrix.page.js"
 			location="/js/condec.relationshipMatrix.page.js" />
-		<resource type="download" name="condec.code.class.page.js"
-			location="/js/condec.code.class.page.js" />
 		<resource type="download" name="condec.decision.group.view.js"
 			location="/js/condec.decision.group.view.js" />
 		<resource type="download" name="condec.consistency.api.js"

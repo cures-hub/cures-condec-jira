@@ -135,7 +135,7 @@
 		var isTestCodeShown = document.getElementById("show-test-elements-input").checked;
 		var filterSettings = {
 		    "searchTerm" : search,
-		    "jiraIssueTypes" : knowledgeTypes,
+		    "knowledgeTypes" : knowledgeTypes,
 		    "isOnlyDecisionKnowledgeShown" : isOnlyDecisionKnowledgeShown,
 		    "linkDistance" : linkDistance,
 		    "selectedElement" : issueKey,
@@ -186,7 +186,7 @@
 				"createdEarliest": createdAfter,
 				"createdLatest": createdBefore,
 				"documentationLocations": documentationLocations,
-				"jiraIssueTypes": issueTypes,
+				"knowledgeTypes": issueTypes,
 				"status": status,
 				"linkTypes": linkTypes,
 				"selectedElement": issueKey,
@@ -204,19 +204,16 @@
 
 		// Parses a Jira query (in JQL) into filter settings, uses the default settings in case no Jira query is provided
 		conDecAPI.getFilterSettings(issueKey, search, function(filterData) {
-			var allIssueTypes = filterData.jiraIssueTypes;
-			var knowledgeTypes = filterData.knowledgeTypes;
-			var selectedIssueTypes = filterData.knowledgeTypes;
-			
-			var selectedKnowledgeTypes = conDecAPI.getKnowledgeTypes().concat(selectedIssueTypes);
+			var allKnowledgeTypes = conDecAPI.getKnowledgeTypes();		
+			var selectedKnowledgeTypes = filterData.knowledgeTypes;
 			var status = conDecAPI.knowledgeStatus;
 			var documentationLocation = filterData.documentationLocations;
 
-			var knowledgeTypeDropdown = conDecFiltering.initDropdown("knowledge-type-dropdown", knowledgeTypes,
+			var knowledgeTypeDropdown = conDecFiltering.initDropdown("knowledge-type-dropdown", allKnowledgeTypes,
 			        selectedKnowledgeTypes); // Tree view
 			knowledgeTypeDropdown.addEventListener("change", showTreant);
 
-			conDecFiltering.initDropdown("issuetype-dropdown", knowledgeTypes, selectedKnowledgeTypes); // graph view
+			conDecFiltering.initDropdown("issuetype-dropdown", allKnowledgeTypes, selectedKnowledgeTypes); // graph view
 			conDecFiltering.initDropdown("status-dropdown", status);
 			conDecFiltering.initDropdown("documentation-dropdown", documentationLocation);
 			if (filterData.startDate >= 0) {

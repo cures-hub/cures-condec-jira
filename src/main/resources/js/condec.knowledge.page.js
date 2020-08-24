@@ -118,7 +118,7 @@
         var minLinkNumber = document.getElementById("min-number-linked-issues-input").value;
 		var maxLinkNumber = document.getElementById("max-number-linked-issues-input").value;
 		var filterSettings = {
-			"jiraIssueTypes" : knowledgeTypes,
+			"knowledgeTypes" : knowledgeTypes,
 			"linkDistance" : 0,
 			"groups" : selectedGroups,
 			"minDegree" : minLinkNumber,
@@ -139,7 +139,7 @@
 			var linkDistance = document.getElementById("link-distance-input").value;
 			filterSettings["linkDistance"] = linkDistance;
     		filterSettings["isOnlyDecisionKnowledgeShown"] = isOnlyDecisionKnowledgeShown;
-    		filterSettings["jiraIssueTypes"] = null;
+    		filterSettings["knowledgeTypes"] = null;
     		filterSettings["selectedElement"] = node.key;
 	        treant.buildTreant(filterSettings, true);
 		});
