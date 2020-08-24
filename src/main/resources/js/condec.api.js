@@ -461,6 +461,7 @@
 			}
 		});
 	};
+	
 	/*
 	 * external reference: condec.jira.issue.module
 	 */

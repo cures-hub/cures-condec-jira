@@ -202,11 +202,12 @@
 		var firstDatePicker = document.getElementById("created-after-picker");
 		var secondDatePicker = document.getElementById("created-before-picker");
 
-		// TODO Move filterSettingsFromJQL to conDecAPI
+		// Parses a Jira query (in JQL) into filter settings, uses the default settings in case no Jira query is provided
 		conDecAPI.getFilterSettings(issueKey, search, function(filterData) {
 			var allIssueTypes = filterData.jiraIssueTypes;
-			var knowledgeTypes = conDecAPI.getKnowledgeTypes().concat(allIssueTypes);
-			var selectedIssueTypes = filterData.jiraIssueTypes;
+			var knowledgeTypes = filterData.knowledgeTypes;
+			var selectedIssueTypes = filterData.knowledgeTypes;
+			
 			var selectedKnowledgeTypes = conDecAPI.getKnowledgeTypes().concat(selectedIssueTypes);
 			var status = conDecAPI.knowledgeStatus;
 			var documentationLocation = filterData.documentationLocations;

@@ -1,5 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.atlassian.gzipfilter.org.apache.commons.lang.math.NumberUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
@@ -11,14 +19,12 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
-
-import java.lang.reflect.Type;
-import java.util.*;
 
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
@@ -26,9 +32,9 @@ import java.util.*;
  */
 public class ConfigPersistenceManager {
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentAccessor
-		.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
+			.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
 	private static TransactionTemplate transactionTemplate = ComponentAccessor
-		.getOSGiComponentInstanceOfType(TransactionTemplate.class);
+			.getOSGiComponentInstanceOfType(TransactionTemplate.class);
 
 	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
@@ -223,7 +229,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
-											   boolean isKnowledgeTypeEnabled) {
+			boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
@@ -258,7 +264,6 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, parameter, gson.toJson(value, type));
 	}
 
-
 	public static void setWebhookEnabled(String projectKey, boolean isWebhookEnabled) {
 		setValue(projectKey, "isWebhookEnabled", Boolean.toString(isWebhookEnabled));
 	}
@@ -287,7 +292,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setReleaseNoteMapping(String projectKey, ReleaseNoteCategory category,
-											 List<String> selectedIssueNames) {
+			List<String> selectedIssueNames) {
 		String joinedIssueNames = String.join(",", selectedIssueNames);
 		setValue(projectKey, "releaseNoteMapping" + "." + category, joinedIssueNames);
 	}
@@ -347,7 +352,7 @@ public class ConfigPersistenceManager {
 				setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, type);
 			}
 
-			rdfSource.setActivated(true); //default:  activated
+			rdfSource.setActivated(true); // default: activated
 			rdfSourceList.add(rdfSource);
 
 			setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, type);

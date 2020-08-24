@@ -18,6 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
@@ -408,5 +409,21 @@ public class FilterSettings {
 			CodeClassPersistenceManager ccManager = new CodeClassPersistenceManager(project.getProjectKey());
 			selectedElement = ccManager.getKnowledgeElement(elementKey);
 		}
+	}
+
+	/**
+	 * @return list of selected knowledge types to be shown in the knowledge graph.
+	 */
+	@XmlElement(name = "knowledgeTypes")
+	public Set<String> getKnowledgeTypes() {
+		String projectKey = project.getProjectKey();
+
+		if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
+			return jiraIssueTypes;
+		}
+
+		Set<String> knowledgeTypes = new DecisionKnowledgeProject(projectKey).getNamesOfDecisionKnowledgeTypes();
+		knowledgeTypes.addAll(jiraIssueTypes);
+		return knowledgeTypes;
 	}
 }

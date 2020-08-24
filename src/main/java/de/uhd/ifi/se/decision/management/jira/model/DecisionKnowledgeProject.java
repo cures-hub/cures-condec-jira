@@ -2,9 +2,11 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
@@ -93,13 +95,39 @@ public class DecisionKnowledgeProject {
 	 * @return {@link KnowledgeType}s that are used in this project.
 	 */
 	public Set<KnowledgeType> getDecisionKnowledgeTypes() {
-		Set<KnowledgeType> knowledgeTypes = new HashSet<KnowledgeType>();
+		Set<KnowledgeType> knowledgeTypes = new LinkedHashSet<KnowledgeType>();
 		for (KnowledgeType knowledgeType : KnowledgeType.values()) {
 			boolean isEnabled = ConfigPersistenceManager.isKnowledgeTypeEnabled(getProjectKey(), knowledgeType);
 			if (isEnabled) {
 				knowledgeTypes.add(knowledgeType);
 			}
 		}
+		return knowledgeTypes;
+	}
+
+	/**
+	 * @return names of {@link KnowledgeType}s that are used in this project as
+	 *         Strings.
+	 */
+	public Set<String> getNamesOfDecisionKnowledgeTypes() {
+		Set<KnowledgeType> knowledgeTypes = getDecisionKnowledgeTypes();
+		Set<String> knowledgeTypesAsString = knowledgeTypes.stream().map(KnowledgeType::toString)
+				.collect(Collectors.toSet());
+		return knowledgeTypesAsString;
+	}
+
+	/**
+	 * @return names of decision knowledge types and Jira issue types that are used
+	 *         in this project as Strings.
+	 */
+	public Set<String> getNamesOfKnowledgeTypes() {
+		Set<String> jiraIssueTypes = getJiraIssueTypeNames();
+		if (ConfigPersistenceManager.isIssueStrategy(this.getProjectKey())) {
+			return jiraIssueTypes;
+		}
+
+		Set<String> knowledgeTypes = getNamesOfDecisionKnowledgeTypes();
+		knowledgeTypes.addAll(jiraIssueTypes);
 		return knowledgeTypes;
 	}
 
