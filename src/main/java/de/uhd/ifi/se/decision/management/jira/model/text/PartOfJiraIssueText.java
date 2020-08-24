@@ -60,11 +60,11 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		this(databaseEntry.getId(), databaseEntry.getEndPosition(), databaseEntry.getStartPosition(),
 				databaseEntry.isValidated(), databaseEntry.isRelevant(), databaseEntry.getProjectKey(),
 				databaseEntry.getCommentId(), databaseEntry.getJiraIssueId(), databaseEntry.getType(),
-				databaseEntry.getStatus());
+				databaseEntry.getStatus(), databaseEntry.isIncomplete());
 	}
 
 	public PartOfJiraIssueText(long id, int endSubstringCount, int startSubstringCount, boolean isValidated,
-			boolean isRelevant, String projectKey, long commentId, long issueId, String type, String status) {
+			boolean isRelevant, String projectKey, long commentId, long issueId, String type, String status, boolean isIncomplete) {
 		this();
 		this.setId(id);
 		this.setEndPosition(endSubstringCount);
@@ -77,6 +77,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		this.setProject(new DecisionKnowledgeProject(projectKey));
 		this.setType(type);
 		this.setStatus(status);
+		this.setIncomplete(isIncomplete);
 		Issue issue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
 		if (issue != null) {
 			this.setKey(issue.getKey() + ":" + this.getId());
@@ -116,6 +117,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		this.setDescription(element.getDescription());
 		this.setProject(element.getProject());
 		this.setStatus(element.getStatus());
+		this.setIncomplete(element.isIncomplete());
 	}
 
 	/**
@@ -241,7 +243,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 * Sets the id of the Jira issue that the decision knowledge element or
 	 * irrelevant text is part of.
 	 * 
-	 * @param id
+	 * @param issueId
 	 *            of the Jira issue.
 	 */
 	public void setJiraIssueId(long issueId) {

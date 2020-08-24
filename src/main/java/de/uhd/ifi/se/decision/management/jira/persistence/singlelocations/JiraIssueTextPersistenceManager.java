@@ -137,7 +137,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	@Override
 	public List<KnowledgeElement> getKnowledgeElements() {
-		List<KnowledgeElement> knowledgeElements = new ArrayList<KnowledgeElement>();
+		List<KnowledgeElement> knowledgeElements = new ArrayList<>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 			Query.select().where("PROJECT_KEY = ?", projectKey))) {
 			knowledgeElements.add(new PartOfJiraIssueText(databaseEntry));
@@ -156,7 +156,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * text.
 	 */
 	public List<KnowledgeElement> getElementsInJiraIssue(long jiraIssueId) {
-		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
+		List<KnowledgeElement> elements = new ArrayList<>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 			Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ? AND RELEVANT = TRUE", projectKey,
 				jiraIssueId))) {
@@ -175,7 +175,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * comment of a Jira issue. Does also return irrelevant parts of text.
 	 */
 	public List<KnowledgeElement> getElementsInComment(long commentId) {
-		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
+		List<KnowledgeElement> elements = new ArrayList<>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 			Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ?", projectKey, commentId))) {
 			elements.add(new PartOfJiraIssueText(databaseEntry));
@@ -350,6 +350,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		databaseEntry.setEndPosition(element.getEndPosition());
 		databaseEntry.setJiraIssueId(element.getJiraIssueId());
 		databaseEntry.setStatus(element.getStatusAsString());
+		databaseEntry.setIncomplete(element.isIncomplete());
 	}
 
 	@Override
@@ -388,7 +389,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		String tag = AbstractKnowledgeClassificationMacro.getTag(newElement.getType());
 		String changedPartOfText = tag + newElement.getDescription() + tag;
 
-		String text = "";
+		String text;
 		MutableComment mutableComment = formerElement.getComment();
 		if (mutableComment == null) {
 			text = formerElement.getJiraIssueDescription();
@@ -424,6 +425,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		formerElement.setRelevant(newElement.getType() != KnowledgeType.OTHER);
 		formerElement.setStatus(newStatus);
 		formerElement.setType(newType);
+		formerElement.setIncomplete(newElement.isIncomplete());
 		// sentence.setCommentId(element.getCommentId());
 
 		return updateInDatabase(formerElement);
@@ -630,7 +632,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	public List<KnowledgeElement> getUserValidatedPartsOfText(String projectKey) {
-		List<KnowledgeElement> validatedPartsOfText = new ArrayList<KnowledgeElement>();
+		List<KnowledgeElement> validatedPartsOfText = new ArrayList<>();
 		if (projectKey == null || projectKey.isEmpty()) {
 			return validatedPartsOfText;
 		}
@@ -645,7 +647,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	public List<KnowledgeElement> getUnvalidatedPartsOfText(String projectKey) {
-		List<KnowledgeElement> unvalidatedPartsOfText = new ArrayList<KnowledgeElement>();
+		List<KnowledgeElement> unvalidatedPartsOfText = new ArrayList<>();
 		if (projectKey == null || projectKey.isEmpty()) {
 			return unvalidatedPartsOfText;
 		}
@@ -699,7 +701,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		// Convert comment String to a list of PartOfJiraIssueText
 		List<PartOfJiraIssueText> partsOfComment = new TextSplitter().getPartsOfText(comment.getBody(), projectKey);
 
-		List<PartOfJiraIssueText> partsOfCommentWithIdInDatabase = new ArrayList<PartOfJiraIssueText>();
+		List<PartOfJiraIssueText> partsOfCommentWithIdInDatabase = new ArrayList<>();
 
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 			.getJiraIssueTextManager();
@@ -735,7 +737,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		// Create entries in the active objects (AO) database
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 			.getJiraIssueTextManager();
-		List<PartOfJiraIssueText> partsOfDescriptionWithIdInDatabase = new ArrayList<PartOfJiraIssueText>();
+		List<PartOfJiraIssueText> partsOfDescriptionWithIdInDatabase = new ArrayList<>();
 		for (PartOfJiraIssueText partOfDescription : partsOfDescription) {
 			partsOfDescriptionWithIdInDatabase.add((PartOfJiraIssueText) persistenceManager
 				.insertKnowledgeElement(partOfDescription, issue.getReporter()));

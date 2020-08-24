@@ -21,7 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.Abstra
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.rationale.backlog.RationaleBacklog;
+import de.uhd.ifi.se.decision.management.jira.rationale.backlog.KnowledgeCompletion;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
@@ -256,8 +256,10 @@ public class KnowledgePersistenceManager {
 		return false;
 	}
 
-	public boolean updateCompleteStatus(KnowledgeElement parentElement, KnowledgeElement childElement, ApplicationUser user) {
-		if (RationaleBacklog.isElementComplete(parentElement, childElement)) {
+	public boolean updateCompleteStatus(KnowledgeElement parentElement,
+										KnowledgeElement childElement,
+										ApplicationUser user) {
+		if (new KnowledgeCompletion().isElementComplete(parentElement, childElement)) {
 			parentElement.setIncomplete(false);
 			updateKnowledgeElement(parentElement, user);
 			return true;

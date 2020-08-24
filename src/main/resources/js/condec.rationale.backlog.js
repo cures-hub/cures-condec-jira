@@ -47,13 +47,13 @@
 
 	function initializeRationaleBacklog(conDecAPI, treant, treeViewer) {
 		console.log("conDecRationaleBacklog initializeRationaleBacklog");
+
 		var knowledgeTypeDropdown = conDecFiltering.initDropdown("knowledge-type-dropdown-rb", conDecAPI.getKnowledgeTypes(), ["Alternative", "Decision", "Issue"]);
 		knowledgeTypeDropdown.addEventListener("change", function() {
 			conDecRationaleBacklog.updateView();
 		});
 
-		conDecFiltering.initDropdown("status-dropdown-rb", conDecAPI.rationaleBacklogItemStatus);
-		var statusDropdown = document.getElementById("status-dropdown-rb");
+		var statusDropdown = conDecFiltering.initDropdown("status-dropdown-rb", conDecAPI.rationaleBacklogItemStatus, ["challenged", "unresolved"]);
 		statusDropdown.addEventListener("change", function () {
 			conDecRationaleBacklog.updateView();
 		});
@@ -70,7 +70,7 @@
 		startDatePicker.value = date.toISOString().substr(0, 10);
 		startDatePicker.addEventListener("change", function () {
 			conDecRationaleBacklog.updateView();
-		})
+		});
 
 		updateView(null, treant, treeViewer);
 	}
@@ -83,7 +83,7 @@
 		var indexOfIncomplete = selectedStatus.indexOf("incomplete");
 		var onlyIncomplete = false;
 		if (indexOfIncomplete !== -1) {
-			selectedStatus.splice(indexOfIncomplete, 1);
+			selectedStatus = this.conDecAPI.knowledgeStatus;
 			onlyIncomplete = true;
 		}
 		var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-rb");
