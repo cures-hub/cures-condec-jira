@@ -8,11 +8,12 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+
 public class TestKnowledgeCompletion {
 
-	KnowledgeCompletion knowledgeCompletion;
-	KnowledgeElement parentElement;
-	KnowledgeElement childElement;
+	private KnowledgeCompletion knowledgeCompletion;
+	private KnowledgeElement parentElement;
+	private KnowledgeElement childElement;
 
 	@Before
 	public void setUp() {
