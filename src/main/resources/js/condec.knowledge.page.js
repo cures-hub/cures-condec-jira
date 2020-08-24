@@ -1,5 +1,5 @@
 /*
- This view provides trees of decision knowledge.
+ This view provides trees of knowledge elements.
  
  Requires
  * conDecAPI
@@ -9,7 +9,7 @@
  * conDecTreeViewer
 
  Is referenced in HTML by
- * decisionKnowledgePage.vm
+ * overview.vm
  */
 (function(global) {
 	/* private vars */
@@ -83,20 +83,18 @@
 			}
 		});
 
-		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input", conDecKnowledgePage.updateView());
+		// @issue Should filters change all views or only the current view?
+		// @decision Filters are only applied in the current view using updateView()!
+		// @alternative We update all views using conDecObservable.notify()!
+		// @pro The user could reuse the filter settings, which is more useable.
+		// @con This would need more computation and decreases performance.
+		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input", conDecKnowledgePage.updateView);
 
 		conDecAPI.fillDecisionGroupSelect("select2-decision-group");
-		$("#select2-decision-group").on("change.select2", function(e) {
-			// @issue Should filters change all views or only the current view?
-			// @decision Filters are only applied in the current view using updateView()!
-			// @alternative We update all views using conDecObservable.notify()!
-			// @pro The user could reuse the filter settings, which is more useable.
-			// @con This would need more computation and decreases performance.
-			conDecKnowledgePage.updateView();
-		});
+		$("#select2-decision-group").on("change.select2", conDecKnowledgePage.updateView);
 
 		var statusDropdown = conDecFiltering.initDropdown("status-dropdown-overview", conDecAPI.knowledgeStatus);
-		statusDropdown.addEventListener("change", conDecKnowledgePage.updateView());
+		statusDropdown.addEventListener("change", conDecKnowledgePage.updateView);
 
 		var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input");
 		isOnlyDecisionKnowledgeShownInput.addEventListener("change", conDecKnowledgePage.updateView);
@@ -119,6 +117,7 @@
 		var maxLinkNumber = document.getElementById("max-number-linked-issues-input").value;
 		var filterSettings = {
 			"knowledgeTypes" : knowledgeTypes,
+			"status" : selectedStatus,
 			"linkDistance" : 0,
 			"groups" : selectedGroups,
 			"minDegree" : minLinkNumber,
