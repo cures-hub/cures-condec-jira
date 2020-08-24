@@ -244,7 +244,7 @@ public class FilteringManager {
 			}
 			type = element.getTypeAsString();
 		}
-		return filterSettings.getJiraIssueTypes().contains(type);
+		return filterSettings.getKnowledgeTypes().contains(type);
 	}
 
 	/**
