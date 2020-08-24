@@ -61,8 +61,9 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	}
 
 	@Test
-	public void testGetKnowledgeTypes() {
+	public void testGetDecisionKnowledgeTypes() {
 		assertEquals(18, project.getDecisionKnowledgeTypes().size());
+		assertEquals(18, project.getNamesOfDecisionKnowledgeTypes().size());
 	}
 
 	@Test
@@ -104,6 +105,11 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	@Test
 	public void testGetJiraIssueTypes() {
 		assertEquals(7, project.getJiraIssueTypeNames().size());
+	}
+
+	@Test
+	public void testGetKnowledgeTypesStorageInJiraIssuesActivated() {
+		assertEquals(7, project.getNamesOfKnowledgeTypes().size());
 	}
 
 	@AfterClass
