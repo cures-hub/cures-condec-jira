@@ -56,6 +56,8 @@ public class FilterSettings {
 			@JsonProperty("searchTerm") String searchTerm) {
 		this.project = new DecisionKnowledgeProject(projectKey);
 		setSearchTerm(searchTerm);
+
+		// the following values are the default values of the filter criteria
 		this.knowledgeTypes = project.getNamesOfKnowledgeTypes();
 		this.linkTypes = LinkType.toStringList();
 		this.startDate = -1;
@@ -103,8 +105,9 @@ public class FilterSettings {
 	}
 
 	/**
-	 * @return search term. This string can also be a Jira Query or a predefined
-	 *         {@link JiraFilter} (e.g. allopenissues).
+	 * @return search term. This string can be a substring filter. If the search
+	 *         term start with "?jql=" oder "?filter=", it is a Jira Query or a
+	 *         predefined {@link JiraFilter} (e.g. allopenissues).
 	 */
 	public String getSearchTerm() {
 		return searchTerm;
@@ -112,7 +115,8 @@ public class FilterSettings {
 
 	/**
 	 * @param searchTerm
-	 *            search term. This string can also be a Jira Query or a predefined
+	 *            can be a substring filter. If the search term start with "?jql="
+	 *            oder "?filter=", it is a Jira Query or a predefined
 	 *            {@link JiraFilter} (e.g. allopenissues).
 	 */
 	@JsonProperty("searchTerm")
