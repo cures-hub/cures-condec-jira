@@ -1,7 +1,7 @@
 /*
- This module is responsible for filtering functionality and view elements.
+ This module is responsible for filling the filter HTML elements and for filtering functionality.
  
- Requires
+ Requires no other module
 
  Is required by
  * conDecJiraIssueModule
@@ -50,7 +50,7 @@
 
 	/*
 	 * external references: condec.knowledge.page, condec.evolution.page, condec.relationship.page, 
-	 * condec.rationale.backlog, condec.code.class.page
+	 * condec.rationale.backlog
 	 */
 	ConDecFiltering.prototype.getSelectedGroups = function(selectId) {
 		var selectedGroupsObj = AJS.$("#" + selectId).select2("data");
