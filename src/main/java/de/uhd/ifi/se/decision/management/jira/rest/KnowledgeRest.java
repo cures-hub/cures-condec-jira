@@ -173,7 +173,6 @@ public class KnowledgeRest {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
 		}
-
 		return Response.status(Status.OK).entity(newElementWithId).build();
 	}
 
@@ -300,7 +299,7 @@ public class KnowledgeRest {
 					if ((linkedElement.getTypeAsString().equals("Decision")
 							|| linkedElement.getTypeAsString().equals("Alternative")
 							|| linkedElement.getTypeAsString().equals("Issue")) && linkedElement.getLinks() != null) {
-						List<Link> deeperLinks = linkedElement.getLinks();
+						Set<Link> deeperLinks = linkedElement.getLinks();
 						for (Link deeperLink : deeperLinks) {
 							if (deeperLink != null && deeperLink.getTarget() != null
 									&& deeperLink.getSource() != null) {

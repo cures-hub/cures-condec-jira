@@ -241,7 +241,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 * Sets the id of the Jira issue that the decision knowledge element or
 	 * irrelevant text is part of.
 	 * 
-	 * @param id
+	 * @param issueId
 	 *            of the Jira issue.
 	 */
 	public void setJiraIssueId(long issueId) {

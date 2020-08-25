@@ -16,11 +16,6 @@
     #set ($textInputId = "text-search-input-rb")
     #parse("templates/filter/text.vm")
 
-    #set ($linkDistanceInputId = "link-distance-input-rb")
-    #parse("templates/filter/linkDistance.vm")
-
-    #set ($filterButtonId = "filter-button-rb")
-    #parse("templates/filter/filterButton.vm")
 </form>
 </div>
 <div class="aui-group">

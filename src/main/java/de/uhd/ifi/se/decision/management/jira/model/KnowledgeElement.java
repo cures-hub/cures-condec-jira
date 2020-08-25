@@ -1,8 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -18,14 +20,14 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
 
 /**
- * Models knowledge elements, e.g. decision knowledge elements or requirements.
- * These elements are nodes of the knowledge graph and connected by
- * links/edges/relationships.
+ * Models knowledge elements, e.g., decision knowledge elements, requirements,
+ * work items, or code classes. These elements are nodes of the knowledge graph
+ * and connected by links/edges/relationships.
  *
  * @see KnowledgeGraph
  * @see Link
@@ -82,40 +84,42 @@ public class KnowledgeElement {
 	}
 
 	public KnowledgeElement(Issue issue) {
-		if (issue != null) {
-			this.id = issue.getId();
-			this.summary = issue.getSummary();
-			this.description = issue.getDescription();
-			if (issue.getIssueType() != null) {
-				this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
-			}
-			if (issue.getProjectObject() != null) {
-				this.project = new DecisionKnowledgeProject(issue.getProjectObject().getKey());
-			}
-			this.key = issue.getKey();
-			this.documentationLocation = DocumentationLocation.JIRAISSUE;
-			this.created = issue.getCreated();
-			// TODO Manage status for decision knowledge elements stored as entire Jira
-			// issues
-			this.status = KnowledgeStatus.RESOLVED;
+		if (issue == null) {
+			return;
 		}
+		this.id = issue.getId();
+		this.summary = issue.getSummary();
+		this.description = issue.getDescription();
+		if (issue.getIssueType() != null) {
+			this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
+		}
+		if (issue.getProjectObject() != null) {
+			this.project = new DecisionKnowledgeProject(issue.getProjectObject().getKey());
+		}
+		this.key = issue.getKey();
+		this.documentationLocation = DocumentationLocation.JIRAISSUE;
+		this.created = issue.getCreated();
+		// TODO Manage status for decision knowledge elements stored as entire Jira
+		// issues
+		this.status = KnowledgeStatus.RESOLVED;
 	}
 
 	public KnowledgeElement(CodeClassInDatabase entry) {
-		if (entry != null) {
-			this.id = entry.getId();
-			this.summary = entry.getFileName();
-			String issueKeys = "";
-			for (String key : entry.getJiraIssueKeys().split(";")) {
-				issueKeys = issueKeys + entry.getProjectKey() + "-" + key + ";";
-			}
-			this.description = issueKeys;
-			this.type = KnowledgeType.getKnowledgeType(null);
-			this.project = new DecisionKnowledgeProject(entry.getProjectKey());
-			this.key = entry.getProjectKey() + "-" + entry.getId();
-			this.documentationLocation = DocumentationLocation.COMMIT;
-			this.status = KnowledgeStatus.getKnowledgeStatus(null);
+		if (entry == null) {
+			return;
 		}
+		this.id = entry.getId();
+		this.summary = entry.getFileName();
+		StringBuilder issueKeys = new StringBuilder();
+		for (String key : entry.getJiraIssueKeys().split(";")) {
+			issueKeys.append(entry.getProjectKey()).append("-").append(key).append(";");
+		}
+		this.description = issueKeys.toString();
+		this.type = KnowledgeType.getKnowledgeType(null);
+		this.project = new DecisionKnowledgeProject(entry.getProjectKey());
+		this.key = entry.getProjectKey() + "-" + entry.getId();
+		this.documentationLocation = DocumentationLocation.COMMIT;
+		this.status = KnowledgeStatus.getKnowledgeStatus(null);
 	}
 
 	/**
@@ -200,7 +204,7 @@ public class KnowledgeElement {
 				&& this.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
 			IssueManager issueManager = ComponentAccessor.getIssueManager();
 			Issue issue = issueManager.getIssueByCurrentKey(this.getKey());
-			return issue.getIssueType().getName();
+			return Objects.requireNonNull(issue.getIssueType()).getName();
 		}
 		return this.getType().toString();
 	}
@@ -220,7 +224,7 @@ public class KnowledgeElement {
 
 	/**
 	 * @see KnowledgeType
-	 * @param type
+	 * @param typeAsString
 	 *            of the knowledge element. For example, types are decision,
 	 *            alternative, issue, and argument.
 	 */
@@ -241,14 +245,13 @@ public class KnowledgeElement {
 	 */
 	@XmlElement(name = "groups")
 	public List<String> getDecisionGroups() {
-		List<String> groups = DecisionGroupManager.getGroupsForElement(this);
-		return groups;
+		return DecisionGroupManager.getGroupsForElement(this);
 	}
 
 	/**
 	 * Add a list of groups assigned to this decision
 	 *
-	 * @param List<String>
+	 * @param decisionGroup
 	 *            of groups
 	 */
 	public void addDecisionGroups(List<String> decisionGroup) {
@@ -370,7 +373,8 @@ public class KnowledgeElement {
 	 * @see DocumentationLocation
 	 * @param documentationLocation
 	 *            of the knowledge element. For example, knowledge can be documented
-	 *            in commit messages or in the comments to a Jira issue.
+	 *            in commit messages or in the comments and the description of a
+	 *            Jira issue.
 	 */
 	@JsonProperty("documentationLocation")
 	public void setDocumentationLocation(String documentationLocation) {
@@ -389,6 +393,8 @@ public class KnowledgeElement {
 	public String getUrl() {
 		String key = this.getKey();
 		// TODO Recognize code classes
+		// TODO Simplify recognition of decision knowledge documented in Jira issue
+		// comments/description
 		if (this.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
 			key = key.split(":")[0];
 		}
@@ -453,8 +459,7 @@ public class KnowledgeElement {
 
 	@Override
 	public String toString() {
-		// return getDocumentationLocation().getIdentifier() + id;
-		return this.getDescription();
+		return getDescription();
 	}
 
 	/**
@@ -473,33 +478,50 @@ public class KnowledgeElement {
 	}
 
 	/**
-	 * @return all links (=edges) of this element in the {@link KnowledgeGraph} as
-	 *         list of {@link} objects, does contain Jira {@link IssueLink}s and
-	 *         generic links.
-	 *
-	 * @see GenericLinkManager
+	 * @return all links (=edges) of this element in the {@link KnowledgeGraph} as a
+	 *         set of {@link Link} objects, does contain Jira {@link IssueLink}s and
+	 *         generic links (e.g. links between code classes and Jira issues).
 	 */
-	public List<Link> getLinks() {
-		// TODO only return KnowledgeGraph.getOrCreate(project).edgesOf(this)
-		List<Link> links = GenericLinkManager.getLinksForElement(this);
-		if (documentationLocation == DocumentationLocation.JIRAISSUE) {
-			links.addAll(KnowledgeGraph.getOrCreate(project).edgesOf(this));
+	public Set<Link> getLinks() {
+		if (project == null) {
+			return new HashSet<>();
 		}
-		return links;
+		return KnowledgeGraph.getOrCreate(project).edgesOf(this);
 	}
 
 	/**
-	 * Determines whether an element is linked to at least one other decision
-	 * knowledge element.
+	 * @param otherElement
+	 *            object of {@link KnowledgeElement}.
+	 * @return {@link Link} object if there exists a link (= edge or relationship)
+	 *         between this knowledge element and the other knowledge element in the
+	 *         {@link KnowledgeGraph}. Returns null if no edge/link/relationshio can
+	 *         be found.
+	 */
+	public Link getLink(KnowledgeElement otherElement) {
+		if (this.equals(otherElement)) {
+			return null;
+		}
+		for (Link link : this.getLinks()) {
+			if (link.getOppositeElement(this).equals(otherElement)) {
+				return link;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Determines whether an element is linked to at least one other knowledge
+	 * element in the {@link KnowledgeGraph}.
 	 *
-	 * @return id of first link that is found.
+	 * @return id of first {@link Link} that is found. Returns 0 if the element is
+	 *         not linked.
 	 */
 	public long isLinked() {
-		List<Link> links = getLinks();
-		if (!links.isEmpty()) {
-			return links.get(0).getId();
+		Set<Link> links = getLinks();
+		if (links.isEmpty()) {
+			return 0;
 		}
-		return 0;
+		return links.iterator().next().getId();
 	}
 
 	/**
@@ -543,6 +565,17 @@ public class KnowledgeElement {
 	@XmlElement(name = "status")
 	public String getStatusAsString() {
 		return getStatus().toString();
+	}
+
+	/**
+	 * @return true if the element is correctly linked according to the definition
+	 *         of done. For example, an argument needs to be linked to at least one
+	 *         solution option (decision or alternative) in the
+	 *         {@link KnowledgeGraph}. Otherwise, it is incomplete, i.e., its
+	 *         documentation needs to be improved.
+	 */
+	public boolean isIncomplete() {
+		return !CompletenessCheck.isElementComplete(this);
 	}
 
 	@Override

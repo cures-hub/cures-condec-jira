@@ -41,6 +41,7 @@ public class FilterSettings {
 	private List<String> decisionGroups;
 	private boolean isOnlyDecisionKnowledgeShown;
 	private boolean isTestCodeShown;
+	private boolean isIncompleteKnowledgeShown;
 	private int linkDistance;
 	private int minDegree;
 	private int maxDegree;
@@ -67,6 +68,7 @@ public class FilterSettings {
 		this.decisionGroups = Collections.emptyList();
 		this.isOnlyDecisionKnowledgeShown = false;
 		this.isTestCodeShown = false;
+		this.isIncompleteKnowledgeShown = true;
 		this.linkDistance = 3;
 		this.minDegree = 0;
 		this.maxDegree = 50;
@@ -174,7 +176,7 @@ public class FilterSettings {
 	 */
 	@XmlElement(name = "documentationLocations")
 	public List<String> getNamesOfDocumentationLocations() {
-		List<String> documentationLocations = new ArrayList<String>();
+		List<String> documentationLocations = new ArrayList<>();
 		for (DocumentationLocation location : getDocumentationLocations()) {
 			documentationLocations.add(DocumentationLocation.getName(location));
 		}
@@ -182,7 +184,7 @@ public class FilterSettings {
 	}
 
 	/**
-	 * @param documentationLocations
+	 * @param namesOfDocumentationLocations
 	 *            {@link DocumentationLocation}s to be shown in the knowledge graph
 	 *            as Strings.
 	 */
@@ -214,11 +216,9 @@ public class FilterSettings {
 	 */
 	@JsonProperty("status")
 	public void setStatus(List<String> status) {
-		knowledgeStatus = new ArrayList<KnowledgeStatus>();
+		knowledgeStatus = new ArrayList<>();
 		if (status == null) {
-			for (KnowledgeStatus eachStatus : KnowledgeStatus.values()) {
-				knowledgeStatus.add(eachStatus);
-			}
+			Collections.addAll(knowledgeStatus, KnowledgeStatus.values());
 			return;
 		}
 		for (String stringStatus : status) {
@@ -352,6 +352,24 @@ public class FilterSettings {
 	}
 
 	/**
+	 * @return true if incompletely documented knowledge elements are shown in the
+	 *         filtered graph.
+	 */
+	public boolean isIncompleteKnowledgeShown() {
+		return isIncompleteKnowledgeShown;
+	}
+
+	/**
+	 * @param isIncompleteKnowledgeShown
+	 *            true if incompletely documented knowledge elements should be shown
+	 *            in the filtered graph.
+	 */
+	@JsonProperty("isIncompleteKnowledgeShown")
+	public void setIncompleteKnowledgeShown(boolean isIncompleteKnowledgeShown) {
+		this.isIncompleteKnowledgeShown = isIncompleteKnowledgeShown;
+	}
+
+	/**
 	 * @return {@link KnowledgeElement} that is currently selected (e.g. as root
 	 *         element in the knowlegde tree view). For example, this can be a Jira
 	 *         issue such as a work item, bug report or requirement.
@@ -409,8 +427,8 @@ public class FilterSettings {
 
 	/**
 	 * @param namesOfTypes
-	 *            names of {@link KnowledgeType}s, such decision knowledge types and
-	 *            other Jira {@link IssueType}s.
+	 *            names of {@link KnowledgeType}s, such as decision knowledge types
+	 *            and other Jira {@link IssueType}s.
 	 */
 	@JsonProperty("knowledgeTypes")
 	public void setKnowledgeTypes(Set<String> namesOfTypes) {

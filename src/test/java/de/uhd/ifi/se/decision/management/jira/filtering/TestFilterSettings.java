@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -144,6 +145,17 @@ public class TestFilterSettings extends TestSetUp {
 		status.add(KnowledgeStatus.UNRESOLVED.toString());
 		filterSettings.setStatus(status);
 		assertEquals(1, filterSettings.getStatus().size());
+	}
+
+	@Test
+	public void testIsIncompleteElementsShown() {
+		assertTrue(filterSettings.isIncompleteKnowledgeShown());
+	}
+
+	@Test
+	public void testSetIncompleteElementsShown() {
+		filterSettings.setIncompleteKnowledgeShown(true);
+		assertTrue(filterSettings.isIncompleteKnowledgeShown());
 	}
 
 	@Test

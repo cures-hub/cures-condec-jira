@@ -12,7 +12,13 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
         conDecAPI.checkIfProjectKeyIsValid();
         if (window.conDecDecisionGroupView.init(conDecAPI, conDecObservable)) {
             conDecAPI.checkIfProjectKeyIsValid();
-            window.conDecDecisionGroupView.buildMatrix();
+            var click = 0;
+        	AJS.$("#menu-item-groups").on("click", function(event) {
+        		if (click === 0) {
+        			window.conDecDecisionGroupView.buildMatrix();
+        		}
+        		click++;
+        	});    
         } else {
             console.error("ConDecDecisionGroupView could not get its dependencies.");
         }

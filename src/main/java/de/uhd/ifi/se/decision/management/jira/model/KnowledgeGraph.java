@@ -189,6 +189,9 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 */
 	@Override
 	public boolean containsEdge(Link link) {
+		if (link == null) {
+			return false;
+		}
 		return super.containsEdge(link.getSource(), link.getTarget());
 	}
 

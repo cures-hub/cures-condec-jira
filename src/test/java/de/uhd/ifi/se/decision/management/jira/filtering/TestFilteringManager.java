@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -31,14 +32,14 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testConstructorWithQueryInvalid() {
-		FilteringManager filteringManager = new FilteringManager(null, null, (String) null);
+		FilteringManager filteringManager = new FilteringManager(null, null, null);
 		assertEquals(0, filteringManager.getElementsMatchingFilterSettings().size());
 		assertNull(filteringManager.getSubgraphMatchingFilterSettings());
 	}
 
 	@Test
 	public void testConstructorWithFilterSettingsInvalid() {
-		FilteringManager filteringManager = new FilteringManager((FilterSettings) null);
+		FilteringManager filteringManager = new FilteringManager(null);
 		assertNull(filteringManager.getFilterSettings());
 	}
 
@@ -84,7 +85,7 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testGetElementsByType() {
-		Set<String> knowledgeTypes = new HashSet<String>();
+		Set<String> knowledgeTypes = new HashSet<>();
 		knowledgeTypes.add("Decision");
 		FilterSettings settings = new FilterSettings("TEST", "TEST");
 		settings.setKnowledgeTypes(knowledgeTypes);
@@ -104,7 +105,7 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testGetSubgraph() {
-		List<String> linkTypes = new ArrayList<String>();
+		List<String> linkTypes = new ArrayList<>();
 		linkTypes.add("support");
 		FilterSettings settings = new FilterSettings("TEST", "TEST");
 		settings.setLinkTypes(linkTypes);
@@ -162,4 +163,19 @@ public class TestFilteringManager extends TestSetUp {
 		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
 		assertTrue(filteringManager.isElementMatchingDegreeFilter(element));
 	}
+
+	@Test
+	public void testIsElementMatchingIncompleteFilter() {
+		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
+		FilterSettings settings = new FilterSettings("TEST", "");
+
+		settings.setIncompleteKnowledgeShown(false);
+		FilteringManager filteringManager = new FilteringManager(user, settings);
+		assertTrue(filteringManager.isElementMatchingIncompleteFilter(element));
+
+		settings.setIncompleteKnowledgeShown(true);
+		filteringManager.setFilterSettings(settings);
+		assertFalse(filteringManager.isElementMatchingIncompleteFilter(element));
+	}
+
 }

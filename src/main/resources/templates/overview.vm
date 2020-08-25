@@ -32,13 +32,19 @@
     <div id="treant-container" class="right"></div>
 </div>
 <script>
-    /*
-     * Instantiate the ConDecKnowledgePage object controlling this view:
-     */
-    $(document).ready(function() {
+  /* Instantiate the ConDecKnowledgePage object controlling this view: */
+  $(document).ready(function() {
         conDecAPI.checkIfProjectKeyIsValid();
-        if ( window.conDecKnowledgePage.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant, conDecTreeViewer) )
-            window.conDecKnowledgePage.fetchAndRender();
+        if ( window.conDecKnowledgePage.init(conDecAPI, conDecObservable, conDecDialog, 
+        		conDecContextMenu, conDecTreant, conDecTreeViewer) ) {
+        	var click = 0;
+        	AJS.$("#menu-item-overview").on("click", function(event) {
+        		if (click === 0) {
+        			window.conDecKnowledgePage.fetchAndRender();
+        		}
+        		click++;
+        	}); 
+  		}
         else {
             console.error("ConDecKnowledgePage could not get its dependencies.");
         }       

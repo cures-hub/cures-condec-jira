@@ -26,7 +26,13 @@
         conDecAPI.checkIfProjectKeyIsValid();
         if(window.conDecRelationshipPage.init(conDecAPI, conDecObservable, conDecVis)) {
             conDecAPI.checkIfProjectKeyIsValid();
-            window.conDecRelationshipPage.buildDecisionGraph();
+            var click = 0;
+        	AJS.$("#menu-item-graph").on("click", function(event) {
+        		if (click === 0) {
+        			window.conDecRelationshipPage.buildDecisionGraph();
+        		}
+        		click++;
+        	});  
         }
         else {
             console.error("ConDecRelationshipPage could not get its dependencies.");
