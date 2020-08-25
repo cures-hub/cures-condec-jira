@@ -373,7 +373,8 @@ public class KnowledgeElement {
 	 * @see DocumentationLocation
 	 * @param documentationLocation
 	 *            of the knowledge element. For example, knowledge can be documented
-	 *            in commit messages or in the comments to a Jira issue.
+	 *            in commit messages or in the comments and the description of a
+	 *            Jira issue.
 	 */
 	@JsonProperty("documentationLocation")
 	public void setDocumentationLocation(String documentationLocation) {
@@ -456,8 +457,7 @@ public class KnowledgeElement {
 
 	@Override
 	public String toString() {
-		// return getDocumentationLocation().getIdentifier() + id;
-		return this.getDescription();
+		return getDescription();
 	}
 
 	/**
@@ -508,10 +508,11 @@ public class KnowledgeElement {
 	}
 
 	/**
-	 * Determines whether an element is linked to at least one other decision
-	 * knowledge element.
+	 * Determines whether an element is linked to at least one other knowledge
+	 * element in the {@link KnowledgeGraph}.
 	 *
-	 * @return id of first link that is found.
+	 * @return id of first {@link Link} that is found. Returns 0 if the element is
+	 *         not linked.
 	 */
 	public long isLinked() {
 		Set<Link> links = getLinks();
