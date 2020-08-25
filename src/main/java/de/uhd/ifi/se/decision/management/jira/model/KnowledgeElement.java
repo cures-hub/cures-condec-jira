@@ -22,12 +22,12 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.KnowledgeCompletion;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.KnowledgeCompletenessChecker;
 
 /**
- * Models knowledge elements, e.g. decision knowledge elements or requirements.
- * These elements are nodes of the knowledge graph and connected by
- * links/edges/relationships.
+ * Models knowledge elements, e.g., decision knowledge elements, requirements,
+ * work items, or code classes. These elements are nodes of the knowledge graph
+ * and connected by links/edges/relationships.
  *
  * @see KnowledgeGraph
  * @see Link
@@ -393,6 +393,8 @@ public class KnowledgeElement {
 	public String getUrl() {
 		String key = this.getKey();
 		// TODO Recognize code classes
+		// TODO Simplify recognition of decision knowledge documented in Jira issue
+		// comments/description
 		if (this.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
 			key = key.split(":")[0];
 		}
@@ -572,7 +574,7 @@ public class KnowledgeElement {
 	 *         incomplete, i.e., its documentation needs to be improved.
 	 */
 	public boolean isIncomplete() {
-		return !KnowledgeCompletion.isElementComplete(this);
+		return !KnowledgeCompletenessChecker.isElementComplete(this);
 	}
 
 	@Override

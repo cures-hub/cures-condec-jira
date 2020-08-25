@@ -93,6 +93,7 @@
 		determineSelectedTab(AJS.$(".active-tab")[0].firstElementChild.href)
 	}
 
+	// TODO Only fill tab when clicking menu item for the first time
 	function determineSelectedTab(href) {
 		if (href === undefined || href.includes("#treant")) {
 			AJS.tabs.change(jQuery('a[href="#treant"]'));

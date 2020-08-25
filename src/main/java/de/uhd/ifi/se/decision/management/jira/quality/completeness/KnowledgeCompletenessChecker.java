@@ -7,8 +7,16 @@ import java.util.Map;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-// TODO Add Java Doc and avoid using maps because they are hard to understand
-public class KnowledgeCompletion {
+/**
+ * Checks whether a given {@link KnowledgeElement} is documented completely
+ * according to the definition of done.
+ * 
+ * For example, an argument needs to be linked to at least one solution option
+ * (decision or alternative). Otherwise, it is incomplete, i.e., its
+ * documentation needs to be improved.
+ */
+public class KnowledgeCompletenessChecker {
+
 	private static final Map<KnowledgeType, CompletionCheck> completionCheckMap = Map.ofEntries(
 			entry(KnowledgeType.DECISION, new DecisionCompletionCheck()),
 			entry(KnowledgeType.ISSUE, new IssueCompletionCheck()),
@@ -17,9 +25,5 @@ public class KnowledgeCompletion {
 	public static boolean isElementComplete(KnowledgeElement element) {
 		CompletionCheck completionCheck = completionCheckMap.get(element.getType());
 		return completionCheck != null && completionCheck.execute(element);
-	}
-
-	public Map<KnowledgeType, CompletionCheck> getCompletionCheckMap() {
-		return completionCheckMap;
 	}
 }

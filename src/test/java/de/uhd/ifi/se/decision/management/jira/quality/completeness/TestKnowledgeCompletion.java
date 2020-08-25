@@ -32,25 +32,25 @@ public class TestKnowledgeCompletion extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCompleteIssue() {
-		assertTrue(KnowledgeCompletion.isElementComplete(issueElement));
+		assertTrue(KnowledgeCompletenessChecker.isElementComplete(issueElement));
 	}
 
 	@Test
 	@NonTransactional
 	public void testCompleteDecision() {
-		assertTrue(KnowledgeCompletion.isElementComplete(decisionElement));
+		assertTrue(KnowledgeCompletenessChecker.isElementComplete(decisionElement));
 	}
 
 	@Test
 	@NonTransactional
 	public void testCompleteAlternative() {
-		assertTrue(KnowledgeCompletion.isElementComplete(alternativeElement));
+		assertTrue(KnowledgeCompletenessChecker.isElementComplete(alternativeElement));
 	}
 
 	@Test
 	@NonTransactional
 	public void testArgument() {
-		assertFalse(KnowledgeCompletion.isElementComplete(proElement));
+		assertFalse(KnowledgeCompletenessChecker.isElementComplete(proElement));
 	}
 
 }
