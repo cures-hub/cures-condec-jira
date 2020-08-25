@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.consistency;
+package de.uhd.ifi.se.decision.management.jira.quality.consistency;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.event.issue.IssueEvent;
@@ -11,9 +11,9 @@ import com.atlassian.jira.issue.status.category.StatusCategoryImpl;
 import com.atlassian.jira.mock.ofbiz.MockGenericValue;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.ConsistencyCheckEventTrigger;
-import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.IssueClosedTrigger;
-import de.uhd.ifi.se.decision.management.jira.consistency.checktriggers.WorkflowDoneTrigger;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.checktriggers.ConsistencyCheckEventTrigger;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.checktriggers.IssueClosedTrigger;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.checktriggers.WorkflowDoneTrigger;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import org.junit.Before;
 import org.junit.Test;

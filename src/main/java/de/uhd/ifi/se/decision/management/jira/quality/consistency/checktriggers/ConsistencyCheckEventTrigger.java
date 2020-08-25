@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.consistency.checktriggers;
+package de.uhd.ifi.se.decision.management.jira.quality.consistency.checktriggers;
 
 import com.atlassian.jira.event.issue.IssueEvent;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;

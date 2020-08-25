@@ -1,8 +1,9 @@
-package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
+package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation;
 
 import com.atlassian.jira.user.ApplicationUser;
-import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
 
 import java.util.ArrayList;
 import java.util.Collection;

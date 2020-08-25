@@ -1,11 +1,11 @@
-package de.uhd.ifi.se.decision.management.jira.consistency;
+package de.uhd.ifi.se.decision.management.jira.quality.consistency;
 
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.project.Project;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateSuggestion;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.DuplicateSuggestion;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import org.junit.Before;

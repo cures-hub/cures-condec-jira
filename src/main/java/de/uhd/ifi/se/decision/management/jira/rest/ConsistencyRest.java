@@ -3,17 +3,19 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
-import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.ContextInformation;
-import de.uhd.ifi.se.decision.management.jira.consistency.duplicatedetection.BasicDuplicateTextDetector;
-import de.uhd.ifi.se.decision.management.jira.consistency.duplicatedetection.DuplicateDetectionManager;
-import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateSuggestion;
-import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
-import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.SuggestionType;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation.ContextInformation;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.duplicatedetection.BasicDuplicateTextDetector;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.duplicatedetection.DuplicateDetectionManager;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.DuplicateSuggestion;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.SuggestionType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,12 +1,14 @@
-package de.uhd.ifi.se.decision.management.jira.consistency.duplicatedetection;
+package de.uhd.ifi.se.decision.management.jira.quality.consistency.duplicatedetection;
 
 import com.atlassian.jira.issue.Issue;
-import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.DuplicateSuggestion;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.DuplicateSuggestion;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

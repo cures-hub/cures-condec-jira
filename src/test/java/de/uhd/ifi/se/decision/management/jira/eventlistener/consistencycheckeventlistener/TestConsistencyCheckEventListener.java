@@ -20,7 +20,7 @@ import org.junit.jupiter.api.AfterEach;
 
 import java.util.Optional;
 
-import static de.uhd.ifi.se.decision.management.jira.consistency.TestConsistencyCheckEventTrigger.generateWorkflowIssueEvent;
+import static de.uhd.ifi.se.decision.management.jira.quality.consistency.TestConsistencyCheckEventTrigger.generateWorkflowIssueEvent;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

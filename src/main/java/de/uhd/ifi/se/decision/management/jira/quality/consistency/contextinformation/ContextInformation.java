@@ -1,11 +1,12 @@
-package de.uhd.ifi.se.decision.management.jira.consistency.contextinformation;
+package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation;
 
-import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

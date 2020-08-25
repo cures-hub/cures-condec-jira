@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.consistency;
+package de.uhd.ifi.se.decision.management.jira.quality.consistency;
 
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
@@ -23,15 +23,15 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.MockApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.ContextInformation;
-import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.ContextInformationProvider;
-import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.TracingCIP;
-import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.UserCIP;
-import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation.ContextInformation;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation.ContextInformationProvider;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation.TracingCIP;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation.UserCIP;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
